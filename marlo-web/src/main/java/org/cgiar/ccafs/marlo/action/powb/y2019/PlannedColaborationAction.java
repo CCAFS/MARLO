@@ -207,7 +207,7 @@ public class PlannedColaborationAction extends BaseAction {
       studiesIds.add(std.getId());
     }
 
-    if (powbSynthesis.getCollaboration().getCollaborationsValue() != null
+    if (powbSynthesis != null && powbSynthesis.getCollaboration() != null && powbSynthesis.getCollaboration().getCollaborationsValue() != null
       && powbSynthesis.getCollaboration().getCollaborationsValue().length() > 0) {
       List<Long> stList = new ArrayList<>();
       for (String string : powbSynthesis.getCollaboration().getCollaborationsValue().trim().split(",")) {
