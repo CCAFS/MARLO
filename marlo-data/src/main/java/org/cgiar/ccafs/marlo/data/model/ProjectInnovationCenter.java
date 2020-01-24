@@ -53,7 +53,7 @@ public class ProjectInnovationCenter extends MarloBaseEntity implements java.io.
     if (this.getClass() != obj.getClass()) {
       return false;
     }
-    ProjectInnovationCrp other = (ProjectInnovationCrp) obj;
+    ProjectInnovationCenter other = (ProjectInnovationCenter) obj;
     if (this.getId() == null) {
       if (other.getId() != null) {
         return false;

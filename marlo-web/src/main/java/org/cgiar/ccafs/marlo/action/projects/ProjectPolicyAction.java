@@ -460,6 +460,7 @@ public class ProjectPolicyAction extends BaseAction {
 			project.getProjecInfoPhase(phase);
 
 			Path path = this.getAutoSaveFilePath();
+			
 			if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
 
 				// Autosave File in
@@ -913,13 +914,12 @@ public class ProjectPolicyAction extends BaseAction {
 	public String save() {
 
 		if (this.hasPermission("canEdit")) {
-
+			
 			Phase phase = this.getActualPhase();
-
+			
 			Path path = this.getAutoSaveFilePath();
-
+			
 			policy.setProject(project);
-			System.out.println("ff " + policy.getProjectPolicyInfo());
 			this.saveCrps(policyDB, phase);
 			this.saveOwners(policyDB, phase);
 			this.saveSubIdos(policyDB, phase);
@@ -997,9 +997,6 @@ public class ProjectPolicyAction extends BaseAction {
 			relationsName.add(APConstants.PROJECT_POLICY_CROSS_CUTTING_RELATION);
 			relationsName.add(APConstants.PROJECT_POLICY_EVIDENCE_RELATION);
 		    relationsName.add(APConstants.PROJECT_POLICY_CENTER_RELATION);
-		    relationsName.add(APConstants.PROJECT_POLICY_CENTER_RELATION);
-
-
 
 			policy.setModificationJustification(this.getJustification());
 
@@ -1024,8 +1021,7 @@ public class ProjectPolicyAction extends BaseAction {
 			 * The following is required because we need to update something on
 			 * the @ProjectInnovation if we want a row created in the auditlog table.
 			 */
-			this.setModificationJustification(policy);
-
+			//this.setModificationJustification(policy);
 			projectPolicyManager.saveProjectPolicy(policy, this.getActionName(), relationsName, this.getActualPhase());
 
 			if (path.toFile().exists()) {
@@ -1545,13 +1541,14 @@ public class ProjectPolicyAction extends BaseAction {
 				if (policySubIdo.getId() == null) {
 					ProjectPolicySubIdo policySubIdoSave = new ProjectPolicySubIdo();
 
+					/*
 					if (principalSubIdo != null && principalSubIdo.size() != 0 && principalSubIdo.get(0) != null) {
 						if (policySubIdo.getSrfSubIdo().getId().intValue() == principalSubIdo.get(0).getId()
 								.intValue()) {
 							policySubIdoSave.setPrimary(true);
 						}
 					}
-
+*/
 					policySubIdoSave.setProjectPolicy(projectPolicy);
 					policySubIdoSave.setPhase(phase);
 
