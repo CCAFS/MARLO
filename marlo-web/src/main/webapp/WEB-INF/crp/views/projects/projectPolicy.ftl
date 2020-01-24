@@ -80,6 +80,9 @@
       <div class="col-md-3"></div>
       <div class="col-md-3">
         [@customForm.select name="${customName}.projectPolicyInfo.year" className="setSelect2" i18nkey="policy.year" listName="years" required=true editable=editable/]
+        [#if editable=false]
+          ${element.projectPolicyInfo.year}
+        [/#if]
       </div>
     </div>
     <hr />
@@ -101,15 +104,9 @@
       </div>
     </div>
     
-    <div class="form-group row">
-      [#-- Implementing Organization Type --]
-      <div class="col-md-6">
-        [@customForm.select name="${customName}.projectPolicyInfo.repIndOrganizationType.id" className="setSelect2 policyOrganizationType" i18nkey="policy.organizationType" help="policy.organizationType.help" listName="organizationTypes" keyFieldName="id"  displayFieldName="name" required=false editable=editable/]
-      </div>
+    <div class="form-group">
       [#-- Level of Maturity of the Process: (Before Stage in Process) --]
-      <div class="col-md-6">
         [@customForm.select name="${customName}.projectPolicyInfo.repIndStageProcess.id" className="setSelect2 maturityLevel" i18nkey="policy.maturityLevel" help="policy.maturityLevel.help" help="policy.maturityLevel.help" listName="stageProcesses" keyFieldName="id"  displayFieldName="description" required=true editable=editable/]
-      </div>
     </div>
     
     <div class="row">

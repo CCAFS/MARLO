@@ -1161,6 +1161,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       String masterQueryName = "Main_Query";
       Resource reportResource;
       if (this.getSelectedCycle().equals("Planning")) {
+    	  
         reportResource = resourceManager.createDirectly(
           this.getClass().getResource("/pentaho/crp/ProjectFullPDF(Planning).prpt"), MasterReport.class);
       } else {
