@@ -46,6 +46,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndOrganizationTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndPolicyInvestimentTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndPolicyTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageProcessManager;
+import org.cgiar.ccafs.marlo.data.manager.SrfIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
@@ -78,6 +79,7 @@ import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
 import org.cgiar.ccafs.marlo.data.model.RepIndPolicyInvestimentType;
 import org.cgiar.ccafs.marlo.data.model.RepIndPolicyType;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageProcess;
+import org.cgiar.ccafs.marlo.data.model.SrfIdo;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -91,6 +93,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -138,8 +141,10 @@ public class ProjectPolicyAction extends BaseAction {
 	private PolicyMilestoneManager policyMilestoneManager;
 	private CrpMilestoneManager crpMilestoneManager;
 	private ProjectPolicyValidator validator;
-  private ProjectPolicyCenterManager projectPolicyCenterManager;
-  private InstitutionManager institutionManager;
+    private ProjectPolicyCenterManager projectPolicyCenterManager;
+    private InstitutionManager institutionManager;
+    private SrfIdoManager srfIdoManager;
+
 
 	// Variables
 	private GlobalUnit loggedCrp;
@@ -163,9 +168,12 @@ public class ProjectPolicyAction extends BaseAction {
 	private List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers;
 	private List<ProjectInnovation> innovationList;
 	private List<CrpMilestone> milestoneList;
+	private List<SrfIdo> srfIdos;
 
 	private String transaction;
-  private List<Institution> centers;
+    private List<Institution> centers;
+    private HashMap<Long, String> idoList;
+
 
 	@Inject
 	public ProjectPolicyAction(APConfig config, GlobalUnitManager globalUnitManager,
@@ -189,7 +197,7 @@ public class ProjectPolicyAction extends BaseAction {
 			ProjectPolicyGeographicScopeManager projectPolicyGeographicScopeManager,
 			ProjectPolicyRegionManager projectPolicyRegionManager, PolicyMilestoneManager policyMilestoneManager,
 			CrpMilestoneManager crpMilestoneManager, ProjectPolicyCenterManager projectPolicyCenterManager,
-		    InstitutionManager institutionManager) {
+		    InstitutionManager institutionManager, SrfIdoManager srfIdoManager) {
 		super(config);
 		this.globalUnitManager = globalUnitManager;
 		this.projectPolicyManager = projectPolicyManager;
@@ -222,6 +230,7 @@ public class ProjectPolicyAction extends BaseAction {
 		this.crpMilestoneManager = crpMilestoneManager;
 		this.projectPolicyCenterManager = projectPolicyCenterManager;
 		this.institutionManager = institutionManager;
+	    this.srfIdoManager = srfIdoManager;
 	}
 
 	/**
@@ -907,6 +916,16 @@ public class ProjectPolicyAction extends BaseAction {
 			policy.getProjectPolicyInfo().setRepIndStageProcess(null);
 
 		}
+		
+		//SrfIDO
+		idoList = new HashMap<>();
+	    srfIdos = new ArrayList<>();
+	    for (SrfIdo srfIdo : srfIdoManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
+	      idoList.put(srfIdo.getId(), srfIdo.getDescription());
+
+	      srfIdo.setSubIdos(srfIdo.getSrfSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+	      srfIdos.add(srfIdo);
+	    }
 
 	}
 
@@ -1562,6 +1581,16 @@ public class ProjectPolicyAction extends BaseAction {
 				}
 			}
 		}
+	}
+	
+	
+
+	public List<SrfIdo> getSrfIdos() {
+		return srfIdos;
+	}
+
+	public void setSrfIdos(List<SrfIdo> srfIdos) {
+		this.srfIdos = srfIdos;
 	}
 
 	public void setCgiarCrossCuttingMarkers(List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers) {
