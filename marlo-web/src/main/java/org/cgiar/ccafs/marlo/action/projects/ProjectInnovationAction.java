@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCrpManager;
@@ -54,6 +55,7 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
@@ -131,6 +133,7 @@ public class ProjectInnovationAction extends BaseAction {
   private ProjectInnovationRegionManager projectInnovationRegionManager;
   private ProjectInnovationGeographicScopeManager projectInnovationGeographicScopeManager;
   private ProjectInnovationSharedManager projectInnovationSharedManager;
+  private ProjectInnovationCenterManager projectInnovationCenterManager;
 
 
   // Variables
@@ -159,6 +162,7 @@ public class ProjectInnovationAction extends BaseAction {
   private List<Project> myProjects;
   private ProjectInnovationValidator validator;
   private Boolean clearLead;
+  private List<Institution> centers;
 
   @Inject
   public ProjectInnovationAction(APConfig config, GlobalUnitManager globalUnitManager,
@@ -180,7 +184,8 @@ public class ProjectInnovationAction extends BaseAction {
     ProjectInnovationContributingOrganizationManager projectInnovationContributingOrganizationManager,
     ProjectInnovationRegionManager projectInnovationRegionManager,
     ProjectInnovationGeographicScopeManager projectInnovationGeographicScopeManager,
-    ProjectInnovationSharedManager projectInnovationSharedManager) {
+    ProjectInnovationSharedManager projectInnovationSharedManager,
+    ProjectInnovationCenterManager projectInnovationCenterManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -211,6 +216,7 @@ public class ProjectInnovationAction extends BaseAction {
     this.projectInnovationRegionManager = projectInnovationRegionManager;
     this.projectInnovationGeographicScopeManager = projectInnovationGeographicScopeManager;
     this.projectInnovationSharedManager = projectInnovationSharedManager;
+    this.projectInnovationCenterManager = projectInnovationCenterManager;
   }
 
   /**
@@ -265,6 +271,10 @@ public class ProjectInnovationAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+  public List<Institution> getCenters() {
+    return centers;
+  }
+
   public List<RepIndContributionOfCrp> getContributionCrpList() {
     return contributionCrpList;
   }
@@ -306,6 +316,7 @@ public class ProjectInnovationAction extends BaseAction {
     return innovationID;
   }
 
+
   public List<RepIndInnovationType> getInnovationTypeList() {
     return innovationTypeList;
   }
@@ -314,7 +325,6 @@ public class ProjectInnovationAction extends BaseAction {
   public List<Institution> getInstitutions() {
     return institutions;
   }
-
 
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
@@ -332,10 +342,10 @@ public class ProjectInnovationAction extends BaseAction {
     return phaseResearchList;
   }
 
+
   public Project getProject() {
     return project;
   }
-
 
   public long getProjectID() {
     return projectID;
@@ -360,6 +370,7 @@ public class ProjectInnovationAction extends BaseAction {
   public Boolean isClearLead() {
     return clearLead;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -598,6 +609,14 @@ public class ProjectInnovationAction extends BaseAction {
           }
         }
 
+        // Innovation Center List Autosave
+        if (innovation.getCenters() != null) {
+          for (ProjectInnovationCenter projectInnovationCenter : innovation.getCenters()) {
+            projectInnovationCenter
+              .setInstitution(institutionManager.getInstitutionById(projectInnovationCenter.getInstitution().getId()));
+          }
+        }
+
         // Innovation Shared Projects List Autosave
         if (this.innovation.getSharedInnovations() != null) {
           for (ProjectInnovationShared projectInnovationShared : this.innovation.getSharedInnovations()) {
@@ -666,6 +685,12 @@ public class ProjectInnovationAction extends BaseAction {
             .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
+        // Innovation Center list
+        if (innovation.getProjectInnovationCenters() != null) {
+          innovation.setCenters(new ArrayList<>(innovation.getProjectInnovationCenters().stream()
+            .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+        }
+
         // Innovation shared Projects List
         if (this.innovation.getProjectInnovationShareds() != null) {
           this.innovation.setSharedInnovations(new ArrayList<>(this.innovation.getProjectInnovationShareds().stream()
@@ -703,6 +728,11 @@ public class ProjectInnovationAction extends BaseAction {
       organizationTypeList = repIndOrganizationTypeManager.findAll();
       contributionCrpList = repIndContributionOfCrpManager.findAll();
       degreeInnovationList = repIndDegreeInnovationManager.findAll();
+      // institutions & ppa partners
+      centers = institutionManager.findAll().stream()
+        .filter(c -> c.isPPA(this.getActualPhase().getCrp().getId(), this.getActualPhase())
+          || c.getInstitutionType().getId().longValue() == APConstants.INSTITUTION_CGIAR_CENTER_TYPE)
+        .collect(Collectors.toList());
 
 
       List<ProjectExpectedStudy> allProjectStudies = new ArrayList<ProjectExpectedStudy>();
@@ -815,6 +845,10 @@ public class ProjectInnovationAction extends BaseAction {
       if (innovation.getSharedInnovations() != null) {
         innovation.getSharedInnovations().clear();
       }
+
+      if (innovation.getCenters() != null) {
+        innovation.getCenters().clear();
+      }
       // HTTP Post info Values
       // innovation.getProjectInnovationInfo().setGenderFocusLevel(null);
       // innovation.getProjectInnovationInfo().setYouthFocusLevel(null);
@@ -827,7 +861,6 @@ public class ProjectInnovationAction extends BaseAction {
       innovation.getProjectInnovationInfo().setLeadOrganization(null);
     }
   }
-
 
   @Override
   public String save() {
@@ -844,6 +877,7 @@ public class ProjectInnovationAction extends BaseAction {
       this.saveContributionOrganizations(innovationDB, phase);
       this.saveCrps(innovationDB, phase);
       this.saveProjects(innovationDB, phase);
+      this.saveCenters(innovationDB, phase);
 
       this.saveGeographicScope(innovationDB, phase);
 
@@ -910,6 +944,7 @@ public class ProjectInnovationAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_DELIVERABLE_CRP_RELATION);
       relationsName.add(APConstants.PROJECT_INNOVATION_CONTRIBUTING_ORGANIZATION_RELATION);
       relationsName.add(APConstants.PROJECT_INNOVATION_SHARED_RELATION);
+      relationsName.add(APConstants.PROJECT_INNOVATION_CENTER_RELATION);
 
       innovation.setModificationJustification(this.getJustification());
 
@@ -1025,6 +1060,43 @@ public class ProjectInnovationAction extends BaseAction {
     }
   }
 
+  public void saveCenters(ProjectInnovation projectInnovation, Phase phase) {
+
+    // Search and deleted form Information
+    if (projectInnovation.getProjectInnovationCenters() != null
+      && projectInnovation.getProjectInnovationCenters().size() > 0) {
+
+      List<ProjectInnovationCenter> centerPrev =
+        new ArrayList<>(projectInnovation.getProjectInnovationCenters().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+      for (ProjectInnovationCenter innovationCenter : centerPrev) {
+        if (innovation.getCenters() == null || !innovation.getCenters().contains(innovationCenter)) {
+          projectInnovationCenterManager.deleteProjectInnovationCenter(innovationCenter.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (innovation.getCenters() != null) {
+      for (ProjectInnovationCenter innovationCenter : innovation.getCenters()) {
+        if (innovationCenter.getId() == null) {
+          ProjectInnovationCenter innovationCenterSave = new ProjectInnovationCenter();
+          innovationCenterSave.setProjectInnovation(projectInnovation);
+          innovationCenterSave.setPhase(phase);
+
+          Institution institution = institutionManager.getInstitutionById(innovationCenter.getInstitution().getId());
+
+          innovationCenterSave.setInstitution(institution);
+
+          projectInnovationCenterManager.saveProjectInnovationCenter(innovationCenterSave);
+          // This is to add innovationCenterSave to generate correct auditlog.
+          innovation.getProjectInnovationCenters().add(innovationCenterSave);
+        }
+      }
+    }
+  }
+
   /**
    * Save Project Innovation contributing organizations
    * 
@@ -1121,6 +1193,7 @@ public class ProjectInnovationAction extends BaseAction {
     }
   }
 
+
   public void saveDeliverables(ProjectInnovation projectInnovation, Phase phase) {
 
     // Search and deleted form Information
@@ -1204,7 +1277,6 @@ public class ProjectInnovationAction extends BaseAction {
     }
   }
 
-
   /**
    * Save Project Innovation Organization Information
    * 
@@ -1248,6 +1320,7 @@ public class ProjectInnovationAction extends BaseAction {
       }
     }
   }
+
 
   /**
    * Save Innovations Shared Projects Information
@@ -1295,7 +1368,6 @@ public class ProjectInnovationAction extends BaseAction {
 
   }
 
-
   /**
    * Save Project Innovation Region Information
    * 
@@ -1339,6 +1411,10 @@ public class ProjectInnovationAction extends BaseAction {
     }
   }
 
+  public void setCenters(List<Institution> centers) {
+    this.centers = centers;
+  }
+
   public void setClearLead(Boolean clearLead) {
     this.clearLead = clearLead;
   }
@@ -1359,6 +1435,7 @@ public class ProjectInnovationAction extends BaseAction {
     this.degreeInnovationList = degreeInnovationList;
   }
 
+
   public void setDeliverableList(List<Deliverable> deliverableList) {
     this.deliverableList = deliverableList;
   }
@@ -1366,7 +1443,6 @@ public class ProjectInnovationAction extends BaseAction {
   public void setExpectedStudyList(List<ProjectExpectedStudy> expectedStudyList) {
     this.expectedStudyList = expectedStudyList;
   }
-
 
   public void setFocusLevelList(List<RepIndGenderYouthFocusLevel> focusLevelList) {
     this.focusLevelList = focusLevelList;
@@ -1424,9 +1500,11 @@ public class ProjectInnovationAction extends BaseAction {
     this.regions = regions;
   }
 
+
   public void setStageInnovationList(List<RepIndStageInnovation> stageInnovationList) {
     this.stageInnovationList = stageInnovationList;
   }
+
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;

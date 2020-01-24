@@ -441,6 +441,9 @@
     <mapping resource="xmls/DeliverablePartnerTypes.hbm.xml" />
     <mapping resource="xmls/DeliverableUserPartnerships.hbm.xml" />
     <mapping resource="xmls/DeliverableUserPartnershipsPersons.hbm.xml" /> 
+    <mapping resource="xmls/ProjectExpectedStudyCenters.hbm.xml" />
+    <mapping resource="xmls/ProjectPolicyCenters.hbm.xml" />
+    <mapping resource="xmls/ProjectInnovationCenters.hbm.xml" /> 
     <mapping resource="xmls/PolicyMilestones.hbm.xml" /> 
   </session-factory>
 </hibernate-configuration>

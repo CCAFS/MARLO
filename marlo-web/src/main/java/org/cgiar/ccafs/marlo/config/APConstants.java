@@ -200,6 +200,7 @@ public final class APConstants {
   public static final String INDICATOR_TYPE_REQUEST_ID = "indicatorTypeID";
   public static final long INSTITUTION_CGIAR = 221;
   // Institutions Types
+  public static final long INSTITUTION_CGIAR_CENTER_TYPE = 3;
   public static final long INSTITUTION_DONOR_TYPE = 5;
   public static final String INSTITUTION_REQUEST_ID = "institutionID";
   public static final String INSTITUTION_TYPE_REQUEST_ID = "institutionTypeID";
@@ -429,6 +430,8 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectInnovation.projectInnovationCrps)";
   public static final String PROJECT_DELIVERABLE_CRP_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectInnovation.projectInnovationDeliverables)";
+  public static final String PROJECT_INNOVATION_CENTER_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectInnovation.projectInnovationCenters)";
 
   // Project Policies Relations
   public static final String PROJECT_POLICY_INFOS_RELATION =
@@ -451,6 +454,9 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.policyMilestones)";
   public static final String PROJECT_POLICY_EVIDENCE_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.projectExpectedStudyPolicies)";
+  public static final String PROJECT_POLICY_CENTER_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.projectPolicyCenters)";
+
 
   // Status control List of each table
   public static final String PROJECT_EXPECTED_STUDIES_TABLE = "project_expected_study_info";
