@@ -38,8 +38,6 @@ public class PolicyMilestoneMySQLDAO extends AbstractMarloDAO<PolicyMilestone, L
   @Override
   public void deletePolicyMilestone(long policyMilestoneId) {
     PolicyMilestone policyMilestone = this.find(policyMilestoneId);
-    policyMilestone.setActive(false);
-    //this.update(policyMilestone);
     this.delete(policyMilestone);
   }
 
@@ -61,7 +59,7 @@ public class PolicyMilestoneMySQLDAO extends AbstractMarloDAO<PolicyMilestone, L
 
   @Override
   public List<PolicyMilestone> findAll() {
-    String query = "from " + PolicyMilestone.class.getName() + " where is_active=1";
+    String query = "from " + PolicyMilestone.class.getName();
     List<PolicyMilestone> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
