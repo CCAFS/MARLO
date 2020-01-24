@@ -221,14 +221,14 @@ public class POWB2019Data<T> {
 
         crpProgramOutcome.setMilestones(crpProgramOutcome.getCrpMilestones().stream()
           .filter(
-            c -> c.isActive() && c.getYear().intValue() == phase.getYear() && c.getIsPowb() != null && c.getIsPowb())
+            c -> c.isActive() && ((c.getYear().intValue() == phase.getYear())
+                    || (c.getExtendedYear() != null && c.getExtendedYear().equals(phase.getYear()))) && c.getIsPowb() != null && c.getIsPowb())
           .collect(Collectors.toList()));
+        
         crpProgramOutcome.setSubIdos(
           crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
         crpProgram.getMilestones().addAll(crpProgramOutcome.getMilestones());
         if (!crpProgram.getMilestones().isEmpty()) {
-
-
           validOutcomes.add(crpProgramOutcome);
         }
       }
