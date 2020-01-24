@@ -179,14 +179,17 @@
     </div>
     
     [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]
+        [#-- Primary Sub IDOs --]
+     [#--  
     <div class="form-group">
       [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="policy.subIDOs" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description"/]
     </div>
     
-    [#-- Primary Sub IDOs --]
+
     <div class="form-group">
        [@customForm.select name="${customName}.principalSubIdo" className="setSelect2 principalSubIdo" i18nkey="policy.subIDO.primary" listName="" keyFieldName="id"  displayFieldName="description" required=true editable=editable/]
     </div>
+        --]
         
     [#-- CGIAR Cross-cutting Markers  --]
     <div class="form-group">
