@@ -75,10 +75,14 @@
     
     [#-- Year --]
     <div class="form-group row">
-      <div class="col-md-4">
-          [@customForm.select name="${customName}.projectPolicyInfo.year" className="setSelect2" i18nkey="policy.year" listName="years" required=true editable=editable/]
-      </div>      
-      <div class="col-md-8">
+      <div class="col-md-3"></div>
+      <div class="col-md-3"></div>
+      <div class="col-md-3"></div>
+      <div class="col-md-3">
+        [@customForm.select name="${customName}.projectPolicyInfo.year" className="setSelect2" i18nkey="policy.year" listName="years" required=true editable=editable/]
+        [#if editable=false]
+          ${element.projectPolicyInfo.year}
+        [/#if]
       </div>
     </div>
     <hr />
