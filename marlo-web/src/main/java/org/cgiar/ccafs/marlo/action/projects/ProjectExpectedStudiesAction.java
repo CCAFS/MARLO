@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyFlagshipManager;
@@ -65,6 +66,7 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCenter;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyFlagship;
@@ -169,6 +171,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private ProjectInnovationManager projectInnovationManager;
   private ProjectPolicyManager projectPolicyManager;
 
+  // AR 2019 Managers
+  private ProjectExpectedStudyCenterManager projectExpectedStudyCenterManager;
+
   // Variables
   private ProjectExpectedStudiesValidator projectExpectedStudiesValidator;
   private GlobalUnit loggedCrp;
@@ -228,7 +233,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     ProjectExpectedStudyQuantificationManager projectExpectedStudyQuantificationManager,
     ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager,
     ProjectInnovationManager projectInnovationManager, ProjectPolicyManager projectPolicyManager,
-    ProjectExpectedStudyGeographicScopeManager projectExpectedStudyGeographicScopeManager) {
+    ProjectExpectedStudyGeographicScopeManager projectExpectedStudyGeographicScopeManager,
+    ProjectExpectedStudyCenterManager projectExpectedStudyCenterManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -272,6 +278,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.projectInnovationManager = projectInnovationManager;
     this.projectPolicyManager = projectPolicyManager;
     this.projectExpectedStudyGeographicScopeManager = projectExpectedStudyGeographicScopeManager;
+
+    this.projectExpectedStudyCenterManager = projectExpectedStudyCenterManager;
 
   }
 
@@ -618,6 +626,14 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           }
         }
 
+        // Expected Study Center List Autosave
+        if (this.expectedStudy.getCenters() != null) {
+          for (ProjectExpectedStudyCenter projectExpectedStudyCenter : this.expectedStudy.getCenters()) {
+            projectExpectedStudyCenter.setInstitution(
+              this.institutionManager.getInstitutionById(projectExpectedStudyCenter.getInstitution().getId()));
+          }
+        }
+
         // Expected Study Institutions List Autosave
         if (this.expectedStudy.getInstitutions() != null) {
           for (ProjectExpectedStudyInstitution projectExpectedStudyInstitution : this.expectedStudy.getInstitutions()) {
@@ -733,6 +749,12 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
+        // Expected Study Center List
+        if (this.expectedStudy.getProjectExpectedStudyCenters() != null) {
+          this.expectedStudy.setCenters(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyCenters().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+        }
+
         // Expected Study Institutions List
         if (this.expectedStudy.getProjectExpectedStudyInstitutions() != null) {
           this.expectedStudy
@@ -808,6 +830,12 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.studyTypes = this.studyTypeManager.findAll();
       this.subIdos = this.srfSubIdoManager.findAll();
       this.targets = this.srfSloIndicatorManager.findAll();
+
+      // institutions
+      centers = institutionManager.findAll().stream()
+        .filter(c -> c.isPPA(this.getActualPhase().getCrp().getId(), this.getActualPhase())
+          || c.getInstitutionType().getId().longValue() == APConstants.INSTITUTION_CGIAR_CENTER_TYPE)
+        .collect(Collectors.toList());
 
       this.tags = this.evidenceTagManager.findAll();
       this.innovationsList = new ArrayList<>();
@@ -1014,6 +1042,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         this.expectedStudy.getGeographicScopes().clear();
       }
 
+      if (this.expectedStudy.getCenters() != null) {
+        this.expectedStudy.getCenters().clear();
+      }
+
       // HTTP Post info Values
       this.expectedStudy.getProjectExpectedStudyInfo().setRepIndRegion(null);
       this.expectedStudy.getProjectExpectedStudyInfo().setRepIndOrganizationType(null);
@@ -1064,6 +1096,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.saveLink(this.expectedStudyDB, phase);
       this.saveInnovations(this.expectedStudyDB, phase);
       this.saveQuantifications(this.expectedStudyDB, phase);
+
+      // AR 2019 Save
+      this.saveCenters(this.expectedStudyDB, phase);
 
       // Save Geographic Scope Data
       this.saveGeographicScopes(this.expectedStudyDB, phase);
@@ -1133,6 +1168,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_COUNTRY_RELATION);
       relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_SRF_TARGET_RELATION);
       relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_GEOGRAPHIC_SCOPE);
+      relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_CENTER_RELATION);
 
       this.expectedStudy.setModificationJustification(this.getJustification());
 
@@ -1280,6 +1316,49 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     } else {
       return NOT_AUTHORIZED;
     }
+  }
+
+  /**
+   * Save Expected Studies Centers/PPA partners Information
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  public void saveCenters(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
+
+    // Search and deleted form Information
+    if (projectExpectedStudy.getProjectExpectedStudyCenters() != null
+      && projectExpectedStudy.getProjectExpectedStudyCenters().size() > 0) {
+      List<ProjectExpectedStudyCenter> centerPrev =
+        new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyCenters().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+      for (ProjectExpectedStudyCenter studyCenter : centerPrev) {
+        if (this.expectedStudy.getCenters() == null || !this.expectedStudy.getCenters().contains(studyCenter)) {
+          this.projectExpectedStudyCenterManager.deleteProjectExpectedStudyCenter(studyCenter.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (this.expectedStudy.getCenters() != null) {
+      for (ProjectExpectedStudyCenter studyCenter : this.expectedStudy.getCenters()) {
+        if (studyCenter.getId() == null) {
+          ProjectExpectedStudyCenter studyCenterSave = new ProjectExpectedStudyCenter();
+          studyCenterSave.setProjectExpectedStudy(projectExpectedStudy);
+          studyCenterSave.setPhase(phase);
+
+          Institution institution = this.institutionManager.getInstitutionById(studyCenter.getInstitution().getId());
+
+          studyCenterSave.setInstitution(institution);
+
+          this.projectExpectedStudyCenterManager.saveProjectExpectedStudyCenter(studyCenterSave);
+          // This is to add studyCrpSave to generate correct auditlog.
+          this.expectedStudy.getProjectExpectedStudyCenters().add(studyCenterSave);
+        }
+      }
+    }
+
   }
 
   /**
