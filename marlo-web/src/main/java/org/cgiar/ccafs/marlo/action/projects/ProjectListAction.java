@@ -755,13 +755,15 @@ public class ProjectListAction extends BaseAction {
                 .format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this.getCurrentCycleYear()))
           .collect(Collectors.toList());
 
-      allCenterProjects =
-        allCenterProjects.stream()
-          .filter(
-            mp -> mp!= null && mp.isActive() && mp.getProjecInfoPhase(this.getActualPhase()) != null
-              && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null || Integer.parseInt(dateFormat
-                .format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this.getCurrentCycleYear()))
-          .collect(Collectors.toList());
+      if(allCenterProjects != null) {
+    	  allCenterProjects =
+    			  allCenterProjects.stream()
+    			  .filter(
+    					  mp -> mp!= null && mp.isActive() && mp.getProjecInfoPhase(this.getActualPhase()) != null
+    					  && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null || Integer.parseInt(dateFormat
+    							  .format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this.getCurrentCycleYear()))
+    			  .collect(Collectors.toList());
+      }
     }
 
     // closedProjects.sort((p1, p2) -> p1.getStatus().compareTo(p2.getStatus()));
