@@ -20,6 +20,9 @@
         </div>
         <div class="col-md-4">
           [@customForm.select name="${customName}.projectExpectedStudyInfo.year" className="setSelect2" i18nkey="study.year" listName="allPhaseYearsGreater" header=false required=true editable=editable /]
+          [#if editable=false]
+            ${element.projectExpectedStudyInfo.year}
+          [/#if]
         </div>
       </div>
       
@@ -199,6 +202,12 @@
         [#if isOutcomeCaseStudy]
         <div class="form-group simpleBox">
           [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="study.keyContributors.crps"  listName="crps" keyFieldName="id" displayFieldName="composedName" required=false /]
+        </div>
+        [/#if]
+        [#-- Centers --]
+        [#if isOutcomeCaseStudy]
+        <div class="form-group simpleBox">
+          [@customForm.elementsListComponent name="${customName}.centers" elementType="institution" elementList=element.centers label="study.keyContributors.centers"  listName="centers" keyFieldName="id" displayFieldName="composedName" /]
         </div>
         [/#if]
         [#-- Flagships --]

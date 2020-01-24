@@ -57,6 +57,9 @@
           <div class="col-md-3"></div>
             <div class="col-md-3">
               [@customForm.select name="innovation.projectInnovationInfo.year" className="setSelect2" i18nkey="study.year" listName="years" header=false required=true editable=editable /]
+              [#if editable=false]
+                ${innovation.projectInnovationInfo.year}
+              [/#if]
             </div>
           </div>
           <hr />
@@ -188,6 +191,11 @@
           [#-- Contributing CRPs/Platforms --]
           <div class="form-group">
             [@customForm.elementsListComponent name="innovation.crps" elementType="globalUnit" elementList=innovation.crps label="projectInnovations.contributing"  listName="crpList" keyFieldName="id" displayFieldName="composedName"/]
+          </div>
+          
+          [#-- Contributing Centers/ PPA partners  --]
+          <div class="form-group">
+            [@customForm.elementsListComponent name="innovation.centers" elementType="institution" elementList=innovation.centers label="projectInnovations.contributingCenters"  listName="centers" keyFieldName="id" displayFieldName="composedName" /]
           </div>
         
         </div>
