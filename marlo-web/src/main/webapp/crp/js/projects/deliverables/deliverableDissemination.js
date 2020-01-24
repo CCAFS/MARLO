@@ -201,7 +201,7 @@ function addDisseminationEvents() {
     });
   }
 
-  // 
+  //
   $('input.iaType').on('change', function() {
     if(this.value == 1) {
       // Patent
@@ -458,7 +458,7 @@ function checkNextAuthorItems(block) {
 
 /**
  * Set the metadata in the interface
- * 
+ *
  * @param {Object} data
  * @returns
  */
@@ -487,6 +487,11 @@ function setMetadata(data) {
           return a.lastName + ", " + a.firstName;
         });
         $input.val(authorsNameArray.join('; '));
+      }
+      if(key == 'doi') {
+        var pos = value.indexOf("/", 8);
+        var formattedDoiUrl = value.substring(pos+1);
+        $input.val(formattedDoiUrl);
       }
     } else {
       $input.attr('readOnly', false);
@@ -660,7 +665,7 @@ function syncMetadata() {
 
 /**
  * Get Deliverable metadata from different repositories using ajax
- * 
+ *
  * @param {string} channel - Repository whrere the metadata is hosted (e.g. CGSpace, Dataverse etc.)
  * @param {string} url - Repositori URL (e.g. https://cgspace.cgiar.org/handle/10568/79435)
  * @returns the ajax return a metadata object
@@ -706,7 +711,7 @@ function getMetadata(channel,url) {
 
 /**
  * Validate duplicated authors
- * 
+ *
  * @param {string} lastName
  * @param {string} firstName
  * @returns {boolean} True if is duplicated.
@@ -722,7 +727,7 @@ function validateAuthors(lastName,firstName) {
 
 /**
  * Format select2: Add Countries flags
- * 
+ *
  * @param state
  * @returns
  */
