@@ -20,6 +20,9 @@
         </div>
         <div class="col-md-4">
           [@customForm.select name="${customName}.projectExpectedStudyInfo.year" className="setSelect2" i18nkey="study.year" listName="allPhaseYearsGreater" header=false required=true editable=editable /]
+          [#if editable=false]
+            ${element.projectExpectedStudyInfo.year}
+          [/#if]
         </div>
       </div>
       
