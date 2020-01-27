@@ -1438,10 +1438,15 @@ public class ProjectPolicyAction extends BaseAction {
 			// Delete all milestones for this policy
 			if (policy.getMilestones() != null && policy.getMilestones().size() > 0) {
 				for (PolicyMilestone policyMilestone : policy.getMilestones()) {
-					CrpMilestone milestone = crpMilestoneManager.getCrpMilestoneById(policyMilestone.getId());
-					if (milestone != null) {
-						policyMilestoneManager.deletePolicyMilestone(policyMilestone.getId());
+					try {
+						CrpMilestone milestone = crpMilestoneManager.getCrpMilestoneById(policyMilestone.getId());
+						if (milestone != null) {
+							policyMilestoneManager.deletePolicyMilestone(policyMilestone.getId());
+						}
+					} catch (Exception e) {
+
 					}
+
 				}
 			}
 		}
