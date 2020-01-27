@@ -1173,7 +1173,7 @@ public class ProjectInnovationAction extends BaseAction {
 						ProjectInnovationMilestone innovationMilestoneSave = new ProjectInnovationMilestone();
 						innovationMilestoneSave.setProjectInnovation(projectInnovation);
 						innovationMilestoneSave.setPhase(phase);
-						
+
 						if (innovationMilestone.getMilestone() != null
 								&& innovationMilestone.getMilestone().getId() != null) {
 							CrpMilestone milestone = milestoneManager
@@ -1191,10 +1191,16 @@ public class ProjectInnovationAction extends BaseAction {
 			// Delete all milestones for this policy
 			if (innovation.getMilestones() != null && innovation.getMilestones().size() > 0) {
 				for (ProjectInnovationMilestone innovationMilestone : innovation.getMilestones()) {
-					CrpMilestone milestone = milestoneManager.getCrpMilestoneById(innovationMilestone.getId());
-					if (milestone != null) {
-						projectInnovationMilestoneManager.deleteProjectInnovationMilestone(innovationMilestone.getId());
+					try {
+						CrpMilestone milestone = milestoneManager.getCrpMilestoneById(innovationMilestone.getId());
+						if (milestone != null) {
+							projectInnovationMilestoneManager
+									.deleteProjectInnovationMilestone(innovationMilestone.getId());
+						}
+					} catch (Exception e) {
+
 					}
+
 				}
 			}
 		}
