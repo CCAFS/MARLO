@@ -51,6 +51,9 @@ function attachEvents() {
     }
 
   })
+  
+//On change radio buttons
+  $('input[class*="radioType-"]').on('change', onChangeRadioButton);
 
 }
 
@@ -68,6 +71,16 @@ function addSelect2() {
       templateSelection: formatStateCountries,
       width: '100%'
   });
+}
+
+function onChangeRadioButton() {
+	  var thisValue = this.value === "true";
+	  var radioType = $(this).classParam('radioType');
+	  if (thisValue) {
+	    $('.block-' + radioType).slideDown();
+	  } else {
+	    $('.block-' + radioType).slideUp();
+	  }
 }
 
 function formatList(state) {
