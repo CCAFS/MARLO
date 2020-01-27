@@ -84,6 +84,23 @@
               [@customForm.select name="innovation.projectInnovationInfo.repIndInnovationType.id" label=""  i18nkey="projectInnovations.innovationType" listName="innovationTypeList" keyFieldName="id"  displayFieldName="name" required=true  className="innovationTypeSelect" editable=editable/]
             </div>
           </div>
+          
+            [#-- Milestones Contribution --]
+		    <div class="form-group">          
+		      <label for="">[@s.text name="innovation.milestones" /]:[@customForm.req required=editable /][@customForm.helpLabel name="innovation.milestones.help" showIcon=false editable=editable/]</label>
+		      [#assign innovationMilestoneLink = "innovationMilestoneLink"]
+		      [#assign showMilestoneIndicator = (innovation.projectInnovationInfo.hasMilestones?string)!"" /]
+		      [@customForm.radioFlat id="${innovationMilestoneLink}-yes" name="innovation.projectInnovationInfo.hasMilestones" label="Yes" value="true" checked=(showMilestoneIndicator == "true") cssClass="radioType-${innovationMilestoneLink}" cssClassLabel="radio-label-yes" editable=editable /]
+		      [@customForm.radioFlat id="${innovationMilestoneLink}-no" name="innovation.projectInnovationInfo.hasMilestones" label="No" value="false" checked=(showMilestoneIndicator == "false") cssClass="radioType-${innovationMilestoneLink}" cssClassLabel="radio-label-no" editable=editable /]
+		    </div>
+		        
+		     <div class="form-group simpleBox block-${innovationMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
+		       [@customForm.elementsListComponent name="innovation.milestones" elementType="crpMilestone" elementList=(element.milestones)!"" label="innovation.milestones" helpIcon=false listName="milestones" keyFieldName="id" displayFieldName="composedName" required=false /]
+		       <div class="note">[@s.text name="innovation.milestones.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/contributionsCrpList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
+		       <br>
+		     </div> 
+		
+		    <br />
         
           [#-- Contribution of CRP --] 
           <div class="form-group row">

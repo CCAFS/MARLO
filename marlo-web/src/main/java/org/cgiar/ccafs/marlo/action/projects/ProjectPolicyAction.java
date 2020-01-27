@@ -141,10 +141,9 @@ public class ProjectPolicyAction extends BaseAction {
 	private PolicyMilestoneManager policyMilestoneManager;
 	private CrpMilestoneManager crpMilestoneManager;
 	private ProjectPolicyValidator validator;
-    private ProjectPolicyCenterManager projectPolicyCenterManager;
-    private InstitutionManager institutionManager;
-    private SrfIdoManager srfIdoManager;
-
+	private ProjectPolicyCenterManager projectPolicyCenterManager;
+	private InstitutionManager institutionManager;
+	private SrfIdoManager srfIdoManager;
 
 	// Variables
 	private GlobalUnit loggedCrp;
@@ -171,9 +170,8 @@ public class ProjectPolicyAction extends BaseAction {
 	private List<SrfIdo> srfIdos;
 
 	private String transaction;
-    private List<Institution> centers;
-    private HashMap<Long, String> idoList;
-
+	private List<Institution> centers;
+	private HashMap<Long, String> idoList;
 
 	@Inject
 	public ProjectPolicyAction(APConfig config, GlobalUnitManager globalUnitManager,
@@ -197,7 +195,7 @@ public class ProjectPolicyAction extends BaseAction {
 			ProjectPolicyGeographicScopeManager projectPolicyGeographicScopeManager,
 			ProjectPolicyRegionManager projectPolicyRegionManager, PolicyMilestoneManager policyMilestoneManager,
 			CrpMilestoneManager crpMilestoneManager, ProjectPolicyCenterManager projectPolicyCenterManager,
-		    InstitutionManager institutionManager, SrfIdoManager srfIdoManager) {
+			InstitutionManager institutionManager, SrfIdoManager srfIdoManager) {
 		super(config);
 		this.globalUnitManager = globalUnitManager;
 		this.projectPolicyManager = projectPolicyManager;
@@ -230,7 +228,7 @@ public class ProjectPolicyAction extends BaseAction {
 		this.crpMilestoneManager = crpMilestoneManager;
 		this.projectPolicyCenterManager = projectPolicyCenterManager;
 		this.institutionManager = institutionManager;
-	    this.srfIdoManager = srfIdoManager;
+		this.srfIdoManager = srfIdoManager;
 	}
 
 	/**
@@ -298,10 +296,9 @@ public class ProjectPolicyAction extends BaseAction {
 		return crps;
 	}
 
-  public List<Institution> getCenters() {
-    return centers;
-  }
-
+	public List<Institution> getCenters() {
+		return centers;
+	}
 
 	public List<SrfSubIdo> getPrincipalSubIdo() {
 		return principalSubIdo;
@@ -469,7 +466,7 @@ public class ProjectPolicyAction extends BaseAction {
 			project.getProjecInfoPhase(phase);
 
 			Path path = this.getAutoSaveFilePath();
-			
+
 			if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
 
 				// Autosave File in
@@ -629,13 +626,13 @@ public class ProjectPolicyAction extends BaseAction {
 				} else {
 					List<ProjectPolicyRegion> geographics = projectPolicyRegionManager
 							.getPolicyRegionbyPhase(policy.getId(), phase.getId());
-        // Insitutions List Autosave
-        if (policy.getCenters() != null) {
-          for (ProjectPolicyCenter projectPolicyCenter : policy.getCenters()) {
-            projectPolicyCenter
-              .setInstitution(institutionManager.getInstitutionById(projectPolicyCenter.getInstitution().getId()));
-          }
-        }
+					// Insitutions List Autosave
+					if (policy.getCenters() != null) {
+						for (ProjectPolicyCenter projectPolicyCenter : policy.getCenters()) {
+							projectPolicyCenter.setInstitution(institutionManager
+									.getInstitutionById(projectPolicyCenter.getInstitution().getId()));
+						}
+					}
 
 					// Load Regions
 					policy.setRegions(
@@ -673,8 +670,7 @@ public class ProjectPolicyAction extends BaseAction {
 
 				if (policy.getPolicyMilestones() != null) {
 					policy.setMilestones(new ArrayList<>(policy.getPolicyMilestones().stream()
-							.filter(o -> o.getPhase().getId().equals(phase.getId()))
-							.collect(Collectors.toList())));
+							.filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
 				}
 
 				// Evidence List
@@ -737,12 +733,12 @@ public class ProjectPolicyAction extends BaseAction {
 
 			// Cross Cutting Markers
 			cgiarCrossCuttingMarkers = cgiarCrossCuttingMarkerManager.findAll();
-			
-		      // institutions
-		      centers = institutionManager.findAll().stream()
-		        .filter(c -> c.isPPA(this.getActualPhase().getCrp().getId(), this.getActualPhase())
-		          || c.getInstitutionType().getId().longValue() == APConstants.INSTITUTION_CGIAR_CENTER_TYPE)
-		        .collect(Collectors.toList());
+
+			// institutions
+			centers = institutionManager.findAll().stream()
+					.filter(c -> c.isPPA(this.getActualPhase().getCrp().getId(), this.getActualPhase())
+							|| c.getInstitutionType().getId().longValue() == APConstants.INSTITUTION_CGIAR_CENTER_TYPE)
+					.collect(Collectors.toList());
 
 			Project projectL = projectManager.getProjectById(projectID);
 
@@ -758,11 +754,12 @@ public class ProjectPolicyAction extends BaseAction {
 			}
 
 			// Institutions List
-	        if (policy.getProjectPolicyCenters() != null) {
-	          policy.setCenters(new ArrayList<>(policy.getProjectPolicyCenters().stream()
-	            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
-	        }
-	        
+			if (policy.getProjectPolicyCenters() != null) {
+				policy.setCenters(new ArrayList<>(policy.getProjectPolicyCenters().stream()
+						.filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId()))
+						.collect(Collectors.toList())));
+			}
+
 			/*
 			 * Get the milestone List
 			 */
@@ -906,26 +903,26 @@ public class ProjectPolicyAction extends BaseAction {
 			if (policy.getGeographicScopes() != null) {
 				policy.getGeographicScopes().clear();
 			}
-			
-		    if (policy.getCenters() != null) {
-		        policy.getCenters().clear();
-	        }
+
+			if (policy.getCenters() != null) {
+				policy.getCenters().clear();
+			}
 
 			// HTTP Post info Values
 			policy.getProjectPolicyInfo().setRepIndPolicyInvestimentType(null);
 			policy.getProjectPolicyInfo().setRepIndStageProcess(null);
 
 		}
-		
-		//SrfIDO
-		idoList = new HashMap<>();
-	    srfIdos = new ArrayList<>();
-	    for (SrfIdo srfIdo : srfIdoManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
-	      idoList.put(srfIdo.getId(), srfIdo.getDescription());
 
-	      srfIdo.setSubIdos(srfIdo.getSrfSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-	      srfIdos.add(srfIdo);
-	    }
+		// SrfIDO
+		idoList = new HashMap<>();
+		srfIdos = new ArrayList<>();
+		for (SrfIdo srfIdo : srfIdoManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
+			idoList.put(srfIdo.getId(), srfIdo.getDescription());
+
+			srfIdo.setSubIdos(srfIdo.getSrfSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+			srfIdos.add(srfIdo);
+		}
 
 	}
 
@@ -933,11 +930,11 @@ public class ProjectPolicyAction extends BaseAction {
 	public String save() {
 
 		if (this.hasPermission("canEdit")) {
-			
+
 			Phase phase = this.getActualPhase();
-			
+
 			Path path = this.getAutoSaveFilePath();
-			
+
 			policy.setProject(project);
 			this.saveCrps(policyDB, phase);
 			this.saveOwners(policyDB, phase);
@@ -1015,7 +1012,7 @@ public class ProjectPolicyAction extends BaseAction {
 			relationsName.add(APConstants.PROJECT_POLICY_MILESTONE_RELATION);
 			relationsName.add(APConstants.PROJECT_POLICY_CROSS_CUTTING_RELATION);
 			relationsName.add(APConstants.PROJECT_POLICY_EVIDENCE_RELATION);
-		    relationsName.add(APConstants.PROJECT_POLICY_CENTER_RELATION);
+			relationsName.add(APConstants.PROJECT_POLICY_CENTER_RELATION);
 
 			policy.setModificationJustification(this.getJustification());
 
@@ -1040,7 +1037,7 @@ public class ProjectPolicyAction extends BaseAction {
 			 * The following is required because we need to update something on
 			 * the @ProjectInnovation if we want a row created in the auditlog table.
 			 */
-			//this.setModificationJustification(policy);
+			// this.setModificationJustification(policy);
 			projectPolicyManager.saveProjectPolicy(policy, this.getActionName(), relationsName, this.getActualPhase());
 
 			if (path.toFile().exists()) {
@@ -1353,61 +1350,61 @@ public class ProjectPolicyAction extends BaseAction {
 	}
 
 	/**
-	   * Save Project Policy Center Information
-	   * 
-	   * @param projectPolicy
-	   * @param phase
-	   */
-	  public void saveCenters(ProjectPolicy projectPolicy, Phase phase) {
+	 * Save Project Policy Center Information
+	 * 
+	 * @param projectPolicy
+	 * @param phase
+	 */
+	public void saveCenters(ProjectPolicy projectPolicy, Phase phase) {
 
-	    // Search and deleted form Information
-	    if (projectPolicy.getProjectPolicyCenters() != null && projectPolicy.getProjectPolicyCenters().size() > 0) {
+		// Search and deleted form Information
+		if (projectPolicy.getProjectPolicyCenters() != null && projectPolicy.getProjectPolicyCenters().size() > 0) {
 
-	      List<ProjectPolicyCenter> centerPrev = new ArrayList<>(projectPolicy.getProjectPolicyCenters().stream()
-	        .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+			List<ProjectPolicyCenter> centerPrev = new ArrayList<>(projectPolicy.getProjectPolicyCenters().stream()
+					.filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId()))
+					.collect(Collectors.toList()));
 
-	      for (ProjectPolicyCenter policyCenter : centerPrev) {
-	        if (policy.getCenters() == null || !policy.getCenters().contains(policyCenter)) {
-	          projectPolicyCenterManager.deleteProjectPolicyCenter(policyCenter.getId());
-	        }
-	      }
-	    }
+			for (ProjectPolicyCenter policyCenter : centerPrev) {
+				if (policy.getCenters() == null || !policy.getCenters().contains(policyCenter)) {
+					projectPolicyCenterManager.deleteProjectPolicyCenter(policyCenter.getId());
+				}
+			}
+		}
 
-	    // Save form Information
-	    if (policy.getCenters() != null) {
-	      for (ProjectPolicyCenter policyCenter : policy.getCenters()) {
-	        if (policyCenter.getId() == null) {
-	          ProjectPolicyCenter policyCenterSave = new ProjectPolicyCenter();
-	          policyCenterSave.setProjectPolicy(projectPolicy);
-	          policyCenterSave.setPhase(phase);
+		// Save form Information
+		if (policy.getCenters() != null) {
+			for (ProjectPolicyCenter policyCenter : policy.getCenters()) {
+				if (policyCenter.getId() == null) {
+					ProjectPolicyCenter policyCenterSave = new ProjectPolicyCenter();
+					policyCenterSave.setProjectPolicy(projectPolicy);
+					policyCenterSave.setPhase(phase);
 
-	          Institution institution = institutionManager.getInstitutionById(policyCenter.getInstitution().getId());
+					Institution institution = institutionManager
+							.getInstitutionById(policyCenter.getInstitution().getId());
 
-	          policyCenterSave.setInstitution(institution);
+					policyCenterSave.setInstitution(institution);
 
-	          projectPolicyCenterManager.saveProjectPolicyCenter(policyCenterSave);
-	          // This is to add innovationCrpSave to generate correct auditlog.
-	          policy.getProjectPolicyCenters().add(policyCenterSave);
-	        }
-	      }
-	    }
-	  }
-	
+					projectPolicyCenterManager.saveProjectPolicyCenter(policyCenterSave);
+					// This is to add innovationCrpSave to generate correct auditlog.
+					policy.getProjectPolicyCenters().add(policyCenterSave);
+				}
+			}
+		}
+	}
 
-		/**
-		   * Save Project Policy Milestone Information
-		   * 
-		   * @param projectPolicy
-		   * @param phase
-		   */
+	/**
+	 * Save Project Policy Milestone Information
+	 * 
+	 * @param projectPolicy
+	 * @param phase
+	 */
 	public void saveMilestones(ProjectPolicy projectPolicy, Phase phase) {
 
 		// Search and deleted form Information
 		if (projectPolicy.getPolicyMilestones() != null && projectPolicy.getPolicyMilestones().size() > 0) {
 
 			List<PolicyMilestone> milestonePrev = new ArrayList<>(projectPolicy.getPolicyMilestones().stream()
-					.filter(nu -> nu.getPhase().getId().equals(phase.getId()))
-					.collect(Collectors.toList()));
+					.filter(nu -> nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 			for (PolicyMilestone policyMilestone : milestonePrev) {
 				if (policy.getMilestones() == null || !policy.getMilestones().contains(policyMilestone)) {
 					policyMilestoneManager.deletePolicyMilestone(policyMilestone.getId());
@@ -1441,7 +1438,10 @@ public class ProjectPolicyAction extends BaseAction {
 			// Delete all milestones for this policy
 			if (policy.getMilestones() != null && policy.getMilestones().size() > 0) {
 				for (PolicyMilestone policyMilestone : policy.getMilestones()) {
-					policyMilestoneManager.deletePolicyMilestone(policyMilestone.getId());
+					CrpMilestone milestone = crpMilestoneManager.getCrpMilestoneById(policyMilestone.getId());
+					if (milestone != null) {
+						policyMilestoneManager.deletePolicyMilestone(policyMilestone.getId());
+					}
 				}
 			}
 		}
@@ -1561,13 +1561,12 @@ public class ProjectPolicyAction extends BaseAction {
 					ProjectPolicySubIdo policySubIdoSave = new ProjectPolicySubIdo();
 
 					/*
-					if (principalSubIdo != null && principalSubIdo.size() != 0 && principalSubIdo.get(0) != null) {
-						if (policySubIdo.getSrfSubIdo().getId().intValue() == principalSubIdo.get(0).getId()
-								.intValue()) {
-							policySubIdoSave.setPrimary(true);
-						}
-					}
-*/
+					 * if (principalSubIdo != null && principalSubIdo.size() != 0 &&
+					 * principalSubIdo.get(0) != null) { if
+					 * (policySubIdo.getSrfSubIdo().getId().intValue() ==
+					 * principalSubIdo.get(0).getId() .intValue()) {
+					 * policySubIdoSave.setPrimary(true); } }
+					 */
 					policySubIdoSave.setProjectPolicy(projectPolicy);
 					policySubIdoSave.setPhase(phase);
 
@@ -1582,8 +1581,6 @@ public class ProjectPolicyAction extends BaseAction {
 			}
 		}
 	}
-	
-	
 
 	public List<SrfIdo> getSrfIdos() {
 		return srfIdos;
