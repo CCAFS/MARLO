@@ -1173,16 +1173,17 @@ public class ProjectInnovationAction extends BaseAction {
 						ProjectInnovationMilestone innovationMilestoneSave = new ProjectInnovationMilestone();
 						innovationMilestoneSave.setProjectInnovation(projectInnovation);
 						innovationMilestoneSave.setPhase(phase);
+						
 						if (innovationMilestone.getMilestone() != null
 								&& innovationMilestone.getMilestone().getId() != null) {
 							CrpMilestone milestone = milestoneManager
 									.getCrpMilestoneById(innovationMilestone.getMilestone().getId());
 							innovationMilestoneSave.setMilestone(milestone);
-						}
 
-						projectInnovationMilestoneManager.saveProjectInnovationMilestone(innovationMilestoneSave);
-						// This is to add innovationCenterSave to generate correct auditlog.
-						innovation.getProjectInnovationMilestones().add(innovationMilestoneSave);
+							projectInnovationMilestoneManager.saveProjectInnovationMilestone(innovationMilestoneSave);
+							// This is to add innovationCenterSave to generate correct auditlog.
+							innovation.getProjectInnovationMilestones().add(innovationMilestoneSave);
+						}
 					}
 				}
 			}
