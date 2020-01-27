@@ -435,6 +435,8 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectInnovation.projectInnovationDeliverables)";
   public static final String PROJECT_INNOVATION_CENTER_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectInnovation.projectInnovationCenters)";
+  public static final String PROJECT_INNOVATION_MILESTONE_RELATION =
+		  "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectInnovation.projectInnovationMilestones)";
 
   // Project Policies Relations
   public static final String PROJECT_POLICY_INFOS_RELATION =

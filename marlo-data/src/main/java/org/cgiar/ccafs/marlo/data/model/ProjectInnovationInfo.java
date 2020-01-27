@@ -80,6 +80,8 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
 
   @Expose
   private String otherInnovationType;
+  @Expose
+  private Boolean hasMilestones;
 
   public ProjectInnovationInfo() {
   }
@@ -135,7 +137,14 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   public String getDescriptionStage() {
     return descriptionStage;
   }
+  
+  public Boolean getHasMilestones() {
+	return hasMilestones;
+  }
 
+  public void setHasMilestones(Boolean hasMilestones) {
+	this.hasMilestones = hasMilestones;
+  }
 
   public String getEvidenceLink() {
     return evidenceLink;
