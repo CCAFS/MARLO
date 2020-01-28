@@ -215,7 +215,7 @@
 	    </div>
         
         <div class="form-group simpleBox block-${studyMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
-          [@customForm.elementsListComponent name="expectedStudy.milestones" elementType="crpMilestones" elementList=(expectedStudy.milestones)!"" label="study.keyContributors.milestones"  listName="milestones" keyFieldName="id" displayFieldName="composedName" /]
+          [@customForm.elementsListComponent name="${customName}.milestones" elementType="crpMilestones" elementList=(element.milestones)![] label="study.keyContributors.milestones"  listName="milestones" keyFieldName="id" displayFieldName="composedName" /]
           <div class="note">[@s.text name="study.milestones.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/contributionsCrpList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
  		  <br>      
         </div>
