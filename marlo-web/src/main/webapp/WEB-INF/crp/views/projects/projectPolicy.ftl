@@ -9,7 +9,8 @@
   ] 
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/projects/projectPolicies.css"
+  "${baseUrlMedia}/css/projects/projectPolicies.css",
+  "${baseUrlMedia}/css/projects/projectSubIdos.css"
   ] 
 /]
 
@@ -25,7 +26,6 @@
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /] 
-[#import "/WEB-INF/crp/macros/projectsSubIDO.ftl" as projectsSubIDO /] 
 
 <section class="container">
     <div class="row">
@@ -207,39 +207,13 @@
     <div class="form-group">
       [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="policy.contributingCrpsPtfs"  listName="crps" keyFieldName="id" displayFieldName="composedName" /]
     </div>
+
     
-    
-    [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]
-    [#--<div class="form-group">
-      [#-- Outcome Sub-IDOs List --]
-      
-        [#-- <h5 class="sectionSubTitle">[@s.text name="outcome.subIDOs.sectionTitle"/] <p class="contributioRem pull-right">Contribution <span class="value">0%</span></p></h5>--]
-     [#--   <div class="subIdos-list" listname="${customName}.subIdos">
-        [#if element.subIdos?has_content]
-          [#list element.subIdos as subIdo]
-            [@projectsSubIDO.subIDOMacro subIdo=subIdo name="${customName}.subIdos" index=subIdo_index /]
-          [/#list]
-        [#else]
-          [@projectsSubIDO.subIDOMacro subIdo={} name="${customName}.subIdos" index=0 /]
-          [#-- <p class="message text-center">[@s.text name="outcome.subIDOs.section.notSubIDOs.span"/]</p> --]
-      [#--  [/#if]
-        </div>
-        [#-- Add Sub-IDO Button --]
-      [#--  [#if editable]
-        <div class="text-right">
-          <div class="addSubIdo button-blue text-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addSubIDO"/]</div>
-        </div>
-        [/#if]
-    [#-- [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="policy.subIDOs" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description"/] --]
-    [#--</div>
-    
-    [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]
-        [#-- Primary Sub IDOs --]
-      
+    [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]      
     <div class="form-group">
+      <div class="buttonSubIdo-content"><br> <div class="selectSubIDO" ><span class=""></span>View sub-IDOs</div></div>
       [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="policy.subIDOs" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description"/]
-    </div>
-    
+    </div>  
 
     <div class="form-group">
        [@customForm.select name="${customName}.principalSubIdo" className="setSelect2 principalSubIdo" i18nkey="policy.subIDO.primary" listName="" keyFieldName="id"  displayFieldName="description" required=true editable=editable/]
