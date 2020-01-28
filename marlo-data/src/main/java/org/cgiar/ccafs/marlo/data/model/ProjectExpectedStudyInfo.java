@@ -145,7 +145,9 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
 
   @Expose
   public String otherStudyType;
-
+  
+  @Expose
+  private Boolean hasMilestones;
 
   public ProjectExpectedStudyInfo() {
   }
@@ -269,6 +271,16 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     u.setId(new Long(3));
     return u;
   }
+
+  public Boolean getHasMilestones() {
+	return hasMilestones;
+  }
+
+
+  public void setHasMilestones(Boolean hasMilestones) {
+	this.hasMilestones = hasMilestones;
+  }
+
 
   public String getOtherCrossCuttingDimensions() {
     return otherCrossCuttingDimensions;
