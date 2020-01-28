@@ -38,7 +38,7 @@ public class ProjectInnovationMilestoneMySQLDAO extends AbstractMarloDAO<Project
   @Override
   public void deleteProjectInnovationMilestone(long projectInnovationMilestoneId) {
     ProjectInnovationMilestone projectInnovationMilestone = this.find(projectInnovationMilestoneId);
-    this.update(projectInnovationMilestone);
+    this.delete(projectInnovationMilestone);
   }
 
   @Override

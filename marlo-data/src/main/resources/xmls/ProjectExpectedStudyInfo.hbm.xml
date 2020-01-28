@@ -155,5 +155,8 @@
     <property name="isPublic" type="java.lang.Boolean">
       <column name="is_public" />
     </property>
+    <property name="hasMilestones" type="boolean">
+        <column name="has_milestones" not-null="true" />
+    </property>
 	</class>
 </hibernate-mapping>

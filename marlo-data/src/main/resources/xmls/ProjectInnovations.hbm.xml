@@ -124,5 +124,21 @@
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter" />
     </set>
+    <set name="projectInnovationMilestones" table="project_innovation_milestones"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="project_innovation_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationMilestone" />
+    </set>
+    <set name="projectInnovationSubIdos" table="project_innovation_sub_idos"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="project_innovation_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationSubIdo" />
+    </set>
 	</class>
 </hibernate-mapping>

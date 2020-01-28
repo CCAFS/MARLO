@@ -25,7 +25,7 @@
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /] 
-
+[#import "/WEB-INF/crp/macros/projectsSubIDO.ftl" as projectsSubIDO /] 
 
 <section class="container">
     <div class="row">
@@ -61,6 +61,36 @@
       </div>
     </div>  
 </section>
+
+[#-- PopUp to select SubIDOs --]
+<div id="subIDOs-graphic" style="overflow:auto; display:none;" >
+  <div class="graphic-container" >
+  <div class="filterPanel panel-default">
+    <div class="panel-heading"> 
+      <form id="filterForm"  role="form">
+        <label class="checkbox-inline">Filter By:</label>
+        <label class="checkbox-inline">
+          <input type="checkbox" value="IDO" checked>IDOs
+        </label>
+        <label class="checkbox-inline">
+          <input type="checkbox" value="CCIDO" checked>Cross-cutting IDOs
+        </label>
+      </form>
+    </div>
+  </div>        
+  [#list srfIdos as ido]
+    <div class="idoWrapper ${ido.isCrossCutting?string("crossCutting","ido")} ">    
+      <div class="IDO${ido.isCrossCutting?string("-CrossCutting","")}"><strong>${ido.isCrossCutting?string("CrossCutting:","")} ${ido.description}</strong></div>
+      <div class="subIdoWrapper">
+        [#list ido.subIdos as subIdo]
+          <div class="line"></div>
+          <div id="subIdo-${subIdo.id}" class="subIDO subIDO${ido.isCrossCutting?string("-CrossCutting","")}">${subIdo.smoCode} ${subIdo.description}</div>
+        [/#list]
+      </div>
+    </div>
+  [/#list]
+  </div>      
+</div>
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
@@ -178,9 +208,34 @@
       [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="policy.contributingCrpsPtfs"  listName="crps" keyFieldName="id" displayFieldName="composedName" /]
     </div>
     
+    
+    [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]
+    [#--<div class="form-group">
+      [#-- Outcome Sub-IDOs List --]
+      
+        [#-- <h5 class="sectionSubTitle">[@s.text name="outcome.subIDOs.sectionTitle"/] <p class="contributioRem pull-right">Contribution <span class="value">0%</span></p></h5>--]
+     [#--   <div class="subIdos-list" listname="${customName}.subIdos">
+        [#if element.subIdos?has_content]
+          [#list element.subIdos as subIdo]
+            [@projectsSubIDO.subIDOMacro subIdo=subIdo name="${customName}.subIdos" index=subIdo_index /]
+          [/#list]
+        [#else]
+          [@projectsSubIDO.subIDOMacro subIdo={} name="${customName}.subIdos" index=0 /]
+          [#-- <p class="message text-center">[@s.text name="outcome.subIDOs.section.notSubIDOs.span"/]</p> --]
+      [#--  [/#if]
+        </div>
+        [#-- Add Sub-IDO Button --]
+      [#--  [#if editable]
+        <div class="text-right">
+          <div class="addSubIdo button-blue text-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addSubIDO"/]</div>
+        </div>
+        [/#if]
+    [#-- [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="policy.subIDOs" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description"/] --]
+    [#--</div>
+    
     [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]
         [#-- Primary Sub IDOs --]
-     [#--  
+      
     <div class="form-group">
       [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="policy.subIDOs" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description"/]
     </div>
@@ -189,7 +244,7 @@
     <div class="form-group">
        [@customForm.select name="${customName}.principalSubIdo" className="setSelect2 principalSubIdo" i18nkey="policy.subIDO.primary" listName="" keyFieldName="id"  displayFieldName="description" required=true editable=editable/]
     </div>
-        --]
+       
         
     [#-- CGIAR Cross-cutting Markers  --]
     <div class="form-group">
