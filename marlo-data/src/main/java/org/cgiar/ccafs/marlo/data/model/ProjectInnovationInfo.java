@@ -62,6 +62,9 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
 
   @Expose
   private Long year;
+  
+  @Expose
+  private Long innovationNumber;
 
   @Expose
   private ProjectExpectedStudy projectExpectedStudy;
@@ -123,6 +126,15 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.genderExplaniation = genderExplaniation;
     this.youthExplaniation = youthExplaniation;
     this.year = year;
+  }
+  
+  
+  public Long getInnovationNumber() {
+	return innovationNumber;
+  }
+
+  public void setInnovationNumber(Long innovationNumber) {
+	this.innovationNumber = innovationNumber;
   }
 
   public String getAdaptativeResearchNarrative() {
