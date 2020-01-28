@@ -26,13 +26,13 @@ import org.apache.commons.io.IOUtils;
 
 public class Clone {
 
-  public static String pathdao = "D:\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\dao";
+  public static String pathdao = "D:\\MARLO-PROJECT\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\dao";
   public static String pathmysqldao =
-    "D:\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\dao\\mysql";
-  public static String pathmanager = "D:\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\manager";
-  public static String pathmodel = "D:\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\model";
+    "D:\\MARLO-PROJECT\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\dao\\mysql";
+  public static String pathmanager = "D:\\MARLO-PROJECT\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\manager";
+  public static String pathmodel = "D:\\MARLO-PROJECT\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\model";
   public static String pathmanagerimpl =
-    "D:\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\manager\\impl";
+    "D:\\MARLO-PROJECT\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\manager\\impl";
 
   // Copy the source file to target file.
   // In case the dst file does not exist, it is created

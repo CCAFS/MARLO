@@ -78,9 +78,9 @@ public class ProjectInnovationMilestoneManagerImpl implements ProjectInnovationM
 		Phase phase = phaseDAO.find(next.getId());
 
 		List<ProjectInnovationMilestone> projectInnovationMilestones = projectInnovationMilestoneDAO.findAll().stream()
-				.filter(c -> c.isActive() && c.getPhase().getId().longValue() == phase.getId().longValue()
+				.filter(c -> c.getPhase().getId().longValue() == phase.getId().longValue()
 						&& c.getProjectInnovation().getId().longValue() == innovationID
-						&& c.getMilestone().getId().equals(projectInnovationMilestone.getMilestone().getId()))
+						&& c.getCrpMilestone().getId().equals(projectInnovationMilestone.getCrpMilestone().getId()))
 				.collect(Collectors.toList());
 
 		for (ProjectInnovationMilestone projectInnovationMilestoneDB : projectInnovationMilestones) {
@@ -119,14 +119,14 @@ public class ProjectInnovationMilestoneManagerImpl implements ProjectInnovationM
 		List<ProjectInnovationMilestone> projectInnovatioCenters = projectInnovationMilestoneDAO.findAll().stream()
 				.filter(c -> c.getProjectInnovation().getId().longValue() == innovationid
 						&& c.getPhase().getId().equals(phase.getId())
-						&& c.getMilestone().getId().equals(projectInnovationMilestone.getMilestone().getId()))
+						&& c.getCrpMilestone().getId().equals(projectInnovationMilestone.getCrpMilestone().getId()))
 				.collect(Collectors.toList());
 
 		if (projectInnovatioCenters.isEmpty()) {
 			ProjectInnovationMilestone projectInnovationMilestoneAdd = new ProjectInnovationMilestone();
 			projectInnovationMilestoneAdd.setProjectInnovation(projectInnovationMilestone.getProjectInnovation());
 			projectInnovationMilestoneAdd.setPhase(phase);
-			projectInnovationMilestoneAdd.setMilestone(projectInnovationMilestone.getMilestone());
+			projectInnovationMilestoneAdd.setCrpMilestone(projectInnovationMilestone.getCrpMilestone());
 			projectInnovationMilestoneDAO.save(projectInnovationMilestoneAdd);
 		}
 		if (phase.getNext() != null) {
