@@ -214,7 +214,17 @@
           <div class="form-group">
             [@customForm.elementsListComponent name="innovation.centers" elementType="institution" elementList=innovation.centers label="projectInnovations.contributingCenters"  listName="centers" keyFieldName="id" displayFieldName="composedName" /]
           </div>
-        
+          
+          [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]
+          [#-- Primary Sub IDOs --]
+          <div class="form-group">
+      	    [@customForm.elementsListComponent name="innovation.subIdos" elementType="srfSubIdo" elementList=(innovations.subIdos)![] label="innovation.subIDOs" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description"/]
+          </div>
+    
+    	  <div class="form-group">
+       	    [@customForm.select name="innovation.principalSubIdo" className="setSelect2 principalSubIdo" i18nkey="innovation.subIDO.primary" listName="" keyFieldName="id"  displayFieldName="description" required=true editable=editable/]
+          </div>
+       
         </div>
         
          

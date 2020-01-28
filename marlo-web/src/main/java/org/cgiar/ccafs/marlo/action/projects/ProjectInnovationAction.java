@@ -37,7 +37,9 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationOrganizationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSharedManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPolicySubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndContributionOfCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndDegreeInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
@@ -47,6 +49,8 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndOrganizationTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndPhaseResearchPartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageInnovationManager;
+import org.cgiar.ccafs.marlo.data.manager.SrfIdoManager;
+import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
@@ -68,9 +72,12 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicySubIdo;
 import org.cgiar.ccafs.marlo.data.model.RepIndContributionOfCrp;
 import org.cgiar.ccafs.marlo.data.model.RepIndDegreeInnovation;
 import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
@@ -80,6 +87,8 @@ import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
 import org.cgiar.ccafs.marlo.data.model.RepIndPhaseResearchPartnership;
 import org.cgiar.ccafs.marlo.data.model.RepIndRegion;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageInnovation;
+import org.cgiar.ccafs.marlo.data.model.SrfIdo;
+import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -92,6 +101,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -140,6 +150,10 @@ public class ProjectInnovationAction extends BaseAction {
 	private ProjectInnovationSharedManager projectInnovationSharedManager;
 	private ProjectInnovationCenterManager projectInnovationCenterManager;
 	private ProjectInnovationMilestoneManager projectInnovationMilestoneManager;
+	private SrfSubIdoManager srfSubIdoManager;
+	private ProjectInnovationSubIdoManager projectInnovationSubIdoManager;
+	private SrfIdoManager srfIdoManager;
+
 
 	// Variables
 	private long projectID;
@@ -169,6 +183,12 @@ public class ProjectInnovationAction extends BaseAction {
 	private Boolean clearLead;
 	private List<Institution> centers;
 	private List<CrpMilestone> milestones;
+	private List<SrfSubIdo> subIdos;
+	private List<SrfSubIdo> principalSubIdo;
+	private List<SrfIdo> srfIdos;
+	private HashMap<Long, String> idoList;
+
+
 
 	@Inject
 	public ProjectInnovationAction(APConfig config, GlobalUnitManager globalUnitManager,
@@ -193,7 +213,7 @@ public class ProjectInnovationAction extends BaseAction {
 			ProjectInnovationGeographicScopeManager projectInnovationGeographicScopeManager,
 			ProjectInnovationSharedManager projectInnovationSharedManager,
 			ProjectInnovationCenterManager projectInnovationCenterManager,
-			ProjectInnovationMilestoneManager projectInnovationMilestoneManager) {
+			ProjectInnovationMilestoneManager projectInnovationMilestoneManager, SrfSubIdoManager srfSubIdoManager, ProjectInnovationSubIdoManager projectInnovationSubIdoManager, SrfIdoManager srfIdoManager) {
 		super(config);
 		this.projectInnovationManager = projectInnovationManager;
 		this.globalUnitManager = globalUnitManager;
@@ -226,6 +246,10 @@ public class ProjectInnovationAction extends BaseAction {
 		this.projectInnovationSharedManager = projectInnovationSharedManager;
 		this.projectInnovationCenterManager = projectInnovationCenterManager;
 		this.projectInnovationMilestoneManager = projectInnovationMilestoneManager;
+		this.srfSubIdoManager = srfSubIdoManager;
+		this.projectInnovationSubIdoManager = projectInnovationSubIdoManager;
+		this.srfIdoManager = srfIdoManager;
+
 	}
 
 	/**
@@ -290,6 +314,30 @@ public class ProjectInnovationAction extends BaseAction {
 	public List<CrpMilestone> getMilestones() {
 		return milestones;
 	}
+	
+	public List<SrfSubIdo> getSubIdos() {
+		return subIdos;
+	}
+
+	public void setSubIdos(List<SrfSubIdo> subIdos) {
+		this.subIdos = subIdos;
+	}
+
+	public List<SrfSubIdo> getPrincipalSubIdo() {
+		return principalSubIdo;
+	}
+
+	public void setPrincipalSubIdo(List<SrfSubIdo> principalSubIdo) {
+		this.principalSubIdo = principalSubIdo;
+	}
+
+	public List<SrfIdo> getSrfIdos() {
+		return srfIdos;
+	}
+
+	public void setSrfIdos(List<SrfIdo> srfIdos) {
+		this.srfIdos = srfIdos;
+	}
 
 	public void setMilestones(List<CrpMilestone> milestones) {
 		this.milestones = milestones;
@@ -306,6 +354,14 @@ public class ProjectInnovationAction extends BaseAction {
 	@Override
 	public List<GlobalUnit> getCrpList() {
 		return crpList;
+	}
+	
+	public HashMap<Long, String> getIdoList() {
+		return idoList;
+	}
+
+	public void setIdoList(HashMap<Long, String> idoList) {
+		this.idoList = idoList;
 	}
 
 	public List<RepIndDegreeInnovation> getDegreeInnovationList() {
@@ -649,6 +705,15 @@ public class ProjectInnovationAction extends BaseAction {
 								.getCrpMilestoneById(projectInnovationMilestone.getCrpMilestone().getId())));
 					}
 				}
+				
+				// SubIdos List Autosave
+				if (innovation.getSubIdos() != null) {
+					for (ProjectInnovationSubIdo projectInnovationSubIdo : innovation.getSubIdos()) {
+						projectInnovationSubIdo.setSrfSubIdo(
+								srfSubIdoManager.getSrfSubIdoById(projectInnovationSubIdo.getSrfSubIdo().getId()));
+					}
+				}
+
 
 				// Innovation Shared Projects List Autosave
 				if (this.innovation.getSharedInnovations() != null) {
@@ -734,6 +799,13 @@ public class ProjectInnovationAction extends BaseAction {
 					innovation.setMilestones(new ArrayList<>(innovation.getProjectInnovationMilestones().stream()
 							.filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
 				}
+				
+				// SubIdos List
+				if (innovation.getProjectInnovationSubIdos() != null) {
+					innovation.setSubIdos(new ArrayList<>(innovation.getProjectInnovationSubIdos().stream()
+							.filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId()))
+							.collect(Collectors.toList())));
+				}
 
 				
 				// Innovation shared Projects List
@@ -780,6 +852,9 @@ public class ProjectInnovationAction extends BaseAction {
 					.collect(Collectors.toList());
 
 			List<ProjectExpectedStudy> allProjectStudies = new ArrayList<ProjectExpectedStudy>();
+			
+			// SubIdos List
+			subIdos = srfSubIdoManager.findAll();
 
 			// Load Studies
 			List<ProjectExpectedStudy> studies = project.getProjectExpectedStudies().stream()
@@ -930,6 +1005,10 @@ public class ProjectInnovationAction extends BaseAction {
 			if (innovation.getMilestones() != null) {
 				innovation.getMilestones().clear();
 			}
+			
+			if (innovation.getSubIdos() != null) {
+				innovation.getSubIdos().clear();
+			}
 			// HTTP Post info Values
 			// innovation.getProjectInnovationInfo().setGenderFocusLevel(null);
 			// innovation.getProjectInnovationInfo().setYouthFocusLevel(null);
@@ -940,6 +1019,16 @@ public class ProjectInnovationAction extends BaseAction {
 			innovation.getProjectInnovationInfo().setRepIndRegion(null);
 			innovation.getProjectInnovationInfo().setRepIndDegreeInnovation(null);
 			innovation.getProjectInnovationInfo().setLeadOrganization(null);
+		}
+		
+		// SrfIDO
+		idoList = new HashMap<>();
+		srfIdos = new ArrayList<>();
+		for (SrfIdo srfIdo : srfIdoManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
+			idoList.put(srfIdo.getId(), srfIdo.getDescription());
+
+			srfIdo.setSubIdos(srfIdo.getSrfSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+			srfIdos.add(srfIdo);
 		}
 	}
 
@@ -956,6 +1045,7 @@ public class ProjectInnovationAction extends BaseAction {
 			this.saveOrganizations(innovationDB, phase);
 			this.saveDeliverables(innovationDB, phase);
 			this.saveContributionOrganizations(innovationDB, phase);
+			this.saveSubIdos(innovationDB, phase);
 			this.saveCrps(innovationDB, phase);
 			this.saveProjects(innovationDB, phase);
 			this.saveCenters(innovationDB, phase);
@@ -1203,6 +1293,56 @@ public class ProjectInnovationAction extends BaseAction {
 
 					}
 
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Save Project Innovation SubIdos Information
+	 * 
+	 * @param projectInnovation
+	 * @param phase
+	 */
+	public void saveSubIdos(ProjectInnovation projectInnovation, Phase phase) {
+
+		// Search and deleted form Information
+		if (projectInnovation.getProjectInnovationSubIdos() != null && projectInnovation.getProjectInnovationSubIdos().size() > 0) {
+
+			List<ProjectInnovationSubIdo> subIdoPrev = new ArrayList<>(projectInnovation.getProjectInnovationSubIdos().stream()
+					.filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId()))
+					.collect(Collectors.toList()));
+
+			for (ProjectInnovationSubIdo innovationSubIdo : subIdoPrev) {
+				if (innovation.getSubIdos() == null || !innovation.getSubIdos().contains(innovationSubIdo)) {
+					projectInnovationSubIdoManager.deleteProjectInnovationSubIdo(innovationSubIdo.getId());
+				}
+			}
+		}
+
+		// Save form Information
+		if (innovation.getSubIdos() != null) {
+			for (ProjectInnovationSubIdo innovationSubIdo : innovation.getSubIdos()) {
+				if (innovationSubIdo.getId() == null) {
+					ProjectInnovationSubIdo innovationSubIdoSave = new ProjectInnovationSubIdo();
+
+					/*
+					 * if (principalSubIdo != null && principalSubIdo.size() != 0 &&
+					 * principalSubIdo.get(0) != null) { if
+					 * (policySubIdo.getSrfSubIdo().getId().intValue() ==
+					 * principalSubIdo.get(0).getId() .intValue()) {
+					 * policySubIdoSave.setPrimary(true); } }
+					 */
+					innovationSubIdoSave.setProjectInnovation(projectInnovation);
+					innovationSubIdoSave.setPhase(phase);
+
+					SrfSubIdo srfSubIdo = srfSubIdoManager.getSrfSubIdoById(innovationSubIdo.getSrfSubIdo().getId());
+
+					innovationSubIdoSave.setSrfSubIdo(srfSubIdo);
+
+					projectInnovationSubIdoManager.saveProjectInnovationSubIdo(innovationSubIdoSave);
+					// This is to add innovationCrpSave to generate correct auditlog.
+					innovation.getProjectInnovationSubIdos().add(innovationSubIdoSave);
 				}
 			}
 		}
