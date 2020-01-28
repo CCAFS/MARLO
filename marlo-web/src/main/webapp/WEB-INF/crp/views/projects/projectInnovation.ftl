@@ -85,6 +85,14 @@
             </div>
           </div>
           
+          [#assign numberRequired = ((innovation.projectInnovationInfo.repIndStageInnovation.id == 4))!false ]
+          <div class="form-group row" style="display:${numberRequired?string('block','none')}>  
+            <div class="col-md-6 ">                 
+                [@customForm.input name="innovation.projectInnovationInfo.innovationNumber" type="number" i18nkey="projectInnovations.innovationNumber" editable=editable /]   
+            </div>
+          </div>
+        
+          
             [#-- Milestones Contribution --]
 		    <div class="form-group">          
 		      <label for="">[@s.text name="innovation.milestones" /]:[@customForm.req required=editable /][@customForm.helpLabel name="innovation.milestones.help" showIcon=false editable=editable/]</label>
