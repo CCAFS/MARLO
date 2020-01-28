@@ -200,7 +200,7 @@
     
     [#-- Contributing Centers/ PPA partners  --]
     <div class="form-group">
-      [@customForm.elementsListComponent name="${customName}.centers" elementType="institution" elementList=element.centers label="policy.contributingCenters"  listName="centers" keyFieldName="id" displayFieldName="composedName" /]
+      [@customForm.elementsListComponent name="${customName}.centers" elementType="institution" elementList=element.centers label="policy.contributingCenters"  listName="centers" keyFieldName="id" displayFieldName="composedName" required=false/]
     </div>
     
     [#-- Contributing CRPs/PTFs  --]

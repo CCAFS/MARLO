@@ -204,13 +204,14 @@ public class ProjectPolicyValidator extends BaseValidator {
 
 
     // Validate Crps
+    /*
     if (projectPolicy.getCrps() == null || projectPolicy.getCrps().isEmpty()) {
       action.addMessage(action.getText("expectedStudyList"));
       action.addMissingField("policy.contributingCrpsPtfs");
       action.getInvalidFields().put("list-policy.crps",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"crps"}));
     }
-
+*/
     // Validate SubIdos
     if (projectPolicy.getSubIdos() == null || projectPolicy.getSubIdos().isEmpty()) {
       action.addMessage(action.getText("subIdos"));

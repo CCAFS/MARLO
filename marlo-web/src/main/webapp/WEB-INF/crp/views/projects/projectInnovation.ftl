@@ -207,7 +207,7 @@
         
           [#-- Contributing CRPs/Platforms --]
           <div class="form-group">
-            [@customForm.elementsListComponent name="innovation.crps" elementType="globalUnit" elementList=innovation.crps label="projectInnovations.contributing"  listName="crpList" keyFieldName="id" displayFieldName="composedName"/]
+            [@customForm.elementsListComponent name="innovation.crps" elementType="globalUnit" elementList=innovation.crps label="projectInnovations.contributing"  listName="crpList" keyFieldName="id" displayFieldName="composedName" required=false /]
           </div>
           
           [#-- Contributing Centers/ PPA partners  --]
