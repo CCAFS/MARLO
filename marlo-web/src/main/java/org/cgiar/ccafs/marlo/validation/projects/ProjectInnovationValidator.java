@@ -115,6 +115,22 @@ public class ProjectInnovationValidator extends BaseValidator {
       this.addMissingField("projectInnovations.narrative");
 
     }
+    
+    //validate Milestones
+    if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()) != null && projectInnovation.getProjectInnovationInfo().getHasMilestones()!= null && projectInnovation.getProjectInnovationInfo().getHasMilestones()== true) {
+    	 action.addMessage(action.getText("milestoneList"));
+         action.addMissingField("innovation.milestones");
+         action.getInvalidFields().put("list-innovation.milestones",
+           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"milestones"}));
+    }
+    
+    // Validate SubIdos
+    if (projectInnovation.getSubIdos() == null || projectInnovation.getSubIdos().isEmpty()) {
+      action.addMessage(action.getText("subIdos"));
+      action.addMissingField("innovation.subIDOs");
+      action.getInvalidFields().put("list-innovation.subIdos",
+      action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
+    }
 
     // Validate Stage of Innovation
     if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndStageInnovation() != null) {
