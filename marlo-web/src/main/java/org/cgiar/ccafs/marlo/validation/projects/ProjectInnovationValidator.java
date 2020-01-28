@@ -344,6 +344,7 @@ public class ProjectInnovationValidator extends BaseValidator {
 
 
     // Validate Crps
+    /*
     if (projectInnovation.getCrps() == null || projectInnovation.getCrps().isEmpty()) {
       if (struts) {
         action.addMessage(action.getText("projectInnovations.contributing"));
@@ -352,6 +353,7 @@ public class ProjectInnovationValidator extends BaseValidator {
       }
       this.addMissingField("projectInnovations.contributing");
     }
+    */
 
     // Validate adaptative research narrative
     if (!(this.wordCount(
