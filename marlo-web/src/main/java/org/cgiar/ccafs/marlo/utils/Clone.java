@@ -26,13 +26,13 @@ import org.apache.commons.io.IOUtils;
 
 public class Clone {
 
-  public static String pathdao = "D:\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\dao";
+  public static String pathdao = "D:\\MARLO-PROJECT - 4.5\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\dao";
   public static String pathmysqldao =
-    "D:\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\dao\\mysql";
-  public static String pathmanager = "D:\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\manager";
-  public static String pathmodel = "D:\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\model";
+    "D:\\MARLO-PROJECT - 4.5\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\dao\\mysql";
+  public static String pathmanager = "D:\\MARLO-PROJECT - 4.5\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\manager";
+  public static String pathmodel = "D:\\MARLO-PROJECT - 4.5\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\model";
   public static String pathmanagerimpl =
-    "D:\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\manager\\impl";
+    "D:\\MARLO-PROJECT - 4.5\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\manager\\impl";
 
   // Copy the source file to target file.
   // In case the dst file does not exist, it is created
@@ -57,10 +57,10 @@ public class Clone {
   public static void generateDao(String nome) {
     File target = new File(pathdao + "\\" + nome + "DAO.java");
     try {
-      copy(new File(pathdao + "\\CrpAssumptionDAO.java"), target);
+      copy(new File(pathdao + "\\ProjectInnovationMilestoneDAO.java"), target);
       String content = IOUtils.toString(new FileInputStream(target));
-      content = content.replaceAll("CrpAssumption", nome);
-      content = content.replaceAll("crpAssumption", miniscula(nome));
+      content = content.replaceAll("ProjectInnovationMilestone", nome);
+      content = content.replaceAll("projectInnovationMilestone", miniscula(nome));
       IOUtils.write(content, new FileOutputStream(target));
       System.out.println();
     } catch (IOException e) {
@@ -73,10 +73,10 @@ public class Clone {
   public static void generateManager(String nome) {
     File target = new File(pathmanager + "\\" + nome + "Manager.java");
     try {
-      copy(new File(pathmanager + "\\CrpAssumptionManager.java"), target);
+      copy(new File(pathmanager + "\\ProjectInnovationMilestoneManager.java"), target);
       String content = IOUtils.toString(new FileInputStream(target));
-      content = content.replaceAll("CrpAssumption", nome);
-      content = content.replaceAll("crpAssumption", miniscula(nome));
+      content = content.replaceAll("ProjectInnovationMilestone", nome);
+      content = content.replaceAll("projectInnovationMilestone", miniscula(nome));
       IOUtils.write(content, new FileOutputStream(target));
       System.out.println();
     } catch (IOException e) {
@@ -90,10 +90,10 @@ public class Clone {
   public static void generateManagerImpl(String nome) {
     File target = new File(pathmanagerimpl + "\\" + nome + "ManagerImpl.java");
     try {
-      copy(new File(pathmanagerimpl + "\\CrpAssumptionManagerImpl.java"), target);
+      copy(new File(pathmanagerimpl + "\\ProjectInnovationMilestoneManagerImpl.java"), target);
       String content = IOUtils.toString(new FileInputStream(target));
-      content = content.replaceAll("CrpAssumption", nome);
-      content = content.replaceAll("crpAssumption", miniscula(nome));
+      content = content.replaceAll("ProjectInnovationMilestone", nome);
+      content = content.replaceAll("projectInnovationMilestone", miniscula(nome));
       IOUtils.write(content, new FileOutputStream(target));
       System.out.println();
     } catch (IOException e) {
@@ -106,10 +106,10 @@ public class Clone {
   public static void generateMysqlDao(String nome) {
     File target = new File(pathmysqldao + "\\" + nome + "MySQLDAO.java");
     try {
-      copy(new File(pathmysqldao + "\\CrpAssumptionMySQLDAO.java"), target);
+      copy(new File(pathmysqldao + "\\ProjectInnovationMilestoneMySQLDAO.java"), target);
       String content = IOUtils.toString(new FileInputStream(target));
-      content = content.replaceAll("CrpAssumption", nome);
-      content = content.replaceAll("crpAssumption", miniscula(nome));
+      content = content.replaceAll("ProjectInnovationMilestone", nome);
+      content = content.replaceAll("projectInnovationMilestone", miniscula(nome));
       IOUtils.write(content, new FileOutputStream(target));
       System.out.println();
     } catch (IOException e) {
@@ -137,7 +137,7 @@ public class Clone {
      * String[] model = {"EvidenceTag", "ProjectExpectedStudyInnovation", "ProjectExpectedStudyPolicy",
      * "ProjectExpectedStudyLink", "ProjectExpectedStudyQuantification"};
      */
-    String[] model = {"DeliverableUserPartnershipPerson"};
+    String[] model = {"ProjectExpectedStudyMilestone"};
 
     for (int i = 0; i < model.length; i++) {
       generateDao(model[i]);
