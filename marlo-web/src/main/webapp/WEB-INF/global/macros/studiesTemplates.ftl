@@ -204,6 +204,22 @@
           [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="study.keyContributors.crps"  listName="crps" keyFieldName="id" displayFieldName="composedName" required=false /]
         </div>
         [/#if]
+        [#-- Milestones --]
+        [#if isOutcomeCaseStudy]
+        <div class="form-group">          
+		      <label for="">[@s.text name="study.milestones" /]:[@customForm.req required=editable /][@customForm.helpLabel name="study.milestones.help" showIcon=false editable=editable/]</label>
+		      [#assign studyMilestoneLink = "studyMilestoneLink"]
+		      [#assign showMilestoneIndicator = (expectedStudy.projectExpectedStudyInfo.hasMilestones?string)!"" /]
+		      [@customForm.radioFlat id="${studyMilestoneLink}-yes" name="${customName}.projectExpectedStudyInfo.hasMilestones" label="Yes" value="true" checked=(showMilestoneIndicator == "true") cssClass="radioType-${studyMilestoneLink}" cssClassLabel="radio-label-yes" editable=editable /]
+		      [@customForm.radioFlat id="${studyMilestoneLink}-no" name="${customName}.projectExpectedStudyInfo.hasMilestones" label="No" value="false" checked=(showMilestoneIndicator == "false") cssClass="radioType-${studyMilestoneLink}" cssClassLabel="radio-label-no" editable=editable /]
+	    </div>
+        
+        <div class="form-group simpleBox block-${studyMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
+          [@customForm.elementsListComponent name="expectedStudy.milestones" elementType="crpMilestones" elementList=(expectedStudy.milestones)!"" label="study.keyContributors.milestones"  listName="milestones" keyFieldName="id" displayFieldName="composedName" /]
+          <div class="note">[@s.text name="study.milestones.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/contributionsCrpList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
+ 		  <br>      
+        </div>
+        [/#if]
         [#-- Centers --]
         [#if isOutcomeCaseStudy]
         <div class="form-group simpleBox">

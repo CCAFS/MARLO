@@ -1,45 +1,22 @@
-/*****************************************************************
- * This file is part of Managing Agricultural Research for Learning &
- * Outcomes Platform (MARLO).
- * MARLO is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * at your option) any later version.
- * MARLO is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
- * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
- *****************************************************************/
-
-/**************
- * @author Diego Perez - CIAT/CCAFS
- **************/
-
 package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import com.google.gson.annotations.Expose;
 
-public class ProjectInnovationMilestone extends MarloBaseEntity implements java.io.Serializable, IAuditLog {
+public class ProjectInnovationSubIdo extends MarloBaseEntity implements java.io.Serializable, IAuditLog {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -1315352201148806722L;
-
-	@Expose
-	private CrpMilestone crpMilestone;
-
+	private static final long serialVersionUID = -4979918140909260608L;
 	@Expose
 	private Phase phase;
-
 	@Expose
 	private ProjectInnovation projectInnovation;
+	@Expose
+	private SrfSubIdo srfSubIdo;
+	@Expose
+	private Boolean primary;
 
-	public ProjectInnovationMilestone() {
+	public ProjectInnovationSubIdo() {
 	}
 
 	@Override
@@ -53,7 +30,7 @@ public class ProjectInnovationMilestone extends MarloBaseEntity implements java.
 		if (this.getClass() != obj.getClass()) {
 			return false;
 		}
-		ProjectInnovationMilestone other = (ProjectInnovationMilestone) obj;
+		ProjectInnovationSubIdo other = (ProjectInnovationSubIdo) obj;
 		if (this.getId() == null) {
 			if (other.getId() != null) {
 				return false;
@@ -87,6 +64,10 @@ public class ProjectInnovationMilestone extends MarloBaseEntity implements java.
 		return phase;
 	}
 
+	public SrfSubIdo getSrfSubIdo() {
+		return srfSubIdo;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -95,12 +76,18 @@ public class ProjectInnovationMilestone extends MarloBaseEntity implements java.
 		return result;
 	}
 
+	public Boolean getPrimary() {
+		return primary;
+	}
+
+	public void setPrimary(Boolean primary) {
+		this.primary = primary;
+	}
+
 	@Override
 	public boolean isActive() {
 		return true;
 	}
-	
-	
 
 	@Override
 	public void setModifiedBy(User modifiedBy) {
@@ -111,12 +98,8 @@ public class ProjectInnovationMilestone extends MarloBaseEntity implements java.
 		this.phase = phase;
 	}
 
-	public CrpMilestone getCrpMilestone() {
-		return crpMilestone;
-	}
-
-	public void setCrpMilestone(CrpMilestone crpMilestone) {
-		this.crpMilestone = crpMilestone;
+	public void setSrfSubIdo(SrfSubIdo srfSubIdo) {
+		this.srfSubIdo = srfSubIdo;
 	}
 
 	public ProjectInnovation getProjectInnovation() {

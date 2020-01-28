@@ -23,23 +23,23 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import com.google.gson.annotations.Expose;
 
-public class ProjectInnovationMilestone extends MarloBaseEntity implements java.io.Serializable, IAuditLog {
+public class ProjectExpectedStudyMilestone extends MarloBaseEntity implements java.io.Serializable, IAuditLog {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -1315352201148806722L;
-
-	@Expose
-	private CrpMilestone crpMilestone;
+	private static final long serialVersionUID = 5629595838271982008L;
 
 	@Expose
 	private Phase phase;
 
 	@Expose
-	private ProjectInnovation projectInnovation;
+	private ProjectExpectedStudy projectExpectedStudy;
 
-	public ProjectInnovationMilestone() {
+	@Expose
+	private CrpMilestone crpMilestone;
+
+	public ProjectExpectedStudyMilestone() {
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class ProjectInnovationMilestone extends MarloBaseEntity implements java.
 		if (this.getClass() != obj.getClass()) {
 			return false;
 		}
-		ProjectInnovationMilestone other = (ProjectInnovationMilestone) obj;
+		ProjectExpectedStudyMilestone other = (ProjectExpectedStudyMilestone) obj;
 		if (this.getId() == null) {
 			if (other.getId() != null) {
 				return false;
@@ -87,6 +87,10 @@ public class ProjectInnovationMilestone extends MarloBaseEntity implements java.
 		return phase;
 	}
 
+	public ProjectExpectedStudy getProjectExpectedStudy() {
+		return projectExpectedStudy;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -99,8 +103,14 @@ public class ProjectInnovationMilestone extends MarloBaseEntity implements java.
 	public boolean isActive() {
 		return true;
 	}
-	
-	
+
+	public CrpMilestone getCrpMilestone() {
+		return crpMilestone;
+	}
+
+	public void setCrpMilestone(CrpMilestone crpMilestone) {
+		this.crpMilestone = crpMilestone;
+	}
 
 	@Override
 	public void setModifiedBy(User modifiedBy) {
@@ -111,20 +121,8 @@ public class ProjectInnovationMilestone extends MarloBaseEntity implements java.
 		this.phase = phase;
 	}
 
-	public CrpMilestone getCrpMilestone() {
-		return crpMilestone;
-	}
-
-	public void setCrpMilestone(CrpMilestone crpMilestone) {
-		this.crpMilestone = crpMilestone;
-	}
-
-	public ProjectInnovation getProjectInnovation() {
-		return projectInnovation;
-	}
-
-	public void setProjectInnovation(ProjectInnovation projectInnovation) {
-		this.projectInnovation = projectInnovation;
+	public void setProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy) {
+		this.projectExpectedStudy = projectExpectedStudy;
 	}
 
 }

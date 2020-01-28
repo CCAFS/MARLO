@@ -645,8 +645,8 @@ public class ProjectInnovationAction extends BaseAction {
 				// Innovation Milestone List Autosave
 				if (innovation.getMilestones() != null) {
 					for (ProjectInnovationMilestone projectInnovationMilestone : innovation.getMilestones()) {
-						projectInnovationMilestone.setMilestone((milestoneManager
-								.getCrpMilestoneById(projectInnovationMilestone.getMilestone().getId())));
+						projectInnovationMilestone.setCrpMilestone((milestoneManager
+								.getCrpMilestoneById(projectInnovationMilestone.getCrpMilestone().getId())));
 					}
 				}
 
@@ -735,37 +735,7 @@ public class ProjectInnovationAction extends BaseAction {
 							.filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
 				}
 
-				/*
-				 * Get the milestone List
-				 */
-				milestones = new ArrayList<>();
-
-				// Get outcomes list
-				List<ProjectOutcome> projectOutcomesList = new ArrayList<>();
-				projectOutcomesList = project.getProjectOutcomes().stream()
-						.filter(po -> po.isActive() && po.getPhase() != null
-								&& po.getPhase().getId().equals(this.getActualPhase().getId()))
-						.collect(Collectors.toList());
-
-				if (projectOutcomesList != null) {
-
-					for (ProjectOutcome projectOutcome : projectOutcomesList) {
-						projectOutcome.setMilestones(projectOutcome.getProjectMilestones().stream()
-								.filter(m -> m != null && m.isActive() && m.getYear() != 0
-										&& m.getYear() <= this.getActualPhase().getYear())
-								.collect(Collectors.toList()));
-
-						if (projectOutcome.getMilestones() != null) {
-							for (ProjectMilestone projectMilestone : projectOutcome.getMilestones()) {
-								if (projectMilestone.getCrpMilestone() != null
-										&& projectMilestone.getCrpMilestone().isActive()) {
-									milestones.add(projectMilestone.getCrpMilestone());
-								}
-							}
-						}
-					}
-				}
-
+				
 				// Innovation shared Projects List
 				if (this.innovation.getProjectInnovationShareds() != null) {
 					this.innovation.setSharedInnovations(new ArrayList<>(this.innovation.getProjectInnovationShareds()
@@ -860,6 +830,38 @@ public class ProjectInnovationAction extends BaseAction {
 					deliverableList.add(deliverable);
 				}
 			}
+			
+			/*
+			 * Get the milestone List
+			 */
+			milestones = new ArrayList<>();
+
+			// Get outcomes list
+			List<ProjectOutcome> projectOutcomesList = new ArrayList<>();
+			projectOutcomesList = project.getProjectOutcomes().stream()
+					.filter(po -> po.isActive() && po.getPhase() != null
+							&& po.getPhase().getId().equals(this.getActualPhase().getId()))
+					.collect(Collectors.toList());
+
+			if (projectOutcomesList != null) {
+
+				for (ProjectOutcome projectOutcome : projectOutcomesList) {
+					projectOutcome.setMilestones(projectOutcome.getProjectMilestones().stream()
+							.filter(m -> m != null && m.isActive() && m.getYear() != 0
+									&& m.getYear() <= this.getActualPhase().getYear())
+							.collect(Collectors.toList()));
+
+					if (projectOutcome.getMilestones() != null) {
+						for (ProjectMilestone projectMilestone : projectOutcome.getMilestones()) {
+							if (projectMilestone.getCrpMilestone() != null
+									&& projectMilestone.getCrpMilestone().isActive()) {
+								milestones.add(projectMilestone.getCrpMilestone());
+							}
+						}
+					}
+				}
+			}
+
 
 			// Shows the projects to create a shared link with their
 			this.myProjects = new ArrayList<>();
@@ -1174,11 +1176,11 @@ public class ProjectInnovationAction extends BaseAction {
 						innovationMilestoneSave.setProjectInnovation(projectInnovation);
 						innovationMilestoneSave.setPhase(phase);
 
-						if (innovationMilestone.getMilestone() != null
-								&& innovationMilestone.getMilestone().getId() != null) {
+						if (innovationMilestone.getCrpMilestone() != null
+								&& innovationMilestone.getCrpMilestone().getId() != null) {
 							CrpMilestone milestone = milestoneManager
-									.getCrpMilestoneById(innovationMilestone.getMilestone().getId());
-							innovationMilestoneSave.setMilestone(milestone);
+									.getCrpMilestoneById(innovationMilestone.getCrpMilestone().getId());
+							innovationMilestoneSave.setCrpMilestone(milestone);
 
 							projectInnovationMilestoneManager.saveProjectInnovationMilestone(innovationMilestoneSave);
 							// This is to add innovationCenterSave to generate correct auditlog.
