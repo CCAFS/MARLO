@@ -218,6 +218,14 @@ public class ProjectPolicyValidator extends BaseValidator {
       action.getInvalidFields().put("list-policy.subIdos",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
     }
+    
+    //validate Milestones
+    if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()) != null && projectPolicy.getProjectPolicyInfo().getHasMilestones()!= null && projectPolicy.getProjectPolicyInfo().getHasMilestones()== true) {
+    	 action.addMessage(action.getText("milestoneList"));
+         action.addMissingField("policy.milestones");
+         action.getInvalidFields().put("list-policy.milestones",
+           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"milestones"}));
+    }
 
     // Validate Cross Cutting
     if (projectPolicy.getCrossCuttingMarkers() == null || projectPolicy.getCrossCuttingMarkers().isEmpty()) {
