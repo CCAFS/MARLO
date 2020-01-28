@@ -9,7 +9,7 @@
 			<column name="id" />
 			<generator class="identity" />
 		</id>
-		<many-to-one name="milestone"
+		<many-to-one name="crpMilestone"
 			class="org.cgiar.ccafs.marlo.data.model.CrpMilestone" fetch="select">
 			<column name="crp_milestone_id" not-null="true" />
 		</many-to-one>
