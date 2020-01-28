@@ -72,8 +72,10 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
 	// AR2019 Field
 	private Set<ProjectInnovationCenter> projectInnovationCenters = new HashSet<ProjectInnovationCenter>(0);
 	private Set<ProjectInnovationMilestone> projectInnovationMilestones = new HashSet<ProjectInnovationMilestone>(0);
+	private Set<ProjectInnovationSubIdo> projectInnovationSubIdos = new HashSet<ProjectInnovationSubIdo>(0);
 	private List<ProjectInnovationCenter> centers;
 	private List<ProjectInnovationMilestone> milestones;
+	private List<ProjectInnovationSubIdo> subIdos;
 
 	public List<ProjectInnovationCenter> getCenters() {
 		return centers;
@@ -148,6 +150,23 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
 
 	public List<ProjectInnovationOrganization> getOrganizations() {
 		return this.organizations;
+	}
+	
+
+	public Set<ProjectInnovationSubIdo> getProjectInnovationSubIdos() {
+		return projectInnovationSubIdos;
+	}
+
+	public void setProjectInnovationSubIdos(Set<ProjectInnovationSubIdo> projectInnovationSubIdos) {
+		this.projectInnovationSubIdos = projectInnovationSubIdos;
+	}
+
+	public List<ProjectInnovationSubIdo> getSubIdos() {
+		return subIdos;
+	}
+
+	public void setSubIdos(List<ProjectInnovationSubIdo> subIdos) {
+		this.subIdos = subIdos;
 	}
 
 	public Project getProject() {
