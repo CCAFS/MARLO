@@ -212,6 +212,13 @@ public class ProjectPolicyValidator extends BaseValidator {
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"crps"}));
     }
 */
+    if (projectPolicy.getCrps() == null || projectPolicy.getCrps().isEmpty()) {
+        action.addMessage(action.getText("contributingCenters"));
+        action.addMissingField("policy.contributingCenters");
+        action.getInvalidFields().put("list-policy.centers",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"centers"}));
+    }
+    
     // Validate SubIdos
     if (projectPolicy.getSubIdos() == null || projectPolicy.getSubIdos().isEmpty()) {
       action.addMessage(action.getText("subIdos"));
