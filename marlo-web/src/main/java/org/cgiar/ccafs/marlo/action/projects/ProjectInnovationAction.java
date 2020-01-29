@@ -806,7 +806,6 @@ public class ProjectInnovationAction extends BaseAction {
 							.filter(o -> o.getPhase().getId().equals(phase.getId()))
 							.collect(Collectors.toList())));
 				}
-
 				
 				// Innovation shared Projects List
 				if (this.innovation.getProjectInnovationShareds() != null) {
