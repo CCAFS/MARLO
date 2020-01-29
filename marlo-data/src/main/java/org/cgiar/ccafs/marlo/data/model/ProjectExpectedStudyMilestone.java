@@ -38,6 +38,9 @@ public class ProjectExpectedStudyMilestone extends MarloBaseEntity implements ja
 
 	@Expose
 	private CrpMilestone crpMilestone;
+	
+	@Expose
+	private Boolean primary;
 
 	public ProjectExpectedStudyMilestone() {
 	}
@@ -124,5 +127,15 @@ public class ProjectExpectedStudyMilestone extends MarloBaseEntity implements ja
 	public void setProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy) {
 		this.projectExpectedStudy = projectExpectedStudy;
 	}
+
+	public Boolean getPrimary() {
+		return primary;
+	}
+
+	public void setPrimary(Boolean primary) {
+		this.primary = primary;
+	}
+	
+	
 
 }
