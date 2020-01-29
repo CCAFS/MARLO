@@ -17,19 +17,14 @@ package org.cgiar.ccafs.marlo;
 
 import org.cgiar.ccafs.marlo.logging.LoggingAspect;
 
-import com.google.common.collect.ImmutableList;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.web.mgt.WebSecurityManager;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @Configuration
@@ -38,20 +33,22 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @ComponentScan(basePackages = {"org.cgiar.ccafs.marlo.rest"})
 public class MarloRestApiConfig {
 
-  @Bean
-  public FilterRegistrationBean corsConfigurationSourceFilter() {
-    CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(ImmutableList.of("*"));
-    configuration.setAllowedMethods(ImmutableList.of("GET", "POST", "PUT", "DELETE"));
-    configuration.setAllowCredentials(true);
-    configuration.setAllowedHeaders(ImmutableList.of("Authorization", "Cache-Control", "Content-Type"));
-    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/api/*", configuration);
-    CorsFilter corsfilter = new CorsFilter(source);
-    FilterRegistrationBean bean = new FilterRegistrationBean(corsfilter);
-    bean.setOrder(0);
-    return bean;
-  }
+  /*
+   * @Bean
+   * public FilterRegistrationBean corsConfigurationSourceFilter() {
+   * CorsConfiguration configuration = new CorsConfiguration();
+   * configuration.setAllowedOrigins(ImmutableList.of("*"));
+   * configuration.setAllowedMethods(ImmutableList.of("GET", "POST", "PUT", "DELETE"));
+   * configuration.setAllowCredentials(true);
+   * configuration.setAllowedHeaders(ImmutableList.of("Authorization", "Cache-Control", "Content-Type"));
+   * UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+   * source.registerCorsConfiguration("/api/*", configuration);
+   * CorsFilter corsfilter = new CorsFilter(source);
+   * FilterRegistrationBean bean = new FilterRegistrationBean(corsfilter);
+   * bean.setOrder(0);
+   * return bean;
+   * }
+   */
 
   /**
    * The following aspect bean below checks to see if Shiro annotations are present.

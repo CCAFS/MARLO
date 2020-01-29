@@ -31,13 +31,10 @@ import org.cgiar.ccafs.marlo.rest.errors.NotFoundException;
 import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
 
-import com.weddini.throttling.Throttling;
-import com.weddini.throttling.ThrottlingType;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -157,7 +154,7 @@ public class Institutions {
    * @param intitution id
    * @return a InstitutionDTO with institution data item
    */
-  @Throttling(type = ThrottlingType.HeaderValue, limit = 1, timeUnit = TimeUnit.SECONDS)
+  // @Throttling(type = ThrottlingType.HeaderValue, limit = 1, timeUnit = TimeUnit.SECONDS)
   @ApiOperation(tags = {"Table 4 - CRP Innovations", "Table 3 - Outcome/ Impact Case Reports"},
     value = "${Institutions.institutions.code.value}", response = InstitutionDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)

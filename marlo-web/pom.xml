@@ -410,10 +410,10 @@
 			<groupId>com.maxmind.geoip2</groupId>
 			<artifactId>geoip2</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.weddini.throttling</groupId>
-			<artifactId>spring-boot-throttling-starter</artifactId>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>com.weddini.throttling</groupId> -->
+<!-- 			<artifactId>spring-boot-throttling-starter</artifactId> -->
+<!-- 		</dependency> -->
 	</dependencies>
 
 
