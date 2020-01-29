@@ -91,6 +91,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
@@ -954,6 +955,17 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 			this.crps = this.crpManager.findAll().stream().filter(
 					gu -> gu.isActive() && (gu.getGlobalUnitType().getId() == 1 || gu.getGlobalUnitType().getId() == 3))
 					.collect(Collectors.toList());
+			
+			List<ProjectExpectedStudyCrp> tempPcrp = null;
+			// Update crp list - Delete the actual crp from the list except if this crp was
+
+			if(expectedStudy.getCrps() != null && expectedStudy.getCrps().stream().filter(x -> x!= null && x.getGlobalUnit().getId().equals(this.getCurrentGlobalUnit().getId())) != null) {
+				tempPcrp = expectedStudy.getCrps().stream().filter(x -> x!= null && x.getGlobalUnit().getId().equals(this.getCurrentGlobalUnit().getId())).collect(Collectors.toList());
+			}
+			
+			if(tempPcrp.size() == 0) {
+				crps.remove(this.getCurrentGlobalUnit());
+			}
 
 			this.flagshipList = this.crpProgramManager.findAll().stream()
 					.filter(p -> p.isActive() && p.getCrp() != null && p.getCrp().getId() == this.loggedCrp.getId()
