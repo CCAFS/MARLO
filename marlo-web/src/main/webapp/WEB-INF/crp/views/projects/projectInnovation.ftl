@@ -52,11 +52,9 @@
 
         <div class="">        
           <div class="form-group">
-          <div class="col-md-3"></div>
-          <div class="col-md-3"></div>
-          <div class="col-md-3"></div>
-            <div class="col-md-3">
-              [@customForm.select name="innovation.projectInnovationInfo.year" className="setSelect2" i18nkey="study.year" listName="years" header=false required=true editable=editable /]
+          <div class="col-md-8"></div>
+            <div class="col-md-4">
+              [@customForm.select name="innovation.projectInnovationInfo.year" className="setSelect2" i18nkey="policy.year" listName="years" header=false required=true editable=editable /]
               [#if editable=false]
                 ${innovation.projectInnovationInfo.year}
               [/#if]
