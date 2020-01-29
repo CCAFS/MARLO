@@ -21,6 +21,8 @@ public class PolicyMilestone extends MarloAuditableEntity implements java.io.Ser
 	private ProjectPolicy policy;
 	@Expose
 	private Phase phase;
+	@Expose
+	private Boolean primary;
 
 	public ProjectPolicy getPolicy() {
 		return policy;
@@ -90,5 +92,15 @@ public class PolicyMilestone extends MarloAuditableEntity implements java.io.Ser
 	public void setPhase(Phase phase) {
 		this.phase = phase;
 	}
+
+	public Boolean getPrimary() {
+		return primary;
+	}
+
+	public void setPrimary(Boolean primary) {
+		this.primary = primary;
+	}
+	
+	
 	
 }

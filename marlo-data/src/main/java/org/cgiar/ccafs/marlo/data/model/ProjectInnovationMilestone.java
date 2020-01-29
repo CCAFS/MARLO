@@ -38,6 +38,9 @@ public class ProjectInnovationMilestone extends MarloBaseEntity implements java.
 
 	@Expose
 	private ProjectInnovation projectInnovation;
+	
+	@Expose
+	private Boolean primary;
 
 	public ProjectInnovationMilestone() {
 	}
@@ -126,5 +129,15 @@ public class ProjectInnovationMilestone extends MarloBaseEntity implements java.
 	public void setProjectInnovation(ProjectInnovation projectInnovation) {
 		this.projectInnovation = projectInnovation;
 	}
+
+	public Boolean getPrimary() {
+		return primary;
+	}
+
+	public void setPrimary(Boolean primary) {
+		this.primary = primary;
+	}
+	
+	
 
 }
