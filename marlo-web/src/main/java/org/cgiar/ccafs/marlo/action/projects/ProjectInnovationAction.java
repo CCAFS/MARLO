@@ -77,6 +77,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicySubIdo;
 import org.cgiar.ccafs.marlo.data.model.RepIndContributionOfCrp;
 import org.cgiar.ccafs.marlo.data.model.RepIndDegreeInnovation;
@@ -956,6 +957,17 @@ public class ProjectInnovationAction extends BaseAction {
 			crpList = globalUnitManager.findAll().stream().filter(
 					gu -> gu.isActive() && (gu.getGlobalUnitType().getId() == 1 || gu.getGlobalUnitType().getId() == 3))
 					.collect(Collectors.toList());
+			
+			List<ProjectInnovationCrp> tempPcrp = null;
+			// Update crp list - Delete the actual crp from the list except if this crp was
+
+			if(innovation.getCrps() != null && innovation.getCrps().stream().filter(x -> x!= null && x.getGlobalUnit().getId().equals(this.getCurrentGlobalUnit().getId())) != null) {
+				tempPcrp = innovation.getCrps().stream().filter(x -> x!= null && x.getGlobalUnit().getId().equals(this.getCurrentGlobalUnit().getId())).collect(Collectors.toList());
+			}
+			
+			if(tempPcrp.size() == 0) {
+				crpList.remove(this.getCurrentGlobalUnit());
+			}
 
 		}
 

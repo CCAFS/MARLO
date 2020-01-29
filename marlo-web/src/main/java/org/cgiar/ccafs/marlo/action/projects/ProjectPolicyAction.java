@@ -855,7 +855,17 @@ public class ProjectPolicyAction extends BaseAction {
 			crps = globalUnitManager.findAll().stream().filter(
 					gu -> gu.isActive() && (gu.getGlobalUnitType().getId() == 1 || gu.getGlobalUnitType().getId() == 3))
 					.collect(Collectors.toList());
+			
+			List<ProjectPolicyCrp> tempPcrp = null;
+			// Update crp list - Delete the actual crp from the list except if this crp was
 
+			if(policy.getCrps() != null && policy.getCrps().stream().filter(x -> x!= null && x.getGlobalUnit().getId().equals(this.getCurrentGlobalUnit().getId())) != null) {
+				tempPcrp = policy.getCrps().stream().filter(x -> x!= null && x.getGlobalUnit().getId().equals(this.getCurrentGlobalUnit().getId())).collect(Collectors.toList());
+			}
+			
+			if(tempPcrp.size() == 0) {
+				crps.remove(this.getCurrentGlobalUnit());
+			}
 		}
 
 		policyDB = projectPolicyManager.getProjectPolicyById(policyID);
