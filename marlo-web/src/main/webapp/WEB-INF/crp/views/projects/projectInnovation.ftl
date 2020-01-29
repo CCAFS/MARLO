@@ -229,7 +229,7 @@
           [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]
           [#-- Primary Sub IDOs --]
           <div class="form-group">
-            [@customForm.elementsListComponent name="innovation.subIdos" elementType="srfSubIdo" elementList=(innovations.subIdos)![] label="innovation.subIDOs" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description"/]
+            [@customForm.elementsListComponent name="innovation.subIdos" elementType="srfSubIdo" elementList=innovation.subIdos label="innovation.subIDOs" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description"/]
           </div>
     
         <div class="form-group">
