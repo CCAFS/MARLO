@@ -198,12 +198,12 @@
     
     [#-- Contributing Centers/ PPA partners  --]
     <div class="form-group">
-      [@customForm.elementsListComponent name="${customName}.centers" elementType="institution" elementList=(element.centers)![] label="policy.contributingCenters"  listName="centers" keyFieldName="id" displayFieldName="composedName" required=false/]
+      [@customForm.elementsListComponent name="${customName}.centers" elementType="institution" elementList=(element.centers)![] label="policy.contributingCenters"  listName="centers" keyFieldName="id" displayFieldName="composedName" /]
     </div>
     
     [#-- Contributing CRPs/PTFs  --]
     <div class="form-group">
-      [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="policy.contributingCrpsPtfs"  listName="crps" keyFieldName="id" displayFieldName="composedName" /]
+      [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="policy.contributingCrpsPtfs"  listName="crps" keyFieldName="id" displayFieldName="composedName" required=false/]
     </div>
 
     
