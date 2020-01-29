@@ -136,9 +136,9 @@
           <label for="">[@s.text name="study.relevantTo" /]:[@customForm.req required=editable /]
           </label> 
         [/#if]
-        [#-- Sub IDOs (maxLimit=2) --]
+        [#-- Sub IDOs (maxLimit=3) --]
         <div class="form-group simpleBox">
-          [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="study.stratgicResultsLink.subIDOs"  listName="subIdos" maxLimit=2 keyFieldName="id" displayFieldName="description"/]
+          [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="study.stratgicResultsLink.subIDOs"  listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description"/]
         </div>
         
         [#-- SRF Targets (maxLimit=2)  --]

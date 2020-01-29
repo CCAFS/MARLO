@@ -105,10 +105,8 @@
     
     [#-- Year --]
     <div class="form-group row">
-      <div class="col-md-3"></div>
-      <div class="col-md-3"></div>
-      <div class="col-md-3"></div>
-      <div class="col-md-3">
+      <div class="col-md-8"></div>
+      <div class="col-md-4">
         [@customForm.select name="${customName}.projectPolicyInfo.year" className="setSelect2" i18nkey="policy.year" listName="years" required=true editable=editable/]
         [#if editable=false]
           ${element.projectPolicyInfo.year}
@@ -191,7 +189,7 @@
     </div>
         
      <div class="form-group simpleBox block-${policyMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
-       [@customForm.elementsListComponent name="${customName}.milestones" elementType="crpMilestone" elementList=(element.milestones)!"" label="policy.milestones" helpIcon=false listName="milestoneList" keyFieldName="id" displayFieldName="composedName" required=false /]
+       [@customForm.elementsListComponent name="${customName}.milestones" elementType="crpMilestone" elementList=(element.milestones)![] label="policy.milestones" helpIcon=false listName="milestoneList" keyFieldName="id" displayFieldName="composedName" required=false /]
        <div class="note">[@s.text name="policy.milestones.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/contributionsCrpList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
        <br>
      </div> 
@@ -200,7 +198,7 @@
     
     [#-- Contributing Centers/ PPA partners  --]
     <div class="form-group">
-      [@customForm.elementsListComponent name="${customName}.centers" elementType="institution" elementList=element.centers label="policy.contributingCenters"  listName="centers" keyFieldName="id" displayFieldName="composedName" required=false/]
+      [@customForm.elementsListComponent name="${customName}.centers" elementType="institution" elementList=(element.centers)![] label="policy.contributingCenters"  listName="centers" keyFieldName="id" displayFieldName="composedName" required=false/]
     </div>
     
     [#-- Contributing CRPs/PTFs  --]
@@ -211,13 +209,13 @@
     
     [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]      
     <div class="form-group">
-      <div class="buttonSubIdo-content"><br> <div class="selectSubIDO" ><span class=""></span>View sub-IDOs</div></div>
-      [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="policy.subIDOs" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description"/]
+     [#--  <div class="buttonSubIdo-content"><br> <div class="selectSubIDO" ><span class=""></span>View sub-IDOs</div></div> --]
+      [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=(element.subIdos)![] label="policy.subIDOs" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description"/]
     </div>  
-
+[#--
     <div class="form-group">
        [@customForm.select name="${customName}.principalSubIdo" className="setSelect2 principalSubIdo" i18nkey="policy.subIDO.primary" listName="" keyFieldName="id"  displayFieldName="description" required=true editable=editable/]
-    </div>
+    </div>--]
        
         
     [#-- CGIAR Cross-cutting Markers  --]
