@@ -803,10 +803,9 @@ public class ProjectInnovationAction extends BaseAction {
 				// SubIdos List
 				if (innovation.getProjectInnovationSubIdos() != null) {
 					innovation.setSubIdos(new ArrayList<>(innovation.getProjectInnovationSubIdos().stream()
-							.filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId()))
+							.filter(o -> o.getPhase().getId().equals(phase.getId()))
 							.collect(Collectors.toList())));
 				}
-
 				
 				// Innovation shared Projects List
 				if (this.innovation.getProjectInnovationShareds() != null) {

@@ -23,5 +23,8 @@
 			fetch="select">
 			<column name="project_innovation_id" />
 		</many-to-one>
+		<property name="primary" type="boolean">
+      		<column name="is_primary" not-null="true" />
+    	</property>
 	</class>
 </hibernate-mapping>

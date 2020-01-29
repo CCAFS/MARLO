@@ -164,6 +164,11 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
 	public List<ProjectInnovationSubIdo> getSubIdos() {
 		return subIdos;
 	}
+	
+	public List<ProjectInnovationSubIdo> getSubIdos(Phase phase) {
+		    return new ArrayList<>(this.getProjectInnovationSubIdos().stream()
+		      .filter(ps -> ps.getPhase().equals(phase)).collect(Collectors.toList()));
+	}
 
 	public void setSubIdos(List<ProjectInnovationSubIdo> subIdos) {
 		this.subIdos = subIdos;

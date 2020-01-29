@@ -9,7 +9,8 @@
   ] 
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/projects/projectPolicies.css"
+  "${baseUrlMedia}/css/projects/projectPolicies.css",
+  "${baseUrlMedia}/css/projects/projectSubIdos.css"
   ] 
 /]
 
@@ -25,7 +26,6 @@
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /] 
-[#import "/WEB-INF/crp/macros/projectsSubIDO.ftl" as projectsSubIDO /] 
 
 <section class="container">
     <div class="row">
@@ -105,10 +105,8 @@
     
     [#-- Year --]
     <div class="form-group row">
-      <div class="col-md-3"></div>
-      <div class="col-md-3"></div>
-      <div class="col-md-3"></div>
-      <div class="col-md-3">
+      <div class="col-md-8"></div>
+      <div class="col-md-4">
         [@customForm.select name="${customName}.projectPolicyInfo.year" className="setSelect2" i18nkey="policy.year" listName="years" required=true editable=editable/]
         [#if editable=false]
           ${element.projectPolicyInfo.year}
@@ -191,7 +189,7 @@
     </div>
         
      <div class="form-group simpleBox block-${policyMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
-       [@customForm.elementsListComponent name="${customName}.milestones" elementType="crpMilestone" elementList=(element.milestones)!"" label="policy.milestones" helpIcon=false listName="milestoneList" keyFieldName="id" displayFieldName="composedName" required=false /]
+       [@customForm.elementsListComponent name="${customName}.milestones" elementType="crpMilestone" elementList=(element.milestones)![] label="policy.milestones" helpIcon=false listName="milestoneList" keyFieldName="id" displayFieldName="composedName" required=false /]
        <div class="note">[@s.text name="policy.milestones.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/contributionsCrpList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
        <br>
      </div> 
@@ -200,50 +198,24 @@
     
     [#-- Contributing Centers/ PPA partners  --]
     <div class="form-group">
-      [@customForm.elementsListComponent name="${customName}.centers" elementType="institution" elementList=element.centers label="policy.contributingCenters"  listName="centers" keyFieldName="id" displayFieldName="composedName" /]
+      [@customForm.elementsListComponent name="${customName}.centers" elementType="institution" elementList=(element.centers)![] label="policy.contributingCenters"  listName="centers" keyFieldName="id" displayFieldName="composedName" required=false/]
     </div>
     
     [#-- Contributing CRPs/PTFs  --]
     <div class="form-group">
       [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="policy.contributingCrpsPtfs"  listName="crps" keyFieldName="id" displayFieldName="composedName" /]
     </div>
-    
-    
-    [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]
-    [#--<div class="form-group">
-      [#-- Outcome Sub-IDOs List --]
-      
-        [#-- <h5 class="sectionSubTitle">[@s.text name="outcome.subIDOs.sectionTitle"/] <p class="contributioRem pull-right">Contribution <span class="value">0%</span></p></h5>--]
-     [#--   <div class="subIdos-list" listname="${customName}.subIdos">
-        [#if element.subIdos?has_content]
-          [#list element.subIdos as subIdo]
-            [@projectsSubIDO.subIDOMacro subIdo=subIdo name="${customName}.subIdos" index=subIdo_index /]
-          [/#list]
-        [#else]
-          [@projectsSubIDO.subIDOMacro subIdo={} name="${customName}.subIdos" index=0 /]
-          [#-- <p class="message text-center">[@s.text name="outcome.subIDOs.section.notSubIDOs.span"/]</p> --]
-      [#--  [/#if]
-        </div>
-        [#-- Add Sub-IDO Button --]
-      [#--  [#if editable]
-        <div class="text-right">
-          <div class="addSubIdo button-blue text-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addSubIDO"/]</div>
-        </div>
-        [/#if]
-    [#-- [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="policy.subIDOs" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description"/] --]
-    [#--</div>
-    
-    [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]
-        [#-- Primary Sub IDOs --]
-      
-    <div class="form-group">
-      [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="policy.subIDOs" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description"/]
-    </div>
-    
 
+    
+    [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]      
+    <div class="form-group">
+     [#--  <div class="buttonSubIdo-content"><br> <div class="selectSubIDO" ><span class=""></span>View sub-IDOs</div></div> --]
+      [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=(element.subIdos)![] label="policy.subIDOs" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description"/]
+    </div>  
+[#--
     <div class="form-group">
        [@customForm.select name="${customName}.principalSubIdo" className="setSelect2 principalSubIdo" i18nkey="policy.subIDO.primary" listName="" keyFieldName="id"  displayFieldName="description" required=true editable=editable/]
-    </div>
+    </div>--]
        
         
     [#-- CGIAR Cross-cutting Markers  --]
