@@ -1518,6 +1518,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 							CrpMilestone milestone = milestoneManager
 									.getCrpMilestoneById(studyMilestone.getCrpMilestone().getId());
 							studyMilestoneSave.setCrpMilestone(milestone);
+							
+							// If just one milestone is selected, this is defined as principal
+							if(this.expectedStudy.getMilestones().size() == 1) {
+								studyMilestoneSave.setPrimary(true);
+							}
 
 							this.projectExpectedStudyMilestoneManager
 									.saveProjectExpectedStudyMilestone(studyMilestoneSave);
@@ -2179,6 +2184,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 					SrfSubIdo srfSubIdo = this.srfSubIdoManager.getSrfSubIdoById(studySubIdo.getSrfSubIdo().getId());
 
 					studySubIdoSave.setSrfSubIdo(srfSubIdo);
+					
+					// If just one sub ido is selected, this is defined as principal
+					if(this.expectedStudy.getSubIdos().size() == 1) {
+						studySubIdoSave.setPrimary(true);
+					}
 
 					this.projectExpectedStudySubIdoManager.saveProjectExpectedStudySubIdo(studySubIdoSave);
 					// This is to add studySubIdoSave to generate correct

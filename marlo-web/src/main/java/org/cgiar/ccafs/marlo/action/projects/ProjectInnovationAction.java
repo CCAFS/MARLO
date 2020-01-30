@@ -1283,6 +1283,11 @@ public class ProjectInnovationAction extends BaseAction {
 									.getCrpMilestoneById(innovationMilestone.getCrpMilestone().getId());
 							innovationMilestoneSave.setCrpMilestone(milestone);
 
+							// If just one milestone is selected, this is defined as principal
+							if(innovation.getMilestones().size() == 1) {
+								innovationMilestoneSave.setPrimary(true);
+							}
+							
 							projectInnovationMilestoneManager.saveProjectInnovationMilestone(innovationMilestoneSave);
 							// This is to add innovationCenterSave to generate correct auditlog.
 							innovation.getProjectInnovationMilestones().add(innovationMilestoneSave);
@@ -1337,19 +1342,17 @@ public class ProjectInnovationAction extends BaseAction {
 				if (innovationSubIdo.getId() == null) {
 					ProjectInnovationSubIdo innovationSubIdoSave = new ProjectInnovationSubIdo();
 
-					/*
-					 * if (principalSubIdo != null && principalSubIdo.size() != 0 &&
-					 * principalSubIdo.get(0) != null) { if
-					 * (policySubIdo.getSrfSubIdo().getId().intValue() ==
-					 * principalSubIdo.get(0).getId() .intValue()) {
-					 * policySubIdoSave.setPrimary(true); } }
-					 */
 					innovationSubIdoSave.setProjectInnovation(projectInnovation);
 					innovationSubIdoSave.setPhase(phase);
 
 					SrfSubIdo srfSubIdo = srfSubIdoManager.getSrfSubIdoById(innovationSubIdo.getSrfSubIdo().getId());
 
 					innovationSubIdoSave.setSrfSubIdo(srfSubIdo);
+					
+					// If just one sub ido is selected, this is defined as principal
+					if(innovation.getSubIdos().size() == 1) {
+						innovationSubIdoSave.setPrimary(true);
+					}
 
 					projectInnovationSubIdoManager.saveProjectInnovationSubIdo(innovationSubIdoSave);
 					// This is to add innovationCrpSave to generate correct auditlog.

@@ -1428,6 +1428,7 @@ public class ProjectPolicyAction extends BaseAction {
 
 			// Policy Milestones
 			if (policy.getMilestones() != null) {
+
 				for (PolicyMilestone policyMilestone : policy.getMilestones()) {
 					if (policyMilestone.getId() == null) {
 						PolicyMilestone policyMilestoneSave = new PolicyMilestone();
@@ -1437,6 +1438,12 @@ public class ProjectPolicyAction extends BaseAction {
 						CrpMilestone milestone = crpMilestoneManager
 								.getCrpMilestoneById(policyMilestone.getCrpMilestone().getId());
 						policyMilestoneSave.setCrpMilestone(milestone);
+						
+						
+						// If just one milestone is selected, this is defined as principal
+						if(policy.getMilestones().size() == 1) {
+							policyMilestoneSave.setPrimary(true);
+						}
 
 						policyMilestoneManager.savePolicyMilestone(policyMilestoneSave);
 						// This is to add milestoneCrpSave to generate correct auditlog.
@@ -1574,20 +1581,17 @@ public class ProjectPolicyAction extends BaseAction {
 			for (ProjectPolicySubIdo policySubIdo : policy.getSubIdos()) {
 				if (policySubIdo.getId() == null) {
 					ProjectPolicySubIdo policySubIdoSave = new ProjectPolicySubIdo();
-
-					/*
-					 * if (principalSubIdo != null && principalSubIdo.size() != 0 &&
-					 * principalSubIdo.get(0) != null) { if
-					 * (policySubIdo.getSrfSubIdo().getId().intValue() ==
-					 * principalSubIdo.get(0).getId() .intValue()) {
-					 * policySubIdoSave.setPrimary(true); } }
-					 */
 					policySubIdoSave.setProjectPolicy(projectPolicy);
 					policySubIdoSave.setPhase(phase);
 
 					SrfSubIdo srfSubIdo = srfSubIdoManager.getSrfSubIdoById(policySubIdo.getSrfSubIdo().getId());
 
 					policySubIdoSave.setSrfSubIdo(srfSubIdo);
+					
+					// If just one sub ido is selected, this is defined as principal
+					if(policy.getSubIdos().size() == 1) {
+						policySubIdoSave.setPrimary(true);
+					}
 
 					projectPolicySubIdoManager.saveProjectPolicySubIdo(policySubIdoSave);
 					// This is to add innovationCrpSave to generate correct auditlog.
