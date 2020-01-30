@@ -648,7 +648,7 @@ public class PlannedStudiesAction extends BaseAction {
 						ProjectExpectedStudy study = projectExpectedStudyManager
 								.getProjectExpectedStudyById(Long.parseLong(studyValues[i]));
 						powbSynthesis.getPowbEvidence().getExpectedStudies().add(study);
-
+/*
 						if (study.getProjectExpectedStudyGeographicScopes() != null) {
 							study.setGeographicScopes(new ArrayList<>(study.getProjectExpectedStudyGeographicScopes()
 									.stream().filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId()))
@@ -678,6 +678,40 @@ public class PlannedStudiesAction extends BaseAction {
 									.filter(sc -> sc.getLocElement().getLocElementType().getId() == 1)
 									.collect(Collectors.toList()));
 						}
+					*/	
+						
+						
+						
+						 // Geographic scope new - Load information
+				          
+				          // Setup Geographic Scope
+				          
+				          if (study.getProjectExpectedStudyGeographicScopes() != null) {
+				        	  study
+				              .setGeographicScopes(new ArrayList<>(study.getProjectExpectedStudyGeographicScopes().stream()
+				                .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+				          }
+				          // Expected Study Countries List
+				          if (study.getProjectExpectedStudyCountries() == null) {
+				        	  study.setCountries(new ArrayList<>());
+				          } else {
+				            List<ProjectExpectedStudyCountry> countries = this.projectExpectedStudyCountryManager
+				              .getProjectExpectedStudyCountrybyPhase(study.getId(), phase.getId()).stream()
+				              .filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 2)
+				              .collect(Collectors.toList());
+				            study.setCountries(countries);
+				          }
+
+				          if (study.getProjectExpectedStudyRegions() == null) {
+				        	  study.setStudyRegions(new ArrayList<>());
+				          } else {
+				            List<ProjectExpectedStudyRegion> geographics = this.projectExpectedStudyRegionManager
+				              .getProjectExpectedStudyRegionbyPhase(study.getId(), phase.getId());
+
+				            // Load Regions
+				            study.setStudyRegions(geographics.stream()
+				              .filter(sc -> sc.getLocElement().getLocElementType().getId() == 1).collect(Collectors.toList()));
+				          }
 					}
 				}
 
