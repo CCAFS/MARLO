@@ -27,7 +27,10 @@ import org.cgiar.ccafs.marlo.data.manager.PowbExpectedCrpProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbExpenditureAreasManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbFinancialPlannedBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrossCuttingDimensionTableDTO;
@@ -58,6 +61,8 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsFlagship;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyGeographicScope;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -187,6 +192,12 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
   private PowbFinancialPlannedBudgetManager powbFinancialPlannedBudgetManager;
   private CrpPpaPartnerManager crpPpaPartnerManager;
   private DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager;
+  private ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager;
+  private ProjectExpectedStudyGeographicScopeManager projectExpectedStudyGeographicScopeManager;
+  private ProjectExpectedStudyRegionManager projectExpectedStudyRegionManager;
+
+
+
 
   // Parameters
   private POISummary poiSummary;
@@ -219,7 +230,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     CrpPpaPartnerManager crpPpaPartnerManager, UserManager userManager,
     POWB2019Data<POWBPOISummary2019Action> powb2019Data,
     PowbFinancialPlannedBudgetManager powbFinancialPlannedBudgetManager,
-    DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager) {
+    DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager, ProjectExpectedStudyGeographicScopeManager projectExpectedStudyGeographicScopeManager, ProjectExpectedStudyRegionManager projectExpectedStudyRegionManager, ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager) {
     super(config, crpManager, phaseManager, projectManager);
     document = new XWPFDocument();
     poiSummary = new POISummary();
@@ -237,6 +248,9 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     this.powbFinancialPlannedBudgetManager = powbFinancialPlannedBudgetManager;
     this.crpPpaPartnerManager = crpPpaPartnerManager;
     this.deliverableCrossCuttingMarkerManager = deliverableCrossCuttingMarkerManager;
+    this.projectExpectedStudyGeographicScopeManager = projectExpectedStudyGeographicScopeManager;
+    this.projectExpectedStudyRegionManager = projectExpectedStudyRegionManager;
+    this.projectExpectedStudyCountryManager = projectExpectedStudyCountryManager;
   }
 
   private void addAdjustmentDescription() {
@@ -780,6 +794,12 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
             title = "";
           }
 
+          
+          /******************************************************
+           * 
+           * 
+           */
+          /*
           // Geographic Scope
           if (projectExpectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope() != null) {
             geographicScope = projectExpectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope().getName();
@@ -824,7 +844,86 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
           } else {
             geographicScope = "";
           }
+          */
+          /***********************************
+           * 
+           * 
+           */
+          // Geographic scope new - Load information
+          
+          // Setup Geographic Scope
+          
+          if (projectExpectedStudy.getProjectExpectedStudyGeographicScopes() != null) {
+        	  projectExpectedStudy
+              .setGeographicScopes(new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyGeographicScopes().stream()
+                .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId())).collect(Collectors.toList())));
+          }
+          // Expected Study Countries List
+          if (projectExpectedStudy.getProjectExpectedStudyCountries() == null) {
+        	  projectExpectedStudy.setCountries(new ArrayList<>());
+          } else {
+            List<ProjectExpectedStudyCountry> countries = this.projectExpectedStudyCountryManager
+              .getProjectExpectedStudyCountrybyPhase(projectExpectedStudy.getId(), this.getSelectedPhase().getId()).stream()
+              .filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 2)
+              .collect(Collectors.toList());
+            projectExpectedStudy.setCountries(countries);
+          }
 
+          if (projectExpectedStudy.getProjectExpectedStudyRegions() == null) {
+        	  projectExpectedStudy.setStudyRegions(new ArrayList<>());
+          } else {
+            List<ProjectExpectedStudyRegion> geographics = this.projectExpectedStudyRegionManager
+              .getProjectExpectedStudyRegionbyPhase(projectExpectedStudy.getId(), this.getSelectedPhase().getId()).stream()
+              .filter(sc -> sc.getLocElement().getLocElementType().getId() == 1).collect(Collectors.toList());
+            projectExpectedStudy.setStudyRegions(geographics);
+          }
+
+          // Show geographic scope information
+          geographicScope = "";
+          
+          // Geographic scope indicators
+          if (projectExpectedStudy.getGeographicScopes() != null) {
+        	  for(ProjectExpectedStudyGeographicScope gs : projectExpectedStudy.getGeographicScopes()) {
+        		  if (gs.getRepIndGeographicScope() != null && gs.getRepIndGeographicScope().getName() != null) {
+        			  if(geographicScope.isEmpty()) {
+        				geographicScope = gs.getRepIndGeographicScope().getName();
+        			  } else {
+        				geographicScope += ", " + gs.getRepIndGeographicScope().getName();
+        			  }
+        		  }
+        	  }
+          }
+          
+          // Geographic scope countries
+          if (projectExpectedStudy.getCountries() != null) {
+        	  for(ProjectExpectedStudyCountry gs : projectExpectedStudy.getCountries()) {
+        		  if (gs.getLocElement() != null && gs.getLocElement().getName() != null) {
+        			  if(geographicScope.isEmpty()) {
+        				geographicScope = gs.getLocElement().getName();
+        			  } else {
+        				geographicScope += ", " + gs.getLocElement().getName();
+        			  }
+        		  }
+        	  }
+          }
+          
+          // Geographic scope regions
+          if (projectExpectedStudy.getRegions() != null) {
+        	  for(ProjectExpectedStudyRegion gs : projectExpectedStudy.getStudyRegions()) {
+        		  if (gs.getLocElement() != null && gs.getLocElement().getName() != null) {
+        			  if(geographicScope.isEmpty()) {
+        				  geographicScope = gs.getLocElement().getName();
+        			  } else {
+        				  geographicScope += ", " + gs.getLocElement().getName();
+        			  }
+        		  }
+        	  }
+          }
+          
+          /*****
+           * 
+           */
+          
           if (projectExpectedStudy.getProjectExpectedStudyInfo().getCommissioningStudy() != null) {
             commissioningStudy = projectExpectedStudy.getProjectExpectedStudyInfo().getCommissioningStudy();
           } else {
