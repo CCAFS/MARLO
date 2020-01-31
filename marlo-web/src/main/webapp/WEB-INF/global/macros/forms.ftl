@@ -631,7 +631,7 @@
       [@listElementMacro name="${name}" element={} type=elementType id=id index=-1 indexLevel=indexLevel template=true /]
     </ul>
     [#-- Select primary  field --]
-    <div class="primarySelectorDisplayBox" style="min-height: 30px; margin-top: 10px; display:${(elementList?has_content)?string('block','none')}">
+    <div class="primarySelectorDisplayBox ${(composedID)}" style="min-height: 30px; margin-top: 10px; display:${(elementList?has_content)?string('block','none')}">
       <div class="panel-head">
         <label for="">[@s.text name=labelPrimary /]:[@req required=required && editable /]
           [#--  Help Text --]
@@ -643,8 +643,8 @@
           [#if elementList?has_content]
             [#list elementList as item]
             <div class="radioFlat selectPrimary radioContentBox ID-${(item[elementType][keyFieldName])}" >
-              <input id="primaryRadioButtonID-${(item[elementType][keyFieldName])}" class="radio-input assesmentLevels primaryRadioButton option-${(item[elementType][keyFieldName])}" type="radio" name="primaryRadio" value="${(item[elementType][keyFieldName])!'{elementNameUndefined}'}"/>
-              <label for="primaryRadioButtonID-${(item[elementType][keyFieldName])}" class="radio-label">${(item[elementType][displayFieldName])!'{elementNameUndefined}'}</label>
+              <input id="primaryRadioButtonID${(composedID)}-${(item[elementType][keyFieldName])}" class="radio-input assesmentLevels primaryRadioButton option-${(item[elementType][keyFieldName])}" type="radio" name="${(composedID)}Primary" value="${(item[elementType][keyFieldName])!'{elementNameUndefined}'}"/>
+              <label for="primaryRadioButtonID${(composedID)}-${(item[elementType][keyFieldName])}" class="radio-label">${(item[elementType][displayFieldName])!'{elementNameUndefined}'}</label>
             </div>
              [/#list]
           [/#if]  
