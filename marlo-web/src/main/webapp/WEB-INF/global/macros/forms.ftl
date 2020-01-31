@@ -590,7 +590,7 @@
   </div>
 [/#macro]
 
-[#macro primaryListComponent name elementType id="" elementList=[] label="" labelPrimary="" label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true ]
+[#macro primaryListComponent name  elementType checkName="" id="" elementList=[] label="" labelPrimary="" label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true checked=true ]
   [#attempt]
     [#local list = ((listName?eval)?sort_by(displayFieldName))![] /] 
   [#recover]
@@ -643,7 +643,7 @@
           [#if elementList?has_content]
             [#list elementList as item]
             <div class="radioFlat selectPrimary radioContentBox ID-${(item[elementType][keyFieldName])}" >
-              <input id="primaryRadioButtonID${(composedID)}-${(item[elementType][keyFieldName])}" class="radio-input assesmentLevels primaryRadioButton option-${(item[elementType][keyFieldName])}" type="radio" name="${name}.isPrimary" value="${(item[elementType][keyFieldName])!'{elementNameUndefined}'}"/>
+              <input id="primaryRadioButtonID${(composedID)}-${(item[elementType][keyFieldName])}" class="radio-input assesmentLevels primaryRadioButton option-${(item[elementType][keyFieldName])}" type="radio" name="${checkName}" value="${(item[elementType][keyFieldName])!'{elementNameUndefined}'}" />
               <label for="primaryRadioButtonID${(composedID)}-${(item[elementType][keyFieldName])}" class="radio-label">${(item[elementType][displayFieldName])!'{elementNameUndefined}'}</label>
             </div>
              [/#list]
