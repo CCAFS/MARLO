@@ -50,6 +50,8 @@ public class DeliverableDissemination extends MarloBaseEntity implements java.io
   private String confidentialUrl;
   @Expose
   private Phase phase;
+  @Expose
+  private String articleUrl;
 
   private String type;
 
@@ -282,9 +284,16 @@ public class DeliverableDissemination extends MarloBaseEntity implements java.io
   public void setType(String type) {
     this.type = type;
   }
+  
+  public String getArticleUrl() {
+	return articleUrl;
+  }
 
+public void setArticleUrl(String articleUrl) {
+	this.articleUrl = articleUrl;
+}
 
-  @Override
+@Override
   public String toString() {
     return "DeliverableDissemination [id=" + this.getId() + ", deliverable=" + deliverable + ", isOpenAccess="
       + isOpenAccess + ", disseminationUrl=" + disseminationUrl + ", synced=" + synced + ", type=" + type + "]";
