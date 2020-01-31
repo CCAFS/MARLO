@@ -694,16 +694,19 @@ function onSelectElement() {
 
   //Validate if $primaryList exist
   if($primaryList != null) {
-    //var id = $option.val();
-    //var name = $option.text();
+
+    var className = $primaryDisplay.attr('class');
+    var idenfitierClassName = className.split(' ');
+    console.log(idenfitierClassName[1]);
+
     $primaryDisplay.css("display","block");
     $element.find('.elementRelationID').val(id);
     $element.find('.elementName').html(name);
 
-    //var $radiobutton = $("");
     var $contentDiv =$("<div class='radioFlat selectPrimary radioContentBox ID-"+ id +"'></div>");
-    var $radiobutton = $("<input id='primaryRadioButtonID-"+ id +"' class='radio-input assesmentLevels primaryRadioButton option-"+ id +"' type='radio' name='primaryRadio' value='"+ id +"'/>");
-    var $radioLabel = $("<label for='primaryRadioButtonID-"+ id +"' class='radio-label'>"+ name +"</label>");
+    var $radiobutton = $("<input id='primaryRadioButtonID"+ idenfitierClassName[1] +"-"+ id +"' class='radio-input assesmentLevels primaryRadioButton option-"+ id +"' type='radio' name='"+ idenfitierClassName[1] +"Primary' value='"+ id +"'/>");
+    var $radioLabel = $("<label for='primaryRadioButtonID"+ idenfitierClassName[1] +"-"+ id +"' class='radio-label'>"+ name +"</label>");
+
     $radiobutton.appendTo($contentDiv);
     $radioLabel.appendTo($contentDiv);
     $contentDiv.appendTo($primaryList);
