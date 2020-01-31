@@ -391,9 +391,23 @@
     <div class="col-md-6">
       [@metadataField title="handle" encodedName="marlo.handle" type="input" require=false/]
     </div>
-    <div class="col-md-6">
-      [@metadataField title="doi" encodedName="marlo.doi" type="input" require=false/]
-    </div>
+
+      <div class="col-md-6 conditionalRequire">
+          [#assign isOtherUrl = (innovation.projectInnovationInfo.clearLead)!false /]
+          [@metadataField title="doi" encodedName="marlo.doi" type="input" require=!(isOtherUrl)/]
+        </div>
+        <div class="col-md-6 isOtherUrlContentBox" style="margin-top:5px; display:none">
+          [#-- Alternative url Check --]
+          <div class="form-group isOtherUrl">
+            [@customForm.checkmark id="" name="clearLead" i18nkey="deliverable.hasDOI" help="" paramText="" value="true" helpIcon=true disabled=false editable=editable checked=(innovation.projectInnovationInfo.clearLead)!false cssClass="isOtherUrl" cssClassLabel=""  /]
+          </div>
+           
+          [#-- Alternative url TextField --]
+          <div class="form-group other-url" style="display:${(isOtherUrl)?string('block','none')}">
+            [@customForm.input name="deliverable.projectInnovationInfo.title" type="text" i18nkey="deliverable.externalUrl"  placeholder="" className="limitWords-30" help="projectInnovations.title.helpText" helpIcon=false required=true editable=editable /]
+          </div>
+        </div>
+
   </div>
    
   <hr />
