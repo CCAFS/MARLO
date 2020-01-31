@@ -150,6 +150,8 @@ public class ProjectPolicyAction extends BaseAction {
 	private Project project;
 	private long projectID;
 	private long policyID;
+	private long subIdoPrimaryId;
+	private long milestonePrimaryId;
 	private ProjectPolicy policy;
 	private ProjectPolicy policyDB;
 	private List<RepIndGeographicScope> geographicScopes;
@@ -284,6 +286,24 @@ public class ProjectPolicyAction extends BaseAction {
 		return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
 	}
 
+	
+	
+	public long getSubIdoPrimaryId() {
+		return subIdoPrimaryId;
+	}
+
+	public void setSubIdoPrimaryId(long subIdoPrimaryId) {
+		this.subIdoPrimaryId = subIdoPrimaryId;
+	}
+
+	public long getMilestonePrimaryId() {
+		return milestonePrimaryId;
+	}
+
+	public void setMilestonePrimaryId(long milestonePrimaryId) {
+		this.milestonePrimaryId = milestonePrimaryId;
+	}
+
 	public List<CgiarCrossCuttingMarker> getCgiarCrossCuttingMarkers() {
 		return cgiarCrossCuttingMarkers;
 	}
@@ -299,7 +319,7 @@ public class ProjectPolicyAction extends BaseAction {
 	public List<Institution> getCenters() {
 		return centers;
 	}
-
+	
 	public List<SrfSubIdo> getPrincipalSubIdo() {
 		return principalSubIdo;
 	}
@@ -532,7 +552,7 @@ public class ProjectPolicyAction extends BaseAction {
 								.getRepIndPolicyTypeById(projectPolicyOwner.getRepIndPolicyType().getId()));
 					}
 				}
-
+/*
 				// Crp List Autosave
 				if (policy.getCrps() != null) {
 					for (ProjectPolicyCrp projectPolicyCrp : policy.getCrps()) {
@@ -540,7 +560,8 @@ public class ProjectPolicyAction extends BaseAction {
 								globalUnitManager.getGlobalUnitById(projectPolicyCrp.getGlobalUnit().getId()));
 					}
 				}
-
+				*/
+/*
 				// SubIdos List Autosave
 				if (policy.getSubIdos() != null) {
 					for (ProjectPolicySubIdo projectPolicySubIdo : policy.getSubIdos()) {
@@ -548,7 +569,7 @@ public class ProjectPolicyAction extends BaseAction {
 								srfSubIdoManager.getSrfSubIdoById(projectPolicySubIdo.getSrfSubIdo().getId()));
 					}
 				}
-
+*/
 				// Innovations List Autosave
 				if (policy.getInnovations() != null) {
 					for (ProjectPolicyInnovation projectPolicyInnovation : policy.getInnovations()) {
@@ -556,7 +577,7 @@ public class ProjectPolicyAction extends BaseAction {
 								.getProjectInnovationById(projectPolicyInnovation.getProjectInnovation().getId()));
 					}
 				}
-
+/*
 				// Milestones List Autosave
 				if (policy.getMilestones() != null) {
 					for (PolicyMilestone policyMilestone : policy.getMilestones()) {
@@ -564,7 +585,7 @@ public class ProjectPolicyAction extends BaseAction {
 								crpMilestoneManager.getCrpMilestoneById(policyMilestone.getCrpMilestone().getId()));
 					}
 				}
-
+*/
 				// Evidences List Autosave
 				if (policy.getEvidences() != null) {
 					for (ProjectExpectedStudyPolicy projectPolicyEvidence : policy.getEvidences()) {
@@ -1444,6 +1465,12 @@ public class ProjectPolicyAction extends BaseAction {
 						if(policy.getMilestones().size() == 1) {
 							policyMilestoneSave.setPrimary(true);
 						}
+						
+						if(milestonePrimaryId != 0) {
+							if(policyMilestone.getId() == milestonePrimaryId) {
+								policyMilestoneSave.setPrimary(true);
+							}
+						}
 
 						policyMilestoneManager.savePolicyMilestone(policyMilestoneSave);
 						// This is to add milestoneCrpSave to generate correct auditlog.
@@ -1591,6 +1618,12 @@ public class ProjectPolicyAction extends BaseAction {
 					// If just one sub ido is selected, this is defined as principal
 					if(policy.getSubIdos().size() == 1) {
 						policySubIdoSave.setPrimary(true);
+					}
+
+					if(subIdoPrimaryId != 0) {
+						if(policySubIdo.getId() == subIdoPrimaryId) {
+							policySubIdoSave.setPrimary(true);
+						}
 					}
 
 					projectPolicySubIdoManager.saveProjectPolicySubIdo(policySubIdoSave);
