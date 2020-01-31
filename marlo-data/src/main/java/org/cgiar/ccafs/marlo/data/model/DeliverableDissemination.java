@@ -52,6 +52,8 @@ public class DeliverableDissemination extends MarloBaseEntity implements java.io
   private Phase phase;
   @Expose
   private String articleUrl;
+  @Expose
+  private Boolean hasDOI;
 
   private String type;
 
@@ -125,7 +127,14 @@ public class DeliverableDissemination extends MarloBaseEntity implements java.io
   public Boolean getIntellectualProperty() {
     return intellectualProperty;
   }
+  
+  public Boolean getHasDOI() {
+	return hasDOI;
+  }
 
+  public void setHasDOI(Boolean hasDOI) {
+	this.hasDOI = hasDOI;
+  }
 
   public Boolean getIsOpenAccess() {
     return isOpenAccess;
