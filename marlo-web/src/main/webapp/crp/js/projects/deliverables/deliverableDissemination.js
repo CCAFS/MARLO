@@ -781,7 +781,7 @@ function formatStateCountries(state) {
  *
  */
 function validateSubCategorySelector() {
-  var selector = $('#CCAFS_deliverable_deliverable_deliverableInfo_deliverableType_id');
+  var selector = $('select[name="deliverable.deliverableInfo.deliverableType.id"]');
   console.log(selector.val());
   if(selector.val() == '63'){
     console.log('true');

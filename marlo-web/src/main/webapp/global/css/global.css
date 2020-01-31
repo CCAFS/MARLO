@@ -6939,9 +6939,6 @@ i.authorVisibles {}
 
 div.selectPrimary{
   padding: 1px 24px 0px 6px;
-  background: #F7F7F7;
-  border: 1px solid #E0E0E0 !important;
-  box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.1);
   border-radius: 2px;
   margin-bottom: 5px;
   position: relative;
