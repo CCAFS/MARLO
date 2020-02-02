@@ -995,7 +995,7 @@ public class ProjectInnovationAction extends BaseAction {
 			.collect(Collectors.toList());
 	    }
 
-	    if (tempPcrp.size() == 0) {
+	    if (tempPcrp != null && tempPcrp.size() == 0 && this.getCurrentGlobalUnit() != null) {
 		crpList.remove(this.getCurrentGlobalUnit());
 	    }
 
@@ -1229,8 +1229,7 @@ public class ProjectInnovationAction extends BaseAction {
 
 	    // If innovation type is different to genetic, the value of the field -number of
 	    // innovation- is set to null
-	    System.out.println("innovation.getProjectInnovationInfo().getRepIndInnovationType().getId()  "
-		    + innovation.getProjectInnovationInfo().getRepIndInnovationType().getId());
+
 	    if (innovation.getProjectInnovationInfo().getRepIndInnovationType() != null
 		    && innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() != null
 		    && innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() != 1) {
