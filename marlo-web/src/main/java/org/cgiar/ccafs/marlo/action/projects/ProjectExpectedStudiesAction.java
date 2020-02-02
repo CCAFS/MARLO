@@ -656,14 +656,16 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 				}
 
 				// Expected Study Center List Autosave
+				/*
 				if (this.expectedStudy.getCenters() != null) {
 					for (ProjectExpectedStudyCenter projectExpectedStudyCenter : this.expectedStudy.getCenters()) {
 						projectExpectedStudyCenter.setInstitution(this.institutionManager
 								.getInstitutionById(projectExpectedStudyCenter.getInstitution().getId()));
 					}
 				}
-
+*/
 				// Innovation Milestone List Autosave
+				/*
 				if (this.expectedStudy.getMilestones() != null) {
 					for (ProjectExpectedStudyMilestone projectExpectedStudyMilestone : this.expectedStudy
 							.getMilestones()) {
@@ -671,7 +673,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 								.getCrpMilestoneById(projectExpectedStudyMilestone.getCrpMilestone().getId())));
 					}
 				}
-
+*/
 				// Expected Study Institutions List Autosave
 				if (this.expectedStudy.getInstitutions() != null) {
 					for (ProjectExpectedStudyInstitution projectExpectedStudyInstitution : this.expectedStudy
