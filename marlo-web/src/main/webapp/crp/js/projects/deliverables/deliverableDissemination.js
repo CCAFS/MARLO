@@ -1,5 +1,7 @@
 $(document).ready(init);
-
+$( document ).ready(function() {
+  validateSubCategorySelector();
+});
 function init() {
 
   // Setting ID to Date-picker input
@@ -258,6 +260,35 @@ function addDisseminationEvents() {
       templateSelection: formatStateCountries,
       width: '100%'
   });
+
+//Display Other Url option for DOI
+  $('input.isOtherUrl').on('change', function() {
+    var selected = $('input.isOtherUrl').is(":checked");
+
+    if(selected == true) {
+      $('.conditionalRequire .requiredTag').slideUp();
+      $('.other-url').css("display","block");
+    } else {
+      $('.conditionalRequire .requiredTag').slideDown();
+      $('.other-url').css("display","none");
+    }
+  });
+
+  $('#CCAFS_deliverable_deliverable_deliverableInfo_deliverableType_id').on('change', function() {
+    if(this.value == '63'){
+      console.log('true');
+      $('.conditionalRequire .requiredTag').slideDown();
+      $('.isOtherUrlContentBox').css("display","block");
+      console.log('true');
+
+    }else{
+      $('.isOtherUrlContentBox').css("display","none");
+      $('.conditionalRequire .requiredTag').slideUp();
+      console.log($('.conditionalRequire .requiredTag'));
+    }
+    console.log(this.value);
+  });
+
 }
 
 function addFlagship(idCRPProgram,text) {
@@ -743,4 +774,24 @@ function formatStateCountries(state) {
     $state = $('<span>' + state.text + '</span>');
   }
   return $state;
+};
+
+/**
+ * Search sub category deliverable and display extra url field
+ *
+ */
+function validateSubCategorySelector() {
+  var selector = $('select[name="deliverable.deliverableInfo.deliverableType.id"]');
+  console.log(selector.val());
+  if(selector.val() == '63'){
+    console.log('true');
+    $('.conditionalRequire .requiredTag').slideDown();
+    $('.isOtherUrlContentBox').css("display","block");
+    console.log('true');
+  }else{
+    $('.isOtherUrlContentBox').css("display","none");
+    $('.conditionalRequire .requiredTag').slideUp();
+    //console.log($('.conditionalRequire .requiredTag'));
+  }
+
 };
