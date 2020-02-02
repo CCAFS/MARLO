@@ -670,20 +670,17 @@ public class ProjectPolicyAction extends BaseAction {
 			    .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId()))
 			    .collect(Collectors.toList())));
 
+		    // Get the ID of the principal Sub IDO if exist
 		    if (policy.getSubIdos(phase) != null) {
-			// Get the ID of the principal Sub IDO if exist
-			if (policy.getSubIdos(phase) != null) {
-			    List<ProjectPolicySubIdo> projectPolicies = new ArrayList<ProjectPolicySubIdo>();
+			List<ProjectPolicySubIdo> projectPolicies = new ArrayList<ProjectPolicySubIdo>();
 
-			    projectPolicies = policy.getSubIdos(phase).stream()
-				    .filter(p -> p != null && p.isActive() && p.getPrimary() != null && p.getPrimary())
-				    .collect(Collectors.toList());
+			projectPolicies = policy.getSubIdos(phase).stream()
+				.filter(p -> p != null && p.isActive() && p.getPrimary() != null && p.getPrimary())
+				.collect(Collectors.toList());
 
-			    if (projectPolicies != null && projectPolicies.size() > 0
-				    && projectPolicies.get(0) != null) {
-				subIdoPrimaryId = projectPolicies.get(0).getSrfSubIdo().getId(); //
-				srfSubIdoPrimary = projectPolicies.get(0).getSrfSubIdo().getId(); //
-			    }
+			if (projectPolicies != null && projectPolicies.size() > 0 && projectPolicies.get(0) != null) {
+			    subIdoPrimaryId = projectPolicies.get(0).getSrfSubIdo().getId(); //
+			    srfSubIdoPrimary = projectPolicies.get(0).getSrfSubIdo().getId(); //
 			}
 		    }
 
@@ -696,9 +693,25 @@ public class ProjectPolicyAction extends BaseAction {
 			    .collect(Collectors.toList())));
 		}
 
+		// Policy Milestones
 		if (policy.getPolicyMilestones() != null) {
 		    policy.setMilestones(new ArrayList<>(policy.getPolicyMilestones().stream()
 			    .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+
+		    // Get the ID of the principal Sub IDO if exist
+		    if (policy.getMilestones() != null) {
+			List<PolicyMilestone> projectPolicies = new ArrayList<PolicyMilestone>();
+
+			projectPolicies = policy.getMilestones().stream()
+				.filter(p -> p != null && p.isActive() && p.getPrimary() != null && p.getPrimary()
+					&& p.getPhase() != null && p.getPhase().getId().equals(phase.getId()))
+				.collect(Collectors.toList());
+
+			if (projectPolicies != null && projectPolicies.size() > 0 && projectPolicies.get(0) != null) {
+			    milestonePrimaryId = projectPolicies.get(0).getCrpMilestone().getId(); //
+			    crpMilestonePrimary = projectPolicies.get(0).getCrpMilestone().getId(); //
+			}
+		    }
 		}
 
 		// Evidence List

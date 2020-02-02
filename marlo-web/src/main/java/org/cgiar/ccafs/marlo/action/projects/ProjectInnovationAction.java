@@ -797,12 +797,42 @@ public class ProjectInnovationAction extends BaseAction {
 		if (innovation.getProjectInnovationMilestones() != null) {
 		    innovation.setMilestones(new ArrayList<>(innovation.getProjectInnovationMilestones().stream()
 			    .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+
+		    // Get the ID of the principal Sub IDO if exist
+		    if (innovation.getMilestones() != null) {
+			List<ProjectInnovationMilestone> projectPolicies = new ArrayList<ProjectInnovationMilestone>();
+
+			projectPolicies = innovation.getMilestones().stream()
+				.filter(p -> p != null && p.isActive() && p.getPrimary() != null && p.getPrimary()
+					&& p.getPhase() != null && p.getPhase().getId().equals(phase.getId()))
+				.collect(Collectors.toList());
+
+			if (projectPolicies != null && projectPolicies.size() > 0 && projectPolicies.get(0) != null) {
+			    milestonePrimaryId = projectPolicies.get(0).getCrpMilestone().getId(); //
+			    crpMilestonePrimary = projectPolicies.get(0).getCrpMilestone().getId(); //
+			}
+		    }
 		}
 
 		// SubIdos List
 		if (innovation.getProjectInnovationSubIdos() != null) {
 		    innovation.setSubIdos(new ArrayList<>(innovation.getProjectInnovationSubIdos().stream()
 			    .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+
+		    // Get the ID of the principal Sub IDO if exist
+		    if (innovation.getSubIdos(phase) != null) {
+			List<ProjectInnovationSubIdo> projectPolicies = new ArrayList<ProjectInnovationSubIdo>();
+
+			projectPolicies = innovation.getSubIdos(phase).stream()
+				.filter(p -> p != null && p.isActive() && p.getPrimary() != null && p.getPrimary())
+				.collect(Collectors.toList());
+
+			if (projectPolicies != null && projectPolicies.size() > 0 && projectPolicies.get(0) != null) {
+			    subIdoPrimaryId = projectPolicies.get(0).getSrfSubIdo().getId(); //
+			    srfSubIdoPrimary = projectPolicies.get(0).getSrfSubIdo().getId(); //
+			}
+		    }
+
 		}
 
 		// Innovation shared Projects List
