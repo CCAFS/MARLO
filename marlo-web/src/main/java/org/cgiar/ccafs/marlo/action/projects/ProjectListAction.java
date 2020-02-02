@@ -641,8 +641,10 @@ public class ProjectListAction extends BaseAction {
     }
     closedProjects = new ArrayList<>();
     List<Project> completedProjects = null;
-    if (projectManager.getCompletedProjects(this.getCrpID(), this.getActualPhase().getId()) != null) {
+    if (this.getCrpID() != null && this.getActualPhase() != null && this.getActualPhase().getId() != null) {
+    	if (projectManager.getCompletedProjects(this.getCrpID(), this.getActualPhase().getId()) != null) {
       completedProjects = projectManager.getCompletedProjects(this.getCrpID(), this.getActualPhase().getId());
+   	 }
     }
 
     // Skip closed projects for Reporting

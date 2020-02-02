@@ -20,8 +20,6 @@ import org.cgiar.ccafs.marlo.data.dao.ProjectInnovationSubIdoDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSubIdoManager;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSubIdo;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSubIdo;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSubIdo;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,124 +33,125 @@ import javax.inject.Named;
 @Named
 public class ProjectInnovationSubIdoManagerImpl implements ProjectInnovationSubIdoManager {
 
-	private ProjectInnovationSubIdoDAO projectInnovationSubIdoDAO;
-	// Managers
-	private PhaseDAO phaseDAO;
+    private ProjectInnovationSubIdoDAO projectInnovationSubIdoDAO;
+    // Managers
+    private PhaseDAO phaseDAO;
 
-	@Inject
-	public ProjectInnovationSubIdoManagerImpl(ProjectInnovationSubIdoDAO projectInnovationSubIdoDAO,
-			PhaseDAO phaseDAO) {
-		this.projectInnovationSubIdoDAO = projectInnovationSubIdoDAO;
-		this.phaseDAO = phaseDAO;
+    @Inject
+    public ProjectInnovationSubIdoManagerImpl(ProjectInnovationSubIdoDAO projectInnovationSubIdoDAO,
+	    PhaseDAO phaseDAO) {
+	this.projectInnovationSubIdoDAO = projectInnovationSubIdoDAO;
+	this.phaseDAO = phaseDAO;
 
+    }
+
+    @Override
+    public void deleteProjectInnovationSubIdo(long projectInnovationSubIdoId) {
+	ProjectInnovationSubIdo ProjectInnovationSubIdo = this
+		.getProjectInnovationSubIdoById(projectInnovationSubIdoId);
+
+	// Conditions to Project Innovation Works In AR phase and Upkeep Phase
+	if (ProjectInnovationSubIdo.getPhase().getDescription().equals(APConstants.PLANNING)
+		&& ProjectInnovationSubIdo.getPhase().getNext() != null) {
+	    this.deleteProjectInnovationSubIdoPhase(ProjectInnovationSubIdo.getPhase().getNext(),
+		    ProjectInnovationSubIdo.getProjectInnovation().getId(), ProjectInnovationSubIdo);
 	}
 
-	@Override
-	public void deleteProjectInnovationSubIdo(long projectInnovationSubIdoId) {
-		ProjectInnovationSubIdo ProjectInnovationSubIdo = this
-				.getProjectInnovationSubIdoById(projectInnovationSubIdoId);
-
-		// Conditions to Project Innovation Works In AR phase and Upkeep Phase
-		if (ProjectInnovationSubIdo.getPhase().getDescription().equals(APConstants.PLANNING)
-				&& ProjectInnovationSubIdo.getPhase().getNext() != null) {
-			this.deleteProjectInnovationSubIdoPhase(ProjectInnovationSubIdo.getPhase().getNext(),
-					ProjectInnovationSubIdo.getProjectInnovation().getId(), ProjectInnovationSubIdo);
+	if (ProjectInnovationSubIdo.getPhase().getDescription().equals(APConstants.REPORTING)) {
+	    if (ProjectInnovationSubIdo.getPhase().getNext() != null
+		    && ProjectInnovationSubIdo.getPhase().getNext().getNext() != null) {
+		Phase upkeepPhase = ProjectInnovationSubIdo.getPhase().getNext().getNext();
+		if (upkeepPhase != null) {
+		    this.deleteProjectInnovationSubIdoPhase(upkeepPhase,
+			    ProjectInnovationSubIdo.getProjectInnovation().getId(), ProjectInnovationSubIdo);
 		}
-
-		if (ProjectInnovationSubIdo.getPhase().getDescription().equals(APConstants.REPORTING)) {
-			if (ProjectInnovationSubIdo.getPhase().getNext() != null
-					&& ProjectInnovationSubIdo.getPhase().getNext().getNext() != null) {
-				Phase upkeepPhase = ProjectInnovationSubIdo.getPhase().getNext().getNext();
-				if (upkeepPhase != null) {
-					this.deleteProjectInnovationSubIdoPhase(upkeepPhase,
-							ProjectInnovationSubIdo.getProjectInnovation().getId(), ProjectInnovationSubIdo);
-				}
-			}
-		}
-
-		projectInnovationSubIdoDAO.deleteProjectInnovationSubIdo(projectInnovationSubIdoId);
+	    }
 	}
 
-	public void deleteProjectInnovationSubIdoPhase(Phase next, long innovationID,
-			ProjectInnovationSubIdo projectInnovationSubIdo) {
-		Phase phase = phaseDAO.find(next.getId());
+	projectInnovationSubIdoDAO.deleteProjectInnovationSubIdo(projectInnovationSubIdoId);
+    }
 
-		List<ProjectInnovationSubIdo> projectInnovationSubIdos = projectInnovationSubIdoDAO.findAll().stream()
-				.filter(c -> c.getPhase().getId().longValue() == phase.getId().longValue()
-						&& c.getProjectInnovation().getId().longValue() == innovationID
-						&& c.getSrfSubIdo().getId().equals(projectInnovationSubIdo.getSrfSubIdo().getId()))
-				.collect(Collectors.toList());
+    public void deleteProjectInnovationSubIdoPhase(Phase next, long innovationID,
+	    ProjectInnovationSubIdo projectInnovationSubIdo) {
+	Phase phase = phaseDAO.find(next.getId());
 
-		for (ProjectInnovationSubIdo projectInnovationSubIdoDB : projectInnovationSubIdos) {
-			projectInnovationSubIdoDAO.deleteProjectInnovationSubIdo(projectInnovationSubIdoDB.getId());
-		}
+	List<ProjectInnovationSubIdo> projectInnovationSubIdos = projectInnovationSubIdoDAO.findAll().stream()
+		.filter(c -> c.getPhase().getId().longValue() == phase.getId().longValue()
+			&& c.getProjectInnovation().getId().longValue() == innovationID
+			&& c.getSrfSubIdo().getId().equals(projectInnovationSubIdo.getSrfSubIdo().getId()))
+		.collect(Collectors.toList());
 
-		if (phase.getNext() != null) {
-			this.deleteProjectInnovationSubIdoPhase(phase.getNext(), innovationID, projectInnovationSubIdo);
-		}
+	for (ProjectInnovationSubIdo projectInnovationSubIdoDB : projectInnovationSubIdos) {
+	    projectInnovationSubIdoDAO.deleteProjectInnovationSubIdo(projectInnovationSubIdoDB.getId());
 	}
 
-	@Override
-	public boolean existProjectInnovationSubIdo(long projectInnovationSubIdoID) {
-
-		return projectInnovationSubIdoDAO.existProjectInnovationSubIdo(projectInnovationSubIdoID);
+	if (phase.getNext() != null) {
+	    this.deleteProjectInnovationSubIdoPhase(phase.getNext(), innovationID, projectInnovationSubIdo);
 	}
+    }
 
-	@Override
-	public List<ProjectInnovationSubIdo> findAll() {
+    @Override
+    public boolean existProjectInnovationSubIdo(long projectInnovationSubIdoID) {
 
-		return projectInnovationSubIdoDAO.findAll();
+	return projectInnovationSubIdoDAO.existProjectInnovationSubIdo(projectInnovationSubIdoID);
+    }
 
+    @Override
+    public List<ProjectInnovationSubIdo> findAll() {
+
+	return projectInnovationSubIdoDAO.findAll();
+
+    }
+
+    @Override
+    public ProjectInnovationSubIdo getProjectInnovationSubIdoById(long projectInnovationSubIdoID) {
+
+	return projectInnovationSubIdoDAO.find(projectInnovationSubIdoID);
+    }
+
+    public void saveInnovationMilestonePhase(Phase next, long innovationid,
+	    ProjectInnovationSubIdo projectInnovationSubIdo) {
+
+	Phase phase = phaseDAO.find(next.getId());
+
+	List<ProjectInnovationSubIdo> projectInnovatioCenters = projectInnovationSubIdoDAO.findAll().stream()
+		.filter(c -> c.getProjectInnovation().getId().longValue() == innovationid
+			&& c.getPhase().getId().equals(phase.getId())
+			&& c.getSrfSubIdo().getId().equals(projectInnovationSubIdo.getSrfSubIdo().getId()))
+		.collect(Collectors.toList());
+
+	if (projectInnovatioCenters.isEmpty()) {
+	    ProjectInnovationSubIdo projectInnovationSubIdoAdd = new ProjectInnovationSubIdo();
+	    projectInnovationSubIdoAdd.setProjectInnovation(projectInnovationSubIdo.getProjectInnovation());
+	    projectInnovationSubIdoAdd.setPhase(phase);
+	    projectInnovationSubIdoAdd.setSrfSubIdo(projectInnovationSubIdo.getSrfSubIdo());
+	    projectInnovationSubIdoAdd.setPrimary(projectInnovationSubIdo.getPrimary());
+	    projectInnovationSubIdoDAO.save(projectInnovationSubIdoAdd);
 	}
-
-	@Override
-	public ProjectInnovationSubIdo getProjectInnovationSubIdoById(long projectInnovationSubIdoID) {
-
-		return projectInnovationSubIdoDAO.find(projectInnovationSubIdoID);
+	if (phase.getNext() != null) {
+	    this.saveInnovationMilestonePhase(phase.getNext(), innovationid, projectInnovationSubIdo);
 	}
+    }
 
-	public void saveInnovationMilestonePhase(Phase next, long innovationid,
-			ProjectInnovationSubIdo projectInnovationSubIdo) {
-
-		Phase phase = phaseDAO.find(next.getId());
-
-		List<ProjectInnovationSubIdo> projectInnovatioCenters = projectInnovationSubIdoDAO.findAll().stream()
-				.filter(c -> c.getProjectInnovation().getId().longValue() == innovationid
-						&& c.getPhase().getId().equals(phase.getId())
-						&& c.getSrfSubIdo().getId().equals(projectInnovationSubIdo.getSrfSubIdo().getId()))
-				.collect(Collectors.toList());
-
-		if (projectInnovatioCenters.isEmpty()) {
-			ProjectInnovationSubIdo projectInnovationSubIdoAdd = new ProjectInnovationSubIdo();
-			projectInnovationSubIdoAdd.setProjectInnovation(projectInnovationSubIdo.getProjectInnovation());
-			projectInnovationSubIdoAdd.setPhase(phase);
-			projectInnovationSubIdoAdd.setSrfSubIdo(projectInnovationSubIdo.getSrfSubIdo());
-			projectInnovationSubIdoDAO.save(projectInnovationSubIdoAdd);
+    @Override
+    public ProjectInnovationSubIdo saveProjectInnovationSubIdo(ProjectInnovationSubIdo projectInnovationSubIdo) {
+	ProjectInnovationSubIdo innovationMilestone = projectInnovationSubIdoDAO.save(projectInnovationSubIdo);
+	Phase phase = phaseDAO.find(innovationMilestone.getPhase().getId());
+	// Conditions to Project Innovation Works In AR phase and Upkeep Phase
+	if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
+	    this.saveInnovationMilestonePhase(innovationMilestone.getPhase().getNext(),
+		    innovationMilestone.getProjectInnovation().getId(), projectInnovationSubIdo);
+	}
+	if (phase.getDescription().equals(APConstants.REPORTING)) {
+	    if (phase.getNext() != null && phase.getNext().getNext() != null) {
+		Phase upkeepPhase = phase.getNext().getNext();
+		if (upkeepPhase != null) {
+		    this.saveInnovationMilestonePhase(upkeepPhase, innovationMilestone.getProjectInnovation().getId(),
+			    projectInnovationSubIdo);
 		}
-		if (phase.getNext() != null) {
-			this.saveInnovationMilestonePhase(phase.getNext(), innovationid, projectInnovationSubIdo);
-		}
+	    }
 	}
-
-	@Override
-	public ProjectInnovationSubIdo saveProjectInnovationSubIdo(ProjectInnovationSubIdo projectInnovationSubIdo) {
-		ProjectInnovationSubIdo innovationMilestone = projectInnovationSubIdoDAO.save(projectInnovationSubIdo);
-		Phase phase = phaseDAO.find(innovationMilestone.getPhase().getId());
-		// Conditions to Project Innovation Works In AR phase and Upkeep Phase
-		if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
-			this.saveInnovationMilestonePhase(innovationMilestone.getPhase().getNext(), innovationMilestone.getProjectInnovation().getId(),
-					projectInnovationSubIdo);
-		}
-		if (phase.getDescription().equals(APConstants.REPORTING)) {
-			if (phase.getNext() != null && phase.getNext().getNext() != null) {
-				Phase upkeepPhase = phase.getNext().getNext();
-				if (upkeepPhase != null) {
-					this.saveInnovationMilestonePhase(upkeepPhase, innovationMilestone.getProjectInnovation().getId(),
-							projectInnovationSubIdo);
-				}
-			}
-		}
-		return innovationMilestone;
-	}
+	return innovationMilestone;
+    }
 
 }
