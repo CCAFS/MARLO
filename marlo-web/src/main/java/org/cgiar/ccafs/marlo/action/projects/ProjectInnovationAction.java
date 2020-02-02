@@ -1227,6 +1227,16 @@ public class ProjectInnovationAction extends BaseAction {
 		innovation.getProjectInnovationInfo().setOtherInnovationType("");
 	    }
 
+	    // If innovation type is different to genetic, the value of the field -number of
+	    // innovation- is set to null
+	    System.out.println("innovation.getProjectInnovationInfo().getRepIndInnovationType().getId()  "
+		    + innovation.getProjectInnovationInfo().getRepIndInnovationType().getId());
+	    if (innovation.getProjectInnovationInfo().getRepIndInnovationType() != null
+		    && innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() != null
+		    && innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() != 1) {
+		innovation.getProjectInnovationInfo().setInnovationNumber(null);
+	    }
+
 	    if (clearLead == null || clearLead == false) {
 		innovation.getProjectInnovationInfo().setClearLead(false);
 	    } else {
