@@ -784,6 +784,21 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 		    this.expectedStudy.setSubIdos(new ArrayList<>(this.expectedStudy.getProjectExpectedStudySubIdos()
 			    .stream().filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId()))
 			    .collect(Collectors.toList())));
+
+		    // Get the ID of the principal Sub IDO if exist
+		    if (expectedStudy.getSubIdos(phase) != null) {
+			List<ProjectExpectedStudySubIdo> projectPolicies = new ArrayList<ProjectExpectedStudySubIdo>();
+
+			projectPolicies = expectedStudy.getSubIdos(phase).stream()
+				.filter(p -> p != null && p.isActive() && p.getPrimary() != null && p.getPrimary())
+				.collect(Collectors.toList());
+
+			if (projectPolicies != null && projectPolicies.size() > 0 && projectPolicies.get(0) != null) {
+			    subIdoPrimaryId = projectPolicies.get(0).getSrfSubIdo().getId(); //
+			    srfSubIdoPrimary = projectPolicies.get(0).getSrfSubIdo().getId(); //
+			}
+		    }
+
 		}
 
 		// Expected Study Flagship List
@@ -876,6 +891,20 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 			    .setInnovations(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyInnovations()
 				    .stream().filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId()))
 				    .collect(Collectors.toList())));
+		    // Get the ID of the principal Sub IDO if exist
+		    if (expectedStudy.getMilestones() != null) {
+			List<ProjectExpectedStudyMilestone> projectPolicies = new ArrayList<ProjectExpectedStudyMilestone>();
+
+			projectPolicies = expectedStudy.getMilestones().stream()
+				.filter(p -> p != null && p.isActive() && p.getPrimary() != null && p.getPrimary()
+					&& p.getPhase() != null && p.getPhase().getId().equals(phase.getId()))
+				.collect(Collectors.toList());
+
+			if (projectPolicies != null && projectPolicies.size() > 0 && projectPolicies.get(0) != null) {
+			    milestonePrimaryId = projectPolicies.get(0).getCrpMilestone().getId(); //
+			    crpMilestonePrimary = projectPolicies.get(0).getCrpMilestone().getId(); //
+			}
+		    }
 		}
 
 	    }
