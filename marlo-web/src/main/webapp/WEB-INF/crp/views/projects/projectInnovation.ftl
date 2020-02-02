@@ -209,7 +209,7 @@
         </div> 
           
         <div class="form-group simpleBox block-${innovationMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
-          [@customForm.primaryListComponent name="innovation.milestones" checkName="innovation.milestonePrimaryId" elementType="crpMilestone" elementList=(innovation.milestones)!"" label="innovation.milestones" labelPrimary="policy.primaryMilestone" helpIcon=false listName="milestones" keyFieldName="id" displayFieldName="composedName" required=false /]
+          [@customForm.primaryListComponent name="innovation.milestones" checkName="milestonePrimaryId" elementType="crpMilestone" elementList=(innovation.milestones)!"" label="innovation.milestones" labelPrimary="policy.primaryMilestone" helpIcon=false listName="milestones" keyFieldName="id" displayFieldName="composedName" required=false /]
          <div class="note">[@s.text name="innovation.milestones.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/contributionsCrpList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
          <br/>
         </div> 
@@ -228,7 +228,7 @@
         [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]      
         <div class="form-group simpleBox">
          [#--  <div class="buttonSubIdo-content"><br> <div class="selectSubIDO" ><span class=""></span>View sub-IDOs</div></div> --]
-          [@customForm.primaryListComponent name="innovation.subIdos" checkName="innovation.subIdoPrimaryId" elementType="srfSubIdo" elementList=(innovation.subIdos)!"" label="innovation.subIDOs" labelPrimary="policy.primarySubIdo" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description" required=false /]
+          [@customForm.primaryListComponent name="innovation.subIdos" checkName="subIdoPrimaryId" elementType="srfSubIdo" elementList=(innovation.subIdos)!"" label="innovation.subIDOs" labelPrimary="policy.primarySubIdo" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description" required=false /]
         
         </div> 
        

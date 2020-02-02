@@ -159,6 +159,24 @@ public class ProjectInnovationAction extends BaseAction {
 	// Variables
 	private long projectID;
 	private long innovationID;
+	private long subIdoPrimaryId;
+	private long milestonePrimaryId;
+	public long getSubIdoPrimaryId() {
+		return subIdoPrimaryId;
+	}
+
+	public void setSubIdoPrimaryId(long subIdoPrimaryId) {
+		this.subIdoPrimaryId = subIdoPrimaryId;
+	}
+
+	public long getMilestonePrimaryId() {
+		return milestonePrimaryId;
+	}
+
+	public void setMilestonePrimaryId(long milestonePrimaryId) {
+		this.milestonePrimaryId = milestonePrimaryId;
+	}
+
 	private Project project;
 	private ProjectInnovation innovation;
 	private ProjectInnovation innovationDB;
@@ -692,29 +710,32 @@ public class ProjectInnovationAction extends BaseAction {
 				}
 
 				// Innovation Center List Autosave
+				/*
 				if (innovation.getCenters() != null) {
 					for (ProjectInnovationCenter projectInnovationCenter : innovation.getCenters()) {
 						projectInnovationCenter.setInstitution(institutionManager
 								.getInstitutionById(projectInnovationCenter.getInstitution().getId()));
 					}
 				}
-
+*/
 				// Innovation Milestone List Autosave
+				/*
 				if (innovation.getMilestones() != null) {
 					for (ProjectInnovationMilestone projectInnovationMilestone : innovation.getMilestones()) {
 						projectInnovationMilestone.setCrpMilestone((milestoneManager
 								.getCrpMilestoneById(projectInnovationMilestone.getCrpMilestone().getId())));
 					}
-				}
+				}*/
 				
 				// SubIdos List Autosave
+				/*
 				if (innovation.getSubIdos() != null) {
 					for (ProjectInnovationSubIdo projectInnovationSubIdo : innovation.getSubIdos()) {
 						projectInnovationSubIdo.setSrfSubIdo(
 								srfSubIdoManager.getSrfSubIdoById(projectInnovationSubIdo.getSrfSubIdo().getId()));
 					}
 				}
-
+*/
 
 				// Innovation Shared Projects List Autosave
 				if (this.innovation.getSharedInnovations() != null) {

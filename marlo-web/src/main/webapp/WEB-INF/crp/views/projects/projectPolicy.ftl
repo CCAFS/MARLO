@@ -191,7 +191,7 @@
      <div class="form-group simpleBox block-${policyMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
        [#--[@customForm.elementsListComponent name="${customName}.milestones" elementType="crpMilestone" elementList=(element.milestones)![] label="policy.milestones" helpIcon=false listName="milestoneList" keyFieldName="id" displayFieldName="composedName" required=false /]
        --]
-       [@customForm.primaryListComponent name="${customName}.milestones" checkName="policy.milestonePrimaryId" elementType="crpMilestone" elementList=(element.milestones)!"" label="policy.milestones" labelPrimary="policy.primaryMilestone" helpIcon=false listName="milestoneList" keyFieldName="id" displayFieldName="composedName" required=false /]
+       [@customForm.primaryListComponent name="${customName}.milestones" checkName="milestonePrimaryId" elementType="crpMilestone" elementList=(element.milestones)!"" label="policy.milestones" labelPrimary="policy.primaryMilestone" helpIcon=false listName="milestoneList" keyFieldName="id" displayFieldName="composedName" required=false /]
        <div class="note">[@s.text name="policy.milestones.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/contributionsCrpList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
        <br>
      </div> 
@@ -212,7 +212,7 @@
     [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]      
     <div class="form-group simpleBox">
      [#--  <div class="buttonSubIdo-content"><br> <div class="selectSubIDO" ><span class=""></span>View sub-IDOs</div></div> --]
-      [@customForm.primaryListComponent name="${customName}.subIdos" checkName="policy.subIdoPrimaryId" elementType="srfSubIdo" elementList=(element.subIdos)!"" label="policy.subIDOs" labelPrimary="policy.primarySubIdo" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description" required=false /]
+      [@customForm.primaryListComponent name="${customName}.subIdos" checkName="subIdoPrimaryId" elementType="srfSubIdo" elementList=(element.subIdos)!"" label="policy.subIDOs" labelPrimary="policy.primarySubIdo" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description" required=false /]
     
     </div>  
 [#--
