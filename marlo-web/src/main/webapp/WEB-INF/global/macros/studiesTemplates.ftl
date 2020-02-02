@@ -143,7 +143,7 @@
         
         [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]      
         <div class="form-group simpleBox">
-          [@customForm.primaryListComponent name="${customName}.subIdos" checkName="study.subIdoPrimaryId" elementType="srfSubIdo" elementList=(element.subIdos)!"" label="study.strategicResultsLink.subIDOs" labelPrimary="policy.primarySubIdo" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description" required=false /]
+          [@customForm.primaryListComponent name="${customName}.subIdos" checkName="subIdoPrimaryId" elementType="srfSubIdo" elementList=(element.subIdos)!"" label="policy.subIDOs" labelPrimary="policy.primarySubIdo" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description" required=false /]
         </div>
         
         [#-- SRF Targets (maxLimit=2)  --]
