@@ -20,8 +20,6 @@ import org.cgiar.ccafs.marlo.data.dao.ProjectInnovationMilestoneDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationMilestoneManager;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationMilestone;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationMilestone;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationMilestone;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,124 +33,126 @@ import javax.inject.Named;
 @Named
 public class ProjectInnovationMilestoneManagerImpl implements ProjectInnovationMilestoneManager {
 
-	private ProjectInnovationMilestoneDAO projectInnovationMilestoneDAO;
-	// Managers
-	private PhaseDAO phaseDAO;
+    private ProjectInnovationMilestoneDAO projectInnovationMilestoneDAO;
+    // Managers
+    private PhaseDAO phaseDAO;
 
-	@Inject
-	public ProjectInnovationMilestoneManagerImpl(ProjectInnovationMilestoneDAO projectInnovationMilestoneDAO,
-			PhaseDAO phaseDAO) {
-		this.projectInnovationMilestoneDAO = projectInnovationMilestoneDAO;
-		this.phaseDAO = phaseDAO;
+    @Inject
+    public ProjectInnovationMilestoneManagerImpl(ProjectInnovationMilestoneDAO projectInnovationMilestoneDAO,
+	    PhaseDAO phaseDAO) {
+	this.projectInnovationMilestoneDAO = projectInnovationMilestoneDAO;
+	this.phaseDAO = phaseDAO;
 
+    }
+
+    @Override
+    public void deleteProjectInnovationMilestone(long projectInnovationMilestoneId) {
+	ProjectInnovationMilestone ProjectInnovationMilestone = this
+		.getProjectInnovationMilestoneById(projectInnovationMilestoneId);
+
+	// Conditions to Project Innovation Works In AR phase and Upkeep Phase
+	if (ProjectInnovationMilestone.getPhase().getDescription().equals(APConstants.PLANNING)
+		&& ProjectInnovationMilestone.getPhase().getNext() != null) {
+	    this.deleteProjectInnovationMilestonePhase(ProjectInnovationMilestone.getPhase().getNext(),
+		    ProjectInnovationMilestone.getProjectInnovation().getId(), ProjectInnovationMilestone);
 	}
 
-	@Override
-	public void deleteProjectInnovationMilestone(long projectInnovationMilestoneId) {
-		ProjectInnovationMilestone ProjectInnovationMilestone = this
-				.getProjectInnovationMilestoneById(projectInnovationMilestoneId);
-
-		// Conditions to Project Innovation Works In AR phase and Upkeep Phase
-		if (ProjectInnovationMilestone.getPhase().getDescription().equals(APConstants.PLANNING)
-				&& ProjectInnovationMilestone.getPhase().getNext() != null) {
-			this.deleteProjectInnovationMilestonePhase(ProjectInnovationMilestone.getPhase().getNext(),
-					ProjectInnovationMilestone.getProjectInnovation().getId(), ProjectInnovationMilestone);
+	if (ProjectInnovationMilestone.getPhase().getDescription().equals(APConstants.REPORTING)) {
+	    if (ProjectInnovationMilestone.getPhase().getNext() != null
+		    && ProjectInnovationMilestone.getPhase().getNext().getNext() != null) {
+		Phase upkeepPhase = ProjectInnovationMilestone.getPhase().getNext().getNext();
+		if (upkeepPhase != null) {
+		    this.deleteProjectInnovationMilestonePhase(upkeepPhase,
+			    ProjectInnovationMilestone.getProjectInnovation().getId(), ProjectInnovationMilestone);
 		}
-
-		if (ProjectInnovationMilestone.getPhase().getDescription().equals(APConstants.REPORTING)) {
-			if (ProjectInnovationMilestone.getPhase().getNext() != null
-					&& ProjectInnovationMilestone.getPhase().getNext().getNext() != null) {
-				Phase upkeepPhase = ProjectInnovationMilestone.getPhase().getNext().getNext();
-				if (upkeepPhase != null) {
-					this.deleteProjectInnovationMilestonePhase(upkeepPhase,
-							ProjectInnovationMilestone.getProjectInnovation().getId(), ProjectInnovationMilestone);
-				}
-			}
-		}
-
-		projectInnovationMilestoneDAO.deleteProjectInnovationMilestone(projectInnovationMilestoneId);
+	    }
 	}
 
-	public void deleteProjectInnovationMilestonePhase(Phase next, long innovationID,
-			ProjectInnovationMilestone projectInnovationMilestone) {
-		Phase phase = phaseDAO.find(next.getId());
+	projectInnovationMilestoneDAO.deleteProjectInnovationMilestone(projectInnovationMilestoneId);
+    }
 
-		List<ProjectInnovationMilestone> projectInnovationMilestones = projectInnovationMilestoneDAO.findAll().stream()
-				.filter(c -> c.getPhase().getId().longValue() == phase.getId().longValue()
-						&& c.getProjectInnovation().getId().longValue() == innovationID
-						&& c.getCrpMilestone().getId().equals(projectInnovationMilestone.getCrpMilestone().getId()))
-				.collect(Collectors.toList());
+    public void deleteProjectInnovationMilestonePhase(Phase next, long innovationID,
+	    ProjectInnovationMilestone projectInnovationMilestone) {
+	Phase phase = phaseDAO.find(next.getId());
 
-		for (ProjectInnovationMilestone projectInnovationMilestoneDB : projectInnovationMilestones) {
-			projectInnovationMilestoneDAO.deleteProjectInnovationMilestone(projectInnovationMilestoneDB.getId());
-		}
+	List<ProjectInnovationMilestone> projectInnovationMilestones = projectInnovationMilestoneDAO.findAll().stream()
+		.filter(c -> c.getPhase().getId().longValue() == phase.getId().longValue()
+			&& c.getProjectInnovation().getId().longValue() == innovationID
+			&& c.getCrpMilestone().getId().equals(projectInnovationMilestone.getCrpMilestone().getId()))
+		.collect(Collectors.toList());
 
-		if (phase.getNext() != null) {
-			this.deleteProjectInnovationMilestonePhase(phase.getNext(), innovationID, projectInnovationMilestone);
-		}
+	for (ProjectInnovationMilestone projectInnovationMilestoneDB : projectInnovationMilestones) {
+	    projectInnovationMilestoneDAO.deleteProjectInnovationMilestone(projectInnovationMilestoneDB.getId());
 	}
 
-	@Override
-	public boolean existProjectInnovationMilestone(long projectInnovationMilestoneID) {
-
-		return projectInnovationMilestoneDAO.existProjectInnovationMilestone(projectInnovationMilestoneID);
+	if (phase.getNext() != null) {
+	    this.deleteProjectInnovationMilestonePhase(phase.getNext(), innovationID, projectInnovationMilestone);
 	}
+    }
 
-	@Override
-	public List<ProjectInnovationMilestone> findAll() {
+    @Override
+    public boolean existProjectInnovationMilestone(long projectInnovationMilestoneID) {
 
-		return projectInnovationMilestoneDAO.findAll();
+	return projectInnovationMilestoneDAO.existProjectInnovationMilestone(projectInnovationMilestoneID);
+    }
 
+    @Override
+    public List<ProjectInnovationMilestone> findAll() {
+
+	return projectInnovationMilestoneDAO.findAll();
+
+    }
+
+    @Override
+    public ProjectInnovationMilestone getProjectInnovationMilestoneById(long projectInnovationMilestoneID) {
+
+	return projectInnovationMilestoneDAO.find(projectInnovationMilestoneID);
+    }
+
+    public void saveInnovationMilestonePhase(Phase next, long innovationid,
+	    ProjectInnovationMilestone projectInnovationMilestone) {
+
+	Phase phase = phaseDAO.find(next.getId());
+
+	List<ProjectInnovationMilestone> projectInnovatioCenters = projectInnovationMilestoneDAO.findAll().stream()
+		.filter(c -> c.getProjectInnovation().getId().longValue() == innovationid
+			&& c.getPhase().getId().equals(phase.getId())
+			&& c.getCrpMilestone().getId().equals(projectInnovationMilestone.getCrpMilestone().getId()))
+		.collect(Collectors.toList());
+
+	if (projectInnovatioCenters.isEmpty()) {
+	    ProjectInnovationMilestone projectInnovationMilestoneAdd = new ProjectInnovationMilestone();
+	    projectInnovationMilestoneAdd.setProjectInnovation(projectInnovationMilestone.getProjectInnovation());
+	    projectInnovationMilestoneAdd.setPhase(phase);
+	    projectInnovationMilestoneAdd.setCrpMilestone(projectInnovationMilestone.getCrpMilestone());
+	    projectInnovationMilestoneAdd.setPrimary(projectInnovationMilestone.getPrimary());
+	    projectInnovationMilestoneDAO.save(projectInnovationMilestoneAdd);
 	}
-
-	@Override
-	public ProjectInnovationMilestone getProjectInnovationMilestoneById(long projectInnovationMilestoneID) {
-
-		return projectInnovationMilestoneDAO.find(projectInnovationMilestoneID);
+	if (phase.getNext() != null) {
+	    this.saveInnovationMilestonePhase(phase.getNext(), innovationid, projectInnovationMilestone);
 	}
+    }
 
-	public void saveInnovationMilestonePhase(Phase next, long innovationid,
-			ProjectInnovationMilestone projectInnovationMilestone) {
-
-		Phase phase = phaseDAO.find(next.getId());
-
-		List<ProjectInnovationMilestone> projectInnovatioCenters = projectInnovationMilestoneDAO.findAll().stream()
-				.filter(c -> c.getProjectInnovation().getId().longValue() == innovationid
-						&& c.getPhase().getId().equals(phase.getId())
-						&& c.getCrpMilestone().getId().equals(projectInnovationMilestone.getCrpMilestone().getId()))
-				.collect(Collectors.toList());
-
-		if (projectInnovatioCenters.isEmpty()) {
-			ProjectInnovationMilestone projectInnovationMilestoneAdd = new ProjectInnovationMilestone();
-			projectInnovationMilestoneAdd.setProjectInnovation(projectInnovationMilestone.getProjectInnovation());
-			projectInnovationMilestoneAdd.setPhase(phase);
-			projectInnovationMilestoneAdd.setCrpMilestone(projectInnovationMilestone.getCrpMilestone());
-			projectInnovationMilestoneDAO.save(projectInnovationMilestoneAdd);
+    @Override
+    public ProjectInnovationMilestone saveProjectInnovationMilestone(
+	    ProjectInnovationMilestone projectInnovationMilestone) {
+	ProjectInnovationMilestone innovationMilestone = projectInnovationMilestoneDAO.save(projectInnovationMilestone);
+	Phase phase = phaseDAO.find(innovationMilestone.getPhase().getId());
+	// Conditions to Project Innovation Works In AR phase and Upkeep Phase
+	if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
+	    this.saveInnovationMilestonePhase(innovationMilestone.getPhase().getNext(),
+		    innovationMilestone.getProjectInnovation().getId(), projectInnovationMilestone);
+	}
+	if (phase.getDescription().equals(APConstants.REPORTING)) {
+	    if (phase.getNext() != null && phase.getNext().getNext() != null) {
+		Phase upkeepPhase = phase.getNext().getNext();
+		if (upkeepPhase != null) {
+		    this.saveInnovationMilestonePhase(upkeepPhase, innovationMilestone.getProjectInnovation().getId(),
+			    projectInnovationMilestone);
 		}
-		if (phase.getNext() != null) {
-			this.saveInnovationMilestonePhase(phase.getNext(), innovationid, projectInnovationMilestone);
-		}
+	    }
 	}
-
-	@Override
-	public ProjectInnovationMilestone saveProjectInnovationMilestone(ProjectInnovationMilestone projectInnovationMilestone) {
-		ProjectInnovationMilestone innovationMilestone = projectInnovationMilestoneDAO.save(projectInnovationMilestone);
-		Phase phase = phaseDAO.find(innovationMilestone.getPhase().getId());
-		// Conditions to Project Innovation Works In AR phase and Upkeep Phase
-		if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
-			this.saveInnovationMilestonePhase(innovationMilestone.getPhase().getNext(), innovationMilestone.getProjectInnovation().getId(),
-					projectInnovationMilestone);
-		}
-		if (phase.getDescription().equals(APConstants.REPORTING)) {
-			if (phase.getNext() != null && phase.getNext().getNext() != null) {
-				Phase upkeepPhase = phase.getNext().getNext();
-				if (upkeepPhase != null) {
-					this.saveInnovationMilestonePhase(upkeepPhase, innovationMilestone.getProjectInnovation().getId(),
-							projectInnovationMilestone);
-				}
-			}
-		}
-		return innovationMilestone;
-	}
+	return innovationMilestone;
+    }
 
 }
