@@ -1469,9 +1469,6 @@ public class ProjectPolicyAction extends BaseAction {
 			policyMilestoneSave.setCrpMilestone(milestone);
 
 			// Save primary
-			System.out.println("milestonePrimaryId " + milestonePrimaryId + " / crpMilestonePrimary "
-				+ crpMilestonePrimary + " policyMilestone.getCrpMilestone().getId() "
-				+ policyMilestone.getCrpMilestone().getId());
 			if ((milestonePrimaryId != 0 || crpMilestonePrimary != 0)
 				&& policyMilestone.getCrpMilestone() != null) {
 			    if ((policyMilestone.getCrpMilestone().getId() == milestonePrimaryId)
