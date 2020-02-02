@@ -907,7 +907,7 @@ public class ProjectPolicyAction extends BaseAction {
 			.collect(Collectors.toList());
 	    }
 
-	    if (tempPcrp.size() == 0) {
+	    if (tempPcrp != null && tempPcrp.size() == 0 && this.getCurrentGlobalUnit() != null) {
 		crps.remove(this.getCurrentGlobalUnit());
 	    }
 	}
