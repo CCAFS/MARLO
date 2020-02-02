@@ -1535,8 +1535,8 @@ public class ProjectInnovationAction extends BaseAction {
 			    innovationMilestoneSave = projectInnovationMilestoneManager
 				    .getProjectInnovationMilestoneById(innovationMilestone.getId());
 
-			    if ((innovationMilestone.getCrpMilestone().getId() == subIdoPrimaryId)
-				    || (innovationMilestone.getCrpMilestone().getId() == srfSubIdoPrimary)) {
+			    if ((innovationMilestone.getCrpMilestone().getId() == milestonePrimaryId)
+				    || (innovationMilestone.getCrpMilestone().getId() == crpMilestonePrimary)) {
 				innovationMilestoneSave.setPrimary(true);
 			    } else {
 				innovationMilestoneSave.setPrimary(false);
@@ -1742,14 +1742,46 @@ public class ProjectInnovationAction extends BaseAction {
 
 		    innovationSubIdoSave.setSrfSubIdo(srfSubIdo);
 
-		    // If just one sub ido is selected, this is defined as principal
-		    if (innovation.getSubIdos().size() == 1) {
-			innovationSubIdoSave.setPrimary(true);
+		    // Save primary
+		    if ((subIdoPrimaryId != 0 || srfSubIdoPrimary != 0) && innovationSubIdo.getSrfSubIdo() != null) {
+			if ((innovationSubIdo.getSrfSubIdo().getId() == subIdoPrimaryId)
+				|| (innovationSubIdo.getSrfSubIdo().getId() == srfSubIdoPrimary)) {
+			    innovationSubIdoSave.setPrimary(true);
+			} else {
+			    innovationSubIdoSave.setPrimary(false);
+			}
+		    } else {
+			// If just one sub ido is selected, this is defined as principal
+			if (innovation.getSubIdos().size() == 1) {
+			    innovationSubIdoSave.setPrimary(true);
+			}
 		    }
 
+		    if (innovationSubIdoSave.getPrimary() == null) {
+			innovationSubIdoSave.setPrimary(false);
+		    }
 		    projectInnovationSubIdoManager.saveProjectInnovationSubIdo(innovationSubIdoSave);
 		    // This is to add innovationCrpSave to generate correct auditlog.
 		    innovation.getProjectInnovationSubIdos().add(innovationSubIdoSave);
+		} else {
+		    // if sub ido already exist - save primary
+		    if ((subIdoPrimaryId != 0 || srfSubIdoPrimary != 0) && innovationSubIdo.getSrfSubIdo() != null) {
+			ProjectInnovationSubIdo innovationSubIdoSave = new ProjectInnovationSubIdo();
+			innovationSubIdoSave = projectInnovationSubIdoManager
+				.getProjectInnovationSubIdoById(innovationSubIdo.getId());
+
+			if ((innovationSubIdo.getSrfSubIdo().getId() == subIdoPrimaryId)
+				|| (innovationSubIdo.getSrfSubIdo().getId() == srfSubIdoPrimary)) {
+			    innovationSubIdoSave.setPrimary(true);
+			} else {
+			    innovationSubIdoSave.setPrimary(false);
+			}
+
+			if (innovationSubIdoSave.getPrimary() == null) {
+			    innovationSubIdoSave.setPrimary(false);
+			}
+			projectInnovationSubIdoManager.saveProjectInnovationSubIdo(innovationSubIdoSave);
+		    }
 		}
 	    }
 	}
