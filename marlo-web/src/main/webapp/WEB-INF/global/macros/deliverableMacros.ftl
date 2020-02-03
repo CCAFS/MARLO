@@ -410,9 +410,6 @@
         [@customForm.input name="project.deliverable.dissemination.articleUrl" type="text" i18nkey="project.deliverable.articleURL"  placeholder="" required=true editable=editable /]
       </div>
    </div>
-  </div>
-
-  </div>
    
   <hr />
    
