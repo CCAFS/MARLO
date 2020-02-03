@@ -1,5 +1,7 @@
 $(document).ready(init);
-
+$( document ).ready(function() {
+  validateSubCategorySelector();
+});
 function init() {
 
   // Setting ID to Date-picker input
@@ -201,7 +203,7 @@ function addDisseminationEvents() {
     });
   }
 
-  // 
+  //
   $('input.iaType').on('change', function() {
     if(this.value == 1) {
       // Patent
@@ -258,6 +260,35 @@ function addDisseminationEvents() {
       templateSelection: formatStateCountries,
       width: '100%'
   });
+
+//Display Other Url option for DOI
+  $('input.isOtherUrl').on('change', function() {
+    var selected = $('input.isOtherUrl').is(":checked");
+
+    if(selected == true) {
+      $('.conditionalRequire .requiredTag').slideUp();
+      $('.other-url').css("display","block");
+    } else {
+      $('.conditionalRequire .requiredTag').slideDown();
+      $('.other-url').css("display","none");
+    }
+  });
+
+  $('#CCAFS_deliverable_deliverable_deliverableInfo_deliverableType_id').on('change', function() {
+    if(this.value == '63'){
+      console.log('true');
+      $('.conditionalRequire .requiredTag').slideDown();
+      $('.isOtherUrlContentBox').css("display","block");
+      console.log('true');
+
+    }else{
+      $('.isOtherUrlContentBox').css("display","none");
+      $('.conditionalRequire .requiredTag').slideUp();
+      console.log($('.conditionalRequire .requiredTag'));
+    }
+    console.log(this.value);
+  });
+
 }
 
 function addFlagship(idCRPProgram,text) {
@@ -458,7 +489,7 @@ function checkNextAuthorItems(block) {
 
 /**
  * Set the metadata in the interface
- * 
+ *
  * @param {Object} data
  * @returns
  */
@@ -487,6 +518,11 @@ function setMetadata(data) {
           return a.lastName + ", " + a.firstName;
         });
         $input.val(authorsNameArray.join('; '));
+      }
+      if(key == 'doi') {
+        var pos = value.indexOf("/", 8);
+        var formattedDoiUrl = value.substring(pos+1);
+        $input.val(formattedDoiUrl);
       }
     } else {
       $input.attr('readOnly', false);
@@ -660,7 +696,7 @@ function syncMetadata() {
 
 /**
  * Get Deliverable metadata from different repositories using ajax
- * 
+ *
  * @param {string} channel - Repository whrere the metadata is hosted (e.g. CGSpace, Dataverse etc.)
  * @param {string} url - Repositori URL (e.g. https://cgspace.cgiar.org/handle/10568/79435)
  * @returns the ajax return a metadata object
@@ -706,7 +742,7 @@ function getMetadata(channel,url) {
 
 /**
  * Validate duplicated authors
- * 
+ *
  * @param {string} lastName
  * @param {string} firstName
  * @returns {boolean} True if is duplicated.
@@ -722,7 +758,7 @@ function validateAuthors(lastName,firstName) {
 
 /**
  * Format select2: Add Countries flags
- * 
+ *
  * @param state
  * @returns
  */
@@ -738,4 +774,24 @@ function formatStateCountries(state) {
     $state = $('<span>' + state.text + '</span>');
   }
   return $state;
+};
+
+/**
+ * Search sub category deliverable and display extra url field
+ *
+ */
+function validateSubCategorySelector() {
+  var selector = $('select[name="deliverable.deliverableInfo.deliverableType.id"]');
+  console.log(selector.val());
+  if(selector.val() == '63'){
+    console.log('true');
+    $('.conditionalRequire .requiredTag').slideDown();
+    $('.isOtherUrlContentBox').css("display","block");
+    console.log('true');
+  }else{
+    $('.isOtherUrlContentBox').css("display","none");
+    $('.conditionalRequire .requiredTag').slideUp();
+    //console.log($('.conditionalRequire .requiredTag'));
+  }
+
 };

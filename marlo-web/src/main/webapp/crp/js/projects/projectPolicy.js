@@ -49,7 +49,6 @@ function attachEvents() {
 
   // On change policyInvestimentTypes
   $('select.policyInvestimentTypes').on('change', function() {
-    console.log(this.value);
     if(this.value == 3) {
       $('.block-budgetInvestment').slideDown();
     } else {
@@ -72,8 +71,31 @@ function attachEvents() {
     }
   });
 
-  //
-  // evidences-block
+//On change radio buttons
+  $('input[class*="radioType-"]').on('change', onChangeRadioButton);
+
+//View sub-IDOs popup
+  $(".selectSubIDO").on("click", function() {
+    currentSubIdo = $(this).parents(".subIdo");
+    $("#subIDOs-graphic").dialog({
+        autoOpen: false,
+        resizable: false,
+        closeText: "",
+        width: '85%',
+        modal: true,
+        height: $(window).height() * 0.90,
+        show: {
+            effect: "blind",
+            duration: 500
+        },
+        hide: {
+            effect: "fadeOut",
+            duration: 500
+        }
+    });
+    $("#subIDOs-graphic").dialog("open");
+  });
+
 
 }
 
@@ -81,4 +103,14 @@ function addSelect2() {
   $('form select').select2({
     width: '100%'
   });
+}
+
+function onChangeRadioButton() {
+  var thisValue = this.value === "true";
+  var radioType = $(this).classParam('radioType');
+  if (thisValue) {
+    $('.block-' + radioType).slideDown();
+  } else {
+    $('.block-' + radioType).slideUp();
+  }
 }
