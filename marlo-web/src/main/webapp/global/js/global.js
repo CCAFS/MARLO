@@ -403,6 +403,7 @@ $('.selectedProgram, selectedProject').on('click', function() {
   $(this).parent().next().slideToggle('slow');
 });
 
+
 // event to inputs in login form
 /*
  * $('input[name="user.email"] , input[name="user.password"]').on("keypress", function(event) { if(event.keyCode === 10 ||
@@ -418,6 +419,7 @@ $('input').on("keypress", function(event) {
   }
 
 });
+
 
 function setViewMore() {
   var element = $('.helpText');
@@ -569,7 +571,7 @@ function notificationError(message) {
 
 /**
  * One to Many component
- * 
+ *
  * @description elementsListComponent function to the functioning of the customForm macro
  */
 function setElementsListComponent() {
@@ -638,8 +640,9 @@ function onSelectElement() {
   var elementType = $select.classParam('elementType');
   var maxLimit = $select.classParam('maxLimit');
   var $list = $parent.find('ul.list');
+  var $primaryList = $parent.find('ul.primaryRadio');
+  var $primaryDisplay = $parent.find('div.primarySelectorDisplayBox');
   var counted = $list.find('li').length;
-
   // Select an option
   if($option.val() == "-1") {
     return;
@@ -688,17 +691,39 @@ function onSelectElement() {
     var indexLevel = $(element).classParam('indexLevel');
     $(element).setNameIndexes(indexLevel, i);
   });
+
+  //Validate if $primaryList exist
+  if($primaryList != null) {
+
+    var className = $primaryDisplay.attr('class');
+    var idenfitierClassName = className.split(' ');
+    console.log(idenfitierClassName[1]);
+
+    $primaryDisplay.css("display","block");
+    $element.find('.elementRelationID').val(id);
+    $element.find('.elementName').html(name);
+
+    var $contentDiv =$("<div class='radioFlat selectPrimary radioContentBox ID-"+ id +"'></div>");
+    var $radiobutton = $("<input id='primaryRadioButtonID"+ idenfitierClassName[1] +"-"+ id +"' class='radio-input assesmentLevels primaryRadioButton option-"+ id +"' type='radio' name='"+ idenfitierClassName[1] +"Primary' value='"+ id +"'/>");
+    var $radioLabel = $("<label for='primaryRadioButtonID"+ idenfitierClassName[1] +"-"+ id +"' class='radio-label'>"+ name +"</label>");
+
+    $radiobutton.appendTo($contentDiv);
+    $radioLabel.appendTo($contentDiv);
+    $contentDiv.appendTo($primaryList);
+  }
 }
 
 function onClickRemoveElement() {
   var removeElementType = $(this).classParam('removeElementType');
   var $parent = $(this).parent();
   var $select = $(this).parents(".panel-body").find('select');
+  var $primaryRadioElement = $(this).parents('.elementsListComponent').find('ul.primaryRadio');
   var $list = $(this).parents('.elementsListComponent').find('ul.list');
   var counted = $list.find('li').length;
   var maxLimit = $select.classParam('maxLimit');
   var id = $parent.find(".elementRelationID").val();
   var name = $parent.find(".elementName").text();
+  var $primaryDisplay = $(this).parents(".elementsListComponent").find('div.primarySelectorDisplayBox');
 
   $parent.slideUp(100, function() {
     $parent.remove();
@@ -717,6 +742,18 @@ function onClickRemoveElement() {
       var indexLevel = $(element).classParam('indexLevel');
       $(element).setNameIndexes(indexLevel, i);
     });
+
+    //check if primary list exist
+    if($primaryRadioElement != null) {
+      var $tempo = $primaryRadioElement.find(".radioFlat.selectPrimary.radioContentBox.ID-"+ id +"");
+
+      $tempo.remove();
+    }
+
+    if($primaryRadioElement.children().length < 1){
+      $primaryDisplay.css("display", "none");
+      console.log($primaryDisplay);
+    }
 
     // Enabled select component if needed
     if((maxLimit > 0) && (counted >= maxLimit)) {

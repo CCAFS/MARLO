@@ -9,7 +9,8 @@
   ] 
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/projects/projectPolicies.css"
+  "${baseUrlMedia}/css/projects/projectPolicies.css",
+  "${baseUrlMedia}/css/projects/projectSubIdos.css"
   ] 
 /]
 
@@ -25,7 +26,6 @@
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /] 
-
 
 <section class="container">
     <div class="row">
@@ -62,6 +62,36 @@
     </div>  
 </section>
 
+[#-- PopUp to select SubIDOs --]
+<div id="subIDOs-graphic" style="overflow:auto; display:none;" >
+  <div class="graphic-container" >
+  <div class="filterPanel panel-default">
+    <div class="panel-heading"> 
+      <form id="filterForm"  role="form">
+        <label class="checkbox-inline">Filter By:</label>
+        <label class="checkbox-inline">
+          <input type="checkbox" value="IDO" checked>IDOs
+        </label>
+        <label class="checkbox-inline">
+          <input type="checkbox" value="CCIDO" checked>Cross-cutting IDOs
+        </label>
+      </form>
+    </div>
+  </div>        
+  [#list srfIdos as ido]
+    <div class="idoWrapper ${ido.isCrossCutting?string("crossCutting","ido")} ">    
+      <div class="IDO${ido.isCrossCutting?string("-CrossCutting","")}"><strong>${ido.isCrossCutting?string("CrossCutting:","")} ${ido.description}</strong></div>
+      <div class="subIdoWrapper">
+        [#list ido.subIdos as subIdo]
+          <div class="line"></div>
+          <div id="subIdo-${subIdo.id}" class="subIDO subIDO${ido.isCrossCutting?string("-CrossCutting","")}">${subIdo.smoCode} ${subIdo.description}</div>
+        [/#list]
+      </div>
+    </div>
+  [/#list]
+  </div>      
+</div>
+
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
 [#-- MACROS --]
@@ -75,10 +105,8 @@
     
     [#-- Year --]
     <div class="form-group row">
-      <div class="col-md-3"></div>
-      <div class="col-md-3"></div>
-      <div class="col-md-3"></div>
-      <div class="col-md-3">
+      <div class="col-md-8"></div>
+      <div class="col-md-4">
         [@customForm.select name="${customName}.projectPolicyInfo.year" className="setSelect2" i18nkey="policy.year" listName="years" required=true editable=editable/]
         [#if editable=false]
           ${element.projectPolicyInfo.year}
@@ -87,9 +115,14 @@
     </div>
     <hr />
     
-    [#-- Title (up to 50 words) --]
+    [#-- Title (up to 30 words - Requested for AR2019) --]
     <div class="form-group">
-      [@customForm.input name="${customName}.projectPolicyInfo.title" i18nkey="policy.title" className="limitWords-50"required=true editable=editable /]
+      [@customForm.input name="${customName}.projectPolicyInfo.title" i18nkey="policy.title" className="limitWords-30"required=true editable=editable /]
+    </div>
+    
+    [#-- Description --]
+    <div class="form-group">
+  	  [@customForm.textArea name="${customName}.projectPolicyInfo.description" i18nkey="policy.description" className="limitWords-30" editable=editable /]
     </div>
     
     <div class="form-group row ">
@@ -146,16 +179,48 @@
     <hr />
     <br />
     
+    [#-- Milestones Contribution --]
+    <div class="form-group">          
+      <label for="">[@s.text name="policy.milestones" /]:[@customForm.req required=editable /][@customForm.helpLabel name="policy.milestones.help" showIcon=false editable=editable/]</label>
+      [#assign policyMilestoneLink = "policyMilestoneLink"]
+      [#assign showMilestoneIndicator = (policy.projectPolicyInfo.hasMilestones?string)!"" /]
+      [@customForm.radioFlat id="${policyMilestoneLink}-yes" name="${customName}.projectPolicyInfo.hasMilestones" label="Yes" value="true" checked=(showMilestoneIndicator == "true") cssClass="radioType-${policyMilestoneLink}" cssClassLabel="radio-label-yes" editable=editable /]
+      [@customForm.radioFlat id="${policyMilestoneLink}-no" name="${customName}.projectPolicyInfo.hasMilestones" label="No" value="false" checked=(showMilestoneIndicator == "false") cssClass="radioType-${policyMilestoneLink}" cssClassLabel="radio-label-no" editable=editable /]
+    </div>
+        
+     <div class="form-group simpleBox block-${policyMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
+       [#--[@customForm.elementsListComponent name="${customName}.milestones" elementType="crpMilestone" elementList=(element.milestones)![] label="policy.milestones" helpIcon=false listName="milestoneList" keyFieldName="id" displayFieldName="composedName" required=false /]
+       --]
+       [@customForm.primaryListComponent name="${customName}.milestones" checkName="milestonePrimaryId" elementType="crpMilestone" elementList=(element.milestones)!"" label="policy.milestones" labelPrimary="policy.primaryMilestone" helpIcon=false listName="milestoneList" keyFieldName="id" displayFieldName="composedName" required=false /]
+       <div class="note">[@s.text name="policy.milestones.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/contributionsCrpList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
+       <br>
+     </div> 
+
+    <br />
+    
+    [#-- Contributing Centers/ PPA partners  --]
+    <div class="form-group">
+      [@customForm.elementsListComponent name="${customName}.centers" elementType="institution" elementList=(element.centers)![] label="policy.contributingCenters"  listName="centers" keyFieldName="id" displayFieldName="composedName" /]
+    </div>
+    
     [#-- Contributing CRPs/PTFs  --]
     <div class="form-group">
-      [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="policy.contributingCrpsPtfs"  listName="crps" keyFieldName="id" displayFieldName="composedName" /]
+      [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="policy.contributingCrpsPtfs"  listName="crps" keyFieldName="id" displayFieldName="composedName" required=false/]
     </div>
+
     
-    [#-- Sub IDOs (maxLimit=2) --]
+    [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]      
+    <div class="form-group simpleBox">
+     [#--  <div class="buttonSubIdo-content"><br> <div class="selectSubIDO" ><span class=""></span>View sub-IDOs</div></div> --]
+      [@customForm.primaryListComponent name="${customName}.subIdos" checkName="subIdoPrimaryId" elementType="srfSubIdo" elementList=(element.subIdos)!"" label="policy.subIDOs" labelPrimary="policy.primarySubIdo" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description" required=false /]
+    
+    </div>  
+[#--
     <div class="form-group">
-      [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="policy.subIDOs" listName="subIdos" maxLimit=2 keyFieldName="id" displayFieldName="description"/]
-    </div>
-    
+       [@customForm.select name="${customName}.principalSubIdo" className="setSelect2 principalSubIdo" i18nkey="policy.subIDO.primary" listName="" keyFieldName="id"  displayFieldName="description" required=true editable=editable/]
+    </div>--]
+       
+        
     [#-- CGIAR Cross-cutting Markers  --]
     <div class="form-group">
       <h5 class="labelheader">[@s.text name="policy.crossCuttingMarkers" /]</h5>

@@ -6936,3 +6936,12 @@ i.authorVisibles {}
 .text-bold {
   font-weight: 500 !important;
 }
+
+div.selectPrimary{
+  padding: 1px 24px 0px 6px;
+  border-radius: 2px;
+  margin-bottom: 5px;
+  position: relative;
+  display: grid;
+  grid-auto-rows: auto;
+}

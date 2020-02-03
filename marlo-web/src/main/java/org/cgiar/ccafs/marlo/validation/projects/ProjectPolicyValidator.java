@@ -111,7 +111,7 @@ public class ProjectPolicyValidator extends BaseValidator {
 
     // Validate Title
     if (!(this.isValidString(projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getTitle())
-      && this.wordCount(projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getTitle()) <= 50)) {
+      && this.wordCount(projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getTitle()) <= 30)) {
       action.addMessage(action.getText("Title"));
       action.addMissingField("projectPolicy.title");
       action.getInvalidFields().put("input-policy.projectPolicyInfo.title", InvalidFieldsMessages.EMPTYFIELD);
@@ -204,19 +204,35 @@ public class ProjectPolicyValidator extends BaseValidator {
 
 
     // Validate Crps
+    /*
     if (projectPolicy.getCrps() == null || projectPolicy.getCrps().isEmpty()) {
       action.addMessage(action.getText("expectedStudyList"));
       action.addMissingField("policy.contributingCrpsPtfs");
       action.getInvalidFields().put("list-policy.crps",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"crps"}));
     }
-
+*/
+    if (projectPolicy.getCrps() == null || projectPolicy.getCrps().isEmpty()) {
+        action.addMessage(action.getText("contributingCenters"));
+        action.addMissingField("policy.contributingCenters");
+        action.getInvalidFields().put("list-policy.centers",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"centers"}));
+    }
+    
     // Validate SubIdos
     if (projectPolicy.getSubIdos() == null || projectPolicy.getSubIdos().isEmpty()) {
       action.addMessage(action.getText("subIdos"));
       action.addMissingField("policy.subIDOs");
       action.getInvalidFields().put("list-policy.subIdos",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
+    }
+    
+    //validate Milestones
+    if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()) != null && projectPolicy.getProjectPolicyInfo().getHasMilestones()!= null && projectPolicy.getProjectPolicyInfo().getHasMilestones()== true) {
+    	 action.addMessage(action.getText("milestoneList"));
+         action.addMissingField("policy.milestones");
+         action.getInvalidFields().put("list-policy.milestones",
+           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"milestones"}));
     }
 
     // Validate Cross Cutting
