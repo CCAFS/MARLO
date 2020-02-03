@@ -22,6 +22,9 @@ public class ProjectExpectedStudySubIdo extends MarloBaseEntity implements java.
 
   @Expose
   private SrfSubIdo srfSubIdo;
+  
+  @Expose
+  private Boolean primary;
 
   public ProjectExpectedStudySubIdo() {
   }
@@ -114,6 +117,12 @@ public class ProjectExpectedStudySubIdo extends MarloBaseEntity implements java.
     this.srfSubIdo = srfSubIdo;
   }
 
+  public Boolean getPrimary() {
+	return primary;
+  }
 
+  public void setPrimary(Boolean primary) {
+	this.primary = primary;
+  }
 }
 

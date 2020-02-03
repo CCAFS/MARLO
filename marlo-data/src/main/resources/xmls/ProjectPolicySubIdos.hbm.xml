@@ -10,6 +10,9 @@
 			<column name="id" />
 			<generator class="identity" />
 		</id>
+		<property name="primary" type="boolean">
+      		<column name="is_primary" not-null="true" />
+    	</property>
 		<many-to-one
 			class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select"
 			name="phase">

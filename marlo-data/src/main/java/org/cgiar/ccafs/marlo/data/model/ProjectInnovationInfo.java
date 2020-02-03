@@ -62,6 +62,9 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
 
   @Expose
   private Long year;
+  
+  @Expose
+  private Long innovationNumber;
 
   @Expose
   private ProjectExpectedStudy projectExpectedStudy;
@@ -80,6 +83,8 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
 
   @Expose
   private String otherInnovationType;
+  @Expose
+  private Boolean hasMilestones;
 
   public ProjectInnovationInfo() {
   }
@@ -122,6 +127,15 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.youthExplaniation = youthExplaniation;
     this.year = year;
   }
+  
+  
+  public Long getInnovationNumber() {
+	return innovationNumber;
+  }
+
+  public void setInnovationNumber(Long innovationNumber) {
+	this.innovationNumber = innovationNumber;
+  }
 
   public String getAdaptativeResearchNarrative() {
     return adaptativeResearchNarrative;
@@ -135,7 +149,14 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   public String getDescriptionStage() {
     return descriptionStage;
   }
+  
+  public Boolean getHasMilestones() {
+	return hasMilestones;
+  }
 
+  public void setHasMilestones(Boolean hasMilestones) {
+	this.hasMilestones = hasMilestones;
+  }
 
   public String getEvidenceLink() {
     return evidenceLink;
