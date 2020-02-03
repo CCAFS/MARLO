@@ -30,14 +30,20 @@ function attachEvents() {
       $('.stageFourBlock-false').slideDown();
     }
   });
-  
+
   // Check the stage of innovation
   $('select.innovationTypeSelect').on('change', function() {
-    var isTypeSix = this.value == 6;
-    if(isTypeSix) {
-      $('.typeSixBlock').slideDown();  
+    console.log(this.value)
+    var id = this.value;
+    if(id == 6) {
+      $('.typeSixBlock').slideDown();
+      $('.numberInnovations-block').slideUp();
+    } else if(id == 1) {
+      $('.numberInnovations-block').slideDown();
+      $('.typeSixBlock').slideUp();
     } else {
       $('.typeSixBlock').slideUp();
+      $('.numberInnovations-block').slideUp();
     }
   });
 
@@ -51,6 +57,9 @@ function attachEvents() {
     }
 
   })
+
+//On change radio buttons
+  $('input[class*="radioType-"]').on('change', onChangeRadioButton);
 
 }
 
@@ -68,6 +77,16 @@ function addSelect2() {
       templateSelection: formatStateCountries,
       width: '100%'
   });
+}
+
+function onChangeRadioButton() {
+	  var thisValue = this.value === "true";
+	  var radioType = $(this).classParam('radioType');
+	  if (thisValue) {
+	    $('.block-' + radioType).slideDown();
+	  } else {
+	    $('.block-' + radioType).slideUp();
+	  }
 }
 
 function formatList(state) {

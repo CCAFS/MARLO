@@ -45,6 +45,9 @@
 		<property name="title" type="string">
 			<column length="65535" name="title" />
 		</property>
+		<property name="description" type="string">
+			<column length="65535" name="description" />
+		</property>
 		<property name="other" type="string">
 			<column length="65535" name="other" />
 		</property>
@@ -54,5 +57,8 @@
 		<property name="amount" type="java.lang.Double">
 			<column name="amount" precision="30" />
 		</property>
+		 <property name="hasMilestones" type="boolean">
+            <column name="has_milestones" not-null="true" />
+        </property>
 	</class>
 </hibernate-mapping>
