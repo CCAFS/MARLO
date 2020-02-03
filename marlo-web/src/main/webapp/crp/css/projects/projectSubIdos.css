@@ -1,0 +1,84 @@
+.idoBlock {
+  width: 41%;
+  float: left;
+  padding-right: 3%;
+}
+
+.subIdoBlock {
+  width: 59%;
+  float: left;
+  padding-right: 0%;
+  padding-top: 3px;
+}
+
+.buttonSubIdo-block {
+    float: left;
+    display: inline-block;
+    margin-right: 4%;
+    /* margin-left: 2%; */
+}
+
+
+.idoWrapper {
+    display: inline-block;
+    width: 120px;
+    margin: 5px 8px;
+    vertical-align: top;
+}
+
+.IDO {
+    border: 2px solid rgba(15, 103, 136, 0.59);
+    background-color: #2293b5;
+    color: white;
+    font-size: 0.8em;
+    text-align: center;
+    padding: 5% 8%;
+    height: 101px;
+}
+
+.IDO-CrossCutting {
+    border: 3px solid rgba(128, 128, 128, 0.59);
+    background-color: rgb(103, 107, 109);
+    color: #ffffff;
+    font-size: 0.8em;
+    text-align: center;
+    padding: 8% 8%;
+    height: 101px;
+}
+
+.subIDO {
+    border: 2px solid #7a90da;
+    background-color: rgba(19, 145, 190, 0.56);
+    color: #0509a3;
+    text-align: center;
+    padding: 5px;
+    font-size: 0.8em;
+    cursor: default;
+    border-radius: 10px;
+}
+
+.subIDO-CrossCutting {
+    border: 2px solid rgb(122, 144, 218);
+    background-color: rgba(69, 71, 72, 0.24);
+    color: #0509a3;
+    text-align: center;
+    padding: 5px;
+    font-size: 0.8em;
+    cursor: default;
+    border-radius: 10px;
+}
+
+.line {
+    width: 2px;
+    height: 18px;
+    background-color: rgb(210, 211, 211);
+    margin: auto auto;
+}
+
+.graphic-container {
+    width: 2000px;
+}
+
+.selectSubIDO {
+    cursor: pointer;
+}

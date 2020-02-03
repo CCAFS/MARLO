@@ -268,6 +268,15 @@ public class DeliverableValidator extends BaseValidator {
             action.getInvalidFields().put("input-deliverable.deliverableInfo.adoptedLicense",
               InvalidFieldsMessages.EMPTYFIELD);
           }
+          
+          // DOI Validator
+          if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId().intValue() == 63) {
+        	  if (deliverable.getDissemination() == null) {
+                  //action.addMessage(action.getText("project.deliverable.v.qualityCheck.assurance"));
+                  //action.getInvalidFields().put("input-deliverable.qualityCheck.qualityAssurance.id",
+                  //  InvalidFieldsMessages.EMPTYFIELD);
+                }
+          }
 
           // Deliverable Quality Check
           if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType() != null && (deliverable

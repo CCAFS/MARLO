@@ -20,6 +20,9 @@
         </div>
         <div class="col-md-4">
           [@customForm.select name="${customName}.projectExpectedStudyInfo.year" className="setSelect2" i18nkey="study.year" listName="allPhaseYearsGreater" header=false required=true editable=editable /]
+          [#if editable=false]
+            ${element.projectExpectedStudyInfo.year}
+          [/#if]
         </div>
       </div>
       
@@ -133,9 +136,14 @@
           <label for="">[@s.text name="study.relevantTo" /]:[@customForm.req required=editable /]
           </label> 
         [/#if]
-        [#-- Sub IDOs (maxLimit=2) --]
+        [#-- Sub IDOs (maxLimit=3) --]
+        [#--<div class="form-group simpleBox">
+          [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="study.stratgicResultsLink.subIDOs"  listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description"/]
+        </div> --] 
+        
+        [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]      
         <div class="form-group simpleBox">
-          [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="study.stratgicResultsLink.subIDOs"  listName="subIdos" maxLimit=2 keyFieldName="id" displayFieldName="description"/]
+          [@customForm.primaryListComponent name="${customName}.subIdos" checkName="subIdoPrimaryId" elementType="srfSubIdo" elementList=(element.subIdos)!"" label="policy.subIDOs" labelPrimary="policy.primarySubIdo" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description" required=false /]
         </div>
         
         [#-- SRF Targets (maxLimit=2)  --]
@@ -158,6 +166,29 @@
         </div>
         [/#if]
       </div>
+      
+      [#-- Milestones --]
+        [#if isOutcomeCaseStudy]
+        <div class="form-group">          
+          <label for="">[@s.text name="study.milestones" /]:[@customForm.req required=editable /][@customForm.helpLabel name="study.milestones.help" showIcon=false editable=editable/]</label>
+          [#assign studyMilestoneLink = "studyMilestoneLink"]
+          [#assign showMilestoneIndicator = (expectedStudy.projectExpectedStudyInfo.hasMilestones?string)!"" /]
+          [@customForm.radioFlat id="${studyMilestoneLink}-yes" name="${customName}.projectExpectedStudyInfo.hasMilestones" label="Yes" value="true" checked=(showMilestoneIndicator == "true") cssClass="radioType-${studyMilestoneLink}" cssClassLabel="radio-label-yes" editable=editable /]
+          [@customForm.radioFlat id="${studyMilestoneLink}-no" name="${customName}.projectExpectedStudyInfo.hasMilestones" label="No" value="false" checked=(showMilestoneIndicator == "false") cssClass="radioType-${studyMilestoneLink}" cssClassLabel="radio-label-no" editable=editable /]
+      </div>
+        
+        [#--<div class="form-group simpleBox block-${studyMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
+          [@customForm.elementsListComponent name="${customName}.milestones" elementType="crpMilestone" elementList=(element.milestones)![] label="study.milestones"  listName="milestones" keyFieldName="id" displayFieldName="composedName" /]
+          <div class="note">[@s.text name="study.milestones.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/contributionsCrpList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
+         <br/>      
+        </div>--]
+        
+        <div class="form-group simpleBox block-${studyMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
+          [@customForm.primaryListComponent name="${customName}.milestones" checkName="study.milestonePrimaryId" elementType="crpMilestone" elementList=(element.milestones)!"" label="study.milestones" labelPrimary="policy.primaryMilestone" helpIcon=false listName="milestones" keyFieldName="id" displayFieldName="composedName" required=false /]
+         <div class="note">[@s.text name="study.milestones.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/contributionsCrpList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
+         <br/>
+        </div>
+        [/#if]
       
       [#-- 6.  Geographic scope - Countries  --]
       <div class="form-group geographicScopeBlock">
@@ -199,6 +230,12 @@
         [#if isOutcomeCaseStudy]
         <div class="form-group simpleBox">
           [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="study.keyContributors.crps"  listName="crps" keyFieldName="id" displayFieldName="composedName" required=false /]
+        </div>
+        [/#if]
+        [#-- Centers --]
+        [#if isOutcomeCaseStudy]
+        <div class="form-group simpleBox">
+          [@customForm.elementsListComponent name="${customName}.centers" elementType="institution" elementList=element.centers label="study.keyContributors.centers"  listName="centers" keyFieldName="id" displayFieldName="composedName" /]
         </div>
         [/#if]
         [#-- Flagships --]

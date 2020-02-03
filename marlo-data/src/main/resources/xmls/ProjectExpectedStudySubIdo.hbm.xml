@@ -17,5 +17,8 @@
         <many-to-one name="srfSubIdo" class="org.cgiar.ccafs.marlo.data.model.SrfSubIdo" fetch="select">
             <column name="sub_ido_id" />
         </many-to-one>
+        <property name="primary" type="boolean">
+      		<column name="is_primary" not-null="true" />
+    	</property>
     </class>
 </hibernate-mapping>

@@ -59,5 +59,11 @@
         <property name="confidentialUrl" type="string">
             <column name="confidential_url" length="500" />
         </property>
+        <property name="articleUrl" type="string">
+            <column name="article_url" length="500" />
+        </property>
+         <property name="hasDOI" type="java.lang.Boolean">
+            <column name="has_doi" />
+        </property>
     </class>
 </hibernate-mapping>
