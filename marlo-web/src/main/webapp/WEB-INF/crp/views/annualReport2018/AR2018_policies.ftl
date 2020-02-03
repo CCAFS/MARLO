@@ -160,6 +160,7 @@
     <thead>
       <tr>
         <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.name" /]</th>
+        <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.description" /]</th>
         <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.maturity" /]</th>
         <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.subIDOs" /]</th>
         [#if expanded]
@@ -203,6 +204,8 @@
             
             <a href="${url}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
           </td>
+          [#-- Description --]
+          <td class="text-center">[@utils.tableText value=(item.projectPolicyInfo.description)!"" /]</td>         
           [#-- Level of Maturity --]
           <td class="text-center">[@utils.tableText value=(item.projectPolicyInfo.repIndStageProcess.name)!"" /]</td>
           [#-- Sub-IDOs --]
@@ -270,9 +273,9 @@
     [#else]
       <tr>
         [#if !expanded]
-         <td class="text-center" colspan="4"><i>No entries added yet.</i></td>
+         <td class="text-center" colspan="5"><i>No entries added yet.</i></td>
         [#else]
-         <td class="text-center" colspan="11"><i>No entries added yet.</i></td>
+         <td class="text-center" colspan="12"><i>No entries added yet.</i></td>
         [/#if]
       </tr>
     [/#if]

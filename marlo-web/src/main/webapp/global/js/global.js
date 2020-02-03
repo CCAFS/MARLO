@@ -694,11 +694,13 @@ function onClickRemoveElement() {
   var removeElementType = $(this).classParam('removeElementType');
   var $parent = $(this).parent();
   var $select = $(this).parents(".panel-body").find('select');
+  var $primaryRadioElement = $(this).parents('.elementsListComponent').find('ul.primaryRadio');
   var $list = $(this).parents('.elementsListComponent').find('ul.list');
   var counted = $list.find('li').length;
   var maxLimit = $select.classParam('maxLimit');
   var id = $parent.find(".elementRelationID").val();
   var name = $parent.find(".elementName").text();
+  var $primaryDisplay = $(this).parents(".elementsListComponent").find('div.primarySelectorDisplayBox');
   var eventData = [
       id, name
   ];

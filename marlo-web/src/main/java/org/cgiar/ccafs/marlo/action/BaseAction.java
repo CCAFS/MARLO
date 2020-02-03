@@ -2551,35 +2551,41 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       if (clazz == ProjectBudget.class) {
         ProjectBudget projectBudget = this.projectBudgetManager.getProjectBudgetById(id);
-        List<DeliverableFundingSource> deList = projectBudget.getFundingSource().getDeliverableFundingSources().stream()
-          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
-            && c.getDeliverable().getProject() != null
-            && c.getDeliverable().getProject().getId().longValue() == projectID.longValue())
-          .collect(Collectors.toList());
+        List<DeliverableFundingSource> deList = projectBudget.getFundingSource().getDeliverableFundingSources()
+            .stream()
+            .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
+                && c.getDeliverable().getProject() != null
+                && c.getDeliverable().getProject().getId().longValue() == projectID.longValue())
+            .collect(Collectors.toList());
         Set<Deliverable> deSet = new HashSet<>();
         for (DeliverableFundingSource deliverableInfo : deList) {
           Deliverable deliverable = deliverableInfo.getDeliverable();
           long projectDB = deliverable.getProject().getId().longValue();
           if (deliverable.getProject() != null && projectDB == projectID) {
-            if (deliverable.getDeliverableInfo(this.getActualPhase()) != null) {
+            if (deliverable.getDeliverableInfo() != null) {
               if (this.isReportingActive() || this.isUpKeepActive()) {
                 if (deliverable.getDeliverableInfo().isRequiredToComplete()
-                  || deliverable.getDeliverableInfo().isStatusCompleteInNextPhases()) {
+                    || deliverable.getDeliverableInfo().isStatusCompleteInNextPhases()) {
                   deSet.add(deliverable);
                 }
               } else {
-                if (deliverable.isActive() && deliverable.getDeliverableInfo().getNewExpectedYear() != null
-                  && deliverable.getDeliverableInfo().getNewExpectedYear() >= this.getActualPhase().getYear()
-                  && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-                  && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-                    .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+                if (deliverable.isActive()
+                    && deliverable.getDeliverableInfo().getNewExpectedYear() != null
+                    && deliverable.getDeliverableInfo().getNewExpectedYear() >= this
+                        .getActualPhase().getYear()
+                    && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+                    && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus()
+                        .intValue() == Integer
+                            .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
                   deSet.add(deliverable);
                 }
                 if (deliverable.isActive()
-                  && deliverable.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear()
-                  && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-                  && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-                    .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+                    && deliverable.getDeliverableInfo(this.getActualPhase()).getYear() >= this
+                        .getActualPhase().getYear()
+                    && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+                    && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus()
+                        .intValue() == Integer
+                            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
                   deSet.add(deliverable);
                 }
               }
@@ -2593,10 +2599,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       if (clazz == Project.class) {
         ProjectBudget projectBudget = this.projectBudgetManager.getProjectBudgetById(id);
-        List<DeliverableFundingSource> deList = projectBudget.getFundingSource().getDeliverableFundingSources().stream()
-          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
-            && c.getDeliverable().getProject().getId().longValue() == projectID.longValue())
-          .collect(Collectors.toList());
+        List<DeliverableFundingSource> deList = projectBudget.getFundingSource().getDeliverableFundingSources()
+            .stream()
+            .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
+                && c.getDeliverable().getProject().getId().longValue() == projectID.longValue())
+            .collect(Collectors.toList());
         Set<Deliverable> deSet = new HashSet<>();
         for (DeliverableFundingSource deliverableInfo : deList) {
           Deliverable deliverable = deliverableInfo.getDeliverable();
@@ -2608,18 +2615,23 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                   deSet.add(deliverable);
                 }
               } else {
-                if (deliverable.isActive() && deliverable.getDeliverableInfo().getNewExpectedYear() != null
-                  && deliverable.getDeliverableInfo().getNewExpectedYear() >= this.getActualPhase().getYear()
-                  && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-                  && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-                    .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+                if (deliverable.isActive()
+                    && deliverable.getDeliverableInfo().getNewExpectedYear() != null
+                    && deliverable.getDeliverableInfo().getNewExpectedYear() >= this
+                        .getActualPhase().getYear()
+                    && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+                    && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus()
+                        .intValue() == Integer
+                            .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
                   deSet.add(deliverable);
                 }
                 if (deliverable.isActive()
-                  && deliverable.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear()
-                  && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-                  && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-                    .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+                    && deliverable.getDeliverableInfo(this.getActualPhase()).getYear() >= this
+                        .getActualPhase().getYear()
+                    && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+                    && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus()
+                        .intValue() == Integer
+                            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
                   deSet.add(deliverable);
                 }
               }
@@ -2635,36 +2647,43 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         deliverables = new ArrayList<>();
         ProjectOutcome projectOutcome = this.projectOutcomeManager.getProjectOutcomeById(id);
         List<CrpClusterKeyOutputOutcome> keyOutputOutcomes = projectOutcome.getCrpProgramOutcome()
-          .getCrpClusterKeyOutputOutcomes().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+            .getCrpClusterKeyOutputOutcomes().stream().filter(c -> c.isActive())
+            .collect(Collectors.toList());
         for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : keyOutputOutcomes) {
 
           deliverables.addAll(this.getDeliverableRelationsImpact(
-            crpClusterKeyOutputOutcome.getCrpClusterKeyOutput().getId(), CrpClusterKeyOutput.class.getName()));
+              crpClusterKeyOutputOutcome.getCrpClusterKeyOutput().getId(),
+              CrpClusterKeyOutput.class.getName()));
         }
         HashSet<Deliverable> deList = new HashSet<>();
 
         for (Deliverable deliverable : deliverables) {
           deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(this.getActualPhase()));
           if (deliverable.getProject() != null
-            && deliverable.getProject().getId().longValue() == projectID.longValue()) {
+              && deliverable.getProject().getId().longValue() == projectID.longValue()) {
             if (deliverable.getDeliverableInfo() != null) {
               if (this.isReportingActive() || this.isUpKeepActive()) {
                 if (deliverable.getDeliverableInfo().isRequiredToComplete()) {
                   deList.add(deliverable);
                 }
               } else {
-                if (deliverable.isActive() && deliverable.getDeliverableInfo().getNewExpectedYear() != null
-                  && deliverable.getDeliverableInfo().getNewExpectedYear() >= this.getActualPhase().getYear()
-                  && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-                  && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-                    .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+                if (deliverable.isActive()
+                    && deliverable.getDeliverableInfo().getNewExpectedYear() != null
+                    && deliverable.getDeliverableInfo().getNewExpectedYear() >= this
+                        .getActualPhase().getYear()
+                    && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+                    && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus()
+                        .intValue() == Integer
+                            .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
                   deList.add(deliverable);
                 }
                 if (deliverable.isActive()
-                  && deliverable.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear()
-                  && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-                  && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-                    .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+                    && deliverable.getDeliverableInfo(this.getActualPhase()).getYear() >= this
+                        .getActualPhase().getYear()
+                    && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+                    && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus()
+                        .intValue() == Integer
+                            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
                   deList.add(deliverable);
                 }
               }

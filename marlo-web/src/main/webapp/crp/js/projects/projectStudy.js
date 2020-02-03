@@ -206,7 +206,8 @@ function attachEvents() {
     }
 
   })();
-
+	//On change radio buttons
+	$('input[class*="radioType-"]').on('change', onChangeRadioButton);
 }
 
 function onChangeRadioButton() {
@@ -254,6 +255,16 @@ function addSelect2() {
   $('form select').select2({
     width: '100%'
   });
+}
+
+function onChangeRadioButton() {
+	  var thisValue = this.value === "true";
+	  var radioType = $(this).classParam('radioType');
+	  if (thisValue) {
+	    $('.block-' + radioType).slideDown();
+	  } else {
+	    $('.block-' + radioType).slideUp();
+	  }
 }
 
 /**
