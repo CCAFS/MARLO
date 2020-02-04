@@ -659,23 +659,22 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
 
         // Expected Study Center List Autosave
-        /*
-         * if (this.expectedStudy.getCenters() != null) { for
-         * (ProjectExpectedStudyCenter projectExpectedStudyCenter :
-         * this.expectedStudy.getCenters()) {
-         * projectExpectedStudyCenter.setInstitution(this.institutionManager
-         * .getInstitutionById(projectExpectedStudyCenter.getInstitution().getId())); }
-         * }
-         */
+        if (this.expectedStudy.getCenters() != null) {
+          for (ProjectExpectedStudyCenter projectExpectedStudyCenter : this.expectedStudy.getCenters()) {
+            projectExpectedStudyCenter.setInstitution(
+              this.institutionManager.getInstitutionById(projectExpectedStudyCenter.getInstitution().getId()));
+          }
+        }
+
         // Innovation Milestone List Autosave
-        /*
-         * if (this.expectedStudy.getMilestones() != null) { for
-         * (ProjectExpectedStudyMilestone projectExpectedStudyMilestone :
-         * this.expectedStudy .getMilestones()) {
-         * projectExpectedStudyMilestone.setCrpMilestone((milestoneManager
-         * .getCrpMilestoneById(projectExpectedStudyMilestone.getCrpMilestone().getId())
-         * )); } }
-         */
+
+        if (this.expectedStudy.getMilestones() != null) {
+          for (ProjectExpectedStudyMilestone projectExpectedStudyMilestone : this.expectedStudy.getMilestones()) {
+            projectExpectedStudyMilestone.setCrpMilestone(
+              (milestoneManager.getCrpMilestoneById(projectExpectedStudyMilestone.getCrpMilestone().getId())));
+          }
+        }
+
         // Expected Study Institutions List Autosave
         if (this.expectedStudy.getInstitutions() != null) {
           for (ProjectExpectedStudyInstitution projectExpectedStudyInstitution : this.expectedStudy.getInstitutions()) {
@@ -1846,6 +1845,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
                 studyMilestoneSave.setPrimary(false);
               }
               projectExpectedStudyMilestoneManager.saveProjectExpectedStudyMilestone(studyMilestoneSave);
+              // This is to add studyCrpSave to generate correct auditlog.
+              this.expectedStudy.getProjectExpectedStudyMilestones().add(studyMilestoneSave);
             }
           }
         }
@@ -1858,6 +1859,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             CrpMilestone milestone = milestoneManager.getCrpMilestoneById(studyMilestone.getId());
             if (milestone != null) {
               projectExpectedStudyMilestoneManager.deleteProjectExpectedStudyMilestone(studyMilestone.getId());
+              // This is to add studyCrpSave to generate correct auditlog.
+              this.expectedStudy.getProjectExpectedStudyMilestones().remove(
+                projectExpectedStudyMilestoneManager.getProjectExpectedStudyMilestoneById(studyMilestone.getId()));
             }
           } catch (Exception e) {
 
