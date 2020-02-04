@@ -764,7 +764,7 @@ function postMessageToSlack(messageJson) {
   // Webhook URLs for Your Workspace #marlo-notifications
   var channelToken = "T0L2KT42Z/BDZ119EPN/XSZBeKmXjS83T7iSEpAVoHRI";
   if(production) {
-    channelToken = "T0L2KT42Z/BDUKU4142/nZfjteOjTWuNnJFwoYadb877";
+    channelToken = "T0L2KT42Z/BTHFGL30U/uBl8mIsLfEos0Ytm8ppiriax";
   }
 
   var webhook_url = 'https://hooks.slack.com/services/' + channelToken;
