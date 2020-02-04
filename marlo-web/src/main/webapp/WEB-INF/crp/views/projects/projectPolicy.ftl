@@ -105,12 +105,17 @@
     
     [#-- Year --]
     <div class="form-group row">
-      <div class="col-md-8"></div>
       <div class="col-md-4">
         [@customForm.select name="${customName}.projectPolicyInfo.year" className="setSelect2" i18nkey="policy.year" listName="years" required=true editable=editable/]
         [#if editable=false]
           ${element.projectPolicyInfo.year}
         [/#if]
+      </div>      
+      <div class="col-md-8">
+        <div class="form-group">
+              [#assign guideSheetURL = "https://drive.google.com/file/d/1GYLsseeZOOXF9zXNtpUtE1xeh2gx3Vw2/view" /]
+              <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> #I1 Policies  -  Guideline </a> </small>
+            </div>
       </div>
     </div>
     <hr />
@@ -222,6 +227,10 @@
        
         
     [#-- CGIAR Cross-cutting Markers  --]
+    <div class="form-group">
+        [#assign ccGuideSheetURL = "https://drive.google.com/file/d/1oXb5UHABZIbyUUczZ8eqnDsgdzwABXPk/view?usp=sharing" /]
+        <small class="pull-right"><a href="${ccGuideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" />Cross-Cutting Markers  -  Guideline </a> </small>
+      </div>
     <div class="form-group">
       <h5 class="labelheader">[@s.text name="policy.crossCuttingMarkers" /]</h5>
       <div class="row">
