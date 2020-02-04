@@ -423,49 +423,54 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
       ReportSynthesis reportSynthesisFG =
         reportSynthesisManager.findSynthesis(this.getSelectedPhase().getId(), liaisonInstitution.getId());
 
-      if (reportSynthesisFG.getReportSynthesisFlagshipProgress() != null) {
+      if (reportSynthesisFG != null) {
 
-        if (reportSynthesisFG.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressOutcomes() != null
-          && !reportSynthesisFG.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressOutcomes()
-            .isEmpty()
-          && reportSynthesisFG.isActive() && reportSynthesisFG.getReportSynthesisFlagshipProgress().isActive()) {
+        if (reportSynthesisFG.getReportSynthesisFlagshipProgress() != null) {
 
-          List<ReportSynthesisFlagshipProgressOutcome> progressOutcomes = new ArrayList<>(
-            reportSynthesisFG.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressOutcomes().stream()
+          if (reportSynthesisFG.getReportSynthesisFlagshipProgress()
+            .getReportSynthesisFlagshipProgressOutcomes() != null
+            && !reportSynthesisFG.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressOutcomes()
+              .isEmpty()
+            && reportSynthesisFG.isActive() && reportSynthesisFG.getReportSynthesisFlagshipProgress().isActive()) {
+
+            List<ReportSynthesisFlagshipProgressOutcome> progressOutcomes = new ArrayList<>(reportSynthesisFG
+              .getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressOutcomes().stream()
               .filter(o -> o.isActive() && o.getCrpProgramOutcome().isActive()).collect(Collectors.toList()));
 
-          for (ReportSynthesisFlagshipProgressOutcome progressOutcome : progressOutcomes) {
+            for (ReportSynthesisFlagshipProgressOutcome progressOutcome : progressOutcomes) {
 
-            if (progressOutcome.getReportSynthesisFlagshipProgressOutcomeMilestones() != null
-              && !progressOutcome.getReportSynthesisFlagshipProgressOutcomeMilestones().isEmpty()) {
-              List<ReportSynthesisFlagshipProgressOutcomeMilestone> outcomeMilestones =
-                new ArrayList<>(progressOutcome.getReportSynthesisFlagshipProgressOutcomeMilestones().stream()
-                  .filter(o -> o.isActive() && o.getCrpMilestone().isActive()).collect(Collectors.toList()));
-              for (ReportSynthesisFlagshipProgressOutcomeMilestone outcomeMilestone : outcomeMilestones) {
+              if (progressOutcome.getReportSynthesisFlagshipProgressOutcomeMilestones() != null
+                && !progressOutcome.getReportSynthesisFlagshipProgressOutcomeMilestones().isEmpty()) {
+                List<ReportSynthesisFlagshipProgressOutcomeMilestone> outcomeMilestones =
+                  new ArrayList<>(progressOutcome.getReportSynthesisFlagshipProgressOutcomeMilestones().stream()
+                    .filter(o -> o.isActive() && o.getCrpMilestone().isActive()).collect(Collectors.toList()));
+                for (ReportSynthesisFlagshipProgressOutcomeMilestone outcomeMilestone : outcomeMilestones) {
 
-                AROutcomeMilestoneEvidence milestoneEvidence = new AROutcomeMilestoneEvidence();
-                milestoneEvidence.setCrpProgramOutcome(progressOutcome.getCrpProgramOutcome());
-                milestoneEvidence.setOutcomeProgress(progressOutcome.getSummary());
-                milestoneEvidence.setCrpMilestone(outcomeMilestone.getCrpMilestone());
-                milestoneEvidence.setMilestonesStatus(outcomeMilestone.getCrpMilestone().getMilestonesStatus().getId());
-                milestoneEvidence.setRepIndMilestoneReason(outcomeMilestone.getReason());
-                milestoneEvidence.setOtherReason(outcomeMilestone.getOtherReason());
-                milestoneEvidence.setEvidence(outcomeMilestone.getEvidence());
+                  AROutcomeMilestoneEvidence milestoneEvidence = new AROutcomeMilestoneEvidence();
+                  milestoneEvidence.setCrpProgramOutcome(progressOutcome.getCrpProgramOutcome());
+                  milestoneEvidence.setOutcomeProgress(progressOutcome.getSummary());
+                  milestoneEvidence.setCrpMilestone(outcomeMilestone.getCrpMilestone());
+                  milestoneEvidence
+                    .setMilestonesStatus(outcomeMilestone.getCrpMilestone().getMilestonesStatus().getId());
+                  milestoneEvidence.setRepIndMilestoneReason(outcomeMilestone.getReason());
+                  milestoneEvidence.setOtherReason(outcomeMilestone.getOtherReason());
+                  milestoneEvidence.setEvidence(outcomeMilestone.getEvidence());
 
-                milestoneEvidence.setCrossCuttingMarkers(new ArrayList<>());
-                if (outcomeMilestone.getReportSynthesisFlagshipProgressCrossCuttingMarkers() != null
-                  && !outcomeMilestone.getReportSynthesisFlagshipProgressCrossCuttingMarkers().isEmpty()) {
+                  milestoneEvidence.setCrossCuttingMarkers(new ArrayList<>());
+                  if (outcomeMilestone.getReportSynthesisFlagshipProgressCrossCuttingMarkers() != null
+                    && !outcomeMilestone.getReportSynthesisFlagshipProgressCrossCuttingMarkers().isEmpty()) {
 
-                  milestoneEvidence.getCrossCuttingMarkers()
-                    .addAll(outcomeMilestone.getReportSynthesisFlagshipProgressCrossCuttingMarkers().stream()
-                      .filter(o -> o.isActive()).collect(Collectors.toList()));
+                    milestoneEvidence.getCrossCuttingMarkers()
+                      .addAll(outcomeMilestone.getReportSynthesisFlagshipProgressCrossCuttingMarkers().stream()
+                        .filter(o -> o.isActive()).collect(Collectors.toList()));
+                  }
+
+                  arOutcomeMilestoneEvidences.add(milestoneEvidence);
+
                 }
-
-                arOutcomeMilestoneEvidences.add(milestoneEvidence);
-
               }
-            }
 
+            }
           }
         }
       }
