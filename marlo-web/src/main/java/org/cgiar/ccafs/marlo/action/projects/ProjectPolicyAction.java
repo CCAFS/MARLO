@@ -540,19 +540,32 @@ public class ProjectPolicyAction extends BaseAction {
               repIndPolicyTypeManager.getRepIndPolicyTypeById(projectPolicyOwner.getRepIndPolicyType().getId()));
           }
         }
-        /*
-         * // Crp List Autosave if (policy.getCrps() != null) { for (ProjectPolicyCrp
-         * projectPolicyCrp : policy.getCrps()) { projectPolicyCrp.setGlobalUnit(
-         * globalUnitManager.getGlobalUnitById(projectPolicyCrp.getGlobalUnit().getId())
-         * ); } }
-         */
-        /*
-         * // SubIdos List Autosave if (policy.getSubIdos() != null) { for
-         * (ProjectPolicySubIdo projectPolicySubIdo : policy.getSubIdos()) {
-         * projectPolicySubIdo.setSrfSubIdo(
-         * srfSubIdoManager.getSrfSubIdoById(projectPolicySubIdo.getSrfSubIdo().getId())
-         * ); } }
-         */
+
+        // Centers List Autosave
+        if (policy.getCenters() != null) {
+          for (ProjectPolicyCenter projectPolicyCenter : policy.getCenters()) {
+            projectPolicyCenter
+              .setInstitution(institutionManager.getInstitutionById(projectPolicyCenter.getInstitution().getId()));
+          }
+        }
+
+        // Crp List Autosave
+        if (policy.getCrps() != null) {
+          for (ProjectPolicyCrp projectPolicyCrp : policy.getCrps()) {
+            projectPolicyCrp
+              .setGlobalUnit(globalUnitManager.getGlobalUnitById(projectPolicyCrp.getGlobalUnit().getId()));
+          }
+        }
+
+
+        // SubIdos List Autosave
+        if (policy.getSubIdos() != null) {
+          for (ProjectPolicySubIdo projectPolicySubIdo : policy.getSubIdos()) {
+            projectPolicySubIdo
+              .setSrfSubIdo(srfSubIdoManager.getSrfSubIdoById(projectPolicySubIdo.getSrfSubIdo().getId()));
+          }
+        }
+
         // Innovations List Autosave
         if (policy.getInnovations() != null) {
           for (ProjectPolicyInnovation projectPolicyInnovation : policy.getInnovations()) {
@@ -560,13 +573,15 @@ public class ProjectPolicyAction extends BaseAction {
               .getProjectInnovationById(projectPolicyInnovation.getProjectInnovation().getId()));
           }
         }
-        /*
-         * // Milestones List Autosave if (policy.getMilestones() != null) { for
-         * (PolicyMilestone policyMilestone : policy.getMilestones()) {
-         * policyMilestone.setCrpMilestone(
-         * crpMilestoneManager.getCrpMilestoneById(policyMilestone.getCrpMilestone().
-         * getId())); } }
-         */
+
+        // Milestones List Autosave
+        if (policy.getMilestones() != null) {
+          for (PolicyMilestone policyMilestone : policy.getMilestones()) {
+            policyMilestone
+              .setCrpMilestone(crpMilestoneManager.getCrpMilestoneById(policyMilestone.getCrpMilestone().getId()));
+          }
+        }
+
         // Evidences List Autosave
         if (policy.getEvidences() != null) {
           for (ProjectExpectedStudyPolicy projectPolicyEvidence : policy.getEvidences()) {
@@ -1033,6 +1048,7 @@ public class ProjectPolicyAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_POLICY_CRP_RELATION);
       relationsName.add(APConstants.PROJECT_POLICY_OWNER_RELATION);
       relationsName.add(APConstants.PROJECT_POLICY_SUB_IDO_RELATION);
+      relationsName.add(APConstants.PROJECT_POLICY_CENTERS_RELATION);
       relationsName.add(APConstants.PROJECT_POLICY_REGION_RELATION);
       relationsName.add(APConstants.PROJECT_POLICY_INNOVATION_RELATION);
       relationsName.add(APConstants.PROJECT_POLICY_MILESTONE_RELATION);
@@ -1483,6 +1499,8 @@ public class ProjectPolicyAction extends BaseAction {
                 policyMilestoneSave.setPrimary(false);
               }
               policyMilestoneManager.savePolicyMilestone(policyMilestoneSave);
+              // This is to add milestoneCrpSave to generate correct auditlog.
+              policy.getPolicyMilestones().add(policyMilestoneSave);
             }
           }
         }
@@ -1495,6 +1513,9 @@ public class ProjectPolicyAction extends BaseAction {
             CrpMilestone milestone = crpMilestoneManager.getCrpMilestoneById(policyMilestone.getId());
             if (milestone != null) {
               policyMilestoneManager.deletePolicyMilestone(policyMilestone.getId());
+              // This is to add milestoneCrpSave to generate correct auditlog.
+              policy.getPolicyMilestones()
+                .remove(policyMilestoneManager.getPolicyMilestoneById(policyMilestone.getId()));
             }
           } catch (Exception e) {
 
