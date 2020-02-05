@@ -71,7 +71,7 @@ public class PolicyMilestoneManagerImpl implements PolicyMilestoneManager {
     Phase phase = phaseDAO.find(next.getId());
 
     List<PolicyMilestone> policyMilestones = phase.getPolicyMilestones().stream()
-      .filter(c -> c.isActive() && c.getPhase().getId().longValue() == phase.getId().longValue()
+      .filter(c -> c.getPhase().getId().longValue() == phase.getId().longValue()
         && c.getPolicy().getId().longValue() == policyID
         && c.getCrpMilestone().getId().equals(policyMilestone.getCrpMilestone().getId()))
       .collect(Collectors.toList());
@@ -141,6 +141,9 @@ public class PolicyMilestoneManagerImpl implements PolicyMilestoneManager {
       policyMilestoneAdd.setPolicy(policyMilestone.getPolicy());
       policyMilestoneAdd.setPhase(phase);
       policyMilestoneAdd.setCrpMilestone(policyMilestone.getCrpMilestone());
+      if (policyMilestone.getPrimary() != null) {
+        policyMilestone.setPrimary(false);
+      }
       policyMilestoneAdd.setPrimary(policyMilestone.getPrimary());
       policyMilestoneDAO.save(policyMilestoneAdd);
     }
