@@ -57,10 +57,10 @@
           <div class="loadingBlock"></div>
           <div style="display:none">
             [#-- Other fields --]
-            [#if project.projectInfo.isProjectEditLeader()]
+            [#if project.projectInfo.isProjectEditLeader() && (project.projectComponentLessonPreview.lessons?has_content)!false]
+            
             <div class="${(!action.isProjectNew(project.id) || reportingActive)?string('simpleBox','')} ${reportingActive?string('fieldFocus','')}">
-              
-             
+            
               [#-- -- -- REPORTING BLOCK -- -- --]
               [#if reportingActive]
               [#-- AR 2018 Changes
