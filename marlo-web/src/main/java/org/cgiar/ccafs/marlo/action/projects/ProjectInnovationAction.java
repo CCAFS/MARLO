@@ -74,6 +74,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.data.model.RepIndContributionOfCrp;
 import org.cgiar.ccafs.marlo.data.model.RepIndDegreeInnovation;
@@ -855,10 +856,20 @@ public class ProjectInnovationAction extends BaseAction {
       contributionCrpList = repIndContributionOfCrpManager.findAll();
       degreeInnovationList = repIndDegreeInnovationManager.findAll();
       // institutions & ppa partners
-      centers = institutionManager.findAll().stream()
-        .filter(c -> c.isPPA(this.getActualPhase().getCrp().getId(), this.getActualPhase())
-          || c.getInstitutionType().getId().longValue() == APConstants.INSTITUTION_CGIAR_CENTER_TYPE)
+      List<Institution> centersTemp = new ArrayList<Institution>();
+      List<ProjectPartner> projectPartnerList = project.getProjectPartners().stream()
+        .filter(c -> c != null && c.isActive() && c.getPhase().equals(this.getActualPhase()))
         .collect(Collectors.toList());
+      for (ProjectPartner projectPartner : projectPartnerList) {
+        if (projectPartner.getInstitution() != null && projectPartner.getInstitution().getId() != null) {
+          Institution institution = institutionManager.getInstitutionById(projectPartner.getInstitution().getId());
+          if (institution != null && (institution.isPPA(this.getActualPhase().getCrp().getId(), this.getActualPhase())
+            || institution.getInstitutionType().getId().longValue() == APConstants.INSTITUTION_CGIAR_CENTER_TYPE)) {
+            centersTemp.add(institution);
+          }
+        }
+      }
+      centers = centersTemp;
 
       List<ProjectExpectedStudy> allProjectStudies = new ArrayList<ProjectExpectedStudy>();
 
