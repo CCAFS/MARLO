@@ -51,13 +51,16 @@
         <div id="innovations" class="borderBox clearfix">   
 
         <div class="">        
-          <div class="form-group">
-          <div class="col-md-8"></div>
+          <div class="form-group row">
             <div class="col-md-4">
               [@customForm.select name="innovation.projectInnovationInfo.year" className="setSelect2" i18nkey="policy.year" listName="years" header=false required=true editable=editable /]
               [#if editable=false]
                 ${innovation.projectInnovationInfo.year}
               [/#if]
+            </div>
+            <div class="col-md-8">
+              [#assign guideSheetURL = "https://drive.google.com/file/d/1JvceA0bdvqS5Een056ctL7zJr3hidToe/view" /]
+              <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> #C1 Innovations  -  Guideline </a> </small>
             </div>
           </div>
           <hr />
