@@ -11,6 +11,12 @@
   <div id="${customId}" class="caseStudy evidenceBlock isNew-${isNew?string}" style="display:${template?string('none','block')}">
     <div class="borderBox">
     
+      <div class="form-group">
+        [#assign guideSheetURL = "https://drive.google.com/file/d/1sMmE8RK4mpDmJYl_S-bHy5CVK_ahCHr0/view" /]
+        <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> Outcome Impact Case Report  -  Guideline </a> </small>
+      </div>
+      <br />
+    
       <div class="form-group row">
         <div class="col-md-4">
           [@customForm.select name="${customName}.projectExpectedStudyInfo.studyType.id" value="${(element.projectExpectedStudyInfo.studyType.id)!-1}" className="setSelect2 studyType" i18nkey="study.type" listName="studyTypes" keyFieldName="id"  displayFieldName="name" required=true editable=editable && !isOutcomeCaseStudy /]
@@ -105,8 +111,8 @@
           [@customForm.elementsListComponent name="${customName}.policies" elementType="projectPolicy" elementList=element.policies label="study.policies"  listName="policyList" keyFieldName="id" displayFieldName="composedName"/]
           [#-- Note --]
           <div class="note">[@s.text name="study.policies.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/policies'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">clicking here</a>[/@][/@]</div>
-          [#local guideSheetURL = "https://drive.google.com/file/d/1GYLsseeZOOXF9zXNtpUtE1xeh2gx3Vw2/view" /]
-          <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> #I1 Policies -  Guideline </a> </small>
+          [#local policiesGuideSheetURL = "https://drive.google.com/file/d/1GYLsseeZOOXF9zXNtpUtE1xeh2gx3Vw2/view" /]
+          <small class="pull-right"><a href="${policiesGuideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> #I1 Policies -  Guideline </a> </small>
           <br>
         </div>
       </div>
@@ -341,6 +347,10 @@
       
       [#-- 11. Gender, Youth, and Capacity Development  --]
       [#if isOutcomeCaseStudy]
+      <div class="form-group">
+        [#assign ccGuideSheetURL = "https://drive.google.com/file/d/1oXb5UHABZIbyUUczZ8eqnDsgdzwABXPk/view?usp=sharing" /]
+        <small class="pull-right"><a href="${ccGuideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" />Cross-Cutting Markers  -  Guideline </a> </small>
+      </div>
       <div class="form-group">
         [@tag name="Indicator #3" /]
         <label for="">[@s.text name="study.crossCuttingRelevance" /]:
