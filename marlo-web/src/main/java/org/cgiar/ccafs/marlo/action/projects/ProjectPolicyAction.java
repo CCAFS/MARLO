@@ -1623,51 +1623,31 @@ public class ProjectPolicyAction extends BaseAction {
           ProjectPolicySubIdo policySubIdoSave = new ProjectPolicySubIdo();
           policySubIdoSave.setProjectPolicy(projectPolicy);
           policySubIdoSave.setPhase(phase);
+          policySubIdoSave.setPrimary(policySubIdo.getPrimary());
+
+          if (policy.getSubIdos() != null && policy.getSubIdos().size() == 1) {
+            policySubIdoSave.setPrimary(true);
+          }
 
           SrfSubIdo srfSubIdo = srfSubIdoManager.getSrfSubIdoById(policySubIdo.getSrfSubIdo().getId());
-
           policySubIdoSave.setSrfSubIdo(srfSubIdo);
-
-          // Save primary
-          if ((subIdoPrimaryId != 0 || srfSubIdoPrimary != 0) && policySubIdo.getSrfSubIdo() != null) {
-            if ((policySubIdo.getSrfSubIdo().getId() == subIdoPrimaryId)
-              || (policySubIdo.getSrfSubIdo().getId() == srfSubIdoPrimary)) {
-              policySubIdoSave.setPrimary(true);
-            } else {
-              policySubIdoSave.setPrimary(false);
-            }
-          } else {
-            // If just one sub ido is selected, this is defined as principal
-            if (policy.getSubIdos().size() == 1) {
-              policySubIdoSave.setPrimary(true);
-            }
-          }
-
-          if (policySubIdoSave.getPrimary() == null) {
-            policySubIdoSave.setPrimary(false);
-          }
 
           projectPolicySubIdoManager.saveProjectPolicySubIdo(policySubIdoSave);
           // This is to add innovationCrpSave to generate correct auditlog.
           policy.getProjectPolicySubIdos().add(policySubIdoSave);
         } else {
           // if sub ido already exist - save primary
-          if ((subIdoPrimaryId != 0 || srfSubIdoPrimary != 0) && policySubIdo.getSrfSubIdo() != null) {
-            ProjectPolicySubIdo policySubIdoSave = new ProjectPolicySubIdo();
-            policySubIdoSave = projectPolicySubIdoManager.getProjectPolicySubIdoById(policySubIdo.getId());
+          ProjectPolicySubIdo policySubIdoSave = new ProjectPolicySubIdo();
+          policySubIdoSave = projectPolicySubIdoManager.getProjectPolicySubIdoById(policySubIdo.getId());
+          SrfSubIdo srfSubIdo = srfSubIdoManager.getSrfSubIdoById(policySubIdo.getSrfSubIdo().getId());
+          policySubIdoSave.setSrfSubIdo(srfSubIdo);
+          policySubIdoSave.setPrimary(policySubIdo.getPrimary());
 
-            if ((policySubIdo.getSrfSubIdo().getId() == subIdoPrimaryId)
-              || (policySubIdo.getSrfSubIdo().getId() == srfSubIdoPrimary)) {
-              policySubIdoSave.setPrimary(true);
-            } else {
-              policySubIdoSave.setPrimary(false);
-            }
-
-            if (policySubIdoSave.getPrimary() == null) {
-              policySubIdoSave.setPrimary(false);
-            }
-            projectPolicySubIdoManager.saveProjectPolicySubIdo(policySubIdoSave);
+          if (policy.getSubIdos() != null && policy.getSubIdos().size() == 1) {
+            policySubIdoSave.setPrimary(true);
           }
+          projectPolicySubIdoManager.saveProjectPolicySubIdo(policySubIdoSave);
+
         }
       }
     }
