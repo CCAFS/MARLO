@@ -1487,11 +1487,12 @@ public class ProjectPolicyAction extends BaseAction {
               PolicyMilestone policyMilestoneSave = new PolicyMilestone();
               policyMilestoneSave = policyMilestoneManager.getPolicyMilestoneById(policyMilestone.getId());
               if (policyMilestoneSave != null && policyMilestoneSave.getCrpMilestone() != null
-                && policyMilestoneSave.getCrpMilestone().getId()) {
+                && policyMilestoneSave.getCrpMilestone().getId() != null) {
                 CrpMilestone milestone =
                   crpMilestoneManager.getCrpMilestoneById(policyMilestone.getCrpMilestone().getId());
+                policyMilestoneSave.setCrpMilestone(milestone);
               }
-              policyMilestoneSave.setCrpMilestone(milestone);
+
               if ((policyMilestone.getCrpMilestone().getId() == subIdoPrimaryId)
                 || (policyMilestone.getCrpMilestone().getId() == srfSubIdoPrimary)) {
                 policyMilestoneSave.setPrimary(true);
