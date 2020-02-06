@@ -203,6 +203,29 @@
         [@customForm.input name="${customName}.academicDegree" i18nkey="involveParticipants.academicDegree" help="involveParticipants.academicDegree.help" className="" required=true editable=editable /]
       </div>
     </div>
+     <div class="note left">
+      <a href="#modal-typeOfActivity" data-toggle="modal"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="deliverable.typeOfActivity.help" /]</a>
+     </div>
+     <br />
+
+    
+    [#-- Modal --]
+    <div class="modal fade" id="modal-typeOfActivity" tabindex="-1" role="dialog" aria-labelledby="modalTypeOfActivity">
+      <div class="modal-dialog modal-lg" role="document">
+       <div class="modal-content">
+         <div class="modal-header">
+             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+             <h4 class="modal-title" id="myModalLabel">[@s.text name="Types of Activities" /]</h4>
+          </div>
+          <div class="modal-body">
+             [@typeOfActivityTable name="deliverable.typeOfActivity" /]
+          </div>
+          <div class="modal-footer">
+             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+         </div>
+      </div>
+    </div>
     
     [#-- Total number of Participants: --]
     <div class="form-group row">
@@ -894,3 +917,107 @@
   [/#list]
   [#return false]
 [/#function]
+
+[#macro typeOfActivityTable name=""]
+  <table id="tableA" class="table table-bordered">
+    <thead>
+      <tr>
+        <th class="text-center">[@s.text name="${name}.title" /]</th>
+        <th class="text-center">[@s.text name="${name}.description" /]</th>  
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        [#-- Title --]
+        <td class="">
+         [@s.text name="${name}.cocreation" /]
+        </td>
+        [#-- Description --]
+        <td class="">
+         [@s.text name="${name}.cocreation.description" /]
+        </td>
+       </tr>
+       <tr>
+        [#-- Title --]
+        <td class="">
+         [@s.text name="${name}.academic" /]
+        </td>
+        [#-- Description --]
+        <td class="">
+         [@s.text name="${name}.academic.description" /]
+        </td>
+       </tr>
+       <tr>
+        [#-- Title --]
+        <td class="">
+         [@s.text name="${name}.longTerm" /]
+        </td>
+        [#-- Description --]
+        <td class="">
+         [@s.text name="${name}.longTerm.description" /]
+        </td>
+       </tr>
+       <tr>
+        [#-- Title --]
+        <td class="">
+         [@s.text name="${name}.oneOff" /]
+        </td>
+        [#-- Description --]
+        <td class="">
+         [@s.text name="${name}.oneOff.description" /]
+        </td>
+       </tr>
+       <tr>
+        [#-- Title --]
+        <td class="">
+         [@s.text name="${name}.research" /]
+        </td>
+        [#-- Description --]
+        <td class="">
+         [@s.text name="${name}.research.description" /]
+        </td>
+       </tr>
+       <tr>
+        [#-- Title --]
+        <td class="">
+         [@s.text name="${name}.knowledge" /]
+        </td>
+        [#-- Description --]
+        <td class="">
+         [@s.text name="${name}.knowledge.description" /]
+        </td>
+       </tr>
+       <tr>
+        [#-- Title --]
+        <td class="">
+         [@s.text name="${name}.scaling" /]
+        </td>
+        [#-- Description --]
+        <td class="">
+         [@s.text name="${name}.scaling.description" /]
+        </td>
+       </tr>
+       <tr>
+        [#-- Title --]
+        <td class="">
+         [@s.text name="${name}.trials" /]
+        </td>
+        [#-- Description --]
+        <td class="">
+         [@s.text name="${name}.trials.description" /]
+        </td>
+       </tr>
+       <tr>
+        [#-- Title --]
+        <td class="">
+         [@s.text name="${name}.other" /]
+        </td>
+        [#-- Description --]
+        <td class="">
+         [@s.text name="${name}.other.description" /]
+        </td>
+       </tr>
+    </tbody>
+  </table>
+
+[/#macro]

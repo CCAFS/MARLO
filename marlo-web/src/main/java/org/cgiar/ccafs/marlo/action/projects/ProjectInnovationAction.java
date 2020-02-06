@@ -74,6 +74,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.data.model.RepIndContributionOfCrp;
 import org.cgiar.ccafs.marlo.data.model.RepIndDegreeInnovation;
@@ -675,29 +676,33 @@ public class ProjectInnovationAction extends BaseAction {
         }
 
         // Innovation Center List Autosave
-        /*
-         * if (innovation.getCenters() != null) { for (ProjectInnovationCenter
-         * projectInnovationCenter : innovation.getCenters()) {
-         * projectInnovationCenter.setInstitution(institutionManager
-         * .getInstitutionById(projectInnovationCenter.getInstitution().getId())); } }
-         */
+
+        if (innovation.getCenters() != null) {
+          for (ProjectInnovationCenter projectInnovationCenter : innovation.getCenters()) {
+            projectInnovationCenter
+              .setInstitution(institutionManager.getInstitutionById(projectInnovationCenter.getInstitution().getId()));
+          }
+        }
+
         // Innovation Milestone List Autosave
-        /*
-         * if (innovation.getMilestones() != null) { for (ProjectInnovationMilestone
-         * projectInnovationMilestone : innovation.getMilestones()) {
-         * projectInnovationMilestone.setCrpMilestone((milestoneManager
-         * .getCrpMilestoneById(projectInnovationMilestone.getCrpMilestone().getId())));
-         * } }
-         */
+
+        if (innovation.getMilestones() != null) {
+          for (ProjectInnovationMilestone projectInnovationMilestone : innovation.getMilestones()) {
+            projectInnovationMilestone.setCrpMilestone(
+              (milestoneManager.getCrpMilestoneById(projectInnovationMilestone.getCrpMilestone().getId())));
+          }
+        }
+
 
         // SubIdos List Autosave
-        /*
-         * if (innovation.getSubIdos() != null) { for (ProjectInnovationSubIdo
-         * projectInnovationSubIdo : innovation.getSubIdos()) {
-         * projectInnovationSubIdo.setSrfSubIdo(
-         * srfSubIdoManager.getSrfSubIdoById(projectInnovationSubIdo.getSrfSubIdo().
-         * getId())); } }
-         */
+
+        if (innovation.getSubIdos() != null) {
+          for (ProjectInnovationSubIdo projectInnovationSubIdo : innovation.getSubIdos()) {
+            projectInnovationSubIdo
+              .setSrfSubIdo(srfSubIdoManager.getSrfSubIdoById(projectInnovationSubIdo.getSrfSubIdo().getId()));
+          }
+        }
+
 
         // Innovation Shared Projects List Autosave
         if (this.innovation.getSharedInnovations() != null) {
@@ -851,10 +856,20 @@ public class ProjectInnovationAction extends BaseAction {
       contributionCrpList = repIndContributionOfCrpManager.findAll();
       degreeInnovationList = repIndDegreeInnovationManager.findAll();
       // institutions & ppa partners
-      centers = institutionManager.findAll().stream()
-        .filter(c -> c.isPPA(this.getActualPhase().getCrp().getId(), this.getActualPhase())
-          || c.getInstitutionType().getId().longValue() == APConstants.INSTITUTION_CGIAR_CENTER_TYPE)
+      List<Institution> centersTemp = new ArrayList<Institution>();
+      List<ProjectPartner> projectPartnerList = project.getProjectPartners().stream()
+        .filter(c -> c != null && c.isActive() && c.getPhase().equals(this.getActualPhase()))
         .collect(Collectors.toList());
+      for (ProjectPartner projectPartner : projectPartnerList) {
+        if (projectPartner.getInstitution() != null && projectPartner.getInstitution().getId() != null) {
+          Institution institution = institutionManager.getInstitutionById(projectPartner.getInstitution().getId());
+          if (institution != null && (institution.isPPA(this.getActualPhase().getCrp().getId(), this.getActualPhase())
+            || institution.getInstitutionType().getId().longValue() == APConstants.INSTITUTION_CGIAR_CENTER_TYPE)) {
+            centersTemp.add(institution);
+          }
+        }
+      }
+      centers = centersTemp;
 
       List<ProjectExpectedStudy> allProjectStudies = new ArrayList<ProjectExpectedStudy>();
 
@@ -1130,6 +1145,7 @@ public class ProjectInnovationAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_INNOVATION_SHARED_RELATION);
       relationsName.add(APConstants.PROJECT_INNOVATION_CENTER_RELATION);
       relationsName.add(APConstants.PROJECT_INNOVATION_MILESTONE_RELATION);
+      relationsName.add(APConstants.PROJECT_INNOVATION_SUB_IDO);
 
       innovation.setModificationJustification(this.getJustification());
 
@@ -1549,6 +1565,8 @@ public class ProjectInnovationAction extends BaseAction {
                 innovationMilestoneSave.setPrimary(false);
               }
               projectInnovationMilestoneManager.saveProjectInnovationMilestone(innovationMilestoneSave);
+              // This is to add innovationCenterSave to generate correct auditlog.
+              innovation.getProjectInnovationMilestones().add(innovationMilestoneSave);
             }
           }
 
@@ -1562,6 +1580,9 @@ public class ProjectInnovationAction extends BaseAction {
             CrpMilestone milestone = milestoneManager.getCrpMilestoneById(innovationMilestone.getId());
             if (milestone != null) {
               projectInnovationMilestoneManager.deleteProjectInnovationMilestone(innovationMilestone.getId());
+              // This is to add innovationCenterSave to generate correct auditlog.
+              innovation.getProjectInnovationMilestones()
+                .remove(projectInnovationMilestoneManager.getProjectInnovationMilestoneById(innovationID));
             }
           } catch (Exception e) {
 
@@ -1780,6 +1801,8 @@ public class ProjectInnovationAction extends BaseAction {
               innovationSubIdoSave.setPrimary(false);
             }
             projectInnovationSubIdoManager.saveProjectInnovationSubIdo(innovationSubIdoSave);
+            // This is to add innovationCrpSave to generate correct auditlog.
+            innovation.getProjectInnovationSubIdos().add(innovationSubIdoSave);
           }
         }
       }

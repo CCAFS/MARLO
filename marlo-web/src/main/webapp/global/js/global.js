@@ -403,7 +403,6 @@ $('.selectedProgram, selectedProject').on('click', function() {
   $(this).parent().next().slideToggle('slow');
 });
 
-
 // event to inputs in login form
 /*
  * $('input[name="user.email"] , input[name="user.password"]').on("keypress", function(event) { if(event.keyCode === 10 ||
@@ -419,7 +418,6 @@ $('input').on("keypress", function(event) {
   }
 
 });
-
 
 function setViewMore() {
   var element = $('.helpText');
@@ -579,6 +577,9 @@ function setElementsListComponent() {
   $('select[class*="elementType-"]').each(function(i,e) {
     $(this).setOneToManyComponent();
   });
+  $('select[class*="primarySelectorField"]').each(function(i,e) {
+    $(this).setPrimarySelectorFunction();
+  });
 }
 
 jQuery.fn.setOneToManyComponent = function() {
@@ -633,6 +634,18 @@ jQuery.fn.setOneToManyComponent = function() {
   $parent.find('[class*="removeElementType-"]').on('click', onClickRemoveElement);
 };
 
+//Function for Primary selector fields
+jQuery.fn.setPrimarySelectorFunction = function() {
+  var $parent = $(this).parents('.elementsListComponent');
+  var $select = $parent.find('select');
+
+  $select.on('change', onSelectElementPrimary);
+
+  // On click remove button
+  $parent.find('[class*="removeElementType-"]').on('click', onClickRemoveElementPrimary);
+
+}
+
 function onSelectElement() {
   var $select = $(this);
   var $parent = $(this).parents('.elementsListComponent');
@@ -640,9 +653,8 @@ function onSelectElement() {
   var elementType = $select.classParam('elementType');
   var maxLimit = $select.classParam('maxLimit');
   var $list = $parent.find('ul.list');
-  var $primaryList = $parent.find('ul.primaryRadio');
-  var $primaryDisplay = $parent.find('div.primarySelectorDisplayBox');
   var counted = $list.find('li').length;
+
   // Select an option
   if($option.val() == "-1") {
     return;
@@ -691,39 +703,17 @@ function onSelectElement() {
     var indexLevel = $(element).classParam('indexLevel');
     $(element).setNameIndexes(indexLevel, i);
   });
-
-  //Validate if $primaryList exist
-  if($primaryList != null) {
-
-    var className = $primaryDisplay.attr('class');
-    var idenfitierClassName = className.split(' ');
-    console.log(idenfitierClassName[1]);
-
-    $primaryDisplay.css("display","block");
-    $element.find('.elementRelationID').val(id);
-    $element.find('.elementName').html(name);
-
-    var $contentDiv =$("<div class='radioFlat selectPrimary radioContentBox ID-"+ id +"'></div>");
-    var $radiobutton = $("<input id='primaryRadioButtonID"+ idenfitierClassName[1] +"-"+ id +"' class='radio-input assesmentLevels primaryRadioButton option-"+ id +"' type='radio' name='"+ idenfitierClassName[1] +"Primary' value='"+ id +"'/>");
-    var $radioLabel = $("<label for='primaryRadioButtonID"+ idenfitierClassName[1] +"-"+ id +"' class='radio-label'>"+ name +"</label>");
-
-    $radiobutton.appendTo($contentDiv);
-    $radioLabel.appendTo($contentDiv);
-    $contentDiv.appendTo($primaryList);
-  }
 }
 
 function onClickRemoveElement() {
   var removeElementType = $(this).classParam('removeElementType');
   var $parent = $(this).parent();
   var $select = $(this).parents(".panel-body").find('select');
-  var $primaryRadioElement = $(this).parents('.elementsListComponent').find('ul.primaryRadio');
   var $list = $(this).parents('.elementsListComponent').find('ul.list');
   var counted = $list.find('li').length;
   var maxLimit = $select.classParam('maxLimit');
   var id = $parent.find(".elementRelationID").val();
   var name = $parent.find(".elementName").text();
-  var $primaryDisplay = $(this).parents(".elementsListComponent").find('div.primarySelectorDisplayBox');
 
   $parent.slideUp(100, function() {
     $parent.remove();
@@ -743,23 +733,74 @@ function onClickRemoveElement() {
       $(element).setNameIndexes(indexLevel, i);
     });
 
-    //check if primary list exist
-    if($primaryRadioElement != null) {
-      var $tempo = $primaryRadioElement.find(".radioFlat.selectPrimary.radioContentBox.ID-"+ id +"");
-
-      $tempo.remove();
-    }
-
-    if($primaryRadioElement.children().length < 1){
-      $primaryDisplay.css("display", "none");
-      console.log($primaryDisplay);
-    }
-
     // Enabled select component if needed
     if((maxLimit > 0) && (counted >= maxLimit)) {
       $select.prop('disabled', false).trigger('change.select2');
     }
   });
+}
+
+function onSelectElementPrimary() {
+  var $select = $(this);
+  var $parent = $(this).parents('.elementsListComponent');
+  var $option = $select.find('option:selected');
+  var elementType = $select.classParam('elementType');
+  var maxLimit = $select.classParam('maxLimit');
+  var $list = $parent.find('ul.list');
+  var counted = $list.find('li').length;
+  var id = $option.val();
+  var name = $option.text();
+
+  var $primaryList = $parent.find('ul.primaryRadio');
+  var $primaryDisplay = $parent.find('div.primarySelectorDisplayBox');
+  var className = $primaryDisplay.attr('class');
+  var idenfitierClassName = className.split(' ');
+
+  $primaryDisplay.css("display","block");
+
+  var $contentDiv =$("<div class='radioFlat selectPrimary radioContentBox ID-"+ id +"'></div>");
+  var $radiobutton = $("<input id='primaryRadioButtonID"+ idenfitierClassName[1] +"-"+ id +"' class='radio-input assesmentLevels primaryRadioButton option-"+ id +"' type='radio' name='"+ idenfitierClassName[1] +"' value='"+ id +"'/>");
+  var $radioLabel = $("<label for='primaryRadioButtonID"+ idenfitierClassName[1] +"-"+ id +"' class='radio-label'>"+ name +"</label>");
+
+  if($primaryList.children().length < 1){
+    $radiobutton.attr('checked', true);
+  }
+
+  $radiobutton.appendTo($contentDiv);
+  $radioLabel.appendTo($contentDiv);
+  $contentDiv.appendTo($primaryList);
+}
+
+function onClickRemoveElementPrimary() {
+  var removeElementType = $(this).classParam('removeElementType');
+  var $parent = $(this).parent();
+  var $select = $(this).parents(".panel-body").find('select');
+  var $list = $(this).parents('.elementsListComponent').find('ul.list');
+  var counted = $list.find('li').length;
+  var maxLimit = $select.classParam('maxLimit');
+  var id = $parent.find(".elementRelationID").val();
+  var name = $parent.find(".elementName").text();
+  var $primaryDisplay = $(this).parents(".elementsListComponent").find('div.primarySelectorDisplayBox');
+  var $primaryRadioElement = $(this).parents('.elementsListComponent').find('ul.primaryRadio');
+
+  var $tempo = $primaryRadioElement.find(".radioFlat.selectPrimary.radioContentBox.ID-"+ id +"");
+  var $input = $tempo.find("input");
+
+  if($input.is(':checked')){
+    $tempo.remove();
+
+    if($primaryRadioElement.children().length > 0){
+      $primaryRadioElement.children(":first").find("input").attr('checked', true);
+    }
+  }else{
+    $tempo.remove();
+  }
+
+  //$tempo.remove();
+
+  if($primaryRadioElement.children().length < 1){
+    $primaryDisplay.css("display", "none");
+  }
 }
 
 /**
