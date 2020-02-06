@@ -1456,62 +1456,38 @@ public class ProjectPolicyAction extends BaseAction {
             PolicyMilestone policyMilestoneSave = new PolicyMilestone();
             policyMilestoneSave.setPolicy(projectPolicy);
             policyMilestoneSave.setPhase(phase);
+            policyMilestoneSave.setPrimary(policyMilestone.getPrimary());
 
-            CrpMilestone milestone = crpMilestoneManager.getCrpMilestoneById(policyMilestone.getCrpMilestone().getId());
-            policyMilestoneSave.setCrpMilestone(milestone);
-
-            // Save primary
-            if ((milestonePrimaryId != 0 || crpMilestonePrimary != 0) && policyMilestone.getCrpMilestone() != null) {
-              if ((policyMilestone.getCrpMilestone().getId() == milestonePrimaryId)
-                || (policyMilestone.getCrpMilestone().getId() == crpMilestonePrimary)) {
-                policyMilestoneSave.setPrimary(true);
-              } else {
-                policyMilestoneSave.setPrimary(false);
-              }
-            }
-            // If just one sub ido is selected, this is defined as principal
-            if (policy.getMilestones().size() == 1) {
+            if (policy.getMilestones() != null && policy.getMilestones().size() == 1) {
               policyMilestoneSave.setPrimary(true);
             }
 
-            if (policyMilestoneSave.getPrimary() == null) {
-              policyMilestoneSave.setPrimary(false);
-            }
+            CrpMilestone milestone = crpMilestoneManager.getCrpMilestoneById(policyMilestone.getCrpMilestone().getId());
+            policyMilestoneSave.setCrpMilestone(milestone);
 
             policyMilestoneManager.savePolicyMilestone(policyMilestoneSave);
             // This is to add milestoneCrpSave to generate correct auditlog.
             policy.getPolicyMilestones().add(policyMilestoneSave);
           } else {
             // if milestone already exist - save primary
-            if ((milestonePrimaryId != 0 || crpMilestonePrimary != 0) && policyMilestone.getCrpMilestone() != null) {
-              PolicyMilestone policyMilestoneSave = new PolicyMilestone();
-              policyMilestoneSave = policyMilestoneManager.getPolicyMilestoneById(policyMilestone.getId());
-              if (policyMilestoneSave != null && policyMilestoneSave.getCrpMilestone() != null
-                && policyMilestoneSave.getCrpMilestone().getId() != null) {
-                CrpMilestone milestone =
-                  crpMilestoneManager.getCrpMilestoneById(policyMilestone.getCrpMilestone().getId());
-                policyMilestoneSave.setCrpMilestone(milestone);
-              }
-
-              if ((policyMilestone.getCrpMilestone().getId() == subIdoPrimaryId)
-                || (policyMilestone.getCrpMilestone().getId() == srfSubIdoPrimary)) {
-                policyMilestoneSave.setPrimary(true);
-              } else {
-                policyMilestoneSave.setPrimary(false);
-              }
-
-              // If just one sub ido is selected, this is defined as principal
-              if (policy.getMilestones().size() == 1) {
-                policyMilestoneSave.setPrimary(true);
-              }
-
-              if (policyMilestoneSave.getPrimary() == null) {
-                policyMilestoneSave.setPrimary(false);
-              }
-              policyMilestoneManager.savePolicyMilestone(policyMilestoneSave);
-              // This is to add milestoneCrpSave to generate correct auditlog.
-              policy.getPolicyMilestones().add(policyMilestoneSave);
+            PolicyMilestone policyMilestoneSave = new PolicyMilestone();
+            policyMilestoneSave = policyMilestoneManager.getPolicyMilestoneById(policyMilestone.getId());
+            if (policyMilestoneSave != null && policyMilestoneSave.getCrpMilestone() != null
+              && policyMilestoneSave.getCrpMilestone().getId() != null) {
+              CrpMilestone milestone =
+                crpMilestoneManager.getCrpMilestoneById(policyMilestone.getCrpMilestone().getId());
+              policyMilestoneSave.setCrpMilestone(milestone);
             }
+            policyMilestoneSave.setPrimary(policyMilestone.getPrimary());
+
+            if (policy.getMilestones() != null && policy.getMilestones().size() == 1) {
+              policyMilestoneSave.setPrimary(true);
+            }
+
+            policyMilestoneManager.savePolicyMilestone(policyMilestoneSave);
+            // This is to add milestoneCrpSave to generate correct auditlog.
+            policy.getPolicyMilestones().add(policyMilestoneSave);
+
           }
         }
       }
