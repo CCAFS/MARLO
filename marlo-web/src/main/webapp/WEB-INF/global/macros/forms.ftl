@@ -567,13 +567,13 @@
     </div>
     <div class="panel-body" style="min-height: 30px;">
       <div class="loading listComponentLoading" style="display:none"></div>
-      <ul class="list">
+      <ul class="list[#if (hasPrimary)!false] primary[/#if]">
         [#if elementList?has_content]
           [#list elementList as item][@listElementMacro name=name element=item type=elementType id=id index=item_index keyFieldName=keyFieldName displayFieldName=displayFieldName indexLevel=indexLevel hasPrimary=hasPrimary/][/#list]
         [/#if]
       </ul>
       [#if editable]
-        <select name="" id="" class="setSelect2 maxLimit-${maxLimit} elementType-${composedID} indexLevel-${indexLevel}">
+        <select name="" id="" class="setSelect2 maxLimit-${maxLimit} elementType-${composedID} indexLevel-${indexLevel}[#if (hasPrimary)!false] primarySelect[/#if]">
           <option value="-1">[@s.text name="form.select.placeholder" /]</option>
           [#list list as item]
             <option value="${(item[keyFieldName])!}">${(item[displayFieldName])!'null'}</option>
