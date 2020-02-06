@@ -667,7 +667,7 @@
         [#if editable]<div class="removeElement sm removeIcon removeElementType-${composedID}" title="Remove"></div>[/#if] 
         <div class="form-group row">
           <div class="col-md-1 d-flex align-items-center">
-            [@radioFlat id="${customName}-primary" name="${customName}.primaryID" value="true" cssClassLabel="radio-label-yes" editable=editable checked=false /]
+            [@radioFlat id="${customName}-primary" name="${customName}.primary" value="true" cssClassLabel="radio-label-yes" editable=editable checked=false /]
           </div>
           <div class="col-md-11">
             [#-- Hidden Inputs --]
