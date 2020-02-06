@@ -212,7 +212,7 @@ public class ProjectPolicyValidator extends BaseValidator {
      * action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"crps"}));
      * }
      */
-    if (projectPolicy.getCrps() == null || projectPolicy.getCrps().isEmpty()) {
+    if (projectPolicy.getCenters() == null || projectPolicy.getCenters().isEmpty()) {
       action.addMessage(action.getText("contributingCenters"));
       action.addMissingField("policy.contributingCenters");
       action.getInvalidFields().put("list-policy.centers",
@@ -230,8 +230,10 @@ public class ProjectPolicyValidator extends BaseValidator {
 
     // validate Milestones
     if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()) != null
-      && projectPolicy.getProjectPolicyInfo().getHasMilestones() != null
-      && projectPolicy.getProjectPolicyInfo().getHasMilestones() == true) {
+      && ((projectPolicy.getProjectPolicyInfo().getHasMilestones() != null
+        && projectPolicy.getProjectPolicyInfo().getHasMilestones() == true)
+        && (projectPolicy.getMilestones() == null || projectPolicy.getMilestones().isEmpty()))
+      || projectPolicy.getProjectPolicyInfo().getHasMilestones() != null) {
       action.addMessage(action.getText("milestoneList"));
       action.addMissingField("policy.milestones");
       action.getInvalidFields().put("list-policy.milestones",
