@@ -365,7 +365,7 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
         if (collaborators == null || collaborators.isEmpty()) {
           collaborators = collaborator.getComposedName();
         } else {
-          collaborators += ", " + collaborator.getComposedName();
+          collaborators += "; " + collaborator.getComposedName();
         }
       }
 
@@ -376,7 +376,7 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
         if (coordinators == null || coordinators.isEmpty()) {
           coordinators = coordinator.getComposedName();
         } else {
-          coordinators += ", " + coordinator.getComposedName();
+          coordinators += "; " + coordinator.getComposedName();
         }
       }
 
@@ -858,6 +858,9 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
 
       if (coordinators.isEmpty() || coordinators == null) {
         coordinators = "<Not defined>";
+      }
+      if (collaborators.isEmpty() || collaborators == null) {
+        collaborators = "<Not defined>";
       }
 
       model.addRow(new Object[] {projectId, projectTitle, projectSummary, status, managementLiaison, flagships, regions,
