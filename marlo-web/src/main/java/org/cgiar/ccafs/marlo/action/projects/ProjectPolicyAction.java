@@ -1472,6 +1472,8 @@ public class ProjectPolicyAction extends BaseAction {
             // if milestone already exist - save primary
             PolicyMilestone policyMilestoneSave = new PolicyMilestone();
             policyMilestoneSave = policyMilestoneManager.getPolicyMilestoneById(policyMilestone.getId());
+            policyMilestoneSave.setPolicy(projectPolicy);
+            policyMilestoneSave.setPhase(phase);
             if (policyMilestoneSave != null && policyMilestoneSave.getCrpMilestone() != null
               && policyMilestoneSave.getCrpMilestone().getId() != null) {
               CrpMilestone milestone =
