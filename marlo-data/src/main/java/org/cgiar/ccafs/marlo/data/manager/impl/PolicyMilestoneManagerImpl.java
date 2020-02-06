@@ -141,9 +141,6 @@ public class PolicyMilestoneManagerImpl implements PolicyMilestoneManager {
       policyMilestoneAdd.setPolicy(policyMilestone.getPolicy());
       policyMilestoneAdd.setPhase(phase);
       policyMilestoneAdd.setCrpMilestone(policyMilestone.getCrpMilestone());
-      if (policyMilestone.getPrimary() != null) {
-        policyMilestone.setPrimary(false);
-      }
       policyMilestoneAdd.setPrimary(policyMilestone.getPrimary());
       policyMilestoneDAO.save(policyMilestoneAdd);
     }
