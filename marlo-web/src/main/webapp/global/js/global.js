@@ -687,6 +687,7 @@ function onSelectElement() {
   //Validate if is a primary radioButton group
   var className = $list.attr('class');
   if(className.indexOf("primary") >= 0){
+    $element.find("input.radio-input").attr("checked", false);
     $element.find("input.radio-input").on('change', onSelectElementPrimary);
   }
 
@@ -762,7 +763,7 @@ function onSelectElementPrimary() {
 
   $list.find("input.radio-input").each(function() {
     if($(this).attr("name") != $input.attr("name") ){
-      $(this).attr("checked", false);;
+      $(this).attr("checked", false);
     }else{
       $(this).attr("checked", true);
     }
