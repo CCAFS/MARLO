@@ -81,7 +81,7 @@ public class ProjectExpectedStudyPolicyManagerImpl implements ProjectExpectedStu
     Phase phase = phaseDAO.find(next.getId());
 
     List<ProjectExpectedStudyPolicy> projectExpectedStudyPolicies = phase.getProjectExpectedStudyPolicies().stream()
-      .filter(c -> c.isActive() && c.getProjectExpectedStudy().getId().longValue() == expectedID
+      .filter(c -> c.getProjectExpectedStudy().getId().longValue() == expectedID
         && c.getProjectPolicy().getId().equals(projectExpectedStudyPolicy.getProjectPolicy().getId()))
       .collect(Collectors.toList());
     for (ProjectExpectedStudyPolicy projectExpectedStudyPolicyDB : projectExpectedStudyPolicies) {
@@ -117,7 +117,7 @@ public class ProjectExpectedStudyPolicyManagerImpl implements ProjectExpectedStu
     Phase phase = phaseDAO.find(next.getId());
 
     List<ProjectExpectedStudyPolicy> projectExpectedStudyPolicies = phase.getProjectExpectedStudyPolicies().stream()
-      .filter(c -> c.isActive() && c.getProjectExpectedStudy().getId().longValue() == expectedID
+      .filter(c -> c.getProjectExpectedStudy().getId().longValue() == expectedID
         && c.getProjectPolicy().getId().equals(projectExpectedStudyPolicy.getProjectPolicy().getId()))
       .collect(Collectors.toList());
 
