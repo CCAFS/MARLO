@@ -596,6 +596,7 @@
 [#macro primaryListComponent name  elementType checkName="" id="" elementList=[] label="" labelPrimary="" label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true checked=true ]
   [#attempt]
     [#local list = ((listName?eval)?sort_by(displayFieldName))![] /] 
+    [#local valueCheck = (((checkName?eval)?eval)) /] 
   [#recover]
     [#local list = [] /] 
   [/#attempt]
@@ -619,7 +620,7 @@
         [/#if]
       </ul>
       [#if editable]
-        <select name="" id="" class="setSelect2 maxLimit-${maxLimit} elementType-${composedID} indexLevel-${indexLevel}" >
+        <select name="" id="" class="setSelect2 maxLimit-${maxLimit} elementType-${composedID} indexLevel-${indexLevel} primarySelectorField" >
           <option value="-1">[@s.text name="form.select.placeholder" /]</option>
           [#list list as item]
             <option value="${(item[keyFieldName])!}">${(item[displayFieldName])!'null'}</option>
@@ -634,9 +635,9 @@
       [@listElementMacro name="${name}" element={} type=elementType id=id index=-1 indexLevel=indexLevel template=true /]
     </ul>
     [#-- Select primary  field --]
-    <div class="primarySelectorDisplayBox ${(composedID)}" style="min-height: 30px; margin-top: 10px; display:${(elementList?has_content)?string('block','none')}">
+    <div class="primarySelectorDisplayBox ${(checkName)}" style="min-height: 30px; margin-top: 10px; display:${(elementList?has_content)?string('block','none')}">
       <div class="panel-head">
-        <label for="">[@s.text name=labelPrimary /]:[@req required=required && editable /]
+        <label for="">${(((checkName?eval)?eval))} [@s.text name=labelPrimary /]:[@req required=required && editable /]
           [#--  Help Text --]
           [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
         </label>
@@ -646,8 +647,8 @@
           [#if elementList?has_content]
             [#list elementList as item]
             <div class="radioFlat selectPrimary radioContentBox ID-${(item[elementType][keyFieldName])}" >
-              <input id="primaryRadioButtonID${(composedID)}-${(item[elementType][keyFieldName])}" class="radio-input assesmentLevels primaryRadioButton option-${(item[elementType][keyFieldName])}" type="radio" name="${checkName}" value="${(item[elementType][keyFieldName])!'{elementNameUndefined}'}" />
-              <label for="primaryRadioButtonID${(composedID)}-${(item[elementType][keyFieldName])}" class="radio-label">${(item[elementType][displayFieldName])!'{elementNameUndefined}'}</label>
+              <input id="primaryRadioButtonID${(checkName)}-${(item[elementType][keyFieldName])}" class="radio-input assesmentLevels primaryRadioButton option-${(item[elementType][keyFieldName])}" type="radio" name="${checkName}" value="${(item[elementType][keyFieldName])!'{0}'}" [#if (valueCheck == (item[elementType][keyFieldName]))!false] checked=true[/#if] />
+              <label for="primaryRadioButtonID${(checkName)}-${(item[elementType][keyFieldName])}" class="radio-label">${(item[elementType][displayFieldName])!'{elementNameUndefined}'}</label>
             </div>
              [/#list]
           [/#if]  
