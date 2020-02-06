@@ -547,7 +547,7 @@
   [#return '']
 [/#function]
 
-[#macro elementsListComponent name elementType id="" elementList=[] label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true ]
+[#macro elementsListComponent name elementType id="" elementList=[] label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true hasPrimary=false]
   [#attempt]
     [#local list = ((listName?eval)?sort_by(displayFieldName))![] /] 
   [#recover]
@@ -569,7 +569,7 @@
       <div class="loading listComponentLoading" style="display:none"></div>
       <ul class="list">
         [#if elementList?has_content]
-          [#list elementList as item][@listElementMacro name=name element=item type=elementType id=id index=item_index keyFieldName=keyFieldName displayFieldName=displayFieldName indexLevel=indexLevel /][/#list]
+          [#list elementList as item][@listElementMacro name=name element=item type=elementType id=id index=item_index keyFieldName=keyFieldName displayFieldName=displayFieldName indexLevel=indexLevel hasPrimary=hasPrimary/][/#list]
         [/#if]
       </ul>
       [#if editable]
@@ -585,7 +585,7 @@
     </div>
     [#-- Element item Template --]
     <ul style="display:none">
-      [@listElementMacro name="${name}" element={} type=elementType id=id index=-1 indexLevel=indexLevel template=true /]
+      [@listElementMacro name="${name}" element={} type=elementType id=id index=-1 indexLevel=indexLevel template=true hasPrimary=hasPrimary /]
     </ul>
   </div>
 [/#macro]
@@ -655,12 +655,30 @@
   </div>
 [/#macro]
 
-[#macro listElementMacro element name type id="" index=-1 keyFieldName="id" displayFieldName="composedName" indexLevel=1 template=false]
+[#macro listElementMacro element name type id="" index=-1 keyFieldName="id" displayFieldName="composedName" indexLevel=1 template=false hasPrimary=false]
   [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
   [#local composedID = "${type}" /]
   [#if id?has_content]
     [#local composedID = "${type}-${id}" /]
   [/#if]
+  [#if hasPrimary]
+      <li class="[#if template]relationElement-template[/#if] relationElement indexLevel-${indexLevel}">
+        [#-- Remove button --]
+        [#if editable]<div class="removeElement sm removeIcon removeElementType-${composedID}" title="Remove"></div>[/#if] 
+        <div class="form-group row">
+          <div class="col-md-1 d-flex align-items-center">
+            [@radioFlat id="${customName}-primary" name="${customName}.primaryID" value="true" cssClassLabel="radio-label-yes" editable=editable checked=false /]
+          </div>
+          <div class="col-md-11">
+            [#-- Hidden Inputs --]
+            <input type="hidden" class="elementID" name="${customName}.id" value="${(element.id)!}" />
+            <input type="hidden" class="elementRelationID" name="${customName}.${type}.id" value="${(element[type][keyFieldName])!}" />
+            [#-- Title --]
+            <span class="elementName">${(element[type][displayFieldName])!'{elementNameUndefined}'}</span>
+          </div>
+        </div>
+      </li>  
+  [#else]
   <li class="[#if template]relationElement-template[/#if] relationElement indexLevel-${indexLevel}">
     [#-- Hidden Inputs --]
     <input type="hidden" class="elementID" name="${customName}.id" value="${(element.id)!}" />
@@ -670,6 +688,7 @@
     [#-- Title --]
     <span class="elementName">${(element[type][displayFieldName])!'{elementNameUndefined}'}</span>
   </li>
+  [/#if]
 [/#macro]
 
 [#macro helpViewMore name=""]
