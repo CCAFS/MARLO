@@ -688,6 +688,7 @@ function onSelectElement() {
   var className = $list.attr('class');
   if(className.indexOf("primary") >= 0){
     $element.find("input.radio-input").attr("checked", false);
+    $element.find("label.radio-label").name = $element.find("label.radio-label").name.replace("_TEMPLATE_", "");
     $element.find("input.radio-input").on('change', onSelectElementPrimary);
   }
 
