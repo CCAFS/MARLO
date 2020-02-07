@@ -197,8 +197,9 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
   }
 
   public String getComposedNameAlternative() {
-    if ((this.getProjectExpectedStudyInfo() != null) && (this.getProjectExpectedStudyInfo().getTitle() != null)) {
-      if (this.getProjectExpectedStudyInfo().getTitle().trim().length() > 0) {
+    if ((this.getProjectExpectedStudyInfo() != null)) {
+      if ((this.getProjectExpectedStudyInfo().getTitle() != null)
+        && (this.getProjectExpectedStudyInfo().getTitle().trim().length() > 0)) {
         return "(" + this.getProjectExpectedStudyInfo().getYear() + ") ID" + this.getId() + " - "
           + this.getProjectExpectedStudyInfo().getTitle();
       } else {
