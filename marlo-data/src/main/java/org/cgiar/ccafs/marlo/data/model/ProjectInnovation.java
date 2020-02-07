@@ -91,8 +91,9 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   }
 
   public String getComposedNameAlternative() {
-    if ((this.projectInnovationInfo != null) && (this.projectInnovationInfo.getTitle() != null)) {
-      if (this.projectInnovationInfo.getTitle().trim().length() > 0) {
+    if ((this.projectInnovationInfo != null)) {
+      if ((this.projectInnovationInfo.getTitle() != null)
+        && (this.projectInnovationInfo.getTitle().trim().length() > 0)) {
         return "(" + this.projectInnovationInfo.getYear() + ") ID" + this.getId() + " - "
           + this.projectInnovationInfo.getTitle();
       } else {
