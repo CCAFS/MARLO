@@ -243,7 +243,7 @@
         [#if isOutcomeCaseStudy]
         <div class="form-group simpleBox">
           [@customForm.elementsListComponent name="${customName}.centers" elementType="institution" elementList=element.centers label="study.keyContributors.centers"  listName="centers" keyFieldName="id" displayFieldName="composedName" /]
-          <div class="note">[@s.text name="policy.ppapartner.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/partners'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
+          <div class="note">[@s.text name="study.ppapartner.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/partners'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
         </div>
         [/#if]
         [#-- Flagships --]
