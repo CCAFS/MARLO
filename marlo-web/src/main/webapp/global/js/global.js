@@ -663,6 +663,7 @@ function onSelectElement() {
   var maxLimit = $select.classParam('maxLimit');
   var $list = $parent.find('ul.list');
   var counted = $list.find('li').length;
+  var className = $list.attr('class');
 
   // Select an option
   if($option.val() == "-1") {
@@ -678,19 +679,12 @@ function onSelectElement() {
     e.name = (e.name).replace("_TEMPLATE_", "");
     e.id = (e.id).replace("_TEMPLATE_", "");
   });
+
   // Set attributes
   var id = $option.val();
   var name = $option.text();
   $element.find('.elementRelationID').val(id);
   $element.find('.elementName').html(name);
-
-  //Validate if is a primary radioButton group
-  var className = $list.attr('class');
-  if(className.indexOf("primary") >= 0){
-    $element.find("input.radio-input").attr("checked", false);
-    //$element.find("label.radio-label").attr("for", $element.find("label.radio-label").name.replace("_TEMPLATE_", ""));
-    $element.find("input.radio-input").on('change', onSelectElementPrimary);
-  }
 
   // Add Item
   console.log("Add item: " + id);
@@ -720,6 +714,19 @@ function onSelectElement() {
     var indexLevel = $(element).classParam('indexLevel');
     $(element).setNameIndexes(indexLevel, i);
   });
+
+  //Validate if is a primary radioButton group
+  if(className.indexOf("primary") >= 0){
+    $element.find('input.radio-input').attr('checked', false);
+    $element.find('label.radio-label').attr('for', $element.find('label.radio-label').parents('.radioFlat').find('input').attr("id"));
+    $element.find('input.radio-input').on('change', onSelectElementPrimary);
+/*
+    if($list.children().length < 2){
+      console.log($list.find('input.radio-input').attr('checked'));
+      $list.find('input.radio-input').attr('checked', true);
+      console.log($list.find('input.radio-input').attr('checked'));
+    }*/
+  }
 }
 
 function onClickRemoveElement() {
@@ -765,8 +772,12 @@ function onSelectElementPrimary() {
   $list.find("input.radio-input").each(function() {
     if($(this).attr("name") != $input.attr("name") ){
       $(this).attr("checked", false);
+      console.log($(this).attr("checked"));
+      console.log($input.attr("checked"));
     }else{
       $(this).attr("checked", true);
+      console.log($(this).attr("checked"));
+      console.log($input.attr("checked"));
     }
   });
 }

@@ -662,22 +662,27 @@
     [#local composedID = "${type}-${id}" /]
   [/#if]
   [#if hasPrimary]
-      <li class="[#if template]relationElement-template[/#if] relationElement indexLevel-${indexLevel}">
-        [#-- Remove button --]
-        [#if editable]<div class="removeElement sm removeIcon removeElementType-${composedID}" title="Remove"></div>[/#if] 
-        <div class="form-group row">
-          <div class="col-md-1 d-flex align-items-center">
-            [@radioFlat id="${customName}-primary" name="${customName}.primary" value="true" cssClassLabel="radio-label-yes" editable=editable checked=false /]
-          </div>
-          <div class="col-md-11">
-            [#-- Hidden Inputs --]
-            <input type="hidden" class="elementID" name="${customName}.id" value="${(element.id)!}" />
-            <input type="hidden" class="elementRelationID" name="${customName}.${type}.id" value="${(element[type][keyFieldName])!}" />
-            [#-- Title --]
-            <span class="elementName">${(element[type][displayFieldName])!'{elementNameUndefined}'}</span>
-          </div>
+    [#attempt]
+      [#local primaryValue = "${customName}.primary"?eval!false /]
+    [#recover]
+      [#local primaryValue = false /]
+    [/#attempt]
+    <li class="[#if template]relationElement-template[/#if] relationElement indexLevel-${indexLevel}">
+      [#-- Remove button --]
+      [#if editable]<div class="removeElement sm removeIcon removeElementType-${composedID}" title="Remove"></div>[/#if] 
+      <div class="form-group row">
+        <div class="col-md-1 d-flex align-items-center">
+          [@radioFlat id="${customName}.primary" name="${customName}.primary" value="true" cssClassLabel="radio-label-yes" editable=editable checked=(primaryValue)!false /]
         </div>
-      </li>  
+        <div class="col-md-11">
+          [#-- Hidden Inputs --]
+          <input type="hidden" class="elementID" name="${customName}.id" value="${(element.id)!}" />
+          <input type="hidden" class="elementRelationID" name="${customName}.${type}.id" value="${(element[type][keyFieldName])!}" />
+          [#-- Title --]
+          <span class="elementName">${(element[type][displayFieldName])!'{elementNameUndefined}'}</span>
+        </div>
+      </div>
+    </li>  
   [#else]
   <li class="[#if template]relationElement-template[/#if] relationElement indexLevel-${indexLevel}">
     [#-- Hidden Inputs --]
