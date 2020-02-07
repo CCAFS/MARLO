@@ -25,7 +25,8 @@
           [@customForm.select name="${customName}.projectExpectedStudyInfo.status.id" className="setSelect2 statusSelect" i18nkey="study.status" listName="statuses" keyFieldName="id"  displayFieldName="name" header=false required=true editable=editable /]
         </div>
         <div class="col-md-4">
-          [@customForm.select name="${customName}.projectExpectedStudyInfo.year" className="setSelect2" i18nkey="study.year" listName="allPhaseYearsGreater" header=false required=true editable=editable /]
+          [#assign dbExpectedYear = ((element.projectExpectedStudyInfo.year)!currentCycleYear)  ]
+          [@customForm.select name="${customName}.projectExpectedStudyInfo.year" className="setSelect2" i18nkey="study.year" listName="getExpectedStudiesYears(${element.projectExpectedStudyInfo.projectExpectedStudy.id})" header=false required=true editable=editable /]
           [#if editable=false]
             ${element.projectExpectedStudyInfo.year}
           [/#if]

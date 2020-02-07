@@ -57,6 +57,7 @@ import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectComponentLessonManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionManager;
@@ -335,6 +336,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private ProjectPolicyManager projectPolicyManager;
+
+  @Inject
+  private ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager;
 
   // Variables
   private String crpSession;
@@ -2678,6 +2682,32 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public List<HistoryDifference> getDifferences() {
     return this.differences;
+  }
+
+  public List<Integer> getExpectedStudiesYears(Long expectedStudy) {
+    List<ProjectExpectedStudyInfo> projectExpectedStudyInfoList =
+      this.projectExpectedStudyInfoManager.findAll().stream()
+        .filter(c -> c.getProjectExpectedStudy().getId().longValue() == expectedStudy.longValue()
+          && c.getPhase().getName().equals("AR") && c.getPhase().getYear() == (this.getActualPhase().getYear()))
+        .collect(Collectors.toList());
+    List<Integer> allYears = new ArrayList<>();
+    if (projectExpectedStudyInfoList.size() > 0) {
+      if (projectExpectedStudyInfoList.get(0).getYear() != this.getActualPhase().getYear()) {
+        allYears.add(projectExpectedStudyInfoList.get(0).getYear());
+      } else {
+        List<ProjectExpectedStudyInfo> projectExpectedStudyInfoList2 =
+          this.projectExpectedStudyInfoManager.findAll().stream()
+            .filter(c -> c.getProjectExpectedStudy().getId().longValue() == expectedStudy.longValue()
+              && c.getPhase().getName().equals("AR") && c.getPhase().getYear() < (this.getActualPhase().getYear()))
+            .collect(Collectors.toList());
+        if (projectExpectedStudyInfoList2.size() > 0) {
+          allYears.add(projectExpectedStudyInfoList2.get(0).getYear());
+        }
+      }
+
+    }
+    allYears.add(this.getActualPhase().getYear());
+    return allYears;
   }
 
   public FileDB getFileDB(FileDB preview, File file, String fileFileName, String path) {
