@@ -2186,28 +2186,15 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           ProjectExpectedStudySubIdo studySubIdoSave = new ProjectExpectedStudySubIdo();
           studySubIdoSave.setProjectExpectedStudy(projectExpectedStudy);
           studySubIdoSave.setPhase(phase);
+          studySubIdoSave.setPrimary(studySubIdo.getPrimary());
 
-          SrfSubIdo srfSubIdo = this.srfSubIdoManager.getSrfSubIdoById(studySubIdo.getSrfSubIdo().getId());
-
-          studySubIdoSave.setSrfSubIdo(srfSubIdo);
-
-          // Save primary
-          if ((subIdoPrimaryId != 0 || srfSubIdoPrimary != 0) && studySubIdo.getSrfSubIdo() != null) {
-            if ((studySubIdo.getSrfSubIdo().getId() == subIdoPrimaryId)
-              || (studySubIdo.getSrfSubIdo().getId() == srfSubIdoPrimary)) {
-              studySubIdoSave.setPrimary(true);
-            } else {
-              studySubIdoSave.setPrimary(false);
-            }
-          } else {
-            // If just one sub ido is selected, this is defined as principal
-            if (expectedStudy.getSubIdos().size() == 1) {
-              studySubIdoSave.setPrimary(true);
-            }
+          if (studySubIdo.getSrfSubIdo() != null && studySubIdo.getSrfSubIdo().getId() != null) {
+            SrfSubIdo srfSubIdo = this.srfSubIdoManager.getSrfSubIdoById(studySubIdo.getSrfSubIdo().getId());
+            studySubIdoSave.setSrfSubIdo(srfSubIdo);
           }
 
-          if (studySubIdoSave.getPrimary() == null) {
-            studySubIdoSave.setPrimary(false);
+          if (expectedStudy.getSubIdos() != null && expectedStudy.getSubIdos().size() == 1) {
+            studySubIdoSave.setPrimary(true);
           }
 
           this.projectExpectedStudySubIdoManager.saveProjectExpectedStudySubIdo(studySubIdoSave);
@@ -2216,22 +2203,23 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           this.expectedStudy.getProjectExpectedStudySubIdos().add(studySubIdoSave);
         } else {
           // if sub ido already exist - save primary
-          if ((subIdoPrimaryId != 0 || srfSubIdoPrimary != 0) && studySubIdo.getSrfSubIdo() != null) {
-            ProjectExpectedStudySubIdo studySubIdoSave = new ProjectExpectedStudySubIdo();
-            studySubIdoSave = projectExpectedStudySubIdoManager.getProjectExpectedStudySubIdoById(studySubIdo.getId());
+          ProjectExpectedStudySubIdo studySubIdoSave = new ProjectExpectedStudySubIdo();
+          studySubIdoSave = projectExpectedStudySubIdoManager.getProjectExpectedStudySubIdoById(studySubIdo.getId());
 
-            if ((studySubIdo.getSrfSubIdo().getId() == subIdoPrimaryId)
-              || (studySubIdo.getSrfSubIdo().getId() == srfSubIdoPrimary)) {
-              studySubIdoSave.setPrimary(true);
-            } else {
-              studySubIdoSave.setPrimary(false);
-            }
+          studySubIdoSave.setProjectExpectedStudy(projectExpectedStudy);
+          studySubIdoSave.setPhase(phase);
+          studySubIdoSave.setPrimary(studySubIdo.getPrimary());
 
-            if (studySubIdoSave.getPrimary() == null) {
-              studySubIdoSave.setPrimary(false);
-            }
-            projectExpectedStudySubIdoManager.saveProjectExpectedStudySubIdo(studySubIdoSave);
+          if (studySubIdo.getSrfSubIdo() != null && studySubIdo.getSrfSubIdo().getId() != null) {
+            SrfSubIdo srfSubIdo = this.srfSubIdoManager.getSrfSubIdoById(studySubIdo.getSrfSubIdo().getId());
+            studySubIdoSave.setSrfSubIdo(srfSubIdo);
           }
+
+          if (expectedStudy.getSubIdos() != null && expectedStudy.getSubIdos().size() == 1) {
+            studySubIdoSave.setPrimary(true);
+          }
+          projectExpectedStudySubIdoManager.saveProjectExpectedStudySubIdo(studySubIdoSave);
+
         }
       }
     }
