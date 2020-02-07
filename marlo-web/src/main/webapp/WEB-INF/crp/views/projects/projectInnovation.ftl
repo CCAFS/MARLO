@@ -53,7 +53,7 @@
         <div class="">        
           <div class="form-group row">
             <div class="col-md-4">
-              [@customForm.select name="innovation.projectInnovationInfo.year" className="setSelect2" i18nkey="policy.year" listName="years" header=false required=true editable=editable /]
+              [@customForm.select name="innovation.projectInnovationInfo.year" className="setSelect2" i18nkey="policy.year" listName="getInnovationsYears(${innovation.projectInnovationInfo.projectInnovation.id})" header=false required=true editable=editable /]
               [#if editable=false]
                 ${innovation.projectInnovationInfo.year}
               [/#if]
