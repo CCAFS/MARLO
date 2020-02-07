@@ -1799,29 +1799,15 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             ProjectExpectedStudyMilestone studyMilestoneSave = new ProjectExpectedStudyMilestone();
             studyMilestoneSave.setProjectExpectedStudy(projectExpectedStudy);
             studyMilestoneSave.setPhase(phase);
+            studyMilestoneSave.setPrimary(studyMilestone.getPrimary());
+
+            if (expectedStudy.getMilestones() != null && expectedStudy.getMilestones().size() == 1) {
+              studyMilestoneSave.setPrimary(true);
+            }
 
             if (studyMilestone.getCrpMilestone() != null && studyMilestone.getCrpMilestone().getId() != null) {
               CrpMilestone milestone = milestoneManager.getCrpMilestoneById(studyMilestone.getCrpMilestone().getId());
               studyMilestoneSave.setCrpMilestone(milestone);
-
-              // Save primary
-              if ((milestonePrimaryId != 0 || crpMilestonePrimary != 0) && studyMilestone.getCrpMilestone() != null) {
-                if ((studyMilestone.getCrpMilestone().getId() == milestonePrimaryId)
-                  || (studyMilestone.getCrpMilestone().getId() == crpMilestonePrimary)) {
-                  studyMilestoneSave.setPrimary(true);
-                } else {
-                  studyMilestoneSave.setPrimary(false);
-                }
-              } else {
-                // If just one sub ido is selected, this is defined as principal
-                if (expectedStudy.getMilestones().size() == 1) {
-                  studyMilestoneSave.setPrimary(true);
-                }
-              }
-
-              if (studyMilestoneSave.getPrimary() == null) {
-                studyMilestoneSave.setPrimary(false);
-              }
 
               this.projectExpectedStudyMilestoneManager.saveProjectExpectedStudyMilestone(studyMilestoneSave);
               // This is to add studyCrpSave to generate correct auditlog.
@@ -1829,25 +1815,25 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             }
           } else {
             // if milestone already exist - save primary
-            if ((milestonePrimaryId != 0 || crpMilestonePrimary != 0) && studyMilestone.getCrpMilestone() != null) {
-              ProjectExpectedStudyMilestone studyMilestoneSave = new ProjectExpectedStudyMilestone();
-              studyMilestoneSave =
-                projectExpectedStudyMilestoneManager.getProjectExpectedStudyMilestoneById(studyMilestone.getId());
+            ProjectExpectedStudyMilestone studyMilestoneSave = new ProjectExpectedStudyMilestone();
+            studyMilestoneSave =
+              projectExpectedStudyMilestoneManager.getProjectExpectedStudyMilestoneById(studyMilestone.getId());
+            studyMilestoneSave.setProjectExpectedStudy(projectExpectedStudy);
+            studyMilestoneSave.setPhase(phase);
+            studyMilestoneSave.setPrimary(studyMilestone.getPrimary());
 
-              if ((studyMilestone.getCrpMilestone().getId() == milestonePrimaryId)
-                || (studyMilestone.getCrpMilestone().getId() == crpMilestonePrimary)) {
-                studyMilestoneSave.setPrimary(true);
-              } else {
-                studyMilestoneSave.setPrimary(false);
-              }
-
-              if (studyMilestoneSave.getPrimary() == null) {
-                studyMilestoneSave.setPrimary(false);
-              }
-              projectExpectedStudyMilestoneManager.saveProjectExpectedStudyMilestone(studyMilestoneSave);
-              // This is to add studyCrpSave to generate correct auditlog.
-              this.expectedStudy.getProjectExpectedStudyMilestones().add(studyMilestoneSave);
+            if (studyMilestone.getCrpMilestone() != null && studyMilestone.getCrpMilestone().getId() != null) {
+              CrpMilestone milestone = milestoneManager.getCrpMilestoneById(studyMilestone.getCrpMilestone().getId());
+              studyMilestoneSave.setCrpMilestone(milestone);
             }
+            if (expectedStudy.getMilestones() != null && expectedStudy.getMilestones().size() == 1) {
+              studyMilestoneSave.setPrimary(true);
+            }
+
+            projectExpectedStudyMilestoneManager.saveProjectExpectedStudyMilestone(studyMilestoneSave);
+            // This is to add studyCrpSave to generate correct auditlog.
+            this.expectedStudy.getProjectExpectedStudyMilestones().add(studyMilestoneSave);
+
           }
         }
       }
