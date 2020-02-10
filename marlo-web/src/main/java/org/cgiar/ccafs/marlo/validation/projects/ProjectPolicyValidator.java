@@ -236,12 +236,12 @@ public class ProjectPolicyValidator extends BaseValidator {
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
     }
 
-    // validate Milestones
+    // Validate Milestones
     if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()) != null
       && ((projectPolicy.getProjectPolicyInfo().getHasMilestones() != null
         && projectPolicy.getProjectPolicyInfo().getHasMilestones() == true)
-        || (projectPolicy.getMilestones() == null || projectPolicy.getMilestones().isEmpty()))
-      || projectPolicy.getProjectPolicyInfo().getHasMilestones() != null) {
+        && (projectPolicy.getMilestones() == null || projectPolicy.getMilestones().isEmpty()))
+      || projectPolicy.getProjectPolicyInfo().getHasMilestones() == null) {
       action.addMessage(action.getText("milestoneList"));
       action.addMissingField("policy.milestones");
       action.getInvalidFields().put("list-policy.milestones",
