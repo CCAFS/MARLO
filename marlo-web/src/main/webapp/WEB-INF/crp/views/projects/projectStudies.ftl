@@ -46,7 +46,7 @@
         [#-- Section Messages --]
         [#include "/WEB-INF/crp/views/projects/messages-projects.ftl" /]
         
-        [@s.form action="caseStudies" cssClass="pure-form" enctype="multipart/form-data" ]  
+        [#-- [@s.form action="caseStudies" cssClass="pure-form" enctype="multipart/form-data" ]  --]
           
           [#-- Studies list --]
           <h3 class="headTitle">[@s.text name="projectStudies.studiesTitle" /] <br /><small>[@s.text name="projectStudies.studiesSubTitle" /]</small></h3>
@@ -71,7 +71,7 @@
             [@tableList list=(projectOldStudies)![] previousTable=true /]
           </div>
           
-        [/@s.form]
+        [#-- [/@s.form]--]
   
       </div>
       
@@ -83,7 +83,7 @@
 [#list params?keys as prop]<input id="${params[prop].id}" type="hidden" value="${params[prop].name}" />[/#list]
 
 
-[@customForm.confirmJustification action="deleteStudy.do" namespace="/projects" nameId="expectedID" projectID="${projectID}" title="Remove study" required=false /]
+[#-- [@customForm.confirmJustification action="deleteStudy.do" namespace="/projects" nameId="expectedID" projectID="${projectID}" title="Remove study" required=false /]--]
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
@@ -171,9 +171,31 @@
             </td>
             <td class="removeHighlight-row text-center">
               [#if canEdit && isOwner && ((item.projectExpectedStudyInfo.year gte  currentCycleYear)!true) ]
-                <a id="removeElement-${item.id}" class="removeElementList" href="#" title="" >
+                <a id="removeElement-${item.id}" class="removeElementList" href="#" title="" data-toggle="modal" data-target="#removeItem-${item_index}" >
                   <img src="${baseUrlCdn}/global/images/trash.png" title="[@s.text name="projectStudies.removeCaseStudy" /]" /> 
                 </a>
+                <div id="removeItem-${item_index}" class="modal fade" tabindex="-1" role="dialog">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      [@s.form action="deleteStudy.do"]
+                        <div class="modal-header">
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                          <h4 class="modal-title">Remove this item <br /> <small>${(item.projectExpectedStudyInfo.title)!}</small> </h4>
+                        </div>
+                        <div class="modal-body">
+                          [@customForm.textArea name="justification" i18nkey="projectPolicies.removeJustification" required=false className="removeJustification"/]                         
+                          <input type="hidden"  name="expectedID" value="${(item.id)!}" />
+                          <input type="hidden"  name="projectID" value="${(projectID)!}" />
+                          <input type="hidden"  name="phaseID"  value="${(actualPhase.id)!}"/>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                          <button type="submit" class="btn btn-danger">Remove</button>
+                        </div>
+                      [/@s.form]
+                    </div>
+                  </div>
+                </div>
               [#else]
                 <img src="${baseUrlCdn}/global/images/trash_disable.png" title="[@s.text name="projectStudies.cantDeleteCaseStudy" /]" />
               [/#if]

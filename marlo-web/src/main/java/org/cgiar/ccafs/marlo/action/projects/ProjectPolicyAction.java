@@ -1479,11 +1479,10 @@ public class ProjectPolicyAction extends BaseAction {
               } else {
                 policyMilestoneSave.setPrimary(false);
               }
-            } else {
-              // If just one sub ido is selected, this is defined as principal
-              if (policy.getMilestones().size() == 1) {
-                policyMilestoneSave.setPrimary(true);
-              }
+            }
+            // If just one sub ido is selected, this is defined as principal
+            if (policy.getMilestones().size() == 1) {
+              policyMilestoneSave.setPrimary(true);
             }
 
             if (policyMilestoneSave.getPrimary() == null) {
@@ -1498,12 +1497,23 @@ public class ProjectPolicyAction extends BaseAction {
             if ((milestonePrimaryId != 0 || crpMilestonePrimary != 0) && policyMilestone.getCrpMilestone() != null) {
               PolicyMilestone policyMilestoneSave = new PolicyMilestone();
               policyMilestoneSave = policyMilestoneManager.getPolicyMilestoneById(policyMilestone.getId());
+              if (policyMilestoneSave != null && policyMilestoneSave.getCrpMilestone() != null
+                && policyMilestoneSave.getCrpMilestone().getId() != null) {
+                CrpMilestone milestone =
+                  crpMilestoneManager.getCrpMilestoneById(policyMilestone.getCrpMilestone().getId());
+                policyMilestoneSave.setCrpMilestone(milestone);
+              }
 
               if ((policyMilestone.getCrpMilestone().getId() == subIdoPrimaryId)
                 || (policyMilestone.getCrpMilestone().getId() == srfSubIdoPrimary)) {
                 policyMilestoneSave.setPrimary(true);
               } else {
                 policyMilestoneSave.setPrimary(false);
+              }
+
+              // If just one sub ido is selected, this is defined as principal
+              if (policy.getMilestones().size() == 1) {
+                policyMilestoneSave.setPrimary(true);
               }
 
               if (policyMilestoneSave.getPrimary() == null) {
