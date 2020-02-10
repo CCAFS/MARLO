@@ -2701,6 +2701,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           && c.getPhase().getYear() == (this.getActualPhase().getYear()))
         .collect(Collectors.toList());
     List<Integer> allYears = new ArrayList<>();
+    if (projectExpectedStudyInfoList == null) {
+      projectExpectedStudyInfoList = new ArrayList<ProjectExpectedStudyInfo>();
+    }
     if (projectExpectedStudyInfoList.size() > 0) {
       if (projectExpectedStudyInfoList.get(0).getYear() != this.getActualPhase().getYear()) {
         allYears.add(projectExpectedStudyInfoList.get(0).getYear());
@@ -2848,6 +2851,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         && c.getPhase().getName().equals(APConstants.PROJECT_INDICATOR_PHASE_PREVIOUS_NAME)
         && c.getPhase().getYear() == (this.getActualPhase().getYear()))
       .collect(Collectors.toList());
+    if (projectInnovationInfoList == null) {
+      projectInnovationInfoList = new ArrayList<ProjectInnovationInfo>();
+    }
     List<Integer> allYears = new ArrayList<>();
     if (projectInnovationInfoList.size() > 0) {
       if (projectInnovationInfoList.get(0).getYear() != this.getActualPhase().getYear()) {
@@ -3204,6 +3210,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         && c.getPhase().getName().equals(APConstants.PROJECT_INDICATOR_PHASE_PREVIOUS_NAME)
         && c.getPhase().getYear() == (this.getActualPhase().getYear()))
       .collect(Collectors.toList());
+    if (projectPolicyInfoList == null) {
+      projectPolicyInfoList = new ArrayList<ProjectPolicyInfo>();
+    }
     List<Integer> allYears = new ArrayList<>();
     if (projectPolicyInfoList.size() > 0) {
       if (projectPolicyInfoList.get(0).getYear() != this.getActualPhase().getYear()) {
