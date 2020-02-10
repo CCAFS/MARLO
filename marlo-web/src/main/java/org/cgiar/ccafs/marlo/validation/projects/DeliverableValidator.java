@@ -454,12 +454,14 @@ public class DeliverableValidator extends BaseValidator {
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"geographicScopes"}));
     } else {
       for (DeliverableGeographicScope deliverableGeographicScope : deliverable.getGeographicScopes()) {
-        if (deliverableGeographicScope.getRepIndGeographicScope().getId() == 2) {
-          haveRegions = true;
-        }
-        if (deliverableGeographicScope.getRepIndGeographicScope().getId() != 1
-          && deliverableGeographicScope.getRepIndGeographicScope().getId() != 2) {
-          haveCountries = true;
+        if (deliverableGeographicScope.getRepIndGeographicScope() != null) {
+          if (deliverableGeographicScope.getRepIndGeographicScope().getId() == 2) {
+            haveRegions = true;
+          }
+          if (deliverableGeographicScope.getRepIndGeographicScope().getId() != 1
+            && deliverableGeographicScope.getRepIndGeographicScope().getId() != 2) {
+            haveCountries = true;
+          }
         }
       }
     }
