@@ -94,6 +94,37 @@
       </div>
       [/#if]
       
+      [#--  Geographic scope - Countries  --]
+      <div class="form-group geographicScopeBlock">
+        [#local geographicScopeList = (element.geographicScopes)![] ]
+        [#local isRegional =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeRegional) /]
+        [#local isMultiNational = findElementID(geographicScopeList,  action.reportingIndGeographicScopeMultiNational) /]
+        [#local isNational =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeNational) /]
+        [#local isSubNational =   findElementID(geographicScopeList,  action.reportingIndGeographicScopeSubNational) /]
+        
+        <label for="">[@s.text name="study.geographicScopeTopic" /]:[@customForm.req required=editable /]</label>
+        <div class="form-group simpleBox">
+          <div class="form-group row">
+            <div class="col-md-6">
+              [#-- Geographic Scope --]
+              [@customForm.elementsListComponent name="${customName}.geographicScopes" elementType="repIndGeographicScope" elementList=element.geographicScopes  label="study.geographicScope" listName="geographicScopes" keyFieldName="id" displayFieldName="name" required=true /]
+            </div>
+          </div>
+          <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
+            [#-- Regional scope --]
+            [@customForm.elementsListComponent name="${customName}.studyRegions" elementType="locElement" elementList=element.studyRegions label="study.region"  listName="regions" keyFieldName="id" displayFieldName="composedName" required=false /]
+          </div>
+          <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
+            [#-- Multinational, National and Subnational scope --]
+            [@customForm.select name="${customName}.countriesIds" label="" i18nkey="study.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="${customName}.countriesIds" multiple=true required=true className="countriesSelect" disabled=!editable/]
+          </div>
+          <div class="form-group">
+            [#-- Comment box --]
+            [@customForm.textArea name="${customName}.projectExpectedStudyInfo.scopeComments" className="limitWords-30" i18nkey="study.geographicScopeComments" help="study.geographicScopeComments.help" helpIcon=false  editable=editable required=false/]
+          </div>
+        </div>
+      </div>
+      
       [#-- 3. Link to Common Results Reporting Indicator #I3 --]
       [#if isOutcomeCaseStudy]
       <div class="form-group">
@@ -196,36 +227,6 @@
         </div>--]
         [/#if]
       
-      [#-- 6.  Geographic scope - Countries  --]
-      <div class="form-group geographicScopeBlock">
-        [#local geographicScopeList = (element.geographicScopes)![] ]
-        [#local isRegional =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeRegional) /]
-        [#local isMultiNational = findElementID(geographicScopeList,  action.reportingIndGeographicScopeMultiNational) /]
-        [#local isNational =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeNational) /]
-        [#local isSubNational =   findElementID(geographicScopeList,  action.reportingIndGeographicScopeSubNational) /]
-        
-        <label for="">[@s.text name="study.geographicScopeTopic" /]:[@customForm.req required=editable /]</label>
-        <div class="form-group simpleBox">
-          <div class="form-group row">
-            <div class="col-md-6">
-              [#-- Geographic Scope --]
-              [@customForm.elementsListComponent name="${customName}.geographicScopes" elementType="repIndGeographicScope" elementList=element.geographicScopes  label="study.geographicScope" listName="geographicScopes" keyFieldName="id" displayFieldName="name" required=true /]
-            </div>
-          </div>
-          <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
-            [#-- Regional scope --]
-            [@customForm.elementsListComponent name="${customName}.studyRegions" elementType="locElement" elementList=element.studyRegions label="study.region"  listName="regions" keyFieldName="id" displayFieldName="composedName" required=false /]
-          </div>
-          <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
-            [#-- Multinational, National and Subnational scope --]
-            [@customForm.select name="${customName}.countriesIds" label="" i18nkey="study.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="${customName}.countriesIds" multiple=true required=true className="countriesSelect" disabled=!editable/]
-          </div>
-          <div class="form-group">
-            [#-- Comment box --]
-            [@customForm.textArea name="${customName}.projectExpectedStudyInfo.scopeComments" className="limitWords-30" i18nkey="study.geographicScopeComments" help="study.geographicScopeComments.help" helpIcon=false  editable=editable required=false/]
-          </div>
-        </div>
-      </div>
 
       [#-- 7. Key Contributors  --]
       <div class="form-group">
@@ -242,6 +243,7 @@
         [#if isOutcomeCaseStudy]
         <div class="form-group simpleBox">
           [@customForm.elementsListComponent name="${customName}.centers" elementType="institution" elementList=element.centers label="study.keyContributors.centers"  listName="centers" keyFieldName="id" displayFieldName="composedName" /]
+          <div class="note">[@s.text name="study.ppapartner.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/partners'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
         </div>
         [/#if]
         [#-- Flagships --]
