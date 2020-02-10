@@ -87,6 +87,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
@@ -908,10 +909,33 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.targets = this.srfSloIndicatorManager.findAll();
 
       // institutions
-      centers = institutionManager.findAll().stream()
-        .filter(c -> c.isPPA(this.getActualPhase().getCrp().getId(), this.getActualPhase())
-          || c.getInstitutionType().getId().longValue() == APConstants.INSTITUTION_CGIAR_CENTER_TYPE)
-        .collect(Collectors.toList());
+      Project projectTemp = null;
+      if (this.expectedStudy.getProject() != null) {
+        projectTemp = projectManager.getProjectById(this.expectedStudy.getProject().getId());
+      }
+      if (projectTemp == null) {
+        // is a sumplementary evidence
+        centers = institutionManager.findAll().stream()
+          .filter(c -> c.isPPA(this.getActualPhase().getCrp().getId(), this.getActualPhase())
+            || c.getInstitutionType().getId().longValue() == APConstants.INSTITUTION_CGIAR_CENTER_TYPE)
+          .collect(Collectors.toList());
+      } else {
+        List<Institution> centersTemp = new ArrayList<Institution>();
+        List<ProjectPartner> projectPartnerList = projectTemp.getProjectPartners().stream()
+          .filter(c -> c != null && c.isActive() && c.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList());
+        for (ProjectPartner projectPartner : projectPartnerList) {
+          if (projectPartner.getInstitution() != null && projectPartner.getInstitution().getId() != null) {
+            Institution institution = institutionManager.getInstitutionById(projectPartner.getInstitution().getId());
+            if (institution != null && (institution.isPPA(this.getActualPhase().getCrp().getId(), this.getActualPhase())
+              || institution.getInstitutionType().getId().longValue() == APConstants.INSTITUTION_CGIAR_CENTER_TYPE)) {
+              centersTemp.add(institution);
+            }
+          }
+        }
+        centers = centersTemp;
+      }
+
 
       this.tags = this.evidenceTagManager.findAll();
       this.innovationsList = new ArrayList<>();

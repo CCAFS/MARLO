@@ -2983,7 +2983,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public LDAPUser getOutlookUser(String email) {
     LDAPService service = new LDAPService();
-    if (config.isProduction()) {
+    if (this.config.isProduction()) {
       service.setInternalConnection(false);
     } else {
       service.setInternalConnection(true);
@@ -5983,7 +5983,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         return null;
       }
       if (deliverableBD.getDeliverableInfo(this.getActualPhase()).getAdoptedLicense()) {
-        //
+        return true;
       }
       return false;
     } catch (Exception e) {
@@ -6308,7 +6308,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public void loadLessons(GlobalUnit crp, Project project, String actionName) {
 
-    Project projectDB = projectManager.getProjectById(project.getId());
+    Project projectDB = this.projectManager.getProjectById(project.getId());
     if (this.isReportingActive()) {
 
       List<ProjectComponentLesson> lessons = projectDB.getProjectComponentLessons().stream()
