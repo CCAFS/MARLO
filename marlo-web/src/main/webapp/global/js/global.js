@@ -673,6 +673,7 @@ function onSelectElement() {
   // Clone the new element
   var $element = $parent.find('.relationElement-template').clone(true);
   $element.removeClass('relationElement-template');
+  $element.attr('class',' '+$element.attr('class'));
 
   // Remove template tag
   $element.find('input').each(function(i,e) {
@@ -714,18 +715,18 @@ function onSelectElement() {
     var indexLevel = $(element).classParam('indexLevel');
     $(element).setNameIndexes(indexLevel, i);
   });
-
+  console.log("child");
+  console.log();
   //Validate if is a primary radioButton group
   if(className.indexOf("primary") >= 0){
-    $element.find('input.radio-input').attr('checked', false);
+    if(($list.children().length < 3 && $list.children().first().is('label')) || $list.children().length < 2){
+      $element.find('input.radio-input').attr('checked', true);
+    }else{
+      $element.find('input.radio-input').attr('checked', false);
+    }
+
     $element.find('label.radio-label').attr('for', $element.find('label.radio-label').parents('.radioFlat').find('input').attr("id"));
     $element.find('input.radio-input').on('change', onSelectElementPrimary);
-/*
-    if($list.children().length < 2){
-      console.log($list.find('input.radio-input').attr('checked'));
-      $list.find('input.radio-input').attr('checked', true);
-      console.log($list.find('input.radio-input').attr('checked'));
-    }*/
   }
 }
 
@@ -738,6 +739,7 @@ function onClickRemoveElement() {
   var maxLimit = $select.classParam('maxLimit');
   var id = $parent.find(".elementRelationID").val();
   var name = $parent.find(".elementName").text();
+  var className = $list.attr('class');
 
   $parent.slideUp(100, function() {
     $parent.remove();
@@ -755,6 +757,16 @@ function onClickRemoveElement() {
     $list.find('li.relationElement').each(function(i,element) {
       var indexLevel = $(element).classParam('indexLevel');
       $(element).setNameIndexes(indexLevel, i);
+
+      if(className.indexOf("primary") >= 0){
+        $(element).find('label.radio-label').attr('for', $(element).find('label.radio-label').parents('.radioFlat').find('input').attr("id"));
+        //$(element).find('input.radio-input').attr('checked', true);
+        /*
+        if ($list.children().length < 3){
+          $(element).find('input.radio-input').attr('checked', true);
+        }
+        */
+      }
     });
 
     // Enabled select component if needed
@@ -772,12 +784,8 @@ function onSelectElementPrimary() {
   $list.find("input.radio-input").each(function() {
     if($(this).attr("name") != $input.attr("name") ){
       $(this).attr("checked", false);
-      console.log($(this).attr("checked"));
-      console.log($input.attr("checked"));
     }else{
       $(this).attr("checked", true);
-      console.log($(this).attr("checked"));
-      console.log($input.attr("checked"));
     }
   });
 }
