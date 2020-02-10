@@ -46,7 +46,7 @@
         [#-- Section Messages --]
         [#include "/WEB-INF/crp/views/projects/messages-projects.ftl" /]
         
-        [@s.form action="caseStudies" cssClass="pure-form" enctype="multipart/form-data" ]  
+        [#-- [@s.form action="caseStudies" cssClass="pure-form" enctype="multipart/form-data" ]  --]
           
           [#-- Studies list --]
           <h3 class="headTitle">[@s.text name="projectStudies.studiesTitle" /] <br /><small>[@s.text name="projectStudies.studiesSubTitle" /]</small></h3>
@@ -71,7 +71,7 @@
             [@tableList list=(projectOldStudies)![] previousTable=true /]
           </div>
           
-        [/@s.form]
+        [#-- [/@s.form]--]
   
       </div>
       
@@ -183,7 +183,7 @@
                           <h4 class="modal-title">Remove this item <br /> <small>${(item.projectExpectedStudyInfo.title)!}</small> </h4>
                         </div>
                         <div class="modal-body">
-                          [@customForm.textArea name="justification" i18nkey="projectPolicies.removeJustification" required=false className="removeJustification"/]
+                          [@customForm.textArea name="justification" i18nkey="projectPolicies.removeJustification" required=false className="removeJustification"/]                         
                           <input type="hidden"  name="expectedID" value="${(item.id)!}" />
                           <input type="hidden"  name="projectID" value="${(projectID)!}" />
                           <input type="hidden"  name="phaseID"  value="${(actualPhase.id)!}"/>
