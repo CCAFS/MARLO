@@ -33,125 +33,122 @@ import javax.inject.Named;
 @Named
 public class ProjectPolicySubIdoManagerImpl implements ProjectPolicySubIdoManager {
 
-    private ProjectPolicySubIdoDAO projectPolicySubIdoDAO;
-    // Managers
-    private PhaseDAO phaseDAO;
+  private ProjectPolicySubIdoDAO projectPolicySubIdoDAO;
+  // Managers
+  private PhaseDAO phaseDAO;
 
-    @Inject
-    public ProjectPolicySubIdoManagerImpl(ProjectPolicySubIdoDAO projectPolicySubIdoDAO, PhaseDAO phaseDAO) {
-	this.projectPolicySubIdoDAO = projectPolicySubIdoDAO;
-	this.phaseDAO = phaseDAO;
+  @Inject
+  public ProjectPolicySubIdoManagerImpl(ProjectPolicySubIdoDAO projectPolicySubIdoDAO, PhaseDAO phaseDAO) {
+    this.projectPolicySubIdoDAO = projectPolicySubIdoDAO;
+    this.phaseDAO = phaseDAO;
 
+  }
+
+  @Override
+  public void deleteProjectPolicySubIdo(long projectPolicySubIdoId) {
+
+    ProjectPolicySubIdo projectPolicySubIdo = this.getProjectPolicySubIdoById(projectPolicySubIdoId);
+
+    // Conditions to Project Policy Works In AR phase and Upkeep Phase
+    if (projectPolicySubIdo.getPhase().getDescription().equals(APConstants.PLANNING)
+      && projectPolicySubIdo.getPhase().getNext() != null) {
+      this.deleteProjectPolicySubIdoPhase(projectPolicySubIdo.getPhase().getNext(),
+        projectPolicySubIdo.getProjectPolicy().getId(), projectPolicySubIdo);
     }
 
-    @Override
-    public void deleteProjectPolicySubIdo(long projectPolicySubIdoId) {
-
-	ProjectPolicySubIdo projectPolicySubIdo = this.getProjectPolicySubIdoById(projectPolicySubIdoId);
-
-	// Conditions to Project Policy Works In AR phase and Upkeep Phase
-	if (projectPolicySubIdo.getPhase().getDescription().equals(APConstants.PLANNING)
-		&& projectPolicySubIdo.getPhase().getNext() != null) {
-	    this.deleteProjectPolicySubIdoPhase(projectPolicySubIdo.getPhase().getNext(),
-		    projectPolicySubIdo.getProjectPolicy().getId(), projectPolicySubIdo);
-	}
-
-	if (projectPolicySubIdo.getPhase().getDescription().equals(APConstants.REPORTING)) {
-	    if (projectPolicySubIdo.getPhase().getNext() != null
-		    && projectPolicySubIdo.getPhase().getNext().getNext() != null) {
-		Phase upkeepPhase = projectPolicySubIdo.getPhase().getNext().getNext();
-		if (upkeepPhase != null) {
-		    this.deleteProjectPolicySubIdoPhase(upkeepPhase, projectPolicySubIdo.getProjectPolicy().getId(),
-			    projectPolicySubIdo);
-		}
-	    }
-	}
-
-	projectPolicySubIdoDAO.deleteProjectPolicySubIdo(projectPolicySubIdoId);
+    if (projectPolicySubIdo.getPhase().getDescription().equals(APConstants.REPORTING)) {
+      if (projectPolicySubIdo.getPhase().getNext() != null
+        && projectPolicySubIdo.getPhase().getNext().getNext() != null) {
+        Phase upkeepPhase = projectPolicySubIdo.getPhase().getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteProjectPolicySubIdoPhase(upkeepPhase, projectPolicySubIdo.getProjectPolicy().getId(),
+            projectPolicySubIdo);
+        }
+      }
     }
 
-    public void deleteProjectPolicySubIdoPhase(Phase next, long policyID, ProjectPolicySubIdo projectPolicySubIdo) {
-	Phase phase = phaseDAO.find(next.getId());
+    projectPolicySubIdoDAO.deleteProjectPolicySubIdo(projectPolicySubIdoId);
+  }
 
-	List<ProjectPolicySubIdo> projectPolicySubIdos = phase.getProjectPolicySubIdos().stream()
-		.filter(c -> c.isActive() && c.getProjectPolicy().getId().longValue() == policyID
-			&& c.getSrfSubIdo().getId().equals(projectPolicySubIdo.getSrfSubIdo().getId()))
-		.collect(Collectors.toList());
+  public void deleteProjectPolicySubIdoPhase(Phase next, long policyID, ProjectPolicySubIdo projectPolicySubIdo) {
+    Phase phase = phaseDAO.find(next.getId());
 
-	for (ProjectPolicySubIdo projectPolicySubIdoDB : projectPolicySubIdos) {
-	    projectPolicySubIdoDAO.deleteProjectPolicySubIdo(projectPolicySubIdoDB.getId());
-	}
+    List<ProjectPolicySubIdo> projectPolicySubIdos =
+      phase.getProjectPolicySubIdos().stream().filter(c -> c.getProjectPolicy().getId().longValue() == policyID
+        && c.getSrfSubIdo().getId().equals(projectPolicySubIdo.getSrfSubIdo().getId())).collect(Collectors.toList());
 
-	if (phase.getNext() != null) {
-	    this.deleteProjectPolicySubIdoPhase(phase.getNext(), policyID, projectPolicySubIdo);
-	}
+    for (ProjectPolicySubIdo projectPolicySubIdoDB : projectPolicySubIdos) {
+      projectPolicySubIdoDAO.deleteProjectPolicySubIdo(projectPolicySubIdoDB.getId());
     }
 
-    @Override
-    public boolean existProjectPolicySubIdo(long projectPolicySubIdoID) {
+    if (phase.getNext() != null) {
+      this.deleteProjectPolicySubIdoPhase(phase.getNext(), policyID, projectPolicySubIdo);
+    }
+  }
 
-	return projectPolicySubIdoDAO.existProjectPolicySubIdo(projectPolicySubIdoID);
+  @Override
+  public boolean existProjectPolicySubIdo(long projectPolicySubIdoID) {
+
+    return projectPolicySubIdoDAO.existProjectPolicySubIdo(projectPolicySubIdoID);
+  }
+
+  @Override
+  public List<ProjectPolicySubIdo> findAll() {
+
+    return projectPolicySubIdoDAO.findAll();
+
+  }
+
+  @Override
+  public ProjectPolicySubIdo getProjectPolicySubIdoById(long projectPolicySubIdoID) {
+
+    return projectPolicySubIdoDAO.find(projectPolicySubIdoID);
+  }
+
+  public void savePolicySubIdoPhase(Phase next, long policyID, ProjectPolicySubIdo projectPolicySubIdo) {
+
+    Phase phase = phaseDAO.find(next.getId());
+
+    List<ProjectPolicySubIdo> projectPolicySubIdos =
+      phase.getProjectPolicySubIdos().stream().filter(c -> c.getProjectPolicy().getId().longValue() == policyID
+        && c.getSrfSubIdo().getId().equals(projectPolicySubIdo.getSrfSubIdo().getId())).collect(Collectors.toList());
+
+    if (projectPolicySubIdos.isEmpty()) {
+      ProjectPolicySubIdo projectPolicySubIdoAdd = new ProjectPolicySubIdo();
+      projectPolicySubIdoAdd.setProjectPolicy(projectPolicySubIdo.getProjectPolicy());
+      projectPolicySubIdoAdd.setPhase(phase);
+      projectPolicySubIdoAdd.setSrfSubIdo(projectPolicySubIdo.getSrfSubIdo());
+      projectPolicySubIdoAdd.setPrimary(projectPolicySubIdo.getPrimary());
+      projectPolicySubIdoDAO.save(projectPolicySubIdoAdd);
     }
 
-    @Override
-    public List<ProjectPolicySubIdo> findAll() {
+    if (phase.getNext() != null) {
+      this.savePolicySubIdoPhase(phase.getNext(), policyID, projectPolicySubIdo);
+    }
+  }
 
-	return projectPolicySubIdoDAO.findAll();
+  @Override
+  public ProjectPolicySubIdo saveProjectPolicySubIdo(ProjectPolicySubIdo projectPolicySubIdo) {
 
+    ProjectPolicySubIdo subIdo = projectPolicySubIdoDAO.save(projectPolicySubIdo);
+    Phase phase = phaseDAO.find(subIdo.getPhase().getId());
+
+    // Conditions to Project Policy Works In AR phase and Upkeep Phase
+    if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
+      this.savePolicySubIdoPhase(projectPolicySubIdo.getPhase().getNext(),
+        projectPolicySubIdo.getProjectPolicy().getId(), projectPolicySubIdo);
     }
 
-    @Override
-    public ProjectPolicySubIdo getProjectPolicySubIdoById(long projectPolicySubIdoID) {
-
-	return projectPolicySubIdoDAO.find(projectPolicySubIdoID);
+    if (phase.getDescription().equals(APConstants.REPORTING)) {
+      if (phase.getNext() != null && phase.getNext().getNext() != null) {
+        Phase upkeepPhase = phase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.savePolicySubIdoPhase(upkeepPhase, projectPolicySubIdo.getProjectPolicy().getId(), projectPolicySubIdo);
+        }
+      }
     }
 
-    public void savePolicySubIdoPhase(Phase next, long policyID, ProjectPolicySubIdo projectPolicySubIdo) {
-
-	Phase phase = phaseDAO.find(next.getId());
-
-	List<ProjectPolicySubIdo> projectPolicySubIdos = phase.getProjectPolicySubIdos().stream()
-		.filter(c -> c.getProjectPolicy().getId().longValue() == policyID
-			&& c.getSrfSubIdo().getId().equals(projectPolicySubIdo.getSrfSubIdo().getId()))
-		.collect(Collectors.toList());
-
-	if (projectPolicySubIdos.isEmpty()) {
-	    ProjectPolicySubIdo projectPolicySubIdoAdd = new ProjectPolicySubIdo();
-	    projectPolicySubIdoAdd.setProjectPolicy(projectPolicySubIdo.getProjectPolicy());
-	    projectPolicySubIdoAdd.setPhase(phase);
-	    projectPolicySubIdoAdd.setSrfSubIdo(projectPolicySubIdo.getSrfSubIdo());
-	    projectPolicySubIdoAdd.setPrimary(projectPolicySubIdo.getPrimary());
-	    projectPolicySubIdoDAO.save(projectPolicySubIdoAdd);
-	}
-
-	if (phase.getNext() != null) {
-	    this.savePolicySubIdoPhase(phase.getNext(), policyID, projectPolicySubIdo);
-	}
-    }
-
-    @Override
-    public ProjectPolicySubIdo saveProjectPolicySubIdo(ProjectPolicySubIdo projectPolicySubIdo) {
-
-	ProjectPolicySubIdo subIdo = projectPolicySubIdoDAO.save(projectPolicySubIdo);
-	Phase phase = phaseDAO.find(subIdo.getPhase().getId());
-
-	// Conditions to Project Policy Works In AR phase and Upkeep Phase
-	if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
-	    this.savePolicySubIdoPhase(projectPolicySubIdo.getPhase().getNext(),
-		    projectPolicySubIdo.getProjectPolicy().getId(), projectPolicySubIdo);
-	}
-
-	if (phase.getDescription().equals(APConstants.REPORTING)) {
-	    if (phase.getNext() != null && phase.getNext().getNext() != null) {
-		Phase upkeepPhase = phase.getNext().getNext();
-		if (upkeepPhase != null) {
-		    this.savePolicySubIdoPhase(upkeepPhase, projectPolicySubIdo.getProjectPolicy().getId(),
-			    projectPolicySubIdo);
-		}
-	    }
-	}
-
-	return subIdo;
-    }
+    return subIdo;
+  }
 
 }

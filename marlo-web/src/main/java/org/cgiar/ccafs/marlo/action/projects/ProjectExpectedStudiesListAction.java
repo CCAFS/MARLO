@@ -133,17 +133,37 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
     return INPUT;
   }
 
+  /*
+   * @Override
+   * public String delete() {
+   * ProjectExpectedStudy projectExpectedStudyBD = projectExpectedStudyManager.getProjectExpectedStudyById(expectedID);
+   * if (projectExpectedStudyBD.getSectionStatuses() != null) {
+   * for (SectionStatus sectionStatus : projectExpectedStudyBD.getSectionStatuses()) {
+   * sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+   * }
+   * }
+   * projectExpectedStudyBD.setModificationJustification(justification);
+   * projectExpectedStudyManager.deleteProjectExpectedStudy(projectExpectedStudyBD.getId());
+   * return SUCCESS;
+   * }
+   */
 
   @Override
   public String delete() {
-    ProjectExpectedStudy projectExpectedStudyBD = projectExpectedStudyManager.getProjectExpectedStudyById(expectedID);
-    if (projectExpectedStudyBD.getSectionStatuses() != null) {
-      for (SectionStatus sectionStatus : projectExpectedStudyBD.getSectionStatuses()) {
-        sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+    // if (project.getExpectedStudies() != null) {
+    if (projectStudies != null) {
+      // for (ProjectExpectedStudy projectStudy : project.getExpectedStudies()) {
+      for (ProjectExpectedStudy projectStudy : projectStudies) {
+        if (projectStudy.getId().longValue() == expectedID) {
+          ProjectExpectedStudy projectExpectedBD = projectExpectedStudyManager.getProjectExpectedStudyById(expectedID);
+          for (SectionStatus sectionStatus : projectExpectedBD.getSectionStatuses()) {
+            sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+          }
+          projectStudy.setModificationJustification(justification);
+          projectExpectedStudyManager.deleteProjectExpectedStudy(projectStudy.getId());
+        }
       }
     }
-    projectExpectedStudyBD.setModificationJustification(justification);
-    projectExpectedStudyManager.deleteProjectExpectedStudy(projectExpectedStudyBD.getId());
     return SUCCESS;
   }
 
