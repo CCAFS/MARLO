@@ -226,6 +226,7 @@
           [#-- Contributing Centers/ PPA partners  --]
           <div class="form-group">
             [@customForm.elementsListComponent name="innovation.centers" elementType="institution" elementList=innovation.centers label="projectInnovations.contributingCenters"  listName="centers" keyFieldName="id" displayFieldName="composedName" /]
+            <div class="note">[@s.text name="innovation.ppapartner.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/partners'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
           </div>
 
         
