@@ -1490,18 +1490,18 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
     if (this.isEntityPlatform() == true) {
       POIField[] sHeader = {
-        new POIField(this.getText("summaries.annualReportCRP2018.module"), ParagraphAlignment.CENTER, true, "000000"),
-        new POIField(this.getText("summaries.annualReport2018.table5Title2"), ParagraphAlignment.CENTER, true,
+        new POIField(this.getText("summaries.annualReportCRP2019.module"), ParagraphAlignment.CENTER, true, "000000"),
+        new POIField(this.getText("summaries.annualReport2019.table5Title2"), ParagraphAlignment.CENTER, true,
           "000000"),
-        new POIField(this.getText("summaries.annualReport2018.table5Title2a"), ParagraphAlignment.CENTER, true,
+        new POIField(this.getText("summaries.annualReport2019.table5Title2a"), ParagraphAlignment.CENTER, true,
           "000000"),
-        new POIField(this.getText("summaries.annualReport2018.table5Title3"), ParagraphAlignment.LEFT, true, "000000"),
-        new POIField(this.getText("summaries.annualReport2018.table5Title4"), ParagraphAlignment.CENTER, true,
+        new POIField(this.getText("summaries.annualReport2019.table5Title3"), ParagraphAlignment.LEFT, true, "000000"),
+        new POIField(this.getText("summaries.annualReport2019.table5Title4"), ParagraphAlignment.CENTER, true,
           "000000"),
-        new POIField(this.getText("summaries.annualReport2018.table5Title5") + " "
-          + this.getText("summaries.annualReport2018.table5Title51"), ParagraphAlignment.LEFT, true, "000000"),
-        new POIField(this.getText("summaries.annualReport2018.table5Title6") + " "
-          + this.getText("summaries.annualReport2018.table5Title61"), ParagraphAlignment.LEFT, true, "000000")};
+        new POIField(this.getText("summaries.annualReport2019.table5Title5") + " "
+          + this.getText("summaries.annualReport2019.table5Title51"), ParagraphAlignment.LEFT, true, "000000"),
+        new POIField(this.getText("summaries.annualReport2019.table5Title6") + " "
+          + this.getText("summaries.annualReport2019.table5Title61"), ParagraphAlignment.LEFT, true, "000000")};
 
       List<POIField> header = Arrays.asList(sHeader);
       headers.add(header);
@@ -2015,7 +2015,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
         CTDocument1 doc = document.getDocument();
         CTBody body = doc.getBody();
-        poiSummary.pageHeader(document, this.getText("summaries.annualReportCRP2018.header"));
+        poiSummary.pageHeaderCenter(document, this.getText("summaries.annualReportCRP2019.header"));
 
         // Get datetime
         ZonedDateTime timezone = ZonedDateTime.now();
