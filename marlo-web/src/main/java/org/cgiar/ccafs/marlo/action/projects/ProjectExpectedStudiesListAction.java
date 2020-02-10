@@ -150,8 +150,10 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
 
   @Override
   public String delete() {
-    if (project.getExpectedStudies() != null) {
-      for (ProjectExpectedStudy projectStudy : project.getExpectedStudies()) {
+    // if (project.getExpectedStudies() != null) {
+    if (projectStudies != null) {
+      // for (ProjectExpectedStudy projectStudy : project.getExpectedStudies()) {
+      for (ProjectExpectedStudy projectStudy : projectStudies) {
         if (projectStudy.getId().longValue() == expectedID) {
           ProjectExpectedStudy projectExpectedBD = projectExpectedStudyManager.getProjectExpectedStudyById(expectedID);
           for (SectionStatus sectionStatus : projectExpectedBD.getSectionStatuses()) {

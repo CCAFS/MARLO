@@ -25,7 +25,8 @@
           [@customForm.select name="${customName}.projectExpectedStudyInfo.status.id" className="setSelect2 statusSelect" i18nkey="study.status" listName="statuses" keyFieldName="id"  displayFieldName="name" header=false required=true editable=editable /]
         </div>
         <div class="col-md-4">
-          [@customForm.select name="${customName}.projectExpectedStudyInfo.year" className="setSelect2" i18nkey="study.year" listName="allPhaseYearsGreater" header=false required=true editable=editable /]
+          [#assign dbExpectedYear = ((element.projectExpectedStudyInfo.year)!currentCycleYear)  ]
+          [@customForm.select name="${customName}.projectExpectedStudyInfo.year" className="setSelect2" i18nkey="study.year" listName="getExpectedStudiesYears(${element.projectExpectedStudyInfo.projectExpectedStudy.id})" header=false required=true editable=editable /]
           [#if editable=false]
             ${element.projectExpectedStudyInfo.year}
           [/#if]
@@ -135,11 +136,10 @@
           [#assign showPolicyIndicator = (element.projectExpectedStudyInfo.isContribution?string)!"" /]
           [@customForm.radioFlat id="${studyIndicatorThree}-yes" name="${name}.projectExpectedStudyInfo.isContribution" label="Yes" value="true" checked=(showPolicyIndicator == "true") cssClass="radioType-${studyIndicatorThree}" cssClassLabel="radio-label-yes" editable=editable /]
           [@customForm.radioFlat id="${studyIndicatorThree}-no" name="${name}.projectExpectedStudyInfo.isContribution" label="No" value="false" checked=(showPolicyIndicator == "false") cssClass="radioType-${studyIndicatorThree}" cssClassLabel="radio-label-no" editable=editable /]
-        </div>
-        
+        </div>        
         [#-- Disaggregates for CGIAR Indicator   --]
         <div class="form-group simpleBox block-${studyIndicatorThree}" style="display:${(showPolicyIndicator == "true")?string('block','none')}">
-          [@customForm.elementsListComponent name="${customName}.policies" elementType="projectPolicy" elementList=element.policies label="study.policies"  listName="policyList" keyFieldName="id" displayFieldName="composedName"/]
+          [@customForm.elementsListComponent name="${customName}.policies" elementType="projectPolicy" elementList=element.policies label="study.policies"  listName="policyList" keyFieldName="id" displayFieldName="composedNameAlternative"/]
           [#-- Note --]
           <div class="note">[@s.text name="study.policies.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/policies'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">clicking here</a>[/@][/@]</div>
           [#local policiesGuideSheetURL = "https://drive.google.com/file/d/1GYLsseeZOOXF9zXNtpUtE1xeh2gx3Vw2/view" /]
@@ -286,7 +286,7 @@
       <div class="form-group stageProcessOne">
         [@customForm.textArea name="${customName}.projectExpectedStudyInfo.cgiarInnovation" i18nkey="study.innovationsNarrative" help="study.innovationsNarrative.help" helpIcon=false className="" required=editable && !(isPolicy && stageProcessOne) editable=editable /]
          
-        [@customForm.elementsListComponent name="${customName}.innovations" elementType="projectInnovation" elementList=element.innovations label="study.innovationsList"  listName="innovationsList" keyFieldName="id" displayFieldName="composedName" required=false /]
+        [@customForm.elementsListComponent name="${customName}.innovations" elementType="projectInnovation" elementList=element.innovations label="study.innovationsList"  listName="innovationsList" keyFieldName="id" displayFieldName="composedNameAlternative" required=false /]
       </div>
       [/#if]
       
