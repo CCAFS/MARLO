@@ -722,7 +722,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     // Table A-1 Evidence on Progress
     List<ReportSynthesisSrfProgressTarget> listSrfProgressTargets = new ArrayList<>();
 
-    if (reportSynthesisPMU!= null && reportSynthesisPMU.getReportSynthesisSrfProgress() != null) {
+    if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisSrfProgress() != null) {
       if (reportSynthesisPMU.getReportSynthesisSrfProgress().getReportSynthesisSrfProgressTargets() != null) {
         listSrfProgressTargets = new ArrayList<>(reportSynthesisPMU.getReportSynthesisSrfProgress()
           .getReportSynthesisSrfProgressTargets().stream().filter(t -> t.isActive()).collect(Collectors.toList()));
@@ -968,8 +968,9 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
   private void createTable13() {
     try {
       String blackColor = "000000";
-      if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisFinancialSummary() != null && reportSynthesisPMU
-        .getReportSynthesisFinancialSummary().getReportSynthesisFinancialSummaryBudgets() != null) {
+      if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisFinancialSummary() != null
+        && reportSynthesisPMU.getReportSynthesisFinancialSummary()
+          .getReportSynthesisFinancialSummaryBudgets() != null) {
         reportSynthesisPMU.getReportSynthesisFinancialSummary()
           .setBudgets(new ArrayList<>(
             reportSynthesisPMU.getReportSynthesisFinancialSummary().getReportSynthesisFinancialSummaryBudgets().stream()
@@ -1149,7 +1150,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     Boolean bold = true;
     POIField[] sHeader = {
       new POIField(this.getText("summaries.annualReport2018.table2Title1"), ParagraphAlignment.LEFT, bold, blackColor),
-      new POIField(this.getText("summaries.annualReport2018.table2Description"), ParagraphAlignment.LEFT, bold, blackColor),
+      new POIField(this.getText("summaries.annualReport2018.table2Description"), ParagraphAlignment.LEFT, bold,
+        blackColor),
       new POIField(this.getText("summaries.annualReport2018.table2Title2"), ParagraphAlignment.LEFT, bold, blackColor),
       new POIField(this.getText("summaries.annualReport2018.table2Title3"), ParagraphAlignment.LEFT, bold, blackColor),
       new POIField(this.getText("summaries.annualReport2018.table2Title4"), ParagraphAlignment.CENTER, bold,
@@ -1180,8 +1182,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
 
     for (ProjectPolicy projectPolicy : projectPoliciesTable2) {
-      String name = null, description = null, levelMaturity = "", srfSubIdo = "", gender = "", youth = "", capdev = "", climateChange = "",
-        evidences = "", evidenceComposed = "";
+      String name = null, description = null, levelMaturity = "", srfSubIdo = "", gender = "", youth = "", capdev = "",
+        climateChange = "", evidences = "", evidenceComposed = "";
 
       // List of Urls
       List<String> urls = new ArrayList<>();
@@ -1472,6 +1474,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           "000000"),
         new POIField(this.getText("summaries.annualReport2018.table5Title2"), ParagraphAlignment.CENTER, true,
           "000000"),
+        new POIField(this.getText("summaries.annualReport2018.table5Title2a"), ParagraphAlignment.CENTER, true,
+          "000000"),
         new POIField(this.getText("summaries.annualReport2018.table5Title3"), ParagraphAlignment.LEFT, true, "000000"),
         new POIField(this.getText("summaries.annualReport2018.table5Title4"), ParagraphAlignment.CENTER, true,
           "000000"),
@@ -1488,6 +1492,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       POIField[] sHeader = {
         new POIField(this.getText("summaries.annualReportCRP2018.module"), ParagraphAlignment.CENTER, true, "000000"),
         new POIField(this.getText("summaries.annualReport2018.table5Title2"), ParagraphAlignment.CENTER, true,
+          "000000"),
+        new POIField(this.getText("summaries.annualReport2018.table5Title2a"), ParagraphAlignment.CENTER, true,
           "000000"),
         new POIField(this.getText("summaries.annualReport2018.table5Title3"), ParagraphAlignment.LEFT, true, "000000"),
         new POIField(this.getText("summaries.annualReport2018.table5Title4"), ParagraphAlignment.CENTER, true,
@@ -1510,7 +1516,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         if (flagship.getOutcomes() != null) {
           String lastOutcome = "", lastNarrative = "", lastFP = "";
           for (CrpProgramOutcome outcome : flagship.getOutcomes()) {
-            String fp = "", outcomes = "", narrative = "", milestone = "", milestoneStatus = "", evidenceMilestone = "";
+            String fp = "", subIdos = "", outcomes = "", narrative = "", milestone = "", milestoneStatus = "",
+              evidenceMilestone = "";
             int milestone_index = 0;
             for (CrpMilestone crpMilestone : outcome.getMilestones()) {
               Boolean isFlagshipRow = (outcome_index == 0) && (milestone_index == 0);
@@ -1598,6 +1605,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
               POIField[] sData = {new POIField(fp, ParagraphAlignment.CENTER, false),
                 new POIField(outcomes, ParagraphAlignment.LEFT, false),
+                new POIField(subIdos, ParagraphAlignment.LEFT, false),
                 new POIField(poiSummary.replaceHTMLTags(narrative), ParagraphAlignment.LEFT, false),
                 new POIField(milestone, ParagraphAlignment.LEFT, false),
                 new POIField(milestoneStatus, ParagraphAlignment.CENTER, false),
@@ -1692,7 +1700,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       switch (i) {
         case 0:
           trainees = this.getText("summaries.annualReport2018.table7.field1");
-          if (reportSynthesisPMU!= null && reportSynthesisPMU.getReportSynthesisCrossCuttingDimension() != null) {
+          if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisCrossCuttingDimension() != null) {
             if (reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getTraineesShortTermFemale() != null) {
               female =
                 reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getTraineesShortTermFemale().intValue();
@@ -2967,7 +2975,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     projectPoliciesTable2 =
       new LinkedHashSet<>(projectPolicyManager.getProjectPoliciesList(pmuInstitution, this.getSelectedPhase()));
 
-    if (reportSynthesisPMU!= null && reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null
+    if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null
       && reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressPolicies() != null
       && !reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressPolicies()
         .isEmpty()) {
@@ -2985,7 +2993,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     projectInnovationsTable4 =
       new LinkedHashSet<>(projectInnovationManager.getProjectInnovationsList(pmuInstitution, this.getSelectedPhase()));
 
-    if (reportSynthesisPMU!= null && reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null
+    if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null
       && reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressInnovations() != null
       && !reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressInnovations()
         .isEmpty()) {
@@ -3005,7 +3013,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null) {
       reportSynthesisPMU.getReportSynthesisFlagshipProgress().setProjectStudies(new ArrayList<>());
     }
-    if (reportSynthesisPMU!= null && reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null
+    if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null
       && reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressStudies() != null
       && !reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressStudies()
         .isEmpty()) {
@@ -3044,13 +3052,13 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
             for (ReportSynthesisKeyPartnershipExternal external : externals) {
 
-              if (external!= null && external.getReportSynthesisKeyPartnershipExternalInstitutions() != null
+              if (external != null && external.getReportSynthesisKeyPartnershipExternalInstitutions() != null
                 && !external.getReportSynthesisKeyPartnershipExternalInstitutions().isEmpty()) {
                 external.setInstitutions(new ArrayList<>(external.getReportSynthesisKeyPartnershipExternalInstitutions()
                   .stream().filter(c -> c.isActive()).collect(Collectors.toList())));
               }
 
-              if (external!= null && external.getReportSynthesisKeyPartnershipExternalMainAreas() != null
+              if (external != null && external.getReportSynthesisKeyPartnershipExternalMainAreas() != null
                 && !external.getReportSynthesisKeyPartnershipExternalMainAreas().isEmpty()) {
                 external.setMainAreas(new ArrayList<>(external.getReportSynthesisKeyPartnershipExternalMainAreas()
                   .stream().filter(c -> c.isActive()).collect(Collectors.toList())));
@@ -3149,7 +3157,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
   private void getProgressByFlagships() {
     // Check if relation is null -create it
-    if (reportSynthesisPMU!= null && reportSynthesisPMU.getReportSynthesisFlagshipProgress() == null) {
+    if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisFlagshipProgress() == null) {
       ReportSynthesisFlagshipProgress flagshipProgress = new ReportSynthesisFlagshipProgress();
       // create one to one relation
       reportSynthesisPMU.setReportSynthesisFlagshipProgress(flagshipProgress);
@@ -3240,7 +3248,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
   private void getTable11Info() {
 
-    if (reportSynthesisPMU!= null && reportSynthesisPMU.getReportSynthesisMelia() != null
+    if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisMelia() != null
       && reportSynthesisPMU.getReportSynthesisMelia().getReportSynthesisMeliaEvaluations() != null
       && !reportSynthesisPMU.getReportSynthesisMelia().getReportSynthesisMeliaEvaluations().isEmpty()) {
       reportSynthesisPMU.getReportSynthesisMelia()
@@ -3251,7 +3259,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     // load evaluation actions
-    if (reportSynthesisPMU!= null && reportSynthesisPMU.getReportSynthesisMelia() != null
+    if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisMelia() != null
       && reportSynthesisPMU.getReportSynthesisMelia().getEvaluations() != null
       && !reportSynthesisPMU.getReportSynthesisMelia().getEvaluations().isEmpty()) {
       for (ReportSynthesisMeliaEvaluation reportSynthesisMeliaEvaluation : reportSynthesisPMU.getReportSynthesisMelia()
@@ -3268,7 +3276,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
   public void getTable12Info() {
     // Flagships Funding Expenditure Areas
-    if (reportSynthesisPMU!= null && reportSynthesisPMU.getReportSynthesisFundingUseSummary() != null
+    if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisFundingUseSummary() != null
       && reportSynthesisPMU.getReportSynthesisFundingUseSummary().getReportSynthesisFundingUseExpendituryAreas() != null
       && !reportSynthesisPMU.getReportSynthesisFundingUseSummary().getReportSynthesisFundingUseExpendituryAreas()
         .isEmpty()) {
@@ -3277,7 +3285,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           .getReportSynthesisFundingUseExpendituryAreas().stream().filter(t -> t.isActive())
           .sorted((f1, f2) -> f1.getId().compareTo(f2.getId())).collect(Collectors.toList())));
     } else {
-      if (reportSynthesisPMU!= null && reportSynthesisPMU.getReportSynthesisFundingUseSummary() != null) {
+      if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisFundingUseSummary() != null) {
         reportSynthesisPMU.getReportSynthesisFundingUseSummary().setExpenditureAreas(new ArrayList<>());
       }
     }
@@ -3288,7 +3296,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     LinkedHashSet<Deliverable> deliverables =
       new LinkedHashSet<>(deliverableManager.getPublicationsList(pmuInstitution, this.getSelectedPhase()));
 
-    if (reportSynthesisPMU!= null && reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null
+    if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null
       && reportSynthesisPMU.getReportSynthesisFlagshipProgress()
         .getReportSynthesisFlagshipProgressDeliverables() != null
       && !reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressDeliverables()
