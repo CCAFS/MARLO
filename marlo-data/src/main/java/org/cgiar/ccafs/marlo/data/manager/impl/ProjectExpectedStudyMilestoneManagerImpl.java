@@ -33,132 +33,128 @@ import javax.inject.Named;
 @Named
 public class ProjectExpectedStudyMilestoneManagerImpl implements ProjectExpectedStudyMilestoneManager {
 
-    private ProjectExpectedStudyMilestoneDAO projectExpectedStudyMilestoneDAO;
-    // Managers
-    private PhaseDAO phaseDAO;
+  private ProjectExpectedStudyMilestoneDAO projectExpectedStudyMilestoneDAO;
+  // Managers
+  private PhaseDAO phaseDAO;
 
-    @Inject
-    public ProjectExpectedStudyMilestoneManagerImpl(ProjectExpectedStudyMilestoneDAO projectExpectedStudyMilestoneDAO,
-	    PhaseDAO phaseDAO) {
-	this.projectExpectedStudyMilestoneDAO = projectExpectedStudyMilestoneDAO;
-	this.phaseDAO = phaseDAO;
+  @Inject
+  public ProjectExpectedStudyMilestoneManagerImpl(ProjectExpectedStudyMilestoneDAO projectExpectedStudyMilestoneDAO,
+    PhaseDAO phaseDAO) {
+    this.projectExpectedStudyMilestoneDAO = projectExpectedStudyMilestoneDAO;
+    this.phaseDAO = phaseDAO;
 
+  }
+
+  @Override
+  public void deleteProjectExpectedStudyMilestone(long projectExpectedStudyMilestoneId) {
+    ProjectExpectedStudyMilestone ProjectExpectedStudyMilestone =
+      this.getProjectExpectedStudyMilestoneById(projectExpectedStudyMilestoneId);
+
+    // Conditions to Project Innovation Works In AR phase and Upkeep Phase
+    if (ProjectExpectedStudyMilestone.getPhase().getDescription().equals(APConstants.PLANNING)
+      && ProjectExpectedStudyMilestone.getPhase().getNext() != null) {
+      this.deleteProjectExpectedStudyMilestonePhase(ProjectExpectedStudyMilestone.getPhase().getNext(),
+        ProjectExpectedStudyMilestone.getProjectExpectedStudy().getId(), ProjectExpectedStudyMilestone);
     }
 
-    @Override
-    public void deleteProjectExpectedStudyMilestone(long projectExpectedStudyMilestoneId) {
-	ProjectExpectedStudyMilestone ProjectExpectedStudyMilestone = this
-		.getProjectExpectedStudyMilestoneById(projectExpectedStudyMilestoneId);
-
-	// Conditions to Project Innovation Works In AR phase and Upkeep Phase
-	if (ProjectExpectedStudyMilestone.getPhase().getDescription().equals(APConstants.PLANNING)
-		&& ProjectExpectedStudyMilestone.getPhase().getNext() != null) {
-	    this.deleteProjectExpectedStudyMilestonePhase(ProjectExpectedStudyMilestone.getPhase().getNext(),
-		    ProjectExpectedStudyMilestone.getProjectExpectedStudy().getId(), ProjectExpectedStudyMilestone);
-	}
-
-	if (ProjectExpectedStudyMilestone.getPhase().getDescription().equals(APConstants.REPORTING)) {
-	    if (ProjectExpectedStudyMilestone.getPhase().getNext() != null
-		    && ProjectExpectedStudyMilestone.getPhase().getNext().getNext() != null) {
-		Phase upkeepPhase = ProjectExpectedStudyMilestone.getPhase().getNext().getNext();
-		if (upkeepPhase != null) {
-		    this.deleteProjectExpectedStudyMilestonePhase(upkeepPhase,
-			    ProjectExpectedStudyMilestone.getProjectExpectedStudy().getId(),
-			    ProjectExpectedStudyMilestone);
-		}
-	    }
-	}
-
-	projectExpectedStudyMilestoneDAO.deleteProjectExpectedStudyMilestone(projectExpectedStudyMilestoneId);
+    if (ProjectExpectedStudyMilestone.getPhase().getDescription().equals(APConstants.REPORTING)) {
+      if (ProjectExpectedStudyMilestone.getPhase().getNext() != null
+        && ProjectExpectedStudyMilestone.getPhase().getNext().getNext() != null) {
+        Phase upkeepPhase = ProjectExpectedStudyMilestone.getPhase().getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteProjectExpectedStudyMilestonePhase(upkeepPhase,
+            ProjectExpectedStudyMilestone.getProjectExpectedStudy().getId(), ProjectExpectedStudyMilestone);
+        }
+      }
     }
 
-    public void deleteProjectExpectedStudyMilestonePhase(Phase next, long innovationID,
-	    ProjectExpectedStudyMilestone projectExpectedStudyMilestone) {
-	Phase phase = phaseDAO.find(next.getId());
+    projectExpectedStudyMilestoneDAO.deleteProjectExpectedStudyMilestone(projectExpectedStudyMilestoneId);
+  }
 
-	List<ProjectExpectedStudyMilestone> projectExpectedStudyMilestones = projectExpectedStudyMilestoneDAO.findAll()
-		.stream()
-		.filter(c -> c.getPhase().getId().longValue() == phase.getId().longValue()
-			&& c.getProjectExpectedStudy().getId().longValue() == innovationID
-			&& c.getCrpMilestone().getId().equals(projectExpectedStudyMilestone.getCrpMilestone().getId()))
-		.collect(Collectors.toList());
+  public void deleteProjectExpectedStudyMilestonePhase(Phase next, long innovationID,
+    ProjectExpectedStudyMilestone projectExpectedStudyMilestone) {
+    Phase phase = phaseDAO.find(next.getId());
 
-	for (ProjectExpectedStudyMilestone projectExpectedStudyMilestoneDB : projectExpectedStudyMilestones) {
-	    projectExpectedStudyMilestoneDAO
-		    .deleteProjectExpectedStudyMilestone(projectExpectedStudyMilestoneDB.getId());
-	}
+    List<ProjectExpectedStudyMilestone> projectExpectedStudyMilestones =
+      projectExpectedStudyMilestoneDAO.findAll().stream()
+        .filter(c -> c.getPhase().getId().longValue() == phase.getId().longValue()
+          && c.getProjectExpectedStudy().getId().longValue() == innovationID
+          && c.getCrpMilestone().getId().equals(projectExpectedStudyMilestone.getCrpMilestone().getId()))
+        .collect(Collectors.toList());
 
-	if (phase.getNext() != null) {
-	    this.deleteProjectExpectedStudyMilestonePhase(phase.getNext(), innovationID, projectExpectedStudyMilestone);
-	}
+    for (ProjectExpectedStudyMilestone projectExpectedStudyMilestoneDB : projectExpectedStudyMilestones) {
+      projectExpectedStudyMilestoneDAO.deleteProjectExpectedStudyMilestone(projectExpectedStudyMilestoneDB.getId());
     }
 
-    @Override
-    public boolean existProjectExpectedStudyMilestone(long projectExpectedStudyMilestoneID) {
-
-	return projectExpectedStudyMilestoneDAO.existProjectExpectedStudyMilestone(projectExpectedStudyMilestoneID);
+    if (phase.getNext() != null) {
+      this.deleteProjectExpectedStudyMilestonePhase(phase.getNext(), innovationID, projectExpectedStudyMilestone);
     }
+  }
 
-    @Override
-    public List<ProjectExpectedStudyMilestone> findAll() {
+  @Override
+  public boolean existProjectExpectedStudyMilestone(long projectExpectedStudyMilestoneID) {
 
-	return projectExpectedStudyMilestoneDAO.findAll();
+    return projectExpectedStudyMilestoneDAO.existProjectExpectedStudyMilestone(projectExpectedStudyMilestoneID);
+  }
 
+  @Override
+  public List<ProjectExpectedStudyMilestone> findAll() {
+
+    return projectExpectedStudyMilestoneDAO.findAll();
+
+  }
+
+  @Override
+  public ProjectExpectedStudyMilestone getProjectExpectedStudyMilestoneById(long projectExpectedStudyMilestoneID) {
+
+    return projectExpectedStudyMilestoneDAO.find(projectExpectedStudyMilestoneID);
+  }
+
+  public void saveInnovationMilestonePhase(Phase next, long innovationid,
+    ProjectExpectedStudyMilestone projectExpectedStudyMilestone) {
+
+    Phase phase = phaseDAO.find(next.getId());
+
+    List<ProjectExpectedStudyMilestone> projectInnovatioCenters = projectExpectedStudyMilestoneDAO.findAll().stream()
+      .filter(c -> c.getProjectExpectedStudy().getId().longValue() == innovationid
+        && c.getPhase().getId().equals(phase.getId())
+        && c.getCrpMilestone().getId().equals(projectExpectedStudyMilestone.getCrpMilestone().getId()))
+      .collect(Collectors.toList());
+
+    if (projectInnovatioCenters.isEmpty()) {
+      ProjectExpectedStudyMilestone projectExpectedStudyMilestoneAdd = new ProjectExpectedStudyMilestone();
+      projectExpectedStudyMilestoneAdd.setProjectExpectedStudy(projectExpectedStudyMilestone.getProjectExpectedStudy());
+      projectExpectedStudyMilestoneAdd.setPhase(phase);
+      projectExpectedStudyMilestoneAdd.setCrpMilestone(projectExpectedStudyMilestone.getCrpMilestone());
+      projectExpectedStudyMilestoneAdd.setPrimary(projectExpectedStudyMilestone.getPrimary());
+      projectExpectedStudyMilestoneDAO.save(projectExpectedStudyMilestoneAdd);
     }
-
-    @Override
-    public ProjectExpectedStudyMilestone getProjectExpectedStudyMilestoneById(long projectExpectedStudyMilestoneID) {
-
-	return projectExpectedStudyMilestoneDAO.find(projectExpectedStudyMilestoneID);
+    if (phase.getNext() != null) {
+      this.saveInnovationMilestonePhase(phase.getNext(), innovationid, projectExpectedStudyMilestone);
     }
+  }
 
-    public void saveInnovationMilestonePhase(Phase next, long innovationid,
-	    ProjectExpectedStudyMilestone projectExpectedStudyMilestone) {
-
-	Phase phase = phaseDAO.find(next.getId());
-
-	List<ProjectExpectedStudyMilestone> projectInnovatioCenters = projectExpectedStudyMilestoneDAO.findAll()
-		.stream()
-		.filter(c -> c.getProjectExpectedStudy().getId().longValue() == innovationid
-			&& c.getPhase().getId().equals(phase.getId())
-			&& c.getCrpMilestone().getId().equals(projectExpectedStudyMilestone.getCrpMilestone().getId()))
-		.collect(Collectors.toList());
-
-	if (projectInnovatioCenters.isEmpty()) {
-	    ProjectExpectedStudyMilestone projectExpectedStudyMilestoneAdd = new ProjectExpectedStudyMilestone();
-	    projectExpectedStudyMilestoneAdd
-		    .setProjectExpectedStudy(projectExpectedStudyMilestone.getProjectExpectedStudy());
-	    projectExpectedStudyMilestoneAdd.setPhase(phase);
-	    projectExpectedStudyMilestoneAdd.setCrpMilestone(projectExpectedStudyMilestone.getCrpMilestone());
-	    projectExpectedStudyMilestoneAdd.setPrimary(projectExpectedStudyMilestone.getPrimary());
-	    projectExpectedStudyMilestoneDAO.save(projectExpectedStudyMilestoneAdd);
-	}
-	if (phase.getNext() != null) {
-	    this.saveInnovationMilestonePhase(phase.getNext(), innovationid, projectExpectedStudyMilestone);
-	}
+  @Override
+  public ProjectExpectedStudyMilestone
+    saveProjectExpectedStudyMilestone(ProjectExpectedStudyMilestone projectExpectedStudyMilestone) {
+    ProjectExpectedStudyMilestone innovationMilestone =
+      projectExpectedStudyMilestoneDAO.save(projectExpectedStudyMilestone);
+    Phase phase = phaseDAO.find(innovationMilestone.getPhase().getId());
+    // Conditions to Project Innovation Works In AR phase and Upkeep Phase
+    if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
+      this.saveInnovationMilestonePhase(innovationMilestone.getPhase().getNext(),
+        innovationMilestone.getProjectExpectedStudy().getId(), projectExpectedStudyMilestone);
     }
-
-    @Override
-    public ProjectExpectedStudyMilestone saveProjectExpectedStudyMilestone(
-	    ProjectExpectedStudyMilestone projectExpectedStudyMilestone) {
-	ProjectExpectedStudyMilestone innovationMilestone = projectExpectedStudyMilestoneDAO
-		.save(projectExpectedStudyMilestone);
-	Phase phase = phaseDAO.find(innovationMilestone.getPhase().getId());
-	// Conditions to Project Innovation Works In AR phase and Upkeep Phase
-	if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
-	    this.saveInnovationMilestonePhase(innovationMilestone.getPhase().getNext(),
-		    innovationMilestone.getProjectExpectedStudy().getId(), projectExpectedStudyMilestone);
-	}
-	if (phase.getDescription().equals(APConstants.REPORTING)) {
-	    if (phase.getNext() != null && phase.getNext().getNext() != null) {
-		Phase upkeepPhase = phase.getNext().getNext();
-		if (upkeepPhase != null) {
-		    this.saveInnovationMilestonePhase(upkeepPhase,
-			    innovationMilestone.getProjectExpectedStudy().getId(), projectExpectedStudyMilestone);
-		}
-	    }
-	}
-	return innovationMilestone;
+    if (phase.getDescription().equals(APConstants.REPORTING)) {
+      if (phase.getNext() != null && phase.getNext().getNext() != null) {
+        Phase upkeepPhase = phase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveInnovationMilestonePhase(upkeepPhase, innovationMilestone.getProjectExpectedStudy().getId(),
+            projectExpectedStudyMilestone);
+        }
+      }
     }
+    return innovationMilestone;
+  }
 
 }

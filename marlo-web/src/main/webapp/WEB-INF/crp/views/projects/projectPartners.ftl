@@ -57,24 +57,23 @@
           <div class="loadingBlock"></div>
           <div style="display:none">
             [#-- Other fields --]
-            [#if project.projectInfo.isProjectEditLeader()]
-            <div class="${(!action.isProjectNew(project.id) || reportingActive)?string('simpleBox','')} ${reportingActive?string('fieldFocus','')}">
-              
-             
+            [#--[#if project.projectInfo.isProjectEditLeader() && (project.projectComponentLessonPreview.lessons?has_content)!false]--]
+            
+            [#--<div class="${(!action.isProjectNew(project.id) || reportingActive)?string('simpleBox','')} ${reportingActive?string('fieldFocus','')}">--]
+            
               [#-- -- -- REPORTING BLOCK -- -- --]
-              [#if reportingActive]
-              [#-- AR 2018 Changes
-              <div class="form-group">
+              [#--[#if reportingActive]--]
+              [#-- AR 2018 Changes --]
+              [#--<div class="form-group">
                 [@customForm.textArea name="project.projectInfo.partnerOverall" i18nkey="projectPartners.partnershipsOverall" className="limitWords-100" required=true editable=editable /]
               </div>
-              --]
-              [/#if]
+              [/#if] --]
               
               [#-- Lessons and progress --]
-              [#if !action.isProjectNew(project.id) || reportingActive]
-                <div id="lessons" class="">
+              [#-- [#if !action.isProjectNew(project.id) || reportingActive]
+                <div id="lessons" class="">--]
                   [#-- Lessons learnt from last planning/reporting cycle --]
-                  [#if (project.projectComponentLessonPreview.lessons?has_content)!false]
+                  [#-- [#if (project.projectComponentLessonPreview.lessons?has_content)!false]
                   <div class="fullBlock">
                     <label>[@customForm.text name="projectPartners.previousLessons.${reportingActive?string('reporting','planning')}" param="${reportingActive?string(reportingYear,planningYear-1)}" /]:[@customForm.req required=false /]</label>
                     <div class="textArea limitWords-100"><p>${project.projectComponentLessonPreview.lessons}</p></div>
@@ -83,8 +82,8 @@
                 </div>
               [/#if]
               <div class="clearfix"></div>
-            </div>
-            [/#if]
+            </div> --]
+            [#-- [/#if] --]
           
           
             [#-- Partners list --]

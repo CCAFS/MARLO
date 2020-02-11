@@ -131,7 +131,8 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestoneManagerImpl
 
         milestonePhase.setMilestonesStatus(crpMilestone.getMilestonesStatus());
 
-        if (crpMilestone.getMilestonesStatus().getId().equals(new Long(4))) {
+        if (crpMilestone != null && crpMilestone.getMilestonesStatus() != null
+          && crpMilestone.getMilestonesStatus().getId().equals(new Long(4))) {
           milestonePhase.setYear(crpMilestone.getYear() + 1);
         }
 
