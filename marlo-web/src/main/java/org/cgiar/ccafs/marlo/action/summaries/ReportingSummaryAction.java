@@ -1161,7 +1161,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       String masterQueryName = "Main_Query";
       Resource reportResource;
       if (this.getSelectedCycle().equals("Planning")) {
-    	  
+
         reportResource = resourceManager.createDirectly(
           this.getClass().getResource("/pentaho/crp/ProjectFullPDF(Planning).prpt"), MasterReport.class);
       } else {
@@ -3737,7 +3737,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
     }
 
-    if (projectInfo.getAdministrative() != null && projectInfo.getAdministrative() == false) {
+    if (projectInfo != null && projectInfo.getAdministrative() != null && projectInfo.getAdministrative() == false) {
       if (flagships != null) {
         if (!flagships.isEmpty()) {
           for (CrpProgram crpProgram : flagships) {
