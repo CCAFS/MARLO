@@ -142,7 +142,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
     if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null
       && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getStudyType() != null
       && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getStudyType().getId()
-        .intValue() != 1) {
+        .intValue() == 1) {
       if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null
         && (projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() != null
           && projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() == true
