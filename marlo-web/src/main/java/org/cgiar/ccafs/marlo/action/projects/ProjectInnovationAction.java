@@ -1412,7 +1412,7 @@ public class ProjectInnovationAction extends BaseAction {
           .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectInnovationDeliverable innovationDeliverable : deliverablePrev) {
-        if (innovationDeliverable != null && innovation.getDeliverables() != null
+        if (innovation != null && innovationDeliverable != null && innovation.getDeliverables() != null
           && !innovation.getDeliverables().contains(innovationDeliverable)) {
           projectInnovationDeliverableManager.deleteProjectInnovationDeliverable(innovationDeliverable.getId());
         }
