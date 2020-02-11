@@ -342,7 +342,7 @@ public class ProjectInnovationValidator extends BaseValidator {
         action.getInvalidFields().put("list-innovation.contributingOrganizations",
           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Contributing organizations"}));
       }
-      // this.addMissingField("projectInnovations.contributingOrganizations");
+      this.addMissingField("projectInnovations.contributingOrganizations");
     }
 
 
