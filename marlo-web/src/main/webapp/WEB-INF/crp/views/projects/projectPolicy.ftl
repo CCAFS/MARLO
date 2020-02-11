@@ -4,7 +4,7 @@
 [#assign pageLibs = [ "select2", "blueimp-file-upload" "flat-flags", "components-font-awesome"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectPolicy.js",
-  "${baseUrlCdn}/global/js/autoSave.js",
+  [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
   "${baseUrlCdn}/global/js/fieldsValidation.js"
   ] 
 /]

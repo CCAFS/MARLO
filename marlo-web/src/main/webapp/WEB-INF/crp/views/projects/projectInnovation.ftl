@@ -5,7 +5,7 @@
 [#assign pageLibs = ["select2","font-awesome", "flat-flags"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectInnovations.js",
-  "${baseUrlCdn}/global/js/autoSave.js",
+  [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
   "${baseUrlCdn}/global/js/fieldsValidation.js"
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectInnovations.css"] /]
