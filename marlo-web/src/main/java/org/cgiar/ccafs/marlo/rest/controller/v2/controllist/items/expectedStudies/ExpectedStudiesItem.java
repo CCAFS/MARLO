@@ -21,8 +21,11 @@ package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.expectedStudi
 
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndStageStudyManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
+import org.cgiar.ccafs.marlo.data.model.RepIndStageStudy;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectExpectedStudyDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectPolicyDTO;
@@ -40,11 +43,15 @@ public class ExpectedStudiesItem<T> {
   private PhaseManager phaseManager;
   private GlobalUnitManager globalUnitManager;
 
+  private RepIndStageStudyManager repIndStageStudyManager;
+
 
   @Inject
-  public ExpectedStudiesItem(GlobalUnitManager globalUnitManager, PhaseManager phaseManager) {
+  public ExpectedStudiesItem(GlobalUnitManager globalUnitManager, PhaseManager phaseManager,
+    RepIndStageStudyManager repIndStageStudyManager) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
+    this.repIndStageStudyManager = repIndStageStudyManager;
   }
 
   public Long createExpectedStudy(NewProjectExpectedStudyDTO newProjectExpectedStudy, String entityAcronym, User user) {
@@ -66,6 +73,23 @@ public class ExpectedStudiesItem<T> {
         new NewProjectPolicyDTO().getPhase().getYear() + " is an invalid year"));
     }
 
+    if (fieldErrors.size() == 0) {
+      if (newProjectExpectedStudy.getProjectExpectedEstudyInfo() != null) {
+        ProjectExpectedStudyInfo projectExpectedStudyInfo = new ProjectExpectedStudyInfo();
+        projectExpectedStudyInfo.setTitle(newProjectExpectedStudy.getProjectExpectedEstudyInfo().getTitle());
+        projectExpectedStudyInfo.setYear(newProjectExpectedStudy.getProjectExpectedEstudyInfo().getYear());
+        RepIndStageStudy repIndStageStudy = repIndStageStudyManager
+          .getRepIndStageStudyById(newProjectExpectedStudy.getProjectExpectedEstudyInfo().getMaturityOfChange());
+        if (repIndStageStudy != null) {
+          projectExpectedStudyInfo.setRepIndStageStudy(repIndStageStudy);
+        } else {
+          fieldErrors.add(new FieldErrorDTO("create Expected Studies", "MaturityOfChange",
+            newProjectExpectedStudy.getProjectExpectedEstudyInfo().getMaturityOfChange()
+              + " is an invalid Level of maturity of change reported code"));
+        }
+
+      }
+    }
     return projectExpectedStudyID;
   }
 }
