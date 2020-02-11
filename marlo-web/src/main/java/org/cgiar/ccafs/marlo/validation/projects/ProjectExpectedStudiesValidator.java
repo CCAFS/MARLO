@@ -146,7 +146,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
       if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null
         && (projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() != null
           && projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() == true
-          && (projectExpectedStudy.getMilestones() == null && projectExpectedStudy.getMilestones().isEmpty()))
+          && (projectExpectedStudy.getMilestones() == null))
         || projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() == null) {
         action.addMessage(action.getText("milestoneList"));
         action.addMissingField("study.milestones");
