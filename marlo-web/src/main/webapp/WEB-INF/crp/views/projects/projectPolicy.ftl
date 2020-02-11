@@ -106,7 +106,7 @@
     [#-- Year --]
     <div class="form-group row">
       <div class="col-md-4">
-        [@customForm.select name="${customName}.projectPolicyInfo.year" className="setSelect2" i18nkey="policy.year" listName="years" required=true editable=editable/]
+        [@customForm.select name="${customName}.projectPolicyInfo.year" className="setSelect2" i18nkey="policy.year" listName="getPoliciesYears(${element.projectPolicyInfo.projectPolicy.id})" required=true editable=editable/]
         [#if editable=false]
           ${element.projectPolicyInfo.year}
         [/#if]
@@ -127,7 +127,7 @@
     
     [#-- Description --]
     <div class="form-group">
-  	  [@customForm.textArea name="${customName}.projectPolicyInfo.description" i18nkey="policy.description" className="limitWords-30" editable=editable required=true /]
+  	  [@customForm.textArea name="${customName}.projectPolicyInfo.description" i18nkey="policy.description" className="limitWords-30" editable=editable /]
     </div>
     
     <div class="form-group row ">
@@ -160,55 +160,28 @@
         [@customForm.input name="${customName}.projectPolicyInfo.other" i18nkey="policy.otherOwner" className="" required=false editable=editable /]
       </div>
     </div>
-    
-    [#--  Geographic scope  --]
-    <div class="form-group geographicScopeBlock">
-      [#local geographicScopeList = (element.geographicScopes)![] ]
-      [#local isRegional =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeRegional) /]
-      [#local isMultiNational = findElementID(geographicScopeList,  action.reportingIndGeographicScopeMultiNational) /]
-      [#local isNational =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeNational) /]
-      [#local isSubNational =   findElementID(geographicScopeList,  action.reportingIndGeographicScopeSubNational) /]
-      <div class="form-group">
-        <div class="row">
-          [#-- Geographic Scope --]
-          <div class="col-md-6">
-            [@customForm.elementsListComponent name="${customName}.geographicScopes" elementType="repIndGeographicScope" elementList=element.geographicScopes maxLimit=1 label="policy.geographicScope" help="policy.geographicScope.help" listName="geographicScopes" keyFieldName="id" displayFieldName="name" required=true /]
-          </div>
-        </div>
-        [#-- Regional scope --]
-        <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
-          [@customForm.elementsListComponent name="${customName}.regions" elementType="locElement" elementList=element.regions label="policy.regions"  listName="regions" keyFieldName="id" displayFieldName="composedName" required=true /]
-        </div>
-        [#-- Multinational, National and Subnational scope --]
-        <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
-          [@customForm.select name="${customName}.countriesIds" label="" i18nkey="policy.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="${customName}.countriesIds" multiple=true required=true className="countriesSelect" disabled=!editable/]
-        </div>
-      </div>
-    </div>
         
     [#-- Evidence (OICR)  --]
     [#local isEvidenceRequired = ([4, 5]?seq_contains(element.projectPolicyInfo.repIndStageProcess.id))!false /]
-    <div class="simpleBox">
-      <div class="form-group evidences-block">
-        [@customForm.elementsListComponent name="${customName}.evidences" elementType="projectExpectedStudy" elementList=element.evidences label="policy.evidence" help="policy.evidence.help" helpIcon=false listName="expectedStudyList" keyFieldName="id" displayFieldName="composedName" required=isEvidenceRequired /]
-        <div class="note">[@s.text name="policy.evidence.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/studies'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
-      </div>
-      
-      [#local isResearchMaturity = ((element.projectPolicyInfo.repIndStageProcess.id == 3))!false]
-      [#-- Narrative --] 
-      <div class="form-group block-researchMaturity" style="display:${isResearchMaturity?string('block', 'none')}">
-        [@customForm.textArea name="${customName}.projectPolicyInfo.narrativeEvidence"  i18nkey="policy.narrative"  placeholder="" className="limitWords-200" help="policy.narrative.helpText" helpIcon=false required=false editable=editable /]
-      <br>
-      </div>
+    <div class="form-group evidences-block">
+      [@customForm.elementsListComponent name="${customName}.evidences" elementType="projectExpectedStudy" elementList=element.evidences label="policy.evidence" help="policy.evidence.help" helpIcon=false listName="expectedStudyList" keyFieldName="id" displayFieldName="composedNameAlternative" required=isEvidenceRequired /]
+      <div class="note">[@s.text name="policy.evidence.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/studies'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
     </div>
     
-    
+    [#local isResearchMaturity = ((element.projectPolicyInfo.repIndStageProcess.id == 3))!false]
+    [#-- Narrative --] 
+    <div class="form-group block-researchMaturity" style="display:${isResearchMaturity?string('block', 'none')}">
+      [@customForm.textArea name="${customName}.projectPolicyInfo.narrativeEvidence"  i18nkey="policy.narrative"  placeholder="" className="limitWords-200" help="policy.narrative.helpText" helpIcon=false required=false editable=editable /]
+    <br>
+    </div>
           
     [#-- Innovations  --]
-    <div class="form-group simpleBox">
-      [@customForm.elementsListComponent name="${customName}.innovations" elementType="projectInnovation" elementList=element.innovations label="policy.innovations" helpIcon=false listName="innovationList" keyFieldName="id" displayFieldName="composedName" required=false /]
+    <div class="form-group">
+      [@customForm.elementsListComponent name="${customName}.innovations" elementType="projectInnovation" elementList=element.innovations label="policy.innovations" helpIcon=false listName="innovationList" keyFieldName="id" displayFieldName="composedNameAlternative" required=false /]
       <div class="note">[@s.text name="policy.innovations.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/innovationsList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
     </div>
+
+    <hr />
     <br />
     
     [#-- Milestones Contribution --]
@@ -232,19 +205,13 @@
     <br />
     
     [#-- Contributing Centers/ PPA partners  --]
-    <label for="">[@s.text name="study.keyContributors" /]:</label>
-    <div class="simpleBox">
-      <div class="form-group">
-        [@customForm.elementsListComponent name="${customName}.centers" elementType="institution" elementList=(element.centers)![] label="policy.contributingCenters"  listName="centers" keyFieldName="id" displayFieldName="composedName" /]
-        <div class="note">[@s.text name="policy.ppapartner.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/partners'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
-      </div>
+    <div class="form-group">
+      [@customForm.elementsListComponent name="${customName}.centers" elementType="institution" elementList=(element.centers)![] label="policy.contributingCenters"  listName="centers" keyFieldName="id" displayFieldName="composedName" /]
     </div>
-      
-      [#-- Contributing CRPs/PTFs  --]
-    <div class="simpleBox">
-      <div class="form-group">
-        [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="policy.contributingCrpsPtfs"  listName="crps" keyFieldName="id" displayFieldName="composedName" required=false/]
-      </div>
+    
+    [#-- Contributing CRPs/PTFs  --]
+    <div class="form-group">
+      [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="policy.contributingCrpsPtfs"  listName="crps" keyFieldName="id" displayFieldName="composedName" required=false/]
     </div>
 
     
@@ -280,6 +247,30 @@
       </div>
     </div>
     
+    [#--  Geographic scope  --]
+    <div class="form-group geographicScopeBlock">
+      [#local geographicScopeList = (element.geographicScopes)![] ]
+      [#local isRegional =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeRegional) /]
+      [#local isMultiNational = findElementID(geographicScopeList,  action.reportingIndGeographicScopeMultiNational) /]
+      [#local isNational =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeNational) /]
+      [#local isSubNational =   findElementID(geographicScopeList,  action.reportingIndGeographicScopeSubNational) /]
+      <div class="form-group">
+        <div class="row">
+          [#-- Geographic Scope --]
+          <div class="col-md-6">
+            [@customForm.elementsListComponent name="${customName}.geographicScopes" elementType="repIndGeographicScope" elementList=element.geographicScopes maxLimit=1 label="policy.geographicScope" help="policy.geographicScope.help" listName="geographicScopes" keyFieldName="id" displayFieldName="name" required=true /]
+          </div>
+        </div>
+        [#-- Regional scope --]
+        <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
+          [@customForm.elementsListComponent name="${customName}.regions" elementType="locElement" elementList=element.regions label="policy.regions"  listName="regions" keyFieldName="id" displayFieldName="composedName" required=true /]
+        </div>
+        [#-- Multinational, National and Subnational scope --]
+        <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
+          [@customForm.select name="${customName}.countriesIds" label="" i18nkey="policy.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="${customName}.countriesIds" multiple=true required=true className="countriesSelect" disabled=!editable/]
+        </div>
+      </div>
+    </div>
   </div>
     
     
