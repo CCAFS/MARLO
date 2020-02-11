@@ -67,7 +67,7 @@ public class ProjectPolicySubIdoManagerImpl implements ProjectPolicySubIdoManage
             projectPolicySubIdo);
         }
       }
-    }
+  }
 
     projectPolicySubIdoDAO.deleteProjectPolicySubIdo(projectPolicySubIdoId);
   }

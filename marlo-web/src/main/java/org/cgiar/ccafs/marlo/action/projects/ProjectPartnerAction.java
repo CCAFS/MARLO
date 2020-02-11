@@ -30,7 +30,11 @@ import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PartnerDivisionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectComponentLessonManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCenterManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCenterManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerLocationManager;
@@ -39,6 +43,8 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPartnershipLocationManag
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPartnershipResearchPhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCenterManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndPhaseResearchPartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndRegionManager;
@@ -61,6 +67,10 @@ import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.PartnerDivision;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCenter;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
@@ -69,6 +79,8 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnershipLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnershipResearchPhase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCenter;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.RepIndPhaseResearchPartnership;
@@ -169,6 +181,12 @@ public class ProjectPartnerAction extends BaseAction {
   private final AuditLogManager auditLogManager;
   private final DeliverableManager deliverableManager;
   private final PartnerDivisionManager partnerDivisionManager;
+  private final ProjectPolicyCenterManager projectPolicyCenterManager;
+  private final ProjectPolicyManager projectPolicyManager;
+  private final ProjectInnovationCenterManager projectInnovationCenterManager;
+  private final ProjectInnovationManager projectInnovationManager;
+  private final ProjectExpectedStudyCenterManager projectExpectedStudyCenterManager;
+  private final ProjectExpectedStudyManager projectExpectedStudyManager;
 
 
   // Variables
@@ -211,7 +229,11 @@ public class ProjectPartnerAction extends BaseAction {
     ProjectPartnerPartnershipManager projectPartnerPartnershipManager,
     ProjectPartnerPartnershipLocationManager projectPartnerPartnershipLocationManager,
     ProjectPartnerPartnershipResearchPhaseManager projectPartnerPartnershipResearchPhaseManager,
-    DeliverableManager deliverableManager, PartnerDivisionManager partnerDivisionManager) {
+    DeliverableManager deliverableManager, PartnerDivisionManager partnerDivisionManager,
+    ProjectPolicyCenterManager projectPolicyCenterManager, ProjectPolicyManager projectPolicyManager,
+    ProjectInnovationCenterManager projectInnovationCenterManager, ProjectInnovationManager projectInnovationManager,
+    ProjectExpectedStudyCenterManager projectExpectedStudyCenterManager,
+    ProjectExpectedStudyManager projectExpectedStudyManager) {
     super(config);
     this.projectPartnersValidator = projectPartnersValidator;
     this.auditLogManager = auditLogManager;
@@ -242,6 +264,12 @@ public class ProjectPartnerAction extends BaseAction {
     this.projectPartnerPartnershipResearchPhaseManager = projectPartnerPartnershipResearchPhaseManager;
     this.deliverableManager = deliverableManager;
     this.partnerDivisionManager = partnerDivisionManager;
+    this.projectPolicyCenterManager = projectPolicyCenterManager;
+    this.projectPolicyManager = projectPolicyManager;
+    this.projectInnovationCenterManager = projectInnovationCenterManager;
+    this.projectInnovationManager = projectInnovationManager;
+    this.projectExpectedStudyCenterManager = projectExpectedStudyCenterManager;
+    this.projectExpectedStudyManager = projectExpectedStudyManager;
   }
 
   public void addCrpUser(User user) {
@@ -1282,6 +1310,8 @@ public class ProjectPartnerAction extends BaseAction {
       for (ProjectPartner previousPartner : previousProject.getProjectPartners().stream()
         .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
         if (project.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader()) {
+
+          this.removeProjectIndicatorsCenter(previouslyEnteredPartner);
           projectPartnerManager.deleteProjectPartner(previouslyEnteredPartner.getId());
 
         } else {
@@ -1291,9 +1321,72 @@ public class ProjectPartnerAction extends BaseAction {
           if (!inst.getCrpPpaPartners().stream()
             .filter(insti -> insti.isActive() && insti.getCrp().getId().longValue() == this.getCrpID().longValue())
             .collect(Collectors.toList()).isEmpty()) {
+            this.removeProjectIndicatorsCenter(previouslyEnteredPartner);
             projectPartnerManager.deleteProjectPartner(previouslyEnteredPartner.getId());
           }
+        }
+      }
+    }
+  }
 
+  private void removeProjectExpectedEstudiesCenter(ProjectPartner previouslyEnteredPartner) {
+    Project projectTemp = projectManager.getProjectById(projectID);
+    Institution institution = previouslyEnteredPartner.getInstitution();
+    if (institution != null && institution.getId() != null
+      && (institution.isPPA(this.getActualPhase().getCrp().getId(), this.getActualPhase())
+        || institution.getInstitutionType().getId().longValue() == APConstants.INSTITUTION_CGIAR_CENTER_TYPE)) {
+      List<ProjectExpectedStudy> projectStudiesList =
+        projectTemp.getProjectExpectedStudies().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      for (ProjectExpectedStudy projectStudy : projectStudiesList) {
+        ProjectExpectedStudy ExpectedStudyTemp =
+          projectExpectedStudyManager.getProjectExpectedStudyById(projectStudy.getId());
+        List<ProjectExpectedStudyCenter> projectExpectedStudyCenterList =
+          ExpectedStudyTemp.getProjectExpectedStudyCenters().stream()
+            .filter(o -> o.isActive() && o != null && o.getPhase().getId().equals(this.getActualPhase().getId()))
+            .collect(Collectors.toList());
+        for (ProjectExpectedStudyCenter projectExpectedStudyCenter : projectExpectedStudyCenterList) {
+          ProjectExpectedStudyCenter projectExpectedStudyCenterTemp =
+            projectExpectedStudyCenterManager.getProjectExpectedStudyCenterById(projectExpectedStudyCenter.getId());
+          if (projectExpectedStudyCenterTemp != null) {
+            if (projectExpectedStudyCenterTemp.getInstitution().getId().equals(institution.getId())) {
+              projectExpectedStudyCenterManager
+                .deleteProjectExpectedStudyCenter(projectExpectedStudyCenterTemp.getId());
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private void removeProjectIndicatorsCenter(ProjectPartner previouslyEnteredPartner) {
+    this.removeProjectExpectedEstudiesCenter(previouslyEnteredPartner);
+    this.removeProjectInnovatiosCenter(previouslyEnteredPartner);
+    this.removeProjectPoliciesCenter(previouslyEnteredPartner);
+  }
+
+  private void removeProjectInnovatiosCenter(ProjectPartner previouslyEnteredPartner) {
+    Project projectTemp = projectManager.getProjectById(projectID);
+    Institution institution = previouslyEnteredPartner.getInstitution();
+    if (institution != null && institution.getId() != null
+      && (institution.isPPA(this.getActualPhase().getCrp().getId(), this.getActualPhase())
+        || institution.getInstitutionType().getId().longValue() == APConstants.INSTITUTION_CGIAR_CENTER_TYPE)) {
+      List<ProjectInnovation> projectInnovationList =
+        projectTemp.getProjectInnovations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      for (ProjectInnovation projectInnovation : projectInnovationList) {
+        ProjectInnovation innovationTemp = projectInnovationManager.getProjectInnovationById(projectInnovation.getId());
+        List<ProjectInnovationCenter> projectInnovationCentersList =
+          innovationTemp.getProjectInnovationCenters().stream()
+            .filter(
+              o -> o.isActive() && o.getId() != null && o.getPhase().getId().equals(this.getActualPhase().getId()))
+            .collect(Collectors.toList());
+        for (ProjectInnovationCenter projectInnovationCenter : projectInnovationCentersList) {
+          ProjectInnovationCenter projectPolicyCenterTemp =
+            projectInnovationCenterManager.getProjectInnovationCenterById(projectInnovationCenter.getId());
+          if (projectPolicyCenterTemp != null) {
+            if (projectPolicyCenterTemp.getInstitution().getId().equals(institution.getId())) {
+              projectInnovationCenterManager.deleteProjectInnovationCenter(projectPolicyCenterTemp.getId());
+            }
+          }
         }
       }
     }
@@ -1312,6 +1405,33 @@ public class ProjectPartnerAction extends BaseAction {
       }
     }
   }
+
+  private void removeProjectPoliciesCenter(ProjectPartner previouslyEnteredPartner) {
+    Project projectTemp = projectManager.getProjectById(projectID);
+    Institution institution = previouslyEnteredPartner.getInstitution();
+    if (institution != null && institution.getId() != null
+      && (institution.isPPA(this.getActualPhase().getCrp().getId(), this.getActualPhase())
+        || institution.getInstitutionType().getId().longValue() == APConstants.INSTITUTION_CGIAR_CENTER_TYPE)) {
+      List<ProjectPolicy> projectPolicyList =
+        projectTemp.getProjectPolicies().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      for (ProjectPolicy projectPolicy : projectPolicyList) {
+        ProjectPolicy policyTemp = projectPolicyManager.getProjectPolicyById(projectPolicy.getId());
+        List<ProjectPolicyCenter> projectPolicyCentersList = policyTemp.getProjectPolicyCenters().stream()
+          .filter(o -> o.isActive() && o.getId() != null && o.getPhase().getId().equals(this.getActualPhase().getId()))
+          .collect(Collectors.toList());
+        for (ProjectPolicyCenter projectPolicyCenter : projectPolicyCentersList) {
+          ProjectPolicyCenter projectPolicyCenterTemp =
+            projectPolicyCenterManager.getProjectPolicyCenterById(projectPolicyCenter.getId());
+          if (projectPolicyCenterTemp != null) {
+            if (projectPolicyCenterTemp.getInstitution().getId().equals(institution.getId())) {
+              projectPolicyCenterManager.deleteProjectPolicyCenter(projectPolicyCenterTemp.getId());
+            }
+          }
+        }
+      }
+    }
+  }
+
 
   @Override
   public String save() {
