@@ -21,7 +21,7 @@ package org.cgiar.ccafs.marlo.rest.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class ProjectExpectedEstudyInfoDTO {
+public class ProjectExpectedStudyInfoDTO {
 
 
   @ApiModelProperty(notes = "Expected study title", position = 2)
@@ -30,16 +30,16 @@ public class ProjectExpectedEstudyInfoDTO {
   @ApiModelProperty(notes = "Expected study title", position = 1)
   private String title;
 
-  @ApiModelProperty(notes = "Expected study type", position = 3)
+  @ApiModelProperty(notes = "Expected study type code", position = 3)
   private StudyTypeDTO studyType;
 
   @ApiModelProperty(notes = "Expected study status", position = 4)
   private long status;
 
-  @ApiModelProperty(notes = "Expected study tag", position = 5)
+  @ApiModelProperty(notes = "Expected study tag code", position = 5)
   private TagDTO tag;
 
-  @ApiModelProperty(notes = "Maturity of change reported", position = 6)
+  @ApiModelProperty(notes = "Maturity of change reported code", position = 6)
   private MaturityOfChangeDTO maturityOfChange;
 
   @ApiModelProperty(notes = "Contact person", position = 7)

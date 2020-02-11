@@ -23,13 +23,13 @@ import java.util.List;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class ProjectExpectedEstudyDTO {
+public class ProjectExpectedStudyDTO {
 
   @ApiModelProperty(notes = "The Generated expected study id", position = 1)
   private Long id;
 
   @ApiModelProperty(notes = "Project expected study info", position = 2)
-  private ProjectExpectedEstudyInfoDTO projectExpectedEstudyInfo;
+  private ProjectExpectedStudyInfoDTO projectExpectedEstudyInfo;
 
   @ApiModelProperty(notes = "CGIAR Sub-IDOs List", position = 3)
   private List<SrfSubIdoDTO> srfSubIdoList;
@@ -124,7 +124,7 @@ public class ProjectExpectedEstudyDTO {
   }
 
 
-  public ProjectExpectedEstudyInfoDTO getProjectExpectedEstudyInfo() {
+  public ProjectExpectedStudyInfoDTO getProjectExpectedEstudyInfo() {
     return projectExpectedEstudyInfo;
   }
 
@@ -204,7 +204,7 @@ public class ProjectExpectedEstudyDTO {
   }
 
 
-  public void setProjectExpectedEstudyInfo(ProjectExpectedEstudyInfoDTO projectExpectedEstudyInfo) {
+  public void setProjectExpectedEstudyInfo(ProjectExpectedStudyInfoDTO projectExpectedEstudyInfo) {
     this.projectExpectedEstudyInfo = projectExpectedEstudyInfo;
   }
 

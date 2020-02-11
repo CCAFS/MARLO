@@ -23,7 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.expectedStudies.ExpectedStudiesItem;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectExpectedStudyDTO;
-import org.cgiar.ccafs.marlo.rest.dto.ProjectExpectedEstudyDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectExpectedStudyDTO;
 import org.cgiar.ccafs.marlo.rest.errors.NotFoundException;
 import org.cgiar.ccafs.marlo.security.Permission;
 
@@ -57,16 +57,16 @@ public class ExpectedStudies {
   @Autowired
   private Environment env;
   private final UserManager userManager;
-  private ExpectedStudiesItem<ProjectExpectedEstudyDTO> expectedStudiesItem;
+  private ExpectedStudiesItem<ProjectExpectedStudyDTO> expectedStudiesItem;
 
   @Inject
-  public ExpectedStudies(ExpectedStudiesItem<ProjectExpectedEstudyDTO> expectedStudiesItem, UserManager userManager) {
+  public ExpectedStudies(ExpectedStudiesItem<ProjectExpectedStudyDTO> expectedStudiesItem, UserManager userManager) {
     this.expectedStudiesItem = expectedStudiesItem;
     this.userManager = userManager;
   }
 
   @ApiOperation(tags = {"Table 3 - Outcome/ Impact Case Reports"}, value = "${ExpectedStudies.OICR.POST.value}",
-    response = ProjectExpectedEstudyDTO.class)
+    response = ProjectExpectedStudyDTO.class)
   @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIAREntity}/OICR", method = RequestMethod.POST,
     produces = MediaType.APPLICATION_JSON_VALUE)
