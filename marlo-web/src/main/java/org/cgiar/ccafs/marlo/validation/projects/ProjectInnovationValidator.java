@@ -339,7 +339,6 @@ public class ProjectInnovationValidator extends BaseValidator {
       || projectInnovation.getContributingOrganizations().isEmpty()) {
       if (struts) {
         action.addMessage(action.getText(action.getText("projectInnovations.contributingOrganizations")));
-        action.getInvalidFields().put("input-innovation.contributingOrganizations", InvalidFieldsMessages.EMPTYFIELD);
         action.getInvalidFields().put("list-innovation.contributingOrganizations",
           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Contributing organizations"}));
       }
