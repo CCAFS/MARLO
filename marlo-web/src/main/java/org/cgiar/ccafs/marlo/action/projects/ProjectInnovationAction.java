@@ -1412,7 +1412,7 @@ public class ProjectInnovationAction extends BaseAction {
           .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectInnovationDeliverable innovationDeliverable : deliverablePrev) {
-        if (innovationDeliverable != null && innovation.getDeliverables() != null
+        if (innovation != null && innovationDeliverable != null && innovation.getDeliverables() != null
           && !innovation.getDeliverables().contains(innovationDeliverable)) {
           projectInnovationDeliverableManager.deleteProjectInnovationDeliverable(innovationDeliverable.getId());
         }
@@ -1517,58 +1517,42 @@ public class ProjectInnovationAction extends BaseAction {
             ProjectInnovationMilestone innovationMilestoneSave = new ProjectInnovationMilestone();
             innovationMilestoneSave.setProjectInnovation(projectInnovation);
             innovationMilestoneSave.setPhase(phase);
+            innovationMilestoneSave.setPrimary(innovationMilestone.getPrimary());
 
-            if (innovationMilestone.getCrpMilestone() != null
-              && innovationMilestone.getCrpMilestone().getId() != null) {
+            if (innovation.getMilestones() != null && innovation.getMilestones().size() == 1) {
+              innovationMilestoneSave.setPrimary(true);
+            }
+
+            CrpMilestone milestone =
+              milestoneManager.getCrpMilestoneById(innovationMilestone.getCrpMilestone().getId());
+            innovationMilestoneSave.setCrpMilestone(milestone);
+
+            projectInnovationMilestoneManager.saveProjectInnovationMilestone(innovationMilestoneSave);
+            // This is to add innovationCenterSave to generate correct auditlog.
+            innovation.getProjectInnovationMilestones().add(innovationMilestoneSave);
+          } else {
+            // if milestone already exist - save primary
+            ProjectInnovationMilestone innovationMilestoneSave = new ProjectInnovationMilestone();
+            innovationMilestoneSave =
+              projectInnovationMilestoneManager.getProjectInnovationMilestoneById(innovationMilestone.getId());
+            innovationMilestoneSave.setProjectInnovation(projectInnovation);
+            innovationMilestoneSave.setPhase(phase);
+            if (innovationMilestoneSave.getCrpMilestone() != null
+              && innovationMilestoneSave.getCrpMilestone().getId() != null) {
               CrpMilestone milestone =
                 milestoneManager.getCrpMilestoneById(innovationMilestone.getCrpMilestone().getId());
               innovationMilestoneSave.setCrpMilestone(milestone);
-
-              // Save primary
-              if ((milestonePrimaryId != 0 || crpMilestonePrimary != 0)
-                && innovationMilestone.getCrpMilestone() != null) {
-                if ((innovationMilestone.getCrpMilestone().getId() == milestonePrimaryId)
-                  || (innovationMilestone.getCrpMilestone().getId() == crpMilestonePrimary)) {
-                  innovationMilestoneSave.setPrimary(true);
-                } else {
-                  innovationMilestoneSave.setPrimary(false);
-                }
-              } else {
-                // If just one sub ido is selected, this is defined as principal
-                if (innovation.getMilestones().size() == 1) {
-                  innovationMilestoneSave.setPrimary(true);
-                }
-              }
-
-              if (innovationMilestoneSave.getPrimary() == null) {
-                innovationMilestoneSave.setPrimary(false);
-              }
-              projectInnovationMilestoneManager.saveProjectInnovationMilestone(innovationMilestoneSave);
-              // This is to add innovationCenterSave to generate correct auditlog.
-              innovation.getProjectInnovationMilestones().add(innovationMilestoneSave);
             }
-          } else {
-            // if milestone already exist - save primary
-            if ((milestonePrimaryId != 0 || crpMilestonePrimary != 0)
-              && innovationMilestone.getCrpMilestone() != null) {
-              ProjectInnovationMilestone innovationMilestoneSave = new ProjectInnovationMilestone();
-              innovationMilestoneSave =
-                projectInnovationMilestoneManager.getProjectInnovationMilestoneById(innovationMilestone.getId());
+            innovationMilestoneSave.setPrimary(innovationMilestone.getPrimary());
 
-              if ((innovationMilestone.getCrpMilestone().getId() == milestonePrimaryId)
-                || (innovationMilestone.getCrpMilestone().getId() == crpMilestonePrimary)) {
-                innovationMilestoneSave.setPrimary(true);
-              } else {
-                innovationMilestoneSave.setPrimary(false);
-              }
-
-              if (innovationMilestoneSave.getPrimary() == null) {
-                innovationMilestoneSave.setPrimary(false);
-              }
-              projectInnovationMilestoneManager.saveProjectInnovationMilestone(innovationMilestoneSave);
-              // This is to add innovationCenterSave to generate correct auditlog.
-              innovation.getProjectInnovationMilestones().add(innovationMilestoneSave);
+            if (innovation.getMilestones() != null && innovation.getMilestones().size() == 1) {
+              innovationMilestoneSave.setPrimary(true);
             }
+
+            projectInnovationMilestoneManager.saveProjectInnovationMilestone(innovationMilestoneSave);
+            // This is to add innovationCenterSave to generate correct auditlog.
+            innovation.getProjectInnovationMilestones().add(innovationMilestoneSave);
+
           }
 
         }
@@ -1755,56 +1739,42 @@ public class ProjectInnovationAction extends BaseAction {
       for (ProjectInnovationSubIdo innovationSubIdo : innovation.getSubIdos()) {
         if (innovationSubIdo.getId() == null) {
           ProjectInnovationSubIdo innovationSubIdoSave = new ProjectInnovationSubIdo();
-
           innovationSubIdoSave.setProjectInnovation(projectInnovation);
           innovationSubIdoSave.setPhase(phase);
+          innovationSubIdoSave.setPrimary(innovationSubIdo.getPrimary());
+
+          if (innovation.getSubIdos() != null && innovation.getSubIdos().size() == 1) {
+            innovationSubIdoSave.setPrimary(true);
+          }
 
           SrfSubIdo srfSubIdo = srfSubIdoManager.getSrfSubIdoById(innovationSubIdo.getSrfSubIdo().getId());
-
           innovationSubIdoSave.setSrfSubIdo(srfSubIdo);
 
-          // Save primary
-          if ((subIdoPrimaryId != 0 || srfSubIdoPrimary != 0) && innovationSubIdo.getSrfSubIdo() != null) {
-            if ((innovationSubIdo.getSrfSubIdo().getId() == subIdoPrimaryId)
-              || (innovationSubIdo.getSrfSubIdo().getId() == srfSubIdoPrimary)) {
-              innovationSubIdoSave.setPrimary(true);
-            } else {
-              innovationSubIdoSave.setPrimary(false);
-            }
-          } else {
-            // If just one sub ido is selected, this is defined as principal
-            if (innovation.getSubIdos().size() == 1) {
-              innovationSubIdoSave.setPrimary(true);
-            }
-          }
-
-          if (innovationSubIdoSave.getPrimary() == null) {
-            innovationSubIdoSave.setPrimary(false);
-          }
           projectInnovationSubIdoManager.saveProjectInnovationSubIdo(innovationSubIdoSave);
           // This is to add innovationCrpSave to generate correct auditlog.
           innovation.getProjectInnovationSubIdos().add(innovationSubIdoSave);
         } else {
           // if sub ido already exist - save primary
-          if ((subIdoPrimaryId != 0 || srfSubIdoPrimary != 0) && innovationSubIdo.getSrfSubIdo() != null) {
-            ProjectInnovationSubIdo innovationSubIdoSave = new ProjectInnovationSubIdo();
-            innovationSubIdoSave =
-              projectInnovationSubIdoManager.getProjectInnovationSubIdoById(innovationSubIdo.getId());
+          ProjectInnovationSubIdo innovationSubIdoSave = new ProjectInnovationSubIdo();
+          innovationSubIdoSave =
+            projectInnovationSubIdoManager.getProjectInnovationSubIdoById(innovationSubIdo.getId());
+          innovationSubIdoSave.setProjectInnovation(projectInnovation);
+          innovationSubIdoSave.setPhase(phase);
+          innovationSubIdoSave.setPrimary(innovationSubIdo.getPrimary());
 
-            if ((innovationSubIdo.getSrfSubIdo().getId() == subIdoPrimaryId)
-              || (innovationSubIdo.getSrfSubIdo().getId() == srfSubIdoPrimary)) {
-              innovationSubIdoSave.setPrimary(true);
-            } else {
-              innovationSubIdoSave.setPrimary(false);
-            }
-
-            if (innovationSubIdoSave.getPrimary() == null) {
-              innovationSubIdoSave.setPrimary(false);
-            }
-            projectInnovationSubIdoManager.saveProjectInnovationSubIdo(innovationSubIdoSave);
-            // This is to add innovationCrpSave to generate correct auditlog.
-            innovation.getProjectInnovationSubIdos().add(innovationSubIdoSave);
+          if (innovationSubIdo.getSrfSubIdo() != null && innovationSubIdo.getSrfSubIdo().getId() != null) {
+            SrfSubIdo srfSubIdo = srfSubIdoManager.getSrfSubIdoById(innovationSubIdo.getSrfSubIdo().getId());
+            innovationSubIdoSave.setSrfSubIdo(srfSubIdo);
           }
+
+          if (innovation.getSubIdos() != null && innovation.getSubIdos().size() == 1) {
+            innovationSubIdoSave.setPrimary(true);
+          }
+
+          projectInnovationSubIdoManager.saveProjectInnovationSubIdo(innovationSubIdoSave);
+          // This is to add innovationCrpSave to generate correct auditlog.
+          innovation.getProjectInnovationSubIdos().add(innovationSubIdoSave);
+
         }
       }
     }
