@@ -1883,15 +1883,16 @@ public class DeliverableAction extends BaseAction {
     /* Delete */
     Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
     for (DeliverableCrp deliverableCrp : deliverableDB.getDeliverableCrps().stream()
-      .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
-      if (!deliverable.getCrps().contains(deliverableCrp)) {
+      .filter(c -> c != null && c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+      .collect(Collectors.toList())) {
+      if (deliverable.getCrps() != null && !deliverable.getCrps().contains(deliverableCrp)) {
         deliverableCrpManager.deleteDeliverableCrp(deliverableCrp.getId());
       }
     }
 
     /* Save */
     for (DeliverableCrp deliverableCrp : deliverable.getCrps()) {
-      if (deliverableCrp.getId() == null || deliverableCrp.getId().intValue() == -1) {
+      if (deliverableCrp != null && deliverableCrp.getId() == null || deliverableCrp.getId().intValue() == -1) {
         deliverableCrp.setId(null);
         deliverableCrp.setDeliverable(deliverable);
         deliverableCrp.setPhase(this.getActualPhase());
