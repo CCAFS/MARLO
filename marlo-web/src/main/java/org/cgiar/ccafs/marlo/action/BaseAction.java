@@ -830,7 +830,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           long userId = partnerPerson.getUser().getId();
 
           List<Deliverable> deliverables =
-            this.deliverableManager.getDeliverablesLeadByUser(userId, this.getActualPhase().getId());
+            deliverableManager.getDeliverablesLeadByUser(userId, this.getActualPhase().getId());
           if (deliverables != null) {
             for (Deliverable deliverable : deliverables) {
               if (deliverable.getProject() != null && deliverable.getProject().getId().equals(projectId)) {
@@ -1005,7 +1005,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
 
-    Project project = this.projectManager.getProjectById(projectID);
+    Project project = projectManager.getProjectById(projectID);
     project.setPartners(project.getProjectPartners().stream()
       .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
       .collect(Collectors.toList()));
@@ -1027,7 +1027,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
     }
 
-    List<BudgetType> budgetTypes = this.budgetTypeManager.findAll().stream().collect(Collectors.toList());
+    List<BudgetType> budgetTypes = budgetTypeManager.findAll().stream().collect(Collectors.toList());
     if (budgetTypes != null && !budgetTypes.isEmpty()) {
       for (BudgetType budgetType : budgetTypes) {
         for (ProjectPartner projectPartner : projectPPAPartners) {
@@ -1447,6 +1447,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   @Override
   public String execute() throws Exception {
     if (this.save) {
+
       return this.save();
     } else if (this.delete) {
       return this.delete();
