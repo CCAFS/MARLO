@@ -1823,29 +1823,15 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             ProjectExpectedStudyMilestone studyMilestoneSave = new ProjectExpectedStudyMilestone();
             studyMilestoneSave.setProjectExpectedStudy(projectExpectedStudy);
             studyMilestoneSave.setPhase(phase);
+            studyMilestoneSave.setPrimary(studyMilestone.getPrimary());
+
+            if (expectedStudy.getMilestones() != null && expectedStudy.getMilestones().size() == 1) {
+              studyMilestoneSave.setPrimary(true);
+            }
 
             if (studyMilestone.getCrpMilestone() != null && studyMilestone.getCrpMilestone().getId() != null) {
               CrpMilestone milestone = milestoneManager.getCrpMilestoneById(studyMilestone.getCrpMilestone().getId());
               studyMilestoneSave.setCrpMilestone(milestone);
-
-              // Save primary
-              if ((milestonePrimaryId != 0 || crpMilestonePrimary != 0) && studyMilestone.getCrpMilestone() != null) {
-                if ((studyMilestone.getCrpMilestone().getId() == milestonePrimaryId)
-                  || (studyMilestone.getCrpMilestone().getId() == crpMilestonePrimary)) {
-                  studyMilestoneSave.setPrimary(true);
-                } else {
-                  studyMilestoneSave.setPrimary(false);
-                }
-              } else {
-                // If just one sub ido is selected, this is defined as principal
-                if (expectedStudy.getMilestones().size() == 1) {
-                  studyMilestoneSave.setPrimary(true);
-                }
-              }
-
-              if (studyMilestoneSave.getPrimary() == null) {
-                studyMilestoneSave.setPrimary(false);
-              }
 
               this.projectExpectedStudyMilestoneManager.saveProjectExpectedStudyMilestone(studyMilestoneSave);
               // This is to add studyCrpSave to generate correct auditlog.
@@ -1853,25 +1839,25 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             }
           } else {
             // if milestone already exist - save primary
-            if ((milestonePrimaryId != 0 || crpMilestonePrimary != 0) && studyMilestone.getCrpMilestone() != null) {
-              ProjectExpectedStudyMilestone studyMilestoneSave = new ProjectExpectedStudyMilestone();
-              studyMilestoneSave =
-                projectExpectedStudyMilestoneManager.getProjectExpectedStudyMilestoneById(studyMilestone.getId());
+            ProjectExpectedStudyMilestone studyMilestoneSave = new ProjectExpectedStudyMilestone();
+            studyMilestoneSave =
+              projectExpectedStudyMilestoneManager.getProjectExpectedStudyMilestoneById(studyMilestone.getId());
+            studyMilestoneSave.setProjectExpectedStudy(projectExpectedStudy);
+            studyMilestoneSave.setPhase(phase);
+            studyMilestoneSave.setPrimary(studyMilestone.getPrimary());
 
-              if ((studyMilestone.getCrpMilestone().getId() == milestonePrimaryId)
-                || (studyMilestone.getCrpMilestone().getId() == crpMilestonePrimary)) {
-                studyMilestoneSave.setPrimary(true);
-              } else {
-                studyMilestoneSave.setPrimary(false);
-              }
-
-              if (studyMilestoneSave.getPrimary() == null) {
-                studyMilestoneSave.setPrimary(false);
-              }
-              projectExpectedStudyMilestoneManager.saveProjectExpectedStudyMilestone(studyMilestoneSave);
-              // This is to add studyCrpSave to generate correct auditlog.
-              this.expectedStudy.getProjectExpectedStudyMilestones().add(studyMilestoneSave);
+            if (studyMilestone.getCrpMilestone() != null && studyMilestone.getCrpMilestone().getId() != null) {
+              CrpMilestone milestone = milestoneManager.getCrpMilestoneById(studyMilestone.getCrpMilestone().getId());
+              studyMilestoneSave.setCrpMilestone(milestone);
             }
+            if (expectedStudy.getMilestones() != null && expectedStudy.getMilestones().size() == 1) {
+              studyMilestoneSave.setPrimary(true);
+            }
+
+            projectExpectedStudyMilestoneManager.saveProjectExpectedStudyMilestone(studyMilestoneSave);
+            // This is to add studyCrpSave to generate correct auditlog.
+            this.expectedStudy.getProjectExpectedStudyMilestones().add(studyMilestoneSave);
+
           }
         }
       }
@@ -2224,28 +2210,15 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           ProjectExpectedStudySubIdo studySubIdoSave = new ProjectExpectedStudySubIdo();
           studySubIdoSave.setProjectExpectedStudy(projectExpectedStudy);
           studySubIdoSave.setPhase(phase);
+          studySubIdoSave.setPrimary(studySubIdo.getPrimary());
 
-          SrfSubIdo srfSubIdo = this.srfSubIdoManager.getSrfSubIdoById(studySubIdo.getSrfSubIdo().getId());
-
-          studySubIdoSave.setSrfSubIdo(srfSubIdo);
-
-          // Save primary
-          if ((subIdoPrimaryId != 0 || srfSubIdoPrimary != 0) && studySubIdo.getSrfSubIdo() != null) {
-            if ((studySubIdo.getSrfSubIdo().getId() == subIdoPrimaryId)
-              || (studySubIdo.getSrfSubIdo().getId() == srfSubIdoPrimary)) {
-              studySubIdoSave.setPrimary(true);
-            } else {
-              studySubIdoSave.setPrimary(false);
-            }
-          } else {
-            // If just one sub ido is selected, this is defined as principal
-            if (expectedStudy.getSubIdos().size() == 1) {
-              studySubIdoSave.setPrimary(true);
-            }
+          if (studySubIdo.getSrfSubIdo() != null && studySubIdo.getSrfSubIdo().getId() != null) {
+            SrfSubIdo srfSubIdo = this.srfSubIdoManager.getSrfSubIdoById(studySubIdo.getSrfSubIdo().getId());
+            studySubIdoSave.setSrfSubIdo(srfSubIdo);
           }
 
-          if (studySubIdoSave.getPrimary() == null) {
-            studySubIdoSave.setPrimary(false);
+          if (expectedStudy.getSubIdos() != null && expectedStudy.getSubIdos().size() == 1) {
+            studySubIdoSave.setPrimary(true);
           }
 
           this.projectExpectedStudySubIdoManager.saveProjectExpectedStudySubIdo(studySubIdoSave);
@@ -2254,22 +2227,23 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           this.expectedStudy.getProjectExpectedStudySubIdos().add(studySubIdoSave);
         } else {
           // if sub ido already exist - save primary
-          if ((subIdoPrimaryId != 0 || srfSubIdoPrimary != 0) && studySubIdo.getSrfSubIdo() != null) {
-            ProjectExpectedStudySubIdo studySubIdoSave = new ProjectExpectedStudySubIdo();
-            studySubIdoSave = projectExpectedStudySubIdoManager.getProjectExpectedStudySubIdoById(studySubIdo.getId());
+          ProjectExpectedStudySubIdo studySubIdoSave = new ProjectExpectedStudySubIdo();
+          studySubIdoSave = projectExpectedStudySubIdoManager.getProjectExpectedStudySubIdoById(studySubIdo.getId());
 
-            if ((studySubIdo.getSrfSubIdo().getId() == subIdoPrimaryId)
-              || (studySubIdo.getSrfSubIdo().getId() == srfSubIdoPrimary)) {
-              studySubIdoSave.setPrimary(true);
-            } else {
-              studySubIdoSave.setPrimary(false);
-            }
+          studySubIdoSave.setProjectExpectedStudy(projectExpectedStudy);
+          studySubIdoSave.setPhase(phase);
+          studySubIdoSave.setPrimary(studySubIdo.getPrimary());
 
-            if (studySubIdoSave.getPrimary() == null) {
-              studySubIdoSave.setPrimary(false);
-            }
-            projectExpectedStudySubIdoManager.saveProjectExpectedStudySubIdo(studySubIdoSave);
+          if (studySubIdo.getSrfSubIdo() != null && studySubIdo.getSrfSubIdo().getId() != null) {
+            SrfSubIdo srfSubIdo = this.srfSubIdoManager.getSrfSubIdoById(studySubIdo.getSrfSubIdo().getId());
+            studySubIdoSave.setSrfSubIdo(srfSubIdo);
           }
+
+          if (expectedStudy.getSubIdos() != null && expectedStudy.getSubIdos().size() == 1) {
+            studySubIdoSave.setPrimary(true);
+          }
+          projectExpectedStudySubIdoManager.saveProjectExpectedStudySubIdo(studySubIdoSave);
+
         }
       }
     }
