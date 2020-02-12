@@ -55,6 +55,8 @@ public interface ProjectPolicyOwnerDAO {
   public List<ProjectPolicyOwner> findAll();
 
 
+  public ProjectPolicyOwner getProjectPolicyOwnerById(long projectPolicyID, long policyTypID, long phaseID);
+
   /**
    * This method saves the information of the given projectPolicyOwner
    * 
