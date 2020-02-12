@@ -22,23 +22,30 @@ package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.expectedStudi
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageStudy;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.rest.dto.NewCrosscuttingMarkersDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectExpectedStudyDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectPolicyDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
@@ -61,13 +68,18 @@ public class ExpectedStudiesItem<T> {
   private SrfSubIdoManager srfSubIdoManager;
   private CrpProgramManager crpProgramManager;
   private LocElementManager locElementManager;
+  private ProjectInnovationManager projectInnovationManager;
+  private ProjectPolicyManager projectPolicyManager;
+  private InstitutionManager institutionManager;
 
 
   @Inject
   public ExpectedStudiesItem(GlobalUnitManager globalUnitManager, PhaseManager phaseManager,
     RepIndStageStudyManager repIndStageStudyManager, RepIndGeographicScopeManager repIndGeographicScopeManager,
     SrfSloIndicatorTargetManager srfSloIndicatorTargetManager, SrfSubIdoManager srfSubIdoManager,
-    CrpProgramManager crpProgramManager, LocElementManager locElementManager) {
+    CrpProgramManager crpProgramManager, LocElementManager locElementManager,
+    ProjectInnovationManager projectInnovationManager, ProjectPolicyManager projectPolicyManager,
+    InstitutionManager institutionManager) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.repIndStageStudyManager = repIndStageStudyManager;
@@ -76,6 +88,9 @@ public class ExpectedStudiesItem<T> {
     this.srfSubIdoManager = srfSubIdoManager;
     this.crpProgramManager = crpProgramManager;
     this.locElementManager = locElementManager;
+    this.projectInnovationManager = projectInnovationManager;
+    this.projectPolicyManager = projectPolicyManager;
+    this.institutionManager = institutionManager;
   }
 
   public Long createExpectedStudy(NewProjectExpectedStudyDTO newProjectExpectedStudy, String entityAcronym, User user) {
@@ -101,10 +116,15 @@ public class ExpectedStudiesItem<T> {
       ProjectExpectedStudy projectExpectedStudy = new ProjectExpectedStudy();
       List<RepIndGeographicScope> geographicScopeList = new ArrayList<RepIndGeographicScope>();
       List<SrfSloIndicatorTarget> srfSloIndicatorTargetList = new ArrayList<SrfSloIndicatorTarget>();
-      List<SrfSubIdo> SrfSubIdoList = new ArrayList<SrfSubIdo>();
       List<GlobalUnit> crpContributing = new ArrayList<GlobalUnit>();
       List<CrpProgram> flagshipList = new ArrayList<>();
       List<LocElement> countriesList = new ArrayList<>();
+      List<LocElement> regionsList = new ArrayList<>();
+      List<SrfSubIdo> srfSubIdoList = new ArrayList<>();
+      List<ProjectInnovation> projectInnovationList = new ArrayList<ProjectInnovation>();
+      List<ProjectPolicy> projectPolicyList = new ArrayList<ProjectPolicy>();
+      List<Institution> institutionList = new ArrayList<Institution>();
+
       if (newProjectExpectedStudy.getProjectExpectedEstudyInfo() != null) {
         ProjectExpectedStudyInfo projectExpectedStudyInfo = new ProjectExpectedStudyInfo();
         projectExpectedStudyInfo.setTitle(newProjectExpectedStudy.getProjectExpectedEstudyInfo().getTitle());
@@ -121,6 +141,8 @@ public class ExpectedStudiesItem<T> {
         }
         // geographic
         if (fieldErrors.size() == 0) {
+          projectExpectedStudy.setPhase(phase.getId());
+          projectExpectedStudy.setProjectExpectedStudyInfo(projectExpectedStudyInfo);
           if (newProjectExpectedStudy.getGeographicScopes() != null
             && newProjectExpectedStudy.getGeographicScopes().size() > 0) {
             for (String geographicscope : newProjectExpectedStudy.getGeographicScopes()) {
@@ -204,9 +226,89 @@ public class ExpectedStudiesItem<T> {
           // regions
           if (newProjectExpectedStudy.getRegions() != null && newProjectExpectedStudy.getRegions().size() > 0) {
             for (String region : newProjectExpectedStudy.getRegions()) {
+              if (region != null && this.isNumeric(region)) {
+                LocElement country = this.locElementManager.getLocElementByNumericISOCode(Long.valueOf(region));
+                if (country == null) {
+                  fieldErrors.add(
+                    new FieldErrorDTO("CreateExpectedStudies", "Regions", region + " is an invalid region UM49 Code"));
+
+                } else if (country.getLocElementType().getId() != APConstants.LOC_ELEMENT_TYPE_REGION) {
+                  fieldErrors
+                    .add(new FieldErrorDTO("CreateExpectedStudies", "Regions", region + " is not a Region UM49 code"));
+                } else {
+                  regionsList.add(country);
+                }
+              }
+            }
+          }
+          // subidos
+          if (newProjectExpectedStudy.getSrfSubIdoList() != null
+            && newProjectExpectedStudy.getSrfSubIdoList().size() > 0) {
+            for (String subido : newProjectExpectedStudy.getSrfSubIdoList()) {
+              if (subido != null) {
+                SrfSubIdo srfSubIdo = srfSubIdoManager.getSrfSubIdoByCode(subido);
+                if (srfSubIdo == null) {
+                  fieldErrors
+                    .add(new FieldErrorDTO("CreateExpectedStudies", "SubIDO", subido + " is an invalid subIDO Code"));
+                } else {
+                  srfSubIdoList.add(srfSubIdo);
+                }
+              }
+            }
+          }
+          // innovation link
+          if (newProjectExpectedStudy.getInnovationCodeList() != null
+            && newProjectExpectedStudy.getInnovationCodeList().size() > 0) {
+            for (String innovation : newProjectExpectedStudy.getInnovationCodeList()) {
+              if (innovation != null && this.isNumeric(innovation)) {
+                ProjectInnovation projectInnovation =
+                  projectInnovationManager.getProjectInnovationById(Long.valueOf(innovation));
+                if (projectInnovation != null) {
+                  projectInnovationList.add(projectInnovation);
+                } else {
+                  fieldErrors.add(new FieldErrorDTO("CreateExpectedStudies", "Innovation",
+                    innovation + " is an invalid innovation identifier"));
+                }
+              }
+            }
+          }
+          // policies link
+          if (newProjectExpectedStudy.getPoliciesCodeList() != null
+            && newProjectExpectedStudy.getPoliciesCodeList().size() > 0) {
+            for (String policy : newProjectExpectedStudy.getPoliciesCodeList()) {
+              if (policy != null && this.isNumeric(policy)) {
+                ProjectPolicy projectPolicy = projectPolicyManager.getProjectPolicyById(Long.valueOf(policy));
+                if (projectPolicy != null) {
+                  projectPolicyList.add(projectPolicy);
+                } else {
+                  fieldErrors.add(
+                    new FieldErrorDTO("CreateExpectedStudies", "Policy", policy + " is an invalid Policy identifier"));
+                }
+              }
+            }
+          }
+          // institutions
+          if (newProjectExpectedStudy.getInstitutionsList() != null
+            && newProjectExpectedStudy.getInstitutionsList().size() > 0) {
+            for (String institution : newProjectExpectedStudy.getInstitutionsList()) {
+              if (institution != null && this.isNumeric(institution)) {
+                Institution institutionDB = institutionManager.getInstitutionById(Long.valueOf(institution));
+                if (institutionDB != null) {
+                  institutionList.add(institutionDB);
+                } else {
+                  fieldErrors.add(new FieldErrorDTO("CreateExpectedStudies", "Institution",
+                    institution + " is an invalid Institution identifier"));
+                }
+              }
+            }
+          }
+
+          // crosscutting markers
+          if (newProjectExpectedStudy.getCrossCuttingMarkers() != null
+            && newProjectExpectedStudy.getCrossCuttingMarkers().size() > 0) {
+            for (NewCrosscuttingMarkersDTO crosscuttingmark : newProjectExpectedStudy.getCrossCuttingMarkers()) {
 
             }
-
           }
         }
       }
