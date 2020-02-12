@@ -26,7 +26,7 @@
         </div>
         <div class="col-md-4">
           [#assign dbExpectedYear = ((element.projectExpectedStudyInfo.year)!currentCycleYear)  ]
-          [@customForm.select name="${customName}.projectExpectedStudyInfo.year" className="setSelect2" i18nkey="study.year" listName="getExpectedStudiesYears(${element.projectExpectedStudyInfo.projectExpectedStudy.id})" header=false required=true editable=editable /]
+          [@customForm.select name="${customName}.projectExpectedStudyInfo.year" className="setSelect2" i18nkey="study.year" listName="getExpectedStudiesYears(${(expectedID)!})" header=false required=true editable=editable /]
           [#if editable=false]
             ${element.projectExpectedStudyInfo.year}
           [/#if]
