@@ -837,6 +837,7 @@ img.icon {
 
 .removeElement.sm {
   padding: 9px 10px;
+  z-index: 1000;
 }
 
 .removeIcon {
@@ -6944,4 +6945,19 @@ div.selectPrimary{
   position: relative;
   display: grid;
   grid-auto-rows: auto;
+}
+
+.primary-radio  {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  padding-top: 5px
+}
+
+.primary-list {
+  margin-bottom: 0px;
+}
+
+.primary-label {
+  font-size: 10px
 }
