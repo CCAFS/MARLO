@@ -62,6 +62,8 @@ public interface ProjectPolicyRegionManager {
    */
   public ProjectPolicyRegion getProjectPolicyRegionById(long projectPolicyRegionID);
 
+  public ProjectPolicyRegion getProjectPolicyRegionByPhase(long projectPolicyID, long regionID, long phaseID);
+
   /**
    * This method saves the information of the given projectPolicyRegion
    * 
