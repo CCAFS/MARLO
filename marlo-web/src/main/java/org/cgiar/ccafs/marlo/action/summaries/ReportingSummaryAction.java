@@ -361,7 +361,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     masterReport.getParameterValues().put("i8nProjectPlanningMenu", "1. " + this.getText("projects.menu.description"));
     masterReport.getParameterValues().put("i8nPartnersPlanningMenu", "2. " + this.getText("projects.menu.partners"));
     masterReport.getParameterValues().put("i8nLocationsPlanningMenu", "3. " + this.getText("projects.menu.locations"));
-    if (this.getProject().getProjectInfo().getAdministrative() != null
+    if (this.getProject().getProjectInfo() != null && this.getProject().getProjectInfo().getAdministrative() != null
       && this.getProject().getProjectInfo().getAdministrative() == true) {
       masterReport.getParameterValues().put("i8nExpectedStudiesPlanningMenu",
         "4. " + this.getText("projects.menu.expectedStudies"));
@@ -423,7 +423,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     masterReport.getParameterValues().put("i8nOutcomesReportingMenu", "4. " + this.getText("breadCrumb.menu.outcomes"));
 
 
-    if (this.getProject().getProjectInfo().getAdministrative() != null
+    if (this.getProject().getProjectInfo() != null && this.getProject().getProjectInfo().getAdministrative() != null
       && this.getProject().getProjectInfo().getAdministrative() == true) {
       masterReport.getParameterValues().put("i8nStudiesReportingMenu", "4. " + this.getText("menu.studies"));
     } else {
@@ -1161,7 +1161,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       String masterQueryName = "Main_Query";
       Resource reportResource;
       if (this.getSelectedCycle().equals("Planning")) {
-    	  
+
         reportResource = resourceManager.createDirectly(
           this.getClass().getResource("/pentaho/crp/ProjectFullPDF(Planning).prpt"), MasterReport.class);
       } else {
@@ -2945,15 +2945,16 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     String title = projectInfo.getTitle();
     String startDate = null;
     String endDate = null;
-    if (projectInfo.getStartDate() != null) {
-      startDate = formatter.format(projectInfo.getStartDate());
-    }
-    if (projectInfo.getEndDate() != null) {
-      endDate = formatter.format(projectInfo.getEndDate());
-    }
-    if (projectInfo.getLiaisonInstitution() != null) {
-      ml = projectInfo.getLiaisonInstitution().getAcronym();
-
+    if (projectInfo != null) {
+      if (projectInfo.getStartDate() != null) {
+        startDate = formatter.format(projectInfo.getStartDate());
+      }
+      if (projectInfo.getEndDate() != null) {
+        endDate = formatter.format(projectInfo.getEndDate());
+      }
+      if (projectInfo.getLiaisonInstitution() != null) {
+        ml = projectInfo.getLiaisonInstitution().getAcronym();
+      }
 
       // Get type from funding sources
       String type = "";
@@ -2997,13 +2998,13 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         }
       }
       String crossCutting = "";
-      if (projectInfo.getCrossCuttingNa() != null) {
+      if (projectInfo != null && projectInfo.getCrossCuttingNa() != null) {
         if (projectInfo.getCrossCuttingNa() == true) {
           crossCutting += "● N/A <br>";
         }
       }
 
-      if (projectInfo.getCrossCuttingCapacity() != null) {
+      if (projectInfo != null && projectInfo.getCrossCuttingCapacity() != null) {
         if (projectInfo.getCrossCuttingCapacity() == true) {
           crossCutting += "● Capacity Development <br>";
         }
@@ -3737,7 +3738,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
     }
 
-    if (projectInfo.getAdministrative() != null && projectInfo.getAdministrative() == false) {
+    if (projectInfo != null && projectInfo.getAdministrative() != null && projectInfo.getAdministrative() == false) {
       if (flagships != null) {
         if (!flagships.isEmpty()) {
           for (CrpProgram crpProgram : flagships) {
@@ -3745,7 +3746,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           }
         }
       }
-      if (projectInfo.getNoRegional() != null && projectInfo.getNoRegional()) {
+      if (projectInfo != null && projectInfo.getNoRegional() != null && projectInfo.getNoRegional()) {
         title += "Global" + "-";
       } else {
         if (regions != null && !regions.isEmpty()) {
@@ -3808,7 +3809,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     centerURL = globalUnitProject.getGlobalUnit().getAcronym();
     Boolean isAdministrative = false;
     String type = "Research Project";
-    if (projectInfo.getAdministrative() != null) {
+    if (projectInfo != null && projectInfo.getAdministrative() != null) {
       if (projectInfo.getAdministrative() == true) {
         type = "Management Project";
       }
@@ -4258,9 +4259,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     String overall = "";
     if (this.getSelectedCycle().equals("Reporting")) {
       // Get project partners overall
-      overall = project.getProjectInfoLast(this.getSelectedPhase()).getPartnerOverall();
-      if (overall == null || overall.isEmpty()) {
-        overall = "&lt;Not Defined&gt;";
+      if (project.getProjectInfoLast(this.getSelectedPhase()) != null) {
+        overall = project.getProjectInfoLast(this.getSelectedPhase()).getPartnerOverall();
+        if (overall == null || overall.isEmpty()) {
+          overall = "&lt;Not Defined&gt;";
+        }
       }
     }
     model.addRow(new Object[] {partnersSize, overall});
@@ -4764,7 +4767,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private TypedTableModel getRLTableModel(List<CrpProgram> regions) {
     TypedTableModel model = new TypedTableModel(new String[] {"RL"}, new Class[] {String.class}, 0);
     String global = "";
-    if (projectInfo.getNoRegional() != null && projectInfo.getNoRegional()) {
+    if (projectInfo != null && projectInfo.getNoRegional() != null && projectInfo.getNoRegional()) {
       global = "Global";
       model.addRow(new Object[] {global});
     } else {
