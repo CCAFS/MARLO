@@ -474,7 +474,6 @@ public class ProjectPartnerAction extends BaseAction {
 
   }
 
-
   public List<PartnerDivision> getDivisions() {
     return divisions;
   }
@@ -489,8 +488,36 @@ public class ProjectPartnerAction extends BaseAction {
     return loggedCrp;
   }
 
+
   public Map<String, String> getPartnerPersonTypes() {
     return partnerPersonTypes;
+  }
+
+  public List<ProjectPolicy> getPolicyContributingByPartner(Long projectPartnerID) {
+    List<ProjectPolicy> policyContributings = new ArrayList<>();
+    if (projectPartnerID != null && projectPartnerID != 0) {
+      ProjectPartner projectPartner = projectPartnerManager.getProjectPartnerById(projectPartnerID);
+      if (projectPartner != null && projectPartner.getInstitution() != null) {
+        List<ProjectPolicyCenter> policyCenters = projectPolicyCenterManager.findAll().stream()
+          .filter(p -> p != null && p.getPhase() != null && p.getPhase().getId().equals(this.getActualPhase().getId())
+            && p.getInstitution() != null && p.getInstitution().getId().equals(projectPartner.getInstitution().getId()))
+          .collect(Collectors.toList());
+        if (policyCenters != null) {
+          for (ProjectPolicyCenter projectPolicyCenter : policyCenters) {
+            if (projectPolicyCenter != null && projectPolicyCenter.getProjectPolicy() != null
+              && projectPolicyCenter.getProjectPolicy().getId() != null) {
+              ProjectPolicy projectPolicy = new ProjectPolicy();
+              projectPolicy = projectPolicyManager.getProjectPolicyById(projectPolicyCenter.getProjectPolicy().getId());
+              if (projectPolicy != null) {
+                policyContributings.add(projectPolicy);
+              }
+            }
+          }
+        }
+      }
+
+    }
+    return policyContributings;
   }
 
 
