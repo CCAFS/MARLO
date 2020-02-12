@@ -569,10 +569,10 @@
       <div class="loading listComponentLoading" style="display:none"></div>
       <ul class="list">
         [#if elementList?has_content]
-          [#list elementList as item][@listElementMacro name=name element=item type=elementType id=id index=item_index keyFieldName=keyFieldName displayFieldName=displayFieldName indexLevel=indexLevel onlyElementIDs=onlyElementIDs isEditable=(editable || forceEditable)/][/#list]
+          [#list elementList as item][@listElementMacro name=name element=item type=elementType id=id index=item_index keyFieldName=keyFieldName displayFieldName=displayFieldName indexLevel=indexLevel /][/#list]
         [/#if]
       </ul>
-      [#if (editable || forceEditable)]
+      [#if editable]
         <select name="" id="" class="setSelect2 maxLimit-${maxLimit} elementType-${composedID} indexLevel-${indexLevel}">
           <option value="-1">[@s.text name="form.select.placeholder" /]</option>
           [#list list as item]
@@ -591,27 +591,82 @@
 [/#macro]
 
 [#macro listElementMacro element name type id="" index=-1 keyFieldName="id" displayFieldName="composedName" indexLevel=1 template=false onlyElementIDs=false isEditable=true]
+[#macro primaryListComponent name  elementType checkName="" id="" elementList=[] label="" labelPrimary="" label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true checked=true ]
+  [#attempt]
+    [#local list = ((listName?eval)?sort_by(displayFieldName))![] /] 
+    [#local valueCheck = (((checkName?eval)?eval)) /] 
+  [#recover]
+    [#local list = [] /] 
+  [/#attempt]
   
-  [#if onlyElementIDs]
-    [#local customName = "${template?string('_TEMPLATE_', '')}${name}"]
-  [#else]
-    [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
+  [#local composedID = "${elementType}" /]
+  [#if id?has_content]
+    [#local composedID = "${elementType}-${id}" /]
   [/#if]
 
+  <div class="panel tertiary elementsListComponent" listname="${name}" style="position:relative">
+    <div class="panel-head">
+      <label for="">[@s.text name=label /]:[@req required=required && editable /]
+        [#--  Help Text --]
+        [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
+      </label>
+    </div>
+    <div class="panel-body" style="min-height: 30px;">
+      <div class="loading listComponentLoading" style="display:none"></div>
+      <ul class="list">
+        [#if elementList?has_content]
+          [#list elementList as item][@listElementMacro name=name element=item type=elementType id=id index=item_index keyFieldName=keyFieldName displayFieldName=displayFieldName indexLevel=indexLevel /][/#list]
+        [/#if]
+      </ul>
+      [#if editable]
+        <select name="" id="" class="setSelect2 maxLimit-${maxLimit} elementType-${composedID} indexLevel-${indexLevel} primarySelectorField" >
+          <option value="-1">[@s.text name="form.select.placeholder" /]</option>
+          [#list list as item]
+            <option value="${(item[keyFieldName])!}">${(item[displayFieldName])!'null'}</option>
+          [/#list]
+        </select>
+      [#else]
+        [#if !(elementList?has_content)]<p class="font-italic"> No entries added yet.</p>[/#if]
+      [/#if]
+    </div>
+    [#-- Element item Template --]
+    <ul style="display:none">
+      [@listElementMacro name="${name}" element={} type=elementType id=id index=-1 indexLevel=indexLevel template=true /]
+    </ul>
+    [#-- Select primary  field --]
+    <div class="primarySelectorDisplayBox ${(checkName)}" style="min-height: 30px; margin-top: 10px; display:${(elementList?has_content)?string('block','none')}">
+      <div class="panel-head">
+        <label for="">${(((checkName?eval)?eval))} [@s.text name=labelPrimary /]:[@req required=required && editable /]
+          [#--  Help Text --]
+          [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
+        </label>
+      </div>
+      <div class="panel-body" style="min-height: 30px;">
+        <ul class="primaryRadio">
+          [#if elementList?has_content]
+            [#list elementList as item]
+            <div class="radioFlat selectPrimary radioContentBox ID-${(item[elementType][keyFieldName])}" >
+              <input id="primaryRadioButtonID${(checkName)}-${(item[elementType][keyFieldName])}" class="radio-input assesmentLevels primaryRadioButton option-${(item[elementType][keyFieldName])}" type="radio" name="${checkName}" value="${(item[elementType][keyFieldName])!'{0}'}" [#if (valueCheck == (item[elementType][keyFieldName]))!false] checked=true[/#if] />
+              <label for="primaryRadioButtonID${(checkName)}-${(item[elementType][keyFieldName])}" class="radio-label">${(item[elementType][displayFieldName])!'{elementNameUndefined}'}</label>
+            </div>
+             [/#list]
+          [/#if]  
+        </ul>
+      </div>
+    </div>
+  </div>
+[/#macro]
+
+[#macro listElementMacro element name type id="" index=-1 keyFieldName="id" displayFieldName="composedName" indexLevel=1 template=false]
+  [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
   [#local composedID = "${type}" /]
   [#if id?has_content]
     [#local composedID = "${type}-${id}" /]
   [/#if]
   <li class="[#if template]relationElement-template[/#if] relationElement indexLevel-${indexLevel}">
     [#-- Hidden Inputs --]
-    [#if onlyElementIDs]
-      <input type="hidden" class="elementRelationID" name="${customName}" value="${(element[type][keyFieldName])!}" />
-    [#else]
-      <input type="hidden" class="elementID" name="${customName}.id" value="${(element.id)!}" />
-      <input type="hidden" class="elementRelationID" name="${customName}.${type}.id" value="${(element[type][keyFieldName])!}" />
-    [/#if]
-    
-    
+    <input type="hidden" class="elementID" name="${customName}.id" value="${(element.id)!}" />
+    <input type="hidden" class="elementRelationID" name="${customName}.${type}.id" value="${(element[type][keyFieldName])!}" />
     [#-- Remove button --]
     [#if isEditable]<div class="removeElement sm removeIcon removeElementType-${composedID}" title="Remove"></div>[/#if] 
     [#-- Title --]

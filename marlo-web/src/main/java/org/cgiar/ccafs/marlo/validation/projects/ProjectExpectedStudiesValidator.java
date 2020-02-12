@@ -137,14 +137,24 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
       action.getInvalidFields().put("list-expectedStudy.subIdos",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
     }
-    
-    //validate Milestones
-    if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null && projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones()!= null && projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones()== true) {
-    	 action.addMessage(action.getText("milestoneList"));
-         action.addMissingField("study.milestones");
-         action.getInvalidFields().put("list-study.milestones",
-         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"milestones"}));
+
+    // validate Milestones
+    if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null
+      && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getStudyType() != null
+      && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getStudyType().getId()
+        .intValue() == 1) {
+      if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null
+        && (projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() != null
+          && projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() == true
+          && (projectExpectedStudy.getMilestones() == null))
+        || projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() == null) {
+        action.addMessage(action.getText("milestoneList"));
+        action.addMissingField("study.milestones");
+        action.getInvalidFields().put("list-study.milestones",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"milestones"}));
+      }
     }
+
 
     // Validate Geographic Scope
     boolean haveRegions = false;

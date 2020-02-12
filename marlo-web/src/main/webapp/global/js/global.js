@@ -577,6 +577,9 @@ function setElementsListComponent() {
   $('select[class*="elementType-"]').each(function(i,e) {
     $(this).setOneToManyComponent();
   });
+  $('select[class*="primarySelectorField"]').each(function(i,e) {
+    $(this).setPrimarySelectorFunction();
+  });
 }
 
 jQuery.fn.setOneToManyComponent = function() {
@@ -631,6 +634,18 @@ jQuery.fn.setOneToManyComponent = function() {
   $parent.find('[class*="removeElementType-"]').on('click', onClickRemoveElement);
 };
 
+//Function for Primary selector fields
+jQuery.fn.setPrimarySelectorFunction = function() {
+  var $parent = $(this).parents('.elementsListComponent');
+  var $select = $parent.find('select');
+
+  $select.on('change', onSelectElementPrimary);
+
+  // On click remove button
+  $parent.find('[class*="removeElementType-"]').on('click', onClickRemoveElementPrimary);
+
+}
+
 function onSelectElement() {
   var $select = $(this);
   var $parent = $(this).parents('.elementsListComponent');
@@ -661,8 +676,8 @@ function onSelectElement() {
   $element.find('.elementName').html(name);
 
   // Add Item
-  // console.log("Add item: " + id);
-  // console.log($element);
+  console.log("Add item: " + id);
+  console.log($element);
 
   // Show the element
   $element.appendTo($list).hide().show(350, function() {
@@ -719,7 +734,9 @@ function onClickRemoveElement() {
     $select.select2();
 
     // Create event removeElement
-    $select.trigger("removeElement", eventData);
+    $select.trigger("removeElement", [
+        id, name
+    ]);
 
     // Update indexes
     $list.find('li.relationElement').each(function(i,element) {
@@ -732,6 +749,69 @@ function onClickRemoveElement() {
       $select.prop('disabled', false).trigger('change.select2');
     }
   });
+}
+
+function onSelectElementPrimary() {
+  var $select = $(this);
+  var $parent = $(this).parents('.elementsListComponent');
+  var $option = $select.find('option:selected');
+  var elementType = $select.classParam('elementType');
+  var maxLimit = $select.classParam('maxLimit');
+  var $list = $parent.find('ul.list');
+  var counted = $list.find('li').length;
+  var id = $option.val();
+  var name = $option.text();
+
+  var $primaryList = $parent.find('ul.primaryRadio');
+  var $primaryDisplay = $parent.find('div.primarySelectorDisplayBox');
+  var className = $primaryDisplay.attr('class');
+  var idenfitierClassName = className.split(' ');
+
+  $primaryDisplay.css("display","block");
+
+  var $contentDiv =$("<div class='radioFlat selectPrimary radioContentBox ID-"+ id +"'></div>");
+  var $radiobutton = $("<input id='primaryRadioButtonID"+ idenfitierClassName[1] +"-"+ id +"' class='radio-input assesmentLevels primaryRadioButton option-"+ id +"' type='radio' name='"+ idenfitierClassName[1] +"' value='"+ id +"'/>");
+  var $radioLabel = $("<label for='primaryRadioButtonID"+ idenfitierClassName[1] +"-"+ id +"' class='radio-label'>"+ name +"</label>");
+
+  if($primaryList.children().length < 1){
+    $radiobutton.attr('checked', true);
+  }
+
+  $radiobutton.appendTo($contentDiv);
+  $radioLabel.appendTo($contentDiv);
+  $contentDiv.appendTo($primaryList);
+}
+
+function onClickRemoveElementPrimary() {
+  var removeElementType = $(this).classParam('removeElementType');
+  var $parent = $(this).parent();
+  var $select = $(this).parents(".panel-body").find('select');
+  var $list = $(this).parents('.elementsListComponent').find('ul.list');
+  var counted = $list.find('li').length;
+  var maxLimit = $select.classParam('maxLimit');
+  var id = $parent.find(".elementRelationID").val();
+  var name = $parent.find(".elementName").text();
+  var $primaryDisplay = $(this).parents(".elementsListComponent").find('div.primarySelectorDisplayBox');
+  var $primaryRadioElement = $(this).parents('.elementsListComponent').find('ul.primaryRadio');
+
+  var $tempo = $primaryRadioElement.find(".radioFlat.selectPrimary.radioContentBox.ID-"+ id +"");
+  var $input = $tempo.find("input");
+
+  if($input.is(':checked')){
+    $tempo.remove();
+
+    if($primaryRadioElement.children().length > 0){
+      $primaryRadioElement.children(":first").find("input").attr('checked', true);
+    }
+  }else{
+    $tempo.remove();
+  }
+
+  //$tempo.remove();
+
+  if($primaryRadioElement.children().length < 1){
+    $primaryDisplay.css("display", "none");
+  }
 }
 
 /**
