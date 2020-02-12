@@ -2,6 +2,7 @@ $(document).ready(init);
 $( document ).ready(function() {
   validateSubCategorySelector();
 });
+
 function init() {
 
   // Setting ID to Date-picker input
@@ -275,20 +276,38 @@ function addDisseminationEvents() {
   });
 
   $('#CCAFS_deliverable_deliverable_deliverableInfo_deliverableType_id').on('change', function() {
-    if(this.value == '63'){
-      console.log('true');
-      $('.conditionalRequire .requiredTag').slideDown();
-      $('.isOtherUrlContentBox').css("display","block");
-      console.log('true');
-
+    var doiField = $('.metadataElement-doi').find('div.input ').children()[3];
+    if(this.value == '63' && doiField.value ==''){
+      displayExtraFieldUrl(true,true);
     }else{
-      $('.isOtherUrlContentBox').css("display","none");
-      $('.conditionalRequire .requiredTag').slideUp();
-      console.log($('.conditionalRequire .requiredTag'));
+      if(this.value == '63'){
+        displayExtraFieldUrl(false,true);
+      }else{
+        displayExtraFieldUrl(false,false);
+      }
     }
-    console.log(this.value);
   });
 
+}
+
+function displayExtraFieldUrl(display,showRequiredTag){
+  if(display){
+    //$('.conditionalRequire .requiredTag').slideDown();
+    $('.isOtherUrlContentBox').css("display","block");
+  }else{
+    $('.isOtherUrlContentBox').css("display","none");
+    //$('.conditionalRequire .requiredTag').slideUp();
+    //console.log($('.conditionalRequire .requiredTag'));
+  }
+
+  if(showRequiredTag){
+    $('.conditionalRequire .requiredTag').slideDown();
+    // $('.isOtherUrlContentBox').css("display","block");
+  }else{
+    //$('.isOtherUrlContentBox').css("display","none");
+    $('.conditionalRequire .requiredTag').slideUp();
+    //console.log($('.conditionalRequire .requiredTag'));
+  }
 }
 
 function addFlagship(idCRPProgram,text) {
@@ -495,7 +514,6 @@ function checkNextAuthorItems(block) {
  */
 function setMetadata(data) {
   console.log(data);
-
   // Text area & Inputs fields
   $.each(data, function(key,value) {
     var $parent = $('.metadataElement-' + key);
@@ -503,6 +521,7 @@ function setMetadata(data) {
     var $input = $parent.find(".metadataValue");
     var $text = $parent.find(".metadataText");
     var $hide = $parent.find('.hide');
+
 
     if(value) {
       $input.val(value);
@@ -563,6 +582,15 @@ function setMetadata(data) {
   // Sync Deliverable
   syncDeliverable();
 
+  var doiField = $('.metadataElement-doi').find('div.input ').children()[3];
+  var selector = $('select[name="deliverable.deliverableInfo.deliverableType.id"]');
+  if(selector.val() == '63' && (doiField.value =='')){
+    displayExtraFieldUrl(true,true);
+  }else{
+    if(selector.val() == '63'){
+      displayExtraFieldUrl(false,true);
+    }
+  }
 }
 
 function setOpenAccess(openAccess) {
@@ -656,6 +684,12 @@ function unSyncDeliverable() {
     $text.text("").parent().hide();
     $hide.val("false");
   });
+
+  var doiField = $('.metadataElement-doi').find('div.input ').children()[3];
+  var selector = $('select[name="deliverable.deliverableInfo.deliverableType.id"]');
+  if(selector.val() == '63' && (doiField.value =='')){
+    displayExtraFieldUrl(true,true);
+  }
 
   // Show authors
   $('.author').removeClass('hideAuthor');
@@ -782,16 +816,19 @@ function formatStateCountries(state) {
  */
 function validateSubCategorySelector() {
   var selector = $('select[name="deliverable.deliverableInfo.deliverableType.id"]');
-  console.log(selector.val());
-  if(selector.val() == '63'){
-    console.log('true');
-    $('.conditionalRequire .requiredTag').slideDown();
-    $('.isOtherUrlContentBox').css("display","block");
-    console.log('true');
+  var doiField = $('.metadataElement-doi').find('div.input ').children()[3];
+  console.log(doiField.value);
+  //console.log(selector.val());
+  if(selector.val() == '63' && (doiField.value =='')){
+    displayExtraFieldUrl(true,true);
   }else{
-    $('.isOtherUrlContentBox').css("display","none");
-    $('.conditionalRequire .requiredTag').slideUp();
-    //console.log($('.conditionalRequire .requiredTag'));
+    if(selector.val() == '63'){
+      displayExtraFieldUrl(false,true);
+      //$('.conditionalRequire .requiredTag').slideUp();
+    }else{
+      displayExtraFieldUrl(false,false);
+    }
+
   }
 
 };
