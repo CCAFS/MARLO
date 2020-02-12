@@ -479,6 +479,35 @@ public class ProjectPartnerAction extends BaseAction {
   }
 
 
+  public List<ProjectInnovation> getInnovationContributingByPartner(Long projectPartnerID) {
+    List<ProjectInnovation> innovationContributings = new ArrayList<>();
+    if (projectPartnerID != null && projectPartnerID != 0) {
+      ProjectPartner projectPartner = projectPartnerManager.getProjectPartnerById(projectPartnerID);
+      if (projectPartner != null && projectPartner.getInstitution() != null) {
+        List<ProjectInnovationCenter> innovationCenters = projectInnovationCenterManager.findAll().stream()
+          .filter(p -> p != null && p.getPhase() != null && p.getPhase().getId().equals(this.getActualPhase().getId())
+            && p.getInstitution() != null && p.getInstitution().getId().equals(projectPartner.getInstitution().getId()))
+          .collect(Collectors.toList());
+        if (innovationCenters != null) {
+          for (ProjectInnovationCenter projectInnovationCenter : innovationCenters) {
+            if (projectInnovationCenter != null && projectInnovationCenter.getProjectInnovation() != null
+              && projectInnovationCenter.getProjectInnovation().getId() != null) {
+              ProjectInnovation projectInnovation = new ProjectInnovation();
+              projectInnovation = projectInnovationManager
+                .getProjectInnovationById(projectInnovationCenter.getProjectInnovation().getId());
+              if (projectInnovation != null) {
+                innovationContributings.add(projectInnovation);
+              }
+            }
+          }
+        }
+      }
+
+    }
+    return innovationContributings;
+  }
+
+
   public List<InstitutionType> getIntitutionTypes() {
     return intitutionTypes;
   }
@@ -488,10 +517,10 @@ public class ProjectPartnerAction extends BaseAction {
     return loggedCrp;
   }
 
-
   public Map<String, String> getPartnerPersonTypes() {
     return partnerPersonTypes;
   }
+
 
   public List<ProjectPolicy> getPolicyContributingByPartner(Long projectPartnerID) {
     List<ProjectPolicy> policyContributings = new ArrayList<>();
