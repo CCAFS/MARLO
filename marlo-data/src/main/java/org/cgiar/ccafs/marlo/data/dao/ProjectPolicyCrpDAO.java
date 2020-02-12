@@ -56,6 +56,16 @@ public interface ProjectPolicyCrpDAO {
 
 
   /**
+   * This method get the information of a projectPolicyCrp
+   * 
+   * @param policyID - policy identifier
+   * @param crpID - CRP/Platform identifier
+   * @param phaseID - phase identifier
+   * @return ProjectPolicyCrp object that contains information..
+   */
+  public ProjectPolicyCrp getProjectPolicyCrpByPhase(long policyID, long crpID, long phaseID);
+
+  /**
    * This method saves the information of the given projectPolicyCrp
    * 
    * @param projectPolicyCrp - is the projectPolicyCrp object with the new information to be added/updated.

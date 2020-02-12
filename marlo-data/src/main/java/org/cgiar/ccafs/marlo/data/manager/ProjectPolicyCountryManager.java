@@ -69,6 +69,8 @@ public interface ProjectPolicyCountryManager {
    */
   public ProjectPolicyCountry getProjectPolicyCountryById(long projectPolicyCountryID);
 
+  public ProjectPolicyCountry getProjectPolicyCountryByPhase(long projectPolicyID, long countryID, long phaseID);
+
   /**
    * This method saves the information of the given projectPolicyCountry
    * 

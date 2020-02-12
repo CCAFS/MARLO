@@ -60,15 +60,21 @@ public interface ProjectPolicyGeographicScopeManager {
    */
   public ProjectPolicyGeographicScope getProjectPolicyGeographicScopeById(long projectPolicyGeographicScopeID);
 
+  public ProjectPolicyGeographicScope getProjectPolicyGeographicScopeByPhase(long projectPolicyID,
+    long geographicScopeID, long phaseID);
+
+
   /**
    * This method saves the information of the given projectPolicyGeographicScope
    * 
-   * @param projectPolicyGeographicScope - is the projectPolicyGeographicScope object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectPolicyGeographicScope was
+   * @param projectPolicyGeographicScope - is the projectPolicyGeographicScope object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectPolicyGeographicScope was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ProjectPolicyGeographicScope saveProjectPolicyGeographicScope(ProjectPolicyGeographicScope projectPolicyGeographicScope);
-
+  public ProjectPolicyGeographicScope
+    saveProjectPolicyGeographicScope(ProjectPolicyGeographicScope projectPolicyGeographicScope);
 
 }
