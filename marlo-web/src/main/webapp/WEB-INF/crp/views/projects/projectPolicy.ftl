@@ -4,7 +4,7 @@
 [#assign pageLibs = [ "select2", "blueimp-file-upload" "flat-flags", "components-font-awesome"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectPolicy.js",
-  [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
+  "${baseUrlCdn}/global/js/autoSave.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js"
   ] 
 /]
@@ -106,7 +106,7 @@
     [#-- Year --]
     <div class="form-group row">
       <div class="col-md-4">
-        [@customForm.select name="${customName}.projectPolicyInfo.year" className="setSelect2" i18nkey="policy.year" listName="getPoliciesYears(${element.projectPolicyInfo.projectPolicy.id})" required=true editable=editable/]
+        [@customForm.select name="${customName}.projectPolicyInfo.year" className="setSelect2" i18nkey="policy.year" listName="getPoliciesYears(${policyID})" required=true editable=editable/]
         [#if editable=false]
           ${element.projectPolicyInfo.year}
         [/#if]
