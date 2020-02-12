@@ -518,9 +518,9 @@
     </div>  --]
     <hr />
     [#-- Does the publication acknowledge {CRP}? --]
-    <div class="row yesNoInputDeliverable">
+    <div class="row yesNoInputDeliverable acknowledgeCCAFS">
       <div class="col-md-9">
-        <label class="yesNoLabel">[@s.text name="project.deliverable.dissemination.acknowledgeQuestion" ][@s.param]${(crpSession?upper_case)!}[/@s.param][/@s.text]</label>
+        <label class="yesNoLabel">[@s.text name="project.deliverable.dissemination.acknowledgeQuestion" ][@s.param]${(crpSession?upper_case)!}[/@s.param][/@s.text][@customForm.req required=false /]</label>
         <p class="message"><i><small>[@s.text name="project.deliverable.dissemination.acknowledgeQuestion.help" ][@s.param]${(crpSession?upper_case)!}[/@s.param][/@s.text]</small></i></p>
       </div>
       <div class="col-md-3">[@customForm.yesNoInputDeliverable name="deliverable.publication.publicationAcknowledge"  editable=editable inverse=false  cssClass="acknowledge text-center" /] </div> 
