@@ -32,7 +32,6 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
-import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -268,15 +267,18 @@ public class DeliverableValidator extends BaseValidator {
             action.getInvalidFields().put("input-deliverable.deliverableInfo.adoptedLicense",
               InvalidFieldsMessages.EMPTYFIELD);
           }
-          
+
           // DOI Validator
-          if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId().intValue() == 63) {
-        	  if (deliverable.getDissemination() == null) {
-                  //action.addMessage(action.getText("project.deliverable.v.qualityCheck.assurance"));
-                  //action.getInvalidFields().put("input-deliverable.qualityCheck.qualityAssurance.id",
-                  //  InvalidFieldsMessages.EMPTYFIELD);
-                }
-          }
+          /*
+           * if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId().intValue() == 63)
+           * {
+           * if (deliverable.getDissemination() == null) {
+           * //action.addMessage(action.getText("project.deliverable.v.qualityCheck.assurance"));
+           * //action.getInvalidFields().put("input-deliverable.qualityCheck.qualityAssurance.id",
+           * // InvalidFieldsMessages.EMPTYFIELD);
+           * }
+           * }
+           */
 
           // Deliverable Quality Check
           if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType() != null && (deliverable
@@ -452,12 +454,14 @@ public class DeliverableValidator extends BaseValidator {
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"geographicScopes"}));
     } else {
       for (DeliverableGeographicScope deliverableGeographicScope : deliverable.getGeographicScopes()) {
-        if (deliverableGeographicScope.getRepIndGeographicScope().getId() == 2) {
-          haveRegions = true;
-        }
-        if (deliverableGeographicScope.getRepIndGeographicScope().getId() != 1
-          && deliverableGeographicScope.getRepIndGeographicScope().getId() != 2) {
-          haveCountries = true;
+        if (deliverableGeographicScope.getRepIndGeographicScope() != null) {
+          if (deliverableGeographicScope.getRepIndGeographicScope().getId() == 2) {
+            haveRegions = true;
+          }
+          if (deliverableGeographicScope.getRepIndGeographicScope().getId() != 1
+            && deliverableGeographicScope.getRepIndGeographicScope().getId() != 2) {
+            haveCountries = true;
+          }
         }
       }
     }
@@ -695,32 +699,31 @@ public class DeliverableValidator extends BaseValidator {
   }
 
   public void validateLicense(Deliverable deliverable, BaseAction action) {
-	  /*
-    if (deliverable.getDeliverableInfo(action.getActualPhase()).getAdoptedLicense().booleanValue()) {
-      if (deliverable.getDeliverableInfo(action.getActualPhase()).getLicense() != null) {
-        if (deliverable.getDeliverableInfo(action.getActualPhase()).getLicense()
-          .equals(LicensesTypeEnum.OTHER.getValue())) {
-          if (deliverable.getDeliverableInfo(action.getActualPhase()).getOtherLicense() != null) {
-            if (!(this.isValidString(deliverable.getDeliverableInfo(action.getActualPhase()).getOtherLicense())
-              && this.wordCount(deliverable.getDeliverableInfo(action.getActualPhase()).getOtherLicense()) <= 100)) {
-              action.addMessage(action.getText("project.deliverable.license.v.other"));
-              action.getInvalidFields().put("input-deliverable.deliverableInfo.otherLicense",
-                InvalidFieldsMessages.EMPTYFIELD);
-            }
-
-            if (deliverable.getDeliverableInfo(action.getActualPhase()).getAllowModifications() == null) {
-              action.addMessage(action.getText("project.deliverable.license.v.allowModification"));
-              action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.allowModification",
-                InvalidFieldsMessages.EMPTYFIELD);
-            }
-          }
-        }
-      } else {
-        action.addMessage(action.getText("project.deliverable.v.license"));
-        action.getInvalidFields().put("input-deliverable.deliverableInfo.license", InvalidFieldsMessages.EMPTYFIELD);
-      }
-    }
-    */
+    /*
+     * if (deliverable.getDeliverableInfo(action.getActualPhase()).getAdoptedLicense().booleanValue()) {
+     * if (deliverable.getDeliverableInfo(action.getActualPhase()).getLicense() != null) {
+     * if (deliverable.getDeliverableInfo(action.getActualPhase()).getLicense()
+     * .equals(LicensesTypeEnum.OTHER.getValue())) {
+     * if (deliverable.getDeliverableInfo(action.getActualPhase()).getOtherLicense() != null) {
+     * if (!(this.isValidString(deliverable.getDeliverableInfo(action.getActualPhase()).getOtherLicense())
+     * && this.wordCount(deliverable.getDeliverableInfo(action.getActualPhase()).getOtherLicense()) <= 100)) {
+     * action.addMessage(action.getText("project.deliverable.license.v.other"));
+     * action.getInvalidFields().put("input-deliverable.deliverableInfo.otherLicense",
+     * InvalidFieldsMessages.EMPTYFIELD);
+     * }
+     * if (deliverable.getDeliverableInfo(action.getActualPhase()).getAllowModifications() == null) {
+     * action.addMessage(action.getText("project.deliverable.license.v.allowModification"));
+     * action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.allowModification",
+     * InvalidFieldsMessages.EMPTYFIELD);
+     * }
+     * }
+     * }
+     * } else {
+     * action.addMessage(action.getText("project.deliverable.v.license"));
+     * action.getInvalidFields().put("input-deliverable.deliverableInfo.license", InvalidFieldsMessages.EMPTYFIELD);
+     * }
+     * }
+     */
   }
 
   public void validateMetadata(List<DeliverableMetadataElement> elements, BaseAction action) {

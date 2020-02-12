@@ -115,21 +115,25 @@ public class ProjectInnovationValidator extends BaseValidator {
       this.addMissingField("projectInnovations.narrative");
 
     }
-    
-    //validate Milestones
-    if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()) != null && projectInnovation.getProjectInnovationInfo().getHasMilestones()!= null && projectInnovation.getProjectInnovationInfo().getHasMilestones()== true) {
-    	 action.addMessage(action.getText("milestoneList"));
-         action.addMissingField("innovation.milestones");
-         action.getInvalidFields().put("list-innovation.milestones",
-           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"milestones"}));
+
+    // validate Milestones
+    if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()) != null
+      && (projectInnovation.getProjectInnovationInfo().getHasMilestones() != null
+        && projectInnovation.getProjectInnovationInfo().getHasMilestones() == true
+        && (projectInnovation.getMilestones() == null || projectInnovation.getMilestones().isEmpty()))
+      || projectInnovation.getProjectInnovationInfo().getHasMilestones() == null) {
+      action.addMessage(action.getText("milestoneList"));
+      action.addMissingField("innovation.milestones");
+      action.getInvalidFields().put("list-innovation.milestones",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"milestones"}));
     }
-    
+
     // Validate SubIdos
     if (projectInnovation.getSubIdos() == null || projectInnovation.getSubIdos().isEmpty()) {
       action.addMessage(action.getText("subIdos"));
       action.addMissingField("innovation.subIDOs");
       action.getInvalidFields().put("list-innovation.subIdos",
-      action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
     }
 
     // Validate Stage of Innovation
@@ -335,25 +339,24 @@ public class ProjectInnovationValidator extends BaseValidator {
       || projectInnovation.getContributingOrganizations().isEmpty()) {
       if (struts) {
         action.addMessage(action.getText(action.getText("projectInnovations.contributingOrganizations")));
-        action.getInvalidFields().put("input-innovation.contributingOrganizations", InvalidFieldsMessages.EMPTYFIELD);
         action.getInvalidFields().put("list-innovation.contributingOrganizations",
           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Contributing organizations"}));
       }
-      this.addMissingField("projectInnovations.contributingOrganizations");
+      // this.addMissingField("projectInnovations.contributingOrganizations");
     }
 
 
     // Validate Crps
     /*
-    if (projectInnovation.getCrps() == null || projectInnovation.getCrps().isEmpty()) {
-      if (struts) {
-        action.addMessage(action.getText("projectInnovations.contributing"));
-        action.getInvalidFields().put("list-innovation.crps",
-          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Crps"}));
-      }
-      this.addMissingField("projectInnovations.contributing");
-    }
-    */
+     * if (projectInnovation.getCrps() == null || projectInnovation.getCrps().isEmpty()) {
+     * if (struts) {
+     * action.addMessage(action.getText("projectInnovations.contributing"));
+     * action.getInvalidFields().put("list-innovation.crps",
+     * action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Crps"}));
+     * }
+     * this.addMissingField("projectInnovations.contributing");
+     * }
+     */
 
     // Validate adaptative research narrative
     if (!(this.wordCount(
