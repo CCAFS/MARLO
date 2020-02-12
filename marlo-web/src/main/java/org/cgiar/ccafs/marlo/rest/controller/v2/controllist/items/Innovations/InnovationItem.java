@@ -186,12 +186,15 @@ public class InnovationItem<T> {
         newInnovationDTO.getStageOfInnovation() + " is an invalid stage of innovation code"));
     }
 
-    Institution leadInstitution =
-      this.institutionManager.getInstitutionById(newInnovationDTO.getLeadOrganization().getCode());
-    if (leadInstitution == null) {
-      fieldErrors.add(new FieldErrorDTO("createInnovation", "Lead institution",
-        newInnovationDTO.getLeadOrganization() + " is an invalid institution id"));
+    Institution leadInstitution = null;
+    if (newInnovationDTO.getLeadOrganization() != null) {
+      leadInstitution = this.institutionManager.getInstitutionById(newInnovationDTO.getLeadOrganization().getCode());
+      if (leadInstitution == null) {
+        fieldErrors.add(new FieldErrorDTO("createInnovation", "Lead institution",
+          newInnovationDTO.getLeadOrganization() + " is an invalid institution id"));
+      }
     }
+
 
     RepIndInnovationType repIndInnovationType =
       this.repIndInnovationTypeManager.getRepIndInnovationTypeById(newInnovationDTO.getInnovationType().getCode());
@@ -432,7 +435,7 @@ public class InnovationItem<T> {
       projectInnovationManager.deleteProjectInnovation(id);
 
     } else {
-      fieldErrors.add(new FieldErrorDTO("createInnovation", "Innovation", id + " is an invalid innovation Code"));
+      fieldErrors.add(new FieldErrorDTO("deleteInnovation", "Innovation", id + " is an invalid innovation Code"));
 
     }
     if (!fieldErrors.isEmpty()) {
@@ -495,8 +498,6 @@ public class InnovationItem<T> {
       }
 
     }
-
-
     innovationList = projectInnovationList.stream()
       .map(innovations -> this.innovationMapper.projectInnovationToInnovationDTO(innovations))
       .collect(Collectors.toList());

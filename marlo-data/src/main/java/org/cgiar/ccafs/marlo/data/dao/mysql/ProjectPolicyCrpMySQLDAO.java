@@ -69,16 +69,24 @@ public class ProjectPolicyCrpMySQLDAO extends AbstractMarloDAO<ProjectPolicyCrp,
   }
 
   @Override
+  public ProjectPolicyCrp getProjectPolicyCrpByPhase(long policyID, long crpID, long phaseID) {
+    String query = " from " + ProjectPolicyCrp.class.getName() + " WHERE project_policy_id=" + policyID
+      + " AND id_phase=" + phaseID + "AND global_unit_id=" + crpID;
+    List<ProjectPolicyCrp> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+  @Override
   public ProjectPolicyCrp save(ProjectPolicyCrp projectPolicyCrp) {
     if (projectPolicyCrp.getId() == null) {
       super.saveEntity(projectPolicyCrp);
     } else {
       projectPolicyCrp = super.update(projectPolicyCrp);
     }
-
-
     return projectPolicyCrp;
   }
-
 
 }
