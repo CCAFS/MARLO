@@ -20,26 +20,33 @@
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.expectedStudies;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CgiarCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.EvidenceTagManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
+import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.EvidenceTag;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyQuantification;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
+import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageStudy;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget;
@@ -48,6 +55,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.NewCrosscuttingMarkersDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectExpectedStudyDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectPolicyDTO;
+import org.cgiar.ccafs.marlo.rest.dto.QuantificationDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
 
 import java.util.ArrayList;
@@ -71,6 +79,9 @@ public class ExpectedStudiesItem<T> {
   private ProjectInnovationManager projectInnovationManager;
   private ProjectPolicyManager projectPolicyManager;
   private InstitutionManager institutionManager;
+  private CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager;
+  private RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager;
+  private EvidenceTagManager evidenceTagManager;
 
 
   @Inject
@@ -79,7 +90,8 @@ public class ExpectedStudiesItem<T> {
     SrfSloIndicatorTargetManager srfSloIndicatorTargetManager, SrfSubIdoManager srfSubIdoManager,
     CrpProgramManager crpProgramManager, LocElementManager locElementManager,
     ProjectInnovationManager projectInnovationManager, ProjectPolicyManager projectPolicyManager,
-    InstitutionManager institutionManager) {
+    InstitutionManager institutionManager, CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager,
+    RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager, EvidenceTagManager evidenceTagManager) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.repIndStageStudyManager = repIndStageStudyManager;
@@ -91,6 +103,9 @@ public class ExpectedStudiesItem<T> {
     this.projectInnovationManager = projectInnovationManager;
     this.projectPolicyManager = projectPolicyManager;
     this.institutionManager = institutionManager;
+    this.cgiarCrossCuttingMarkerManager = cgiarCrossCuttingMarkerManager;
+    this.repIndGenderYouthFocusLevelManager = repIndGenderYouthFocusLevelManager;
+    this.evidenceTagManager = evidenceTagManager;
   }
 
   public Long createExpectedStudy(NewProjectExpectedStudyDTO newProjectExpectedStudy, String entityAcronym, User user) {
@@ -124,18 +139,30 @@ public class ExpectedStudiesItem<T> {
       List<ProjectInnovation> projectInnovationList = new ArrayList<ProjectInnovation>();
       List<ProjectPolicy> projectPolicyList = new ArrayList<ProjectPolicy>();
       List<Institution> institutionList = new ArrayList<Institution>();
+      List<String> linkList = new ArrayList<String>();
+      List<ProjectExpectedStudyQuantification> ExpectedStudyQuantificationList =
+        new ArrayList<ProjectExpectedStudyQuantification>();
 
       if (newProjectExpectedStudy.getProjectExpectedEstudyInfo() != null) {
         ProjectExpectedStudyInfo projectExpectedStudyInfo = new ProjectExpectedStudyInfo();
         projectExpectedStudyInfo.setTitle(newProjectExpectedStudy.getProjectExpectedEstudyInfo().getTitle());
         projectExpectedStudyInfo.setYear(newProjectExpectedStudy.getProjectExpectedEstudyInfo().getYear());
 
+        EvidenceTag evidenceTag =
+          evidenceTagManager.getEvidenceTagById(newProjectExpectedStudy.getProjectExpectedEstudyInfo().getTag());
+        if (evidenceTag != null) {
+          projectExpectedStudyInfo.setEvidenceTag(evidenceTag);
+        } else {
+          fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Evidence Tag",
+            newProjectExpectedStudy.getProjectExpectedEstudyInfo().getMaturityOfChange()
+              + " is an invalid Evidence Tag code"));
+        }
         RepIndStageStudy repIndStageStudy = repIndStageStudyManager
           .getRepIndStageStudyById(newProjectExpectedStudy.getProjectExpectedEstudyInfo().getMaturityOfChange());
         if (repIndStageStudy != null) {
           projectExpectedStudyInfo.setRepIndStageStudy(repIndStageStudy);
         } else {
-          fieldErrors.add(new FieldErrorDTO("create Expected Studies", "MaturityOfChange",
+          fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "MaturityOfChange",
             newProjectExpectedStudy.getProjectExpectedEstudyInfo().getMaturityOfChange()
               + " is an invalid Level of maturity of change reported code"));
         }
@@ -152,7 +179,7 @@ public class ExpectedStudiesItem<T> {
                 if (repIndGeographicScope != null) {
                   geographicScopeList.add(repIndGeographicScope);
                 } else {
-                  fieldErrors.add(new FieldErrorDTO("CreateExpectedStudies", "GeographicScope",
+                  fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "GeographicScope",
                     repIndGeographicScope + " is an invalid geographicScope identifier"));
                 }
               }
@@ -168,7 +195,7 @@ public class ExpectedStudiesItem<T> {
                 if (srfSloIndicatorTarget != null) {
                   srfSloIndicatorTargetList.add(srfSloIndicatorTarget);
                 } else {
-                  fieldErrors.add(new FieldErrorDTO("CreateExpectedStudies", "SrfSloIndicator target ",
+                  fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "SrfSloIndicator target ",
                     srfSloIndicatorTarget + " is an invalid SLOIndicatorTarget identifier"));
                 }
               }
@@ -184,7 +211,7 @@ public class ExpectedStudiesItem<T> {
                   crpContributing.add(globalUnit);
                 } else {
                   fieldErrors
-                    .add(new FieldErrorDTO("CreateExpectedStudies", "CRP ", crps + " is an invalid CRP identifier"));
+                    .add(new FieldErrorDTO("CreateExpectedStudy", "CRP ", crps + " is an invalid CRP identifier"));
                 }
               }
             }
@@ -198,7 +225,7 @@ public class ExpectedStudiesItem<T> {
                 if (crpProgram != null) {
                   flagshipList.add(crpProgram);
                 } else {
-                  fieldErrors.add(new FieldErrorDTO("CreateExpectedStudies", "Flagship/Module",
+                  fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Flagship/Module",
                     flagship + " is an invalid Flagship/Module code"));
                 }
               }
@@ -210,12 +237,12 @@ public class ExpectedStudiesItem<T> {
               if (countries != null && this.isNumeric(countries)) {
                 LocElement country = this.locElementManager.getLocElementByNumericISOCode(Long.valueOf(countries));
                 if (country == null) {
-                  fieldErrors.add(new FieldErrorDTO("CreateExpectedStudies", "Countries",
+                  fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Countries",
                     countries + " is an invalid country ISO Code"));
 
                 } else if (country.getLocElementType().getId() != APConstants.LOC_ELEMENT_TYPE_COUNTRY) {
                   fieldErrors.add(
-                    new FieldErrorDTO("CreateExpectedStudies", "Countries", countries + " is not a Country ISO code"));
+                    new FieldErrorDTO("CreateExpectedStudy", "Countries", countries + " is not a Country ISO code"));
                 } else {
                   countriesList.add(country);
                 }
@@ -230,11 +257,11 @@ public class ExpectedStudiesItem<T> {
                 LocElement country = this.locElementManager.getLocElementByNumericISOCode(Long.valueOf(region));
                 if (country == null) {
                   fieldErrors.add(
-                    new FieldErrorDTO("CreateExpectedStudies", "Regions", region + " is an invalid region UM49 Code"));
+                    new FieldErrorDTO("CreateExpectedStudy", "Regions", region + " is an invalid region UM49 Code"));
 
                 } else if (country.getLocElementType().getId() != APConstants.LOC_ELEMENT_TYPE_REGION) {
                   fieldErrors
-                    .add(new FieldErrorDTO("CreateExpectedStudies", "Regions", region + " is not a Region UM49 code"));
+                    .add(new FieldErrorDTO("CreateExpectedStudy", "Regions", region + " is not a Region UM49 code"));
                 } else {
                   regionsList.add(country);
                 }
@@ -249,7 +276,7 @@ public class ExpectedStudiesItem<T> {
                 SrfSubIdo srfSubIdo = srfSubIdoManager.getSrfSubIdoByCode(subido);
                 if (srfSubIdo == null) {
                   fieldErrors
-                    .add(new FieldErrorDTO("CreateExpectedStudies", "SubIDO", subido + " is an invalid subIDO Code"));
+                    .add(new FieldErrorDTO("CreateExpectedStudy", "SubIDO", subido + " is an invalid subIDO Code"));
                 } else {
                   srfSubIdoList.add(srfSubIdo);
                 }
@@ -266,7 +293,7 @@ public class ExpectedStudiesItem<T> {
                 if (projectInnovation != null) {
                   projectInnovationList.add(projectInnovation);
                 } else {
-                  fieldErrors.add(new FieldErrorDTO("CreateExpectedStudies", "Innovation",
+                  fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Innovation",
                     innovation + " is an invalid innovation identifier"));
                 }
               }
@@ -282,7 +309,7 @@ public class ExpectedStudiesItem<T> {
                   projectPolicyList.add(projectPolicy);
                 } else {
                   fieldErrors.add(
-                    new FieldErrorDTO("CreateExpectedStudies", "Policy", policy + " is an invalid Policy identifier"));
+                    new FieldErrorDTO("CreateExpectedStudy", "Policy", policy + " is an invalid Policy identifier"));
                 }
               }
             }
@@ -296,7 +323,7 @@ public class ExpectedStudiesItem<T> {
                 if (institutionDB != null) {
                   institutionList.add(institutionDB);
                 } else {
-                  fieldErrors.add(new FieldErrorDTO("CreateExpectedStudies", "Institution",
+                  fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Institution",
                     institution + " is an invalid Institution identifier"));
                 }
               }
@@ -307,6 +334,68 @@ public class ExpectedStudiesItem<T> {
           if (newProjectExpectedStudy.getCrossCuttingMarkers() != null
             && newProjectExpectedStudy.getCrossCuttingMarkers().size() > 0) {
             for (NewCrosscuttingMarkersDTO crosscuttingmark : newProjectExpectedStudy.getCrossCuttingMarkers()) {
+              if (crosscuttingmark != null && crosscuttingmark.getCrossCuttingmarker() != null
+                && crosscuttingmark.getCrossCuttingmarkerScore() != null) {
+                if (this.isNumeric(crosscuttingmark.getCrossCuttingmarker())) {
+                  CgiarCrossCuttingMarker cgiarCrossCuttingMarker = cgiarCrossCuttingMarkerManager
+                    .getCgiarCrossCuttingMarkerById(Long.valueOf(crosscuttingmark.getCrossCuttingmarker()));
+                  if (cgiarCrossCuttingMarker == null) {
+                    fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Crosscuttingmarker",
+                      cgiarCrossCuttingMarker + " is an invalid Crosscuttingmarker Code"));
+
+                  } else {
+                    if (this.isNumeric(crosscuttingmark.getCrossCuttingmarkerScore())) {
+                      RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
+                        repIndGenderYouthFocusLevelManager.getRepIndGenderYouthFocusLevelById(
+                          Long.valueOf(crosscuttingmark.getCrossCuttingmarkerScore()));
+                      if (repIndGenderYouthFocusLevel == null) {
+                        fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "CrosscuttingmarkerScore",
+                          cgiarCrossCuttingMarker + " is an invalid GenderYouthFocusLevel Code"));
+                      } else {
+                        if (cgiarCrossCuttingMarker.getId()
+                          .longValue() == APConstants.CGIAR_CROSS_CUTTING_MARKERS_GENDER) {
+                          projectExpectedStudyInfo.setGenderLevel(repIndGenderYouthFocusLevel);
+                        }
+                        if (cgiarCrossCuttingMarker.getId()
+                          .longValue() == APConstants.CGIAR_CROSS_CUTTING_MARKERS_YOUTH) {
+                          projectExpectedStudyInfo.setYouthLevel(repIndGenderYouthFocusLevel);
+                        }
+                        if (cgiarCrossCuttingMarker.getId()
+                          .longValue() == APConstants.CGIAR_CROSS_CUTTING_MARKERS_CAPDEV) {
+                          projectExpectedStudyInfo.setCapdevLevel(repIndGenderYouthFocusLevel);
+                        }
+                        if (cgiarCrossCuttingMarker.getId()
+                          .longValue() == APConstants.CGIAR_CROSS_CUTTING_MARKERS_CLIMATECHANGE) {
+                          projectExpectedStudyInfo.setClimateChangeLevel(repIndGenderYouthFocusLevel);
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          // links
+          for (String link : newProjectExpectedStudy.getLinks()) {
+            if (link != null && link.length() > 0) {
+              linkList.add(link);
+            }
+          }
+          // quantifications
+
+          if (newProjectExpectedStudy.getQuantificationList() != null) {
+            for (QuantificationDTO quantification : newProjectExpectedStudy.getQuantificationList()) {
+              if (quantification.getTargetUnit().length() > 0 && quantification.getNumber() >= 0
+                && (quantification.getQuantificationType().equals("A")
+                  || quantification.getQuantificationType().equals("B"))) {
+                ProjectExpectedStudyQuantification projectExpectedStudyQuantification =
+                  new ProjectExpectedStudyQuantification();
+                projectExpectedStudyQuantification.setPhase(phase);
+                projectExpectedStudyQuantification.setTargetUnit(quantification.getTargetUnit());
+                projectExpectedStudyQuantification.setTypeQuantification(quantification.getQuantificationType());
+                projectExpectedStudyQuantification.setNumber(quantification.getNumber());
+                ExpectedStudyQuantificationList.add(projectExpectedStudyQuantification);
+              }
 
             }
           }

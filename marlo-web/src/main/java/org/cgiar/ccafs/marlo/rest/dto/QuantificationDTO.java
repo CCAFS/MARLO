@@ -27,7 +27,7 @@ public class QuantificationDTO {
   private String quantificationType;
 
   @ApiModelProperty(notes = "Quantification unit", position = 2)
-  private TargetUnitDTO targetUnit;
+  private String targetUnit;
 
   @ApiModelProperty(notes = "Quantification unit value", position = 2)
   private long number;
@@ -51,7 +51,7 @@ public class QuantificationDTO {
   }
 
 
-  public TargetUnitDTO getTargetUnit() {
+  public String getTargetUnit() {
     return targetUnit;
   }
 
@@ -71,7 +71,7 @@ public class QuantificationDTO {
   }
 
 
-  public void setTargetUnit(TargetUnitDTO targetUnit) {
+  public void setTargetUnit(String targetUnit) {
     this.targetUnit = targetUnit;
   }
 
