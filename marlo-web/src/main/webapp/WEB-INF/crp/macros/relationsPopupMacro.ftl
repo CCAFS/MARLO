@@ -104,8 +104,7 @@
                 <thead>
                   <tr>
                     <th id="ids">[@s.text name="projectsList.projectids" /]</th>
-                    <th id="deliverableTitles" >[@s.text name="project.deliverableList.deliverableName" /]</th>
-                    <th>Project ID</th>
+                    <th id="deliverableTitles" >[@s.text name="project.deliverableList.deliverableName" /]</th>        
                     <th id="deliverableType">[@s.text name="project.deliverableList.subtype" /]</th>
                     <th></th>
                   </tr>
@@ -116,7 +115,6 @@
                     <tr>
                       <th scope="row">D${d.id}</th>
                       <td class="col-md-6">${(d.deliverableInfo.title)!'Untitled'}</td>
-                      <td>P${(d.project.id)!'none'}</td>
                       <td>${(d.deliverableInfo.deliverableType.name?capitalize)!'none'}</td>
                       <td> <a href="${deliverableUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
                     </tr>
@@ -164,7 +162,6 @@
                   <tr>
                     <th id="ids">[@s.text name="projectsList.projectids" /]</th>
                     <th id="policyTitles" >[@s.text name="project.projectPolicyList.policyName" /]</th>
-                    <th>Project ID</th>
                     <th id="policyType">[@s.text name="project.projectPolicyList.type" /]</th>
                     <th></th>
                   </tr>
@@ -175,7 +172,6 @@
                     <tr>
                       <th scope="row">${p.id}</th>
                       <td class="col-md-6">${(p.projectPolicyInfo.title)!'Untitled'}</td>
-                      <td>P${(p.project.id)!'none'}</td>
                       <td>${(p.projectPolicyInfo.policyType.name?capitalize)!'none'}</td>
                       <td> <a href="${policyUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
                     </tr>
@@ -223,8 +219,8 @@
                   <tr>
                     <th id="ids">[@s.text name="projectsList.projectids" /]</th>
                     <th id="innovationTitles" >[@s.text name="project.innovationList.innovationName" /]</th>
-                    <th>Project ID</th>
                     <th id="innovationType">[@s.text name="project.innovationList.type" /]</th>
+                    <th id="innovationRole" >[@s.text name="project.innovationList.role" /]</th>
                     <th></th>
                   </tr>
                 </thead>
@@ -234,8 +230,8 @@
                     <tr>
                       <th scope="row">${i.id}</th>
                       <td class="col-md-6">${(i.projectInnovationInfo.title)!'Untitled'}</td>
-                      <td>P${(i.project.id)!'none'}</td>
                       <td>${(i.innovationInfo.innovationType.name?capitalize)!'none'}</td>
+                      <td class="col-md-6">${(i.projectInnovationInfo.title)!'Untitled'}</td>
                       <td> <a href="${innovationUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
                     </tr>
                     [/#list]
@@ -282,7 +278,6 @@
                   <tr>
                     <th id="ids">[@s.text name="projectsList.projectids" /]</th>
                     <th id="evidencyTitles" >[@s.text name="project.evidencyList.evidencyName" /]</th>
-                    <th>Project ID</th>
                     <th id="evidencyType">[@s.text name="project.evidencyList.type" /]</th>
                     <th></th>
                   </tr>
@@ -293,7 +288,6 @@
                     <tr>
                       <th scope="row">${e.id}</th>
                       <td class="col-md-6">${(e.projectExpectedStudyInfo.title)!'Untitled'}</td>
-                      <td>P${(e.project.id)!'none'}</td>
                       <td>${(e.studyInfo.studyType.name?capitalize)!'none'}</td>
                       <td> <a href="${evidencyUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
                     </tr>
