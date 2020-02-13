@@ -592,7 +592,7 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
       reportSynthesisManager.findSynthesis(this.getSelectedPhase().getId(), liaisonInstitutionPMU.getId());
 
 
-    if (reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null) {
+    if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null) {
 
       AllInnovations = new LinkedHashSet<>(
         projectInnovationManager.getProjectInnovationsList(liaisonInstitutionPMU, this.getSelectedPhase()));
