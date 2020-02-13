@@ -484,10 +484,14 @@ public class ProjectPartnerAction extends BaseAction {
     if (projectPartnerID != null && projectPartnerID != 0) {
       ProjectPartner projectPartner = projectPartnerManager.getProjectPartnerById(projectPartnerID);
       if (projectPartner != null && projectPartner.getInstitution() != null) {
-        List<ProjectInnovationCenter> innovationCenters = projectInnovationCenterManager.findAll().stream()
-          .filter(p -> p != null && p.getPhase() != null && p.getPhase().getId().equals(this.getActualPhase().getId())
-            && p.getInstitution() != null && p.getInstitution().getId().equals(projectPartner.getInstitution().getId()))
-          .collect(Collectors.toList());
+        List<ProjectInnovationCenter> innovationCenters = projectInnovationCenterManager.findAll();
+        if (innovationCenters != null) {
+          innovationCenters = innovationCenters.stream()
+            .filter(p -> p != null && p.getPhase() != null && p.getPhase().getId().equals(this.getActualPhase().getId())
+              && p.getInstitution() != null
+              && p.getInstitution().getId().equals(projectPartner.getInstitution().getId()))
+            .collect(Collectors.toList());
+        }
         if (innovationCenters != null) {
           for (ProjectInnovationCenter projectInnovationCenter : innovationCenters) {
             if (projectInnovationCenter != null && projectInnovationCenter.getProjectInnovation() != null
