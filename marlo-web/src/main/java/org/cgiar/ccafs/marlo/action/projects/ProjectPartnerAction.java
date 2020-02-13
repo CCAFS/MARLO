@@ -567,10 +567,14 @@ public class ProjectPartnerAction extends BaseAction {
     if (projectExpectedID != null && projectExpectedID != 0) {
       ProjectPartner projectPartner = projectPartnerManager.getProjectPartnerById(projectExpectedID);
       if (projectPartner != null && projectPartner.getInstitution() != null) {
-        List<ProjectExpectedStudyCenter> studyCenters = projectExpectedStudyCenterManager.findAll().stream()
-          .filter(p -> p != null && p.getPhase() != null && p.getPhase().getId().equals(this.getActualPhase().getId())
-            && p.getInstitution() != null && p.getInstitution().getId().equals(projectPartner.getInstitution().getId()))
-          .collect(Collectors.toList());
+        List<ProjectExpectedStudyCenter> studyCenters = projectExpectedStudyCenterManager.findAll();
+        if (studyCenters != null) {
+          studyCenters = studyCenters.stream()
+            .filter(p -> p != null && p.getPhase() != null && p.getPhase().getId().equals(this.getActualPhase().getId())
+              && p.getInstitution() != null
+              && p.getInstitution().getId().equals(projectPartner.getInstitution().getId()))
+            .collect(Collectors.toList());
+        }
         if (studyCenters != null) {
           for (ProjectExpectedStudyCenter projectExpectedStudyCenter : studyCenters) {
             if (projectExpectedStudyCenter != null && projectExpectedStudyCenter.getProjectExpectedStudy() != null
