@@ -33,6 +33,7 @@ public class ProjectDTO {
   @JsonFormat(pattern = "yyyy-MM-dd")
   private Date createDate;
 
+  @ApiModelProperty(notes = "Project information", position = 2)
   private ProjectInfoDTO projectInfo;
 
   private List<CrpProgramDTO> regions;

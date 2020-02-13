@@ -95,14 +95,24 @@ public class ProjectPolicyRegionMySQLDAO extends AbstractMarloDAO<ProjectPolicyR
   }
 
   @Override
+  public ProjectPolicyRegion getProjectPolicyRegionByPhase(long projectPolicyID, long regionID, long phaseID) {
+    String query = "from " + ProjectPolicyRegion.class.getName() + " WHERE project_policy_id=" + projectPolicyID
+      + " AND id_region=" + regionID + " AND id_phase=" + phaseID;
+    List<ProjectPolicyRegion> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+
+  }
+
+  @Override
   public ProjectPolicyRegion save(ProjectPolicyRegion projectPolicyRegion) {
     if (projectPolicyRegion.getId() == null) {
       super.saveEntity(projectPolicyRegion);
     } else {
       projectPolicyRegion = super.update(projectPolicyRegion);
     }
-
-
     return projectPolicyRegion;
   }
 

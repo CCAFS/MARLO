@@ -57,6 +57,8 @@ public interface ProjectPolicyRegionDAO {
 
   public List<ProjectPolicyRegion> getPolicyRegionbyPhase(long policyID, long phaseID);
 
+  public ProjectPolicyRegion getProjectPolicyRegionByPhase(long projectPolicyID, long regionID, long phaseID);
+
   /**
    * This method saves the information of the given projectPolicyRegion
    * 
