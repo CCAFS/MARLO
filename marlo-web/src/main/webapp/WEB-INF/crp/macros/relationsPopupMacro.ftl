@@ -16,10 +16,8 @@
   [#local projects = (action.getProjectRelationsImpact(element.id, element.class.name))! /]
   [#-- News buttons --]
   [#local policies = (action.getPolicyContributingByPartner(element.id))! /]
-  [#--
-  [#local innovations = (action.getProjectRelationsImpact(element.id, element.class.name))! /] [#local projects = (action.getProjectRelationsImpact(element.id, element.class.name))! /]
-  [#local evidencies = (action.getProjectRelationsImpact(element.id, element.class.name))! /]
-  --]
+  [#local innovations = (action.getInnovationContributingByPartner(element.id))! /] 
+  [#local evidencies = (action.getStudyContributingByPartner(element.id))! /]
   [#-- News buttons --]
     
   [#local elementTitle = (element.keyOutput)!((element.title)!((element.description)!'')) /]
@@ -138,7 +136,7 @@
     [#if policies?has_content]
       [#-- Button --]
       <button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#modal-policies-${composedID}">
-        <span class="icon-20 deliverable"></span> <strong>${policies?size}</strong> [#if labelText] policy(ies)[/#if]
+        <span class="icon-20 deliverable"></span> <strong>${policies?size}</strong> [#if labelText] Policy(ies)[/#if]
       </button>
       
       [#-- Modal --]
@@ -176,9 +174,9 @@
                     [#local policyUrl][@s.url namespace="/projects" action="${(crpSession)!}/deliverable"][@s.param name='deliverableID']${p.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
                     <tr>
                       <th scope="row">D${p.id}</th>
-                      <td class="col-md-6">${(p.policyInfo.title)!'Untitled'}</td>
+                      <td class="col-md-6">${(p.projectPolicyInfo.title)!'Untitled'}</td>
                       <td>P${(p.project.id)!'none'}</td>
-                      <td>${(p.policyInfo.policyType.name?capitalize)!'none'}</td>
+                      <td>${(p.projectPolicyInfo.policyType.name?capitalize)!'none'}</td>
                       <td> <a href="${policyUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
                     </tr>
                     [/#list]
@@ -193,6 +191,124 @@
       </div>
     [/#if]
     
+    [#-- innovations --]
+    [#if deliverables?has_content]
+      [#-- Button --]
+      <button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#modal-innovations-${composedID}">
+        <span class="icon-20 deliverable"></span> <strong>${innovations?size}</strong> [#if labelText] innovation(s)[/#if]
+      </button>
+      
+      [#-- Modal --]
+      <div class="modal fade" id="modal-innovations-${composedID}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="myModalLabel">
+               
+                 [#if className=="ProjectBudget"]
+                Deliverables funded by this funding source in this [@s.text name="global.Project" /]
+                [#else]
+                  Deliverables that are contributing to this [@s.text name="global.${className}" /] 
+                [/#if]
+              
+                <br />
+                <small>${elementTitle}</small>
+              </h4>
+            </div>
+            <div class="modal-body"> 
+              [#-- Policies table --]
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th id="ids">[@s.text name="projectsList.projectids" /]</th>
+                    <th id="innovationTitles" >[@s.text name="project.deliverableList.deliverableName" /]</th>
+                    <th>Project ID</th>
+                    <th id="innovationType">[@s.text name="project.deliverableList.subtype" /]</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  [#list innovations as i]
+                    [#local innovationUrl][@s.url namespace="/projects" action="${(crpSession)!}/deliverable"][@s.param name='deliverableID']${i.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                    <tr>
+                      <th scope="row">D${i.id}</th>
+                      <td class="col-md-6">${(i.deliverableInfo.title)!'Untitled'}</td>
+                      <td>P${(i.project.id)!'none'}</td>
+                      <td>${(i.deliverableInfo.deliverableType.name?capitalize)!'none'}</td>
+                      <td> <a href="${innovationUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
+                    </tr>
+                    [/#list]
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    [/#if]
+    
+    [#-- Evidencies --]
+    [#if deliverables?has_content]
+      [#-- Button --]
+      <button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#modal-Evidencies-${composedID}">
+        <span class="icon-20 deliverable"></span> <strong>${Evidencies?size}</strong> [#if labelText] Evidency(ies)[/#if]
+      </button>
+      
+      [#-- Modal --]
+      <div class="modal fade" id="modal-Evidencies-${composedID}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="myModalLabel">
+               
+                 [#if className=="ProjectBudget"]
+                Deliverables funded by this funding source in this [@s.text name="global.Project" /]
+                [#else]
+                  Deliverables that are contributing to this [@s.text name="global.${className}" /] 
+                [/#if]
+              
+                <br />
+                <small>${elementTitle}</small>
+              </h4>
+            </div>
+            <div class="modal-body"> 
+              [#-- Policies table --]
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th id="ids">[@s.text name="projectsList.projectids" /]</th>
+                    <th id="EvidenctyTitles" >[@s.text name="project.deliverableList.deliverableName" /]</th>
+                    <th>Project ID</th>
+                    <th id="EvidencyType">[@s.text name="project.deliverableList.subtype" /]</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  [#list Evidencies as e]
+                    [#local EvidencyUrl][@s.url namespace="/projects" action="${(crpSession)!}/deliverable"][@s.param name='deliverableID']${e.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                    <tr>
+                      <th scope="row">D${e.id}</th>
+                      <td class="col-md-6">${(e.deliverableInfo.title)!'Untitled'}</td>
+                      <td>P${(e.project.id)!'none'}</td>
+                      <td>${(e.deliverableInfo.deliverableType.name?capitalize)!'none'}</td>
+                      <td> <a href="${EvidencyUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
+                    </tr>
+                    [/#list]
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    [/#if]
+
   </div>
   [/#if]
 [/#macro]
