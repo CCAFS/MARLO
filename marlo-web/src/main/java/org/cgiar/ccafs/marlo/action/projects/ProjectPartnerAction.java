@@ -500,6 +500,8 @@ public class ProjectPartnerAction extends BaseAction {
               projectInnovation = projectInnovationManager
                 .getProjectInnovationById(projectInnovationCenter.getProjectInnovation().getId());
               if (projectInnovation != null) {
+                projectInnovation
+                  .setProjectInnovationInfo(projectInnovation.getProjectInnovationInfo(this.getActualPhase()));
                 innovationContributings.add(projectInnovation);
               }
             }
@@ -541,6 +543,7 @@ public class ProjectPartnerAction extends BaseAction {
               ProjectPolicy projectPolicy = new ProjectPolicy();
               projectPolicy = projectPolicyManager.getProjectPolicyById(projectPolicyCenter.getProjectPolicy().getId());
               if (projectPolicy != null) {
+                projectPolicy.setProjectPolicyInfo(projectPolicy.getProjectPolicyInfo(this.getActualPhase()));
                 policyContributings.add(projectPolicy);
               }
             }
@@ -587,6 +590,8 @@ public class ProjectPartnerAction extends BaseAction {
               projectExpectedStudy = projectExpectedStudyManager
                 .getProjectExpectedStudyById(projectExpectedStudyCenter.getProjectExpectedStudy().getId());
               if (projectExpectedStudy != null) {
+                projectExpectedStudy
+                  .setProjectExpectedStudyInfo(projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()));
                 studyContributings.add(projectExpectedStudy);
               }
             }
