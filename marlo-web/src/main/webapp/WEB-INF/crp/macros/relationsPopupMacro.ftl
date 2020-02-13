@@ -15,9 +15,9 @@
   [/#if]
   [#local projects = (action.getProjectRelationsImpact(element.id, element.class.name))! /]
   [#-- News buttons --]
-  [#local policies = (action.getPolicyContributingByPartner(element.id))! /]
-  [#local innovations = (action.getInnovationContributingByPartner(element.id))! /] 
-  [#local evidencies = (action.getStudyContributingByPartner(element.id))! /]
+  [#local policies = (action.getPolicyContributingByPartner(element.id))![] /]
+  [#local innovations = (action.getInnovationContributingByPartner(element.id))![] /] 
+  [#local evidencies = (action.getStudyContributingByPartner(element.id))![] /]
   [#-- News buttons --]
     
   [#local elementTitle = (element.keyOutput)!((element.title)!((element.description)!'')) /]
@@ -148,9 +148,9 @@
               <h4 class="modal-title" id="myModalLabel">
                
                  [#if className=="ProjectBudget"]
-                Deliverables funded by this funding source in this [@s.text name="global.Project" /]
+                Policies funded by this funding source in this [@s.text name="global.Project" /]
                 [#else]
-                  Deliverables that are contributing to this [@s.text name="global.${className}" /] 
+                  Policies that are contributing to this [@s.text name="global.${className}" /] 
                 [/#if]
               
                 <br />
@@ -163,17 +163,17 @@
                 <thead>
                   <tr>
                     <th id="ids">[@s.text name="projectsList.projectids" /]</th>
-                    <th id="policyTitles" >[@s.text name="project.deliverableList.deliverableName" /]</th>
+                    <th id="policyTitles" >[@s.text name="project.projectPolicyList.policyName" /]</th>
                     <th>Project ID</th>
-                    <th id="policyType">[@s.text name="project.deliverableList.subtype" /]</th>
+                    <th id="policyType">[@s.text name="project.projectPolicyList.type" /]</th>
                     <th></th>
                   </tr>
                 </thead>
                 <tbody>
                   [#list policies as p]
-                    [#local policyUrl][@s.url namespace="/projects" action="${(crpSession)!}/deliverable"][@s.param name='deliverableID']${p.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                    [#local policyUrl][@s.url namespace="/projects" action="${(crpSession)!}/policy"][@s.param name='policyID']${p.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
                     <tr>
-                      <th scope="row">D${p.id}</th>
+                      <th scope="row">${p.id}</th>
                       <td class="col-md-6">${(p.projectPolicyInfo.title)!'Untitled'}</td>
                       <td>P${(p.project.id)!'none'}</td>
                       <td>${(p.projectPolicyInfo.policyType.name?capitalize)!'none'}</td>
@@ -192,10 +192,10 @@
     [/#if]
     
     [#-- innovations --]
-    [#if deliverables?has_content]
+    [#if innovations?has_content]
       [#-- Button --]
       <button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#modal-innovations-${composedID}">
-        <span class="icon-20 deliverable"></span> <strong>${innovations?size}</strong> [#if labelText] innovation(s)[/#if]
+        <span class="icon-20 deliverable"></span> <strong>${innovations?size}</strong> [#if labelText] Innovation(s)[/#if]
       </button>
       
       [#-- Modal --]
@@ -207,9 +207,9 @@
               <h4 class="modal-title" id="myModalLabel">
                
                  [#if className=="ProjectBudget"]
-                Deliverables funded by this funding source in this [@s.text name="global.Project" /]
+                Innovations funded by this funding source in this [@s.text name="global.Project" /]
                 [#else]
-                  Deliverables that are contributing to this [@s.text name="global.${className}" /] 
+                  Innovations that are contributing to this [@s.text name="global.${className}" /] 
                 [/#if]
               
                 <br />
@@ -217,25 +217,25 @@
               </h4>
             </div>
             <div class="modal-body"> 
-              [#-- Policies table --]
+              [#-- innovations table --]
               <table class="table">
                 <thead>
                   <tr>
                     <th id="ids">[@s.text name="projectsList.projectids" /]</th>
-                    <th id="innovationTitles" >[@s.text name="project.deliverableList.deliverableName" /]</th>
+                    <th id="innovationTitles" >[@s.text name="project.innovationList.innovationName" /]</th>
                     <th>Project ID</th>
-                    <th id="innovationType">[@s.text name="project.deliverableList.subtype" /]</th>
+                    <th id="innovationType">[@s.text name="project.innovationList.type" /]</th>
                     <th></th>
                   </tr>
                 </thead>
                 <tbody>
                   [#list innovations as i]
-                    [#local innovationUrl][@s.url namespace="/projects" action="${(crpSession)!}/deliverable"][@s.param name='deliverableID']${i.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                    [#local innovationUrl][@s.url namespace="/projects" action="${(crpSession)!}/innovation"][@s.param name='innovationID']${i.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
                     <tr>
-                      <th scope="row">D${i.id}</th>
-                      <td class="col-md-6">${(i.deliverableInfo.title)!'Untitled'}</td>
+                      <th scope="row">${i.id}</th>
+                      <td class="col-md-6">${(i.projectInnovationInfo.title)!'Untitled'}</td>
                       <td>P${(i.project.id)!'none'}</td>
-                      <td>${(i.deliverableInfo.deliverableType.name?capitalize)!'none'}</td>
+                      <td>${(i.innovationInfo.innovationType.name?capitalize)!'none'}</td>
                       <td> <a href="${innovationUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
                     </tr>
                     [/#list]
@@ -251,14 +251,14 @@
     [/#if]
     
     [#-- Evidencies --]
-    [#if deliverables?has_content]
+    [#if evidencies?has_content]
       [#-- Button --]
-      <button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#modal-Evidencies-${composedID}">
-        <span class="icon-20 deliverable"></span> <strong>${Evidencies?size}</strong> [#if labelText] Evidency(ies)[/#if]
+      <button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#modal-evidencies-${composedID}">
+        <span class="icon-20 deliverable"></span> <strong>${evidencies?size}</strong> [#if labelText] Evidency(ies)[/#if]
       </button>
       
       [#-- Modal --]
-      <div class="modal fade" id="modal-Evidencies-${composedID}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal fade" id="modal-evidencies-${composedID}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog modal-lg" role="document">
           <div class="modal-content">
             <div class="modal-header">
@@ -266,9 +266,9 @@
               <h4 class="modal-title" id="myModalLabel">
                
                  [#if className=="ProjectBudget"]
-                Deliverables funded by this funding source in this [@s.text name="global.Project" /]
+                Evidencies funded by this funding source in this [@s.text name="global.Project" /]
                 [#else]
-                  Deliverables that are contributing to this [@s.text name="global.${className}" /] 
+                  Evidencies that are contributing to this [@s.text name="global.${className}" /] 
                 [/#if]
               
                 <br />
@@ -276,26 +276,26 @@
               </h4>
             </div>
             <div class="modal-body"> 
-              [#-- Policies table --]
+              [#-- Evidencies table --]
               <table class="table">
                 <thead>
                   <tr>
                     <th id="ids">[@s.text name="projectsList.projectids" /]</th>
-                    <th id="EvidenctyTitles" >[@s.text name="project.deliverableList.deliverableName" /]</th>
+                    <th id="evidencyTitles" >[@s.text name="project.evidencyList.evidencyName" /]</th>
                     <th>Project ID</th>
-                    <th id="EvidencyType">[@s.text name="project.deliverableList.subtype" /]</th>
+                    <th id="evidencyType">[@s.text name="project.evidencyList.type" /]</th>
                     <th></th>
                   </tr>
                 </thead>
                 <tbody>
-                  [#list Evidencies as e]
-                    [#local EvidencyUrl][@s.url namespace="/projects" action="${(crpSession)!}/deliverable"][@s.param name='deliverableID']${e.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                  [#list evidencies as e]
+                    [#local evidencyUrl][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${e.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
                     <tr>
-                      <th scope="row">D${e.id}</th>
-                      <td class="col-md-6">${(e.deliverableInfo.title)!'Untitled'}</td>
+                      <th scope="row">${e.id}</th>
+                      <td class="col-md-6">${(e.projectExpectedStudyInfo.title)!'Untitled'}</td>
                       <td>P${(e.project.id)!'none'}</td>
-                      <td>${(e.deliverableInfo.deliverableType.name?capitalize)!'none'}</td>
-                      <td> <a href="${EvidencyUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
+                      <td>${(e.studyInfo.studyType.name?capitalize)!'none'}</td>
+                      <td> <a href="${evidencyUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
                     </tr>
                     [/#list]
                 </tbody>
