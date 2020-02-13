@@ -61,10 +61,10 @@ import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.CGIAREntityDTO;
 import org.cgiar.ccafs.marlo.rest.dto.CountryDTO;
+import org.cgiar.ccafs.marlo.rest.dto.CrosscuttingMarkersDTO;
 import org.cgiar.ccafs.marlo.rest.dto.GeographicScopeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectPolicyDTO;
 import org.cgiar.ccafs.marlo.rest.dto.PolicyOwnerTypeDTO;
-import org.cgiar.ccafs.marlo.rest.dto.CrosscuttingMarkersDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectPolicyDTO;
 import org.cgiar.ccafs.marlo.rest.dto.RegionDTO;
 import org.cgiar.ccafs.marlo.rest.dto.SrfSubIdoDTO;
@@ -105,7 +105,7 @@ public class PolicyItem<T> {
   private RepIndOrganizationTypeManager repIndOrganizationTypeManager;
   private RepIndPolicyTypeManager repIndPolicyTypeManager;
   private ProjectManager projectManager;
-  private SrfSubIdoManager SrfSubIdoManager;
+  private SrfSubIdoManager srfSubIdoManager;
   private RepIndGeographicScopeManager repIndGeographicScopeManager;
   private LocElementManager locElementManager;
   private ProjectPolicyMapper projectPolicyMapper;
@@ -138,7 +138,7 @@ public class PolicyItem<T> {
     this.repIndStageProcessManager = repIndStageProcessManager;
     this.repIndOrganizationTypeManager = repIndOrganizationTypeManager;
     this.projectManager = projectManager;
-    this.SrfSubIdoManager = srfSubIdoManager;
+    this.srfSubIdoManager = srfSubIdoManager;
     this.repIndGeographicScopeManager = repIndGeographicScopeManager;
     this.locElementManager = locElementManager;
     this.cgiarCrossCuttingMarkerManager = cgiarCrossCuttingMarkerManager;
@@ -238,7 +238,7 @@ public class PolicyItem<T> {
         // validate sub-IDO
         if (newPolicyDTO.getSrfSubIdoList() != null && newPolicyDTO.getSrfSubIdoList().size() > 0) {
           for (SrfSubIdoDTO subIdos : newPolicyDTO.getSrfSubIdoList()) {
-            SrfSubIdo srfSubIdo = SrfSubIdoManager.getSrfSubIdoByCode(subIdos.getCode());
+            SrfSubIdo srfSubIdo = srfSubIdoManager.getSrfSubIdoByCode(subIdos.getCode());
             if (srfSubIdo == null) {
               fieldErrors
                 .add(new FieldErrorDTO("createPolicy", "SrfSubIdo", subIdos.getCode() + " is an invalid Sub-IDO code"));
@@ -647,7 +647,7 @@ public class PolicyItem<T> {
         // validate sub-IDO
         if (newPolicyDTO.getSrfSubIdoList() != null && newPolicyDTO.getSrfSubIdoList().size() > 0) {
           for (SrfSubIdoDTO subIdos : newPolicyDTO.getSrfSubIdoList()) {
-            SrfSubIdo srfSubIdo = SrfSubIdoManager.getSrfSubIdoByCode(subIdos.getCode());
+            SrfSubIdo srfSubIdo = srfSubIdoManager.getSrfSubIdoByCode(subIdos.getCode());
             if (srfSubIdo == null) {
               fieldErrors
                 .add(new FieldErrorDTO("createPolicy", "SrfSubIdo", subIdos.getCode() + " is an invalid Sub-IDO code"));

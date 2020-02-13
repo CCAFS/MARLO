@@ -715,8 +715,7 @@ function onSelectElement() {
     var indexLevel = $(element).classParam('indexLevel');
     $(element).setNameIndexes(indexLevel, i);
   });
-  console.log("child");
-  console.log();
+
   //Validate if is a primary radioButton group
   if(className.indexOf("primary") >= 0){
     if(($list.children().length < 3 && $list.children().first().is('label')) || $list.children().length < 2){

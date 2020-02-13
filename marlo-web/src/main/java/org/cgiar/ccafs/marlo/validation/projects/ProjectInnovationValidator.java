@@ -187,9 +187,7 @@ public class ProjectInnovationValidator extends BaseValidator {
         } else {
           // Validate Evidence Link (URL)
           if (!this
-            .isValidString(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getEvidenceLink())
-            && !this
-              .isValidUrl(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getEvidenceLink())) {
+            .isValidString(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getEvidenceLink())) {
             if (struts) {
               action.addMessage(action.getText("projectInnovations.evidenceLink"));
               action.getInvalidFields().put("input-innovation.projectInnovationInfo.evidenceLink",
