@@ -36,9 +36,14 @@ public class PolicyMaturityLevelDTO {
   @ApiModelProperty(notes = "Level of maturity of policy definition")
   private String description;
 
+  @ApiModelProperty(notes = "Year of policy")
+  private Long year;
+
+
   public Long getCode() {
     return this.code;
   }
+
 
   public String getDescription() {
     return this.description;
@@ -46,6 +51,10 @@ public class PolicyMaturityLevelDTO {
 
   public String getName() {
     return this.name;
+  }
+
+  public Long getYear() {
+    return year;
   }
 
   public void setCode(Long code) {
@@ -58,6 +67,10 @@ public class PolicyMaturityLevelDTO {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public void setYear(Long year) {
+    this.year = year;
   }
 
 }

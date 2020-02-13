@@ -123,6 +123,12 @@ public class ProjectPolicyRegionManagerImpl implements ProjectPolicyRegionManage
   }
 
   @Override
+  public ProjectPolicyRegion getProjectPolicyRegionByPhase(long projectPolicyID, long regionID, long phaseID) {
+
+    return projectPolicyRegionDAO.getProjectPolicyRegionByPhase(projectPolicyID, regionID, phaseID);
+  }
+
+  @Override
   public ProjectPolicyRegion saveProjectPolicyRegion(ProjectPolicyRegion projectPolicyRegion) {
 
     ProjectPolicyRegion region = projectPolicyRegionDAO.save(projectPolicyRegion);
