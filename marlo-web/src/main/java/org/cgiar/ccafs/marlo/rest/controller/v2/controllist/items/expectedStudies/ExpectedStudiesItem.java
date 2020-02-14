@@ -23,33 +23,51 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CgiarCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.EvidenceTagManager;
+import org.cgiar.ccafs.marlo.data.manager.GeneralStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyFlagshipManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyGeographicScopeManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInfoManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyLinkManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyRegionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySrfTargetManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageStudyManager;
-import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorTargetManager;
+import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.EvidenceTag;
+import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyFlagship;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLink;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyQuantification;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageStudy;
-import org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget;
+import org.cgiar.ccafs.marlo.data.model.SrfSloIndicator;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.NewCrosscuttingMarkersDTO;
@@ -72,7 +90,7 @@ public class ExpectedStudiesItem<T> {
 
   private RepIndStageStudyManager repIndStageStudyManager;
   private RepIndGeographicScopeManager repIndGeographicScopeManager;
-  private SrfSloIndicatorTargetManager srfSloIndicatorTargetManager;
+  private SrfSloIndicatorManager srfSloIndicatorManager;
   private SrfSubIdoManager srfSubIdoManager;
   private CrpProgramManager crpProgramManager;
   private LocElementManager locElementManager;
@@ -82,21 +100,40 @@ public class ExpectedStudiesItem<T> {
   private CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager;
   private RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager;
   private EvidenceTagManager evidenceTagManager;
+  private GeneralStatusManager generalStatusManager;
+  private ProjectExpectedStudyManager projectExpectedStudyManager;
+  private ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager;
+  private ProjectExpectedStudyGeographicScopeManager projectExpectedStudyGeographicScopeManager;
+  private ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager;
+  private ProjectExpectedStudyRegionManager projectExpectedStudyRegionManager;
+  private ProjectExpectedStudySrfTargetManager projectExpectedStudySrfTargetManager;
+  private ProjectExpectedStudySubIdoManager projectExpectedStudySubIdoManager;
+  private ProjectExpectedStudyFlagshipManager projectExpectedStudyFlagshipManager;
+  private ProjectExpectedStudyLinkManager projectExpectedStudyLinkManager;
 
 
   @Inject
   public ExpectedStudiesItem(GlobalUnitManager globalUnitManager, PhaseManager phaseManager,
     RepIndStageStudyManager repIndStageStudyManager, RepIndGeographicScopeManager repIndGeographicScopeManager,
-    SrfSloIndicatorTargetManager srfSloIndicatorTargetManager, SrfSubIdoManager srfSubIdoManager,
+    SrfSloIndicatorManager srfSloIndicatorManager, SrfSubIdoManager srfSubIdoManager,
     CrpProgramManager crpProgramManager, LocElementManager locElementManager,
     ProjectInnovationManager projectInnovationManager, ProjectPolicyManager projectPolicyManager,
     InstitutionManager institutionManager, CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager,
-    RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager, EvidenceTagManager evidenceTagManager) {
+    RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager, EvidenceTagManager evidenceTagManager,
+    GeneralStatusManager generalStatusManager, ProjectExpectedStudyManager projectExpectedStudyManager,
+    ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager,
+    ProjectExpectedStudyGeographicScopeManager projectExpectedStudyGeographicScopeManager,
+    ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager,
+    ProjectExpectedStudyRegionManager projectExpectedStudyRegionManager,
+    ProjectExpectedStudySrfTargetManager projectExpectedStudySrfTargetManager,
+    ProjectExpectedStudySubIdoManager projectExpectedStudySubIdoManager,
+    ProjectExpectedStudyFlagshipManager projectExpectedStudyFlagshipManager,
+    ProjectExpectedStudyLinkManager projectExpectedStudyLinkManager) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.repIndStageStudyManager = repIndStageStudyManager;
     this.repIndGeographicScopeManager = repIndGeographicScopeManager;
-    this.srfSloIndicatorTargetManager = srfSloIndicatorTargetManager;
+    this.srfSloIndicatorManager = srfSloIndicatorManager;
     this.srfSubIdoManager = srfSubIdoManager;
     this.crpProgramManager = crpProgramManager;
     this.locElementManager = locElementManager;
@@ -106,6 +143,14 @@ public class ExpectedStudiesItem<T> {
     this.cgiarCrossCuttingMarkerManager = cgiarCrossCuttingMarkerManager;
     this.repIndGenderYouthFocusLevelManager = repIndGenderYouthFocusLevelManager;
     this.evidenceTagManager = evidenceTagManager;
+    this.generalStatusManager = generalStatusManager;
+    this.projectExpectedStudyManager = projectExpectedStudyManager;
+    this.projectExpectedStudyInfoManager = projectExpectedStudyInfoManager;
+    this.projectExpectedStudyGeographicScopeManager = projectExpectedStudyGeographicScopeManager;
+    this.projectExpectedStudyCountryManager = projectExpectedStudyCountryManager;
+    this.projectExpectedStudyRegionManager = projectExpectedStudyRegionManager;
+    this.projectExpectedStudySrfTargetManager = projectExpectedStudySrfTargetManager;
+    this.projectExpectedStudyFlagshipManager = projectExpectedStudyFlagshipManager;
   }
 
   public Long createExpectedStudy(NewProjectExpectedStudyDTO newProjectExpectedStudy, String entityAcronym, User user) {
@@ -130,7 +175,7 @@ public class ExpectedStudiesItem<T> {
     if (fieldErrors.size() == 0) {
       ProjectExpectedStudy projectExpectedStudy = new ProjectExpectedStudy();
       List<RepIndGeographicScope> geographicScopeList = new ArrayList<RepIndGeographicScope>();
-      List<SrfSloIndicatorTarget> srfSloIndicatorTargetList = new ArrayList<SrfSloIndicatorTarget>();
+      List<SrfSloIndicator> srfSloIndicatorTargetList = new ArrayList<SrfSloIndicator>();
       List<GlobalUnit> crpContributing = new ArrayList<GlobalUnit>();
       List<CrpProgram> flagshipList = new ArrayList<>();
       List<LocElement> countriesList = new ArrayList<>();
@@ -148,6 +193,14 @@ public class ExpectedStudiesItem<T> {
         projectExpectedStudyInfo.setTitle(newProjectExpectedStudy.getProjectExpectedEstudyInfo().getTitle());
         projectExpectedStudyInfo.setYear(newProjectExpectedStudy.getProjectExpectedEstudyInfo().getYear());
 
+        GeneralStatus generalStatus =
+          generalStatusManager.getGeneralStatusById(newProjectExpectedStudy.getProjectExpectedEstudyInfo().getStatus());
+        if (generalStatus != null) {
+          projectExpectedStudyInfo.setStatus(generalStatus);
+        } else {
+          fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Status",
+            newProjectExpectedStudy.getProjectExpectedEstudyInfo().getStatus() + " is an invalid status code"));
+        }
         EvidenceTag evidenceTag =
           evidenceTagManager.getEvidenceTagById(newProjectExpectedStudy.getProjectExpectedEstudyInfo().getTag());
         if (evidenceTag != null) {
@@ -190,13 +243,13 @@ public class ExpectedStudiesItem<T> {
             && newProjectExpectedStudy.getSrfSloTargetList().size() > 0) {
             for (String sloTarget : newProjectExpectedStudy.getSrfSloTargetList()) {
               if (sloTarget != null && this.isNumeric(sloTarget)) {
-                SrfSloIndicatorTarget srfSloIndicatorTarget =
-                  srfSloIndicatorTargetManager.getSrfSloIndicatorTargetById(Long.valueOf(sloTarget));
-                if (srfSloIndicatorTarget != null) {
-                  srfSloIndicatorTargetList.add(srfSloIndicatorTarget);
+                SrfSloIndicator srfSloIndicator =
+                  srfSloIndicatorManager.getSrfSloIndicatorById(Long.valueOf(sloTarget));
+                if (srfSloIndicator != null) {
+                  srfSloIndicatorTargetList.add(srfSloIndicator);
                 } else {
                   fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "SrfSloIndicator target ",
-                    srfSloIndicatorTarget + " is an invalid SLOIndicatorTarget identifier"));
+                    sloTarget + " is an invalid SLOIndicatorTarget identifier"));
                 }
               }
             }
@@ -395,8 +448,82 @@ public class ExpectedStudiesItem<T> {
                 projectExpectedStudyQuantification.setTypeQuantification(quantification.getQuantificationType());
                 projectExpectedStudyQuantification.setNumber(quantification.getNumber());
                 ExpectedStudyQuantificationList.add(projectExpectedStudyQuantification);
+              } else {
+                fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Quantification",
+                  "You have to fill all fields for quantification"));
               }
-
+            }
+          }
+          if (fieldErrors.size() == 0) {
+            projectExpectedStudy.setPhase(phase.getId());
+            projectExpectedStudy.setYear(phase.getYear());
+            ProjectExpectedStudy projectExpectedStudyDB =
+              projectExpectedStudyManager.saveProjectExpectedStudy(projectExpectedStudy);
+            if (projectExpectedStudyDB != null) {
+              projectExpectedStudyID = projectExpectedStudyDB.getId();
+              if (projectExpectedStudyInfoManager.saveProjectExpectedStudyInfo(projectExpectedStudyInfo) != null) {
+                // save geographicscopes
+                for (RepIndGeographicScope repIndGeographicScope : geographicScopeList) {
+                  ProjectExpectedStudyGeographicScope projectExpectedStudyGeographicScope =
+                    new ProjectExpectedStudyGeographicScope();
+                  projectExpectedStudyGeographicScope.setPhase(phase);
+                  projectExpectedStudyGeographicScope.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudyGeographicScope.setRepIndGeographicScope(repIndGeographicScope);
+                  projectExpectedStudyGeographicScopeManager
+                    .saveProjectExpectedStudyGeographicScope(projectExpectedStudyGeographicScope);
+                }
+                // countries
+                for (LocElement country : countriesList) {
+                  ProjectExpectedStudyCountry projectExpectedStudyCountry = new ProjectExpectedStudyCountry();
+                  projectExpectedStudyCountry.setLocElement(country);
+                  projectExpectedStudyCountry.setPhase(phase);
+                  projectExpectedStudyCountry.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudyCountryManager.saveProjectExpectedStudyCountry(projectExpectedStudyCountry);
+                }
+                // regions
+                for (LocElement country : regionsList) {
+                  ProjectExpectedStudyRegion projectExpectedStudyRegion = new ProjectExpectedStudyRegion();
+                  projectExpectedStudyRegion.setLocElement(country);
+                  projectExpectedStudyRegion.setPhase(phase);
+                  projectExpectedStudyRegion.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudyRegionManager.saveProjectExpectedStudyRegion(projectExpectedStudyRegion);
+                }
+                // SLO targets
+                for (SrfSloIndicator srfSloIndicator : srfSloIndicatorTargetList) {
+                  ProjectExpectedStudySrfTarget projectExpectedStudySrfTarget = new ProjectExpectedStudySrfTarget();
+                  projectExpectedStudySrfTarget.setSrfSloIndicator(srfSloIndicator);
+                  projectExpectedStudySrfTarget.setPhase(phase);
+                  projectExpectedStudySrfTarget.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudySrfTargetManager.saveProjectExpectedStudySrfTarget(projectExpectedStudySrfTarget);
+                }
+                // SudIDOs
+                for (SrfSubIdo srfSubIdo : srfSubIdoList) {
+                  ProjectExpectedStudySubIdo projectExpectedStudySubIdo = new ProjectExpectedStudySubIdo();
+                  projectExpectedStudySubIdo.setPhase(phase);
+                  projectExpectedStudySubIdo.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudySubIdo.setSrfSubIdo(srfSubIdo);
+                  // to do Set as a primary if is necessary
+                  projectExpectedStudySubIdo.setPrimary(false);
+                  projectExpectedStudySubIdoManager.saveProjectExpectedStudySubIdo(projectExpectedStudySubIdo);
+                }
+                // flagships
+                for (CrpProgram crpProgram : flagshipList) {
+                  ProjectExpectedStudyFlagship projectExpectedStudyFlagship = new ProjectExpectedStudyFlagship();
+                  projectExpectedStudyFlagship.setCrpProgram(crpProgram);
+                  projectExpectedStudyFlagship.setPhase(phase);
+                  projectExpectedStudyFlagship.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudyFlagshipManager.saveProjectExpectedStudyFlagship(projectExpectedStudyFlagship);
+                }
+                // Links
+                for (String link : linkList) {
+                  ProjectExpectedStudyLink projectExpectedStudyLink = new ProjectExpectedStudyLink();
+                  projectExpectedStudyLink.setPhase(phase);
+                  projectExpectedStudyLink.setLink(link);
+                  projectExpectedStudyLink.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudyLinkManager.saveProjectExpectedStudyLink(projectExpectedStudyLink);
+                }
+                //
+              }
             }
           }
         }
