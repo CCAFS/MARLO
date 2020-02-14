@@ -1722,6 +1722,17 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
             }
           }
           break;
+        case 2:
+          trainees = this.getText("summaries.annualReport2018.table7.field3");
+          if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisCrossCuttingDimension() != null) {
+            if (reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getPhdFemale() != null) {
+              female = reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getPhdFemale().intValue();
+            }
+            if (reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getPhdMale() != null) {
+              male = reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getPhdMale().intValue();
+            }
+          }
+          break;
       }
 
       POIField[] sData = {new POIField(trainees, ParagraphAlignment.LEFT, false),
