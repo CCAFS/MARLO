@@ -1696,7 +1696,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     String trainees = "";
     int female = 0, male = 0;
 
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < 3; i++) {
       switch (i) {
         case 0:
           trainees = this.getText("summaries.annualReport2018.table7.field1");
