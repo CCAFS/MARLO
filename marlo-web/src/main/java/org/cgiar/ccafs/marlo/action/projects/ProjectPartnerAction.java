@@ -474,11 +474,44 @@ public class ProjectPartnerAction extends BaseAction {
 
   }
 
-
   public List<PartnerDivision> getDivisions() {
     return divisions;
   }
 
+
+  public List<ProjectInnovation> getInnovationContributingByPartner(Long projectPartnerID) {
+    List<ProjectInnovation> innovationContributings = new ArrayList<>();
+    if (projectPartnerID != null && projectPartnerID != 0) {
+      ProjectPartner projectPartner = projectPartnerManager.getProjectPartnerById(projectPartnerID);
+      if (projectPartner != null && projectPartner.getInstitution() != null) {
+        List<ProjectInnovationCenter> innovationCenters = projectInnovationCenterManager.findAll();
+        if (innovationCenters != null) {
+          innovationCenters = innovationCenters.stream()
+            .filter(p -> p != null && p.getPhase() != null && p.getPhase().getId().equals(this.getActualPhase().getId())
+              && p.getInstitution() != null
+              && p.getInstitution().getId().equals(projectPartner.getInstitution().getId()))
+            .collect(Collectors.toList());
+        }
+        if (innovationCenters != null) {
+          for (ProjectInnovationCenter projectInnovationCenter : innovationCenters) {
+            if (projectInnovationCenter != null && projectInnovationCenter.getProjectInnovation() != null
+              && projectInnovationCenter.getProjectInnovation().getId() != null) {
+              ProjectInnovation projectInnovation = new ProjectInnovation();
+              projectInnovation = projectInnovationManager
+                .getProjectInnovationById(projectInnovationCenter.getProjectInnovation().getId());
+              if (projectInnovation != null) {
+                projectInnovation
+                  .setProjectInnovationInfo(projectInnovation.getProjectInnovationInfo(this.getActualPhase()));
+                innovationContributings.add(projectInnovation);
+              }
+            }
+          }
+        }
+      }
+
+    }
+    return innovationContributings;
+  }
 
   public List<InstitutionType> getIntitutionTypes() {
     return intitutionTypes;
@@ -489,8 +522,37 @@ public class ProjectPartnerAction extends BaseAction {
     return loggedCrp;
   }
 
+
   public Map<String, String> getPartnerPersonTypes() {
     return partnerPersonTypes;
+  }
+
+  public List<ProjectPolicy> getPolicyContributingByPartner(Long projectPartnerID) {
+    List<ProjectPolicy> policyContributings = new ArrayList<>();
+    if (projectPartnerID != null && projectPartnerID != 0) {
+      ProjectPartner projectPartner = projectPartnerManager.getProjectPartnerById(projectPartnerID);
+      if (projectPartner != null && projectPartner.getInstitution() != null) {
+        List<ProjectPolicyCenter> policyCenters = projectPolicyCenterManager.findAll().stream()
+          .filter(p -> p != null && p.getPhase() != null && p.getPhase().getId().equals(this.getActualPhase().getId())
+            && p.getInstitution() != null && p.getInstitution().getId().equals(projectPartner.getInstitution().getId()))
+          .collect(Collectors.toList());
+        if (policyCenters != null) {
+          for (ProjectPolicyCenter projectPolicyCenter : policyCenters) {
+            if (projectPolicyCenter != null && projectPolicyCenter.getProjectPolicy() != null
+              && projectPolicyCenter.getProjectPolicy().getId() != null) {
+              ProjectPolicy projectPolicy = new ProjectPolicy();
+              projectPolicy = projectPolicyManager.getProjectPolicyById(projectPolicyCenter.getProjectPolicy().getId());
+              if (projectPolicy != null) {
+                projectPolicy.setProjectPolicyInfo(projectPolicy.getProjectPolicyInfo(this.getActualPhase()));
+                policyContributings.add(projectPolicy);
+              }
+            }
+          }
+        }
+      }
+
+    }
+    return policyContributings;
   }
 
 
@@ -498,12 +560,47 @@ public class ProjectPartnerAction extends BaseAction {
     return project;
   }
 
+
   public long getProjectID() {
     return projectID;
   }
 
   public List<ProjectPartner> getProjectPPAPartners() {
     return projectPPAPartners;
+  }
+
+  public List<ProjectExpectedStudy> getStudyContributingByPartner(Long projectExpectedID) {
+    List<ProjectExpectedStudy> studyContributings = new ArrayList<>();
+    if (projectExpectedID != null && projectExpectedID != 0) {
+      ProjectPartner projectPartner = projectPartnerManager.getProjectPartnerById(projectExpectedID);
+      if (projectPartner != null && projectPartner.getInstitution() != null) {
+        List<ProjectExpectedStudyCenter> studyCenters = projectExpectedStudyCenterManager.findAll();
+        if (studyCenters != null) {
+          studyCenters = studyCenters.stream()
+            .filter(p -> p != null && p.getPhase() != null && p.getPhase().getId().equals(this.getActualPhase().getId())
+              && p.getInstitution() != null
+              && p.getInstitution().getId().equals(projectPartner.getInstitution().getId()))
+            .collect(Collectors.toList());
+        }
+        if (studyCenters != null) {
+          for (ProjectExpectedStudyCenter projectExpectedStudyCenter : studyCenters) {
+            if (projectExpectedStudyCenter != null && projectExpectedStudyCenter.getProjectExpectedStudy() != null
+              && projectExpectedStudyCenter.getProjectExpectedStudy().getId() != null) {
+              ProjectExpectedStudy projectExpectedStudy = new ProjectExpectedStudy();
+              projectExpectedStudy = projectExpectedStudyManager
+                .getProjectExpectedStudyById(projectExpectedStudyCenter.getProjectExpectedStudy().getId());
+              if (projectExpectedStudy != null) {
+                projectExpectedStudy
+                  .setProjectExpectedStudyInfo(projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()));
+                studyContributings.add(projectExpectedStudy);
+              }
+            }
+          }
+        }
+      }
+
+    }
+    return studyContributings;
   }
 
 
