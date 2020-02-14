@@ -135,7 +135,7 @@
     </property>
     
     <property name="phdMale" type="java.lang.Double">
-      <column name="phd_female" precision="30" scale="0" />
+      <column name="phd_male" precision="30" scale="0" />
     </property>
     
 
