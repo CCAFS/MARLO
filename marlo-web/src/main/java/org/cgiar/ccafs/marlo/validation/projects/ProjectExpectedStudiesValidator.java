@@ -140,6 +140,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
 
     // validate Milestones
     if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null
+      && baseAction.getActualPhase().getName() != null && baseAction.getActualPhase().getName().contains("AR")
       && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getStudyType() != null
       && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getStudyType().getId()
         .intValue() == 1) {

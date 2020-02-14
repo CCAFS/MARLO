@@ -44,6 +44,13 @@ public class ReportSynthesisCrossCuttingDimension extends MarloAuditableEntity
   @Expose
   private String intellectualAssets;
 
+  @Expose
+  private Double phdFemale;
+
+  @Expose
+  private Double phdMale;
+
+
   private Set<ReportSynthesisCrossCuttingDimensionAsset> reportSynthesisCrossCuttingDimensionAssets =
     new HashSet<ReportSynthesisCrossCuttingDimensionAsset>(0);
 
@@ -169,11 +176,9 @@ public class ReportSynthesisCrossCuttingDimension extends MarloAuditableEntity
     return genderProblemsArisen;
   }
 
-
   public String getGenderResearchFindings() {
     return genderResearchFindings;
   }
-
 
   /**
    * @return an array of integers (project Innovation Id).
@@ -224,9 +229,21 @@ public class ReportSynthesisCrossCuttingDimension extends MarloAuditableEntity
     return otherAspects;
   }
 
+
+  public Double getPhdFemale() {
+    return phdFemale;
+  }
+
+
+  public Double getPhdMale() {
+    return phdMale;
+  }
+
+
   public List<ReportSynthesisCrossCuttingDimensionAsset> getPlannedAssets() {
     return plannedAssets;
   }
+
 
   public List<ReportSynthesisCrossCuttingDimensionInnovation> getPlannedInnovations() {
     return plannedInnovations;
@@ -280,7 +297,6 @@ public class ReportSynthesisCrossCuttingDimension extends MarloAuditableEntity
     return youthProblemsArisen;
   }
 
-
   public String getYouthResearchFindings() {
     return youthResearchFindings;
   }
@@ -288,6 +304,7 @@ public class ReportSynthesisCrossCuttingDimension extends MarloAuditableEntity
   public void setAssets(List<DeliverableIntellectualAsset> assets) {
     this.assets = assets;
   }
+
 
   public void setAssetsValue(String assetsValue) {
     this.assetsValue = assetsValue;
@@ -305,11 +322,9 @@ public class ReportSynthesisCrossCuttingDimension extends MarloAuditableEntity
     this.climateChangeKeyAchievements = climateChangeKeyAchievements;
   }
 
-
   public void setGenderDescription(String genderDescription) {
     this.genderDescription = genderDescription;
   }
-
 
   public void setGenderLearned(String genderLearned) {
     this.genderLearned = genderLearned;
@@ -345,6 +360,7 @@ public class ReportSynthesisCrossCuttingDimension extends MarloAuditableEntity
     this.intellectualAssets = intellectualAssets;
   }
 
+
   public void setOpenData(String openData) {
     this.openData = openData;
   }
@@ -352,6 +368,15 @@ public class ReportSynthesisCrossCuttingDimension extends MarloAuditableEntity
 
   public void setOtherAspects(String otherAspects) {
     this.otherAspects = otherAspects;
+  }
+
+  public void setPhdFemale(Double phdFemale) {
+    this.phdFemale = phdFemale;
+  }
+
+
+  public void setPhdMale(Double phdMale) {
+    this.phdMale = phdMale;
   }
 
 
