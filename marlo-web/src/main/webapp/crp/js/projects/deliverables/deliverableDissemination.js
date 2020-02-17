@@ -758,11 +758,14 @@ function getMetadata(channel,url) {
       },
       success: function(metadata) {
         metadata = metadata.metadata;
+        console.log(metadata);
         if(jQuery.isEmptyObject(metadata)) {
           $('#metadata-output').html("Metadata empty");
         } else {
           // Setting Metadata
+          console.log(metadata);
           setMetadata(metadata);
+
           // Show a message indicating the medatada harves was successfully
           $('#metadata-output').empty().append("Found metadata successfully in " + channel);
         }
