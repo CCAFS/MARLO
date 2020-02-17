@@ -188,7 +188,9 @@
                               <td> [@customForm.input name="${customName}.traineesLongTermMale" i18nkey="" showTitle=false className="numericInput" required=true editable=editable /] </td>
                             </tr>
                             <tr>
-                              <td> [@s.text name="${customLabel}.table7.phd" /]</td>
+                              <td> [@s.text name="${customLabel}.table7.phd" /]
+                                   <br/><small>([@s.text name="${customLabel}.table7.phd.help" /])</small>
+                              </td>
                               <td> [@customForm.input name="${customName}.phdFemale" i18nkey="" showTitle=false className="numericInput" required=true editable=editable /] </td>
                               <td> [@customForm.input name="${customName}.phdMale" i18nkey="" showTitle=false className="numericInput" required=true editable=editable /] </td>
                             </tr>
