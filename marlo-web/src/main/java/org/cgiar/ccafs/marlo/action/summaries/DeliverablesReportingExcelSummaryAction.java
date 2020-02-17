@@ -1254,7 +1254,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
               regions += ", " + programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
             }
           }
-          if (deliverable.getProject().getProjecInfoPhase(this.getSelectedPhase()).getNoRegional() != null
+          if (deliverable != null && deliverable.getProject() != null
+            && deliverable.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
+            && deliverable.getProject().getProjecInfoPhase(this.getSelectedPhase()).getNoRegional() != null
             && deliverable.getProject().getProjecInfoPhase(this.getSelectedPhase()).getNoRegional()) {
             if (regions != null && !regions.isEmpty()) {
               LOG.warn("Project is global and has regions selected");
