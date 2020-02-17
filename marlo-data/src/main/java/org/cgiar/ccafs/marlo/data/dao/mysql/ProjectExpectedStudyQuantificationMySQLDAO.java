@@ -40,7 +40,9 @@ public class ProjectExpectedStudyQuantificationMySQLDAO
   public void deleteProjectExpectedStudyQuantification(long projectExpectedStudyQuantificationId) {
     ProjectExpectedStudyQuantification projectExpectedStudyQuantification =
       this.find(projectExpectedStudyQuantificationId);
-    this.delete(projectExpectedStudyQuantification);
+    if (projectExpectedStudyQuantification != null) {
+      this.delete(projectExpectedStudyQuantification);
+    }
   }
 
   @Override

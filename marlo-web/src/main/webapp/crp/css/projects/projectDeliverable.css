@@ -684,18 +684,23 @@ td:last-child {
   position: relative;
 }
 
-.icon-container {
+/*.icon-container {
   position: absolute;
   font-size: 15px;
   height: 100%;
   padding-left: 35px;
   top: 0;
-}
+}*/
 
 .icon-container span.trash-icon {
-  position: absolute;
-  top: 25%;
+ /* position: absolute;
+  top: 25%;*/
   cursor: pointer;
+}
+
+.remove-disabled span.trash-icon {
+  cursor: default;
+  color: #abadb3;
 }
 
 tr:hover .icon-container {
