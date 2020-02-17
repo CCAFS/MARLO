@@ -1696,7 +1696,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     String trainees = "";
     int female = 0, male = 0;
 
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < 3; i++) {
       switch (i) {
         case 0:
           trainees = this.getText("summaries.annualReport2018.table7.field1");
@@ -1719,6 +1719,17 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
             }
             if (reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getTraineesLongTermMale() != null) {
               male = reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getTraineesLongTermMale().intValue();
+            }
+          }
+          break;
+        case 2:
+          trainees = this.getText("summaries.annualReport2018.table7.field3");
+          if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisCrossCuttingDimension() != null) {
+            if (reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getPhdFemale() != null) {
+              female = reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getPhdFemale().intValue();
+            }
+            if (reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getPhdMale() != null) {
+              male = reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getPhdMale().intValue();
             }
           }
           break;

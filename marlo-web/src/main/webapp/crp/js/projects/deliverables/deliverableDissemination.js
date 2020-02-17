@@ -277,14 +277,17 @@ function addDisseminationEvents() {
 
   $('#CCAFS_deliverable_deliverable_deliverableInfo_deliverableType_id').on('change', function() {
     var doiField = $('.metadataElement-doi').find('div.input ').children()[3];
-    if(this.value == '63' && doiField.value ==''){
-      displayExtraFieldUrl(true,true);
-    }else{
-      if(this.value == '63'){
-        displayExtraFieldUrl(false,true);
+
+    if(this.value == '63'){
+      $('.acknowledgeCCAFS .requiredTag').slideDown();
+      if(doiField.value ==''){
+        displayExtraFieldUrl(true,true);
       }else{
-        displayExtraFieldUrl(false,false);
+          displayExtraFieldUrl(false,true);
       }
+    }else{
+      $('.acknowledgeCCAFS .requiredTag').slideUp();
+      displayExtraFieldUrl(false,false);
     }
   });
 
@@ -755,11 +758,14 @@ function getMetadata(channel,url) {
       },
       success: function(metadata) {
         metadata = metadata.metadata;
+        console.log(metadata);
         if(jQuery.isEmptyObject(metadata)) {
           $('#metadata-output').html("Metadata empty");
         } else {
           // Setting Metadata
+          console.log(metadata);
           setMetadata(metadata);
+
           // Show a message indicating the medatada harves was successfully
           $('#metadata-output').empty().append("Found metadata successfully in " + channel);
         }
@@ -815,20 +821,18 @@ function formatStateCountries(state) {
  *
  */
 function validateSubCategorySelector() {
-  var selector = $('select[name="deliverable.deliverableInfo.deliverableType.id"]');
+  var selector = $('#CCAFS_deliverable_deliverable_deliverableInfo_deliverableType_id');
   var doiField = $('.metadataElement-doi').find('div.input ').children()[3];
-  console.log(doiField.value);
-  //console.log(selector.val());
-  if(selector.val() == '63' && (doiField.value =='')){
-    displayExtraFieldUrl(true,true);
-  }else{
-    if(selector.val() == '63'){
-      displayExtraFieldUrl(false,true);
-      //$('.conditionalRequire .requiredTag').slideUp();
+
+  if(selector.val() == '63'){
+    $('.acknowledgeCCAFS .requiredTag').slideDown();
+    if(doiField.value ==''){
+      displayExtraFieldUrl(true,true);
     }else{
-      displayExtraFieldUrl(false,false);
+        displayExtraFieldUrl(false,true);
     }
-
+  }else{
+    $('.acknowledgeCCAFS .requiredTag').slideUp();
+    displayExtraFieldUrl(false,false);
   }
-
 };
