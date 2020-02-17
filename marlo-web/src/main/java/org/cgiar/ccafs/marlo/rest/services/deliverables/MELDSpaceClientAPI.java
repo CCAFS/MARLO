@@ -37,9 +37,11 @@ import org.slf4j.LoggerFactory;
 public class MELDSpaceClientAPI extends MetadataClientApi {
 
   private static final Logger LOG = LoggerFactory.getLogger(MELDSpaceClientAPI.class);
-  private final String HANDLE_URL = "http://repo.mel.cgiar.org/handle/";
-  private final String DSPACE_HANDLE = "http://repo.mel.cgiar.org/rest/handle/{0}";
-  private final String REST_URL = "http://repo.mel.cgiar.org/rest/items/{0}/metadata";
+  private final String HTTP_URL = "http";
+  private final String HTTPS_URL = "https";
+  private String HANDLE_URL = "://repo.mel.cgiar.org/handle/";
+  private String DSPACE_HANDLE = "://repo.mel.cgiar.org/rest/handle/{0}";
+  private String REST_URL = "://repo.mel.cgiar.org/rest/items/{0}/metadata";
   private RestConnectionUtil xmlReaderConnectionUtil;
   private Map<String, String> coverterAtrributes;
 
@@ -139,6 +141,16 @@ public class MELDSpaceClientAPI extends MetadataClientApi {
    */
   @Override
   public String parseLink(String link) {
+
+    if (link.contains(HTTPS_URL)) {
+      HANDLE_URL = HTTPS_URL + HANDLE_URL;
+      DSPACE_HANDLE = HTTPS_URL + DSPACE_HANDLE;
+      REST_URL = HTTPS_URL + REST_URL;
+    } else {
+      HANDLE_URL = HTTP_URL + HANDLE_URL;
+      DSPACE_HANDLE = HTTP_URL + DSPACE_HANDLE;
+      REST_URL = HTTP_URL + REST_URL;
+    }
 
     if (link.contains(HANDLE_URL)) {
       this.setId(link.replace(HANDLE_URL, ""));
