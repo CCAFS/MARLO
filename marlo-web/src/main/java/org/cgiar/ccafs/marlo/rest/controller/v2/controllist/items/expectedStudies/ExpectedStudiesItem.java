@@ -29,21 +29,28 @@ import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyFlagshipManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInfoManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInnovationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyLinkManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPolicyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyQuantificationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySrfTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
+import org.cgiar.ccafs.marlo.data.manager.StudyTypeManager;
 import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.EvidenceTag;
@@ -52,12 +59,17 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyFlagship;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLink;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyQuantification;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
@@ -69,15 +81,19 @@ import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageStudy;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicator;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
+import org.cgiar.ccafs.marlo.data.model.StudyType;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.NewCrosscuttingMarkersDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectExpectedStudyDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectPolicyDTO;
 import org.cgiar.ccafs.marlo.rest.dto.QuantificationDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
+import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -101,7 +117,9 @@ public class ExpectedStudiesItem<T> {
   private RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager;
   private EvidenceTagManager evidenceTagManager;
   private GeneralStatusManager generalStatusManager;
+  private ProjectManager projectManager;
   private ProjectExpectedStudyManager projectExpectedStudyManager;
+  private StudyTypeManager studyTypeManager;
   private ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager;
   private ProjectExpectedStudyGeographicScopeManager projectExpectedStudyGeographicScopeManager;
   private ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager;
@@ -110,6 +128,11 @@ public class ExpectedStudiesItem<T> {
   private ProjectExpectedStudySubIdoManager projectExpectedStudySubIdoManager;
   private ProjectExpectedStudyFlagshipManager projectExpectedStudyFlagshipManager;
   private ProjectExpectedStudyLinkManager projectExpectedStudyLinkManager;
+  private ProjectExpectedStudyInstitutionManager projectExpectedStudyInstitutionManager;
+  private ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager;
+  private ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager;
+  private ProjectExpectedStudyCrpManager projectExpectedStudyCrpManager;
+  private ProjectExpectedStudyQuantificationManager projectExpectedStudyQuantificationManager;
 
 
   @Inject
@@ -128,7 +151,13 @@ public class ExpectedStudiesItem<T> {
     ProjectExpectedStudySrfTargetManager projectExpectedStudySrfTargetManager,
     ProjectExpectedStudySubIdoManager projectExpectedStudySubIdoManager,
     ProjectExpectedStudyFlagshipManager projectExpectedStudyFlagshipManager,
-    ProjectExpectedStudyLinkManager projectExpectedStudyLinkManager) {
+    ProjectExpectedStudyLinkManager projectExpectedStudyLinkManager,
+    ProjectExpectedStudyInstitutionManager projectExpectedStudyInstitutionManager,
+    ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager,
+    ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager,
+    ProjectExpectedStudyCrpManager projectExpectedStudyCrpManager,
+    ProjectExpectedStudyQuantificationManager projectExpectedStudyQuantificationManager,
+    StudyTypeManager studyTypeManager, ProjectManager projectManager) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.repIndStageStudyManager = repIndStageStudyManager;
@@ -151,6 +180,15 @@ public class ExpectedStudiesItem<T> {
     this.projectExpectedStudyRegionManager = projectExpectedStudyRegionManager;
     this.projectExpectedStudySrfTargetManager = projectExpectedStudySrfTargetManager;
     this.projectExpectedStudyFlagshipManager = projectExpectedStudyFlagshipManager;
+    this.projectExpectedStudyInstitutionManager = projectExpectedStudyInstitutionManager;
+    this.projectExpectedStudyPolicyManager = projectExpectedStudyPolicyManager;
+    this.projectExpectedStudyInnovationManager = projectExpectedStudyInnovationManager;
+    this.projectExpectedStudyCrpManager = projectExpectedStudyCrpManager;
+    this.projectExpectedStudyQuantificationManager = projectExpectedStudyQuantificationManager;
+    this.projectExpectedStudyLinkManager = projectExpectedStudyLinkManager;
+    this.studyTypeManager = studyTypeManager;
+    this.projectManager = projectManager;
+    this.projectExpectedStudySubIdoManager = projectExpectedStudySubIdoManager;
   }
 
   public Long createExpectedStudy(NewProjectExpectedStudyDTO newProjectExpectedStudy, String entityAcronym, User user) {
@@ -171,11 +209,19 @@ public class ExpectedStudiesItem<T> {
       fieldErrors.add(new FieldErrorDTO("create Expected Studies", "phase",
         new NewProjectPolicyDTO().getPhase().getYear() + " is an invalid year"));
     }
+    Project project = null;
+    if (newProjectExpectedStudy.getProject() != null) {
+      project = projectManager.getProjectById(newProjectExpectedStudy.getProject());
+      if (project == null) {
+        fieldErrors.add(new FieldErrorDTO("create Expected Studies", "Project",
+          newProjectExpectedStudy.getProject() + " is an project ID"));
+      }
+    }
 
     if (fieldErrors.size() == 0) {
       ProjectExpectedStudy projectExpectedStudy = new ProjectExpectedStudy();
       List<RepIndGeographicScope> geographicScopeList = new ArrayList<RepIndGeographicScope>();
-      List<SrfSloIndicator> srfSloIndicatorTargetList = new ArrayList<SrfSloIndicator>();
+      List<SrfSloIndicator> srfSloIndicatorList = new ArrayList<SrfSloIndicator>();
       List<GlobalUnit> crpContributing = new ArrayList<GlobalUnit>();
       List<CrpProgram> flagshipList = new ArrayList<>();
       List<LocElement> countriesList = new ArrayList<>();
@@ -192,7 +238,17 @@ public class ExpectedStudiesItem<T> {
         ProjectExpectedStudyInfo projectExpectedStudyInfo = new ProjectExpectedStudyInfo();
         projectExpectedStudyInfo.setTitle(newProjectExpectedStudy.getProjectExpectedEstudyInfo().getTitle());
         projectExpectedStudyInfo.setYear(newProjectExpectedStudy.getProjectExpectedEstudyInfo().getYear());
+        projectExpectedStudyInfo.setPhase(phase);
 
+
+        StudyType studyType =
+          studyTypeManager.getStudyTypeById(newProjectExpectedStudy.getProjectExpectedEstudyInfo().getStudyType());
+        if (studyType != null) {
+          projectExpectedStudyInfo.setStudyType(studyType);
+        } else {
+          fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Study Type",
+            newProjectExpectedStudy.getProjectExpectedEstudyInfo().getStudyType() + " is an invalid status code"));
+        }
         GeneralStatus generalStatus =
           generalStatusManager.getGeneralStatusById(newProjectExpectedStudy.getProjectExpectedEstudyInfo().getStatus());
         if (generalStatus != null) {
@@ -246,7 +302,7 @@ public class ExpectedStudiesItem<T> {
                 SrfSloIndicator srfSloIndicator =
                   srfSloIndicatorManager.getSrfSloIndicatorById(Long.valueOf(sloTarget));
                 if (srfSloIndicator != null) {
-                  srfSloIndicatorTargetList.add(srfSloIndicator);
+                  srfSloIndicatorList.add(srfSloIndicator);
                 } else {
                   fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "SrfSloIndicator target ",
                     sloTarget + " is an invalid SLOIndicatorTarget identifier"));
@@ -259,7 +315,7 @@ public class ExpectedStudiesItem<T> {
             && newProjectExpectedStudy.getProjectExpectedStudiesCrpDTO().size() > 0) {
             for (String crps : newProjectExpectedStudy.getProjectExpectedStudiesCrpDTO()) {
               if (crps != null && this.isNumeric(crps)) {
-                GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(Long.valueOf(crps));
+                GlobalUnit globalUnit = globalUnitManager.findGlobalUnitBySMOCode(crps);
                 if (globalUnit != null) {
                   crpContributing.add(globalUnit);
                 } else {
@@ -435,7 +491,6 @@ public class ExpectedStudiesItem<T> {
             }
           }
           // quantifications
-
           if (newProjectExpectedStudy.getQuantificationList() != null) {
             for (QuantificationDTO quantification : newProjectExpectedStudy.getQuantificationList()) {
               if (quantification.getTargetUnit().length() > 0 && quantification.getNumber() >= 0
@@ -447,6 +502,7 @@ public class ExpectedStudiesItem<T> {
                 projectExpectedStudyQuantification.setTargetUnit(quantification.getTargetUnit());
                 projectExpectedStudyQuantification.setTypeQuantification(quantification.getQuantificationType());
                 projectExpectedStudyQuantification.setNumber(quantification.getNumber());
+                projectExpectedStudyQuantification.setComments(quantification.getComment());
                 ExpectedStudyQuantificationList.add(projectExpectedStudyQuantification);
               } else {
                 fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Quantification",
@@ -454,13 +510,22 @@ public class ExpectedStudiesItem<T> {
               }
             }
           }
-          if (fieldErrors.size() == 0) {
+          if (fieldErrors.size() == 0 && project != null) {
             projectExpectedStudy.setPhase(phase.getId());
             projectExpectedStudy.setYear(phase.getYear());
+            projectExpectedStudy.setProject(project);
             ProjectExpectedStudy projectExpectedStudyDB =
               projectExpectedStudyManager.saveProjectExpectedStudy(projectExpectedStudy);
             if (projectExpectedStudyDB != null) {
               projectExpectedStudyID = projectExpectedStudyDB.getId();
+              projectExpectedStudyInfo.setProjectExpectedStudy(projectExpectedStudyDB);
+              if (projectPolicyList.size() > 0) {
+                projectExpectedStudyInfo.setIsContribution(true);
+              }
+
+              if (srfSloIndicatorList.size() > 0) {
+                projectExpectedStudyInfo.setIsSrfTarget("targetsOptionYes");
+              }
               if (projectExpectedStudyInfoManager.saveProjectExpectedStudyInfo(projectExpectedStudyInfo) != null) {
                 // save geographicscopes
                 for (RepIndGeographicScope repIndGeographicScope : geographicScopeList) {
@@ -489,7 +554,7 @@ public class ExpectedStudiesItem<T> {
                   projectExpectedStudyRegionManager.saveProjectExpectedStudyRegion(projectExpectedStudyRegion);
                 }
                 // SLO targets
-                for (SrfSloIndicator srfSloIndicator : srfSloIndicatorTargetList) {
+                for (SrfSloIndicator srfSloIndicator : srfSloIndicatorList) {
                   ProjectExpectedStudySrfTarget projectExpectedStudySrfTarget = new ProjectExpectedStudySrfTarget();
                   projectExpectedStudySrfTarget.setSrfSloIndicator(srfSloIndicator);
                   projectExpectedStudySrfTarget.setPhase(phase);
@@ -522,12 +587,71 @@ public class ExpectedStudiesItem<T> {
                   projectExpectedStudyLink.setProjectExpectedStudy(projectExpectedStudyDB);
                   projectExpectedStudyLinkManager.saveProjectExpectedStudyLink(projectExpectedStudyLink);
                 }
-                //
+                // institutions
+                for (Institution institution : institutionList) {
+                  ProjectExpectedStudyInstitution projectExpectedStudyInstitution =
+                    new ProjectExpectedStudyInstitution();
+                  projectExpectedStudyInstitution.setInstitution(institution);
+                  projectExpectedStudyInstitution.setPhase(phase);
+                  projectExpectedStudyInstitution.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudyInstitutionManager
+                    .saveProjectExpectedStudyInstitution(projectExpectedStudyInstitution);
+                }
+                // policies
+                for (ProjectPolicy projectPolicy : projectPolicyList) {
+                  ProjectExpectedStudyPolicy projectExpectedStudyPolicy = new ProjectExpectedStudyPolicy();
+                  projectExpectedStudyPolicy.setProjectPolicy(projectPolicy);
+                  projectExpectedStudyPolicy.setPhase(phase);
+                  projectExpectedStudyPolicy.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudyPolicyManager.saveProjectExpectedStudyPolicy(projectExpectedStudyPolicy);
+                }
+                // innovations
+                for (ProjectInnovation projectInnovation : projectInnovationList) {
+                  ProjectExpectedStudyInnovation projectExpectedStudyInnovation = new ProjectExpectedStudyInnovation();
+                  projectExpectedStudyInnovation.setPhase(phase);
+                  projectExpectedStudyInnovation.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudyInnovation.setProjectInnovation(projectInnovation);
+                  projectExpectedStudyInnovationManager
+                    .saveProjectExpectedStudyInnovation(projectExpectedStudyInnovation);
+                }
+                // crps
+                for (GlobalUnit globalUnit : crpContributing) {
+                  ProjectExpectedStudyCrp projectExpectedStudyCrp = new ProjectExpectedStudyCrp();
+                  projectExpectedStudyCrp.setGlobalUnit(globalUnit);
+                  projectExpectedStudyCrp.setPhase(phase);
+                  projectExpectedStudyCrp.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudyCrpManager.saveProjectExpectedStudyCrp(projectExpectedStudyCrp);
+                }
+                // quantification
+                for (ProjectExpectedStudyQuantification projectExpectedStudyQuantification : ExpectedStudyQuantificationList) {
+                  ProjectExpectedStudyQuantification projectExpectedStudyQuantificationDB =
+                    new ProjectExpectedStudyQuantification();
+                  projectExpectedStudyQuantificationDB.setNumber(projectExpectedStudyQuantification.getNumber());
+                  projectExpectedStudyQuantificationDB.setPhase(phase);
+                  projectExpectedStudyQuantificationDB.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudyQuantificationDB
+                    .setTargetUnit(projectExpectedStudyQuantification.getTargetUnit());
+                  projectExpectedStudyQuantificationDB
+                    .setTypeQuantification(projectExpectedStudyQuantification.getTypeQuantification());
+                  projectExpectedStudyQuantificationDB.setComments(projectExpectedStudyQuantification.getComments());
+                  projectExpectedStudyQuantificationManager
+                    .saveProjectExpectedStudyQuantification(projectExpectedStudyQuantificationDB);
+                }
               }
             }
           }
         }
       }
+    }
+    // Validate all fields
+    if (!fieldErrors.isEmpty()) {
+      for (FieldErrorDTO errors : fieldErrors) {
+        System.out.println("FieldErrorDTO " + errors.getMessage());
+      }
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
     }
     return projectExpectedStudyID;
   }
