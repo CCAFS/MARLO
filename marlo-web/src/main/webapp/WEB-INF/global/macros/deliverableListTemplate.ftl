@@ -15,6 +15,7 @@
         <th id="deliverableStatus">[@s.text name="project.deliverableList.status" /]</th>
         [#if currentTable]
         <th id="deliverableRF"></th>
+        <th id="deliverableRemove"></th>
         [/#if]
       </tr>
     </thead>
@@ -113,13 +114,17 @@
               [#else]
                 <span class="icon-20 icon-uncheck" title="[@s.text name="project.deliverableList.requiredStatus.incomplete" /]"></span> 
               [/#if]
+            </td>
+            <td class="text-center">
               [#-- Remove icon --]
               [#if isDeliverableNew]
                 <a id="removeDeliverable-${deliverable.id}" class="removeDeliverable" href="${baseUrl}/projects/${crpSession}/deleteDeliverable.do?deliverableID=${deliverable.id}&phaseID=${(actualPhase.id)!}" title="Remove deliverable">
                   <div class="icon-container"><span class="trash-icon glyphicon glyphicon-trash"></span><div>
                 </a>
+              [#else]
+                 <div class="icon-container remove-disabled"><span class="trash-icon glyphicon glyphicon-trash" title="This deliverable cannot be deleted"></span><div>
               [/#if]
-            </td>
+              </td>
           [/#if]
         </tr>
       [/#list]
