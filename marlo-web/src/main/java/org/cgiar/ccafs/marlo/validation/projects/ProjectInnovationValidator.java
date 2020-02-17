@@ -319,28 +319,26 @@ public class ProjectInnovationValidator extends BaseValidator {
             .getId() == -1) {
           if (struts) {
             action.addMessage(action.getText("projectInnovations.leadOrganization"));
-            action.getInvalidFields().put("input-innovation.projectInnovationInfo.leadOrganization.id",
+            action.getInvalidFields().put("list-innovation.projectInnovationInfo.leadOrganization.id",
               InvalidFieldsMessages.EMPTYFIELD);
           }
           this.addMissingField("projectInnovations.leadOrganization");
         }
       } else {
         action.addMessage(action.getText("projectInnovations.leadOrganization"));
-        this.addMissingField("projectInnovations.leadOrganization");
-        action.getInvalidFields().put("input-innovation.projectInnovationInfo.leadOrganization.id",
+        action.getInvalidFields().put("list-innovation.projectInnovationInfo.leadOrganization.id",
           InvalidFieldsMessages.EMPTYFIELD);
       }
     }
 
     // Validate contributing organizations
-    if (projectInnovation.getContributingOrganizations() == null
-      || projectInnovation.getContributingOrganizations().isEmpty()) {
+    if (projectInnovation.getContributingOrganizations() == null) {
       if (struts) {
         action.addMessage(action.getText(action.getText("projectInnovations.contributingOrganizations")));
         action.getInvalidFields().put("list-innovation.contributingOrganizations",
           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Contributing organizations"}));
       }
-      // this.addMissingField("projectInnovations.contributingOrganizations");
+      this.addMissingField("projectInnovations.contributingOrganizations");
     }
 
 
