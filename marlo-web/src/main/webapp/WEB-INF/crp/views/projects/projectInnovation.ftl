@@ -55,7 +55,7 @@
             <div class="col-md-4">
               [@customForm.select name="innovation.projectInnovationInfo.year" className="setSelect2" i18nkey="policy.year" listName="getInnovationsYears(${innovationID})" header=false required=true editable=editable /]
               [#if editable=false]
-                ${innovation.projectInnovationInfo.year}
+                ${(innovation.projectInnovationInfo.year)!""}
               [/#if]
             </div>
             <div class="col-md-8">
