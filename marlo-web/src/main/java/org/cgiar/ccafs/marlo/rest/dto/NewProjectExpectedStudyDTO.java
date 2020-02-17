@@ -25,38 +25,45 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class NewProjectExpectedStudyDTO {
 
+  @ApiModelProperty(notes = "Project ID", position = 1)
+  private Long project;
+
+
   @ApiModelProperty(notes = "Project expected study info", position = 2)
   private NewProjectExpectedStudyInfoDTO projectExpectedEstudyInfo;
 
-  @ApiModelProperty(notes = "CGIAR Sub-IDOs List", position = 3)
+
+  @ApiModelProperty(notes = "CGIAR Sub-IDOs code List", position = 3)
   // private List<SrfSubIdoDTO> srfSubIdoList;
   private List<String> srfSubIdoList;
 
-  @ApiModelProperty(notes = "CGIAR SLO target List", position = 4)
+
+  @ApiModelProperty(notes = "CGIAR SLO target code List", position = 4)
   // private List<SrfSloTargetDTO> srfSloTargetList;
   private List<String> srfSloTargetList;
 
-  @ApiModelProperty(notes = "Geographic Scope List", position = 5)
+
+  @ApiModelProperty(notes = "Geographic Scope code List", position = 5)
   // private List<GeographicScopeDTO> geographicScopes;
   private List<String> geographicScopes;
 
-  @ApiModelProperty(notes = "Contributing Flagship List", position = 8)
+  @ApiModelProperty(notes = "Contributing Flagship code List", position = 8)
   // private List<CrpProgramDTO> flagshipsList;
   private List<String> flagshipsList;
 
-  @ApiModelProperty(notes = "Contributing External Partners List", position = 9)
+  @ApiModelProperty(notes = "Contributing External Partners code List", position = 9)
   // private List<InstitutionDTO> institutionsList;
   private List<String> institutionsList;
 
-  @ApiModelProperty(notes = "Contributing CRP/Plataform List", position = 7)
+  @ApiModelProperty(notes = "Contributing CRP/Plataform code List", position = 7)
   // private List<CGIAREntityDTO> projectExpectedStudiesCrpDTO;
   private List<String> projectExpectedStudiesCrpDTO;
 
-  @ApiModelProperty(notes = "Regions", position = 6)
+  @ApiModelProperty(notes = "Region AN94 code list", position = 6)
   // private List<RegionDTO> regions;
   private List<String> regions;
 
-  @ApiModelProperty(notes = "Countries", position = 6)
+  @ApiModelProperty(notes = "Country ISO code list", position = 6)
   private List<String> countries;
   // private List<CountryDTO> countries;
 
@@ -82,11 +89,9 @@ public class NewProjectExpectedStudyDTO {
     return countries;
   }
 
-
   public List<NewCrosscuttingMarkersDTO> getCrossCuttingMarkers() {
     return crossCuttingMarkers;
   }
-
 
   public List<String> getFlagshipsList() {
     return flagshipsList;
@@ -120,6 +125,11 @@ public class NewProjectExpectedStudyDTO {
 
   public List<String> getPoliciesCodeList() {
     return policiesCodeList;
+  }
+
+
+  public Long getProject() {
+    return project;
   }
 
 
@@ -195,6 +205,11 @@ public class NewProjectExpectedStudyDTO {
 
   public void setPoliciesCodeList(List<String> policiesCodeList) {
     this.policiesCodeList = policiesCodeList;
+  }
+
+
+  public void setProject(Long project) {
+    this.project = project;
   }
 
 
