@@ -62,16 +62,19 @@ public class ProjectExpectedStudyDTO {
   private List<QuantificationDTO> quantificationList;
 
   @ApiModelProperty(notes = "Contributing innovations list", position = 10)
-  private List<String> innovationCodeList;
+  private List<ProjectExpectedStudyInnovation> innovationCodeList;
 
   @ApiModelProperty(notes = "Contributing policies list", position = 3)
-  private List<String> policiesCodeList;
+  private List<ProjectExpectedStudyPolicy> policiesCodeList;
 
   @ApiModelProperty(notes = "Aditional link list", position = 4)
-  private List<String> links;
+  private List<ProjectExpectedStudyLinkDTO> links;
 
   @ApiModelProperty(notes = "phase (POWB, AR, UpKeep)", position = 13)
   private PhaseDTO phase;
+
+  @ApiModelProperty(notes = "phase id", position = 14)
+  private Long phaseID;
 
 
   public List<CountryDTO> getCountries() {
@@ -99,7 +102,7 @@ public class ProjectExpectedStudyDTO {
   }
 
 
-  public List<String> getInnovationCodeList() {
+  public List<ProjectExpectedStudyInnovation> getInnovationCodeList() {
     return innovationCodeList;
   }
 
@@ -109,7 +112,7 @@ public class ProjectExpectedStudyDTO {
   }
 
 
-  public List<String> getLinks() {
+  public List<ProjectExpectedStudyLinkDTO> getLinks() {
     return links;
   }
 
@@ -119,7 +122,12 @@ public class ProjectExpectedStudyDTO {
   }
 
 
-  public List<String> getPoliciesCodeList() {
+  public Long getPhaseID() {
+    return phaseID;
+  }
+
+
+  public List<ProjectExpectedStudyPolicy> getPoliciesCodeList() {
     return policiesCodeList;
   }
 
@@ -179,7 +187,7 @@ public class ProjectExpectedStudyDTO {
   }
 
 
-  public void setInnovationCodeList(List<String> innovationCodeList) {
+  public void setInnovationCodeList(List<ProjectExpectedStudyInnovation> innovationCodeList) {
     this.innovationCodeList = innovationCodeList;
   }
 
@@ -189,17 +197,17 @@ public class ProjectExpectedStudyDTO {
   }
 
 
-  public void setLinks(List<String> links) {
-    this.links = links;
-  }
-
-
   public void setPhase(PhaseDTO phase) {
     this.phase = phase;
   }
 
 
-  public void setPoliciesCodeList(List<String> policiesCodeList) {
+  public void setPhaseID(Long phaseID) {
+    this.phaseID = phaseID;
+  }
+
+
+  public void setPoliciesCodeList(List<ProjectExpectedStudyPolicy> policiesCodeList) {
     this.policiesCodeList = policiesCodeList;
   }
 
@@ -231,6 +239,11 @@ public class ProjectExpectedStudyDTO {
 
   public void setSrfSubIdoList(List<SrfSubIdoDTO> srfSubIdoList) {
     this.srfSubIdoList = srfSubIdoList;
+  }
+
+
+  public void setStudiesLinks(List<ProjectExpectedStudyLinkDTO> links) {
+    this.links = links;
   }
 
 

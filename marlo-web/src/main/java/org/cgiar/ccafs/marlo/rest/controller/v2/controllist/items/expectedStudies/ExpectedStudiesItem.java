@@ -86,17 +86,23 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.NewCrosscuttingMarkersDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectExpectedStudyDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectPolicyDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectExpectedStudyDTO;
 import org.cgiar.ccafs.marlo.rest.dto.QuantificationDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
 import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
+import org.cgiar.ccafs.marlo.rest.mappers.ProjectExpectedStudyMapper;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @Named
 public class ExpectedStudiesItem<T> {
@@ -134,6 +140,8 @@ public class ExpectedStudiesItem<T> {
   private ProjectExpectedStudyCrpManager projectExpectedStudyCrpManager;
   private ProjectExpectedStudyQuantificationManager projectExpectedStudyQuantificationManager;
 
+  private ProjectExpectedStudyMapper projectExpectedStudyMapper;
+
 
   @Inject
   public ExpectedStudiesItem(GlobalUnitManager globalUnitManager, PhaseManager phaseManager,
@@ -157,7 +165,8 @@ public class ExpectedStudiesItem<T> {
     ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager,
     ProjectExpectedStudyCrpManager projectExpectedStudyCrpManager,
     ProjectExpectedStudyQuantificationManager projectExpectedStudyQuantificationManager,
-    StudyTypeManager studyTypeManager, ProjectManager projectManager) {
+    StudyTypeManager studyTypeManager, ProjectManager projectManager,
+    ProjectExpectedStudyMapper projectExpectedStudyMapper) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.repIndStageStudyManager = repIndStageStudyManager;
@@ -189,6 +198,8 @@ public class ExpectedStudiesItem<T> {
     this.studyTypeManager = studyTypeManager;
     this.projectManager = projectManager;
     this.projectExpectedStudySubIdoManager = projectExpectedStudySubIdoManager;
+
+    this.projectExpectedStudyMapper = projectExpectedStudyMapper;
   }
 
   public Long createExpectedStudy(NewProjectExpectedStudyDTO newProjectExpectedStudy, String entityAcronym, User user) {
@@ -654,6 +665,23 @@ public class ExpectedStudiesItem<T> {
           .collect(Collectors.toList()));
     }
     return projectExpectedStudyID;
+  }
+
+  public ResponseEntity<ProjectExpectedStudyDTO> findExpectedStudyById(Long id, String CGIARentityAcronym,
+    Integer repoYear, String repoPhase, User user) {
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
+    ProjectExpectedStudy projectExpectedStudy = projectExpectedStudyManager.getProjectExpectedStudyById(id.longValue());
+    if (!fieldErrors.isEmpty()) {
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
+    }
+
+    return Optional.ofNullable(projectExpectedStudy)
+      .map(this.projectExpectedStudyMapper::projectExpectedStudyToProjectExpectedStudyDTO)
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
   public boolean isNumeric(String value) {
