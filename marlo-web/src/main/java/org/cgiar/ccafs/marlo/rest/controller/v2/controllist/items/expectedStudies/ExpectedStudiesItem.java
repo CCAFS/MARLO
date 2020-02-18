@@ -314,7 +314,7 @@ public class ExpectedStudiesItem<T> {
           if (newProjectExpectedStudy.getProjectExpectedStudiesCrpDTO() != null
             && newProjectExpectedStudy.getProjectExpectedStudiesCrpDTO().size() > 0) {
             for (String crps : newProjectExpectedStudy.getProjectExpectedStudiesCrpDTO()) {
-              if (crps != null && this.isNumeric(crps)) {
+              if (crps != null) {
                 GlobalUnit globalUnit = globalUnitManager.findGlobalUnitBySMOCode(crps);
                 if (globalUnit != null) {
                   crpContributing.add(globalUnit);
