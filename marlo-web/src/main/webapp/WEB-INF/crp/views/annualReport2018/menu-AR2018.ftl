@@ -11,10 +11,10 @@
     { 'slug': 'crpProgress',          'name': 'annualReport2018.menu.crpProgress',          'action': 'crpProgress',        'active': true, 'subName': 'annualReport2018.menu.crpProgress.subName' },
     { 'slug': 'flagshipProgress',     'name': 'annualReport2018.menu.flagshipProgress',     'action': 'flagshipProgress',   'active': true,
       'items': [
-        { 'slug': 'policies',             'name': 'annualReport2018.menu.policies',           'action': 'policies',             'active': true,     'development': true },
-        { 'slug': 'oicr',                 'name': 'annualReport2018.menu.oicr',               'action': 'oicr',                 'active': true,     'development': true },
-        { 'slug': 'innovations',          'name': 'annualReport2018.menu.innovations',        'action': 'innovations',          'active': true,     'development': true },
-        { 'slug': 'outomesMilestones',    'name': 'annualReport2018.menu.outomesMilestones',  'action': 'outomesMilestones',    'active': true, 'onlyFlagship': !flagship },
+        { 'slug': 'policies',             'name': 'annualReport2018.menu.policies',           'action': 'policies',             'active': true     },
+        { 'slug': 'oicr',                 'name': 'annualReport2018.menu.oicr',               'action': 'oicr',                 'active': true     },
+        { 'slug': 'innovations',          'name': 'annualReport2018.menu.innovations',        'action': 'innovations',          'active': true     },
+        { 'slug': 'outomesMilestones',    'name': 'annualReport2018.menu.outomesMilestones',  'action': 'outomesMilestones',    'active': true, 'onlyFlagship': !flagship, 'development': true  },
         { 'slug': 'publications',         'name': 'annualReport2018.menu.publications',       'action': 'publications',         'active': true }  
       ]
     },
@@ -26,7 +26,7 @@
     { 'slug': 'governance',             'name': 'annualReport2018.menu.governance',             'action': 'governance',             'active': true, 'onlyPMU': !PMU }
     { 'slug': 'externalPartnerships',   'name': 'annualReport2018.menu.externalPartnerships',   'action': 'externalPartnerships',   'active': true, 'subName': '(Table 8 and Table 9)' },
     { 'slug': 'intellectualAssets',     'name': 'annualReport2018.menu.intellectualAssets',     'action': 'intellectualAssets',     'active': true, 'onlyPMU': !PMU },
-    { 'slug': 'melia',                  'name': 'annualReport2018.menu.melia',                  'action': 'melia',                  'active': true, 'subName': '(Table 10 and Table 11)' },
+    { 'slug': 'melia',                  'name': 'annualReport2018.menu.melia',                  'action': 'melia',                  'active': true, 'subName': '(Table 10 and Table 11)', 'development': true },
     { 'slug': 'efficiency',             'name': 'annualReport2018.menu.efficiency',             'action': 'efficiency',             'active': true, 'onlyPMU': !PMU },
     { 'slug': 'risks',                  'name': 'annualReport2018.menu.risks',                  'action': 'risks',                  'active': true, 'onlyPMU': !PMU },
     { 'slug': 'fundingUse',             'name': 'annualReport2018.menu.fundingUse',             'action': 'fundingUse',             'active': true, 'subName': '(Table 12)', 'onlyPMU': !PMU }
@@ -118,7 +118,7 @@
 <div class="text-center">
   [#assign documentLink][@s.url namespace="/summaries" action="${crpSession}/AnnualReportSummary2018"][@s.param name='phaseID']${actualPhase.id}[/@s.param][/@s.url][/#assign]
   <a class="btn btn-default" href="${documentLink}" target="_blank">
-   <img  src="${baseUrlCdn}/global/images/icons/file-doc.png" alt="" /> Generate DOC file </small>
+   <img  src="${baseUrlCdn}/global/images/icons/file-doc.png" alt="" /> Generate DOC file <br /> <small> (Beta version, this is still under development)</small>
   </a>
 </div>
 [/#if]
@@ -134,7 +134,6 @@
 [#include "/WEB-INF/global/macros/discardChangesPopup.ftl"]
 
 [#-- Project Submit JS --]
-[#--  HERMES TO ENABLE THE AUTOSAVE FUNCTION PLASE ADD THIS: "${baseUrlCdn}/global/js/autoSave.js" --]
 [#assign customJS = customJS  + [  "${baseUrlMedia}/js/annualReport/annualReportSubmit.js", "${baseUrlCdn}/global/js/fieldsValidation.js"]
 /]
 
