@@ -34,7 +34,7 @@ public class ProjectExpectedStudyInfoDTO {
   private StudyTypeDTO studyType;
 
   @ApiModelProperty(notes = "Expected study status", position = 4)
-  private long status;
+  private Long status;
 
   @ApiModelProperty(notes = "Expected study tag code", position = 5)
   private TagDTO tag;
