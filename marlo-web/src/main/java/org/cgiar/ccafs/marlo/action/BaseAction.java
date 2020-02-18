@@ -2697,7 +2697,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public List<Integer> getExpectedStudiesYears(Long expectedStudy) {
     List<ProjectExpectedStudyInfo> projectExpectedStudyInfoList =
       this.projectExpectedStudyInfoManager.findAll().stream()
-        .filter(c -> c.getProjectExpectedStudy().getId().longValue() == expectedStudy.longValue()
+        .filter(c -> c != null && c.getProjectExpectedStudy() != null
+          && c.getProjectExpectedStudy().getId().longValue() == expectedStudy.longValue()
           && c.getPhase().getName().equals(APConstants.PROJECT_INDICATOR_PHASE_PREVIOUS_NAME)
           && c.getPhase().getYear() == (this.getActualPhase().getYear()))
         .collect(Collectors.toList());
@@ -2708,7 +2709,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       } else {
         List<ProjectExpectedStudyInfo> projectExpectedStudyInfoList2 =
           this.projectExpectedStudyInfoManager.findAll().stream()
-            .filter(c -> c.getProjectExpectedStudy().getId().longValue() == expectedStudy.longValue()
+            .filter(c -> c != null && c.getProjectExpectedStudy() != null
+              && c.getProjectExpectedStudy().getId().longValue() == expectedStudy.longValue()
               && c.getPhase().getName().equals(APConstants.PROJECT_INDICATOR_PHASE_PREVIOUS_NAME)
               && c.getPhase().getYear() < (this.getActualPhase().getYear()))
             .collect(Collectors.toList());
@@ -2845,7 +2847,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public List<Integer> getInnovationsYears(Long innovation) {
     List<ProjectInnovationInfo> projectInnovationInfoList = this.projectInnovationInfoManager.findAll().stream()
-      .filter(c -> c.getProjectInnovation().getId().longValue() == innovation.longValue()
+      .filter(c -> c != null && c.getProjectInnovation() != null
+        && c.getProjectInnovation().getId().longValue() == innovation.longValue()
         && c.getPhase().getName().equals(APConstants.PROJECT_INDICATOR_PHASE_PREVIOUS_NAME)
         && c.getPhase().getYear() == (this.getActualPhase().getYear()))
       .collect(Collectors.toList());
@@ -2855,7 +2858,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         allYears.add(projectInnovationInfoList.get(0).getYear().intValue());
       } else {
         List<ProjectInnovationInfo> projectInnovationInfoList2 = this.projectInnovationInfoManager.findAll().stream()
-          .filter(c -> c.getProjectInnovation().getId().longValue() == innovation.longValue()
+          .filter(c -> c != null && c.getProjectInnovation() != null
+            && c.getProjectInnovation().getId().longValue() == innovation.longValue()
             && c.getPhase().getName().equals(APConstants.PROJECT_INDICATOR_PHASE_PREVIOUS_NAME)
             && c.getPhase().getYear() < (this.getActualPhase().getYear()))
           .collect(Collectors.toList());
@@ -3200,18 +3204,21 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public List<Integer> getPoliciesYears(Long policy) {
-    List<ProjectPolicyInfo> projectPolicyInfoList = this.projectPolicyInfoManager.findAll().stream()
-      .filter(c -> c.getProjectPolicy().getId().longValue() == policy.longValue()
-        && c.getPhase().getName().equals(APConstants.PROJECT_INDICATOR_PHASE_PREVIOUS_NAME)
-        && c.getPhase().getYear() == (this.getActualPhase().getYear()))
-      .collect(Collectors.toList());
+    List<ProjectPolicyInfo> projectPolicyInfoList =
+      this.projectPolicyInfoManager.findAll().stream()
+        .filter(c -> c != null && c.getProjectPolicy() != null
+          && c.getProjectPolicy().getId().longValue() == policy.longValue()
+          && c.getPhase().getName().equals(APConstants.PROJECT_INDICATOR_PHASE_PREVIOUS_NAME)
+          && c.getPhase().getYear() == (this.getActualPhase().getYear()))
+        .collect(Collectors.toList());
     List<Integer> allYears = new ArrayList<>();
     if (projectPolicyInfoList.size() > 0) {
       if (projectPolicyInfoList.get(0).getYear() != this.getActualPhase().getYear()) {
         allYears.add(projectPolicyInfoList.get(0).getYear().intValue());
       } else {
         List<ProjectPolicyInfo> projectPolicyInfoList2 = this.projectPolicyInfoManager.findAll().stream()
-          .filter(c -> c.getProjectPolicy().getId().longValue() == policy.longValue()
+          .filter(c -> c != null && c.getProjectPolicy() != null
+            && c.getProjectPolicy().getId().longValue() == policy.longValue()
             && c.getPhase().getName().equals(APConstants.PROJECT_INDICATOR_PHASE_PREVIOUS_NAME)
             && c.getPhase().getYear() < (this.getActualPhase().getYear()))
           .collect(Collectors.toList());
