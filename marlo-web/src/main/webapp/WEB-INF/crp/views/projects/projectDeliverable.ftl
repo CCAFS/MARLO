@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2","font-awesome","dropzone","blueimp-file-upload","jsUri", "flat-flags", "pickadate"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20190812",
-  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20190229", 
+  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20200218", 
   "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20200205",
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
   [#--  "${baseUrlCdn}/global/js/autoSave.js",--]
