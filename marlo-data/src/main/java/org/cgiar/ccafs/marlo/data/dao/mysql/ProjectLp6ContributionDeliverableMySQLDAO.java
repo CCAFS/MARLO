@@ -42,7 +42,9 @@ public class ProjectLp6ContributionDeliverableMySQLDAO extends AbstractMarloDAO<
   public void deleteProjectLp6ContributionDeliverable(long projectLp6ContributionDeliverableId) {
     ProjectLp6ContributionDeliverable projectLp6ContributionDeliverable =
       this.find(projectLp6ContributionDeliverableId);
-    this.delete(projectLp6ContributionDeliverable);
+    if (projectLp6ContributionDeliverable != null) {
+      this.delete(projectLp6ContributionDeliverable);
+    }
   }
 
   @Override
