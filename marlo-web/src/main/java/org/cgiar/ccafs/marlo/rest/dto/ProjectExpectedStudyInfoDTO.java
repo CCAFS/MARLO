@@ -45,9 +45,36 @@ public class ProjectExpectedStudyInfoDTO {
   @ApiModelProperty(notes = "Contact person", position = 7)
   private String contacts;
 
+  @ApiModelProperty(notes = "Gender Level", position = 8)
+  private CrossCuttingMarkerScoreDTO genderLevel;
+
+  @ApiModelProperty(notes = "Youth Level", position = 9)
+  private CrossCuttingMarkerScoreDTO youthLevel;
+
+  @ApiModelProperty(notes = "ClimateChange Level", position = 10)
+  private CrossCuttingMarkerScoreDTO climateChangeLevel;
+
+  @ApiModelProperty(notes = "Capdev Level", position = 1)
+  private CrossCuttingMarkerScoreDTO capdevLevel;
+
+
+  public CrossCuttingMarkerScoreDTO getCapdevLevel() {
+    return capdevLevel;
+  }
+
+
+  public CrossCuttingMarkerScoreDTO getClimateChangeLevel() {
+    return climateChangeLevel;
+  }
+
 
   public String getContacts() {
     return contacts;
+  }
+
+
+  public CrossCuttingMarkerScoreDTO getGenderLevel() {
+    return genderLevel;
   }
 
 
@@ -81,8 +108,28 @@ public class ProjectExpectedStudyInfoDTO {
   }
 
 
+  public CrossCuttingMarkerScoreDTO getYouthLevel() {
+    return youthLevel;
+  }
+
+
+  public void setCapdevLevel(CrossCuttingMarkerScoreDTO capdevLevel) {
+    this.capdevLevel = capdevLevel;
+  }
+
+
+  public void setClimateChangeLevel(CrossCuttingMarkerScoreDTO climateChangeLevel) {
+    this.climateChangeLevel = climateChangeLevel;
+  }
+
+
   public void setContacts(String contacts) {
     this.contacts = contacts;
+  }
+
+
+  public void setGenderLevel(CrossCuttingMarkerScoreDTO genderLevel) {
+    this.genderLevel = genderLevel;
   }
 
 
@@ -92,6 +139,11 @@ public class ProjectExpectedStudyInfoDTO {
 
 
   public void setStatus(long status) {
+    this.status = status;
+  }
+
+
+  public void setStatus(Long status) {
     this.status = status;
   }
 
@@ -113,6 +165,11 @@ public class ProjectExpectedStudyInfoDTO {
 
   public void setYear(long year) {
     this.year = year;
+  }
+
+
+  public void setYouthLevel(CrossCuttingMarkerScoreDTO youthLevel) {
+    this.youthLevel = youthLevel;
   }
 
 
