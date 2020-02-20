@@ -313,9 +313,7 @@ public class KeyExternalPartnershipItem<T> {
     }
 
     // TODO more validations!
-    LOG.info("-----------------------");
-    keyExternalPartnership.getReportSynthesisKeyPartnership().getReportSynthesis().getPhase().getCrp();
-    LOG.info("-----------------------");
+
     // Validate all fields
     if (!fieldErrors.isEmpty()) {
       fieldErrors.forEach(e -> System.out.println(e.getMessage()));
