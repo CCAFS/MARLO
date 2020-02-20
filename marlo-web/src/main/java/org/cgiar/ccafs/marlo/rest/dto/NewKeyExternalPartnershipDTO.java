@@ -19,31 +19,48 @@
 
 package org.cgiar.ccafs.marlo.rest.dto;
 
+import java.util.List;
+
 import io.swagger.annotations.ApiModelProperty;
 
 public class NewKeyExternalPartnershipDTO {
 
-
   @ApiModelProperty(notes = "Partnership / Main area", position = 3)
-  private PartnershipMainAreaDTO partnershipMainArea;
+  private List<String> partnershipMainAreaIds;
+  // private String partnershipMainAreaId;
 
   @ApiModelProperty(notes = "Description of partnership aim", position = 2)
   private String description;
 
   @ApiModelProperty(notes = "Flagship / Module", position = 1)
-  private FlagshipProgramDTO flagshipProgram;
+  private String flagshipProgramId;
+  // private String flagshipProgramId;
 
   @ApiModelProperty(notes = "Phase (AR, POWB) - Year", position = 4)
   private PhaseDTO phase;
 
+  @ApiModelProperty(notes = "Institutions linked to the partnership", position = 4)
+  private List<String> institutionsIds;
 
-  public FlagshipProgramDTO getFlagshipProgram() {
-    return flagshipProgram;
+  // report synthesis key partnership missing!
+
+  public String getDescription() {
+    return description;
   }
 
 
-  public PartnershipMainAreaDTO getPartnershipMainArea() {
-    return partnershipMainArea;
+  public String getFlagshipProgramId() {
+    return flagshipProgramId;
+  }
+
+
+  public List<String> getInstitutionsIds() {
+    return institutionsIds;
+  }
+
+
+  public List<String> getPartnershipMainAreaIds() {
+    return partnershipMainAreaIds;
   }
 
 
@@ -52,19 +69,28 @@ public class NewKeyExternalPartnershipDTO {
   }
 
 
-  public void setFlagshipProgram(FlagshipProgramDTO flagshipProgram) {
-    this.flagshipProgram = flagshipProgram;
+  public void setDescription(String description) {
+    this.description = description;
   }
 
 
-  public void setPartnershipMainArea(PartnershipMainAreaDTO partnershipMainArea) {
-    this.partnershipMainArea = partnershipMainArea;
+  public void setFlagshipProgramId(String flagshipProgramId) {
+    this.flagshipProgramId = flagshipProgramId;
+  }
+
+
+  public void setInstitutionsIds(List<String> institutionsIds) {
+    this.institutionsIds = institutionsIds;
+  }
+
+
+  public void setPartnershipMainAreaIds(List<String> partnershipMainAreaIds) {
+    this.partnershipMainAreaIds = partnershipMainAreaIds;
   }
 
 
   public void setPhase(PhaseDTO phase) {
     this.phase = phase;
   }
-
 
 }
