@@ -19,22 +19,10 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
-import org.cgiar.ccafs.marlo.rest.dto.ProjectExpectedStudyInfoDTO;
-
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
 
-@Mapper(componentModel = "jsr330",
-  uses = {StudyTypeMapper.class, TagMapper.class, MaturityOfChangeMapper.class, CrossCuttingMarkerScoreMapper.class})
-public interface ProjectExpectedStudyInfoMapper {
+@Mapper(componentModel = "jsr330")
+public interface CgiarCrossCuttingMarkersMapper {
 
-  @Mappings({@Mapping(source = "projectExpectedStudyInfo.status.id", target = "status"),
-    @Mapping(source = "projectExpectedStudyInfo.studyType", target = "studyType"),
-    @Mapping(source = "projectExpectedStudyInfo.evidenceTag", target = "tag"),
-    @Mapping(source = "projectExpectedStudyInfo.repIndStageStudy", target = "maturityOfChange")})
-  public abstract ProjectExpectedStudyInfoDTO
-    projectExpectedStudyInfoToProjectExpectedStudyInfoDTO(ProjectExpectedStudyInfo projectExpectedStudyInfo);
 
 }
