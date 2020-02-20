@@ -21,8 +21,20 @@ package org.cgiar.ccafs.marlo.rest.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class ProjectExpectedStudyInnovation {
+public class ProjectExpectedStudyPolicyDTO {
 
-  @ApiModelProperty(notes = "Project Innovation ID", position = 1)
-  private Long projectInnovationID;
+  @ApiModelProperty(notes = "Project Policy ID", position = 1)
+  private Long projectPolicyID;
+
+
+  public Long getProjectPolicyID() {
+    return projectPolicyID;
+  }
+
+
+  public void setProjectPolicyID(Long projectPolicyID) {
+    this.projectPolicyID = projectPolicyID;
+  }
+
+
 }

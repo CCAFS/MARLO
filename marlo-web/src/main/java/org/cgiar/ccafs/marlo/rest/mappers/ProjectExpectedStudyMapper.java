@@ -26,11 +26,21 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
-@Mapper(componentModel = "jsr330", uses = {ProjectExpectedStudyLinkMapper.class})
+@Mapper(componentModel = "jsr330",
+  uses = {ProjectExpectedStudyLinkMapper.class, ProjectExpectedStudyInfoMapper.class, InstitutionMapper.class,
+    ProjectExpectedStudySubIdoMapper.class, ProjectExpectedStudySrfSloTargetMapper.class,
+    ProjectExpectedStudiesCrpMapper.class, ProjectExpectedStudyInstitutionMapper.class,
+    ProjectExpectedStudyFlagshipMapper.class})
 public interface ProjectExpectedStudyMapper {
 
   @Mappings({@Mapping(source = "projectExpectedStudy.phase", target = "phaseID"),
-    @Mapping(source = "projectExpectedStudy.projectExpectedStudyInfo.phase", target = "phase")})
+    @Mapping(source = "projectExpectedStudy.projectExpectedStudyInfo.phase", target = "phase"),
+    @Mapping(source = "projectExpectedStudy.subIdos", target = "srfSubIdoList"),
+    @Mapping(source = "projectExpectedStudy.srfTargets", target = "srfSloTargetList"),
+    @Mapping(source = "projectExpectedStudy.crps", target = "projectExpectedStudiesCrp"),
+    @Mapping(source = "projectExpectedStudy.institutions", target = "institutionsList"),
+    @Mapping(source = "projectExpectedStudy.flagships", target = "flagshipsList")})
+
   public abstract ProjectExpectedStudyDTO
     projectExpectedStudyToProjectExpectedStudyDTO(ProjectExpectedStudy projectExpectedStudy);
 

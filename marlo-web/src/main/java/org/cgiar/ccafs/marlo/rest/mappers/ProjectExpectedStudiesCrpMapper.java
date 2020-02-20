@@ -19,22 +19,20 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
-import org.cgiar.ccafs.marlo.rest.dto.ProjectExpectedStudyInfoDTO;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrp;
+import org.cgiar.ccafs.marlo.rest.dto.CGIAREntityDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
-@Mapper(componentModel = "jsr330",
-  uses = {StudyTypeMapper.class, TagMapper.class, MaturityOfChangeMapper.class, CrossCuttingMarkerScoreMapper.class})
-public interface ProjectExpectedStudyInfoMapper {
+@Mapper(componentModel = "jsr330", uses = {GlobalUnitMapper.class})
+public interface ProjectExpectedStudiesCrpMapper {
 
-  @Mappings({@Mapping(source = "projectExpectedStudyInfo.status.id", target = "status"),
-    @Mapping(source = "projectExpectedStudyInfo.studyType", target = "studyType"),
-    @Mapping(source = "projectExpectedStudyInfo.evidenceTag", target = "tag"),
-    @Mapping(source = "projectExpectedStudyInfo.repIndStageStudy", target = "maturityOfChange")})
-  public abstract ProjectExpectedStudyInfoDTO
-    projectExpectedStudyInfoToProjectExpectedStudyInfoDTO(ProjectExpectedStudyInfo projectExpectedStudyInfo);
+  @Mappings({@Mapping(source = "projectExpectedStudyCrp.globalUnit.id", target = "code"),
+    @Mapping(source = "projectExpectedStudyCrp.globalUnit.name", target = "name"),
+    @Mapping(source = "projectExpectedStudyCrp.globalUnit.acronym", target = "acronym")})
+  public abstract CGIAREntityDTO
+    projectExpectedStudiesCrpToCGIAREntityDTO(ProjectExpectedStudyCrp projectExpectedStudyCrp);
 
 }
