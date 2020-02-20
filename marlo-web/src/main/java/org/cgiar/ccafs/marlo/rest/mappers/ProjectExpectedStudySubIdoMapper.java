@@ -17,24 +17,17 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.rest.dto;
+package org.cgiar.ccafs.marlo.rest.mappers;
 
-import io.swagger.annotations.ApiModelProperty;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectExpectedStudySubIdoDTO;
 
-public class ProjectExpectedStudyPolicy {
+import org.mapstruct.Mapper;
 
-  @ApiModelProperty(notes = "Project Policy ID", position = 1)
-  private Long projectPolicyID;
+@Mapper(componentModel = "jsr330", uses = {SrfSubIdoMapper.class})
+public interface ProjectExpectedStudySubIdoMapper {
 
-
-  public Long getProjectPolicyID() {
-    return projectPolicyID;
-  }
-
-
-  public void setProjectPolicyID(Long projectPolicyID) {
-    this.projectPolicyID = projectPolicyID;
-  }
-
+  public abstract ProjectExpectedStudySubIdoDTO
+    projectExpectedStudySubIdoToProjectExpectedStudySubIdo(ProjectExpectedStudySubIdo projectExpectedStudySubIdo);
 
 }
