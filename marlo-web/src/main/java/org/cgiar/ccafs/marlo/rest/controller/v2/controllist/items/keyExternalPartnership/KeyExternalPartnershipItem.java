@@ -59,6 +59,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -116,13 +117,25 @@ public class KeyExternalPartnershipItem<T> {
     this.keyExternalPartnershipMapper = keyExternalPartnershipMapper;
   }
 
-  private Map<Boolean, List<String>> changes(Set<String> base, Set<String> incoming) {
-    Map<Boolean, List<String>> changes = new HashMap<>();
-    List<String> elementsInBase = new ArrayList<>();
-    List<String> elementsInIncoming = new ArrayList<>();
-    Collection<String> disjunction = CollectionUtils.disjunction(base, incoming);
+  /**
+   * Analyzes the changes between two sets and outputs a map with boolean keys and a list of the disjunction of the
+   * elements depending on which set is belonged to. True means the elements are present on the first set, false means
+   * the elements are present on the second set.
+   * 
+   * @param base the base list
+   * @param incoming the incoming changes
+   * @return a map with the changes between the two sets
+   */
 
-    for (String element : disjunction) {
+  private <O> Map<Boolean, List<O>> changes(Set<O> base, Set<O> incoming) {
+    Map<Boolean, List<O>> changes = new HashMap<>();
+    List<O> elementsInBase = new ArrayList<>();
+    List<O> elementsInIncoming = new ArrayList<>();
+
+    // gets the common elements between the two sets
+    Collection<O> disjunction = CollectionUtils.disjunction(base, incoming);
+
+    for (O element : disjunction) {
       if (base.contains(element)) {
         elementsInBase.add(element);
       } else {
@@ -177,7 +190,8 @@ public class KeyExternalPartnershipItem<T> {
       if (newKeyExternalPartnershipDTO.getPartnershipMainAreaIds() != null
         && !newKeyExternalPartnershipDTO.getPartnershipMainAreaIds().isEmpty()) {
         mainAreas = newKeyExternalPartnershipDTO.getPartnershipMainAreaIds().stream()
-          .filter(p -> p != null && NumberUtils.isParsable(p)).map(new Function<String, RepIndPartnershipMainArea>() {
+          .filter(p -> p != null && NumberUtils.isParsable(p.trim()))
+          .map(new Function<String, RepIndPartnershipMainArea>() {
 
             @Override
             public RepIndPartnershipMainArea apply(String partnershipMainAreaId) {
@@ -196,7 +210,7 @@ public class KeyExternalPartnershipItem<T> {
 
       // start CrpProgram (flagshipProgram)
       if (newKeyExternalPartnershipDTO.getFlagshipProgramId() != null
-        && NumberUtils.isParsable(newKeyExternalPartnershipDTO.getFlagshipProgramId())) {
+        && NumberUtils.isParsable(newKeyExternalPartnershipDTO.getFlagshipProgramId().trim())) {
         crpProgram =
           crpProgramManager.getCrpProgramById(Long.valueOf(newKeyExternalPartnershipDTO.getFlagshipProgramId()));
         if (crpProgram == null /* || crpProgram.getProgramType() != 4 */ /* TODO ask Diego for flagship constant */) {
@@ -220,10 +234,10 @@ public class KeyExternalPartnershipItem<T> {
       // end ReportSynthesisKeyPartnership
 
       // start Institutions
-      if (newKeyExternalPartnershipDTO.getInstitutionsIds() != null
-        && !newKeyExternalPartnershipDTO.getInstitutionsIds().isEmpty()) {
-        institutions = newKeyExternalPartnershipDTO.getInstitutionsIds().stream()
-          .filter(i -> i != null && NumberUtils.isParsable(i)).map(new Function<String, Institution>() {
+      if (newKeyExternalPartnershipDTO.getInstitutionIds() != null
+        && !newKeyExternalPartnershipDTO.getInstitutionIds().isEmpty()) {
+        institutions = newKeyExternalPartnershipDTO.getInstitutionIds().stream()
+          .filter(i -> i != null && NumberUtils.isParsable(i.trim())).map(new Function<String, Institution>() {
 
             @Override
             public Institution apply(String institutionId) {
@@ -401,7 +415,7 @@ public class KeyExternalPartnershipItem<T> {
 
     // Validate all fields
     if (!fieldErrors.isEmpty()) {
-      fieldErrors.forEach(e -> System.out.println(e.getMessage()));
+      // fieldErrors.forEach(e -> System.out.println(e.getMessage()));
       throw new MARLOFieldValidationException("Field Validation errors", "",
         fieldErrors.stream()
           .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
@@ -452,6 +466,19 @@ public class KeyExternalPartnershipItem<T> {
         newKeyExternalPartnershipDTO.getPhase().getYear() + " is an invalid year"));
     }
 
+    String flagshipId = newKeyExternalPartnershipDTO.getFlagshipProgramId();
+    CrpProgram crpProgram = null;
+    if (flagshipId != null && NumberUtils.isParsable(flagshipId.trim())) {
+      crpProgram = crpProgramManager.getCrpProgramById(Long.valueOf(flagshipId));
+      if (crpProgram == null) {
+        fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "CrpProgramEntity",
+          newKeyExternalPartnershipDTO.getFlagshipProgramId() + " is an invalid CRP Program Code"));
+      }
+    } else {
+      fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "CrpProgramEntity",
+        newKeyExternalPartnershipDTO.getFlagshipProgramId() + " is an invalid CRP Program Code"));
+    }
+
     ReportSynthesisKeyPartnershipExternal keyPartnershipExternal =
       keyPartnershipExternalManager.getReportSynthesisKeyPartnershipExternalById(idKeyExternalPartnership);
     if (keyPartnershipExternal == null) {
@@ -461,29 +488,95 @@ public class KeyExternalPartnershipItem<T> {
 
     if (fieldErrors.isEmpty()) {
       idKeyExternalPartnershipDB = keyPartnershipExternal.getId();
-
       Set<String> base = keyPartnershipExternal.getReportSynthesisKeyPartnershipExternalMainAreas().stream()
-        .filter(m -> m != null && m.getId() != null).map(m -> m.getId().toString()).collect(Collectors.toSet());
-      Map<Boolean, List<String>> changes =
-        this.changes(base, new HashSet<>(newKeyExternalPartnershipDTO.getPartnershipMainAreaIds()));
+        .filter(m -> m != null && m.getId() != null).map(m -> m.getPartnerArea().getId().toString())
+        .collect(Collectors.toSet());
 
-      // Set<ReportSynthesisKeyPartnershipExternalMainArea> newMainAreas = newKeyExternalPartnershipDTO
-      // .getPartnershipMainAreaIds().stream().filter(m -> m != null && NumberUtils.isParsable(m))
-      // .map(new Function<String, ReportSynthesisKeyPartnershipExternalMainArea>() {
-      //
-      // @Override
-      // public ReportSynthesisKeyPartnershipExternalMainArea apply(String partnershipMainAreaId) {
-      // ReportSynthesisKeyPartnershipExternalMainArea partnershipMainArea = keyPartnershipExternalMainAreaManager
-      // .getReportSynthesisKeyPartnershipExternalMainAreaById(Long.valueOf(partnershipMainAreaId));
-      // if (partnershipMainArea == null) {
-      // fieldErrors.add(
-      // new FieldErrorDTO("putKeyExternalPartnership", "ReportSynthesisKeyPartnershipExternalMainAreaEntity",
-      // partnershipMainAreaId + " is an invalid Report Indicator Partnership Main Area code."));
-      // }
-      // return partnershipMainArea;
-      // }
-      // }).collect(Collectors.toSet());
+      // We track the changes. As a result we get a map where the list with the true key means the elements are present
+      // in the database and are no longer selected; false means the elements are new and need to be saved.
+      // TODO it might be a better way to do this...
+      Map<Boolean, List<String>> changes =
+        this.<String>changes(base, new HashSet<>(newKeyExternalPartnershipDTO.getPartnershipMainAreaIds()));
+
+      changes.get(Boolean.TRUE).stream().map(Long::valueOf)
+        .forEach(keyPartnershipExternalMainAreaManager::deleteReportSynthesisKeyPartnershipExternalMainArea);
+      changes.get(Boolean.FALSE).stream().filter(m -> m != null && NumberUtils.isParsable(m.trim())).map(Long::valueOf)
+        .forEach(new Consumer<Long>() {
+
+          @Override
+          public void accept(Long mainAreaId) {
+            RepIndPartnershipMainArea incoming =
+              repIndPartnershipMainAreaManager.getRepIndPartnershipMainAreaById(mainAreaId);
+            if (incoming == null) {
+              fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "RepIndPartnershipMainAreaEntity",
+                +mainAreaId + " is an invalid Report Indicator Partnership Main Area Code"));
+            } else {
+              ReportSynthesisKeyPartnershipExternalMainArea newMainArea =
+                new ReportSynthesisKeyPartnershipExternalMainArea();
+              newMainArea.setPartnerArea(incoming);
+              newMainArea.setReportSynthesisKeyPartnershipExternal(keyPartnershipExternal);
+              keyPartnershipExternalMainAreaManager.saveReportSynthesisKeyPartnershipExternalMainArea(newMainArea);
+            }
+          }
+        });
+
+      base = keyPartnershipExternal.getReportSynthesisKeyPartnershipExternalInstitutions().stream()
+        .filter(i -> i != null && i.getId() != null).map(m -> m.getInstitution().getId().toString())
+        .collect(Collectors.toSet());
+
+      changes = this.<String>changes(base, new HashSet<>(newKeyExternalPartnershipDTO.getInstitutionIds()));
+
+      changes.get(Boolean.TRUE).stream().map(Long::valueOf)
+        .forEach(keyPartnershipExternalInstitutionManager::deleteReportSynthesisKeyPartnershipExternalInstitution);
+      changes.get(Boolean.FALSE).stream().filter(m -> m != null && NumberUtils.isParsable(m.trim())).map(Long::valueOf)
+        .forEach(new Consumer<Long>() {
+
+          @Override
+          public void accept(Long institutionId) {
+            Institution incoming = institutionManager.getInstitutionById(institutionId);
+            if (incoming == null) {
+              fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "InstitutionEntity",
+                +institutionId + " is an invalid Institution Code"));
+            } else {
+              ReportSynthesisKeyPartnershipExternalInstitution newInstitution =
+                new ReportSynthesisKeyPartnershipExternalInstitution();
+              newInstitution.setInstitution(incoming);
+              newInstitution.setReportSynthesisKeyPartnershipExternal(keyPartnershipExternal);
+              keyPartnershipExternalInstitutionManager
+                .saveReportSynthesisKeyPartnershipExternalInstitution(newInstitution);
+            }
+          }
+        });
+
+      keyPartnershipExternal.setDescription(newKeyExternalPartnershipDTO.getDescription());
+
+      LiaisonInstitution liaisonInstitution = liaisonInstitutionManager.findByAcronym(crpProgram.getAcronym());
+
+      if (liaisonInstitution == null) {
+        fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "LiaisonInstitutionEntity",
+          "A Liaison Institution with the acronym " + crpProgram.getAcronym() + " could not be found"));
+      }
+
+      ReportSynthesis reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
+
+      if (reportSynthesis == null) {
+        fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "ReportSynthesisEntity",
+          "A report entity linked to the Phase with id " + phase.getId() + " and Liaison Institution with id "
+            + liaisonInstitution.getId() + " could not be found"));
+      }
+
+      ReportSynthesisKeyPartnership reportSynthesisKeyPartnership = reportSynthesis.getReportSynthesisKeyPartnership();
+
+      keyPartnershipExternal.setReportSynthesisKeyPartnership(reportSynthesisKeyPartnership);
     }
+
+    if (!fieldErrors.isEmpty()) {
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
+    }
+    keyPartnershipExternalManager.saveReportSynthesisKeyPartnershipExternal(keyPartnershipExternal);
 
     return idKeyExternalPartnershipDB;
   }

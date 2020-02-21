@@ -40,7 +40,7 @@ public class NewKeyExternalPartnershipDTO {
   private PhaseDTO phase;
 
   @ApiModelProperty(notes = "Institutions linked to the partnership", position = 4)
-  private List<String> institutionsIds;
+  private List<String> institutionIds;
 
   // report synthesis key partnership missing!
 
@@ -54,8 +54,8 @@ public class NewKeyExternalPartnershipDTO {
   }
 
 
-  public List<String> getInstitutionsIds() {
-    return institutionsIds;
+  public List<String> getInstitutionIds() {
+    return institutionIds;
   }
 
 
@@ -79,8 +79,8 @@ public class NewKeyExternalPartnershipDTO {
   }
 
 
-  public void setInstitutionsIds(List<String> institutionsIds) {
-    this.institutionsIds = institutionsIds;
+  public void setInstitutionIds(List<String> institutionsIds) {
+    this.institutionIds = institutionsIds;
   }
 
 
