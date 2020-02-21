@@ -21,36 +21,20 @@ package org.cgiar.ccafs.marlo.rest.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class NewCrosscuttingMarkersDTO {
+public class ProjectExpectedStudySrfSloTargetDTO {
+
+  @ApiModelProperty(notes = "Srf-SLO identifier")
+  private SrfSloDTO srfSloTarget;
 
 
-  @ApiModelProperty(
-    notes = "CrossCutting marker identifier (1-Gender," + "2-Youth," + "3-CapDev," + "4-Climate Change)", position = 1)
-  private String crossCuttingmarker;
-
-  @ApiModelProperty(
-    notes = "CrossCutting marker score (1-Not Targeted," + "2-Significant," + "3-Principal," + "4-Not applicable)",
-    position = 2)
-  private String crossCuttingmarkerScore;
-
-
-  public String getCrossCuttingmarker() {
-    return crossCuttingmarker;
+  public SrfSloDTO getSrfSloTarget() {
+    return srfSloTarget;
   }
 
 
-  public String getCrossCuttingmarkerScore() {
-    return crossCuttingmarkerScore;
+  public void setSrfSloTarget(SrfSloDTO srfSloTarget) {
+    this.srfSloTarget = srfSloTarget;
   }
 
-
-  public void setCrossCuttingmarker(String crossCuttingmarker) {
-    this.crossCuttingmarker = crossCuttingmarker;
-  }
-
-
-  public void setCrossCuttingmarkerScore(String crossCuttingmarkerScore) {
-    this.crossCuttingmarkerScore = crossCuttingmarkerScore;
-  }
 
 }

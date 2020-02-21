@@ -87,6 +87,7 @@
         <th class="">Year</th>
         [#if currentTable]
         <th class="no-sort"></th>
+        <th class="no-sort"></th>
         [/#if]
       </tr>
     </thead>
@@ -96,7 +97,7 @@
           [#-- URL --]
           [#local dlurl][@s.url namespace=namespace action='${crpSession}/policy' ][@s.param name='policyID']${(item.id)!}[/@s.param][@s.param name='projectID']${(item.project.id)!(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
           [#-- Is this complete --]
-          [#local isThisComplete = false]
+          [#local isThisComplete = (action.hasPoliciesMissingFields(item.id))!false]
           [#-- Is new --]
           [#local isNew = (action.isPolicyNew(item.id)) /]
           <tr>
@@ -122,8 +123,15 @@
             <td>
               [@utils.tableText value=(item.projectPolicyInfo.year)!"" /]
             </td>
-             
+            [#-- Missing fields --]
             [#if currentTable]
+            <td>
+              [#if isThisComplete]
+                <span class="icon-20 icon-check" title="Complete"></span> 
+              [#else]
+                <span class="icon-20 icon-uncheck" title=""></span> 
+              [/#if]
+            </td>
             <td class="removeHighlight-row text-center">
               [#if canEdit && ((item.year gte  currentCycleYear)!true) ]
                 <a id="removeElement-${(item.id)!}" class="removeElementList" href="#" title="" data-toggle="modal" data-target="#removeItem-${item_index}" >

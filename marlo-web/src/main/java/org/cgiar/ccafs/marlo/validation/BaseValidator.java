@@ -769,6 +769,8 @@ public class BaseValidator {
       status.setMissingFields("");
     }
     sectionStatusManager.saveSectionStatus(status);
+
+    action.getMissingFields().setLength(0);
   }
 
   /**

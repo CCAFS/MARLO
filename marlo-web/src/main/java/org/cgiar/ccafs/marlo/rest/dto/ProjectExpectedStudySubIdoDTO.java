@@ -21,58 +21,27 @@ package org.cgiar.ccafs.marlo.rest.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class QuantificationDTO {
+public class ProjectExpectedStudySubIdoDTO {
 
-  @ApiModelProperty(notes = "Quantification type (A/B)", position = 2)
-  private String quantificationType;
+  @ApiModelProperty(notes = "SubIdo ID", position = 1)
+  private SrfSubIdoDTO srfSubIdo;
+  @ApiModelProperty(notes = "SubIdo as primary", position = 1)
+  private Boolean primary;
 
-  @ApiModelProperty(notes = "Quantification unit", position = 2)
-  private String targetUnit;
-
-  @ApiModelProperty(notes = "Quantification unit value", position = 2)
-  private long number;
-
-  @ApiModelProperty(notes = "Quantification unit comment", position = 2)
-  private String comments;
-
-
-  public String getComments() {
-    return comments;
+  public Boolean getPrimary() {
+    return primary;
   }
 
-
-  public long getNumber() {
-    return number;
+  public SrfSubIdoDTO getSrfSubIdo() {
+    return srfSubIdo;
   }
 
-
-  public String getQuantificationType() {
-    return quantificationType;
+  public void setPrimary(Boolean primary) {
+    this.primary = primary;
   }
 
-
-  public String getTargetUnit() {
-    return targetUnit;
-  }
-
-
-  public void setComments(String comments) {
-    this.comments = comments;
-  }
-
-
-  public void setNumber(long number) {
-    this.number = number;
-  }
-
-
-  public void setQuantificationType(String quantificationType) {
-    this.quantificationType = quantificationType;
-  }
-
-
-  public void setTargetUnit(String targetUnit) {
-    this.targetUnit = targetUnit;
+  public void setSrfSubIdo(SrfSubIdoDTO srfSubIdo) {
+    this.srfSubIdo = srfSubIdo;
   }
 
 

@@ -86,7 +86,8 @@ public class ProjectBudgetsValidator extends BaseValidator {
   public void validate(BaseAction action, Project project, boolean saving) {
     action.setInvalidFields(new HashMap<>());
     hasErros = false;
-    if (project != null) {
+    if (project != null && action.getActualPhase() != null && action.getActualPhase().getName() != null
+      && !action.getActualPhase().getName().contains("AR")) {
       if (!saving) {
         Path path = this.getAutoSaveFilePath(project, action.getCrpID(), action);
 

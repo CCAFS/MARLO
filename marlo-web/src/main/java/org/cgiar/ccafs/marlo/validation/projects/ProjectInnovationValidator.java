@@ -122,7 +122,7 @@ public class ProjectInnovationValidator extends BaseValidator {
         && projectInnovation.getProjectInnovationInfo().getHasMilestones() == true
         && (projectInnovation.getMilestones() == null || projectInnovation.getMilestones().isEmpty()))
       || projectInnovation.getProjectInnovationInfo().getHasMilestones() == null) {
-      action.addMessage(action.getText("milestoneList"));
+      action.addMessage(action.getText("milestones"));
       action.addMissingField("innovation.milestones");
       action.getInvalidFields().put("list-innovation.milestones",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"milestones"}));
@@ -131,7 +131,7 @@ public class ProjectInnovationValidator extends BaseValidator {
     // Validate SubIdos
     if (projectInnovation.getSubIdos() == null || projectInnovation.getSubIdos().isEmpty()) {
       action.addMessage(action.getText("subIdos"));
-      action.addMissingField("innovation.subIDOs");
+      action.addMissingField("innovation.subIdos");
       action.getInvalidFields().put("list-innovation.subIdos",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
     }
@@ -217,8 +217,8 @@ public class ProjectInnovationValidator extends BaseValidator {
         action.addMessage(action.getText("projectInnovations.geographicScope"));
         action.getInvalidFields().put("list-innovation.geographicScopes",
           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"geographicScopes"}));
+        action.addMissingField("projectInnovations.geographicScope");
       }
-      this.addMissingField("projectInnovations.geographicScope");
 
     } else {
       for (ProjectInnovationGeographicScope innovationGeographicScope : projectInnovation.getGeographicScopes()) {
