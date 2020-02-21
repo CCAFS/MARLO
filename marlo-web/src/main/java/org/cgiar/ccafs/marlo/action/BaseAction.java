@@ -4545,6 +4545,31 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return permissions;
   }
 
+  /**
+   * Validate Missing fields in Policies
+   *
+   * @return
+   */
+  public boolean hasPoliciesMissingFields(long id) {
+    SectionStatus sectionStatus = null;
+
+    ProjectPolicy projectPolicy = this.projectPolicyManager.getProjectPolicyById(id);
+
+    sectionStatus =
+      this.sectionStatusManager.getSectionStatusByProjectPolicy(projectPolicy.getId(), this.getCurrentCycle(),
+        this.getCurrentCycleYear(), this.isUpKeepActive(), ProjectSectionStatusEnum.POLICIES.getStatus());
+
+    if (sectionStatus != null) {
+      if (sectionStatus.getMissingFields() != null) {
+        if (sectionStatus.getMissingFields().trim().equals("")) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
   public boolean hasProgramnsRegions() {
     try {
       return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_HAS_REGIONS).toString());
