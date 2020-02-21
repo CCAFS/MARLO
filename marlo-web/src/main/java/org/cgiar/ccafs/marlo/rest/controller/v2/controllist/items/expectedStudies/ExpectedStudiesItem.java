@@ -513,7 +513,7 @@ public class ExpectedStudiesItem<T> {
                 projectExpectedStudyQuantification.setTargetUnit(quantification.getTargetUnit());
                 projectExpectedStudyQuantification.setTypeQuantification(quantification.getQuantificationType());
                 projectExpectedStudyQuantification.setNumber(quantification.getNumber());
-                projectExpectedStudyQuantification.setComments(quantification.getComment());
+                projectExpectedStudyQuantification.setComments(quantification.getComments());
                 ExpectedStudyQuantificationList.add(projectExpectedStudyQuantification);
               } else {
                 fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Quantification",
