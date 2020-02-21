@@ -30,7 +30,9 @@ import org.mapstruct.Mappings;
   uses = {ProjectExpectedStudyLinkMapper.class, ProjectExpectedStudyInfoMapper.class, InstitutionMapper.class,
     ProjectExpectedStudySubIdoMapper.class, ProjectExpectedStudySrfSloTargetMapper.class,
     ProjectExpectedStudiesCrpMapper.class, ProjectExpectedStudyInstitutionMapper.class,
-    ProjectExpectedStudyFlagshipMapper.class})
+    ProjectExpectedStudyFlagshipMapper.class, GeographicScopeMapper.class, LocationMapper.class,
+    ProjectExpectedStudyPolicyMapper.class, ProjectExpectedStudyInnovationMapper.class,
+    ProjectExpectedStudyLinkMapper.class, ProjectExpectedStudyQuantificationMapper.class})
 public interface ProjectExpectedStudyMapper {
 
   @Mappings({@Mapping(source = "projectExpectedStudy.phase", target = "phaseID"),
@@ -39,7 +41,16 @@ public interface ProjectExpectedStudyMapper {
     @Mapping(source = "projectExpectedStudy.srfTargets", target = "srfSloTargetList"),
     @Mapping(source = "projectExpectedStudy.crps", target = "projectExpectedStudiesCrp"),
     @Mapping(source = "projectExpectedStudy.institutions", target = "institutionsList"),
-    @Mapping(source = "projectExpectedStudy.flagships", target = "flagshipsList")})
+    @Mapping(source = "projectExpectedStudy.flagships", target = "flagshipsList"),
+    @Mapping(source = "projectExpectedStudy.geographicScopes", target = "geographicScopes"),
+    @Mapping(source = "projectExpectedStudy.regions", target = "regions"),
+    @Mapping(source = "projectExpectedStudy.project.id", target = "project"),
+    @Mapping(source = "projectExpectedStudy.countries", target = "countries"),
+    @Mapping(source = "projectExpectedStudy.policies", target = "policiesCodeList"),
+    @Mapping(source = "projectExpectedStudy.innovations", target = "innovationCodeList"),
+    @Mapping(source = "projectExpectedStudy.links", target = "links"),
+    @Mapping(source = "projectExpectedStudy.projectExpectedStudyInfo", target = "projectExpectedEstudyInfo"),
+    @Mapping(source = "projectExpectedStudy.quantifications", target = "quantificationList")})
 
   public abstract ProjectExpectedStudyDTO
     projectExpectedStudyToProjectExpectedStudyDTO(ProjectExpectedStudy projectExpectedStudy);
