@@ -53,6 +53,7 @@ import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.StudyTypeManager;
 import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.EvidenceTag;
 import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -96,6 +97,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -672,6 +674,25 @@ public class ExpectedStudiesItem<T> {
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
     ProjectExpectedStudy projectExpectedStudy = projectExpectedStudyManager.getProjectExpectedStudyById(id.longValue());
+
+    Phase phase =
+      this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
+        && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().get();
+
+    Set<CrpUser> lstUser = user.getCrpUsers();
+
+    if (!lstUser.stream().anyMatch(crp -> crp.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym))) {
+      fieldErrors.add(new FieldErrorDTO("findExpectedStudy", "GlobalUnitEntity", "CGIAR entity not autorized"));
+    }
+
+    if (globalUnitEntity == null) {
+      fieldErrors.add(new FieldErrorDTO("findExpectedStudy", "GlobalUnitEntity",
+        CGIARentityAcronym + " is not an invalid CGIAR entity acronym"));
+    }
+    if (phase == null) {
+      fieldErrors.add(new FieldErrorDTO("findExpectedStudy", "phase", repoYear + " is an invalid year"));
+    }
+
     if (!fieldErrors.isEmpty()) {
       throw new MARLOFieldValidationException("Field Validation errors", "",
         fieldErrors.stream()
