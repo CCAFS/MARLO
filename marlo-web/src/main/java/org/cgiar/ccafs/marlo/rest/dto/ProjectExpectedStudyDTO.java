@@ -28,11 +28,17 @@ public class ProjectExpectedStudyDTO {
   @ApiModelProperty(notes = "The Generated expected study id", position = 1)
   private Long id;
 
+  @ApiModelProperty(notes = "Project id", position = 1)
+  private String project;
+
+
   @ApiModelProperty(notes = "Project expected study info", position = 2)
   private ProjectExpectedStudyInfoDTO projectExpectedEstudyInfo;
 
+
   @ApiModelProperty(notes = "CGIAR Sub-IDOs List", position = 3)
   private List<ProjectExpectedStudySubIdoDTO> srfSubIdoList;
+
 
   @ApiModelProperty(notes = "CGIAR SLO target List", position = 4)
   private List<ProjectExpectedStudySrfSloTargetDTO> srfSloTargetList;
@@ -55,14 +61,12 @@ public class ProjectExpectedStudyDTO {
   @ApiModelProperty(notes = "Countries", position = 6)
   private List<CountryDTO> countries;
 
-  @ApiModelProperty(notes = "Crosscutting Markers List", position = 12)
-  private List<CrosscuttingMarkersDTO> crossCuttingMarkers;
-
   @ApiModelProperty(notes = "Quantification List List", position = 11)
   private List<QuantificationDTO> quantificationList;
 
   @ApiModelProperty(notes = "Contributing innovations list", position = 10)
   private List<ProjectExpectedStudyInnovationDTO> innovationCodeList;
+
 
   @ApiModelProperty(notes = "Contributing policies list", position = 3)
   private List<ProjectExpectedStudyPolicyDTO> policiesCodeList;
@@ -76,16 +80,9 @@ public class ProjectExpectedStudyDTO {
   @ApiModelProperty(notes = "phase id", position = 14)
   private Long phaseID;
 
-
   public List<CountryDTO> getCountries() {
     return countries;
   }
-
-
-  public List<CrosscuttingMarkersDTO> getCrossCuttingMarkers() {
-    return crossCuttingMarkers;
-  }
-
 
   public List<CrpProgramDTO> getFlagshipsList() {
     return flagshipsList;
@@ -132,6 +129,11 @@ public class ProjectExpectedStudyDTO {
   }
 
 
+  public String getProject() {
+    return project;
+  }
+
+
   public ProjectExpectedStudyInfoDTO getProjectExpectedEstudyInfo() {
     return projectExpectedEstudyInfo;
   }
@@ -164,11 +166,6 @@ public class ProjectExpectedStudyDTO {
 
   public void setCountries(List<CountryDTO> countries) {
     this.countries = countries;
-  }
-
-
-  public void setCrossCuttingMarkers(List<CrosscuttingMarkersDTO> crossCuttingMarkers) {
-    this.crossCuttingMarkers = crossCuttingMarkers;
   }
 
 
@@ -217,6 +214,11 @@ public class ProjectExpectedStudyDTO {
   }
 
 
+  public void setProject(String project) {
+    this.project = project;
+  }
+
+
   public void setProjectExpectedEstudyInfo(ProjectExpectedStudyInfoDTO projectExpectedEstudyInfo) {
     this.projectExpectedEstudyInfo = projectExpectedEstudyInfo;
   }
@@ -244,11 +246,6 @@ public class ProjectExpectedStudyDTO {
 
   public void setSrfSubIdoList(List<ProjectExpectedStudySubIdoDTO> srfSubIdoList) {
     this.srfSubIdoList = srfSubIdoList;
-  }
-
-
-  public void setStudiesLinks(List<ProjectExpectedStudyLinkDTO> links) {
-    this.links = links;
   }
 
 

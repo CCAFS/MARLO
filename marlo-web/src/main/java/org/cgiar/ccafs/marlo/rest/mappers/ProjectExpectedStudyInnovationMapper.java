@@ -17,22 +17,20 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.rest.dto;
+package org.cgiar.ccafs.marlo.rest.mappers;
 
-import io.swagger.annotations.ApiModelProperty;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectExpectedStudyInnovationDTO;
 
-public class ProjectExpectedStudyInnovationDTO {
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
+@Mapper(componentModel = "jsr330")
+public interface ProjectExpectedStudyInnovationMapper {
 
-  @ApiModelProperty(notes = "Project Innovation ID", position = 1)
-  private Long projectInnovationID;
+  @Mappings({@Mapping(source = "projectExpectedStudyInnovation.projectInnovation.id", target = "projectInnovationID")})
+  public abstract ProjectExpectedStudyInnovationDTO projectExpectedStudyInnovationToProjectExpectedStudyInnovationDTO(
+    ProjectExpectedStudyInnovation projectExpectedStudyInnovation);
 
-
-  public Long getProjectInnovationID() {
-    return projectInnovationID;
-  }
-
-  public void setProjectInnovationID(Long projectInnovationID) {
-    this.projectInnovationID = projectInnovationID;
-  }
 }
