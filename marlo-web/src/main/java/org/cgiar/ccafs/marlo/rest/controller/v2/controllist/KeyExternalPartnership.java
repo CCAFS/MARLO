@@ -94,6 +94,30 @@ public class KeyExternalPartnership {
   }
 
   @ApiOperation(tags = {"Table 8 - Key external partnerships"},
+    value = "${KeyExternalPartnership.externalpartnerships.DELETE.id.value}",
+    response = KeyExternalPartnershipDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/keyexternalpartnership/{id}", method = RequestMethod.DELETE,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<KeyExternalPartnershipDTO> deleteKeyExternalPartnershipById(
+    @ApiParam(value = "${KeyExternalPartnership.externalpartnerships.DELETE.id.param.CGIAR}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${KeyExternalPartnership.externalpartnerships.DELETE.id.param.id}",
+      required = true) @PathVariable Long id,
+    @ApiParam(value = "${KeyExternalPartnership.externalpartnerships.DELETE.id.param.year}",
+      required = true) @RequestParam Integer year,
+    @ApiParam(value = "${KeyExternalPartnership.externalpartnerships.DELETE.id.param.phase}",
+      required = true) @RequestParam String phase) {
+    ResponseEntity<KeyExternalPartnershipDTO> response = this.keyExternalPartnershipItem
+      .deleteKeyExternalPartnershipById(id, CGIAREntity, year, phase, this.getCurrentUser());
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404",
+        this.env.getProperty("KeyExternalPartnership.externalpartnerships.DELETE.id.404"));
+    }
+    return response;
+  }
+
+  @ApiOperation(tags = {"Table 8 - Key external partnerships"},
     value = "${KeyExternalPartnership.externalpartnerships.GET.id.value}", response = KeyExternalPartnershipDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIAREntity}/keyexternalpartnership/{id}", method = RequestMethod.GET,
@@ -124,10 +148,40 @@ public class KeyExternalPartnership {
     return response;
   }
 
+  @ApiOperation(tags = {"Table 8 - Key external partnerships"},
+    value = "${KeyExternalPartnership.externalpartnerships.PUT.value}", response = KeyExternalPartnershipDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/keyexternalpartnership/{id}", method = RequestMethod.PUT,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Long> findKeyExternalPartnershipById(
+    @ApiParam(value = "${KeyExternalPartnership.externalpartnerships.PUT.param.CGIAR}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${KeyExternalPartnership.externalpartnerships.PUT.param.id}",
+      required = true) @PathVariable Long id,
+    @ApiParam(value = "${KeyExternalPartnership.externalpartnerships.PUT.param.externalpartnership}",
+      required = true) @Valid @RequestBody NewKeyExternalPartnershipDTO newKeyExternalPartnershipDTO) {
+
+    ResponseEntity<Long> response = null;
+    try {
+      Long innovationId = this.keyExternalPartnershipItem.putKeyExternalPartnershipById(id,
+        newKeyExternalPartnershipDTO, CGIAREntity, this.getCurrentUser());
+      response = new ResponseEntity<Long>(innovationId, HttpStatus.OK);
+      if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+        throw new NotFoundException("404",
+          this.env.getProperty("KeyExternalPartnership.externalpartnerships.PUT.id.404"));
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    return response;
+  }
+
   private User getCurrentUser() {
     Subject subject = SecurityUtils.getSubject();
     Long principal = (Long) subject.getPrincipal();
     User user = this.userManager.getUser(principal);
     return user;
   }
+
 }

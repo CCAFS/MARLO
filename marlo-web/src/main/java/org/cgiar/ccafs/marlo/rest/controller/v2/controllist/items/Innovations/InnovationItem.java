@@ -596,6 +596,7 @@ public class InnovationItem<T> {
         && c.getYear() == newInnovationDTO.getPhase().getYear()
         && c.getName().equalsIgnoreCase(newInnovationDTO.getPhase().getName()))
       .findFirst().get();
+
     ProjectInnovation innovation = this.projectInnovationManager.getProjectInnovationById(idInnovation);
     if (fieldErrors.size() == 0) {
       if (innovation != null) {
