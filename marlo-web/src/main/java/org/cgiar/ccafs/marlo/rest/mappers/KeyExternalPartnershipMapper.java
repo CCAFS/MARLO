@@ -43,5 +43,4 @@ public interface KeyExternalPartnershipMapper {
   public abstract KeyExternalPartnershipDTO
     keyPartnershipExternalToKeyExternalPartnershipDTO(ReportSynthesisKeyPartnershipExternal keyPartnershipExternal);
 
-  // crpprogram
 }
