@@ -553,6 +553,11 @@ public final class APConstants {
   /** cross cutting scores ****/
   public static final long CROSS_CUTTING_NOT_TARGETED = 0;
 
+  public static final long CGIAR_CROSS_CUTTING_MARKERS_GENDER = 1;
+  public static final long CGIAR_CROSS_CUTTING_MARKERS_YOUTH = 2;
+  public static final long CGIAR_CROSS_CUTTING_MARKERS_CAPDEV = 3;
+  public static final long CGIAR_CROSS_CUTTING_MARKERS_CLIMATECHANGE = 4;
+
   /**
    * -------------------------------------------------------------------------------
    * *******************************************************************************

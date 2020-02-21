@@ -387,6 +387,7 @@ public class InnovationItem<T> {
           .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
           .collect(Collectors.toList()));
     }
+
     return innovationID;
   }
 

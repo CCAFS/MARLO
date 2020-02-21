@@ -28,14 +28,20 @@ public class ProjectExpectedStudyDTO {
   @ApiModelProperty(notes = "The Generated expected study id", position = 1)
   private Long id;
 
+  @ApiModelProperty(notes = "Project id", position = 1)
+  private String project;
+
+
   @ApiModelProperty(notes = "Project expected study info", position = 2)
   private ProjectExpectedStudyInfoDTO projectExpectedEstudyInfo;
 
+
   @ApiModelProperty(notes = "CGIAR Sub-IDOs List", position = 3)
-  private List<SrfSubIdoDTO> srfSubIdoList;
+  private List<ProjectExpectedStudySubIdoDTO> srfSubIdoList;
+
 
   @ApiModelProperty(notes = "CGIAR SLO target List", position = 4)
-  private List<SrfSloTargetDTO> srfSloTargetList;
+  private List<ProjectExpectedStudySrfSloTargetDTO> srfSloTargetList;
 
   @ApiModelProperty(notes = "Geographic Scope List", position = 5)
   private List<GeographicScopeDTO> geographicScopes;
@@ -47,7 +53,7 @@ public class ProjectExpectedStudyDTO {
   private List<InstitutionDTO> institutionsList;
 
   @ApiModelProperty(notes = "Contributing CRP/Plataform List", position = 7)
-  private List<CGIAREntityDTO> projectExpectedStudiesCrpDTO;
+  private List<CGIAREntityDTO> projectExpectedStudiesCrp;
 
   @ApiModelProperty(notes = "Regions", position = 6)
   private List<RegionDTO> regions;
@@ -55,34 +61,28 @@ public class ProjectExpectedStudyDTO {
   @ApiModelProperty(notes = "Countries", position = 6)
   private List<CountryDTO> countries;
 
-  @ApiModelProperty(notes = "Crosscutting Markers List", position = 12)
-  private List<CrosscuttingMarkersDTO> crossCuttingMarkers;
-
   @ApiModelProperty(notes = "Quantification List List", position = 11)
   private List<QuantificationDTO> quantificationList;
 
   @ApiModelProperty(notes = "Contributing innovations list", position = 10)
-  private List<String> innovationCodeList;
+  private List<ProjectExpectedStudyInnovationDTO> innovationCodeList;
+
 
   @ApiModelProperty(notes = "Contributing policies list", position = 3)
-  private List<String> policiesCodeList;
+  private List<ProjectExpectedStudyPolicyDTO> policiesCodeList;
 
   @ApiModelProperty(notes = "Aditional link list", position = 4)
-  private List<String> links;
+  private List<ProjectExpectedStudyLinkDTO> links;
 
   @ApiModelProperty(notes = "phase (POWB, AR, UpKeep)", position = 13)
   private PhaseDTO phase;
 
+  @ApiModelProperty(notes = "phase id", position = 14)
+  private Long phaseID;
 
   public List<CountryDTO> getCountries() {
     return countries;
   }
-
-
-  public List<CrosscuttingMarkersDTO> getCrossCuttingMarkers() {
-    return crossCuttingMarkers;
-  }
-
 
   public List<CrpProgramDTO> getFlagshipsList() {
     return flagshipsList;
@@ -99,7 +99,7 @@ public class ProjectExpectedStudyDTO {
   }
 
 
-  public List<String> getInnovationCodeList() {
+  public List<ProjectExpectedStudyInnovationDTO> getInnovationCodeList() {
     return innovationCodeList;
   }
 
@@ -109,7 +109,7 @@ public class ProjectExpectedStudyDTO {
   }
 
 
-  public List<String> getLinks() {
+  public List<ProjectExpectedStudyLinkDTO> getLinks() {
     return links;
   }
 
@@ -119,8 +119,18 @@ public class ProjectExpectedStudyDTO {
   }
 
 
-  public List<String> getPoliciesCodeList() {
+  public Long getPhaseID() {
+    return phaseID;
+  }
+
+
+  public List<ProjectExpectedStudyPolicyDTO> getPoliciesCodeList() {
     return policiesCodeList;
+  }
+
+
+  public String getProject() {
+    return project;
   }
 
 
@@ -129,8 +139,8 @@ public class ProjectExpectedStudyDTO {
   }
 
 
-  public List<CGIAREntityDTO> getProjectExpectedStudiesCrpDTO() {
-    return projectExpectedStudiesCrpDTO;
+  public List<CGIAREntityDTO> getProjectExpectedStudiesCrp() {
+    return projectExpectedStudiesCrp;
   }
 
 
@@ -144,23 +154,18 @@ public class ProjectExpectedStudyDTO {
   }
 
 
-  public List<SrfSloTargetDTO> getSrfSloTargetList() {
+  public List<ProjectExpectedStudySrfSloTargetDTO> getSrfSloTargetList() {
     return srfSloTargetList;
   }
 
 
-  public List<SrfSubIdoDTO> getSrfSubIdoList() {
+  public List<ProjectExpectedStudySubIdoDTO> getSrfSubIdoList() {
     return srfSubIdoList;
   }
 
 
   public void setCountries(List<CountryDTO> countries) {
     this.countries = countries;
-  }
-
-
-  public void setCrossCuttingMarkers(List<CrosscuttingMarkersDTO> crossCuttingMarkers) {
-    this.crossCuttingMarkers = crossCuttingMarkers;
   }
 
 
@@ -179,7 +184,7 @@ public class ProjectExpectedStudyDTO {
   }
 
 
-  public void setInnovationCodeList(List<String> innovationCodeList) {
+  public void setInnovationCodeList(List<ProjectExpectedStudyInnovationDTO> innovationCodeList) {
     this.innovationCodeList = innovationCodeList;
   }
 
@@ -189,7 +194,7 @@ public class ProjectExpectedStudyDTO {
   }
 
 
-  public void setLinks(List<String> links) {
+  public void setLinks(List<ProjectExpectedStudyLinkDTO> links) {
     this.links = links;
   }
 
@@ -199,8 +204,18 @@ public class ProjectExpectedStudyDTO {
   }
 
 
-  public void setPoliciesCodeList(List<String> policiesCodeList) {
+  public void setPhaseID(Long phaseID) {
+    this.phaseID = phaseID;
+  }
+
+
+  public void setPoliciesCodeList(List<ProjectExpectedStudyPolicyDTO> policiesCodeList) {
     this.policiesCodeList = policiesCodeList;
+  }
+
+
+  public void setProject(String project) {
+    this.project = project;
   }
 
 
@@ -209,8 +224,8 @@ public class ProjectExpectedStudyDTO {
   }
 
 
-  public void setProjectExpectedStudiesCrpDTO(List<CGIAREntityDTO> projectExpectedStudiesCrpDTO) {
-    this.projectExpectedStudiesCrpDTO = projectExpectedStudiesCrpDTO;
+  public void setProjectExpectedStudiesCrp(List<CGIAREntityDTO> projectExpectedStudiesCrp) {
+    this.projectExpectedStudiesCrp = projectExpectedStudiesCrp;
   }
 
 
@@ -224,12 +239,12 @@ public class ProjectExpectedStudyDTO {
   }
 
 
-  public void setSrfSloTargetList(List<SrfSloTargetDTO> srfSloTargetList) {
+  public void setSrfSloTargetList(List<ProjectExpectedStudySrfSloTargetDTO> srfSloTargetList) {
     this.srfSloTargetList = srfSloTargetList;
   }
 
 
-  public void setSrfSubIdoList(List<SrfSubIdoDTO> srfSubIdoList) {
+  public void setSrfSubIdoList(List<ProjectExpectedStudySubIdoDTO> srfSubIdoList) {
     this.srfSubIdoList = srfSubIdoList;
   }
 

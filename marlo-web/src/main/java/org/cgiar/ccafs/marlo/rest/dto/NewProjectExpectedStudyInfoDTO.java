@@ -23,7 +23,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class NewProjectExpectedStudyInfoDTO {
 
-  @ApiModelProperty(notes = "Expected study title", position = 2)
+  @ApiModelProperty(notes = "Expected year", position = 2)
   private int year;
 
   @ApiModelProperty(notes = "Expected study title", position = 1)

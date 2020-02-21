@@ -47,6 +47,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -86,6 +87,31 @@ public class ExpectedStudies {
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("ExpectedStudies.OICR.GET.id.404"));
     }
+    return response;
+  }
+
+  @ApiOperation(tags = {"Table 3 - Outcome/ Impact Case Reports"}, value = "${ExpectedStudies.OICR.GET.id.value}",
+    response = ProjectExpectedStudyDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/OICR/{id}", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<ProjectExpectedStudyDTO> findExpectedStudyById(
+    @ApiParam(value = "${ExpectedStudies.OICR.GET.id.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${ExpectedStudies.OICR.GET.id.param.id}", required = true) @PathVariable Long id,
+    @ApiParam(value = "${ExpectedStudies.OICR.GET.id.param.year}", required = true) @RequestParam Integer year,
+    @ApiParam(value = "${ExpectedStudies.OICR.GET.id.param.phase}", required = true) @RequestParam String phase) {
+
+
+    ResponseEntity<ProjectExpectedStudyDTO> response = null;
+    try {
+      response = this.expectedStudiesItem.findExpectedStudyById(id, CGIAREntity, year, phase, this.getCurrentUser());
+      if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+        throw new NotFoundException("404", this.env.getProperty("ExpectedStudies.OICR.GET.id.404"));
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
     return response;
   }
 

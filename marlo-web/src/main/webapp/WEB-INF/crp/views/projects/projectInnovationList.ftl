@@ -180,7 +180,7 @@
       [/#list]
     [#else]
       <tr>
-        <td class="text-center" colspan="[#if currentTable]7[#else]6[/#if]">
+        <td class="text-center" colspan="[#if currentTable]9[#else]6[/#if]">
           <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
         </td>
       </tr>
