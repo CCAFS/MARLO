@@ -117,14 +117,6 @@ public class ProjectPolicyValidator extends BaseValidator {
       action.getInvalidFields().put("input-policy.projectPolicyInfo.title", InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    // Validate Description
-    if (!(this.isValidString(projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getDescription())
-      && this.wordCount(projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getDescription()) <= 30)) {
-      action.addMessage(action.getText("Description"));
-      action.addMissingField("projectPolicy.description");
-      action.getInvalidFields().put("input-policy.projectPolicyInfo.description", InvalidFieldsMessages.EMPTYFIELD);
-    }
-
     // Validate Policy Investment Type
     if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndPolicyInvestimentType() != null) {
       if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndPolicyInvestimentType()
@@ -238,8 +230,8 @@ public class ProjectPolicyValidator extends BaseValidator {
 
     // Validate Milestones
     if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()) != null
-      && ((projectPolicy.getProjectPolicyInfo().getHasMilestones() != null
-        && projectPolicy.getProjectPolicyInfo().getHasMilestones() == true)
+      && (projectPolicy.getProjectPolicyInfo().getHasMilestones() != null
+        && projectPolicy.getProjectPolicyInfo().getHasMilestones() == true
         && (projectPolicy.getMilestones() == null || projectPolicy.getMilestones().isEmpty()))
       || projectPolicy.getProjectPolicyInfo().getHasMilestones() == null) {
       action.addMessage(action.getText("milestoneList"));
