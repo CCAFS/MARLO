@@ -14,9 +14,13 @@
 [#attempt]
   [#assign canAcessPublications = (action.canAcessPublications())!false ]
   [#assign canAcessCrp = (action.canAcessCrp())!false ]
+  [#assign canAcessBI = (action.canAccessSuperAdmin())!false ]
+  [#assign canAcessCCAFS = (action.isCrpCCAFS())!false ]
 [#recover]
   [#assign canAcessPublications = false ]
   [#assign canAcessCrp = false ]
+  [#assign canAcessBI = false ]
+  [#assign canAcessCCAFS = false ]
 [/#attempt]
 
 [#assign mainMenu= [
@@ -58,7 +62,8 @@
   { 'slug': 'capdev', 'name': 'menu.capdev',      'namespace': '/capdev',       'action': '${(centerSession)!}/capdev',    'visible': logged && centerGlobalUnit, 'active': action.centerCapDevActive()}, 
   [#-- SUMMARIES - ALL --]
   { 'slug': 'summaries', 'name': 'menu.summaries',      'namespace': '/summaries',       'action': '${(crpSession)!}/summaries',    'visible': logged, 'active': true }
-
+  [#-- BI Module --]
+  { 'slug': 'bi', 'name': 'menu.bi',      'namespace': '/bi',       'action': '${(crpSession)!}/bi',    'visible': logged && canAcessBI && canAcessCCAFS, 'active': true }
 ]/]
 
 
