@@ -17,32 +17,16 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.rest.dto;
+package org.cgiar.ccafs.marlo.rest.mappers;
 
-import io.swagger.annotations.ApiModelProperty;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyMilestone;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectExpectedStudyMilestoneDTO;
 
-public class ProjectExpectedStudySubIdoDTO {
+import org.mapstruct.Mapper;
 
-  @ApiModelProperty(notes = "SubIdo Identifier", position = 1)
-  private SrfSubIdoDTO srfSubIdo;
-  @ApiModelProperty(notes = "SubIdo as primary", position = 1)
-  private Boolean primary;
+@Mapper(componentModel = "jsr330", uses = {MilestoneMapper.class})
+public interface ProjectExpectedStudyMilestoneMapper {
 
-  public Boolean getPrimary() {
-    return primary;
-  }
-
-  public SrfSubIdoDTO getSrfSubIdo() {
-    return srfSubIdo;
-  }
-
-  public void setPrimary(Boolean primary) {
-    this.primary = primary;
-  }
-
-  public void setSrfSubIdo(SrfSubIdoDTO srfSubIdo) {
-    this.srfSubIdo = srfSubIdo;
-  }
-
-
+  public abstract ProjectExpectedStudyMilestoneDTO ProjectExpectedStudyMilestoneToProjectExpectedStudyMilestoneDTO(
+    ProjectExpectedStudyMilestone projectExpectedStudyMilestone);
 }

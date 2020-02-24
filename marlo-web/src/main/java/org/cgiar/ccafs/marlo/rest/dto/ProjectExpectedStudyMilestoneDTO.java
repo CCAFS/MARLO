@@ -21,27 +21,32 @@ package org.cgiar.ccafs.marlo.rest.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class ProjectExpectedStudySubIdoDTO {
+public class ProjectExpectedStudyMilestoneDTO {
 
-  @ApiModelProperty(notes = "SubIdo Identifier", position = 1)
-  private SrfSubIdoDTO srfSubIdo;
-  @ApiModelProperty(notes = "SubIdo as primary", position = 1)
+  @ApiModelProperty(notes = "Milestone Identifier", position = 1)
+  private MilestoneDTO crpMilestone;
+
+  @ApiModelProperty(notes = "Milestone as primary", position = 1)
   private Boolean primary;
+
+
+  public MilestoneDTO getCrpMilestone() {
+    return crpMilestone;
+  }
+
 
   public Boolean getPrimary() {
     return primary;
   }
 
-  public SrfSubIdoDTO getSrfSubIdo() {
-    return srfSubIdo;
+
+  public void setCrpMilestone(MilestoneDTO crpMilestone) {
+    this.crpMilestone = crpMilestone;
   }
+
 
   public void setPrimary(Boolean primary) {
     this.primary = primary;
-  }
-
-  public void setSrfSubIdo(SrfSubIdoDTO srfSubIdo) {
-    this.srfSubIdo = srfSubIdo;
   }
 
 

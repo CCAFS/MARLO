@@ -32,7 +32,8 @@ import org.mapstruct.Mappings;
     ProjectExpectedStudiesCrpMapper.class, ProjectExpectedStudyInstitutionMapper.class,
     ProjectExpectedStudyFlagshipMapper.class, GeographicScopeMapper.class, LocationMapper.class,
     ProjectExpectedStudyPolicyMapper.class, ProjectExpectedStudyInnovationMapper.class,
-    ProjectExpectedStudyLinkMapper.class, ProjectExpectedStudyQuantificationMapper.class})
+    ProjectExpectedStudyLinkMapper.class, ProjectExpectedStudyQuantificationMapper.class,
+    ProjectExpectedStudyMilestoneMapper.class})
 public interface ProjectExpectedStudyMapper {
 
   @Mappings({@Mapping(source = "projectExpectedStudy.phase", target = "phaseID"),
@@ -50,7 +51,8 @@ public interface ProjectExpectedStudyMapper {
     @Mapping(source = "projectExpectedStudy.innovations", target = "innovationCodeList"),
     @Mapping(source = "projectExpectedStudy.links", target = "links"),
     @Mapping(source = "projectExpectedStudy.projectExpectedStudyInfo", target = "projectExpectedEstudyInfo"),
-    @Mapping(source = "projectExpectedStudy.quantifications", target = "quantificationList")})
+    @Mapping(source = "projectExpectedStudy.quantifications", target = "quantificationList"),
+    @Mapping(source = "projectExpectedStudy.milestones", target = "milestonesList")})
 
   public abstract ProjectExpectedStudyDTO
     projectExpectedStudyToProjectExpectedStudyDTO(ProjectExpectedStudy projectExpectedStudy);

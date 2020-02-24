@@ -28,6 +28,6 @@ import org.mapstruct.Mapper;
 public interface ProjectExpectedStudySubIdoMapper {
 
   public abstract ProjectExpectedStudySubIdoDTO
-    projectExpectedStudySubIdoToProjectExpectedStudySubIdo(ProjectExpectedStudySubIdo projectExpectedStudySubIdo);
+    projectExpectedStudySubIdoToProjectExpectedStudySubIdoDTO(ProjectExpectedStudySubIdo projectExpectedStudySubIdo);
 
 }
