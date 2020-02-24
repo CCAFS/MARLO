@@ -35,7 +35,7 @@ public class NewProjectExpectedStudyDTO {
 
   @ApiModelProperty(notes = "CGIAR Sub-IDOs code List", position = 3)
   // private List<SrfSubIdoDTO> srfSubIdoList;
-  private List<String> srfSubIdoList;
+  private List<NewSrfSubIdoDTO> srfSubIdoList;
 
 
   @ApiModelProperty(notes = "CGIAR SLO target code List", position = 4)
@@ -76,7 +76,7 @@ public class NewProjectExpectedStudyDTO {
   @ApiModelProperty(notes = "Contributing innovations code list", position = 10)
   private List<String> innovationCodeList;
 
-  @ApiModelProperty(notes = "Contributing policies code list", position = 3)
+  @ApiModelProperty(notes = "Contributing policies code list", position = 10)
   private List<String> policiesCodeList;
 
   @ApiModelProperty(notes = "Aditional link list", position = 4)
@@ -85,9 +85,14 @@ public class NewProjectExpectedStudyDTO {
   @ApiModelProperty(notes = "phase (POWB, AR, UpKeep)", position = 4)
   private PhaseDTO phase;
 
+  @ApiModelProperty(notes = "Contributing milestones code list", position = 10)
+  private List<NewMilestonesDTO> milestonesCodeList;
+
+
   public List<String> getCountries() {
     return countries;
   }
+
 
   public List<NewCrosscuttingMarkersDTO> getCrossCuttingMarkers() {
     return crossCuttingMarkers;
@@ -97,11 +102,9 @@ public class NewProjectExpectedStudyDTO {
     return flagshipsList;
   }
 
-
   public List<String> getGeographicScopes() {
     return geographicScopes;
   }
-
 
   public List<String> getInnovationCodeList() {
     return innovationCodeList;
@@ -115,6 +118,11 @@ public class NewProjectExpectedStudyDTO {
 
   public List<String> getLinks() {
     return links;
+  }
+
+
+  public List<NewMilestonesDTO> getMilestonesCodeList() {
+    return milestonesCodeList;
   }
 
 
@@ -158,7 +166,7 @@ public class NewProjectExpectedStudyDTO {
   }
 
 
-  public List<String> getSrfSubIdoList() {
+  public List<NewSrfSubIdoDTO> getSrfSubIdoList() {
     return srfSubIdoList;
   }
 
@@ -195,6 +203,11 @@ public class NewProjectExpectedStudyDTO {
 
   public void setLinks(List<String> links) {
     this.links = links;
+  }
+
+
+  public void setMilestonesCodeList(List<NewMilestonesDTO> milestonesCodeList) {
+    this.milestonesCodeList = milestonesCodeList;
   }
 
 
@@ -238,7 +251,7 @@ public class NewProjectExpectedStudyDTO {
   }
 
 
-  public void setSrfSubIdoList(List<String> srfSubIdoList) {
+  public void setSrfSubIdoList(List<NewSrfSubIdoDTO> srfSubIdoList) {
     this.srfSubIdoList = srfSubIdoList;
   }
 

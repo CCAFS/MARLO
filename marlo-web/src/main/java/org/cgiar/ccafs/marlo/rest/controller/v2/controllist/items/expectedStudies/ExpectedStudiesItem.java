@@ -21,6 +21,7 @@ package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.expectedStudi
 
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CgiarCrossCuttingMarkerManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.EvidenceTagManager;
 import org.cgiar.ccafs.marlo.data.manager.GeneralStatusManager;
@@ -37,6 +38,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyLinkManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyQuantificationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyRegionManager;
@@ -52,6 +54,7 @@ import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.StudyTypeManager;
 import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
+import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.EvidenceTag;
@@ -70,6 +73,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLink;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyQuantification;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
@@ -85,8 +89,10 @@ import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.data.model.StudyType;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.NewCrosscuttingMarkersDTO;
+import org.cgiar.ccafs.marlo.rest.dto.NewMilestonesDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectExpectedStudyDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectPolicyDTO;
+import org.cgiar.ccafs.marlo.rest.dto.NewSrfSubIdoDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectExpectedStudyDTO;
 import org.cgiar.ccafs.marlo.rest.dto.QuantificationDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
@@ -128,6 +134,7 @@ public class ExpectedStudiesItem<T> {
   private ProjectManager projectManager;
   private ProjectExpectedStudyManager projectExpectedStudyManager;
   private StudyTypeManager studyTypeManager;
+  private CrpMilestoneManager crpMilestoneManager;
   private ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager;
   private ProjectExpectedStudyGeographicScopeManager projectExpectedStudyGeographicScopeManager;
   private ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager;
@@ -141,7 +148,7 @@ public class ExpectedStudiesItem<T> {
   private ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager;
   private ProjectExpectedStudyCrpManager projectExpectedStudyCrpManager;
   private ProjectExpectedStudyQuantificationManager projectExpectedStudyQuantificationManager;
-
+  private ProjectExpectedStudyMilestoneManager projectExpectedStudyMilestoneManager;
   private ProjectExpectedStudyMapper projectExpectedStudyMapper;
 
 
@@ -167,7 +174,8 @@ public class ExpectedStudiesItem<T> {
     ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager,
     ProjectExpectedStudyCrpManager projectExpectedStudyCrpManager,
     ProjectExpectedStudyQuantificationManager projectExpectedStudyQuantificationManager,
-    StudyTypeManager studyTypeManager, ProjectManager projectManager,
+    StudyTypeManager studyTypeManager, ProjectManager projectManager, CrpMilestoneManager crpMilestoneManager,
+    ProjectExpectedStudyMilestoneManager projectExpectedStudyMilestoneManager,
     ProjectExpectedStudyMapper projectExpectedStudyMapper) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
@@ -199,6 +207,7 @@ public class ExpectedStudiesItem<T> {
     this.projectExpectedStudyLinkManager = projectExpectedStudyLinkManager;
     this.studyTypeManager = studyTypeManager;
     this.projectManager = projectManager;
+    this.crpMilestoneManager = crpMilestoneManager;
     this.projectExpectedStudySubIdoManager = projectExpectedStudySubIdoManager;
 
     this.projectExpectedStudyMapper = projectExpectedStudyMapper;
@@ -239,11 +248,12 @@ public class ExpectedStudiesItem<T> {
       List<CrpProgram> flagshipList = new ArrayList<>();
       List<LocElement> countriesList = new ArrayList<>();
       List<LocElement> regionsList = new ArrayList<>();
-      List<SrfSubIdo> srfSubIdoList = new ArrayList<>();
+      List<ProjectExpectedStudySubIdo> srfSubIdoList = new ArrayList<>();
       List<ProjectInnovation> projectInnovationList = new ArrayList<ProjectInnovation>();
       List<ProjectPolicy> projectPolicyList = new ArrayList<ProjectPolicy>();
       List<Institution> institutionList = new ArrayList<Institution>();
       List<String> linkList = new ArrayList<String>();
+      List<ProjectExpectedStudyMilestone> milestoneList = new ArrayList<ProjectExpectedStudyMilestone>();
       List<ProjectExpectedStudyQuantification> ExpectedStudyQuantificationList =
         new ArrayList<ProjectExpectedStudyQuantification>();
 
@@ -393,14 +403,22 @@ public class ExpectedStudiesItem<T> {
           // subidos
           if (newProjectExpectedStudy.getSrfSubIdoList() != null
             && newProjectExpectedStudy.getSrfSubIdoList().size() > 0) {
-            for (String subido : newProjectExpectedStudy.getSrfSubIdoList()) {
-              if (subido != null) {
-                SrfSubIdo srfSubIdo = srfSubIdoManager.getSrfSubIdoByCode(subido);
+            for (NewSrfSubIdoDTO subido : newProjectExpectedStudy.getSrfSubIdoList()) {
+              if (subido != null && subido.getSubIdo() != null) {
+                SrfSubIdo srfSubIdo = srfSubIdoManager.getSrfSubIdoByCode(subido.getSubIdo());
                 if (srfSubIdo == null) {
                   fieldErrors
                     .add(new FieldErrorDTO("CreateExpectedStudy", "SubIDO", subido + " is an invalid subIDO Code"));
                 } else {
-                  srfSubIdoList.add(srfSubIdo);
+
+                  ProjectExpectedStudySubIdo obj = new ProjectExpectedStudySubIdo();
+                  if (subido.getPrimary() != null && subido.getPrimary()) {
+                    obj.setPrimary(subido.getPrimary());
+                  } else {
+                    obj.setPrimary(false);
+                  }
+                  obj.setSrfSubIdo(srfSubIdo);
+                  srfSubIdoList.add(obj);
                 }
               }
             }
@@ -452,7 +470,30 @@ public class ExpectedStudiesItem<T> {
             }
           }
 
-          // crosscutting markers
+          // milestones
+          if (newProjectExpectedStudy.getMilestonesCodeList() != null
+            && newProjectExpectedStudy.getMilestonesCodeList().size() > 0) {
+            for (NewMilestonesDTO milestones : newProjectExpectedStudy.getMilestonesCodeList()) {
+              if (milestones != null && this.isNumeric(milestones.getMilestone())) {
+                CrpMilestone crpMilestone =
+                  crpMilestoneManager.getCrpMilestoneById(Long.valueOf(milestones.getMilestone()));
+                if (crpMilestone != null) {
+                  ProjectExpectedStudyMilestone obj = new ProjectExpectedStudyMilestone();
+                  obj.setCrpMilestone(crpMilestone);
+                  if (milestones.getPrimary() != null && milestones.getPrimary()) {
+                    obj.setPrimary(milestones.getPrimary());
+                  } else {
+                    obj.setPrimary(false);
+                  }
+                  milestoneList.add(obj);
+                } else {
+                  fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Milestone",
+                    milestones.getMilestone() + " is an invalid Institution identifier"));
+                }
+              }
+            }
+          }
+          // Crosscutting markers
           if (newProjectExpectedStudy.getCrossCuttingMarkers() != null
             && newProjectExpectedStudy.getCrossCuttingMarkers().size() > 0) {
             for (NewCrosscuttingMarkersDTO crosscuttingmark : newProjectExpectedStudy.getCrossCuttingMarkers()) {
@@ -575,13 +616,13 @@ public class ExpectedStudiesItem<T> {
                   projectExpectedStudySrfTargetManager.saveProjectExpectedStudySrfTarget(projectExpectedStudySrfTarget);
                 }
                 // SudIDOs
-                for (SrfSubIdo srfSubIdo : srfSubIdoList) {
+                for (ProjectExpectedStudySubIdo srfSubIdo : srfSubIdoList) {
                   ProjectExpectedStudySubIdo projectExpectedStudySubIdo = new ProjectExpectedStudySubIdo();
                   projectExpectedStudySubIdo.setPhase(phase);
                   projectExpectedStudySubIdo.setProjectExpectedStudy(projectExpectedStudyDB);
-                  projectExpectedStudySubIdo.setSrfSubIdo(srfSubIdo);
+                  projectExpectedStudySubIdo.setSrfSubIdo(srfSubIdo.getSrfSubIdo());
+                  projectExpectedStudySubIdo.setPrimary(srfSubIdo.getPrimary());
                   // to do Set as a primary if is necessary
-                  projectExpectedStudySubIdo.setPrimary(false);
                   projectExpectedStudySubIdoManager.saveProjectExpectedStudySubIdo(projectExpectedStudySubIdo);
                 }
                 // flagships
@@ -626,6 +667,16 @@ public class ExpectedStudiesItem<T> {
                   projectExpectedStudyInnovation.setProjectInnovation(projectInnovation);
                   projectExpectedStudyInnovationManager
                     .saveProjectExpectedStudyInnovation(projectExpectedStudyInnovation);
+                }
+
+                // milestones
+                for (ProjectExpectedStudyMilestone projectExpectedStudyMilestones : milestoneList) {
+                  ProjectExpectedStudyMilestone expectedStudyMilestone = new ProjectExpectedStudyMilestone();
+                  expectedStudyMilestone.setCrpMilestone(projectExpectedStudyMilestones.getCrpMilestone());
+                  expectedStudyMilestone.setPhase(phase);
+                  expectedStudyMilestone.setPrimary(projectExpectedStudyMilestones.getPrimary());
+                  expectedStudyMilestone.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudyMilestoneManager.saveProjectExpectedStudyMilestone(expectedStudyMilestone);
                 }
                 // crps
                 for (GlobalUnit globalUnit : crpContributing) {
@@ -675,6 +726,7 @@ public class ExpectedStudiesItem<T> {
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
     ProjectExpectedStudy projectExpectedStudy = projectExpectedStudyManager.getProjectExpectedStudyById(id.longValue());
 
+
     Phase phase =
       this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
         && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().get();
@@ -698,6 +750,92 @@ public class ExpectedStudiesItem<T> {
         fieldErrors.stream()
           .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
           .collect(Collectors.toList()));
+    }
+
+    if (projectExpectedStudy != null) {
+      ProjectExpectedStudyInfo projectExpectedStudyInfo = projectExpectedStudy.getProjectExpectedStudyInfo(phase);
+      // Flagship
+      List<ProjectExpectedStudyFlagship> projectExpectedStudyFlagshipList =
+        projectExpectedStudy.getProjectExpectedStudyFlagships().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+      projectExpectedStudy.setFlagships(projectExpectedStudyFlagshipList);
+      // SubIDOs
+      List<ProjectExpectedStudySubIdo> projectExpectedStudySubIdoList =
+        projectExpectedStudy.getProjectExpectedStudySubIdos().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+      projectExpectedStudy.setSubIdos(projectExpectedStudySubIdoList);
+      if (projectExpectedStudyInfo.getIsSrfTarget() != null
+        && projectExpectedStudyInfo.getIsSrfTarget().equals("Yes")) {
+        // SrfSlo
+        List<ProjectExpectedStudySrfTarget> projectExpectedStudySrfTargetList =
+          projectExpectedStudy.getProjectExpectedStudySrfTargets().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+        projectExpectedStudy.setSrfTargets(projectExpectedStudySrfTargetList);
+      } else {
+        List<ProjectExpectedStudySrfTarget> projectExpectedStudySrfTargetList =
+          new ArrayList<ProjectExpectedStudySrfTarget>();
+        projectExpectedStudy.setSrfTargets(projectExpectedStudySrfTargetList);
+      }
+
+      // GeographicScope
+      List<ProjectExpectedStudyGeographicScope> projectExpectedStudyGeographicScopeList =
+        projectExpectedStudy.getProjectExpectedStudyGeographicScopes().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+      projectExpectedStudy.setGeographicScopes(projectExpectedStudyGeographicScopeList);
+      // Institutions
+      List<ProjectExpectedStudyInstitution> projectExpectedStudyInstitutionList =
+        projectExpectedStudy.getProjectExpectedStudyInstitutions().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+      projectExpectedStudy.setInstitutions(projectExpectedStudyInstitutionList);
+      // CRPs contribution
+      List<ProjectExpectedStudyCrp> projectExpectedStudyCrpList = projectExpectedStudy.getProjectExpectedStudyCrps()
+        .stream().filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+      projectExpectedStudy.setCrps(projectExpectedStudyCrpList);
+      // Regions
+      List<ProjectExpectedStudyRegion> projectExpectedStudyRegionList = projectExpectedStudyRegionManager
+        .findAll().stream().filter(c -> c.isActive()
+          && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
+        .collect(Collectors.toList());
+      projectExpectedStudy.setStudyRegions(projectExpectedStudyRegionList);
+      // Countries
+      List<ProjectExpectedStudyCountry> projectExpectedStudyCountryList = projectExpectedStudyCountryManager
+        .findAll().stream().filter(c -> c.isActive()
+          && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
+        .collect(Collectors.toList());
+      projectExpectedStudy.setCountries(projectExpectedStudyCountryList);
+      // Quantification
+      List<ProjectExpectedStudyQuantification> projectExpectedStudyQuantificationList =
+        projectExpectedStudyQuantificationManager
+          .findAll().stream().filter(c -> c.isActive()
+            && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
+          .collect(Collectors.toList());
+      projectExpectedStudy.setQuantifications(projectExpectedStudyQuantificationList);
+      // Links
+      List<ProjectExpectedStudyLink> projectExpectedStudyLinkList = projectExpectedStudy.getProjectExpectedStudyLinks()
+        .stream().filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+      projectExpectedStudy.setLinks(projectExpectedStudyLinkList);
+
+      // innovations
+      List<ProjectExpectedStudyInnovation> projectExpectedStudyInnovationList =
+        projectExpectedStudy.getProjectExpectedStudyInnovations().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+      projectExpectedStudy.setInnovations(projectExpectedStudyInnovationList);
+      if (projectExpectedStudyInfo.getIsContribution() != null && projectExpectedStudyInfo.getIsContribution()) {
+        // Policies
+        List<ProjectExpectedStudyPolicy> projectExpectedStudyPolicyList =
+          projectExpectedStudy.getProjectExpectedStudyPolicies().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+        projectExpectedStudy.setPolicies(projectExpectedStudyPolicyList);
+      } else {
+        List<ProjectExpectedStudyPolicy> projectExpectedStudyPolicyList = new ArrayList<ProjectExpectedStudyPolicy>();
+        projectExpectedStudy.setPolicies(projectExpectedStudyPolicyList);
+      }
+
+      List<ProjectExpectedStudyMilestone> projectExpectedStudyMilestoneList = projectExpectedStudy
+        .getProjectExpectedStudyMilestones().stream().filter(c -> c != null
+          && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
+        .collect(Collectors.toList());
+      projectExpectedStudy.setMilestones(projectExpectedStudyMilestoneList);
     }
 
     return Optional.ofNullable(projectExpectedStudy)

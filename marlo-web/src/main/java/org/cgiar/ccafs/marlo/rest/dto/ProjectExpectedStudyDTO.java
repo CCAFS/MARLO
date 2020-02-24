@@ -74,11 +74,17 @@ public class ProjectExpectedStudyDTO {
   @ApiModelProperty(notes = "Aditional link list", position = 4)
   private List<ProjectExpectedStudyLinkDTO> links;
 
-  @ApiModelProperty(notes = "phase (POWB, AR, UpKeep)", position = 13)
+  @ApiModelProperty(notes = "Contributing milestone list", position = 13)
+  private List<ProjectExpectedStudyMilestoneDTO> milestonesList;
+
+
+  @ApiModelProperty(notes = "phase (POWB, AR, UpKeep)", position = 14)
   private PhaseDTO phase;
+
 
   @ApiModelProperty(notes = "phase id", position = 14)
   private Long phaseID;
+
 
   public List<CountryDTO> getCountries() {
     return countries;
@@ -88,11 +94,9 @@ public class ProjectExpectedStudyDTO {
     return flagshipsList;
   }
 
-
   public List<GeographicScopeDTO> getGeographicScopes() {
     return geographicScopes;
   }
-
 
   public Long getId() {
     return id;
@@ -111,6 +115,11 @@ public class ProjectExpectedStudyDTO {
 
   public List<ProjectExpectedStudyLinkDTO> getLinks() {
     return links;
+  }
+
+
+  public List<ProjectExpectedStudyMilestoneDTO> getMilestonesList() {
+    return milestonesList;
   }
 
 
@@ -196,6 +205,11 @@ public class ProjectExpectedStudyDTO {
 
   public void setLinks(List<ProjectExpectedStudyLinkDTO> links) {
     this.links = links;
+  }
+
+
+  public void setMilestonesList(List<ProjectExpectedStudyMilestoneDTO> milestonesList) {
+    this.milestonesList = milestonesList;
   }
 
 
