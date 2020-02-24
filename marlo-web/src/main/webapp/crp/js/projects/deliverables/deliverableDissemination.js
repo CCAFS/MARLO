@@ -274,19 +274,19 @@ function addDisseminationEvents() {
       $('.other-url').css("display","none");
     }
   });
-
-  $('#CCAFS_deliverable_deliverable_deliverableInfo_deliverableType_id').on('change', function() {
+  var crp = $('form').attr("name").split('_');
+  $('#'+crp[0]+'_deliverable_deliverable_deliverableInfo_deliverableType_id').on('change', function() {
     var doiField = $('.metadataElement-doi').find('div.input ').children()[3];
 
     if(this.value == '63'){
-      $('.acknowledgeCCAFS .requiredTag').slideDown();
+      $('.acknowledge'+crp[0]+' .requiredTag').slideDown();
       if(doiField.value ==''){
         displayExtraFieldUrl(true,true);
       }else{
           displayExtraFieldUrl(false,true);
       }
     }else{
-      $('.acknowledgeCCAFS .requiredTag').slideUp();
+      $('.acknowledge'+crp[0]+' .requiredTag').slideUp();
       displayExtraFieldUrl(false,false);
     }
   });
@@ -821,18 +821,19 @@ function formatStateCountries(state) {
  *
  */
 function validateSubCategorySelector() {
-  var selector = $('#CCAFS_deliverable_deliverable_deliverableInfo_deliverableType_id');
+  var crp = $('form').attr("name").split('_');
+  var selector = $('#'+crp[0]+'_deliverable_deliverable_deliverableInfo_deliverableType_id');
   var doiField = $('.metadataElement-doi').find('div.input ').children()[3];
 
   if(selector.val() == '63'){
-    $('.acknowledgeCCAFS .requiredTag').slideDown();
+    $('.acknowledge'+crp[0]+' .requiredTag').slideDown();
     if(doiField.value ==''){
       displayExtraFieldUrl(true,true);
     }else{
         displayExtraFieldUrl(false,true);
     }
   }else{
-    $('.acknowledgeCCAFS .requiredTag').slideUp();
+    $('.acknowledge'+crp[0]+' .requiredTag').slideUp();
     displayExtraFieldUrl(false,false);
   }
 };
