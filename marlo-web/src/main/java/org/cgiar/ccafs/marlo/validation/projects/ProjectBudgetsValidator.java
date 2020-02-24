@@ -86,8 +86,7 @@ public class ProjectBudgetsValidator extends BaseValidator {
   public void validate(BaseAction action, Project project, boolean saving) {
     action.setInvalidFields(new HashMap<>());
     hasErros = false;
-    if (project != null && action.getActualPhase() != null && action.getActualPhase().getName() != null
-      && !action.getActualPhase().getName().contains("AR")) {
+    if (project != null) {
       if (!saving) {
         Path path = this.getAutoSaveFilePath(project, action.getCrpID(), action);
 
@@ -96,104 +95,107 @@ public class ProjectBudgetsValidator extends BaseValidator {
         }
       }
 
-      int totalPartnerBudgetsCurrentYear = 0;
-      if (project.getBudgets() != null && project.getBudgets().size() > 0) {
-        long total = 0;
-        int i = 0;
-        for (ProjectBudget projectBudget : project.getBudgets()) {
+      if (!action.getActualPhase().getName().contains("AR")) {
 
-          if (projectBudget != null) {
-            if (projectBudget.getYear() == action.getCurrentCycleYear()) {
-              totalPartnerBudgetsCurrentYear++;
-            }
-            if (projectBudget.getAmount() != null) {
+        int totalPartnerBudgetsCurrentYear = 0;
+        if (project.getBudgets() != null && project.getBudgets().size() > 0) {
+          long total = 0;
+          int i = 0;
+          for (ProjectBudget projectBudget : project.getBudgets()) {
+
+            if (projectBudget != null) {
               if (projectBudget.getYear() == action.getCurrentCycleYear()) {
-                FundingSource fundingSource =
-                  fundingSourceManager.getFundingSourceById(projectBudget.getFundingSource().getId());
-                // calculate the remaing. If the budget is new, calculate it with the budgets associated with this FS in
-                // the year evaluated. If it is not new this budget is excluded from the calculation
-                double remaining = 0;
-                if (projectBudget.getId() == null) {
-                  remaining = fundingSource.getRemaining(projectBudget.getYear(), action.getActualPhase());
-                } else {
-                  remaining = fundingSource.getRemainingExcludeBudget(projectBudget.getYear(),
-                    projectBudget.getId().longValue(), action.getActualPhase());
-                }
-                double currentAmount = projectBudget.getAmount().doubleValue();
-                double subBudgets = remaining - currentAmount;
-                int intValue = (int) subBudgets;
-                if (intValue < 0) {
-                  action.addMessage(action.getText("projectBudgets.fundig"));
-                  action.getInvalidFields().put("input-project.budgets[" + i + "].amount",
-                    InvalidFieldsMessages.EMPTYFIELD);
+                totalPartnerBudgetsCurrentYear++;
+              }
+              if (projectBudget.getAmount() != null) {
+                if (projectBudget.getYear() == action.getCurrentCycleYear()) {
+                  FundingSource fundingSource =
+                    fundingSourceManager.getFundingSourceById(projectBudget.getFundingSource().getId());
+                  // calculate the remaing. If the budget is new, calculate it with the budgets associated with this FS
+                  // in
+                  // the year evaluated. If it is not new this budget is excluded from the calculation
+                  double remaining = 0;
+                  if (projectBudget.getId() == null) {
+                    remaining = fundingSource.getRemaining(projectBudget.getYear(), action.getActualPhase());
+                  } else {
+                    remaining = fundingSource.getRemainingExcludeBudget(projectBudget.getYear(),
+                      projectBudget.getId().longValue(), action.getActualPhase());
+                  }
+                  double currentAmount = projectBudget.getAmount().doubleValue();
+                  double subBudgets = remaining - currentAmount;
+                  int intValue = (int) subBudgets;
+                  if (intValue < 0) {
+                    action.addMessage(action.getText("projectBudgets.fundig"));
+                    action.getInvalidFields().put("input-project.budgets[" + i + "].amount",
+                      InvalidFieldsMessages.EMPTYFIELD);
 
-                }
+                  }
 
-                total = total + projectBudget.getAmount().longValue();
+                  total = total + projectBudget.getAmount().longValue();
+                }
+              }
+
+            }
+            i++;
+          }
+          if (!action.hasSpecificities(APConstants.CRP_PROJECT_BUDGET_ZERO)) {
+            if (total <= 0) {
+              i = 0;
+              for (ProjectBudget projectBudget : project.getBudgets()) {
+                if (projectBudget != null) {
+                  if (projectBudget.getYear() == action.getCurrentCycleYear()) {
+                    action.addMessage(action.getText("projectBudgets.amount"));
+                    action.getInvalidFields().put("input-project.budgets[" + i + "].amount",
+                      InvalidFieldsMessages.EMPTYFIELD);
+                  }
+                }
+                i++;
               }
             }
-
           }
-          i++;
+        } else {
+          // These lines were comment due a choice with Hector to not require at least one budget anymore (2019-11-27)
+          // action.addMessage(action.getText("projectBudgets"));
+          // action.getInvalidFields().put("list-project.budgets",
+          // action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Budgets"}));
         }
-        if (!action.hasSpecificities(APConstants.CRP_PROJECT_BUDGET_ZERO)) {
-          if (total <= 0) {
-            i = 0;
-            for (ProjectBudget projectBudget : project.getBudgets()) {
-              if (projectBudget != null) {
-                if (projectBudget.getYear() == action.getCurrentCycleYear()) {
-                  action.addMessage(action.getText("projectBudgets.amount"));
-                  action.getInvalidFields().put("input-project.budgets[" + i + "].amount",
+
+        if (totalPartnerBudgetsCurrentYear <= 0) {
+          // These lines were comment due a choice with Hector to not require at least one budget anymore (2019-11-27)
+          // action.addMessage(action.getText("projectBudgets"));
+          // action.getInvalidFields().put("list-project.budgets",
+          // action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Budgets"}));
+        }
+
+        if ((action.isReportingActive() || action.isUpKeepActive())
+          && action.hasSpecificities(action.getCrpEnableBudgetExecution())) {
+          if (project.getBudgetExecutions() != null && project.getBudgetExecutions().size() > 0) {
+            int i = 0;
+            for (ProjectBudgetExecution projectBudgetExecution : project.getBudgetExecutions()) {
+              if (projectBudgetExecution.getYear() >= action.getActualPhase().getYear()) {
+                if (!this.isValidNumber(String.valueOf(projectBudgetExecution.getActualExpenditure()))
+                  || projectBudgetExecution.getActualExpenditure() < 0) {
+                  action.addMessage("Actual expenditure" + "[" + i + "]");
+                  action.getInvalidFields().put("input-project.budgetExecutions[" + i + "].actualExpenditure",
                     InvalidFieldsMessages.EMPTYFIELD);
                 }
               }
               i++;
             }
+          } else {
+            action.addMessage(action.getText("projectBudgetsExecution"));
+            action.getInvalidFields().put("input-project.budgetExecutions[0].actualExpenditure",
+              action.getText(InvalidFieldsMessages.EMPTYFIELD));
           }
         }
-      } else {
-        // These lines were comment due a choice with Hector to not require at least one budget anymore (2019-11-27)
-        // action.addMessage(action.getText("projectBudgets"));
-        // action.getInvalidFields().put("list-project.budgets",
-        // action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Budgets"}));
-      }
-
-      if (totalPartnerBudgetsCurrentYear <= 0) {
-        // These lines were comment due a choice with Hector to not require at least one budget anymore (2019-11-27)
-        // action.addMessage(action.getText("projectBudgets"));
-        // action.getInvalidFields().put("list-project.budgets",
-        // action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Budgets"}));
-      }
-
-      if ((action.isReportingActive() || action.isUpKeepActive())
-        && action.hasSpecificities(action.getCrpEnableBudgetExecution())) {
-        if (project.getBudgetExecutions() != null && project.getBudgetExecutions().size() > 0) {
-          int i = 0;
-          for (ProjectBudgetExecution projectBudgetExecution : project.getBudgetExecutions()) {
-            if (projectBudgetExecution.getYear() >= action.getActualPhase().getYear()) {
-              if (!this.isValidNumber(String.valueOf(projectBudgetExecution.getActualExpenditure()))
-                || projectBudgetExecution.getActualExpenditure() < 0) {
-                action.addMessage("Actual expenditure" + "[" + i + "]");
-                action.getInvalidFields().put("input-project.budgetExecutions[" + i + "].actualExpenditure",
-                  InvalidFieldsMessages.EMPTYFIELD);
-              }
-            }
-            i++;
-          }
-        } else {
-          action.addMessage(action.getText("projectBudgetsExecution"));
-          action.getInvalidFields().put("input-project.budgetExecutions[0].actualExpenditure",
-            action.getText(InvalidFieldsMessages.EMPTYFIELD));
+        if (!action.getFieldErrors().isEmpty()) {
+          hasErros = true;
+          action.addActionError(action.getText("saving.fields.required"));
+        } else if (action.getValidationMessage().length() > 0) {
+          action.addActionMessage(
+            " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
         }
       }
-      if (!action.getFieldErrors().isEmpty()) {
-        hasErros = true;
-        action.addActionError(action.getText("saving.fields.required"));
-      } else if (action.getValidationMessage().length() > 0) {
-        action.addActionMessage(
-          " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
-      }
-
       this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
         action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.BUDGET.getStatus(), action);
 
