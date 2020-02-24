@@ -623,7 +623,7 @@ function setISI(isi) {
     $('input#optionISI-yes').prop('checked', true);
   }
   if(isi === "false") {
-    $('input#optionISI-no').prop('checked', false);
+    $('input#optionISI-no').prop('checked', true);
   }
   if(isi === "") {
     $('input#optionISI-yes').prop('checked', false);
