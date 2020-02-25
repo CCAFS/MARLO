@@ -33,7 +33,7 @@ public class NewProjectExpectedStudyDTO {
   private NewProjectExpectedStudyInfoDTO projectExpectedEstudyInfo;
 
 
-  @ApiModelProperty(notes = "CGIAR Sub-IDOs code List", position = 3)
+  @ApiModelProperty(notes = "CGIAR Sub-IDOs SMO code List", position = 3)
   // private List<SrfSubIdoDTO> srfSubIdoList;
   private List<NewSrfSubIdoDTO> srfSubIdoList;
 
@@ -47,7 +47,7 @@ public class NewProjectExpectedStudyDTO {
   // private List<GeographicScopeDTO> geographicScopes;
   private List<String> geographicScopes;
 
-  @ApiModelProperty(notes = "Contributing Flagship code List", position = 8)
+  @ApiModelProperty(notes = "Contributing Flagship SMO code List", position = 8)
   // private List<CrpProgramDTO> flagshipsList;
   private List<String> flagshipsList;
 
@@ -55,7 +55,7 @@ public class NewProjectExpectedStudyDTO {
   // private List<InstitutionDTO> institutionsList;
   private List<String> institutionsList;
 
-  @ApiModelProperty(notes = "Contributing CRP/Plataform code List", position = 7)
+  @ApiModelProperty(notes = "Contributing CRP/Plataform SMO code List", position = 7)
   // private List<CGIAREntityDTO> projectExpectedStudiesCrpDTO;
   private List<String> projectExpectedStudiesCrpDTO;
 
