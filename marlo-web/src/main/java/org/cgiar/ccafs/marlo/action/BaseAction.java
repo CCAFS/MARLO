@@ -3736,28 +3736,32 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         break;
 
       case BUDGET:
-        if (this.isReportingActive() && !this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
+        if (this.reportingActive) {
           return true;
-        }
-        project = this.projectManager.getProjectById(projectID);
-        if (project.getProjectBudgets().stream()
-          .filter(d -> d.isActive() && d.getPhase() != null && d.getPhase().equals(this.getActualPhase()))
-          .collect(Collectors.toList()).isEmpty()) {
-          return false;
-        }
-        if (this.isReportingActive() && this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
-          if (project.getProjectBudgetExecutions().stream()
+        } else {
+          if (!this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
+            return true;
+          }
+          project = this.projectManager.getProjectById(projectID);
+          if (project.getProjectBudgets().stream()
             .filter(d -> d.isActive() && d.getPhase() != null && d.getPhase().equals(this.getActualPhase()))
             .collect(Collectors.toList()).isEmpty()) {
             return false;
           }
-        }
+          if (this.isReportingActive() && this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
+            if (project.getProjectBudgetExecutions().stream()
+              .filter(d -> d.isActive() && d.getPhase() != null && d.getPhase().equals(this.getActualPhase()))
+              .collect(Collectors.toList()).isEmpty()) {
+              return false;
+            }
+          }
 
-        sectionStatus = this.sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
-          this.getCurrentCycleYear(), this.isUpKeepActive(), section);
-        if (sectionStatus != null) {
-          if (sectionStatus.getMissingFields().length() == 0) {
-            return true;
+          sectionStatus = this.sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
+            this.getCurrentCycleYear(), this.isUpKeepActive(), section);
+          if (sectionStatus != null) {
+            if (sectionStatus.getMissingFields().length() == 0) {
+              return true;
+            }
           }
         }
         break;
