@@ -51,7 +51,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Api(tags = "KeyExternalPartnership")
+@Api(tags = "Table 8 - Key external partnerships")
 public class KeyExternalPartnership {
 
   private static final Logger LOG = LoggerFactory.getLogger(KeyExternalPartnership.class);

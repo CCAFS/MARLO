@@ -51,7 +51,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Api(tags = "ExpectedStudies")
+@Api(tags = "Table 3 - Outcome/ Impact Case Reports")
 public class ExpectedStudies {
 
   private static final Logger LOG = LoggerFactory.getLogger(ExpectedStudies.class);
@@ -86,6 +86,26 @@ public class ExpectedStudies {
     ResponseEntity<Long> response = new ResponseEntity<Long>(policyId, HttpStatus.OK);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("ExpectedStudies.OICR.GET.id.404"));
+    }
+    return response;
+  }
+
+  @ApiOperation(tags = {"Table 3 - Outcome/ Impact Case Reports"}, value = "${ExpectedStudies.OICR.DELETE.id.value}",
+    response = ProjectExpectedStudyDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/OICR/{id}", method = RequestMethod.DELETE,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<ProjectExpectedStudyDTO> deleteExpectedStudyById(
+    @ApiParam(value = "${ExpectedStudies.innovation.DELETE.id.param.CGIAR}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${ExpectedStudies.OICR.DELETE.id.param.id}", required = true) @PathVariable Long id,
+    @ApiParam(value = "${ExpectedStudies.OICR.DELETE.id.param.year}", required = true) @RequestParam Integer year,
+    @ApiParam(value = "${ExpectedStudies.OICR.DELETE.id.param.phase}", required = true) @RequestParam String phase) {
+
+    ResponseEntity<ProjectExpectedStudyDTO> response =
+      this.expectedStudiesItem.deleteExpectedStudyById(id, CGIAREntity, year, phase, this.getCurrentUser());
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("ExpectedStudies.OICR.DELETE.id.404"));
     }
     return response;
   }
