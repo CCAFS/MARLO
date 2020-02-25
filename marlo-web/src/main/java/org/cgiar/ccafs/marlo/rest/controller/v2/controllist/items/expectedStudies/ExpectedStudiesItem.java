@@ -353,7 +353,7 @@ public class ExpectedStudiesItem<T> {
             && newProjectExpectedStudy.getFlagshipsList().size() > 0) {
             for (String flagship : newProjectExpectedStudy.getFlagshipsList()) {
               if (flagship != null && this.isNumeric(flagship)) {
-                CrpProgram crpProgram = crpProgramManager.getCrpProgramById(Long.valueOf(flagship));
+                CrpProgram crpProgram = crpProgramManager.getCrpProgramBySmoCode(flagship);
                 if (crpProgram != null) {
                   flagshipList.add(crpProgram);
                 } else {
