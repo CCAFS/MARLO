@@ -1727,7 +1727,16 @@ public class DeliverableAction extends BaseAction {
         this.saveParticipant();
       }
 
-
+      /*
+       * Delete the field 'new expected year' when the status is different to Extended and this field has information
+       */
+      if (deliverableManagedState.getDeliverableInfo() != null
+        && deliverableManagedState.getDeliverableInfo().getStatus() != null) {
+        if (deliverableManagedState.getDeliverableInfo().getStatus() != 4
+          && deliverableManagedState.getDeliverableInfo().getNewExpectedYear() != null) {
+          deliverableManagedState.getDeliverableInfo().setNewExpectedYear(null);
+        }
+      }
       deliverableInfoManager.saveDeliverableInfo(deliverableManagedState.getDeliverableInfo());
 
       if (this.hasSpecificities(APConstants.CRP_LP6_ACTIVE) && this.isReportingActive()
