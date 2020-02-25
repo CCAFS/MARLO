@@ -495,8 +495,8 @@
       [@customForm.input name="deliverable.publication.journal" i18nkey="project.deliverable.dissemination.journalName" className="metadataValue" type="text" disabled=!editable  required=true editable=editable /]
     </div>
     
-    [#-- Is ISI Journal --]
-    <div class="form-group">
+    [#-- Is ISI Journal--]
+    <div class="form-group isIsiJournal">
       <label for="">[@s.text name="deliverable.isiPublication" /] [@customForm.req required=editable /]
       [@customForm.helpLabel name="deliverable.isiPublication.help" showIcon=false editable=editable/]</label> <br />
       [#local isISI = (deliverable.publication.isiPublication?string)!"" /]
