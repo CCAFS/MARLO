@@ -15,8 +15,7 @@
 
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 
-  <section class="container">
-
+    <section class="container">
            <div class="dashboard-tabs">
             [#-- Menu --]
             <ul class="nav nav-tabs" role="tablist"> 
@@ -29,13 +28,13 @@
             </ul>
             <div class="tab-content ">
               <div id="project-submission-status" role="tabpanel" class="tab-pane fade in active">
-               <iframe width="1000" height="600" src="https://app.powerbi.com/view?r=eyJrIjoiZGRjMzhkM2ItZjA4Ny00YjBkLWI0NjYtYjI1YjRiMjBhYzg0IiwidCI6IjZhZmEwZTAwLWZhMTQtNDBiNy04YTJlLTIyYTdmOGMzNTdkNSIsImMiOjh9" frameborder="0" allowFullScreen="true"></iframe>
+               <iframe width="1100" height="720" src="https://app.powerbi.com/view?r=eyJrIjoiZGU4MTk2ZTQtYjRiNC00NzkxLWFlZWYtNGYwZmI1NGQ1ODA0IiwidCI6IjZhZmEwZTAwLWZhMTQtNDBiNy04YTJlLTIyYTdmOGMzNTdkNSIsImMiOjh9" frameborder="0" allowFullScreen="true"></iframe>
               </div>
               <div id="project-deliverables" role="tabpanel" class="tab-pane fade ">
-                <iframe width="1000" height="600" src="https://app.powerbi.com/view?r=eyJrIjoiZjlkOWVjM2MtYjVjMi00MWRlLThmMDItODZlNjJiMTdlOTI5IiwidCI6IjZhZmEwZTAwLWZhMTQtNDBiNy04YTJlLTIyYTdmOGMzNTdkNSIsImMiOjh9" frameborder="0" allowFullScreen="true"></iframe>
+                <iframe width="1100" height="1100" src="https://app.powerbi.com/view?r=eyJrIjoiNGNiNWRkODEtMWMxYy00MjdjLWIwZTctOGVmYWVhZTliMGIxIiwidCI6IjZhZmEwZTAwLWZhMTQtNDBiNy04YTJlLTIyYTdmOGMzNTdkNSIsImMiOjh9" frameborder="0" allowFullScreen="true"></iframe>
               </div>
             </div>
            </div>
-  </section>
+     </section>
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
