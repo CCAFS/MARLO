@@ -141,4 +141,23 @@ public class ExpectedStudies {
     User user = this.userManager.getUser(principal);
     return user;
   }
+
+  @ApiOperation(tags = {"Table 3 - Outcome/ Impact Case Reports"}, value = "${ExpectedStudies.OICR.PUT.value}",
+    response = ProjectExpectedStudyDTO.class)
+  @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/OICR/{id}", method = RequestMethod.PUT,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Long> putInnovation(
+    @ApiParam(value = "${ExpectedStudies.OICR.PUT.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${ExpectedStudies.OICR.PUT.param.id}", required = true) @PathVariable Long id,
+    @ApiParam(value = "${ExpectedStudies.OICR.PUT.param.innovation}",
+      required = true) @Valid @RequestBody NewProjectExpectedStudyDTO newProjectExpectedStudyDTO) {
+    Long expectedStudyId =
+      this.expectedStudiesItem.putExpectedStudyById(id, newProjectExpectedStudyDTO, CGIAREntity, this.getCurrentUser());
+    ResponseEntity<Long> response = new ResponseEntity<Long>(expectedStudyId, HttpStatus.OK);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("ExpectedStudies.OICR.GET.id.404"));
+    }
+    return response;
+  }
 }

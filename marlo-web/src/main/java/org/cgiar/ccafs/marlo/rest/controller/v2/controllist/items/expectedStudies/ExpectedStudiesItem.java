@@ -729,7 +729,7 @@ public class ExpectedStudiesItem<T> {
       fieldErrors.add(new FieldErrorDTO("DeleteExpectedStudy", "GlobalUnitEntity",
         CGIARentityAcronym + " is an invalid CGIAR entity acronym"));
     }
-    ProjectExpectedStudy expectedStudy = this.projectExpectedStudyManager.getProjectExpectedStudyById(id);
+    ProjectExpectedStudy projectExpectedStudy = this.projectExpectedStudyManager.getProjectExpectedStudyById(id);
     Phase phase =
       this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
         && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().get();
@@ -739,8 +739,95 @@ public class ExpectedStudiesItem<T> {
         new NewInnovationDTO().getPhase().getYear() + " is an invalid year"));
     }
 
-    if (expectedStudy != null) {
+    if (projectExpectedStudy != null) {
+      ProjectExpectedStudyInfo projectExpectedStudyInfo = projectExpectedStudy.getProjectExpectedStudyInfo(phase);
+      if (projectExpectedStudyInfo != null) {
+        // Flagship
+        List<ProjectExpectedStudyFlagship> projectExpectedStudyFlagshipList =
+          projectExpectedStudy.getProjectExpectedStudyFlagships().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+        projectExpectedStudy.setFlagships(projectExpectedStudyFlagshipList);
+        // SubIDOs
+        List<ProjectExpectedStudySubIdo> projectExpectedStudySubIdoList =
+          projectExpectedStudy.getProjectExpectedStudySubIdos().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+        projectExpectedStudy.setSubIdos(projectExpectedStudySubIdoList);
+        if (projectExpectedStudyInfo.getIsSrfTarget() != null
+          && projectExpectedStudyInfo.getIsSrfTarget().equals("Yes")) {
+          // SrfSlo
+          List<ProjectExpectedStudySrfTarget> projectExpectedStudySrfTargetList =
+            projectExpectedStudy.getProjectExpectedStudySrfTargets().stream()
+              .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+          projectExpectedStudy.setSrfTargets(projectExpectedStudySrfTargetList);
+        } else {
+          List<ProjectExpectedStudySrfTarget> projectExpectedStudySrfTargetList =
+            new ArrayList<ProjectExpectedStudySrfTarget>();
+          projectExpectedStudy.setSrfTargets(projectExpectedStudySrfTargetList);
+        }
 
+        // GeographicScope
+        List<ProjectExpectedStudyGeographicScope> projectExpectedStudyGeographicScopeList =
+          projectExpectedStudy.getProjectExpectedStudyGeographicScopes().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+        projectExpectedStudy.setGeographicScopes(projectExpectedStudyGeographicScopeList);
+        // Institutions
+        List<ProjectExpectedStudyInstitution> projectExpectedStudyInstitutionList =
+          projectExpectedStudy.getProjectExpectedStudyInstitutions().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+        projectExpectedStudy.setInstitutions(projectExpectedStudyInstitutionList);
+        // CRPs contribution
+        List<ProjectExpectedStudyCrp> projectExpectedStudyCrpList = projectExpectedStudy.getProjectExpectedStudyCrps()
+          .stream().filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+        projectExpectedStudy.setCrps(projectExpectedStudyCrpList);
+        // Regions
+        List<ProjectExpectedStudyRegion> projectExpectedStudyRegionList = projectExpectedStudyRegionManager
+          .findAll().stream().filter(c -> c.isActive()
+            && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
+          .collect(Collectors.toList());
+        projectExpectedStudy.setStudyRegions(projectExpectedStudyRegionList);
+        // Countries
+        List<ProjectExpectedStudyCountry> projectExpectedStudyCountryList = projectExpectedStudyCountryManager
+          .findAll().stream().filter(c -> c.isActive()
+            && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
+          .collect(Collectors.toList());
+        projectExpectedStudy.setCountries(projectExpectedStudyCountryList);
+        // Quantification
+        List<ProjectExpectedStudyQuantification> projectExpectedStudyQuantificationList =
+          projectExpectedStudyQuantificationManager
+            .findAll().stream().filter(c -> c.isActive()
+              && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
+            .collect(Collectors.toList());
+        projectExpectedStudy.setQuantifications(projectExpectedStudyQuantificationList);
+        // Links
+        List<ProjectExpectedStudyLink> projectExpectedStudyLinkList =
+          projectExpectedStudy.getProjectExpectedStudyLinks().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+        projectExpectedStudy.setLinks(projectExpectedStudyLinkList);
+
+        // innovations
+        List<ProjectExpectedStudyInnovation> projectExpectedStudyInnovationList =
+          projectExpectedStudy.getProjectExpectedStudyInnovations().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+        projectExpectedStudy.setInnovations(projectExpectedStudyInnovationList);
+        if (projectExpectedStudyInfo.getIsContribution() != null && projectExpectedStudyInfo.getIsContribution()) {
+          // Policies
+          List<ProjectExpectedStudyPolicy> projectExpectedStudyPolicyList =
+            projectExpectedStudy.getProjectExpectedStudyPolicies().stream()
+              .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+          projectExpectedStudy.setPolicies(projectExpectedStudyPolicyList);
+        } else {
+          List<ProjectExpectedStudyPolicy> projectExpectedStudyPolicyList = new ArrayList<ProjectExpectedStudyPolicy>();
+          projectExpectedStudy.setPolicies(projectExpectedStudyPolicyList);
+        }
+
+        List<ProjectExpectedStudyMilestone> projectExpectedStudyMilestoneList = projectExpectedStudy
+          .getProjectExpectedStudyMilestones().stream().filter(c -> c != null
+            && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
+          .collect(Collectors.toList());
+        projectExpectedStudy.setMilestones(projectExpectedStudyMilestoneList);
+
+        projectExpectedStudyManager.deleteProjectExpectedStudy(projectExpectedStudy.getId());
+      }
     }
     if (!fieldErrors.isEmpty()) {
       throw new MARLOFieldValidationException("Field Validation errors", "",
@@ -748,7 +835,7 @@ public class ExpectedStudiesItem<T> {
           .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
           .collect(Collectors.toList()));
     }
-    return Optional.ofNullable(expectedStudy)
+    return Optional.ofNullable(projectExpectedStudy)
       .map(this.projectExpectedStudyMapper::projectExpectedStudyToProjectExpectedStudyDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
 
@@ -892,5 +979,38 @@ public class ExpectedStudiesItem<T> {
       validation = false;
     }
     return validation;
+  }
+
+  public Long putExpectedStudyById(Long idExpectedStudy, NewProjectExpectedStudyDTO newProjectExpectedStudyDTO,
+    String CGIARentityAcronym, User user) {
+    Long expectedStudyID = null;
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
+    if (globalUnitEntity == null) {
+      fieldErrors.add(new FieldErrorDTO("createInnovation", "GlobalUnitEntity",
+        CGIARentityAcronym + " is an invalid CGIAR entity acronym"));
+    }
+
+    Phase phase = this.phaseManager.findAll().stream()
+      .filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
+        && c.getYear() == newProjectExpectedStudyDTO.getPhase().getYear()
+        && c.getName().equalsIgnoreCase(newProjectExpectedStudyDTO.getPhase().getName()))
+      .findFirst().get();
+
+    ProjectExpectedStudy projectExpectedStudy =
+      this.projectExpectedStudyManager.getProjectExpectedStudyById(idExpectedStudy);
+    if (fieldErrors.size() == 0) {
+      if (expectedStudyID != null) {
+        expectedStudyID = projectExpectedStudy.getId();
+      }
+    }
+    if (!fieldErrors.isEmpty()) {
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
+    }
+
+    return expectedStudyID;
   }
 }
