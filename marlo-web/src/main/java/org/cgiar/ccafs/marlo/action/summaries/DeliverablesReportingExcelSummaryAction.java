@@ -1784,7 +1784,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
       new String[] {"publication_id", "title", "publication_sub_type", "deliv_year", "leader",
         "deliv_dissemination_channel", "deliv_dissemination_url", "deliv_open_access", "deliv_license", "titleMetadata",
         "descriptionMetadata", "dateMetadata", "languageMetadata", "countryMetadata", "keywordsMetadata",
-        "citationMetadata", "HandleMetadata", "DOIMetadata", "creator_authors", "F", "A", "I", "R", "restricted_access",
+        "citationMetadata", "HandleMetadata", "DOIMetadata", "creator_authors", "F", "A", "I", "R",
         "deliv_license_modifications", "volume", "issue", "pages", "journal", "journal_indicators", "acknowledge",
         "fl_contrib", "flagships", "regions", "added_by", "phaseID", "gender", "youth", "cap", "keyOutput", "outcomes",
         "geographicScope", "region", "country", "fundingSources"},
@@ -1792,8 +1792,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, Long.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, Long.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, String.class, String.class},
       0);
 
 
@@ -2460,9 +2460,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         model.addRow(new Object[] {publicationId, title, publicationSubType, delivYear, leader,
           delivDisseminationChannel, delivDisseminationUrl, delivOpenAccess, delivLicense, titleMetadata,
           descriptionMetadata, dateMetadata, languageMetadata, countryMetadata, keywordsMetadata, citationMetadata,
-          HandleMetadata, DOIMetadata, creatorAuthors, F, A, I, R, restrictedAccess, delivLicenseModifications, volume,
-          issue, pages, journal, journalIndicators, acknowledge, flContrib, flagships, regions, addedBy, phaseID,
-          gender, youth, cap, keyOutput, outcomes, geographicScope, region, country, fundingSources});
+          HandleMetadata, DOIMetadata, creatorAuthors, F, A, I, R, delivLicenseModifications, volume, issue, pages,
+          journal, journalIndicators, acknowledge, flContrib, flagships, regions, addedBy, phaseID, gender, youth, cap,
+          keyOutput, outcomes, geographicScope, region, country, fundingSources});
       }
     }
     return model;
