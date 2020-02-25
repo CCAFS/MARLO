@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Project Contributions to LP6" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = ["select2", "font-awesome", "flat-flags"] /]
+[#assign pageLibs = ["select2", "font-awesome", "flag-icon-css"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectContributionsToLP6.js",
   "${baseUrlCdn}/global/js/autoSave.js",
