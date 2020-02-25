@@ -98,9 +98,9 @@ public class ProjectInnovationValidator extends BaseValidator {
       && this.wordCount(projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getTitle()) <= 30)) {
       if (struts) {
         action.addMessage(action.getText("projectInnovations.title"));
+        action.addMissingField("projectInnovations.title");
         action.getInvalidFields().put("input-innovation.projectInnovationInfo.title", InvalidFieldsMessages.EMPTYFIELD);
       }
-      this.addMissingField("projectInnovations.title");
     }
 
 
@@ -108,11 +108,11 @@ public class ProjectInnovationValidator extends BaseValidator {
     if (!(this.wordCount(projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getNarrative()) <= 75)) {
       if (struts) {
         action.addMessage(action.getText("projectInnovations.narrative"));
+        action.addMissingField("projectInnovations.narrative");
         action.getInvalidFields().put("input-innovation.projectPolicyInfo.narrativeEvidence",
           InvalidFieldsMessages.EMPTYFIELD);
       }
 
-      this.addMissingField("projectInnovations.narrative");
 
     }
 
@@ -122,7 +122,7 @@ public class ProjectInnovationValidator extends BaseValidator {
         && projectInnovation.getProjectInnovationInfo().getHasMilestones() == true
         && (projectInnovation.getMilestones() == null || projectInnovation.getMilestones().isEmpty()))
       || projectInnovation.getProjectInnovationInfo().getHasMilestones() == null) {
-      action.addMessage(action.getText("milestoneList"));
+      action.addMessage(action.getText("milestones"));
       action.addMissingField("innovation.milestones");
       action.getInvalidFields().put("list-innovation.milestones",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"milestones"}));
@@ -131,7 +131,7 @@ public class ProjectInnovationValidator extends BaseValidator {
     // Validate SubIdos
     if (projectInnovation.getSubIdos() == null || projectInnovation.getSubIdos().isEmpty()) {
       action.addMessage(action.getText("subIdos"));
-      action.addMissingField("innovation.subIDOs");
+      action.addMissingField("innovation.subIdos");
       action.getInvalidFields().put("list-innovation.subIdos",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
     }
@@ -144,10 +144,10 @@ public class ProjectInnovationValidator extends BaseValidator {
           .getId() == -1) {
         if (struts) {
           action.addMessage(action.getText("projectInnovations.stage"));
+          action.addMissingField("projectInnovations.stage");
           action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndStageInnovation.id",
             InvalidFieldsMessages.EMPTYFIELD);
         }
-        this.addMissingField("projectInnovations.stage");
       } else {
         // Validate if Stage is = 4 and review if the innovation has an Organization Types and Outcome Case Study
         if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndStageInnovation()
@@ -156,10 +156,10 @@ public class ProjectInnovationValidator extends BaseValidator {
           if (projectInnovation.getOrganizations() == null || projectInnovation.getOrganizations().isEmpty()) {
             if (struts) {
               action.addMessage(action.getText("projectInnovations.nextUserOrganizationalType"));
+              action.addMissingField("projectInnovations.nextUserOrganizationalType");
               action.getInvalidFields().put("list-innovation.organizations",
                 action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Organization Types"}));
             }
-            this.addMissingField("projectInnovations.nextUserOrganizationalType");
           }
 
           // Validate Outcome Case Study
@@ -171,18 +171,19 @@ public class ProjectInnovationValidator extends BaseValidator {
                 .getId() == -1) {
               if (struts) {
                 action.addMessage(action.getText("projectInnovations.outcomeCaseStudy"));
+                action.addMissingField("projectInnovations.outcomeCaseStudy");
                 action.getInvalidFields().put("input-innovation.projectInnovationInfo.projectExpectedStudy.id",
                   InvalidFieldsMessages.EMPTYFIELD);
               }
-              this.addMissingField("projectInnovations.outcomeCaseStudy");
             }
           } else {
             if (struts) {
               action.addMessage(action.getText("projectInnovations.outcomeCaseStudy"));
+              this.addMissingField("projectInnovations.outcomeCaseStudy");
+              action.addMissingField("projectInnovations.outcomeCaseStudy");
               action.getInvalidFields().put("input-innovation.projectInnovationInfo.projectExpectedStudy.id",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
-            this.addMissingField("projectInnovations.outcomeCaseStudy");
           }
         } else {
           // Validate Evidence Link (URL)
@@ -190,20 +191,20 @@ public class ProjectInnovationValidator extends BaseValidator {
             .isValidString(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getEvidenceLink())) {
             if (struts) {
               action.addMessage(action.getText("projectInnovations.evidenceLink"));
+              action.addMissingField("projectInnovations.evidenceLink");
               action.getInvalidFields().put("input-innovation.projectInnovationInfo.evidenceLink",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
-            this.addMissingField("projectInnovations.evidenceLink");
           }
         }
       }
     } else {
       if (struts) {
         action.addMessage(action.getText("projectInnovations.stage"));
+        action.addMissingField("projectInnovations.stage");
         action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndStageInnovation.id",
           InvalidFieldsMessages.EMPTYFIELD);
       }
-      this.addMissingField("projectInnovations.stage");
     }
 
 
@@ -216,8 +217,8 @@ public class ProjectInnovationValidator extends BaseValidator {
         action.addMessage(action.getText("projectInnovations.geographicScope"));
         action.getInvalidFields().put("list-innovation.geographicScopes",
           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"geographicScopes"}));
+        action.addMissingField("projectInnovations.geographicScope");
       }
-      this.addMissingField("projectInnovations.geographicScope");
 
     } else {
       for (ProjectInnovationGeographicScope innovationGeographicScope : projectInnovation.getGeographicScopes()) {

@@ -151,9 +151,9 @@
       <label class="col-md-9 yesNoLabel" for="">Is this deliverable Open Access? [@customForm.req required=reportingActive /]</label>
       <div class="col-md-3">[@customForm.yesNoInputDeliverable name="${customName}.isOpenAccess"  editable=editable inverse=false cssClass="type-accessible inverted-true text-center" /]  </div>
     </div> 
-    <div class="block-accessible" style="display: ${((!deliverable.dissemination.isOpenAccess)!false)?string("block","none")};">
+    [#--  <div class="block-accessible" style="display: ${((!deliverable.dissemination.isOpenAccess)!false)?string("block","none")};">
       <hr />
-      [#local oaRestrictions = [
+     [#local oaRestrictions = [
         {"value": "intellectualProperty", "isChecked": (deliverable.dissemination.intellectualProperty)!false },
         {"value": "limitedExclusivity", "isChecked": (deliverable.dissemination.limitedExclusivity)!false }
         {"value": "restrictedUseAgreement", "isChecked": (deliverable.dissemination.restrictedUseAgreement)!false }
@@ -173,6 +173,7 @@
         </div>
       </div>
     </div>
+     --]
   </div>
 [/#macro]
 
@@ -182,7 +183,7 @@
 <div class="simpleBox">
   <div class="form-group row yesNoInputDeliverable">
     <label class="col-md-9 yesNoLabel" for="">[@s.text name="deliverable.involveParticipants.title" /] [@customForm.req required=reportingActive /]</label>
-    <div class="col-md-3">[@customForm.yesNoInputDeliverable name="${customName}.hasParticipants"  editable=editable inverse=false  cssClass="type-involveParticipants text-center" neutral=true  /] </div>  
+    <div class="col-md-3">[@customForm.yesNoInputDeliverableParticipants name="${customName}.hasParticipants"  editable=editable inverse=false  cssClass="type-involveParticipants text-center" neutral=true  /] </div>  
   </div>
   
   <div class="block-involveParticipants" style="display:${((deliverable.deliverableParticipant.hasParticipants)!false)?string('block','none')}">
