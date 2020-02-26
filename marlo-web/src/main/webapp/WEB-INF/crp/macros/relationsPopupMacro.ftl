@@ -250,7 +250,7 @@
     [#if evidencies?has_content]
       [#-- Button --]
       <button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#modal-evidencies-${composedID}">
-        <span class="icon-20 deliverable"></span> <strong>${evidencies?size}</strong> [#if labelText] Evidency(ies)[/#if]
+        <span class="icon-20 deliverable"></span> <strong>${evidencies?size}</strong> [#if labelText] Evidence(s)[/#if]
       </button>
       
       [#-- Modal --]
