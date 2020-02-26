@@ -6052,7 +6052,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       try {
         Date reportingDate = this.getActualPhase().getStartDate();
-        if (project.getCreateDate().compareTo(reportingDate) >= 0) {
+        if (project.getCreateDate() != null && reportingDate != null
+          && project.getCreateDate().compareTo(reportingDate) >= 0) {
           return true;
         } else {
           return false;
