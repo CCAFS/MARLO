@@ -58,12 +58,15 @@ public class CGSpaceClientAPI extends MetadataClientApi {
   public MetadataModel getMetadata(String link) {
     MetadataModel metadataModel = null;
     JSONObject jo = new JSONObject();
+    String countries = "";
     this.setDefaultEmptyValues(jo);
+
     try {
       Element metadata = xmlReaderConnectionUtil.getXmlRestClient(link);
       List<Author> authors = new ArrayList<Author>();
       List<Element> elements = metadata.elements();
       for (Element element : elements) {
+
         Element key = element.element("key");
         Element value = element.element("value");
         String keyValue = key.getStringValue();
@@ -100,9 +103,16 @@ public class CGSpaceClientAPI extends MetadataClientApi {
             jo.put(keyValue, value.getStringValue());
           }
         }
+        if (keyValue.equals("coverage.country")) {
+          if (countries.isEmpty()) {
+            countries += value.getStringValue();
+          } else {
+            countries += ", " + value.getStringValue();
+          }
+        }
 
       }
-
+      jo.put("countries", countries);
       this.setDoi(jo);
 
       GsonBuilder gsonBuilder = new GsonBuilder();
