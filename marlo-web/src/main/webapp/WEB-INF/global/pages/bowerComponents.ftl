@@ -15,6 +15,7 @@
   [#if libraryName="animate.css" ]<link rel="stylesheet" href="${baseUrlCdn}/global/bower_components/animate.css/animate.css" />[/#if]
   [#if libraryName="bootstrap" ]<link rel="stylesheet" href="${baseUrlCdn}/global/bower_components/bootstrap/dist/css/bootstrap.min.css" />[/#if]
   [#if libraryName="flat-flags" ]<link rel="stylesheet" href="${baseUrlCdn}/global/bower_components/flat-flags/css/main.css" />[/#if]
+  [#if libraryName="flag-icon-css" ]<link rel="stylesheet" href="${baseUrlCdn}/global/bower_components/flag-icon-css/css/flag-icon.min.css" />[/#if]
   [#if libraryName="bootstrap-select" ]<link rel="stylesheet" href="${baseUrlCdn}/global/bower_components/bootstrap-select/dist/css/bootstrap-select.css" />[/#if]
   [#if libraryName="cytoscape-panzoom" ]<link rel="stylesheet" href="${baseUrlCdn}/global/bower_components/cytoscape-panzoom/cytoscape.js-panzoom.css" />[/#if]
   [#if libraryName="cytoscape-panzoom" ]<link rel="stylesheet" href="${baseUrlCdn}/global/bower_components/cytoscape-panzoom/font-awesome-4.0.3/css/font-awesome.css" />[/#if]

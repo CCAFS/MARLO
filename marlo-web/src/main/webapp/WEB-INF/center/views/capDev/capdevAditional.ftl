@@ -5,7 +5,7 @@
   "${baseUrlCdn}/global/css/customDataTable.css"
   ] 
 /]
-[#assign pageLibs = ["select2","flat-flags"] /]
+[#assign pageLibs = ["select2","flag-icon-css"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/capDev/capacityDevelopment.js",
   "${baseUrlMedia}/js/capDev/capdevDescription.js",
