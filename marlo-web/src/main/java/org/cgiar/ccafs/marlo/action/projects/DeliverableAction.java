@@ -1732,7 +1732,8 @@ public class DeliverableAction extends BaseAction {
        */
       if (deliverableManagedState.getDeliverableInfo() != null
         && deliverableManagedState.getDeliverableInfo().getStatus() != null) {
-        if (deliverableManagedState.getDeliverableInfo().getStatus() != 4
+        if ((deliverableManagedState.getDeliverableInfo().getStatus() != 3
+          && deliverableManagedState.getDeliverableInfo().getStatus() != 4)
           && deliverableManagedState.getDeliverableInfo().getNewExpectedYear() != null) {
           deliverableManagedState.getDeliverableInfo().setNewExpectedYear(null);
         }
