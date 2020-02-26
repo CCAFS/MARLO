@@ -4360,6 +4360,27 @@ li.fileUploaded span {
   vertical-align: middle;
 }
 
+.icon-20.policies {
+  background-image: url(../../global/images/icons-policies.png);
+  background-position: -28px 0px;
+  background-size: 358%;
+  vertical-align: middle;
+}
+
+.icon-20.innovations {
+  background-image: url(../../global/images/icons-innovations.png);
+  background-position: -28px 0px;
+  background-size: 358%;
+  vertical-align: middle;
+}
+
+.icon-20.evidences {
+  background-image: url(../../global/images/icons-evidences.png);
+  background-position: -28px 0px;
+  background-size: 358%;
+  vertical-align: middle;
+}
+
 
 .icon-uncheck {
   background: url('../../global/images/sprite-icons-activities.png') 0 -85px;
