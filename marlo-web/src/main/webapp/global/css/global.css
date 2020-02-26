@@ -6997,3 +6997,9 @@ div.selectPrimary{
 li.currentSection#bi::before{
   color: #127fa8;
 }
+
+.menuContent.positionFixedTop #bi::before{
+  font-size: 5px;
+  padding: 0.3em 2.5em 0.3em 2.5em;
+  border-radius: 0em 0em 0.3em 0.3em;
+}
