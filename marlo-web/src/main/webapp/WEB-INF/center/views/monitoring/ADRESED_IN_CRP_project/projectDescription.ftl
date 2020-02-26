@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Project Description" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = ["select2","flat-flags"] /]
+[#assign pageLibs = ["select2","flag-icon-css"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/fieldsValidation.js",
   "${baseUrlCdn}/global/js/usersManagement.js", 
