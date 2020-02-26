@@ -69,7 +69,8 @@ public class ProjectInnovationValidator extends BaseValidator {
     if (!saving) {
       Path path = this.getAutoSaveFilePath(innovation, action.getCrpID(), action);
       if (path.toFile().exists()) {
-        this.addMissingField("draft");
+        // Draft label cause that the section appears like there were missing fields
+        // this.addMissingField("draft");
       }
     }
 
