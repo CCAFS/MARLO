@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "MARLO Study" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-${(expectedStudy.id)!}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = ["select2" ,"blueimp-file-upload", "flat-flags" ] /]
+[#assign pageLibs = ["select2" ,"blueimp-file-upload", "flag-icon-css" ] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectStudy.js?20190228",
   "${baseUrlCdn}/global/js/autoSave.js",

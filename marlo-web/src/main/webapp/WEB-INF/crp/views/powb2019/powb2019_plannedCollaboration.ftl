@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "POWB Synthesis" /]
 [#assign currentSectionString = "powb-${actionName?replace('/','-')}-${liaisonInstitutionID}" /]
-[#assign pageLibs = [ "select2", "flat-flags", "datatables.net", "datatables.net-bs" ] /]
+[#assign pageLibs = [ "select2", "flag-icon-css", "datatables.net", "datatables.net-bs" ] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/powb2019/powb2019_global.js?20181119",
   "${baseUrlMedia}/js/powb2019/powb2019_plannedCollaboration.js?20181119"
