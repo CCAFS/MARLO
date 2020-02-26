@@ -63,7 +63,7 @@
   [#-- SUMMARIES - ALL --]
   { 'slug': 'summaries', 'name': 'menu.summaries',      'namespace': '/summaries',       'action': '${(crpSession)!}/summaries',    'visible': logged, 'active': true }
   [#-- BI Module --]
-  { 'slug': 'bi', 'name': 'menu.bi',      'namespace': '/bi',       'action': '${(crpSession)!}/bi',    'visible': logged && canAcessBI && canAcessCCAFS, 'active': true }
+  { 'slug': 'bi', 'name': 'menu.bi',      'namespace': '/bi',       'action': '${(crpSession)!}/bi',    'visible': logged && canAcessCCAFS, 'active': true }
 ]/]
 
 
