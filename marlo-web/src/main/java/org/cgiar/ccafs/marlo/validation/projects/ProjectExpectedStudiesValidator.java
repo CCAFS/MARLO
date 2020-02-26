@@ -148,12 +148,12 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
           && projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() == true
           && (projectExpectedStudy.getMilestones() == null || projectExpectedStudy.getMilestones().isEmpty()))
         || projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() == null) {
-        /*
-         * action.addMessage(action.getText("milestones"));
-         * action.addMissingField("expectedStudy.milestones");
-         * action.getInvalidFields().put("list-expectedStudy.milestones",
-         * action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"milestones"}));
-         */
+
+        action.addMessage(action.getText("milestones"));
+        action.addMissingField("expectedStudy.milestones");
+        action.getInvalidFields().put("list-expectedStudy.milestones",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"milestones"}));
+
       }
     }
 
