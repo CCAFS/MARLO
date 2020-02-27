@@ -110,6 +110,13 @@ public class ProjectExpectedStudyMilestoneManagerImpl implements ProjectExpected
     return projectExpectedStudyMilestoneDAO.find(projectExpectedStudyMilestoneID);
   }
 
+  @Override
+  public ProjectExpectedStudyMilestone getProjectExpectedStudyMilestoneByPhase(Long expectedID, Long milestoneID,
+    Long phaseID) {
+
+    return projectExpectedStudyMilestoneDAO.getProjectExpectedStudyMilestoneByPhase(expectedID, milestoneID, phaseID);
+  }
+
   public void saveInnovationMilestonePhase(Phase next, long innovationid,
     ProjectExpectedStudyMilestone projectExpectedStudyMilestone) {
 
