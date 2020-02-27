@@ -114,6 +114,13 @@ public class ProjectExpectedStudySrfTargetManagerImpl implements ProjectExpected
     return projectExpectedStudySrfTargetDAO.find(projectExpectedStudySrfTargetID);
   }
 
+  @Override
+  public ProjectExpectedStudySrfTarget getProjectExpectedStudySrfTargetByPhase(Long expectedID, Long srfSloIndicatorID,
+    Long PhaseID) {
+    return projectExpectedStudySrfTargetDAO.getProjectExpectedStudySrfTargetByPhase(expectedID, srfSloIndicatorID,
+      PhaseID);
+  }
+
   public void saveExpectedStudySrfTargetPhase(Phase next, long expectedID,
     ProjectExpectedStudySrfTarget projectExpectedStudySrfTarget) {
     Phase phase = phaseDAO.find(next.getId());

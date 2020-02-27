@@ -658,7 +658,6 @@ public class InnovationItem<T> {
           List<ProjectInnovationOrganization> projectInnovationOrganizationList =
             innovation.getProjectInnovationOrganizations().stream()
               .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
-
           List<ProjectInnovationOrganization> existingProjectInnovationOrganizationList =
             new ArrayList<ProjectInnovationOrganization>();
           for (OrganizationTypeDTO id : newInnovationDTO.getNextUserOrganizationTypes()) {
