@@ -21,51 +21,52 @@ package org.cgiar.ccafs.marlo.rest.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class ProgressTowardsSRFTargetsDTO {
+public class SrfProgressTowardsTargetsDTO {
 
   @ApiModelProperty(notes = "ID ", position = 1)
   private Long id;
-  @ApiModelProperty(notes = "SLO target", position = 2)
-  private SrfSloTargetDTO srfSloTarget;
-  @ApiModelProperty(notes = "Progress Towards narrative narrative", position = 3)
-  private String narrative;
 
-  @ApiModelProperty(notes = "Phase - Year ", position = 4)
-  private PhaseDTO phase;
+  @ApiModelProperty(notes = "SLO target", position = 2)
+  private SrfSloIndicatorTargetDTO srfSloTarget;
+
+  @ApiModelProperty(notes = "Progress Towards narrative", position = 3)
+  private String briefSummary;
+
+  @ApiModelProperty(notes = "Progress Towards additional contribution", position = 4)
+  private String additionalContribution;
+
+
+  public String getAdditionalContribution() {
+    return additionalContribution;
+  }
+
+  public String getBriefSummary() {
+    return briefSummary;
+  }
 
   public Long getId() {
     return id;
   }
 
-  public String getNarrative() {
-    return narrative;
-  }
-
-  public PhaseDTO getPhase() {
-    return phase;
-  }
-
-
-  public SrfSloTargetDTO getSrfSloTarget() {
+  public SrfSloIndicatorTargetDTO getSrfSloTarget() {
     return srfSloTarget;
   }
 
+
+  public void setAdditionalContribution(String additionalContribution) {
+    this.additionalContribution = additionalContribution;
+  }
+
+  public void setBriefSummary(String briefSummary) {
+    this.briefSummary = briefSummary;
+  }
 
   public void setId(Long id) {
     this.id = id;
   }
 
-  public void setNarrative(String narrative) {
-    this.narrative = narrative;
-  }
-
-  public void setPhase(PhaseDTO phase) {
-    this.phase = phase;
-  }
-
-  public void setSrfSloTarget(SrfSloTargetDTO srfSloTarget) {
+  public void setSrfSloTarget(SrfSloIndicatorTargetDTO srfSloTarget) {
     this.srfSloTarget = srfSloTarget;
   }
-
 
 }

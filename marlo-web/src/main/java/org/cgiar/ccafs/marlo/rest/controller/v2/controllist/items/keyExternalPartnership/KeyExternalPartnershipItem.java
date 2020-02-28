@@ -44,16 +44,14 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnershipExternalIns
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnershipExternalMainArea;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.KeyExternalPartnershipDTO;
-import org.cgiar.ccafs.marlo.rest.dto.NewInnovationDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewKeyExternalPartnershipDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
 import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
 import org.cgiar.ccafs.marlo.rest.mappers.KeyExternalPartnershipMapper;
+import org.cgiar.ccafs.marlo.utils.ChangeTracker;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +64,6 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,39 +112,6 @@ public class KeyExternalPartnershipItem<T> {
     this.reportSynthesisManager = reportSynthesisManager;
     this.reportSynthesisKeyPartnershipManager = reportSynthesisKeyPartnershipManager;
     this.keyExternalPartnershipMapper = keyExternalPartnershipMapper;
-  }
-
-  /**
-   * Analyzes the changes between two sets and outputs a map with boolean keys and a list of the disjunction of the
-   * elements depending on which set is belonged to. True means the elements are present on the first set, false means
-   * the elements are present on the second set.
-   * 
-   * @param base the base list
-   * @param incoming the incoming changes
-   * @return a map with the changes between the two sets
-   */
-
-  private <O> Map<Boolean, List<O>> changes(Set<O> base, Set<O> incoming) {
-    Map<Boolean, List<O>> changes = new HashMap<>();
-    List<O> elementsInBase = new ArrayList<>();
-    List<O> elementsInIncoming = new ArrayList<>();
-
-    // gets the common elements between the two sets
-    Collection<O> disjunction = CollectionUtils.disjunction(base, incoming);
-
-    for (O element : disjunction) {
-      if (base.contains(element)) {
-        elementsInBase.add(element);
-      } else {
-        elementsInIncoming.add(element);
-      }
-
-    }
-
-    changes.put(Boolean.TRUE, elementsInBase);
-    changes.put(Boolean.FALSE, elementsInIncoming);
-
-    return changes;
   }
 
   public Long createKeyExternalPartnership(NewKeyExternalPartnershipDTO newKeyExternalPartnershipDTO,
@@ -333,9 +297,17 @@ public class KeyExternalPartnershipItem<T> {
       this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
         && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().get();
     if (phase == null) {
-      fieldErrors.add(new FieldErrorDTO("createInnovation", "phase",
-        new NewInnovationDTO().getPhase().getYear() + " is an invalid year"));
+      fieldErrors
+        .add(new FieldErrorDTO("createInnovation", "phase", repoPhase + ' ' + repoYear + " is an invalid phase"));
     }
+
+    // TODO possible validation
+    // CrpUser crpUser = user.getCrpUsers().stream().filter(cu -> cu.getCrp().getId() ==
+    // phase.getId()).findFirst().get();
+    // if (crpUser == null) {
+    // fieldErrors.add(new FieldErrorDTO("createInnovation", "CrpUserEntity",
+    // "You do not have the permissions to create an Innovation in this GlobalUnit"));
+    // }
 
     ReportSynthesisKeyPartnershipExternal keyPartnershipExternal =
       keyPartnershipExternalManager.getReportSynthesisKeyPartnershipExternalById(id);
@@ -496,7 +468,7 @@ public class KeyExternalPartnershipItem<T> {
       // in the database and are no longer selected; false means the elements are new and need to be saved.
       // TODO it might be a better way to do this...
       Map<Boolean, List<String>> changes =
-        this.<String>changes(base, new HashSet<>(newKeyExternalPartnershipDTO.getPartnershipMainAreaIds()));
+        ChangeTracker.trackChanges(base, new HashSet<>(newKeyExternalPartnershipDTO.getPartnershipMainAreaIds()));
 
       changes.get(Boolean.TRUE).stream().map(Long::valueOf)
         .forEach(keyPartnershipExternalMainAreaManager::deleteReportSynthesisKeyPartnershipExternalMainArea);
@@ -524,7 +496,7 @@ public class KeyExternalPartnershipItem<T> {
         .filter(i -> i != null && i.getId() != null).map(m -> m.getInstitution().getId().toString())
         .collect(Collectors.toSet());
 
-      changes = this.<String>changes(base, new HashSet<>(newKeyExternalPartnershipDTO.getInstitutionIds()));
+      changes = ChangeTracker.trackChanges(base, new HashSet<>(newKeyExternalPartnershipDTO.getInstitutionIds()));
 
       changes.get(Boolean.TRUE).stream().map(Long::valueOf)
         .forEach(keyPartnershipExternalInstitutionManager::deleteReportSynthesisKeyPartnershipExternalInstitution);
