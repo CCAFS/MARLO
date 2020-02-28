@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisSrfProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisSrfProgressTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorTargetManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -46,6 +47,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -223,7 +225,7 @@ public class ProgressTowardsItem<T> {
 
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
     if (globalUnitEntity == null) {
-      fieldErrors.add(new FieldErrorDTO("createInnovation", "GlobalUnitEntity",
+      fieldErrors.add(new FieldErrorDTO("deleteProgressTowardsById", "GlobalUnitEntity",
         CGIARentityAcronym + " is an invalid CGIAR entity acronym"));
     }
 
@@ -231,8 +233,8 @@ public class ProgressTowardsItem<T> {
       this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
         && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().get();
     if (phase == null) {
-      fieldErrors
-        .add(new FieldErrorDTO("createInnovation", "phase", repoPhase + ' ' + repoYear + " is an invalid phase"));
+      fieldErrors.add(
+        new FieldErrorDTO("deleteProgressTowardsById", "phase", repoPhase + ' ' + repoYear + " is an invalid phase"));
     }
 
     ReportSynthesisSrfProgressTarget srfProgressTarget =
@@ -241,12 +243,68 @@ public class ProgressTowardsItem<T> {
     if (srfProgressTarget != null) {
       reportSynthesisSrfProgressTargetManager.deleteReportSynthesisSrfProgressTarget(srfProgressTarget.getId());
     } else {
-      fieldErrors.add(new FieldErrorDTO("deleteKeyExternalPartnership", "ReportSynthesisSrfProgressTargetEntity",
+      fieldErrors.add(new FieldErrorDTO("deleteProgressTowardsById", "ReportSynthesisSrfProgressTargetEntity",
         id + " is an invalid Report Synthesis Srf Progress Target Code"));
     }
 
     return Optional.ofNullable(srfProgressTarget)
-      .map(this.srfProgressTowardsTargetMapper::progressTargetToSrfProgressTowardsTargetsDTO)
+      .map(this.srfProgressTowardsTargetMapper::reportSynthesisSrfProgressTargetToSrfProgressTowardsTargetsDTO)
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
+
+  /**
+   * Find an KeyExternalPartnership by Id and year
+   * 
+   * @param id
+   * @param year
+   * @param phase
+   * @return a KeyExternalPartnershipDTO with the keyExternalPartnership Item
+   */
+
+  public ResponseEntity<SrfProgressTowardsTargetsDTO> findProgressTowardsById(Long id, String CGIARentityAcronym,
+    Integer repoYear, String repoPhase, User user) {
+    // TODO: Include all security validations
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+
+    Set<CrpUser> lstUser = user.getCrpUsers();
+    if (!lstUser.stream().anyMatch(crp -> crp.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym))) {
+      fieldErrors.add(new FieldErrorDTO("findProgressTowardsById", "GlobalUnitEntity", "CGIAR entity not autorized"));
+    }
+
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
+    if (globalUnitEntity == null) {
+      fieldErrors.add(new FieldErrorDTO("findProgressTowardsById", "GlobalUnitEntity",
+        CGIARentityAcronym + " is not a valid CGIAR entity acronym"));
+    }
+
+    Phase phase =
+      this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
+        && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().get();
+    if (phase == null) {
+      fieldErrors.add(new FieldErrorDTO("findProgressTowardsById", "phase", repoYear + " is an invalid year"));
+    }
+
+    ReportSynthesisSrfProgressTarget reportSynthesisSrfProgressTarget =
+      reportSynthesisSrfProgressTargetManager.getReportSynthesisSrfProgressTargetById(id);
+    if (reportSynthesisSrfProgressTarget == null) {
+      fieldErrors.add(new FieldErrorDTO("findProgressTowardsById", "ReportSynthesisSrfProgressTargetEntity",
+        id + " is an invalid id of a Report Synthesis Srf Progress Target"));
+    }
+
+
+    // TODO more validations!
+
+    // Validate all fields
+    if (!fieldErrors.isEmpty()) {
+      // fieldErrors.forEach(e -> System.out.println(e.getMessage()));
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
+    }
+
+    return Optional.ofNullable(reportSynthesisSrfProgressTarget)
+      .map(this.srfProgressTowardsTargetMapper::reportSynthesisSrfProgressTargetToSrfProgressTowardsTargetsDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 

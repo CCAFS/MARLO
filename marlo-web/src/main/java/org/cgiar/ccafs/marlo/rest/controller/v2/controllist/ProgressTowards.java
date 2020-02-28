@@ -22,6 +22,7 @@ package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.progressTowards.ProgressTowardsItem;
+import org.cgiar.ccafs.marlo.rest.dto.KeyExternalPartnershipDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewSrfProgressTowardsTargetDTO;
 import org.cgiar.ccafs.marlo.rest.dto.SrfProgressTowardsTargetsDTO;
 import org.cgiar.ccafs.marlo.rest.errors.NotFoundException;
@@ -111,6 +112,34 @@ public class ProgressTowards {
       this.progressTowardsItem.deleteProgressTowardsById(id, CGIAREntity, year, phase, this.getCurrentUser());
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("ProgressTowards.progresstowardsSRF.DELETE.id.404"));
+    }
+
+    return response;
+  }
+
+  @ApiOperation(tags = {"Table 1 - Progress towards SRF targets"},
+    value = "${ProgressTowards.progresstowardsSRF.GET.id.value}", response = KeyExternalPartnershipDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/progresstowards/{id}", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<SrfProgressTowardsTargetsDTO> findKeyExternalPartnershipById(
+    @ApiParam(value = "${ProgressTowards.progresstowardsSRF.GET.id.param.CGIAR}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${ProgressTowards.progresstowardsSRF.GET.id.param.id}", required = true) @PathVariable Long id,
+    @ApiParam(value = "${ProgressTowards.progresstowardsSRF.GET.id.param.year}",
+      required = true) @RequestParam Integer year,
+    @ApiParam(value = "${ProgressTowards.progresstowardsSRF.GET.id.param.phase}",
+      required = true) @RequestParam String phase) {
+
+    ResponseEntity<SrfProgressTowardsTargetsDTO> response = null;
+
+    try {
+      response = this.progressTowardsItem.findProgressTowardsById(id, CGIAREntity, year, phase, this.getCurrentUser());
+      if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+        throw new NotFoundException("404", this.env.getProperty("ProgressTowards.progresstowardsSRF.GET.id.404"));
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
     }
 
     return response;
