@@ -47,6 +47,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -92,10 +93,35 @@ public class ProgressTowards {
     return response;
   }
 
+  @ApiOperation(tags = {"Table 1 - Progress towards SRF targets"},
+    value = "${ProgressTowards.progresstowardsSRF.DELETE.id.value}", response = SrfProgressTowardsTargetsDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/progresstowards/{id}", method = RequestMethod.DELETE,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<SrfProgressTowardsTargetsDTO> deleteKeyExternalPartnershipById(
+    @ApiParam(value = "${ProgressTowards.progresstowardsSRF.DELETE.id.param.CGIAR}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${ProgressTowards.progresstowardsSRF.DELETE.id.param.id}",
+      required = true) @PathVariable Long id,
+    @ApiParam(value = "${ProgressTowards.progresstowardsSRF.DELETE.id.param.year}",
+      required = true) @RequestParam Integer year,
+    @ApiParam(value = "${ProgressTowards.progresstowardsSRF.DELETE.id.param.phase}",
+      required = true) @RequestParam String phase) {
+    ResponseEntity<SrfProgressTowardsTargetsDTO> response =
+      this.progressTowardsItem.deleteProgressTowardsById(id, CGIAREntity, year, phase, this.getCurrentUser());
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("ProgressTowards.progresstowardsSRF.DELETE.id.404"));
+    }
+
+    return response;
+  }
+
   private User getCurrentUser() {
     Subject subject = SecurityUtils.getSubject();
     Long principal = (Long) subject.getPrincipal();
     User user = this.userManager.getUser(principal);
     return user;
   }
+
+
 }

@@ -173,13 +173,11 @@ public class KeyExternalPartnershipItem<T> {
       // end ReportSynthesisKeyPartnershipExternalMainArea
 
       // start CrpProgram (flagshipProgram)
-      if (newKeyExternalPartnershipDTO.getFlagshipProgramId() != null
-        && NumberUtils.isParsable(newKeyExternalPartnershipDTO.getFlagshipProgramId().trim())) {
-        crpProgram =
-          crpProgramManager.getCrpProgramById(Long.valueOf(newKeyExternalPartnershipDTO.getFlagshipProgramId()));
+      if (newKeyExternalPartnershipDTO.getFlagshipProgramId() != null) {
+        crpProgram = crpProgramManager.getCrpProgramBySmoCode(newKeyExternalPartnershipDTO.getFlagshipProgramId());
         if (crpProgram == null /* || crpProgram.getProgramType() != 4 */ /* TODO ask Diego for flagship constant */) {
           fieldErrors.add(new FieldErrorDTO("createKeyExternalPartnership", "FlagshipEntity",
-            newKeyExternalPartnershipDTO.getFlagshipProgramId() + " is an invalid CRP Program code."));
+            newKeyExternalPartnershipDTO.getFlagshipProgramId() + " is an invalid CRP Program SMO code."));
         }
       }
       // end CrpProgram (flagshipProgram)
@@ -438,17 +436,17 @@ public class KeyExternalPartnershipItem<T> {
         newKeyExternalPartnershipDTO.getPhase().getYear() + " is an invalid year"));
     }
 
-    String flagshipId = newKeyExternalPartnershipDTO.getFlagshipProgramId();
     CrpProgram crpProgram = null;
-    if (flagshipId != null && NumberUtils.isParsable(flagshipId.trim())) {
-      crpProgram = crpProgramManager.getCrpProgramById(Long.valueOf(flagshipId));
+    if (newKeyExternalPartnershipDTO.getFlagshipProgramId() != null) {
+      crpProgram = crpProgramManager.getCrpProgramBySmoCode(newKeyExternalPartnershipDTO.getFlagshipProgramId());
       if (crpProgram == null) {
         fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "CrpProgramEntity",
-          newKeyExternalPartnershipDTO.getFlagshipProgramId() + " is an invalid CRP Program Code"));
+          newKeyExternalPartnershipDTO.getFlagshipProgramId() + " is an invalid CRP Program SMO Code"));
       }
+
     } else {
       fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "CrpProgramEntity",
-        newKeyExternalPartnershipDTO.getFlagshipProgramId() + " is an invalid CRP Program Code"));
+        newKeyExternalPartnershipDTO.getFlagshipProgramId() + " is an invalid CRP Program SMO Code"));
     }
 
     ReportSynthesisKeyPartnershipExternal keyPartnershipExternal =

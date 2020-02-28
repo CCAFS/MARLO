@@ -26,7 +26,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
-@Mapper(componentModel = "jsr330")
+@Mapper(componentModel = "jsr330", uses = {SrfSloMapper.class})
 public interface SrfSloIndicatorMapper {
 
   @Mappings({@Mapping(source = "srfSloIndicator.srfSlo.id", target = "smoCode")})
