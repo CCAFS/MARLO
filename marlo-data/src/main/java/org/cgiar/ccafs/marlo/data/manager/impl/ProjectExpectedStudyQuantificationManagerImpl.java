@@ -125,6 +125,14 @@ public class ProjectExpectedStudyQuantificationManagerImpl implements ProjectExp
     return projectExpectedStudyQuantificationDAO.find(projectExpectedStudyQuantificationID);
   }
 
+  @Override
+  public ProjectExpectedStudyQuantification getProjectExpectedStudyQuantificationByPhase(Long expectedID,
+    String typeQuantification, Long number, String targetUnit, Long phaseID) {
+
+    return projectExpectedStudyQuantificationDAO.getProjectExpectedStudyQuantificationByPhase(expectedID,
+      typeQuantification, number, targetUnit, phaseID);
+  }
+
   public void saveExpectedStudyQuantificationPhase(Phase next, long expectedID,
     ProjectExpectedStudyQuantification projectExpectedStudyQuantification) {
     Phase phase = phaseDAO.find(next.getId());

@@ -74,6 +74,20 @@ public class ProjectExpectedStudyQuantificationMySQLDAO
   }
 
   @Override
+  public ProjectExpectedStudyQuantification getProjectExpectedStudyQuantificationByPhase(Long expectedID,
+    String typeQuantification, Long number, String targetUnit, Long phaseID) {
+    String query = "from " + ProjectExpectedStudyQuantification.class.getName() + " where expected_id=" + expectedID
+      + "and id_phase=" + phaseID + " and type_quantification='" + typeQuantification + "' and number=" + number
+      + " and targe_unit='" + targetUnit + "'";
+    List<ProjectExpectedStudyQuantification> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+
+  }
+
+  @Override
   public ProjectExpectedStudyQuantification
     save(ProjectExpectedStudyQuantification projectExpectedStudyQuantification) {
     if (projectExpectedStudyQuantification.getId() == null) {

@@ -53,22 +53,29 @@ public interface ProjectExpectedStudyQuantificationManager {
 
 
   /**
-   * This method gets a projectExpectedStudyQuantification object by a given projectExpectedStudyQuantification identifier.
+   * This method gets a projectExpectedStudyQuantification object by a given projectExpectedStudyQuantification
+   * identifier.
    * 
    * @param projectExpectedStudyQuantificationID is the projectExpectedStudyQuantification identifier.
    * @return a ProjectExpectedStudyQuantification object.
    */
-  public ProjectExpectedStudyQuantification getProjectExpectedStudyQuantificationById(long projectExpectedStudyQuantificationID);
+  public ProjectExpectedStudyQuantification
+    getProjectExpectedStudyQuantificationById(long projectExpectedStudyQuantificationID);
+
+  public ProjectExpectedStudyQuantification getProjectExpectedStudyQuantificationByPhase(Long expectedID,
+    String typeQuantification, Long number, String targetUnit, Long phaseID);
+
 
   /**
    * This method saves the information of the given projectExpectedStudyQuantification
    * 
-   * @param projectExpectedStudyQuantification - is the projectExpectedStudyQuantification object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectExpectedStudyQuantification was
+   * @param projectExpectedStudyQuantification - is the projectExpectedStudyQuantification object with the new
+   *        information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectExpectedStudyQuantification was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ProjectExpectedStudyQuantification saveProjectExpectedStudyQuantification(ProjectExpectedStudyQuantification projectExpectedStudyQuantification);
-
-
+  public ProjectExpectedStudyQuantification
+    saveProjectExpectedStudyQuantification(ProjectExpectedStudyQuantification projectExpectedStudyQuantification);
 }
