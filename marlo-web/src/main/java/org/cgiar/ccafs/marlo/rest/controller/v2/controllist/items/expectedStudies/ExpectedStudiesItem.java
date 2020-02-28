@@ -1023,7 +1023,7 @@ public class ExpectedStudiesItem<T> {
         List<Institution> institutionList = new ArrayList<Institution>();
         List<String> linkList = new ArrayList<String>();
         List<ProjectExpectedStudyMilestone> milestoneList = new ArrayList<ProjectExpectedStudyMilestone>();
-        List<ProjectExpectedStudyQuantification> ExpectedStudyQuantificationList =
+        List<ProjectExpectedStudyQuantification> expectedStudyQuantificationList =
           new ArrayList<ProjectExpectedStudyQuantification>();
         if (newProjectExpectedStudy.getProjectExpectedEstudyInfo() != null) {
           // update expected Study info
@@ -1332,7 +1332,7 @@ public class ExpectedStudiesItem<T> {
                   projectExpectedStudyQuantification.setTypeQuantification(quantification.getQuantificationType());
                   projectExpectedStudyQuantification.setNumber(quantification.getNumber());
                   projectExpectedStudyQuantification.setComments(quantification.getComments());
-                  ExpectedStudyQuantificationList.add(projectExpectedStudyQuantification);
+                  expectedStudyQuantificationList.add(projectExpectedStudyQuantification);
                 } else {
                   fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Quantification",
                     "You have to fill all fields for quantification"));
@@ -1660,6 +1660,77 @@ public class ExpectedStudiesItem<T> {
                 for (ProjectExpectedStudyCrp obj : projectExpectedStudyCrpList) {
                   if (!existingProjectExpectedStudyCrpList.contains(obj)) {
                     projectExpectedStudyCrpManager.deleteProjectExpectedStudyCrp(obj.getId());
+                  }
+                }
+
+                // quantifications
+                // getting actual quantifications
+                List<ProjectExpectedStudyQuantification> projectExpectedStudyQuantificationList =
+                  projectExpectedStudyQuantificationManager.findAll().stream()
+                    .filter(
+                      c -> c.isActive() && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId())
+                        && c.getPhase().equals(phase))
+                    .collect(Collectors.toList());
+                // create existing quantifications
+                List<ProjectExpectedStudyQuantification> existingProjectExpectedStudyQuantificationList =
+                  new ArrayList<ProjectExpectedStudyQuantification>();
+                // save quantifications
+                for (ProjectExpectedStudyQuantification expectedStudyQuantification : expectedStudyQuantificationList) {
+                  ProjectExpectedStudyQuantification projectExpectedStudyQuantification =
+                    projectExpectedStudyQuantificationManager.getProjectExpectedStudyQuantificationByPhase(
+                      expectedStudyID, expectedStudyQuantification.getTypeQuantification(),
+                      expectedStudyQuantification.getNumber(), expectedStudyQuantification.getTargetUnit(),
+                      phase.getId());
+                  if (projectExpectedStudyQuantification != null) {
+                    existingProjectExpectedStudyQuantificationList.add(projectExpectedStudyQuantification);
+                  } else {
+                    projectExpectedStudyQuantification = new ProjectExpectedStudyQuantification();
+                    projectExpectedStudyQuantification.setNumber(expectedStudyQuantification.getNumber());
+                    projectExpectedStudyQuantification.setTargetUnit(expectedStudyQuantification.getTargetUnit());
+                    projectExpectedStudyQuantification
+                      .setTypeQuantification(expectedStudyQuantification.getTypeQuantification());
+                    projectExpectedStudyQuantification.setComments(expectedStudyQuantification.getComments());
+                    projectExpectedStudyQuantification.setPhase(phase);
+                    projectExpectedStudyQuantification.setProjectExpectedStudy(projectExpectedStudyDB);
+                    projectExpectedStudyQuantificationManager
+                      .saveProjectExpectedStudyQuantification(projectExpectedStudyQuantification);
+                  }
+                }
+                // delete not existing quantifications
+                for (ProjectExpectedStudyQuantification obj : projectExpectedStudyQuantificationList) {
+                  if (!existingProjectExpectedStudyQuantificationList.contains(obj)) {
+                    projectExpectedStudyQuantificationManager.deleteProjectExpectedStudyQuantification(obj.getId());
+                  }
+                }
+
+                // innovations
+                // getting actual innovations
+                List<ProjectExpectedStudyInnovation> projectExpectedStudyInnovationList =
+                  projectExpectedStudy.getProjectExpectedStudyInnovations().stream()
+                    .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+                // create existing innovations
+                List<ProjectExpectedStudyInnovation> existingProjectExpectedStudyInnovationList =
+                  new ArrayList<ProjectExpectedStudyInnovation>();
+                // save innovations
+                for (ProjectInnovation projectInnovation : projectInnovationList) {
+                  ProjectExpectedStudyInnovation projectExpectedStudyInnovation =
+                    projectExpectedStudyInnovationManager.getProjectExpectedStudyInnovationByPhase(expectedStudyID,
+                      projectInnovation.getId(), phase.getId());
+                  if (projectExpectedStudyInnovation != null) {
+                    existingProjectExpectedStudyInnovationList.add(projectExpectedStudyInnovation);
+                  } else {
+                    projectExpectedStudyInnovation = new ProjectExpectedStudyInnovation();
+                    projectExpectedStudyInnovation.setProjectInnovation(projectInnovation);
+                    projectExpectedStudyInnovation.setPhase(phase);
+                    projectExpectedStudyInnovation.setProjectExpectedStudy(projectExpectedStudyDB);
+                    projectExpectedStudyInnovationManager
+                      .saveProjectExpectedStudyInnovation(projectExpectedStudyInnovation);
+                  }
+                }
+                // delete not existing innovations
+                for (ProjectExpectedStudyInnovation obj : projectExpectedStudyInnovationList) {
+                  if (!existingProjectExpectedStudyInnovationList.contains(obj)) {
+                    projectExpectedStudyInnovationManager.deleteProjectExpectedStudyInnovation(obj.getId());
                   }
                 }
               }
