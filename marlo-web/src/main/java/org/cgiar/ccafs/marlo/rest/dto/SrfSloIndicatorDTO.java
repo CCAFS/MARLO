@@ -17,53 +17,58 @@ package org.cgiar.ccafs.marlo.rest.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 
-/**
- * @author Hermes Jiménez - CIAT/CCAFS
- */
-public class SrfSloTargetDTO {
+/**************
+ * @author German C. Martinez - CIAT/CCAFS
+ **************/
 
-  @ApiModelProperty(notes = "SLO target indicator code")
-  private String code;
+public class SrfSloIndicatorDTO {
 
-  @ApiModelProperty(notes = "SLO target indicator year")
-  private String year;
+  @ApiModelProperty(notes = "ID")
+  private Long id;
 
-  @ApiModelProperty(notes = "SLO target indicator narrative")
-  private String narrative;
+  @ApiModelProperty(notes = "SLO of indicator")
+  private SrfSloDTO srfSlo;
 
-  @ApiModelProperty(notes = "SLO of target indicator ")
-  private SrfSloDTO srfSloDTO;
+  @ApiModelProperty(notes = "title of indicator")
+  private String title;
 
-  public String getCode() {
-    return this.code;
+  @ApiModelProperty(notes = "Description of indicator")
+  private String description;
+
+  public SrfSloIndicatorDTO() {
+    // TODO Auto-generated constructor stub
   }
 
-  public String getNarrative() {
-    return this.narrative;
+  public String getDescription() {
+    return description;
   }
 
-  public SrfSloDTO getSrfSloDTO() {
-    return this.srfSloDTO;
+  public Long getId() {
+    return id;
   }
 
-  public String getYear() {
-    return this.year;
+  public SrfSloDTO getSrfSlo() {
+    return srfSlo;
   }
 
-  public void setCode(String code) {
-    this.code = code;
+  public String getTitle() {
+    return title;
   }
 
-  public void setNarrative(String narrative) {
-    this.narrative = narrative;
+  public void setDescription(String description) {
+    this.description = description;
   }
 
-  public void setSrfSloDTO(SrfSloDTO srfSloDTO) {
-    this.srfSloDTO = srfSloDTO;
+  public void setId(Long id) {
+    this.id = id;
   }
 
-  public void setYear(String year) {
-    this.year = year;
+  public void setSrfSlo(SrfSloDTO srfSlo) {
+    this.srfSlo = srfSlo;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
   }
 
 }

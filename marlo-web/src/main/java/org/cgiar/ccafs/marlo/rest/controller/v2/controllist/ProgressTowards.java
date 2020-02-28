@@ -22,8 +22,8 @@ package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.progressTowards.ProgressTowardsItem;
-import org.cgiar.ccafs.marlo.rest.dto.NewProgressTowardsSRFTargetDTO;
-import org.cgiar.ccafs.marlo.rest.dto.ProgressTowardsSRFTargetsDTO;
+import org.cgiar.ccafs.marlo.rest.dto.NewSrfProgressTowardsTargetDTO;
+import org.cgiar.ccafs.marlo.rest.dto.SrfProgressTowardsTargetsDTO;
 import org.cgiar.ccafs.marlo.rest.errors.NotFoundException;
 import org.cgiar.ccafs.marlo.security.Permission;
 
@@ -53,34 +53,34 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "ProgressTowards")
 public class ProgressTowards {
 
-  private static final Logger LOG = LoggerFactory.getLogger(Policies.class);
+  private static final Logger LOG = LoggerFactory.getLogger(ProgressTowards.class);
   @Autowired
   private Environment env;
   private final UserManager userManager;
-  private ProgressTowardsItem<ProgressTowardsSRFTargetsDTO> progressTowardsItem;
+  private ProgressTowardsItem<SrfProgressTowardsTargetsDTO> progressTowardsItem;
 
 
   @Inject
-  public ProgressTowards(ProgressTowardsItem<ProgressTowardsSRFTargetsDTO> progressTowardsItem,
+  public ProgressTowards(ProgressTowardsItem<SrfProgressTowardsTargetsDTO> progressTowardsItem,
     UserManager userManager) {
     this.userManager = userManager;
     this.progressTowardsItem = progressTowardsItem;
   }
 
   @ApiOperation(tags = {"Table 1 - Progress towards SRF targets"},
-    value = "${ProgressTowards.progresstowardsSRF.POST.value}", response = ProgressTowardsSRFTargetsDTO.class)
+    value = "${ProgressTowards.progresstowardsSRF.POST.value}", response = SrfProgressTowardsTargetsDTO.class)
   @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIAREntity}/progresstowards", method = RequestMethod.POST,
     produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Long> createPolicy(
+  public ResponseEntity<Long> createProgressTowards(
     @ApiParam(value = "${ProgressTowards.progresstowardsSRF.POST.param.CGIAR}",
       required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${ProgressTowards.progresstowardsSRF.POST.param.progresstowardsSRF}",
-      required = true) @Valid @RequestBody NewProgressTowardsSRFTargetDTO newProgressTowardsSRFTargetDTO) {
+      required = true) @Valid @RequestBody NewSrfProgressTowardsTargetDTO newSrfProgressTowardsDTO) {
     Long policyId = new Long(0);
     try {
-      policyId = this.progressTowardsItem.createProgressTowards(newProgressTowardsSRFTargetDTO, CGIAREntity,
-        this.getCurrentUser());
+      policyId =
+        this.progressTowardsItem.createProgressTowards(newSrfProgressTowardsDTO, CGIAREntity, this.getCurrentUser());
     } catch (Exception e) {
       e.printStackTrace();
     }
