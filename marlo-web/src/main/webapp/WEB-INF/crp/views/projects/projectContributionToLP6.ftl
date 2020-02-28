@@ -8,6 +8,7 @@
   "${baseUrlCdn}/global/js/fieldsValidation.js"
   ] /]
 [#assign customCSS = [
+  "${baseUrlMedia}/css/projects/projectsContributionToLP6.css",
   "${baseUrlMedia}/css/projects/projectContributionsCrpList.css"
   ] /]
 [#assign currentSection = "projects" /]
@@ -26,6 +27,17 @@
         <div class="col-md-9">
           <h3 class="headTitle">[@s.text name="projects.LP6Contribution.contributionTitle" /]</h3>  
           <div id="projectContributionToLP6" class="borderBox">
+          
+          <p class="note lp6-contribution-note"><small>[@s.text name="projects.LP6Contribution.infoText"/] (<span class="lp6-view-more" data-toggle="modal" data-target=".lp6info-modal">view more</span>)</small></p>
+          [#-- LP6 Help Text expanded --]
+          <div class="modal fade extended-table-modal lp6info-modal" tabindex="-1" role="dialog" aria-labelledby="extendedTableModal" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+               <div class="modal-content">
+                 <button type="button" class="close lp6-close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                   <div class="lp6-help">[@s.text name="projects.LP6Contribution.helpText"/]</div>
+                </div>
+            </div>
+          </div>
             [#if (project.projectLp6Contribution.contribution)!false]
           
             <div class="form-group contributionNarrative">
