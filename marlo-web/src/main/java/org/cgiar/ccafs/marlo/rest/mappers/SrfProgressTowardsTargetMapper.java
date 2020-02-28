@@ -30,7 +30,12 @@ public interface SrfProgressTowardsTargetMapper {
 
   @Mappings({@Mapping(source = "birefSummary", target = "briefSummary"),
     @Mapping(source = "srfSloIndicatorTarget", target = "srfSloTarget")})
-  public abstract SrfProgressTowardsTargetsDTO
-    progressTargetToSrfProgressTowardsTargetsDTO(ReportSynthesisSrfProgressTarget reportSynthesisSrfProgressTarget);
+  public abstract SrfProgressTowardsTargetsDTO reportSynthesisSrfProgressTargetToSrfProgressTowardsTargetsDTO(
+    ReportSynthesisSrfProgressTarget reportSynthesisSrfProgressTarget);
+
+  // @Mappings({@Mapping(source = "birefSummary", target = "briefSummary"),
+  // @Mapping(source = "srfSloIndicatorTarget", target = "srfSloTarget")})
+  // public abstract ReportSynthesisSrfProgressTarget srfProgressTowardsTargetsDTOToReportSynthesisSrfProgressTarget(
+  // SrfProgressTowardsTargetsDTO srfProgressTowardsTargetsDTO);
 
 }
