@@ -205,7 +205,9 @@ public class ProgressTowardsItem<T> {
         if (reportSynthesisSrfProgressTargetDB != null) {
           srfProgressTargetId = reportSynthesisSrfProgressTargetDB.getId();
         }
+
       }
+
     }
 
     if (!fieldErrors.isEmpty()) {
