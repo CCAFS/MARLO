@@ -88,8 +88,14 @@ public class ProjectInnovationValidator extends BaseValidator {
       }
     }
 
-    this.saveMissingFields(project, innovation, action.getActualPhase().getDescription(), year, upkeep,
-      ProjectSectionStatusEnum.INNOVATIONS.getStatus(), this.getMissingFields().toString());
+    if (action.getValidationMessage() == null || action.getValidationMessage().toString() == null
+      || action.getValidationMessage().toString().isEmpty()) {
+      this.saveMissingFields(project, innovation, action.getActualPhase().getDescription(), year, upkeep,
+        ProjectSectionStatusEnum.INNOVATIONS.getStatus(), "");
+    } else {
+      this.saveMissingFields(project, innovation, action.getActualPhase().getDescription(), year, upkeep,
+        ProjectSectionStatusEnum.INNOVATIONS.getStatus(), this.getMissingFields().toString());
+    }
   }
 
   private void validateProjectInnovation(BaseAction action, ProjectInnovation projectInnovation, boolean struts) {
