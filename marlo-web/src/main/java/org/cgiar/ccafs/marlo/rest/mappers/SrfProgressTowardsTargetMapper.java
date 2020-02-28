@@ -15,25 +15,22 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
-import org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget;
-import org.cgiar.ccafs.marlo.rest.dto.SrfSloIndicatorTargetDTO;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTarget;
+import org.cgiar.ccafs.marlo.rest.dto.SrfProgressTowardsTargetsDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
-/**
- * @author Hermes Jiménez - CIAT/CCAFS
- */
-@Mapper(componentModel = "jsr330", uses = {SrfSloIndicatorMapper.class})
-public interface SrfSloIndicatorTargetMapper {
+/**************
+ * @author German C. Martinez - CIAT/CCAFS
+ **************/
+@Mapper(componentModel = "jsr330", uses = {SrfSloIndicatorTargetMapper.class})
+public interface SrfProgressTowardsTargetMapper {
 
-  @Mappings({@Mapping(source = "srfSloDTO", target = "srfSloIndicator"), @Mapping(source = "code", target = "id")})
-  public abstract SrfSloIndicatorTarget
-    srfSloIndicatorTargetDTOToSrfSloIndicatorTarget(SrfSloIndicatorTargetDTO srfSloIndicatorTargetDTO);
-
-  @Mappings({@Mapping(source = "srfSloIndicator", target = "srfSloDTO"), @Mapping(source = "id", target = "code")})
-  public abstract SrfSloIndicatorTargetDTO
-    srfSloIndicatorTargetToSrfSloIndicatorTargetDTO(SrfSloIndicatorTarget srfSloIndicatorTarget);
+  @Mappings({@Mapping(source = "birefSummary", target = "briefSummary"),
+    @Mapping(source = "srfSloIndicatorTarget", target = "srfSloTarget")})
+  public abstract SrfProgressTowardsTargetsDTO
+    progressTargetToSrfProgressTowardsTargetsDTO(ReportSynthesisSrfProgressTarget reportSynthesisSrfProgressTarget);
 
 }
