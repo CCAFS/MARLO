@@ -27,6 +27,8 @@ import org.cgiar.ccafs.marlo.rest.dto.NewKeyExternalPartnershipDTO;
 import org.cgiar.ccafs.marlo.rest.errors.NotFoundException;
 import org.cgiar.ccafs.marlo.security.Permission;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import com.opensymphony.xwork2.inject.Inject;
@@ -115,6 +117,22 @@ public class KeyExternalPartnership {
         this.env.getProperty("KeyExternalPartnership.externalpartnerships.DELETE.id.404"));
     }
     return response;
+  }
+
+  @ApiOperation(tags = {"Table 8 - Key external partnerships"},
+    value = "${KeyExternalPartnership.externalpartnerships.GET.all.value}", response = KeyExternalPartnershipDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/keyexternalpartnership", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<KeyExternalPartnershipDTO> findAllProgressTowardsByGlobalUnit(
+    @ApiParam(value = "${KeyExternalPartnership.externalpartnerships.GET.all.param.CGIAR}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${KeyExternalPartnership.externalpartnerships.GET.all.param.year}",
+      required = true) @RequestParam Integer year,
+    @ApiParam(value = "${KeyExternalPartnership.externalpartnerships.GET.all.param.phase}",
+      required = true) @RequestParam String phase) {
+    return this.keyExternalPartnershipItem.findAllKeyExternalPartnershipByGlobalUnit(CGIAREntity, year, phase,
+      this.getCurrentUser());
   }
 
   @ApiOperation(tags = {"Table 8 - Key external partnerships"},
