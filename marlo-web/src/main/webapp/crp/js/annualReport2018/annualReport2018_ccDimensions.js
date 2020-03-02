@@ -91,6 +91,7 @@ function setGoogleCharts() {
           width: 400
       },*/
       //colors: '#7ed6df',
+
       hAxis: {
         baseline:'none',
         textPosition: 'none',
@@ -105,8 +106,22 @@ function setGoogleCharts() {
         }
       },
       series: {
-        0:{color:'#00A0B0'},
-        1:{color:'#AB2E56'}
+        0:{
+          color:'#00A0B0',
+          annotations: {
+            stem: {
+              length: 5
+            },
+          }
+        },
+        1:{
+          color:'#AB2E56',
+          annotations: {
+            stem: {
+              length: 22
+            },
+          }
+        }
       },
       legend: {
         position: 'bottom',
