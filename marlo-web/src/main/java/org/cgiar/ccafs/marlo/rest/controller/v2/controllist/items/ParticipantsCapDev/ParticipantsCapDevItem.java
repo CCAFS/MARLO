@@ -15,8 +15,18 @@
 
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.ParticipantsCapDev;
 
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.NewParticipantsCapDevDTO;
+import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -25,11 +35,16 @@ import javax.inject.Named;
 public class ParticipantsCapDevItem<T> {
 
   // Managers and mappers
+  private static final String ACRONYM_PMU = "PMU";
+  private GlobalUnitManager globalUnitManager;
+  private PhaseManager phaseManager;
+  private LiaisonInstitutionManager liaisonInstitutionManager;
 
   // Variables
   // private List<FieldErrorDTO> fieldErrors;
   // private ProjectInnovation projectInnovation;
   // private long innovationID;
+
 
   @Inject
   public ParticipantsCapDevItem() {
@@ -52,6 +67,33 @@ public class ParticipantsCapDevItem<T> {
     // TODO: Include all data validations
     // TODO: return an innovationDTO
     Long reportSynCrossCutDimId = new Long(1);
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
+
+    if (globalUnitEntity == null) {
+      fieldErrors.add(new FieldErrorDTO("createParticipantsCapDev", "GlobalUnitEntity",
+        entityAcronym + " is an invalid CGIAR entity acronym"));
+    }
+
+    Phase phase = this.phaseManager.findAll().stream()
+      .filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(entityAcronym)
+        && c.getYear() == newParticipantsCapDevDTO.getPhase().getYear()
+        && c.getName().equalsIgnoreCase(newParticipantsCapDevDTO.getPhase().getName()))
+      .findFirst().get();
+
+    if (phase == null) {
+      fieldErrors.add(new FieldErrorDTO("createParticipantsCapDev", "phase",
+        new NewParticipantsCapDevDTO().getPhase().getYear() + " is an invalid year"));
+    }
+
+    LiaisonInstitution liaisonInstitution =
+      this.liaisonInstitutionManager.findByAcronymAndCrp(ACRONYM_PMU, globalUnitEntity.getId());
+
+    if (liaisonInstitution == null) {
+      fieldErrors
+        .add(new FieldErrorDTO("createParticipantsCapDev", "LiaisonInstitution", "invalid liaison institution"));
+    }
 
 
     return reportSynCrossCutDimId;
