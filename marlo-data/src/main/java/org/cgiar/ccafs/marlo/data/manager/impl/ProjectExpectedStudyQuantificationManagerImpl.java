@@ -131,10 +131,16 @@ public class ProjectExpectedStudyQuantificationManagerImpl implements ProjectExp
 
     List<ProjectExpectedStudyQuantification> projectExpectedStudyQuantifications =
       phase.getProjectExpectedStudyQuantifications().stream()
-        .filter(c -> c.isActive() && c.getProjectExpectedStudy().getId().longValue() == expectedID
-          && c.getNumber() == projectExpectedStudyQuantification.getNumber()
-          && c.getComments().equals(projectExpectedStudyQuantification.getComments())
+        .filter(c -> c.isActive() && expectedID != 0 && c.getProjectExpectedStudy() != null
+          && c.getProjectExpectedStudy().getId() != null
+          && c.getProjectExpectedStudy().getId().longValue() == expectedID && c.getNumber() != 0
+          && projectExpectedStudyQuantification != null && projectExpectedStudyQuantification.getNumber() != null
+          && c.getNumber() == projectExpectedStudyQuantification.getNumber() && c.getComments() != null
+          && projectExpectedStudyQuantification.getComments() != null
+          && c.getComments().equals(projectExpectedStudyQuantification.getComments()) && c.getTargetUnit() != null
+          && projectExpectedStudyQuantification.getTargetUnit() != null
           && c.getTargetUnit().equals(projectExpectedStudyQuantification.getTargetUnit())
+          && c.getTypeQuantification() != null && projectExpectedStudyQuantification.getTypeQuantification() != null
           && c.getTypeQuantification().equals(projectExpectedStudyQuantification.getTypeQuantification()))
         .collect(Collectors.toList());
 
