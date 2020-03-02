@@ -21,7 +21,7 @@ package org.cgiar.ccafs.marlo.rest.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class SrfProgressTowardsTargetsDTO {
+public class SrfProgressTowardsTargetDTO {
 
   @ApiModelProperty(notes = "ID ", position = 1)
   private Long id;
@@ -35,6 +35,9 @@ public class SrfProgressTowardsTargetsDTO {
   @ApiModelProperty(notes = "Progress Towards additional contribution", position = 4)
   private String additionalContribution;
 
+  @ApiModelProperty(notes = "Flagship / Module", position = 5)
+  private FlagshipProgramDTO flagshipProgramDTO;
+
 
   public String getAdditionalContribution() {
     return additionalContribution;
@@ -42,6 +45,10 @@ public class SrfProgressTowardsTargetsDTO {
 
   public String getBriefSummary() {
     return briefSummary;
+  }
+
+  public FlagshipProgramDTO getFlagshipProgramDTO() {
+    return flagshipProgramDTO;
   }
 
   public Long getId() {
@@ -59,6 +66,10 @@ public class SrfProgressTowardsTargetsDTO {
 
   public void setBriefSummary(String briefSummary) {
     this.briefSummary = briefSummary;
+  }
+
+  public void setFlagshipProgramDTO(FlagshipProgramDTO flagshipProgramDTO) {
+    this.flagshipProgramDTO = flagshipProgramDTO;
   }
 
   public void setId(Long id) {

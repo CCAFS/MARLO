@@ -28,32 +28,24 @@ public class SrfProgressTowardsDTO {
   @ApiModelProperty(notes = "The Generated identification Code", position = 1)
   private Long code;
 
-  @ApiModelProperty(notes = "SRF progress targets", position = 3)
-  private List<SrfProgressTowardsTargetsDTO> srfSloTargets;
+  @ApiModelProperty(notes = "SRF progress targets", position = 2)
+  private List<SrfProgressTowardsTargetDTO> srfSloTargets;
 
-  @ApiModelProperty(notes = "Progress Towards summary", position = 4)
+  @ApiModelProperty(notes = "Progress Towards summary", position = 3)
   private String summary;
 
-  @ApiModelProperty(notes = "Phase - Year ", position = 5)
+  @ApiModelProperty(notes = "Phase - Year ", position = 4)
   private PhaseDTO phase;
-
-  @ApiModelProperty(notes = "Flagship / Module", position = 2)
-  private FlagshipProgramDTO flagshipProgramId;
-
 
   public Long getCode() {
     return code;
-  }
-
-  public FlagshipProgramDTO getFlagshipProgramId() {
-    return flagshipProgramId;
   }
 
   public PhaseDTO getPhase() {
     return phase;
   }
 
-  public List<SrfProgressTowardsTargetsDTO> getSrfSloTargets() {
+  public List<SrfProgressTowardsTargetDTO> getSrfSloTargets() {
     return srfSloTargets;
   }
 
@@ -66,15 +58,11 @@ public class SrfProgressTowardsDTO {
     this.code = code;
   }
 
-  public void setFlagshipProgramId(FlagshipProgramDTO flagshipProgramId) {
-    this.flagshipProgramId = flagshipProgramId;
-  }
-
   public void setPhase(PhaseDTO phase) {
     this.phase = phase;
   }
 
-  public void setSrfSloTargets(List<SrfProgressTowardsTargetsDTO> srfSloTargets) {
+  public void setSrfSloTargets(List<SrfProgressTowardsTargetDTO> srfSloTargets) {
     this.srfSloTargets = srfSloTargets;
   }
 
