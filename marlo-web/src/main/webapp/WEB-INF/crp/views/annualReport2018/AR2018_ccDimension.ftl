@@ -221,8 +221,8 @@
                             <div class="row form-group">
                               <div id="chart12" class="chartBox simpleBox">
                                 [#assign chartData = [
-                                    {"name":"Male",   "value": "${(totalParticipantFormalTrainingShortMale)!0}", "valuePHD": "${(totalParticipantFormalTrainingShortMale)!0}"},
-                                    {"name":"Female", "value": "${(totalParticipantFormalTrainingShortFemale)!0}", "valuePHD": "${(totalParticipantFormalTrainingShortFemale)!0}"}
+                                    {"name":"Male",   "value": "${(totalParticipantFormalTrainingShortMale)!0}"},
+                                    {"name":"Female", "value": "${(totalParticipantFormalTrainingShortFemale)!0}"}
                                   ] /] 
                                 <ul class="chartData" style="display:none">
                                   <li>
@@ -241,8 +241,8 @@
                             <div class="row form-group">
                               <div id="chart13" class="chartBox simpleBox">
                                 [#assign chartData = [
-                                    {"name":"Male",   "value": "${(totalParticipantFormalTrainingLongMale)!0}",   "valuePHD": "${(totalParticipantFormalTrainingLongMale)!0}"}
-                                    {"name":"Female", "value": "${(totalParticipantFormalTrainingLongFemale)!0}",   "valuePHD": "${(totalParticipantFormalTrainingLongFemale)!0}"}
+                                    {"name":"Male",   "value": "${(totalParticipantFormalTrainingLongMale)!0}",   "valuePhD": "0"}
+                                    {"name":"Female", "value": "${(totalParticipantFormalTrainingLongFemale)!0}",   "valuePhD": "0"}
                                   ] /] 
                                 <ul class="chartData" style="display:none">
                                   <li>
@@ -254,7 +254,7 @@
                                   </li>
                                   [#if (((totalParticipantFormalTrainingLongMale)!0) + ((totalParticipantFormalTrainingLongFemale)!0)) > 0 ]
                                     [#list chartData as data]
-                                      <li><span>${data.name}</span><span class="number">${data.value}</span><span>${data.value}</span><span class="number">${data.valuePHD}</span><span>${data.valuePHD}</span></li>
+                                      <li><span>${data.name}</span><span class="number">${data.value}</span><span>${data.value}</span><span class="number">${data.valuePhD}</span><span>${data.valuePhD}</span></li>
                                     [/#list]
                                   [/#if]
                                 </ul>
