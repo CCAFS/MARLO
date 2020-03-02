@@ -207,15 +207,13 @@
                     <div class="form-group">
                       <div class="row">
                         <div class="col-md-4">
-                          <div class="align-middle">
-                            <div id="" class="simpleBox numberBox">
-                              <label for="">[@s.text name="${customLabel}.totalParticipants" /]</label><br />
-                              <span>${(totalParticipants?number?string(",##0"))!0}</span>
-                            </div>
-                            <div id="" class="simpleBox numberBox">
-                              <label for="">Participants in [@s.text name="${customLabel}.totalParticipantFormalTraining" /]</label><br />
-                              <span>${(totalParticipantFormalTraining?number?string(",##0"))!0}</span>
-                            </div>
+                          <div id="" class="simpleBox numberBox">
+                            <label for="">[@s.text name="${customLabel}.totalParticipants" /]</label><br />
+                            <span>${(totalParticipants?number?string(",##0"))!0}</span>
+                          </div>
+                          <div id="" class="simpleBox numberBox">
+                            <label for="">Participants in [@s.text name="${customLabel}.totalParticipantFormalTraining" /]</label><br />
+                            <span>${(totalParticipantFormalTraining?number?string(",##0"))!0}</span>
                           </div>
                         </div>
                         <div class="col-md-8">
