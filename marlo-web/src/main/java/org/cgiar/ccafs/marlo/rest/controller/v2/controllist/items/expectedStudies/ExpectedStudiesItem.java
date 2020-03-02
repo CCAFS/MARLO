@@ -1733,6 +1733,35 @@ public class ExpectedStudiesItem<T> {
                     projectExpectedStudyInnovationManager.deleteProjectExpectedStudyInnovation(obj.getId());
                   }
                 }
+
+                // policies
+                // getting actual policies
+                List<ProjectExpectedStudyPolicy> projectExpectedStudyPolicyList =
+                  projectExpectedStudy.getProjectExpectedStudyPolicies().stream()
+                    .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+                // create existing policies
+                List<ProjectExpectedStudyPolicy> existingProjectExpectedStudyPolicyList =
+                  new ArrayList<ProjectExpectedStudyPolicy>();
+                // save policies
+                for (ProjectPolicy projectPolicy : projectPolicyList) {
+                  ProjectExpectedStudyPolicy projectExpectedStudyPolicy = projectExpectedStudyPolicyManager
+                    .getProjectExpectedStudyPolicyByPhase(expectedStudyID, projectPolicy.getId(), phase.getId());
+                  if (projectExpectedStudyPolicy != null) {
+                    existingProjectExpectedStudyPolicyList.add(projectExpectedStudyPolicy);
+                  } else {
+                    projectExpectedStudyPolicy = new ProjectExpectedStudyPolicy();
+                    projectExpectedStudyPolicy.setProjectPolicy(projectPolicy);
+                    projectExpectedStudyPolicy.setPhase(phase);
+                    projectExpectedStudyPolicy.setProjectExpectedStudy(projectExpectedStudyDB);
+                    projectExpectedStudyPolicyManager.saveProjectExpectedStudyPolicy(projectExpectedStudyPolicy);
+                  }
+                }
+                // delete not existing policies
+                for (ProjectExpectedStudyPolicy obj : projectExpectedStudyPolicyList) {
+                  if (!existingProjectExpectedStudyPolicyList.contains(obj)) {
+                    projectExpectedStudyPolicyManager.deleteProjectExpectedStudyPolicy(obj.getId());
+                  }
+                }
               }
             }
           }
