@@ -1749,6 +1749,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.years;
   }
 
+  public List<Submission> getAllProjectSubmissionsByProjectID(long projectID) {
+    Project project = this.projectManager.getProjectById(projectID);
+    List<Submission> submissions = project.getSubmissions().stream()
+      .filter(c -> c.getCycle().equals(this.getCurrentCycle()) && c.getYear().intValue() == this.getCurrentCycleYear())
+      .collect(Collectors.toList());
+    if (submissions.isEmpty()) {
+      return new ArrayList<>();
+    }
+    return submissions;
+  }
+
   /**
    * ************************ CENTER METHOD ****************************** This
    * method calculates all the years between the start date and the end date.
