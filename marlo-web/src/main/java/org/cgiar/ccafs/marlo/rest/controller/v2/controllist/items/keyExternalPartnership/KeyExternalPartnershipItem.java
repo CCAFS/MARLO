@@ -432,7 +432,7 @@ public class KeyExternalPartnershipItem<T> {
         && c.getName().equalsIgnoreCase(newKeyExternalPartnershipDTO.getPhase().getName()))
       .findFirst().get();
     if (phase == null) {
-      fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "phase",
+      fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "PhaseEntity",
         newKeyExternalPartnershipDTO.getPhase().getYear() + " is an invalid year"));
     }
 
@@ -521,14 +521,12 @@ public class KeyExternalPartnershipItem<T> {
       keyPartnershipExternal.setDescription(newKeyExternalPartnershipDTO.getDescription());
 
       LiaisonInstitution liaisonInstitution = liaisonInstitutionManager.findByAcronym(crpProgram.getAcronym());
-
       if (liaisonInstitution == null) {
         fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "LiaisonInstitutionEntity",
           "A Liaison Institution with the acronym " + crpProgram.getAcronym() + " could not be found"));
       }
 
       ReportSynthesis reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
-
       if (reportSynthesis == null) {
         fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "ReportSynthesisEntity",
           "A report entity linked to the Phase with id " + phase.getId() + " and Liaison Institution with id "
@@ -536,7 +534,6 @@ public class KeyExternalPartnershipItem<T> {
       }
 
       ReportSynthesisKeyPartnership reportSynthesisKeyPartnership = reportSynthesis.getReportSynthesisKeyPartnership();
-
       keyPartnershipExternal.setReportSynthesisKeyPartnership(reportSynthesisKeyPartnership);
     }
 
@@ -546,8 +543,8 @@ public class KeyExternalPartnershipItem<T> {
           .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
           .collect(Collectors.toList()));
     }
-    keyPartnershipExternalManager.saveReportSynthesisKeyPartnershipExternal(keyPartnershipExternal);
 
+    keyPartnershipExternalManager.saveReportSynthesisKeyPartnershipExternal(keyPartnershipExternal);
     return idKeyExternalPartnershipDB;
   }
 
