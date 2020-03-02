@@ -253,7 +253,6 @@ public class ProgressTowardsItem<T> {
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
-  // TODO ask how to do this
   public List<SrfProgressTowardsTargetDTO> findAllProgressTowardsByGlobalUnit(String CGIARentityAcronym,
     Integer repoYear, String repoPhase, User user) {
 
@@ -274,7 +273,7 @@ public class ProgressTowardsItem<T> {
     }
 
     if (fieldErrors.isEmpty()) {
-      // not all ReportSynthesis have a ReportSynthesisSrfProgress, so we need to filter out those
+      // not all ReportSynthesis have a ReportSynthesisSrfProgress, so we need to filter out those to avoid exceptions
       progressTowardsTargets = reportSynthesisManager.findAll().stream()
         .filter(rs -> rs.getPhase().getId() == phase.getId() && rs.getReportSynthesisSrfProgress() != null)
         .flatMap(rs -> rs.getReportSynthesisSrfProgress().getReportSynthesisSrfProgressTargets().stream())
