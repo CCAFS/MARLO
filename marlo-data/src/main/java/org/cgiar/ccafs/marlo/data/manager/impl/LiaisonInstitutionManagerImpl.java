@@ -67,11 +67,16 @@ public class LiaisonInstitutionManagerImpl implements LiaisonInstitutionManager 
   }
 
   @Override
+  public LiaisonInstitution findByAcronymAndCrp(String acronym, long crpID) {
+    return liaisonInstitutionDAO.findByAcronymAndCrp(acronym, crpID);
+  }
+
+
+  @Override
   public LiaisonInstitution getLiaisonInstitutionById(long liaisonInstitutionID) {
 
     return liaisonInstitutionDAO.find(liaisonInstitutionID);
   }
-
 
   @Override
   public List<LiaisonInstitution> getLiaisonInstitutionByUserId(Long userId, Long crpId) {

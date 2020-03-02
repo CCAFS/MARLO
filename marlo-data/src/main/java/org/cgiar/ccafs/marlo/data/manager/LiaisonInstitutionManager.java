@@ -61,6 +61,15 @@ public interface LiaisonInstitutionManager {
   public LiaisonInstitution findByAcronym(String acronym);
 
   /**
+   * This method gets a liaisonInstitution object by a given liaisonInstitution acronym and crp.
+   * 
+   * @param acronym is the liaisonInstitution acronym.
+   * @param crpID is the crp identifier.
+   * @return a LiaisonInstitution object.
+   */
+  public LiaisonInstitution findByAcronymAndCrp(String acronym, long crpID);
+
+  /**
    * This method gets a liaisonInstitution object by a given liaisonInstitution identifier.
    * 
    * @param liaisonInstitutionID is the liaisonInstitution identifier.
