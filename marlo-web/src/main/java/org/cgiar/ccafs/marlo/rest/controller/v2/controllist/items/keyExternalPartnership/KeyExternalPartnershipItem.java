@@ -341,6 +341,45 @@ public class KeyExternalPartnershipItem<T> {
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
+  public List<KeyExternalPartnershipDTO> findAllKeyExternalPartnershipByGlobalUnit(String CGIARentityAcronym,
+    Integer repoYear, String repoPhase, User user) {
+
+    List<KeyExternalPartnershipDTO> keyExternalPartnerships = new ArrayList<>();
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
+    if (globalUnitEntity == null) {
+      fieldErrors.add(new FieldErrorDTO("findKeyExternalPartnershipByGlobalUnit", "GlobalUnitEntity",
+        CGIARentityAcronym + " is an invalid CGIAR entity acronym"));
+    }
+
+    Phase phase =
+      this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
+        && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().get();
+    if (phase == null) {
+      fieldErrors.add(new FieldErrorDTO("findProgressTowardsByGlobalUnit", "phase", repoYear + " is an invalid year"));
+    }
+
+    if (fieldErrors.isEmpty()) {
+      // not all ReportSynthesis have a ReportSynthesisSrfProgress, so we need to filter out those to avoid exceptions
+      keyExternalPartnerships = reportSynthesisManager.findAll().stream()
+        .filter(rs -> rs.getPhase().getId() == phase.getId() && rs.getReportSynthesisKeyPartnership() != null)
+        .flatMap(rs -> rs.getReportSynthesisKeyPartnership().getReportSynthesisKeyPartnershipExternals().stream())
+        .map(keyExternalPartnershipMapper::keyPartnershipExternalToKeyExternalPartnershipDTO)
+        .collect(Collectors.toList());
+    }
+
+    if (!fieldErrors.isEmpty()) {
+      fieldErrors.forEach(e -> System.out.println(e.getMessage()));
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
+    }
+
+    return keyExternalPartnerships;
+  }
+
   /**
    * Find an KeyExternalPartnership by Id and year
    * 
@@ -432,7 +471,7 @@ public class KeyExternalPartnershipItem<T> {
         && c.getName().equalsIgnoreCase(newKeyExternalPartnershipDTO.getPhase().getName()))
       .findFirst().get();
     if (phase == null) {
-      fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "phase",
+      fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "PhaseEntity",
         newKeyExternalPartnershipDTO.getPhase().getYear() + " is an invalid year"));
     }
 
@@ -521,14 +560,12 @@ public class KeyExternalPartnershipItem<T> {
       keyPartnershipExternal.setDescription(newKeyExternalPartnershipDTO.getDescription());
 
       LiaisonInstitution liaisonInstitution = liaisonInstitutionManager.findByAcronym(crpProgram.getAcronym());
-
       if (liaisonInstitution == null) {
         fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "LiaisonInstitutionEntity",
           "A Liaison Institution with the acronym " + crpProgram.getAcronym() + " could not be found"));
       }
 
       ReportSynthesis reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
-
       if (reportSynthesis == null) {
         fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "ReportSynthesisEntity",
           "A report entity linked to the Phase with id " + phase.getId() + " and Liaison Institution with id "
@@ -536,7 +573,6 @@ public class KeyExternalPartnershipItem<T> {
       }
 
       ReportSynthesisKeyPartnership reportSynthesisKeyPartnership = reportSynthesis.getReportSynthesisKeyPartnership();
-
       keyPartnershipExternal.setReportSynthesisKeyPartnership(reportSynthesisKeyPartnership);
     }
 
@@ -546,8 +582,8 @@ public class KeyExternalPartnershipItem<T> {
           .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
           .collect(Collectors.toList()));
     }
-    keyPartnershipExternalManager.saveReportSynthesisKeyPartnershipExternal(keyPartnershipExternal);
 
+    keyPartnershipExternalManager.saveReportSynthesisKeyPartnershipExternal(keyPartnershipExternal);
     return idKeyExternalPartnershipDB;
   }
 
