@@ -758,7 +758,7 @@ function onClickRemoveElement() {
       $(element).setNameIndexes(indexLevel, i);
 
       if(className.indexOf("primary") >= 0){
-        $(element).find('label.radio-label').attr('for', $(element).find('label.radio-label').parents('.radioFlat').find('input').attr("id"));
+        $(element).find('label.radio-label').attr('for', $(element).find('label.radio-label').parents('.radiot').find('input').attr("id"));
         //$(element).find('input.radio-input').attr('checked', true);
         /*
         if ($list.children().length < 3){
@@ -830,7 +830,7 @@ function formatStateCountries(state) {
   if(!state.id) {
     return state.text;
   }
-  var flag = '<i class="flag-sm flag-sm-' + state.element.value.toUpperCase() + '"></i> ';
+  var flag = '<i class="flag-icon flag-icon-'+ state.element.value.toLowerCase() +'"></i> ';
   var $state;
   if(state.id != -1) {
     $state = $('<span>' + flag + state.text + '</span>');

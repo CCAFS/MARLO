@@ -134,7 +134,7 @@
     [#if policies?has_content]
       [#-- Button --]
       <button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#modal-policies-${composedID}">
-        <span class="icon-20 deliverable"></span> <strong>${policies?size}</strong> [#if labelText] Policy(ies)[/#if]
+        <span class="icon-20 policies"></span> <strong>${policies?size}</strong> [#if labelText] Policy(ies)[/#if]
       </button>
       
       [#-- Modal --]
@@ -191,7 +191,7 @@
     [#if innovations?has_content]
       [#-- Button --]
       <button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#modal-innovations-${composedID}">
-        <span class="icon-20 deliverable"></span> <strong>${innovations?size}</strong> [#if labelText] Innovation(s)[/#if]
+        <span class="icon-20 innovations"></span> <strong>${innovations?size}</strong> [#if labelText] Innovation(s)[/#if]
       </button>
       
       [#-- Modal --]
@@ -250,7 +250,7 @@
     [#if evidencies?has_content]
       [#-- Button --]
       <button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#modal-evidencies-${composedID}">
-        <span class="icon-20 deliverable"></span> <strong>${evidencies?size}</strong> [#if labelText] Evidency(ies)[/#if]
+        <span class="icon-20 evidences"></span> <strong>${evidencies?size}</strong> [#if labelText] Evidence(s)[/#if]
       </button>
       
       [#-- Modal --]
@@ -277,19 +277,19 @@
                 <thead>
                   <tr>
                     <th id="ids">[@s.text name="projectsList.projectids" /]</th>
-                    <th id="evidencyTitles" >[@s.text name="project.evidencyList.evidencyName" /]</th>
-                    [#--<th id="evidencyType">[@s.text name="project.evidencyList.type" /]</th>--]
+                    <th id="evidencyTitles" >[@s.text name="project.evidenceList.evidenceName" /]</th>
+                    [#--<th id="evidencyType">[@s.text name="project.evidenceList.type" /]</th>--]
                     <th></th>
                   </tr>
                 </thead>
                 <tbody>
                   [#list evidencies as e]
-                    [#local evidencyUrl][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${e.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                    [#local evidenceUrl][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${e.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
                     <tr>
                       <th scope="row">${e.id}</th>
                       <td class="col-md-6">${(e.projectExpectedStudyInfo.title)!'Untitled'}</td>
                       [#--<td>${(e.studyInfo.studyType.name?capitalize)!'none'}</td>--]
-                      <td> <a href="${evidencyUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
+                      <td> <a href="${evidenceUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
                     </tr>
                     [/#list]
                 </tbody>

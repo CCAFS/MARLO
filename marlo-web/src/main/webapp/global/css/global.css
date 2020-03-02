@@ -4360,6 +4360,27 @@ li.fileUploaded span {
   vertical-align: middle;
 }
 
+.icon-20.policies {
+  background-image: url(../../global/images/icons-policies.png);
+  background-position: -28px 0px;
+  background-size: 358%;
+  vertical-align: middle;
+}
+
+.icon-20.innovations {
+  background-image: url(../../global/images/icons-innovations.png);
+  background-position: -28px 0px;
+  background-size: 358%;
+  vertical-align: middle;
+}
+
+.icon-20.evidences {
+  background-image: url(../../global/images/icons-evidences.png);
+  background-position: -28px 0px;
+  background-size: 358%;
+  vertical-align: middle;
+}
+
 
 .icon-uncheck {
   background: url('../../global/images/sprite-icons-activities.png') 0 -85px;
@@ -6960,4 +6981,25 @@ div.selectPrimary{
 
 .primary-label {
   font-size: 10px
+}
+
+.menuContent #bi::before{
+  content: "BETA";
+  color: #0277a2;
+  font-size: 9px;
+  position: absolute;
+  top: 0em;
+  background-color: rgb(154, 226, 128);
+  padding: 0.3em 1.1em 0.3em 1.1em;
+  border-radius: 0em 0em 0.3em 0.3em;
+}
+
+li.currentSection#bi::before{
+  color: #127fa8;
+}
+
+.menuContent.positionFixedTop #bi::before{
+  font-size: 5px;
+  padding: 0.3em 2.5em 0.3em 2.5em;
+  border-radius: 0em 0em 0.3em 0.3em;
 }
