@@ -97,7 +97,7 @@ function loadTab() {
 
 /**
  * Get chart data in Array
- * 
+ *
  * @param chart
  * @returns
  */
@@ -141,7 +141,7 @@ function createGoogleChart(chartID,type,options) {
     google.charts.setOnLoadCallback(function() {
       $chart.addClass('loaded');
       var data = new google.visualization.arrayToDataTable(getChartDataArray($chart));
-      if(data.wg.length === 0) {
+      if(data.eg.length === 0) {
         $chart.append('<p  class="text-center"> ' + options.title + ' <br>  No data </p>');
       } else {
         if(type == "Bar") {
