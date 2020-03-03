@@ -217,8 +217,8 @@
                           </div>
                         </div>
                         <div class="col-md-8">
-                          <div class="row">
-                            <div class="col-md-6">
+                          <div class="col-lg">
+                            <div class="row form-group">
                               <div id="chart12" class="chartBox simpleBox">
                                 [#assign chartData = [
                                     {"name":"Male",   "value": "${(totalParticipantFormalTrainingShortMale)!0}"},
@@ -226,31 +226,35 @@
                                   ] /] 
                                 <ul class="chartData" style="display:none">
                                   <li>
-                                    <span>[@s.text name="${customLabel}.chart12" /]</span>
-                                    <span>[@s.text name="${customLabel}.chart12" /]</span>
+                                    <span>[@s.text name="${customLabel}" /]</span>
+                                    <span>[@s.text name="Short-Term" /]</span>
+                                    <span class="json">{"role":"annotation"}</span>
                                   </li>
                                   [#if (((totalParticipantFormalTrainingShortMale)!0) + ((totalParticipantFormalTrainingShortFemale)!0)) > 0 ]
                                     [#list chartData as data]
-                                      <li><span>${data.name}</span><span class="number">${data.value}</span></li>
+                                      <li><span>${data.name}</span><span class="number">${data.value}</span><span>${data.value}</span></li>
                                     [/#list]
                                   [/#if]
                                 </ul>
                               </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="row form-group">
                               <div id="chart13" class="chartBox simpleBox">
                                 [#assign chartData = [
-                                    {"name":"Male",   "value": "${(totalParticipantFormalTrainingLongMale)!0}"},
-                                    {"name":"Female", "value": "${(totalParticipantFormalTrainingLongFemale)!0}"}
+                                    {"name":"Male",   "value": "${(totalParticipantFormalTrainingLongMale)!0}",   "valuePhD": "0"}
+                                    {"name":"Female", "value": "${(totalParticipantFormalTrainingLongFemale)!0}",   "valuePhD": "0"}
                                   ] /] 
                                 <ul class="chartData" style="display:none">
                                   <li>
                                     <span>[@s.text name="${customLabel}.chart13" /]</span>
-                                    <span>[@s.text name="${customLabel}.chart13" /]</span>
+                                    <span>[@s.text name="Long-Term" /]</span>
+                                    <span class="json">{"role":"annotation"}</span>
+                                    <span>[@s.text name="PhD" /]</span>
+                                    <span class="json">{"role":"annotation"}</span>
                                   </li>
                                   [#if (((totalParticipantFormalTrainingLongMale)!0) + ((totalParticipantFormalTrainingLongFemale)!0)) > 0 ]
                                     [#list chartData as data]
-                                      <li><span>${data.name}</span><span class="number">${data.value}</span></li>
+                                      <li><span>${data.name}</span><span class="number">${data.value}</span><span>${data.value}</span><span class="number">${data.valuePhD}</span><span>${data.valuePhD}</span></li>
                                     [/#list]
                                   [/#if]
                                 </ul>
