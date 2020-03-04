@@ -279,7 +279,7 @@ public class KeyExternalPartnershipItem<T> {
    * @param id
    * @param year
    * @param phase
-   * @return a InnovationDTO with the innovation Item
+   * @return a KeyExternalPartnershipDTO with the Key External Partnership Item
    */
   public ResponseEntity<KeyExternalPartnershipDTO> deleteKeyExternalPartnershipById(Long id, String CGIARentityAcronym,
     Integer repoYear, String repoPhase, User user) {
