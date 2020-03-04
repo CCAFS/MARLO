@@ -1,6 +1,6 @@
 [#ftl]
 [#assign currentSectionString = "capdev-${actionName?replace('/','-')}-${capdevID}-deliverable-${deliverableID}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = ["datatables.net", "datatables.net-bs", "select2", "flat-flags", "pickadate"] /]
+[#assign pageLibs = ["datatables.net", "datatables.net-bs", "select2", "flag-icon-css", "pickadate"] /]
 [#assign customCSS = [
   "${baseUrlCdn}/global/css/customDataTable.css", 
   "${baseUrlMedia}/css/capDev/capacityDevelopment.css"

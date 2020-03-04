@@ -147,7 +147,7 @@
                       <label for="">[@s.text name="projectLocations.activitiesCSV.instructions" /]:</label>
                     </div>
                     <div class="col-md-3 right">
-                      <a href="${baseUrlCdn}/global/documents/Guidelines_CSA_evlautions_template _Reporting_2018.pdf" target="__BLANK">
+                      <a href="${baseUrlCdn}/global/documents/Guidelines_CSA_evlautions_template _Reporting_2020.pdf" target="__BLANK">
                         <img src="${baseUrlCdn}/global/images/pdf.png" height="20" />
                         [[@s.text name="projectLocations.activitiesCSV.guideline" /]]
                       </a>
@@ -161,7 +161,7 @@
                     <div class="col-md-4">
                        <label for="">[@s.text name="projectLocations.activitiesCSV.download" /]:</label>
                        <div class="form-group">
-                         <a href="${baseUrlCdn}/global/documents/CSA_Evaluation_template.xlsm" download><img src="${baseUrlCdn}/global/images/download-excel.png" height="70" /></a>
+                         <a href="${baseUrlCdn}/global/documents/CSA_Evaluation_template_2020.xlsm" download><img src="${baseUrlCdn}/global/images/download-excel.png" height="70" /></a>
                        </div>
                     </div>
                     

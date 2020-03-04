@@ -2,7 +2,7 @@
 [#assign title = "Innovations" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${innovationID}-phase-${(actualPhase.id)!}" /]
 [#-- TODO: Remove unused pageLibs--]
-[#assign pageLibs = ["select2","font-awesome", "flat-flags"] /]
+[#assign pageLibs = ["select2","font-awesome", "flag-icon-css"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectInnovations.js",
   "${baseUrlCdn}/global/js/autoSave.js", 

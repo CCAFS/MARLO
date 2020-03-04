@@ -280,6 +280,10 @@ function addDisseminationEvents() {
 
     if(this.value == '63'){
       $('.acknowledge'+crp[0]+' .requiredTag').slideDown();
+      $('.metadataElement-volume .requiredTag').slideDown();
+      $('.metadataElement-issue .requiredTag').slideDown();
+      $('.metadataElement-pages .requiredTag').slideDown();
+      $('.isIsiJournal .requiredTag').slideDown();
       if(doiField.value ==''){
         displayExtraFieldUrl(true,true);
       }else{
@@ -287,6 +291,10 @@ function addDisseminationEvents() {
       }
     }else{
       $('.acknowledge'+crp[0]+' .requiredTag').slideUp();
+      $('.metadataElement-volume .requiredTag').slideUp();
+      $('.metadataElement-issue .requiredTag').slideUp();
+      $('.metadataElement-pages .requiredTag').slideUp();
+      $('.isIsiJournal .requiredTag').slideUp();
       displayExtraFieldUrl(false,false);
     }
   });
@@ -758,12 +766,10 @@ function getMetadata(channel,url) {
       },
       success: function(metadata) {
         metadata = metadata.metadata;
-        console.log(metadata);
         if(jQuery.isEmptyObject(metadata)) {
           $('#metadata-output').html("Metadata empty");
         } else {
           // Setting Metadata
-          console.log(metadata);
           setMetadata(metadata);
 
           // Show a message indicating the medatada harves was successfully
@@ -827,6 +833,10 @@ function validateSubCategorySelector() {
 
   if(selector.val() == '63'){
     $('.acknowledge'+crp[0]+' .requiredTag').slideDown();
+    $('.metadataElement-volume .requiredTag').slideDown();
+    $('.metadataElement-issue .requiredTag').slideDown();
+    $('.metadataElement-pages .requiredTag').slideDown();
+    $('.isIsiJournal .requiredTag').slideDown();
     if(doiField.value ==''){
       displayExtraFieldUrl(true,true);
     }else{
@@ -834,6 +844,10 @@ function validateSubCategorySelector() {
     }
   }else{
     $('.acknowledge'+crp[0]+' .requiredTag').slideUp();
+    $('.metadataElement-volume .requiredTag').slideUp();
+    $('.metadataElement-issue .requiredTag').slideUp();
+    $('.metadataElement-pages .requiredTag').slideUp();
+    $('.isIsiJournal .requiredTag').slideUp();
     displayExtraFieldUrl(false,false);
   }
 };

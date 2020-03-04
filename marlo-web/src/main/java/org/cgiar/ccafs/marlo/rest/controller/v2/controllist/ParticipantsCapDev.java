@@ -43,6 +43,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -92,11 +93,80 @@ public class ParticipantsCapDev {
     return response;
   }
 
+  @ApiOperation(tags = {"Table 7 - Participants in CapDev Activities"},
+    value = "${ParticipantsCapDev.participantscapdev.DELETE.id.value}", response = ParticipantsCapDevDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/participantscapdev/{id}", method = RequestMethod.DELETE,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<ParticipantsCapDevDTO> deleteParticipantsCapDevById(
+    @ApiParam(value = "${ParticipantsCapDev.participantscapdev.DELETE.id.param.CGIAR}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${ParticipantsCapDev.participantscapdev.DELETE.id.param.id}",
+      required = true) @PathVariable Long id,
+    @ApiParam(value = "${ParticipantsCapDev.participantscapdev.DELETE.id.param.year}",
+      required = true) @RequestParam Integer year,
+    @ApiParam(value = "${ParticipantsCapDev.participantscapdev.DELETE.id.param.phase}",
+      required = true) @RequestParam String phase) {
+
+    ResponseEntity<ParticipantsCapDevDTO> response =
+      this.participantsCapDevItem.deleteParticipantsCapDevById(id, CGIAREntity, year, phase, this.getCurrentUser());
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("ParticipantsCapDev.participantscapdev.DELETE.id.404"));
+    }
+    return response;
+  }
+
+  @ApiOperation(tags = {"Table 7 - Participants in CapDev Activities"},
+    value = "${ParticipantsCapDev.participantscapdev.GET.id.value}", response = ParticipantsCapDevDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/participantscapdev/{id}", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<ParticipantsCapDevDTO> findParticipantsCapDevById(
+    @ApiParam(value = "${ParticipantsCapDev.participantscapdev.GET.id.param.CGIAR}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${ParticipantsCapDev.participantscapdev.GET.id.param.id}",
+      required = true) @PathVariable Long id,
+    @ApiParam(value = "${ParticipantsCapDev.participantscapdev.GET.id.param.year}",
+      required = true) @RequestParam Integer year,
+    @ApiParam(value = "${ParticipantsCapDev.participantscapdev.GET.id.param.phase}",
+      required = true) @RequestParam String phase) {
+
+    ResponseEntity<ParticipantsCapDevDTO> response =
+      this.participantsCapDevItem.findParticipantsCapDevById(id, CGIAREntity, year, phase, this.getCurrentUser());
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("ParticipantsCapDev.participantscapdev.GET.id.404"));
+    }
+    return response;
+  }
+
+
   private User getCurrentUser() {
     Subject subject = SecurityUtils.getSubject();
     Long principal = (Long) subject.getPrincipal();
     User user = this.userManager.getUser(principal);
     return user;
   }
+
+
+  @ApiOperation(tags = {"Table 7 - Participants in CapDev Activities"},
+    value = "${ParticipantsCapDev.participantscapdev.PUT.value}", response = ParticipantsCapDevDTO.class)
+  @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/participantscapdev/{id}", method = RequestMethod.PUT,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Long> putParticipantsCapDev(
+    @ApiParam(value = "${ParticipantsCapDev.participantscapdev.PUT.param.CGIAR}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${ParticipantsCapDev.participantscapdev.PUT.param.id}", required = true) @PathVariable Long id,
+    @ApiParam(value = "${ParticipantsCapDev.participantscapdev.PUT.param.participantscapdev}",
+      required = true) @Valid @RequestBody NewParticipantsCapDevDTO newParticipantsCapDevDTO) {
+    Long reportSynCrossCutDimId = this.participantsCapDevItem.putParticipantsCapDevById(id, newParticipantsCapDevDTO,
+      CGIAREntity, this.getCurrentUser());
+    ResponseEntity<Long> response = new ResponseEntity<Long>(reportSynCrossCutDimId, HttpStatus.OK);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("ParticipantsCapDev.participantscapdev.DELETE.id.404"));
+    }
+    return response;
+  }
+
 
 }
