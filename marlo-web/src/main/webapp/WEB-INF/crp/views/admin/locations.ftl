@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Locations" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = [ "select2", "flat-flags" ] /]
+[#assign pageLibs = [ "select2", "flag-icon-css" ] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/admin/locations.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js" ] 
