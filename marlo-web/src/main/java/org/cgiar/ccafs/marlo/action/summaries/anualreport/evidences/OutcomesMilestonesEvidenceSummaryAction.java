@@ -449,9 +449,14 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
                   AROutcomeMilestoneEvidence milestoneEvidence = new AROutcomeMilestoneEvidence();
                   milestoneEvidence.setCrpProgramOutcome(progressOutcome.getCrpProgramOutcome());
                   milestoneEvidence.setOutcomeProgress(progressOutcome.getSummary());
-                  milestoneEvidence.setCrpMilestone(outcomeMilestone.getCrpMilestone());
-                  milestoneEvidence
-                    .setMilestonesStatus(outcomeMilestone.getCrpMilestone().getMilestonesStatus().getId());
+                  if (outcomeMilestone.getCrpMilestone() != null) {
+                    milestoneEvidence.setCrpMilestone(outcomeMilestone.getCrpMilestone());
+                    if (outcomeMilestone.getCrpMilestone().getMilestonesStatus() != null
+                      && outcomeMilestone.getCrpMilestone().getMilestonesStatus().getId() != null) {
+                      milestoneEvidence
+                        .setMilestonesStatus(outcomeMilestone.getCrpMilestone().getMilestonesStatus().getId());
+                    }
+                  }
                   milestoneEvidence.setRepIndMilestoneReason(outcomeMilestone.getReason());
                   milestoneEvidence.setOtherReason(outcomeMilestone.getOtherReason());
                   milestoneEvidence.setEvidence(outcomeMilestone.getEvidence());
