@@ -69,6 +69,11 @@
             <div class="form-group row">
               [#-- Chart 8 - Innovations by Type --]
               <div class="col-md-5">
+              <div  class="chartBox simpleBox">
+               Innovations by Type
+                <center><img src="${baseUrlCdn}/global/images/ComingSoon-charts.png" height="150"></center>
+                </div>
+              [#--
                 <div id="chart8" class="chartBox simpleBox">
                   <ul class="chartData" style="display:none">
                     <li>
@@ -84,13 +89,17 @@
                       [/#if]
                     [/#list]
                   </ul>
-                </div>
+                </div> --]
               </div>
               
               [#-- Chart 9 - Innovations by Stage --]
               <div class="col-md-7">
+              <div  class="chartBox simpleBox">
+               Innovations by Stage
+                <center><img src="${baseUrlCdn}/global/images/ComingSoon-charts.png" height="150"></center>
+                </div>
                 
-                 <div id="chart9" class="chartBox simpleBox">
+                 [#-- <div id="chart9" class="chartBox simpleBox">
                   <ul class="chartData" style="display:none">
                     <li>
                       <span>[@s.text name="${customLabel}.indicatorC1.chart9.0" /]</span>
@@ -109,7 +118,7 @@
                       [/#if]
                     [/#list]
                   </ul>
-                </div>
+                </div> --]
               </div>
            
             </div>
