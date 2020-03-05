@@ -498,7 +498,7 @@
     [#-- Is ISI Journal--]
     <div class="form-group isIsiJournal">
       <label for="">[@s.text name="deliverable.isiPublication" /] [@customForm.req required=editable /]
-      [@customForm.helpLabel name="deliverable.isiPublication.help" showIcon=false editable=editable/]</label> <br />
+      <p><i class="helpLabel">[@s.text name="deliverable.isiPublication.help"][@s.param]<a href="http://mjl.clarivate.com/">http://mjl.clarivate.com/</a>[/@s.param][/@s.text]</i></p></label> <br />
       [#local isISI = (deliverable.publication.isiPublication?string)!"" /]
       [@customForm.radioFlat id="optionISI-yes"  name="deliverable.publication.isiPublication" i18nkey="Yes"  value="true"  checked=(isISI == "true")  cssClass="radioType-optionISI" cssClassLabel="font-normal radio-label-yes" editable=editable /] 
       [@customForm.radioFlat id="optionISI-no"   name="deliverable.publication.isiPublication" i18nkey="No"   value="false" checked=(isISI == "false") cssClass="radioType-optionISI" cssClassLabel="font-normal radio-label-no"  editable=editable /] 
