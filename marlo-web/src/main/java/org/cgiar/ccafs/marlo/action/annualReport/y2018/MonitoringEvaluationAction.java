@@ -116,6 +116,7 @@ public class MonitoringEvaluationAction extends BaseAction {
   private List<ReportSynthesisMeliaEvaluation> fpSynthesisTable;
   private List<ReportSynthesisMelia> flagshipMeliaProgress;
   private List<ProjectExpectedStudy> projectExpectedStudies;
+  private List<ProjectExpectedStudy> selectedExpectedStudies;
   private Map<Integer, String> statuses;
 
   @Inject
@@ -363,6 +364,10 @@ public class MonitoringEvaluationAction extends BaseAction {
 
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
+  }
+
+  public List<ProjectExpectedStudy> getSelectedExpectedStudies() {
+    return selectedExpectedStudies;
   }
 
   public Map<Integer, String> getStatuses() {
@@ -902,6 +907,10 @@ public class MonitoringEvaluationAction extends BaseAction {
 
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
     this.reportSynthesis = reportSynthesis;
+  }
+
+  public void setSelectedExpectedStudies(List<ProjectExpectedStudy> selectedExpectedStudies) {
+    this.selectedExpectedStudies = selectedExpectedStudies;
   }
 
 
