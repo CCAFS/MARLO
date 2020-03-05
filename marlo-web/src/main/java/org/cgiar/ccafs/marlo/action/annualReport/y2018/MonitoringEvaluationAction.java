@@ -587,6 +587,8 @@ public class MonitoringEvaluationAction extends BaseAction {
       .collect(Collectors.toList());
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
 
+    // Get all expected studies
+    this.getAllProjectExpectedStudies();
 
     if (this.isPMU()) {
       // Table I-1 PMU Information
