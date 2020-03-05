@@ -720,12 +720,45 @@ public class OutcomesMilestonesAction extends BaseAction {
                     }
                   }
                 }
+                /*
+                 * CrpMilestone crpMilestone =
+                 * crpMilestoneManager.getCrpMilestoneById(milestone.getCrpMilestone().getId());
+                 * List<ReportSynthesisFlagshipProgressCrossCuttingMarker> synthesisMarkets = new ArrayList<>();
+                 * List<ReportSynthesisFlagshipProgressCrossCuttingMarker> synthesisMarketsTemp = new ArrayList<>();
+                 * List<ReportSynthesisFlagshipProgressCrossCuttingMarker> synthesisMarketsNew = new ArrayList<>();
+                 * synthesisMarkets = milestone.getMarkers();
+                 * if (milestone.getMarkers() != null) {
+                 * if (crpMilestone != null) {
+                 * // Gender
+                 * synthesisMarketsTemp = synthesisMarkets.stream()
+                 * .filter(
+                 * sm -> sm.getMarker() != null && sm.getMarker().getId() != null && sm.getMarker().getId() == 1)
+                 * .collect(Collectors.toList());
+                 * if (synthesisMarketsTemp == null && crpMilestone.getGenderFocusLevel() != null) {
+                 * ReportSynthesisFlagshipProgressCrossCuttingMarker rs =
+                 * new ReportSynthesisFlagshipProgressCrossCuttingMarker();
+                 * rs.setMarker(cgiarCrossCuttingMarkerManager.getCgiarCrossCuttingMarkerById(1));
+                 * rs.setReportSynthesisFlagshipProgressOutcomeMilestone(
+                 * reportSynthesisFlagshipProgressOutcomeMilestoneManager
+                 * .getReportSynthesisFlagshipProgressOutcomeMilestoneById(milestone.getId()));
+                 * rs.setFocus(focusLevelManager
+                 * .getRepIndGenderYouthFocusLevelById(crpMilestone.getGenderFocusLevel().getId()));
+                 * synthesisMarketsNew.add(rs);
+                 * }
+                 * if (synthesisMarketsNew != null) {
+                 * milestone.setMarkers(synthesisMarketsNew);
+                 * }
+                 * }
+                 * }
+                 */
               }
 
               reportSynthesisFlagshipProgressOutcome.setMilestones(milestones);
 
-              reportSynthesisFlagshipProgressOutcome.getMilestones()
-                .sort((p1, p2) -> p1.getCrpMilestone().getId().compareTo(p2.getCrpMilestone().getId()));
+              if (reportSynthesisFlagshipProgressOutcome.getMilestones() != null) {
+                reportSynthesisFlagshipProgressOutcome.getMilestones()
+                  .sort((p1, p2) -> p1.getCrpMilestone().getId().compareTo(p2.getCrpMilestone().getId()));
+              }
             }
 
             reportOutcomes
@@ -760,11 +793,13 @@ public class OutcomesMilestonesAction extends BaseAction {
           .collect(Collectors.toList()));
     }
     for (CrpProgramOutcome outcome : outcomesList) {
+
       outcome.setMilestones(outcome.getCrpMilestones().stream()
         .filter(c -> c.isActive() && (c.getYear().intValue() == this.getActualPhase().getYear()
           || (c.getExtendedYear() != null && c.getExtendedYear().intValue() == this.getActualPhase().getYear())))
         .collect(Collectors.toList()));
-      if (!outcome.getMilestones().isEmpty()) {
+
+      if (outcome.getMilestones() != null && !outcome.getMilestones().isEmpty()) {
         outcomesSet.add(outcome);
       }
     }
@@ -1041,6 +1076,7 @@ public class OutcomesMilestonesAction extends BaseAction {
 
         flagshipProgressMilestoneNew.setEvidence(flagshipProgressMilestone.getEvidence());
         flagshipProgressMilestoneNew.setMilestonesStatus(flagshipProgressMilestone.getMilestonesStatus());
+        flagshipProgressMilestoneNew.setExtendedYear(flagshipProgressMilestone.getExtendedYear());
         flagshipProgressMilestoneNew.setCrpMilestone(flagshipProgressMilestone.getCrpMilestone());
         flagshipProgressMilestoneNew = reportSynthesisFlagshipProgressOutcomeMilestoneManager
           .saveReportSynthesisFlagshipProgressOutcomeMilestone(flagshipProgressMilestoneNew);
