@@ -266,7 +266,10 @@
         </div>
       [/#if]
     </div>
-    
+    [#-- Link to evidence --]
+    <div class="form-group evidences-block">
+      [@customForm.elementsListComponent name="${customName}.table11.evidence" elementType="projectExpectedStudy" elementList=selectedExpectedStudies label="${customLabel}.table11.evidence" help="" helpIcon=false listName="projectExpectedStudies" keyFieldName="id" displayFieldName="composedName" required=true /]
+    </div>
     [#-- Comments --] 
     <div class="form-group">
       [@customForm.textArea name="${customName}.comments" i18nkey="${customLabel}.table11.comments" help="${customLabel}.table11.comments.help" helpIcon=false className="" required=true editable=isEditable allowTextEditor=true /]
