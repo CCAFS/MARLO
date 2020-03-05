@@ -28,6 +28,9 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestone extends MarloAudita
   private GeneralStatus milestonesStatus;
 
   @Expose
+  private Integer extendedYear;
+
+  @Expose
   private String evidence;
 
   private Set<ReportSynthesisFlagshipProgressCrossCuttingMarker> reportSynthesisFlagshipProgressCrossCuttingMarkers =
@@ -56,13 +59,16 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestone extends MarloAudita
   }
 
 
+  public Integer getExtendedYear() {
+    return extendedYear;
+  }
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
-
 
   public List<ReportSynthesisFlagshipProgressCrossCuttingMarker> getMarkers() {
     return this.markers;
@@ -73,20 +79,20 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestone extends MarloAudita
     return milestonesStatus;
   }
 
+
   public String getOtherReason() {
     return this.otherReason;
   }
-
 
   public RepIndMilestoneReason getReason() {
     return this.reason;
   }
 
+
   public Set<ReportSynthesisFlagshipProgressCrossCuttingMarker>
     getReportSynthesisFlagshipProgressCrossCuttingMarkers() {
     return this.reportSynthesisFlagshipProgressCrossCuttingMarkers;
   }
-
 
   public ReportSynthesisFlagshipProgressOutcome getReportSynthesisFlagshipProgressOutcome() {
     return this.reportSynthesisFlagshipProgressOutcome;
@@ -123,6 +129,11 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestone extends MarloAudita
 
   public void setEvidence(String evidence) {
     this.evidence = evidence;
+  }
+
+
+  public void setExtendedYear(Integer extendedYear) {
+    this.extendedYear = extendedYear;
   }
 
 
