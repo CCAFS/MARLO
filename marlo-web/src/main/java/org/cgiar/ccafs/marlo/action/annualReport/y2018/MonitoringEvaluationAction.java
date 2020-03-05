@@ -115,6 +115,8 @@ public class MonitoringEvaluationAction extends BaseAction {
   private List<PowbEvidencePlannedStudyDTO> flagshipPlannedList;
   private List<ReportSynthesisMeliaEvaluation> fpSynthesisTable;
   private List<ReportSynthesisMelia> flagshipMeliaProgress;
+  private List<ProjectExpectedStudy> projectExpectedStudies;
+  private List<ProjectExpectedStudy> selectedExpectedStudies;
   private Map<Integer, String> statuses;
 
   @Inject
@@ -293,6 +295,7 @@ public class MonitoringEvaluationAction extends BaseAction {
     return flagshipPlannedList;
   }
 
+
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null && c.isActive()
@@ -301,6 +304,18 @@ public class MonitoringEvaluationAction extends BaseAction {
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
     long liaisonInstitutionId = liaisonInstitutions.get(0).getId();
     return liaisonInstitutionId;
+  }
+
+  public void getAllProjectExpectedStudies() {
+    projectExpectedStudies = new ArrayList<>();
+    if (projectExpectedStudyManager.findAll() != null) {
+
+      // Get global unit studies
+      projectExpectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
+        .filter(es -> es.isActive() && es.getProjectExpectedStudyInfo(this.getActualPhase()) != null
+          && es.getProjectExpectedStudyInfo(this.getActualPhase()).getYear().equals(this.getCurrentCycleYear()))
+        .collect(Collectors.toList()));
+    }
   }
 
   private Path getAutoSaveFilePath() {
@@ -343,8 +358,16 @@ public class MonitoringEvaluationAction extends BaseAction {
     return phaseManager;
   }
 
+  public List<ProjectExpectedStudy> getProjectExpectedStudies() {
+    return projectExpectedStudies;
+  }
+
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
+  }
+
+  public List<ProjectExpectedStudy> getSelectedExpectedStudies() {
+    return selectedExpectedStudies;
   }
 
   public Map<Integer, String> getStatuses() {
@@ -564,6 +587,8 @@ public class MonitoringEvaluationAction extends BaseAction {
       .collect(Collectors.toList());
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
 
+    // Get all expected studies
+    this.getAllProjectExpectedStudies();
 
     if (this.isPMU()) {
       // Table I-1 PMU Information
@@ -878,8 +903,16 @@ public class MonitoringEvaluationAction extends BaseAction {
     this.phaseManager = phaseManager;
   }
 
+  public void setProjectExpectedStudies(List<ProjectExpectedStudy> projectExpectedStudies) {
+    this.projectExpectedStudies = projectExpectedStudies;
+  }
+
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
     this.reportSynthesis = reportSynthesis;
+  }
+
+  public void setSelectedExpectedStudies(List<ProjectExpectedStudy> selectedExpectedStudies) {
+    this.selectedExpectedStudies = selectedExpectedStudies;
   }
 
 

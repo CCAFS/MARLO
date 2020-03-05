@@ -307,6 +307,12 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     return type;
   }
 
+  public List<Integer> getYearActualPhase(int yearDB) {
+    List<Integer> allYears = new ArrayList<>();
+    allYears.add(yearDB);
+    return allYears;
+  }
+
   public List<Integer> getYears(int year) {
     List<Integer> allYears = new ArrayList<>();
     if (startDate != null && endDate != null) {

@@ -62,8 +62,12 @@
                   <span class="animated infinite bounce">${(((total)!0)?number?string(",##0"))!0}</span>
                 </div>
                 [#-- Chart 7 - Level of maturity --]
-                <div id="chart7" class="chartBox simpleBox">
-                  <ul class="chartData" style="display:none">
+                <div  class="chartBox simpleBox">
+                Policies Level of Maturity
+                <center><img src="${baseUrlCdn}/global/images/ComingSoon-charts.png" height="130"></center>
+                </div>
+               [#-- <div id="chart7" class="chartBox simpleBox">
+                   <ul class="chartData" style="display:none">
                     <li>
                       <span> </span>
                       <span> </span>
@@ -71,12 +75,16 @@
                     [#list (policiesByRepIndStageProcessDTOs)![] as data]
                       <li><span>${data.repIndStageProcess.name}</span><span class="number">${data.projectPolicies?size}</span></li>
                     [/#list]
-                  </ul>
-                </div> 
+                  </ul> 
+                </div> --]
               </div>
               <div class="col-md-8">
+              <div class="chartBox simpleBox">
+              Policies by Type
+                <center><img src="${baseUrlCdn}/global/images/ComingSoon-charts.png" height="180"></center>
+              </div>
                 [#-- Chart 6 - Organizations designing/promulgating the policy --]
-                <div id="chart6" class="chartBox simpleBox">
+                [#-- <div id="chart6" class="chartBox simpleBox">
                   <ul class="chartData" style="display:none">
                     <li>
                       <span>[@s.text name="${customLabel}.indicatorI1.chart1.0" /]</span>
@@ -96,7 +104,7 @@
                       [/#if]
                     [/#list]
                   </ul>
-                </div> 
+                </div> --]
               </div>
             </div>
               

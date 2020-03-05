@@ -1096,100 +1096,101 @@ public class ProjectPartnerAction extends BaseAction {
         project.getProjectInfo().setPhase(projectDb.getProjecInfoPhase(this.getActualPhase()).getPhase());
 
         this.projectPPAPartners = new ArrayList<ProjectPartner>();
-        for (ProjectPartner pp : project.getPartners()) {
+        if (project.getPartners() != null) {
+          for (ProjectPartner pp : project.getPartners()) {
 
 
-          if (pp.getInstitution() != null) {
+            if (pp.getInstitution() != null) {
 
-            if (pp.getInstitution().getId() != null || pp.getInstitution().getId() != -1) {
-              Institution inst = institutionManager.getInstitutionById(pp.getInstitution().getId());
-              if (inst != null) {
-                if (inst.getCrpPpaPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList())
-                  .size() > 0) {
-                  this.projectPPAPartners.add(pp);
+              if (pp.getInstitution().getId() != null || pp.getInstitution().getId() != -1) {
+                Institution inst = institutionManager.getInstitutionById(pp.getInstitution().getId());
+                if (inst != null) {
+                  if (inst.getCrpPpaPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList())
+                    .size() > 0) {
+                    this.projectPPAPartners.add(pp);
+
+                  }
+                  pp.setInstitution(inst);
+                  pp.getInstitution().setLocations(pp.getInstitution().getInstitutionsLocations().stream()
+                    .filter(c -> c.isActive()).collect(Collectors.toList()));
+                }
+              }
+
+
+            }
+
+            if (pp.getSelectedLocations() != null) {
+
+              List<InstitutionLocation> locElements = new ArrayList<>();
+              for (InstitutionLocation locElement : pp.getSelectedLocations()) {
+                LocElement locElementDB =
+                  locationManager.getLocElementByISOCode(locElement.getLocElement().getIsoAlpha2());
+
+                if (locElementDB != null && pp.getInstitution() != null && pp.getInstitution().getId() != null) {
+                  InstitutionLocation institutionLocation = institutionLocationManager
+                    .findByLocation(locElementDB.getId(), pp.getInstitution().getId().longValue());
+                  locElements.add(institutionLocation);
+                }
+
+              }
+              pp.getSelectedLocations().clear();
+              pp.getSelectedLocations().addAll(locElements);
+            }
+
+
+            if (pp.getPartnerPersons() != null) {
+              for (ProjectPartnerPerson projectPartnerPerson : pp.getPartnerPersons()) {
+
+                if (projectPartnerPerson.getUser().getId() != null) {
+                  projectPartnerPerson.setUser(userManager.getUser(projectPartnerPerson.getUser().getId()));
 
                 }
-                pp.setInstitution(inst);
-                pp.getInstitution().setLocations(pp.getInstitution().getInstitutionsLocations().stream()
-                  .filter(c -> c.isActive()).collect(Collectors.toList()));
+
+                if (projectPartnerPerson.getPartnerDivision() != null
+                  && projectPartnerPerson.getPartnerDivision().getId() != null) {
+                  projectPartnerPerson.setPartnerDivision(
+                    partnerDivisionManager.getPartnerDivisionById(projectPartnerPerson.getPartnerDivision().getId()));
+                }
               }
             }
 
+            if (pp.getPartnerContributors() != null) {
+              for (ProjectPartnerContribution projectPartnerContribution : pp.getPartnerContributors()) {
 
-          }
+                if (projectPartnerContribution.getProjectPartnerContributor().getInstitution().getId() != null) {
+                  projectPartnerContribution.getProjectPartnerContributor()
+                    .setInstitution(institutionManager.getInstitutionById(
+                      projectPartnerContribution.getProjectPartnerContributor().getInstitution().getId()));
+                }
 
-          if (pp.getSelectedLocations() != null) {
-
-            List<InstitutionLocation> locElements = new ArrayList<>();
-            for (InstitutionLocation locElement : pp.getSelectedLocations()) {
-              LocElement locElementDB =
-                locationManager.getLocElementByISOCode(locElement.getLocElement().getIsoAlpha2());
-
-              if (locElementDB != null && pp.getInstitution() != null && pp.getInstitution().getId() != null) {
-                InstitutionLocation institutionLocation = institutionLocationManager
-                  .findByLocation(locElementDB.getId(), pp.getInstitution().getId().longValue());
-                locElements.add(institutionLocation);
-              }
-
-            }
-            pp.getSelectedLocations().clear();
-            pp.getSelectedLocations().addAll(locElements);
-          }
-
-
-          if (pp.getPartnerPersons() != null) {
-            for (ProjectPartnerPerson projectPartnerPerson : pp.getPartnerPersons()) {
-
-              if (projectPartnerPerson.getUser().getId() != null) {
-                projectPartnerPerson.setUser(userManager.getUser(projectPartnerPerson.getUser().getId()));
-
-              }
-
-              if (projectPartnerPerson.getPartnerDivision() != null
-                && projectPartnerPerson.getPartnerDivision().getId() != null) {
-                projectPartnerPerson.setPartnerDivision(
-                  partnerDivisionManager.getPartnerDivisionById(projectPartnerPerson.getPartnerDivision().getId()));
               }
             }
-          }
-
-          if (pp.getPartnerContributors() != null) {
-            for (ProjectPartnerContribution projectPartnerContribution : pp.getPartnerContributors()) {
-
-              if (projectPartnerContribution.getProjectPartnerContributor().getInstitution().getId() != null) {
-                projectPartnerContribution.getProjectPartnerContributor()
-                  .setInstitution(institutionManager.getInstitutionById(
-                    projectPartnerContribution.getProjectPartnerContributor().getInstitution().getId()));
+            if (pp.getProjectPartnerPartnership() != null) {
+              ProjectPartnerPartnership projectPartnerPartnership = pp.getProjectPartnerPartnership();
+              // Countries
+              if (projectPartnerPartnership.getPartnershipLocationsIsosText() != null) {
+                String[] locationsIsos = projectPartnerPartnership.getPartnershipLocationsIsosText().replace("[", "")
+                  .replace("]", "").split(",");
+                List<String> locations = new ArrayList<>();
+                for (String value : Arrays.asList(locationsIsos)) {
+                  locations.add(value.trim());
+                }
+                projectPartnerPartnership.setPartnershipLocationsIsos(locations);
               }
 
-            }
-          }
-          if (pp.getProjectPartnerPartnership() != null) {
-            ProjectPartnerPartnership projectPartnerPartnership = pp.getProjectPartnerPartnership();
-            // Countries
-            if (projectPartnerPartnership.getPartnershipLocationsIsosText() != null) {
-              String[] locationsIsos = projectPartnerPartnership.getPartnershipLocationsIsosText().replace("[", "")
-                .replace("]", "").split(",");
-              List<String> locations = new ArrayList<>();
-              for (String value : Arrays.asList(locationsIsos)) {
-                locations.add(value.trim());
+              // Research Phases
+              if (projectPartnerPartnership.getResearchPhasesIdsText() != null) {
+                String[] researchPhasesIds =
+                  projectPartnerPartnership.getResearchPhasesIdsText().replace("[", "").replace("]", "").split(",");
+                List<Long> researchPhases = new ArrayList<>();
+                for (String value : Arrays.asList(researchPhasesIds)) {
+                  researchPhases.add(Long.parseLong(value.trim()));
+                }
+                projectPartnerPartnership.setResearchPhasesIds(researchPhases);
               }
-              projectPartnerPartnership.setPartnershipLocationsIsos(locations);
-            }
-
-            // Research Phases
-            if (projectPartnerPartnership.getResearchPhasesIdsText() != null) {
-              String[] researchPhasesIds =
-                projectPartnerPartnership.getResearchPhasesIdsText().replace("[", "").replace("]", "").split(",");
-              List<Long> researchPhases = new ArrayList<>();
-              for (String value : Arrays.asList(researchPhasesIds)) {
-                researchPhases.add(Long.parseLong(value.trim()));
-              }
-              projectPartnerPartnership.setResearchPhasesIds(researchPhases);
             }
           }
         }
-
         this.setDraft(true);
       } else {
 
