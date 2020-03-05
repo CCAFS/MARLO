@@ -241,8 +241,8 @@
                             <div class="row form-group">
                               <div id="chart13" class="chartBox simpleBox">
                                 [#assign chartData = [
-                                    {"name":"Male",   "value": "${(totalParticipantFormalTrainingLongMale)!0}",   "valuePhD": "0"}
-                                    {"name":"Female", "value": "${(totalParticipantFormalTrainingLongFemale)!0}",   "valuePhD": "0"}
+                                    {"name":"Male",   "value": "${(totalParticipantFormalTrainingLongMale)!0}",   "valuePhD": "${(totalParticipantFormalPhDMale)!0}"}
+                                    {"name":"Female", "value": "${(totalParticipantFormalTrainingLongFemale)!0}",   "valuePhD": "${(totalParticipantFormalPhDFemale)!0}"}
                                   ] /] 
                                 <ul class="chartData" style="display:none">
                                   <li>
@@ -321,6 +321,7 @@
         <th id="tb-type">[@s.text name="${customLabel}.activitiesEventsTable.totalParticipants" /]</th>
         <th id="tb-type">[@s.text name="${customLabel}.activitiesEventsTable.numberFemales" /]</th>
         <th id="tb-organization-type">[@s.text name="${customLabel}.activitiesEventsTable.typeParticipants" /]</th>
+        <th id="tb-training-period">[@s.text name="${customLabel}.activitiesEventsTable.trainingPeriod" /]</th>
       </tr>
     </thead>
     <tbody>
@@ -351,6 +352,10 @@
           [#-- Type of participants --]
           <td class="text-center">
             [@utils.tableText value=(item.repIndTypeParticipant.name)!"" /]
+          </td>
+          [#-- Training period of time --]
+          <td class="text-center">
+            [@utils.tableText value=(item.repIndTrainingPeriod.name)!"" /]
           </td>
         </tr>
       [/#list]
