@@ -114,6 +114,12 @@ public class CrossCGIARCollaborationsItem<T> {
         entityAcronym + " is an invalid CGIAR entity acronym"));
     }
 
+    Set<CrpUser> lstUser = user.getCrpUsers();
+    if (!lstUser.stream().anyMatch(crp -> crp.getCrp().getAcronym().equalsIgnoreCase(entityAcronym))) {
+      fieldErrors
+        .add(new FieldErrorDTO("createCrossCGIARCollaboration", "GlobalUnitEntity", "CGIAR entity not autorized"));
+    }
+
     Phase phase = phaseManager.findAll().stream()
       .filter(p -> p.getCrp().getAcronym().equalsIgnoreCase(entityAcronym)
         && p.getYear() == newCrossCGIARCollaborationDTO.getPhase().getYear()
@@ -127,7 +133,7 @@ public class CrossCGIARCollaborationsItem<T> {
 
     if (fieldErrors.isEmpty()) {
       Set<GlobalUnit> collaborationCrps = new HashSet<>();
-      CrpProgram crpProgram = new CrpProgram();
+      CrpProgram crpProgram = null;
       ReportSynthesis reportSynthesis = null;
       ReportSynthesisKeyPartnership reportSynthesisKeyPartnership = null;
       LiaisonInstitution liaisonInstitution = null;
@@ -154,16 +160,24 @@ public class CrossCGIARCollaborationsItem<T> {
               return globalUnit;
             }
           }).collect(Collectors.toSet());
+      } else {
+        fieldErrors.add(
+          new FieldErrorDTO("createCrossCGIARCollaboration", "GlobalUnitList", "Please enter the collaborating crps."));
       }
       // end GlobalUnit
 
       // start CrpProgram (flagshipProgram)
-      if (newCrossCGIARCollaborationDTO.getFlagshipProgramId() != null) {
-        crpProgram = crpProgramManager.getCrpProgramBySmoCode(newCrossCGIARCollaborationDTO.getFlagshipProgramId());
+      if (newCrossCGIARCollaborationDTO.getFlagshipProgramId() != null
+        && !newCrossCGIARCollaborationDTO.getFlagshipProgramId().trim().isEmpty()) {
+        crpProgram =
+          crpProgramManager.getCrpProgramBySmoCode(newCrossCGIARCollaborationDTO.getFlagshipProgramId().trim());
         if (crpProgram == null) {
           fieldErrors.add(new FieldErrorDTO("createCrossCGIARCollaboration", "FlagshipEntity",
             newCrossCGIARCollaborationDTO.getFlagshipProgramId() + " is an invalid CRP Program SMO code."));
         }
+      } else {
+        fieldErrors.add(new FieldErrorDTO("createCrossCGIARCollaboration", "FlagshipEntity",
+          "CRP Program SMO code can not be null nor empty."));
       }
       // end CrpProgram (flagshipProgram)
 
