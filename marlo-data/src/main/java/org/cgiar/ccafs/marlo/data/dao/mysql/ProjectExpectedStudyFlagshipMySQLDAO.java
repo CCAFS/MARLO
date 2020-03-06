@@ -70,14 +70,25 @@ public class ProjectExpectedStudyFlagshipMySQLDAO extends AbstractMarloDAO<Proje
   }
 
   @Override
+  public ProjectExpectedStudyFlagship findProjectExpectedStudyFlagshipbyPhase(Long expectedStudyId, Long flagshipId,
+    Long phaseId) {
+    String query =
+      "from " + ProjectExpectedStudyFlagship.class.getName() + " where expected_id=" + expectedStudyId.longValue()
+        + " and crp_program_id=" + flagshipId.longValue() + " and id_phase=" + phaseId.longValue();
+    List<ProjectExpectedStudyFlagship> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+  @Override
   public ProjectExpectedStudyFlagship save(ProjectExpectedStudyFlagship projectExpectedStudyFlagship) {
     if (projectExpectedStudyFlagship.getId() == null) {
       super.saveEntity(projectExpectedStudyFlagship);
     } else {
       projectExpectedStudyFlagship = super.update(projectExpectedStudyFlagship);
     }
-
-
     return projectExpectedStudyFlagship;
   }
 

@@ -21,39 +21,33 @@ package org.cgiar.ccafs.marlo.rest.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class NewProgressTowardsSRFTargetDTO {
+public class ProjectInnovationMilestoneDTO {
 
-  @ApiModelProperty(notes = "SLO target", position = 2)
-  private SrfSloTargetDTO srfSloTarget;
-  @ApiModelProperty(notes = "Progress Towards narrative narrative", position = 3)
-  private String narrative;
-  @ApiModelProperty(notes = "Phase - Year ", position = 4)
-  private PhaseDTO phase;
+  @ApiModelProperty(notes = "Milestone Identifier", position = 1)
+  private MilestoneDTO crpMilestone;
+
+  @ApiModelProperty(notes = "Milestone as primary", position = 1)
+  private Boolean primary;
 
 
-  public String getNarrative() {
-    return narrative;
+  public MilestoneDTO getCrpMilestone() {
+    return crpMilestone;
   }
 
 
-  public PhaseDTO getPhase() {
-    return phase;
+  public Boolean getPrimary() {
+    return primary;
   }
 
-  public SrfSloTargetDTO getSrfSloTarget() {
-    return srfSloTarget;
+
+  public void setCrpMilestone(MilestoneDTO crpMilestone) {
+    this.crpMilestone = crpMilestone;
   }
 
-  public void setNarrative(String narrative) {
-    this.narrative = narrative;
+
+  public void setPrimary(Boolean primary) {
+    this.primary = primary;
   }
 
-  public void setPhase(PhaseDTO phase) {
-    this.phase = phase;
-  }
-
-  public void setSrfSloTarget(SrfSloTargetDTO srfSloTarget) {
-    this.srfSloTarget = srfSloTarget;
-  }
 
 }

@@ -23,7 +23,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class ProjectExpectedStudySubIdoDTO {
 
-  @ApiModelProperty(notes = "SubIdo ID", position = 1)
+  @ApiModelProperty(notes = "SubIdo Identifier", position = 1)
   private SrfSubIdoDTO srfSubIdo;
   @ApiModelProperty(notes = "SubIdo as primary", position = 1)
   private Boolean primary;

@@ -17,7 +17,7 @@ package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.srflist;
 
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorTargetManager;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget;
-import org.cgiar.ccafs.marlo.rest.dto.SrfSloTargetDTO;
+import org.cgiar.ccafs.marlo.rest.dto.SrfSloIndicatorTargetDTO;
 import org.cgiar.ccafs.marlo.rest.mappers.SrfSloIndicatorTargetMapper;
 
 import java.util.ArrayList;
@@ -57,7 +57,7 @@ public class SrfSloTargetItem<T> {
    * @return a SrfSloIndicatorTargetDTO with SRF slo target Indicator
    *         requesting data.
    */
-  public ResponseEntity<SrfSloTargetDTO> findSrfSloIndicatorTargetbyId(String code) {
+  public ResponseEntity<SrfSloIndicatorTargetDTO> findSrfSloIndicatorTargetbyId(String code) {
     SrfSloIndicatorTarget SrfSloIndicatorTarget = this.srfSloIndicatorTargetManager.findbyTargetIndicatorCode(code);
 
     return Optional.ofNullable(SrfSloIndicatorTarget)
@@ -71,7 +71,7 @@ public class SrfSloTargetItem<T> {
    * @return a List of SrfSloIndicatorTargetDTO with all slo target Indicator
    *         Items.
    */
-  public ResponseEntity<List<SrfSloTargetDTO>> getAllSrfSloIndicatorTargets(Long year) {
+  public ResponseEntity<List<SrfSloIndicatorTargetDTO>> getAllSrfSloIndicatorTargets(Long year) {
     List<SrfSloIndicatorTarget> SrfSloIndicatorTargets;
 
     if (this.srfSloIndicatorTargetManager.findAll() != null) {
@@ -81,16 +81,16 @@ public class SrfSloTargetItem<T> {
       } else {
         SrfSloIndicatorTargets = new ArrayList<>(this.srfSloIndicatorTargetManager.findAll());
       }
-      List<SrfSloTargetDTO> srfSloIndicatorTargetDTOs =
+      List<SrfSloIndicatorTargetDTO> srfSloIndicatorTargetDTOs =
         SrfSloIndicatorTargets.stream().map(srfSloIndicatorTargetEntity -> this.srfSloIndicatorTargetMapper
           .srfSloIndicatorTargetToSrfSloIndicatorTargetDTO(srfSloIndicatorTargetEntity)).collect(Collectors.toList());
       if (srfSloIndicatorTargetDTOs == null || srfSloIndicatorTargetDTOs.size() == 0) {
-        return new ResponseEntity<List<SrfSloTargetDTO>>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<List<SrfSloIndicatorTargetDTO>>(HttpStatus.NOT_FOUND);
       } else {
-        return new ResponseEntity<List<SrfSloTargetDTO>>(srfSloIndicatorTargetDTOs, HttpStatus.OK);
+        return new ResponseEntity<List<SrfSloIndicatorTargetDTO>>(srfSloIndicatorTargetDTOs, HttpStatus.OK);
       }
     } else {
-      return new ResponseEntity<List<SrfSloTargetDTO>>(HttpStatus.NOT_FOUND);
+      return new ResponseEntity<List<SrfSloIndicatorTargetDTO>>(HttpStatus.NOT_FOUND);
     }
   }
 

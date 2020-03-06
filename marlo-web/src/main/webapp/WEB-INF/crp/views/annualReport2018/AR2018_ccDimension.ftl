@@ -10,7 +10,7 @@
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js",
-  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js" 
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20200304" 
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20190621"] /]
 
@@ -254,7 +254,11 @@
                                   </li>
                                   [#if (((totalParticipantFormalTrainingLongMale)!0) + ((totalParticipantFormalTrainingLongFemale)!0)) > 0 ]
                                     [#list chartData as data]
-                                      <li><span>${data.name}</span><span class="number">${data.value}</span><span>${data.value}</span><span class="number">${data.valuePhD}</span><span>${data.valuePhD}</span></li>
+                                      <li><span>${data.name}</span>
+                                      <span class="number">${data.value}</span>
+                                      <span>${data.value}</span>
+                                      <span class="number">${data.valuePhD}</span>
+                                      <span>${data.valuePhD}</span></li>
                                     [/#list]
                                   [/#if]
                                 </ul>

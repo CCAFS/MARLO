@@ -71,6 +71,20 @@ public class ProjectExpectedStudyGeographicScopeMySQLDAO extends
   }
 
   @Override
+  public ProjectExpectedStudyGeographicScope getProjectExpectedStudyGeographicScopeByPhase(Long expectedId,
+    Long geographicScopeId, Long phaseId) {
+    String query =
+      "from " + ProjectExpectedStudyGeographicScope.class.getName() + " where expected_id=" + expectedId.longValue()
+        + " and rep_ind_geographic_scope_id=" + geographicScopeId.longValue() + " and id_phase=" + phaseId.longValue();
+    List<ProjectExpectedStudyGeographicScope> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+
+  }
+
+  @Override
   public ProjectExpectedStudyGeographicScope
     save(ProjectExpectedStudyGeographicScope projectExpectedStudyGeographicScope) {
     if (projectExpectedStudyGeographicScope.getId() == null) {

@@ -29,7 +29,7 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "jsr330", uses = {CrpProgramMapper.class})
 public interface ProjectExpectedStudyFlagshipMapper {
 
-  @Mappings({@Mapping(source = "projectExpectedStudyFlagship.crpProgram.id", target = "id"),
+  @Mappings({@Mapping(source = "projectExpectedStudyFlagship.crpProgram.smoCode", target = "id"),
     @Mapping(source = "projectExpectedStudyFlagship.crpProgram.name", target = "name"),
     @Mapping(source = "projectExpectedStudyFlagship.crpProgram.acronym", target = "acronym")})
   public abstract CrpProgramDTO

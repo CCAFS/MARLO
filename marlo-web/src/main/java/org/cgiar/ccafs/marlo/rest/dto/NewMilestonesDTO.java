@@ -21,50 +21,27 @@ package org.cgiar.ccafs.marlo.rest.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class ProgressTowardsSRFTargetsDTO {
+public class NewMilestonesDTO {
 
-  @ApiModelProperty(notes = "ID ", position = 1)
-  private Long id;
-  @ApiModelProperty(notes = "SLO target", position = 2)
-  private SrfSloTargetDTO srfSloTarget;
-  @ApiModelProperty(notes = "Progress Towards narrative narrative", position = 3)
-  private String narrative;
+  @ApiModelProperty(notes = "Milestone code")
+  private String milestone;
+  @ApiModelProperty(notes = "Milestone as a primary")
+  private Boolean primary;
 
-  @ApiModelProperty(notes = "Phase - Year ", position = 4)
-  private PhaseDTO phase;
-
-  public Long getId() {
-    return id;
+  public String getMilestone() {
+    return milestone;
   }
 
-  public String getNarrative() {
-    return narrative;
+  public Boolean getPrimary() {
+    return primary;
   }
 
-  public PhaseDTO getPhase() {
-    return phase;
+  public void setMilestone(String milestone) {
+    this.milestone = milestone;
   }
 
-
-  public SrfSloTargetDTO getSrfSloTarget() {
-    return srfSloTarget;
-  }
-
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public void setNarrative(String narrative) {
-    this.narrative = narrative;
-  }
-
-  public void setPhase(PhaseDTO phase) {
-    this.phase = phase;
-  }
-
-  public void setSrfSloTarget(SrfSloTargetDTO srfSloTarget) {
-    this.srfSloTarget = srfSloTarget;
+  public void setPrimary(Boolean primary) {
+    this.primary = primary;
   }
 
 

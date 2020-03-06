@@ -923,6 +923,36 @@ public class ProjectInnovationAction extends BaseAction {
           deliverableList.add(deliverable);
         }
       }
+      List<Project> projectSharedList = new ArrayList<>();
+      if (innovation.getSharedInnovations() != null && innovation.getSharedInnovations().size() > 0) {
+        for (ProjectInnovationShared sharedInnovation : innovation.getSharedInnovations()) {
+          if (sharedInnovation != null && sharedInnovation.getProject() != null
+            && sharedInnovation.getProject().getId() != null) {
+            projectSharedList.add(sharedInnovation.getProject());
+          }
+        }
+
+
+        // Get deliverable list for shared innovations projects
+        if (projectSharedList != null && projectSharedList.size() > 0) {
+          for (Project projectInnovationShared : projectSharedList) {
+            if (phase != null && phase.getDeliverableInfos() != null && projectInnovationShared != null
+              && phase.getDeliverableInfos().size() > 0) {
+              List<DeliverableInfo> infos = phase.getDeliverableInfos().stream()
+                .filter(c -> c != null && c.getDeliverable() != null && c.getDeliverable().getProject() != null
+                  && c.getDeliverable().getProject().equals(projectInnovationShared) && c.getDeliverable().isActive())
+                .collect(Collectors.toList());
+
+              for (DeliverableInfo deliverableInfo : infos) {
+                Deliverable deliverable = deliverableInfo.getDeliverable();
+                deliverable.setDeliverableInfo(deliverableInfo);
+                deliverableList.add(deliverable);
+              }
+            }
+          }
+        }
+      }
+
 
       /*
        * Get the milestone List
