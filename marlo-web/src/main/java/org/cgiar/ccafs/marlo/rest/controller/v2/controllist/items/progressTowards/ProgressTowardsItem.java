@@ -26,7 +26,7 @@ import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisSrfProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisSrfProgressTargetManager;
-import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorTargetManager;
+import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -35,6 +35,7 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTarget;
+import org.cgiar.ccafs.marlo.data.model.SrfSloIndicator;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.NewSrfProgressTowardsTargetDTO;
@@ -44,6 +45,7 @@ import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
 import org.cgiar.ccafs.marlo.rest.mappers.SrfProgressTowardsTargetMapper;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -67,7 +69,7 @@ public class ProgressTowardsItem<T> {
   private ReportSynthesisManager reportSynthesisManager;
   private ReportSynthesisSrfProgressManager reportSynthesisSrfProgressManager;
   private CrpProgramManager crpProgramManager;
-  private SrfSloIndicatorTargetManager srfSloIndicatorTargetManager;
+  private SrfSloIndicatorManager srfSloIndicatorManager;
 
   private SrfProgressTowardsTargetMapper srfProgressTowardsTargetMapper;
 
@@ -76,8 +78,7 @@ public class ProgressTowardsItem<T> {
     ReportSynthesisSrfProgressTargetManager reportSynthesisSrfProgressTargetManager,
     ReportSynthesisManager reportSynthesisManager, LiaisonInstitutionManager liaisonInstitutionManager,
     CrpProgramManager crpProgramManager, ReportSynthesisSrfProgressManager reportSynthesisSrfProgressManager,
-    SrfSloIndicatorTargetManager srfSloIndicatorTargetManager,
-    SrfProgressTowardsTargetMapper srfProgressTowardsTargetMapper) {
+    SrfProgressTowardsTargetMapper srfProgressTowardsTargetMapper, SrfSloIndicatorManager srfSloIndicatorManager) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.reportSynthesisSrfProgressTargetManager = reportSynthesisSrfProgressTargetManager;
@@ -85,7 +86,7 @@ public class ProgressTowardsItem<T> {
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.crpProgramManager = crpProgramManager;
     this.reportSynthesisSrfProgressManager = reportSynthesisSrfProgressManager;
-    this.srfSloIndicatorTargetManager = srfSloIndicatorTargetManager;
+    this.srfSloIndicatorManager = srfSloIndicatorManager;
 
     this.srfProgressTowardsTargetMapper = srfProgressTowardsTargetMapper;
   }
@@ -117,15 +118,16 @@ public class ProgressTowardsItem<T> {
       LiaisonInstitution liaisonInstitution = null;
       ReportSynthesisSrfProgress reportSynthesisSrfProgress = null;
       SrfSloIndicatorTarget srfSloIndicatorTarget = null;
+      SrfSloIndicator srfSloIndicator = null;
 
       // we check if a ReportSynthesisSrfProgressTarget for the Phase and ReportSynthesisSrfProgressTarget already exist
       // start ReportSynthesisSrfProgressTarget
-      if (newSrfProgressTowardsTargetDTO.getSrfSloIndicatorTargetId() != null
-        && NumberUtils.isParsable(newSrfProgressTowardsTargetDTO.getSrfSloIndicatorTargetId())) {
+      if (newSrfProgressTowardsTargetDTO.getSrfSloIndicatorId() != null
+        && NumberUtils.isParsable(newSrfProgressTowardsTargetDTO.getSrfSloIndicatorId().trim())) {
         reportSynthesisSrfProgressTarget = reportSynthesisSrfProgressTargetManager.findAll().stream()
           .filter(pt -> pt.getReportSynthesisSrfProgress().getReportSynthesis().getPhase().getId() == phase.getId()
-            && pt.getSrfSloIndicatorTarget().getId() == Long
-              .valueOf(newSrfProgressTowardsTargetDTO.getSrfSloIndicatorTargetId()))
+            && pt.getSrfSloIndicatorTarget().getSrfSloIndicator().getId() == Long
+              .valueOf(newSrfProgressTowardsTargetDTO.getSrfSloIndicatorId().trim()))
           .findFirst().orElse(null);
         if (reportSynthesisSrfProgressTarget != null) {
           fieldErrors.add(new FieldErrorDTO("createProgressTowards", "ReportSynthesisSrfProgressTargetEntity",
@@ -135,20 +137,23 @@ public class ProgressTowardsItem<T> {
       // end ReportSynthesisSrfProgressTarget
 
       // start SrfSloIndicatorTarget
-      if (newSrfProgressTowardsTargetDTO.getSrfSloIndicatorTargetId() != null
-        && NumberUtils.isParsable(newSrfProgressTowardsTargetDTO.getSrfSloIndicatorTargetId().trim())) {
-        srfSloIndicatorTarget = srfSloIndicatorTargetManager.getSrfSloIndicatorTargetById(
-          Long.valueOf(newSrfProgressTowardsTargetDTO.getSrfSloIndicatorTargetId().trim()));
-        if (srfSloIndicatorTarget == null) {
-          fieldErrors.add(new FieldErrorDTO("createProgressTowards", "SrfSloIndicatorTargetEntity",
-            srfProgressTargetId + " is an invalid Srf Slo Indicator Target code."));
-        }
+      if (newSrfProgressTowardsTargetDTO.getSrfSloIndicatorId() != null
+        && NumberUtils.isParsable(newSrfProgressTowardsTargetDTO.getSrfSloIndicatorId().trim())) {
+        srfSloIndicator = srfSloIndicatorManager
+          .getSrfSloIndicatorById(Long.valueOf(newSrfProgressTowardsTargetDTO.getSrfSloIndicatorId().trim()));
+        if (srfSloIndicator == null) {
+          fieldErrors.add(new FieldErrorDTO("createProgressTowards", "SrfSloIndicatorEntity",
+            newSrfProgressTowardsTargetDTO.getSrfSloIndicatorId() + " is an invalid Srf Slo Indicator code."));
+        } else {
+          srfSloIndicatorTarget = srfSloIndicator.getSrfSloIndicatorTargets().stream()
+            .sorted((t1, t2) -> Integer.compare(t1.getYear(), t2.getYear()))
+            .filter(t -> t.getYear() > Calendar.getInstance().get(Calendar.YEAR)).findFirst().orElse(null);
 
-        // FIXME this will break in 2023 so, good luck!
-        // TODO write a better error message
-        if (srfSloIndicatorTarget.getYear() > 2022) {
-          fieldErrors.add(new FieldErrorDTO("createProgressTowards", "SrfSloIndicatorTargetEntity",
-            srfProgressTargetId + " is from a year that have not been activated."));
+          // TODO write a better error message
+          if (srfSloIndicatorTarget == null) {
+            fieldErrors.add(new FieldErrorDTO("createProgressTowards", "SrfSloIndicatorTargetEntity",
+              newSrfProgressTowardsTargetDTO.getSrfSloIndicatorId() + " is from a year that have not been activated."));
+          }
         }
       }
       // end SrfSloIndicatorTarget
@@ -417,19 +422,29 @@ public class ProgressTowardsItem<T> {
     if (fieldErrors.isEmpty()) {
       idProgressTowardsDB = reportSynthesisSrfProgressTarget.getId();
       SrfSloIndicatorTarget srfSloIndicatorTarget = null;
+      SrfSloIndicator srfSloIndicator = null;
       reportSynthesisSrfProgressTarget.setBirefSummary(newSrfProgressTowardsTargetDTO.getBriefSummary());
       reportSynthesisSrfProgressTarget
         .setAdditionalContribution(newSrfProgressTowardsTargetDTO.getAdditionalContribution());
 
-      if (newSrfProgressTowardsTargetDTO.getSrfSloIndicatorTargetId() != null
-        && NumberUtils.isParsable(newSrfProgressTowardsTargetDTO.getSrfSloIndicatorTargetId().trim())) {
-        srfSloIndicatorTarget = srfSloIndicatorTargetManager.getSrfSloIndicatorTargetById(
-          Long.valueOf(newSrfProgressTowardsTargetDTO.getSrfSloIndicatorTargetId().trim()));
-        if (srfSloIndicatorTarget == null) {
-          fieldErrors.add(new FieldErrorDTO("putProgressTowards", "SrfSloIndicatorTargetEntity",
-            newSrfProgressTowardsTargetDTO.getFlagshipProgramId() + " is an invalid Srf Slo Indicator Target Code"));
-        }
+      if (newSrfProgressTowardsTargetDTO.getSrfSloIndicatorId() != null
+        && NumberUtils.isParsable(newSrfProgressTowardsTargetDTO.getSrfSloIndicatorId().trim())) {
+        srfSloIndicator = srfSloIndicatorManager
+          .getSrfSloIndicatorById(Long.valueOf(newSrfProgressTowardsTargetDTO.getSrfSloIndicatorId().trim()));
+        if (srfSloIndicator == null) {
+          fieldErrors.add(new FieldErrorDTO("createProgressTowards", "SrfSloIndicatorEntity",
+            newSrfProgressTowardsTargetDTO.getSrfSloIndicatorId() + " is an invalid Srf Slo Indicator code."));
+        } else {
+          srfSloIndicatorTarget = srfSloIndicator.getSrfSloIndicatorTargets().stream()
+            .sorted((t1, t2) -> Integer.compare(t1.getYear(), t2.getYear()))
+            .filter(t -> t.getYear() > Calendar.getInstance().get(Calendar.YEAR)).findFirst().orElse(null);
 
+          // TODO write a better error message
+          if (srfSloIndicatorTarget == null) {
+            fieldErrors.add(new FieldErrorDTO("createProgressTowards", "SrfSloIndicatorTargetEntity",
+              newSrfProgressTowardsTargetDTO.getSrfSloIndicatorId() + " is from a year that have not been activated."));
+          }
+        }
       }
 
       reportSynthesisSrfProgressTarget.setSrfSloIndicatorTarget(srfSloIndicatorTarget);
