@@ -268,7 +268,7 @@
     </div>
     [#-- Link to evidence --]
     <div class="form-group evidences-block">
-      [@customForm.elementsListComponent name="${customName}.table11.evidence" elementType="projectExpectedStudy" elementList=selectedExpectedStudies label="${customLabel}.table11.evidence" help="" helpIcon=false listName="projectExpectedStudies" keyFieldName="id" displayFieldName="composedName" required=true /]
+      [@customForm.elementsListComponent name="${customName}.meliaActionsStudy" elementType="projectExpectedStudy" elementList=selectedExpectedStudies label="${customLabel}.table11.evidence" help="" helpIcon=false listName="projectExpectedStudies" keyFieldName="id" displayFieldName="composedName" required=true /]
     </div>
     [#-- Comments --] 
     <div class="form-group">
