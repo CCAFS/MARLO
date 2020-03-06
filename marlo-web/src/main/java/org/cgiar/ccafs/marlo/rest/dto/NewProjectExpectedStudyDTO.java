@@ -30,7 +30,7 @@ public class NewProjectExpectedStudyDTO {
 
 
   @ApiModelProperty(notes = "Project expected study info", position = 2)
-  private NewProjectExpectedStudyInfoDTO projectExpectedEstudyInfo;
+  private NewProjectExpectedStudyInfoDTO projectExpectedStudyInfo;
 
 
   @ApiModelProperty(notes = "CGIAR Sub-IDOs SMO code List", position = 3)
@@ -141,13 +141,13 @@ public class NewProjectExpectedStudyDTO {
   }
 
 
-  public NewProjectExpectedStudyInfoDTO getProjectExpectedEstudyInfo() {
-    return projectExpectedEstudyInfo;
+  public List<String> getProjectExpectedStudiesCrpDTO() {
+    return projectExpectedStudiesCrpDTO;
   }
 
 
-  public List<String> getProjectExpectedStudiesCrpDTO() {
-    return projectExpectedStudiesCrpDTO;
+  public NewProjectExpectedStudyInfoDTO getProjectExpectedStudyInfo() {
+    return projectExpectedStudyInfo;
   }
 
 
@@ -226,13 +226,13 @@ public class NewProjectExpectedStudyDTO {
   }
 
 
-  public void setProjectExpectedEstudyInfo(NewProjectExpectedStudyInfoDTO projectExpectedEstudyInfo) {
-    this.projectExpectedEstudyInfo = projectExpectedEstudyInfo;
+  public void setProjectExpectedStudiesCrpDTO(List<String> projectExpectedStudiesCrpDTO) {
+    this.projectExpectedStudiesCrpDTO = projectExpectedStudiesCrpDTO;
   }
 
 
-  public void setProjectExpectedStudiesCrpDTO(List<String> projectExpectedStudiesCrpDTO) {
-    this.projectExpectedStudiesCrpDTO = projectExpectedStudiesCrpDTO;
+  public void setProjectExpectedStudyInfo(NewProjectExpectedStudyInfoDTO projectExpectedStudyInfo) {
+    this.projectExpectedStudyInfo = projectExpectedStudyInfo;
   }
 
 

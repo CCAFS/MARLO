@@ -258,45 +258,45 @@ public class ExpectedStudiesItem<T> {
       List<ProjectExpectedStudyQuantification> ExpectedStudyQuantificationList =
         new ArrayList<ProjectExpectedStudyQuantification>();
 
-      if (newProjectExpectedStudy.getProjectExpectedEstudyInfo() != null) {
+      if (newProjectExpectedStudy.getProjectExpectedStudyInfo() != null) {
         ProjectExpectedStudyInfo projectExpectedStudyInfo = new ProjectExpectedStudyInfo();
-        projectExpectedStudyInfo.setTitle(newProjectExpectedStudy.getProjectExpectedEstudyInfo().getTitle());
-        projectExpectedStudyInfo.setYear(newProjectExpectedStudy.getProjectExpectedEstudyInfo().getYear());
+        projectExpectedStudyInfo.setTitle(newProjectExpectedStudy.getProjectExpectedStudyInfo().getTitle());
+        projectExpectedStudyInfo.setYear(newProjectExpectedStudy.getProjectExpectedStudyInfo().getYear());
         projectExpectedStudyInfo.setPhase(phase);
 
 
         StudyType studyType =
-          studyTypeManager.getStudyTypeById(newProjectExpectedStudy.getProjectExpectedEstudyInfo().getStudyType());
+          studyTypeManager.getStudyTypeById(newProjectExpectedStudy.getProjectExpectedStudyInfo().getStudyType());
         if (studyType != null) {
           projectExpectedStudyInfo.setStudyType(studyType);
         } else {
           fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Study Type",
-            newProjectExpectedStudy.getProjectExpectedEstudyInfo().getStudyType() + " is an invalid status code"));
+            newProjectExpectedStudy.getProjectExpectedStudyInfo().getStudyType() + " is an invalid status code"));
         }
         GeneralStatus generalStatus =
-          generalStatusManager.getGeneralStatusById(newProjectExpectedStudy.getProjectExpectedEstudyInfo().getStatus());
+          generalStatusManager.getGeneralStatusById(newProjectExpectedStudy.getProjectExpectedStudyInfo().getStatus());
         if (generalStatus != null) {
           projectExpectedStudyInfo.setStatus(generalStatus);
         } else {
           fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Status",
-            newProjectExpectedStudy.getProjectExpectedEstudyInfo().getStatus() + " is an invalid status code"));
+            newProjectExpectedStudy.getProjectExpectedStudyInfo().getStatus() + " is an invalid status code"));
         }
         EvidenceTag evidenceTag =
-          evidenceTagManager.getEvidenceTagById(newProjectExpectedStudy.getProjectExpectedEstudyInfo().getTag());
+          evidenceTagManager.getEvidenceTagById(newProjectExpectedStudy.getProjectExpectedStudyInfo().getTag());
         if (evidenceTag != null) {
           projectExpectedStudyInfo.setEvidenceTag(evidenceTag);
         } else {
           fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Evidence Tag",
-            newProjectExpectedStudy.getProjectExpectedEstudyInfo().getMaturityOfChange()
+            newProjectExpectedStudy.getProjectExpectedStudyInfo().getMaturityOfChange()
               + " is an invalid Evidence Tag code"));
         }
         RepIndStageStudy repIndStageStudy = repIndStageStudyManager
-          .getRepIndStageStudyById(newProjectExpectedStudy.getProjectExpectedEstudyInfo().getMaturityOfChange());
+          .getRepIndStageStudyById(newProjectExpectedStudy.getProjectExpectedStudyInfo().getMaturityOfChange());
         if (repIndStageStudy != null) {
           projectExpectedStudyInfo.setRepIndStageStudy(repIndStageStudy);
         } else {
           fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "MaturityOfChange",
-            newProjectExpectedStudy.getProjectExpectedEstudyInfo().getMaturityOfChange()
+            newProjectExpectedStudy.getProjectExpectedStudyInfo().getMaturityOfChange()
               + " is an invalid Level of maturity of change reported code"));
         }
 
@@ -1025,48 +1025,48 @@ public class ExpectedStudiesItem<T> {
         List<ProjectExpectedStudyMilestone> milestoneList = new ArrayList<ProjectExpectedStudyMilestone>();
         List<ProjectExpectedStudyQuantification> expectedStudyQuantificationList =
           new ArrayList<ProjectExpectedStudyQuantification>();
-        if (newProjectExpectedStudy.getProjectExpectedEstudyInfo() != null) {
+        if (newProjectExpectedStudy.getProjectExpectedStudyInfo() != null) {
           // update expected Study info
           ProjectExpectedStudyInfo projectExpectedStudyInfo = projectExpectedStudy.getProjectExpectedStudyInfo(phase);
           if (projectExpectedStudyInfo == null) {
             projectExpectedStudyInfo = new ProjectExpectedStudyInfo();
           }
-          projectExpectedStudyInfo.setTitle(newProjectExpectedStudy.getProjectExpectedEstudyInfo().getTitle());
-          projectExpectedStudyInfo.setYear(newProjectExpectedStudy.getProjectExpectedEstudyInfo().getYear());
+          projectExpectedStudyInfo.setTitle(newProjectExpectedStudy.getProjectExpectedStudyInfo().getTitle());
+          projectExpectedStudyInfo.setYear(newProjectExpectedStudy.getProjectExpectedStudyInfo().getYear());
           projectExpectedStudyInfo.setPhase(phase);
 
           StudyType studyType =
-            studyTypeManager.getStudyTypeById(newProjectExpectedStudy.getProjectExpectedEstudyInfo().getStudyType());
+            studyTypeManager.getStudyTypeById(newProjectExpectedStudy.getProjectExpectedStudyInfo().getStudyType());
           if (studyType != null) {
             projectExpectedStudyInfo.setStudyType(studyType);
           } else {
             fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Study Type",
-              newProjectExpectedStudy.getProjectExpectedEstudyInfo().getStudyType() + " is an invalid status code"));
+              newProjectExpectedStudy.getProjectExpectedStudyInfo().getStudyType() + " is an invalid status code"));
           }
           GeneralStatus generalStatus = generalStatusManager
-            .getGeneralStatusById(newProjectExpectedStudy.getProjectExpectedEstudyInfo().getStatus());
+            .getGeneralStatusById(newProjectExpectedStudy.getProjectExpectedStudyInfo().getStatus());
           if (generalStatus != null) {
             projectExpectedStudyInfo.setStatus(generalStatus);
           } else {
             fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Status",
-              newProjectExpectedStudy.getProjectExpectedEstudyInfo().getStatus() + " is an invalid status code"));
+              newProjectExpectedStudy.getProjectExpectedStudyInfo().getStatus() + " is an invalid status code"));
           }
           EvidenceTag evidenceTag =
-            evidenceTagManager.getEvidenceTagById(newProjectExpectedStudy.getProjectExpectedEstudyInfo().getTag());
+            evidenceTagManager.getEvidenceTagById(newProjectExpectedStudy.getProjectExpectedStudyInfo().getTag());
           if (evidenceTag != null) {
             projectExpectedStudyInfo.setEvidenceTag(evidenceTag);
           } else {
             fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Evidence Tag",
-              newProjectExpectedStudy.getProjectExpectedEstudyInfo().getMaturityOfChange()
+              newProjectExpectedStudy.getProjectExpectedStudyInfo().getMaturityOfChange()
                 + " is an invalid Evidence Tag code"));
           }
           RepIndStageStudy repIndStageStudy = repIndStageStudyManager
-            .getRepIndStageStudyById(newProjectExpectedStudy.getProjectExpectedEstudyInfo().getMaturityOfChange());
+            .getRepIndStageStudyById(newProjectExpectedStudy.getProjectExpectedStudyInfo().getMaturityOfChange());
           if (repIndStageStudy != null) {
             projectExpectedStudyInfo.setRepIndStageStudy(repIndStageStudy);
           } else {
             fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "MaturityOfChange",
-              newProjectExpectedStudy.getProjectExpectedEstudyInfo().getMaturityOfChange()
+              newProjectExpectedStudy.getProjectExpectedStudyInfo().getMaturityOfChange()
                 + " is an invalid Level of maturity of change reported code"));
           }
 
