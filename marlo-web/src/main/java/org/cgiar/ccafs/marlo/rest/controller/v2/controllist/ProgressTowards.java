@@ -79,11 +79,11 @@ public class ProgressTowards {
     @ApiParam(value = "${ProgressTowards.progresstowardsSRF.POST.param.CGIAR}",
       required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${ProgressTowards.progresstowardsSRF.POST.param.progresstowardsSRF}",
-      required = true) @Valid @RequestBody NewSrfProgressTowardsTargetDTO newSrfProgressTowardsDTO) {
+      required = true) @Valid @RequestBody NewSrfProgressTowardsTargetDTO newSrfProgressTowardsTargetDTO) {
     Long policyId = new Long(0);
     try {
-      policyId =
-        this.progressTowardsItem.createProgressTowards(newSrfProgressTowardsDTO, CGIAREntity, this.getCurrentUser());
+      policyId = this.progressTowardsItem.createProgressTowards(newSrfProgressTowardsTargetDTO, CGIAREntity,
+        this.getCurrentUser());
     } catch (Exception e) {
       e.printStackTrace();
     }

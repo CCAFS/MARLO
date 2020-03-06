@@ -23,11 +23,8 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class NewSrfProgressTowardsTargetDTO {
 
-  // TODO remove if right
-  // @ApiModelProperty(notes = "SLO target", position = 2)
-  // private SrfSloIndicatorTargetDTO srfSloIndicatorTargetDTO;
-  @ApiModelProperty(notes = "SLO indicator target  ID", position = 2)
-  private String srfSloIndicatorTargetId;
+  @ApiModelProperty(notes = "SLO indicator ID", position = 2)
+  private String srfSloIndicatorId;
 
   @ApiModelProperty(notes = "Progress Towards Target narrative", position = 3)
   private String briefSummary;
@@ -58,12 +55,8 @@ public class NewSrfProgressTowardsTargetDTO {
     return phase;
   }
 
-  // public SrfSloIndicatorTargetDTO getSrfSloIndicatorTargetDTO() {
-  // return srfSloIndicatorTargetDTO;
-  // }
-
-  public String getSrfSloIndicatorTargetId() {
-    return srfSloIndicatorTargetId;
+  public String getSrfSloIndicatorId() {
+    return srfSloIndicatorId;
   }
 
 
@@ -83,11 +76,7 @@ public class NewSrfProgressTowardsTargetDTO {
     this.phase = phase;
   }
 
-  // public void setSrfSloIndicatorTargetDTO(SrfSloIndicatorTargetDTO srfSloIndicatorTargetDTO) {
-  // this.srfSloIndicatorTargetDTO = srfSloIndicatorTargetDTO;
-  // }
-
-  public void setSrfSloIndicatorTargetId(String srfSloIndicatorTargetId) {
-    this.srfSloIndicatorTargetId = srfSloIndicatorTargetId;
+  public void setSrfSloIndicatorId(String srfSloIndicatorId) {
+    this.srfSloIndicatorId = srfSloIndicatorId;
   }
 }
