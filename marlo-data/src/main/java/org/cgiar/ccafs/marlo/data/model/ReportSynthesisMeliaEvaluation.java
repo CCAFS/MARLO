@@ -54,6 +54,7 @@ public class ReportSynthesisMeliaEvaluation extends MarloAuditableEntity impleme
     new HashSet<ReportSynthesisMeliaActionStudy>(0);
 
   private List<ReportSynthesisMeliaEvaluationAction> meliaEvaluationActions;
+  private List<ReportSynthesisMeliaActionStudy> meliaActionsStudy;
 
 
   public ReportSynthesisMeliaEvaluation() {
@@ -106,22 +107,29 @@ public class ReportSynthesisMeliaEvaluation extends MarloAuditableEntity impleme
   }
 
 
+  public List<ReportSynthesisMeliaActionStudy> getMeliaActionsStudy() {
+    return meliaActionsStudy;
+  }
+
+
   public List<ReportSynthesisMeliaEvaluationAction> getMeliaEvaluationActions() {
     return meliaEvaluationActions;
   }
+
 
   public String getNameEvaluation() {
     return nameEvaluation;
   }
 
+
   public String getRecommendation() {
     return recommendation;
   }
 
-
   public ReportSynthesisMelia getReportSynthesisMelia() {
     return reportSynthesisMelia;
   }
+
 
   public Set<ReportSynthesisMeliaActionStudy> getReportSynthesisMeliaActionStudies() {
     return reportSynthesisMeliaActionStudies;
@@ -139,7 +147,6 @@ public class ReportSynthesisMeliaEvaluation extends MarloAuditableEntity impleme
     return textWhen;
   }
 
-
   public String getTextWhom() {
     return textWhom;
   }
@@ -149,13 +156,18 @@ public class ReportSynthesisMeliaEvaluation extends MarloAuditableEntity impleme
     this.actions = actions;
   }
 
+
   public void setComments(String comments) {
     this.comments = comments;
   }
 
-
   public void setManagementResponse(String managementResponse) {
     this.managementResponse = managementResponse;
+  }
+
+
+  public void setMeliaActionsStudy(List<ReportSynthesisMeliaActionStudy> meliaActionsStudy) {
+    this.meliaActionsStudy = meliaActionsStudy;
   }
 
 
