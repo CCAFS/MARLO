@@ -599,6 +599,8 @@ public class InnovationItem<T> {
         .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
       innovation.setMilestones(innovation.getProjectInnovationMilestones().stream()
         .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+      innovation.setSubIdos(innovation.getProjectInnovationSubIdos().stream()
+        .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
     }
 
     // Validate all fields
