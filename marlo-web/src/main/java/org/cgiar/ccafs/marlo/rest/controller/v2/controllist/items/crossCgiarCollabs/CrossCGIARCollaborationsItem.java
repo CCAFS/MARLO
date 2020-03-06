@@ -55,6 +55,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -103,6 +104,7 @@ public class CrossCGIARCollaborationsItem<T> {
   public Long createCrossCGIARCollaboration(NewCrossCGIARCollaborationDTO newCrossCGIARCollaborationDTO,
     String entityAcronym, User user) {
     Long crossCGIARCollaborationID = null;
+    Phase phase = null;
     ReportSynthesisKeyPartnershipCollaboration keyPartnershipCollaboration =
       new ReportSynthesisKeyPartnershipCollaboration();
     ReportSynthesisKeyPartnershipCollaborationCrp keyPartnershipCollaborationCrp;
@@ -111,24 +113,45 @@ public class CrossCGIARCollaborationsItem<T> {
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
     if (globalUnitEntity == null) {
       fieldErrors.add(new FieldErrorDTO("createCrossCGIARCollaboration", "GlobalUnitEntity",
-        entityAcronym + " is an invalid CGIAR entity acronym"));
+        entityAcronym + " is not a valid CGIAR entity acronym"));
+    } else {
+      if (!globalUnitEntity.isActive()) {
+        fieldErrors.add(new FieldErrorDTO("createCrossCGIARCollaboration", "GlobalUnitEntity",
+          "The Global Unit with acronym " + entityAcronym + " is not active."));
+      }
+
     }
 
     Set<CrpUser> lstUser = user.getCrpUsers();
-    if (!lstUser.stream().anyMatch(crp -> crp.getCrp().getAcronym().equalsIgnoreCase(entityAcronym))) {
+    if (!lstUser.stream().anyMatch(crp -> StringUtils.equalsIgnoreCase(crp.getCrp().getAcronym(), entityAcronym))) {
       fieldErrors
         .add(new FieldErrorDTO("createCrossCGIARCollaboration", "GlobalUnitEntity", "CGIAR entity not autorized"));
     }
 
-    Phase phase = phaseManager.findAll().stream()
-      .filter(p -> p.getCrp().getAcronym().equalsIgnoreCase(entityAcronym)
-        && p.getYear() == newCrossCGIARCollaborationDTO.getPhase().getYear()
-        && p.getName().equalsIgnoreCase(newCrossCGIARCollaborationDTO.getPhase().getName()))
-      .findFirst().get();
+    if (newCrossCGIARCollaborationDTO.getPhase() == null) {
+      fieldErrors.add(new FieldErrorDTO("createCrossCGIARCollaboration", "PhaseEntity", "Phase must not be null"));
+    } else {
+      if (newCrossCGIARCollaborationDTO.getPhase().getName() == null
+        || newCrossCGIARCollaborationDTO.getPhase().getName().trim().isEmpty()
+        || newCrossCGIARCollaborationDTO.getPhase().getYear() == null
+        // DANGER! Magic number ahead
+        || newCrossCGIARCollaborationDTO.getPhase().getYear() < 2015) {
+        fieldErrors.add(new FieldErrorDTO("createCrossCGIARCollaboration", "PhaseEntity", "Phase is invalid"));
+      } else {
+        phase = phaseManager.findAll().stream()
+          .filter(p -> p.getCrp().getAcronym().equalsIgnoreCase(entityAcronym)
+            && p.getYear() == newCrossCGIARCollaborationDTO.getPhase().getYear()
+            && p.getName().equalsIgnoreCase(newCrossCGIARCollaborationDTO.getPhase().getName()))
+          .findFirst().orElse(null);
 
-    if (phase == null) {
-      fieldErrors.add(new FieldErrorDTO("createCrossCGIARCollaboration", "Phase",
-        newCrossCGIARCollaborationDTO.getPhase().getYear() + " is an invalid year."));
+        if (phase == null) {
+          fieldErrors.add(new FieldErrorDTO("createCrossCGIARCollaboration", "phase",
+            newCrossCGIARCollaborationDTO.getPhase().getName() + ' '
+              + newCrossCGIARCollaborationDTO.getPhase().getYear() + " is an invalid phase"));
+        }
+
+      }
+
     }
 
     if (fieldErrors.isEmpty()) {
@@ -141,20 +164,28 @@ public class CrossCGIARCollaborationsItem<T> {
       // start GlobalUnit
       if (newCrossCGIARCollaborationDTO.getCollaborationCrpIds() != null
         && !newCrossCGIARCollaborationDTO.getCollaborationCrpIds().isEmpty()) {
-        collaborationCrps = newCrossCGIARCollaborationDTO.getCollaborationCrpIds().stream()
-          .filter(s -> s != null && !s.trim().isEmpty()).map(new Function<String, GlobalUnit>() {
+        collaborationCrps =
+          newCrossCGIARCollaborationDTO.getCollaborationCrpIds().stream().map(new Function<String, GlobalUnit>() {
 
             @Override
             public GlobalUnit apply(String globalUnitId) {
-              GlobalUnit globalUnit = globalUnitManager.findGlobalUnitBySMOCode(globalUnitId.trim());
-              if (globalUnit == null) {
-                fieldErrors.add(new FieldErrorDTO("createCrossCGIARCollaboration", "GlobalUnitEntity",
-                  globalUnitId + " is an invalid Global Unit SMO code."));
-              } else {
-                if (!globalUnit.isActive()) {
+              GlobalUnit globalUnit = null;
+              if (globalUnitId != null && !globalUnitId.trim().isEmpty()) {
+                globalUnit = globalUnitManager.findGlobalUnitBySMOCode(globalUnitId.trim());
+                if (globalUnit == null) {
                   fieldErrors.add(new FieldErrorDTO("createCrossCGIARCollaboration", "GlobalUnitEntity",
-                    "The Global Unit with SMO code " + globalUnitId + " is not active."));
+                    globalUnitId + " is an invalid Global Unit SMO code."));
+                } else {
+                  if (!globalUnit.isActive()) {
+                    fieldErrors.add(new FieldErrorDTO("createCrossCGIARCollaboration", "GlobalUnitEntity",
+                      "The Global Unit with SMO code " + globalUnitId + " is not active."));
+                  }
+
                 }
+
+              } else {
+                fieldErrors.add(new FieldErrorDTO("createCrossCGIARCollaboration", "GlobalUnitEntity",
+                  "A Global Unit SMO code can not be null nor empty."));
               }
 
               return globalUnit;
@@ -193,6 +224,14 @@ public class CrossCGIARCollaborationsItem<T> {
         reportSynthesisKeyPartnership = reportSynthesis.getReportSynthesisKeyPartnership();
       }
       // end ReportSynthesisKeyPartnership
+
+      // start description
+      if (newCrossCGIARCollaborationDTO.getDescription() == null
+        || newCrossCGIARCollaborationDTO.getDescription().trim().isEmpty()) {
+        fieldErrors
+          .add(new FieldErrorDTO("createCrossCGIARCollaboration", "Description", "Please enter a description."));
+      }
+      // end description
 
       // all validated! now it is supposed to be ok to save the entities
       if (fieldErrors.isEmpty()) {
@@ -252,12 +291,25 @@ public class CrossCGIARCollaborationsItem<T> {
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
     if (globalUnitEntity == null) {
       fieldErrors.add(new FieldErrorDTO("deleteCrossCGIARCollaboration", "GlobalUnitEntity",
-        CGIARentityAcronym + " is an invalid CGIAR entity acronym"));
+        CGIARentityAcronym + " is not a valid CGIAR entity acronym"));
+    } else {
+      if (!globalUnitEntity.isActive()) {
+        fieldErrors.add(new FieldErrorDTO("deleteCrossCGIARCollaboration", "GlobalUnitEntity",
+          "The Global Unit with acronym " + CGIARentityAcronym + " is not active."));
+      }
+
+    }
+
+    Set<CrpUser> lstUser = user.getCrpUsers();
+    if (!lstUser.stream()
+      .anyMatch(crp -> StringUtils.equalsIgnoreCase(crp.getCrp().getAcronym(), CGIARentityAcronym))) {
+      fieldErrors
+        .add(new FieldErrorDTO("deleteCrossCGIARCollaboration", "GlobalUnitEntity", "CGIAR entity not autorized"));
     }
 
     Phase phase =
       this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
-        && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().get();
+        && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().orElse(null);
     if (phase == null) {
       fieldErrors.add(new FieldErrorDTO("deleteCrossCGIARCollaboration", "phase",
         repoPhase + ' ' + repoYear + " is an invalid phase"));
@@ -307,16 +359,22 @@ public class CrossCGIARCollaborationsItem<T> {
 
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
     if (globalUnitEntity == null) {
-      fieldErrors.add(new FieldErrorDTO("findCrossCGIARCollaborationByGlobalUnit", "GlobalUnitEntity",
-        CGIARentityAcronym + " is an invalid CGIAR entity acronym"));
+      fieldErrors.add(new FieldErrorDTO("findCrossCGIARCollaboration", "GlobalUnitEntity",
+        CGIARentityAcronym + " is not a valid CGIAR entity acronym"));
+    } else {
+      if (!globalUnitEntity.isActive()) {
+        fieldErrors.add(new FieldErrorDTO("findCrossCGIARCollaboration", "GlobalUnitEntity",
+          "The Global Unit with acronym " + CGIARentityAcronym + " is not active."));
+      }
+
     }
 
     Phase phase =
       this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
-        && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().get();
+        && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().orElse(null);
     if (phase == null) {
-      fieldErrors
-        .add(new FieldErrorDTO("findCrossCGIARCollaborationByGlobalUnit", "phase", repoYear + " is an invalid year"));
+      fieldErrors.add(
+        new FieldErrorDTO("findCrossCGIARCollaboration", "phase", repoPhase + ' ' + repoYear + " is an invalid phase"));
     }
 
     if (fieldErrors.isEmpty()) {
@@ -345,23 +403,24 @@ public class CrossCGIARCollaborationsItem<T> {
     // TODO: Include all security validations
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
 
-    Set<CrpUser> lstUser = user.getCrpUsers();
-    if (!lstUser.stream().anyMatch(crp -> crp.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym))) {
-      fieldErrors
-        .add(new FieldErrorDTO("findKeyExternalPartnership", "GlobalUnitEntity", "CGIAR entity not autorized"));
-    }
-
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
     if (globalUnitEntity == null) {
       fieldErrors.add(new FieldErrorDTO("findCrossCGIARCollaboration", "GlobalUnitEntity",
         CGIARentityAcronym + " is not a valid CGIAR entity acronym"));
+    } else {
+      if (!globalUnitEntity.isActive()) {
+        fieldErrors.add(new FieldErrorDTO("findCrossCGIARCollaboration", "GlobalUnitEntity",
+          "The Global Unit with acronym " + CGIARentityAcronym + " is not active."));
+      }
+
     }
 
     Phase phase =
       this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
-        && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().get();
+        && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().orElse(null);
     if (phase == null) {
-      fieldErrors.add(new FieldErrorDTO("findCrossCGIARCollaboration", "phase", repoYear + " is an invalid year"));
+      fieldErrors.add(
+        new FieldErrorDTO("findCrossCGIARCollaboration", "phase", repoPhase + ' ' + repoYear + " is an invalid phase"));
     }
 
     ReportSynthesisKeyPartnershipCollaboration keyPartnershipCollaboration =
@@ -376,7 +435,7 @@ public class CrossCGIARCollaborationsItem<T> {
 
     // Validate all fields
     if (!fieldErrors.isEmpty()) {
-      // fieldErrors.forEach(e -> System.out.println(e.getMessage()));
+      fieldErrors.forEach(e -> System.out.println(e.getMessage()));
       throw new MARLOFieldValidationException("Field Validation errors", "",
         fieldErrors.stream()
           .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
@@ -391,37 +450,58 @@ public class CrossCGIARCollaborationsItem<T> {
   public Long putCrossCGIARCollaborationById(Long idCrossCGIARCollaboration,
     NewCrossCGIARCollaborationDTO newCrossCGIARCollaborationDTO, String CGIARentityAcronym, User user) {
     Long idCrossCGIARCollaborationDB = null;
+    Phase phase = null;
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
 
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
     if (globalUnitEntity == null) {
       fieldErrors.add(new FieldErrorDTO("putCrossCGIARCollaboration", "GlobalUnitEntity",
-        CGIARentityAcronym + " is an invalid CGIAR entity acronym"));
+        CGIARentityAcronym + " is not a valid CGIAR entity acronym"));
+    } else {
+      if (!globalUnitEntity.isActive()) {
+        fieldErrors.add(new FieldErrorDTO("putCrossCGIARCollaboration", "GlobalUnitEntity",
+          "The Global Unit with acronym " + CGIARentityAcronym + " is not active."));
+      }
+
+    }
+
+    Set<CrpUser> lstUser = user.getCrpUsers();
+    if (!lstUser.stream().anyMatch(crp -> crp.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym))) {
+      fieldErrors
+        .add(new FieldErrorDTO("putCrossCGIARCollaboration", "GlobalUnitEntity", "CGIAR entity not autorized"));
     }
 
     if (newCrossCGIARCollaborationDTO.getPhase() == null) {
       fieldErrors.add(new FieldErrorDTO("putCrossCGIARCollaboration", "PhaseEntity", "Phase must not be null"));
-    }
+    } else {
+      if (newCrossCGIARCollaborationDTO.getPhase().getName() == null
+        || newCrossCGIARCollaborationDTO.getPhase().getName().trim().isEmpty()
+        || newCrossCGIARCollaborationDTO.getPhase().getYear() == null
+        // DANGER! Magic number ahead
+        || newCrossCGIARCollaborationDTO.getPhase().getYear() < 2015) {
+        fieldErrors.add(new FieldErrorDTO("putCrossCGIARCollaboration", "PhaseEntity", "Phase is invalid"));
+      } else {
+        phase = phaseManager.findAll().stream()
+          .filter(p -> p.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
+            && p.getYear() == newCrossCGIARCollaborationDTO.getPhase().getYear()
+            && p.getName().equalsIgnoreCase(newCrossCGIARCollaborationDTO.getPhase().getName()))
+          .findFirst().orElse(null);
 
-    if (newCrossCGIARCollaborationDTO.getPhase().getName() == null
-      || newCrossCGIARCollaborationDTO.getPhase().getYear() == null) {
-      fieldErrors.add(new FieldErrorDTO("putCrossCGIARCollaboration", "PhaseEntity", "Phase is invalid"));
-    }
+        if (phase == null) {
+          fieldErrors.add(
+            new FieldErrorDTO("putCrossCGIARCollaboration", "phase", newCrossCGIARCollaborationDTO.getPhase().getName()
+              + ' ' + newCrossCGIARCollaborationDTO.getPhase().getYear() + " is an invalid phase"));
+        }
 
-    // i suppose is safe now
-    Phase phase = this.phaseManager.findAll().stream()
-      .filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
-        && c.getYear() == newCrossCGIARCollaborationDTO.getPhase().getYear()
-        && c.getName().equalsIgnoreCase(newCrossCGIARCollaborationDTO.getPhase().getName()))
-      .findFirst().orElse(null);
-    if (phase == null) {
-      fieldErrors.add(new FieldErrorDTO("putCrossCGIARCollaboration", "PhaseEntity",
-        newCrossCGIARCollaborationDTO.getPhase().getYear() + " is an invalid year"));
+      }
+
     }
 
     CrpProgram crpProgram = null;
-    if (newCrossCGIARCollaborationDTO.getFlagshipProgramId() != null) {
-      crpProgram = crpProgramManager.getCrpProgramBySmoCode(newCrossCGIARCollaborationDTO.getFlagshipProgramId());
+    if (newCrossCGIARCollaborationDTO.getFlagshipProgramId() != null
+      && !newCrossCGIARCollaborationDTO.getFlagshipProgramId().trim().isEmpty()) {
+      crpProgram =
+        crpProgramManager.getCrpProgramBySmoCode(newCrossCGIARCollaborationDTO.getFlagshipProgramId().trim());
       if (crpProgram == null) {
         fieldErrors.add(new FieldErrorDTO("putCrossCGIARCollaboration", "CrpProgramEntity",
           newCrossCGIARCollaborationDTO.getFlagshipProgramId() + " is an invalid CRP Program SMO Code"));
@@ -453,14 +533,29 @@ public class CrossCGIARCollaborationsItem<T> {
       Map<Boolean, List<String>> changes =
         ChangeTracker.trackChanges(base, newCrossCGIARCollaborationDTO.getCollaborationCrpIds());
 
-      changes.get(Boolean.TRUE).stream().filter(m -> m != null && !m.trim().isEmpty())
-        .map(ch -> reportSynthesisKeyPartnershipCollaborationCrpManager.getByCollaborationIdAndGlobalUnitId(
-          // we know the globalUnit exists by now, so its safe to do what is below
-          keyPartnershipCollaboration.getId(), globalUnitManager.findGlobalUnitBySMOCode(ch).getId()))
+      changes.get(Boolean.TRUE).stream().map(m -> {
+        if (m != null && !m.trim().isEmpty()) {
+          fieldErrors
+            .add(new FieldErrorDTO("putCrossCGIARCollaboration", "ReportSynthesisKeyPartnershipCollaborationEntity",
+              +idCrossCGIARCollaboration + " is an invalid Report Synthesis Key Partnership Collaboration Code"));
+        }
+
+        return m;
+      }).map(ch -> reportSynthesisKeyPartnershipCollaborationCrpManager.getByCollaborationIdAndGlobalUnitId(
+        // we know the globalUnit exists by now, so its safe to do what is below
+        keyPartnershipCollaboration.getId(), globalUnitManager.findGlobalUnitBySMOCode(ch).getId()))
         .map(ReportSynthesisKeyPartnershipCollaborationCrp::getId).forEach(
           reportSynthesisKeyPartnershipCollaborationCrpManager::deleteReportSynthesisKeyPartnershipCollaborationCrp);
 
-      changes.get(Boolean.FALSE).stream().filter(m -> m != null && !m.trim().isEmpty()).forEach(new Consumer<String>() {
+      changes.get(Boolean.FALSE).stream().map(m -> {
+        if (m != null && !m.trim().isEmpty()) {
+          fieldErrors
+            .add(new FieldErrorDTO("putCrossCGIARCollaboration", "ReportSynthesisKeyPartnershipCollaborationEntity",
+              +idCrossCGIARCollaboration + " is an invalid Report Synthesis Key Partnership Collaboration Code"));
+        }
+
+        return m;
+      }).forEach(new Consumer<String>() {
 
         @Override
         public void accept(String smoCode) {
@@ -478,8 +573,16 @@ public class CrossCGIARCollaborationsItem<T> {
           }
         }
       });
+      // start description
+      if (newCrossCGIARCollaborationDTO.getDescription() == null
+        || newCrossCGIARCollaborationDTO.getDescription().trim().isEmpty()) {
+        fieldErrors
+          .add(new FieldErrorDTO("createCrossCGIARCollaboration", "Description", "Please enter a description."));
+      } else {
+        keyPartnershipCollaboration.setDescription(newCrossCGIARCollaborationDTO.getDescription());
+      }
+      // end description
 
-      keyPartnershipCollaboration.setDescription(newCrossCGIARCollaborationDTO.getDescription());
       keyPartnershipCollaboration.setValueAdded(newCrossCGIARCollaborationDTO.getValueAdded());
 
       LiaisonInstitution liaisonInstitution = liaisonInstitutionManager.findByAcronym(crpProgram.getAcronym());
