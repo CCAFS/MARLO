@@ -72,8 +72,13 @@ public class InnovationDTO {
   @ApiModelProperty(notes = "Contributing CRPs/Platforms", position = 140)
   private List<CGIAREntityDTO> contributingCGIAREntities;
 
+  @ApiModelProperty(notes = "Contributing milestone list", position = 13)
+  private List<ProjectInnovationMilestoneDTO> milestonesList;
+
+
   @ApiModelProperty(notes = "Phase year/section", position = 160)
   private PhaseDTO phase;
+
 
   public List<CGIAREntityDTO> getContributingCGIAREntities() {
     return this.contributingCGIAREntities;
@@ -83,7 +88,6 @@ public class InnovationDTO {
   public List<InstitutionDTO> getContributingInstitutions() {
     return this.contributingInstitutions;
   }
-
 
   public List<CountryDTO> getCountries() {
     return this.countries;
@@ -122,6 +126,11 @@ public class InnovationDTO {
 
   public InstitutionDTO getLeadOrganization() {
     return this.leadOrganization;
+  }
+
+
+  public List<ProjectInnovationMilestoneDTO> getMilestonesList() {
+    return milestonesList;
   }
 
 
@@ -212,6 +221,11 @@ public class InnovationDTO {
 
   public void setLeadOrganization(InstitutionDTO leadOrganization) {
     this.leadOrganization = leadOrganization;
+  }
+
+
+  public void setMilestonesList(List<ProjectInnovationMilestoneDTO> milestonesList) {
+    this.milestonesList = milestonesList;
   }
 
 

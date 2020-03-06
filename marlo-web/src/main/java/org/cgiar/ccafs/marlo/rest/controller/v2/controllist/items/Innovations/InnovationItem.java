@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.Innovations;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
@@ -26,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationOrganizationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
@@ -34,6 +36,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndInnovationTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndOrganizationTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageInnovationManager;
+import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
@@ -46,6 +49,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationRegion;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
@@ -59,6 +63,7 @@ import org.cgiar.ccafs.marlo.rest.dto.GeographicScopeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InnovationDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewInnovationDTO;
+import org.cgiar.ccafs.marlo.rest.dto.NewMilestonesDTO;
 import org.cgiar.ccafs.marlo.rest.dto.OrganizationTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.RegionDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
@@ -101,6 +106,8 @@ public class InnovationItem<T> {
   private ProjectInnovationContributingOrganizationManager projectInnovationContributingOrganizationManager;
   private ProjectInnovationRegionManager projectInnovationRegionManager;
   private ProjectInnovationGeographicScopeManager projectInnovationGeographicScopeManager;
+  private CrpMilestoneManager crpMilestoneManager;
+  private ProjectInnovationMilestoneManager projectInnovationMilestoneManager;
 
   // Variables
   // private List<FieldErrorDTO> fieldErrors;
@@ -121,7 +128,8 @@ public class InnovationItem<T> {
     ProjectInnovationCountryManager projectInnovationCountryManager,
     ProjectInnovationContributingOrganizationManager projectInnovationContributingOrganizationManager,
     ProjectInnovationRegionManager projectInnovationRegionManager,
-    ProjectInnovationGeographicScopeManager projectInnovationGeographicScopeManager) {
+    ProjectInnovationGeographicScopeManager projectInnovationGeographicScopeManager,
+    CrpMilestoneManager crpMilestoneManager, ProjectInnovationMilestoneManager projectInnovationMilestoneManager) {
     this.projectInnovationManager = projectInnovationManager;
     this.innovationMapper = innovationMapper;
     this.phaseManager = phaseManager;
@@ -141,6 +149,8 @@ public class InnovationItem<T> {
     this.projectInnovationGeographicScopeManager = projectInnovationGeographicScopeManager;
     this.repIndGeographicScopeManager = repIndGeographicScopeManager;
     this.locElementManager = locElementManager;
+    this.crpMilestoneManager = crpMilestoneManager;
+    this.projectInnovationMilestoneManager = projectInnovationMilestoneManager;
 
   }
 
@@ -377,6 +387,34 @@ public class InnovationItem<T> {
           }
         }
       }
+
+      if (newInnovationDTO.getMilestonesCodeList() != null && newInnovationDTO.getMilestonesCodeList().size() > 0) {
+        for (NewMilestonesDTO milestones : newInnovationDTO.getMilestonesCodeList()) {
+          if (milestones.getMilestone() != null && milestones.getMilestone().length() > 0
+            && milestones.getPrimary() != null) {
+            // find milestone by composedID and phase
+            CrpMilestone crpMilestone =
+              crpMilestoneManager.getCrpMilestoneByPhase(milestones.getMilestone(), phase.getId());
+            if (crpMilestone != null) {
+              ProjectInnovationMilestone projectInnovationMilestone = new ProjectInnovationMilestone();
+              projectInnovationMilestone.setProjectInnovation(projectInnovation);
+              projectInnovationMilestone.setCrpMilestone(crpMilestone);
+              projectInnovationMilestone.setPhase(phase);
+              projectInnovationMilestone.setPrimary(milestones.getPrimary());
+              projectInnovationMilestoneManager.saveProjectInnovationMilestone(projectInnovationMilestone);
+              // This is to add innovationOrganizationSave to generate
+              // correct auditlog.
+              projectInnovation.getProjectInnovationMilestones().add(projectInnovationMilestone);
+            } else {
+              fieldErrors.add(new FieldErrorDTO("createInnovation", "Milestones",
+                milestones.getMilestone() + " is an invalid SMO Code"));
+            }
+          } else {
+            fieldErrors.add(new FieldErrorDTO("createInnovation", "Milestones",
+              milestones.getMilestone() + " is an invalid SMO Code"));
+          }
+        }
+      }
     }
 
 
@@ -558,6 +596,8 @@ public class InnovationItem<T> {
       innovation.setCrps(innovation.getProjectInnovationCrps().stream()
         .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
       innovation.setOrganizations(innovation.getProjectInnovationOrganizations().stream()
+        .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+      innovation.setMilestones(innovation.getProjectInnovationMilestones().stream()
         .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
     }
 
@@ -807,6 +847,49 @@ public class InnovationItem<T> {
           }
         }
 
+        // check innovations milestones
+        if (newInnovationDTO.getMilestonesCodeList() != null && newInnovationDTO.getMilestonesCodeList().size() > 0) {
+          List<ProjectInnovationMilestone> projectInnovationMilestoneList =
+            innovation.getProjectInnovationMilestones().stream()
+              .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
+          List<ProjectInnovationMilestone> existingProjectInnovationMilestoneList =
+            new ArrayList<ProjectInnovationMilestone>();
+          for (NewMilestonesDTO milestones : newInnovationDTO.getMilestonesCodeList()) {
+            if (milestones.getMilestone() != null && milestones.getMilestone().length() > 0
+              && milestones.getPrimary() != null) {
+              // find milestone by composedID and phase
+              CrpMilestone crpMilestone =
+                crpMilestoneManager.getCrpMilestoneByPhase(milestones.getMilestone(), phase.getId());
+              if (crpMilestone != null) {
+                ProjectInnovationMilestone projectInnovationMilestone = projectInnovationMilestoneManager
+                  .getProjectInnovationMilestoneById(innovation.getId(), crpMilestone.getId(), phase.getId());
+                if (projectInnovationMilestone != null) {
+                  existingProjectInnovationMilestoneList.add(projectInnovationMilestone);
+                } else {
+                  projectInnovationMilestone = new ProjectInnovationMilestone();
+                  projectInnovationMilestone.setProjectInnovation(innovation);
+                  projectInnovationMilestone.setCrpMilestone(crpMilestone);
+                  projectInnovationMilestone.setPhase(phase);
+                  projectInnovationMilestone.setPrimary(milestones.getPrimary());
+                  projectInnovationMilestoneManager.saveProjectInnovationMilestone(projectInnovationMilestone);
+                  // This is to add innovationOrganizationSave to generate
+                  // correct auditlog.
+                  innovation.getProjectInnovationMilestones().add(projectInnovationMilestone);
+                }
+              } else {
+                fieldErrors.add(new FieldErrorDTO("createInnovation", "Milestones",
+                  milestones.getMilestone() + " is an invalid SMO Code"));
+              }
+            }
+          }
+          // verify regions
+          for (ProjectInnovationMilestone obj : projectInnovationMilestoneList) {
+
+            if (!existingProjectInnovationMilestoneList.contains(obj)) {
+              this.projectInnovationMilestoneManager.deleteProjectInnovationMilestone(obj.getId());
+            }
+          }
+        }
         // check innovation regions
         if (newInnovationDTO.getRegions() != null && newInnovationDTO.getRegions().size() > 0) {
           List<ProjectInnovationRegion> projectInnovationRegionList = innovation.getProjectInnovationRegions().stream()
