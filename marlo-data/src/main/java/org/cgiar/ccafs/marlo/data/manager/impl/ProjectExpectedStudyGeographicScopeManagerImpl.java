@@ -120,6 +120,13 @@ public class ProjectExpectedStudyGeographicScopeManagerImpl implements ProjectEx
     return projectExpectedStudyGeographicScopeDAO.find(projectExpectedStudyGeographicScopeID);
   }
 
+  @Override
+  public ProjectExpectedStudyGeographicScope getProjectExpectedStudyGeographicScopeByPhase(Long expectedId,
+    Long geographicScopeId, Long phaseId) {
+    return projectExpectedStudyGeographicScopeDAO.getProjectExpectedStudyGeographicScopeByPhase(expectedId,
+      geographicScopeId, phaseId);
+  }
+
   public void saveExpectedStudyGeographicScopePhase(Phase next, long expectedID,
     ProjectExpectedStudyGeographicScope projectExpectedStudyGeographicScope) {
     Phase phase = phaseDAO.find(next.getId());

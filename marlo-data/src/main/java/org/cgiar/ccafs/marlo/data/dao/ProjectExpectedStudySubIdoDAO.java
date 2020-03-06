@@ -56,10 +56,22 @@ public interface ProjectExpectedStudySubIdoDAO {
 
 
   /**
+   * This method gets a projectExpectedStudySubIdo object by a given projectExpectedStudySubIdo identifier.
+   * 
+   * @param expectedID is the projectExpectedStudySubIdo identifier.
+   * @param subIdoID is the projectExpectedStudySubIdo identifier.
+   * @param phaseID is the projectExpectedStudySubIdo identifier.
+   * @return a ProjectExpectedStudySubIdo object.
+   */
+  public ProjectExpectedStudySubIdo getProjectExpectedStudySubIdoByPhase(Long expectedID, Long subIdoID, Long phaseID);
+
+  /**
    * This method saves the information of the given projectExpectedStudySubIdo
    * 
-   * @param projectExpectedStudySubIdo - is the projectExpectedStudySubIdo object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectExpectedStudySubIdo was
+   * @param projectExpectedStudySubIdo - is the projectExpectedStudySubIdo object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectExpectedStudySubIdo was
    *         updated
    *         or -1 is some error occurred.
    */

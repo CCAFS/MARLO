@@ -97,7 +97,7 @@ public class PublicationListAction extends BaseAction {
       deliverable.setCreateDate(new Date());
       deliverable.setIsPublication(true);
       deliverable.setPhase(this.getActualPhase());
-
+      deliverable.setProject(null);
       deliverable = deliverableManager.saveDeliverable(deliverable);
       deliverableID = deliverable.getId();
 

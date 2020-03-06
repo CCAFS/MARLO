@@ -61,14 +61,28 @@ public interface ProjectExpectedStudyMilestoneManager {
   public ProjectExpectedStudyMilestone getProjectExpectedStudyMilestoneById(long projectExpectedStudyMilestoneID);
 
   /**
+   * This method gets a projectExpectedStudyMilestone object by a given projectExpectedStudyMilestone identifier.
+   * 
+   * @param expectedID is the projectExpectedStudy identifier.
+   * @param milestoneID is the milestone identifier.
+   * @param phaseID is the phase identifier.
+   * @return a ProjectExpectedStudyMilestone object.
+   */
+  public ProjectExpectedStudyMilestone getProjectExpectedStudyMilestoneByPhase(Long expectedID, Long milestoneID,
+    Long phaseID);
+
+  /**
    * This method saves the information of the given projectExpectedStudyMilestone
    * 
-   * @param projectExpectedStudyMilestone - is the projectExpectedStudyMilestone object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectExpectedStudyMilestone was
+   * @param projectExpectedStudyMilestone - is the projectExpectedStudyMilestone object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectExpectedStudyMilestone was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ProjectExpectedStudyMilestone saveProjectExpectedStudyMilestone(ProjectExpectedStudyMilestone projectExpectedStudyMilestone);
+  public ProjectExpectedStudyMilestone
+    saveProjectExpectedStudyMilestone(ProjectExpectedStudyMilestone projectExpectedStudyMilestone);
 
 
 }

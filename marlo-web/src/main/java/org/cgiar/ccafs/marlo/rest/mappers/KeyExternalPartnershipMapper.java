@@ -27,7 +27,6 @@ import org.mapstruct.Mappings;
     PartnershipInstitutionMapper.class, GlobalUnitMapper.class, CrpProgramMapper.class})
 public interface KeyExternalPartnershipMapper {
 
-
   @Mappings({@Mapping(source = "id", target = "code"),
     @Mapping(source = "keyPartnershipExternal.reportSynthesisKeyPartnership.reportSynthesis.liaisonInstitution.crp",
       target = "cgiarEntity"),
@@ -43,5 +42,4 @@ public interface KeyExternalPartnershipMapper {
   public abstract KeyExternalPartnershipDTO
     keyPartnershipExternalToKeyExternalPartnershipDTO(ReportSynthesisKeyPartnershipExternal keyPartnershipExternal);
 
-  // crpprogram
 }

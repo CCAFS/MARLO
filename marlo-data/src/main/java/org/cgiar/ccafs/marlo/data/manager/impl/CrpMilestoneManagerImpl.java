@@ -71,6 +71,12 @@ public class CrpMilestoneManagerImpl implements CrpMilestoneManager {
   }
 
   @Override
+  public CrpMilestone getCrpMilestoneByPhase(String composedID, long phaseID) {
+
+    return crpAssumptionDAO.getCrpMilestoneByPhase(composedID, phaseID);
+  }
+
+  @Override
   public CrpMilestone saveCrpMilestone(CrpMilestone crpAssumption) {
 
     return crpAssumptionDAO.save(crpAssumption);

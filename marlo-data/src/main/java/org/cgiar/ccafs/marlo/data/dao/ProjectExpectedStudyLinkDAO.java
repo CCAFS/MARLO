@@ -60,6 +60,16 @@ public interface ProjectExpectedStudyLinkDAO {
     ProjectExpectedStudyLink projectExpectedStudyLink);
 
   /**
+   * This method gets a projectExpectedStudyLink object by a given projectExpectedStudy, phase identifier and link
+   * 
+   * @param expectedID is the projectExpectedStudy identifier.
+   * @param link is the url link
+   * @param phaseID is the phase identifier
+   * @return a ProjectExpectedStudyLink object.
+   */
+  public ProjectExpectedStudyLink getProjectExpectedStudyLinkByPhase(Long expectedID, String link, Long phaseID);
+
+  /**
    * This method saves the information of the given projectExpectedStudyLink
    * 
    * @param projectExpectedStudyLink - is the projectExpectedStudyLink object with the new information to be

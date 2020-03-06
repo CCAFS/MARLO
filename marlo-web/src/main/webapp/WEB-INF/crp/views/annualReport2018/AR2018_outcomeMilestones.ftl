@@ -130,6 +130,7 @@
         <tr>
           <th rowspan="2">[@s.text name="expectedProgress.tableA.fp" /]</th>
           <th rowspan="2"> Outcome </th>
+          [#if !allowPopups]<th rowspan="2"> Sub IDOs </th>[/#if]
           [#if !allowPopups]<th rowspan="2"> Outcome Progress </th>[/#if]
           <th rowspan="2"> Milestone </th>
           <th rowspan="2"> Status</th>
@@ -166,12 +167,31 @@
                     [#-- Outcome Statement --]
                     ${outcome.composedName}
                     [#-- Sub-IDOs --]
+                    [#--
                     [#if !allowPopups]
                     <br />
                     <small>
                       <ul>[#list (outcome.subIdos)![] as subIdo]<li> [#if (subIdo.srfSubIdo.srfIdo.isCrossCutting)!false] <strong title="Cross-Cutting IDO">CC</strong> [/#if]${(subIdo.srfSubIdo.description)!}</li>[/#list]</ul>
                     </small>
                     [/#if]
+                    --]
+                  </td>
+                [/#if]
+                [#-- Sub-IDOs --]
+                [#if isOutcomeRow && !allowPopups]
+                  <td rowspan="${outcomesSize}" class="milestonesSize-${outcomesSize}">
+                    <small>
+                      <ul>
+                        [#list (outcome.subIdos)![] as subIdo]
+                          <li> 
+                            [#if (subIdo.srfSubIdo.srfIdo.isCrossCutting)!false] 
+                              <strong title="Cross-Cutting IDO">CC</strong> 
+                            [/#if]
+                            ${(subIdo.srfSubIdo.description)!}
+                          </li><br />
+                        [/#list]
+                      </ul>
+                    </small>
                   </td>
                 [/#if]
                 [#-- Outcomes - Narrative --]
