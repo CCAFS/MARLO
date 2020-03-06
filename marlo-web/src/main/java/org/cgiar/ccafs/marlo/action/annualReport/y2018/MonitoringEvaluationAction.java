@@ -47,6 +47,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressStudyDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMelia;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaActionStudy;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaEvaluation;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaEvaluationAction;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaStudy;
@@ -570,6 +571,20 @@ public class MonitoringEvaluationAction extends BaseAction {
               }
             }
 
+            // load evaluation actions
+            if (reportSynthesis.getReportSynthesisMelia().getEvaluations() != null
+              && !reportSynthesis.getReportSynthesisMelia().getEvaluations().isEmpty()) {
+              for (ReportSynthesisMeliaEvaluation reportSynthesisMeliaEvaluation : reportSynthesis
+                .getReportSynthesisMelia().getEvaluations()) {
+                if (reportSynthesisMeliaEvaluation.getMeliaActionsStudy() != null
+                  && !reportSynthesisMeliaEvaluation.getMeliaActionsStudy().isEmpty()) {
+                  reportSynthesisMeliaEvaluation.setMeliaActionsStudy(
+                    new ArrayList<>(reportSynthesisMeliaEvaluation.getReportSynthesisMeliaActionStudies().stream()
+                      .filter(e -> e.isActive()).collect(Collectors.toList())));
+                }
+              }
+            }
+
           }
         }
       }
@@ -712,6 +727,15 @@ public class MonitoringEvaluationAction extends BaseAction {
                 .deleteReportSynthesisMeliaEvaluationAction(reportSynthesisMeliaEvaluationAction.getId());
             }
           }
+          // Delete actions studies
+          if (evaluation.getReportSynthesisMeliaEvaluationActions() != null
+            && !evaluation.getReportSynthesisMeliaEvaluationActions().isEmpty()) {
+            for (ReportSynthesisMeliaActionStudy reportSynthesisMeliaEvaluationAction : evaluation
+              .getMeliaActionsStudy()) {
+              reportSynthesisMeliaActionStudyManager
+                .deleteReportSynthesisMeliaActionStudy(reportSynthesisMeliaEvaluationAction.getId());
+            }
+          }
         }
       }
     }
@@ -796,6 +820,31 @@ public class MonitoringEvaluationAction extends BaseAction {
 
           }
 
+          // Save evaluation actions studies
+          if (evaluation.getReportSynthesisMeliaActionStudies() != null
+            && !evaluation.getReportSynthesisMeliaActionStudies().isEmpty()) {
+            for (ReportSynthesisMeliaActionStudy reportSynthesisMeliaActionStudy : evaluation.getMeliaActionsStudy()) {
+
+              if (reportSynthesisMeliaActionStudy.getId() == null) {
+                ReportSynthesisMeliaActionStudy meliaEvaluationActionSave = new ReportSynthesisMeliaActionStudy();
+                meliaEvaluationActionSave
+                  .setProjectExpectedStudy(reportSynthesisMeliaActionStudy.getProjectExpectedStudy());
+                meliaEvaluationActionSave.setReportSynthesisMeliaEvaluation(evaluationPrev);
+                reportSynthesisMeliaActionStudyManager.saveReportSynthesisMeliaActionStudy(meliaEvaluationActionSave);
+              } else {
+                ReportSynthesisMeliaActionStudy evaluationActionUpdate = reportSynthesisMeliaActionStudyManager
+                  .getReportSynthesisMeliaActionStudyById(reportSynthesisMeliaActionStudy.getId());
+
+                evaluationActionUpdate
+                  .setProjectExpectedStudy(reportSynthesisMeliaActionStudy.getProjectExpectedStudy());
+                evaluationActionUpdate.setReportSynthesisMeliaEvaluation(evaluationPrev);
+                reportSynthesisMeliaActionStudyManager.saveReportSynthesisMeliaActionStudy(evaluationActionUpdate);
+              }
+
+            }
+
+          }
+
           reportSynthesisMeliaEvaluationManager.saveReportSynthesisMeliaEvaluation(evaluationPrev);
         }
       }
@@ -809,7 +858,7 @@ public class MonitoringEvaluationAction extends BaseAction {
    * 
    * @param projectExpectedStudy
    */
-  public void saveEvidence(ReportSynthesisMelia meliaDB) {
+  public void saveEvidence(ReportSynthesisMeliaEvaluation meliaDB) {
   }
 
 
