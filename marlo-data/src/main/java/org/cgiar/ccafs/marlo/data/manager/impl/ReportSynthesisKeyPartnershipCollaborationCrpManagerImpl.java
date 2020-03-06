@@ -28,7 +28,8 @@ import javax.inject.Named;
  * @author CCAFS
  */
 @Named
-public class ReportSynthesisKeyPartnershipCollaborationCrpManagerImpl implements ReportSynthesisKeyPartnershipCollaborationCrpManager {
+public class ReportSynthesisKeyPartnershipCollaborationCrpManagerImpl
+  implements ReportSynthesisKeyPartnershipCollaborationCrpManager {
 
 
   private ReportSynthesisKeyPartnershipCollaborationCrpDAO reportSynthesisKeyPartnershipCollaborationCrpDAO;
@@ -36,22 +37,27 @@ public class ReportSynthesisKeyPartnershipCollaborationCrpManagerImpl implements
 
 
   @Inject
-  public ReportSynthesisKeyPartnershipCollaborationCrpManagerImpl(ReportSynthesisKeyPartnershipCollaborationCrpDAO reportSynthesisKeyPartnershipCollaborationCrpDAO) {
+  public ReportSynthesisKeyPartnershipCollaborationCrpManagerImpl(
+    ReportSynthesisKeyPartnershipCollaborationCrpDAO reportSynthesisKeyPartnershipCollaborationCrpDAO) {
     this.reportSynthesisKeyPartnershipCollaborationCrpDAO = reportSynthesisKeyPartnershipCollaborationCrpDAO;
 
 
   }
 
   @Override
-  public void deleteReportSynthesisKeyPartnershipCollaborationCrp(long reportSynthesisKeyPartnershipCollaborationCrpId) {
+  public void
+    deleteReportSynthesisKeyPartnershipCollaborationCrp(long reportSynthesisKeyPartnershipCollaborationCrpId) {
 
-    reportSynthesisKeyPartnershipCollaborationCrpDAO.deleteReportSynthesisKeyPartnershipCollaborationCrp(reportSynthesisKeyPartnershipCollaborationCrpId);
+    reportSynthesisKeyPartnershipCollaborationCrpDAO
+      .deleteReportSynthesisKeyPartnershipCollaborationCrp(reportSynthesisKeyPartnershipCollaborationCrpId);
   }
 
   @Override
-  public boolean existReportSynthesisKeyPartnershipCollaborationCrp(long reportSynthesisKeyPartnershipCollaborationCrpID) {
+  public boolean
+    existReportSynthesisKeyPartnershipCollaborationCrp(long reportSynthesisKeyPartnershipCollaborationCrpID) {
 
-    return reportSynthesisKeyPartnershipCollaborationCrpDAO.existReportSynthesisKeyPartnershipCollaborationCrp(reportSynthesisKeyPartnershipCollaborationCrpID);
+    return reportSynthesisKeyPartnershipCollaborationCrpDAO
+      .existReportSynthesisKeyPartnershipCollaborationCrp(reportSynthesisKeyPartnershipCollaborationCrpID);
   }
 
   @Override
@@ -62,13 +68,22 @@ public class ReportSynthesisKeyPartnershipCollaborationCrpManagerImpl implements
   }
 
   @Override
-  public ReportSynthesisKeyPartnershipCollaborationCrp getReportSynthesisKeyPartnershipCollaborationCrpById(long reportSynthesisKeyPartnershipCollaborationCrpID) {
+  public ReportSynthesisKeyPartnershipCollaborationCrp getByCollaborationIdAndGlobalUnitId(long collaborationId,
+    long globalUnitId) {
+    return reportSynthesisKeyPartnershipCollaborationCrpDAO.findByCollaborationIdAndGlobalUnitId(collaborationId,
+      globalUnitId);
+  }
+
+  @Override
+  public ReportSynthesisKeyPartnershipCollaborationCrp
+    getReportSynthesisKeyPartnershipCollaborationCrpById(long reportSynthesisKeyPartnershipCollaborationCrpID) {
 
     return reportSynthesisKeyPartnershipCollaborationCrpDAO.find(reportSynthesisKeyPartnershipCollaborationCrpID);
   }
 
   @Override
-  public ReportSynthesisKeyPartnershipCollaborationCrp saveReportSynthesisKeyPartnershipCollaborationCrp(ReportSynthesisKeyPartnershipCollaborationCrp reportSynthesisKeyPartnershipCollaborationCrp) {
+  public ReportSynthesisKeyPartnershipCollaborationCrp saveReportSynthesisKeyPartnershipCollaborationCrp(
+    ReportSynthesisKeyPartnershipCollaborationCrp reportSynthesisKeyPartnershipCollaborationCrp) {
 
     return reportSynthesisKeyPartnershipCollaborationCrpDAO.save(reportSynthesisKeyPartnershipCollaborationCrp);
   }

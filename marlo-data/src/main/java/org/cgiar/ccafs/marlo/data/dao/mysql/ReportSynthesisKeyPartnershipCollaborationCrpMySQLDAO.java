@@ -76,6 +76,19 @@ public class ReportSynthesisKeyPartnershipCollaborationCrpMySQLDAO
   }
 
   @Override
+  public ReportSynthesisKeyPartnershipCollaborationCrp findByCollaborationIdAndGlobalUnitId(long collaborationId,
+    long globalUnitId) {
+    String query = "from " + ReportSynthesisKeyPartnershipCollaborationCrp.class.getName()
+      + " where report_synthesis_key_partnership_collaboration_id = " + collaborationId + " and global_unit_id = "
+      + globalUnitId;
+    List<ReportSynthesisKeyPartnershipCollaborationCrp> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+  @Override
   public ReportSynthesisKeyPartnershipCollaborationCrp
     save(ReportSynthesisKeyPartnershipCollaborationCrp reportSynthesisKeyPartnershipCollaborationCrp) {
     if (reportSynthesisKeyPartnershipCollaborationCrp.getId() == null) {
