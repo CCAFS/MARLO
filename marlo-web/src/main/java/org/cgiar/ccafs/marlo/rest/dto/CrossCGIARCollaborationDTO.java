@@ -34,7 +34,7 @@ public class CrossCGIARCollaborationDTO {
   @ApiModelProperty(notes = "Value added,", position = 3)
   private String valueAdded;
 
-  @ApiModelProperty(notes = "Phase (AR, POWB) - Year", position = 4)
+  @ApiModelProperty(notes = "Id(s) of collaborating CRP(s), Platform(s) or Center(s)", position = 4)
   private List<CGIAREntityDTO> collaborationCrps;
 
   @ApiModelProperty(notes = "Flagship / Module", position = 5)

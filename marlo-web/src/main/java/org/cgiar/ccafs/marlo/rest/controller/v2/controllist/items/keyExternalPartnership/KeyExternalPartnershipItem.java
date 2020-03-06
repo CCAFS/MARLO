@@ -336,6 +336,14 @@ public class KeyExternalPartnershipItem<T> {
         id + " is an invalid Report Synthesis Key Partnership External Code"));
     }
 
+    if (!fieldErrors.isEmpty()) {
+      fieldErrors.forEach(e -> System.out.println(e.getMessage()));
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
+    }
+
     return Optional.ofNullable(keyPartnershipExternal)
       .map(this.keyExternalPartnershipMapper::keyPartnershipExternalToKeyExternalPartnershipDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -508,9 +516,14 @@ public class KeyExternalPartnershipItem<T> {
         ChangeTracker.trackChanges(base, new HashSet<>(newKeyExternalPartnershipDTO.getPartnershipMainAreaIds()));
 
       changes.get(Boolean.TRUE).stream().map(Long::valueOf)
+        // TODO create a method in DAO and Manager to find by RepIndPartnershipMainArea and KeyPartnershipExternal
+        .flatMap(ch -> keyPartnershipExternalMainAreaManager.findAll().stream()
+          .filter(i -> i != null && i.getPartnerArea() != null && i.getPartnerArea().getId() == ch))
+        .map(ReportSynthesisKeyPartnershipExternalMainArea::getId)
         .forEach(keyPartnershipExternalMainAreaManager::deleteReportSynthesisKeyPartnershipExternalMainArea);
-      changes.get(Boolean.FALSE).stream().filter(m -> m != null && NumberUtils.isParsable(m.trim())).map(Long::valueOf)
-        .forEach(new Consumer<Long>() {
+
+      changes.get(Boolean.FALSE).stream().filter(m -> m != null && NumberUtils.isParsable(m.trim()))
+        .map(m -> Long.valueOf(m.trim())).forEach(new Consumer<Long>() {
 
           @Override
           public void accept(Long mainAreaId) {
@@ -536,9 +549,14 @@ public class KeyExternalPartnershipItem<T> {
       changes = ChangeTracker.trackChanges(base, new HashSet<>(newKeyExternalPartnershipDTO.getInstitutionIds()));
 
       changes.get(Boolean.TRUE).stream().map(Long::valueOf)
+        // TODO create a method in DAO and Manager to find by Institution and KeyPartnershipExternal
+        .flatMap(ch -> keyPartnershipExternalInstitutionManager.findAll().stream()
+          .filter(i -> i != null && i.getInstitution() != null && i.getInstitution().getId() == ch))
+        .map(ReportSynthesisKeyPartnershipExternalInstitution::getId)
         .forEach(keyPartnershipExternalInstitutionManager::deleteReportSynthesisKeyPartnershipExternalInstitution);
-      changes.get(Boolean.FALSE).stream().filter(m -> m != null && NumberUtils.isParsable(m.trim())).map(Long::valueOf)
-        .forEach(new Consumer<Long>() {
+
+      changes.get(Boolean.FALSE).stream().filter(m -> m != null && NumberUtils.isParsable(m.trim()))
+        .map(m -> Long.valueOf(m.trim())).forEach(new Consumer<Long>() {
 
           @Override
           public void accept(Long institutionId) {
@@ -577,6 +595,7 @@ public class KeyExternalPartnershipItem<T> {
     }
 
     if (!fieldErrors.isEmpty()) {
+      fieldErrors.forEach(e -> System.out.println(e.getMessage()));
       throw new MARLOFieldValidationException("Field Validation errors", "",
         fieldErrors.stream()
           .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
