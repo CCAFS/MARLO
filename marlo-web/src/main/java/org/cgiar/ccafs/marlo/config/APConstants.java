@@ -124,6 +124,8 @@ public final class APConstants {
   public static final String CRP_ENABLE_BUDGETBYCOAS = "crp_budgetbycoas";
   public static final String CRP_PPA_ENABLE_PROJECT_DESCRIPTION = "crp_ppa_enable_project_description";
   public static final String CRP_PROJECT_PAGE = "crp_project_page";
+  public static final String CRP_GENERIC_PROJECT = "crp_generic_project";
+  public static final String CRP_GENERIC_PROJECT_VALUE = "crp_generic_project_value";
 
   public static final String IS_EXPECTED_DELIVERABLE_REPORT_All_YEARS_VISIBLE =
     "is_expected_deliverable_report_all_years_visible";
