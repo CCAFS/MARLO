@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisMeliaActionStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisMeliaEvaluationActionManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisMeliaEvaluationManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisMeliaManager;
@@ -99,6 +100,7 @@ public class MonitoringEvaluationAction extends BaseAction {
   private ProjectManager projectManager;
   private ProjectExpectedStudyManager projectExpectedStudyManager;
   private ReportSynthesisMeliaStudyManager reportSynthesisMeliaStudyManager;
+  private ReportSynthesisMeliaActionStudyManager reportSynthesisMeliaActionStudyManager;
   private ReportSynthesisMeliaEvaluationManager reportSynthesisMeliaEvaluationManager;
   private ReportSynthesisMeliaEvaluationActionManager reportSynthesisMeliaEvaluationActionManager;
   private PhaseManager phaseManager;
@@ -127,6 +129,7 @@ public class MonitoringEvaluationAction extends BaseAction {
     ProjectFocusManager projectFocusManager, ProjectManager projectManager,
     ProjectExpectedStudyManager projectExpectedStudyManager,
     ReportSynthesisMeliaStudyManager reportSynthesisMeliaStudyManager,
+    ReportSynthesisMeliaActionStudyManager reportSynthesisMeliaActionStudyManager,
     ReportSynthesisMeliaEvaluationManager reportSynthesisMeliaEvaluationManager, PhaseManager phaseManager,
     ReportSynthesisMeliaEvaluationActionManager reportSynthesisMeliaEvaluationActionManager) {
     super(config);
@@ -142,6 +145,7 @@ public class MonitoringEvaluationAction extends BaseAction {
     this.projectManager = projectManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.reportSynthesisMeliaStudyManager = reportSynthesisMeliaStudyManager;
+    this.reportSynthesisMeliaActionStudyManager = reportSynthesisMeliaActionStudyManager;
     this.reportSynthesisMeliaEvaluationManager = reportSynthesisMeliaEvaluationManager;
     this.reportSynthesisMeliaEvaluationActionManager = reportSynthesisMeliaEvaluationActionManager;
     this.phaseManager = phaseManager;
@@ -799,6 +803,15 @@ public class MonitoringEvaluationAction extends BaseAction {
 
 
   }
+
+  /**
+   * Save Melia -Evidence Information
+   * 
+   * @param projectExpectedStudy
+   */
+  public void saveEvidence(ReportSynthesisMelia meliaDB) {
+  }
+
 
   public void saveStudies(ReportSynthesisMelia meliaDB) {
 

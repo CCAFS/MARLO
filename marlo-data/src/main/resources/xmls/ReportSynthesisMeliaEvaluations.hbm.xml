@@ -65,5 +65,14 @@
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaEvaluationAction" />
 		</set>
+		<set name="reportSynthesisMeliaActionStudies"
+			table="report_synthesis_melia_action_studies" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="report_synthesis_melia_evaluation_id" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaEvaluationAction" />
+		</set>
 	</class>
 </hibernate-mapping>
