@@ -72,8 +72,13 @@ public class NewInnovationDTO {
   @ApiModelProperty(notes = "Contributing milestones code list", position = 135)
   private List<NewMilestonesDTO> milestonesCodeList;
 
+  @ApiModelProperty(notes = "CGIAR Sub-IDOs SMO code List", position = 134)
+  private List<NewSrfSubIdoDTO> srfSubIdoList;
+
+
   @ApiModelProperty(notes = "Phase year/section", position = 140)
   private PhaseDTO phase;
+
 
   public List<CGIAREntityDTO> getContributingCGIAREntities() {
     return this.contributingCGIAREntities;
@@ -83,7 +88,6 @@ public class NewInnovationDTO {
   public List<InstitutionDTO> getContributingInstitutions() {
     return this.contributingInstitutions;
   }
-
 
   public List<CountryDTO> getCountries() {
     return this.countries;
@@ -152,6 +156,11 @@ public class NewInnovationDTO {
 
   public List<RegionDTO> getRegions() {
     return this.regions;
+  }
+
+
+  public List<NewSrfSubIdoDTO> getSrfSubIdoList() {
+    return srfSubIdoList;
   }
 
 
@@ -242,6 +251,11 @@ public class NewInnovationDTO {
 
   public void setRegions(List<RegionDTO> regions) {
     this.regions = regions;
+  }
+
+
+  public void setSrfSubIdoList(List<NewSrfSubIdoDTO> srfSubIdoList) {
+    this.srfSubIdoList = srfSubIdoList;
   }
 
 

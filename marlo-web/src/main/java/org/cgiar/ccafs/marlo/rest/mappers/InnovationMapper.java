@@ -29,7 +29,7 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "jsr330",
   uses = {StageOfInnovationMapper.class, InstitutionMapper.class, InnovationTypeMapper.class, LocationMapper.class,
     InstitutionTypeMapper.class, ContributionOfCrpMapper.class, GlobalUnitMapper.class, GeographicScopeMapper.class,
-    PhaseMapper.class, ProjectInnovationMilestoneMapper.class})
+    PhaseMapper.class, ProjectInnovationMilestoneMapper.class, ProjectInnovationSubIdoMapper.class})
 public interface InnovationMapper {
 
 
@@ -47,7 +47,9 @@ public interface InnovationMapper {
     @Mapping(source = "projectInnovation.projectInnovationInfo.evidenceLink", target = "evidenceLink"),
     @Mapping(source = "projectInnovation.crps", target = "contributingCGIAREntities"),
     @Mapping(source = "projectInnovation.projectInnovationInfo.phase", target = "phase"),
-    @Mapping(source = "projectInnovation.milestones", target = "milestonesList"),})
+    @Mapping(source = "projectInnovation.projectInnovationInfo.otherInnovationType", target = "otherInnovationType"),
+    @Mapping(source = "projectInnovation.milestones", target = "milestonesList"),
+    @Mapping(source = "projectInnovation.subIdos", target = "srfSubIdoList")})
   public abstract InnovationDTO projectInnovationToInnovationDTO(ProjectInnovation projectInnovation);
 
 
