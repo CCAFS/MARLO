@@ -17,8 +17,8 @@
         <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
             <column name="created_by" />
         </many-to-one>
-        <many-to-one name="reportSynthesisMelia" class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisMelia" fetch="select">
-            <column name="report_synhtesis_melia_id" />
+        <many-to-one name="reportSynthesisMeliaEvaluation" class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaEvaluation" fetch="select">
+            <column name="report_synhtesis_melia_evaluation_id" />
         </many-to-one>
         <property name="active" type="boolean">
             <column name="is_active" not-null="true" />
