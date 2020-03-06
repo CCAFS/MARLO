@@ -20,7 +20,7 @@ public class ReportSynthesisMeliaActionStudy extends MarloAuditableEntity implem
 
 
   @Expose
-  private ReportSynthesisMelia reportSynthesisMelia;
+  private ReportSynthesisMeliaEvaluation reportSynthesisMeliaEvaluation;
 
 
   public ReportSynthesisMeliaActionStudy() {
@@ -46,11 +46,12 @@ public class ReportSynthesisMeliaActionStudy extends MarloAuditableEntity implem
     } else if (!this.getProjectExpectedStudy().equals(other.getProjectExpectedStudy())) {
       return false;
     }
-    if (this.getReportSynthesisMelia() == null) {
-      if (other.getReportSynthesisMelia() != null) {
+    if (this.getReportSynthesisMeliaEvaluation() == null) {
+      if (other.getReportSynthesisMeliaEvaluation() != null) {
         return false;
       }
-    } else if (!this.getReportSynthesisMelia().getId().equals(other.getReportSynthesisMelia().getId())) {
+    } else if (!this.getReportSynthesisMeliaEvaluation().getId()
+      .equals(other.getReportSynthesisMeliaEvaluation().getId())) {
       return false;
     }
     return true;
@@ -68,8 +69,8 @@ public class ReportSynthesisMeliaActionStudy extends MarloAuditableEntity implem
   }
 
 
-  public ReportSynthesisMelia getReportSynthesisMelia() {
-    return reportSynthesisMelia;
+  public ReportSynthesisMeliaEvaluation getReportSynthesisMeliaEvaluation() {
+    return reportSynthesisMeliaEvaluation;
   }
 
 
@@ -77,8 +78,9 @@ public class ReportSynthesisMeliaActionStudy extends MarloAuditableEntity implem
     this.projectExpectedStudy = projectExpectedStudy;
   }
 
-  public void setReportSynthesisMelia(ReportSynthesisMelia reportSynthesisMelia) {
-    this.reportSynthesisMelia = reportSynthesisMelia;
+
+  public void setReportSynthesisMeliaEvaluation(ReportSynthesisMeliaEvaluation reportSynthesisMeliaEvaluation) {
+    this.reportSynthesisMeliaEvaluation = reportSynthesisMeliaEvaluation;
   }
 
 

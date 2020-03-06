@@ -50,6 +50,9 @@ public class ReportSynthesisMeliaEvaluation extends MarloAuditableEntity impleme
   private Set<ReportSynthesisMeliaEvaluationAction> reportSynthesisMeliaEvaluationActions =
     new HashSet<ReportSynthesisMeliaEvaluationAction>(0);
 
+  private Set<ReportSynthesisMeliaActionStudy> reportSynthesisMeliaActionStudies =
+    new HashSet<ReportSynthesisMeliaActionStudy>(0);
+
   private List<ReportSynthesisMeliaEvaluationAction> meliaEvaluationActions;
 
 
@@ -107,7 +110,6 @@ public class ReportSynthesisMeliaEvaluation extends MarloAuditableEntity impleme
     return meliaEvaluationActions;
   }
 
-
   public String getNameEvaluation() {
     return nameEvaluation;
   }
@@ -116,8 +118,13 @@ public class ReportSynthesisMeliaEvaluation extends MarloAuditableEntity impleme
     return recommendation;
   }
 
+
   public ReportSynthesisMelia getReportSynthesisMelia() {
     return reportSynthesisMelia;
+  }
+
+  public Set<ReportSynthesisMeliaActionStudy> getReportSynthesisMeliaActionStudies() {
+    return reportSynthesisMeliaActionStudies;
   }
 
   public Set<ReportSynthesisMeliaEvaluationAction> getReportSynthesisMeliaEvaluationActions() {
@@ -128,7 +135,6 @@ public class ReportSynthesisMeliaEvaluation extends MarloAuditableEntity impleme
     return status;
   }
 
-
   public String getTextWhen() {
     return textWhen;
   }
@@ -138,10 +144,10 @@ public class ReportSynthesisMeliaEvaluation extends MarloAuditableEntity impleme
     return textWhom;
   }
 
+
   public void setActions(String actions) {
     this.actions = actions;
   }
-
 
   public void setComments(String comments) {
     this.comments = comments;
@@ -170,6 +176,12 @@ public class ReportSynthesisMeliaEvaluation extends MarloAuditableEntity impleme
 
   public void setReportSynthesisMelia(ReportSynthesisMelia reportSynthesisMelia) {
     this.reportSynthesisMelia = reportSynthesisMelia;
+  }
+
+
+  public void
+    setReportSynthesisMeliaActionStudies(Set<ReportSynthesisMeliaActionStudy> reportSynthesisMeliaActionStudies) {
+    this.reportSynthesisMeliaActionStudies = reportSynthesisMeliaActionStudies;
   }
 
   public void setReportSynthesisMeliaEvaluationActions(
