@@ -1375,8 +1375,10 @@ public class ProjectPartnerAction extends BaseAction {
       project.getPartners().add(0, leader);
     }
 
-    Collections.sort(project.getPartners(),
-      (p1, p2) -> Boolean.compare(this.isPPA(p2.getInstitution()), this.isPPA(p1.getInstitution())));
+    if (project.getPartners() != null) {
+      Collections.sort(project.getPartners(),
+        (p1, p2) -> Boolean.compare(this.isPPA(p2.getInstitution()), this.isPPA(p1.getInstitution())));
+    }
 
     partnerPersonTypes = new HashMap<>();
     partnerPersonTypes.put(APConstants.PROJECT_PARTNER_CP, this.getText("projectPartners.types.CP"));

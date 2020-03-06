@@ -340,6 +340,7 @@
     <mapping
       resource="xmls/ReportSynthesisCrossCgiarCollaborations.hbm.xml" />
     <mapping resource="xmls/ReportSynthesisMelia.hbm.xml" />
+    <mapping resource="xmls/ReportSynthesisMeliaActionStudies.hbm.xml" />
     <mapping
       resource="xmls/ReportSynthesisMeliaEvaluations.hbm.xml" />
     <mapping resource="xmls/ReportSynthesisMeliaStudies.hbm.xml" />
