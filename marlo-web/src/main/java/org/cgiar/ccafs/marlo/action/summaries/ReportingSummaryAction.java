@@ -1251,7 +1251,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         // Note: Contacts for partners are filled by queries inside the prpt
         // Subreport Partner Lessons
         args.clear();
-        this.fillSubreport((SubReport) hm.get("partner_lessons"), "partner_lessons", args);
+        // this.fillSubreport((SubReport) hm.get("partner_lessons"), "partner_lessons", args);
 
         // Subreport Locations
         args.clear();
@@ -1366,9 +1366,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         } else {
           model = this.getPartnersOtherTableModel(new ProjectPartner());
         }
-        break;
-      case "partner_lessons":
-        model = this.getPartnersLessonsTableModel();
         break;
       case "locations":
         model = this.getLocationsTableModel();
