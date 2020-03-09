@@ -426,6 +426,14 @@ public class InnovationItem<T> {
           }
         }
       }
+      // validation for primary milestones must be one of them selected.
+      List<ProjectInnovationMilestone> primaryDataMilestones =
+        projectInnovationMilestoneList.stream().filter(c -> c.getPrimary() == true).collect(Collectors.toList());
+      if (primaryDataMilestones == null || primaryDataMilestones.size() > 1) {
+        fieldErrors
+          .add(new FieldErrorDTO("createInnovation", "Milestones", "only one milestone can be marked as principal"));
+      }
+
 
       // save subIDOs
       if (newInnovationDTO.getSrfSubIdoList() != null && newInnovationDTO.getSrfSubIdoList().size() > 0) {
@@ -451,6 +459,13 @@ public class InnovationItem<T> {
           }
         }
       }
+      // validation for primary subIdo must be one of them selected.
+      List<ProjectInnovationSubIdo> primaryDataSubIdos =
+        projectInnovationSubIdoList.stream().filter(c -> c.getPrimary() == true).collect(Collectors.toList());
+      if (primaryDataSubIdos == null || primaryDataSubIdos.size() > 1) {
+        fieldErrors.add(new FieldErrorDTO("createInnovation", "SubIdo", "only one subIdo can be marked as principal"));
+      }
+
       if (fieldErrors.isEmpty()) {
         projectInnovation = this.projectInnovationManager.saveProjectInnovation(projectInnovation);
         innovationID = projectInnovation.getId();
