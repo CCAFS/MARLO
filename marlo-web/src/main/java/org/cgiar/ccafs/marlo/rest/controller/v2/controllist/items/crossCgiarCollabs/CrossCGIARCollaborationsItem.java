@@ -512,6 +512,12 @@ public class CrossCGIARCollaborationsItem<T> {
         newCrossCGIARCollaborationDTO.getFlagshipProgramId() + " is an invalid CRP Program SMO Code"));
     }
 
+    if (newCrossCGIARCollaborationDTO.getCollaborationCrpIds() == null
+      || newCrossCGIARCollaborationDTO.getCollaborationCrpIds().isEmpty()) {
+      fieldErrors
+        .add(new FieldErrorDTO("putCrossCGIARCollaboration", "GlobalUnitList", "Please enter the collaborating crps."));
+    }
+
     ReportSynthesisKeyPartnershipCollaboration keyPartnershipCollaboration =
       reportSynthesisKeyPartnershipCollaborationManager
         .getReportSynthesisKeyPartnershipCollaborationById(idCrossCGIARCollaboration);
@@ -534,7 +540,7 @@ public class CrossCGIARCollaborationsItem<T> {
         ChangeTracker.trackChanges(base, newCrossCGIARCollaborationDTO.getCollaborationCrpIds());
 
       changes.get(Boolean.TRUE).stream().map(m -> {
-        if (m != null && !m.trim().isEmpty()) {
+        if (m == null || m.trim().isEmpty()) {
           fieldErrors
             .add(new FieldErrorDTO("putCrossCGIARCollaboration", "ReportSynthesisKeyPartnershipCollaborationEntity",
               +idCrossCGIARCollaboration + " is an invalid Report Synthesis Key Partnership Collaboration Code"));
@@ -548,7 +554,7 @@ public class CrossCGIARCollaborationsItem<T> {
           reportSynthesisKeyPartnershipCollaborationCrpManager::deleteReportSynthesisKeyPartnershipCollaborationCrp);
 
       changes.get(Boolean.FALSE).stream().map(m -> {
-        if (m != null && !m.trim().isEmpty()) {
+        if (m == null || m.trim().isEmpty()) {
           fieldErrors
             .add(new FieldErrorDTO("putCrossCGIARCollaboration", "ReportSynthesisKeyPartnershipCollaborationEntity",
               +idCrossCGIARCollaboration + " is an invalid Report Synthesis Key Partnership Collaboration Code"));
@@ -573,6 +579,7 @@ public class CrossCGIARCollaborationsItem<T> {
           }
         }
       });
+
       // start description
       if (newCrossCGIARCollaborationDTO.getDescription() == null
         || newCrossCGIARCollaborationDTO.getDescription().trim().isEmpty()) {
