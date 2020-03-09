@@ -478,3 +478,8 @@ div#chart13 {
 .urlify {
   word-break: break-word;
 }
+
+.primaryTag{
+  margin-right: 10px;
+  padding: .3em .7em .45em;
+}
