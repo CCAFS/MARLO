@@ -15,7 +15,16 @@
 
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 
+[#attempt]
+  [#assign canAccessCCAFS = (action.crpID == 1)!false ]
+  [#assign canAccessWLE = (action.crpID == 4)!false ]
+[#recover]
+  [#assign canAccessCCAFS = false ]
+  [#assign canAccessWLE = false ]
+[/#attempt]
+
     <section class="container">
+      [#if canAccessCCAFS]
            <div class="dashboard-tabs">
             [#-- Menu --]
             <ul class="nav nav-tabs" role="tablist"> 
@@ -35,6 +44,11 @@
               </div>
             </div>
            </div>
+           [#elseif canAccessWLE]
+            <div>
+               <iframe width="1100" height="720" src="https://app.powerbi.com/view?r=eyJrIjoiNzYzNjE1NTctZmJiOS00NmEyLTliMDQtZTAyN2Y2MDgyMDRhIiwidCI6IjZhZmEwZTAwLWZhMTQtNDBiNy04YTJlLTIyYTdmOGMzNTdkNSIsImMiOjh9" frameborder="0" allowFullScreen="true"></iframe>
+              </div>
+           [/#if]
      </section>
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
