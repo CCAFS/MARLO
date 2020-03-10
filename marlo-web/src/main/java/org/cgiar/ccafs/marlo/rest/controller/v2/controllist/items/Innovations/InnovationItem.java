@@ -963,7 +963,39 @@ public class InnovationItem<T> {
                 }
               }
             }
+          }
 
+          // check innovations subidos
+          List<ProjectInnovationSubIdo> projectInnovationSubIdoListDB =
+            innovation.getProjectInnovationSubIdos().stream()
+              .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
+          List<ProjectInnovationSubIdo> existingProjectInnovationSubIdoList = new ArrayList<ProjectInnovationSubIdo>();
+          if (newInnovationDTO.getSrfSubIdoList() != null && newInnovationDTO.getSrfSubIdoList().size() > 0) {
+            for (NewSrfSubIdoDTO subIdos : newInnovationDTO.getSrfSubIdoList()) {
+              if (subIdos.getSubIdo() != null && subIdos.getSubIdo().length() > 0 && subIdos.getPrimary() != null) {
+                // find SubIdo by composedID and phase
+                SrfSubIdo srfSubIdo = srfSubIdoManager.getSrfSubIdoByCode(subIdos.getSubIdo());
+                if (srfSubIdo != null) {
+                  ProjectInnovationSubIdo projectInnovationSubIdo = projectInnovationSubIdoManager
+                    .getProjectInnovationSubIdoByPhase(innovation.getId(), srfSubIdo.getId(), phase.getId());
+                  if (projectInnovationSubIdo != null) {
+                    existingProjectInnovationSubIdoList.add(projectInnovationSubIdo);
+                  } else {
+                    projectInnovationSubIdo = new ProjectInnovationSubIdo();
+                    projectInnovationSubIdo.setSrfSubIdo(srfSubIdo);
+                    projectInnovationSubIdo.setPhase(phase);
+                    projectInnovationSubIdo.setPrimary(subIdos.getPrimary());
+                    projectInnovationSubIdoList.add(projectInnovationSubIdo);
+                    // This is to add innovationOrganizationSave to generate
+                    // correct auditlog.
+                    innovation.getProjectInnovationSubIdos().add(projectInnovationSubIdo);
+                  }
+                } else {
+                  fieldErrors.add(
+                    new FieldErrorDTO("createInnovation", "SubIdos", subIdos.getSubIdo() + " is an invalid SMO Code"));
+                }
+              }
+            }
           }
           // check innovation regions
           List<ProjectInnovationRegion> projectInnovationRegionListDB =
@@ -1022,89 +1054,98 @@ public class InnovationItem<T> {
                 }
               }
             }
-
-            if (fieldErrors.isEmpty()) {
-              // SAVE innovation info
-              innovation = this.projectInnovationManager.saveProjectInnovation(innovation);
-              if (innovation != null) {
-                projectInnovationInfo.setHasMilestones(false);
-                if (projectInnovationMilestoneList.size() > 0) {
-                  projectInnovationInfo.setHasMilestones(true);
+          }
+          if (fieldErrors.isEmpty()) {
+            // SAVE innovation info
+            innovation = this.projectInnovationManager.saveProjectInnovation(innovation);
+            if (innovation != null) {
+              projectInnovationInfo.setHasMilestones(false);
+              if (projectInnovationMilestoneList.size() > 0) {
+                projectInnovationInfo.setHasMilestones(true);
+              }
+              this.projectInnovationInfoManager.saveProjectInnovationInfo(projectInnovationInfo);
+              for (ProjectInnovationOrganization projectInnovationOrganization : projectInnovationOrganizationList) {
+                projectInnovationOrganization.setProjectInnovation(innovation);
+                this.projectInnovationOrganizationManager
+                  .saveProjectInnovationOrganization(projectInnovationOrganization);
+              }
+              // verify Organization
+              for (ProjectInnovationOrganization obj : projectInnovationOrganizationListDB) {
+                if (!existingProjectInnovationOrganizationList.contains(obj)) {
+                  projectInnovationOrganizationManager.deleteProjectInnovationOrganization(obj.getId());
                 }
-                this.projectInnovationInfoManager.saveProjectInnovationInfo(projectInnovationInfo);
-                for (ProjectInnovationOrganization projectInnovationOrganization : projectInnovationOrganizationList) {
-                  projectInnovationOrganization.setProjectInnovation(innovation);
-                  this.projectInnovationOrganizationManager
-                    .saveProjectInnovationOrganization(projectInnovationOrganization);
+              }
+              for (ProjectInnovationCrp projectInnovationCrp : projectInnovationCrpList) {
+                projectInnovationCrp.setProjectInnovation(innovation);
+                this.projectInnovationCrpManager.saveProjectInnovationCrp(projectInnovationCrp);
+              }
+              // verify innovationCRPs
+              for (ProjectInnovationCrp obj : projectInnovationCrpListDB) {
+                if (!existingProjectInnovationCrpList.contains(obj)) {
+                  this.projectInnovationCrpManager.deleteProjectInnovationCrp(obj.getId());
                 }
-                // verify Organization
-                for (ProjectInnovationOrganization obj : projectInnovationOrganizationListDB) {
-                  if (!existingProjectInnovationOrganizationList.contains(obj)) {
-                    projectInnovationOrganizationManager.deleteProjectInnovationOrganization(obj.getId());
-                  }
-                }
-                for (ProjectInnovationCrp projectInnovationCrp : projectInnovationCrpList) {
-                  projectInnovationCrp.setProjectInnovation(innovation);
-                  this.projectInnovationCrpManager.saveProjectInnovationCrp(projectInnovationCrp);
-                }
-                // verify innovationCRPs
-                for (ProjectInnovationCrp obj : projectInnovationCrpListDB) {
-                  if (!existingProjectInnovationCrpList.contains(obj)) {
-                    this.projectInnovationCrpManager.deleteProjectInnovationCrp(obj.getId());
-                  }
-                }
-                for (ProjectInnovationContributingOrganization contributingOrganization : projectInnovationContributingOrganizationList) {
-                  contributingOrganization.setProjectInnovation(innovation);
+              }
+              for (ProjectInnovationContributingOrganization contributingOrganization : projectInnovationContributingOrganizationList) {
+                contributingOrganization.setProjectInnovation(innovation);
+                this.projectInnovationContributingOrganizationManager
+                  .saveProjectInnovationContributingOrganization(contributingOrganization);
+              }
+              // verify existing ProjectInnovationContributingOrganization
+              for (ProjectInnovationContributingOrganization obj : projectInnovationContributingOrganizationListDB) {
+                if (!existingProjectInnovationContributingOrganizationList.contains(obj)) {
                   this.projectInnovationContributingOrganizationManager
-                    .saveProjectInnovationContributingOrganization(contributingOrganization);
+                    .deleteProjectInnovationContributingOrganization(obj.getId());
                 }
-                // verify existing ProjectInnovationContributingOrganization
-                for (ProjectInnovationContributingOrganization obj : projectInnovationContributingOrganizationListDB) {
-                  if (!existingProjectInnovationContributingOrganizationList.contains(obj)) {
-                    this.projectInnovationContributingOrganizationManager
-                      .deleteProjectInnovationContributingOrganization(obj.getId());
-                  }
+              }
+              for (ProjectInnovationGeographicScope geographicScope : projectInnovationGeographicScopeList) {
+                geographicScope.setProjectInnovation(innovation);
+                this.projectInnovationGeographicScopeManager.saveProjectInnovationGeographicScope(geographicScope);
+              }
+              // verify existing ProjectInnovationGeographicScope
+              for (ProjectInnovationGeographicScope obj : projectInnovationGeographicScopeListDB) {
+                if (!existingProjectInnovationGeographicScopeList.contains(obj)) {
+                  this.projectInnovationGeographicScopeManager.deleteProjectInnovationGeographicScope(obj.getId());
                 }
-                for (ProjectInnovationGeographicScope geographicScope : projectInnovationGeographicScopeList) {
-                  geographicScope.setProjectInnovation(innovation);
-                  this.projectInnovationGeographicScopeManager.saveProjectInnovationGeographicScope(geographicScope);
+              }
+              for (ProjectInnovationMilestone projectInnovationMilestone : projectInnovationMilestoneList) {
+                projectInnovationMilestone.setProjectInnovation(innovation);
+                this.projectInnovationMilestoneManager.saveProjectInnovationMilestone(projectInnovationMilestone);
+              }
+              // verify milestones
+              for (ProjectInnovationMilestone obj : projectInnovationMilestoneListDB) {
+                if (!existingProjectInnovationMilestoneList.contains(obj)) {
+                  this.projectInnovationMilestoneManager.deleteProjectInnovationMilestone(obj.getId());
                 }
-                // verify existing ProjectInnovationGeographicScope
-                for (ProjectInnovationGeographicScope obj : projectInnovationGeographicScopeListDB) {
-                  if (!existingProjectInnovationGeographicScopeList.contains(obj)) {
-                    this.projectInnovationGeographicScopeManager.deleteProjectInnovationGeographicScope(obj.getId());
-                  }
-                }
-                for (ProjectInnovationMilestone projectInnovationMilestone : projectInnovationMilestoneList) {
-                  projectInnovationMilestone.setProjectInnovation(innovation);
-                  this.projectInnovationMilestoneManager.saveProjectInnovationMilestone(projectInnovationMilestone);
-                }
-                // verify milestones
-                for (ProjectInnovationMilestone obj : projectInnovationMilestoneListDB) {
-                  if (!existingProjectInnovationMilestoneList.contains(obj)) {
-                    this.projectInnovationMilestoneManager.deleteProjectInnovationMilestone(obj.getId());
-                  }
-                }
+              }
 
-                for (ProjectInnovationRegion projectInnovationRegion : projectInnovationRegionList) {
-                  projectInnovationRegion.setProjectInnovation(innovation);
-                  this.projectInnovationRegionManager.saveProjectInnovationRegion(projectInnovationRegion);
+              for (ProjectInnovationRegion projectInnovationRegion : projectInnovationRegionList) {
+                projectInnovationRegion.setProjectInnovation(innovation);
+                this.projectInnovationRegionManager.saveProjectInnovationRegion(projectInnovationRegion);
+              }
+              // verify regions
+              for (ProjectInnovationRegion obj : projectInnovationRegionListDB) {
+                if (!existingProjectInnovationRegionList.contains(obj)) {
+                  this.projectInnovationRegionManager.deleteProjectInnovationRegion(obj.getId());
                 }
-                // verify regions
-                for (ProjectInnovationRegion obj : projectInnovationRegionListDB) {
-                  if (!existingProjectInnovationRegionList.contains(obj)) {
-                    this.projectInnovationRegionManager.deleteProjectInnovationRegion(obj.getId());
-                  }
+              }
+              for (ProjectInnovationCountry projectInnovationCountry : projectInnovationCountryList) {
+                projectInnovationCountry.setProjectInnovation(innovation);
+                this.projectInnovationCountryManager.saveProjectInnovationCountry(projectInnovationCountry);
+              }
+              // verify existing countries
+              for (ProjectInnovationCountry obj : projectInnovationCountryListDB) {
+                if (!existingprojectInnovationCountryList.contains(obj)) {
+                  projectInnovationCountryManager.deleteProjectInnovationCountry(obj.getId());
                 }
-                for (ProjectInnovationCountry projectInnovationCountry : projectInnovationCountryList) {
-                  projectInnovationCountry.setProjectInnovation(innovation);
-                  this.projectInnovationCountryManager.saveProjectInnovationCountry(projectInnovationCountry);
-                }
-                // verify existing countries
-                for (ProjectInnovationCountry obj : projectInnovationCountryListDB) {
-                  if (!existingprojectInnovationCountryList.contains(obj)) {
-                    projectInnovationCountryManager.deleteProjectInnovationCountry(obj.getId());
-                  }
+              }
+              for (ProjectInnovationSubIdo projectInnovationSubIdo : projectInnovationSubIdoList) {
+                projectInnovationSubIdo.setProjectInnovation(innovation);
+                projectInnovationSubIdoManager.saveProjectInnovationSubIdo(projectInnovationSubIdo);
+              }
+              // verify existing subIdos
+              for (ProjectInnovationSubIdo obj : projectInnovationSubIdoListDB) {
+                if (!existingProjectInnovationSubIdoList.contains(obj)) {
+                  projectInnovationSubIdoManager.deleteProjectInnovationSubIdo(obj.getId());
                 }
               }
             }
