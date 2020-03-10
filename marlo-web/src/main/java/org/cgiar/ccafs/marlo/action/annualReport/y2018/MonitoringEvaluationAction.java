@@ -119,7 +119,9 @@ public class MonitoringEvaluationAction extends BaseAction {
   private List<ReportSynthesisMeliaEvaluation> fpSynthesisTable;
   private List<ReportSynthesisMelia> flagshipMeliaProgress;
   private List<ProjectExpectedStudy> projectExpectedStudies;
-  private List<ProjectExpectedStudy> selectedExpectedStudies;
+  private List<ReportSynthesisMeliaActionStudy> projectExpectedStudyConverted;
+  private List<ReportSynthesisMeliaActionStudy> selectedExpectedStudies;
+  private List<ProjectExpectedStudy> selectedExpectedSt;
   private Map<Integer, String> statuses;
 
   @Inject
@@ -321,7 +323,23 @@ public class MonitoringEvaluationAction extends BaseAction {
           && es.getProjectExpectedStudyInfo(this.getActualPhase()).getYear().equals(this.getCurrentCycleYear()))
         .collect(Collectors.toList()));
     }
+
+    projectExpectedStudyConverted = new ArrayList<>();
+    if (projectExpectedStudies != null) {
+      Long i = (long) 1;
+      for (ProjectExpectedStudy study : projectExpectedStudies) {
+        ReportSynthesisMeliaActionStudy meliaActionStudy = new ReportSynthesisMeliaActionStudy();
+        if (study != null && study.getId() != null) {
+          meliaActionStudy
+            .setProjectExpectedStudy(projectExpectedStudyManager.getProjectExpectedStudyById(study.getId()));
+          meliaActionStudy.setId(i);
+          projectExpectedStudyConverted.add(meliaActionStudy);
+        }
+        i++;
+      }
+    }
   }
+
 
   private Path getAutoSaveFilePath() {
     String composedClassName = reportSynthesis.getClass().getSimpleName();
@@ -330,6 +348,7 @@ public class MonitoringEvaluationAction extends BaseAction {
       + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
+
 
   public List<ReportSynthesisMelia> getFlagshipMeliaProgress() {
     return flagshipMeliaProgress;
@@ -367,11 +386,19 @@ public class MonitoringEvaluationAction extends BaseAction {
     return projectExpectedStudies;
   }
 
+  public List<ReportSynthesisMeliaActionStudy> getProjectExpectedStudyConverted() {
+    return projectExpectedStudyConverted;
+  }
+
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
   }
 
-  public List<ProjectExpectedStudy> getSelectedExpectedStudies() {
+  public List<ProjectExpectedStudy> getSelectedExpectedSt() {
+    return selectedExpectedSt;
+  }
+
+  public List<ReportSynthesisMeliaActionStudy> getSelectedExpectedStudies() {
     return selectedExpectedStudies;
   }
 
@@ -562,29 +589,23 @@ public class MonitoringEvaluationAction extends BaseAction {
               && !reportSynthesis.getReportSynthesisMelia().getEvaluations().isEmpty()) {
               for (ReportSynthesisMeliaEvaluation reportSynthesisMeliaEvaluation : reportSynthesis
                 .getReportSynthesisMelia().getEvaluations()) {
+
                 if (reportSynthesisMeliaEvaluation.getReportSynthesisMeliaEvaluationActions() != null
                   && !reportSynthesisMeliaEvaluation.getReportSynthesisMeliaEvaluationActions().isEmpty()) {
                   reportSynthesisMeliaEvaluation.setMeliaEvaluationActions(
                     new ArrayList<>(reportSynthesisMeliaEvaluation.getReportSynthesisMeliaEvaluationActions().stream()
                       .filter(e -> e.isActive()).collect(Collectors.toList())));
                 }
+                /*
+                 * if (reportSynthesisMeliaEvaluation.getReportSynthesisMeliaActionStudies() != null
+                 * && !reportSynthesisMeliaEvaluation.getReportSynthesisMeliaActionStudies().isEmpty()) {
+                 * reportSynthesisMeliaEvaluation.setMeliaActionsStudy(
+                 * new ArrayList<>(reportSynthesisMeliaEvaluation.getReportSynthesisMeliaActionStudies().stream()
+                 * .filter(e -> e.isActive()).collect(Collectors.toList())));
+                 * }
+                 */
               }
             }
-
-            // load evaluation actions
-            if (reportSynthesis.getReportSynthesisMelia().getEvaluations() != null
-              && !reportSynthesis.getReportSynthesisMelia().getEvaluations().isEmpty()) {
-              for (ReportSynthesisMeliaEvaluation reportSynthesisMeliaEvaluation : reportSynthesis
-                .getReportSynthesisMelia().getEvaluations()) {
-                if (reportSynthesisMeliaEvaluation.getMeliaActionsStudy() != null
-                  && !reportSynthesisMeliaEvaluation.getMeliaActionsStudy().isEmpty()) {
-                  reportSynthesisMeliaEvaluation.setMeliaActionsStudy(
-                    new ArrayList<>(reportSynthesisMeliaEvaluation.getReportSynthesisMeliaActionStudies().stream()
-                      .filter(e -> e.isActive()).collect(Collectors.toList())));
-                }
-              }
-            }
-
           }
         }
       }
@@ -728,8 +749,8 @@ public class MonitoringEvaluationAction extends BaseAction {
             }
           }
           // Delete actions studies
-          if (evaluation.getReportSynthesisMeliaEvaluationActions() != null
-            && !evaluation.getReportSynthesisMeliaEvaluationActions().isEmpty()) {
+          if (evaluation.getReportSynthesisMeliaActionStudies() != null
+            && !evaluation.getReportSynthesisMeliaActionStudies().isEmpty()) {
             for (ReportSynthesisMeliaActionStudy reportSynthesisMeliaEvaluationAction : evaluation
               .getMeliaActionsStudy()) {
               reportSynthesisMeliaActionStudyManager
@@ -765,6 +786,18 @@ public class MonitoringEvaluationAction extends BaseAction {
             meliaEvaluationActionSave.setReportSynthesisMeliaEvaluation(evaluationSave);
             reportSynthesisMeliaEvaluationActionManager
               .saveReportSynthesisMeliaEvaluationAction(meliaEvaluationActionSave);
+          }
+
+          // Save evaluation Actions studies
+          if (evaluation.getMeliaActionsStudy() != null) {
+            for (ReportSynthesisMeliaActionStudy reportSynthesisMeliaActionStudy : evaluation.getMeliaActionsStudy()) {
+              ReportSynthesisMeliaActionStudy meliaEvaluationActionSave = new ReportSynthesisMeliaActionStudy();
+              meliaEvaluationActionSave
+                .setProjectExpectedStudy(reportSynthesisMeliaActionStudy.getProjectExpectedStudy());
+              meliaEvaluationActionSave.setReportSynthesisMeliaEvaluation(evaluationSave);
+              reportSynthesisMeliaActionStudyManager
+                .saveReportSynthesisMeliaActionStudy(reportSynthesisMeliaActionStudy);
+            }
           }
         } else {
 
@@ -820,9 +853,33 @@ public class MonitoringEvaluationAction extends BaseAction {
 
           }
 
+          // Save evaluation actions studies test
+          if (selectedExpectedSt != null) {
+            for (ProjectExpectedStudy reportSynthesisMeliaActionStudy : selectedExpectedSt) {
+
+              if (reportSynthesisMeliaActionStudy.getId() == null) {
+                ReportSynthesisMeliaActionStudy meliaEvaluationActionSave = new ReportSynthesisMeliaActionStudy();
+                meliaEvaluationActionSave.setProjectExpectedStudy(reportSynthesisMeliaActionStudy);
+                meliaEvaluationActionSave.setReportSynthesisMeliaEvaluation(evaluationPrev);
+                reportSynthesisMeliaActionStudyManager.saveReportSynthesisMeliaActionStudy(meliaEvaluationActionSave);
+              } else {
+                /*
+                 * ReportSynthesisMeliaActionStudy evaluationActionUpdate = reportSynthesisMeliaActionStudyManager
+                 * .getReportSynthesisMeliaActionStudyById(reportSynthesisMeliaActionStudy.getId());
+                 * evaluationActionUpdate
+                 * .setProjectExpectedStudy(reportSynthesisMeliaActionStudy);
+                 * evaluationActionUpdate.setReportSynthesisMeliaEvaluation(evaluationPrev);
+                 * reportSynthesisMeliaActionStudyManager.saveReportSynthesisMeliaActionStudy(evaluationActionUpdate);
+                 * reportSynthesisMeliaEvaluationManager.saveReportSynthesisMeliaEvaluation(evaluationPrev);
+                 */
+              }
+
+            }
+
+          }
+
           // Save evaluation actions studies
-          if (evaluation.getReportSynthesisMeliaActionStudies() != null
-            && !evaluation.getReportSynthesisMeliaActionStudies().isEmpty()) {
+          if (evaluation.getMeliaActionsStudy() != null && !evaluation.getMeliaActionsStudy().isEmpty()) {
             for (ReportSynthesisMeliaActionStudy reportSynthesisMeliaActionStudy : evaluation.getMeliaActionsStudy()) {
 
               if (reportSynthesisMeliaActionStudy.getId() == null) {
@@ -839,28 +896,44 @@ public class MonitoringEvaluationAction extends BaseAction {
                   .setProjectExpectedStudy(reportSynthesisMeliaActionStudy.getProjectExpectedStudy());
                 evaluationActionUpdate.setReportSynthesisMeliaEvaluation(evaluationPrev);
                 reportSynthesisMeliaActionStudyManager.saveReportSynthesisMeliaActionStudy(evaluationActionUpdate);
+                reportSynthesisMeliaEvaluationManager.saveReportSynthesisMeliaEvaluation(evaluationPrev);
+              }
+
+            }
+
+          }
+          // Save evaluation actions studies test 3
+          if (selectedExpectedStudies != null) {
+            for (ReportSynthesisMeliaActionStudy reportSynthesisMeliaActionStudy : selectedExpectedStudies) {
+
+              if (reportSynthesisMeliaActionStudy.getId() == null
+                && reportSynthesisMeliaActionStudy.getProjectExpectedStudy() != null
+                && reportSynthesisMeliaActionStudy.getProjectExpectedStudy().getId() != null) {
+                ReportSynthesisMeliaActionStudy meliaEvaluationActionSave = new ReportSynthesisMeliaActionStudy();
+                meliaEvaluationActionSave.setProjectExpectedStudy(projectExpectedStudyManager
+                  .getProjectExpectedStudyById(reportSynthesisMeliaActionStudy.getProjectExpectedStudy().getId()));
+                meliaEvaluationActionSave.setReportSynthesisMeliaEvaluation(evaluationPrev);
+                reportSynthesisMeliaActionStudyManager.saveReportSynthesisMeliaActionStudy(meliaEvaluationActionSave);
+              } else {
+                ReportSynthesisMeliaActionStudy evaluationActionUpdate = reportSynthesisMeliaActionStudyManager
+                  .getReportSynthesisMeliaActionStudyById(reportSynthesisMeliaActionStudy.getId());
+
+                evaluationActionUpdate
+                  .setProjectExpectedStudy(reportSynthesisMeliaActionStudy.getProjectExpectedStudy());
+                evaluationActionUpdate.setReportSynthesisMeliaEvaluation(evaluationPrev);
+                reportSynthesisMeliaActionStudyManager.saveReportSynthesisMeliaActionStudy(evaluationActionUpdate);
+                reportSynthesisMeliaEvaluationManager.saveReportSynthesisMeliaEvaluation(evaluationPrev);
               }
 
             }
 
           }
 
-          reportSynthesisMeliaEvaluationManager.saveReportSynthesisMeliaEvaluation(evaluationPrev);
+
         }
       }
     }
-
-
   }
-
-  /**
-   * Save Melia -Evidence Information
-   * 
-   * @param projectExpectedStudy
-   */
-  public void saveEvidence(ReportSynthesisMeliaEvaluation meliaDB) {
-  }
-
 
   public void saveStudies(ReportSynthesisMelia meliaDB) {
 
@@ -969,14 +1042,23 @@ public class MonitoringEvaluationAction extends BaseAction {
     this.projectExpectedStudies = projectExpectedStudies;
   }
 
+  public void setProjectExpectedStudyConverted(List<ReportSynthesisMeliaActionStudy> projectExpectedStudyConverted) {
+    this.projectExpectedStudyConverted = projectExpectedStudyConverted;
+  }
+
+
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
     this.reportSynthesis = reportSynthesis;
   }
 
-  public void setSelectedExpectedStudies(List<ProjectExpectedStudy> selectedExpectedStudies) {
-    this.selectedExpectedStudies = selectedExpectedStudies;
+
+  public void setSelectedExpectedSt(List<ProjectExpectedStudy> selectedExpectedSt) {
+    this.selectedExpectedSt = selectedExpectedSt;
   }
 
+  public void setSelectedExpectedStudies(List<ReportSynthesisMeliaActionStudy> selectedExpectedStudies) {
+    this.selectedExpectedStudies = selectedExpectedStudies;
+  }
 
   public void setStatuses(Map<Integer, String> statuses) {
     this.statuses = statuses;
