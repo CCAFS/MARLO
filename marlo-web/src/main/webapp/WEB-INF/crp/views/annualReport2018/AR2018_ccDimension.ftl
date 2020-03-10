@@ -241,8 +241,8 @@
                             <div class="row form-group">
                               <div id="chart13" class="chartBox simpleBox">
                                 [#assign chartData = [
-                                    {"name":"Male",   "value": "${(totalParticipantFormalTrainingLongMale)!0}",   "valuePhD": "0"}
-                                    {"name":"Female", "value": "${(totalParticipantFormalTrainingLongFemale)!0}",   "valuePhD": "0"}
+                                    {"name":"Male",   "value": "${(totalParticipantFormalTrainingLongMale)!0}",   "valuePhD": "${(totalParticipantFormalTrainingPhdMale)!0}"}
+                                    {"name":"Female", "value": "${(totalParticipantFormalTrainingLongFemale)!0}",   "valuePhD": "${(totalParticipantFormalTrainingPhdFemale)!0}"}
                                   ] /] 
                                 <ul class="chartData" style="display:none">
                                   <li>
@@ -317,10 +317,12 @@
     <thead>
       <tr class="subHeader">
         <th id="tb-id">[@s.text name="${customLabel}.activitiesEventsTable.activityEvent" /]</th>
-        <th id="tb-title">[@s.text name="${customLabel}.activitiesEventsTable.type" /]</th>
-        <th id="tb-type">[@s.text name="${customLabel}.activitiesEventsTable.totalParticipants" /]</th>
-        <th id="tb-type">[@s.text name="${customLabel}.activitiesEventsTable.numberFemales" /]</th>
+        <th id="tb-title">[@s.text name="${customLabel}.activitiesEventsTable.type" /]</th>        
         <th id="tb-organization-type">[@s.text name="${customLabel}.activitiesEventsTable.typeParticipants" /]</th>
+        <th id="tb-type">[@s.text name="${customLabel}.activitiesEventsTable.numberMales" /]</th>
+        <th id="tb-type">[@s.text name="${customLabel}.activitiesEventsTable.numberFemales" /]</th>
+        <th id="tb-type">[@s.text name="${customLabel}.activitiesEventsTable.totalParticipants" /]</th>
+        <th id="tb-training-period">[@s.text name="${customLabel}.activitiesEventsTable.trainingPeriod" /]</th>
       </tr>
     </thead>
     <tbody>
@@ -339,18 +341,36 @@
           [#-- Activity Type --]
           <td class="">
             <small>[@utils.tableText value=(item.repIndTypeActivity.name)!"" /]</small>
+          </td>          
+          [#-- Type of participants --]
+          <td class="text-center">
+            [@utils.tableText value=(item.repIndTypeParticipant.name)!"" /]
+          </td>          
+          [#assign knowFemale = (item.dontKnowFemale)!false]
+          [#assign hasFemale = (item.females?has_content)!false]
+          [#-- Total Participants --]
+          <td class="text-center">
+            [#if knowFemale && !hasFemale ]
+              <i><small>Not specified</small></i>
+              [#else]
+              ${(item.males?number?string(",##0"))!0}
+            [/#if]
+          </td>
+          [#-- Number of females --]
+          <td class="text-center">
+          [#if knowFemale && !hasFemale ]
+            <i><small>Not specified</small></i>
+            [#else]
+            ${(item.females?number?string(",##0"))!0}
+          [/#if]
           </td>
           [#-- Total Participants --]
           <td class="text-center">
             ${(item.participants?number?string(",##0"))!0}
           </td>
-          [#-- Number of females --]
+          [#-- Training period of time --]
           <td class="text-center">
-            ${(item.females?number?string(",##0"))!0}
-          </td>
-          [#-- Type of participants --]
-          <td class="text-center">
-            [@utils.tableText value=(item.repIndTypeParticipant.name)!"" /]
+            [@utils.tableText value=(item.repIndTrainingTerm.name)!"" /]
           </td>
         </tr>
       [/#list]

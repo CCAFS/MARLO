@@ -35,6 +35,8 @@ public class DeliverableParticipant extends MarloAuditableEntity implements java
   private RepIndTypeParticipant repIndTypeParticipant;
   @Expose
   private RepIndTrainingTerm repIndTrainingTerm;
+  @Expose
+  private Double males;
 
 
   public DeliverableParticipant() {
@@ -110,6 +112,14 @@ public class DeliverableParticipant extends MarloAuditableEntity implements java
   }
 
 
+  public Double getMales() {
+    if (this.participants != null && this.females != null) {
+      return this.participants - females;
+    }
+    return new Double(0);
+  }
+
+
   public Double getParticipants() {
     return participants;
   }
@@ -177,6 +187,11 @@ public class DeliverableParticipant extends MarloAuditableEntity implements java
   public void setHasParticipants(Boolean hasParticipants) {
     this.hasParticipants = hasParticipants;
   }
+
+  public void setMales(Double males) {
+    this.males = males;
+  }
+
 
   public void setParticipants(Double participants) {
     this.participants = participants;
