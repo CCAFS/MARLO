@@ -361,7 +361,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     masterReport.getParameterValues().put("i8nProjectPlanningMenu", "1. " + this.getText("projects.menu.description"));
     masterReport.getParameterValues().put("i8nPartnersPlanningMenu", "2. " + this.getText("projects.menu.partners"));
     masterReport.getParameterValues().put("i8nLocationsPlanningMenu", "3. " + this.getText("projects.menu.locations"));
-    if (this.getProject().getProjectInfo() != null && this.getProject().getProjectInfo().getAdministrative() != null
+    if (this.getProject() != null && this.getProject().getProjectInfo() != null
+      && this.getProject().getProjectInfo().getAdministrative() != null
       && this.getProject().getProjectInfo().getAdministrative() == true) {
       masterReport.getParameterValues().put("i8nExpectedStudiesPlanningMenu",
         "4. " + this.getText("projects.menu.expectedStudies"));
@@ -1182,8 +1183,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         this.getAllSubreports(hm, masteritemBand);
         // Uncomment to see which Subreports are detecting the method getAllSubreports
         // get project leader
-
-        ProjectPartner projectLeader = project.getLeader(this.getSelectedPhase());
+        ProjectPartner projectLeader = null;
+        if (this.getSelectedPhase() != null && project != null && project.getLeader(this.getSelectedPhase()) != null) {
+          projectLeader = project.getLeader(this.getSelectedPhase());
+        }
         // get Flagships related to the project sorted by acronym
         List<CrpProgram> flagships = new ArrayList<>();
         for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
@@ -1251,7 +1254,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         // Note: Contacts for partners are filled by queries inside the prpt
         // Subreport Partner Lessons
         args.clear();
-        this.fillSubreport((SubReport) hm.get("partner_lessons"), "partner_lessons", args);
+        // this.fillSubreport((SubReport) hm.get("partner_lessons"), "partner_lessons", args);
 
         // Subreport Locations
         args.clear();
@@ -1366,9 +1369,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         } else {
           model = this.getPartnersOtherTableModel(new ProjectPartner());
         }
-        break;
-      case "partner_lessons":
-        model = this.getPartnersLessonsTableModel();
         break;
       case "locations":
         model = this.getLocationsTableModel();
