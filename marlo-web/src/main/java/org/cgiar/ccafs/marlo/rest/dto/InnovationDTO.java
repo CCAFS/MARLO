@@ -72,8 +72,11 @@ public class InnovationDTO {
   @ApiModelProperty(notes = "Contributing CRPs/Platforms", position = 140)
   private List<CGIAREntityDTO> contributingCGIAREntities;
 
-  @ApiModelProperty(notes = "Contributing milestone list", position = 13)
+  @ApiModelProperty(notes = "Contributing milestone list", position = 142)
   private List<ProjectInnovationMilestoneDTO> milestonesList;
+
+  @ApiModelProperty(notes = "CGIAR Sub-IDOs List", position = 143)
+  private List<ProjectInnovationSubIdoDTO> srfSubIdoList;
 
 
   @ApiModelProperty(notes = "Phase year/section", position = 160)
@@ -89,6 +92,7 @@ public class InnovationDTO {
     return this.contributingInstitutions;
   }
 
+
   public List<CountryDTO> getCountries() {
     return this.countries;
   }
@@ -97,7 +101,6 @@ public class InnovationDTO {
   public String getDescriptionStage() {
     return this.descriptionStage;
   }
-
 
   public Boolean getEquitativeEffort() {
     return equitativeEffort;
@@ -161,6 +164,11 @@ public class InnovationDTO {
 
   public List<RegionDTO> getRegions() {
     return this.regions;
+  }
+
+
+  public List<ProjectInnovationSubIdoDTO> getSrfSubIdoList() {
+    return srfSubIdoList;
   }
 
 
@@ -256,6 +264,11 @@ public class InnovationDTO {
 
   public void setRegions(List<RegionDTO> regions) {
     this.regions = regions;
+  }
+
+
+  public void setSrfSubIdoList(List<ProjectInnovationSubIdoDTO> srfSubIdoList) {
+    this.srfSubIdoList = srfSubIdoList;
   }
 
 

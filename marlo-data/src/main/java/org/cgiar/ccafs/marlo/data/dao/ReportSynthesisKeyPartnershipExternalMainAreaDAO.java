@@ -26,23 +26,29 @@ public interface ReportSynthesisKeyPartnershipExternalMainAreaDAO {
   /**
    * This method removes a specific reportSynthesisKeyPartnershipExternalMainArea value from the database.
    * 
-   * @param reportSynthesisKeyPartnershipExternalMainAreaId is the reportSynthesisKeyPartnershipExternalMainArea identifier.
+   * @param reportSynthesisKeyPartnershipExternalMainAreaId is the reportSynthesisKeyPartnershipExternalMainArea
+   *        identifier.
    * @return true if the reportSynthesisKeyPartnershipExternalMainArea was successfully deleted, false otherwise.
    */
   public void deleteReportSynthesisKeyPartnershipExternalMainArea(long reportSynthesisKeyPartnershipExternalMainAreaId);
 
   /**
-   * This method validate if the reportSynthesisKeyPartnershipExternalMainArea identify with the given id exists in the system.
+   * This method validate if the reportSynthesisKeyPartnershipExternalMainArea identify with the given id exists in the
+   * system.
    * 
-   * @param reportSynthesisKeyPartnershipExternalMainAreaID is a reportSynthesisKeyPartnershipExternalMainArea identifier.
+   * @param reportSynthesisKeyPartnershipExternalMainAreaID is a reportSynthesisKeyPartnershipExternalMainArea
+   *        identifier.
    * @return true if the reportSynthesisKeyPartnershipExternalMainArea exists, false otherwise.
    */
-  public boolean existReportSynthesisKeyPartnershipExternalMainArea(long reportSynthesisKeyPartnershipExternalMainAreaID);
+  public boolean
+    existReportSynthesisKeyPartnershipExternalMainArea(long reportSynthesisKeyPartnershipExternalMainAreaID);
 
   /**
-   * This method gets a reportSynthesisKeyPartnershipExternalMainArea object by a given reportSynthesisKeyPartnershipExternalMainArea identifier.
+   * This method gets a reportSynthesisKeyPartnershipExternalMainArea object by a given
+   * reportSynthesisKeyPartnershipExternalMainArea identifier.
    * 
-   * @param reportSynthesisKeyPartnershipExternalMainAreaID is the reportSynthesisKeyPartnershipExternalMainArea identifier.
+   * @param reportSynthesisKeyPartnershipExternalMainAreaID is the reportSynthesisKeyPartnershipExternalMainArea
+   *        identifier.
    * @return a ReportSynthesisKeyPartnershipExternalMainArea object.
    */
   public ReportSynthesisKeyPartnershipExternalMainArea find(long id);
@@ -54,14 +60,27 @@ public interface ReportSynthesisKeyPartnershipExternalMainAreaDAO {
    */
   public List<ReportSynthesisKeyPartnershipExternalMainArea> findAll();
 
+  /**
+   * This method finds a reportSynthesisKeyPartnershipExternalMainArea by its foreign keys
+   * (ReportSynthesisKeyPartnershipExternal and RepIndPartnershipMainArea)
+   * 
+   * @return a ReportSynthesisKeyPartnershipExternalMainArea object.
+   */
+
+  public ReportSynthesisKeyPartnershipExternalMainArea
+    getByPartnershipExternalIdAndMainAreaId(long partnershipExternalId, long mainAreaId);
+
 
   /**
    * This method saves the information of the given reportSynthesisKeyPartnershipExternalMainArea
    * 
-   * @param reportSynthesisKeyPartnershipExternalMainArea - is the reportSynthesisKeyPartnershipExternalMainArea object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the reportSynthesisKeyPartnershipExternalMainArea was
+   * @param reportSynthesisKeyPartnershipExternalMainArea - is the reportSynthesisKeyPartnershipExternalMainArea object
+   *        with the new information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         reportSynthesisKeyPartnershipExternalMainArea was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ReportSynthesisKeyPartnershipExternalMainArea save(ReportSynthesisKeyPartnershipExternalMainArea reportSynthesisKeyPartnershipExternalMainArea);
+  public ReportSynthesisKeyPartnershipExternalMainArea
+    save(ReportSynthesisKeyPartnershipExternalMainArea reportSynthesisKeyPartnershipExternalMainArea);
 }

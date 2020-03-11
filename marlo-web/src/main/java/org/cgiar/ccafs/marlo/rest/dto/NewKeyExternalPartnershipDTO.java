@@ -42,7 +42,6 @@ public class NewKeyExternalPartnershipDTO {
   @ApiModelProperty(notes = "Institutions linked to the partnership", position = 4)
   private List<String> institutionIds;
 
-  // report synthesis key partnership missing!
 
   public String getDescription() {
     return description;
@@ -53,16 +52,13 @@ public class NewKeyExternalPartnershipDTO {
     return flagshipProgramId;
   }
 
-
   public List<String> getInstitutionIds() {
     return institutionIds;
   }
 
-
   public List<String> getPartnershipMainAreaIds() {
     return partnershipMainAreaIds;
   }
-
 
   public PhaseDTO getPhase() {
     return phase;
@@ -73,21 +69,17 @@ public class NewKeyExternalPartnershipDTO {
     this.description = description;
   }
 
-
   public void setFlagshipProgramId(String flagshipProgramId) {
     this.flagshipProgramId = flagshipProgramId;
   }
-
 
   public void setInstitutionIds(List<String> institutionsIds) {
     this.institutionIds = institutionsIds;
   }
 
-
   public void setPartnershipMainAreaIds(List<String> partnershipMainAreaIds) {
     this.partnershipMainAreaIds = partnershipMainAreaIds;
   }
-
 
   public void setPhase(PhaseDTO phase) {
     this.phase = phase;

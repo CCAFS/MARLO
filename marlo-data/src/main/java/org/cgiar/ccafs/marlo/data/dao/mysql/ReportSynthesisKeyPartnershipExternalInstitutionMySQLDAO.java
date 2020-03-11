@@ -76,6 +76,20 @@ public class ReportSynthesisKeyPartnershipExternalInstitutionMySQLDAO
 
   @Override
   public ReportSynthesisKeyPartnershipExternalInstitution
+    getByPartnershipExternalIdAndInstitutionId(long partnershipExternalId, long institutionId) {
+    String query = "from " + ReportSynthesisKeyPartnershipExternalInstitution.class.getName()
+      + " where report_synthesis_key_partnership_external_id = " + partnershipExternalId + " and institution_id = "
+      + institutionId;
+    List<ReportSynthesisKeyPartnershipExternalInstitution> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+
+    return null;
+  }
+
+  @Override
+  public ReportSynthesisKeyPartnershipExternalInstitution
     save(ReportSynthesisKeyPartnershipExternalInstitution reportSynthesisKeyPartnershipExternalInstitution) {
     if (reportSynthesisKeyPartnershipExternalInstitution.getId() == null) {
       super.saveEntity(reportSynthesisKeyPartnershipExternalInstitution);
@@ -86,6 +100,5 @@ public class ReportSynthesisKeyPartnershipExternalInstitutionMySQLDAO
 
     return reportSynthesisKeyPartnershipExternalInstitution;
   }
-
 
 }
