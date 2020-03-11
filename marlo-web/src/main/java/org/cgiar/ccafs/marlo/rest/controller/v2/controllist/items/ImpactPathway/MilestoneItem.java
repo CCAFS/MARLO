@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -66,13 +67,22 @@ public class MilestoneItem<T> {
    * @return a OutcomeDTO with the milestone data.
    */
 
-  public ResponseEntity<MilestoneDTO> findMilestoneById(Long id, String CGIARentityAcronym) {
+  public ResponseEntity<MilestoneDTO> findMilestoneById(String id, String CGIARentityAcronym, Integer year) {
+    CrpMilestone crpMilestone = null;
+    Phase phase = this.phaseManager.findAll().stream()
+      .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), CGIARentityAcronym) && p.getYear() == year
+        && StringUtils.equalsIgnoreCase(p.getName(), "AR"))
+      .findFirst().orElse(null);
 
-    CrpMilestone crpMilestone = this.crpMilestoneManager.getCrpMilestoneById(id);
-    if (!crpMilestone.getCrpProgramOutcome().getCrpProgram().getCrp().getAcronym()
-      .equalsIgnoreCase(CGIARentityAcronym)) {
-      crpMilestone = null;
+    if (phase != null) {
+      crpMilestone = this.crpMilestoneManager.getCrpMilestoneByPhase(id, phase.getId());
+      if (!crpMilestone.getCrpProgramOutcome().getCrpProgram().getCrp().getAcronym()
+        .equalsIgnoreCase(CGIARentityAcronym)) {
+        crpMilestone = null;
+      }
+
     }
+
     return Optional.ofNullable(crpMilestone).map(this.milestoneMapper::crpMilestoneToMilestoneDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }

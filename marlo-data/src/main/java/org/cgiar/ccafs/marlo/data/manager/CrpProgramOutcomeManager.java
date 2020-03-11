@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -51,6 +52,15 @@ public interface CrpProgramOutcomeManager {
    */
   public List<CrpProgramOutcome> findAll();
 
+
+  /**
+   * This method finds a CrpProgramOutcome by composeId and phase
+   * 
+   * @param composedId
+   * @param phase
+   * @return a CrpProgramOutcome object.
+   */
+  public CrpProgramOutcome getCrpProgramOutcome(String composedId, Phase phase);
 
   /**
    * This method gets a crpProgramOutcome object by a given crpProgramOutcome identifier.
