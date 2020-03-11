@@ -95,6 +95,10 @@ public class PoliciesAction extends BaseAction {
   private List<ReportSynthesisPoliciesByOrganizationTypeDTO> policiesByOrganizationTypeDTOs;
   private List<ReportSynthesisPoliciesByRepIndStageProcessDTO> policiesByRepIndStageProcessDTOs;
   private Integer total = 0;
+  private Double totalRepIndPolicyInvestimentTypePolicy = new Double(0);
+  private Double totalRepIndPolicyInvestimentTypeLegalInstrument = new Double(0);
+  private Double totalRepIndPolicyInvestimentTypeBudget = new Double(0);
+  private Double totalRepIndPolicyInvestimentTypeCurriculum = new Double(0);
 
 
   @Inject
@@ -268,6 +272,25 @@ public class PoliciesAction extends BaseAction {
     return total;
   }
 
+
+  public Double getTotalRepIndPolicyInvestimentTypeBudget() {
+    return totalRepIndPolicyInvestimentTypeBudget;
+  }
+
+
+  public Double getTotalRepIndPolicyInvestimentTypeCurriculum() {
+    return totalRepIndPolicyInvestimentTypeCurriculum;
+  }
+
+
+  public Double getTotalRepIndPolicyInvestimentTypeLegalInstrument() {
+    return totalRepIndPolicyInvestimentTypeLegalInstrument;
+  }
+
+
+  public Double getTotalRepIndPolicyInvestimentTypePolicy() {
+    return totalRepIndPolicyInvestimentTypePolicy;
+  }
 
   public String getTransaction() {
     return transaction;
@@ -477,6 +500,8 @@ public class PoliciesAction extends BaseAction {
         // Chart: Policies by stage process
         policiesByRepIndStageProcessDTOs =
           repIndStageProcessManager.getPoliciesByStageProcess(selectedProjectPolicies, phase);
+
+        this.totalsRepIndPolicyInvestimentTypePolicy(selectedProjectPolicies);
       }
 
     }
@@ -592,8 +617,51 @@ public class PoliciesAction extends BaseAction {
     this.total = total;
   }
 
+
+  public void setTotalRepIndPolicyInvestimentTypeBudget(Double totalRepIndPolicyInvestimentTypeBudget) {
+    this.totalRepIndPolicyInvestimentTypeBudget = totalRepIndPolicyInvestimentTypeBudget;
+  }
+
+
+  public void setTotalRepIndPolicyInvestimentTypeCurriculum(Double totalRepIndPolicyInvestimentTypeCurriculum) {
+    this.totalRepIndPolicyInvestimentTypeCurriculum = totalRepIndPolicyInvestimentTypeCurriculum;
+  }
+
+
+  public void
+    setTotalRepIndPolicyInvestimentTypeLegalInstrument(Double totalRepIndPolicyInvestimentTypeLegalInstrument) {
+    this.totalRepIndPolicyInvestimentTypeLegalInstrument = totalRepIndPolicyInvestimentTypeLegalInstrument;
+  }
+
+
+  public void setTotalRepIndPolicyInvestimentTypePolicy(Double totalRepIndPolicyInvestimentTypePolicy) {
+    this.totalRepIndPolicyInvestimentTypePolicy = totalRepIndPolicyInvestimentTypePolicy;
+  }
+
   public void setTransaction(String transaction) {
     this.transaction = transaction;
+  }
+
+  private void totalsRepIndPolicyInvestimentTypePolicy(List<ProjectPolicy> selectedProjectPolicies) {
+    for (ProjectPolicy projectPolicy : selectedProjectPolicies) {
+      if (projectPolicy.getProjectPolicyInfo().getRepIndPolicyInvestimentType().getId()
+        .equals(APConstants.REP_IND_POLICY_INVESTIMENT_TYPES_POLICY)) {
+        totalRepIndPolicyInvestimentTypePolicy++;
+      }
+      if (projectPolicy.getProjectPolicyInfo().getRepIndPolicyInvestimentType().getId()
+        .equals(APConstants.REP_IND_POLICY_INVESTIMENT_TYPES_LEGALINSTRUMENT)) {
+        totalRepIndPolicyInvestimentTypeLegalInstrument++;
+      }
+      if (projectPolicy.getProjectPolicyInfo().getRepIndPolicyInvestimentType().getId()
+        .equals(APConstants.REP_IND_POLICY_INVESTIMENT_TYPES_BUDGET)) {
+        totalRepIndPolicyInvestimentTypeBudget++;
+      }
+      if (projectPolicy.getProjectPolicyInfo().getRepIndPolicyInvestimentType().getId()
+        .equals(APConstants.REP_IND_POLICY_INVESTIMENT_TYPES_CURRICULUM)) {
+        totalRepIndPolicyInvestimentTypeCurriculum++;
+      }
+    }
+
   }
 
   @Override
