@@ -1,0 +1,2 @@
+INSERT INTO `parameters` ( `global_unit_type_id`, `key`, `description`, `format`, `default_value`, `category`) 
+VALUES ('1', 'crp_project_page', 'active api information project page?', '1', NULL, '2');
