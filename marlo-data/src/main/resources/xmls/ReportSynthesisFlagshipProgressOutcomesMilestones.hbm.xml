@@ -26,6 +26,9 @@
         <property name="evidence" type="string">
             <column name="evidence" sql-type="TEXT" />
         </property>
+        <property name="extendedYear" type="int">
+            <column name="extended_year" />
+        </property>
         <property name="active" type="boolean">
             <column name="is_active" not-null="true" />
         </property>
