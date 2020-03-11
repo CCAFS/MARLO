@@ -774,12 +774,13 @@ public class DeliverableValidator extends BaseValidator {
         }
 
         // Validation of Journal Article Name
-        if (!(this.isValidString(deliverablePublicationMetadata.getJournal())
-          && this.wordCount(deliverablePublicationMetadata.getJournal()) <= 100)) {
-          action.addMessage(action.getText("project.deliverable.publication.v.journal"));
-          action.getInvalidFields().put("input-deliverable.publication.journal", InvalidFieldsMessages.EMPTYFIELD);
-        }
-
+        /*
+         * if (!(this.isValidString(deliverablePublicationMetadata.getJournal())
+         * && this.wordCount(deliverablePublicationMetadata.getJournal()) <= 100)) {
+         * action.addMessage(action.getText("project.deliverable.publication.v.journal"));
+         * action.getInvalidFields().put("input-deliverable.publication.journal", InvalidFieldsMessages.EMPTYFIELD);
+         * }
+         */
         // Validation of ISI Question
         if (deliverablePublicationMetadata.getIsiPublication() == null) {
           action.addMessage(action.getText("deliverable.isiPublication"));

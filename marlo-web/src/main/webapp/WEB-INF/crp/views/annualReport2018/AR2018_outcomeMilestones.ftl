@@ -307,13 +307,15 @@
       [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.outcome.progressNarrative" help="${customLabel}.outcome.progressNarrative.help" className="limitWords-200" helpIcon=false required=true editable=editable allowTextEditor=true /]
     </div>
     [#-- Sub-IDOs List --]
+    [#--
     [#if element.milestones?has_content]
       [#local hasPrimary=  element.milestones?size > 1 ]
       <h4 class="simpleTitle">[@s.text name="${customLabel}.subIdos.title" /]</h4>
       <div class="simpleBox">
         <div class="form-group">
            [#list element.milestones as subIdo][#-- [#list element.milestone?sort_by("isPrimary") as subIdo] --]
-             [#if hasPrimary && subIdo?index == 0] [#-- subIdo.isPrimary --]
+           [#--
+             [#if hasPrimary && subIdo?index == 0] [#-- subIdo.isPrimary --][#--
                 [@annualReport2018SubIdoMacro element=subIdo name="${customName}.milestones" index=milestone_index reportedOutcomeID=(annualReportElement.id)!-1 isPrimary=true/]
              [#else]
                  [@annualReport2018SubIdoMacro element=subIdo name="${customName}.milestones" index=milestone_index reportedOutcomeID=(annualReportElement.id)!-1 /]
@@ -322,6 +324,7 @@
          </div> 
        </div> 
     [/#if]
+    --]
     [#-- Milestones List --]
     <h4 class="simpleTitle">[@s.text name="${customLabel}.milestones.title" /]</h4>
     <div class="form-group">
@@ -505,89 +508,89 @@
                 [/#list]
               </tbody>
             </table>
-            [#-- Policies --]
-          [#if projectPolicies?has_content] 
-            <h4 class="simpleTitle">[@s.text name="expectedProgress.milestonesContributions.policiesTitle" /]</h4>
-            <div class="">
-              <table class="table table-bordered">
-                <thead>
-                  <tr>
-                    <th class="col-md-1"> ID </th>
-                    <th class=""> Title </th>
-                  </tr>
-                </thead>
-                <tbody> 
-                  [#list projectPolicies as policy]
-                    [#local ppURL][@s.url namespace="/projects" action="${(crpSession)!}/policy"][@s.param name='projectID']${policy.projectOutcome.project.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
-                    [#local ppoURL][@s.url namespace="/projects" action="${(crpSession)!}/policy"][@s.param name='policyID']${policy.projectOutcome.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+            [#-- Policies --][#--
+            [#if projectPolicies?has_content] 
+              <h4 class="simpleTitle">[@s.text name="expectedProgress.milestonesContributions.policiesTitle" /]</h4>
+              <div class="">
+                <table class="table table-bordered">
+                  <thead>
                     <tr>
-                      <td> <a href="${ppURL}" target="_blank"> P${policy.projectOutcome.project.id} </a> </td>
-                      <td> 
-                        ${policy.projectOutcome.project.projectInfo.title} 
-                        <a href="${ppoURL}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
-                      </td>                       
+                      <th class="col-md-1"> ID </th>
+                      <th class=""> Title </th>
                     </tr>
-                  [/#list]
-                </tbody>
-              </table>
-            </div>
-          [/#if]
-          
-          [#-- outcome impact case reports --]
-          [#if outcomeCases?has_content] 
-            <h4 class="simpleTitle">[@s.text name="expectedProgress.milestonesContributions.oicrTitle" /]</h4>
-            <div class="">
-              <table class="table table-bordered">
-                <thead>
-                  <tr>
-                    <th class="col-md-1"> ID </th>
-                    <th class=""> Title </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  [#list outcomeCases as outcomeCase]
-                    [#local ocURL][@s.url namespace="/projects" action="${(crpSession)!}/studies"][@s.param name='projectID']${outcomeCase.projectOutcome.project.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
-                    [#local ocoURL][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${outcomeCase.projectOutcome.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                  </thead>
+                  <tbody> 
+                    [#list projectPolicies as policy]
+                      [#local ppURL][@s.url namespace="/projects" action="${(crpSession)!}/policy"][@s.param name='projectID']${policy.projectOutcome.project.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                      [#local ppoURL][@s.url namespace="/projects" action="${(crpSession)!}/policy"][@s.param name='policyID']${policy.projectOutcome.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                      <tr>
+                        <td> <a href="${ppURL}" target="_blank"> P${policy.projectOutcome.project.id} </a> </td>
+                        <td> 
+                          ${policy.projectOutcome.project.projectInfo.title} 
+                          <a href="${ppoURL}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
+                        </td>                       
+                      </tr>
+                    [/#list]
+                  </tbody>
+                </table>
+              </div>
+            [/#if]
+            
+            [#-- outcome impact case reports --][#--
+            [#if outcomeCases?has_content] 
+              <h4 class="simpleTitle">[@s.text name="expectedProgress.milestonesContributions.oicrTitle" /]</h4>
+              <div class="">
+                <table class="table table-bordered">
+                  <thead>
                     <tr>
-                      <td> <a href="${ocURL}" target="_blank"> P${outcomeCase.projectOutcome.project.id} </a> </td>
-                      <td> 
-                        ${outcomeCase.projectOutcome.project.projectInfo.title}  
-                        <a href="${ocoURL}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
-                      </td>
+                      <th class="col-md-1"> ID </th>
+                      <th class=""> Title </th>
                     </tr>
-                  [/#list]
-                </tbody>
-              </table>
-            </div>
-          [/#if]
-          
-          [#-- innovation --]
-          [#if projectInnovations?has_content] 
-            <h4 class="simpleTitle">[@s.text name="expectedProgress.milestonesContributions.innovations" /]</h4>
-            <div class="">
-              <table class="table table-bordered">
-                <thead>
-                  <tr>
-                    <th class="col-md-1"> ID </th>
-                    <th class=""> Title </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  [#list projectInnovations as innovation]
-                    [#local piURL][@s.url namespace="/projects" action="${(crpSession)!}/innovationsList"][@s.param name='projectID']${innovation.projectOutcome.project.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
-                    [#local pioURL][@s.url namespace="/projects" action="${(crpSession)!}/innovation"][@s.param name='innovationID']${innovation.projectOutcome.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                  </thead>
+                  <tbody>
+                    [#list outcomeCases as outcomeCase]
+                      [#local ocURL][@s.url namespace="/projects" action="${(crpSession)!}/studies"][@s.param name='projectID']${outcomeCase.projectOutcome.project.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                      [#local ocoURL][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${outcomeCase.projectOutcome.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                      <tr>
+                        <td> <a href="${ocURL}" target="_blank"> P${outcomeCase.projectOutcome.project.id} </a> </td>
+                        <td> 
+                          ${outcomeCase.projectOutcome.project.projectInfo.title}  
+                          <a href="${ocoURL}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
+                        </td>
+                      </tr>
+                    [/#list]
+                  </tbody>
+                </table>
+              </div>
+            [/#if]
+            
+            [#-- innovation --][#--
+            [#if projectInnovations?has_content] 
+              <h4 class="simpleTitle">[@s.text name="expectedProgress.milestonesContributions.innovations" /]</h4>
+              <div class="">
+                <table class="table table-bordered">
+                  <thead>
                     <tr>
-                      <td> <a href="${piURL}" target="_blank"> P${innovation.projectOutcome.project.id} </a> </td>
-                      <td> 
-                        ${innovation.projectOutcome.project.projectInfo.title}
-                        <a href="${pioURL}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
-                      </td>
+                      <th class="col-md-1"> ID </th>
+                      <th class=""> Title </th>
                     </tr>
-                  [/#list]
-                </tbody>
-              </table>
-            </div>
-          [/#if]
+                  </thead>
+                  <tbody>
+                    [#list projectInnovations as innovation]
+                      [#local piURL][@s.url namespace="/projects" action="${(crpSession)!}/innovationsList"][@s.param name='projectID']${innovation.projectOutcome.project.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                      [#local pioURL][@s.url namespace="/projects" action="${(crpSession)!}/innovation"][@s.param name='innovationID']${innovation.projectOutcome.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                      <tr>
+                        <td> <a href="${piURL}" target="_blank"> P${innovation.projectOutcome.project.id} </a> </td>
+                        <td> 
+                          ${innovation.projectOutcome.project.projectInfo.title}
+                          <a href="${pioURL}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
+                        </td>
+                      </tr>
+                    [/#list]
+                  </tbody>
+                </table>
+              </div>
+            [/#if]--]
           </div>
         </div>
         <div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div>
