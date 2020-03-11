@@ -7,7 +7,7 @@
   "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20190228", 
   "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20190228",
   "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20190229",
-  "${baseUrlCdn}/global/js/autoSave.js",
+  [#-- "${baseUrlCdn}/global/js/autoSave.js",--]
   "${baseUrlCdn}/global/js/fieldsValidation.js?20180529"
 ] /]
 [#assign customCSS = [ "${baseUrlMedia}/css/publications/publication.css", "${baseUrlMedia}/css/projects/projectDeliverable.css" ] /]
