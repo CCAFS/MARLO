@@ -58,7 +58,7 @@ public class OutcomeItem<T> {
   }
 
   /**
-   * Find a Flagship or program requesting by smo Code
+   * Find a Flagship or program requesting by smo Code and year
    * 
    * @param smo code
    * @return a FlagshipProgramDTO with the flagship or program data.
