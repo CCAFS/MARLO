@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -63,12 +64,22 @@ public class OutcomeItem<T> {
    * @return a FlagshipProgramDTO with the flagship or program data.
    */
 
-  public ResponseEntity<OutcomeDTO> findOutcomeById(Long id, String CGIARentityAcronym) {
+  public ResponseEntity<OutcomeDTO> findOutcomeById(String id, String CGIARentityAcronym, Integer year) {
+    CrpProgramOutcome crpProgramOutcome = null;
+    Phase phase = this.phaseManager.findAll().stream()
+      .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), CGIARentityAcronym) && p.getYear() == year
+        && StringUtils.equalsIgnoreCase(p.getName(), "AR"))
+      .findFirst().orElse(null);
 
-    CrpProgramOutcome crpProgramOutcome = this.crpProgramOutcomeManager.getCrpProgramOutcomeById(id);
-    if (!crpProgramOutcome.getCrpProgram().getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)) {
-      crpProgramOutcome = null;
+
+    if (phase != null) {
+      crpProgramOutcome = this.crpProgramOutcomeManager.getCrpProgramOutcome(id, phase);
+      if (!crpProgramOutcome.getCrpProgram().getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)) {
+        crpProgramOutcome = null;
+      }
+
     }
+
     return Optional.ofNullable(crpProgramOutcome).map(this.outcomeMapper::crpProgramOutcomeToOutcomeDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
