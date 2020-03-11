@@ -60,7 +60,7 @@ public class MilestoneItem<T> {
   }
 
   /**
-   * Find a milestone by smo id
+   * Find a milestone by smo id and year
    * 
    * @param id of milestone
    * @param CGIARentityAcronym acronym of the CRP/PTF
