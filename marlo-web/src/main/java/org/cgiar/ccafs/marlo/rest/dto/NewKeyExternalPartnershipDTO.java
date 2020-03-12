@@ -25,21 +25,19 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class NewKeyExternalPartnershipDTO {
 
-  @ApiModelProperty(notes = "Partnership / Main area", position = 3)
+  @ApiModelProperty(notes = "Id(s) Partnership Main Area(s)", position = 3)
   private List<String> partnershipMainAreaIds;
-  // private String partnershipMainAreaId;
 
   @ApiModelProperty(notes = "Description of partnership aim", position = 2)
   private String description;
 
-  @ApiModelProperty(notes = "Flagship / Module", position = 1)
+  @ApiModelProperty(notes = "Flagship / Module SMO Code", position = 1)
   private String flagshipProgramId;
-  // private String flagshipProgramId;
 
   @ApiModelProperty(notes = "Phase (AR, POWB) - Year", position = 4)
   private PhaseDTO phase;
 
-  @ApiModelProperty(notes = "Institutions linked to the partnership", position = 4)
+  @ApiModelProperty(notes = "Id(s) Institution(s) linked to the partnership", position = 4)
   private List<String> institutionIds;
 
 
