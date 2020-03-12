@@ -24,7 +24,7 @@ function formatState(state) {
     return state.text;
   }
   var $state =
-      $('<span><i class="flag-sm flag-sm-' + state.element.value.toUpperCase() + '"></i> ' + state.text + '</span>');
+      $('<span><i class="flag-icon flag-icon-' + state.element.value.toLowerCase() + '"></i> ' + state.text + '</span>');
   return $state;
 };
 
@@ -58,7 +58,7 @@ function addCountry(countrySelected) {
   var $item = $('#country-template').clone(true).removeAttr('id');
   $item.find('input.isoAlpha2').val(countrySelected.val());
   $item.find('.country-title').html("<i></i> " + countrySelected.text());
-  $item.find('i').attr('class', 'flag-sm flag-sm-' + countrySelected.val());
+  $item.find('i').attr('class', 'flag-icon flag-icon-' + countrySelected.val().toLowerCase());
   countriesContent.append($item);
   $item.show("slow");
   updateCountriesIndex();

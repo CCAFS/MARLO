@@ -23,7 +23,7 @@ $(document).ready(function() {
               render: function(data,type,full,meta) {
                 var flags = '';
                 $.each(full.countries.split(','), function(i,flag) {
-                  flags += '<i title="' + flag + '" class="flag-sm flag-sm-' + $.trim(flag) + '"></i>';
+                  flags += '<i title="' + flag + '" class="flag-icon flag-icon-' + $.trim(flag.toLowerCase()) + '"></i>';
                 });
 
                 return data + " <br/>  " + flags;

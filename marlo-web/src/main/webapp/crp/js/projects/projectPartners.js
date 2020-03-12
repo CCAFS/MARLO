@@ -702,7 +702,7 @@ function addContactEvent(e) {
       templateResult: formatState,
       width: '100%'
   });
-  
+
   // IFPRI Division
   if(partner.institutionId == 89){
     $newElement.find('.divisionBlock.division-IFPRI').show();
@@ -857,7 +857,7 @@ function addSelect2() {
 
 /**
  * PartnerObject
- * 
+ *
  * @param {DOM} Project partner
  */
 
@@ -1028,7 +1028,7 @@ function PartnerObject(partner) {
 
     // Add Flag
     var $flag = $item.find('.flag-icon');
-    var flag = '<i class="flag-sm flag-sm-' + contryISO.toUpperCase() + '"></i>';
+    var flag = '<i class="flag-icon flag-icon-' + contryISO.toLowerCase() + '"></i>';
     $flag.html(flag);
     // Remove coordinates span
     $item.find('.coordinates').remove();
@@ -1075,7 +1075,7 @@ function PartnerObject(partner) {
 
 /**
  * PartnerPersonObject
- * 
+ *
  * @param {DOM} Partner person
  */
 function PartnerPersonObject(partnerPerson) {
@@ -1136,7 +1136,7 @@ function formatStateCountries(state) {
   if(!state.id) {
     return state.text;
   }
-  var flag = '<i class="flag-sm flag-sm-' + state.element.value.toUpperCase() + '"></i> ';
+  var flag = '<i class="flag-icon flag-icon-' + state.element.value.toLowerCase() + '"></i> ';
   var $state;
   if(state.id != -1) {
     $state = $('<span>' + flag + state.text + '</span>');
