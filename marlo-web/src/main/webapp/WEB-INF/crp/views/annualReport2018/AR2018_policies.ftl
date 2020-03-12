@@ -102,9 +102,10 @@
                       </li>
                     [/#list]
                     --]
-                  </ul> 
+                  </ul>
                 </div> 
               </div>
+              
               <div class="col-md-7">
               [#--<div class="chartBox simpleBox">
               Policies by Type
@@ -119,18 +120,13 @@
                       <span class="json">{"role":"style"}</span>
                       <span class="json">{"role":"annotation"}</span>
                     </li>
-                    [#assign chartData = [  
-                            {"name":"Policy or Strategy",   "value": "${(totalRepIndPolicyInvestimentTypePolicy)!0}"},
-                            {"name":"Budget or Investment",   "value": "${(totalRepIndPolicyInvestimentTypeBudget)!0}"},
-                            {"name":"Curriculum",   "value": "${(totalRepIndPolicyInvestimentTypeCurriculum)!0}"},
-                            {"name":"Legal instrument",   "value": "${(totalRepIndPolicyInvestimentTypeLegalInstrument)!0}"}
-                    ] /] 
-                    [#list (chartData)![] as data]
+                                        
+                    [#list (policiesByRepIndInvestimentTypeDTOs)![] as data]
                       <li>
-                        <span>${(data.name)!}</span>
-                        <span class="number">${data.value}</span>
-                        <span>#1773b8</span>
-                        <span>${data.value}</span>
+                          <span>${(data.repIndPolicyInvestimentType.name)!}</span>
+                          <span class="number">${data.projectPolicies?size}</span>
+                          <span>#1773b8</span>
+                          <span>${data.projectPolicies?size}</span>
                       </li> 
                     [/#list]          
                   </ul>
