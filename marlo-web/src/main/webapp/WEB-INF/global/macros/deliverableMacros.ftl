@@ -492,7 +492,7 @@
       </div>
     </div>
     <div class="form-group metadataElement metadataElement-journal no-lock">
-      [@customForm.input name="deliverable.publication.journal" i18nkey="project.deliverable.dissemination.journalName" className="metadataValue" type="text" disabled=!editable  required=false editable=editable /]
+      [@customForm.input name="deliverable.publication.journal" i18nkey="project.deliverable.dissemination.journalName" className="metadataValue" type="text" disabled=!editable  required=true editable=editable /]
     </div>
     
     [#-- Is ISI Journal--]

@@ -499,7 +499,9 @@ public class ProjectPartnerAction extends BaseAction {
               ProjectInnovation projectInnovation = new ProjectInnovation();
               projectInnovation = projectInnovationManager
                 .getProjectInnovationById(projectInnovationCenter.getProjectInnovation().getId());
-              if (projectInnovation != null) {
+              if (projectInnovation != null && projectInnovation.getProject() != null
+                && projectInnovation.getProject().getId() != null
+                && projectInnovation.getId().equals(project.getId())) {
                 projectInnovation
                   .setProjectInnovationInfo(projectInnovation.getProjectInnovationInfo(this.getActualPhase()));
                 innovationContributings.add(projectInnovation);
@@ -542,7 +544,9 @@ public class ProjectPartnerAction extends BaseAction {
               && projectPolicyCenter.getProjectPolicy().getId() != null) {
               ProjectPolicy projectPolicy = new ProjectPolicy();
               projectPolicy = projectPolicyManager.getProjectPolicyById(projectPolicyCenter.getProjectPolicy().getId());
-              if (projectPolicy != null) {
+              if (projectPolicy != null && projectPolicy.getProject() != null
+                && projectPolicy.getProject().getId() != null
+                && projectPolicy.getProject().getId().equals(project.getId())) {
                 projectPolicy.setProjectPolicyInfo(projectPolicy.getProjectPolicyInfo(this.getActualPhase()));
                 policyContributings.add(projectPolicy);
               }
@@ -589,7 +593,9 @@ public class ProjectPartnerAction extends BaseAction {
               ProjectExpectedStudy projectExpectedStudy = new ProjectExpectedStudy();
               projectExpectedStudy = projectExpectedStudyManager
                 .getProjectExpectedStudyById(projectExpectedStudyCenter.getProjectExpectedStudy().getId());
-              if (projectExpectedStudy != null) {
+              if (projectExpectedStudy != null && projectExpectedStudy.getProject() != null
+                && projectExpectedStudy.getProject().getId() != null
+                && projectExpectedStudy.getProject().getId().equals(project.getId())) {
                 projectExpectedStudy
                   .setProjectExpectedStudyInfo(projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()));
                 studyContributings.add(projectExpectedStudy);

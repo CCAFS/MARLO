@@ -23,13 +23,13 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class SrfProgressTowardsTargetDTO {
 
-  @ApiModelProperty(notes = "ID ", position = 1)
+  @ApiModelProperty(notes = "The Generated identification Code", position = 1)
   private Long id;
 
   @ApiModelProperty(notes = "SLO target", position = 2)
   private SrfSloIndicatorTargetDTO srfSloTarget;
 
-  @ApiModelProperty(notes = "Progress Towards narrative", position = 3)
+  @ApiModelProperty(notes = "Brief summary of new evidence of CGIAR contribution", position = 3)
   private String briefSummary;
 
   @ApiModelProperty(notes = "Progress Towards additional contribution", position = 4)
