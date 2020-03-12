@@ -26,16 +26,16 @@ public class NewSrfProgressTowardsTargetDTO {
   @ApiModelProperty(notes = "SLO indicator ID", position = 2)
   private String srfSloIndicatorId;
 
-  @ApiModelProperty(notes = "Progress Towards Target narrative", position = 3)
+  @ApiModelProperty(notes = "Brief summary of new evidence of CGIAR contribution", position = 3)
   private String briefSummary;
 
-  @ApiModelProperty(notes = "Progress Towards Target additional contribution", position = 4)
+  @ApiModelProperty(notes = "Expected additional contribution", position = 4)
   private String additionalContribution;
 
-  @ApiModelProperty(notes = "Phase - Year ", position = 5)
+  @ApiModelProperty(notes = "Phase (AR, POWB) - Year", position = 5)
   private PhaseDTO phase;
 
-  @ApiModelProperty(notes = "Flagship / Module", position = 1)
+  @ApiModelProperty(notes = "Flagship / Module SMO Code", position = 1)
   private String flagshipProgramId;
 
 

@@ -31,7 +31,7 @@ public class KeyExternalPartnershipDTO {
   @ApiModelProperty(notes = "CRP information", position = 2)
   private CGIAREntityDTO cgiarEntity;
 
-  @ApiModelProperty(notes = "Partnership / Main area", position = 5)
+  @ApiModelProperty(notes = "Partnership Main Area(s)", position = 5)
   private List<PartnershipMainAreaDTO> partnershipMainAreas;
 
   @ApiModelProperty(notes = "Description of partnership aim", position = 3)
