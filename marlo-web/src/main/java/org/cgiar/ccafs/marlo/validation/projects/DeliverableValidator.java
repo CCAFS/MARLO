@@ -454,7 +454,8 @@ public class DeliverableValidator extends BaseValidator {
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"geographicScopes"}));
     } else {
       for (DeliverableGeographicScope deliverableGeographicScope : deliverable.getGeographicScopes()) {
-        if (deliverableGeographicScope.getRepIndGeographicScope() != null) {
+        if (deliverableGeographicScope.getRepIndGeographicScope() != null
+          && deliverableGeographicScope.getRepIndGeographicScope().getId() != null) {
           if (deliverableGeographicScope.getRepIndGeographicScope().getId() == 2) {
             haveRegions = true;
           }
@@ -774,13 +775,15 @@ public class DeliverableValidator extends BaseValidator {
         }
 
         // Validation of Journal Article Name
-        /*
-         * if (!(this.isValidString(deliverablePublicationMetadata.getJournal())
-         * && this.wordCount(deliverablePublicationMetadata.getJournal()) <= 100)) {
-         * action.addMessage(action.getText("project.deliverable.publication.v.journal"));
-         * action.getInvalidFields().put("input-deliverable.publication.journal", InvalidFieldsMessages.EMPTYFIELD);
-         * }
-         */
+        if (deliverableInfo.getDeliverableType() != null && deliverableInfo.getDeliverableType().getId() != null
+          && deliverableInfo.getDeliverableType().getId() != 63) {
+          if (!(this.isValidString(deliverablePublicationMetadata.getJournal())
+            && this.wordCount(deliverablePublicationMetadata.getJournal()) <= 100)) {
+            action.addMessage(action.getText("project.deliverable.publication.v.journal"));
+            action.getInvalidFields().put("input-deliverable.publication.journal", InvalidFieldsMessages.EMPTYFIELD);
+          }
+        }
+
         // Validation of ISI Question
         if (deliverablePublicationMetadata.getIsiPublication() == null) {
           action.addMessage(action.getText("deliverable.isiPublication"));

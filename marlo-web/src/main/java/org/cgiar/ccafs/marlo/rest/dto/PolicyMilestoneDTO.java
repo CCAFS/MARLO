@@ -13,26 +13,37 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.mappers;
+package org.cgiar.ccafs.marlo.rest.dto;
 
-import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
-import org.cgiar.ccafs.marlo.rest.dto.MilestoneDTO;
+import io.swagger.annotations.ApiModelProperty;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+/**************
+ * @author German C. Martinez - CIAT/CCAFS
+ **************/
 
-@Mapper(componentModel = "jsr330", uses = {OutcomeMapper.class})
-public abstract class MilestoneMapper {
+public class PolicyMilestoneDTO {
 
-  private static final Logger LOG = LoggerFactory.getLogger(MilestoneMapper.class);
+  @ApiModelProperty(notes = "Milestone Identifier", position = 1)
+  private MilestoneDTO crpMilestone;
 
-  @Mappings({@Mapping(source = "crpProgramOutcome", target = "outcomeDTO"),
-    @Mapping(source = "srfTargetUnit", target = "targetUnitDTO"), @Mapping(source = "composeID", target = "id")})
-  public abstract MilestoneDTO crpMilestoneToMilestoneDTO(CrpMilestone crpMilestone);
+  @ApiModelProperty(notes = "Milestone as primary", position = 1)
+  private Boolean primary;
 
-  public abstract CrpMilestone milestoneDTOToCrpMilestone(MilestoneDTO milestoneDTO);
 
+  public MilestoneDTO getCrpMilestone() {
+    return crpMilestone;
+  }
+
+  public Boolean getPrimary() {
+    return primary;
+  }
+
+
+  public void setCrpMilestone(MilestoneDTO crpMilestone) {
+    this.crpMilestone = crpMilestone;
+  }
+
+  public void setPrimary(Boolean primary) {
+    this.primary = primary;
+  }
 }

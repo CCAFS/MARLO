@@ -25,13 +25,13 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class NewCrossCGIARCollaborationDTO {
 
-  @ApiModelProperty(notes = "Flagship / Module", position = 1)
+  @ApiModelProperty(notes = "Flagship / Module SMO Code", position = 1)
   private String flagshipProgramId;
 
   @ApiModelProperty(notes = "Brief description of the collaboration", position = 2)
   private String description;
 
-  @ApiModelProperty(notes = "Value added,", position = 3)
+  @ApiModelProperty(notes = "Value added (e.g. scientific or efficiency benefits)", position = 3)
   private String valueAdded;
 
   @ApiModelProperty(notes = "Id(s) of collaborating CRP(s), Platform(s) or Center(s)", position = 4)

@@ -100,6 +100,11 @@ public class PolicyMilestoneManagerImpl implements PolicyMilestoneManager {
   }
 
   @Override
+  public PolicyMilestone findByCrpMilestonePolicyAndPhase(long crpMilestoneId, long policyId, long phaseId) {
+    return policyMilestoneDAO.findByCrpMilestonePolicyAndPhase(crpMilestoneId, policyId, phaseId);
+  }
+
+  @Override
   public PolicyMilestone getPolicyMilestoneById(long policyMilestoneID) {
 
     return policyMilestoneDAO.find(policyMilestoneID);

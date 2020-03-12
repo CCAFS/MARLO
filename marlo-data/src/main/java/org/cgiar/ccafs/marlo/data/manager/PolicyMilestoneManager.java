@@ -53,6 +53,17 @@ public interface PolicyMilestoneManager {
 
 
   /**
+   * This method gets a policyMilestone object by its foreign keys (Phase, CrpMilestone and Policy).
+   * 
+   * @param crpMilestoneId is the crpMilestone identifier.
+   * @param policyId is the policy identifier
+   * @param phaseId is the phase identifier
+   * @return a PolicyMilestone object.
+   */
+  public PolicyMilestone findByCrpMilestonePolicyAndPhase(long crpMilestoneId, long policyId, long phaseId);
+
+
+  /**
    * This method gets a policyMilestone object by a given policyMilestone identifier.
    * 
    * @param policyMilestoneID is the policyMilestone identifier.

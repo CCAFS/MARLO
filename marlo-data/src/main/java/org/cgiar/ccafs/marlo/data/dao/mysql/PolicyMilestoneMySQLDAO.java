@@ -69,6 +69,19 @@ public class PolicyMilestoneMySQLDAO extends AbstractMarloDAO<PolicyMilestone, L
   }
 
   @Override
+  public PolicyMilestone findByCrpMilestonePolicyAndPhase(long crpMilestoneId, long policyId, long phaseId) {
+    String query = "from " + PolicyMilestone.class.getName() + " where policy_id=" + policyId + " and crp_milestone_id="
+      + crpMilestoneId + " and id_phase=" + phaseId;
+
+    List<PolicyMilestone> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+
+    return null;
+  }
+
+  @Override
   public PolicyMilestone save(PolicyMilestone policyMilestone) {
     if (policyMilestone.getId() == null) {
       super.saveEntity(policyMilestone);

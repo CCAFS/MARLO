@@ -15,24 +15,17 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
-import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
-import org.cgiar.ccafs.marlo.rest.dto.MilestoneDTO;
+import org.cgiar.ccafs.marlo.data.model.PolicyMilestone;
+import org.cgiar.ccafs.marlo.rest.dto.PolicyMilestoneDTO;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-@Mapper(componentModel = "jsr330", uses = {OutcomeMapper.class})
-public abstract class MilestoneMapper {
+/**************
+ * @author German C. Martinez - CIAT/CCAFS
+ **************/
 
-  private static final Logger LOG = LoggerFactory.getLogger(MilestoneMapper.class);
+@Mapper(componentModel = "jsr330", uses = {MilestoneMapper.class})
+public interface PolicyMilestoneMapper {
 
-  @Mappings({@Mapping(source = "crpProgramOutcome", target = "outcomeDTO"),
-    @Mapping(source = "srfTargetUnit", target = "targetUnitDTO"), @Mapping(source = "composeID", target = "id")})
-  public abstract MilestoneDTO crpMilestoneToMilestoneDTO(CrpMilestone crpMilestone);
-
-  public abstract CrpMilestone milestoneDTOToCrpMilestone(MilestoneDTO milestoneDTO);
-
+  public abstract PolicyMilestoneDTO policyMilestoneToPolicyMilestoneDTO(PolicyMilestone policyMilestone);
 }
