@@ -306,18 +306,14 @@
       <input type="hidden" name="${customName}.crpProgramOutcome.id" value="${(element.id)!}"/>
       [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.outcome.progressNarrative" help="${customLabel}.outcome.progressNarrative.help" className="limitWords-200" helpIcon=false required=true editable=editable allowTextEditor=true /]
     </div>
-    [#-- Sub-IDOs List --]  
+    [#-- Sub-IDOs List --]
     [#if element.subIdos?has_content]
       [#local hasPrimary=  element.subIdos?size > 1 ]
       <h4 class="simpleTitle">[@s.text name="${customLabel}.subIdos.title" /]</h4>
       <div class="simpleBox">
         <div class="form-group">
-           [#list element.subIdos as subIdo][#-- [#list element.milestone?sort_by("isPrimary") as subIdo] --]           
-             [#if hasPrimary && subIdo?index == 0] [#-- subIdo.isPrimary --]
-                [@annualReport2018SubIdoMacro element=subIdo name="${customName}.subIdos"  isPrimary=true/]
-             [#else]
-                 [@annualReport2018SubIdoMacro element=subIdo name="${customName}.subIdos" /]
-             [/#if]          
+          [#list element.subIdos as subIdo]         
+            [@annualReport2018SubIdoMacro element=subIdo name="${customName}.subIdos" /]                    
           [/#list]
          </div> 
        </div> 
@@ -432,9 +428,9 @@
 [/#macro]
 
 
-[#macro annualReport2018SubIdoMacro element name isTemplate=false isPrimary=false]    
+[#macro annualReport2018SubIdoMacro element name ]    
     <div class="form-group grayBox">
-      [#if isPrimary]
+      [#if (element.primary)!false]
        <div>
         <span class="pull-left label label-info primaryTag">Primary</span>
        </div>
