@@ -79,18 +79,15 @@ public class CrossCGIARCollaborations {
       required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${CrossCollabs.crossCGIARcollaborations.POST.param.progresstowardsSRF}",
       required = true) @Valid @RequestBody NewCrossCGIARCollaborationDTO newCrossCGIARCollaborationDTO) {
-    Long keyExternalPartnershipID = new Long(0);
-    try {
-      keyExternalPartnershipID = this.crossCollabItem.createCrossCGIARCollaboration(newCrossCGIARCollaborationDTO,
-        CGIAREntity, this.getCurrentUser());
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
 
-    ResponseEntity<Long> response = new ResponseEntity<Long>(keyExternalPartnershipID, HttpStatus.OK);
+    Long crossCGIARCollaborationId = this.crossCollabItem.createCrossCGIARCollaboration(newCrossCGIARCollaborationDTO,
+      CGIAREntity, this.getCurrentUser());
+
+    ResponseEntity<Long> response = new ResponseEntity<Long>(crossCGIARCollaborationId, HttpStatus.OK);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("CrossCollabs.crossCGIARcollaborations.GET.id.404"));
     }
+
     return response;
   }
 
@@ -108,11 +105,13 @@ public class CrossCGIARCollaborations {
       required = true) @RequestParam Integer year,
     @ApiParam(value = "${CrossCollabs.crossCGIARcollaborations.DELETE.id.param.phase}",
       required = true) @RequestParam String phase) {
+
     ResponseEntity<CrossCGIARCollaborationDTO> response =
       this.crossCollabItem.deleteCrossCGIARCollaborationById(id, CGIAREntity, year, phase, this.getCurrentUser());
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("CrossCollabs.crossCGIARcollaborations.DELETE.id.404"));
     }
+
     return response;
   }
 
@@ -147,43 +146,10 @@ public class CrossCGIARCollaborations {
     @ApiParam(value = "${CrossCollabs.crossCGIARcollaborations.GET.id.param.phase}",
       required = true) @RequestParam String phase) {
 
-    ResponseEntity<CrossCGIARCollaborationDTO> response = null;
-
-    try {
-      response =
-        this.crossCollabItem.findCrossCGIARCollaborationById(id, CGIAREntity, year, phase, this.getCurrentUser());
-      if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-        throw new NotFoundException("404", this.env.getProperty("CrossCollabs.crossCGIARcollaborations.GET.id.404"));
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-
-    return response;
-  }
-
-  @ApiOperation(tags = {"Table 9 - Internal Cross-CGIAR Collaborations"},
-    value = "${CrossCollabs.crossCGIARcollaborations.PUT.value}", response = CrossCGIARCollaborationDTO.class)
-  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/{CGIAREntity}/crosscgiarcollaboration/{id}", method = RequestMethod.PUT,
-    produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Long> findCrossCGIARCollaborationById(
-    @ApiParam(value = "${CrossCollabs.crossCGIARcollaborations.PUT.param.CGIAR}",
-      required = true) @PathVariable String CGIAREntity,
-    @ApiParam(value = "${CrossCollabs.crossCGIARcollaborations.PUT.param.id}", required = true) @PathVariable Long id,
-    @ApiParam(value = "${CrossCollabs.crossCGIARcollaborations.PUT.param.progresstowardsSRF}",
-      required = true) @Valid @RequestBody NewCrossCGIARCollaborationDTO newCrossCGIARCollaborationDTO) {
-
-    ResponseEntity<Long> response = null;
-    try {
-      Long crossCGIARCollaborationId = this.crossCollabItem.putCrossCGIARCollaborationById(id,
-        newCrossCGIARCollaborationDTO, CGIAREntity, this.getCurrentUser());
-      response = new ResponseEntity<Long>(crossCGIARCollaborationId, HttpStatus.OK);
-      if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-        throw new NotFoundException("404", this.env.getProperty("CrossCollabs.crossCGIARcollaborations.PUT.id.404"));
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
+    ResponseEntity<CrossCGIARCollaborationDTO> response =
+      this.crossCollabItem.findCrossCGIARCollaborationById(id, CGIAREntity, year, phase, this.getCurrentUser());
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("CrossCollabs.crossCGIARcollaborations.GET.id.404"));
     }
 
     return response;
@@ -194,6 +160,29 @@ public class CrossCGIARCollaborations {
     Long principal = (Long) subject.getPrincipal();
     User user = this.userManager.getUser(principal);
     return user;
+  }
+
+  @ApiOperation(tags = {"Table 9 - Internal Cross-CGIAR Collaborations"},
+    value = "${CrossCollabs.crossCGIARcollaborations.PUT.value}", response = CrossCGIARCollaborationDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/crosscgiarcollaboration/{id}", method = RequestMethod.PUT,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Long> putCrossCGIARCollaborationById(
+    @ApiParam(value = "${CrossCollabs.crossCGIARcollaborations.PUT.param.CGIAR}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${CrossCollabs.crossCGIARcollaborations.PUT.param.id}", required = true) @PathVariable Long id,
+    @ApiParam(value = "${CrossCollabs.crossCGIARcollaborations.PUT.param.progresstowardsSRF}",
+      required = true) @Valid @RequestBody NewCrossCGIARCollaborationDTO newCrossCGIARCollaborationDTO) {
+
+    Long crossCGIARCollaborationId = this.crossCollabItem.putCrossCGIARCollaborationById(id,
+      newCrossCGIARCollaborationDTO, CGIAREntity, this.getCurrentUser());
+
+    ResponseEntity<Long> response = new ResponseEntity<Long>(crossCGIARCollaborationId, HttpStatus.OK);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("CrossCollabs.crossCGIARcollaborations.PUT.id.404"));
+    }
+
+    return response;
   }
 
 }
