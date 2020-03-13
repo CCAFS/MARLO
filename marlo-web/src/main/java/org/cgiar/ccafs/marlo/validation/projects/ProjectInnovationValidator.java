@@ -183,14 +183,6 @@ public class ProjectInnovationValidator extends BaseValidator {
                   InvalidFieldsMessages.EMPTYFIELD);
               }
             }
-          } else {
-            if (struts) {
-              action.addMessage(action.getText("projectInnovations.outcomeCaseStudy"));
-              this.addMissingField("projectInnovations.outcomeCaseStudy");
-              action.addMissingField("projectInnovations.outcomeCaseStudy");
-              action.getInvalidFields().put("input-innovation.projectInnovationInfo.projectExpectedStudy.id",
-                InvalidFieldsMessages.EMPTYFIELD);
-            }
           }
         } else {
           // Validate Evidence Link (URL)
