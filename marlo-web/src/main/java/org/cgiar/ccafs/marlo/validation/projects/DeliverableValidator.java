@@ -454,7 +454,8 @@ public class DeliverableValidator extends BaseValidator {
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"geographicScopes"}));
     } else {
       for (DeliverableGeographicScope deliverableGeographicScope : deliverable.getGeographicScopes()) {
-        if (deliverableGeographicScope.getRepIndGeographicScope() != null) {
+        if (deliverableGeographicScope.getRepIndGeographicScope() != null
+          && deliverableGeographicScope.getRepIndGeographicScope().getId() != null) {
           if (deliverableGeographicScope.getRepIndGeographicScope().getId() == 2) {
             haveRegions = true;
           }
