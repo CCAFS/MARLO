@@ -77,7 +77,7 @@ public class CrossCGIARCollaborations {
   public ResponseEntity<Long> createCrossCGIARCollaboration(
     @ApiParam(value = "${CrossCollabs.crossCGIARcollaborations.POST.param.CGIAR}",
       required = true) @PathVariable String CGIAREntity,
-    @ApiParam(value = "${CrossCollabs.crossCGIARcollaborations.POST.param.progresstowardsSRF}",
+    @ApiParam(value = "${CrossCollabs.crossCGIARcollaborations.POST.param.crossCGIARcollaboration}",
       required = true) @Valid @RequestBody NewCrossCGIARCollaborationDTO newCrossCGIARCollaborationDTO) {
 
     Long crossCGIARCollaborationId = this.crossCollabItem.createCrossCGIARCollaboration(newCrossCGIARCollaborationDTO,
@@ -171,7 +171,7 @@ public class CrossCGIARCollaborations {
     @ApiParam(value = "${CrossCollabs.crossCGIARcollaborations.PUT.param.CGIAR}",
       required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${CrossCollabs.crossCGIARcollaborations.PUT.param.id}", required = true) @PathVariable Long id,
-    @ApiParam(value = "${CrossCollabs.crossCGIARcollaborations.PUT.param.progresstowardsSRF}",
+    @ApiParam(value = "${CrossCollabs.crossCGIARcollaborations.PUT.param.crossCGIARcollaboration}",
       required = true) @Valid @RequestBody NewCrossCGIARCollaborationDTO newCrossCGIARCollaborationDTO) {
 
     Long crossCGIARCollaborationId = this.crossCollabItem.putCrossCGIARCollaborationById(id,
