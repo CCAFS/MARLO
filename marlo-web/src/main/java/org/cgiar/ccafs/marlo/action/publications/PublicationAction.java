@@ -1538,7 +1538,11 @@ public class PublicationAction extends BaseAction {
         dissemination.setAlreadyDisseminated(deliverable.getDissemination().getAlreadyDisseminated());
         if (deliverable.getDissemination().getAlreadyDisseminated().booleanValue()) {
 
-          dissemination.setDisseminationUrl(deliverable.getDissemination().getDisseminationUrl());
+          if (deliverable.getDissemination().getDisseminationUrl() != null) {
+            dissemination.setDisseminationUrl(deliverable.getDissemination().getDisseminationUrl().trim());
+          } else {
+            dissemination.setDisseminationUrl(deliverable.getDissemination().getDisseminationUrl());
+          }
           dissemination.setDisseminationChannel(deliverable.getDissemination().getDisseminationChannel());
         } else {
           dissemination.setDisseminationUrl(null);
