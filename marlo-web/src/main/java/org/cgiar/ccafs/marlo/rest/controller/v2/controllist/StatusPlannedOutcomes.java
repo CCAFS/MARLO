@@ -53,7 +53,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "Table 5 - Status of Planned Outcomes and Milestones")
 public class StatusPlannedOutcomes {
 
-  private static final Logger LOG = LoggerFactory.getLogger(Policies.class);
+  private static final Logger LOG = LoggerFactory.getLogger(StatusPlannedOutcomes.class);
   @Autowired
   private Environment env;
   private final UserManager userManager;
