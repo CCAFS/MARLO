@@ -1,5 +1,5 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
+ * This file is part of Managing Agricultural Research for Learning &
  * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,34 @@
 
 package org.cgiar.ccafs.marlo.rest.dto;
 
+import io.swagger.annotations.ApiModelProperty;
 
 public class StatusPlannedOutcomesDTO {
+
+  @ApiModelProperty(notes = "Status of Planned Outcome ID")
+  private String code;
+
+  @ApiModelProperty(notes = "Phase year/section", position = 140)
+  private PhaseDTO phase;
+
+
+  public String getCode() {
+    return code;
+  }
+
+
+  public PhaseDTO getPhase() {
+    return phase;
+  }
+
+
+  public void setCode(String code) {
+    this.code = code;
+  }
+
+
+  public void setPhase(PhaseDTO phase) {
+    this.phase = phase;
+  }
 
 }

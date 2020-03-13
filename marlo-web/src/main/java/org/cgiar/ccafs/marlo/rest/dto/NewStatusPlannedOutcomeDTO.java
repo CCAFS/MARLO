@@ -39,6 +39,9 @@ public class NewStatusPlannedOutcomeDTO {
   @ApiModelProperty(notes = "Status Milestones List", position = 4)
   private List<NewStatusPlannedMilestoneDTO> statusMilestoneList;
 
+  @ApiModelProperty(notes = "Phase (AR, POWB, UpKeep)", position = 1)
+  private PhaseDTO phase;
+
 
   public String getCrpOutcomeCode() {
     return crpOutcomeCode;
@@ -47,6 +50,11 @@ public class NewStatusPlannedOutcomeDTO {
 
   public String getCrpProgramCode() {
     return crpProgramCode;
+  }
+
+
+  public PhaseDTO getPhase() {
+    return phase;
   }
 
 
@@ -67,6 +75,11 @@ public class NewStatusPlannedOutcomeDTO {
 
   public void setCrpProgramCode(String crpProgramCode) {
     this.crpProgramCode = crpProgramCode;
+  }
+
+
+  public void setPhase(PhaseDTO phase) {
+    this.phase = phase;
   }
 
   public void setStatusMilestoneList(List<NewStatusPlannedMilestoneDTO> statusMilestoneList) {
