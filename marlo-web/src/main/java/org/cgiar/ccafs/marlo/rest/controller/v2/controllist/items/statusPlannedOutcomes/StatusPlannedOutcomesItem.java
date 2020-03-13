@@ -37,9 +37,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.apache.commons.lang.StringUtils;
 
+@Named
 public class StatusPlannedOutcomesItem<T> {
 
   private PhaseManager phaseManager;
