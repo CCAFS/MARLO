@@ -234,7 +234,8 @@ public class KeyExternalPartnershipItem<T> {
 
       // start ReportSynthesis
       if (crpProgram != null) {
-        liaisonInstitution = liaisonInstitutionManager.findByAcronym(crpProgram.getAcronym());
+        liaisonInstitution =
+          liaisonInstitutionManager.findByAcronymAndCrp(crpProgram.getAcronym(), globalUnitEntity.getId());
         reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
       }
       // end ReportSynthesis
@@ -296,7 +297,8 @@ public class KeyExternalPartnershipItem<T> {
         // creating new ReportSynthesis if it does not exist
         if (reportSynthesis == null) {
           reportSynthesis = new ReportSynthesis();
-          liaisonInstitution = liaisonInstitutionManager.findByAcronym(crpProgram.getAcronym());
+          liaisonInstitution =
+            liaisonInstitutionManager.findByAcronymAndCrp(crpProgram.getAcronym(), globalUnitEntity.getId());
           reportSynthesis.setLiaisonInstitution(liaisonInstitution);
           reportSynthesis.setPhase(phase);
           reportSynthesisManager.saveReportSynthesis(reportSynthesis);
@@ -744,7 +746,8 @@ public class KeyExternalPartnershipItem<T> {
       }
       // end description
 
-      LiaisonInstitution liaisonInstitution = liaisonInstitutionManager.findByAcronym(crpProgram.getAcronym());
+      LiaisonInstitution liaisonInstitution =
+        liaisonInstitutionManager.findByAcronymAndCrp(crpProgram.getAcronym(), globalUnitEntity.getId());
       if (liaisonInstitution == null) {
         fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "LiaisonInstitutionEntity",
           "A Liaison Institution with the acronym " + crpProgram.getAcronym() + " could not be found"));
