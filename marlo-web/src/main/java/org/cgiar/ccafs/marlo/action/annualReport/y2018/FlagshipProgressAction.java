@@ -471,7 +471,7 @@ public class FlagshipProgressAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      validator.validate(this, reportSynthesis, true);
+      validator.validate(this, reportSynthesis, true, hasFlagshipProgress);
     }
   }
 
