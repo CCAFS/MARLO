@@ -6220,9 +6220,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean isReportingActive() {
-
-    return this.getActualPhase().getDescription().equals(APConstants.REPORTING);
-
+    boolean reporting = false;
+    if (this.getActualPhase() != null && this.getActualPhase().getDescription() != null
+      && APConstants.REPORTING != null) {
+      reporting = this.getActualPhase().getDescription().equals(APConstants.REPORTING);
+    } else {
+      reporting = false;
+    }
+    return reporting;
   }
 
   public boolean isReportingActiveParam() {
