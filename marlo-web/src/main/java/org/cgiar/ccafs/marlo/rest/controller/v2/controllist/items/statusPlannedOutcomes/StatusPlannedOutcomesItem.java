@@ -19,24 +19,36 @@
 
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.statusPlannedOutcomes;
 
+import org.cgiar.ccafs.marlo.data.manager.CgiarCrossCuttingMarkerManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.GeneralStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
+import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
+import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
+import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcome;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestone;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.rest.dto.NewCrosscuttingMarkersSynthesisDTO;
+import org.cgiar.ccafs.marlo.rest.dto.NewStatusPlannedMilestoneDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewStatusPlannedOutcomeDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
 import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
@@ -58,20 +70,26 @@ public class StatusPlannedOutcomesItem<T> {
   private PhaseManager phaseManager;
   private GlobalUnitManager globalUnitManager;
   private CrpProgramManager crpProgramManager;
+  private CrpMilestoneManager crpMilestoneManager;
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
   private ReportSynthesisManager reportSynthesisManager;
   private ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager;
   private ReportSynthesisFlagshipProgressOutcomeManager reportSynthesisFlagshipProgressOutcomeManager;
   private LiaisonInstitutionManager liaisonInstitutionManager;
+  private GeneralStatusManager generalStatusManager;
+  private CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager;
+  private RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager;
 
 
   @Inject
   public StatusPlannedOutcomesItem(GlobalUnitManager globalUnitManager, PhaseManager phaseManager,
-    CrpProgramManager crpProgramManager, CrpProgramOutcomeManager crpProgramOutcomeManager,
-    ReportSynthesisManager reportSynthesisManager,
+    CrpProgramManager crpProgramManager, CrpMilestoneManager crpMilestoneManager,
+    CrpProgramOutcomeManager crpProgramOutcomeManager, ReportSynthesisManager reportSynthesisManager,
     ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
     ReportSynthesisFlagshipProgressOutcomeManager reportSynthesisFlagshipProgressOutcomeManager,
-    LiaisonInstitutionManager liaisonInstitutionManager) {
+    LiaisonInstitutionManager liaisonInstitutionManager, GeneralStatusManager generalStatusManager,
+    CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager,
+    RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.crpProgramManager = crpProgramManager;
@@ -80,6 +98,10 @@ public class StatusPlannedOutcomesItem<T> {
     this.reportSynthesisFlagshipProgressManager = reportSynthesisFlagshipProgressManager;
     this.reportSynthesisFlagshipProgressOutcomeManager = reportSynthesisFlagshipProgressOutcomeManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
+    this.crpMilestoneManager = crpMilestoneManager;
+    this.generalStatusManager = generalStatusManager;
+    this.cgiarCrossCuttingMarkerManager = cgiarCrossCuttingMarkerManager;
+    this.repIndGenderYouthFocusLevelManager = repIndGenderYouthFocusLevelManager;
   }
 
   public Long createStatusPlannedOutcome(NewStatusPlannedOutcomeDTO newStatusPlannedOutcomeDTO, String entityAcronym,
@@ -149,6 +171,43 @@ public class StatusPlannedOutcomesItem<T> {
         reportSynthesisFlagshipProgressOutcome.setSummary(newStatusPlannedOutcomeDTO.getSumary());
         reportSynthesisFlagshipProgressOutcomeManager
           .saveReportSynthesisFlagshipProgressOutcome(reportSynthesisFlagshipProgressOutcome);
+
+        for (NewStatusPlannedMilestoneDTO milestones : newStatusPlannedOutcomeDTO.getStatusMilestoneList()) {
+          ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone =
+            new ReportSynthesisFlagshipProgressOutcomeMilestone();
+          CrpMilestone crpMilestone =
+            crpMilestoneManager.getCrpMilestoneByPhase(milestones.getMilestoneCode(), phase.getId());
+          if (crpMilestone != null) {
+            reportSynthesisFlagshipProgressOutcomeMilestone.setCrpMilestone(crpMilestone);
+            reportSynthesisFlagshipProgressOutcomeMilestone.setEvidence(milestones.getEvidence());
+            GeneralStatus status = generalStatusManager.getGeneralStatusById(milestones.getStatus());
+            reportSynthesisFlagshipProgressOutcomeMilestone.setMilestonesStatus(status);
+            reportSynthesisFlagshipProgressOutcomeMilestone
+              .setReportSynthesisFlagshipProgressOutcome(reportSynthesisFlagshipProgressOutcome);
+            reportSynthesisFlagshipProgressOutcomeMilestone.setCreatedBy(user);
+            for (NewCrosscuttingMarkersSynthesisDTO crosscuttingmarkers : milestones.getCrosscuttinmarkerList()) {
+              CgiarCrossCuttingMarker cgiarCrossCuttingMarker = cgiarCrossCuttingMarkerManager
+                .getCgiarCrossCuttingMarkerById(Long.parseLong(crosscuttingmarkers.getCrossCuttingmarker()));
+              if (cgiarCrossCuttingMarker != null) {
+                RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel = repIndGenderYouthFocusLevelManager
+                  .getRepIndGenderYouthFocusLevelById(Long.parseLong(crosscuttingmarkers.getCrossCuttingmarkerScore()));
+                if (repIndGenderYouthFocusLevel != null) {
+                  ReportSynthesisFlagshipProgressCrossCuttingMarker reportSynthesisFlagshipProgressCrossCuttingMarker =
+                    new ReportSynthesisFlagshipProgressCrossCuttingMarker();
+                  reportSynthesisFlagshipProgressCrossCuttingMarker.setReportSynthesisFlagshipProgressOutcomeMilestone(
+                    reportSynthesisFlagshipProgressOutcomeMilestone);
+                  reportSynthesisFlagshipProgressCrossCuttingMarker.setMarker(cgiarCrossCuttingMarker);
+                  reportSynthesisFlagshipProgressCrossCuttingMarker.setFocus(repIndGenderYouthFocusLevel);
+                  reportSynthesisFlagshipProgressCrossCuttingMarker.setJust(crosscuttingmarkers.getJustification());
+                }
+              }
+
+
+            }
+          }
+
+
+        }
       }
     }
 
