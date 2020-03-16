@@ -29,7 +29,7 @@ public class NewStatusPlannedMilestoneDTO {
   private String milestoneCode;
 
   @ApiModelProperty(notes = "Milestone Status", position = 2)
-  private List<NewCrosscuttingMarkersDTO> crosscuttinmarkerList;
+  private List<NewCrosscuttingMarkersSynthesisDTO> crosscuttinmarkerList;
 
   @ApiModelProperty(notes = "Milestone Status", position = 3)
   private Long status;
@@ -38,7 +38,7 @@ public class NewStatusPlannedMilestoneDTO {
   private String evidence;
 
 
-  public List<NewCrosscuttingMarkersDTO> getCrosscuttinmarkerList() {
+  public List<NewCrosscuttingMarkersSynthesisDTO> getCrosscuttinmarkerList() {
     return crosscuttinmarkerList;
   }
 
@@ -58,7 +58,7 @@ public class NewStatusPlannedMilestoneDTO {
   }
 
 
-  public void setCrosscuttinmarkerList(List<NewCrosscuttingMarkersDTO> crosscuttinmarkerList) {
+  public void setCrosscuttinmarkerList(List<NewCrosscuttingMarkersSynthesisDTO> crosscuttinmarkerList) {
     this.crosscuttinmarkerList = crosscuttinmarkerList;
   }
 
