@@ -1943,13 +1943,12 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         "fl_contrib", "show_publication", "showCompilance", "deliv_description", "hasIntellectualAsset", "isPantent",
         "isPvp", "hasParticipants", "isAcademicDegree", "hasParticipantsText", "participantEvent",
         "participantActivityType", "participantAcademicDegree", "participantTotalParticipants", "participantFemales",
-        "participantType", "hasIntellectualAssetText", "intellectualAssetApplicants", "intellectualAssetType",
-        "intellectualAssetTitle", "intellectualAssetFillingType", "intellectualAssetPantentStatus",
-        "intellectualAssetPatentType", "intellectualAssetPvpVarietyName", "intellectualAssetPvpStatus",
-        "intellectualAssetPvpCountry", "intellectualAssetPvpApplicationNumber", "intellectualAssetPvpBreederCrop",
-        "intellectualAssetDateFilling", "intellectualAssetDateRegistration", "intellectualAssetDateExpiry",
-        "intellectualAssetAdditionalInformation", "intellectualAssetLinkPublished", "intellectualAssetCommunication",
-        "otherPartner", "deliv_confidential_url"},
+        "participantType", "intellectualAssetApplicants", "intellectualAssetType", "intellectualAssetTitle",
+        "intellectualAssetFillingType", "intellectualAssetPantentStatus", "intellectualAssetPatentType",
+        "intellectualAssetPvpVarietyName", "intellectualAssetPvpStatus", "intellectualAssetPvpCountry",
+        "intellectualAssetPvpApplicationNumber", "intellectualAssetPvpBreederCrop", "intellectualAssetDateFilling",
+        "intellectualAssetDateRegistration", "intellectualAssetDateExpiry", "intellectualAssetAdditionalInformation",
+        "intellectualAssetLinkPublished", "intellectualAssetCommunication", "otherPartner"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
@@ -1961,7 +1960,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class},
+        String.class},
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
     if (!project.getDeliverables().isEmpty()) {
@@ -2184,7 +2183,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           && deliverable.getDeliverableDisseminations().stream().collect(Collectors.toList()).get(0) != null) {
           // Get deliverable dissemination
           DeliverableDissemination deliverableDissemination =
-            deliverable.getDeliverableDisseminations().stream().collect(Collectors.toList()).get(0);
+            deliverable.getDeliverableDisseminations().stream()
+              .filter(d -> d != null && d.getPhase() != null && d.getPhase().getId() != null
+                && this.getActualPhase() != null && this.getActualPhase().getId() != null
+                && d.getPhase().getId().equals(this.getActualPhase().getId()))
+              .collect(Collectors.toList()).get(0);
           if (deliverableDissemination.getAlreadyDisseminated() != null
             && deliverableDissemination.getAlreadyDisseminated() == true) {
             isDisseminated = true;
@@ -2695,13 +2698,13 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           volume, issue, pages, journal, journalIndicators, acknowledge, flContrib, showPublication, showCompilance,
           deliv_description, hasIntellectualAsset, isPantent, isPvp, hasParticipants, isAcademicDegree,
           hasParticipantsText, participantEvent, participantActivityType, participantAcademicDegree,
-          participantTotalParticipants, participantFemales, participantType, hasIntellectualAssetText,
-          intellectualAssetApplicants, intellectualAssetType, intellectualAssetTitle, intellectualAssetFillingType,
-          intellectualAssetPantentStatus, intellectualAssetPatentType, intellectualAssetPvpVarietyName,
-          intellectualAssetPvpStatus, intellectualAssetPvpCountry, intellectualAssetPvpApplicationNumber,
-          intellectualAssetPvpBreederCrop, intellectualAssetDateFilling, intellectualAssetDateRegistration,
-          intellectualAssetDateExpiry, intellectualAssetAdditionalInformation, intellectualAssetLinkPublished,
-          intellectualAssetCommunication, otherPartner, delivConfidentialUrl});
+          participantTotalParticipants, participantFemales, participantType, intellectualAssetApplicants,
+          intellectualAssetType, intellectualAssetTitle, intellectualAssetFillingType, intellectualAssetPantentStatus,
+          intellectualAssetPatentType, intellectualAssetPvpVarietyName, intellectualAssetPvpStatus,
+          intellectualAssetPvpCountry, intellectualAssetPvpApplicationNumber, intellectualAssetPvpBreederCrop,
+          intellectualAssetDateFilling, intellectualAssetDateRegistration, intellectualAssetDateExpiry,
+          intellectualAssetAdditionalInformation, intellectualAssetLinkPublished, intellectualAssetCommunication,
+          otherPartner});
       }
     }
     return model;
