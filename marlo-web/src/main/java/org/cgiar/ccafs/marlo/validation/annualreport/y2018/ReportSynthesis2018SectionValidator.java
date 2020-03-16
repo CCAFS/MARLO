@@ -360,12 +360,12 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
       reportSynthesis.setReportSynthesisFlagshipProgress(flagshipProgress);
       flagshipProgress.setReportSynthesis(reportSynthesis);
 
-      flagshipProgress2018Validator.validate(action, reportSynthesis, false);
+      flagshipProgress2018Validator.validate(action, reportSynthesis, false, false);
 
       // save the changes
       reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
     } else {
-      flagshipProgress2018Validator.validate(action, reportSynthesis, false);
+      flagshipProgress2018Validator.validate(action, reportSynthesis, false, false);
     }
 
   }
