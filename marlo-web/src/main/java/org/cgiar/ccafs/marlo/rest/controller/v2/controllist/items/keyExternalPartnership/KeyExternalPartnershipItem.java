@@ -516,6 +516,28 @@ public class KeyExternalPartnershipItem<T> {
     if (keyExternalPartnership == null) {
       fieldErrors.add(new FieldErrorDTO("findKeyExternalPartnership", "ReportSynthesisKeyPartnershipExternalEntity",
         id + " is an invalid id of a Report Synthesis Key Partnership External"));
+    } else {
+      if (keyExternalPartnership.getReportSynthesisKeyPartnership() == null) {
+        fieldErrors.add(new FieldErrorDTO("findKeyExternalPartnership", "ReportSynthesisKeyPartnershipEntity",
+          "There is no Report Synthesis Key Partnership assosiated to this entity!"));
+      } else {
+        if (keyExternalPartnership.getReportSynthesisKeyPartnership().getReportSynthesis() == null) {
+          fieldErrors.add(new FieldErrorDTO("findKeyExternalPartnership", "ReportSynthesisKeyPartnershipEntity",
+            "There is no Report Synthesis assosiated to this entity!"));
+        } else {
+          if (keyExternalPartnership.getReportSynthesisKeyPartnership().getReportSynthesis().getPhase() == null) {
+            fieldErrors.add(new FieldErrorDTO("findKeyExternalPartnership", "ReportSynthesisKeyPartnershipEntity",
+              "There is no Phase assosiated to this entity!"));
+          } else {
+            if (keyExternalPartnership.getReportSynthesisKeyPartnership().getReportSynthesis().getPhase()
+              .getId() != phase.getId()) {
+              fieldErrors.add(new FieldErrorDTO("findKeyExternalPartnership", "ReportSynthesisKeyPartnershipEntity",
+                "The Report Synthesis Key Partnership External with id " + id
+                  + " do not correspond to the phase entered"));
+            }
+          }
+        }
+      }
     }
 
     // TODO more validations!

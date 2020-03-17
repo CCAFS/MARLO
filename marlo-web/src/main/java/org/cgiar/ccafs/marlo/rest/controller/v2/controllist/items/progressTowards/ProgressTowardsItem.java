@@ -230,7 +230,8 @@ public class ProgressTowardsItem<T> {
 
       // start ReportSynthesis
       if (crpProgram != null) {
-        liaisonInstitution = liaisonInstitutionManager.findByAcronym(crpProgram.getAcronym());
+        liaisonInstitution =
+          liaisonInstitutionManager.findByAcronymAndCrp(crpProgram.getAcronym(), globalUnitEntity.getId());
         reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
       }
       // end ReportSynthesis
@@ -256,7 +257,8 @@ public class ProgressTowardsItem<T> {
         // creating new ReportSynthesis if it does not exist
         if (reportSynthesis == null) {
           reportSynthesis = new ReportSynthesis();
-          liaisonInstitution = liaisonInstitutionManager.findByAcronym(crpProgram.getAcronym());
+          liaisonInstitution =
+            liaisonInstitutionManager.findByAcronymAndCrp(crpProgram.getAcronym(), globalUnitEntity.getId());
           reportSynthesis.setLiaisonInstitution(liaisonInstitution);
           reportSynthesis.setPhase(phase);
           reportSynthesisManager.saveReportSynthesis(reportSynthesis);
@@ -436,6 +438,28 @@ public class ProgressTowardsItem<T> {
     if (reportSynthesisSrfProgressTarget == null) {
       fieldErrors.add(new FieldErrorDTO("findProgressTowardsById", "ReportSynthesisSrfProgressTargetEntity",
         id + " is an invalid id of a Report Synthesis Srf Progress Target"));
+    } else {
+      if (reportSynthesisSrfProgressTarget.getReportSynthesisSrfProgress() == null) {
+        fieldErrors.add(new FieldErrorDTO("findProgressTowardsById", "ReportSynthesisSrfProgressEntity",
+          "There is no Report Synthesis SRF Progress assosiated to this entity!"));
+      } else {
+        if (reportSynthesisSrfProgressTarget.getReportSynthesisSrfProgress().getReportSynthesis() == null) {
+          fieldErrors.add(new FieldErrorDTO("findProgressTowardsById", "ReportSynthesisEntity",
+            "There is no Report Synthesis assosiated to this entity!"));
+        } else {
+          if (reportSynthesisSrfProgressTarget.getReportSynthesisSrfProgress().getReportSynthesis()
+            .getPhase() == null) {
+            fieldErrors.add(new FieldErrorDTO("findProgressTowardsById", "PhaseEntity",
+              "There is no Phase assosiated to this entity!"));
+          } else {
+            if (reportSynthesisSrfProgressTarget.getReportSynthesisSrfProgress().getReportSynthesis().getPhase()
+              .getId() != phase.getId()) {
+              fieldErrors.add(new FieldErrorDTO("findProgressTowardsById", "ReportSynthesisSrfProgressTargetEntity",
+                "The Report Synthesis Srf Progress Target with id " + id + " do not correspond to the phase entered"));
+            }
+          }
+        }
+      }
     }
 
     // TODO more validations!
@@ -580,7 +604,8 @@ public class ProgressTowardsItem<T> {
 
       reportSynthesisSrfProgressTarget.setSrfSloIndicatorTarget(srfSloIndicatorTarget);
 
-      LiaisonInstitution liaisonInstitution = liaisonInstitutionManager.findByAcronym(crpProgram.getAcronym());
+      LiaisonInstitution liaisonInstitution =
+        liaisonInstitutionManager.findByAcronymAndCrp(crpProgram.getAcronym(), globalUnitEntity.getId());
       if (liaisonInstitution == null) {
         fieldErrors.add(new FieldErrorDTO("putProgressTowards", "LiaisonInstitutionEntity",
           "A Liaison Institution with the acronym " + crpProgram.getAcronym() + " could not be found"));
