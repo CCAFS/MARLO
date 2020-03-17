@@ -214,7 +214,8 @@ public class CrossCGIARCollaborationsItem<T> {
 
       // start ReportSynthesis
       if (crpProgram != null) {
-        liaisonInstitution = liaisonInstitutionManager.findByAcronym(crpProgram.getAcronym());
+        liaisonInstitution =
+          liaisonInstitutionManager.findByAcronymAndCrp(crpProgram.getAcronym(), globalUnitEntity.getId());
         reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
       }
       // end ReportSynthesis
@@ -238,7 +239,8 @@ public class CrossCGIARCollaborationsItem<T> {
         // creating new ReportSynthesis if it does not exist
         if (reportSynthesis == null) {
           reportSynthesis = new ReportSynthesis();
-          liaisonInstitution = liaisonInstitutionManager.findByAcronym(crpProgram.getAcronym());
+          liaisonInstitution =
+            liaisonInstitutionManager.findByAcronymAndCrp(crpProgram.getAcronym(), globalUnitEntity.getId());
           reportSynthesis.setLiaisonInstitution(liaisonInstitution);
           reportSynthesis.setPhase(phase);
           reportSynthesisManager.saveReportSynthesis(reportSynthesis);
@@ -425,10 +427,34 @@ public class CrossCGIARCollaborationsItem<T> {
 
     ReportSynthesisKeyPartnershipCollaboration keyPartnershipCollaboration =
       reportSynthesisKeyPartnershipCollaborationManager.getReportSynthesisKeyPartnershipCollaborationById(id);
+
     if (keyPartnershipCollaboration == null) {
       fieldErrors
         .add(new FieldErrorDTO("findCrossCGIARCollaboration", "ReportSynthesisKeyPartnershipCollaborationEntity",
           id + " is an invalid id of a Report Synthesis Key Partnership Collaboration"));
+    } else {
+      if (keyPartnershipCollaboration.getReportSynthesisKeyPartnership() == null) {
+        fieldErrors.add(new FieldErrorDTO("findCrossCGIARCollaboration", "ReportSynthesisKeyPartnershipEntity",
+          "There is no Report Synthesis Key Partnership assosiated to this entity!"));
+      } else {
+        if (keyPartnershipCollaboration.getReportSynthesisKeyPartnership().getReportSynthesis() == null) {
+          fieldErrors.add(new FieldErrorDTO("findCrossCGIARCollaboration", "ReportSynthesisEntity",
+            "There is no Report Synthesis assosiated to this entity!"));
+        } else {
+          if (keyPartnershipCollaboration.getReportSynthesisKeyPartnership().getReportSynthesis().getPhase() == null) {
+            fieldErrors.add(new FieldErrorDTO("findCrossCGIARCollaboration", "PhaseEntity",
+              "There is no Phase assosiated to this entity!"));
+          } else {
+            if (keyPartnershipCollaboration.getReportSynthesisKeyPartnership().getReportSynthesis().getPhase()
+              .getId() != phase.getId()) {
+              fieldErrors.add(
+                new FieldErrorDTO("findCrossCGIARCollaboration", "ReportSynthesisKeyPartnershipCollaborationEntity",
+                  "The Report Synthesis Key Partnership Collaboration with id " + id
+                    + " do not correspond to the phase entered"));
+            }
+          }
+        }
+      }
     }
 
     // TODO more validations!
@@ -524,7 +550,15 @@ public class CrossCGIARCollaborationsItem<T> {
     if (keyPartnershipCollaboration == null) {
       fieldErrors
         .add(new FieldErrorDTO("putCrossCGIARCollaboration", "ReportSynthesisKeyPartnershipCollaborationEntity",
-          +idCrossCGIARCollaboration + " is an invalid Report Synthesis Key Partnership Collaboration Code"));
+          idCrossCGIARCollaboration + " is an invalid id of a Report Synthesis Key Partnership Collaboration"));
+    } else {
+      if (!keyPartnershipCollaboration.getReportSynthesisKeyPartnership().getReportSynthesis().getPhase()
+        .equals(phase)) {
+        fieldErrors.add(new FieldErrorDTO("findCrossCGIARCollaboration",
+          "ReportSynthesisKeyPartnershipCollaborationEntity", "Report Synthesis Key Partnership Collaboration with id "
+            + idCrossCGIARCollaboration + " do not correspond to the phase entered"));
+
+      }
     }
 
     if (fieldErrors.isEmpty()) {
@@ -592,7 +626,8 @@ public class CrossCGIARCollaborationsItem<T> {
 
       keyPartnershipCollaboration.setValueAdded(newCrossCGIARCollaborationDTO.getValueAdded());
 
-      LiaisonInstitution liaisonInstitution = liaisonInstitutionManager.findByAcronym(crpProgram.getAcronym());
+      LiaisonInstitution liaisonInstitution =
+        liaisonInstitutionManager.findByAcronymAndCrp(crpProgram.getAcronym(), globalUnitEntity.getId());
       if (liaisonInstitution == null) {
         fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "LiaisonInstitutionEntity",
           "A Liaison Institution with the acronym " + crpProgram.getAcronym() + " could not be found"));
