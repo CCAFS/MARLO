@@ -137,7 +137,7 @@ function formatState(state) {
     return state.text;
   }
   var $state =
-      $('<span> <i class="flag-sm flag-sm-' + state.element.value.toUpperCase() + '"></i>  ' + state.text + '</span>');
+      $('<span> <i class="flag-icon flag-icon-' + state.element.value.toLowerCase() + '"></i>  ' + state.text + '</span>');
   return $state;
 };
 
