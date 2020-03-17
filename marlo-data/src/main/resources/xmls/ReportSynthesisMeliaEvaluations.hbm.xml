@@ -41,6 +41,9 @@
 		<property name="textWhom" type="string">
 			<column name="text_whon" length="65535" />
 		</property>
+		<property name="evidences" type="string">
+			<column name="evidences" length="65535" />
+		</property>
 		<property name="textWhen" type="string">
 			<column name="text_when" length="65535" />
 		</property>

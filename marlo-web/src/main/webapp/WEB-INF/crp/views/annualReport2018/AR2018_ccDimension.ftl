@@ -10,7 +10,7 @@
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js",
-  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20200304" 
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20200310" 
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20190621"] /]
 
@@ -204,70 +204,70 @@
                     <br />
                     
                     [#-- CapDevCharts--]
-                    <div class="form-group">
-                      <div class="row">
-                        <div class="col-md-4">
-                          <div id="" class="simpleBox numberBox">
+                    <div class="form-group row">
+                      <div class="col-md-4">
+                        <div id="" class="simpleBox numberBox">
                             <label for="">[@s.text name="${customLabel}.totalParticipants" /]</label><br />
                             <span>${(totalParticipants?number?string(",##0"))!0}</span>
-                          </div>
-                          <div id="" class="simpleBox numberBox">
+                         </div>
+                         <div id="" class="simpleBox numberBox">
                             <label for="">Participants in [@s.text name="${customLabel}.totalParticipantFormalTraining" /]</label><br />
                             <span>${(totalParticipantFormalTraining?number?string(",##0"))!0}</span>
-                          </div>
+                         </div>
+                      </div>
+                      <div class="col-md-8">
+                        [#-- Trainees in Short-Term --]
+                        <div id="chart12" class="chartBox simpleBox">
+                          [#assign chartData = [
+                            {"name":"Male",   "value": "${(totalParticipantFormalTrainingShortMale)!0}"},
+                            {"name":"Female", "value": "${(totalParticipantFormalTrainingShortFemale)!0}"}
+                          ] /] 
+                          <ul class="chartData" style="display:none">
+                            <li>
+                              <span>[@s.text name="${customLabel}" /]</span>
+                              <span>[@s.text name="Short-Term" /]</span>
+                              <span class="json">{"role":"annotation"}</span>
+                            </li>
+                            [#if (((totalParticipantFormalTrainingShortMale)!0) + ((totalParticipantFormalTrainingShortFemale)!0)) > 0 ]
+                              [#list chartData as data]
+                                <li>
+                                  <span>${data.name}</span>
+                                  <span class="number">${data.value}</span>
+                                  <span>${data.value}</span>
+                                </li>
+                              [/#list]
+                            [/#if]
+                          </ul>
                         </div>
-                        <div class="col-md-8">
-                          <div class="col-lg">
-                            <div class="row form-group">
-                              <div id="chart12" class="chartBox simpleBox">
-                                [#assign chartData = [
-                                    {"name":"Male",   "value": "${(totalParticipantFormalTrainingShortMale)!0}"},
-                                    {"name":"Female", "value": "${(totalParticipantFormalTrainingShortFemale)!0}"}
-                                  ] /] 
-                                <ul class="chartData" style="display:none">
-                                  <li>
-                                    <span>[@s.text name="${customLabel}" /]</span>
-                                    <span>[@s.text name="Short-Term" /]</span>
-                                    <span class="json">{"role":"annotation"}</span>
-                                  </li>
-                                  [#if (((totalParticipantFormalTrainingShortMale)!0) + ((totalParticipantFormalTrainingShortFemale)!0)) > 0 ]
-                                    [#list chartData as data]
-                                      <li><span>${data.name}</span><span class="number">${data.value}</span><span>${data.value}</span></li>
-                                    [/#list]
-                                  [/#if]
-                                </ul>
-                              </div>
-                            </div>
-                            <div class="row form-group">
-                              <div id="chart13" class="chartBox simpleBox">
-                                [#assign chartData = [
-                                    {"name":"Male",   "value": "${(totalParticipantFormalTrainingLongMale)!0}",   "valuePhD": "${(totalParticipantFormalTrainingPhdMale)!0}"}
-                                    {"name":"Female", "value": "${(totalParticipantFormalTrainingLongFemale)!0}",   "valuePhD": "${(totalParticipantFormalTrainingPhdFemale)!0}"}
-                                  ] /] 
-                                <ul class="chartData" style="display:none">
-                                  <li>
-                                    <span>[@s.text name="${customLabel}.chart13" /]</span>
-                                    <span>[@s.text name="Long-Term" /]</span>
-                                    <span class="json">{"role":"annotation"}</span>
-                                    <span>[@s.text name="PhD" /]</span>
-                                    <span class="json">{"role":"annotation"}</span>
-                                  </li>
-                                  [#if (((totalParticipantFormalTrainingLongMale)!0) + ((totalParticipantFormalTrainingLongFemale)!0)) > 0 ]
-                                    [#list chartData as data]
-                                      <li><span>${data.name}</span>
-                                      <span class="number">${data.value}</span>
-                                      <span>${data.value}</span>
-                                      <span class="number">${data.valuePhD}</span>
-                                      <span>${data.valuePhD}</span></li>
-                                    [/#list]
-                                  [/#if]
-                                </ul>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                        <br />
+                        [#-- Trainees in Long-Term --]
+                        <div id="chart13" class="chartBox simpleBox">
+                          [#assign chartData = [
+                            {"name":"Male",   "value": "${(totalParticipantFormalTrainingLongMale)!0}",   "valuePhD": "${(totalParticipantFormalTrainingPhdMale)!0}"}
+                            {"name":"Female", "value": "${(totalParticipantFormalTrainingLongFemale)!0}",   "valuePhD": "${(totalParticipantFormalTrainingPhdFemale)!0}"}
+                          ] /] 
+                          <ul class="chartData" style="display:none">
+                            <li>
+                              <span>[@s.text name="${customLabel}.chart13" /]</span>
+                              <span>[@s.text name="Long-Term" /]</span>
+                              <span class="json">{"role":"annotation"}</span>
+                              <span>[@s.text name="PhD" /]</span>
+                              <span class="json">{"role":"annotation"}</span>
+                            </li>
+                            [#if (((totalParticipantFormalTrainingLongMale)!0) + ((totalParticipantFormalTrainingLongFemale)!0)) > 0 ]
+                              [#list chartData as data]
+                                <li><span>${data.name}</span>
+                                <span class="number">${data.value}</span>
+                                <span>${data.value}</span>
+                                <span class="number">${data.valuePhD}</span>
+                                <span>${data.valuePhD}</span></li>
+                              [/#list]
+                            [/#if]
+                          </ul>
+                         </div>
                       </div>
                     </div>
+                    
                     
                     [#-- Deliverables Participants & Trainees --]
                     <div class="form-group">

@@ -774,6 +774,7 @@ public class MonitoringEvaluationAction extends BaseAction {
           evaluationSave.setRecommendation(evaluation.getRecommendation());
           evaluationSave.setManagementResponse(evaluation.getManagementResponse());
           evaluationSave.setComments(evaluation.getComments());
+          evaluationSave.setEvidences(evaluation.getEvidences());
           evaluationSave = reportSynthesisMeliaEvaluationManager.saveReportSynthesisMeliaEvaluation(evaluationSave);
 
           // Save evaluationActions
@@ -809,6 +810,7 @@ public class MonitoringEvaluationAction extends BaseAction {
           evaluationPrev.setRecommendation(evaluation.getRecommendation());
           evaluationPrev.setManagementResponse(evaluation.getManagementResponse());
           evaluationPrev.setComments(evaluation.getComments());
+          evaluationPrev.setEvidences(evaluation.getEvidences());
 
           List<ReportSynthesisMeliaEvaluationAction> evaluationActionsPrev =
             new ArrayList<>(evaluationPrev.getReportSynthesisMeliaEvaluationActions().stream()

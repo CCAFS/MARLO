@@ -9,7 +9,7 @@
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
-  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js",
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20200310",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js"
   ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20190621"] /]
@@ -64,8 +64,12 @@
                   <span>${(total)!}</span>
                 </div>
               </div>
+              <div class="col-md-8">
+              </div>
+             </div>
               
-              <div class="col-md-4">
+              <div class="form-group row">
+              <div class="col-md-6">
                 [#-- Chart 10 - Number of peer reviewed articles by Open Access status --]
                 <div id="chart10" class="chartBox simpleBox">
                   [#assign chartData = [
@@ -84,7 +88,7 @@
                 </div>
               </div>
               
-              <div class="col-md-4">
+              <div class="col-md-6">
                 [#-- Chart 11 - Number of peer reviewed articles by ISI status --]
                 <div id="chart11" class="chartBox simpleBox">
                   [#assign chartData = [
