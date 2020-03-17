@@ -564,7 +564,7 @@ public class ExpectedStudiesItem<T> {
                   "There should be at least one Sub-IDO marked as primary"));
               }
               if (hasPrimary > 1) {
-                fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "SubIDO",
+                fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "SubIDO",
                   "There can not be more than one Sub-IDO marked as primary"));
               }
             } else {
