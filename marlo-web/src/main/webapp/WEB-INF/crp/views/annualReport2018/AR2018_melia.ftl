@@ -268,7 +268,7 @@
     </div>
     [#-- Link to evidence --]
     <div class="form-group">
-       [@customForm.textArea name="${customName}.evidences" i18nkey="${customLabel}.table11.evidence" className="evidenceList" helpIcon=false className="" editable=isEditable allowTextEditor=true /]
+       [@customForm.textArea name="${customName}.evidences" i18nkey="${customLabel}.table11.evidences" className="evidenceList" helpIcon=false className="" editable=isEditable allowTextEditor=true /]
     </div>
 
       
