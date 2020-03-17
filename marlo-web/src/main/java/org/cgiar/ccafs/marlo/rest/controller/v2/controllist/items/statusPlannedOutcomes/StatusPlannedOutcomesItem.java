@@ -28,8 +28,10 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressOutcomeMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
@@ -75,6 +77,8 @@ public class StatusPlannedOutcomesItem<T> {
   private ReportSynthesisManager reportSynthesisManager;
   private ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager;
   private ReportSynthesisFlagshipProgressOutcomeManager reportSynthesisFlagshipProgressOutcomeManager;
+  private ReportSynthesisFlagshipProgressOutcomeMilestoneManager reportSynthesisFlagshipProgressOutcomeMilestoneManager;
+  private ReportSynthesisFlagshipProgressCrossCuttingMarkerManager reportSynthesisFlagshipProgressCrossCuttingMarkerManager;
   private LiaisonInstitutionManager liaisonInstitutionManager;
   private GeneralStatusManager generalStatusManager;
   private CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager;
@@ -87,6 +91,8 @@ public class StatusPlannedOutcomesItem<T> {
     CrpProgramOutcomeManager crpProgramOutcomeManager, ReportSynthesisManager reportSynthesisManager,
     ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
     ReportSynthesisFlagshipProgressOutcomeManager reportSynthesisFlagshipProgressOutcomeManager,
+    ReportSynthesisFlagshipProgressOutcomeMilestoneManager reportSynthesisFlagshipProgressOutcomeMilestoneManager,
+    ReportSynthesisFlagshipProgressCrossCuttingMarkerManager reportSynthesisFlagshipProgressCrossCuttingMarkerManager,
     LiaisonInstitutionManager liaisonInstitutionManager, GeneralStatusManager generalStatusManager,
     CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager,
     RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager) {
@@ -102,6 +108,10 @@ public class StatusPlannedOutcomesItem<T> {
     this.generalStatusManager = generalStatusManager;
     this.cgiarCrossCuttingMarkerManager = cgiarCrossCuttingMarkerManager;
     this.repIndGenderYouthFocusLevelManager = repIndGenderYouthFocusLevelManager;
+    this.reportSynthesisFlagshipProgressOutcomeMilestoneManager =
+      reportSynthesisFlagshipProgressOutcomeMilestoneManager;
+    this.reportSynthesisFlagshipProgressCrossCuttingMarkerManager =
+      reportSynthesisFlagshipProgressCrossCuttingMarkerManager;
   }
 
   public Long createStatusPlannedOutcome(NewStatusPlannedOutcomeDTO newStatusPlannedOutcomeDTO, String entityAcronym,
@@ -163,17 +173,13 @@ public class StatusPlannedOutcomesItem<T> {
         // set report synthesis flagship progress
         reportSynthesisFlagshipProgress = new ReportSynthesisFlagshipProgress();
         reportSynthesisFlagshipProgress.setCreatedBy(user);
-        reportSynthesisFlagshipProgress.setReportSynthesis(reportSynthesis);
-        reportSynthesis.setReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgress);
-        // reportSynthesisFlagshipProgressManager.saveReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgress);
+
         // set report synthesis flagship progress outcome
         reportSynthesisFlagshipProgressOutcome = new ReportSynthesisFlagshipProgressOutcome();
-        reportSynthesisFlagshipProgressOutcome.setReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgress);
         reportSynthesisFlagshipProgressOutcome.setCrpProgramOutcome(crpProgramOutcome);
         reportSynthesisFlagshipProgressOutcome.setSummary(newStatusPlannedOutcomeDTO.getSumary());
-        // reportSynthesisFlagshipProgressOutcomeManager
-        // .saveReportSynthesisFlagshipProgressOutcome(reportSynthesisFlagshipProgressOutcome);
-
+        List<ReportSynthesisFlagshipProgressOutcomeMilestone> reportSynthesisFlagshipProgressOutcomeMilestoneList =
+          new ArrayList<ReportSynthesisFlagshipProgressOutcomeMilestone>();
         for (NewStatusPlannedMilestoneDTO milestones : newStatusPlannedOutcomeDTO.getStatusMilestoneList()) {
           ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone =
             new ReportSynthesisFlagshipProgressOutcomeMilestone();
@@ -198,22 +204,54 @@ public class StatusPlannedOutcomesItem<T> {
                 if (repIndGenderYouthFocusLevel != null) {
                   ReportSynthesisFlagshipProgressCrossCuttingMarker reportSynthesisFlagshipProgressCrossCuttingMarker =
                     new ReportSynthesisFlagshipProgressCrossCuttingMarker();
-                  // reportSynthesisFlagshipProgressCrossCuttingMarker.setReportSynthesisFlagshipProgressOutcomeMilestone(
-                  // reportSynthesisFlagshipProgressOutcomeMilestone);
                   reportSynthesisFlagshipProgressCrossCuttingMarker.setMarker(cgiarCrossCuttingMarker);
                   reportSynthesisFlagshipProgressCrossCuttingMarker.setFocus(repIndGenderYouthFocusLevel);
                   reportSynthesisFlagshipProgressCrossCuttingMarker.setJust(crosscuttingmarkers.getJustification());
                   reportSynthesisFlagshipProgressCrossCuttingMarkerList
                     .add(reportSynthesisFlagshipProgressCrossCuttingMarker);
                 }
+              } else {
+                fieldErrors.add(new FieldErrorDTO("createStatusPlannedOutcome", "Crosscutting markers",
+                  crosscuttingmarkers.getCrossCuttingmarker() + "is an invalid CGIAR Crosscutting marker"));
               }
               reportSynthesisFlagshipProgressOutcomeMilestone
                 .setMarkers(reportSynthesisFlagshipProgressCrossCuttingMarkerList);
             }
+            reportSynthesisFlagshipProgressOutcomeMilestoneList.add(reportSynthesisFlagshipProgressOutcomeMilestone);
           }
         }
         if (fieldErrors.isEmpty()) {
           reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
+          if (reportSynthesis != null) {
+            reportSynthesisFlagshipProgress.setReportSynthesis(reportSynthesis);
+            reportSynthesisFlagshipProgress = reportSynthesisFlagshipProgressManager
+              .saveReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgress);
+            if (reportSynthesisFlagshipProgress != null) {
+              reportSynthesisFlagshipProgressOutcome
+                .setReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgress);
+              reportSynthesisFlagshipProgressOutcome = reportSynthesisFlagshipProgressOutcomeManager
+                .saveReportSynthesisFlagshipProgressOutcome(reportSynthesisFlagshipProgressOutcome);
+              if (reportSynthesisFlagshipProgressOutcome != null) {
+                for (ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone : reportSynthesisFlagshipProgressOutcomeMilestoneList) {
+                  reportSynthesisFlagshipProgressOutcomeMilestone
+                    .setReportSynthesisFlagshipProgressOutcome(reportSynthesisFlagshipProgressOutcome);
+                  reportSynthesisFlagshipProgressOutcomeMilestone =
+                    reportSynthesisFlagshipProgressOutcomeMilestoneManager
+                      .saveReportSynthesisFlagshipProgressOutcomeMilestone(
+                        reportSynthesisFlagshipProgressOutcomeMilestone);
+                  for (ReportSynthesisFlagshipProgressCrossCuttingMarker reportSynthesisFlagshipProgressCrossCuttingMarker : reportSynthesisFlagshipProgressOutcomeMilestone
+                    .getMarkers()) {
+                    reportSynthesisFlagshipProgressCrossCuttingMarker
+                      .setReportSynthesisFlagshipProgressOutcomeMilestone(
+                        reportSynthesisFlagshipProgressOutcomeMilestone);
+                    reportSynthesisFlagshipProgressCrossCuttingMarkerManager
+                      .saveReportSynthesisFlagshipProgressCrossCuttingMarker(
+                        reportSynthesisFlagshipProgressCrossCuttingMarker);
+                  }
+                }
+              }
+            }
+          }
         }
       } else {
 
