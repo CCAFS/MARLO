@@ -87,7 +87,7 @@
 		<!-- Projects Summaries -->
 		<action name="{crp}/projectHighlightSummary"
 			class="org.cgiar.ccafs.marlo.action.summaries.ProjectHighlightSummaryAction">
-			<interceptor-ref name="publicSummaryStack" />
+			<interceptor-ref name="privateSummaryStack" />
 			<result name="success" type="stream">
 				<param name="inputName">inputStream</param>
 				     
