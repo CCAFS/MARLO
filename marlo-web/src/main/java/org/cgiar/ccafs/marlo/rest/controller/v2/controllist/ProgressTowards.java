@@ -80,18 +80,15 @@ public class ProgressTowards {
       required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${ProgressTowards.progresstowardsSRF.POST.param.progresstowardsSRF}",
       required = true) @Valid @RequestBody NewSrfProgressTowardsTargetDTO newSrfProgressTowardsTargetDTO) {
-    Long policyId = new Long(0);
-    try {
-      policyId = this.progressTowardsItem.createProgressTowards(newSrfProgressTowardsTargetDTO, CGIAREntity,
-        this.getCurrentUser());
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
 
-    ResponseEntity<Long> response = new ResponseEntity<Long>(policyId, HttpStatus.OK);
+    Long progressTowardsId = this.progressTowardsItem.createProgressTowards(newSrfProgressTowardsTargetDTO, CGIAREntity,
+      this.getCurrentUser());
+
+    ResponseEntity<Long> response = new ResponseEntity<Long>(progressTowardsId, HttpStatus.OK);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("ProgressTowards.progresstowardsSRF.GET.id.404"));
     }
+
     return response;
   }
 
@@ -100,7 +97,7 @@ public class ProgressTowards {
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIAREntity}/progresstowards/{id}", method = RequestMethod.DELETE,
     produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<SrfProgressTowardsTargetDTO> deleteKeyExternalPartnershipById(
+  public ResponseEntity<SrfProgressTowardsTargetDTO> deleteProgressTowardsById(
     @ApiParam(value = "${ProgressTowards.progresstowardsSRF.DELETE.id.param.CGIAR}",
       required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${ProgressTowards.progresstowardsSRF.DELETE.id.param.id}",
@@ -109,6 +106,7 @@ public class ProgressTowards {
       required = true) @RequestParam Integer year,
     @ApiParam(value = "${ProgressTowards.progresstowardsSRF.DELETE.id.param.phase}",
       required = true) @RequestParam String phase) {
+
     ResponseEntity<SrfProgressTowardsTargetDTO> response =
       this.progressTowardsItem.deleteProgressTowardsById(id, CGIAREntity, year, phase, this.getCurrentUser());
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
@@ -138,7 +136,7 @@ public class ProgressTowards {
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIAREntity}/progresstowards/{id}", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<SrfProgressTowardsTargetDTO> findKeyExternalPartnershipById(
+  public ResponseEntity<SrfProgressTowardsTargetDTO> findProgressTowardsById(
     @ApiParam(value = "${ProgressTowards.progresstowardsSRF.GET.id.param.CGIAR}",
       required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${ProgressTowards.progresstowardsSRF.GET.id.param.id}", required = true) @PathVariable Long id,
@@ -147,43 +145,10 @@ public class ProgressTowards {
     @ApiParam(value = "${ProgressTowards.progresstowardsSRF.GET.id.param.phase}",
       required = true) @RequestParam String phase) {
 
-    ResponseEntity<SrfProgressTowardsTargetDTO> response = null;
-
-    try {
-      response = this.progressTowardsItem.findProgressTowardsById(id, CGIAREntity, year, phase, this.getCurrentUser());
-      if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-        throw new NotFoundException("404", this.env.getProperty("ProgressTowards.progresstowardsSRF.GET.id.404"));
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-
-    return response;
-  }
-
-  @ApiOperation(tags = {"Table 1 - Progress towards SRF targets"},
-    value = "${ProgressTowards.progresstowardsSRF.PUT.value}", response = SrfProgressTowardsTargetDTO.class)
-  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/{CGIAREntity}/progresstowards/{id}", method = RequestMethod.PUT,
-    produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Long> findKeyExternalPartnershipById(
-    @ApiParam(value = "${ProgressTowards.progresstowardsSRF.PUT.param.CGIAR}",
-      required = true) @PathVariable String CGIAREntity,
-    @ApiParam(value = "${ProgressTowards.progresstowardsSRF.PUT.param.id}", required = true) @PathVariable Long id,
-    @ApiParam(value = "${ProgressTowards.progresstowardsSRF.PUT.param.progresstowardsSRF}",
-      required = true) @Valid @RequestBody NewSrfProgressTowardsTargetDTO newKeyExternalPartnershipDTO) {
-
-    ResponseEntity<Long> response = null;
-    try {
-      Long innovationId = this.progressTowardsItem.putProgressTowardsById(id, newKeyExternalPartnershipDTO, CGIAREntity,
-        this.getCurrentUser());
-      response = new ResponseEntity<Long>(innovationId, HttpStatus.OK);
-      if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-        throw new NotFoundException("404",
-          this.env.getProperty("KeyExternalPartnership.externalpartnerships.PUT.id.404"));
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
+    ResponseEntity<SrfProgressTowardsTargetDTO> response =
+      this.progressTowardsItem.findProgressTowardsById(id, CGIAREntity, year, phase, this.getCurrentUser());
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("ProgressTowards.progresstowardsSRF.GET.id.404"));
     }
 
     return response;
@@ -194,6 +159,29 @@ public class ProgressTowards {
     Long principal = (Long) subject.getPrincipal();
     User user = this.userManager.getUser(principal);
     return user;
+  }
+
+  @ApiOperation(tags = {"Table 1 - Progress towards SRF targets"},
+    value = "${ProgressTowards.progresstowardsSRF.PUT.value}", response = SrfProgressTowardsTargetDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/progresstowards/{id}", method = RequestMethod.PUT,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Long> putProgressTowardsById(
+    @ApiParam(value = "${ProgressTowards.progresstowardsSRF.PUT.param.CGIAR}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${ProgressTowards.progresstowardsSRF.PUT.param.id}", required = true) @PathVariable Long id,
+    @ApiParam(value = "${ProgressTowards.progresstowardsSRF.PUT.param.progresstowardsSRF}",
+      required = true) @Valid @RequestBody NewSrfProgressTowardsTargetDTO newKeyExternalPartnershipDTO) {
+
+    Long progressTowardsId = this.progressTowardsItem.putProgressTowardsById(id, newKeyExternalPartnershipDTO,
+      CGIAREntity, this.getCurrentUser());
+
+    ResponseEntity<Long> response = new ResponseEntity<Long>(progressTowardsId, HttpStatus.OK);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("ProgressTowards.progresstowardsSRF.PUT.id.404"));
+    }
+
+    return response;
   }
 
 

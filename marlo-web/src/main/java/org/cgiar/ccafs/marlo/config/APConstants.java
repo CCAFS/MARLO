@@ -738,6 +738,10 @@ public final class APConstants {
   public static final long REP_IND_TRAINING_TERMS_SHORT = 1;
   public static final long REP_IND_TRAINING_TERMS_LONG = 2;
   public static final long REP_IND_TRAINING_TERMS_PHD = 4;
+  public static final long REP_IND_POLICY_INVESTIMENT_TYPES_POLICY = 1;
+  public static final long REP_IND_POLICY_INVESTIMENT_TYPES_LEGALINSTRUMENT = 2;
+  public static final long REP_IND_POLICY_INVESTIMENT_TYPES_BUDGET = 3;
+  public static final long REP_IND_POLICY_INVESTIMENT_TYPES_CURRICULUM = 4;
 
   // Capdev Parameters
   public static final String CRP_CD_ROLE = "crp_cd_role";

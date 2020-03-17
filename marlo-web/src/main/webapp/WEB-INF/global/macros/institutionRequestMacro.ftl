@@ -21,7 +21,7 @@
               [#-- Partner type --]
               <p><strong>[@s.text name="Type" /]:</strong> <i>${partner.institutionType.name}</i></p>
               [#-- Country --]
-              <p><strong>[@s.text name="Country" /]:</strong> <i class="flag-sm flag-sm-${(partner.countryISO?upper_case)!}"></i> <i>${partner.countryInfo}</i></p>
+              <p><strong>[@s.text name="Country" /]:</strong> <i class="flag-icon flag-icon-${(partner.countryISO?lower_case)!}"></i> <i>${partner.countryInfo}</i></p>
               [#-- Requested Source --]
               <p><strong>[@s.text name="Requested Source" /]:</strong> <i>${(partner.requestSource)}</i></p>
               [#-- CRP --]
@@ -159,7 +159,7 @@
                     <li class="inputsFlat li-item officeCountryRequest">
                       <input type="checkbox"  name="${customOfficeName}.id" id="officeRequest-${officeRequest.id}" class="officeRequest" value="${officeRequest.id}" />
                       <label class="checkbox-label" for="officeRequest-${officeRequest.id}">${officeRequest.locElement.name}</label>
-                      <i class="pull-right flag-sm flag-sm-${(officeRequest.locElement.isoAlpha2?upper_case)!}"></i> 
+                      <i class="pull-right flag-icon flag-icon-${(officeRequest.locElement.isoAlpha2?lower_case)!}"></i> 
                       [#-- It was muted, its better to show in the form --]
                       [#-- Added Requested Source --]
                       <br><strong>[@s.text name="Requested Source" /]:</strong> <i>${(officeRequest.requestSource)}</i>                    

@@ -793,12 +793,14 @@ public class OutcomesMilestonesAction extends BaseAction {
           .collect(Collectors.toList()));
     }
     for (CrpProgramOutcome outcome : outcomesList) {
-
+      // setting milestones
       outcome.setMilestones(outcome.getCrpMilestones().stream()
         .filter(c -> c.isActive() && (c.getYear().intValue() == this.getActualPhase().getYear()
           || (c.getExtendedYear() != null && c.getExtendedYear().intValue() == this.getActualPhase().getYear())))
         .collect(Collectors.toList()));
-
+      // setting subidos
+      outcome
+        .setSubIdos(outcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
       if (outcome.getMilestones() != null && !outcome.getMilestones().isEmpty()) {
         outcomesSet.add(outcome);
       }
