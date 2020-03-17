@@ -837,7 +837,7 @@ img.icon {
 
 .removeElement.sm {
   padding: 9px 10px;
-  z-index: 1000;
+  /*z-index: 1000;*/
 }
 
 .removeIcon {
