@@ -325,6 +325,7 @@ public class FlagshipProgressAction extends BaseAction {
         .getFlagshipsReportSynthesisFlagshipProgress(liaisonInstitutions, phase.getId());
       if (flagshipsReportSynthesisFlagshipProgress != null) {
         int count = 0;
+        hasFlagshipProgress = false;
         if (flagshipsReportSynthesisFlagshipProgress.stream()
           .filter(f -> f != null && f.getProgressByFlagships() != null && !f.getProgressByFlagships().isEmpty())
           .collect(Collectors.toList()) != null
@@ -333,7 +334,6 @@ public class FlagshipProgressAction extends BaseAction {
             .collect(Collectors.toList()).size() > 0) {
           count++;
         }
-        hasFlagshipProgress = false;
         if (flagshipsReportSynthesisFlagshipProgress.stream()
           .filter(f -> f != null && f.getDetailedAnnex() != null && !f.getDetailedAnnex().isEmpty())
           .collect(Collectors.toList()) != null

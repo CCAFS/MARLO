@@ -450,7 +450,7 @@ function addOutput(option) {
 
   // Set output parameters
   $item.find(".name").attr("title", $(option).text());
-  // var $state = $('<span> <i class="flag-sm flag-sm-' + option.val() + '"></i> ' + v + '</span>');
+  // var $state = $('<span> <i class="flag-icon flag-icon-' + option.val().toLowerCase() + '"></i> ' + v + '</span>');
   $item.find(".name").html($(option).text());
   $item.find(".outputId").val(option.val());
   $list.append($item);
