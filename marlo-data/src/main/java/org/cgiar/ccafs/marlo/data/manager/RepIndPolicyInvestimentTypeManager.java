@@ -14,7 +14,11 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.RepIndPolicyInvestimentType;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisPoliciesByOrganizationTypeDTO;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisPoliciesByRepIndPolicyInvestimentTypeDTO;
 
 import java.util.List;
 
@@ -71,4 +75,11 @@ public interface RepIndPolicyInvestimentTypeManager {
   public RepIndPolicyInvestimentType saveRepIndPolicyInvestimentType(RepIndPolicyInvestimentType repIndPolicyInvestimentType);
 
 
+  /**
+   * This method gets a list of ReportSynthesisPoliciesByRepIndPolicyInvestimentTypeDTO that are active:
+   * List of Policies grouped by RepIndPolicyInvestimentType
+   * 
+   * @return a list from ReportSynthesisPoliciesByRepIndPolicyInvestimentTypeDTO null if no exist records
+   */  
+  public List<ReportSynthesisPoliciesByRepIndPolicyInvestimentTypeDTO> getPoliciesByInvestimentType(List<ProjectPolicy> selectedProjectPolicies, Phase phase);
 }

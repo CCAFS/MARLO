@@ -106,7 +106,7 @@ function formatStateCountries(state) {
   if(!state.id) {
     return state.text;
   }
-  var flag = '<i class="flag-sm flag-sm-' + state.element.value.toUpperCase() + '"></i> ';
+  var flag = '<i class="flag-icon flag-icon-' + state.element.value.toLowerCase() + '"></i> ';
   var $state;
   if(state.id != -1) {
     $state = $('<span>' + flag + state.text + '</span>');

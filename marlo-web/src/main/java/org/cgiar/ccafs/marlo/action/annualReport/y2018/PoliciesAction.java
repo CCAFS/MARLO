@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndOrganizationTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndPolicyInvestimentTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageProcessManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressPolicyManager;
@@ -39,6 +40,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressPolicy;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisPoliciesByOrganizationTypeDTO;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisPoliciesByRepIndPolicyInvestimentTypeDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisPoliciesByRepIndStageProcessDTO;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -82,6 +84,7 @@ public class PoliciesAction extends BaseAction {
   private ReportSynthesisFlagshipProgressPolicyManager reportSynthesisFlagshipProgressPolicyManager;
   private RepIndOrganizationTypeManager repIndOrganizationTypeManager;
   private RepIndStageProcessManager repIndStageProcessManager;
+  private RepIndPolicyInvestimentTypeManager repIndInvestimentTypeManager;
 
   // Variables
   private String transaction;
@@ -95,6 +98,7 @@ public class PoliciesAction extends BaseAction {
   private List<ReportSynthesisPoliciesByOrganizationTypeDTO> policiesByOrganizationTypeDTOs;
   private List<ReportSynthesisPoliciesByRepIndStageProcessDTO> policiesByRepIndStageProcessDTOs;
   private Integer total = 0;
+  private List<ReportSynthesisPoliciesByRepIndPolicyInvestimentTypeDTO> policiesByRepIndInvestimentTypeDTOs;
 
 
   @Inject
@@ -104,7 +108,8 @@ public class PoliciesAction extends BaseAction {
     CrpProgramManager crpProgramManager, ProjectPolicyManager projectPolicyManager,
     ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
     ReportSynthesisFlagshipProgressPolicyManager reportSynthesisFlagshipProgressPolicyManager,
-    RepIndOrganizationTypeManager repIndOrganizationTypeManager, RepIndStageProcessManager repIndStageProcessManager) {
+    RepIndOrganizationTypeManager repIndOrganizationTypeManager, RepIndStageProcessManager repIndStageProcessManager,
+    RepIndPolicyInvestimentTypeManager repIndInvestimentTypeManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -118,6 +123,7 @@ public class PoliciesAction extends BaseAction {
     this.reportSynthesisFlagshipProgressPolicyManager = reportSynthesisFlagshipProgressPolicyManager;
     this.repIndOrganizationTypeManager = repIndOrganizationTypeManager;
     this.repIndStageProcessManager = repIndStageProcessManager;
+    this.repIndInvestimentTypeManager = repIndInvestimentTypeManager;
   }
 
 
@@ -246,6 +252,10 @@ public class PoliciesAction extends BaseAction {
   }
 
 
+  public List<ReportSynthesisPoliciesByRepIndPolicyInvestimentTypeDTO> getPoliciesByRepIndInvestimentTypeDTOs() {
+    return policiesByRepIndInvestimentTypeDTOs;
+  }
+
   public List<ReportSynthesisPoliciesByRepIndStageProcessDTO> getPoliciesByRepIndStageProcessDTOs() {
     return policiesByRepIndStageProcessDTOs;
   }
@@ -267,7 +277,6 @@ public class PoliciesAction extends BaseAction {
   public Integer getTotal() {
     return total;
   }
-
 
   public String getTransaction() {
     return transaction;
@@ -477,6 +486,10 @@ public class PoliciesAction extends BaseAction {
         // Chart: Policies by stage process
         policiesByRepIndStageProcessDTOs =
           repIndStageProcessManager.getPoliciesByStageProcess(selectedProjectPolicies, phase);
+
+        // Chat: Policies by investiment type
+        policiesByRepIndInvestimentTypeDTOs =
+          repIndInvestimentTypeManager.getPoliciesByInvestimentType(selectedProjectPolicies, phase);
       }
 
     }
@@ -568,6 +581,12 @@ public class PoliciesAction extends BaseAction {
   }
 
 
+  public void setPoliciesByRepIndInvestimentTypeDTOs(
+    List<ReportSynthesisPoliciesByRepIndPolicyInvestimentTypeDTO> policiesByRepIndInvestimentTypeDTOs) {
+    this.policiesByRepIndInvestimentTypeDTOs = policiesByRepIndInvestimentTypeDTOs;
+  }
+
+
   public void setPoliciesByRepIndStageProcessDTOs(
     List<ReportSynthesisPoliciesByRepIndStageProcessDTO> policiesByRepIndStageProcessDTOs) {
     this.policiesByRepIndStageProcessDTOs = policiesByRepIndStageProcessDTOs;
@@ -592,9 +611,11 @@ public class PoliciesAction extends BaseAction {
     this.total = total;
   }
 
+
   public void setTransaction(String transaction) {
     this.transaction = transaction;
   }
+
 
   @Override
   public void validate() {

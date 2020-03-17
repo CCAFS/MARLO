@@ -26,7 +26,7 @@ function setGoogleCharts() {
       pieHole: 0.4,
       chartArea: {
           top: 70,
-          width: '80%'
+          width: '100%'
       },
       colors: '#e67e22',
       legend: {
@@ -34,10 +34,10 @@ function setGoogleCharts() {
       },
       slices: {
           0: {
-            color: '#27ae60'
+            color: '#f68212'
           },
           1: {
-            color: '#f1c40f'
+            color: '#999fa3'
           }
       }
   });
@@ -49,12 +49,13 @@ function setGoogleCharts() {
           color: '#5f5e5e',
           fontName: 'Roboto',
           fontSize: 16,
-          bold: false
+          bold: false,
+          alignment: 'center'
       },
       pieHole: 0.4,
       chartArea: {
           top: 70,
-          width: '80%'
+          width: '100%'
       },
       colors: '#e67e22',
       legend: {
@@ -65,7 +66,7 @@ function setGoogleCharts() {
             color: '#16a085'
           },
           1: {
-            color: '#bdc3c7'
+            color: '#999fa3'
           }
       }
   });
