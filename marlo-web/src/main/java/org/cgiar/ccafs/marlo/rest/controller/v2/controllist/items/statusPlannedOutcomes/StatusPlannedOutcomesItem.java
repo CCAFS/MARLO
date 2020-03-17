@@ -148,8 +148,10 @@ public class StatusPlannedOutcomesItem<T> {
         fieldErrors.add(new FieldErrorDTO("createStatusPlannedOutcome", "Outcome", "is an invalid CRP Outcome"));
       }
     }
+    ReportSynthesis reportSynthesis = null;
+    ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress = null;
+    ReportSynthesisFlagshipProgressOutcome reportSynthesisFlagshipProgressOutcome;
     if (fieldErrors.isEmpty()) {
-      ReportSynthesis reportSynthesis = null;
       LiaisonInstitution liaisonInstitution =
         liaisonInstitutionManager.findByAcronymAndCrp(crpProgram.getAcronym(), globalUnitEntity.getId());
       reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
@@ -157,20 +159,20 @@ public class StatusPlannedOutcomesItem<T> {
         reportSynthesis = new ReportSynthesis();
         reportSynthesis.setLiaisonInstitution(liaisonInstitution);
         reportSynthesis.setPhase(phase);
-        reportSynthesisManager.saveReportSynthesis(reportSynthesis);
+        //
         // set report synthesis flagship progress
-        ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress = new ReportSynthesisFlagshipProgress();
+        reportSynthesisFlagshipProgress = new ReportSynthesisFlagshipProgress();
         reportSynthesisFlagshipProgress.setCreatedBy(user);
         reportSynthesisFlagshipProgress.setReportSynthesis(reportSynthesis);
-        reportSynthesisFlagshipProgressManager.saveReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgress);
+        reportSynthesis.setReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgress);
+        // reportSynthesisFlagshipProgressManager.saveReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgress);
         // set report synthesis flagship progress outcome
-        ReportSynthesisFlagshipProgressOutcome reportSynthesisFlagshipProgressOutcome =
-          new ReportSynthesisFlagshipProgressOutcome();
+        reportSynthesisFlagshipProgressOutcome = new ReportSynthesisFlagshipProgressOutcome();
         reportSynthesisFlagshipProgressOutcome.setReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgress);
         reportSynthesisFlagshipProgressOutcome.setCrpProgramOutcome(crpProgramOutcome);
         reportSynthesisFlagshipProgressOutcome.setSummary(newStatusPlannedOutcomeDTO.getSumary());
-        reportSynthesisFlagshipProgressOutcomeManager
-          .saveReportSynthesisFlagshipProgressOutcome(reportSynthesisFlagshipProgressOutcome);
+        // reportSynthesisFlagshipProgressOutcomeManager
+        // .saveReportSynthesisFlagshipProgressOutcome(reportSynthesisFlagshipProgressOutcome);
 
         for (NewStatusPlannedMilestoneDTO milestones : newStatusPlannedOutcomeDTO.getStatusMilestoneList()) {
           ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone =
@@ -185,6 +187,8 @@ public class StatusPlannedOutcomesItem<T> {
             reportSynthesisFlagshipProgressOutcomeMilestone
               .setReportSynthesisFlagshipProgressOutcome(reportSynthesisFlagshipProgressOutcome);
             reportSynthesisFlagshipProgressOutcomeMilestone.setCreatedBy(user);
+            List<ReportSynthesisFlagshipProgressCrossCuttingMarker> reportSynthesisFlagshipProgressCrossCuttingMarkerList =
+              new ArrayList<ReportSynthesisFlagshipProgressCrossCuttingMarker>();
             for (NewCrosscuttingMarkersSynthesisDTO crosscuttingmarkers : milestones.getCrosscuttinmarkerList()) {
               CgiarCrossCuttingMarker cgiarCrossCuttingMarker = cgiarCrossCuttingMarkerManager
                 .getCgiarCrossCuttingMarkerById(Long.parseLong(crosscuttingmarkers.getCrossCuttingmarker()));
@@ -194,20 +198,25 @@ public class StatusPlannedOutcomesItem<T> {
                 if (repIndGenderYouthFocusLevel != null) {
                   ReportSynthesisFlagshipProgressCrossCuttingMarker reportSynthesisFlagshipProgressCrossCuttingMarker =
                     new ReportSynthesisFlagshipProgressCrossCuttingMarker();
-                  reportSynthesisFlagshipProgressCrossCuttingMarker.setReportSynthesisFlagshipProgressOutcomeMilestone(
-                    reportSynthesisFlagshipProgressOutcomeMilestone);
+                  // reportSynthesisFlagshipProgressCrossCuttingMarker.setReportSynthesisFlagshipProgressOutcomeMilestone(
+                  // reportSynthesisFlagshipProgressOutcomeMilestone);
                   reportSynthesisFlagshipProgressCrossCuttingMarker.setMarker(cgiarCrossCuttingMarker);
                   reportSynthesisFlagshipProgressCrossCuttingMarker.setFocus(repIndGenderYouthFocusLevel);
                   reportSynthesisFlagshipProgressCrossCuttingMarker.setJust(crosscuttingmarkers.getJustification());
+                  reportSynthesisFlagshipProgressCrossCuttingMarkerList
+                    .add(reportSynthesisFlagshipProgressCrossCuttingMarker);
                 }
               }
-
-
+              reportSynthesisFlagshipProgressOutcomeMilestone
+                .setMarkers(reportSynthesisFlagshipProgressCrossCuttingMarkerList);
             }
           }
-
-
         }
+        if (fieldErrors.isEmpty()) {
+          reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
+        }
+      } else {
+
       }
     }
 
