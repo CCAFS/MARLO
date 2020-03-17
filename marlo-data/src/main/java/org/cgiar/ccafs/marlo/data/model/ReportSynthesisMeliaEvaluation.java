@@ -42,6 +42,9 @@ public class ReportSynthesisMeliaEvaluation extends MarloAuditableEntity impleme
   private String textWhom;
 
   @Expose
+  private String evidences;
+
+  @Expose
   private String textWhen;
 
   @Expose
@@ -94,6 +97,11 @@ public class ReportSynthesisMeliaEvaluation extends MarloAuditableEntity impleme
   }
 
 
+  public String getEvidences() {
+    return evidences;
+  }
+
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -121,15 +129,14 @@ public class ReportSynthesisMeliaEvaluation extends MarloAuditableEntity impleme
     return nameEvaluation;
   }
 
-
   public String getRecommendation() {
     return recommendation;
   }
 
+
   public ReportSynthesisMelia getReportSynthesisMelia() {
     return reportSynthesisMelia;
   }
-
 
   public Set<ReportSynthesisMeliaActionStudy> getReportSynthesisMeliaActionStudies() {
     return reportSynthesisMeliaActionStudies;
@@ -151,14 +158,17 @@ public class ReportSynthesisMeliaEvaluation extends MarloAuditableEntity impleme
     return textWhom;
   }
 
-
   public void setActions(String actions) {
     this.actions = actions;
   }
 
-
   public void setComments(String comments) {
     this.comments = comments;
+  }
+
+
+  public void setEvidences(String evidences) {
+    this.evidences = evidences;
   }
 
   public void setManagementResponse(String managementResponse) {

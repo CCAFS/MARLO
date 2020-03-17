@@ -106,7 +106,7 @@
     [#if editable && !hasRegions]
       <div class=" removeElement removeCountry" title="Remove Country"></div>
     [/#if]
-    <h5 class="country-title"><i class="flag-sm flag-sm-${(element.locElement.isoAlpha2?upper_case)!}"></i>  ${(element.locElement.name)!}   [#if hasRegions][#list element.programName as regName]- ${regName!} [/#list][/#if] </h5>
+    <h5 class="country-title"><i class="flag-icon flag-icon-${(element.locElement.isoAlpha2?lower_case)!}"></i>  ${(element.locElement.name)!}   [#if hasRegions][#list element.programName as regName]- ${regName!} [/#list][/#if] </h5>
     <div class="crpCountry-block">
       <div class="items-list simpleBox" listname="${customNameCountry}.siteLeaders">
         <ul>

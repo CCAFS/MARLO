@@ -49,7 +49,7 @@ function attachEvents() {
   $('.no-button-label').on('click', function() {
     yesnoEventLocations(false, $(this));
   });
-  
+
   // Default locations levels
   $('.elementTypeCheck').on('change', function(){
     $(this).parents('.defaultLocation').find('input:checkbox').val($(this).is(":checked"));
@@ -100,20 +100,20 @@ function addLocElementCountry() {
   if(contryISO == "-1"){
     return
   }
-  
+
   var $item = $('#locElement-scope-template').clone(true).removeAttr('id');
   var $list = $(this).parents('.locationLevel').find(".items-list ul");
-  
-  
+
+
   // Fill item values
   $item.find('span.name').text(countryName);
   $item.find('span.coordinates').text("");
   $item.find('input.locElementName').val(countryName);
   $item.find('input.locElementCountry').val(contryISO);
-  
+
   // Add Flag
   var $flag = $item.find('.flag-icon');
-  var flag = '<i class="flag-sm flag-sm-' + contryISO.toUpperCase() + '"></i>';
+  var flag = '<i class="flag-icon flag-icon-' + contryISO.toLowerCase() + '"></i>';
   $flag.html(flag);
   // Remove coordinates span
   $item.find('.coordinates').remove();
@@ -125,7 +125,7 @@ function addLocElementCountry() {
   $item.show('slow');
   // Remove message
   $list.parent().find('p.message').hide();
-  
+
   // Reset select
   $(this).val('-1');
   $(this).trigger('select2:change');
@@ -220,7 +220,7 @@ function updateLocLevelIndexes(index,location){
   // No Button
   $(location).find('input.no-button-input').attr('id', "no-button-" + uniqueId);
   $(location).find('label.no-button-label').attr('for', "no-button-" + uniqueId);
-  
+
   // Loc Element
   $(location).find('.locElement').each(function(i,element) {
     $(element).setNameIndexes(2, i);
@@ -306,6 +306,6 @@ function formatState(state) {
     return state.text;
   }
   var $state =
-      $('<span><i class="flag-sm flag-sm-' + state.element.value.toUpperCase() + '"></i> ' + state.text + '</span>');
+      $('<span><i class="flag-icon flag-icon-' + state.element.value.toLowerCase() + '"></i> ' + state.text + '</span>');
   return $state;
 };
