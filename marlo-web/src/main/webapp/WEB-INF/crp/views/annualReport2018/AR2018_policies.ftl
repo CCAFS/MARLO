@@ -9,10 +9,10 @@
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
-  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js",
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20200311",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js"
 ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20190621"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20200311"] /]
 
 [#assign breadCrumb = [
   {"label":"${currentSection}",   "nameSpace":"",             "action":""},
@@ -56,35 +56,63 @@
             </div>
             <br />
             <div class="form-group row">
-              <div class="col-md-4">
+              <div class="col-md-5">
                 <div class="simpleBox numberBox">
                   <label for="">[@s.text name="${customLabel}.indicatorI1.totalPolicies" /]</label><br />
                   <span class="animated infinite bounce">${(((total)!0)?number?string(",##0"))!0}</span>
                 </div>
-                [#-- Chart 7 - Level of maturity --]
+                [#-- Chart 7 - Level of maturity --][#--
                 <div  class="chartBox simpleBox">
                 Policies Level of Maturity
                 <center><img src="${baseUrlCdn}/global/images/ComingSoon-charts.png" height="130"></center>
-                </div>
-               [#-- <div id="chart7" class="chartBox simpleBox">
+                </div>--]
+                 <div id="chart7" class="chartBox simpleBox">
                    <ul class="chartData" style="display:none">
                     <li>
-                      <span> </span>
-                      <span> </span>
+                      <span></span>
+                      [#list (policiesByRepIndStageProcessDTOs)![] as data]
+                        [#if data.repIndStageProcess.name?contains("Level")]    
+                            <span>${data.repIndStageProcess.name}</span>
+                            <span class="json">{"role":"annotation"}</span> 
+                        [/#if]                    
+                      [/#list] 
                     </li>
+                    <li>
+                      <span></span>
+                      [#list (policiesByRepIndStageProcessDTOs)![] as data]
+                        [#if data.repIndStageProcess.name?contains("Level")]
+                          <span class="number">${data.projectPolicies?size}</span>
+                          <span>${data.projectPolicies?size}</span>
+                        [/#if]  
+                      [/#list]
+                    </li>
+                    [#--
+                    <li>
+                      <span></span>
+                      <span></span>
+                      <span class="json">{"role":"annotation"}</span>
+                      <span class="json">{"role":"style"}</span>
+                    </li>
+                       
                     [#list (policiesByRepIndStageProcessDTOs)![] as data]
-                      <li><span>${data.repIndStageProcess.name}</span><span class="number">${data.projectPolicies?size}</span></li>
+                      <li>
+                        <span>${data.repIndStageProcess.name}</span>
+                        <span class="number">${data.projectPolicies?size}</span>
+                        <span>${data.projectPolicies?size}</span>
+                      </li>
                     [/#list]
-                  </ul> 
-                </div> --]
+                    --]
+                  </ul>
+                </div> 
               </div>
-              <div class="col-md-8">
-              <div class="chartBox simpleBox">
+              
+              <div class="col-md-7">
+              [#--<div class="chartBox simpleBox">
               Policies by Type
                 <center><img src="${baseUrlCdn}/global/images/ComingSoon-charts.png" height="180"></center>
-              </div>
-                [#-- Chart 6 - Organizations designing/promulgating the policy --]
-                [#-- <div id="chart6" class="chartBox simpleBox">
+              </div>--]
+                [#-- Chart 6 - Policies by type --]
+                 <div id="chart6" class="chartBox simpleBox">
                   <ul class="chartData" style="display:none">
                     <li>
                       <span>[@s.text name="${customLabel}.indicatorI1.chart1.0" /]</span>
@@ -92,19 +120,17 @@
                       <span class="json">{"role":"style"}</span>
                       <span class="json">{"role":"annotation"}</span>
                     </li>
-                    [#list (policiesByOrganizationTypeDTOs)![] as data]
-                      [#assign policiesSize = (data.projectPolicies?size) /]
-                      [#if  policiesSize > 0]
+                                        
+                    [#list (policiesByRepIndInvestimentTypeDTOs)![] as data]
                       <li>
-                        <span>${(data.repIndOrganizationType.name)!}</span>
-                        <span class="number">${data.projectPolicies?size}</span>
-                        <span>#4285f4</span>
-                        <span>${data.projectPolicies?size}</span>
-                      </li>
-                      [/#if]
-                    [/#list]
+                          <span>${(data.repIndPolicyInvestimentType.name)!}</span>
+                          <span class="number">${data.projectPolicies?size}</span>
+                          <span>#1773b8</span>
+                          <span>${data.projectPolicies?size}</span>
+                      </li> 
+                    [/#list]          
                   </ul>
-                </div> --]
+                </div> 
               </div>
             </div>
               

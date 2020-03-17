@@ -13,7 +13,7 @@ function attachEvents() {
 
 function setGoogleCharts() {
   // Chart #7 - Policies Level of maturity
-  createGooglePieChart('#chart7', {
+  createGoogleBarChart('#chart7', {
       title: 'Policies Level of Maturity',
       titleTextStyle: {
           color: '#5f5e5e',
@@ -21,22 +21,41 @@ function setGoogleCharts() {
           fontSize: 16,
           bold: false
       },
-      pieHole: 0.4,
+      orientation: 'horizontal',
+      hAxis: {
+        baseline:'none',
+        textPosition: 'none',
+        gridlines: {
+          count: 0
+        }
+      },
+      vAxis: {
+        //baseline:'none',
+        baseline:'none',
+        textPosition: 'none',
+        gridlines: {
+          count: 0
+        }
+      },
+      //pieHole: 0.4,
       chartArea: {
           top: 45,
-          width: "100%"
+          width: "80%",
+          heigth: "100%"
       },
       colors: [
-          '#4dd0e1', '#29b6f6', '#2196f3'
+          '#1773b8', '#e43a74', '#00a0b0', '#f3bd1e', '#373a3b'
       ],
+      bar: {groupWidth: '100%'},
       legend: {
-        alignment: 'center'
-      }
+        position: "bottom",
+        //alignment: 'center',
+      },
   });
 
-  // Chart #6 - Organizations designing/promulgating the policy
+  // Chart #6 - Policies by Type
   createGoogleBarChart("#chart6", {
-      title: "Organizations designing/promulgating the policy",
+      title: "Policies by Type",
       titleTextStyle: {
           color: '#5f5e5e',
           fontName: 'Roboto',
@@ -44,17 +63,28 @@ function setGoogleCharts() {
           bold: false
       },
       chartArea: {
+          top: 65,
           right: 0,
-          width: '80%'
+          width: '70%',
+          heigth: "100%"
       },
-      legend: {
-        position: "none"
+      hAxis: {
+        baseline:'none',
+        //viewWindowMode: 'pretty',
+        //slantedText: true,
+        textPosition: 'none',
+        gridlines: {
+          count: 0
+        }
       },
       vAxis: {
         textStyle: {
-            color: '#8c8c8c',
+            color: '#5f5e5e',
             fontName: 'Roboto'
         }
+      },
+      legend: {
+        position: "none"
       },
       bars: 'horizontal' // Required for Material Bar Charts.
   });

@@ -307,24 +307,18 @@
       [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.outcome.progressNarrative" help="${customLabel}.outcome.progressNarrative.help" className="limitWords-200" helpIcon=false required=true editable=editable allowTextEditor=true /]
     </div>
     [#-- Sub-IDOs List --]
-    [#--
-    [#if element.milestones?has_content]
-      [#local hasPrimary=  element.milestones?size > 1 ]
+    [#if element.subIdos?has_content]
+      [#local hasPrimary=  element.subIdos?size > 1 ]
       <h4 class="simpleTitle">[@s.text name="${customLabel}.subIdos.title" /]</h4>
       <div class="simpleBox">
         <div class="form-group">
-           [#list element.milestones as subIdo][#-- [#list element.milestone?sort_by("isPrimary") as subIdo] --]
-           [#--
-             [#if hasPrimary && subIdo?index == 0] [#-- subIdo.isPrimary --][#--
-                [@annualReport2018SubIdoMacro element=subIdo name="${customName}.milestones" index=milestone_index reportedOutcomeID=(annualReportElement.id)!-1 isPrimary=true/]
-             [#else]
-                 [@annualReport2018SubIdoMacro element=subIdo name="${customName}.milestones" index=milestone_index reportedOutcomeID=(annualReportElement.id)!-1 /]
-             [/#if]          
+          [#list element.subIdos as subIdo]         
+            [@annualReport2018SubIdoMacro element=subIdo name="${customName}.subIdos" /]                    
           [/#list]
          </div> 
        </div> 
-    [/#if]
-    --]
+    [/#if]    
+ 
     [#-- Milestones List --]
     <h4 class="simpleTitle">[@s.text name="${customLabel}.milestones.title" /]</h4>
     <div class="form-group">
@@ -434,17 +428,15 @@
 [/#macro]
 
 
-[#macro annualReport2018SubIdoMacro element name reportedOutcomeID index="0"isTemplate=false isPrimary=false]
-  [#local annualReportElement= (action.getMilestone(reportedOutcomeID,element.id))! ]
-  [#local customName = "${name}[${index}]" /]
+[#macro annualReport2018SubIdoMacro element name ]    
     <div class="form-group grayBox">
-      [#if isPrimary]
+      [#if (element.primary)!false]
        <div>
         <span class="pull-left label label-info primaryTag">Primary</span>
        </div>
       [/#if]
       <div>
-        <p class="text-justify">${(element.title)!} </p>
+        <p class="text-justify">${(element.srfSubIdo.description)!} </p>
       </div>
     </div>
 [/#macro]

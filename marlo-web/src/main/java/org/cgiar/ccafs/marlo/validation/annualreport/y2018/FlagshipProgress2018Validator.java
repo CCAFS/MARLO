@@ -88,7 +88,8 @@ public class FlagshipProgress2018Validator extends BaseValidator {
   }
 
 
-  public void validate(BaseAction action, ReportSynthesis reportSynthesis, boolean saving) {
+  public void validate(BaseAction action, ReportSynthesis reportSynthesis, boolean saving,
+    boolean hasFlagshipsProgress) {
     action.setInvalidFields(new HashMap<>());
     if (reportSynthesis != null) {
       if (!saving) {
@@ -110,10 +111,21 @@ public class FlagshipProgress2018Validator extends BaseValidator {
         }
       } else {
         // Validate PMU fields
-        if (!(this.isValidString(reportSynthesis.getReportSynthesisFlagshipProgress().getOverallProgress()))) {
-          action.addMissingField(action.getText("annualReport2018.flagshipProgress.overallProgress.readText"));
-          action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.overallProgress",
-            InvalidFieldsMessages.EMPTYFIELD);
+
+        if (hasFlagshipsProgress == true) {
+          if (!(this.isValidString(reportSynthesis.getReportSynthesisFlagshipProgress().getOverallProgress()))
+            && reportSynthesis.getReportSynthesisFlagshipProgress().getOverallProgress().length() > 250) {
+            action.addMissingField(action.getText("annualReport2018.flagshipProgress.overallProgress.readText"));
+            action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.overallProgress",
+              InvalidFieldsMessages.EMPTYFIELD);
+          } else {
+            if (!(this.isValidString(reportSynthesis.getReportSynthesisFlagshipProgress().getOverallProgress()))
+              && reportSynthesis.getReportSynthesisFlagshipProgress().getOverallProgress().length() > 1000) {
+              action.addMissingField(action.getText("annualReport2018.flagshipProgress.overallProgress.readText"));
+              action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.overallProgress",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+          }
         }
       }
 
