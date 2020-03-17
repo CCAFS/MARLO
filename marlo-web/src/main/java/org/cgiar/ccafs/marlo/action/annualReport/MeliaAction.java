@@ -525,6 +525,7 @@ public class MeliaAction extends BaseAction {
           evaluationSave.setManagementResponse(evaluation.getManagementResponse());
           evaluationSave.setTextWhom(evaluation.getTextWhom());
           evaluationSave.setTextWhen(evaluation.getTextWhen());
+          evaluationSave.setEvidences(evaluation.getEvidences());
 
 
           reportSynthesisMeliaEvaluationManager.saveReportSynthesisMeliaEvaluation(evaluationSave);
@@ -540,6 +541,7 @@ public class MeliaAction extends BaseAction {
           evaluationPrev.setManagementResponse(evaluation.getManagementResponse());
           evaluationPrev.setTextWhom(evaluation.getTextWhom());
           evaluationPrev.setTextWhen(evaluation.getTextWhen());
+          evaluationPrev.setEvidences(evaluation.getEvidences());
 
           reportSynthesisMeliaEvaluationManager.saveReportSynthesisMeliaEvaluation(evaluationPrev);
 
