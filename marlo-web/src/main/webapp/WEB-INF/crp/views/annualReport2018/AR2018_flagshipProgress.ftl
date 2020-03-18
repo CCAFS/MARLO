@@ -48,7 +48,7 @@
               <div class="form-group">
                 [#-- Word Document Tag --]
                 [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
-                [@customForm.textArea name="${customName}.progressByFlagships" i18nkey="${customLabel}.progressByFlagships" help="${customLabel}.progressByFlagships.help" className="limitWords-200" helpIcon=false required=true editable=editable allowTextEditor=true /]
+                [@customForm.textArea name="${customName}.progressByFlagships" i18nkey="${customLabel}.progressByFlagships" help="${customLabel}.progressByFlagships.help" className="limitWords-200" helpIcon=false required=false editable=editable allowTextEditor=true /]
               </div>
               [#-- Detailed annex --]
               <div class="form-group">
