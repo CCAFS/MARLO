@@ -222,26 +222,22 @@ public class MonitoringEvaluationAction extends BaseAction {
         .collect(Collectors.toList()));
 
       for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
-
         if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()) != null) {
+          if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType() != null
+            && projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType().getId() != 1
+            && projectExpectedStudy.getProjectExpectedStudyInfo().getStatus() != null
+            && projectExpectedStudy.getProjectExpectedStudyInfo().getYear().equals(this.getCurrentCycleYear())) {
+            ReportSynthesisFlagshipProgressStudyDTO dto = new ReportSynthesisFlagshipProgressStudyDTO();
 
-          if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()) != null) {
-            if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType() != null
-              && projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType().getId() != 1
-              && projectExpectedStudy.getProjectExpectedStudyInfo().getStatus() != null
-              && projectExpectedStudy.getProjectExpectedStudyInfo().getYear().equals(this.getCurrentCycleYear())) {
-              ReportSynthesisFlagshipProgressStudyDTO dto = new ReportSynthesisFlagshipProgressStudyDTO();
-
-              dto.setProjectExpectedStudy(projectExpectedStudy);
-              List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
-              liaisonInstitutions.add(this.liaisonInstitution);
-              dto.setLiaisonInstitutions(liaisonInstitutions);
-              flagshipPlannedList.add(dto);
-              break;
-
-            }
+            dto.setProjectExpectedStudy(projectExpectedStudy);
+            List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
+            liaisonInstitutions.add(this.liaisonInstitution);
+            dto.setLiaisonInstitutions(liaisonInstitutions);
+            flagshipPlannedList.add(dto);
+            // break;
           }
         }
+
       }
 
       // Get deleted studies
@@ -774,6 +770,7 @@ public class MonitoringEvaluationAction extends BaseAction {
           evaluationSave.setRecommendation(evaluation.getRecommendation());
           evaluationSave.setManagementResponse(evaluation.getManagementResponse());
           evaluationSave.setComments(evaluation.getComments());
+          evaluationSave.setEvidences(evaluation.getEvidences());
           evaluationSave = reportSynthesisMeliaEvaluationManager.saveReportSynthesisMeliaEvaluation(evaluationSave);
 
           // Save evaluationActions
@@ -809,6 +806,7 @@ public class MonitoringEvaluationAction extends BaseAction {
           evaluationPrev.setRecommendation(evaluation.getRecommendation());
           evaluationPrev.setManagementResponse(evaluation.getManagementResponse());
           evaluationPrev.setComments(evaluation.getComments());
+          evaluationPrev.setEvidences(evaluation.getEvidences());
 
           List<ReportSynthesisMeliaEvaluationAction> evaluationActionsPrev =
             new ArrayList<>(evaluationPrev.getReportSynthesisMeliaEvaluationActions().stream()

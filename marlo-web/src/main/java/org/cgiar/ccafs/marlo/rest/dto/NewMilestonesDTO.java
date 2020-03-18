@@ -25,6 +25,7 @@ public class NewMilestonesDTO {
 
   @ApiModelProperty(notes = "Milestone code")
   private String milestone;
+
   @ApiModelProperty(notes = "Milestone as a primary")
   private Boolean primary;
 
