@@ -412,6 +412,7 @@ public class ProgressTowardsItem<T> {
     Integer repoYear, String repoPhase, User user) {
     // TODO: Include all security validations
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+    ReportSynthesisSrfProgressTarget reportSynthesisSrfProgressTarget = null;
 
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
     if (globalUnitEntity == null) {
@@ -433,29 +434,32 @@ public class ProgressTowardsItem<T> {
         new FieldErrorDTO("findProgressTowardsById", "phase", repoPhase + ' ' + repoYear + " is an invalid phase"));
     }
 
-    ReportSynthesisSrfProgressTarget reportSynthesisSrfProgressTarget =
-      reportSynthesisSrfProgressTargetManager.getReportSynthesisSrfProgressTargetById(id);
-    if (reportSynthesisSrfProgressTarget == null) {
-      fieldErrors.add(new FieldErrorDTO("findProgressTowardsById", "ReportSynthesisSrfProgressTargetEntity",
-        id + " is an invalid id of a Report Synthesis Srf Progress Target"));
-    } else {
-      if (reportSynthesisSrfProgressTarget.getReportSynthesisSrfProgress() == null) {
-        fieldErrors.add(new FieldErrorDTO("findProgressTowardsById", "ReportSynthesisSrfProgressEntity",
-          "There is no Report Synthesis SRF Progress assosiated to this entity!"));
+    if (fieldErrors.isEmpty()) {
+      reportSynthesisSrfProgressTarget =
+        reportSynthesisSrfProgressTargetManager.getReportSynthesisSrfProgressTargetById(id);
+      if (reportSynthesisSrfProgressTarget == null) {
+        fieldErrors.add(new FieldErrorDTO("findProgressTowardsById", "ReportSynthesisSrfProgressTargetEntity",
+          id + " is an invalid id of a Report Synthesis Srf Progress Target"));
       } else {
-        if (reportSynthesisSrfProgressTarget.getReportSynthesisSrfProgress().getReportSynthesis() == null) {
-          fieldErrors.add(new FieldErrorDTO("findProgressTowardsById", "ReportSynthesisEntity",
-            "There is no Report Synthesis assosiated to this entity!"));
+        if (reportSynthesisSrfProgressTarget.getReportSynthesisSrfProgress() == null) {
+          fieldErrors.add(new FieldErrorDTO("findProgressTowardsById", "ReportSynthesisSrfProgressEntity",
+            "There is no Report Synthesis SRF Progress assosiated to this entity!"));
         } else {
-          if (reportSynthesisSrfProgressTarget.getReportSynthesisSrfProgress().getReportSynthesis()
-            .getPhase() == null) {
-            fieldErrors.add(new FieldErrorDTO("findProgressTowardsById", "PhaseEntity",
-              "There is no Phase assosiated to this entity!"));
+          if (reportSynthesisSrfProgressTarget.getReportSynthesisSrfProgress().getReportSynthesis() == null) {
+            fieldErrors.add(new FieldErrorDTO("findProgressTowardsById", "ReportSynthesisEntity",
+              "There is no Report Synthesis assosiated to this entity!"));
           } else {
-            if (reportSynthesisSrfProgressTarget.getReportSynthesisSrfProgress().getReportSynthesis().getPhase()
-              .getId() != phase.getId()) {
-              fieldErrors.add(new FieldErrorDTO("findProgressTowardsById", "ReportSynthesisSrfProgressTargetEntity",
-                "The Report Synthesis Srf Progress Target with id " + id + " do not correspond to the phase entered"));
+            if (reportSynthesisSrfProgressTarget.getReportSynthesisSrfProgress().getReportSynthesis()
+              .getPhase() == null) {
+              fieldErrors.add(new FieldErrorDTO("findProgressTowardsById", "PhaseEntity",
+                "There is no Phase assosiated to this entity!"));
+            } else {
+              if (reportSynthesisSrfProgressTarget.getReportSynthesisSrfProgress().getReportSynthesis().getPhase()
+                .getId() != phase.getId()) {
+                fieldErrors.add(new FieldErrorDTO("findProgressTowardsById", "ReportSynthesisSrfProgressTargetEntity",
+                  "The Report Synthesis Srf Progress Target with id " + id
+                    + " do not correspond to the phase entered"));
+              }
             }
           }
         }
