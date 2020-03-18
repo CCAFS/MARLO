@@ -404,6 +404,7 @@ public class CrossCGIARCollaborationsItem<T> {
     Integer repoYear, String repoPhase, User user) {
     // TODO: Include all security validations
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+    ReportSynthesisKeyPartnershipCollaboration keyPartnershipCollaboration = null;
 
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
     if (globalUnitEntity == null) {
@@ -425,32 +426,35 @@ public class CrossCGIARCollaborationsItem<T> {
         new FieldErrorDTO("findCrossCGIARCollaboration", "phase", repoPhase + ' ' + repoYear + " is an invalid phase"));
     }
 
-    ReportSynthesisKeyPartnershipCollaboration keyPartnershipCollaboration =
-      reportSynthesisKeyPartnershipCollaborationManager.getReportSynthesisKeyPartnershipCollaborationById(id);
+    if (fieldErrors.isEmpty()) {
+      keyPartnershipCollaboration =
+        reportSynthesisKeyPartnershipCollaborationManager.getReportSynthesisKeyPartnershipCollaborationById(id);
 
-    if (keyPartnershipCollaboration == null) {
-      fieldErrors
-        .add(new FieldErrorDTO("findCrossCGIARCollaboration", "ReportSynthesisKeyPartnershipCollaborationEntity",
-          id + " is an invalid id of a Report Synthesis Key Partnership Collaboration"));
-    } else {
-      if (keyPartnershipCollaboration.getReportSynthesisKeyPartnership() == null) {
-        fieldErrors.add(new FieldErrorDTO("findCrossCGIARCollaboration", "ReportSynthesisKeyPartnershipEntity",
-          "There is no Report Synthesis Key Partnership assosiated to this entity!"));
+      if (keyPartnershipCollaboration == null) {
+        fieldErrors
+          .add(new FieldErrorDTO("findCrossCGIARCollaboration", "ReportSynthesisKeyPartnershipCollaborationEntity",
+            id + " is an invalid id of a Report Synthesis Key Partnership Collaboration"));
       } else {
-        if (keyPartnershipCollaboration.getReportSynthesisKeyPartnership().getReportSynthesis() == null) {
-          fieldErrors.add(new FieldErrorDTO("findCrossCGIARCollaboration", "ReportSynthesisEntity",
-            "There is no Report Synthesis assosiated to this entity!"));
+        if (keyPartnershipCollaboration.getReportSynthesisKeyPartnership() == null) {
+          fieldErrors.add(new FieldErrorDTO("findCrossCGIARCollaboration", "ReportSynthesisKeyPartnershipEntity",
+            "There is no Report Synthesis Key Partnership assosiated to this entity!"));
         } else {
-          if (keyPartnershipCollaboration.getReportSynthesisKeyPartnership().getReportSynthesis().getPhase() == null) {
-            fieldErrors.add(new FieldErrorDTO("findCrossCGIARCollaboration", "PhaseEntity",
-              "There is no Phase assosiated to this entity!"));
+          if (keyPartnershipCollaboration.getReportSynthesisKeyPartnership().getReportSynthesis() == null) {
+            fieldErrors.add(new FieldErrorDTO("findCrossCGIARCollaboration", "ReportSynthesisEntity",
+              "There is no Report Synthesis assosiated to this entity!"));
           } else {
-            if (keyPartnershipCollaboration.getReportSynthesisKeyPartnership().getReportSynthesis().getPhase()
-              .getId() != phase.getId()) {
-              fieldErrors.add(
-                new FieldErrorDTO("findCrossCGIARCollaboration", "ReportSynthesisKeyPartnershipCollaborationEntity",
-                  "The Report Synthesis Key Partnership Collaboration with id " + id
-                    + " do not correspond to the phase entered"));
+            if (keyPartnershipCollaboration.getReportSynthesisKeyPartnership().getReportSynthesis()
+              .getPhase() == null) {
+              fieldErrors.add(new FieldErrorDTO("findCrossCGIARCollaboration", "PhaseEntity",
+                "There is no Phase assosiated to this entity!"));
+            } else {
+              if (keyPartnershipCollaboration.getReportSynthesisKeyPartnership().getReportSynthesis().getPhase()
+                .getId() != phase.getId()) {
+                fieldErrors.add(
+                  new FieldErrorDTO("findCrossCGIARCollaboration", "ReportSynthesisKeyPartnershipCollaborationEntity",
+                    "The Report Synthesis Key Partnership Collaboration with id " + id
+                      + " do not correspond to the phase entered"));
+              }
             }
           }
         }
