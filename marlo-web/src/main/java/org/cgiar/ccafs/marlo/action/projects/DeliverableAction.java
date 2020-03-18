@@ -1891,28 +1891,33 @@ public class DeliverableAction extends BaseAction {
       deliverable.setCrps(new ArrayList<>());
     }
     /* Delete */
-    Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
-    for (DeliverableCrp deliverableCrp : deliverableDB.getDeliverableCrps().stream()
-      .filter(c -> c != null && c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
-      .collect(Collectors.toList())) {
-      if (deliverable.getCrps() != null && !deliverable.getCrps().contains(deliverableCrp)) {
-        deliverableCrpManager.deleteDeliverableCrp(deliverableCrp.getId());
+    if (deliverableID != 0 && deliverableManager.getDeliverableById(deliverableID) != null) {
+      Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
+      for (DeliverableCrp deliverableCrp : deliverableDB.getDeliverableCrps().stream()
+        .filter(c -> c != null && c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+        .collect(Collectors.toList())) {
+        if (deliverableCrp != null && deliverableCrp.getId() != null && deliverable.getCrps() != null
+          && !deliverable.getCrps().contains(deliverableCrp)) {
+          deliverableCrpManager.deleteDeliverableCrp(deliverableCrp.getId());
+        }
       }
     }
 
     /* Save */
-    for (DeliverableCrp deliverableCrp : deliverable.getCrps()) {
-      if (deliverableCrp != null && deliverableCrp.getId() == null || deliverableCrp.getId().intValue() == -1) {
-        deliverableCrp.setId(null);
-        deliverableCrp.setDeliverable(deliverable);
-        deliverableCrp.setPhase(this.getActualPhase());
-        if (deliverableCrp.getGlobalUnit() != null && deliverableCrp.getGlobalUnit().getId() != null
-          && deliverableCrp.getGlobalUnit().getId() != -1) {
-          deliverableCrp.setCrpProgram(null);
-        } else {
-          deliverableCrp.setGlobalUnit(null);
+    if (deliverable.getCrps() != null) {
+      for (DeliverableCrp deliverableCrp : deliverable.getCrps()) {
+        if (deliverableCrp != null && deliverableCrp.getId() == null || deliverableCrp.getId().intValue() == -1) {
+          deliverableCrp.setId(null);
+          deliverableCrp.setDeliverable(deliverable);
+          deliverableCrp.setPhase(this.getActualPhase());
+          if (deliverableCrp.getGlobalUnit() != null && deliverableCrp.getGlobalUnit().getId() != null
+            && deliverableCrp.getGlobalUnit().getId() != -1) {
+            deliverableCrp.setCrpProgram(null);
+          } else {
+            deliverableCrp.setGlobalUnit(null);
+          }
+          deliverableCrpManager.saveDeliverableCrp(deliverableCrp);
         }
-        deliverableCrpManager.saveDeliverableCrp(deliverableCrp);
       }
     }
   }
