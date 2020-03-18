@@ -211,6 +211,12 @@
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
 
+      <interceptor-stack name="privateSummaryStack">
+        <interceptor-ref name="i18nFile" />
+        <interceptor-ref name="requireUser" />
+        <interceptor-ref name="defaultStack" />
+      </interceptor-stack>
+
 			<interceptor-stack name="publicSummaryStack">
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />

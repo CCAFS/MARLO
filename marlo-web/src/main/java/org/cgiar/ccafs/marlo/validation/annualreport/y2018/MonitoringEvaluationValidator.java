@@ -192,6 +192,13 @@ public class MonitoringEvaluationValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
+    // Validate evidences
+    if (!this.isValidString(evaluation.getEvidences())) {
+      action.addMessage(action.getText("reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].evidence"));
+      action.getInvalidFields().put("input-reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].evidences",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
     // Validate Evaluation Actions
     if (evaluation.getMeliaEvaluationActions() != null && !evaluation.getMeliaEvaluationActions().isEmpty()) {
       for (int j = 0; j < evaluation.getMeliaEvaluationActions().size(); j++) {

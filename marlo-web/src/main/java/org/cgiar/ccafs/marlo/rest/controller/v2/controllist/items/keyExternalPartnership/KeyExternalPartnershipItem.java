@@ -490,6 +490,7 @@ public class KeyExternalPartnershipItem<T> {
     Integer repoYear, String repoPhase, User user) {
     // TODO: Include all security validations
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+    ReportSynthesisKeyPartnershipExternal keyExternalPartnership = null;
 
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
     if (globalUnitEntity == null) {
@@ -511,11 +512,34 @@ public class KeyExternalPartnershipItem<T> {
         new FieldErrorDTO("findKeyExternalPartnership", "phase", repoPhase + ' ' + repoYear + " is an invalid phase"));
     }
 
-    ReportSynthesisKeyPartnershipExternal keyExternalPartnership =
-      this.keyPartnershipExternalManager.getReportSynthesisKeyPartnershipExternalById(id);
-    if (keyExternalPartnership == null) {
-      fieldErrors.add(new FieldErrorDTO("findKeyExternalPartnership", "ReportSynthesisKeyPartnershipExternalEntity",
-        id + " is an invalid id of a Report Synthesis Key Partnership External"));
+    if (fieldErrors.isEmpty()) {
+      keyExternalPartnership = this.keyPartnershipExternalManager.getReportSynthesisKeyPartnershipExternalById(id);
+      if (keyExternalPartnership == null) {
+        fieldErrors.add(new FieldErrorDTO("findKeyExternalPartnership", "ReportSynthesisKeyPartnershipExternalEntity",
+          id + " is an invalid id of a Report Synthesis Key Partnership External"));
+      } else {
+        if (keyExternalPartnership.getReportSynthesisKeyPartnership() == null) {
+          fieldErrors.add(new FieldErrorDTO("findKeyExternalPartnership", "ReportSynthesisKeyPartnershipEntity",
+            "There is no Report Synthesis Key Partnership assosiated to this entity!"));
+        } else {
+          if (keyExternalPartnership.getReportSynthesisKeyPartnership().getReportSynthesis() == null) {
+            fieldErrors.add(new FieldErrorDTO("findKeyExternalPartnership", "ReportSynthesisKeyPartnershipEntity",
+              "There is no Report Synthesis assosiated to this entity!"));
+          } else {
+            if (keyExternalPartnership.getReportSynthesisKeyPartnership().getReportSynthesis().getPhase() == null) {
+              fieldErrors.add(new FieldErrorDTO("findKeyExternalPartnership", "ReportSynthesisKeyPartnershipEntity",
+                "There is no Phase assosiated to this entity!"));
+            } else {
+              if (keyExternalPartnership.getReportSynthesisKeyPartnership().getReportSynthesis().getPhase()
+                .getId() != phase.getId()) {
+                fieldErrors.add(new FieldErrorDTO("findKeyExternalPartnership", "ReportSynthesisKeyPartnershipEntity",
+                  "The Report Synthesis Key Partnership External with id " + id
+                    + " do not correspond to the phase entered"));
+              }
+            }
+          }
+        }
+      }
     }
 
     // TODO more validations!
