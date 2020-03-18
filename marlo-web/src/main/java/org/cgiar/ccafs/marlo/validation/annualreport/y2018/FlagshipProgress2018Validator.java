@@ -104,13 +104,11 @@ public class FlagshipProgress2018Validator extends BaseValidator {
 
       // Validate flagship fields
       if (this.isFlagship(liaisonInstitution)) {
-        /*
-         * if (!(this.isValidString(reportSynthesis.getReportSynthesisFlagshipProgress().getProgressByFlagships()))) {
-         * action.addMissingField(action.getText("annualReport2018.flagshipProgress.progressByFlagships.readText"));
-         * action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.progressByFlagships",
-         * InvalidFieldsMessages.EMPTYFIELD);
-         * }
-         */
+        if (!(this.isValidString(reportSynthesis.getReportSynthesisFlagshipProgress().getProgressByFlagships()))) {
+          action.addMissingField(action.getText("annualReport2018.flagshipProgress.progressByFlagships.readText"));
+          action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.progressByFlagships",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
       } else {
         // Validate PMU fields
 
