@@ -293,6 +293,8 @@ public class ProgressTowardsItem<T> {
 
   public ResponseEntity<SrfProgressTowardsTargetDTO> deleteProgressTowardsById(Long id, String CGIARentityAcronym,
     Integer repoYear, String repoPhase, User user) {
+    ReportSynthesisSrfProgressTarget srfProgressTarget = null;
+
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
 
     String strippedEntityAcronym = StringUtils.stripToNull(CGIARentityAcronym);
@@ -322,20 +324,44 @@ public class ProgressTowardsItem<T> {
     if (phase == null) {
       fieldErrors
         .add(new FieldErrorDTO("deleteProgressTowards", "phase", repoPhase + ' ' + repoYear + " is an invalid phase"));
-    }
-
-    if (!StringUtils.equalsIgnoreCase(phase.getCrp().getAcronym(), strippedEntityAcronym)) {
-      fieldErrors.add(new FieldErrorDTO("deleteProgressTowards", "FlagshipEntity",
-        "The CRP Program SMO Code entered does not correspond to the GlobalUnit with acronym " + CGIARentityAcronym));
-    }
-
-    ReportSynthesisSrfProgressTarget srfProgressTarget =
-      reportSynthesisSrfProgressTargetManager.getReportSynthesisSrfProgressTargetById(id);
-    if (srfProgressTarget != null) {
-      reportSynthesisSrfProgressTargetManager.deleteReportSynthesisSrfProgressTarget(srfProgressTarget.getId());
     } else {
-      fieldErrors.add(new FieldErrorDTO("deleteProgressTowardsById", "ReportSynthesisSrfProgressTargetEntity",
-        id + " is an invalid Report Synthesis Srf Progress Target Code"));
+      if (!StringUtils.equalsIgnoreCase(phase.getCrp().getAcronym(), strippedEntityAcronym)) {
+        fieldErrors.add(new FieldErrorDTO("deleteProgressTowards", "FlagshipEntity",
+          "The CRP Program SMO Code entered does not correspond to the GlobalUnit with acronym " + CGIARentityAcronym));
+      }
+    }
+
+    if (fieldErrors.isEmpty()) {
+      srfProgressTarget = reportSynthesisSrfProgressTargetManager.getReportSynthesisSrfProgressTargetById(id);
+      if (srfProgressTarget != null) {
+        if (srfProgressTarget.getReportSynthesisSrfProgress() == null) {
+          fieldErrors.add(new FieldErrorDTO("findProgressTowardsById", "ReportSynthesisSrfProgressEntity",
+            "There is no Report Synthesis SRF Progress assosiated to this entity!"));
+        } else {
+          if (srfProgressTarget.getReportSynthesisSrfProgress().getReportSynthesis() == null) {
+            fieldErrors.add(new FieldErrorDTO("findProgressTowardsById", "ReportSynthesisEntity",
+              "There is no Report Synthesis assosiated to this entity!"));
+          } else {
+            if (srfProgressTarget.getReportSynthesisSrfProgress().getReportSynthesis().getPhase() == null) {
+              fieldErrors.add(new FieldErrorDTO("findProgressTowardsById", "PhaseEntity",
+                "There is no Phase assosiated to this entity!"));
+            } else {
+              if (srfProgressTarget.getReportSynthesisSrfProgress().getReportSynthesis().getPhase().getId() != phase
+                .getId()) {
+                fieldErrors.add(new FieldErrorDTO("findProgressTowardsById", "ReportSynthesisSrfProgressTargetEntity",
+                  "The Report Synthesis Srf Progress Target with id " + id
+                    + " do not correspond to the phase entered"));
+              } else {
+                reportSynthesisSrfProgressTargetManager
+                  .deleteReportSynthesisSrfProgressTarget(srfProgressTarget.getId());
+              }
+            }
+          }
+        }
+      } else {
+        fieldErrors.add(new FieldErrorDTO("deleteProgressTowardsById", "ReportSynthesisSrfProgressTargetEntity",
+          id + " is an invalid Report Synthesis Srf Progress Target Code"));
+      }
     }
 
     if (!fieldErrors.isEmpty()) {
