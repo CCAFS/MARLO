@@ -542,7 +542,8 @@ public class CrossCGIARCollaborationsItem<T> {
     }
 
     Set<CrpUser> lstUser = user.getCrpUsers();
-    if (!lstUser.stream().anyMatch(crp -> crp.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym))) {
+    if (!lstUser.stream()
+      .anyMatch(crp -> StringUtils.equalsIgnoreCase(crp.getCrp().getAcronym(), strippedEntityAcronym))) {
       fieldErrors
         .add(new FieldErrorDTO("putCrossCGIARCollaboration", "GlobalUnitEntity", "CGIAR entity not autorized"));
     }
@@ -634,11 +635,13 @@ public class CrossCGIARCollaborationsItem<T> {
         .filter(c -> c != null && c.getId() != null).map(c -> c.getGlobalUnit().getSmoCode())
         .collect(Collectors.toSet());
 
+      Set<String> incoming = newCrossCGIARCollaborationDTO.getCollaborationCrpIds().stream()
+        .map(StringUtils::stripToNull).collect(Collectors.toSet());
+
       // We track the changes. As a result we get a map where the list with the true key means the elements are present
       // in the database and are no longer selected; false means the elements are new and need to be saved.
       // TODO it might be a better way to do this...
-      Map<Boolean, List<String>> changes =
-        ChangeTracker.trackChanges(base, newCrossCGIARCollaborationDTO.getCollaborationCrpIds());
+      Map<Boolean, List<String>> changes = ChangeTracker.trackChanges(base, incoming);
 
       changes.get(Boolean.TRUE).stream().map(StringUtils::stripToNull)
         .map(ch -> reportSynthesisKeyPartnershipCollaborationCrpManager.getByCollaborationIdAndGlobalUnitId(
