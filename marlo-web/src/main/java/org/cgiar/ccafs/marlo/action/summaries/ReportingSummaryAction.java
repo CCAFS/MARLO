@@ -2179,25 +2179,32 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         Boolean isRestricted = false;
         Boolean isLastTwoRestricted = false;
         Boolean showDelivLicenseModifications = false;
-        if (deliverable.getDeliverableDisseminations().stream().collect(Collectors.toList()).size() > 0
+        if (deliverable.getDeliverableDisseminations() != null
+          && deliverable.getDeliverableDisseminations().stream().collect(Collectors.toList()).size() > 0
           && deliverable.getDeliverableDisseminations().stream().collect(Collectors.toList()).get(0) != null) {
           // Get deliverable dissemination
-          DeliverableDissemination deliverableDissemination =
-            deliverable.getDeliverableDisseminations().stream()
+          DeliverableDissemination deliverableDissemination = null;
+          if (deliverable.getDeliverableDisseminations().stream()
+            .filter(
+              d -> d != null && d.getPhase() != null && d.getPhase().getId() != null && this.getActualPhase() != null
+                && this.getActualPhase().getId() != null && d.getPhase().getId().equals(this.getActualPhase().getId()))
+            .collect(Collectors.toList()) != null) {
+            deliverableDissemination = deliverable.getDeliverableDisseminations().stream()
               .filter(d -> d != null && d.getPhase() != null && d.getPhase().getId() != null
                 && this.getActualPhase() != null && this.getActualPhase().getId() != null
                 && d.getPhase().getId().equals(this.getActualPhase().getId()))
               .collect(Collectors.toList()).get(0);
-          if (deliverableDissemination.getAlreadyDisseminated() != null
+          }
+          if (deliverableDissemination != null && deliverableDissemination.getAlreadyDisseminated() != null
             && deliverableDissemination.getAlreadyDisseminated() == true) {
             isDisseminated = true;
             disseminated = "Yes";
           }
-          if (deliverableDissemination.getDisseminationChannel() != null
+          if (deliverableDissemination != null && deliverableDissemination.getDisseminationChannel() != null
             && !deliverableDissemination.getDisseminationChannel().isEmpty()) {
             RepositoryChannel repositoryChannel = repositoryChannelManager
               .getRepositoryChannelByShortName(deliverableDissemination.getDisseminationChannel());
-            if (repositoryChannel != null) {
+            if (repositoryChannel != null && repositoryChannel.getName() != null) {
               delivDisseminationChannel = repositoryChannel.getName();
             }
           }
