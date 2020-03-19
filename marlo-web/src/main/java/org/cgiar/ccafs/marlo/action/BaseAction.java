@@ -4970,16 +4970,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return
    */
   public boolean isCompleteLiaisonSectionReport2018(long liaisonInstitutionID) {
-    Phase phase = this.getActualPhase();
+    if (liaisonInstitutionID != 0 && this.getActualPhase() != null && this.getActualPhase().getId() != null) {
+      Phase phase = this.getActualPhase();
 
-    ReportSynthesis reportSynthesis = this.reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
+      ReportSynthesis reportSynthesis = this.reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
 
-    if (reportSynthesis != null) {
-      return this.isCompleteReportSynthesis2018(reportSynthesis.getId());
+      if (reportSynthesis != null) {
+        return this.isCompleteReportSynthesis2018(reportSynthesis.getId());
+      } else {
+        return false;
+      }
     } else {
       return false;
     }
-
   }
 
   /**
