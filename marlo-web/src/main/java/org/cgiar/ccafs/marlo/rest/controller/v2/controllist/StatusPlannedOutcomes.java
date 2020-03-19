@@ -77,15 +77,15 @@ public class StatusPlannedOutcomes {
       required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${StatusPlannedOutcomes.outcomes.POST.param.statusPlannedOutcome}",
       required = true) @Valid @RequestBody NewStatusPlannedOutcomeDTO newStatusPlannedOutcomeDTO) {
-    Long policyId = new Long(0);
+    Long reportSythesisProgressOutcomesID = new Long(0);
     try {
-      policyId = this.statusPlannedOutcomesItem.createStatusPlannedOutcome(newStatusPlannedOutcomeDTO, CGIAREntity,
-        this.getCurrentUser());
+      reportSythesisProgressOutcomesID = this.statusPlannedOutcomesItem
+        .createStatusPlannedOutcome(newStatusPlannedOutcomeDTO, CGIAREntity, this.getCurrentUser());
     } catch (Exception e) {
       e.printStackTrace();
     }
 
-    ResponseEntity<Long> response = new ResponseEntity<Long>(policyId, HttpStatus.OK);
+    ResponseEntity<Long> response = new ResponseEntity<Long>(reportSythesisProgressOutcomesID, HttpStatus.OK);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("StatusPlannedOutcomes.outcomes.GET.id.404"));
     }

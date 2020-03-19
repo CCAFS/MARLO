@@ -242,6 +242,7 @@ public class StatusPlannedOutcomesItem<T> {
                 .setReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgress);
               reportSynthesisFlagshipProgressOutcome = reportSynthesisFlagshipProgressOutcomeManager
                 .saveReportSynthesisFlagshipProgressOutcome(reportSynthesisFlagshipProgressOutcome);
+              plannedOutcomeStatusID = reportSynthesisFlagshipProgressOutcome.getId();
               if (reportSynthesisFlagshipProgressOutcome != null) {
                 for (ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone : reportSynthesisFlagshipProgressOutcomeMilestoneList) {
                   reportSynthesisFlagshipProgressOutcomeMilestone
@@ -250,6 +251,11 @@ public class StatusPlannedOutcomesItem<T> {
                     reportSynthesisFlagshipProgressOutcomeMilestoneManager
                       .saveReportSynthesisFlagshipProgressOutcomeMilestone(
                         reportSynthesisFlagshipProgressOutcomeMilestone);
+                  CrpMilestone milestoneObject = crpMilestoneManager
+                    .getCrpMilestoneById(reportSynthesisFlagshipProgressOutcomeMilestone.getCrpMilestone().getId());
+                  // update milestone
+                  milestoneObject
+                    .setMilestonesStatus(reportSynthesisFlagshipProgressOutcomeMilestone.getMilestonesStatus());
                   for (ReportSynthesisFlagshipProgressCrossCuttingMarker reportSynthesisFlagshipProgressCrossCuttingMarker : reportSynthesisFlagshipProgressOutcomeMilestone
                     .getMarkers()) {
                     reportSynthesisFlagshipProgressCrossCuttingMarker
@@ -288,10 +294,12 @@ public class StatusPlannedOutcomesItem<T> {
             // validate milestones by smocode
             if (crpMilestone != null) {
               GeneralStatus status = generalStatusManager.getGeneralStatusById(milestones.getStatus());
+
               if (status != null) {
                 reportSynthesisFlagshipProgressOutcomeMilestone.setCrpMilestone(crpMilestone);
                 reportSynthesisFlagshipProgressOutcomeMilestone.setEvidence(milestones.getEvidence());
                 reportSynthesisFlagshipProgressOutcomeMilestone.setMilestonesStatus(status);
+                crpMilestone.setMilestonesStatus(status);
                 reportSynthesisFlagshipProgressOutcomeMilestone
                   .setReportSynthesisFlagshipProgressOutcome(reportSynthesisFlagshipProgressOutcome);
                 reportSynthesisFlagshipProgressOutcomeMilestone.setCreatedBy(user);
@@ -340,11 +348,18 @@ public class StatusPlannedOutcomesItem<T> {
             reportSynthesisFlagshipProgressOutcome.setReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgress);
             reportSynthesisFlagshipProgressOutcome = reportSynthesisFlagshipProgressOutcomeManager
               .saveReportSynthesisFlagshipProgressOutcome(reportSynthesisFlagshipProgressOutcome);
+            plannedOutcomeStatusID = reportSynthesisFlagshipProgressOutcome.getId();
             for (ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone : reportSynthesisFlagshipProgressOutcomeMilestoneList) {
               reportSynthesisFlagshipProgressOutcomeMilestone
                 .setReportSynthesisFlagshipProgressOutcome(reportSynthesisFlagshipProgressOutcome);
               reportSynthesisFlagshipProgressOutcomeMilestone = reportSynthesisFlagshipProgressOutcomeMilestoneManager
                 .saveReportSynthesisFlagshipProgressOutcomeMilestone(reportSynthesisFlagshipProgressOutcomeMilestone);
+              CrpMilestone milestoneObject = crpMilestoneManager
+                .getCrpMilestoneById(reportSynthesisFlagshipProgressOutcomeMilestone.getCrpMilestone().getId());
+              // update milestone
+              milestoneObject
+                .setMilestonesStatus(reportSynthesisFlagshipProgressOutcomeMilestone.getMilestonesStatus());
+              crpMilestoneManager.saveCrpMilestone(milestoneObject);
               for (ReportSynthesisFlagshipProgressCrossCuttingMarker reportSynthesisFlagshipProgressCrossCuttingMarker : reportSynthesisFlagshipProgressOutcomeMilestone
                 .getMarkers()) {
                 reportSynthesisFlagshipProgressCrossCuttingMarker
@@ -423,11 +438,17 @@ public class StatusPlannedOutcomesItem<T> {
                 .setReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgress);
               reportSynthesisFlagshipProgressOutcome = reportSynthesisFlagshipProgressOutcomeManager
                 .saveReportSynthesisFlagshipProgressOutcome(reportSynthesisFlagshipProgressOutcome);
+              plannedOutcomeStatusID = reportSynthesisFlagshipProgressOutcome.getId();
               for (ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone : reportSynthesisFlagshipProgressOutcomeMilestoneList) {
                 reportSynthesisFlagshipProgressOutcomeMilestone
                   .setReportSynthesisFlagshipProgressOutcome(reportSynthesisFlagshipProgressOutcome);
                 reportSynthesisFlagshipProgressOutcomeMilestone = reportSynthesisFlagshipProgressOutcomeMilestoneManager
                   .saveReportSynthesisFlagshipProgressOutcomeMilestone(reportSynthesisFlagshipProgressOutcomeMilestone);
+                CrpMilestone milestoneObject = crpMilestoneManager
+                  .getCrpMilestoneById(reportSynthesisFlagshipProgressOutcomeMilestone.getCrpMilestone().getId());
+                // update milestone
+                milestoneObject
+                  .setMilestonesStatus(reportSynthesisFlagshipProgressOutcomeMilestone.getMilestonesStatus());
                 for (ReportSynthesisFlagshipProgressCrossCuttingMarker reportSynthesisFlagshipProgressCrossCuttingMarker : reportSynthesisFlagshipProgressOutcomeMilestone
                   .getMarkers()) {
                   reportSynthesisFlagshipProgressCrossCuttingMarker.setReportSynthesisFlagshipProgressOutcomeMilestone(
