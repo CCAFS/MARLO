@@ -541,7 +541,8 @@ public class ProgressTowardsItem<T> {
     }
 
     Set<CrpUser> lstUser = user.getCrpUsers();
-    if (!lstUser.stream().anyMatch(crp -> crp.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym))) {
+    if (!lstUser.stream()
+      .anyMatch(crp -> StringUtils.equalsIgnoreCase(crp.getCrp().getAcronym(), strippedEntityAcronym))) {
       fieldErrors.add(new FieldErrorDTO("putProgressTowards", "GlobalUnitEntity", "CGIAR entity not autorized"));
     }
 
