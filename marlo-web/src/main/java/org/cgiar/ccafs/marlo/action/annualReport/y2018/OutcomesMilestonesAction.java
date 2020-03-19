@@ -167,6 +167,7 @@ public class OutcomesMilestonesAction extends BaseAction {
   private List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers;
   private List<RepIndGenderYouthFocusLevel> focusLevels;
   private List<RepIndMilestoneReason> reasons;
+  private List<String> missingFields;
 
 
   @Inject
@@ -534,6 +535,7 @@ public class OutcomesMilestonesAction extends BaseAction {
   }
 
   public void loadTablePMU() {
+    missingFields = new ArrayList<>();
     flagships = loggedCrp.getCrpPrograms().stream()
       .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList());
@@ -552,9 +554,30 @@ public class OutcomesMilestonesAction extends BaseAction {
         crpProgramOutcome.setMilestones(crpProgramOutcome.getCrpMilestones().stream()
           .filter(c -> c.isActive() && c.getYear().intValue() == this.getActualPhase().getYear())
           .collect(Collectors.toList()));
+        // validate milestones
+        if (crpProgramOutcome.getMilestones() == null) {
+          missingFields.add("milestones");
+        } else {
+          if (crpProgramOutcome.getMilestones().size() > 0) {
+            for (CrpMilestone milestone : crpProgramOutcome.getMilestones()) {
+              if (milestone != null) {
+                if (milestone.getMilestonesStatus() != null) {
+
+                } else {
+                  missingFields.add("milestoneStatus");
+                }
+              }
+            }
+          }
+        }
         crpProgramOutcome.setSubIdos(
           crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
         crpProgram.getMilestones().addAll(crpProgramOutcome.getMilestones());
+        // Validate subIdos
+        if (crpProgramOutcome.getSubIdos() == null) {
+          missingFields.add("subIDOs");
+        }
+
         if (!crpProgram.getMilestones().isEmpty()) {
           validOutcomes.add(crpProgramOutcome);
         }
@@ -847,7 +870,6 @@ public class OutcomesMilestonesAction extends BaseAction {
     }
   }
 
-
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -899,6 +921,7 @@ public class OutcomesMilestonesAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
   }
+
 
   /**
    * Save CrossCutting Information
@@ -1092,10 +1115,10 @@ public class OutcomesMilestonesAction extends BaseAction {
 
   }
 
-
   public void setCgiarCrossCuttingMarkers(List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers) {
     this.cgiarCrossCuttingMarkers = cgiarCrossCuttingMarkers;
   }
+
 
   public void setFlagships(List<CrpProgram> flagships) {
     this.flagships = flagships;
@@ -1113,10 +1136,10 @@ public class OutcomesMilestonesAction extends BaseAction {
     this.liaisonInstitutionID = liaisonInstitutionID;
   }
 
-
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
   }
+
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
@@ -1126,10 +1149,10 @@ public class OutcomesMilestonesAction extends BaseAction {
     this.outcomes = outcomes;
   }
 
-
   public void setReasons(List<RepIndMilestoneReason> reasons) {
     this.reasons = reasons;
   }
+
 
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
     this.reportSynthesis = reportSynthesis;
@@ -1143,12 +1166,16 @@ public class OutcomesMilestonesAction extends BaseAction {
     this.transaction = transaction;
   }
 
-
   @Override
   public void validate() {
     if (save) {
       validator.validate(this, reportSynthesis, true);
     }
+  }
+
+
+  public void validateTableInformation() {
+
   }
 
 }
