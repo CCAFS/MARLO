@@ -6097,19 +6097,23 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean isProjectSubmitted(long projectID) {
-    if (this.getActualPhase() != null && this.getActualPhase().getUpkeep() != null
-      && !this.getActualPhase().getUpkeep()) {
-      Project project = this.projectManager.getProjectById(projectID);
-      List<Submission> submissions = project.getSubmissions().stream()
-        .filter(c -> c.getCycle() != null && this.getCurrentCycle() != null
-          && c.getCycle().equals(this.getCurrentCycle()) && c.getYear() != null
-          && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
-        .collect(Collectors.toList());
-      if (submissions.isEmpty()) {
+    try {
+      if (this.getActualPhase() != null && this.getActualPhase().getUpkeep() != null
+        && !this.getActualPhase().getUpkeep()) {
+        Project project = this.projectManager.getProjectById(projectID);
+        List<Submission> submissions = project.getSubmissions().stream()
+          .filter(c -> c.getCycle() != null && this.getCurrentCycle() != null
+            && c.getCycle().equals(this.getCurrentCycle()) && c.getYear() != null
+            && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
+          .collect(Collectors.toList());
+        if (submissions == null || submissions.isEmpty()) {
+          return false;
+        }
+        return true;
+      } else {
         return false;
       }
-      return true;
-    } else {
+    } catch (Exception e) {
       return false;
     }
   }
