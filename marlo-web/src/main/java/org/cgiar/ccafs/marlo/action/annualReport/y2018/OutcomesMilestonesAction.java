@@ -288,6 +288,24 @@ public class OutcomesMilestonesAction extends BaseAction {
         this.getActualPhase().getId());
 
       if (crossCuttingMarker != null) {
+        String markerInfo = "";
+        String milestoneInfo = "";
+        if (crossCuttingMarker.getFocus() == null) {
+          if (crpMilestoneManager.getCrpMilestoneById(milestoneID) != null) {
+            if (crpMilestoneManager.getCrpMilestoneById(milestoneID).getTitle() != null) {
+              milestoneInfo = crpMilestoneManager.getCrpMilestoneById(milestoneID).getTitle();
+            }
+          }
+          /*
+           * if (reportSynthesisFlagshipProgressCrossCuttingMarkerManager!= null &&
+           * reportSynthesisFlagshipProgressCrossCuttingMarkerManager
+           * .getReportSynthesisFlagshipProgressCrossCuttingMarkerById(markerID) != null) {
+           * marketInfo ="";
+           * }
+           */
+
+          missingFields.add(milestoneInfo + " Marker");
+        }
         return crossCuttingMarker;
       } else {
         return null;
@@ -335,6 +353,33 @@ public class OutcomesMilestonesAction extends BaseAction {
       milestone = reportSynthesisFlagshipProgressOutcomeMilestoneManager.getMilestoneId(outcomeID, milestoneID);
 
       if (milestone != null) {
+        String outcomeInfo = "";
+        String milestoneInfo = "";
+        if (crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeID) != null
+          && crpMilestoneManager.getCrpMilestoneById(milestoneID) != null) {
+          if (crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeID).getCrpProgram() != null
+            && crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeID).getCrpProgram().getAcronym() != null) {
+            outcomeInfo = crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeID).getCrpProgram().getAcronym()
+              + " - " + crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeID).getDescription();
+          }
+          if (crpMilestoneManager.getCrpMilestoneById(milestoneID).getComposedName() != null) {
+            milestoneInfo = crpMilestoneManager.getCrpMilestoneById(milestoneID).getComposedName();
+          }
+        }
+
+        if (milestone == null || milestone.getMilestonesStatus() == null) {
+          // missingFields.add("outcome: " + outcomeInfo + "/ milestone: " + milestoneInfo + " " + "Milestone Status");
+          // missingFields.add("milestone: " + milestoneInfo + " " + "Milestone Status");
+        }
+
+        if (milestoneInfo == null) {
+          milestoneInfo = "";
+        }
+        if (milestone.getEvidence() == null) {
+          missingFields.add("outcome: " + outcomeInfo + "/ milestone: " + milestoneInfo + " "
+            + "Provide evidence for completed milestones");
+        }
+
         return milestone;
       } else {
         return null;
@@ -398,6 +443,18 @@ public class OutcomesMilestonesAction extends BaseAction {
         outcome = reportSynthesisFlagshipProgressOutcomeManager.getOutcomeId(flagshipProgress.getId(), outcomeID);
 
         if (outcome != null) {
+          String flagshipInfo = null;
+          if (outcome.getSummary() == null || outcome.getSummary().isEmpty()) {
+            if (crpProgramManager.getCrpProgramById(programID) != null
+              && crpProgramManager.getCrpProgramById(programID).getAcronym() != null) {
+              flagshipInfo = crpProgramManager.getCrpProgramById(programID).getAcronym();
+            }
+            if (flagshipInfo == null) {
+              flagshipInfo = "";
+            }
+            missingFields
+              .add(flagshipInfo + " " + "Summary narrative on progress against each flagship outcome this year");
+          }
           return outcome;
         } else {
           return null;
@@ -535,7 +592,6 @@ public class OutcomesMilestonesAction extends BaseAction {
   }
 
   public void loadTablePMU() {
-    missingFields = new ArrayList<>();
     flagships = loggedCrp.getCrpPrograms().stream()
       .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList());
@@ -554,29 +610,10 @@ public class OutcomesMilestonesAction extends BaseAction {
         crpProgramOutcome.setMilestones(crpProgramOutcome.getCrpMilestones().stream()
           .filter(c -> c.isActive() && c.getYear().intValue() == this.getActualPhase().getYear())
           .collect(Collectors.toList()));
-        // validate milestones
-        if (crpProgramOutcome.getMilestones() == null) {
-          missingFields.add("milestones");
-        } else {
-          if (crpProgramOutcome.getMilestones().size() > 0) {
-            for (CrpMilestone milestone : crpProgramOutcome.getMilestones()) {
-              if (milestone != null) {
-                if (milestone.getMilestonesStatus() != null) {
 
-                } else {
-                  missingFields.add("milestoneStatus");
-                }
-              }
-            }
-          }
-        }
         crpProgramOutcome.setSubIdos(
           crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
         crpProgram.getMilestones().addAll(crpProgramOutcome.getMilestones());
-        // Validate subIdos
-        if (crpProgramOutcome.getSubIdos() == null) {
-          missingFields.add("subIDOs");
-        }
 
         if (!crpProgram.getMilestones().isEmpty()) {
           validOutcomes.add(crpProgramOutcome);
@@ -600,6 +637,8 @@ public class OutcomesMilestonesAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
+    missingFields = new ArrayList<>();
+
     // Get current CRP
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
@@ -1168,6 +1207,12 @@ public class OutcomesMilestonesAction extends BaseAction {
 
   @Override
   public void validate() {
+
+    if (this.isPMU()) {
+      if (missingFields != null && !missingFields.isEmpty()) {
+        validator.validateTable5(this, missingFields);
+      }
+    }
     if (save) {
       validator.validate(this, reportSynthesis, true);
     }

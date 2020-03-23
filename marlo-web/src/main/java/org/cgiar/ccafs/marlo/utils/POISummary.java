@@ -577,7 +577,7 @@ public class POISummary {
     CTText ctHeader = ctrHeader.addNewT();
     ctHeader.setStringValue(text);
     XWPFParagraph headerParagraph = new XWPFParagraph(ctpHeader, document);
-    headerParagraph.setAlignment(ParagraphAlignment.RIGHT);
+    headerParagraph.setAlignment(ParagraphAlignment.CENTER);
     XWPFParagraph[] parsHeader = new XWPFParagraph[1];
     parsHeader[0] = headerParagraph;
     policy.createHeader(XWPFHeaderFooterPolicy.DEFAULT, parsHeader);
