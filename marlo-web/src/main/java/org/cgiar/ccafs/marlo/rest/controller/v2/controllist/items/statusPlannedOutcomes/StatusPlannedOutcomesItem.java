@@ -114,6 +114,7 @@ public class StatusPlannedOutcomesItem<T> {
       reportSynthesisFlagshipProgressCrossCuttingMarkerManager;
   }
 
+
   public Long createStatusPlannedOutcome(NewStatusPlannedOutcomeDTO newStatusPlannedOutcomeDTO, String entityAcronym,
     User user) {
     Long plannedOutcomeStatusID = null;

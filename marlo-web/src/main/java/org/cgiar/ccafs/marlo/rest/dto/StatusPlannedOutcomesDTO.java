@@ -19,19 +19,35 @@
 
 package org.cgiar.ccafs.marlo.rest.dto;
 
+import java.util.List;
+
 import io.swagger.annotations.ApiModelProperty;
 
 public class StatusPlannedOutcomesDTO {
 
-  @ApiModelProperty(notes = "Status of Planned Outcome ID")
-  private String code;
+  @ApiModelProperty(notes = "Flagship/Moodule Identifier", position = 1)
+  private CrpProgramDTO crpProgram;
 
-  @ApiModelProperty(notes = "Phase year/section", position = 140)
+  @ApiModelProperty(notes = "Outcome Identifier", position = 2)
+  private OutcomeDTO outcome;
+
+  @ApiModelProperty(notes = "Outcome Sumary", position = 3)
+  private String sumary;
+
+  @ApiModelProperty(notes = "Milestones Status", position = 4)
+  private List<StatusPlannedMilestonesDTO> milestones;
+
+  @ApiModelProperty(notes = "Phase year/section", position = 5)
   private PhaseDTO phase;
 
 
-  public String getCode() {
-    return code;
+  public CrpProgramDTO getCrpProgram() {
+    return crpProgram;
+  }
+
+
+  public OutcomeDTO getOutcome() {
+    return outcome;
   }
 
 
@@ -40,13 +56,28 @@ public class StatusPlannedOutcomesDTO {
   }
 
 
-  public void setCode(String code) {
-    this.code = code;
+  public String getSumary() {
+    return sumary;
+  }
+
+
+  public void setCrpProgram(CrpProgramDTO crpProgram) {
+    this.crpProgram = crpProgram;
+  }
+
+
+  public void setOutcome(OutcomeDTO outcome) {
+    this.outcome = outcome;
   }
 
 
   public void setPhase(PhaseDTO phase) {
     this.phase = phase;
+  }
+
+
+  public void setSumary(String sumary) {
+    this.sumary = sumary;
   }
 
 }
