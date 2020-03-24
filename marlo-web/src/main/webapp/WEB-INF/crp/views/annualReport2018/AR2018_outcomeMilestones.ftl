@@ -51,6 +51,15 @@
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
           <div class="">
           
+          [#-- Links to evidence --]
+          [#if !PMU]
+            <div class="form-group">
+              <div class="borderBox">
+                [@customForm.textArea name="${customName}.evidence" i18nkey="${customLabel}.table5.evidence" helpIcon=false required=true editable=editable allowTextEditor=true /]
+              </div>
+            </div>
+           [/#if]
+          
             [#-- Table 5: Status of Planned Outcomes and Milestones --]
             <div class="form-group">
               [#if PMU]
