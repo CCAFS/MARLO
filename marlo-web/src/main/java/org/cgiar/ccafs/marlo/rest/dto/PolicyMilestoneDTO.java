@@ -17,53 +17,33 @@ package org.cgiar.ccafs.marlo.rest.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 
-/**
- * @author Hermes Jiménez - CIAT/CCAFS
- */
-public class SrfSloTargetDTO {
+/**************
+ * @author German C. Martinez - CIAT/CCAFS
+ **************/
 
-  @ApiModelProperty(notes = "SLO target indicator code")
-  private String code;
+public class PolicyMilestoneDTO {
 
-  @ApiModelProperty(notes = "SLO target indicator year")
-  private String year;
+  @ApiModelProperty(notes = "Milestone Identifier", position = 1)
+  private MilestoneDTO crpMilestone;
 
-  @ApiModelProperty(notes = "SLO target indicator narrative")
-  private String narrative;
+  @ApiModelProperty(notes = "Milestone as primary", position = 1)
+  private Boolean primary;
 
-  @ApiModelProperty(notes = "SLO of target indicator ")
-  private SrfSloDTO srfSloDTO;
 
-  public String getCode() {
-    return this.code;
+  public MilestoneDTO getCrpMilestone() {
+    return crpMilestone;
   }
 
-  public String getNarrative() {
-    return this.narrative;
+  public Boolean getPrimary() {
+    return primary;
   }
 
-  public SrfSloDTO getSrfSloDTO() {
-    return this.srfSloDTO;
+
+  public void setCrpMilestone(MilestoneDTO crpMilestone) {
+    this.crpMilestone = crpMilestone;
   }
 
-  public String getYear() {
-    return this.year;
+  public void setPrimary(Boolean primary) {
+    this.primary = primary;
   }
-
-  public void setCode(String code) {
-    this.code = code;
-  }
-
-  public void setNarrative(String narrative) {
-    this.narrative = narrative;
-  }
-
-  public void setSrfSloDTO(SrfSloDTO srfSloDTO) {
-    this.srfSloDTO = srfSloDTO;
-  }
-
-  public void setYear(String year) {
-    this.year = year;
-  }
-
 }

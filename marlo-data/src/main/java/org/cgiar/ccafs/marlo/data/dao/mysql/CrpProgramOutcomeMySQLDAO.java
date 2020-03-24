@@ -85,11 +85,7 @@ public class CrpProgramOutcomeMySQLDAO extends AbstractMarloDAO<CrpProgramOutcom
     Object findSingleResult = super.findSingleResult(CrpProgramOutcome.class, createQuery);
     CrpProgramOutcome crpProgramOutcome = (CrpProgramOutcome) findSingleResult;
 
-
-    // projectPartner.getProjectPartnerLocations().size();
-
     return crpProgramOutcome;
-
   }
 
   @Override

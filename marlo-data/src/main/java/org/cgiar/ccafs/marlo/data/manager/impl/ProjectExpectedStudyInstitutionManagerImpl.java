@@ -116,6 +116,14 @@ public class ProjectExpectedStudyInstitutionManagerImpl implements ProjectExpect
     return projectExpectedStudyInstitutionDAO.find(projectExpectedStudyInstitutionID);
   }
 
+  @Override
+  public ProjectExpectedStudyInstitution getProjectExpectedStudyInstitutionByPhase(Long expectedID, Long institutionID,
+    Long phaseID) {
+
+    return projectExpectedStudyInstitutionDAO.getProjectExpectedStudyInstitutionByPhase(expectedID, institutionID,
+      phaseID);
+  }
+
   public void saveExpectedStudyInstitutionPhase(Phase next, long expectedID,
     ProjectExpectedStudyInstitution projectExpectedStudyInstitution) {
     Phase phase = phaseDAO.find(next.getId());

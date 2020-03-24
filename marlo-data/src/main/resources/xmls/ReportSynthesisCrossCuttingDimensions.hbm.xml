@@ -137,7 +137,14 @@
     <property name="phdMale" type="java.lang.Double">
       <column name="phd_male" precision="30" scale="0" />
     </property>
+
+    <property name="traineesPhdFemale" type="java.lang.Double">
+      <column name="trainees_phd_female" precision="30" scale="0" />
+    </property>
     
+    <property name="traineesPhdMale" type="java.lang.Double">
+      <column name="trainees_phd_male" precision="30" scale="0" />
+    </property>
 
   </class>
 </hibernate-mapping>

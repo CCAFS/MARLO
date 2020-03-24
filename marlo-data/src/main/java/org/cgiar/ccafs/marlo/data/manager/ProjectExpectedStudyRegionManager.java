@@ -63,6 +63,16 @@ public interface ProjectExpectedStudyRegionManager {
   public List<ProjectExpectedStudyRegion> getProjectExpectedStudyRegionbyPhase(long expectedID, long phaseID);
 
   /**
+   * This method gets a projectExpectedStudyRegion object by a given projectExpectedStudyRegion identifier.
+   * 
+   * @param expectedID is the projectExpectedStudy identifier.
+   * @param regionID is the locElement identifier.
+   * @param phaseID is the phase identifier.
+   * @return a ProjectExpectedStudyRegion object.
+   */
+  public ProjectExpectedStudyRegion getProjectExpectedStudyRegionByPhase(Long expectedID, Long regionID, Long phaseID);
+
+  /**
    * This method saves the information of the given projectExpectedStudyRegion
    * 
    * @param projectExpectedStudyRegion - is the projectExpectedStudyRegion object with the new information to be
@@ -74,6 +84,5 @@ public interface ProjectExpectedStudyRegionManager {
    */
   public ProjectExpectedStudyRegion
     saveProjectExpectedStudyRegion(ProjectExpectedStudyRegion projectExpectedStudyRegion);
-
 
 }

@@ -55,51 +55,49 @@ public class ProjectPolicyDTO {
   @ApiModelProperty(notes = "Countries", position = 100)
   private List<CountryDTO> countries;
 
+  @ApiModelProperty(notes = "Milestones", position = 110)
+  private List<PolicyMilestoneDTO> milestones;
+
 
   public List<CountryDTO> getCountries() {
     return countries;
   }
 
-
   public List<CrosscuttingMarkersDTO> getCrossCuttingMarkers() {
     return crossCuttingMarkers;
   }
-
 
   public List<ProjectPolicyGeographicScopeDTO> getGeographicScopes() {
     return geographicScopes;
   }
 
-
   public Long getId() {
     return id;
   }
 
+  public List<PolicyMilestoneDTO> getMilestones() {
+    return milestones;
+  }
 
   public List<PolicyOwnerTypeDTO> getOwners() {
     return owners;
   }
 
-
   public Long getProject() {
     return project;
   }
-
 
   public ProjectPoliciesInfoDTO getProjectPoliciesInfo() {
     return projectPoliciesInfo;
   }
 
-
   public List<ProjectPolicyCrpDTO> getProjectPolicyCrpDTO() {
     return projectPolicyCrpDTO;
   }
 
-
   public List<RegionDTO> getRegions() {
     return regions;
   }
-
 
   public List<ProjectPolicySubIdoDTO> getSrfSubIdoList() {
     return srfSubIdoList;
@@ -110,26 +108,25 @@ public class ProjectPolicyDTO {
     this.countries = countries;
   }
 
-
   public void setCrossCuttingMarkers(List<CrosscuttingMarkersDTO> crossCuttingMarkers) {
     this.crossCuttingMarkers = crossCuttingMarkers;
   }
-
 
   public void setGeographicScopes(List<ProjectPolicyGeographicScopeDTO> geographicScopes) {
     this.geographicScopes = geographicScopes;
   }
 
-
   public void setId(Long id) {
     this.id = id;
   }
 
+  public void setMilestones(List<PolicyMilestoneDTO> milestones) {
+    this.milestones = milestones;
+  }
 
   public void setOwners(List<PolicyOwnerTypeDTO> owners) {
     this.owners = owners;
   }
-
 
   public void setProject(Long project) {
     this.project = project;
@@ -139,16 +136,13 @@ public class ProjectPolicyDTO {
     this.projectPoliciesInfo = projectPoliciesInfo;
   }
 
-
   public void setProjectPolicyCrpDTO(List<ProjectPolicyCrpDTO> projectPolicyCrpDTO) {
     this.projectPolicyCrpDTO = projectPolicyCrpDTO;
   }
 
-
   public void setRegions(List<RegionDTO> regions) {
     this.regions = regions;
   }
-
 
   public void setSrfSubIdoList(List<ProjectPolicySubIdoDTO> srfSubIdoList) {
     this.srfSubIdoList = srfSubIdoList;

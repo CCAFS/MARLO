@@ -56,10 +56,22 @@ public interface ProjectInnovationSubIdoDAO {
 
 
   /**
+   * This method gets a projectInnovationSubIdo object by a given projectInnovation,SubIdo and Phase identifier.
+   * 
+   * @param innovationID is the projectInnovation identifier.
+   * @param subIdoID is the SubIDO identifier.
+   * @param phaseID is the phase identifier
+   * @return a ProjectInnovationSubIdo object.
+   */
+  public ProjectInnovationSubIdo getProjectInnovationSubIdoByPhase(Long innovationID, Long subIdoID, Long phaseID);
+
+  /**
    * This method saves the information of the given projectInnovationSubIdo
    * 
-   * @param projectInnovationSubIdo - is the projectInnovationSubIdo object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectInnovationSubIdo was
+   * @param projectInnovationSubIdo - is the projectInnovationSubIdo object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectInnovationSubIdo
+   *         was
    *         updated
    *         or -1 is some error occurred.
    */

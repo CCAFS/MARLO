@@ -15,6 +15,7 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
 import org.cgiar.ccafs.marlo.rest.dto.GeographicScopeDTO;
@@ -33,6 +34,12 @@ public interface GeographicScopeMapper {
   @Mappings({@Mapping(source = "code", target = "id")})
   public abstract RepIndGeographicScope
     geographicScopeDTOToRepIndGeographicScope(GeographicScopeDTO geographicScopeDTO);
+
+  @Mappings({@Mapping(source = "projectExpectedStudyGeographicScope.repIndGeographicScope.id", target = "code"),
+    @Mapping(source = "projectExpectedStudyGeographicScope.repIndGeographicScope.name", target = "name"),
+    @Mapping(source = "projectExpectedStudyGeographicScope.repIndGeographicScope.definition", target = "definition")})
+  public abstract GeographicScopeDTO projectExpectedStudyGeographicScopeToGeographicScopeDTO(
+    ProjectExpectedStudyGeographicScope projectExpectedStudyGeographicScope);
 
   @Mappings({@Mapping(source = "repIndGeographicScope.id", target = "code"),
     @Mapping(source = "repIndGeographicScope.name", target = "name"),
