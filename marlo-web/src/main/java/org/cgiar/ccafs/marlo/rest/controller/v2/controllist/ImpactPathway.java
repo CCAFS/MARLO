@@ -70,8 +70,9 @@ public class ImpactPathway {
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<MilestoneDTO> findMilestoneById(
     @ApiParam(value = "${ImpactPathway.milestones.id.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
-    @ApiParam(value = "${ImpactPathway.milestones.id.param.id}", required = true) @PathVariable Long id) {
-    ResponseEntity<MilestoneDTO> response = this.milestoneItem.findMilestoneById(id, CGIAREntity);
+    @ApiParam(value = "${ImpactPathway.milestones.id.param.id}", required = true) @PathVariable String id,
+    @ApiParam(value = "${ImpactPathway.milestones.id.param.year}", required = true) @RequestParam Integer year) {
+    ResponseEntity<MilestoneDTO> response = this.milestoneItem.findMilestoneById(id, CGIAREntity, year);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("ImpactPathway.milestones.id.404"));
     }
@@ -85,8 +86,9 @@ public class ImpactPathway {
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<OutcomeDTO> findOutcomeById(
     @ApiParam(value = "${ImpactPathway.outcomes.id.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
-    @ApiParam(value = "${ImpactPathway.outcomes.id.param.id}", required = true) @PathVariable Long id) {
-    ResponseEntity<OutcomeDTO> response = this.outcomeItem.findOutcomeById(id, CGIAREntity);
+    @ApiParam(value = "${ImpactPathway.outcomes.id.param.id}", required = true) @PathVariable String id,
+    @ApiParam(value = "${ImpactPathway.outcomes.id.param.year}", required = true) @RequestParam Integer year) {
+    ResponseEntity<OutcomeDTO> response = this.outcomeItem.findOutcomeById(id, CGIAREntity, year);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("ImpactPathway.outcomes.id.404"));
     }

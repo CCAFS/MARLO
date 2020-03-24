@@ -33,133 +33,139 @@ import javax.inject.Named;
 @Named
 public class ProjectExpectedStudySubIdoManagerImpl implements ProjectExpectedStudySubIdoManager {
 
-    private ProjectExpectedStudySubIdoDAO projectExpectedStudySubIdoDAO;
-    // Managers
-    private PhaseDAO phaseDAO;
+  private ProjectExpectedStudySubIdoDAO projectExpectedStudySubIdoDAO;
+  // Managers
+  private PhaseDAO phaseDAO;
 
-    @Inject
-    public ProjectExpectedStudySubIdoManagerImpl(ProjectExpectedStudySubIdoDAO projectExpectedStudySubIdoDAO,
-	    PhaseDAO phaseDAO) {
-	this.projectExpectedStudySubIdoDAO = projectExpectedStudySubIdoDAO;
-	this.phaseDAO = phaseDAO;
+  @Inject
+  public ProjectExpectedStudySubIdoManagerImpl(ProjectExpectedStudySubIdoDAO projectExpectedStudySubIdoDAO,
+    PhaseDAO phaseDAO) {
+    this.projectExpectedStudySubIdoDAO = projectExpectedStudySubIdoDAO;
+    this.phaseDAO = phaseDAO;
+
+  }
+
+  @Override
+  public void deleteProjectExpectedStudySubIdo(long projectExpectedStudySubIdoId) {
+
+    ProjectExpectedStudySubIdo projectExpectedStudySubIdo =
+      this.getProjectExpectedStudySubIdoById(projectExpectedStudySubIdoId);
+    Phase currentPhase = projectExpectedStudySubIdo.getPhase();
+
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+      if (currentPhase.getNext() != null) {
+        this.deleteProjectExpectedStudySubIdoPhase(currentPhase.getNext(),
+          projectExpectedStudySubIdo.getProjectExpectedStudy().getId(), projectExpectedStudySubIdo);
+      }
+    }
+
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteProjectExpectedStudySubIdoPhase(upkeepPhase,
+            projectExpectedStudySubIdo.getProjectExpectedStudy().getId(), projectExpectedStudySubIdo);
+        }
+      }
+    }
+
+    if (currentPhase.getNext() != null) {
 
     }
 
-    @Override
-    public void deleteProjectExpectedStudySubIdo(long projectExpectedStudySubIdoId) {
+    projectExpectedStudySubIdoDAO.deleteProjectExpectedStudySubIdo(projectExpectedStudySubIdoId);
+  }
 
-	ProjectExpectedStudySubIdo projectExpectedStudySubIdo = this
-		.getProjectExpectedStudySubIdoById(projectExpectedStudySubIdoId);
-	Phase currentPhase = projectExpectedStudySubIdo.getPhase();
+  public void deleteProjectExpectedStudySubIdoPhase(Phase next, long expectedID,
+    ProjectExpectedStudySubIdo projectExpectedStudySubIdo) {
+    Phase phase = phaseDAO.find(next.getId());
 
-	if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-	    if (currentPhase.getNext() != null) {
-		this.deleteProjectExpectedStudySubIdoPhase(currentPhase.getNext(),
-			projectExpectedStudySubIdo.getProjectExpectedStudy().getId(), projectExpectedStudySubIdo);
-	    }
-	}
-
-	if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
-	    if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
-		Phase upkeepPhase = currentPhase.getNext().getNext();
-		if (upkeepPhase != null) {
-		    this.deleteProjectExpectedStudySubIdoPhase(upkeepPhase,
-			    projectExpectedStudySubIdo.getProjectExpectedStudy().getId(), projectExpectedStudySubIdo);
-		}
-	    }
-	}
-
-	if (currentPhase.getNext() != null) {
-
-	}
-
-	projectExpectedStudySubIdoDAO.deleteProjectExpectedStudySubIdo(projectExpectedStudySubIdoId);
+    List<ProjectExpectedStudySubIdo> projectExpectedStudySubIdos = phase.getProjectExpectedStudySubIdos().stream()
+      .filter(c -> c.isActive() && c.getProjectExpectedStudy().getId().longValue() == expectedID
+        && c.getSrfSubIdo().getId().equals(projectExpectedStudySubIdo.getSrfSubIdo().getId()))
+      .collect(Collectors.toList());
+    for (ProjectExpectedStudySubIdo projectExpectedStudySubIdoDB : projectExpectedStudySubIdos) {
+      projectExpectedStudySubIdoDAO.deleteProjectExpectedStudySubIdo(projectExpectedStudySubIdoDB.getId());
     }
 
-    public void deleteProjectExpectedStudySubIdoPhase(Phase next, long expectedID,
-	    ProjectExpectedStudySubIdo projectExpectedStudySubIdo) {
-	Phase phase = phaseDAO.find(next.getId());
+    if (phase.getNext() != null) {
+      this.deleteProjectExpectedStudySubIdoPhase(phase.getNext(), expectedID, projectExpectedStudySubIdo);
+    }
+  }
 
-	List<ProjectExpectedStudySubIdo> projectExpectedStudySubIdos = phase.getProjectExpectedStudySubIdos().stream()
-		.filter(c -> c.isActive() && c.getProjectExpectedStudy().getId().longValue() == expectedID
-			&& c.getSrfSubIdo().getId().equals(projectExpectedStudySubIdo.getSrfSubIdo().getId()))
-		.collect(Collectors.toList());
-	for (ProjectExpectedStudySubIdo projectExpectedStudySubIdoDB : projectExpectedStudySubIdos) {
-	    projectExpectedStudySubIdoDAO.deleteProjectExpectedStudySubIdo(projectExpectedStudySubIdoDB.getId());
-	}
+  @Override
+  public boolean existProjectExpectedStudySubIdo(long projectExpectedStudySubIdoID) {
 
-	if (phase.getNext() != null) {
-	    this.deleteProjectExpectedStudySubIdoPhase(phase.getNext(), expectedID, projectExpectedStudySubIdo);
-	}
+    return projectExpectedStudySubIdoDAO.existProjectExpectedStudySubIdo(projectExpectedStudySubIdoID);
+  }
+
+  @Override
+  public List<ProjectExpectedStudySubIdo> findAll() {
+
+    return projectExpectedStudySubIdoDAO.findAll();
+
+  }
+
+  @Override
+  public ProjectExpectedStudySubIdo getProjectExpectedStudySubIdoById(long projectExpectedStudySubIdoID) {
+
+    return projectExpectedStudySubIdoDAO.find(projectExpectedStudySubIdoID);
+  }
+
+  @Override
+  public ProjectExpectedStudySubIdo getProjectExpectedStudySubIdoByPhase(Long expectedID, Long subIdoID, Long phaseID) {
+
+    return projectExpectedStudySubIdoDAO.getProjectExpectedStudySubIdoByPhase(expectedID, subIdoID, phaseID);
+  }
+
+  public void saveExpectedStudySubIdoPhase(Phase next, long expectedID,
+    ProjectExpectedStudySubIdo projectExpectedStudySubIdo) {
+    Phase phase = phaseDAO.find(next.getId());
+
+    List<ProjectExpectedStudySubIdo> projectExpectedStudySubIdos = phase.getProjectExpectedStudySubIdos().stream()
+      .filter(c -> c.getProjectExpectedStudy().getId().longValue() == expectedID
+        && c.getSrfSubIdo().getId().equals(projectExpectedStudySubIdo.getSrfSubIdo().getId()))
+      .collect(Collectors.toList());
+
+    if (projectExpectedStudySubIdos.isEmpty()) {
+      ProjectExpectedStudySubIdo projectExpectedStudySubIdoAdd = new ProjectExpectedStudySubIdo();
+      projectExpectedStudySubIdoAdd.setProjectExpectedStudy(projectExpectedStudySubIdo.getProjectExpectedStudy());
+      projectExpectedStudySubIdoAdd.setPhase(phase);
+      projectExpectedStudySubIdoAdd.setSrfSubIdo(projectExpectedStudySubIdo.getSrfSubIdo());
+      projectExpectedStudySubIdoAdd.setPrimary(projectExpectedStudySubIdo.getPrimary());
+      projectExpectedStudySubIdoDAO.save(projectExpectedStudySubIdoAdd);
     }
 
-    @Override
-    public boolean existProjectExpectedStudySubIdo(long projectExpectedStudySubIdoID) {
+    if (phase.getNext() != null) {
+      this.saveExpectedStudySubIdoPhase(phase.getNext(), expectedID, projectExpectedStudySubIdo);
+    }
+  }
 
-	return projectExpectedStudySubIdoDAO.existProjectExpectedStudySubIdo(projectExpectedStudySubIdoID);
+  @Override
+  public ProjectExpectedStudySubIdo
+    saveProjectExpectedStudySubIdo(ProjectExpectedStudySubIdo projectExpectedStudySubIdo) {
+
+    ProjectExpectedStudySubIdo subIdo = projectExpectedStudySubIdoDAO.save(projectExpectedStudySubIdo);
+    Phase currentPhase = subIdo.getPhase();
+
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+      if (currentPhase.getNext() != null) {
+        this.saveExpectedStudySubIdoPhase(currentPhase.getNext(), subIdo.getProjectExpectedStudy().getId(),
+          projectExpectedStudySubIdo);
+      }
     }
 
-    @Override
-    public List<ProjectExpectedStudySubIdo> findAll() {
-
-	return projectExpectedStudySubIdoDAO.findAll();
-
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveExpectedStudySubIdoPhase(upkeepPhase, subIdo.getProjectExpectedStudy().getId(),
+            projectExpectedStudySubIdo);
+        }
+      }
     }
 
-    @Override
-    public ProjectExpectedStudySubIdo getProjectExpectedStudySubIdoById(long projectExpectedStudySubIdoID) {
-
-	return projectExpectedStudySubIdoDAO.find(projectExpectedStudySubIdoID);
-    }
-
-    public void saveExpectedStudySubIdoPhase(Phase next, long expectedID,
-	    ProjectExpectedStudySubIdo projectExpectedStudySubIdo) {
-	Phase phase = phaseDAO.find(next.getId());
-
-	List<ProjectExpectedStudySubIdo> projectExpectedStudySubIdos = phase.getProjectExpectedStudySubIdos().stream()
-		.filter(c -> c.getProjectExpectedStudy().getId().longValue() == expectedID
-			&& c.getSrfSubIdo().getId().equals(projectExpectedStudySubIdo.getSrfSubIdo().getId()))
-		.collect(Collectors.toList());
-
-	if (projectExpectedStudySubIdos.isEmpty()) {
-	    ProjectExpectedStudySubIdo projectExpectedStudySubIdoAdd = new ProjectExpectedStudySubIdo();
-	    projectExpectedStudySubIdoAdd.setProjectExpectedStudy(projectExpectedStudySubIdo.getProjectExpectedStudy());
-	    projectExpectedStudySubIdoAdd.setPhase(phase);
-	    projectExpectedStudySubIdoAdd.setSrfSubIdo(projectExpectedStudySubIdo.getSrfSubIdo());
-	    projectExpectedStudySubIdoAdd.setPrimary(projectExpectedStudySubIdo.getPrimary());
-	    projectExpectedStudySubIdoDAO.save(projectExpectedStudySubIdoAdd);
-	}
-
-	if (phase.getNext() != null) {
-	    this.saveExpectedStudySubIdoPhase(phase.getNext(), expectedID, projectExpectedStudySubIdo);
-	}
-    }
-
-    @Override
-    public ProjectExpectedStudySubIdo saveProjectExpectedStudySubIdo(
-	    ProjectExpectedStudySubIdo projectExpectedStudySubIdo) {
-
-	ProjectExpectedStudySubIdo subIdo = projectExpectedStudySubIdoDAO.save(projectExpectedStudySubIdo);
-	Phase currentPhase = subIdo.getPhase();
-
-	if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-	    if (currentPhase.getNext() != null) {
-		this.saveExpectedStudySubIdoPhase(currentPhase.getNext(), subIdo.getProjectExpectedStudy().getId(),
-			projectExpectedStudySubIdo);
-	    }
-	}
-
-	if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
-	    if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
-		Phase upkeepPhase = currentPhase.getNext().getNext();
-		if (upkeepPhase != null) {
-		    this.saveExpectedStudySubIdoPhase(upkeepPhase, subIdo.getProjectExpectedStudy().getId(),
-			    projectExpectedStudySubIdo);
-		}
-	    }
-	}
-
-	return subIdo;
-    }
+    return subIdo;
+  }
 
 }

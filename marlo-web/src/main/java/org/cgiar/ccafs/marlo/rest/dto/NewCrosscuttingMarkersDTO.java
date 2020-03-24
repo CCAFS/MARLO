@@ -24,10 +24,13 @@ import io.swagger.annotations.ApiModelProperty;
 public class NewCrosscuttingMarkersDTO {
 
 
-  @ApiModelProperty(notes = "CrossCutting marker identifier", position = 1)
+  @ApiModelProperty(
+    notes = "CrossCutting marker identifier (1-Gender," + "2-Youth," + "3-CapDev," + "4-Climate Change)", position = 1)
   private String crossCuttingmarker;
 
-  @ApiModelProperty(notes = "CrossCutting marker score", position = 2)
+  @ApiModelProperty(
+    notes = "CrossCutting marker score (1-Not Targeted," + "2-Significant," + "3-Principal," + "4-Not applicable)",
+    position = 2)
   private String crossCuttingmarkerScore;
 
 

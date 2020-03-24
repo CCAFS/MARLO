@@ -60,15 +60,30 @@ public interface ProjectExpectedStudySrfTargetManager {
    */
   public ProjectExpectedStudySrfTarget getProjectExpectedStudySrfTargetById(long projectExpectedStudySrfTargetID);
 
+
+  /**
+   * This method gets a projectExpectedStudySrfTarget object by a given projectExpectedStudy,srfSloIndicator and phase
+   * identifier.
+   * 
+   * @param expectedID is the projectExpectedStudy identifier.
+   * @param srfSloIndicatorID is the srfSloIndicator identifier
+   * @param PhaseID is the phase identifier
+   * @return a ProjectExpectedStudySrfTarget object.
+   */
+  public ProjectExpectedStudySrfTarget getProjectExpectedStudySrfTargetByPhase(Long expectedID, Long srfSloIndicatorID,
+    Long PhaseID);
+
+
   /**
    * This method saves the information of the given projectExpectedStudySrfTarget
    * 
-   * @param projectExpectedStudySrfTarget - is the projectExpectedStudySrfTarget object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectExpectedStudySrfTarget was
+   * @param projectExpectedStudySrfTarget - is the projectExpectedStudySrfTarget object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectExpectedStudySrfTarget was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ProjectExpectedStudySrfTarget saveProjectExpectedStudySrfTarget(ProjectExpectedStudySrfTarget projectExpectedStudySrfTarget);
-
-
+  public ProjectExpectedStudySrfTarget
+    saveProjectExpectedStudySrfTarget(ProjectExpectedStudySrfTarget projectExpectedStudySrfTarget);
 }

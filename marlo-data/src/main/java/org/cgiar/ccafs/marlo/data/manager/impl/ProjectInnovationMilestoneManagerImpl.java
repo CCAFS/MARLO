@@ -109,6 +109,13 @@ public class ProjectInnovationMilestoneManagerImpl implements ProjectInnovationM
     return projectInnovationMilestoneDAO.find(projectInnovationMilestoneID);
   }
 
+  @Override
+  public ProjectInnovationMilestone getProjectInnovationMilestoneById(Long innovationID, Long crpMilestoneID,
+    Long phaseID) {
+
+    return projectInnovationMilestoneDAO.getProjectInnovationMilestoneById(innovationID, crpMilestoneID, phaseID);
+  }
+
   public void saveInnovationMilestonePhase(Phase next, long innovationid,
     ProjectInnovationMilestone projectInnovationMilestone) {
 

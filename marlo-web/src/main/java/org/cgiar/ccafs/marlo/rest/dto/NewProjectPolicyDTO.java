@@ -34,81 +34,72 @@ public class NewProjectPolicyDTO {
   @ApiModelProperty(notes = "Project Policy info", position = 2)
   private ProjectPoliciesInfoDTO projectPoliciesInfo;
 
-
   @ApiModelProperty(notes = "Contributing CRP/Plataform List", position = 3)
   private List<CGIAREntityDTO> projectPolicyCrpDTO;
 
-
   @ApiModelProperty(notes = "CGIAR Sub-IDOs List", position = 4)
-  private List<SrfSubIdoDTO> srfSubIdoList;
-
+  private List<NewSrfSubIdoDTO> srfSubIdoList;
 
   @ApiModelProperty(notes = "Geographic Scope List", position = 10)
   private List<GeographicScopeDTO> geographicScopes;
 
-
-  @ApiModelProperty(notes = "Policy Owners List", position = 6)
+  @ApiModelProperty(notes = "Policy Owners List", position = 7)
   private List<PolicyOwnerTypeDTO> owners;
 
-
-  @ApiModelProperty(notes = "Crosscutting Markers List", position = 5)
+  @ApiModelProperty(notes = "Crosscutting Markers List", position = 6)
   private List<CrosscuttingMarkersDTO> crossCuttingMarkers;
-
 
   @ApiModelProperty(notes = "Regions ", position = 12)
   private List<RegionDTO> regions;
-
 
   @ApiModelProperty(notes = "Countries", position = 11)
   private List<CountryDTO> countries;
 
 
+  @ApiModelProperty(notes = "CGIAR Milestones List", position = 5)
+  private List<NewMilestonesDTO> milestonesDTOs;
+
   public List<CountryDTO> getCountries() {
     return countries;
   }
-
 
   public List<CrosscuttingMarkersDTO> getCrossCuttingMarkers() {
     return crossCuttingMarkers;
   }
 
-
   public List<GeographicScopeDTO> getGeographicScopes() {
     return geographicScopes;
   }
 
+  public List<NewMilestonesDTO> getMilestonesDTOs() {
+    return milestonesDTOs;
+  }
 
   public List<PolicyOwnerTypeDTO> getOwners() {
     return owners;
   }
 
-
   public PhaseDTO getPhase() {
     return phase;
   }
-
 
   public Long getProject() {
     return project;
   }
 
-
   public ProjectPoliciesInfoDTO getProjectPoliciesInfo() {
     return projectPoliciesInfo;
   }
-
 
   public List<CGIAREntityDTO> getProjectPolicyCrpDTO() {
     return projectPolicyCrpDTO;
   }
 
-
   public List<RegionDTO> getRegions() {
     return regions;
   }
 
-
-  public List<SrfSubIdoDTO> getSrfSubIdoList() {
+  public List<NewSrfSubIdoDTO> getSrfSubIdoList() {
     return srfSubIdoList;
   }
 
@@ -117,14 +108,16 @@ public class NewProjectPolicyDTO {
     this.countries = countries;
   }
 
-
   public void setCrossCuttingMarkers(List<CrosscuttingMarkersDTO> crossCuttingMarkers) {
     this.crossCuttingMarkers = crossCuttingMarkers;
   }
 
-
   public void setGeographicScopes(List<GeographicScopeDTO> geographicScopes) {
     this.geographicScopes = geographicScopes;
+  }
+
+  public void setMilestonesDTOs(List<NewMilestonesDTO> milestonesDTOs) {
+    this.milestonesDTOs = milestonesDTOs;
   }
 
   public void setOwners(List<PolicyOwnerTypeDTO> owners) {
@@ -147,15 +140,12 @@ public class NewProjectPolicyDTO {
     this.projectPolicyCrpDTO = projectPolicyCrpDTO;
   }
 
-
   public void setRegions(List<RegionDTO> regions) {
     this.regions = regions;
   }
 
-
-  public void setSrfSubIdoList(List<SrfSubIdoDTO> srfSubIdoList) {
+  public void setSrfSubIdoList(List<NewSrfSubIdoDTO> srfSubIdoList) {
     this.srfSubIdoList = srfSubIdoList;
   }
-
 
 }

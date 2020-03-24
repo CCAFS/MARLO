@@ -28,7 +28,8 @@ import javax.inject.Named;
  * @author CCAFS
  */
 @Named
-public class ReportSynthesisKeyPartnershipExternalInstitutionManagerImpl implements ReportSynthesisKeyPartnershipExternalInstitutionManager {
+public class ReportSynthesisKeyPartnershipExternalInstitutionManagerImpl
+  implements ReportSynthesisKeyPartnershipExternalInstitutionManager {
 
 
   private ReportSynthesisKeyPartnershipExternalInstitutionDAO reportSynthesisKeyPartnershipExternalInstitutionDAO;
@@ -36,22 +37,27 @@ public class ReportSynthesisKeyPartnershipExternalInstitutionManagerImpl impleme
 
 
   @Inject
-  public ReportSynthesisKeyPartnershipExternalInstitutionManagerImpl(ReportSynthesisKeyPartnershipExternalInstitutionDAO reportSynthesisKeyPartnershipExternalInstitutionDAO) {
+  public ReportSynthesisKeyPartnershipExternalInstitutionManagerImpl(
+    ReportSynthesisKeyPartnershipExternalInstitutionDAO reportSynthesisKeyPartnershipExternalInstitutionDAO) {
     this.reportSynthesisKeyPartnershipExternalInstitutionDAO = reportSynthesisKeyPartnershipExternalInstitutionDAO;
 
 
   }
 
   @Override
-  public void deleteReportSynthesisKeyPartnershipExternalInstitution(long reportSynthesisKeyPartnershipExternalInstitutionId) {
+  public void
+    deleteReportSynthesisKeyPartnershipExternalInstitution(long reportSynthesisKeyPartnershipExternalInstitutionId) {
 
-    reportSynthesisKeyPartnershipExternalInstitutionDAO.deleteReportSynthesisKeyPartnershipExternalInstitution(reportSynthesisKeyPartnershipExternalInstitutionId);
+    reportSynthesisKeyPartnershipExternalInstitutionDAO
+      .deleteReportSynthesisKeyPartnershipExternalInstitution(reportSynthesisKeyPartnershipExternalInstitutionId);
   }
 
   @Override
-  public boolean existReportSynthesisKeyPartnershipExternalInstitution(long reportSynthesisKeyPartnershipExternalInstitutionID) {
+  public boolean
+    existReportSynthesisKeyPartnershipExternalInstitution(long reportSynthesisKeyPartnershipExternalInstitutionID) {
 
-    return reportSynthesisKeyPartnershipExternalInstitutionDAO.existReportSynthesisKeyPartnershipExternalInstitution(reportSynthesisKeyPartnershipExternalInstitutionID);
+    return reportSynthesisKeyPartnershipExternalInstitutionDAO
+      .existReportSynthesisKeyPartnershipExternalInstitution(reportSynthesisKeyPartnershipExternalInstitutionID);
   }
 
   @Override
@@ -62,13 +68,22 @@ public class ReportSynthesisKeyPartnershipExternalInstitutionManagerImpl impleme
   }
 
   @Override
-  public ReportSynthesisKeyPartnershipExternalInstitution getReportSynthesisKeyPartnershipExternalInstitutionById(long reportSynthesisKeyPartnershipExternalInstitutionID) {
+  public ReportSynthesisKeyPartnershipExternalInstitution
+    getByPartnershipExternalIdAndInstitutionId(long partnershipExternalId, long institutionId) {
+    return reportSynthesisKeyPartnershipExternalInstitutionDAO
+      .getByPartnershipExternalIdAndInstitutionId(partnershipExternalId, institutionId);
+  }
+
+  @Override
+  public ReportSynthesisKeyPartnershipExternalInstitution
+    getReportSynthesisKeyPartnershipExternalInstitutionById(long reportSynthesisKeyPartnershipExternalInstitutionID) {
 
     return reportSynthesisKeyPartnershipExternalInstitutionDAO.find(reportSynthesisKeyPartnershipExternalInstitutionID);
   }
 
   @Override
-  public ReportSynthesisKeyPartnershipExternalInstitution saveReportSynthesisKeyPartnershipExternalInstitution(ReportSynthesisKeyPartnershipExternalInstitution reportSynthesisKeyPartnershipExternalInstitution) {
+  public ReportSynthesisKeyPartnershipExternalInstitution saveReportSynthesisKeyPartnershipExternalInstitution(
+    ReportSynthesisKeyPartnershipExternalInstitution reportSynthesisKeyPartnershipExternalInstitution) {
 
     return reportSynthesisKeyPartnershipExternalInstitutionDAO.save(reportSynthesisKeyPartnershipExternalInstitution);
   }

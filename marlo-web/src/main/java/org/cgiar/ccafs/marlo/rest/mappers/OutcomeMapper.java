@@ -30,7 +30,7 @@ public abstract class OutcomeMapper {
   private static final Logger LOG = LoggerFactory.getLogger(OutcomeMapper.class);
 
   @Mappings({@Mapping(source = "crpProgram", target = "flagshipProgramDTO"),
-    @Mapping(source = "srfTargetUnit", target = "targetUnitDTO"),
+    @Mapping(source = "srfTargetUnit", target = "targetUnitDTO"), @Mapping(source = "composeID", target = "id")
     // @Mapping(source = "crpOutcomeSubIdos", target = "subIdoDTOs")
   })
   public abstract OutcomeDTO crpProgramOutcomeToOutcomeDTO(CrpProgramOutcome crpProgramOutcome);
