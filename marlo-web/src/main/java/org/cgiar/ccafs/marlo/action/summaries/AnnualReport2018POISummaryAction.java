@@ -779,7 +779,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         ParagraphAlignment.CENTER, false),
       new POIField(this.getText("summaries.annualReport2018.table10Title2"), ParagraphAlignment.CENTER, false),
       new POIField(this.getText("summaries.annualReport2018.table10Title3"), ParagraphAlignment.CENTER, true, "839B49"),
-      new POIField(this.getText("summaries.annualReport2018.table10Title4"), ParagraphAlignment.CENTER, false)};
+      new POIField(this.getText("summaries.annualReport2018.table10Title5"), ParagraphAlignment.CENTER, false)};
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
 
@@ -1325,7 +1325,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     POIField[] sHeader = {
       new POIField(
         this.getText("summaries.annualReport2018.table3Title1", new String[] {String.valueOf(this.getSelectedYear())}),
-        ParagraphAlignment.LEFT, false, false),
+        ParagraphAlignment.LEFT, false, true),
       new POIField(this.getText("summaries.annualReport2018.table3Title2a"), ParagraphAlignment.LEFT, false),
       new POIField(this.getText("summaries.annualReport2018.table3Title2"), ParagraphAlignment.LEFT, false),
       new POIField(this.getText("summaries.annualReport2018.table3Title3"), ParagraphAlignment.LEFT, false)};
@@ -1366,6 +1366,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         + this.getSelectedPhase().getYear();
 
       POIField[] sData = {new POIField(title, ParagraphAlignment.LEFT, false, "000000", url),
+        new POIField(linkOICR, ParagraphAlignment.CENTER, false),
         new POIField(maturity, ParagraphAlignment.CENTER, false),
         new POIField(indicator, ParagraphAlignment.LEFT, false)};
       data = Arrays.asList(sData);
