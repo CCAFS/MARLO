@@ -22,7 +22,10 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * @author Luis Benavides - CIAT/CCAFS
  */
-public class NewProjectExpectedStudiesOtherDTO {
+public class ProjectExpectedStudiesOtherDTO {
+
+  @ApiModelProperty(notes = "Project ID", position = 1)
+  private Long project;
 
   @ApiModelProperty(notes = "Project expected studies other info", position = 2)
   private NewProjectExpectedStudiesOtherInfoDTO newProjectExpectedStudiesOtherInfoDTO;
@@ -65,6 +68,11 @@ public class NewProjectExpectedStudiesOtherDTO {
   }
 
 
+  public Long getProject() {
+    return project;
+  }
+
+
   public List<String> getRegions() {
     return regions;
   }
@@ -101,6 +109,11 @@ public class NewProjectExpectedStudiesOtherDTO {
   }
 
 
+  public void setProject(Long project) {
+    this.project = project;
+  }
+
+
   public void setRegions(List<String> regions) {
     this.regions = regions;
   }
@@ -114,6 +127,5 @@ public class NewProjectExpectedStudiesOtherDTO {
   public void setSrfSloTargetList(List<String> srfSloTargetList) {
     this.srfSloTargetList = srfSloTargetList;
   }
-
 
 }
