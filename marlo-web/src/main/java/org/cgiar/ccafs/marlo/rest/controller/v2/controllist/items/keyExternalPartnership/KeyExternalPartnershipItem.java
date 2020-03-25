@@ -157,7 +157,7 @@ public class KeyExternalPartnershipItem<T> {
         phase = phaseManager.findAll().stream()
           .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), strippedEntityAcronym)
             && p.getYear() == newKeyExternalPartnershipDTO.getPhase().getYear()
-            && StringUtils.equalsIgnoreCase(p.getName(), strippedPhaseName))
+            && StringUtils.equalsIgnoreCase(p.getName(), strippedPhaseName) && p.isActive())
           .findFirst().orElse(null);
 
         if (phase == null) {
@@ -255,9 +255,6 @@ public class KeyExternalPartnershipItem<T> {
               return institution;
             }
           }).collect(Collectors.toSet());
-      } else {
-        fieldErrors
-          .add(new FieldErrorDTO("createKeyExternalPartnership", "InstitutionList", "Please enter the key partners."));
       }
       // end Institutions
 
@@ -378,7 +375,7 @@ public class KeyExternalPartnershipItem<T> {
     String strippedRepoPhase = StringUtils.stripToNull(repoPhase);
     Phase phase = this.phaseManager.findAll().stream()
       .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), strippedEntityAcronym)
-        && p.getYear() == repoYear && StringUtils.equalsIgnoreCase(p.getName(), strippedRepoPhase))
+        && p.getYear() == repoYear && StringUtils.equalsIgnoreCase(p.getName(), strippedRepoPhase) && p.isActive())
       .findFirst().orElse(null);
     if (phase == null) {
       fieldErrors.add(new FieldErrorDTO("deleteKeyExternalPartnership", "phase",
@@ -479,7 +476,7 @@ public class KeyExternalPartnershipItem<T> {
     String strippedRepoPhase = StringUtils.stripToNull(repoPhase);
     Phase phase = this.phaseManager.findAll().stream()
       .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), strippedEntityAcronym)
-        && p.getYear() == repoYear && StringUtils.equalsIgnoreCase(p.getName(), strippedRepoPhase))
+        && p.getYear() == repoYear && StringUtils.equalsIgnoreCase(p.getName(), strippedRepoPhase) && p.isActive())
       .findFirst().orElse(null);
     if (phase == null) {
       fieldErrors.add(new FieldErrorDTO("findKeyExternalPartnershipByGlobalUnit", "phase",
@@ -536,7 +533,7 @@ public class KeyExternalPartnershipItem<T> {
     String strippedRepoPhase = StringUtils.stripToNull(repoPhase);
     Phase phase = this.phaseManager.findAll().stream()
       .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), strippedEntityAcronym)
-        && p.getYear() == repoYear && StringUtils.equalsIgnoreCase(p.getName(), strippedRepoPhase))
+        && p.getYear() == repoYear && StringUtils.equalsIgnoreCase(p.getName(), strippedRepoPhase) && p.isActive())
       .findFirst().orElse(null);
     if (phase == null) {
       fieldErrors.add(
@@ -636,7 +633,7 @@ public class KeyExternalPartnershipItem<T> {
         phase = phaseManager.findAll().stream()
           .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), strippedEntityAcronym)
             && p.getYear() == newKeyExternalPartnershipDTO.getPhase().getYear()
-            && StringUtils.equalsIgnoreCase(p.getName(), strippedPhaseName))
+            && StringUtils.equalsIgnoreCase(p.getName(), strippedPhaseName) && p.isActive())
           .findFirst().orElse(null);
 
         if (phase == null) {
@@ -669,12 +666,6 @@ public class KeyExternalPartnershipItem<T> {
       || newKeyExternalPartnershipDTO.getPartnershipMainAreaIds().isEmpty()) {
       fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "RepIndPartnershipMainAreaList",
         "Please enter the main area(s) of partnership."));
-    }
-
-    if (newKeyExternalPartnershipDTO.getInstitutionIds() == null
-      || newKeyExternalPartnershipDTO.getInstitutionIds().isEmpty()) {
-      fieldErrors
-        .add(new FieldErrorDTO("putKeyExternalPartnership", "InstitutionList", "Please enter the key partners."));
     }
 
     ReportSynthesisKeyPartnershipExternal keyPartnershipExternal =

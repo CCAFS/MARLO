@@ -132,7 +132,7 @@ public class ProgressTowardsItem<T> {
         phase = phaseManager.findAll().stream()
           .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), strippedEntityAcronym)
             && p.getYear() == newSrfProgressTowardsTargetDTO.getPhase().getYear()
-            && StringUtils.equalsIgnoreCase(p.getName(), strippedPhaseName))
+            && StringUtils.equalsIgnoreCase(p.getName(), strippedPhaseName) && p.isActive())
           .findFirst().orElse(null);
 
         if (phase == null) {
@@ -202,8 +202,7 @@ public class ProgressTowardsItem<T> {
       if (strippedId != null) {
         id = this.tryParseLong(strippedId, fieldErrors, "createProgressTowards", "SrfSloIndicator");
         if (id != null) {
-          srfSloIndicator = srfSloIndicatorManager
-            .getSrfSloIndicatorById(Long.valueOf(newSrfProgressTowardsTargetDTO.getSrfSloIndicatorId().trim()));
+          srfSloIndicator = srfSloIndicatorManager.getSrfSloIndicatorById(id);
           if (srfSloIndicator == null) {
             fieldErrors.add(new FieldErrorDTO("createProgressTowards", "SrfSloIndicatorEntity",
               newSrfProgressTowardsTargetDTO.getSrfSloIndicatorId() + " is an invalid Srf Slo Indicator code."));
@@ -319,7 +318,7 @@ public class ProgressTowardsItem<T> {
     String strippedRepoPhase = StringUtils.stripToNull(repoPhase);
     Phase phase = this.phaseManager.findAll().stream()
       .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), strippedEntityAcronym)
-        && p.getYear() == repoYear && StringUtils.equalsIgnoreCase(p.getName(), strippedRepoPhase))
+        && p.getYear() == repoYear && StringUtils.equalsIgnoreCase(p.getName(), strippedRepoPhase) && p.isActive())
       .findFirst().orElse(null);
     if (phase == null) {
       fieldErrors
@@ -333,7 +332,7 @@ public class ProgressTowardsItem<T> {
 
     if (fieldErrors.isEmpty()) {
       srfProgressTarget = reportSynthesisSrfProgressTargetManager.getReportSynthesisSrfProgressTargetById(id);
-      if (srfProgressTarget != null) {
+      if (srfProgressTarget != null && srfProgressTarget.isActive() == true) {
         if (srfProgressTarget.getReportSynthesisSrfProgress() == null) {
           fieldErrors.add(new FieldErrorDTO("findProgressTowardsById", "ReportSynthesisSrfProgressEntity",
             "There is no Report Synthesis SRF Progress assosiated to this entity!"));
@@ -398,7 +397,7 @@ public class ProgressTowardsItem<T> {
     String strippedRepoPhase = StringUtils.stripToNull(repoPhase);
     Phase phase = this.phaseManager.findAll().stream()
       .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), strippedEntityAcronym)
-        && p.getYear() == repoYear && StringUtils.equalsIgnoreCase(p.getName(), strippedRepoPhase))
+        && p.getYear() == repoYear && StringUtils.equalsIgnoreCase(p.getName(), strippedRepoPhase) && p.isActive())
       .findFirst().orElse(null);
     if (phase == null) {
       fieldErrors.add(new FieldErrorDTO("findProgressTowardsByGlobalUnit", "phase",
@@ -408,7 +407,8 @@ public class ProgressTowardsItem<T> {
     if (fieldErrors.isEmpty()) {
       // not all ReportSynthesis have a ReportSynthesisSrfProgress, so we need to filter out those to avoid exceptions
       progressTowardsTargets = reportSynthesisManager.findAll().stream()
-        .filter(rs -> rs.getPhase().getId() == phase.getId() && rs.getReportSynthesisSrfProgress() != null)
+        .filter(rs -> rs.getPhase().getId() == phase.getId() && rs.getReportSynthesisSrfProgress() != null
+          && rs.getReportSynthesisSrfProgress().isActive() == true)
         .flatMap(rs -> rs.getReportSynthesisSrfProgress().getReportSynthesisSrfProgressTargets().stream())
         .map(srfProgressTowardsTargetMapper::reportSynthesisSrfProgressTargetToSrfProgressTowardsTargetsDTO)
         .collect(Collectors.toList());
@@ -455,7 +455,7 @@ public class ProgressTowardsItem<T> {
     String strippedRepoPhase = StringUtils.stripToNull(repoPhase);
     Phase phase = this.phaseManager.findAll().stream()
       .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), strippedEntityAcronym)
-        && p.getYear() == repoYear && StringUtils.equalsIgnoreCase(p.getName(), strippedRepoPhase))
+        && p.getYear() == repoYear && StringUtils.equalsIgnoreCase(p.getName(), strippedRepoPhase) && p.isActive())
       .findFirst().orElse(null);
     if (phase == null) {
       fieldErrors.add(
@@ -465,7 +465,7 @@ public class ProgressTowardsItem<T> {
     if (fieldErrors.isEmpty()) {
       reportSynthesisSrfProgressTarget =
         reportSynthesisSrfProgressTargetManager.getReportSynthesisSrfProgressTargetById(id);
-      if (reportSynthesisSrfProgressTarget == null) {
+      if (reportSynthesisSrfProgressTarget == null || reportSynthesisSrfProgressTarget.isActive() == false) {
         fieldErrors.add(new FieldErrorDTO("findProgressTowardsById", "ReportSynthesisSrfProgressTargetEntity",
           id + " is an invalid id of a Report Synthesis Srf Progress Target"));
       } else {
@@ -558,7 +558,7 @@ public class ProgressTowardsItem<T> {
         phase = phaseManager.findAll().stream()
           .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), strippedEntityAcronym)
             && p.getYear() == newSrfProgressTowardsTargetDTO.getPhase().getYear()
-            && StringUtils.equalsIgnoreCase(p.getName(), strippedPhaseName))
+            && StringUtils.equalsIgnoreCase(p.getName(), strippedPhaseName) && p.isActive())
           .findFirst().orElse(null);
 
         if (phase == null) {
@@ -589,7 +589,7 @@ public class ProgressTowardsItem<T> {
 
     ReportSynthesisSrfProgressTarget reportSynthesisSrfProgressTarget =
       reportSynthesisSrfProgressTargetManager.getReportSynthesisSrfProgressTargetById(idProgressTowards);
-    if (reportSynthesisSrfProgressTarget == null) {
+    if (reportSynthesisSrfProgressTarget == null || reportSynthesisSrfProgressTarget.isActive() == false) {
       fieldErrors.add(new FieldErrorDTO("putProgressTowards", "ReportSynthesisSrfProgressTargetEntity",
         idProgressTowards + " is an invalid Report Synthesis Srf Progress Target Code"));
     }
@@ -638,8 +638,7 @@ public class ProgressTowardsItem<T> {
       if (strippedId != null) {
         id = this.tryParseLong(strippedId, fieldErrors, "putProgressTowards", "SrfSloIndicator");
         if (id != null) {
-          srfSloIndicator = srfSloIndicatorManager
-            .getSrfSloIndicatorById(Long.valueOf(newSrfProgressTowardsTargetDTO.getSrfSloIndicatorId().trim()));
+          srfSloIndicator = srfSloIndicatorManager.getSrfSloIndicatorById(id);
           if (srfSloIndicator == null) {
             fieldErrors.add(new FieldErrorDTO("putProgressTowards", "SrfSloIndicatorEntity",
               newSrfProgressTowardsTargetDTO.getSrfSloIndicatorId() + " is an invalid Srf Slo Indicator code."));
