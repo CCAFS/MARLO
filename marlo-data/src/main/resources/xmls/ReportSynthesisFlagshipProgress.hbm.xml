@@ -20,9 +20,6 @@
         <property name="summary" type="string">
             <column name="summary" sql-type="TEXT" />
         </property>
-        <property name="evidence" type="string">
-            <column name="evidence" sql-type="TEXT" />
-        </property>
         <property name="active" type="boolean">
             <column name="is_active" not-null="true" />
         </property>
