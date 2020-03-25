@@ -80,7 +80,7 @@ public class URLShortener {
               }
 
               if (shortURL != null) {
-                referenceText = referenceText.replaceAll(url, shortURL);
+                referenceText = referenceText.replace(url, shortURL);
               }
             }
 
@@ -160,7 +160,7 @@ public class URLShortener {
               }
 
               if (shortURL != null) {
-                referenceText = referenceText.replaceAll(url, shortURL);
+                referenceText = referenceText.replace(url, shortURL);
               }
             }
 
