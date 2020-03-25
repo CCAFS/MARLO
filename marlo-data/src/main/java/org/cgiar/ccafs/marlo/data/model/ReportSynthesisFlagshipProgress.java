@@ -23,9 +23,6 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
   @Expose
   private String summary;
 
-  @Expose
-  private String evidence;
-
   private Set<ReportSynthesisFlagshipProgressOutcome> reportSynthesisFlagshipProgressOutcomes =
     new HashSet<ReportSynthesisFlagshipProgressOutcome>(0);
 
@@ -156,11 +153,6 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
   public String getDroppedResearchLines() {
     return droppedResearchLines;
   }
-
-  public String getEvidence() {
-    return evidence;
-  }
-
 
   public String getExpandedResearchAreas() {
     return expandedResearchAreas;
@@ -350,11 +342,6 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
 
   public void setDroppedResearchLines(String droppedResearchLines) {
     this.droppedResearchLines = droppedResearchLines;
-  }
-
-
-  public void setEvidence(String evidence) {
-    this.evidence = evidence;
   }
 
 

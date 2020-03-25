@@ -1490,7 +1490,9 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         new POIField(this.getText("summaries.annualReport2019.table5Title5") + " "
           + this.getText("summaries.annualReport2018.table5Title51"), ParagraphAlignment.LEFT, false, "000000"),
         new POIField(this.getText("summaries.annualReport2018.table5Title6") + " "
-          + this.getText("summaries.annualReport2018.table5Title61"), ParagraphAlignment.LEFT, false, "000000")};
+          + this.getText("summaries.annualReport2018.table5Title61"), ParagraphAlignment.LEFT, false, "000000"),
+        new POIField(this.getText("summaries.annualReport2018.table5Title7"), ParagraphAlignment.LEFT, false,
+          "000000")};
 
       List<POIField> header = Arrays.asList(sHeader);
       headers.add(header);
@@ -1509,7 +1511,9 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         new POIField(this.getText("summaries.annualReport2019.table5Title5") + " "
           + this.getText("summaries.annualReport2019.table5Title51"), ParagraphAlignment.LEFT, true, "000000"),
         new POIField(this.getText("summaries.annualReport2019.table5Title6") + " "
-          + this.getText("summaries.annualReport2019.table5Title61"), ParagraphAlignment.LEFT, true, "000000")};
+          + this.getText("summaries.annualReport2019.table5Title61"), ParagraphAlignment.LEFT, true, "000000"),
+        new POIField(this.getText("summaries.annualReport2018.table5Title7"), ParagraphAlignment.LEFT, false,
+          "000000")};
 
       List<POIField> header = Arrays.asList(sHeader);
       headers.add(header);
@@ -1525,7 +1529,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           String lastOutcome = "", lastNarrative = "", lastFP = "";
           for (CrpProgramOutcome outcome : flagship.getOutcomes()) {
             String fp = "", subIdos = "", outcomes = "", narrative = "", milestone = "", milestoneStatus = "",
-              evidenceMilestone = "";
+              evidenceMilestone = "", evidence = "";
             int milestone_index = 0;
             for (CrpMilestone crpMilestone : outcome.getMilestones()) {
               Boolean isFlagshipRow = (outcome_index == 0) && (milestone_index == 0);
@@ -1556,6 +1560,34 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
               if (crpMilestone.getComposedName() != null) {
                 milestone = crpMilestone.getComposedName();
+              }
+
+              flagshipsReportSynthesisFlagshipProgress =
+                reportSynthesisFlagshipProgressManager.getFlagshipsReportSynthesisFlagshipProgress(
+                  flagshipLiaisonInstitutions, this.getSelectedPhase().getId());
+
+              if (flagshipsReportSynthesisFlagshipProgress != null) {
+                int i = 0;
+                for (ReportSynthesisFlagshipProgress flagshipProgress : flagshipsReportSynthesisFlagshipProgress) {
+
+                  String FP = "", annex = "";
+                  if (flagshipProgress.getDetailedAnnex() != null) {
+                    annex = flagshipProgress.getDetailedAnnex();
+                  }
+
+                  if (this.isEntityPlatform()) {
+                    FP = flagships.get(i).getComposedName();
+                  } else {
+                    FP = flagships.get(i).getComposedName();
+                  }
+
+                  i++;
+
+                  POIField[] sData = {new POIField(FP, ParagraphAlignment.CENTER, true),
+                    new POIField(poiSummary.replaceHTMLTags(annex), ParagraphAlignment.CENTER, true)};
+                  data = Arrays.asList(sData);
+                  datas.add(data);
+                }
               }
               ReportSynthesisFlagshipProgressOutcomeMilestone milestoneOb = null;
               if (reportSynthesisFlagshipProgressOutcomeMilestoneManager.findAll() != null
@@ -1617,7 +1649,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
                 new POIField(poiSummary.replaceHTMLTags(narrative), ParagraphAlignment.LEFT, false),
                 new POIField(milestone, ParagraphAlignment.LEFT, false),
                 new POIField(milestoneStatus, ParagraphAlignment.CENTER, false),
-                new POIField(evidenceMilestone, ParagraphAlignment.LEFT, true)};
+                new POIField(evidenceMilestone, ParagraphAlignment.LEFT, true),
+                new POIField(evidence, ParagraphAlignment.LEFT, true)};
               data = Arrays.asList(sData);
               datas.add(data);
             }

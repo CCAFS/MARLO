@@ -167,7 +167,6 @@ public class OutcomesMilestonesAction extends BaseAction {
   private List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers;
   private List<RepIndGenderYouthFocusLevel> focusLevels;
   private List<RepIndMilestoneReason> reasons;
-  private List<String> missingFields;
 
 
   @Inject
@@ -290,22 +289,7 @@ public class OutcomesMilestonesAction extends BaseAction {
       if (crossCuttingMarker != null) {
         String markerInfo = "";
         String milestoneInfo = "";
-        if (crossCuttingMarker.getFocus() == null) {
-          if (crpMilestoneManager.getCrpMilestoneById(milestoneID) != null) {
-            if (crpMilestoneManager.getCrpMilestoneById(milestoneID).getTitle() != null) {
-              milestoneInfo = crpMilestoneManager.getCrpMilestoneById(milestoneID).getTitle();
-            }
-          }
-          /*
-           * if (reportSynthesisFlagshipProgressCrossCuttingMarkerManager!= null &&
-           * reportSynthesisFlagshipProgressCrossCuttingMarkerManager
-           * .getReportSynthesisFlagshipProgressCrossCuttingMarkerById(markerID) != null) {
-           * marketInfo ="";
-           * }
-           */
 
-          missingFields.add(milestoneInfo + " Marker");
-        }
         return crossCuttingMarker;
       } else {
         return null;
@@ -365,19 +349,6 @@ public class OutcomesMilestonesAction extends BaseAction {
           if (crpMilestoneManager.getCrpMilestoneById(milestoneID).getComposedName() != null) {
             milestoneInfo = crpMilestoneManager.getCrpMilestoneById(milestoneID).getComposedName();
           }
-        }
-
-        if (milestone == null || milestone.getMilestonesStatus() == null) {
-          // missingFields.add("outcome: " + outcomeInfo + "/ milestone: " + milestoneInfo + " " + "Milestone Status");
-          // missingFields.add("milestone: " + milestoneInfo + " " + "Milestone Status");
-        }
-
-        if (milestoneInfo == null) {
-          milestoneInfo = "";
-        }
-        if (milestone.getEvidence() == null) {
-          missingFields.add("outcome: " + outcomeInfo + "/ milestone: " + milestoneInfo + " "
-            + "Provide evidence for completed milestones");
         }
 
         return milestone;
@@ -443,18 +414,6 @@ public class OutcomesMilestonesAction extends BaseAction {
         outcome = reportSynthesisFlagshipProgressOutcomeManager.getOutcomeId(flagshipProgress.getId(), outcomeID);
 
         if (outcome != null) {
-          String flagshipInfo = null;
-          if (outcome.getSummary() == null || outcome.getSummary().isEmpty()) {
-            if (crpProgramManager.getCrpProgramById(programID) != null
-              && crpProgramManager.getCrpProgramById(programID).getAcronym() != null) {
-              flagshipInfo = crpProgramManager.getCrpProgramById(programID).getAcronym();
-            }
-            if (flagshipInfo == null) {
-              flagshipInfo = "";
-            }
-            missingFields
-              .add(flagshipInfo + " " + "Summary narrative on progress against each flagship outcome this year");
-          }
           return outcome;
         } else {
           return null;
@@ -637,7 +596,6 @@ public class OutcomesMilestonesAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    missingFields = new ArrayList<>();
 
     // Get current CRP
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
@@ -1208,19 +1166,9 @@ public class OutcomesMilestonesAction extends BaseAction {
   @Override
   public void validate() {
 
-    if (this.isPMU()) {
-      if (missingFields != null && !missingFields.isEmpty()) {
-        validator.validateTable5(this, missingFields);
-      }
-    }
     if (save) {
       validator.validate(this, reportSynthesis, true);
     }
-  }
-
-
-  public void validateTableInformation() {
-
   }
 
 }
