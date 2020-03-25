@@ -33,6 +33,9 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestone extends MarloAudita
   @Expose
   private String evidence;
 
+  @Expose
+  private String evidenceLink;
+
   private Set<ReportSynthesisFlagshipProgressCrossCuttingMarker> reportSynthesisFlagshipProgressCrossCuttingMarkers =
     new HashSet<ReportSynthesisFlagshipProgressCrossCuttingMarker>(0);
 
@@ -59,6 +62,10 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestone extends MarloAudita
   }
 
 
+  public String getEvidenceLink() {
+    return evidenceLink;
+  }
+
   public Integer getExtendedYear() {
     return extendedYear;
   }
@@ -70,29 +77,29 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestone extends MarloAudita
     return sb.toString();
   }
 
+
   public List<ReportSynthesisFlagshipProgressCrossCuttingMarker> getMarkers() {
     return this.markers;
   }
-
 
   public GeneralStatus getMilestonesStatus() {
     return milestonesStatus;
   }
 
-
   public String getOtherReason() {
     return this.otherReason;
   }
+
 
   public RepIndMilestoneReason getReason() {
     return this.reason;
   }
 
-
   public Set<ReportSynthesisFlagshipProgressCrossCuttingMarker>
     getReportSynthesisFlagshipProgressCrossCuttingMarkers() {
     return this.reportSynthesisFlagshipProgressCrossCuttingMarkers;
   }
+
 
   public ReportSynthesisFlagshipProgressOutcome getReportSynthesisFlagshipProgressOutcome() {
     return this.reportSynthesisFlagshipProgressOutcome;
@@ -129,6 +136,11 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestone extends MarloAudita
 
   public void setEvidence(String evidence) {
     this.evidence = evidence;
+  }
+
+
+  public void setEvidenceLink(String evidenceLink) {
+    this.evidenceLink = evidenceLink;
   }
 
 
