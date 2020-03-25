@@ -1097,6 +1097,7 @@ public class OutcomesMilestonesAction extends BaseAction {
         }
 
         flagshipProgressMilestoneNew.setEvidence(flagshipProgressMilestone.getEvidence());
+        flagshipProgressMilestoneNew.setEvidenceLink(flagshipProgressMilestone.getEvidenceLink());
         flagshipProgressMilestoneNew.setMilestonesStatus(flagshipProgressMilestone.getMilestonesStatus());
         flagshipProgressMilestoneNew.setExtendedYear(flagshipProgressMilestone.getExtendedYear());
         flagshipProgressMilestoneNew.setCrpMilestone(flagshipProgressMilestone.getCrpMilestone());
