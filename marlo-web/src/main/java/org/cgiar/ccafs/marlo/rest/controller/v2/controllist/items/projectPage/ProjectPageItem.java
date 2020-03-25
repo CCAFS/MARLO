@@ -53,7 +53,7 @@ public class ProjectPageItem<T> {
   private PhaseManager phaseManager;
   private GlobalUnitManager globalUnitManager;
   private ProjectPageMapper projectPageMapper;
-  private List<FieldErrorDTO> fieldErrors;
+
 
   @Inject
   public ProjectPageItem(ProjectManager projectManager, PhaseManager phaseManager, GlobalUnitManager globalUnitManager,
@@ -72,18 +72,18 @@ public class ProjectPageItem<T> {
    */
   public ResponseEntity<ProjectPageDTO> findProjectPageById(Long id, String globalUnitAcronym) {
 
-    this.fieldErrors = new ArrayList<FieldErrorDTO>();
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
 
     Project project = projectManager.getProjectById(id);
 
     if (project == null) {
-      this.fieldErrors.add(new FieldErrorDTO("ProjectPageDTO", "Project", "Invalid Project code"));
+      fieldErrors.add(new FieldErrorDTO("ProjectPageDTO", "Project", "Invalid Project code"));
     }
 
     GlobalUnit globalUnit = globalUnitManager.findGlobalUnitByAcronym(globalUnitAcronym);
 
     if (globalUnit == null) {
-      this.fieldErrors.add(new FieldErrorDTO("ProjectPageDTO", "GlobalUnitEntity", "Invalid CGIAR entity acronym"));
+      fieldErrors.add(new FieldErrorDTO("ProjectPageDTO", "GlobalUnitEntity", "Invalid CGIAR entity acronym"));
     } else {
       Boolean crpProjectPage = globalUnit.getCustomParameters().stream()
         .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_PROJECT_PAGE))
@@ -92,12 +92,12 @@ public class ProjectPageItem<T> {
       if (crpProjectPage) {
         project = (project != null) ? this.getProjectInformation(project, globalUnit) : null;
       } else {
-        this.fieldErrors.add(new FieldErrorDTO("ProjectPageDTO", "GlobalUnitEntity", "CGIAR entity not autorized"));
+        fieldErrors.add(new FieldErrorDTO("ProjectPageDTO", "GlobalUnitEntity", "CGIAR entity not autorized"));
       }
     }
 
-    if (!this.fieldErrors.isEmpty()) {
-      throw new MARLOFieldValidationException("Field Validation errors", "", this.fieldErrors);
+    if (!fieldErrors.isEmpty()) {
+      throw new MARLOFieldValidationException("Field Validation errors", "", fieldErrors);
     }
 
     return Optional.ofNullable(project).map(this.projectPageMapper::projectToProjectPageDTO)
