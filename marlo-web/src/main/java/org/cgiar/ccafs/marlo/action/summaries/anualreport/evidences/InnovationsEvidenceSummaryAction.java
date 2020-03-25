@@ -30,7 +30,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationDeliverable;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationOrganization;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSubIdo;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
@@ -119,7 +119,7 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
     masterReport.getParameterValues().put("i8nColumnE", this.getText("projectInnovations.stage"));
     masterReport.getParameterValues().put("i8nColumnF", this.getText("projectInnovations.innovationType"));
     masterReport.getParameterValues().put("i8nColumnG", this.getText("projectInnovations.contributionOfCrp"));
-    masterReport.getParameterValues().put("i8nColumnH", this.getText("projectInnovations.table.nextUsers"));
+    masterReport.getParameterValues().put("i8nColumnH", this.getText("projectInnovations.table.milestones"));
     masterReport.getParameterValues().put("i8nColumnI", this.getText("projectInnovations.geographicScope"));
     masterReport.getParameterValues().put("i8nColumnJ", this.getText("projectInnovations.region"));
     masterReport.getParameterValues().put("i8nColumnK", this.getText("projectInnovations.countries"));
@@ -132,6 +132,8 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
     masterReport.getParameterValues().put("i8nColumnR", this.getText("projectInnovations.contributing"));
     masterReport.getParameterValues().put("i8nColumnS", this.getText("projectInnovations.table.modification"));
     masterReport.getParameterValues().put("i8nColumnT", this.getText("projectInnovations.table.include"));
+    masterReport.getParameterValues().put("i8nColumnU", this.getText("projectInnovations.table.subIdos"));
+    masterReport.getParameterValues().put("i8nColumnV", this.getText("projectInnovations.table.evidenceLink"));
     masterReport.getParameterValues().put("i8nHeader", this.getText("projectInnovations.table.header"));
 
     return masterReport;
@@ -261,7 +263,7 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
      * paramE - stageInnovation
      * paramF - innovationType
      * paramG - crpContribution
-     * paramH - nextUsers
+     * paramH - milestones
      * paramI - geographicScope
      * paramJ - regions
      * paramK - countries
@@ -275,6 +277,7 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
      * paramS - General last modification date
      * paramT - includeAR
      * paramU - subIdos list
+     * paramV - Evidence Link
      * innovationURL
      * studyURL
      * NOTE : does not mater the order into the implementation (ex: the paramO will be setup first that the paramA)
@@ -282,10 +285,11 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
     TypedTableModel model = new TypedTableModel(
       new String[] {"paramA", "paramB", "paramC", "paramD", "paramE", "paramF", "paramG", "paramH", "paramI", "paramJ",
         "paramK", "paramL", "paramM", "paramN", "paramO", "paramP", "paramQ", "paramR", "paramS", "paramT", "paramU",
-        "innovationURL", "studyURL"},
+        "paramV", "innovationURL", "studyURL"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class},
       0);
 
     // Load the Innovations information
@@ -295,7 +299,7 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
       Long paramA = null, paramB = null;
       String paramC = "", paramD = "", paramE = "", paramF = "", paramG = "", paramH = "", paramI = "", paramJ = "",
         paramK = "", paramL = "", paramM = "", paramN = "", paramO = "", paramP = "", paramQ = "", paramR = "",
-        paramS = "", paramT = "", paramU = "", innovationURL = "", studyURL = "";
+        paramS = "", paramT = "", paramU = "", paramV = "", innovationURL = "", studyURL = "";
 
       // Condition to know if the project innovation have information in the selected phase
       if (innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase()) != null) {
@@ -344,22 +348,43 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
           paramF = "<Not Defined>";
         }
 
-        // Next Users
-        if (innovationEvidences.getProjectInnovation().getProjectInnovationOrganizations() != null) {
-          List<ProjectInnovationOrganization> organizations =
-            new ArrayList<>(innovationEvidences.getProjectInnovation().getProjectInnovationOrganizations().stream()
-              .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
-              .collect(Collectors.toList()));
-          if (organizations != null && !organizations.isEmpty()) {
-            for (ProjectInnovationOrganization organization : organizations) {
-              paramH += "● " + organization.getRepIndOrganizationType().getName() + "\n";
-            }
-          } else {
-            paramH = "<Not Defined>";
-          }
-        } else {
-          paramH = "<Not Defined>";
+        if (innovationEvidences.getProjectInnovation().getProjectInnovationMilestones() != null) {
+          innovationEvidences.getProjectInnovation()
+            .setMilestones(new ArrayList<>(innovationEvidences.getProjectInnovation().getProjectInnovationMilestones()
+              .stream().filter(o -> o.getPhase().getId().equals(this.getSelectedPhase().getId()))
+              .collect(Collectors.toList())));
         }
+        if (innovationEvidences.getProjectInnovation().getMilestones() != null) {
+          for (ProjectInnovationMilestone milestone : innovationEvidences.getProjectInnovation().getMilestones()) {
+            if (milestone.getCrpMilestone() != null && milestone.getCrpMilestone().getComposedName() != null) {
+              if (paramH.isEmpty()) {
+                paramH = milestone.getCrpMilestone().getComposedName();
+              } else {
+                paramH += ", " + milestone.getCrpMilestone().getComposedName();
+              }
+            }
+          }
+        }
+
+        // Next Users
+        /*
+         * if (innovationEvidences.getProjectInnovation().getProjectInnovationOrganizations() != null) {
+         * List<ProjectInnovationOrganization> organizations =
+         * new ArrayList<>(innovationEvidences.getProjectInnovation().getProjectInnovationOrganizations().stream()
+         * .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
+         * .collect(Collectors.toList()));
+         * if (organizations != null && !organizations.isEmpty()) {
+         * for (ProjectInnovationOrganization organization : organizations) {
+         * paramH += "● " + organization.getRepIndOrganizationType().getName() + "\n";
+         * }
+         * } else {
+         * paramH = "<Not Defined>";
+         * }
+         * } else {
+         * paramH = "<Not Defined>";
+         * }
+         */
+
 
         // Geographic scopes, regions and countries
         boolean haveRegions = false;
@@ -560,13 +585,30 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
               .filter(o -> o.getPhase().getId().equals(this.getSelectedPhase().getId())).collect(Collectors.toList()));
           if (subIdos != null && !subIdos.isEmpty()) {
             for (ProjectInnovationSubIdo subIdo : subIdos) {
-              paramU += "● " + subIdo.getSrfSubIdo().getDescription() + "\n";
+              if (paramU.isEmpty()) {
+                paramU = subIdo.getSrfSubIdo().getDescription();
+              } else {
+                paramU += " " + subIdo.getSrfSubIdo().getDescription();
+              }
             }
           } else {
             paramU = "<Not Defined>";
           }
         } else {
           paramU = "<Not Defined>";
+        }
+
+        // paramV - evidence Link
+        // CRPs / PLTs
+        // Title
+        if (innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
+          .getEvidenceLink() != null
+          && !innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
+            .getEvidenceLink().isEmpty()) {
+          paramV = innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
+            .getEvidenceLink();
+        } else {
+          paramV = "<Not Defined>";
         }
 
         // Generate the innovation url of MARLO
@@ -578,8 +620,9 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
 
       }
 
-      model.addRow(new Object[] {paramA, paramB, paramC, paramD, paramE, paramF, paramG, paramH, paramI, paramJ, paramK,
-        paramL, paramM, paramN, paramO, paramP, paramQ, paramR, paramS, paramT, paramU, innovationURL, studyURL});
+      model.addRow(
+        new Object[] {paramA, paramB, paramC, paramD, paramE, paramF, paramG, paramH, paramI, paramJ, paramK, paramL,
+          paramM, paramN, paramO, paramP, paramQ, paramR, paramS, paramT, paramU, paramV, innovationURL, studyURL});
     }
     return model;
   }
