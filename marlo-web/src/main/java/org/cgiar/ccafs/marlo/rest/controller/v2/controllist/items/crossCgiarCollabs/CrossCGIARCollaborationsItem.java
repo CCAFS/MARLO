@@ -144,7 +144,7 @@ public class CrossCGIARCollaborationsItem<T> {
         phase = phaseManager.findAll().stream()
           .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), strippedEntityAcronym)
             && p.getYear() == newCrossCGIARCollaborationDTO.getPhase().getYear()
-            && StringUtils.equalsIgnoreCase(p.getName(), strippedPhaseName))
+            && StringUtils.equalsIgnoreCase(p.getName(), strippedPhaseName) && p.isActive())
           .findFirst().orElse(null);
 
         if (phase == null) {
@@ -315,7 +315,7 @@ public class CrossCGIARCollaborationsItem<T> {
     String strippedRepoPhase = StringUtils.stripToNull(repoPhase);
     Phase phase = this.phaseManager.findAll().stream()
       .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), strippedEntityAcronym)
-        && p.getYear() == repoYear && StringUtils.equalsIgnoreCase(p.getName(), strippedRepoPhase))
+        && p.getYear() == repoYear && StringUtils.equalsIgnoreCase(p.getName(), strippedRepoPhase) && p.isActive())
       .findFirst().orElse(null);
     if (phase == null) {
       fieldErrors.add(new FieldErrorDTO("deleteCrossCGIARCollaboration", "phase",
@@ -412,7 +412,7 @@ public class CrossCGIARCollaborationsItem<T> {
     String strippedRepoPhase = StringUtils.stripToNull(repoPhase);
     Phase phase = this.phaseManager.findAll().stream()
       .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), strippedEntityAcronym)
-        && p.getYear() == repoYear && StringUtils.equalsIgnoreCase(p.getName(), strippedRepoPhase))
+        && p.getYear() == repoYear && StringUtils.equalsIgnoreCase(p.getName(), strippedRepoPhase) && p.isActive())
       .findFirst().orElse(null);
     if (phase == null) {
       fieldErrors.add(
@@ -461,7 +461,7 @@ public class CrossCGIARCollaborationsItem<T> {
     String strippedRepoPhase = StringUtils.stripToNull(repoPhase);
     Phase phase = this.phaseManager.findAll().stream()
       .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), strippedEntityAcronym)
-        && p.getYear() == repoYear && StringUtils.equalsIgnoreCase(p.getName(), strippedRepoPhase))
+        && p.getYear() == repoYear && StringUtils.equalsIgnoreCase(p.getName(), strippedRepoPhase) && p.isActive())
       .findFirst().orElse(null);
     if (phase == null) {
       fieldErrors.add(
@@ -560,7 +560,7 @@ public class CrossCGIARCollaborationsItem<T> {
         phase = phaseManager.findAll().stream()
           .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), strippedEntityAcronym)
             && p.getYear() == newCrossCGIARCollaborationDTO.getPhase().getYear()
-            && StringUtils.equalsIgnoreCase(p.getName(), strippedPhaseName))
+            && StringUtils.equalsIgnoreCase(p.getName(), strippedPhaseName) && p.isActive())
           .findFirst().orElse(null);
 
         if (phase == null) {
