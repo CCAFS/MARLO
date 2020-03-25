@@ -60,6 +60,14 @@ public class POIField {
     this.html = html;
   }
 
+  public POIField(String text, ParagraphAlignment alignment, boolean html, boolean bold) {
+    super();
+    this.text = text;
+    this.alignment = alignment;
+    this.html = html;
+    this.bold = bold;
+  }
+
 
   public POIField(String text, ParagraphAlignment alignment, Boolean bold, String fontColor) {
     super();
