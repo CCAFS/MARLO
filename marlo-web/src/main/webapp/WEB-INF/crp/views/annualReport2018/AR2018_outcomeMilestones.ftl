@@ -136,6 +136,7 @@
           <th rowspan="2"> Status</th>
           [#if !allowPopups]
           <th rowspan="2">Milestone Evidence</th>
+          <th rowspan="2">Link to Evidences</th>
           <th colspan="${cgiarCrossCuttingMarkers?size}" class="text-center">Cross-Cutting Markers</th>
           [/#if]
         </tr>
@@ -210,6 +211,8 @@
                 [#if !allowPopups]
                   [#-- Milestone Evidence --]
                   <td class="urlify">[@utils.tableText value=(reportedMilestone.evidence)!"" emptyText="global.prefilledByFlagship" /] </td>
+                  [#-- Link to Evidences --]
+                  <td class="urlify">[@utils.tableText value=(reportedMilestone.evidenceLink)!"" emptyText="global.prefilledByFlagship" /] </td>
                   [#-- Cross Cutting markers --]
                   [#list cgiarCrossCuttingMarkers as marker]
                     [#local reportedCrossCuting =  (action.getCrossCuttingMarker( ((reportedMilestone.id)!-1), marker.id ))! ]
