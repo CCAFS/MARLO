@@ -17,43 +17,19 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.rest.dto;
+package org.cgiar.ccafs.marlo.rest.mappers;
 
-import io.swagger.annotations.ApiModelProperty;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectExpectedStudyPolicyDTO;
 
-public class NewProgressTowardsSRFTargetDTO {
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
-  @ApiModelProperty(notes = "SLO target", position = 2)
-  private SrfSloTargetDTO srfSloTarget;
-  @ApiModelProperty(notes = "Progress Towards narrative narrative", position = 3)
-  private String narrative;
-  @ApiModelProperty(notes = "Phase - Year ", position = 4)
-  private PhaseDTO phase;
+@Mapper(componentModel = "jsr330")
+public interface ProjectExpectedStudyPolicyMapper {
 
-
-  public String getNarrative() {
-    return narrative;
-  }
-
-
-  public PhaseDTO getPhase() {
-    return phase;
-  }
-
-  public SrfSloTargetDTO getSrfSloTarget() {
-    return srfSloTarget;
-  }
-
-  public void setNarrative(String narrative) {
-    this.narrative = narrative;
-  }
-
-  public void setPhase(PhaseDTO phase) {
-    this.phase = phase;
-  }
-
-  public void setSrfSloTarget(SrfSloTargetDTO srfSloTarget) {
-    this.srfSloTarget = srfSloTarget;
-  }
-
+  @Mappings({@Mapping(source = "projectExpectedStudyPolicy.projectPolicy.id", target = "projectPolicyID")})
+  public abstract ProjectExpectedStudyPolicyDTO
+    ProjectExpectedStudyPolicyToProjectExpectedStudyPolicyDTO(ProjectExpectedStudyPolicy projectExpectedStudyPolicy);
 }

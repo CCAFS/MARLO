@@ -52,7 +52,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Api(tags = "Policies")
+@Api(tags = "Table 2 - CRP Policies")
 public class Policies {
 
   private static final Logger LOG = LoggerFactory.getLogger(Policies.class);

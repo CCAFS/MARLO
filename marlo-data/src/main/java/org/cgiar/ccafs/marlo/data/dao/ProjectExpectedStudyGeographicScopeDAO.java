@@ -40,7 +40,8 @@ public interface ProjectExpectedStudyGeographicScopeDAO {
   public boolean existProjectExpectedStudyGeographicScope(long projectExpectedStudyGeographicScopeID);
 
   /**
-   * This method gets a projectExpectedStudyGeographicScope object by a given projectExpectedStudyGeographicScope identifier.
+   * This method gets a projectExpectedStudyGeographicScope object by a given projectExpectedStudyGeographicScope
+   * identifier.
    * 
    * @param projectExpectedStudyGeographicScopeID is the projectExpectedStudyGeographicScope identifier.
    * @return a ProjectExpectedStudyGeographicScope object.
@@ -56,12 +57,29 @@ public interface ProjectExpectedStudyGeographicScopeDAO {
 
 
   /**
+   * This method gets a projectExpectedStudyGeographicScope object by a given projectExpectedStudy, geographicScope and
+   * phase
+   * identifier.
+   * 
+   * @param expectedId is the projectExpectedStudy identifier.
+   * @param geographicScopeId is the geographicScope identifier.
+   * @param phaseId is the phase identifier.
+   * @return a ProjectExpectedStudyGeographicScope object.
+   */
+  public ProjectExpectedStudyGeographicScope getProjectExpectedStudyGeographicScopeByPhase(Long expectedId,
+    Long geographicScopeId, Long phaseId);
+
+  /**
    * This method saves the information of the given projectExpectedStudyGeographicScope
    * 
-   * @param projectExpectedStudyGeographicScope - is the projectExpectedStudyGeographicScope object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectExpectedStudyGeographicScope was
+   * @param projectExpectedStudyGeographicScope - is the projectExpectedStudyGeographicScope object with the new
+   *        information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectExpectedStudyGeographicScope was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ProjectExpectedStudyGeographicScope save(ProjectExpectedStudyGeographicScope projectExpectedStudyGeographicScope);
+  public ProjectExpectedStudyGeographicScope
+    save(ProjectExpectedStudyGeographicScope projectExpectedStudyGeographicScope);
+
 }

@@ -118,6 +118,13 @@ public class ProjectExpectedStudyCountryManagerImpl implements ProjectExpectedSt
     return projectExpectedStudyCountryDAO.getProjectExpectedStudyCountrybyPhase(expectedID, phaseID);
   }
 
+  @Override
+  public ProjectExpectedStudyCountry getProjectExpectedStudyCountryByPhase(Long projectExpectedStudyID, Long countryID,
+    Long PhaseID) {
+    return projectExpectedStudyCountryDAO.getProjectExpectedStudyCountryByPhase(projectExpectedStudyID, countryID,
+      PhaseID);
+  }
+
   public void saveExpectedStudyCountryPhase(Phase next, long expectedID,
     ProjectExpectedStudyCountry projectExpectedStudyCountry) {
     Phase phase = phaseDAO.find(next.getId());

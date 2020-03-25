@@ -29,19 +29,23 @@ public interface ReportSynthesisKeyPartnershipCollaborationCrpManager {
   /**
    * This method removes a specific reportSynthesisKeyPartnershipCollaborationCrp value from the database.
    * 
-   * @param reportSynthesisKeyPartnershipCollaborationCrpId is the reportSynthesisKeyPartnershipCollaborationCrp identifier.
+   * @param reportSynthesisKeyPartnershipCollaborationCrpId is the reportSynthesisKeyPartnershipCollaborationCrp
+   *        identifier.
    * @return true if the reportSynthesisKeyPartnershipCollaborationCrp was successfully deleted, false otherwise.
    */
   public void deleteReportSynthesisKeyPartnershipCollaborationCrp(long reportSynthesisKeyPartnershipCollaborationCrpId);
 
 
   /**
-   * This method validate if the reportSynthesisKeyPartnershipCollaborationCrp identify with the given id exists in the system.
+   * This method validate if the reportSynthesisKeyPartnershipCollaborationCrp identify with the given id exists in the
+   * system.
    * 
-   * @param reportSynthesisKeyPartnershipCollaborationCrpID is a reportSynthesisKeyPartnershipCollaborationCrp identifier.
+   * @param reportSynthesisKeyPartnershipCollaborationCrpID is a reportSynthesisKeyPartnershipCollaborationCrp
+   *        identifier.
    * @return true if the reportSynthesisKeyPartnershipCollaborationCrp exists, false otherwise.
    */
-  public boolean existReportSynthesisKeyPartnershipCollaborationCrp(long reportSynthesisKeyPartnershipCollaborationCrpID);
+  public boolean
+    existReportSynthesisKeyPartnershipCollaborationCrp(long reportSynthesisKeyPartnershipCollaborationCrpID);
 
 
   /**
@@ -53,22 +57,38 @@ public interface ReportSynthesisKeyPartnershipCollaborationCrpManager {
 
 
   /**
-   * This method gets a reportSynthesisKeyPartnershipCollaborationCrp object by a given reportSynthesisKeyPartnershipCollaborationCrp identifier.
+   * This method finds a ReportSynthesisKeyPartnershipCollaborationCrp by its foreign keys
+   * (ReportSynthesisKeyPartnershipCollaboration and GlobalUnit)
    * 
-   * @param reportSynthesisKeyPartnershipCollaborationCrpID is the reportSynthesisKeyPartnershipCollaborationCrp identifier.
    * @return a ReportSynthesisKeyPartnershipCollaborationCrp object.
    */
-  public ReportSynthesisKeyPartnershipCollaborationCrp getReportSynthesisKeyPartnershipCollaborationCrpById(long reportSynthesisKeyPartnershipCollaborationCrpID);
+
+  public ReportSynthesisKeyPartnershipCollaborationCrp getByCollaborationIdAndGlobalUnitId(long collaborationId,
+    long globalUnitId);
+
+  /**
+   * This method gets a reportSynthesisKeyPartnershipCollaborationCrp object by a given
+   * reportSynthesisKeyPartnershipCollaborationCrp identifier.
+   * 
+   * @param reportSynthesisKeyPartnershipCollaborationCrpID is the reportSynthesisKeyPartnershipCollaborationCrp
+   *        identifier.
+   * @return a ReportSynthesisKeyPartnershipCollaborationCrp object.
+   */
+  public ReportSynthesisKeyPartnershipCollaborationCrp
+    getReportSynthesisKeyPartnershipCollaborationCrpById(long reportSynthesisKeyPartnershipCollaborationCrpID);
 
   /**
    * This method saves the information of the given reportSynthesisKeyPartnershipCollaborationCrp
    * 
-   * @param reportSynthesisKeyPartnershipCollaborationCrp - is the reportSynthesisKeyPartnershipCollaborationCrp object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the reportSynthesisKeyPartnershipCollaborationCrp was
+   * @param reportSynthesisKeyPartnershipCollaborationCrp - is the reportSynthesisKeyPartnershipCollaborationCrp object
+   *        with the new information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         reportSynthesisKeyPartnershipCollaborationCrp was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ReportSynthesisKeyPartnershipCollaborationCrp saveReportSynthesisKeyPartnershipCollaborationCrp(ReportSynthesisKeyPartnershipCollaborationCrp reportSynthesisKeyPartnershipCollaborationCrp);
+  public ReportSynthesisKeyPartnershipCollaborationCrp saveReportSynthesisKeyPartnershipCollaborationCrp(
+    ReportSynthesisKeyPartnershipCollaborationCrp reportSynthesisKeyPartnershipCollaborationCrp);
 
 
 }
