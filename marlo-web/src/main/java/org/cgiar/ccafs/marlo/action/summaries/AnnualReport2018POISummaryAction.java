@@ -1608,6 +1608,9 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
                   if (milestoneOb.getEvidence() != null) {
                     evidenceMilestone = milestoneOb.getEvidence();
                   }
+                  if (milestoneOb.getEvidenceLink() != null) {
+                    evidence = milestoneOb.getEvidenceLink();
+                  }
                   if (milestoneOb.getCrpMilestone().getStatusName() != null) {
                     milestoneStatus = milestoneOb.getCrpMilestone().getStatusName();
                   }
