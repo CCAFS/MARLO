@@ -24,6 +24,9 @@ import io.swagger.annotations.ApiModelProperty;
  */
 public class NewProjectExpectedStudiesOtherDTO {
 
+  @ApiModelProperty(notes = "Project ID", position = 1)
+  private Long project;
+
   @ApiModelProperty(notes = "Project expected studies other info", position = 2)
   private NewProjectExpectedStudiesOtherInfoDTO newProjectExpectedStudiesOtherInfoDTO;
 
@@ -45,6 +48,7 @@ public class NewProjectExpectedStudiesOtherDTO {
   @ApiModelProperty(notes = "Comments", position = 9)
   private String comments;
 
+
   public String getComments() {
     return comments;
   }
@@ -62,6 +66,11 @@ public class NewProjectExpectedStudiesOtherDTO {
 
   public NewProjectExpectedStudiesOtherInfoDTO getNewProjectExpectedStudiesOtherInfoDTO() {
     return newProjectExpectedStudiesOtherInfoDTO;
+  }
+
+
+  public Long getProject() {
+    return project;
   }
 
 
@@ -98,6 +107,11 @@ public class NewProjectExpectedStudiesOtherDTO {
   public void setNewProjectExpectedStudiesOtherInfoDTO(
     NewProjectExpectedStudiesOtherInfoDTO newProjectExpectedStudiesOtherInfoDTO) {
     this.newProjectExpectedStudiesOtherInfoDTO = newProjectExpectedStudiesOtherInfoDTO;
+  }
+
+
+  public void setProject(Long project) {
+    this.project = project;
   }
 
 
