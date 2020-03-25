@@ -65,6 +65,17 @@ public interface ProjectExpectedStudyCountryDAO {
 
 
   /**
+   * This method gets a projectExpectedStudyCountry object by a given projectExpectedStudy,Country and phase identifier.
+   * 
+   * @param projectExpectedStudyID is the projectExpectedStudy identifier.
+   * @param countryID is the LocElement identifier.
+   * @param PhaseID is the phase identifier.
+   * @return a ProjectExpectedStudyCountry object.
+   */
+  public ProjectExpectedStudyCountry getProjectExpectedStudyCountryByPhase(Long projectExpectedStudyID, Long countryID,
+    Long PhaseID);
+
+  /**
    * This method saves the information of the given projectExpectedStudyCountry
    * 
    * @param projectExpectedStudyCountry - is the projectExpectedStudyCountry object with the new information to be

@@ -114,6 +114,12 @@ public class ProjectExpectedStudyLinkManagerImpl implements ProjectExpectedStudy
     return projectExpectedStudyLinkDAO.find(projectExpectedStudyLinkID);
   }
 
+  @Override
+  public ProjectExpectedStudyLink getProjectExpectedStudyLinkByPhase(Long expectedID, String link, Long phaseID) {
+
+    return projectExpectedStudyLinkDAO.getProjectExpectedStudyLinkByPhase(expectedID, link, phaseID);
+  }
+
   public void saveExpectedStudyLinkPhase(Phase next, long expectedID,
     ProjectExpectedStudyLink projectExpectedStudyLink) {
     Phase phase = phaseDAO.find(next.getId());

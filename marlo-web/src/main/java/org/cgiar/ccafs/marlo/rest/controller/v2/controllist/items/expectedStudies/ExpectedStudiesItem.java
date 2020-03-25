@@ -20,41 +20,97 @@
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.expectedStudies;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CgiarCrossCuttingMarkerManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.EvidenceTagManager;
+import org.cgiar.ccafs.marlo.data.manager.GeneralStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCrpManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyFlagshipManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyGeographicScopeManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInfoManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInnovationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyLinkManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyMilestoneManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPolicyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyQuantificationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyRegionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySrfTargetManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageStudyManager;
-import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorTargetManager;
+import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
+import org.cgiar.ccafs.marlo.data.manager.StudyTypeManager;
+import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
+import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.CrpUser;
+import org.cgiar.ccafs.marlo.data.model.EvidenceTag;
+import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrp;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyFlagship;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLink;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyMilestone;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyQuantification;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
+import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageStudy;
-import org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget;
+import org.cgiar.ccafs.marlo.data.model.SrfSloIndicator;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
+import org.cgiar.ccafs.marlo.data.model.StudyType;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.NewCrosscuttingMarkersDTO;
+import org.cgiar.ccafs.marlo.rest.dto.NewMilestonesDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectExpectedStudyDTO;
-import org.cgiar.ccafs.marlo.rest.dto.NewProjectPolicyDTO;
+import org.cgiar.ccafs.marlo.rest.dto.NewSrfSubIdoDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectExpectedStudyDTO;
+import org.cgiar.ccafs.marlo.rest.dto.QuantificationDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
+import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
+import org.cgiar.ccafs.marlo.rest.mappers.ProjectExpectedStudyMapper;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @Named
 public class ExpectedStudiesItem<T> {
@@ -64,265 +120,2145 @@ public class ExpectedStudiesItem<T> {
 
   private RepIndStageStudyManager repIndStageStudyManager;
   private RepIndGeographicScopeManager repIndGeographicScopeManager;
-  private SrfSloIndicatorTargetManager srfSloIndicatorTargetManager;
+  private SrfSloIndicatorManager srfSloIndicatorManager;
   private SrfSubIdoManager srfSubIdoManager;
   private CrpProgramManager crpProgramManager;
   private LocElementManager locElementManager;
   private ProjectInnovationManager projectInnovationManager;
   private ProjectPolicyManager projectPolicyManager;
   private InstitutionManager institutionManager;
+  private CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager;
+  private RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager;
+  private EvidenceTagManager evidenceTagManager;
+  private GeneralStatusManager generalStatusManager;
+  private ProjectManager projectManager;
+  private ProjectExpectedStudyManager projectExpectedStudyManager;
+  private StudyTypeManager studyTypeManager;
+  private CrpMilestoneManager crpMilestoneManager;
+  private ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager;
+  private ProjectExpectedStudyGeographicScopeManager projectExpectedStudyGeographicScopeManager;
+  private ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager;
+  private ProjectExpectedStudyRegionManager projectExpectedStudyRegionManager;
+  private ProjectExpectedStudySrfTargetManager projectExpectedStudySrfTargetManager;
+  private ProjectExpectedStudySubIdoManager projectExpectedStudySubIdoManager;
+  private ProjectExpectedStudyFlagshipManager projectExpectedStudyFlagshipManager;
+  private ProjectExpectedStudyLinkManager projectExpectedStudyLinkManager;
+  private ProjectExpectedStudyInstitutionManager projectExpectedStudyInstitutionManager;
+  private ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager;
+  private ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager;
+  private ProjectExpectedStudyCrpManager projectExpectedStudyCrpManager;
+  private ProjectExpectedStudyQuantificationManager projectExpectedStudyQuantificationManager;
+  private ProjectExpectedStudyMilestoneManager projectExpectedStudyMilestoneManager;
+  private ProjectExpectedStudyMapper projectExpectedStudyMapper;
 
 
   @Inject
   public ExpectedStudiesItem(GlobalUnitManager globalUnitManager, PhaseManager phaseManager,
     RepIndStageStudyManager repIndStageStudyManager, RepIndGeographicScopeManager repIndGeographicScopeManager,
-    SrfSloIndicatorTargetManager srfSloIndicatorTargetManager, SrfSubIdoManager srfSubIdoManager,
+    SrfSloIndicatorManager srfSloIndicatorManager, SrfSubIdoManager srfSubIdoManager,
     CrpProgramManager crpProgramManager, LocElementManager locElementManager,
     ProjectInnovationManager projectInnovationManager, ProjectPolicyManager projectPolicyManager,
-    InstitutionManager institutionManager) {
+    InstitutionManager institutionManager, CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager,
+    RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager, EvidenceTagManager evidenceTagManager,
+    GeneralStatusManager generalStatusManager, ProjectExpectedStudyManager projectExpectedStudyManager,
+    ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager,
+    ProjectExpectedStudyGeographicScopeManager projectExpectedStudyGeographicScopeManager,
+    ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager,
+    ProjectExpectedStudyRegionManager projectExpectedStudyRegionManager,
+    ProjectExpectedStudySrfTargetManager projectExpectedStudySrfTargetManager,
+    ProjectExpectedStudySubIdoManager projectExpectedStudySubIdoManager,
+    ProjectExpectedStudyFlagshipManager projectExpectedStudyFlagshipManager,
+    ProjectExpectedStudyLinkManager projectExpectedStudyLinkManager,
+    ProjectExpectedStudyInstitutionManager projectExpectedStudyInstitutionManager,
+    ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager,
+    ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager,
+    ProjectExpectedStudyCrpManager projectExpectedStudyCrpManager,
+    ProjectExpectedStudyQuantificationManager projectExpectedStudyQuantificationManager,
+    StudyTypeManager studyTypeManager, ProjectManager projectManager, CrpMilestoneManager crpMilestoneManager,
+    ProjectExpectedStudyMilestoneManager projectExpectedStudyMilestoneManager,
+    ProjectExpectedStudyMapper projectExpectedStudyMapper) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.repIndStageStudyManager = repIndStageStudyManager;
     this.repIndGeographicScopeManager = repIndGeographicScopeManager;
-    this.srfSloIndicatorTargetManager = srfSloIndicatorTargetManager;
+    this.srfSloIndicatorManager = srfSloIndicatorManager;
     this.srfSubIdoManager = srfSubIdoManager;
     this.crpProgramManager = crpProgramManager;
     this.locElementManager = locElementManager;
     this.projectInnovationManager = projectInnovationManager;
     this.projectPolicyManager = projectPolicyManager;
     this.institutionManager = institutionManager;
+    this.cgiarCrossCuttingMarkerManager = cgiarCrossCuttingMarkerManager;
+    this.repIndGenderYouthFocusLevelManager = repIndGenderYouthFocusLevelManager;
+    this.evidenceTagManager = evidenceTagManager;
+    this.generalStatusManager = generalStatusManager;
+    this.projectExpectedStudyManager = projectExpectedStudyManager;
+    this.projectExpectedStudyInfoManager = projectExpectedStudyInfoManager;
+    this.projectExpectedStudyGeographicScopeManager = projectExpectedStudyGeographicScopeManager;
+    this.projectExpectedStudyCountryManager = projectExpectedStudyCountryManager;
+    this.projectExpectedStudyRegionManager = projectExpectedStudyRegionManager;
+    this.projectExpectedStudySrfTargetManager = projectExpectedStudySrfTargetManager;
+    this.projectExpectedStudyFlagshipManager = projectExpectedStudyFlagshipManager;
+    this.projectExpectedStudyInstitutionManager = projectExpectedStudyInstitutionManager;
+    this.projectExpectedStudyPolicyManager = projectExpectedStudyPolicyManager;
+    this.projectExpectedStudyInnovationManager = projectExpectedStudyInnovationManager;
+    this.projectExpectedStudyCrpManager = projectExpectedStudyCrpManager;
+    this.projectExpectedStudyQuantificationManager = projectExpectedStudyQuantificationManager;
+    this.projectExpectedStudyLinkManager = projectExpectedStudyLinkManager;
+    this.projectExpectedStudyMilestoneManager = projectExpectedStudyMilestoneManager;
+    this.studyTypeManager = studyTypeManager;
+    this.projectManager = projectManager;
+    this.crpMilestoneManager = crpMilestoneManager;
+    this.projectExpectedStudySubIdoManager = projectExpectedStudySubIdoManager;
+
+    this.projectExpectedStudyMapper = projectExpectedStudyMapper;
   }
 
   public Long createExpectedStudy(NewProjectExpectedStudyDTO newProjectExpectedStudy, String entityAcronym, User user) {
     Long projectExpectedStudyID = null;
+    Phase phase = null;
+    Long id = null;
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
     if (globalUnitEntity == null) {
-      fieldErrors.add(new FieldErrorDTO("createExpetedStudy", "GlobalUnitEntity",
-        entityAcronym + " is an invalid CGIAR entity acronym"));
-    }
-    Phase phase = this.phaseManager.findAll().stream()
-      .filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(entityAcronym)
-        && c.getYear() == newProjectExpectedStudy.getPhase().getYear()
-        && c.getName().equalsIgnoreCase(newProjectExpectedStudy.getPhase().getName()))
-      .findFirst().get();
+      fieldErrors.add(new FieldErrorDTO("createExpectedStudy", "GlobalUnitEntity",
+        entityAcronym + " is not a valid CGIAR entity acronym"));
+    } else {
+      if (!globalUnitEntity.isActive()) {
+        fieldErrors.add(new FieldErrorDTO("createExpectedStudy", "GlobalUnitEntity",
+          "The Global Unit with acronym " + entityAcronym + " is not active."));
+      }
 
-    if (phase == null) {
-      fieldErrors.add(new FieldErrorDTO("create Expected Studies", "phase",
-        new NewProjectPolicyDTO().getPhase().getYear() + " is an invalid year"));
     }
 
-    if (fieldErrors.size() == 0) {
+    Set<CrpUser> lstUser = user.getCrpUsers();
+    if (!lstUser.stream().anyMatch(crp -> StringUtils.equalsIgnoreCase(crp.getCrp().getAcronym(), entityAcronym))) {
+      fieldErrors.add(new FieldErrorDTO("createExpectedStudy", "GlobalUnitEntity", "CGIAR entity not autorized"));
+    }
+
+    if (newProjectExpectedStudy.getPhase() == null) {
+      fieldErrors.add(new FieldErrorDTO("createExpectedStudy", "PhaseEntity", "Phase must not be null"));
+    } else {
+      if (newProjectExpectedStudy.getPhase().getName() == null
+        || newProjectExpectedStudy.getPhase().getName().trim().isEmpty()
+        || newProjectExpectedStudy.getPhase().getYear() == null
+        // DANGER! Magic number ahead
+        || newProjectExpectedStudy.getPhase().getYear() < 2015) {
+        fieldErrors.add(new FieldErrorDTO("createExpectedStudy", "PhaseEntity", "Phase is invalid"));
+      } else {
+        phase = phaseManager.findAll().stream()
+          .filter(p -> p.getCrp().getAcronym().equalsIgnoreCase(entityAcronym)
+            && p.getYear() == newProjectExpectedStudy.getPhase().getYear()
+            && p.getName().equalsIgnoreCase(newProjectExpectedStudy.getPhase().getName()))
+          .findFirst().orElse(null);
+
+        if (phase == null) {
+          fieldErrors.add(new FieldErrorDTO("createExpectedStudy", "phase", newProjectExpectedStudy.getPhase().getName()
+            + ' ' + newProjectExpectedStudy.getPhase().getYear() + " is an invalid phase"));
+        }
+
+      }
+
+    }
+
+    Project project = null;
+    if (newProjectExpectedStudy.getProject() != null) {
+      project = projectManager.getProjectById(newProjectExpectedStudy.getProject());
+      if (project == null) {
+        fieldErrors.add(new FieldErrorDTO("createExpectedStudy", "Project",
+          newProjectExpectedStudy.getProject() + " is an invalid project ID"));
+      }
+
+    } else {
+      fieldErrors.add(new FieldErrorDTO("createExpectedStudy", "Project", "Please insert a Project ID"));
+    }
+
+    if (fieldErrors.isEmpty()) {
       ProjectExpectedStudy projectExpectedStudy = new ProjectExpectedStudy();
       List<RepIndGeographicScope> geographicScopeList = new ArrayList<RepIndGeographicScope>();
-      List<SrfSloIndicatorTarget> srfSloIndicatorTargetList = new ArrayList<SrfSloIndicatorTarget>();
+      List<SrfSloIndicator> srfSloIndicatorList = new ArrayList<SrfSloIndicator>();
       List<GlobalUnit> crpContributing = new ArrayList<GlobalUnit>();
       List<CrpProgram> flagshipList = new ArrayList<>();
       List<LocElement> countriesList = new ArrayList<>();
       List<LocElement> regionsList = new ArrayList<>();
-      List<SrfSubIdo> srfSubIdoList = new ArrayList<>();
+      List<ProjectExpectedStudySubIdo> srfSubIdoList = new ArrayList<>();
       List<ProjectInnovation> projectInnovationList = new ArrayList<ProjectInnovation>();
       List<ProjectPolicy> projectPolicyList = new ArrayList<ProjectPolicy>();
       List<Institution> institutionList = new ArrayList<Institution>();
+      List<String> linkList = new ArrayList<String>();
+      List<ProjectExpectedStudyMilestone> milestoneList = new ArrayList<ProjectExpectedStudyMilestone>();
+      List<ProjectExpectedStudyQuantification> ExpectedStudyQuantificationList =
+        new ArrayList<ProjectExpectedStudyQuantification>();
+      int hasPrimary = 0;
 
-      if (newProjectExpectedStudy.getProjectExpectedEstudyInfo() != null) {
+      if (newProjectExpectedStudy.getProjectExpectedStudyInfo() != null) {
         ProjectExpectedStudyInfo projectExpectedStudyInfo = new ProjectExpectedStudyInfo();
-        projectExpectedStudyInfo.setTitle(newProjectExpectedStudy.getProjectExpectedEstudyInfo().getTitle());
-        projectExpectedStudyInfo.setYear(newProjectExpectedStudy.getProjectExpectedEstudyInfo().getYear());
 
-        RepIndStageStudy repIndStageStudy = repIndStageStudyManager
-          .getRepIndStageStudyById(newProjectExpectedStudy.getProjectExpectedEstudyInfo().getMaturityOfChange());
-        if (repIndStageStudy != null) {
-          projectExpectedStudyInfo.setRepIndStageStudy(repIndStageStudy);
+        if (newProjectExpectedStudy.getProjectExpectedStudyInfo().getTitle() != null
+          && !newProjectExpectedStudy.getProjectExpectedStudyInfo().getTitle().trim().isEmpty()) {
+          projectExpectedStudyInfo.setTitle(newProjectExpectedStudy.getProjectExpectedStudyInfo().getTitle());
         } else {
-          fieldErrors.add(new FieldErrorDTO("create Expected Studies", "MaturityOfChange",
-            newProjectExpectedStudy.getProjectExpectedEstudyInfo().getMaturityOfChange()
-              + " is an invalid Level of maturity of change reported code"));
+          fieldErrors.add(new FieldErrorDTO("createExpectedStudy", "Title", "Please insert a valid title"));
         }
-        // geographic
+
+        // DANGER! Magic number ahead
+        if (newProjectExpectedStudy.getProjectExpectedStudyInfo().getYear() > 1900) {
+          projectExpectedStudyInfo.setYear(newProjectExpectedStudy.getProjectExpectedStudyInfo().getYear());
+        } else {
+          fieldErrors.add(new FieldErrorDTO("createExpectedStudy", "Year", "Please insert a valid year"));
+        }
+
+        projectExpectedStudyInfo.setPhase(phase);
+        projectExpectedStudyInfo.setContacts(newProjectExpectedStudy.getProjectExpectedStudyInfo().getContacts());
+
+        StudyType studyType = null;
+        if (newProjectExpectedStudy.getProjectExpectedStudyInfo().getStudyType() != null) {
+          studyType =
+            studyTypeManager.getStudyTypeById(newProjectExpectedStudy.getProjectExpectedStudyInfo().getStudyType());
+          if (studyType != null) {
+            // DANGER! Magic number ahead
+            if (studyType.getId() != 1) {
+              fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Study Type",
+                "Study type with id " + newProjectExpectedStudy.getProjectExpectedStudyInfo().getStudyType()
+                  + " does not correspond with an Outcome Impact Case Report"));
+            } else {
+              projectExpectedStudyInfo.setStudyType(studyType);
+            }
+          } else {
+            fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Study Type",
+              newProjectExpectedStudy.getProjectExpectedStudyInfo().getStudyType() + " is an invalid study code"));
+          }
+        } else {
+          fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Study", "study identifier can not be null nor empty"));
+        }
+
+        // null check not necessary because status is a long (primitive type)
+        GeneralStatus generalStatus =
+          generalStatusManager.getGeneralStatusById(newProjectExpectedStudy.getProjectExpectedStudyInfo().getStatus());
+        if (generalStatus != null) {
+          projectExpectedStudyInfo.setStatus(generalStatus);
+        } else {
+          fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Status",
+            newProjectExpectedStudy.getProjectExpectedStudyInfo().getStatus() + " is an invalid status code"));
+        }
+
+        EvidenceTag evidenceTag = null;
+        if (newProjectExpectedStudy.getProjectExpectedStudyInfo().getTag() != null) {
+          evidenceTag =
+            evidenceTagManager.getEvidenceTagById(newProjectExpectedStudy.getProjectExpectedStudyInfo().getTag());
+          if (evidenceTag != null) {
+            projectExpectedStudyInfo.setEvidenceTag(evidenceTag);
+          } else {
+            fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Evidence Tag",
+              newProjectExpectedStudy.getProjectExpectedStudyInfo().getMaturityOfChange()
+                + " is an invalid Evidence Tag code"));
+          }
+        } else {
+          fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "EvidenceTag",
+            "evidence tag identifier can not be null nor empty"));
+        }
+
+        RepIndStageStudy repIndStageStudy = null;
+        if (newProjectExpectedStudy.getProjectExpectedStudyInfo().getMaturityOfChange() != null) {
+          repIndStageStudy = repIndStageStudyManager
+            .getRepIndStageStudyById(newProjectExpectedStudy.getProjectExpectedStudyInfo().getMaturityOfChange());
+          if (repIndStageStudy != null) {
+            projectExpectedStudyInfo.setRepIndStageStudy(repIndStageStudy);
+          } else {
+            fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "MaturityOfChange",
+              newProjectExpectedStudy.getProjectExpectedStudyInfo().getMaturityOfChange()
+                + " is an invalid Level of maturity of change reported code"));
+          }
+        } else {
+          fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "MaturityOfChange",
+            "maturity of change identifier can not be null nor empty"));
+        }
+
         if (fieldErrors.size() == 0) {
           projectExpectedStudy.setPhase(phase.getId());
           projectExpectedStudy.setProjectExpectedStudyInfo(projectExpectedStudyInfo);
+
+          // geographic
           if (newProjectExpectedStudy.getGeographicScopes() != null
             && newProjectExpectedStudy.getGeographicScopes().size() > 0) {
             for (String geographicscope : newProjectExpectedStudy.getGeographicScopes()) {
-              if (geographicscope != null && this.isNumeric(geographicscope)) {
-                RepIndGeographicScope repIndGeographicScope =
-                  repIndGeographicScopeManager.getRepIndGeographicScopeById(Long.valueOf(geographicscope));
-                if (repIndGeographicScope != null) {
-                  geographicScopeList.add(repIndGeographicScope);
-                } else {
-                  fieldErrors.add(new FieldErrorDTO("CreateExpectedStudies", "GeographicScope",
-                    repIndGeographicScope + " is an invalid geographicScope identifier"));
+              if (geographicscope != null && !geographicscope.trim().isEmpty()) {
+                id = this.tryParseLong(geographicscope.trim(), fieldErrors, "CreateExpectedStudy", "GeographicScope");
+                if (id != null) {
+                  RepIndGeographicScope repIndGeographicScope =
+                    repIndGeographicScopeManager.getRepIndGeographicScopeById(id);
+                  if (repIndGeographicScope != null) {
+                    geographicScopeList.add(repIndGeographicScope);
+                  } else {
+                    fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "GeographicScope",
+                      id + " is an invalid geographicScope identifier"));
+                  }
                 }
+              } else {
+                fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "GeographicScope",
+                  "geographicScope identifier can not be null nor empty"));
               }
             }
-          }
+          } /*
+             * else {
+             * fieldErrors.add(
+             * new FieldErrorDTO("CreateExpectedStudy", "GeographicScope", "Please enter the Geographic Scope(s)."));
+             * }
+             */
+
           // Slo Target
           if (newProjectExpectedStudy.getSrfSloTargetList() != null
             && newProjectExpectedStudy.getSrfSloTargetList().size() > 0) {
             for (String sloTarget : newProjectExpectedStudy.getSrfSloTargetList()) {
-              if (sloTarget != null && this.isNumeric(sloTarget)) {
-                SrfSloIndicatorTarget srfSloIndicatorTarget =
-                  srfSloIndicatorTargetManager.getSrfSloIndicatorTargetById(Long.valueOf(sloTarget));
-                if (srfSloIndicatorTarget != null) {
-                  srfSloIndicatorTargetList.add(srfSloIndicatorTarget);
-                } else {
-                  fieldErrors.add(new FieldErrorDTO("CreateExpectedStudies", "SrfSloIndicator target ",
-                    srfSloIndicatorTarget + " is an invalid SLOIndicatorTarget identifier"));
+              if (sloTarget != null && !sloTarget.trim().isEmpty()) {
+                id = this.tryParseLong(sloTarget.trim(), fieldErrors, "CreateExpectedStudy", "SrfSloIndicatorTarget");
+                if (id != null) {
+                  SrfSloIndicator srfSloIndicator = srfSloIndicatorManager.getSrfSloIndicatorById(id);
+                  if (srfSloIndicator != null) {
+                    srfSloIndicatorList.add(srfSloIndicator);
+                  } else {
+                    fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "SrfSloIndicatorTarget ",
+                      sloTarget + " is an invalid SLOIndicatorTarget identifier"));
+                  }
                 }
+              } else {
+                fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "SrfSloIndicatorTarget",
+                  "sloTarget identifier can not be null nor empty"));
               }
             }
           }
+
           // crps
           if (newProjectExpectedStudy.getProjectExpectedStudiesCrpDTO() != null
             && newProjectExpectedStudy.getProjectExpectedStudiesCrpDTO().size() > 0) {
             for (String crps : newProjectExpectedStudy.getProjectExpectedStudiesCrpDTO()) {
-              if (crps != null && this.isNumeric(crps)) {
-                GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(Long.valueOf(crps));
+              if (crps != null && !crps.trim().isEmpty()) {
+                GlobalUnit globalUnit = globalUnitManager.findGlobalUnitBySMOCode(crps.trim());
                 if (globalUnit != null) {
                   crpContributing.add(globalUnit);
                 } else {
-                  fieldErrors
-                    .add(new FieldErrorDTO("CreateExpectedStudies", "CRP ", crps + " is an invalid CRP identifier"));
+                  fieldErrors.add(
+                    new FieldErrorDTO("CreateExpectedStudy", "GlobalUnit ", crps + " is an invalid CRP identifier"));
                 }
+              } else {
+                fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "GlobalUnit",
+                  "A GlobalUnit code can not be null nor empty."));
               }
             }
-          }
+          } /*
+             * else {
+             * fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "GlobalUnit", "Please enter the CRP(s)."));
+             * }
+             */
+
           // flagships
           if (newProjectExpectedStudy.getFlagshipsList() != null
             && newProjectExpectedStudy.getFlagshipsList().size() > 0) {
             for (String flagship : newProjectExpectedStudy.getFlagshipsList()) {
-              if (flagship != null && this.isNumeric(flagship)) {
-                CrpProgram crpProgram = crpProgramManager.getCrpProgramById(Long.valueOf(flagship));
-                if (crpProgram != null) {
-                  flagshipList.add(crpProgram);
-                } else {
-                  fieldErrors.add(new FieldErrorDTO("CreateExpectedStudies", "Flagship/Module",
-                    flagship + " is an invalid Flagship/Module code"));
+              if (flagship != null && !flagship.trim().isEmpty()) {
+                id = this.tryParseLong(flagship.trim(), fieldErrors, "CreateExpectedStudy", "CrpProgram");
+                if (id != null) {
+                  CrpProgram crpProgram = crpProgramManager.getCrpProgramBySmoCode(flagship.trim());
+                  if (crpProgram != null) {
+                    flagshipList.add(crpProgram);
+                  } else {
+                    fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Flagship/Module",
+                      flagship + " is an invalid Flagship/Module code"));
+                  }
                 }
+              } else {
+                fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "CrpProgram",
+                  "A CrpProgram code can not be null nor empty."));
               }
             }
-          }
+          } /*
+             * else {
+             * fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "CrpProgram", "Please enter the Flagship(s)."));
+             * }
+             */
+
           // countries
           if (newProjectExpectedStudy.getCountries() != null && newProjectExpectedStudy.getCountries().size() > 0) {
             for (String countries : newProjectExpectedStudy.getCountries()) {
-              if (countries != null && this.isNumeric(countries)) {
-                LocElement country = this.locElementManager.getLocElementByNumericISOCode(Long.valueOf(countries));
-                if (country == null) {
-                  fieldErrors.add(new FieldErrorDTO("CreateExpectedStudies", "Countries",
-                    countries + " is an invalid country ISO Code"));
+              if (countries != null && !countries.trim().isEmpty()) {
+                id = this.tryParseLong(countries.trim(), fieldErrors, "CreateExpectedStudy", "Country");
+                if (id != null) {
+                  LocElement country = this.locElementManager.getLocElementByNumericISOCode(id);
+                  if (country == null) {
+                    fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Countries",
+                      countries + " is an invalid country ISO Code"));
 
-                } else if (country.getLocElementType().getId() != APConstants.LOC_ELEMENT_TYPE_COUNTRY) {
-                  fieldErrors.add(
-                    new FieldErrorDTO("CreateExpectedStudies", "Countries", countries + " is not a Country ISO code"));
-                } else {
-                  countriesList.add(country);
+                  } else if (country.getLocElementType().getId() != APConstants.LOC_ELEMENT_TYPE_COUNTRY) {
+                    fieldErrors.add(
+                      new FieldErrorDTO("CreateExpectedStudy", "Countries", countries + " is not a Country ISO code"));
+                  } else {
+                    countriesList.add(country);
+                  }
                 }
+              } else {
+                fieldErrors.add(
+                  new FieldErrorDTO("CreateExpectedStudy", "Countries", "A Country code can not be null nor empty."));
               }
             }
-          }
+          } /*
+             * else {
+             * fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Countries", "Please enter the Country(ies)."));
+             * }
+             */
 
           // regions
           if (newProjectExpectedStudy.getRegions() != null && newProjectExpectedStudy.getRegions().size() > 0) {
             for (String region : newProjectExpectedStudy.getRegions()) {
-              if (region != null && this.isNumeric(region)) {
-                LocElement country = this.locElementManager.getLocElementByNumericISOCode(Long.valueOf(region));
-                if (country == null) {
-                  fieldErrors.add(
-                    new FieldErrorDTO("CreateExpectedStudies", "Regions", region + " is an invalid region UM49 Code"));
+              if (region != null && !region.trim().isEmpty()) {
+                id = this.tryParseLong(region.trim(), fieldErrors, "CreateExpectedStudy", "Region");
+                if (id != null) {
+                  LocElement country = this.locElementManager.getLocElementByNumericISOCode(id);
+                  if (country == null) {
+                    fieldErrors.add(
+                      new FieldErrorDTO("CreateExpectedStudy", "Regions", region + " is an invalid region UM49 Code"));
 
-                } else if (country.getLocElementType().getId() != APConstants.LOC_ELEMENT_TYPE_REGION) {
-                  fieldErrors
-                    .add(new FieldErrorDTO("CreateExpectedStudies", "Regions", region + " is not a Region UM49 code"));
-                } else {
-                  regionsList.add(country);
+                  } else if (country.getLocElementType().getId() != APConstants.LOC_ELEMENT_TYPE_REGION) {
+                    fieldErrors
+                      .add(new FieldErrorDTO("CreateExpectedStudy", "Regions", region + " is not a Region UM49 code"));
+                  } else {
+                    regionsList.add(country);
+                  }
                 }
+              } else {
+                fieldErrors
+                  .add(new FieldErrorDTO("CreateExpectedStudy", "Regions", "A Region code can not be null nor empty."));
               }
             }
-          }
+          } /*
+             * else {
+             * fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Regions", "Please enter the Region(s)."));
+             * }
+             */
+
           // subidos
           if (newProjectExpectedStudy.getSrfSubIdoList() != null
             && newProjectExpectedStudy.getSrfSubIdoList().size() > 0) {
-            for (String subido : newProjectExpectedStudy.getSrfSubIdoList()) {
-              if (subido != null) {
-                SrfSubIdo srfSubIdo = srfSubIdoManager.getSrfSubIdoByCode(subido);
-                if (srfSubIdo == null) {
-                  fieldErrors
-                    .add(new FieldErrorDTO("CreateExpectedStudies", "SubIDO", subido + " is an invalid subIDO Code"));
+            if (newProjectExpectedStudy.getSrfSubIdoList().size() <= 3) {
+              hasPrimary = 0;
+              for (NewSrfSubIdoDTO subido : newProjectExpectedStudy.getSrfSubIdoList()) {
+                if (subido != null && subido.getSubIdo() != null && !subido.getSubIdo().trim().isEmpty()) {
+                  SrfSubIdo srfSubIdo = srfSubIdoManager.getSrfSubIdoByCode(subido.getSubIdo().trim());
+                  if (srfSubIdo == null || !srfSubIdo.isActive()) {
+                    fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "SubIDO",
+                      subido.getSubIdo() + " is an invalid subIDO Code"));
+                  } else {
+                    ProjectExpectedStudySubIdo obj = new ProjectExpectedStudySubIdo();
+                    obj.setSrfSubIdo(srfSubIdo);
+                    obj.setPrimary(subido.getPrimary() != null && subido.getPrimary());
+                    hasPrimary = hasPrimary + (obj.getPrimary() == true ? 1 : 0);
+                    srfSubIdoList.add(obj);
+                  }
                 } else {
-                  srfSubIdoList.add(srfSubIdo);
+                  fieldErrors.add(
+                    new FieldErrorDTO("CreateExpectedStudy", "SubIDO", "A Sub IDO code can not be null nor empty."));
                 }
               }
+              if (hasPrimary == 0) {
+                fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "SubIDO",
+                  "There should be at least one Sub-IDO marked as primary"));
+              }
+              if (hasPrimary > 1) {
+                fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "SubIDO",
+                  "There can not be more than one Sub-IDO marked as primary"));
+              }
+            } else {
+              fieldErrors
+                .add(new FieldErrorDTO("CreateExpectedStudy", "SubIDO", "There can not be more than three SubIDO(s)."));
             }
-          }
+          } /*
+             * else {
+             * fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "SubIDO", "Please enter the SubIDO(s)."));
+             * }
+             */
+
           // innovation link
           if (newProjectExpectedStudy.getInnovationCodeList() != null
             && newProjectExpectedStudy.getInnovationCodeList().size() > 0) {
             for (String innovation : newProjectExpectedStudy.getInnovationCodeList()) {
-              if (innovation != null && this.isNumeric(innovation)) {
-                ProjectInnovation projectInnovation =
-                  projectInnovationManager.getProjectInnovationById(Long.valueOf(innovation));
-                if (projectInnovation != null) {
-                  projectInnovationList.add(projectInnovation);
-                } else {
-                  fieldErrors.add(new FieldErrorDTO("CreateExpectedStudies", "Innovation",
-                    innovation + " is an invalid innovation identifier"));
+              if (innovation != null && !innovation.trim().isEmpty()) {
+                id = this.tryParseLong(innovation.trim(), fieldErrors, "CreateExpectedStudy", "Innovation");
+                if (id != null) {
+                  ProjectInnovation projectInnovation = projectInnovationManager.getProjectInnovationById(id);
+                  if (projectInnovation != null) {
+                    projectInnovationList.add(projectInnovation);
+                  } else {
+                    fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Innovation",
+                      innovation + " is an invalid innovation identifier"));
+                  }
                 }
+              } else {
+                fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Innovation",
+                  "An Innovation code can not be null nor empty."));
               }
             }
-          }
+          } /*
+             * else {
+             * fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Innovation",
+             * "Please enter the Innovation(s)."));
+             * }
+             */
+
           // policies link
           if (newProjectExpectedStudy.getPoliciesCodeList() != null
             && newProjectExpectedStudy.getPoliciesCodeList().size() > 0) {
             for (String policy : newProjectExpectedStudy.getPoliciesCodeList()) {
-              if (policy != null && this.isNumeric(policy)) {
-                ProjectPolicy projectPolicy = projectPolicyManager.getProjectPolicyById(Long.valueOf(policy));
-                if (projectPolicy != null) {
-                  projectPolicyList.add(projectPolicy);
-                } else {
-                  fieldErrors.add(
-                    new FieldErrorDTO("CreateExpectedStudies", "Policy", policy + " is an invalid Policy identifier"));
+              if (policy != null && !policy.trim().isEmpty()) {
+                id = this.tryParseLong(policy.trim(), fieldErrors, "CreateExpectedStudy", "Policy");
+                if (id != null) {
+                  ProjectPolicy projectPolicy = projectPolicyManager.getProjectPolicyById(id);
+                  if (projectPolicy != null) {
+                    projectPolicyList.add(projectPolicy);
+                  } else {
+                    fieldErrors.add(
+                      new FieldErrorDTO("CreateExpectedStudy", "Policy", policy + " is an invalid Policy identifier"));
+                  }
                 }
+              } else {
+                fieldErrors
+                  .add(new FieldErrorDTO("CreateExpectedStudy", "Policy", "A Policy code can not be null nor empty."));
               }
             }
           }
+
           // institutions
           if (newProjectExpectedStudy.getInstitutionsList() != null
             && newProjectExpectedStudy.getInstitutionsList().size() > 0) {
             for (String institution : newProjectExpectedStudy.getInstitutionsList()) {
-              if (institution != null && this.isNumeric(institution)) {
-                Institution institutionDB = institutionManager.getInstitutionById(Long.valueOf(institution));
-                if (institutionDB != null) {
-                  institutionList.add(institutionDB);
-                } else {
-                  fieldErrors.add(new FieldErrorDTO("CreateExpectedStudies", "Institution",
-                    institution + " is an invalid Institution identifier"));
+              if (institution != null && !institution.trim().isEmpty()) {
+                id = this.tryParseLong(institution.trim(), fieldErrors, "CreateExpectedStudy", "Institution");
+                if (id != null) {
+                  Institution institutionDB = institutionManager.getInstitutionById(id);
+                  if (institutionDB != null) {
+                    institutionList.add(institutionDB);
+                  } else {
+                    fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Institution",
+                      institution + " is an invalid Institution identifier"));
+                  }
                 }
+              } else {
+                fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Institution",
+                  "An Institution code can not be null nor empty."));
+              }
+            }
+          } /*
+             * else {
+             * fieldErrors
+             * .add(new FieldErrorDTO("CreateExpectedStudy", "Institution", "Please enter the Institution(s)."));
+             * }
+             */
+
+          // milestones
+          if (newProjectExpectedStudy.getMilestonesCodeList() != null
+            && newProjectExpectedStudy.getMilestonesCodeList().size() > 0) {
+            hasPrimary = 0;
+            for (NewMilestonesDTO milestones : newProjectExpectedStudy.getMilestonesCodeList()) {
+              if (milestones != null && milestones.getMilestone() != null
+                && !milestones.getMilestone().trim().isEmpty()) {
+                id =
+                  this.tryParseLong(milestones.getMilestone().trim(), fieldErrors, "CreateExpectedStudy", "Milestone");
+                if (id != null) {
+                  CrpMilestone crpMilestone = crpMilestoneManager.getCrpMilestoneById(id);
+                  if (crpMilestone != null && crpMilestone.isActive()) {
+                    ProjectExpectedStudyMilestone obj = new ProjectExpectedStudyMilestone();
+                    obj.setCrpMilestone(crpMilestone);
+                    obj.setPrimary(milestones.getPrimary() != null && milestones.getPrimary());
+                    hasPrimary = hasPrimary + (obj.getPrimary() == true ? 1 : 0);
+                    milestoneList.add(obj);
+                  } else {
+                    fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Milestone",
+                      milestones.getMilestone() + " is an invalid Milestone identifier"));
+                  }
+                }
+              } else {
+                fieldErrors.add(
+                  new FieldErrorDTO("CreateExpectedStudy", "Milestone", "A Milestone code can not be null nor empty."));
+              }
+            }
+            if (hasPrimary == 0) {
+              fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Milestone",
+                "There should be at least one milestone marked as primary"));
+            }
+            if (hasPrimary > 1) {
+              fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Milestone",
+                "There can not be more than one milestone marked as primary"));
+            }
+          } /*
+             * else {
+             * fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Milestone", "Please enter the Milestone(s)."));
+             * }
+             */
+
+          // Crosscutting markers
+          if (newProjectExpectedStudy.getCrossCuttingMarkers() != null
+            && newProjectExpectedStudy.getCrossCuttingMarkers().size() > 0) {
+            for (NewCrosscuttingMarkersDTO crosscuttingmark : newProjectExpectedStudy.getCrossCuttingMarkers()) {
+              if (crosscuttingmark != null && crosscuttingmark.getCrossCuttingmarker() != null
+                && crosscuttingmark.getCrossCuttingmarkerScore() != null
+                && !crosscuttingmark.getCrossCuttingmarker().trim().isEmpty()
+                && !crosscuttingmark.getCrossCuttingmarkerScore().trim().isEmpty()) {
+                id = this.tryParseLong(crosscuttingmark.getCrossCuttingmarker().trim(), fieldErrors,
+                  "CreateExpectedStudy", "Crosscuttingmarker");
+                if (id != null) {
+                  CgiarCrossCuttingMarker cgiarCrossCuttingMarker =
+                    cgiarCrossCuttingMarkerManager.getCgiarCrossCuttingMarkerById(id);
+                  if (cgiarCrossCuttingMarker == null) {
+                    fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Crosscuttingmarker",
+                      cgiarCrossCuttingMarker + " is an invalid Crosscuttingmarker Code"));
+                  } else {
+                    id = this.tryParseLong(crosscuttingmark.getCrossCuttingmarkerScore().trim(), fieldErrors,
+                      "CreateExpectedStudy", "CrosscuttingmarkerScore");
+                    if (id != null) {
+                      RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
+                        repIndGenderYouthFocusLevelManager.getRepIndGenderYouthFocusLevelById(id);
+                      if (repIndGenderYouthFocusLevel == null) {
+                        fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "CrosscuttingmarkerScore",
+                          cgiarCrossCuttingMarker + " is an invalid GenderYouthFocusLevel Code"));
+                      } else {
+                        if (cgiarCrossCuttingMarker.getId()
+                          .longValue() == APConstants.CGIAR_CROSS_CUTTING_MARKERS_GENDER) {
+                          projectExpectedStudyInfo.setGenderLevel(repIndGenderYouthFocusLevel);
+                        }
+                        if (cgiarCrossCuttingMarker.getId()
+                          .longValue() == APConstants.CGIAR_CROSS_CUTTING_MARKERS_YOUTH) {
+                          projectExpectedStudyInfo.setYouthLevel(repIndGenderYouthFocusLevel);
+                        }
+                        if (cgiarCrossCuttingMarker.getId()
+                          .longValue() == APConstants.CGIAR_CROSS_CUTTING_MARKERS_CAPDEV) {
+                          projectExpectedStudyInfo.setCapdevLevel(repIndGenderYouthFocusLevel);
+                        }
+                        if (cgiarCrossCuttingMarker.getId()
+                          .longValue() == APConstants.CGIAR_CROSS_CUTTING_MARKERS_CLIMATECHANGE) {
+                          projectExpectedStudyInfo.setClimateChangeLevel(repIndGenderYouthFocusLevel);
+                        }
+                      }
+                    }
+                  }
+                }
+              } else {
+                fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "CrosscuttingMarker",
+                  "A CrosscuttingMarker or CrosscuttingmarkerScore is invalid."));
+              }
+            }
+          } /*
+             * else {
+             * fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Crosscuttingmarker",
+             * "Please enter the CrosscuttingMarker(s)."));
+             * }
+             */
+
+          // links
+          if (newProjectExpectedStudy.getLinks() != null && !newProjectExpectedStudy.getLinks().isEmpty()) {
+            for (String link : newProjectExpectedStudy.getLinks()) {
+              if (link != null && !link.trim().isEmpty()) {
+                linkList.add(link);
+              } else {
+                fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Link", "A Link can not be null nor empty."));
               }
             }
           }
 
-          // crosscutting markers
-          if (newProjectExpectedStudy.getCrossCuttingMarkers() != null
-            && newProjectExpectedStudy.getCrossCuttingMarkers().size() > 0) {
-            for (NewCrosscuttingMarkersDTO crosscuttingmark : newProjectExpectedStudy.getCrossCuttingMarkers()) {
+          // quantifications
+          if (newProjectExpectedStudy.getQuantificationList() != null
+            && !newProjectExpectedStudy.getQuantificationList().isEmpty()) {
+            for (QuantificationDTO quantification : newProjectExpectedStudy.getQuantificationList()) {
+              if (quantification.getTargetUnit() != null && quantification.getTargetUnit().length() > 0
+                && quantification.getNumber() > 0 && (quantification.getQuantificationType().equalsIgnoreCase("A")
+                  || quantification.getQuantificationType().equalsIgnoreCase("B"))) {
+                ProjectExpectedStudyQuantification projectExpectedStudyQuantification =
+                  new ProjectExpectedStudyQuantification();
+                projectExpectedStudyQuantification.setPhase(phase);
+                projectExpectedStudyQuantification.setTargetUnit(quantification.getTargetUnit());
+                projectExpectedStudyQuantification.setTypeQuantification(quantification.getQuantificationType());
+                projectExpectedStudyQuantification.setNumber(quantification.getNumber());
+                projectExpectedStudyQuantification.setComments(quantification.getComments());
+                ExpectedStudyQuantificationList.add(projectExpectedStudyQuantification);
+              } else {
+                fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Quantification",
+                  "You have to fill all fields for quantification"));
+              }
+            }
+          } /*
+             * else {
+             * fieldErrors
+             * .add(new FieldErrorDTO("CreateExpectedStudy", "Quantification", "Please enter the Quantification(s)."));
+             * }
+             */
 
+          // all validated
+          if (fieldErrors.size() == 0 && project != null) {
+            projectExpectedStudy.setPhase(phase.getId());
+            projectExpectedStudy.setYear(phase.getYear());
+            projectExpectedStudy.setProject(project);
+            ProjectExpectedStudy projectExpectedStudyDB =
+              projectExpectedStudyManager.saveProjectExpectedStudy(projectExpectedStudy);
+            if (projectExpectedStudyDB != null) {
+              projectExpectedStudyID = projectExpectedStudyDB.getId();
+              projectExpectedStudyInfo.setProjectExpectedStudy(projectExpectedStudyDB);
+              if (projectPolicyList.size() > 0) {
+                projectExpectedStudyInfo.setIsContribution(true);
+              }
+
+              if (srfSloIndicatorList.size() > 0) {
+                projectExpectedStudyInfo.setIsSrfTarget("targetsOptionYes");
+              }
+              if (projectExpectedStudyInfoManager.saveProjectExpectedStudyInfo(projectExpectedStudyInfo) != null) {
+                // save geographicscopes
+                for (RepIndGeographicScope repIndGeographicScope : geographicScopeList) {
+                  ProjectExpectedStudyGeographicScope projectExpectedStudyGeographicScope =
+                    new ProjectExpectedStudyGeographicScope();
+                  projectExpectedStudyGeographicScope.setPhase(phase);
+                  projectExpectedStudyGeographicScope.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudyGeographicScope.setRepIndGeographicScope(repIndGeographicScope);
+                  projectExpectedStudyGeographicScopeManager
+                    .saveProjectExpectedStudyGeographicScope(projectExpectedStudyGeographicScope);
+                }
+
+                // countries
+                for (LocElement country : countriesList) {
+                  ProjectExpectedStudyCountry projectExpectedStudyCountry = new ProjectExpectedStudyCountry();
+                  projectExpectedStudyCountry.setLocElement(country);
+                  projectExpectedStudyCountry.setPhase(phase);
+                  projectExpectedStudyCountry.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudyCountryManager.saveProjectExpectedStudyCountry(projectExpectedStudyCountry);
+                }
+
+                // regions
+                for (LocElement country : regionsList) {
+                  ProjectExpectedStudyRegion projectExpectedStudyRegion = new ProjectExpectedStudyRegion();
+                  projectExpectedStudyRegion.setLocElement(country);
+                  projectExpectedStudyRegion.setPhase(phase);
+                  projectExpectedStudyRegion.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudyRegionManager.saveProjectExpectedStudyRegion(projectExpectedStudyRegion);
+                }
+
+                // SLO targets
+                for (SrfSloIndicator srfSloIndicator : srfSloIndicatorList) {
+                  ProjectExpectedStudySrfTarget projectExpectedStudySrfTarget = new ProjectExpectedStudySrfTarget();
+                  projectExpectedStudySrfTarget.setSrfSloIndicator(srfSloIndicator);
+                  projectExpectedStudySrfTarget.setPhase(phase);
+                  projectExpectedStudySrfTarget.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudySrfTargetManager.saveProjectExpectedStudySrfTarget(projectExpectedStudySrfTarget);
+                }
+
+                // SudIDOs
+                for (ProjectExpectedStudySubIdo srfSubIdo : srfSubIdoList) {
+                  ProjectExpectedStudySubIdo projectExpectedStudySubIdo = new ProjectExpectedStudySubIdo();
+                  projectExpectedStudySubIdo.setPhase(phase);
+                  projectExpectedStudySubIdo.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudySubIdo.setSrfSubIdo(srfSubIdo.getSrfSubIdo());
+                  projectExpectedStudySubIdo.setPrimary(srfSubIdo.getPrimary());
+                  // to do Set as a primary if is necessary
+                  projectExpectedStudySubIdoManager.saveProjectExpectedStudySubIdo(projectExpectedStudySubIdo);
+                }
+
+                // flagships
+                for (CrpProgram crpProgram : flagshipList) {
+                  ProjectExpectedStudyFlagship projectExpectedStudyFlagship = new ProjectExpectedStudyFlagship();
+                  projectExpectedStudyFlagship.setCrpProgram(crpProgram);
+                  projectExpectedStudyFlagship.setPhase(phase);
+                  projectExpectedStudyFlagship.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudyFlagshipManager.saveProjectExpectedStudyFlagship(projectExpectedStudyFlagship);
+                }
+
+                // Links
+                for (String link : linkList) {
+                  ProjectExpectedStudyLink projectExpectedStudyLink = new ProjectExpectedStudyLink();
+                  projectExpectedStudyLink.setPhase(phase);
+                  projectExpectedStudyLink.setLink(link);
+                  projectExpectedStudyLink.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudyLinkManager.saveProjectExpectedStudyLink(projectExpectedStudyLink);
+                }
+
+                // institutions
+                for (Institution institution : institutionList) {
+                  ProjectExpectedStudyInstitution projectExpectedStudyInstitution =
+                    new ProjectExpectedStudyInstitution();
+                  projectExpectedStudyInstitution.setInstitution(institution);
+                  projectExpectedStudyInstitution.setPhase(phase);
+                  projectExpectedStudyInstitution.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudyInstitutionManager
+                    .saveProjectExpectedStudyInstitution(projectExpectedStudyInstitution);
+                }
+
+                // policies
+                for (ProjectPolicy projectPolicy : projectPolicyList) {
+                  ProjectExpectedStudyPolicy projectExpectedStudyPolicy = new ProjectExpectedStudyPolicy();
+                  projectExpectedStudyPolicy.setProjectPolicy(projectPolicy);
+                  projectExpectedStudyPolicy.setPhase(phase);
+                  projectExpectedStudyPolicy.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudyPolicyManager.saveProjectExpectedStudyPolicy(projectExpectedStudyPolicy);
+                }
+
+                // innovations
+                for (ProjectInnovation projectInnovation : projectInnovationList) {
+                  ProjectExpectedStudyInnovation projectExpectedStudyInnovation = new ProjectExpectedStudyInnovation();
+                  projectExpectedStudyInnovation.setPhase(phase);
+                  projectExpectedStudyInnovation.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudyInnovation.setProjectInnovation(projectInnovation);
+                  projectExpectedStudyInnovationManager
+                    .saveProjectExpectedStudyInnovation(projectExpectedStudyInnovation);
+                }
+
+                // milestones
+                for (ProjectExpectedStudyMilestone projectExpectedStudyMilestones : milestoneList) {
+                  ProjectExpectedStudyMilestone expectedStudyMilestone = new ProjectExpectedStudyMilestone();
+                  expectedStudyMilestone.setCrpMilestone(projectExpectedStudyMilestones.getCrpMilestone());
+                  expectedStudyMilestone.setPhase(phase);
+                  expectedStudyMilestone.setPrimary(projectExpectedStudyMilestones.getPrimary());
+                  expectedStudyMilestone.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudyMilestoneManager.saveProjectExpectedStudyMilestone(expectedStudyMilestone);
+                }
+
+                // crps
+                for (GlobalUnit globalUnit : crpContributing) {
+                  ProjectExpectedStudyCrp projectExpectedStudyCrp = new ProjectExpectedStudyCrp();
+                  projectExpectedStudyCrp.setGlobalUnit(globalUnit);
+                  projectExpectedStudyCrp.setPhase(phase);
+                  projectExpectedStudyCrp.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudyCrpManager.saveProjectExpectedStudyCrp(projectExpectedStudyCrp);
+                }
+
+                // quantification
+                for (ProjectExpectedStudyQuantification projectExpectedStudyQuantification : ExpectedStudyQuantificationList) {
+                  ProjectExpectedStudyQuantification projectExpectedStudyQuantificationDB =
+                    new ProjectExpectedStudyQuantification();
+                  projectExpectedStudyQuantificationDB.setNumber(projectExpectedStudyQuantification.getNumber());
+                  projectExpectedStudyQuantificationDB.setPhase(phase);
+                  projectExpectedStudyQuantificationDB.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudyQuantificationDB
+                    .setTargetUnit(projectExpectedStudyQuantification.getTargetUnit());
+                  projectExpectedStudyQuantificationDB
+                    .setTypeQuantification(projectExpectedStudyQuantification.getTypeQuantification());
+                  projectExpectedStudyQuantificationDB.setComments(projectExpectedStudyQuantification.getComments());
+                  projectExpectedStudyQuantificationManager
+                    .saveProjectExpectedStudyQuantification(projectExpectedStudyQuantificationDB);
+                }
+              }
             }
           }
         }
+      } else {
+        fieldErrors.add(new FieldErrorDTO("createExpectedStudy", "ProjectExpectedStudyInfoEntity",
+          "Please enter a Project Expected Study Info"));
       }
     }
+
+    // Validate all fields
+    if (!fieldErrors.isEmpty()) {
+      for (FieldErrorDTO errors : fieldErrors) {
+        System.out.println("FieldErrorDTO " + errors.getMessage());
+      }
+
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
+    }
+
     return projectExpectedStudyID;
   }
 
-  public boolean isNumeric(String value) {
-    boolean validation = true;
-    try {
-      Long.parseLong(value);
-    } catch (Exception e) {
-      validation = false;
+  public ResponseEntity<ProjectExpectedStudyDTO> deleteExpectedStudyById(Long id, String CGIARentityAcronym,
+    Integer repoYear, String repoPhase, User user) {
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
+    if (globalUnitEntity == null) {
+      fieldErrors.add(new FieldErrorDTO("deleteExpectedStudy", "GlobalUnitEntity",
+        CGIARentityAcronym + " is not a valid CGIAR entity acronym"));
+    } else {
+      if (!globalUnitEntity.isActive()) {
+        fieldErrors.add(new FieldErrorDTO("deleteExpectedStudy", "GlobalUnitEntity",
+          "The Global Unit with acronym " + CGIARentityAcronym + " is not active."));
+      }
+
     }
-    return validation;
+
+    Set<CrpUser> lstUser = user.getCrpUsers();
+    if (!lstUser.stream()
+      .anyMatch(crp -> StringUtils.equalsIgnoreCase(crp.getCrp().getAcronym(), CGIARentityAcronym))) {
+      fieldErrors.add(new FieldErrorDTO("deleteExpectedStudy", "GlobalUnitEntity", "CGIAR entity not autorized"));
+    }
+
+    Phase phase =
+      this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
+        && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().orElse(null);
+    if (phase == null) {
+      fieldErrors
+        .add(new FieldErrorDTO("deleteExpectedStudy", "phase", repoPhase + ' ' + repoYear + " is an invalid phase"));
+    }
+
+    ProjectExpectedStudy projectExpectedStudy = this.projectExpectedStudyManager.getProjectExpectedStudyById(id);
+
+    if (projectExpectedStudy != null) {
+      ProjectExpectedStudyInfo projectExpectedStudyInfo = projectExpectedStudy.getProjectExpectedStudyInfo(phase);
+      if (projectExpectedStudyInfo != null) {
+        // Flagship
+        List<ProjectExpectedStudyFlagship> projectExpectedStudyFlagshipList =
+          projectExpectedStudy.getProjectExpectedStudyFlagships().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+        projectExpectedStudy.setFlagships(projectExpectedStudyFlagshipList);
+        // SubIDOs
+        List<ProjectExpectedStudySubIdo> projectExpectedStudySubIdoList =
+          projectExpectedStudy.getProjectExpectedStudySubIdos().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+        projectExpectedStudy.setSubIdos(projectExpectedStudySubIdoList);
+        if (projectExpectedStudyInfo.getIsSrfTarget() != null
+          && projectExpectedStudyInfo.getIsSrfTarget().equals("Yes")) {
+          // SrfSlo
+          List<ProjectExpectedStudySrfTarget> projectExpectedStudySrfTargetList =
+            projectExpectedStudy.getProjectExpectedStudySrfTargets().stream()
+              .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+          projectExpectedStudy.setSrfTargets(projectExpectedStudySrfTargetList);
+        } else {
+          List<ProjectExpectedStudySrfTarget> projectExpectedStudySrfTargetList =
+            new ArrayList<ProjectExpectedStudySrfTarget>();
+          projectExpectedStudy.setSrfTargets(projectExpectedStudySrfTargetList);
+        }
+
+        // GeographicScope
+        List<ProjectExpectedStudyGeographicScope> projectExpectedStudyGeographicScopeList =
+          projectExpectedStudy.getProjectExpectedStudyGeographicScopes().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+        projectExpectedStudy.setGeographicScopes(projectExpectedStudyGeographicScopeList);
+        // Institutions
+        List<ProjectExpectedStudyInstitution> projectExpectedStudyInstitutionList =
+          projectExpectedStudy.getProjectExpectedStudyInstitutions().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+        projectExpectedStudy.setInstitutions(projectExpectedStudyInstitutionList);
+        // CRPs contribution
+        List<ProjectExpectedStudyCrp> projectExpectedStudyCrpList = projectExpectedStudy.getProjectExpectedStudyCrps()
+          .stream().filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+        projectExpectedStudy.setCrps(projectExpectedStudyCrpList);
+        // Regions
+        List<ProjectExpectedStudyRegion> projectExpectedStudyRegionList = projectExpectedStudyRegionManager
+          .findAll().stream().filter(c -> c.isActive()
+            && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
+          .collect(Collectors.toList());
+        projectExpectedStudy.setStudyRegions(projectExpectedStudyRegionList);
+        // Countries
+        List<ProjectExpectedStudyCountry> projectExpectedStudyCountryList = projectExpectedStudyCountryManager
+          .findAll().stream().filter(c -> c.isActive()
+            && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
+          .collect(Collectors.toList());
+        projectExpectedStudy.setCountries(projectExpectedStudyCountryList);
+        // Quantification
+        List<ProjectExpectedStudyQuantification> projectExpectedStudyQuantificationList =
+          projectExpectedStudyQuantificationManager
+            .findAll().stream().filter(c -> c.isActive()
+              && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
+            .collect(Collectors.toList());
+        projectExpectedStudy.setQuantifications(projectExpectedStudyQuantificationList);
+        // Links
+        List<ProjectExpectedStudyLink> projectExpectedStudyLinkList =
+          projectExpectedStudy.getProjectExpectedStudyLinks().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+        projectExpectedStudy.setLinks(projectExpectedStudyLinkList);
+
+        // innovations
+        List<ProjectExpectedStudyInnovation> projectExpectedStudyInnovationList =
+          projectExpectedStudy.getProjectExpectedStudyInnovations().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+        projectExpectedStudy.setInnovations(projectExpectedStudyInnovationList);
+        if (projectExpectedStudyInfo.getIsContribution() != null && projectExpectedStudyInfo.getIsContribution()) {
+          // Policies
+          List<ProjectExpectedStudyPolicy> projectExpectedStudyPolicyList =
+            projectExpectedStudy.getProjectExpectedStudyPolicies().stream()
+              .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+          projectExpectedStudy.setPolicies(projectExpectedStudyPolicyList);
+        } else {
+          List<ProjectExpectedStudyPolicy> projectExpectedStudyPolicyList = new ArrayList<ProjectExpectedStudyPolicy>();
+          projectExpectedStudy.setPolicies(projectExpectedStudyPolicyList);
+        }
+
+        List<ProjectExpectedStudyMilestone> projectExpectedStudyMilestoneList = projectExpectedStudy
+          .getProjectExpectedStudyMilestones().stream().filter(c -> c != null
+            && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
+          .collect(Collectors.toList());
+        projectExpectedStudy.setMilestones(projectExpectedStudyMilestoneList);
+
+        projectExpectedStudyManager.deleteProjectExpectedStudy(projectExpectedStudy.getId());
+      } // ?
+    } else {
+      fieldErrors.add(new FieldErrorDTO("deleteExpectedStudy", "ProjectExpectedStudyEntity",
+        id + " is an invalid Project Expected Study Code"));
+    }
+
+    if (!fieldErrors.isEmpty()) {
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
+    }
+
+    return Optional.ofNullable(projectExpectedStudy)
+      .map(this.projectExpectedStudyMapper::projectExpectedStudyToProjectExpectedStudyDTO)
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
+
+  public ResponseEntity<ProjectExpectedStudyDTO> findExpectedStudyById(Long id, String CGIARentityAcronym,
+    Integer repoYear, String repoPhase, User user) {
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
+    if (globalUnitEntity == null) {
+      fieldErrors.add(new FieldErrorDTO("findExpectedStudy", "GlobalUnitEntity",
+        CGIARentityAcronym + " is not a valid CGIAR entity acronym"));
+    } else {
+      if (!globalUnitEntity.isActive()) {
+        fieldErrors.add(new FieldErrorDTO("findExpectedStudy", "GlobalUnitEntity",
+          "The Global Unit with acronym " + CGIARentityAcronym + " is not active."));
+      }
+
+    }
+
+    Phase phase =
+      this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
+        && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().orElse(null);
+    if (phase == null) {
+      fieldErrors
+        .add(new FieldErrorDTO("findExpectedStudy", "phase", repoPhase + ' ' + repoYear + " is an invalid phase"));
+    }
+
+    ProjectExpectedStudy projectExpectedStudy = projectExpectedStudyManager.getProjectExpectedStudyById(id.longValue());
+
+    if (projectExpectedStudy != null) {
+      ProjectExpectedStudyInfo projectExpectedStudyInfo = projectExpectedStudy.getProjectExpectedStudyInfo(phase);
+      // Flagship
+      List<ProjectExpectedStudyFlagship> projectExpectedStudyFlagshipList =
+        projectExpectedStudy.getProjectExpectedStudyFlagships().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+      projectExpectedStudy.setFlagships(projectExpectedStudyFlagshipList);
+      // SubIDOs
+      List<ProjectExpectedStudySubIdo> projectExpectedStudySubIdoList =
+        projectExpectedStudy.getProjectExpectedStudySubIdos().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+      projectExpectedStudy.setSubIdos(projectExpectedStudySubIdoList);
+      if (projectExpectedStudyInfo.getIsSrfTarget() != null
+        && projectExpectedStudyInfo.getIsSrfTarget().equals("Yes")) {
+        // SrfSlo
+        List<ProjectExpectedStudySrfTarget> projectExpectedStudySrfTargetList =
+          projectExpectedStudy.getProjectExpectedStudySrfTargets().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+        projectExpectedStudy.setSrfTargets(projectExpectedStudySrfTargetList);
+      } else {
+        List<ProjectExpectedStudySrfTarget> projectExpectedStudySrfTargetList =
+          new ArrayList<ProjectExpectedStudySrfTarget>();
+        projectExpectedStudy.setSrfTargets(projectExpectedStudySrfTargetList);
+      }
+
+      // GeographicScope
+      List<ProjectExpectedStudyGeographicScope> projectExpectedStudyGeographicScopeList =
+        projectExpectedStudy.getProjectExpectedStudyGeographicScopes().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+      projectExpectedStudy.setGeographicScopes(projectExpectedStudyGeographicScopeList);
+      // Institutions
+      List<ProjectExpectedStudyInstitution> projectExpectedStudyInstitutionList =
+        projectExpectedStudy.getProjectExpectedStudyInstitutions().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+      projectExpectedStudy.setInstitutions(projectExpectedStudyInstitutionList);
+      // CRPs contribution
+      List<ProjectExpectedStudyCrp> projectExpectedStudyCrpList = projectExpectedStudy.getProjectExpectedStudyCrps()
+        .stream().filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+      projectExpectedStudy.setCrps(projectExpectedStudyCrpList);
+      // Regions
+      List<ProjectExpectedStudyRegion> projectExpectedStudyRegionList = projectExpectedStudyRegionManager
+        .findAll().stream().filter(c -> c.isActive()
+          && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
+        .collect(Collectors.toList());
+      projectExpectedStudy.setStudyRegions(projectExpectedStudyRegionList);
+      // Countries
+      List<ProjectExpectedStudyCountry> projectExpectedStudyCountryList = projectExpectedStudyCountryManager
+        .findAll().stream().filter(c -> c.isActive()
+          && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
+        .collect(Collectors.toList());
+      projectExpectedStudy.setCountries(projectExpectedStudyCountryList);
+      // Quantification
+      List<ProjectExpectedStudyQuantification> projectExpectedStudyQuantificationList =
+        projectExpectedStudyQuantificationManager
+          .findAll().stream().filter(c -> c.isActive()
+            && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
+          .collect(Collectors.toList());
+      projectExpectedStudy.setQuantifications(projectExpectedStudyQuantificationList);
+      // Links
+      List<ProjectExpectedStudyLink> projectExpectedStudyLinkList = projectExpectedStudy.getProjectExpectedStudyLinks()
+        .stream().filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+      projectExpectedStudy.setLinks(projectExpectedStudyLinkList);
+
+      // innovations
+      List<ProjectExpectedStudyInnovation> projectExpectedStudyInnovationList =
+        projectExpectedStudy.getProjectExpectedStudyInnovations().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+      projectExpectedStudy.setInnovations(projectExpectedStudyInnovationList);
+      if (projectExpectedStudyInfo.getIsContribution() != null && projectExpectedStudyInfo.getIsContribution()) {
+        // Policies
+        List<ProjectExpectedStudyPolicy> projectExpectedStudyPolicyList =
+          projectExpectedStudy.getProjectExpectedStudyPolicies().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+        projectExpectedStudy.setPolicies(projectExpectedStudyPolicyList);
+      } else {
+        List<ProjectExpectedStudyPolicy> projectExpectedStudyPolicyList = new ArrayList<ProjectExpectedStudyPolicy>();
+        projectExpectedStudy.setPolicies(projectExpectedStudyPolicyList);
+      }
+
+      List<ProjectExpectedStudyMilestone> projectExpectedStudyMilestoneList = projectExpectedStudy
+        .getProjectExpectedStudyMilestones().stream().filter(c -> c != null
+          && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
+        .collect(Collectors.toList());
+      projectExpectedStudy.setMilestones(projectExpectedStudyMilestoneList);
+    } else {
+      fieldErrors.add(new FieldErrorDTO("findExpectedStudy", "ProjectExpectedStudyEntity",
+        id + " is an invalid Project Expected Study Code"));
+    }
+
+    if (!fieldErrors.isEmpty()) {
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
+    }
+
+    return Optional.ofNullable(projectExpectedStudy)
+      .map(this.projectExpectedStudyMapper::projectExpectedStudyToProjectExpectedStudyDTO)
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
+
+  public Long putExpectedStudyById(Long idExpectedStudy, NewProjectExpectedStudyDTO newProjectExpectedStudy,
+    String CGIARentityAcronym, User user) {
+    Long expectedStudyID = null;
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+    Phase phase = null;
+    Long id = null;
+
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
+    if (globalUnitEntity == null) {
+      fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "GlobalUnitEntity",
+        CGIARentityAcronym + " is not a valid CGIAR entity acronym"));
+    } else {
+      if (!globalUnitEntity.isActive()) {
+        fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "GlobalUnitEntity",
+          "The Global Unit with acronym " + CGIARentityAcronym + " is not active."));
+      }
+
+    }
+
+    Set<CrpUser> lstUser = user.getCrpUsers();
+    if (!lstUser.stream().anyMatch(crp -> crp.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym))) {
+      fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "GlobalUnitEntity", "CGIAR entity not autorized"));
+    }
+
+    if (newProjectExpectedStudy.getPhase() == null) {
+      fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "PhaseEntity", "Phase must not be null"));
+    } else {
+      if (newProjectExpectedStudy.getPhase().getName() == null
+        || newProjectExpectedStudy.getPhase().getName().trim().isEmpty()
+        || newProjectExpectedStudy.getPhase().getYear() == null
+        // DANGER! Magic number ahead
+        || newProjectExpectedStudy.getPhase().getYear() < 2015) {
+        fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "PhaseEntity", "Phase is invalid"));
+      } else {
+        phase = phaseManager.findAll().stream()
+          .filter(p -> p.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
+            && p.getYear() == newProjectExpectedStudy.getPhase().getYear()
+            && p.getName().equalsIgnoreCase(newProjectExpectedStudy.getPhase().getName()))
+          .findFirst().orElse(null);
+
+        if (phase == null) {
+          fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "phase", newProjectExpectedStudy.getPhase().getName()
+            + ' ' + newProjectExpectedStudy.getPhase().getYear() + " is an invalid phase"));
+        }
+
+      }
+
+    }
+
+    Project project = null;
+    if (newProjectExpectedStudy.getProject() != null) {
+      project = projectManager.getProjectById(newProjectExpectedStudy.getProject());
+      if (project == null) {
+        fieldErrors.add(
+          new FieldErrorDTO("putExpectedStudy", "Project", newProjectExpectedStudy.getProject() + " is an project ID"));
+      }
+    } else {
+      fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Project", "A projectID can not be null"));
+    }
+
+    ProjectExpectedStudy projectExpectedStudy =
+      this.projectExpectedStudyManager.getProjectExpectedStudyById(idExpectedStudy);
+    if (projectExpectedStudy == null) {
+      fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "ProjectExpectedStudy",
+        idExpectedStudy + " is an invalid ProjectExpectedStudy code"));
+    }
+
+    if (fieldErrors.size() == 0) {
+      expectedStudyID = projectExpectedStudy.getId();
+
+      List<RepIndGeographicScope> geographicScopeList = new ArrayList<RepIndGeographicScope>();
+      List<SrfSloIndicator> srfSloIndicatorList = new ArrayList<SrfSloIndicator>();
+      List<GlobalUnit> crpContributing = new ArrayList<GlobalUnit>();
+      List<CrpProgram> flagshipList = new ArrayList<>();
+      List<LocElement> countriesList = new ArrayList<>();
+      List<LocElement> regionsList = new ArrayList<>();
+      List<ProjectExpectedStudySubIdo> srfSubIdoList = new ArrayList<>();
+      List<ProjectInnovation> projectInnovationList = new ArrayList<ProjectInnovation>();
+      List<ProjectPolicy> projectPolicyList = new ArrayList<ProjectPolicy>();
+      List<Institution> institutionList = new ArrayList<Institution>();
+      List<String> linkList = new ArrayList<String>();
+      List<ProjectExpectedStudyMilestone> milestoneList = new ArrayList<ProjectExpectedStudyMilestone>();
+      List<ProjectExpectedStudyQuantification> expectedStudyQuantificationList =
+        new ArrayList<ProjectExpectedStudyQuantification>();
+      int hasPrimary = 0;
+
+      if (newProjectExpectedStudy.getProjectExpectedStudyInfo() != null) {
+        // update expected Study info
+        ProjectExpectedStudyInfo projectExpectedStudyInfo = projectExpectedStudy.getProjectExpectedStudyInfo(phase);
+        if (projectExpectedStudyInfo == null) {
+          projectExpectedStudyInfo = new ProjectExpectedStudyInfo();
+        }
+
+        if (newProjectExpectedStudy.getProjectExpectedStudyInfo().getTitle() != null
+          && !newProjectExpectedStudy.getProjectExpectedStudyInfo().getTitle().trim().isEmpty()) {
+          projectExpectedStudyInfo.setTitle(newProjectExpectedStudy.getProjectExpectedStudyInfo().getTitle());
+        } else {
+          fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Title", "Please insert a valid title"));
+        }
+
+        // DANGER! Magic number ahead
+        if (newProjectExpectedStudy.getProjectExpectedStudyInfo().getYear() > 1900) {
+          projectExpectedStudyInfo.setYear(newProjectExpectedStudy.getProjectExpectedStudyInfo().getYear());
+        } else {
+          fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Year", "Please insert a valid year"));
+        }
+        projectExpectedStudyInfo.setPhase(phase);
+        projectExpectedStudyInfo.setContacts(newProjectExpectedStudy.getProjectExpectedStudyInfo().getContacts());
+
+        StudyType studyType = null;
+        if (newProjectExpectedStudy.getProjectExpectedStudyInfo().getStudyType() != null) {
+          studyType =
+            studyTypeManager.getStudyTypeById(newProjectExpectedStudy.getProjectExpectedStudyInfo().getStudyType());
+          if (studyType != null) {
+            // DANGER! Magic number ahead
+            if (studyType.getId() != 1) {
+              fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Study Type",
+                "Study type with id " + newProjectExpectedStudy.getProjectExpectedStudyInfo().getStudyType()
+                  + " does not correspond with an Outcome Impact Case Report"));
+            } else {
+              projectExpectedStudyInfo.setStudyType(studyType);
+            }
+          } else {
+            fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Study Type",
+              newProjectExpectedStudy.getProjectExpectedStudyInfo().getStudyType() + " is an invalid study code"));
+          }
+        } else {
+          fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Study", "study identifier can not be null nor empty"));
+        }
+
+        // null check not necessary because status is a long (primitive type)
+        GeneralStatus generalStatus =
+          generalStatusManager.getGeneralStatusById(newProjectExpectedStudy.getProjectExpectedStudyInfo().getStatus());
+        if (generalStatus != null) {
+          projectExpectedStudyInfo.setStatus(generalStatus);
+        } else {
+          fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Status",
+            newProjectExpectedStudy.getProjectExpectedStudyInfo().getStatus() + " is an invalid status code"));
+        }
+
+        EvidenceTag evidenceTag = null;
+        if (newProjectExpectedStudy.getProjectExpectedStudyInfo().getTag() != null) {
+          evidenceTag =
+            evidenceTagManager.getEvidenceTagById(newProjectExpectedStudy.getProjectExpectedStudyInfo().getTag());
+          if (evidenceTag != null) {
+            projectExpectedStudyInfo.setEvidenceTag(evidenceTag);
+          } else {
+            fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Evidence Tag",
+              newProjectExpectedStudy.getProjectExpectedStudyInfo().getMaturityOfChange()
+                + " is an invalid Evidence Tag code"));
+          }
+        } else {
+          fieldErrors.add(
+            new FieldErrorDTO("putExpectedStudy", "EvidenceTag", "evidence tag identifier can not be null nor empty"));
+        }
+
+        RepIndStageStudy repIndStageStudy = null;
+        if (newProjectExpectedStudy.getProjectExpectedStudyInfo().getMaturityOfChange() != null) {
+          repIndStageStudy = repIndStageStudyManager
+            .getRepIndStageStudyById(newProjectExpectedStudy.getProjectExpectedStudyInfo().getMaturityOfChange());
+          if (repIndStageStudy != null) {
+            projectExpectedStudyInfo.setRepIndStageStudy(repIndStageStudy);
+          } else {
+            fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "MaturityOfChange",
+              newProjectExpectedStudy.getProjectExpectedStudyInfo().getMaturityOfChange()
+                + " is an invalid Level of maturity of change reported code"));
+          }
+        } else {
+          fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "MaturityOfChange",
+            "maturity of change identifier can not be null nor empty"));
+        }
+
+        if (fieldErrors.size() == 0) {
+          projectExpectedStudy.setPhase(phase.getId());
+          projectExpectedStudy.setProjectExpectedStudyInfo(projectExpectedStudyInfo);
+
+          // update many to many relationships
+          // geographic
+          if (newProjectExpectedStudy.getGeographicScopes() != null
+            && newProjectExpectedStudy.getGeographicScopes().size() > 0) {
+            for (String geographicscope : newProjectExpectedStudy.getGeographicScopes()) {
+              if (geographicscope != null && !geographicscope.trim().isEmpty()) {
+                id = this.tryParseLong(geographicscope.trim(), fieldErrors, "putExpectedStudy", "GeographicScope");
+                if (id != null) {
+                  RepIndGeographicScope repIndGeographicScope =
+                    repIndGeographicScopeManager.getRepIndGeographicScopeById(id);
+                  if (repIndGeographicScope != null) {
+                    geographicScopeList.add(repIndGeographicScope);
+                  } else {
+                    fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "GeographicScope",
+                      id + " is an invalid geographicScope identifier"));
+                  }
+                }
+              } else {
+                fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "GeographicScope",
+                  "geographicScope identifier can not be null nor empty"));
+              }
+            }
+          } /*
+             * else {
+             * fieldErrors
+             * .add(new FieldErrorDTO("putExpectedStudy", "GeographicScope", "Please enter the Geographic Scope(s)."));
+             * }
+             */
+
+          // Slo Target
+          if (newProjectExpectedStudy.getSrfSloTargetList() != null
+            && newProjectExpectedStudy.getSrfSloTargetList().size() > 0) {
+            for (String sloTarget : newProjectExpectedStudy.getSrfSloTargetList()) {
+              if (sloTarget != null && !sloTarget.trim().isEmpty()) {
+                id = this.tryParseLong(sloTarget.trim(), fieldErrors, "putExpectedStudy", "SrfSloIndicatorTarget");
+                if (id != null) {
+                  SrfSloIndicator srfSloIndicator = srfSloIndicatorManager.getSrfSloIndicatorById(id);
+                  if (srfSloIndicator != null) {
+                    srfSloIndicatorList.add(srfSloIndicator);
+                  } else {
+                    fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "SrfSloIndicatorTarget ",
+                      sloTarget + " is an invalid SLOIndicatorTarget identifier"));
+                  }
+                }
+              } else {
+                fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "SrfSloIndicatorTarget",
+                  "sloTarget identifier can not be null nor empty"));
+              }
+            }
+          }
+
+          // crps
+          if (newProjectExpectedStudy.getProjectExpectedStudiesCrpDTO() != null
+            && newProjectExpectedStudy.getProjectExpectedStudiesCrpDTO().size() > 0) {
+            for (String crps : newProjectExpectedStudy.getProjectExpectedStudiesCrpDTO()) {
+              if (crps != null && !crps.trim().isEmpty()) {
+                GlobalUnit globalUnit = globalUnitManager.findGlobalUnitBySMOCode(crps.trim());
+                if (globalUnit != null) {
+                  crpContributing.add(globalUnit);
+                } else {
+                  fieldErrors
+                    .add(new FieldErrorDTO("putExpectedStudy", "GlobalUnit ", crps + " is an invalid CRP identifier"));
+                }
+              } else {
+                fieldErrors.add(
+                  new FieldErrorDTO("putExpectedStudy", "GlobalUnit", "A GlobalUnit code can not be null nor empty."));
+              }
+            }
+          } /*
+             * else {
+             * fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "GlobalUnit", "Please enter the CRP(s)."));
+             * }
+             */
+
+          // flagship
+          if (newProjectExpectedStudy.getFlagshipsList() != null
+            && newProjectExpectedStudy.getFlagshipsList().size() > 0) {
+            for (String flagship : newProjectExpectedStudy.getFlagshipsList()) {
+              if (flagship != null && !flagship.trim().isEmpty()) {
+                id = this.tryParseLong(flagship.trim(), fieldErrors, "putExpectedStudy", "CrpProgram");
+                if (id != null) {
+                  CrpProgram crpProgram = crpProgramManager.getCrpProgramBySmoCode(flagship.trim());
+                  if (crpProgram != null) {
+                    flagshipList.add(crpProgram);
+                  } else {
+                    fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Flagship/Module",
+                      flagship + " is an invalid Flagship/Module code"));
+                  }
+                }
+              } else {
+                fieldErrors.add(
+                  new FieldErrorDTO("putExpectedStudy", "CrpProgram", "A CrpProgram code can not be null nor empty."));
+              }
+            }
+          } /*
+             * else {
+             * fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "CrpProgram", "Please enter the Flagship(s)."));
+             * }
+             */
+
+          // countries
+          if (newProjectExpectedStudy.getCountries() != null && newProjectExpectedStudy.getCountries().size() > 0) {
+            for (String countries : newProjectExpectedStudy.getCountries()) {
+              if (countries != null && !countries.trim().isEmpty()) {
+                id = this.tryParseLong(countries.trim(), fieldErrors, "putExpectedStudy", "Country");
+                if (id != null) {
+                  LocElement country = this.locElementManager.getLocElementByNumericISOCode(id);
+                  if (country == null) {
+                    fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Countries",
+                      countries + " is an invalid country ISO Code"));
+
+                  } else if (country.getLocElementType().getId() != APConstants.LOC_ELEMENT_TYPE_COUNTRY) {
+                    fieldErrors.add(
+                      new FieldErrorDTO("putExpectedStudy", "Countries", countries + " is not a Country ISO code"));
+                  } else {
+                    countriesList.add(country);
+                  }
+                }
+              } else {
+                fieldErrors
+                  .add(new FieldErrorDTO("putExpectedStudy", "Countries", "A Country code can not be null nor empty."));
+              }
+            }
+          } /*
+             * else {
+             * fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Countries", "Please enter the Country(ies)."));
+             * }
+             */
+
+          // regions
+          if (newProjectExpectedStudy.getRegions() != null && newProjectExpectedStudy.getRegions().size() > 0) {
+            for (String region : newProjectExpectedStudy.getRegions()) {
+              if (region != null && !region.trim().isEmpty()) {
+                id = this.tryParseLong(region.trim(), fieldErrors, "putExpectedStudy", "Region");
+                if (id != null) {
+                  LocElement country = this.locElementManager.getLocElementByNumericISOCode(id);
+                  if (country == null) {
+                    fieldErrors.add(
+                      new FieldErrorDTO("putExpectedStudy", "Regions", region + " is an invalid region UM49 Code"));
+
+                  } else if (country.getLocElementType().getId() != APConstants.LOC_ELEMENT_TYPE_REGION) {
+                    fieldErrors
+                      .add(new FieldErrorDTO("putExpectedStudy", "Regions", region + " is not a Region UM49 code"));
+                  } else {
+                    regionsList.add(country);
+                  }
+                }
+              } else {
+                fieldErrors
+                  .add(new FieldErrorDTO("putExpectedStudy", "Regions", "A Region code can not be null nor empty."));
+              }
+            }
+          } /*
+             * else {
+             * fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Regions", "Please enter the Region(s)."));
+             * }
+             */
+
+          // subidos
+          if (newProjectExpectedStudy.getSrfSubIdoList() != null
+            && newProjectExpectedStudy.getSrfSubIdoList().size() > 0) {
+            if (newProjectExpectedStudy.getSrfSubIdoList().size() <= 3) {
+              hasPrimary = 0;
+              for (NewSrfSubIdoDTO subido : newProjectExpectedStudy.getSrfSubIdoList()) {
+                if (subido != null && subido.getSubIdo() != null && !subido.getSubIdo().trim().isEmpty()) {
+                  SrfSubIdo srfSubIdo = srfSubIdoManager.getSrfSubIdoByCode(subido.getSubIdo().trim());
+                  if (srfSubIdo == null || !srfSubIdo.isActive()) {
+                    fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "SubIDO",
+                      subido.getSubIdo() + " is an invalid subIDO Code"));
+                  } else {
+                    ProjectExpectedStudySubIdo obj = new ProjectExpectedStudySubIdo();
+                    obj.setSrfSubIdo(srfSubIdo);
+                    obj.setPrimary(subido.getPrimary() != null && subido.getPrimary());
+                    hasPrimary = hasPrimary + (obj.getPrimary() == true ? 1 : 0);
+                    srfSubIdoList.add(obj);
+                  }
+                } else {
+                  fieldErrors
+                    .add(new FieldErrorDTO("putExpectedStudy", "SubIDO", "A Sub IDO code can not be null nor empty."));
+                }
+              }
+              if (hasPrimary == 0) {
+                fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "SubIDO",
+                  "There should be at least one Sub-IDO marked as primary"));
+              }
+              if (hasPrimary > 1) {
+                fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "SubIDO",
+                  "There can not be more than one Sub-IDO marked as primary"));
+              }
+            } else {
+              fieldErrors
+                .add(new FieldErrorDTO("putExpectedStudy", "SubIDO", "There can not be more than three SubIDO(s)."));
+            }
+          } /*
+             * else {
+             * fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "SubIDO", "Please enter the SubIDO(s)."));
+             * }
+             */
+
+          // innovation link
+          if (newProjectExpectedStudy.getInnovationCodeList() != null
+            && newProjectExpectedStudy.getInnovationCodeList().size() > 0) {
+            for (String innovation : newProjectExpectedStudy.getInnovationCodeList()) {
+              if (innovation != null && !innovation.trim().isEmpty()) {
+                id = this.tryParseLong(innovation.trim(), fieldErrors, "putExpectedStudy", "Innovation");
+                if (id != null) {
+                  ProjectInnovation projectInnovation = projectInnovationManager.getProjectInnovationById(id);
+                  if (projectInnovation != null) {
+                    projectInnovationList.add(projectInnovation);
+                  } else {
+                    fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Innovation",
+                      innovation + " is an invalid innovation identifier"));
+                  }
+                }
+              } else {
+                fieldErrors.add(
+                  new FieldErrorDTO("putExpectedStudy", "Innovation", "An Innovation code can not be null nor empty."));
+              }
+            }
+          } /*
+             * else {
+             * fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Innovation", "Please enter the Innovation(s)."));
+             * }
+             */
+
+          // policies link
+          if (newProjectExpectedStudy.getPoliciesCodeList() != null
+            && newProjectExpectedStudy.getPoliciesCodeList().size() > 0) {
+            for (String policy : newProjectExpectedStudy.getPoliciesCodeList()) {
+              if (policy != null && !policy.trim().isEmpty()) {
+                id = this.tryParseLong(policy.trim(), fieldErrors, "putExpectedStudy", "Policy");
+                if (id != null) {
+                  ProjectPolicy projectPolicy = projectPolicyManager.getProjectPolicyById(id);
+                  if (projectPolicy != null) {
+                    projectPolicyList.add(projectPolicy);
+                  } else {
+                    fieldErrors.add(
+                      new FieldErrorDTO("putExpectedStudy", "Policy", policy + " is an invalid Policy identifier"));
+                  }
+                }
+              } else {
+                fieldErrors
+                  .add(new FieldErrorDTO("putExpectedStudy", "Policy", "A Policy code can not be null nor empty."));
+              }
+            }
+          }
+
+          // institutions
+          if (newProjectExpectedStudy.getInstitutionsList() != null
+            && newProjectExpectedStudy.getInstitutionsList().size() > 0) {
+            for (String institution : newProjectExpectedStudy.getInstitutionsList()) {
+              if (institution != null && !institution.trim().isEmpty()) {
+                id = this.tryParseLong(institution.trim(), fieldErrors, "putExpectedStudy", "Institution");
+                if (id != null) {
+                  Institution institutionDB = institutionManager.getInstitutionById(id);
+                  if (institutionDB != null) {
+                    institutionList.add(institutionDB);
+                  } else {
+                    fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Institution",
+                      institution + " is an invalid Institution identifier"));
+                  }
+                }
+              } else {
+                fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Institution",
+                  "An Institution code can not be null nor empty."));
+              }
+            }
+          } /*
+             * else {
+             * fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Institution",
+             * "Please enter the Institution(s)."));
+             * }
+             */
+
+          // milestones
+          if (newProjectExpectedStudy.getMilestonesCodeList() != null
+            && newProjectExpectedStudy.getMilestonesCodeList().size() > 0) {
+            hasPrimary = 0;
+            for (NewMilestonesDTO milestones : newProjectExpectedStudy.getMilestonesCodeList()) {
+              if (milestones != null && milestones.getMilestone() != null
+                && !milestones.getMilestone().trim().isEmpty()) {
+                id = this.tryParseLong(milestones.getMilestone().trim(), fieldErrors, "putExpectedStudy", "Milestone");
+                if (id != null) {
+                  CrpMilestone crpMilestone = crpMilestoneManager.getCrpMilestoneById(id);
+                  if (crpMilestone != null && crpMilestone.isActive()) {
+                    ProjectExpectedStudyMilestone obj = new ProjectExpectedStudyMilestone();
+                    obj.setCrpMilestone(crpMilestone);
+                    obj.setPrimary(milestones.getPrimary() != null && milestones.getPrimary());
+                    hasPrimary = hasPrimary + (obj.getPrimary() == true ? 1 : 0);
+                    milestoneList.add(obj);
+                  } else {
+                    fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Milestone",
+                      milestones.getMilestone() + " is an invalid Milestone identifier"));
+                  }
+                }
+              } else {
+                fieldErrors.add(
+                  new FieldErrorDTO("putExpectedStudy", "Milestone", "A Milestone code can not be null nor empty."));
+              }
+            }
+            if (hasPrimary == 0) {
+              fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Milestone",
+                "There should be at least one milestone marked as primary"));
+            }
+            if (hasPrimary > 1) {
+              fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Milestone",
+                "There can not be more than one milestone marked as primary"));
+            }
+          } /*
+             * else {
+             * fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Milestone", "Please enter the Milestone(s)."));
+             * }
+             */
+
+          // Crosscutting markers
+          if (newProjectExpectedStudy.getCrossCuttingMarkers() != null
+            && newProjectExpectedStudy.getCrossCuttingMarkers().size() > 0) {
+            for (NewCrosscuttingMarkersDTO crosscuttingmark : newProjectExpectedStudy.getCrossCuttingMarkers()) {
+              if (crosscuttingmark != null && crosscuttingmark.getCrossCuttingmarker() != null
+                && crosscuttingmark.getCrossCuttingmarkerScore() != null
+                && !crosscuttingmark.getCrossCuttingmarker().trim().isEmpty()
+                && !crosscuttingmark.getCrossCuttingmarkerScore().trim().isEmpty()) {
+                id = this.tryParseLong(crosscuttingmark.getCrossCuttingmarker().trim(), fieldErrors, "putExpectedStudy",
+                  "Crosscuttingmarker");
+                if (id != null) {
+                  CgiarCrossCuttingMarker cgiarCrossCuttingMarker =
+                    cgiarCrossCuttingMarkerManager.getCgiarCrossCuttingMarkerById(id);
+                  if (cgiarCrossCuttingMarker == null) {
+                    fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Crosscuttingmarker",
+                      cgiarCrossCuttingMarker + " is an invalid Crosscuttingmarker Code"));
+                  } else {
+                    id = this.tryParseLong(crosscuttingmark.getCrossCuttingmarkerScore().trim(), fieldErrors,
+                      "putExpectedStudy", "CrosscuttingmarkerScore");
+                    if (id != null) {
+                      RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
+                        repIndGenderYouthFocusLevelManager.getRepIndGenderYouthFocusLevelById(id);
+                      if (repIndGenderYouthFocusLevel == null) {
+                        fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "CrosscuttingmarkerScore",
+                          cgiarCrossCuttingMarker + " is an invalid GenderYouthFocusLevel Code"));
+                      } else {
+                        if (cgiarCrossCuttingMarker.getId()
+                          .longValue() == APConstants.CGIAR_CROSS_CUTTING_MARKERS_GENDER) {
+                          projectExpectedStudyInfo.setGenderLevel(repIndGenderYouthFocusLevel);
+                        }
+                        if (cgiarCrossCuttingMarker.getId()
+                          .longValue() == APConstants.CGIAR_CROSS_CUTTING_MARKERS_YOUTH) {
+                          projectExpectedStudyInfo.setYouthLevel(repIndGenderYouthFocusLevel);
+                        }
+                        if (cgiarCrossCuttingMarker.getId()
+                          .longValue() == APConstants.CGIAR_CROSS_CUTTING_MARKERS_CAPDEV) {
+                          projectExpectedStudyInfo.setCapdevLevel(repIndGenderYouthFocusLevel);
+                        }
+                        if (cgiarCrossCuttingMarker.getId()
+                          .longValue() == APConstants.CGIAR_CROSS_CUTTING_MARKERS_CLIMATECHANGE) {
+                          projectExpectedStudyInfo.setClimateChangeLevel(repIndGenderYouthFocusLevel);
+                        }
+                      }
+                    }
+                  }
+                }
+              } else {
+                fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "CrosscuttingMarker",
+                  "A CrosscuttingMarker/CrosscuttingmarkerScore code can not be null nor empty."));
+              }
+            }
+          } /*
+             * else {
+             * fieldErrors.add(
+             * new FieldErrorDTO("putExpectedStudy", "Crosscuttingmarker", "Please enter the CrosscuttingMarker(s)."));
+             * }
+             */
+
+          // links
+          if (newProjectExpectedStudy.getLinks() != null && !newProjectExpectedStudy.getLinks().isEmpty()) {
+            for (String link : newProjectExpectedStudy.getLinks()) {
+              if (link != null && !link.trim().isEmpty()) {
+                linkList.add(link);
+              } else {
+                fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Link", "A Link can not be null nor empty."));
+              }
+            }
+          }
+
+          // quantifications
+          if (newProjectExpectedStudy.getQuantificationList() != null
+            && !newProjectExpectedStudy.getQuantificationList().isEmpty()) {
+            for (QuantificationDTO quantification : newProjectExpectedStudy.getQuantificationList()) {
+              if (quantification.getTargetUnit() != null && quantification.getTargetUnit().trim().length() > 0
+                && quantification.getNumber() >= 0 && quantification.getQuantificationType() != null
+                && (quantification.getQuantificationType().equalsIgnoreCase("A")
+                  || quantification.getQuantificationType().equalsIgnoreCase("B"))) {
+                ProjectExpectedStudyQuantification projectExpectedStudyQuantification =
+                  new ProjectExpectedStudyQuantification();
+                projectExpectedStudyQuantification.setPhase(phase);
+                projectExpectedStudyQuantification.setTargetUnit(quantification.getTargetUnit());
+                projectExpectedStudyQuantification.setTypeQuantification(quantification.getQuantificationType());
+                projectExpectedStudyQuantification.setNumber(quantification.getNumber());
+                projectExpectedStudyQuantification.setComments(quantification.getComments());
+                expectedStudyQuantificationList.add(projectExpectedStudyQuantification);
+              } else {
+                fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Quantification",
+                  "You have to fill all fields for quantification"));
+              }
+            }
+          } /*
+             * else {
+             * fieldErrors
+             * .add(new FieldErrorDTO("putExpectedStudy", "Quantification", "Please enter the Quantification(s)."));
+             * }
+             */
+        }
+
+        if (fieldErrors.size() == 0 && project != null) {
+          projectExpectedStudy.setPhase(phase.getId());
+          projectExpectedStudy.setYear(phase.getYear());
+          projectExpectedStudy.setProject(project);
+          ProjectExpectedStudy projectExpectedStudyDB =
+            projectExpectedStudyManager.saveProjectExpectedStudy(projectExpectedStudy);
+          if (projectExpectedStudyDB != null) {
+            expectedStudyID = projectExpectedStudyDB.getId();
+            projectExpectedStudyInfo.setProjectExpectedStudy(projectExpectedStudyDB);
+            if (projectPolicyList.size() > 0) {
+              projectExpectedStudyInfo.setIsContribution(true);
+            }
+            if (srfSloIndicatorList.size() > 0) {
+              projectExpectedStudyInfo.setIsSrfTarget("targetsOptionYes");
+            }
+            if (projectExpectedStudyInfoManager.saveProjectExpectedStudyInfo(projectExpectedStudyInfo) != null) {
+              // update flashsip/module
+              // getting actual flagships
+              Long phaseId = phase.getId();
+              List<ProjectExpectedStudyFlagship> projectExpectedStudyFlagshipList =
+                projectExpectedStudy.getProjectExpectedStudyFlagships().stream()
+                  .filter(c -> c.isActive() && c.getPhase().getId() == phaseId).collect(Collectors.toList());
+              // create existing flagship
+              List<ProjectExpectedStudyFlagship> existingProjectExpectedStudyFlagshipList =
+                new ArrayList<ProjectExpectedStudyFlagship>();
+              // flagships
+              for (CrpProgram crpProgram : flagshipList) {
+                ProjectExpectedStudyFlagship projectExpectedStudyFlagship = projectExpectedStudyFlagshipManager
+                  .findProjectExpectedStudyFlagshipbyPhase(expectedStudyID, crpProgram.getId(), phase.getId());
+                if (projectExpectedStudyFlagship != null) {
+                  existingProjectExpectedStudyFlagshipList.add(projectExpectedStudyFlagship);
+                } else {
+                  projectExpectedStudyFlagship = new ProjectExpectedStudyFlagship();
+                  projectExpectedStudyFlagship.setCrpProgram(crpProgram);
+                  projectExpectedStudyFlagship.setPhase(phase);
+                  projectExpectedStudyFlagship.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudyFlagshipManager.saveProjectExpectedStudyFlagship(projectExpectedStudyFlagship);
+                }
+              }
+              // delete not existing
+              for (ProjectExpectedStudyFlagship obj : projectExpectedStudyFlagshipList) {
+                if (!existingProjectExpectedStudyFlagshipList.contains(obj)) {
+                  projectExpectedStudyFlagshipManager.deleteProjectExpectedStudyFlagship(obj.getId());
+                }
+              }
+
+              // update geographicscope
+              // getting actual geographicscope
+              List<ProjectExpectedStudyGeographicScope> projectExpectedStudyGeographicScopeList =
+                projectExpectedStudy.getProjectExpectedStudyGeographicScopes().stream()
+                  .filter(c -> c.isActive() && c.getPhase().getId() == phaseId).collect(Collectors.toList());
+              // create existing geographicscope
+              List<ProjectExpectedStudyGeographicScope> existingProjectExpectedStudyGeographicScopeList =
+                new ArrayList<ProjectExpectedStudyGeographicScope>();
+              // save geographicscopes
+              for (RepIndGeographicScope repIndGeographicScope : geographicScopeList) {
+                ProjectExpectedStudyGeographicScope projectExpectedStudyGeographicScope =
+                  projectExpectedStudyGeographicScopeManager.getProjectExpectedStudyGeographicScopeByPhase(
+                    expectedStudyID, repIndGeographicScope.getId(), phase.getId());
+                if (projectExpectedStudyGeographicScope != null) {
+                  existingProjectExpectedStudyGeographicScopeList.add(projectExpectedStudyGeographicScope);
+                } else {
+                  projectExpectedStudyGeographicScope = new ProjectExpectedStudyGeographicScope();
+                  projectExpectedStudyGeographicScope.setPhase(phase);
+                  projectExpectedStudyGeographicScope.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudyGeographicScope.setRepIndGeographicScope(repIndGeographicScope);
+                  projectExpectedStudyGeographicScopeManager
+                    .saveProjectExpectedStudyGeographicScope(projectExpectedStudyGeographicScope);
+                }
+              }
+              // delete not existing
+              for (ProjectExpectedStudyGeographicScope obj : projectExpectedStudyGeographicScopeList) {
+                if (!existingProjectExpectedStudyGeographicScopeList.contains(obj)) {
+                  projectExpectedStudyGeographicScopeManager.deleteProjectExpectedStudyGeographicScope(obj.getId());
+                }
+              }
+
+              // countries
+              // getting actual countries
+              List<ProjectExpectedStudyCountry> projectExpectedStudyCountryList =
+                projectExpectedStudyCountryManager.findAll().stream()
+                  .filter(c -> c.isActive() && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId())
+                    && c.getPhase().getId() == phaseId)
+                  .collect(Collectors.toList());
+              // create existing countries
+              List<ProjectExpectedStudyCountry> existingProjectExpectedStudyCountryList =
+                new ArrayList<ProjectExpectedStudyCountry>();
+              // save countries
+              for (LocElement country : countriesList) {
+                ProjectExpectedStudyCountry projectExpectedStudyCountry = projectExpectedStudyCountryManager
+                  .getProjectExpectedStudyCountryByPhase(expectedStudyID, country.getId(), phase.getId());
+                if (projectExpectedStudyCountry != null) {
+                  existingProjectExpectedStudyCountryList.add(projectExpectedStudyCountry);
+                } else {
+                  projectExpectedStudyCountry = new ProjectExpectedStudyCountry();
+                  projectExpectedStudyCountry.setLocElement(country);
+                  projectExpectedStudyCountry.setPhase(phase);
+                  projectExpectedStudyCountry.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudyCountryManager.saveProjectExpectedStudyCountry(projectExpectedStudyCountry);
+                }
+              }
+              // delete not existing
+              for (ProjectExpectedStudyCountry obj : projectExpectedStudyCountryList) {
+                if (!existingProjectExpectedStudyCountryList.contains(obj)) {
+                  projectExpectedStudyCountryManager.deleteProjectExpectedStudyCountry(obj.getId());
+                }
+              }
+
+              // regions
+              // getting actual regions
+              List<ProjectExpectedStudyRegion> projectExpectedStudyRegionList =
+                projectExpectedStudyRegionManager.findAll().stream()
+                  .filter(c -> c.isActive() && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId())
+                    && c.getPhase().getId() == phaseId)
+                  .collect(Collectors.toList());
+              // create existing regions
+              List<ProjectExpectedStudyRegion> existingProjectExpectedStudyRegionList =
+                new ArrayList<ProjectExpectedStudyRegion>();
+              // save regions
+              for (LocElement region : regionsList) {
+                ProjectExpectedStudyRegion projectExpectedStudyRegion = projectExpectedStudyRegionManager
+                  .getProjectExpectedStudyRegionByPhase(expectedStudyID, region.getId(), phase.getId());
+                if (projectExpectedStudyRegion != null) {
+                  existingProjectExpectedStudyRegionList.add(projectExpectedStudyRegion);
+                } else {
+                  projectExpectedStudyRegion = new ProjectExpectedStudyRegion();
+                  projectExpectedStudyRegion.setLocElement(region);
+                  projectExpectedStudyRegion.setPhase(phase);
+                  projectExpectedStudyRegion.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudyRegionManager.saveProjectExpectedStudyRegion(projectExpectedStudyRegion);
+                }
+              }
+              // delete not existing regions
+              for (ProjectExpectedStudyRegion obj : projectExpectedStudyRegionList) {
+                if (!existingProjectExpectedStudyRegionList.contains(obj)) {
+                  projectExpectedStudyRegionManager.deleteProjectExpectedStudyRegion(obj.getId());
+                }
+              }
+
+              // SLO targets
+              // getting actual SLO targets
+              List<ProjectExpectedStudySrfTarget> projectExpectedStudySrfTargetList =
+                projectExpectedStudy.getProjectExpectedStudySrfTargets().stream()
+                  .filter(c -> c.isActive() && c.getPhase().getId() == phaseId).collect(Collectors.toList());
+              // create existing SLO targets
+              List<ProjectExpectedStudySrfTarget> existingProjectExpectedStudySrfTargetList =
+                new ArrayList<ProjectExpectedStudySrfTarget>();
+              // save SLO targets
+              for (SrfSloIndicator srfSloIndicator : srfSloIndicatorList) {
+                ProjectExpectedStudySrfTarget projectExpectedStudySrfTarget = projectExpectedStudySrfTargetManager
+                  .getProjectExpectedStudySrfTargetByPhase(expectedStudyID, srfSloIndicator.getId(), phase.getId());
+                if (projectExpectedStudySrfTarget != null) {
+                  existingProjectExpectedStudySrfTargetList.add(projectExpectedStudySrfTarget);
+                } else {
+                  projectExpectedStudySrfTarget = new ProjectExpectedStudySrfTarget();
+                  projectExpectedStudySrfTarget.setSrfSloIndicator(srfSloIndicator);
+                  projectExpectedStudySrfTarget.setPhase(phase);
+                  projectExpectedStudySrfTarget.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudySrfTargetManager.saveProjectExpectedStudySrfTarget(projectExpectedStudySrfTarget);
+                }
+              }
+              // delete not existing SLO targets
+              for (ProjectExpectedStudySrfTarget obj : projectExpectedStudySrfTargetList) {
+                if (!existingProjectExpectedStudySrfTargetList.contains(obj)) {
+                  projectExpectedStudySrfTargetManager.deleteProjectExpectedStudySrfTarget(obj.getId());
+                }
+              }
+
+              // SudIDOs
+              // getting actual SudIDOs
+              List<ProjectExpectedStudySubIdo> projectExpectedStudySubIdoList =
+                projectExpectedStudy.getProjectExpectedStudySubIdos().stream()
+                  .filter(c -> c.isActive() && c.getPhase().getId() == phaseId).collect(Collectors.toList());
+              // create existing SudIDOs
+              List<ProjectExpectedStudySubIdo> existingProjectExpectedStudySubIdoList =
+                new ArrayList<ProjectExpectedStudySubIdo>();
+              // save SudIDOs
+              for (ProjectExpectedStudySubIdo srfSubIdo : srfSubIdoList) {
+                ProjectExpectedStudySubIdo projectExpectedStudySubIdo =
+                  projectExpectedStudySubIdoManager.getProjectExpectedStudySubIdoByPhase(expectedStudyID,
+                    srfSubIdo.getSrfSubIdo().getId(), phase.getId());
+                if (projectExpectedStudySubIdo != null) {
+                  existingProjectExpectedStudySubIdoList.add(projectExpectedStudySubIdo);
+                } else {
+                  projectExpectedStudySubIdo = new ProjectExpectedStudySubIdo();
+                  projectExpectedStudySubIdo.setSrfSubIdo(srfSubIdo.getSrfSubIdo());
+                  projectExpectedStudySubIdo.setPhase(phase);
+                  projectExpectedStudySubIdo.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudySubIdo.setPrimary(srfSubIdo.getPrimary());
+                  projectExpectedStudySubIdoManager.saveProjectExpectedStudySubIdo(projectExpectedStudySubIdo);
+                }
+              }
+              // delete not existing SudIDOs
+              for (ProjectExpectedStudySubIdo obj : projectExpectedStudySubIdoList) {
+                if (!existingProjectExpectedStudySubIdoList.contains(obj)) {
+                  projectExpectedStudySubIdoManager.deleteProjectExpectedStudySubIdo(obj.getId());
+                }
+              }
+
+              // links
+              // getting actual links
+              List<ProjectExpectedStudyLink> projectExpectedStudyLinkList =
+                projectExpectedStudy.getProjectExpectedStudyLinks().stream()
+                  .filter(c -> c.isActive() && c.getPhase().getId() == phaseId).collect(Collectors.toList());
+              // create existing links
+              List<ProjectExpectedStudyLink> existingProjectExpectedStudyLinkList =
+                new ArrayList<ProjectExpectedStudyLink>();
+              // save links
+              for (String link : linkList) {
+                ProjectExpectedStudyLink projectExpectedStudyLink = projectExpectedStudyLinkManager
+                  .getProjectExpectedStudyLinkByPhase(expectedStudyID, link, phase.getId());
+                if (projectExpectedStudyLink != null) {
+                  existingProjectExpectedStudyLinkList.add(projectExpectedStudyLink);
+                } else {
+                  projectExpectedStudyLink = new ProjectExpectedStudyLink();
+                  projectExpectedStudyLink.setLink(link);
+                  projectExpectedStudyLink.setPhase(phase);
+                  projectExpectedStudyLink.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudyLinkManager.saveProjectExpectedStudyLink(projectExpectedStudyLink);
+                }
+              }
+              // delete not existing links
+              for (ProjectExpectedStudyLink obj : projectExpectedStudyLinkList) {
+                if (!existingProjectExpectedStudyLinkList.contains(obj)) {
+                  projectExpectedStudyLinkManager.deleteProjectExpectedStudyLink(obj.getId());
+                }
+              }
+
+              // institutions
+              // getting actual institutions
+              List<ProjectExpectedStudyInstitution> projectExpectedStudyInstitutionList =
+                projectExpectedStudy.getProjectExpectedStudyInstitutions().stream()
+                  .filter(c -> c.isActive() && c.getPhase().getId() == phaseId).collect(Collectors.toList());
+              // create existing institutions
+              List<ProjectExpectedStudyInstitution> existingProjectExpectedStudyInstitutionList =
+                new ArrayList<ProjectExpectedStudyInstitution>();
+              // save institutions
+              for (Institution institution : institutionList) {
+                ProjectExpectedStudyInstitution projectExpectedStudyInstitution = projectExpectedStudyInstitutionManager
+                  .getProjectExpectedStudyInstitutionByPhase(expectedStudyID, institution.getId(), phase.getId());
+                if (projectExpectedStudyInstitution != null) {
+                  existingProjectExpectedStudyInstitutionList.add(projectExpectedStudyInstitution);
+                } else {
+                  projectExpectedStudyInstitution = new ProjectExpectedStudyInstitution();
+                  projectExpectedStudyInstitution.setInstitution(institution);
+                  projectExpectedStudyInstitution.setPhase(phase);
+                  projectExpectedStudyInstitution.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudyInstitutionManager
+                    .saveProjectExpectedStudyInstitution(projectExpectedStudyInstitution);
+                }
+              }
+              // delete not existing institutions
+              for (ProjectExpectedStudyInstitution obj : projectExpectedStudyInstitutionList) {
+                if (!existingProjectExpectedStudyInstitutionList.contains(obj)) {
+                  projectExpectedStudyInstitutionManager.deleteProjectExpectedStudyInstitution(obj.getId());
+                }
+              }
+
+              // milestones
+              // getting actual milestones
+              List<ProjectExpectedStudyMilestone> projectExpectedStudyMilestoneList =
+                projectExpectedStudy.getProjectExpectedStudyMilestones().stream()
+                  .filter(c -> c.isActive() && c.getPhase().getId() == phaseId).collect(Collectors.toList());
+              // create existing links
+              List<ProjectExpectedStudyMilestone> existingProjectExpectedStudyMilestoneList =
+                new ArrayList<ProjectExpectedStudyMilestone>();
+              // save institutions
+              for (ProjectExpectedStudyMilestone expectedStudyMilestones : milestoneList) {
+                ProjectExpectedStudyMilestone projectExpectedStudyMilestone =
+                  projectExpectedStudyMilestoneManager.getProjectExpectedStudyMilestoneByPhase(expectedStudyID,
+                    expectedStudyMilestones.getCrpMilestone().getId(), phase.getId());
+                if (projectExpectedStudyMilestone != null) {
+                  projectExpectedStudyMilestoneList.add(projectExpectedStudyMilestone);
+                } else {
+                  projectExpectedStudyMilestone = new ProjectExpectedStudyMilestone();
+                  projectExpectedStudyMilestone.setPrimary(expectedStudyMilestones.getPrimary());
+                  projectExpectedStudyMilestone.setCrpMilestone(expectedStudyMilestones.getCrpMilestone());
+                  projectExpectedStudyMilestone.setPhase(phase);
+                  projectExpectedStudyMilestone.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudyMilestoneManager.saveProjectExpectedStudyMilestone(projectExpectedStudyMilestone);
+                }
+              }
+              // delete not existing institutions
+              for (ProjectExpectedStudyMilestone obj : projectExpectedStudyMilestoneList) {
+                if (!existingProjectExpectedStudyMilestoneList.contains(obj)) {
+                  projectExpectedStudyMilestoneManager.deleteProjectExpectedStudyMilestone(obj.getId());
+                }
+              }
+
+              // contributing crps
+              // getting actual crps
+              List<ProjectExpectedStudyCrp> projectExpectedStudyCrpList =
+                projectExpectedStudy.getProjectExpectedStudyCrps().stream()
+                  .filter(c -> c.isActive() && c.getPhase().getId() == phaseId).collect(Collectors.toList());
+              // create existing crps
+              List<ProjectExpectedStudyCrp> existingProjectExpectedStudyCrpList =
+                new ArrayList<ProjectExpectedStudyCrp>();
+              // save crps
+              for (GlobalUnit globalUnit : crpContributing) {
+                ProjectExpectedStudyCrp projectExpectedStudyCrp = projectExpectedStudyCrpManager
+                  .getProjectExpectedStudyCrpByPhase(expectedStudyID, globalUnit.getId(), phase.getId());
+                if (projectExpectedStudyCrp != null) {
+                  existingProjectExpectedStudyCrpList.add(projectExpectedStudyCrp);
+                } else {
+                  projectExpectedStudyCrp = new ProjectExpectedStudyCrp();
+                  projectExpectedStudyCrp.setGlobalUnit(globalUnit);
+                  projectExpectedStudyCrp.setPhase(phase);
+                  projectExpectedStudyCrp.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudyCrpManager.saveProjectExpectedStudyCrp(projectExpectedStudyCrp);
+                }
+              }
+              // delete not existing crps
+              for (ProjectExpectedStudyCrp obj : projectExpectedStudyCrpList) {
+                if (!existingProjectExpectedStudyCrpList.contains(obj)) {
+                  projectExpectedStudyCrpManager.deleteProjectExpectedStudyCrp(obj.getId());
+                }
+              }
+
+              // quantifications
+              // getting actual quantifications
+              List<ProjectExpectedStudyQuantification> projectExpectedStudyQuantificationList =
+                projectExpectedStudyQuantificationManager.findAll().stream()
+                  .filter(c -> c.isActive() && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId())
+                    && c.getPhase().getId() == phaseId)
+                  .collect(Collectors.toList());
+              // create existing quantifications
+              List<ProjectExpectedStudyQuantification> existingProjectExpectedStudyQuantificationList =
+                new ArrayList<ProjectExpectedStudyQuantification>();
+              // save quantifications
+              for (ProjectExpectedStudyQuantification expectedStudyQuantification : expectedStudyQuantificationList) {
+                ProjectExpectedStudyQuantification projectExpectedStudyQuantification =
+                  projectExpectedStudyQuantificationManager.getProjectExpectedStudyQuantificationByPhase(
+                    expectedStudyID, expectedStudyQuantification.getTypeQuantification(),
+                    expectedStudyQuantification.getNumber(), expectedStudyQuantification.getTargetUnit(),
+                    phase.getId());
+                if (projectExpectedStudyQuantification != null) {
+                  existingProjectExpectedStudyQuantificationList.add(projectExpectedStudyQuantification);
+                } else {
+                  projectExpectedStudyQuantification = new ProjectExpectedStudyQuantification();
+                  projectExpectedStudyQuantification.setNumber(expectedStudyQuantification.getNumber());
+                  projectExpectedStudyQuantification.setTargetUnit(expectedStudyQuantification.getTargetUnit());
+                  projectExpectedStudyQuantification
+                    .setTypeQuantification(expectedStudyQuantification.getTypeQuantification());
+                  projectExpectedStudyQuantification.setComments(expectedStudyQuantification.getComments());
+                  projectExpectedStudyQuantification.setPhase(phase);
+                  projectExpectedStudyQuantification.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudyQuantificationManager
+                    .saveProjectExpectedStudyQuantification(projectExpectedStudyQuantification);
+                }
+              }
+              // delete not existing quantifications
+              for (ProjectExpectedStudyQuantification obj : projectExpectedStudyQuantificationList) {
+                if (!existingProjectExpectedStudyQuantificationList.contains(obj)) {
+                  projectExpectedStudyQuantificationManager.deleteProjectExpectedStudyQuantification(obj.getId());
+                }
+              }
+
+              // innovations
+              // getting actual innovations
+              List<ProjectExpectedStudyInnovation> projectExpectedStudyInnovationList =
+                projectExpectedStudy.getProjectExpectedStudyInnovations().stream()
+                  .filter(c -> c.isActive() && c.getPhase().getId() == phaseId).collect(Collectors.toList());
+              // create existing innovations
+              List<ProjectExpectedStudyInnovation> existingProjectExpectedStudyInnovationList =
+                new ArrayList<ProjectExpectedStudyInnovation>();
+              // save innovations
+              for (ProjectInnovation projectInnovation : projectInnovationList) {
+                ProjectExpectedStudyInnovation projectExpectedStudyInnovation = projectExpectedStudyInnovationManager
+                  .getProjectExpectedStudyInnovationByPhase(expectedStudyID, projectInnovation.getId(), phase.getId());
+                if (projectExpectedStudyInnovation != null) {
+                  existingProjectExpectedStudyInnovationList.add(projectExpectedStudyInnovation);
+                } else {
+                  projectExpectedStudyInnovation = new ProjectExpectedStudyInnovation();
+                  projectExpectedStudyInnovation.setProjectInnovation(projectInnovation);
+                  projectExpectedStudyInnovation.setPhase(phase);
+                  projectExpectedStudyInnovation.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudyInnovationManager
+                    .saveProjectExpectedStudyInnovation(projectExpectedStudyInnovation);
+                }
+              }
+              // delete not existing innovations
+              for (ProjectExpectedStudyInnovation obj : projectExpectedStudyInnovationList) {
+                if (!existingProjectExpectedStudyInnovationList.contains(obj)) {
+                  projectExpectedStudyInnovationManager.deleteProjectExpectedStudyInnovation(obj.getId());
+                }
+              }
+
+              // policies
+              // getting actual policies
+              List<ProjectExpectedStudyPolicy> projectExpectedStudyPolicyList =
+                projectExpectedStudy.getProjectExpectedStudyPolicies().stream()
+                  .filter(c -> c.isActive() && c.getPhase().getId() == phaseId).collect(Collectors.toList());
+              // create existing policies
+              List<ProjectExpectedStudyPolicy> existingProjectExpectedStudyPolicyList =
+                new ArrayList<ProjectExpectedStudyPolicy>();
+              // save policies
+              for (ProjectPolicy projectPolicy : projectPolicyList) {
+                ProjectExpectedStudyPolicy projectExpectedStudyPolicy = projectExpectedStudyPolicyManager
+                  .getProjectExpectedStudyPolicyByPhase(expectedStudyID, projectPolicy.getId(), phase.getId());
+                if (projectExpectedStudyPolicy != null) {
+                  existingProjectExpectedStudyPolicyList.add(projectExpectedStudyPolicy);
+                } else {
+                  projectExpectedStudyPolicy = new ProjectExpectedStudyPolicy();
+                  projectExpectedStudyPolicy.setProjectPolicy(projectPolicy);
+                  projectExpectedStudyPolicy.setPhase(phase);
+                  projectExpectedStudyPolicy.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudyPolicyManager.saveProjectExpectedStudyPolicy(projectExpectedStudyPolicy);
+                }
+              }
+              // delete not existing policies
+              for (ProjectExpectedStudyPolicy obj : projectExpectedStudyPolicyList) {
+                if (!existingProjectExpectedStudyPolicyList.contains(obj)) {
+                  projectExpectedStudyPolicyManager.deleteProjectExpectedStudyPolicy(obj.getId());
+                }
+              }
+            }
+          }
+        }
+      } else {
+        fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "ProjectExpectedStudyInfoEntity",
+          "Please enter a Project Expected Study Info"));
+      }
+    }
+
+    if (!fieldErrors.isEmpty()) {
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
+    }
+
+    return expectedStudyID;
+  }
+
+  public Long tryParseLong(String value, List<FieldErrorDTO> fieldErrors, String httpMethod, String field) {
+    Long result = null;
+    try {
+      result = Long.parseLong(value);
+    } catch (NumberFormatException nfe) {
+      fieldErrors
+        .add(new FieldErrorDTO(httpMethod, field, value + " is an invalid " + field + " numeric identification code"));
+    }
+    return result;
   }
 }

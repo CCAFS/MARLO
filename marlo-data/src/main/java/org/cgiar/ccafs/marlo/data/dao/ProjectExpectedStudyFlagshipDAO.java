@@ -56,10 +56,23 @@ public interface ProjectExpectedStudyFlagshipDAO {
 
 
   /**
+   * This method gets a projectExpectedStudyFlagship object by a given expectedStudy, Flagship and Phase identifier.
+   * 
+   * @param expectedStudyId is the projectExpectedStudy identifier.
+   * @param flagshipId is the flagship/Module identifier.
+   * @param phaseId is the Phase identifier.
+   * @return a ProjectExpectedStudyFlagship object.
+   */
+  public ProjectExpectedStudyFlagship findProjectExpectedStudyFlagshipbyPhase(Long expectedStudyId, Long flagshipId,
+    Long phaseId);
+
+  /**
    * This method saves the information of the given projectExpectedStudyFlagship
    * 
-   * @param projectExpectedStudyFlagship - is the projectExpectedStudyFlagship object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectExpectedStudyFlagship was
+   * @param projectExpectedStudyFlagship - is the projectExpectedStudyFlagship object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectExpectedStudyFlagship was
    *         updated
    *         or -1 is some error occurred.
    */

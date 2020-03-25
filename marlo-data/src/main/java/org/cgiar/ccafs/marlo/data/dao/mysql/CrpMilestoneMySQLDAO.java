@@ -20,7 +20,9 @@ import org.cgiar.ccafs.marlo.data.dao.CrpMilestoneDAO;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -86,6 +88,41 @@ public class CrpMilestoneMySQLDAO extends AbstractMarloDAO<CrpMilestone, Long> i
 
     return crpMilestone;
 
+  }
+
+  @Override
+  public CrpMilestone getCrpMilestoneByPhase(String composedID, long phaseID) {
+    StringBuilder query = new StringBuilder();
+
+    query.append("SELECT DISTINCT  ");
+    query.append("cm.id as id ");
+    query.append("FROM ");
+    query.append("crp_milestones cm ");
+    query.append("INNER JOIN crp_program_outcomes co ON co.id=cm.crp_program_outcome_id ");
+    query.append("INNER JOIN crp_programs ON crp_programs.id=co.crp_program_id ");
+    query.append("INNER JOIN global_units gu ON gu.id=crp_programs.global_unit_id ");
+    query.append("INNER JOIN phases ON phases.id=co.id_phase ");
+    query.append("WHERE co.is_active = 1 AND ");
+    query.append("phases.id =" + phaseID + " AND ");
+    query.append("cm.is_active=1 AND ");
+    query.append("cm.composed_id ='" + composedID + "'");
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<CrpMilestone> crpMilestones = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        CrpMilestone crpMilestone = this.find(Long.parseLong(map.get("id").toString()));
+        crpMilestones.add(crpMilestone);
+      }
+      if (crpMilestones.size() > 0) {
+        return crpMilestones.get(0);
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
   }
 
   @Override

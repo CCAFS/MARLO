@@ -61,6 +61,15 @@ public interface CrpMilestoneManager {
   public CrpMilestone getCrpMilestoneById(long crpMilestoneID);
 
   /**
+   * This method gets a crpMilestone object by a given crpMilestone composedID and phase identifier.
+   * 
+   * @param composedID is the crpMilestone composedID identifier.
+   * @param phaseID is the phase identifier.
+   * @return a CrpMilestone object.
+   */
+  public CrpMilestone getCrpMilestoneByPhase(String composedID, long phaseID);
+
+  /**
    * This method saves the information of the given crpMilestone
    * 
    * @param crpMilestone - is the crpMilestone object with the new information to be added/updated.

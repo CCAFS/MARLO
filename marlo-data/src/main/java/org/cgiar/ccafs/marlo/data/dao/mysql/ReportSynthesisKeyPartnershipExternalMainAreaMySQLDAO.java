@@ -76,6 +76,20 @@ public class ReportSynthesisKeyPartnershipExternalMainAreaMySQLDAO
 
   @Override
   public ReportSynthesisKeyPartnershipExternalMainArea
+    getByPartnershipExternalIdAndMainAreaId(long partnershipExternalId, long mainAreaId) {
+    String query = "from " + ReportSynthesisKeyPartnershipExternalMainArea.class.getName()
+      + " where report_synthesis_key_partnership_external_id = " + partnershipExternalId
+      + " and rep_ind_partnership_main_area_id = " + mainAreaId;
+    List<ReportSynthesisKeyPartnershipExternalMainArea> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+
+    return null;
+  }
+
+  @Override
+  public ReportSynthesisKeyPartnershipExternalMainArea
     save(ReportSynthesisKeyPartnershipExternalMainArea reportSynthesisKeyPartnershipExternalMainArea) {
     if (reportSynthesisKeyPartnershipExternalMainArea.getId() == null) {
       super.saveEntity(reportSynthesisKeyPartnershipExternalMainArea);

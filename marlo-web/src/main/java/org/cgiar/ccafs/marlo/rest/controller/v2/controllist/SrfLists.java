@@ -23,7 +23,7 @@ import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.srflist.SrfSub
 import org.cgiar.ccafs.marlo.rest.dto.SrfCrossCuttingIssueDTO;
 import org.cgiar.ccafs.marlo.rest.dto.SrfIdoDTO;
 import org.cgiar.ccafs.marlo.rest.dto.SrfSloDTO;
-import org.cgiar.ccafs.marlo.rest.dto.SrfSloTargetDTO;
+import org.cgiar.ccafs.marlo.rest.dto.SrfSloIndicatorTargetDTO;
 import org.cgiar.ccafs.marlo.rest.dto.SrfSubIdoDTO;
 import org.cgiar.ccafs.marlo.rest.errors.NotFoundException;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -128,13 +128,13 @@ public class SrfLists {
   @ApiOperation(
     tags = {"Table 1 - Progress towards SRF targets", "Table 3 - Outcome/ Impact Case Reports",
       "Table 10 - Monitoring, Evaluation, Learning and Impact Assessment (MELIA)"},
-    value = "${SrfList.slo-targets.code.value}", response = SrfSloTargetDTO.class)
+    value = "${SrfList.slo-targets.code.value}", response = SrfSloIndicatorTargetDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/slo-targets/{code:.+}", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<SrfSloTargetDTO> findSrfSloTargetByCode(
+  public ResponseEntity<SrfSloIndicatorTargetDTO> findSrfSloTargetByCode(
     @ApiParam(value = "${SrfList.slo-targets.code.param.code}", required = true) @PathVariable String code) {
-    ResponseEntity<SrfSloTargetDTO> response = this.srfSloIndicatorTargetItem.findSrfSloIndicatorTargetbyId(code);
+    ResponseEntity<SrfSloIndicatorTargetDTO> response = this.srfSloIndicatorTargetItem.findSrfSloIndicatorTargetbyId(code);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("SrfList.slo-targets.code.404"));
     }
@@ -219,12 +219,12 @@ public class SrfLists {
   @ApiOperation(
     tags = {"Table 1 - Progress towards SRF targets", "Table 3 - Outcome/ Impact Case Reports",
       "Table 10 - Monitoring, Evaluation, Learning and Impact Assessment (MELIA)"},
-    value = "${SrfList.slo-targets.all.value}", response = SrfSloTargetDTO.class, responseContainer = "List")
+    value = "${SrfList.slo-targets.all.value}", response = SrfSloIndicatorTargetDTO.class, responseContainer = "List")
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/slo-targets", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<List<SrfSloTargetDTO>> getAllSrfSloTarget(
+  public ResponseEntity<List<SrfSloIndicatorTargetDTO>> getAllSrfSloTarget(
     @ApiParam(value = "${SrfList.srf-sub-idos.code.param.code}") @RequestParam(required = false) Long year) {
-    ResponseEntity<List<SrfSloTargetDTO>> response = this.srfSloIndicatorTargetItem.getAllSrfSloIndicatorTargets(year);
+    ResponseEntity<List<SrfSloIndicatorTargetDTO>> response = this.srfSloIndicatorTargetItem.getAllSrfSloIndicatorTargets(year);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("SrfList.slo-targets.all.404"));
     }

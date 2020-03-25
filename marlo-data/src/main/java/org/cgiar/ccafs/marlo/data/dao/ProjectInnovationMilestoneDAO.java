@@ -56,10 +56,24 @@ public interface ProjectInnovationMilestoneDAO {
 
 
   /**
+   * This method gets a projectInnovationMilestone object by a given projectInnovation,crpMilestone and phase
+   * identifier.
+   * 
+   * @param innovationID is the projectInnovation identifier.
+   * @param crpMilestoneID is the crpMilestone identifier.
+   * @param phaseID is the phase identifier.
+   * @return a ProjectInnovationMilestone object.
+   */
+  public ProjectInnovationMilestone getProjectInnovationMilestoneById(Long innovationID, Long crpMilestoneID,
+    Long phaseID);
+
+  /**
    * This method saves the information of the given projectInnovationMilestone
    * 
-   * @param projectInnovationMilestone - is the projectInnovationMilestone object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectInnovationMilestone was
+   * @param projectInnovationMilestone - is the projectInnovationMilestone object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectInnovationMilestone was
    *         updated
    *         or -1 is some error occurred.
    */

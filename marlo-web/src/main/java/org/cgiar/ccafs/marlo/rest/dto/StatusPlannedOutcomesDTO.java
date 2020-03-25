@@ -19,53 +19,65 @@
 
 package org.cgiar.ccafs.marlo.rest.dto;
 
+import java.util.List;
+
 import io.swagger.annotations.ApiModelProperty;
 
-public class ProgressTowardsSRFTargetsDTO {
+public class StatusPlannedOutcomesDTO {
 
-  @ApiModelProperty(notes = "ID ", position = 1)
-  private Long id;
-  @ApiModelProperty(notes = "SLO target", position = 2)
-  private SrfSloTargetDTO srfSloTarget;
-  @ApiModelProperty(notes = "Progress Towards narrative narrative", position = 3)
-  private String narrative;
+  @ApiModelProperty(notes = "Flagship/Moodule Identifier", position = 1)
+  private CrpProgramDTO crpProgram;
 
-  @ApiModelProperty(notes = "Phase - Year ", position = 4)
+  @ApiModelProperty(notes = "Outcome Identifier", position = 2)
+  private OutcomeDTO outcome;
+
+  @ApiModelProperty(notes = "Outcome Sumary", position = 3)
+  private String sumary;
+
+  @ApiModelProperty(notes = "Milestones Status", position = 4)
+  private List<StatusPlannedMilestonesDTO> milestones;
+
+  @ApiModelProperty(notes = "Phase year/section", position = 5)
   private PhaseDTO phase;
 
-  public Long getId() {
-    return id;
+
+  public CrpProgramDTO getCrpProgram() {
+    return crpProgram;
   }
 
-  public String getNarrative() {
-    return narrative;
+
+  public OutcomeDTO getOutcome() {
+    return outcome;
   }
+
 
   public PhaseDTO getPhase() {
     return phase;
   }
 
 
-  public SrfSloTargetDTO getSrfSloTarget() {
-    return srfSloTarget;
+  public String getSumary() {
+    return sumary;
   }
 
 
-  public void setId(Long id) {
-    this.id = id;
+  public void setCrpProgram(CrpProgramDTO crpProgram) {
+    this.crpProgram = crpProgram;
   }
 
-  public void setNarrative(String narrative) {
-    this.narrative = narrative;
+
+  public void setOutcome(OutcomeDTO outcome) {
+    this.outcome = outcome;
   }
+
 
   public void setPhase(PhaseDTO phase) {
     this.phase = phase;
   }
 
-  public void setSrfSloTarget(SrfSloTargetDTO srfSloTarget) {
-    this.srfSloTarget = srfSloTarget;
-  }
 
+  public void setSumary(String sumary) {
+    this.sumary = sumary;
+  }
 
 }
