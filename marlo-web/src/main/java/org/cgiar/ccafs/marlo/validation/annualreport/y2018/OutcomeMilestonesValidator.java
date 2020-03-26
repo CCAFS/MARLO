@@ -34,6 +34,7 @@ import org.cgiar.ccafs.marlo.validation.BaseValidator;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.inject.Named;
 
@@ -264,6 +265,14 @@ public class OutcomeMilestonesValidator extends BaseValidator {
     }
 
 
+  }
+
+  public void validateTable5(BaseAction action, List<String> missingFieldsList) {
+    if (missingFieldsList != null) {
+      for (String missingField : missingFieldsList) {
+        action.addMessage(missingField);
+      }
+    }
   }
 
 

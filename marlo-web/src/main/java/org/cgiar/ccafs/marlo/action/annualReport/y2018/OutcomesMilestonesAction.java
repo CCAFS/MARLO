@@ -287,6 +287,9 @@ public class OutcomesMilestonesAction extends BaseAction {
         this.getActualPhase().getId());
 
       if (crossCuttingMarker != null) {
+        String markerInfo = "";
+        String milestoneInfo = "";
+
         return crossCuttingMarker;
       } else {
         return null;
@@ -334,6 +337,20 @@ public class OutcomesMilestonesAction extends BaseAction {
       milestone = reportSynthesisFlagshipProgressOutcomeMilestoneManager.getMilestoneId(outcomeID, milestoneID);
 
       if (milestone != null) {
+        String outcomeInfo = "";
+        String milestoneInfo = "";
+        if (crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeID) != null
+          && crpMilestoneManager.getCrpMilestoneById(milestoneID) != null) {
+          if (crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeID).getCrpProgram() != null
+            && crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeID).getCrpProgram().getAcronym() != null) {
+            outcomeInfo = crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeID).getCrpProgram().getAcronym()
+              + " - " + crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeID).getDescription();
+          }
+          if (crpMilestoneManager.getCrpMilestoneById(milestoneID).getComposedName() != null) {
+            milestoneInfo = crpMilestoneManager.getCrpMilestoneById(milestoneID).getComposedName();
+          }
+        }
+
         return milestone;
       } else {
         return null;
@@ -552,9 +569,11 @@ public class OutcomesMilestonesAction extends BaseAction {
         crpProgramOutcome.setMilestones(crpProgramOutcome.getCrpMilestones().stream()
           .filter(c -> c.isActive() && c.getYear().intValue() == this.getActualPhase().getYear())
           .collect(Collectors.toList()));
+
         crpProgramOutcome.setSubIdos(
           crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
         crpProgram.getMilestones().addAll(crpProgramOutcome.getMilestones());
+
         if (!crpProgram.getMilestones().isEmpty()) {
           validOutcomes.add(crpProgramOutcome);
         }
@@ -577,6 +596,7 @@ public class OutcomesMilestonesAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
+
     // Get current CRP
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
@@ -847,7 +867,6 @@ public class OutcomesMilestonesAction extends BaseAction {
     }
   }
 
-
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -899,6 +918,7 @@ public class OutcomesMilestonesAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
   }
+
 
   /**
    * Save CrossCutting Information
@@ -1077,6 +1097,7 @@ public class OutcomesMilestonesAction extends BaseAction {
         }
 
         flagshipProgressMilestoneNew.setEvidence(flagshipProgressMilestone.getEvidence());
+        flagshipProgressMilestoneNew.setEvidenceLink(flagshipProgressMilestone.getEvidenceLink());
         flagshipProgressMilestoneNew.setMilestonesStatus(flagshipProgressMilestone.getMilestonesStatus());
         flagshipProgressMilestoneNew.setExtendedYear(flagshipProgressMilestone.getExtendedYear());
         flagshipProgressMilestoneNew.setCrpMilestone(flagshipProgressMilestone.getCrpMilestone());
@@ -1092,10 +1113,10 @@ public class OutcomesMilestonesAction extends BaseAction {
 
   }
 
-
   public void setCgiarCrossCuttingMarkers(List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers) {
     this.cgiarCrossCuttingMarkers = cgiarCrossCuttingMarkers;
   }
+
 
   public void setFlagships(List<CrpProgram> flagships) {
     this.flagships = flagships;
@@ -1113,10 +1134,10 @@ public class OutcomesMilestonesAction extends BaseAction {
     this.liaisonInstitutionID = liaisonInstitutionID;
   }
 
-
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
   }
+
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
@@ -1126,10 +1147,10 @@ public class OutcomesMilestonesAction extends BaseAction {
     this.outcomes = outcomes;
   }
 
-
   public void setReasons(List<RepIndMilestoneReason> reasons) {
     this.reasons = reasons;
   }
+
 
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
     this.reportSynthesis = reportSynthesis;
@@ -1143,9 +1164,9 @@ public class OutcomesMilestonesAction extends BaseAction {
     this.transaction = transaction;
   }
 
-
   @Override
   public void validate() {
+
     if (save) {
       validator.validate(this, reportSynthesis, true);
     }

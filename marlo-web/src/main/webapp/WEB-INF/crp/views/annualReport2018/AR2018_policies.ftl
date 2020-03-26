@@ -205,6 +205,9 @@
         <th class="text-center" rowspan="${rows}">Evidence(s)</th>
         [/#if]
         [#if !expanded]
+        [#-- Complete Status
+        <th class="col-md-1 text-center no-sort" rowspan="${rows}">[@s.text name="${customLabel}.table2.status" /]</th>
+        --]
         <th class="col-md-1 text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.includeAR" /]</th>
         [/#if]        
       </tr>
@@ -295,7 +298,17 @@
               [/#list]
             </td>
           [/#if]
+          
           [#if !expanded]
+          [#-- Complete Status
+          <td class="text-center">
+            [#local isCompleted = true /]
+            [#if isCompleted]
+              <span class="icon-20 icon-check" title="Complete"></span> 
+              [#else]
+                <span class="icon-20 icon-uncheck" title=""></span> 
+            [/#if]   
+          </td>--]
           <td class="text-center">
             [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.policiesIds?seq_contains(item.id))!true) /]
             <div class="hidden">${isChecked?string}</div>
@@ -307,6 +320,9 @@
     [#else]
       <tr>
         [#if !expanded]
+         [#-- Complete Status
+         <td class="text-center" colspan="6"><i>No entries added yet.</i></td>
+         --]
          <td class="text-center" colspan="5"><i>No entries added yet.</i></td>
         [#else]
          <td class="text-center" colspan="12"><i>No entries added yet.</i></td>
