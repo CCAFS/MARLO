@@ -1229,16 +1229,6 @@ public class ExpectedStudiesItem<T> {
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
-  public boolean isNumeric(String value) {
-    boolean validation = true;
-    try {
-      Long.parseLong(value);
-    } catch (Exception e) {
-      validation = false;
-    }
-    return validation;
-  }
-
   public Long putExpectedStudyById(Long idExpectedStudy, NewProjectExpectedStudyDTO newProjectExpectedStudy,
     String CGIARentityAcronym, User user) {
     Long expectedStudyID = null;

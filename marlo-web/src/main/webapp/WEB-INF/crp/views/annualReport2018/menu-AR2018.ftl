@@ -94,9 +94,9 @@
   <div id="progressbar-${liaisonInstitutionID}" class="progressbar" style="display:none"></div>
 [/#if]
 
- 
-[#-- Submit button --]
-[#if false && canEdit && canSubmit]
+
+[#-- Submit button --] [#--
+[#if canEdit && canSubmit]
   [#assign showSubmit=(canSubmit && !submission && completed)]
   <a id="submitProject-${synthesisID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${crpSession}/submitAnnualReport"][@s.param name='synthesisID']${synthesisID}[/@s.param][/@s.url]" >
     [@s.text name="form.buttons.submit" /]
@@ -105,13 +105,13 @@
   <div></div>
 [/#if]
 
-[#-- Unsubmit button --]
-[#if false && (canUnSubmit && submission) && !crpClosed && !reportingActive]
+[#-- Unsubmit button --][#--
+[#if (canUnSubmit && submission) && !crpClosed && !reportingActive]
   <a id="submitProject-${liaisonInstitutionID}" class="projectUnSubmitButton" href="[@s.url action="${crpSession}/unsubmit"][@s.param name='liaisonInstitutionID']${liaisonInstitutionID}[/@s.param][/@s.url]" >
     [@s.text name="form.buttons.unsubmit" /]
   </a>
 [/#if]
-
+--]
 [#-- Generate WORD Document --]
 [#if true]
 <br />

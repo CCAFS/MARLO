@@ -65,7 +65,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -116,31 +115,32 @@ public class KeyExternalPartnershipItem<T> {
   }
 
   public Long createKeyExternalPartnership(NewKeyExternalPartnershipDTO newKeyExternalPartnershipDTO,
-    String entityAcronym, User user) {
-
+    String CGIARentityAcronym, User user) {
     Long keyExternalPartnershipID = null;
-    ReportSynthesisKeyPartnershipExternal keyPartnershipExternal = new ReportSynthesisKeyPartnershipExternal();
-    ReportSynthesisKeyPartnershipExternalInstitution keyPartnershipExternalInstitution;
-    ReportSynthesisKeyPartnershipExternalMainArea keyPartnershipExternalMainArea =
-      new ReportSynthesisKeyPartnershipExternalMainArea();
+    ReportSynthesisKeyPartnershipExternal keyPartnershipExternal = null;
+    ReportSynthesisKeyPartnershipExternalInstitution keyPartnershipExternalInstitution = null;
+    ReportSynthesisKeyPartnershipExternalMainArea keyPartnershipExternalMainArea = null;
+    CrpProgram crpProgram = null;
     Phase phase = null;
+    String strippedId = null;
 
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
 
-    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
+    String strippedEntityAcronym = StringUtils.stripToNull(CGIARentityAcronym);
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(strippedEntityAcronym);
     if (globalUnitEntity == null) {
       fieldErrors.add(new FieldErrorDTO("createKeyExternalPartnership", "GlobalUnitEntity",
-        entityAcronym + " is not a valid CGIAR entity acronym"));
+        CGIARentityAcronym + " is not a valid CGIAR entity acronym"));
     } else {
       if (!globalUnitEntity.isActive()) {
         fieldErrors.add(new FieldErrorDTO("createKeyExternalPartnership", "GlobalUnitEntity",
-          "The Global Unit with acronym " + entityAcronym + " is not active."));
+          "The Global Unit with acronym " + CGIARentityAcronym + " is not active."));
       }
-
     }
 
     Set<CrpUser> lstUser = user.getCrpUsers();
-    if (!lstUser.stream().anyMatch(crp -> StringUtils.equalsIgnoreCase(crp.getCrp().getAcronym(), entityAcronym))) {
+    if (!lstUser.stream()
+      .anyMatch(crp -> StringUtils.equalsIgnoreCase(crp.getCrp().getAcronym(), strippedEntityAcronym))) {
       fieldErrors
         .add(new FieldErrorDTO("createKeyExternalPartnership", "GlobalUnitEntity", "CGIAR entity not autorized"));
     }
@@ -148,17 +148,16 @@ public class KeyExternalPartnershipItem<T> {
     if (newKeyExternalPartnershipDTO.getPhase() == null) {
       fieldErrors.add(new FieldErrorDTO("createKeyExternalPartnership", "PhaseEntity", "Phase must not be null"));
     } else {
-      if (newKeyExternalPartnershipDTO.getPhase().getName() == null
-        || newKeyExternalPartnershipDTO.getPhase().getName().trim().isEmpty()
-        || newKeyExternalPartnershipDTO.getPhase().getYear() == null
-        // DANGER! Magic number ahead
+      String strippedPhaseName = StringUtils.stripToNull(newKeyExternalPartnershipDTO.getPhase().getName());
+      if (strippedPhaseName == null || newKeyExternalPartnershipDTO.getPhase().getYear() == null
+      // DANGER! Magic number ahead
         || newKeyExternalPartnershipDTO.getPhase().getYear() < 2015) {
         fieldErrors.add(new FieldErrorDTO("createKeyExternalPartnership", "PhaseEntity", "Phase is invalid"));
       } else {
         phase = phaseManager.findAll().stream()
-          .filter(p -> p.getCrp().getAcronym().equalsIgnoreCase(entityAcronym)
+          .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), strippedEntityAcronym)
             && p.getYear() == newKeyExternalPartnershipDTO.getPhase().getYear()
-            && p.getName().equalsIgnoreCase(newKeyExternalPartnershipDTO.getPhase().getName()))
+            && StringUtils.equalsIgnoreCase(p.getName(), strippedPhaseName) && p.isActive())
           .findFirst().orElse(null);
 
         if (phase == null) {
@@ -166,42 +165,54 @@ public class KeyExternalPartnershipItem<T> {
             new FieldErrorDTO("createKeyExternalPartnership", "phase", newKeyExternalPartnershipDTO.getPhase().getName()
               + ' ' + newKeyExternalPartnershipDTO.getPhase().getYear() + " is an invalid phase"));
         }
-
       }
+    }
 
+    strippedId = StringUtils.stripToNull(newKeyExternalPartnershipDTO.getFlagshipProgramId());
+    if (strippedId != null) {
+      crpProgram = crpProgramManager.getCrpProgramBySmoCode(strippedId);
+      if (crpProgram == null) {
+        fieldErrors.add(new FieldErrorDTO("createKeyExternalPartnership", "FlagshipEntity",
+          newKeyExternalPartnershipDTO.getFlagshipProgramId() + " is an invalid CRP Program SMO code."));
+      } else {
+        if (!StringUtils.equalsIgnoreCase(crpProgram.getCrp().getAcronym(), strippedEntityAcronym)) {
+          fieldErrors.add(new FieldErrorDTO("createCrossCGIARCollaboration", "FlagshipEntity",
+            "The CRP Program SMO Code entered does not correspond to the GlobalUnit with acronym "
+              + CGIARentityAcronym));
+        }
+      }
+    } else {
+      fieldErrors.add(new FieldErrorDTO("createKeyExternalPartnership", "FlagshipEntity",
+        "CRP Program SMO code can not be null nor empty."));
     }
 
     if (fieldErrors.isEmpty()) {
       Set<RepIndPartnershipMainArea> mainAreas = new HashSet<>();
       Set<Institution> institutions = new HashSet<>();
-      CrpProgram crpProgram = null;
       ReportSynthesis reportSynthesis = null;
       ReportSynthesisKeyPartnership reportSynthesisKeyPartnership = null;
       LiaisonInstitution liaisonInstitution = null;
+      Long id = null;
 
       // start ReportSynthesisKeyPartnershipExternalMainArea
       if (newKeyExternalPartnershipDTO.getPartnershipMainAreaIds() != null
         && !newKeyExternalPartnershipDTO.getPartnershipMainAreaIds().isEmpty()) {
-        mainAreas = newKeyExternalPartnershipDTO.getPartnershipMainAreaIds().stream()
+        mainAreas = newKeyExternalPartnershipDTO.getPartnershipMainAreaIds().stream().map(StringUtils::stripToNull)
           .map(new Function<String, RepIndPartnershipMainArea>() {
 
             @Override
-            public RepIndPartnershipMainArea apply(String partnershipMainAreaId) {
+            public RepIndPartnershipMainArea apply(String partnershipMainAreaIdString) {
               RepIndPartnershipMainArea partnershipMainArea = null;
-
-              if (partnershipMainAreaId != null && !partnershipMainAreaId.trim().isEmpty()) {
-                partnershipMainAreaId = partnershipMainAreaId.trim();
-
-                if (NumberUtils.isParsable(partnershipMainAreaId)) {
-                  partnershipMainArea = repIndPartnershipMainAreaManager
-                    .getRepIndPartnershipMainAreaById(Long.valueOf(partnershipMainAreaId));
+              if (partnershipMainAreaIdString != null) {
+                Long idPartnershipMainArea = KeyExternalPartnershipItem.this.tryParseLong(partnershipMainAreaIdString,
+                  fieldErrors, "createKeyExternalPartnership", "RepIndPartnershipMainAreaEntity");
+                if (idPartnershipMainArea != null) {
+                  partnershipMainArea =
+                    repIndPartnershipMainAreaManager.getRepIndPartnershipMainAreaById(idPartnershipMainArea);
                   if (partnershipMainArea == null) {
                     fieldErrors.add(new FieldErrorDTO("createKeyExternalPartnership", "RepIndPartnershipMainAreaEntity",
-                      partnershipMainAreaId + " is an invalid Report Indicator Partnership Main Area code."));
+                      partnershipMainAreaIdString + " is an invalid Report Indicator Partnership Main Area code."));
                   }
-                } else {
-                  fieldErrors.add(new FieldErrorDTO("createCrossCGIARCollaboration", "RepIndPartnershipMainAreaEntity",
-                    partnershipMainAreaId + " is not a valid id number."));
                 }
               } else {
                 fieldErrors.add(new FieldErrorDTO("createKeyExternalPartnership", "RepIndPartnershipMainAreaEntity",
@@ -217,20 +228,35 @@ public class KeyExternalPartnershipItem<T> {
       }
       // end ReportSynthesisKeyPartnershipExternalMainArea
 
-      // start CrpProgram (flagshipProgram)
-      if (newKeyExternalPartnershipDTO.getFlagshipProgramId() != null
-        && !newKeyExternalPartnershipDTO.getFlagshipProgramId().trim().isEmpty()) {
-        crpProgram =
-          crpProgramManager.getCrpProgramBySmoCode(newKeyExternalPartnershipDTO.getFlagshipProgramId().trim());
-        if (crpProgram == null) {
-          fieldErrors.add(new FieldErrorDTO("createKeyExternalPartnership", "FlagshipEntity",
-            newKeyExternalPartnershipDTO.getFlagshipProgramId() + " is an invalid CRP Program SMO code."));
-        }
-      } else {
-        fieldErrors.add(new FieldErrorDTO("createKeyExternalPartnership", "FlagshipEntity",
-          "CRP Program SMO code can not be null nor empty."));
+      // start Institutions
+      if (newKeyExternalPartnershipDTO.getInstitutionIds() != null
+        && !newKeyExternalPartnershipDTO.getInstitutionIds().isEmpty()) {
+        institutions = newKeyExternalPartnershipDTO.getInstitutionIds().stream().map(StringUtils::stripToNull)
+          .map(new Function<String, Institution>() {
+
+            @Override
+            public Institution apply(String institutionIdString) {
+              Institution institution = null;
+              if (institutionIdString != null) {
+                Long idInstitution = KeyExternalPartnershipItem.this.tryParseLong(institutionIdString, fieldErrors,
+                  "createKeyExternalPartnership", "InstitutionEntity");
+                if (idInstitution != null) {
+                  institution = institutionManager.getInstitutionById(idInstitution);
+                  if (institution == null) {
+                    fieldErrors.add(new FieldErrorDTO("createKeyExternalPartnership", "InstitutionEntity",
+                      institutionIdString + " is an invalid Institution code."));
+                  }
+                }
+              } else {
+                fieldErrors.add(new FieldErrorDTO("createKeyExternalPartnership", "InstitutionEntity",
+                  "An Institution code can not be null nor empty."));
+              }
+
+              return institution;
+            }
+          }).collect(Collectors.toSet());
       }
-      // end CrpProgram (flagshipProgram)
+      // end Institutions
 
       // start ReportSynthesis
       if (crpProgram != null) {
@@ -247,53 +273,15 @@ public class KeyExternalPartnershipItem<T> {
       // end ReportSynthesisKeyPartnership
 
       // start description
-      if (newKeyExternalPartnershipDTO.getDescription() == null
-        || newKeyExternalPartnershipDTO.getDescription().trim().isEmpty()) {
+      if (StringUtils.isBlank(newKeyExternalPartnershipDTO.getDescription())) {
         fieldErrors
           .add(new FieldErrorDTO("createKeyExternalPartnership", "Description", "Please enter a description."));
       }
       // end description
 
-      // start Institutions
-      if (newKeyExternalPartnershipDTO.getInstitutionIds() != null
-        && !newKeyExternalPartnershipDTO.getInstitutionIds().isEmpty()) {
-        institutions =
-          newKeyExternalPartnershipDTO.getInstitutionIds().stream().map(new Function<String, Institution>() {
-
-            @Override
-            public Institution apply(String institutionId) {
-              Institution institution = null;
-
-              if (institutionId != null && !institutionId.trim().isEmpty()) {
-                institutionId = institutionId.trim();
-
-                if (NumberUtils.isParsable(institutionId)) {
-                  institution = institutionManager.getInstitutionById(Long.valueOf(institutionId));
-                  if (institution == null) {
-                    fieldErrors.add(new FieldErrorDTO("createKeyExternalPartnership", "InstitutionEntity",
-                      institutionId + " is an invalid Institution code."));
-                  }
-                } else {
-                  fieldErrors.add(new FieldErrorDTO("createKeyExternalPartnership", "InstitutionEntity",
-                    institutionId + " is not a valid id number."));
-                }
-
-              } else {
-                fieldErrors.add(new FieldErrorDTO("createKeyExternalPartnership", "InstitutionEntity",
-                  "An Institution code can not be null nor empty."));
-              }
-
-              return institution;
-            }
-          }).collect(Collectors.toSet());
-      } else {
-        fieldErrors
-          .add(new FieldErrorDTO("createKeyExternalPartnership", "InstitutionList", "Please enter the key partners."));
-      }
-      // end Institutions
-
       // all validated! now it is supposed to be ok to save the entities
       if (fieldErrors.isEmpty()) {
+        keyPartnershipExternal = new ReportSynthesisKeyPartnershipExternal();
         // creating new ReportSynthesis if it does not exist
         if (reportSynthesis == null) {
           reportSynthesis = new ReportSynthesis();
@@ -311,7 +299,7 @@ public class KeyExternalPartnershipItem<T> {
           reportSynthesisKeyPartnershipManager.saveReportSynthesisKeyPartnership(reportSynthesisKeyPartnership);
         }
 
-        keyPartnershipExternal.setDescription(newKeyExternalPartnershipDTO.getDescription());
+        keyPartnershipExternal.setDescription(newKeyExternalPartnershipDTO.getDescription().trim());
         keyPartnershipExternal.setReportSynthesisKeyPartnership(reportSynthesisKeyPartnership);
         ReportSynthesisKeyPartnershipExternal keyPartnershipExternalDB =
           keyPartnershipExternalManager.saveReportSynthesisKeyPartnershipExternal(keyPartnershipExternal);
@@ -361,9 +349,12 @@ public class KeyExternalPartnershipItem<T> {
    */
   public ResponseEntity<KeyExternalPartnershipDTO> deleteKeyExternalPartnershipById(Long id, String CGIARentityAcronym,
     Integer repoYear, String repoPhase, User user) {
+    ReportSynthesisKeyPartnershipExternal keyPartnershipExternal = null;
+
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
 
-    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
+    String strippedEntityAcronym = StringUtils.stripToNull(CGIARentityAcronym);
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(strippedEntityAcronym);
     if (globalUnitEntity == null) {
       fieldErrors.add(new FieldErrorDTO("deleteKeyExternalPartnership", "GlobalUnitEntity",
         CGIARentityAcronym + " is not a valid CGIAR entity acronym"));
@@ -372,50 +363,83 @@ public class KeyExternalPartnershipItem<T> {
         fieldErrors.add(new FieldErrorDTO("deleteKeyExternalPartnership", "GlobalUnitEntity",
           "The Global Unit with acronym " + CGIARentityAcronym + " is not active."));
       }
-
     }
 
     Set<CrpUser> lstUser = user.getCrpUsers();
     if (!lstUser.stream()
-      .anyMatch(crp -> StringUtils.equalsIgnoreCase(crp.getCrp().getAcronym(), CGIARentityAcronym))) {
+      .anyMatch(crp -> StringUtils.equalsIgnoreCase(crp.getCrp().getAcronym(), strippedEntityAcronym))) {
       fieldErrors
         .add(new FieldErrorDTO("deleteKeyExternalPartnership", "GlobalUnitEntity", "CGIAR entity not autorized"));
     }
 
-    Phase phase =
-      this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
-        && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().orElse(null);
+    String strippedRepoPhase = StringUtils.stripToNull(repoPhase);
+    Phase phase = this.phaseManager.findAll().stream()
+      .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), strippedEntityAcronym)
+        && p.getYear() == repoYear && StringUtils.equalsIgnoreCase(p.getName(), strippedRepoPhase) && p.isActive())
+      .findFirst().orElse(null);
     if (phase == null) {
       fieldErrors.add(new FieldErrorDTO("deleteKeyExternalPartnership", "phase",
         repoPhase + ' ' + repoYear + " is an invalid phase"));
+    } else {
+      if (!StringUtils.equalsIgnoreCase(phase.getCrp().getAcronym(), strippedEntityAcronym)) {
+        fieldErrors.add(new FieldErrorDTO("deleteKeyExternalPartnership", "FlagshipEntity",
+          "The CRP Program SMO Code entered does not correspond to the GlobalUnit with acronym " + CGIARentityAcronym));
+      }
     }
 
-    ReportSynthesisKeyPartnershipExternal keyPartnershipExternal =
-      keyPartnershipExternalManager.getReportSynthesisKeyPartnershipExternalById(id);
+    if (fieldErrors.isEmpty()) {
+      keyPartnershipExternal = keyPartnershipExternalManager.getReportSynthesisKeyPartnershipExternalById(id);
+      if (keyPartnershipExternal != null) {
+        if (keyPartnershipExternal.getReportSynthesisKeyPartnership() == null) {
+          fieldErrors.add(new FieldErrorDTO("deleteKeyExternalPartnership", "ReportSynthesisKeyPartnershipEntity",
+            "There is no Report Synthesis Key Partnership assosiated to this entity!"));
+        } else {
+          if (keyPartnershipExternal.getReportSynthesisKeyPartnership().getReportSynthesis() == null) {
+            fieldErrors.add(new FieldErrorDTO("deleteKeyExternalPartnership", "ReportSynthesisEntity",
+              "There is no Report Synthesis assosiated to this entity!"));
+          } else {
+            if (keyPartnershipExternal.getReportSynthesisKeyPartnership().getReportSynthesis().getPhase() == null) {
+              fieldErrors.add(new FieldErrorDTO("deleteKeyExternalPartnership", "PhaseEntity",
+                "There is no Phase assosiated to this entity!"));
+            } else {
+              if (keyPartnershipExternal.getReportSynthesisKeyPartnership().getReportSynthesis().getPhase()
+                .getId() != phase.getId()) {
+                fieldErrors
+                  .add(new FieldErrorDTO("deleteKeyExternalPartnership", "ReportSynthesisKeyPartnershipExternalEntity",
+                    "The Report Synthesis Key Partnership External with id " + id
+                      + " do not correspond to the phase entered"));
+              } else {
+                Long idKeyPartnershipExternal = keyPartnershipExternal.getId();
+                keyPartnershipExternal.setReportSynthesisKeyPartnershipExternalInstitutions(
+                  keyPartnershipExternalInstitutionManager.findAll().stream()
+                    .filter(i -> i.isActive() && i.getReportSynthesisKeyPartnershipExternal()
+                      .getReportSynthesisKeyPartnership().getReportSynthesis().getPhase().getId().equals(phase.getId()))
+                    .collect(Collectors.toSet()));
+                keyPartnershipExternal.setReportSynthesisKeyPartnershipExternalMainAreas(
+                  keyPartnershipExternalMainAreaManager.findAll().stream()
+                    .filter(a -> a.isActive() && a.getReportSynthesisKeyPartnershipExternal()
+                      .getReportSynthesisKeyPartnership().getReportSynthesis().getPhase().getId().equals(phase.getId()))
+                    .collect(Collectors.toSet()));
 
-    if (keyPartnershipExternal != null) {
-      keyPartnershipExternal
-        .setReportSynthesisKeyPartnershipExternalInstitutions(keyPartnershipExternalInstitutionManager.findAll()
-          .stream().filter(i -> i.isActive() && i.getReportSynthesisKeyPartnershipExternal()
-            .getReportSynthesisKeyPartnership().getReportSynthesis().getPhase().getId().equals(phase.getId()))
-          .collect(Collectors.toSet()));
-      keyPartnershipExternal.setReportSynthesisKeyPartnershipExternalMainAreas(keyPartnershipExternalMainAreaManager
-        .findAll().stream().filter(a -> a.isActive() && a.getReportSynthesisKeyPartnershipExternal()
-          .getReportSynthesisKeyPartnership().getReportSynthesis().getPhase().getId().equals(phase.getId()))
-        .collect(Collectors.toSet()));
+                keyPartnershipExternal.getReportSynthesisKeyPartnershipExternalInstitutions().stream()
+                  .filter(i -> i.getReportSynthesisKeyPartnershipExternal().getId() == idKeyPartnershipExternal)
+                  .forEach(i -> keyPartnershipExternalInstitutionManager
+                    .deleteReportSynthesisKeyPartnershipExternalInstitution(i.getId()));
+                keyPartnershipExternal.getReportSynthesisKeyPartnershipExternalMainAreas().stream()
+                  .filter(i -> i.getReportSynthesisKeyPartnershipExternal().getId() == idKeyPartnershipExternal)
+                  .forEach(i -> keyPartnershipExternalMainAreaManager
+                    .deleteReportSynthesisKeyPartnershipExternalMainArea(i.getId()));
 
-      keyPartnershipExternal.getReportSynthesisKeyPartnershipExternalInstitutions().stream()
-        .filter(i -> i.getReportSynthesisKeyPartnershipExternal().getId() == keyPartnershipExternal.getId())
-        .forEach(i -> keyPartnershipExternalInstitutionManager
-          .deleteReportSynthesisKeyPartnershipExternalInstitution(i.getId()));
-      keyPartnershipExternal.getReportSynthesisKeyPartnershipExternalMainAreas().stream()
-        .filter(i -> i.getReportSynthesisKeyPartnershipExternal().getId() == keyPartnershipExternal.getId()).forEach(
-          i -> keyPartnershipExternalMainAreaManager.deleteReportSynthesisKeyPartnershipExternalMainArea(i.getId()));
-
-      keyPartnershipExternalManager.deleteReportSynthesisKeyPartnershipExternal(keyPartnershipExternal.getId());
-    } else {
-      fieldErrors.add(new FieldErrorDTO("deleteKeyExternalPartnership", "ReportSynthesisKeyPartnershipExternalEntity",
-        id + " is an invalid Report Synthesis Key Partnership External Code"));
+                keyPartnershipExternalManager
+                  .deleteReportSynthesisKeyPartnershipExternal(keyPartnershipExternal.getId());
+              }
+            }
+          }
+        }
+      } else {
+        fieldErrors.add(new FieldErrorDTO("deleteKeyExternalPartnership", "ReportSynthesisKeyPartnershipExternalEntity",
+          id + " is an invalid Report Synthesis Key Partnership External Code"));
+      }
     }
 
     if (!fieldErrors.isEmpty()) {
@@ -437,7 +461,8 @@ public class KeyExternalPartnershipItem<T> {
     List<KeyExternalPartnershipDTO> keyExternalPartnerships = new ArrayList<>();
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
 
-    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
+    String strippedEntityAcronym = StringUtils.stripToNull(CGIARentityAcronym);
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(strippedEntityAcronym);
     if (globalUnitEntity == null) {
       fieldErrors.add(new FieldErrorDTO("findKeyExternalPartnershipByGlobalUnit", "GlobalUnitEntity",
         CGIARentityAcronym + " is not a valid CGIAR entity acronym"));
@@ -446,12 +471,13 @@ public class KeyExternalPartnershipItem<T> {
         fieldErrors.add(new FieldErrorDTO("findKeyExternalPartnershipByGlobalUnit", "GlobalUnitEntity",
           "The Global Unit with acronym " + CGIARentityAcronym + " is not active."));
       }
-
     }
 
-    Phase phase =
-      this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
-        && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().orElse(null);
+    String strippedRepoPhase = StringUtils.stripToNull(repoPhase);
+    Phase phase = this.phaseManager.findAll().stream()
+      .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), strippedEntityAcronym)
+        && p.getYear() == repoYear && StringUtils.equalsIgnoreCase(p.getName(), strippedRepoPhase) && p.isActive())
+      .findFirst().orElse(null);
     if (phase == null) {
       fieldErrors.add(new FieldErrorDTO("findKeyExternalPartnershipByGlobalUnit", "phase",
         repoPhase + ' ' + repoYear + " is an invalid phase"));
@@ -492,7 +518,8 @@ public class KeyExternalPartnershipItem<T> {
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
     ReportSynthesisKeyPartnershipExternal keyExternalPartnership = null;
 
-    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
+    String strippedEntityAcronym = StringUtils.stripToNull(CGIARentityAcronym);
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(strippedEntityAcronym);
     if (globalUnitEntity == null) {
       fieldErrors.add(new FieldErrorDTO("findKeyExternalPartnership", "GlobalUnitEntity",
         CGIARentityAcronym + " is not a valid CGIAR entity acronym"));
@@ -501,12 +528,13 @@ public class KeyExternalPartnershipItem<T> {
         fieldErrors.add(new FieldErrorDTO("findKeyExternalPartnership", "GlobalUnitEntity",
           "The Global Unit with acronym " + CGIARentityAcronym + " is not active."));
       }
-
     }
 
-    Phase phase =
-      this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
-        && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().orElse(null);
+    String strippedRepoPhase = StringUtils.stripToNull(repoPhase);
+    Phase phase = this.phaseManager.findAll().stream()
+      .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), strippedEntityAcronym)
+        && p.getYear() == repoYear && StringUtils.equalsIgnoreCase(p.getName(), strippedRepoPhase) && p.isActive())
+      .findFirst().orElse(null);
     if (phase == null) {
       fieldErrors.add(
         new FieldErrorDTO("findKeyExternalPartnership", "phase", repoPhase + ' ' + repoYear + " is an invalid phase"));
@@ -570,9 +598,13 @@ public class KeyExternalPartnershipItem<T> {
     NewKeyExternalPartnershipDTO newKeyExternalPartnershipDTO, String CGIARentityAcronym, User user) {
     Long idKeyExternalPartnershipDB = null;
     Phase phase = null;
+    CrpProgram crpProgram = null;
+    String strippedId = null;
+
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
 
-    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
+    String strippedEntityAcronym = StringUtils.stripToNull(CGIARentityAcronym);
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(strippedEntityAcronym);
     if (globalUnitEntity == null) {
       fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "GlobalUnitEntity",
         CGIARentityAcronym + " is not a valid CGIAR entity acronym"));
@@ -581,28 +613,27 @@ public class KeyExternalPartnershipItem<T> {
         fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "GlobalUnitEntity",
           "The Global Unit with acronym " + CGIARentityAcronym + " is not active."));
       }
-
     }
 
     Set<CrpUser> lstUser = user.getCrpUsers();
-    if (!lstUser.stream().anyMatch(crp -> crp.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym))) {
+    if (!lstUser.stream()
+      .anyMatch(crp -> StringUtils.equalsIgnoreCase(crp.getCrp().getAcronym(), strippedEntityAcronym))) {
       fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "GlobalUnitEntity", "CGIAR entity not autorized"));
     }
 
     if (newKeyExternalPartnershipDTO.getPhase() == null) {
       fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "PhaseEntity", "Phase must not be null"));
     } else {
-      if (newKeyExternalPartnershipDTO.getPhase().getName() == null
-        || newKeyExternalPartnershipDTO.getPhase().getName().trim().isEmpty()
-        || newKeyExternalPartnershipDTO.getPhase().getYear() == null
-        // DANGER! Magic number ahead
+      String strippedPhaseName = StringUtils.stripToNull(newKeyExternalPartnershipDTO.getPhase().getName());
+      if (strippedPhaseName == null || newKeyExternalPartnershipDTO.getPhase().getYear() == null
+      // DANGER! Magic number ahead
         || newKeyExternalPartnershipDTO.getPhase().getYear() < 2015) {
         fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "PhaseEntity", "Phase is invalid"));
       } else {
         phase = phaseManager.findAll().stream()
-          .filter(p -> p.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
+          .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), strippedEntityAcronym)
             && p.getYear() == newKeyExternalPartnershipDTO.getPhase().getYear()
-            && p.getName().equalsIgnoreCase(newKeyExternalPartnershipDTO.getPhase().getName()))
+            && StringUtils.equalsIgnoreCase(p.getName(), strippedPhaseName) && p.isActive())
           .findFirst().orElse(null);
 
         if (phase == null) {
@@ -610,20 +641,22 @@ public class KeyExternalPartnershipItem<T> {
             new FieldErrorDTO("putKeyExternalPartnership", "phase", newKeyExternalPartnershipDTO.getPhase().getName()
               + ' ' + newKeyExternalPartnershipDTO.getPhase().getYear() + " is an invalid phase"));
         }
-
       }
-
     }
 
-    CrpProgram crpProgram = null;
-    if (newKeyExternalPartnershipDTO.getFlagshipProgramId() != null
-      && !newKeyExternalPartnershipDTO.getFlagshipProgramId().trim().isEmpty()) {
-      crpProgram = crpProgramManager.getCrpProgramBySmoCode(newKeyExternalPartnershipDTO.getFlagshipProgramId().trim());
+    strippedId = StringUtils.stripToNull(newKeyExternalPartnershipDTO.getFlagshipProgramId());
+    if (strippedId != null) {
+      crpProgram = crpProgramManager.getCrpProgramBySmoCode(strippedId);
       if (crpProgram == null) {
         fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "CrpProgramEntity",
           newKeyExternalPartnershipDTO.getFlagshipProgramId() + " is an invalid CRP Program SMO Code"));
+      } else {
+        if (!StringUtils.equalsIgnoreCase(crpProgram.getCrp().getAcronym(), strippedEntityAcronym)) {
+          fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "FlagshipEntity",
+            "The CRP Program SMO Code entered does not correspond to the GlobalUnit with acronym "
+              + CGIARentityAcronym));
+        }
       }
-
     } else {
       fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "CrpProgramEntity",
         newKeyExternalPartnershipDTO.getFlagshipProgramId() + " is an invalid CRP Program SMO Code"));
@@ -635,12 +668,6 @@ public class KeyExternalPartnershipItem<T> {
         "Please enter the main area(s) of partnership."));
     }
 
-    if (newKeyExternalPartnershipDTO.getInstitutionIds() == null
-      || newKeyExternalPartnershipDTO.getInstitutionIds().isEmpty()) {
-      fieldErrors
-        .add(new FieldErrorDTO("putKeyExternalPartnership", "InstitutionList", "Please enter the key partners."));
-    }
-
     ReportSynthesisKeyPartnershipExternal keyPartnershipExternal =
       keyPartnershipExternalManager.getReportSynthesisKeyPartnershipExternalById(idKeyExternalPartnership);
     if (keyPartnershipExternal == null) {
@@ -650,123 +677,111 @@ public class KeyExternalPartnershipItem<T> {
 
     if (fieldErrors.isEmpty()) {
       idKeyExternalPartnershipDB = keyPartnershipExternal.getId();
+      ReportSynthesis reportSynthesis = null;
+
       Set<String> base = keyPartnershipExternal.getReportSynthesisKeyPartnershipExternalMainAreas().stream()
         .filter(m -> m != null && m.getId() != null).map(m -> m.getPartnerArea().getId().toString())
         .collect(Collectors.toSet());
 
-      Set<String> incoming = newKeyExternalPartnershipDTO.getPartnershipMainAreaIds().stream().map(m -> {
-        // we check that every incoming code is not null, not empty and can be parsed
-        if (m != null && !m.trim().isEmpty()) {
-          m = m.trim();
+      Set<String> incoming = newKeyExternalPartnershipDTO.getPartnershipMainAreaIds().stream()
+        .map(StringUtils::stripToNull).collect(Collectors.toSet());
 
-          if (!NumberUtils.isParsable(m)) {
-            fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "RepIndPartnershipMainAreaEntity",
-              m + " is not a valid numeric id."));
-          }
-        } else {
-          fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "RepIndPartnershipMainAreaEntity",
-            m + " is an invalid Report Indicator Partnership Main Area Code"));
-        }
+      // We track the changes. As a result we get a map where the list with the true key means the elements are
+      // present
+      // in the database and are no longer selected; false means the elements are new and need to be saved.
+      // TODO it might be a better way to do this...
+      Map<Boolean, List<String>> changes = ChangeTracker.trackChanges(base, incoming);
 
-        return m;
-      }).collect(Collectors.toSet());
+      // we know that every code is a number, so it is safe to do what is below
+      changes.get(Boolean.TRUE).stream().map(StringUtils::stripToNull)
+        .map(m -> this.tryParseLong(m, fieldErrors, "putKeyExternalPartnership", "RepIndPartnershipMainAreaEntity"))
+        .map(m -> keyPartnershipExternalMainAreaManager
+          .getByPartnershipExternalIdAndMainAreaId(keyPartnershipExternal.getId(), m))
+        // this should not throw NullPointerException because we know the entities exists in the db
+        .map(ReportSynthesisKeyPartnershipExternalMainArea::getId)
+        .forEach(keyPartnershipExternalMainAreaManager::deleteReportSynthesisKeyPartnershipExternalMainArea);
 
-      Map<Boolean, List<String>> changes = null;
+      changes.get(Boolean.FALSE).stream().map(StringUtils::stripToNull).forEach(new Consumer<String>() {
 
-      if (fieldErrors.isEmpty()) {
-        // We track the changes. As a result we get a map where the list with the true key means the elements are
-        // present
-        // in the database and are no longer selected; false means the elements are new and need to be saved.
-        // TODO it might be a better way to do this...
-        changes = ChangeTracker.trackChanges(base, incoming);
-
-        // we know that every code is a number, so it is safe to do what is below
-        changes.get(Boolean.TRUE).stream().map(i -> Long.valueOf(i.trim()))
-          .map(i -> keyPartnershipExternalMainAreaManager
-            .getByPartnershipExternalIdAndMainAreaId(keyPartnershipExternal.getId(), i))
-          // this should not throw NullPointerException because we know the entities exists in the db
-          .map(ReportSynthesisKeyPartnershipExternalMainArea::getId)
-          .forEach(keyPartnershipExternalMainAreaManager::deleteReportSynthesisKeyPartnershipExternalMainArea);
-
-        changes.get(Boolean.FALSE).stream().map(m -> Long.valueOf(m.trim())).forEach(new Consumer<Long>() {
-
-          @Override
-          public void accept(Long mainAreaId) {
-            RepIndPartnershipMainArea incoming =
-              repIndPartnershipMainAreaManager.getRepIndPartnershipMainAreaById(mainAreaId);
-            if (incoming == null) {
-              fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "RepIndPartnershipMainAreaEntity",
-                +mainAreaId + " is an invalid Report Indicator Partnership Main Area Code"));
-            } else {
-              ReportSynthesisKeyPartnershipExternalMainArea newMainArea =
-                new ReportSynthesisKeyPartnershipExternalMainArea();
-              newMainArea.setPartnerArea(incoming);
-              newMainArea.setReportSynthesisKeyPartnershipExternal(keyPartnershipExternal);
-              keyPartnershipExternalMainAreaManager.saveReportSynthesisKeyPartnershipExternalMainArea(newMainArea);
+        @Override
+        public void accept(String partnershipMainAreaIdString) {
+          RepIndPartnershipMainArea incoming = null;
+          if (partnershipMainAreaIdString != null) {
+            Long idPartnershipMainArea = KeyExternalPartnershipItem.this.tryParseLong(partnershipMainAreaIdString,
+              fieldErrors, "putKeyExternalPartnership", "RepIndPartnershipMainAreaEntity");
+            if (idPartnershipMainArea != null) {
+              incoming = repIndPartnershipMainAreaManager.getRepIndPartnershipMainAreaById(idPartnershipMainArea);
+              if (incoming == null) {
+                fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "RepIndPartnershipMainAreaEntity",
+                  partnershipMainAreaIdString + " is an invalid Report Indicator Partnership Main Area Code"));
+              } else {
+                ReportSynthesisKeyPartnershipExternalMainArea newMainArea =
+                  new ReportSynthesisKeyPartnershipExternalMainArea();
+                newMainArea.setPartnerArea(incoming);
+                newMainArea.setReportSynthesisKeyPartnershipExternal(keyPartnershipExternal);
+                keyPartnershipExternalMainAreaManager.saveReportSynthesisKeyPartnershipExternalMainArea(newMainArea);
+              }
             }
+          } else {
+            fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "RepIndPartnershipMainAreaEntity",
+              "A Report Indicator Partnership Main Area code can not be null nor empty."));
           }
-        });
-      }
+        }
+      });
 
       base = keyPartnershipExternal.getReportSynthesisKeyPartnershipExternalInstitutions().stream()
         .filter(i -> i != null && i.getId() != null).map(m -> m.getInstitution().getId().toString())
         .collect(Collectors.toSet());
 
-      incoming = newKeyExternalPartnershipDTO.getInstitutionIds().stream().map(i -> {
-        // we check that every incoming code is not null, not empty and can be parsed
-        if (i != null && !i.trim().isEmpty()) {
-          i = i.trim();
+      incoming = newKeyExternalPartnershipDTO.getInstitutionIds().stream().map(StringUtils::stripToNull)
+        .collect(Collectors.toSet());
 
-          if (!NumberUtils.isParsable(i)) {
-            fieldErrors.add(
-              new FieldErrorDTO("putKeyExternalPartnership", "InstitutionEntity", i + " is not a valid number id."));
-          }
-        } else {
-          fieldErrors.add(
-            new FieldErrorDTO("putKeyExternalPartnership", "InstitutionEntity", i + " is an invalid Institution Code"));
-        }
+      changes = ChangeTracker.trackChanges(base, incoming);
 
-        return i;
-      }).collect(Collectors.toSet());
+      // we know that every code is a number, so it is safe to do what is below
+      changes.get(Boolean.TRUE).stream().map(StringUtils::stripToNull)
+        .map(i -> this.tryParseLong(i, fieldErrors, "putKeyExternalPartnership", "InstitutionEntity"))
+        .map(i -> keyPartnershipExternalInstitutionManager
+          .getByPartnershipExternalIdAndInstitutionId(keyPartnershipExternal.getId(), i))
+        // this should not throw NullPointerException because we know the entities exists in the db
+        .map(ReportSynthesisKeyPartnershipExternalInstitution::getId)
+        .forEach(keyPartnershipExternalInstitutionManager::deleteReportSynthesisKeyPartnershipExternalInstitution);
 
-      if (fieldErrors.isEmpty()) {
-        changes = ChangeTracker.trackChanges(base, incoming);
+      changes.get(Boolean.FALSE).stream().map(StringUtils::stripToNull).forEach(new Consumer<String>() {
 
-        // we know that every code is a number, so it is safe to do what is below
-        changes.get(Boolean.TRUE).stream().map(ch -> Long.valueOf(ch.trim()))
-          .map(ch -> keyPartnershipExternalInstitutionManager
-            .getByPartnershipExternalIdAndInstitutionId(keyPartnershipExternal.getId(), ch))
-          // this should not throw NullPointerException because we know the entities exists in the db
-          .map(ReportSynthesisKeyPartnershipExternalInstitution::getId)
-          .forEach(keyPartnershipExternalInstitutionManager::deleteReportSynthesisKeyPartnershipExternalInstitution);
-
-        changes.get(Boolean.FALSE).stream().map(m -> Long.valueOf(m.trim())).forEach(new Consumer<Long>() {
-
-          @Override
-          public void accept(Long institutionId) {
-            Institution incoming = institutionManager.getInstitutionById(institutionId);
-            if (incoming == null) {
-              fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "InstitutionEntity",
-                +institutionId + " is an invalid Institution Code"));
-            } else {
-              ReportSynthesisKeyPartnershipExternalInstitution newInstitution =
-                new ReportSynthesisKeyPartnershipExternalInstitution();
-              newInstitution.setInstitution(incoming);
-              newInstitution.setReportSynthesisKeyPartnershipExternal(keyPartnershipExternal);
-              keyPartnershipExternalInstitutionManager
-                .saveReportSynthesisKeyPartnershipExternalInstitution(newInstitution);
+        @Override
+        public void accept(String institutionIdString) {
+          Institution incoming = null;
+          if (institutionIdString != null) {
+            Long idInstitution = KeyExternalPartnershipItem.this.tryParseLong(institutionIdString, fieldErrors,
+              "putKeyExternalPartnership", "InstitutionEntity");
+            if (idInstitution != null) {
+              incoming = institutionManager.getInstitutionById(idInstitution);
+              if (incoming == null) {
+                fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "InstitutionEntity",
+                  idInstitution + " is an invalid Institution Code"));
+              } else {
+                ReportSynthesisKeyPartnershipExternalInstitution newInstitution =
+                  new ReportSynthesisKeyPartnershipExternalInstitution();
+                newInstitution.setInstitution(incoming);
+                newInstitution.setReportSynthesisKeyPartnershipExternal(keyPartnershipExternal);
+                keyPartnershipExternalInstitutionManager
+                  .saveReportSynthesisKeyPartnershipExternalInstitution(newInstitution);
+              }
             }
+          } else {
+            fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "InstitutionEntity",
+              "An Institution code can not be null nor empty."));
           }
-        });
-      }
+        }
+      });
 
       // start description
-      if (newKeyExternalPartnershipDTO.getDescription() == null
-        || newKeyExternalPartnershipDTO.getDescription().trim().isEmpty()) {
+      if (StringUtils.isBlank(newKeyExternalPartnershipDTO.getDescription())) {
         fieldErrors
-          .add(new FieldErrorDTO("createCrossCGIARCollaboration", "Description", "Please enter a description."));
+          .add(new FieldErrorDTO("createKeyExternalPartnership", "Description", "Please enter a description."));
       } else {
-        keyPartnershipExternal.setDescription(newKeyExternalPartnershipDTO.getDescription());
+        keyPartnershipExternal.setDescription(newKeyExternalPartnershipDTO.getDescription().trim());
       }
       // end description
 
@@ -775,17 +790,23 @@ public class KeyExternalPartnershipItem<T> {
       if (liaisonInstitution == null) {
         fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "LiaisonInstitutionEntity",
           "A Liaison Institution with the acronym " + crpProgram.getAcronym() + " could not be found"));
+      } else {
+        reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
+        if (reportSynthesis == null) {
+          fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "ReportSynthesisEntity",
+            "A report entity linked to the Phase with id " + phase.getId() + " and Liaison Institution with id "
+              + liaisonInstitution.getId() + " could not be found"));
+        } else {
+          ReportSynthesisKeyPartnership reportSynthesisKeyPartnership =
+            reportSynthesis.getReportSynthesisKeyPartnership();
+          if (reportSynthesisKeyPartnership == null) {
+            fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "ReportSynthesisEntity",
+              "There is no Report Synthesis Key Partnership linked to the Report Synthesis"));
+          } else {
+            keyPartnershipExternal.setReportSynthesisKeyPartnership(reportSynthesisKeyPartnership);
+          }
+        }
       }
-
-      ReportSynthesis reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
-      if (reportSynthesis == null) {
-        fieldErrors.add(new FieldErrorDTO("putKeyExternalPartnership", "ReportSynthesisEntity",
-          "A report entity linked to the Phase with id " + phase.getId() + " and Liaison Institution with id "
-            + liaisonInstitution.getId() + " could not be found"));
-      }
-
-      ReportSynthesisKeyPartnership reportSynthesisKeyPartnership = reportSynthesis.getReportSynthesisKeyPartnership();
-      keyPartnershipExternal.setReportSynthesisKeyPartnership(reportSynthesisKeyPartnership);
     }
 
     if (!fieldErrors.isEmpty()) {
@@ -798,6 +819,17 @@ public class KeyExternalPartnershipItem<T> {
 
     keyPartnershipExternalManager.saveReportSynthesisKeyPartnershipExternal(keyPartnershipExternal);
     return idKeyExternalPartnershipDB;
+  }
+
+  public Long tryParseLong(String value, List<FieldErrorDTO> fieldErrors, String httpMethod, String field) {
+    Long result = null;
+    try {
+      result = Long.parseLong(value);
+    } catch (NumberFormatException nfe) {
+      fieldErrors
+        .add(new FieldErrorDTO(httpMethod, field, value + " is an invalid " + field + " numeric identification code"));
+    }
+    return result;
   }
 
 }

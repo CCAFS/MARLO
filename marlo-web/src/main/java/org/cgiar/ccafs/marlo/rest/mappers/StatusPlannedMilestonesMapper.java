@@ -13,23 +13,15 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.mappers;
+/**************
+ * @author Diego Perez - CIAT/CCAFS
+ **************/
 
-import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.rest.dto.ProjectPageDTO;
+package org.cgiar.ccafs.marlo.rest.mappers;
 
 import org.mapstruct.Mapper;
 
-/**
- * @author Luis Fernando - CIAT/CCAFS
- */
-
-@Mapper(componentModel = "jsr330", uses = {ProjecInfoMapper.class})
-public interface ProjectPageMapper {
-
-
-  public abstract Project projectPageDTOToProject(ProjectPageDTO projectPageDTO);
-
-  public abstract ProjectPageDTO projectToProjectPageDTO(Project project);
+@Mapper(componentModel = "jsr330")
+public interface StatusPlannedMilestonesMapper {
 
 }
