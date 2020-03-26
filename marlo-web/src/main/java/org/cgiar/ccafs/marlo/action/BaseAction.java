@@ -5056,16 +5056,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return
    */
   public boolean isCompleteLiaisonSectionReport2018(long liaisonInstitutionID) {
-    Phase phase = this.getActualPhase();
+    if (liaisonInstitutionID != 0 && this.getActualPhase() != null && this.getActualPhase().getId() != null) {
+      Phase phase = this.getActualPhase();
 
-    ReportSynthesis reportSynthesis = this.reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
+      ReportSynthesis reportSynthesis = this.reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
 
-    if (reportSynthesis != null) {
-      return this.isCompleteReportSynthesis2018(reportSynthesis.getId());
+      if (reportSynthesis != null) {
+        return this.isCompleteReportSynthesis2018(reportSynthesis.getId());
+      } else {
+        return false;
+      }
     } else {
       return false;
     }
-
   }
 
   /**
@@ -6181,19 +6184,23 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean isProjectSubmitted(long projectID) {
-    if (this.getActualPhase() != null && this.getActualPhase().getUpkeep() != null
-      && !this.getActualPhase().getUpkeep()) {
-      Project project = this.projectManager.getProjectById(projectID);
-      List<Submission> submissions = project.getSubmissions().stream()
-        .filter(c -> c.getCycle() != null && this.getCurrentCycle() != null
-          && c.getCycle().equals(this.getCurrentCycle()) && c.getYear() != null
-          && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
-        .collect(Collectors.toList());
-      if (submissions.isEmpty()) {
+    try {
+      if (this.getActualPhase() != null && this.getActualPhase().getUpkeep() != null
+        && !this.getActualPhase().getUpkeep()) {
+        Project project = this.projectManager.getProjectById(projectID);
+        List<Submission> submissions = project.getSubmissions().stream()
+          .filter(c -> c.getCycle() != null && this.getCurrentCycle() != null
+            && c.getCycle().equals(this.getCurrentCycle()) && c.getYear() != null
+            && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
+          .collect(Collectors.toList());
+        if (submissions == null || submissions.isEmpty()) {
+          return false;
+        }
+        return true;
+      } else {
         return false;
       }
-      return true;
-    } else {
+    } catch (Exception e) {
       return false;
     }
   }

@@ -76,7 +76,7 @@ public class InstitutionItem<T> {
   protected APConfig config;
 
   private boolean messageSent;
-  private List<FieldErrorDTO> fieldErrors;
+  // private List<FieldErrorDTO> fieldErrors;
 
   @Inject
   public InstitutionItem(InstitutionTypeManager institutionTypeManager, InstitutionManager institutionManager,
@@ -91,12 +91,12 @@ public class InstitutionItem<T> {
     this.globalUnitManager = globalUnitManager;
     this.sendMail = sendMail;
     this.config = config;
-    this.fieldErrors = new ArrayList<FieldErrorDTO>();
+    // this.fieldErrors = new ArrayList<FieldErrorDTO>();
   }
 
   public ResponseEntity<InstitutionRequestDTO> createPartnerRequest(NewInstitutionDTO newInstitutionDTO,
     String entityAcronym, User user) throws Exception {
-
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
     String regex = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
     Pattern pattern = Pattern.compile(regex);
@@ -104,40 +104,35 @@ public class InstitutionItem<T> {
 
     Set<CrpUser> lstUser = user.getCrpUsers();
     if (!lstUser.stream().anyMatch(crp -> crp.getCrp().getAcronym().equalsIgnoreCase(entityAcronym))) {
-      this.fieldErrors
-        .add(new FieldErrorDTO("InstitutionRequestDTO", "GlobalUnitEntity", "CGIAR entity not autorized"));
+      fieldErrors.add(new FieldErrorDTO("InstitutionRequestDTO", "GlobalUnitEntity", "CGIAR entity not autorized"));
     }
     if (globalUnitEntity == null) {
-      this.fieldErrors
-        .add(new FieldErrorDTO("InstitutionRequestDTO", "GlobalUnitEntity", "Invalid CGIAR entity acronym"));
+      fieldErrors.add(new FieldErrorDTO("InstitutionRequestDTO", "GlobalUnitEntity", "Invalid CGIAR entity acronym"));
     }
 
     LocElement locElement = this.locElementManager.getLocElementByISOCode(newInstitutionDTO.getHqCountryIso());
     if (locElement == null) {
-      this.fieldErrors.add(new FieldErrorDTO("InstitutionRequestDTO", "Country", "Invalid country iso Alpha code"));
+      fieldErrors.add(new FieldErrorDTO("InstitutionRequestDTO", "Country", "Invalid country iso Alpha code"));
     }
 
     InstitutionType institutionType =
       this.institutionTypeManager.getInstitutionTypeById(Long.parseLong(newInstitutionDTO.getInstitutionTypeCode()));
     if (institutionType == null) {
-      this.fieldErrors
-        .add(new FieldErrorDTO("InstitutionRequestDTO", "institutionType", "Invalid Institution type code"));
+      fieldErrors.add(new FieldErrorDTO("InstitutionRequestDTO", "institutionType", "Invalid Institution type code"));
     }
 
     // externalUserMail is mandatory
     if (newInstitutionDTO.getExternalUserMail() != null) {
       Matcher matcher = pattern.matcher(newInstitutionDTO.getExternalUserMail());
       if (!matcher.matches()) {
-        this.fieldErrors
-          .add(new FieldErrorDTO("InstitutionRequestDTO", "getExternalUserMail", "Bad external email format"));
+        fieldErrors.add(new FieldErrorDTO("InstitutionRequestDTO", "getExternalUserMail", "Bad external email format"));
       }
     } else {
-      this.fieldErrors
-        .add(new FieldErrorDTO("InstitutionRequestDTO", "getExternalUserMail", "External email is empty"));
+      fieldErrors.add(new FieldErrorDTO("InstitutionRequestDTO", "getExternalUserMail", "External email is empty"));
     }
 
-    if (!this.fieldErrors.isEmpty()) {
-      throw new MARLOFieldValidationException("Field Validation errors", "", this.fieldErrors);
+    if (!fieldErrors.isEmpty()) {
+      throw new MARLOFieldValidationException("Field Validation errors", "", fieldErrors);
     }
 
     PartnerRequest partnerRequestParent = this.institutionMapper.newInstitutionDTOToPartnerRequest(newInstitutionDTO,
