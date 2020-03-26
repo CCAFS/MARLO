@@ -24,7 +24,7 @@ import org.mapstruct.Mapper;
  * @author Luis Fernando - CIAT/CCAFS
  */
 
-@Mapper(componentModel = "jsr330")
+@Mapper(componentModel = "jsr330", uses = {ProjecInfoMapper.class})
 public interface ProjectPageMapper {
 
 
