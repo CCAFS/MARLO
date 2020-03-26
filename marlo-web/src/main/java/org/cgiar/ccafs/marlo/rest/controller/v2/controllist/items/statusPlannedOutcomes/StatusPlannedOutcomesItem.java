@@ -52,12 +52,15 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.NewCrosscuttingMarkersSynthesisDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewStatusPlannedMilestoneDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewStatusPlannedOutcomeDTO;
+import org.cgiar.ccafs.marlo.rest.dto.StatusPlannedOutcomesDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
 import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
+import org.cgiar.ccafs.marlo.rest.mappers.StatusPlannedOutcomesMapper;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -65,6 +68,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @Named
 public class StatusPlannedOutcomesItem<T> {
@@ -84,6 +89,8 @@ public class StatusPlannedOutcomesItem<T> {
   private CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager;
   private RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager;
 
+  private StatusPlannedOutcomesMapper statusPlannedOutcomesMapper;
+
 
   @Inject
   public StatusPlannedOutcomesItem(GlobalUnitManager globalUnitManager, PhaseManager phaseManager,
@@ -95,7 +102,8 @@ public class StatusPlannedOutcomesItem<T> {
     ReportSynthesisFlagshipProgressCrossCuttingMarkerManager reportSynthesisFlagshipProgressCrossCuttingMarkerManager,
     LiaisonInstitutionManager liaisonInstitutionManager, GeneralStatusManager generalStatusManager,
     CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager,
-    RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager) {
+    RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager,
+    StatusPlannedOutcomesMapper statusPlannedOutcomesMapper) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.crpProgramManager = crpProgramManager;
@@ -112,6 +120,7 @@ public class StatusPlannedOutcomesItem<T> {
       reportSynthesisFlagshipProgressOutcomeMilestoneManager;
     this.reportSynthesisFlagshipProgressCrossCuttingMarkerManager =
       reportSynthesisFlagshipProgressCrossCuttingMarkerManager;
+    this.statusPlannedOutcomesMapper = statusPlannedOutcomesMapper;
   }
 
 
@@ -478,5 +487,21 @@ public class StatusPlannedOutcomesItem<T> {
           .collect(Collectors.toList()));
     }
     return plannedOutcomeStatusID;
+  }
+
+  public ResponseEntity<StatusPlannedOutcomesDTO> findStatusPlannedOutcome(String outcomeID, String CGIARentityAcronym,
+    Integer repoYear, String repoPhase, User user) {
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
+    ReportSynthesisFlagshipProgressOutcome reportSynthesisFlagshipProgressOutcome = null;
+    if (!fieldErrors.isEmpty()) {
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
+    }
+    return Optional.ofNullable(reportSynthesisFlagshipProgressOutcome)
+      .map(this.statusPlannedOutcomesMapper::reportSynthesisFlagshipProgressOutcomeToStatusPlannedOutcomesDTO)
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 }
