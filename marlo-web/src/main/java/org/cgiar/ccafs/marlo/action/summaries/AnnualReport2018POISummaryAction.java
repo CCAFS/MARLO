@@ -781,13 +781,14 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         ParagraphAlignment.CENTER, false),
       new POIField(this.getText("summaries.annualReport2018.table10Title2"), ParagraphAlignment.CENTER, false),
       new POIField(this.getText("summaries.annualReport2018.table10Title3"), ParagraphAlignment.CENTER, true, "839B49"),
-      new POIField(this.getText("summaries.annualReport2018.table10Title5"), ParagraphAlignment.CENTER, false)};
+      new POIField(this.getText("summaries.annualReport2018.table10Title5"), ParagraphAlignment.CENTER, false),
+      new POIField(this.getText("summaries.annualReport2018.table10Title6"), ParagraphAlignment.CENTER, false)};
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
 
     if (meliaDto != null) {
       for (ProjectExpectedStudy study : meliaDto) {
-        String name = "", status = "", type = "", comments = "";
+        String name = "", status = "", type = "", comments = "", meliaPublications = "";
         if (study.getProjectExpectedStudyInfo(this.getSelectedPhase()) != null) {
           if (study.getProjectExpectedStudyInfo(this.getSelectedPhase()).getTitle() != null) {
             name = "S" + study.getId() + " - " + study.getProjectExpectedStudyInfo(this.getSelectedPhase()).getTitle();
@@ -807,9 +808,14 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
             comments = study.getProjectExpectedStudyInfo(this.getSelectedPhase()).getTopLevelComments();
           }
 
-          POIField[] sData = {new POIField(name, ParagraphAlignment.LEFT, false),
-            new POIField(status, ParagraphAlignment.CENTER, false), new POIField(type, ParagraphAlignment.LEFT, false),
-            new POIField(comments, ParagraphAlignment.LEFT, true)};
+          if (study.getProjectExpectedStudyInfo(this.getSelectedPhase()).getMELIAPublications() != null) {
+            meliaPublications = study.getProjectExpectedStudyInfo(this.getSelectedPhase()).getMELIAPublications();
+          }
+
+          POIField[] sData =
+            {new POIField(name, ParagraphAlignment.LEFT, false), new POIField(status, ParagraphAlignment.CENTER, false),
+              new POIField(type, ParagraphAlignment.LEFT, false), new POIField(comments, ParagraphAlignment.LEFT, true),
+              new POIField(meliaPublications, ParagraphAlignment.LEFT, true)};
           data = Arrays.asList(sData);
           datas.add(data);
         }
