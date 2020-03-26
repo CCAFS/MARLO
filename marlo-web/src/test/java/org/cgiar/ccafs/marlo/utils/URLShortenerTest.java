@@ -13,23 +13,21 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.projectPage;
-
-import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.ProjectPage;
+package org.cgiar.ccafs.marlo.utils;
 
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
-public class ProjectPageItemTest {
-
-  private ProjectPageItem<ProjectPage> projectPageItem;
+public class URLShortenerTest {
 
   @Test
-  public void findProjectPageById() {
-    /*
-     * ResponseEntity<ProjectPageDTO> response = projectPageItem.findProjectPageById(new Long(2), "CCAFS");
-     * assertTrue(response.getStatusCode() != HttpStatus.NOT_FOUND);
-     */
+  public void testGetShortUrlService() throws Exception {
+    URLShortener urlShortener = new URLShortener();
+    String url =
+      "https://cgiar.sharepoint.com/:f:/r/sites/CCAFS/CRP%207%20Management/Reviewing%20and%20Reporting/Annual%20Reporting/TL%20and%20RPL%20Technical%20Reporting/2019/Internal%20Evidences/P266/Evidence%203247?csf=1&e=0xuOXI10";
+    String shortURL = urlShortener.getShortUrlService(url);
+    assertThat(shortURL, notNullValue());
   }
-
 }
