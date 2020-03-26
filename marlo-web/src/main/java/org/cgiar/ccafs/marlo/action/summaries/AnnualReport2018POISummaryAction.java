@@ -346,9 +346,9 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
   private void addCrossCuttingYouth() {
 
     String crossCuttingYouthContribution = "";
-    String crossCuttingYouthResearchFindings = "";
-    String crossCuttingYouthLearned = "";
-    String crossCuttingYouthProblemsArisen = "";
+    // String crossCuttingYouthResearchFindings = "";
+    // String crossCuttingYouthLearned = "";
+    // String crossCuttingYouthProblemsArisen = "";
     if (reportSynthesisPMU != null) {
 
       // Cross Cutting Gender Info
@@ -357,30 +357,32 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           reportSynthesisPMU.getReportSynthesisCrossCuttingDimension();
         if (crossCutting != null) {
           crossCuttingYouthContribution = crossCutting.getYouthContribution();
-          crossCuttingYouthResearchFindings = crossCutting.getYouthResearchFindings();
-          crossCuttingYouthLearned = crossCutting.getYouthLearned();
-          crossCuttingYouthProblemsArisen = crossCutting.getYouthProblemsArisen();
+          // crossCuttingYouthResearchFindings = crossCutting.getYouthResearchFindings();
+          // crossCuttingYouthLearned = crossCutting.getYouthLearned();
+          // crossCuttingYouthProblemsArisen = crossCutting.getYouthProblemsArisen();
         }
       }
     }
     if (crossCuttingYouthContribution != null && !crossCuttingYouthContribution.isEmpty()) {
       poiSummary.convertHTMLTags(document, crossCuttingYouthContribution, null);
     }
-    if (crossCuttingYouthResearchFindings != null && !crossCuttingYouthResearchFindings.isEmpty()) {
-      this.createSubtitle("annualReport2018.ccDimensions.youth.researchFindings");
-      // poiSummary.convertHTMLTags(document, this.getText("annualReport2018.ccDimensions.gender.researchFindings"));
-      poiSummary.convertHTMLTags(document, crossCuttingYouthResearchFindings, null);
-    }
-    if (crossCuttingYouthLearned != null && !crossCuttingYouthLearned.isEmpty()) {
-      this.createSubtitle("annualReport2018.ccDimensions.youth.learned");
-      // poiSummary.convertHTMLTags(document, this.getText("annualReport2018.ccDimensions.gender.learned"));
-      poiSummary.convertHTMLTags(document, crossCuttingYouthLearned, null);
-    }
-    if (crossCuttingYouthProblemsArisen != null && !crossCuttingYouthProblemsArisen.isEmpty()) {
-      this.createSubtitle("annualReport2018.ccDimensions.youth.problemsArisen");
-      // poiSummary.convertHTMLTags(document, this.getText("annualReport2018.ccDimensions.gender.problemsArisen"));
-      poiSummary.convertHTMLTags(document, crossCuttingYouthProblemsArisen, null);
-    }
+    /*
+     * if (crossCuttingYouthResearchFindings != null && !crossCuttingYouthResearchFindings.isEmpty()) {
+     * this.createSubtitle("annualReport2018.ccDimensions.youth.researchFindings");
+     * // poiSummary.convertHTMLTags(document, this.getText("annualReport2018.ccDimensions.gender.researchFindings"));
+     * poiSummary.convertHTMLTags(document, crossCuttingYouthResearchFindings, null);
+     * }
+     * if (crossCuttingYouthLearned != null && !crossCuttingYouthLearned.isEmpty()) {
+     * this.createSubtitle("annualReport2018.ccDimensions.youth.learned");
+     * // poiSummary.convertHTMLTags(document, this.getText("annualReport2018.ccDimensions.gender.learned"));
+     * poiSummary.convertHTMLTags(document, crossCuttingYouthLearned, null);
+     * }
+     * if (crossCuttingYouthProblemsArisen != null && !crossCuttingYouthProblemsArisen.isEmpty()) {
+     * this.createSubtitle("annualReport2018.ccDimensions.youth.problemsArisen");
+     * // poiSummary.convertHTMLTags(document, this.getText("annualReport2018.ccDimensions.gender.problemsArisen"));
+     * poiSummary.convertHTMLTags(document, crossCuttingYouthProblemsArisen, null);
+     * }
+     */
   }
 
   private void addCrossPartnerships() {
@@ -779,13 +781,14 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         ParagraphAlignment.CENTER, false),
       new POIField(this.getText("summaries.annualReport2018.table10Title2"), ParagraphAlignment.CENTER, false),
       new POIField(this.getText("summaries.annualReport2018.table10Title3"), ParagraphAlignment.CENTER, true, "839B49"),
-      new POIField(this.getText("summaries.annualReport2018.table10Title5"), ParagraphAlignment.CENTER, false)};
+      new POIField(this.getText("summaries.annualReport2018.table10Title5"), ParagraphAlignment.CENTER, false),
+      new POIField(this.getText("summaries.annualReport2018.table10Title6"), ParagraphAlignment.CENTER, false)};
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
 
     if (meliaDto != null) {
       for (ProjectExpectedStudy study : meliaDto) {
-        String name = "", status = "", type = "", comments = "";
+        String name = "", status = "", type = "", comments = "", meliaPublications = "";
         if (study.getProjectExpectedStudyInfo(this.getSelectedPhase()) != null) {
           if (study.getProjectExpectedStudyInfo(this.getSelectedPhase()).getTitle() != null) {
             name = "S" + study.getId() + " - " + study.getProjectExpectedStudyInfo(this.getSelectedPhase()).getTitle();
@@ -805,9 +808,14 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
             comments = study.getProjectExpectedStudyInfo(this.getSelectedPhase()).getTopLevelComments();
           }
 
-          POIField[] sData = {new POIField(name, ParagraphAlignment.LEFT, false),
-            new POIField(status, ParagraphAlignment.CENTER, false), new POIField(type, ParagraphAlignment.LEFT, false),
-            new POIField(comments, ParagraphAlignment.LEFT, true)};
+          if (study.getProjectExpectedStudyInfo(this.getSelectedPhase()).getMELIAPublications() != null) {
+            meliaPublications = study.getProjectExpectedStudyInfo(this.getSelectedPhase()).getMELIAPublications();
+          }
+
+          POIField[] sData =
+            {new POIField(name, ParagraphAlignment.LEFT, false), new POIField(status, ParagraphAlignment.CENTER, false),
+              new POIField(type, ParagraphAlignment.LEFT, false), new POIField(comments, ParagraphAlignment.LEFT, true),
+              new POIField(meliaPublications, ParagraphAlignment.LEFT, true)};
           data = Arrays.asList(sData);
           datas.add(data);
         }

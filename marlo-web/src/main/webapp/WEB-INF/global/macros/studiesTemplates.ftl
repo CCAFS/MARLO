@@ -470,7 +470,11 @@
       [#--  Comments for other studies--]
       [#if !isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
-        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.topLevelComments" i18nkey="study.comments"  placeholder="" className="limitWords-100" required=editable && !(isPolicy && stageProcessOne) editable=editable /]
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.topLevelComments" i18nkey="study.activityDescription"  placeholder="" className="limitWords-100" required=editable && !(isPolicy && stageProcessOne) editable=editable /]
+      </div>
+      
+      <div class="form-group stageProcessOne">
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.MELIAPublications" i18nkey="study.MELIAPublications"  placeholder="" help="study.MELIAPublications.help" helpIcon=false className="" required=false editable=editable /]
       </div>
       [/#if]
       
