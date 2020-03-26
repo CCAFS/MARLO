@@ -107,37 +107,10 @@
                     [@customForm.textArea name="${customName}.youthContribution" i18nkey="${customLabel}.youth.youthContribution" help="${customLabel}.youth.youthContribution.help" className="limitWords-${calculateLimitWords(600)}" helpIcon=false required=!isPlatform editable=editable allowTextEditor=true /]
                   </div>
                   
-                  
-                  [@customForm.helpLabel name="${customLabel}.youth.help" showIcon=false editable=editable /]
-                  
-                  [#-- Youth - Research findings --]
-                  <div class="form-group">
-                    [#-- Word Document Tag --]
-                    [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
-                    
-                    [@customForm.textArea name="${customName}.youthResearchFindings" i18nkey="${customLabel}.youth.researchFindings" help="${customLabel}.youth.researchFindings.help" className="limitWords-${calculateLimitWords(450)}" helpIcon=false required=!isPlatform editable=editable allowTextEditor=true /]
-                  </div>
-                  
-                  [#-- Youth - What have you learned --]
-                  <div class="form-group">
-                    [#-- Word Document Tag --]
-                    [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
-                    
-                    [@customForm.textArea name="${customName}.youthLearned" i18nkey="${customLabel}.youth.learned" help="${customLabel}.youth.learned.help" className="limitWords-${calculateLimitWords(200)}" helpIcon=false required=!isPlatform editable=editable allowTextEditor=true /]
-                  </div>
-                  
-                  [#-- Youth - Problems arisen --]
-                  <div class="form-group">
-                    [#-- Word Document Tag --]
-                    [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
-                    
-                    [@customForm.textArea name="${customName}.youthProblemsArisen" i18nkey="${customLabel}.youth.problemsArisen" help="" className="limitWords-${calculateLimitWords(100)}" helpIcon=false required=!isPlatform editable=editable allowTextEditor=true /]
-                  </div>
-                  
                   [#if PMU]
                     [#-- Flagships - Youth Synthesis --]
                     <div class="form-group">
-                      [@macrosAR.tableFPSynthesis tableName="${customLabel}.youth.flagshipSynthesis" list=flagshipCCDimensions columns=["youthContribution", "youthResearchFindings", "youthLearned", "youthProblemsArisen"]  allInOne=true  /]
+                      [@macrosAR.tableFPSynthesis tableName="${customLabel}.youth.flagshipSynthesis" list=flagshipCCDimensions columns=["youthContribution"]  allInOne=true  /]
                     </div>
                   [/#if]
                 </div>
