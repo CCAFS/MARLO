@@ -472,12 +472,7 @@ public class CrossCuttingDimensionAction extends BaseAction {
         .setGenderProblemsArisen(reportSynthesis.getReportSynthesisCrossCuttingDimension().getGenderProblemsArisen());
       crossCuttingDimensionDB
         .setYouthContribution(reportSynthesis.getReportSynthesisCrossCuttingDimension().getYouthContribution());
-      crossCuttingDimensionDB
-        .setYouthResearchFindings(reportSynthesis.getReportSynthesisCrossCuttingDimension().getYouthResearchFindings());
-      crossCuttingDimensionDB
-        .setYouthLearned(reportSynthesis.getReportSynthesisCrossCuttingDimension().getYouthLearned());
-      crossCuttingDimensionDB
-        .setYouthProblemsArisen(reportSynthesis.getReportSynthesisCrossCuttingDimension().getYouthProblemsArisen());
+
       crossCuttingDimensionDB
         .setCapDevKeyAchievements(reportSynthesis.getReportSynthesisCrossCuttingDimension().getCapDevKeyAchievements());
       crossCuttingDimensionDB.setClimateChangeKeyAchievements(
