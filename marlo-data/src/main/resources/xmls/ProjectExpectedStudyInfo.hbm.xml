@@ -101,6 +101,9 @@
 		<property name="topLevelComments" type="string">
 			<column name="top_level_comments" sql-type="TEXT" />
 		</property>
+		<property name="MELIAPublications" type="string">
+			<column name="melia_publications" sql-type="TEXT" />
+		</property>
 		<property name="scopeComments" type="string">
 			<column name="scope_comments" sql-type="TEXT" />
 		</property>

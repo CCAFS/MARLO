@@ -159,6 +159,9 @@
           <th class="text-center col-md-2"> [@s.text name="${customLabel}.table10.status" /] </th>
           <th class="text-center"> [@s.text name="${customLabel}.table10.type" /] </th>
           <th class="text-center col-md-4"> [@s.text name="${customLabel}.table10.comments" /] </th>
+          [#if expandedTable]
+          <th class="text-center col-md-4"> [@s.text name="${customLabel}.table10.publicationsLinks" /] </th>
+          [/#if]
           [#if !expandedTable]
             <th class="col-md-1 text-center"> <small>[@s.text name="${customLabel}.table10.includeAR" /]</small>  </th>
           [/#if]
@@ -196,6 +199,11 @@
               <td class="urlify">
                 [@utils.tableText value=(item.projectExpectedStudyInfo.topLevelComments)!"" /]
               </td>
+              [#if expandedTable]
+              <td class="urlify">
+                [@utils.tableText value=(item.projectExpectedStudyInfo.MELIAPublications)!"" /]
+              </td>
+              [/#if]
               [#if !expandedTable]
               <td class="text-center">
                 [#local isChecked = ((!reportSynthesis.reportSynthesisMelia.studiesIds?seq_contains(item.id))!true) /]
