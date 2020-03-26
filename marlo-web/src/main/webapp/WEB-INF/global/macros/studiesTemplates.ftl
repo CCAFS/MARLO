@@ -474,7 +474,7 @@
       </div>
       
       <div class="form-group stageProcessOne">
-        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.MELIAPublications" i18nkey="study.MELIAPublications"  placeholder="" help="study.MELIAPublications.help" helpIcon=false className="" required=editable && !(isPolicy && stageProcessOne) editable=editable /]
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.MELIAPublications" i18nkey="study.MELIAPublications"  placeholder="" help="study.MELIAPublications.help" helpIcon=false className="" required=false editable=editable /]
       </div>
       [/#if]
       
