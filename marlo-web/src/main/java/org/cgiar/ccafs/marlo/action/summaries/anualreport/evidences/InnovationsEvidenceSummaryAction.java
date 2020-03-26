@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
@@ -118,7 +119,7 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
     masterReport.getParameterValues().put("i8nColumnD", this.getText("projectInnovations.narrative.readText"));
     masterReport.getParameterValues().put("i8nColumnE", this.getText("projectInnovations.stage"));
     masterReport.getParameterValues().put("i8nColumnF", this.getText("projectInnovations.innovationType"));
-    masterReport.getParameterValues().put("i8nColumnG", this.getText("projectInnovations.contributionOfCrp"));
+    masterReport.getParameterValues().put("i8nColumnG", this.getText("projectInnovations.hasMilestones"));
     masterReport.getParameterValues().put("i8nColumnH", this.getText("projectInnovations.table.milestones"));
     masterReport.getParameterValues().put("i8nColumnI", this.getText("projectInnovations.geographicScope"));
     masterReport.getParameterValues().put("i8nColumnJ", this.getText("projectInnovations.region"));
@@ -134,6 +135,7 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
     masterReport.getParameterValues().put("i8nColumnT", this.getText("projectInnovations.table.include"));
     masterReport.getParameterValues().put("i8nColumnU", this.getText("projectInnovations.table.subIdos"));
     masterReport.getParameterValues().put("i8nColumnV", this.getText("projectInnovations.table.evidenceLink"));
+    masterReport.getParameterValues().put("i8nColumnW", this.getText("projectInnovations.table.centers"));
     masterReport.getParameterValues().put("i8nHeader", this.getText("projectInnovations.table.header"));
 
     return masterReport;
@@ -262,7 +264,7 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
      * paramD - description
      * paramE - stageInnovation
      * paramF - innovationType
-     * paramG - crpContribution
+     * paramG - HasMilestones
      * paramH - milestones
      * paramI - geographicScope
      * paramJ - regions
@@ -285,11 +287,11 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
     TypedTableModel model = new TypedTableModel(
       new String[] {"paramA", "paramB", "paramC", "paramD", "paramE", "paramF", "paramG", "paramH", "paramI", "paramJ",
         "paramK", "paramL", "paramM", "paramN", "paramO", "paramP", "paramQ", "paramR", "paramS", "paramT", "paramU",
-        "paramV", "innovationURL", "studyURL"},
+        "paramV", "paramW", "innovationURL", "studyURL"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class},
+        String.class, String.class},
       0);
 
     // Load the Innovations information
@@ -299,7 +301,7 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
       Long paramA = null, paramB = null;
       String paramC = "", paramD = "", paramE = "", paramF = "", paramG = "", paramH = "", paramI = "", paramJ = "",
         paramK = "", paramL = "", paramM = "", paramN = "", paramO = "", paramP = "", paramQ = "", paramR = "",
-        paramS = "", paramT = "", paramU = "", paramV = "", innovationURL = "", studyURL = "";
+        paramS = "", paramT = "", paramU = "", paramV = "", paramW = "", innovationURL = "", studyURL = "";
 
       // Condition to know if the project innovation have information in the selected phase
       if (innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase()) != null) {
@@ -348,6 +350,22 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
           paramF = "<Not Defined>";
         }
 
+        // has milestones
+        if (innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
+          .getHasMilestones() != null) {
+
+          if (innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
+            .getHasMilestones() == true) {
+            paramG = "Yes";
+          }
+          if (innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
+            .getHasMilestones() == false) {
+            paramG = "No";
+          }
+        } else {
+          paramG = "<Not Defined>";
+        }
+
         if (innovationEvidences.getProjectInnovation().getProjectInnovationMilestones() != null) {
           innovationEvidences.getProjectInnovation()
             .setMilestones(new ArrayList<>(innovationEvidences.getProjectInnovation().getProjectInnovationMilestones()
@@ -357,13 +375,11 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
         if (innovationEvidences.getProjectInnovation().getMilestones() != null) {
           for (ProjectInnovationMilestone milestone : innovationEvidences.getProjectInnovation().getMilestones()) {
             if (milestone.getCrpMilestone() != null && milestone.getCrpMilestone().getComposedName() != null) {
-              if (paramH.isEmpty()) {
-                paramH = milestone.getCrpMilestone().getComposedName();
-              } else {
-                paramH += ", " + milestone.getCrpMilestone().getComposedName();
-              }
+              paramH += milestone.getCrpMilestone().getComposedName() + "\n";
             }
           }
+        } else {
+          paramH = "<Not Defined>";
         }
 
         // Next Users
@@ -585,11 +601,7 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
               .filter(o -> o.getPhase().getId().equals(this.getSelectedPhase().getId())).collect(Collectors.toList()));
           if (subIdos != null && !subIdos.isEmpty()) {
             for (ProjectInnovationSubIdo subIdo : subIdos) {
-              if (paramU.isEmpty()) {
-                paramU = subIdo.getSrfSubIdo().getDescription();
-              } else {
-                paramU += " " + subIdo.getSrfSubIdo().getDescription();
-              }
+              paramU += subIdo.getSrfSubIdo().getDescription() + "\n";
             }
           } else {
             paramU = "<Not Defined>";
@@ -611,18 +623,34 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
           paramV = "<Not Defined>";
         }
 
+        // paramW - Innovation Centers
+        // Innovation Center list
+        if (innovationEvidences.getProjectInnovation().getProjectInnovationCenters() != null) {
+          innovationEvidences.getProjectInnovation()
+            .setCenters(new ArrayList<>(innovationEvidences.getProjectInnovation().getProjectInnovationCenters()
+              .stream().filter(c -> c.isActive() && c.getPhase().getId().equals(this.getSelectedPhase().getId()))
+              .collect(Collectors.toList())));
+        }
+        if (innovationEvidences.getProjectInnovation().getCenters() != null) {
+          for (ProjectInnovationCenter center : innovationEvidences.getProjectInnovation().getCenters()) {
+            if (center.getInstitution() != null && center.getInstitution().getComposedName() != null) {
+              paramW += center.getInstitution().getComposedName() + "\n";
+            }
+          }
+        } else {
+          paramW = "<Not Defined>";
+        }
+
         // Generate the innovation url of MARLO
         innovationURL = this.getBaseUrl() + "/projects/" + this.getCrpSession() + "/innovation.do?innovationID="
           + innovationEvidences.getProjectInnovation().getId().toString() + "&phaseID="
           + this.getSelectedPhase().getId().toString() + "&projectID="
           + innovationEvidences.getProjectInnovation().getProject().getId().toString();
-
-
       }
 
-      model.addRow(
-        new Object[] {paramA, paramB, paramC, paramD, paramE, paramF, paramG, paramH, paramI, paramJ, paramK, paramL,
-          paramM, paramN, paramO, paramP, paramQ, paramR, paramS, paramT, paramU, paramV, innovationURL, studyURL});
+      model.addRow(new Object[] {paramA, paramB, paramC, paramD, paramE, paramF, paramG, paramH, paramI, paramJ, paramK,
+        paramL, paramM, paramN, paramO, paramP, paramQ, paramR, paramS, paramT, paramU, paramV, paramW, innovationURL,
+        studyURL});
     }
     return model;
   }
