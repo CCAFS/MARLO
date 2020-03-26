@@ -27,14 +27,17 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationDeliverable;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationRegion;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSubIdo;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.URLShortener;
 
@@ -146,11 +149,17 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       this.getText("caseStudy.caseStudyTitle"));
     masterReport.getParameterValues().put("i8nInnovationRDescriptionStage",
       this.getText("projectInnovations.stageDescription.readText"));
+    masterReport.getParameterValues().put("i8nInnovationHasMilestones",
+      this.getText("projectInnovations.hasMilestones"));
+    masterReport.getParameterValues().put("i8nInnovationMilestones", this.getText("projectInnovations.milestones"));
+    masterReport.getParameterValues().put("i8nInnovationSubIdos", this.getText("projectInnovations.subIdos"));
 
     masterReport.getParameterValues().put("i8nInnovationLeadOrganization",
       this.getText("projectInnovations.leadOrganization"));
     masterReport.getParameterValues().put("i8nInnovationContributionOrganization",
       this.getText("projectInnovations.contributingOrganizations"));
+    masterReport.getParameterValues().put("i8nInnovationContributionCenters",
+      this.getText("projectInnovations.contributingCenters"));
     masterReport.getParameterValues().put("i8nInnovationAdaptativeResearch", "projectInnovations.adaptativeResearch");
     masterReport.getParameterValues().put("i8nInnovationREvidenceLink",
       this.getText("summaries.innovation.evidenceLink"));
@@ -312,11 +321,12 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         "innovationType", "contributionOfCrp", "degreeInnovation", "geographicScope", "region", "countries",
         "organizations", "projectExpectedStudy", "descriptionStage", "leadOrganization", "contributingOrganization",
         "adaptativeResearch", "evidenceLink", "deliverables", "crps", "genderFocusLevel", "genderExplaniation",
-        "youthFocusLevel", "youthExplaniation", "project", "oicr"},
+        "youthFocusLevel", "youthExplaniation", "project", "oicr", "centers", "hasMilestones", "Milestones", "subIdos"},
       new Class[] {Long.class, Boolean.class, Boolean.class, Boolean.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class},
       0);
     Long id = null;
     String title = null, narrative = null, phaseResearch = null, stageInnovation = null, innovationType = null,
@@ -324,7 +334,8 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       organizations = null, projectExpectedStudy = null, descriptionStage = null, leadOrganization = null,
       contributingOrganization = null, adaptativeResearch = null, evidenceLink = null, links = null,
       deliverables = null, crps = null, genderFocusLevel = null, genderExplaniation = null, youthFocusLevel = null,
-      youthExplaniation = null, project = null, oicr = "";
+      youthExplaniation = null, project = null, oicr = "", centers = "", hasMilestones = "", milestones = "",
+      subIdos = "";
     Boolean isRegional = false, isNational = false, isStage4 = false;
     // Id
     id = projectInnovationID;
@@ -370,7 +381,6 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
           oicr = this.getBaseUrl() + "/projects/" + this.getLoggedCrp().getAcronym() + "/studySummary.do?studyID="
             + projectInnovationInfo.getProjectExpectedStudy().getId() + "&cycle=" + this.getSelectedCycle() + "&year="
             + this.getSelectedPhase().getYear();
-          System.out.println(oicr);
         }
       }
     }
@@ -381,6 +391,56 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     // Degree
     if (projectInnovationInfo.getRepIndDegreeInnovation() != null) {
       degreeInnovation = projectInnovationInfo.getRepIndDegreeInnovation().getName();
+    }
+
+    // Has milestones
+    if (projectInnovationInfo.getHasMilestones() != null) {
+
+      if (projectInnovationInfo.getHasMilestones() == true) {
+        hasMilestones = "Yes";
+      }
+      if (projectInnovationInfo.getHasMilestones() == false) {
+        hasMilestones = "No";
+      }
+    } else {
+      hasMilestones = "<Not Defined>";
+    }
+
+    // Milestones
+    if (projectInnovationInfo.getProjectInnovation().getProjectInnovationMilestones() != null) {
+      projectInnovationInfo.getProjectInnovation().setMilestones(
+        new ArrayList<>(projectInnovationInfo.getProjectInnovation().getProjectInnovationMilestones().stream()
+          .filter(o -> o.getPhase().getId().equals(this.getSelectedPhase().getId())).collect(Collectors.toList())));
+    }
+    if (projectInnovationInfo.getProjectInnovation().getMilestones() != null) {
+      Set<String> milestonesSet = new HashSet<>();
+      for (ProjectInnovationMilestone milestone : projectInnovationInfo.getProjectInnovation().getMilestones()) {
+        if (milestone.getCrpMilestone() != null && milestone.getCrpMilestone().getComposedName() != null) {
+          milestonesSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + milestone.getCrpMilestone().getComposedName());
+        }
+      }
+      milestones = String.join("", milestonesSet);
+    } else {
+      milestones = "<Not Defined>";
+    }
+
+    // Sub Idos
+    if (projectInnovationInfo.getProjectInnovation().getProjectInnovationSubIdos() != null) {
+      List<ProjectInnovationSubIdo> subIdosList =
+        new ArrayList<>(projectInnovationInfo.getProjectInnovation().getProjectInnovationSubIdos().stream()
+          .filter(o -> o.getPhase().getId().equals(this.getSelectedPhase().getId())).collect(Collectors.toList()));
+      if (subIdosList != null && !subIdos.isEmpty()) {
+        Set<String> subIdosSet = new HashSet<>();
+        for (ProjectInnovationSubIdo subIdo : subIdosList) {
+          subIdosSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + subIdo.getSrfSubIdo().getDescription());
+        }
+        subIdos = String.join("", subIdosSet);
+
+      } else {
+        subIdos = "<Not Defined>";
+      }
+    } else {
+      subIdos = "<Not Defined>";
     }
 
     // Geographic Scope
@@ -525,6 +585,23 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       deliverables = String.join("", deliverablesSet);
     }
 
+    if (projectInnovationInfo.getProjectInnovation().getProjectInnovationCenters() != null) {
+      projectInnovationInfo.getProjectInnovation()
+        .setCenters(new ArrayList<>(projectInnovationInfo.getProjectInnovation().getProjectInnovationCenters().stream()
+          .filter(c -> c.isActive() && c.getPhase().getId().equals(this.getSelectedPhase().getId()))
+          .collect(Collectors.toList())));
+    }
+    if (projectInnovationInfo.getProjectInnovation().getCenters() != null) {
+      Set<String> centerSet = new HashSet<>();
+
+      for (ProjectInnovationCenter center : projectInnovationInfo.getProjectInnovation().getCenters()) {
+        if (center.getInstitution() != null && center.getInstitution().getComposedName() != null) {
+          centerSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + center.getInstitution().getComposedName());
+        }
+      }
+      centers = String.join("", centerSet);
+    }
+
     // Contributions CRPS/Platforms
     List<ProjectInnovationCrp> projectInnovationCrps =
       projectInnovationInfo.getProjectInnovation().getProjectInnovationCrps().stream()
@@ -564,7 +641,8 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     model.addRow(new Object[] {id, isRegional, isNational, isStage4, title, narrative, stageInnovation, innovationType,
       contributionOfCrp, degreeInnovation, geographicScope, region, countries, organizations, projectExpectedStudy,
       descriptionStage, leadOrganization, contributingOrganization, adaptativeResearch, evidenceLink, deliverables,
-      crps, genderFocusLevel, genderExplaniation, youthFocusLevel, youthExplaniation, project, oicr});
+      crps, genderFocusLevel, genderExplaniation, youthFocusLevel, youthExplaniation, project, oicr, centers,
+      hasMilestones, milestones, subIdos});
     return model;
   }
 
