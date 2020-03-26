@@ -19,14 +19,16 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectInfoDTO;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 
 @Mapper(componentModel = "jsr330")
-public interface ProjecInfotMapper {
+public interface ProjecInfoMapper {
 
-
+  @Mappings({@Mapping(source = "dimension", target = "genderAnalysis")})
   public abstract ProjectInfoDTO projectInfoToProjectInfoDTO(ProjectInfo projectInfo);
 }
