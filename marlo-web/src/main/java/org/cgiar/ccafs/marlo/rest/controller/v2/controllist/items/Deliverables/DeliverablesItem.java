@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableUserManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.MetadataElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
@@ -51,12 +52,19 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import com.ibm.icu.util.Calendar;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @Named
 public class DeliverablesItem<T> {
@@ -75,7 +83,6 @@ public class DeliverablesItem<T> {
 
   private DeliverablesMapper deliverablesMapper;
   private PublicationsMapper publicationsMapper;
-
 
   @Inject
   public DeliverablesItem(PhaseManager phaseManager, GlobalUnitManager globalUnitManager,
@@ -283,28 +290,188 @@ public class DeliverablesItem<T> {
     return deliverablesID;
   }
 
+  public ResponseEntity<PublicationDTO> deleteDeliverableById(Long id, String CGIARentityAcronym, Integer repoYear,
+    String repoPhase, User user) {
+    Publication publication = null;
+    Deliverable deliverable = null;
+
+    List<FieldErrorDTO> fieldErrors = new ArrayList<>();
+
+    String strippedEntityAcronym = StringUtils.stripToNull(CGIARentityAcronym);
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(strippedEntityAcronym);
+    if (globalUnitEntity == null) {
+      fieldErrors.add(new FieldErrorDTO("deleteDeliverableById", "GlobalUnitEntity",
+        CGIARentityAcronym + " is not a valid CGIAR entity acronym"));
+    } else {
+      if (!globalUnitEntity.isActive()) {
+        fieldErrors.add(new FieldErrorDTO("deleteDeliverableById", "GlobalUnitEntity",
+          "The Global Unit with acronym " + CGIARentityAcronym + " is not active."));
+      }
+
+    }
+
+    Set<CrpUser> lstUser = user.getCrpUsers();
+    if (!lstUser.stream()
+      .anyMatch(crp -> StringUtils.equalsIgnoreCase(crp.getCrp().getAcronym(), strippedEntityAcronym))) {
+      fieldErrors.add(new FieldErrorDTO("deleteDeliverableById", "GlobalUnitEntity", "CGIAR entity not autorized"));
+    }
+
+    String strippedRepoPhase = StringUtils.stripToNull(repoPhase);
+    Phase phase = this.phaseManager.findAll().stream()
+      .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), strippedEntityAcronym)
+        && p.getYear() == repoYear && StringUtils.equalsIgnoreCase(p.getName(), strippedRepoPhase) && p.isActive())
+      .findFirst().orElse(null);
+    if (phase == null) {
+      fieldErrors
+        .add(new FieldErrorDTO("deleteDeliverableById", "phase", repoPhase + ' ' + repoYear + " is an invalid phase"));
+    } else {
+      if (!StringUtils.equalsIgnoreCase(phase.getCrp().getAcronym(), strippedEntityAcronym)) {
+        fieldErrors.add(new FieldErrorDTO("deleteDeliverableById", "FlagshipEntity",
+          "The CRP Program SMO Code entered does not correspond to the GlobalUnit with acronym " + CGIARentityAcronym));
+      }
+    }
+
+    if (fieldErrors.isEmpty()) {
+      deliverable = deliverableManager.getDeliverableById(id);
+      if (deliverable != null && deliverable.isActive() == true) {
+        if (deliverable.getPhase() != null) {
+          if (deliverable.getPhase().getId() == phase.getId()) {
+            // only soft delete if deliverable is a publication
+            if (deliverable.getProject() == null) {
+              deliverableManager.deleteDeliverable(deliverable.getId());
+              List<DeliverableMetadataElement> phaseMetadata = deliverable.getMetadataElements(phase);
+              Map<String, DeliverableMetadataElement> metadataElements = this.getMetadataElements(phaseMetadata);
+              publication = this.publicationsMapper.deliverableToPublication(deliverable, phase, metadataElements);
+            }
+          } else {
+            fieldErrors.add(new FieldErrorDTO("deleteDeliverableById", "DeliverableEntity",
+              "The Deliverable with id " + id + " do not correspond to the phase entered"));
+          }
+        } else {
+          fieldErrors.add(
+            new FieldErrorDTO("deleteDeliverableById", "PhaseEntity", "There is no Phase assosiated to this entity!"));
+        }
+      } else {
+        fieldErrors.add(new FieldErrorDTO("deleteDeliverableById", "DeliverableEntity",
+          id + " is an invalid Report Synthesis Srf Progress Target Code"));
+      }
+    }
+
+    if (!fieldErrors.isEmpty()) {
+      fieldErrors.forEach(e -> System.out.println(e.getMessage()));
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
+    }
+
+    return Optional.ofNullable(publication).map(this.publicationsMapper::publicationToPublicationDTO)
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
+
+  /**
+   * Find a Deliverable by Id and year
+   * 
+   * @param id
+   * @param year
+   * @param phase
+   * @return a PublicationDTO with the Deliverable Item
+   */
+  public ResponseEntity<PublicationDTO> findDeliverableById(Long idDeliverable, String CGIARentityAcronym,
+    Integer repoYear, String repoPhase, User user) {
+    // TODO: Include all security validations
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+    Publication publication = null;
+    Deliverable deliverable = null;
+    DeliverableInfo deliverableInfo = null;
+
+    String strippedEntityAcronym = StringUtils.stripToNull(CGIARentityAcronym);
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(strippedEntityAcronym);
+    if (globalUnitEntity == null) {
+      fieldErrors.add(new FieldErrorDTO("findDeliverableById", "GlobalUnitEntity",
+        CGIARentityAcronym + " is not a valid CGIAR entity acronym"));
+    } else {
+      if (!globalUnitEntity.isActive()) {
+        fieldErrors.add(new FieldErrorDTO("findDeliverableById", "GlobalUnitEntity",
+          "The Global Unit with acronym " + CGIARentityAcronym + " is not active."));
+      }
+    }
+
+    String strippedRepoPhase = StringUtils.stripToNull(repoPhase);
+    Phase phase = this.phaseManager.findAll().stream()
+      .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), strippedEntityAcronym)
+        && p.getYear() == repoYear && StringUtils.equalsIgnoreCase(p.getName(), strippedRepoPhase))
+      .findFirst().orElse(null);
+    if (phase == null) {
+      fieldErrors
+        .add(new FieldErrorDTO("findDeliverableById", "phase", repoPhase + ' ' + repoYear + " is an invalid phase"));
+    }
+
+    deliverable = deliverableManager.getDeliverableById(idDeliverable);
+    if (deliverable == null || !deliverable.isActive()) {
+      fieldErrors.add(new FieldErrorDTO("findDeliverableById", "DeliverableEntity",
+        idDeliverable + " is an invalid id of a Deliverable"));
+    } else {
+      if (phase != null) {
+        deliverableInfo = deliverable.getDeliverableInfo(phase);
+        if (deliverableInfo == null) {
+          fieldErrors.add(new FieldErrorDTO("findDeliverableById", "DeliverableEntity",
+            "The Deliverable with id " + idDeliverable + " do not correspond to the phase entered"));
+        } else {
+          if (globalUnitEntity != null && deliverableInfo.getPhase().getCrp().getId() != globalUnitEntity.getId()) {
+            fieldErrors.add(new FieldErrorDTO("findDeliverableById", "DeliverableEntity",
+              "The Deliverable with id " + idDeliverable + " do not correspond to the CRP entered"));
+          }
+        }
+      }
+    }
+
+    if (fieldErrors.isEmpty()) {
+      // if it does not have a project associated, it must be a publication
+      if (deliverable.getProject() == null) {
+        List<DeliverableMetadataElement> phaseMetadata = deliverable.getMetadataElements(phase);
+        Map<String, DeliverableMetadataElement> metadataElements = this.getMetadataElements(phaseMetadata);
+        publication = publicationsMapper.deliverableToPublication(deliverable, phase, metadataElements);
+      }
+    }
+
+    // Validate all fields
+    if (!fieldErrors.isEmpty()) {
+      // fieldErrors.forEach(e -> System.out.println(e.getMessage()));
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
+    }
+
+    return Optional.ofNullable(publication).map(this.publicationsMapper::publicationToPublicationDTO)
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
+
   public List<PublicationDTO> getAllDeliverables(String entityAcronym, int repoyear, String repoPhase, User user) {
     List<PublicationDTO> deliverablesListDTO = new ArrayList<PublicationDTO>();
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
     if (globalUnitEntity == null) {
       fieldErrors.add(new FieldErrorDTO("createDeliverable", "GlobalUnitEntity",
         entityAcronym + " is an invalid CGIAR entity acronym"));
     }
+
     Phase phase =
       this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(entityAcronym)
         && c.getYear() == repoyear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().get();
-
     if (phase == null) {
       fieldErrors.add(new FieldErrorDTO("createDeliverable", "phase", repoyear + " is an invalid year"));
     }
+
     if (fieldErrors.size() == 0 || fieldErrors.isEmpty()) {
       try {
-
         List<Publication> fullPublicationsList = new ArrayList<Publication>();
 
         List<Deliverable> deliverableList = deliverableManager.getPublicationsByPhase(phase.getId());
         for (Deliverable deliverable : deliverableList) {
+          // if there is no project associated to the deliverable it means it is a prp
           if (deliverable.getProject() == null) {
             Publication publication = new Publication();
             publication.setId(deliverable.getId());
@@ -417,6 +584,226 @@ public class DeliverablesItem<T> {
       }
     }
     return deliverablesListDTO;
+  }
+
+  private Map<String, DeliverableMetadataElement>
+    getMetadataElements(List<DeliverableMetadataElement> deliverableMetadataElements) {
+    Map<String, DeliverableMetadataElement> map = new TreeMap<>(Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
+
+    if (deliverableMetadataElements != null && !deliverableMetadataElements.isEmpty()) {
+      for (DeliverableMetadataElement deliverableMetadataElement : deliverableMetadataElements) {
+        map.put(deliverableMetadataElement.getMetadataElement().getEcondedName(), deliverableMetadataElement);
+      }
+    }
+
+    return map;
+  }
+
+  public Long putDeliverableById(Long idDeliverable, NewPublicationDTO newPublicationDTO, String CGIARentityAcronym,
+    User user) {
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    DeliverableInfo deliverableInfo = null;
+    Long idDeliverableDB = null;
+    Phase phase = null;
+
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+
+    String strippedEntityAcronym = StringUtils.stripToNull(CGIARentityAcronym);
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(strippedEntityAcronym);
+    if (globalUnitEntity == null) {
+      fieldErrors.add(new FieldErrorDTO("putDeliverable", "GlobalUnitEntity",
+        CGIARentityAcronym + " is not a valid CGIAR entity acronym"));
+    } else {
+      if (!globalUnitEntity.isActive()) {
+        fieldErrors.add(new FieldErrorDTO("putDeliverable", "GlobalUnitEntity",
+          "The Global Unit with acronym " + CGIARentityAcronym + " is not active."));
+      }
+    }
+
+    Set<CrpUser> lstUser = user.getCrpUsers();
+    if (!lstUser.stream()
+      .anyMatch(crp -> StringUtils.equalsIgnoreCase(crp.getCrp().getAcronym(), strippedEntityAcronym))) {
+      fieldErrors.add(new FieldErrorDTO("putDeliverable", "GlobalUnitEntity", "CGIAR entity not autorized"));
+    }
+
+    if (newPublicationDTO.getPhase() == null) {
+      fieldErrors.add(new FieldErrorDTO("putDeliverable", "PhaseEntity", "Phase must not be null"));
+    } else {
+      String strippedPhaseName = StringUtils.stripToNull(newPublicationDTO.getPhase().getName());
+      if (strippedPhaseName == null || newPublicationDTO.getPhase().getYear() == null
+      // DANGER! Magic number ahead
+        || newPublicationDTO.getPhase().getYear() < 2015) {
+        fieldErrors.add(new FieldErrorDTO("putDeliverable", "PhaseEntity", "Phase is invalid"));
+      } else {
+        phase = phaseManager.findAll().stream()
+          .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), strippedEntityAcronym)
+            && p.getYear() == newPublicationDTO.getPhase().getYear()
+            && StringUtils.equalsIgnoreCase(p.getName(), strippedPhaseName))
+          .findFirst().orElse(null);
+
+        if (phase == null) {
+          fieldErrors.add(new FieldErrorDTO("putDeliverable", "phase", newPublicationDTO.getPhase().getName() + ' '
+            + newPublicationDTO.getPhase().getYear() + " is an invalid phase"));
+        }
+      }
+    }
+
+    Deliverable deliverable = deliverableManager.getDeliverableById(idDeliverable);
+    if (deliverable == null || deliverable.isActive() == false) {
+      fieldErrors.add(new FieldErrorDTO("findDeliverableById", "DeliverableEntity",
+        idDeliverable + " is an invalid id of a Deliverable"));
+    } else {
+      if (phase != null) {
+        deliverableInfo = deliverable.getDeliverableInfo(phase);
+        if (deliverableInfo == null) {
+          fieldErrors.add(new FieldErrorDTO("findDeliverableById", "DeliverableEntity",
+            "The Deliverable with id " + idDeliverable + " do not correspond to the phase entered"));
+        } else {
+          if (globalUnitEntity != null && deliverableInfo.getPhase().getCrp().getId() != globalUnitEntity.getId()) {
+            fieldErrors.add(new FieldErrorDTO("findDeliverableById", "DeliverableEntity",
+              "The Deliverable with id " + idDeliverable + " do not correspond to the CRP entered"));
+          }
+        }
+      }
+    }
+
+    if (fieldErrors.isEmpty()) {
+      // create deliverable
+      deliverable.setCrp(globalUnitEntity);
+      deliverable.setPhase(phase);
+      deliverable.setIsPublication(true);
+      // save deliverables
+      deliverable = deliverableManager.saveDeliverable(deliverable);
+      idDeliverableDB = deliverable.getId();
+
+      if (idDeliverableDB != null) {
+        DeliverableType deliverableType =
+          deliverableTypeManager.getDeliverableTypeById(APConstants.IMPORT_DELIVERABLE_VALUE);
+
+        // create deliverable info
+        deliverable = deliverableManager.getDeliverableById(idDeliverableDB);
+        deliverableInfo = deliverable.getDeliverableInfo();
+        deliverableInfo.setDeliverable(deliverable);
+        deliverableInfo.setTitle(newPublicationDTO.getTitle()); //
+        // this.deliverableinfo.setDescription(deliverable.getTitle());
+        deliverableInfo.setYear(deliverable.getPhase().getYear());
+        deliverableInfo.setDeliverableType(deliverableType);
+        deliverableInfo.setPhase(phase);
+        deliverableInfo.setStatus(APConstants.CLARISA_PUBLICATIONS_STATUS);
+        deliverableInfo.setModificationJustification(APConstants.MESSAGE_MODIFICATION_JUSTIFICATION
+          + sdf.format(new Date(Calendar.getInstance().getTimeInMillis())));
+        // save deliverableinfo
+        deliverableInfoManager.saveDeliverableInfo(deliverableInfo);
+
+        // create deliverable dissemination data ???
+        DeliverableDissemination deliverableDissemination = deliverable.getDissemination();
+        deliverableDissemination.setIsOpenAccess(newPublicationDTO.getIsOpenAccess());
+        deliverableDissemination.setDeliverable(deliverable);
+        deliverableDissemination.setPhase(phase);
+        deliverableDisseminationManager.saveDeliverableDissemination(deliverableDissemination);
+
+        // creatte deliverable publication metadata
+        DeliverablePublicationMetadata deliverablePublicationMetadata = deliverable.getPublication();
+        deliverablePublicationMetadata.setDeliverable(deliverable);
+        deliverablePublicationMetadata.setIssue(newPublicationDTO.getIssue());
+        deliverablePublicationMetadata.setJournal(newPublicationDTO.getJournal());
+        deliverablePublicationMetadata.setPages(newPublicationDTO.getNpages());
+        deliverablePublicationMetadata.setVolume(newPublicationDTO.getVolume());
+        deliverablePublicationMetadata.setIsiPublication(newPublicationDTO.isISIJournal());
+        deliverablePublicationMetadata.setPhase(phase);
+        deliverablePubMetadataManager.saveDeliverablePublicationMetadata(deliverablePublicationMetadata);
+
+        // get element ID from econded_name to get Handle and DOI and create
+        Long phaseId = phase.getId();
+        List<DeliverableMetadataElement> phaseMetadata = deliverable.getMetadataElements().stream()
+          .filter(m -> m.getPhase().getId() == phaseId).collect(Collectors.toList());
+        Map<String, DeliverableMetadataElement> metadataElements = this.getMetadataElements(phaseMetadata);
+        if (metadataElements != null && !metadataElements.isEmpty()) {
+          // deliverable metadataelement handle
+          DeliverableMetadataElement deliverableMetadataElementHandle =
+            metadataElements.get(APConstants.METADATAELEMENTHANDLE);
+          deliverableMetadataElementHandle.setDeliverable(deliverable);
+          deliverableMetadataElementHandle.setPhase(phase);
+          deliverableMetadataElementHandle.setElementValue(newPublicationDTO.getHandle());
+          deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementHandle);
+
+          // deliverable metadataelement DOI
+          DeliverableMetadataElement deliverableMetadataElementDoi =
+            metadataElements.get(APConstants.METADATAELEMENTDOI);
+          deliverableMetadataElementDoi.setDeliverable(deliverable);
+          deliverableMetadataElementDoi.setPhase(phase);
+          deliverableMetadataElementDoi.setElementValue(newPublicationDTO.getDoi());
+          deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementDoi);
+
+          // deliverable metadataelement Title
+          DeliverableMetadataElement deliverableMetadataElementTitle =
+            metadataElements.get(APConstants.METADATAELEMENTTITLE);
+          deliverableMetadataElementTitle.setDeliverable(deliverable);
+          deliverableMetadataElementTitle.setPhase(phase);
+          deliverableMetadataElementTitle.setElementValue(newPublicationDTO.getTitle());
+          deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementTitle);
+
+          // deliverable metadataelement Citation
+          DeliverableMetadataElement deliverableMetadataElementCitation =
+            metadataElements.get(APConstants.METADATAELEMENTCITATION);
+          deliverableMetadataElementCitation.setDeliverable(deliverable);
+          deliverableMetadataElementCitation.setPhase(phase);
+          StringBuilder elementCitation = new StringBuilder();
+          for (DeliverableUserDTO author : newPublicationDTO.getAuthorList()) {
+            elementCitation.append(elementCitation.length() > 0 ? ',' : "").append(author.getLastName()).append(' ')
+              .append(author.getFirstName());
+          }
+
+          deliverableMetadataElementCitation.setElementValue(elementCitation.append(',')
+            .append(newPublicationDTO.getYear()).append(',').append(newPublicationDTO.getTitle()).append(',')
+            .append(newPublicationDTO.getJournal()).append(',').append(newPublicationDTO.getVolume()).append(',')
+            .append(newPublicationDTO.getIssue()).append(',').append(newPublicationDTO.getNpages()).toString());
+          deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementCitation);
+
+          // deliverable metadataelement Publication
+          DeliverableMetadataElement deliverableMetadataElementPublication =
+            metadataElements.get(APConstants.METADATAELEMENTPUBLICATION);
+          deliverableMetadataElementPublication.setDeliverable(deliverable);
+          deliverableMetadataElementPublication.setPhase(phase);
+          deliverableMetadataElementPublication.setElementValue(String.valueOf(newPublicationDTO.getYear()));
+          deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementPublication);
+
+          // changes for authors 2019-09-03 apply to a field to include all authors in a single row
+          // setdeliverables author
+          DeliverableMetadataElement deliverableMetadataElementAuthors =
+            metadataElements.get(APConstants.METADATAELEMENTAUTHORS);
+          deliverableMetadataElementAuthors.setDeliverable(deliverable);
+          deliverableMetadataElementAuthors.setPhase(phase);
+          deliverableMetadataElementAuthors.setElementValue(String.valueOf(newPublicationDTO.getAuthors()));
+          deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementAuthors);
+        }
+
+        for (DeliverableUserDTO deliverableUserDTO : newPublicationDTO.getAuthorList()) {
+          DeliverableUser deliverableUser = new DeliverableUser();
+          deliverableUser.setFirstName(deliverableUserDTO.getFirstName());
+          deliverableUser.setLastName(deliverableUserDTO.getLastName());
+          deliverableUser.setDeliverable(deliverable);
+          deliverableUser.setPhase(phase);
+          deliverableUserManager.saveDeliverableUser(deliverableUser);
+        }
+      } else {
+        fieldErrors.add(new FieldErrorDTO("putDeliverable", "phase", "Error while creating a publication "));
+        throw new MARLOFieldValidationException("Field Validation errors", "",
+          fieldErrors.stream()
+            .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+            .collect(Collectors.toList()));
+      }
+
+
+    } else {
+      // validators
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
+    }
+
+    return idDeliverableDB;
   }
 
 }
