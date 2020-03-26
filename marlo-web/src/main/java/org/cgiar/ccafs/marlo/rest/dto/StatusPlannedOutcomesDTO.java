@@ -32,7 +32,7 @@ public class StatusPlannedOutcomesDTO {
   private OutcomeDTO outcome;
 
   @ApiModelProperty(notes = "Outcome Sumary", position = 3)
-  private String sumary;
+  private String summary;
 
   @ApiModelProperty(notes = "Milestones Status", position = 4)
   private List<StatusPlannedMilestonesDTO> milestones;
@@ -56,8 +56,8 @@ public class StatusPlannedOutcomesDTO {
   }
 
 
-  public String getSumary() {
-    return sumary;
+  public String getSummary() {
+    return summary;
   }
 
 
@@ -76,8 +76,8 @@ public class StatusPlannedOutcomesDTO {
   }
 
 
-  public void setSumary(String sumary) {
-    this.sumary = sumary;
+  public void setSummary(String sumary) {
+    this.summary = sumary;
   }
 
 }
