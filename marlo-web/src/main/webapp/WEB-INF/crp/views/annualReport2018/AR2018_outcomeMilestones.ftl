@@ -50,7 +50,7 @@
           [#-- Title --]
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
           <div class="">
-          
+
             [#-- Table 5: Status of Planned Outcomes and Milestones --]
             <div class="form-group">
               [#if PMU]
@@ -136,6 +136,7 @@
           <th rowspan="2"> Status</th>
           [#if !allowPopups]
           <th rowspan="2">Milestone Evidence</th>
+          <th rowspan="2">Link to Evidences</th>
           <th colspan="${cgiarCrossCuttingMarkers?size}" class="text-center">Cross-Cutting Markers</th>
           [/#if]
         </tr>
@@ -210,6 +211,8 @@
                 [#if !allowPopups]
                   [#-- Milestone Evidence --]
                   <td class="urlify">[@utils.tableText value=(reportedMilestone.evidence)!"" emptyText="global.prefilledByFlagship" /] </td>
+                  [#-- Link to Evidences --]
+                  <td class="urlify">[@utils.tableText value=(reportedMilestone.evidenceLink)!"" emptyText="global.prefilledByFlagship" /] </td>
                   [#-- Cross Cutting markers --]
                   [#list cgiarCrossCuttingMarkers as marker]
                     [#local reportedCrossCuting =  (action.getCrossCuttingMarker( ((reportedMilestone.id)!-1), marker.id ))! ]
@@ -408,6 +411,11 @@
     [#-- Evidence for completed milestones or explanation for extended or cancelled --]
     <div class="form-group">
       [@customForm.textArea name="${customName}.evidence" value="${(annualReportElement.evidence)!}" i18nkey="${customLabel}.milestoneEvidence" help="${customLabel}.milestoneEvidence.help" helpIcon=false display=true required=false className="limitWords-50" editable=editable allowTextEditor=true /]
+    </div>
+    
+    [#-- Links to evidence --]
+    <div class="form-group">
+      [@customForm.textArea name="${customName}.evidenceLink" value="${(annualReportElement.evidenceLink)!}" i18nkey="${customLabel}.milestoneEvidenceLink" help="${customLabel}.milestoneEvidenceLink.help" helpIcon=false display=true required=false editable=editable allowTextEditor=true /]
     </div>
       
     <div class="form-group milestonesEvidence" style="width: 100%; display:${((milestoneStatus == 4) || (milestoneStatus == 5) || (milestoneStatus == 6))?string('block', 'none')}">
