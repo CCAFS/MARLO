@@ -150,6 +150,7 @@ public class POISummary {
 
 
   public void convertHTMLTags(XWPFDocument document, String text, XWPFTableCell cell) {
+
     List<Integer> startsPosList = new ArrayList<Integer>();
     List<Integer> finalPosList = new ArrayList<Integer>();
     List<String> tagsAddList = new ArrayList<String>();
@@ -1986,7 +1987,9 @@ public class POISummary {
         } else {
 
           if (poiParameter.isHtml()) {
-            this.convertHTMLTags(null, poiParameter.getText(), dataRow.getCell(record));
+            if (poiParameter.getText() != null) {
+              this.convertHTMLTags(null, poiParameter.getText(), dataRow.getCell(record));
+            }
           } else {
             XWPFRun paragraphRun = paragraph.createRun();
             this.addParagraphTextBreak(paragraphRun, poiParameter.getText());
