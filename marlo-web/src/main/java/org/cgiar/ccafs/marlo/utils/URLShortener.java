@@ -182,6 +182,7 @@ public class URLShortener {
   public String getShortUrlService(String link) {
     String output = null;
     String shortUrl = null;
+    link = link.trim();
 
     if (link.length() > 93) {
 

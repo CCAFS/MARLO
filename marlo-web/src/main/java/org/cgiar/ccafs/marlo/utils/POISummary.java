@@ -150,6 +150,7 @@ public class POISummary {
 
 
   public void convertHTMLTags(XWPFDocument document, String text, XWPFTableCell cell) {
+
     List<Integer> startsPosList = new ArrayList<Integer>();
     List<Integer> finalPosList = new ArrayList<Integer>();
     List<String> tagsAddList = new ArrayList<String>();
@@ -179,7 +180,9 @@ public class POISummary {
     text = text.replaceAll("&nbsp;", " ");
     text = text.replaceAll("<span style=\"color: rgb(130, 130, 130); font-size: 0.98em;\">", "");
     text = text.replaceAll("<span style=\"color: rgb(130, 130, 130); font-size: 0.98em;", "");
+    text = text.replaceAll("<span style=\"color: rgb(130, 130, 130); font-size: 0.98em;\">", "");
     text = text.replaceAll("style=\"font-size: 0.98em; background-color: rgb(255, 255, 255)", "");
+    text = text.replaceAll("style=\"font-size: 0.98em; background-color: rgb(255, 255, 255);", "");
     text = text.replaceAll("</span>", "");
     text = text.replaceAll("title=\"\"", "");
     text = text.replaceAll("style=\"font-size: 0.98em;\"", "");
@@ -1984,7 +1987,9 @@ public class POISummary {
         } else {
 
           if (poiParameter.isHtml()) {
-            this.convertHTMLTags(null, poiParameter.getText(), dataRow.getCell(record));
+            if (poiParameter.getText() != null) {
+              this.convertHTMLTags(null, poiParameter.getText(), dataRow.getCell(record));
+            }
           } else {
             XWPFRun paragraphRun = paragraph.createRun();
             this.addParagraphTextBreak(paragraphRun, poiParameter.getText());
