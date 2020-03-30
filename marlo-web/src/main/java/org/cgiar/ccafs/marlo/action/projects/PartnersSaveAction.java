@@ -133,17 +133,6 @@ public class PartnersSaveAction extends BaseAction {
     this.reportSynthesisManager = reportSynthesisManager;
   }
 
-  public void addARSynthesisMessage(StringBuilder message, PartnerRequest partnerRequest,
-    PartnerRequest partnerRequestModifications) {
-    System.out.println(synthesisID);
-    ReportSynthesis reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
-    String sourceMessage = "" + context + " ReportSynthesis: (" + synthesisID + ") - "
-      + reportSynthesis.getLiaisonInstitution().getComposedName();
-    message.append(sourceMessage);
-    partnerRequest.setRequestSource(sourceMessage);
-    partnerRequestModifications.setRequestSource(sourceMessage);
-  }
-
   public void addCapDevMessage(StringBuilder message, PartnerRequest partnerRequest,
     PartnerRequest partnerRequestModifications) {
     CapacityDevelopment capacityDevelopment = capacityDevelopmentManager.getCapacityDevelopmentById(capdevID);
@@ -152,7 +141,6 @@ public class PartnersSaveAction extends BaseAction {
     partnerRequest.setRequestSource(sourceMessage);
     partnerRequestModifications.setRequestSource(sourceMessage);
   }
-
 
   public void addFunginMessage(StringBuilder message, PartnerRequest partnerRequest,
     PartnerRequest partnerRequestModifications) {
@@ -163,6 +151,7 @@ public class PartnersSaveAction extends BaseAction {
     partnerRequest.setRequestSource(sourceMessage);
     partnerRequestModifications.setRequestSource(sourceMessage);
   }
+
 
   public void addPowbSynthesisMessage(StringBuilder message, PartnerRequest partnerRequest,
     PartnerRequest partnerRequestModifications) {
@@ -179,6 +168,17 @@ public class PartnersSaveAction extends BaseAction {
     PartnerRequest partnerRequestModifications) {
     ProjectInfo projectInfo = projectManager.getProjectById(projectID).getProjecInfoPhase(this.getActualPhase());
     String sourceMessage = "" + context + " Project: (" + projectID + ") - " + projectInfo.getTitle();
+    message.append(sourceMessage);
+    partnerRequest.setRequestSource(sourceMessage);
+    partnerRequestModifications.setRequestSource(sourceMessage);
+  }
+
+  public void addReportSynthesisMessage(StringBuilder message, PartnerRequest partnerRequest,
+    PartnerRequest partnerRequestModifications) {
+    System.out.println(synthesisID);
+    ReportSynthesis reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
+    String sourceMessage = "" + context + " ReportSynthesis: (" + synthesisID + ") - "
+      + reportSynthesis.getLiaisonInstitution().getComposedName();
     message.append(sourceMessage);
     partnerRequest.setRequestSource(sourceMessage);
     partnerRequestModifications.setRequestSource(sourceMessage);
@@ -303,6 +303,15 @@ public class PartnersSaveAction extends BaseAction {
         this.getCurrentUser().getEmail(), powbSynthesisID);
     }
 
+    // Take the AR Synthesis id only the first time the page loads
+    if (this.getRequest().getParameter(APConstants.REPORT_SYNTHESIS_ID) != null
+      && Integer.parseInt(this.getRequest().getParameter(APConstants.REPORT_SYNTHESIS_ID)) != 0) {
+      synthesisID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.REPORT_SYNTHESIS_ID)));
+      pageRequestName = "reportSynthesis";
+      LOG.info("The user {} load the request partner section related to the reportSynthesis {}.",
+        this.getCurrentUser().getEmail(), synthesisID);
+    }
+
     this.countriesList = locationManager.findAll().stream()
       .filter(c -> c.isActive() && c.getLocElementType().getId().longValue() == 2).collect(Collectors.toList());
     this.institutionTypesList =
@@ -423,8 +432,8 @@ public class PartnersSaveAction extends BaseAction {
         this.addPowbSynthesisMessage(message, partnerRequest, partnerRequestModifications);
         break;
 
-      case "synthesisID":
-        this.addARSynthesisMessage(message, partnerRequest, partnerRequestModifications);
+      case "synthesis":
+        this.addReportSynthesisMessage(message, partnerRequest, partnerRequestModifications);
         break;
 
     }
