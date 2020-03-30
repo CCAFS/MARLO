@@ -187,6 +187,7 @@ public class POISummary {
     text = text.replaceAll("title=\"\"", "");
     text = text.replaceAll("style=\"font-size: 0.98em;\"", "");
     text = text.replaceAll(" style=\"font-size: 0.98em;\"", "");
+    text = text.replaceAll("\" \">", "");
 
     /*
      * recognize the tag as a line break
