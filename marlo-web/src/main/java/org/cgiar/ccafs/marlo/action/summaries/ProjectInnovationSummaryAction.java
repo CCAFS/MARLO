@@ -329,7 +329,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         "innovationType", "contributionOfCrp", "degreeInnovation", "geographicScope", "region", "countries",
         "organizations", "projectExpectedStudy", "descriptionStage", "leadOrganization", "contributingOrganization",
         "adaptativeResearch", "evidenceLink", "deliverables", "crps", "genderFocusLevel", "genderExplaniation",
-        "youthFocusLevel", "youthExplaniation", "project", "oicr", "centers", "hasMilestones", "Milestones", "subIdos"},
+        "youthFocusLevel", "youthExplaniation", "project", "oicr", "centers", "hasMilestones", "milestones", "subIdos"},
       new Class[] {Long.class, Boolean.class, Boolean.class, Boolean.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
@@ -342,8 +342,8 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       organizations = null, projectExpectedStudy = null, descriptionStage = null, leadOrganization = null,
       contributingOrganization = null, adaptativeResearch = null, evidenceLink = null, links = null,
       deliverables = null, crps = null, genderFocusLevel = null, genderExplaniation = null, youthFocusLevel = null,
-      youthExplaniation = null, project = null, oicr = "", centers = "", hasMilestones = "", milestones = "",
-      subIdos = "";
+      youthExplaniation = null, project = null, oicr = "", centers = "", hasMilestones = "", milestones = null,
+      subIdos = null;
     Boolean isRegional = false, isNational = false, isStage4 = false;
     // Id
     id = projectInnovationID;
@@ -434,23 +434,21 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
      * }
      */
 
+
+    // List<ProjectInnovationMilestone> projectInnovationMilestoneList = new ArrayList<>();
     List<ProjectInnovationMilestone> projectInnovationMilestoneList = new ArrayList<>();
     projectInnovationMilestoneList = projectInnovationMilestoneManager.findAll().stream()
       .filter(pi -> pi.getPhase().getId().equals(this.getSelectedPhase().getId())
         && pi.getProjectInnovation().getId().equals(projectInnovationInfo.getProjectInnovation().getId()))
       .collect(Collectors.toList());
 
-    if (projectInnovationMilestoneList != null) {
-      Set<String> milestonesSet = new HashSet<>();
-      for (ProjectInnovationMilestone milestone : projectInnovationMilestoneList) {
-        if (milestone.getCrpMilestone() != null && milestone.getCrpMilestone().getComposedName() != null) {
-          milestonesSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + milestone.getCrpMilestone().getComposedName());
-        }
+    Set<String> milestonesSet = new HashSet<>();
+    for (ProjectInnovationMilestone milestone : projectInnovationMilestoneList) {
+      if (milestone.getCrpMilestone() != null && milestone.getCrpMilestone().getTitle() != null) {
+        milestonesSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + milestone.getCrpMilestone().getTitle());
       }
-      milestones = String.join("", milestonesSet);
-    } else {
-      milestones = "<Not Defined>";
     }
+    milestones = String.join("", milestonesSet);
 
     // Sub Idos
 
@@ -464,7 +462,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
      * new ArrayList<>(projectInnovationInfo.getProjectInnovation().getProjectInnovationSubIdos().stream()
      * .filter(o -> o.getPhase().getId().equals(this.getSelectedPhase().getId())).collect(Collectors.toList()));
      */
-    if (subIdosList != null && !subIdos.isEmpty()) {
+    if (subIdosList != null) {
       Set<String> subIdosSet = new HashSet<>();
       for (ProjectInnovationSubIdo subIdo : subIdosList) {
         subIdosSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + subIdo.getSrfSubIdo().getDescription());

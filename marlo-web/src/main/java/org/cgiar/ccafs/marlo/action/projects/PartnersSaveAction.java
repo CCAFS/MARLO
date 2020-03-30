@@ -177,7 +177,7 @@ public class PartnersSaveAction extends BaseAction {
     PartnerRequest partnerRequestModifications) {
     System.out.println(synthesisID);
     ReportSynthesis reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
-    String sourceMessage = "" + context + " ReportSynthesis: (" + synthesisID + ") - "
+    String sourceMessage = "" + context + " Report Synthesis: (" + synthesisID + ") - "
       + reportSynthesis.getLiaisonInstitution().getComposedName();
     message.append(sourceMessage);
     partnerRequest.setRequestSource(sourceMessage);
@@ -410,7 +410,7 @@ public class PartnersSaveAction extends BaseAction {
     }
     message.append(" </br>");
 
-
+    System.out.println("pageRequestName" + synthesisID);
     switch (pageRequestName) {
       case "projects":
         this.addProjectMessage(message, partnerRequest, partnerRequestModifications);
@@ -432,7 +432,7 @@ public class PartnersSaveAction extends BaseAction {
         this.addPowbSynthesisMessage(message, partnerRequest, partnerRequestModifications);
         break;
 
-      case "synthesis":
+      case "reportSynthesis":
         this.addReportSynthesisMessage(message, partnerRequest, partnerRequestModifications);
         break;
 
