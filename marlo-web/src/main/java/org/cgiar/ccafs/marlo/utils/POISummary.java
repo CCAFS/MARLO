@@ -150,6 +150,9 @@ public class POISummary {
 
 
   public void convertHTMLTags(XWPFDocument document, String text, XWPFTableCell cell) {
+    if (text != null && text.isEmpty()) {
+      text = text.trim();
+    }
 
     List<Integer> startsPosList = new ArrayList<Integer>();
     List<Integer> finalPosList = new ArrayList<Integer>();
