@@ -522,7 +522,43 @@ public class StatusPlannedOutcomesItem<T> {
     }
 
     if (fieldErrors.isEmpty()) {
+      LiaisonInstitution liaisonInstitution = liaisonInstitutionManager
+        .findByAcronymAndCrp(crpProgramOutcome.getCrpProgram().getAcronym(), globalUnitEntity.getId());
+      ReportSynthesis reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
+      if (reportSynthesis != null) {
+        ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress =
+          reportSynthesisFlagshipProgressManager.getReportSynthesisFlagshipProgressById(reportSynthesis.getId());
+        if (reportSynthesisFlagshipProgress != null) {
+          reportSynthesisFlagshipProgressOutcome = reportSynthesisFlagshipProgressOutcomeManager
+            .getOutcomeId(reportSynthesisFlagshipProgress.getId(), crpProgramOutcome.getId());
+          // validate Synthesis FlagshipProgress Outcome
+          if (reportSynthesisFlagshipProgressOutcome != null) {
+            // setting milestones empty list
+            List<ReportSynthesisFlagshipProgressOutcomeMilestone> reportSynthesisFlagshipProgressOutcomeMilestoneList =
+              new ArrayList<ReportSynthesisFlagshipProgressOutcomeMilestone>();
 
+            for (ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone : reportSynthesisFlagshipProgressOutcome
+              .getReportSynthesisFlagshipProgressOutcomeMilestones().stream().filter(c -> c.isActive())
+              .collect(Collectors.toList())) {
+              List<ReportSynthesisFlagshipProgressCrossCuttingMarker> markersList =
+                new ArrayList<ReportSynthesisFlagshipProgressCrossCuttingMarker>();
+              reportSynthesisFlagshipProgressOutcomeMilestone = reportSynthesisFlagshipProgressOutcomeMilestoneManager
+                .getReportSynthesisFlagshipProgressOutcomeMilestoneById(
+                  reportSynthesisFlagshipProgressOutcomeMilestone.getId());
+              for (ReportSynthesisFlagshipProgressCrossCuttingMarker marker : reportSynthesisFlagshipProgressOutcomeMilestone
+                .getReportSynthesisFlagshipProgressCrossCuttingMarkers().stream().filter(c -> c.isActive())
+                .collect(Collectors.toList())) {
+                marker = reportSynthesisFlagshipProgressCrossCuttingMarkerManager
+                  .getReportSynthesisFlagshipProgressCrossCuttingMarkerById(marker.getId());
+                markersList.add(marker);
+              }
+              reportSynthesisFlagshipProgressOutcomeMilestone.setMarkers(markersList);
+              reportSynthesisFlagshipProgressOutcomeMilestoneList.add(reportSynthesisFlagshipProgressOutcomeMilestone);
+            }
+            reportSynthesisFlagshipProgressOutcome.setMilestones(reportSynthesisFlagshipProgressOutcomeMilestoneList);
+          }
+        }
+      }
     }
     if (!fieldErrors.isEmpty()) {
       throw new MARLOFieldValidationException("Field Validation errors", "",

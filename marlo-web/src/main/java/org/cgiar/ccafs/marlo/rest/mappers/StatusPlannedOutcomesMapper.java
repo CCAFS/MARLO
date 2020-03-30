@@ -26,7 +26,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
-@Mapper(componentModel = "jsr330", uses = {CrpProgramMapper.class, OutcomeMapper.class})
+@Mapper(componentModel = "jsr330",
+  uses = {CrpProgramMapper.class, OutcomeMapper.class, StatusPlannedMilestonesMapper.class})
 public interface StatusPlannedOutcomesMapper {
 
   @Mappings({@Mapping(source = "crpProgramOutcome", target = "outcome"),
