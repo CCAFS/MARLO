@@ -37,12 +37,18 @@ public class StatusPlannedOutcomesDTO {
   @ApiModelProperty(notes = "Milestones Status", position = 4)
   private List<StatusPlannedMilestonesDTO> milestones;
 
+
   @ApiModelProperty(notes = "Phase year/section", position = 5)
   private PhaseDTO phase;
 
 
   public CrpProgramDTO getCrpProgram() {
     return crpProgram;
+  }
+
+
+  public List<StatusPlannedMilestonesDTO> getMilestones() {
+    return milestones;
   }
 
 
@@ -63,6 +69,11 @@ public class StatusPlannedOutcomesDTO {
 
   public void setCrpProgram(CrpProgramDTO crpProgram) {
     this.crpProgram = crpProgram;
+  }
+
+
+  public void setMilestones(List<StatusPlannedMilestonesDTO> milestones) {
+    this.milestones = milestones;
   }
 
 

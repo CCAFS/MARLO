@@ -94,14 +94,15 @@ public class StatusPlannedOutcomes {
   }
 
   @ApiOperation(tags = {"Table 5 - Status of Planned Outcomes and Milestones"},
-    value = "${StatusPlannedOutcomes.outcomes.GET.value}", response = StatusPlannedOutcomesDTO.class)
+    value = "${StatusPlannedOutcomes.outcomes.GET.id.value}", response = StatusPlannedOutcomesDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIAREntity}/statusOutcomes/{outcomeID}", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<StatusPlannedOutcomesDTO> findStatusPlannedOutcome(
-    @ApiParam(value = "${StatusPlannedOutcomes.outcomes.GET.param.CGIAR}",
+    @ApiParam(value = "${StatusPlannedOutcomes.outcomes.GET.id.param.CGIAR}",
       required = true) @PathVariable String CGIAREntity,
-    @ApiParam(value = "${StatusPlannedOutcomes.outcomes.GET.param.id}", required = true) @PathVariable String outcomeID,
+    @ApiParam(value = "${StatusPlannedOutcomes.outcomes.GET.id.param.outcome}",
+      required = true) @PathVariable String outcomeID,
     @ApiParam(value = "${StatusPlannedOutcomes.outcomes.GET.id.param.year}",
       required = true) @RequestParam Integer year,
     @ApiParam(value = "${StatusPlannedOutcomes.outcomes.GET.id.param.phase}",
