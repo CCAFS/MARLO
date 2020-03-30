@@ -325,13 +325,13 @@
       </div>
       
       [#-- Request partner adition   --]
-      [#-- <p id="addPartnerText" class="helpMessage">
+       <p id="addPartnerText" class="helpMessage">
         [@s.text name="global.addInstitutionMessage" /]
         <a class="popup" href="[@s.url namespace="/projects" action='${crpSession}/partnerSave' ][@s.param name='synthesisID']${(reportSynthesis.id)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
           [@s.text name="projectPartners.addPartnerMessage.second" /]
         </a>
        </p>
-       --]
+       
       <br>
     
       [#-- Upload Template --]
