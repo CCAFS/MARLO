@@ -408,7 +408,7 @@ public class ProgressTowardsItem<T> {
       // not all ReportSynthesis have a ReportSynthesisSrfProgress, so we need to filter out those to avoid exceptions
       progressTowardsTargets = reportSynthesisManager.findAll().stream()
         .filter(rs -> rs.getPhase().getId() == phase.getId() && rs.getReportSynthesisSrfProgress() != null
-          && rs.getReportSynthesisSrfProgress().isActive() == true)
+          && rs.getReportSynthesisSrfProgress().isActive() == true && rs.isActive() == true)
         .flatMap(rs -> rs.getReportSynthesisSrfProgress().getReportSynthesisSrfProgressTargets().stream())
         .map(srfProgressTowardsTargetMapper::reportSynthesisSrfProgressTargetToSrfProgressTowardsTargetsDTO)
         .collect(Collectors.toList());
