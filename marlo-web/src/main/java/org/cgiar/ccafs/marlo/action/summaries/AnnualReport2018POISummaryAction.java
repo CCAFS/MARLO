@@ -1671,7 +1671,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
                 new POIField(poiSummary.replaceHTMLTags(narrative), ParagraphAlignment.LEFT, false),
                 new POIField(milestone, ParagraphAlignment.LEFT, false),
                 new POIField(milestoneStatus, ParagraphAlignment.CENTER, false),
-                new POIField(evidenceMilestone, ParagraphAlignment.LEFT, true),
+                new POIField(evidenceMilestone, ParagraphAlignment.LEFT, false),
                 new POIField(evidence, ParagraphAlignment.LEFT, true)};
               data = Arrays.asList(sData);
               datas.add(data);
@@ -1680,7 +1680,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         }
       }
     }
-    poiSummary.textTable(document, headers, datas, false, "table5AnnualReport2018");
+    poiSummary.textTable(document, headers, datas, false, "table4AnnualReport2018");
   }
 
 
