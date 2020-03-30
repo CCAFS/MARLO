@@ -150,6 +150,9 @@ public class POISummary {
 
 
   public void convertHTMLTags(XWPFDocument document, String text, XWPFTableCell cell) {
+    if (text != null && text.isEmpty()) {
+      text = text.trim();
+    }
 
     List<Integer> startsPosList = new ArrayList<Integer>();
     List<Integer> finalPosList = new ArrayList<Integer>();
@@ -187,6 +190,7 @@ public class POISummary {
     text = text.replaceAll("title=\"\"", "");
     text = text.replaceAll("style=\"font-size: 0.98em;\"", "");
     text = text.replaceAll(" style=\"font-size: 0.98em;\"", "");
+    text = text.replaceAll("\" \">", "");
 
     /*
      * recognize the tag as a line break
@@ -860,7 +864,7 @@ public class POISummary {
     for (int x = 0; x < table.getNumberOfRows(); x++) {
       if (x > 0) {
         XWPFTableRow row = table.getRow(x);
-        for (int y = 0; y < 4; y++) {
+        for (int y = 0; y < 6; y++) {
           XWPFTableCell cell = row.getCell(y);
 
           if (cell.getCTTc() == null) {
