@@ -29,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.manager.PartnerRequestManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.ActivityPartner;
 import org.cgiar.ccafs.marlo.data.model.CapacityDevelopment;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInfo;
@@ -40,6 +41,7 @@ import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
@@ -87,6 +89,7 @@ public class PartnersSaveAction extends BaseAction {
   private ProjectExpectedStudyManager projectExpectedStudyManager;
   private ICapacityDevelopmentService capacityDevelopmentManager;
   private PowbSynthesisManager powbSynthesisManager;
+  private ReportSynthesisManager reportSynthesisManager;
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
   private final SendMailS sendMail;
@@ -102,6 +105,7 @@ public class PartnersSaveAction extends BaseAction {
   private int projectID;
   private int fundingSourceID;
   private int powbSynthesisID;
+  private int synthesisID;
   private int expectedID;
   private int activityID;
   private int capdevID;
@@ -112,7 +116,8 @@ public class PartnersSaveAction extends BaseAction {
     InstitutionTypeManager institutionManager, InstitutionManager institutionsManager, ProjectManager projectManager,
     PartnerRequestManager partnerRequestManager, FundingSourceManager fundingSourceManager,
     GlobalUnitManager crpManager, SendMailS sendMail, ProjectExpectedStudyManager projectExpectedStudyManager,
-    ICapacityDevelopmentService capacityDevelopmentManager, PowbSynthesisManager powbSynthesisManager) {
+    ICapacityDevelopmentService capacityDevelopmentManager, PowbSynthesisManager powbSynthesisManager,
+    ReportSynthesisManager reportSynthesisManager) {
     super(config);
     this.locationManager = locationManager;
     this.institutionManager = institutionManager;
@@ -125,6 +130,18 @@ public class PartnersSaveAction extends BaseAction {
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.capacityDevelopmentManager = capacityDevelopmentManager;
     this.powbSynthesisManager = powbSynthesisManager;
+    this.reportSynthesisManager = reportSynthesisManager;
+  }
+
+  public void addARSynthesisMessage(StringBuilder message, PartnerRequest partnerRequest,
+    PartnerRequest partnerRequestModifications) {
+    System.out.println(synthesisID);
+    ReportSynthesis reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
+    String sourceMessage = "" + context + " ReportSynthesis: (" + synthesisID + ") - "
+      + reportSynthesis.getLiaisonInstitution().getComposedName();
+    message.append(sourceMessage);
+    partnerRequest.setRequestSource(sourceMessage);
+    partnerRequestModifications.setRequestSource(sourceMessage);
   }
 
   public void addCapDevMessage(StringBuilder message, PartnerRequest partnerRequest,
@@ -136,6 +153,7 @@ public class PartnersSaveAction extends BaseAction {
     partnerRequestModifications.setRequestSource(sourceMessage);
   }
 
+
   public void addFunginMessage(StringBuilder message, PartnerRequest partnerRequest,
     PartnerRequest partnerRequestModifications) {
     FundingSourceInfo fsInfo =
@@ -145,7 +163,6 @@ public class PartnersSaveAction extends BaseAction {
     partnerRequest.setRequestSource(sourceMessage);
     partnerRequestModifications.setRequestSource(sourceMessage);
   }
-
 
   public void addPowbSynthesisMessage(StringBuilder message, PartnerRequest partnerRequest,
     PartnerRequest partnerRequestModifications) {
@@ -157,7 +174,6 @@ public class PartnersSaveAction extends BaseAction {
     partnerRequest.setRequestSource(sourceMessage);
     partnerRequestModifications.setRequestSource(sourceMessage);
   }
-
 
   public void addProjectMessage(StringBuilder message, PartnerRequest partnerRequest,
     PartnerRequest partnerRequestModifications) {
@@ -229,9 +245,14 @@ public class PartnersSaveAction extends BaseAction {
   }
 
 
+  public int getSynthesisID() {
+    return synthesisID;
+  }
+
   public boolean isMessageSent() {
     return messageSent;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -298,7 +319,6 @@ public class PartnersSaveAction extends BaseAction {
       LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
     }
   }
-
 
   @Override
   public String save() {
@@ -403,6 +423,10 @@ public class PartnersSaveAction extends BaseAction {
         this.addPowbSynthesisMessage(message, partnerRequest, partnerRequestModifications);
         break;
 
+      case "synthesisID":
+        this.addARSynthesisMessage(message, partnerRequest, partnerRequestModifications);
+        break;
+
     }
 
     partnerRequest = partnerRequestManager.savePartnerRequest(partnerRequest);
@@ -445,10 +469,10 @@ public class PartnersSaveAction extends BaseAction {
     this.activityID = activityID;
   }
 
+
   public void setActivityPartner(ActivityPartner activityPartner) {
     this.activityPartner = activityPartner;
   }
-
 
   public void setCapdevID(int capdevID) {
     this.capdevID = capdevID;
@@ -470,10 +494,10 @@ public class PartnersSaveAction extends BaseAction {
     this.institutions = institutions;
   }
 
+
   public void setLocationId(long locationId) {
     this.locationId = locationId;
   }
-
 
   public void setMessageSent(boolean messageSent) {
     this.messageSent = messageSent;
@@ -483,9 +507,12 @@ public class PartnersSaveAction extends BaseAction {
     this.powbSynthesisID = powbSynthesisID;
   }
 
-
   public void setProjectID(int projectID) {
     this.projectID = projectID;
+  }
+
+  public void setSynthesisID(int synthesisID) {
+    this.synthesisID = synthesisID;
   }
 
 
