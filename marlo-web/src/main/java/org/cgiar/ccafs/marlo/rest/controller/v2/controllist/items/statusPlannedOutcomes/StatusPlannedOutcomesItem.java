@@ -493,7 +493,37 @@ public class StatusPlannedOutcomesItem<T> {
     Integer repoYear, String repoPhase, User user) {
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
+    if (globalUnitEntity == null) {
+      fieldErrors.add(new FieldErrorDTO("createStatusPlannedOutcome", "GlobalUnitEntity",
+        CGIARentityAcronym + " is an invalid CGIAR entity acronym"));
+    }
+    Phase phase =
+      this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
+        && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().get();
+
+    if (phase == null) {
+      fieldErrors.add(new FieldErrorDTO("createStatusPlannedOutcome", "phase", " is an invalid phase-year"));
+    }
+
+    Set<CrpUser> lstUser = user.getCrpUsers();
+    if (!lstUser.stream()
+      .anyMatch(crp -> StringUtils.equalsIgnoreCase(crp.getCrp().getAcronym(), CGIARentityAcronym))) {
+      fieldErrors
+        .add(new FieldErrorDTO("createStatusPlannedOutcome", "GlobalUnitEntity", "CGIAR entity not autorized"));
+    }
     ReportSynthesisFlagshipProgressOutcome reportSynthesisFlagshipProgressOutcome = null;
+
+    CrpProgramOutcome crpProgramOutcome = null;
+    if (outcomeID != null && outcomeID.length() > 0) {
+      crpProgramOutcome = crpProgramOutcomeManager.getCrpProgramOutcome(outcomeID, phase);
+      if (crpProgramOutcome == null) {
+        fieldErrors.add(new FieldErrorDTO("createStatusPlannedOutcome", "Outcome", "is an invalid CRP Outcome"));
+      }
+    }
+
+    if (fieldErrors.isEmpty()) {
+
+    }
     if (!fieldErrors.isEmpty()) {
       throw new MARLOFieldValidationException("Field Validation errors", "",
         fieldErrors.stream()
