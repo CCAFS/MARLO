@@ -105,7 +105,7 @@
                     [#-- Word Document Tag --]
                     [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
                     
-                    [@customForm.textArea name="${customName}.youthContribution" i18nkey="${customLabel}.youth.youthContribution" help="${customLabel}.youth.youthContribution.help" className="limitWords-${calculateLimitWords(600)}" helpIcon=false required=!isPlatform editable=editable allowTextEditor=true /]
+                    [@customForm.textArea name="${customName}.youthContribution" i18nkey="${customLabel}.youth.youthContribution" help="${customLabel}.youth.youthContribution.help" className="limitWords-${calculateLimitWords(600)}" helpIcon=false required=false editable=editable allowTextEditor=true /]
                   </div>
                   
                   [@customForm.helpLabel name="${customLabel}.youth.help" showIcon=false editable=editable /]

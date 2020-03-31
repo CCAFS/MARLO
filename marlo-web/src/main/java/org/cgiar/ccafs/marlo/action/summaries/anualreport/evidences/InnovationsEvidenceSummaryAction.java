@@ -120,7 +120,7 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
     masterReport.getParameterValues().put("i8nColumnE", this.getText("projectInnovations.stage"));
     masterReport.getParameterValues().put("i8nColumnF", this.getText("projectInnovations.innovationType"));
     masterReport.getParameterValues().put("i8nColumnG", this.getText("projectInnovations.hasMilestones"));
-    masterReport.getParameterValues().put("i8nColumnH", this.getText("projectInnovations.table.milestones"));
+    masterReport.getParameterValues().put("i8nColumnH", this.getText("projectInnovations.table.milestonesAssociated"));
     masterReport.getParameterValues().put("i8nColumnI", this.getText("projectInnovations.geographicScope"));
     masterReport.getParameterValues().put("i8nColumnJ", this.getText("projectInnovations.region"));
     masterReport.getParameterValues().put("i8nColumnK", this.getText("projectInnovations.countries"));
@@ -372,7 +372,8 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
               .stream().filter(o -> o.getPhase().getId().equals(this.getSelectedPhase().getId()))
               .collect(Collectors.toList())));
         }
-        if (innovationEvidences.getProjectInnovation().getMilestones() != null) {
+        if (innovationEvidences.getProjectInnovation().getMilestones() != null
+          && !innovationEvidences.getProjectInnovation().getMilestones().isEmpty()) {
           for (ProjectInnovationMilestone milestone : innovationEvidences.getProjectInnovation().getMilestones()) {
             if (milestone.getCrpMilestone() != null && milestone.getCrpMilestone().getComposedName() != null) {
               paramH += milestone.getCrpMilestone().getComposedName() + "\n";
@@ -510,7 +511,8 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
         }
 
         // Organizations
-        if (innovationEvidences.getProjectInnovation().getProjectInnovationContributingOrganization() != null) {
+        if (innovationEvidences.getProjectInnovation().getProjectInnovationContributingOrganization() != null
+          && !innovationEvidences.getProjectInnovation().getProjectInnovationContributingOrganization().isEmpty()) {
           List<ProjectInnovationContributingOrganization> organizations =
             new ArrayList<>(innovationEvidences.getProjectInnovation().getProjectInnovationContributingOrganization()
               .stream().filter(o -> o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
