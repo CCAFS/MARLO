@@ -200,6 +200,7 @@ public class StatusPlannedOutcomesItem<T> {
             if (status != null) {
               reportSynthesisFlagshipProgressOutcomeMilestone.setCrpMilestone(crpMilestone);
               reportSynthesisFlagshipProgressOutcomeMilestone.setEvidence(milestones.getEvidence());
+              reportSynthesisFlagshipProgressOutcomeMilestone.setEvidenceLink(milestones.getLinkEvidence());
               reportSynthesisFlagshipProgressOutcomeMilestone.setMilestonesStatus(status);
               reportSynthesisFlagshipProgressOutcomeMilestone
                 .setReportSynthesisFlagshipProgressOutcome(reportSynthesisFlagshipProgressOutcome);
@@ -308,6 +309,7 @@ public class StatusPlannedOutcomesItem<T> {
               if (status != null) {
                 reportSynthesisFlagshipProgressOutcomeMilestone.setCrpMilestone(crpMilestone);
                 reportSynthesisFlagshipProgressOutcomeMilestone.setEvidence(milestones.getEvidence());
+                reportSynthesisFlagshipProgressOutcomeMilestone.setEvidenceLink(milestones.getLinkEvidence());
                 reportSynthesisFlagshipProgressOutcomeMilestone.setMilestonesStatus(status);
                 crpMilestone.setMilestonesStatus(status);
                 reportSynthesisFlagshipProgressOutcomeMilestone
@@ -401,6 +403,7 @@ public class StatusPlannedOutcomesItem<T> {
                 if (status != null) {
                   reportSynthesisFlagshipProgressOutcomeMilestone.setCrpMilestone(crpMilestone);
                   reportSynthesisFlagshipProgressOutcomeMilestone.setEvidence(milestones.getEvidence());
+                  reportSynthesisFlagshipProgressOutcomeMilestone.setEvidenceLink(milestones.getLinkEvidence());
                   reportSynthesisFlagshipProgressOutcomeMilestone.setMilestonesStatus(status);
                   reportSynthesisFlagshipProgressOutcomeMilestone
                     .setReportSynthesisFlagshipProgressOutcome(reportSynthesisFlagshipProgressOutcome);
