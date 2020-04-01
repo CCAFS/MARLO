@@ -197,7 +197,7 @@ public class POISummary {
      */
     text = text.replaceAll("\n", "");
     text = text.replaceAll("<table>", "\n");
-    text = text.replaceAll("</p>", "\n");
+    text = text.replaceAll("</p>", " \n");
     text = text.replaceAll("</tr>", "\n");
     text = text.replaceAll("<br>", "\n");
     // text = text.replaceAll("\r", " ");
@@ -410,8 +410,27 @@ public class POISummary {
                 break;
               }
             }
-
-            this.textHyperlink(url1, textIndicatorLink1, paragraph);
+            try {
+              this.textHyperlink(url1, textIndicatorLink1, paragraph);
+            } catch (Exception e) {
+              try {
+                paragraph.setAlignment(ParagraphAlignment.BOTH);
+                paragraphRun = paragraph.createRun();
+                paragraphRun.setFontFamily(FONT_TYPE);
+                paragraphRun.setText(url1 + " (" + textIndicatorLink1 + ")");
+              } catch (Exception x) {
+                if (cell != null) {
+                  paragraph = null;
+                  paragraph = cell.addParagraph();
+                  paragraph.setAlignment(ParagraphAlignment.BOTH);
+                  paragraphRun = paragraph.createRun();
+                } else {
+                  paragraph = document.createParagraph();
+                  paragraph.setAlignment(ParagraphAlignment.BOTH);
+                  paragraphRun = paragraph.createRun();
+                }
+              }
+            }
             break;
 
           /*
