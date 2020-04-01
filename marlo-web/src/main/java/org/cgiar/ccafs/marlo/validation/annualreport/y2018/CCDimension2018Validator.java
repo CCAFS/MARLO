@@ -103,17 +103,21 @@ public class CCDimension2018Validator extends BaseValidator {
       }
 
       // Validate Youth
-      if (!this.isValidString(reportSynthesis.getReportSynthesisCrossCuttingDimension().getYouthContribution())) {
-        action.addMessage(action.getText("annualReport2018.ccDimensions.youth.youthContribution.readText"));
-        action.getInvalidFields().put("input-reportSynthesis.reportSynthesisCrossCuttingDimension.youthContribution",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
+      /*
+       * if (!this.isValidString(reportSynthesis.getReportSynthesisCrossCuttingDimension().getYouthContribution())) {
+       * action.addMessage(action.getText("annualReport2018.ccDimensions.youth.youthContribution.readText"));
+       * action.getInvalidFields().put("input-reportSynthesis.reportSynthesisCrossCuttingDimension.youthContribution",
+       * InvalidFieldsMessages.EMPTYFIELD);
+       * }
+       */
+
       if (!this.isValidString(reportSynthesis.getReportSynthesisCrossCuttingDimension().getYouthResearchFindings())) {
         action.addMessage(action.getText("annualReport2018.ccDimensions.youth.researchFindings.readText"));
         action.getInvalidFields().put(
           "input-reportSynthesis.reportSynthesisCrossCuttingDimension.youthResearchFindings",
           InvalidFieldsMessages.EMPTYFIELD);
       }
+
       if (!this.isValidString(reportSynthesis.getReportSynthesisCrossCuttingDimension().getYouthLearned())) {
         action.addMessage(action.getText("annualReport2018.ccDimensions.youth.learned.readText"));
         action.getInvalidFields().put("input-reportSynthesis.reportSynthesisCrossCuttingDimension.youthLearned",

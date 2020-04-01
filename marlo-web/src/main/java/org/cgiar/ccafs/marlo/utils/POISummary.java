@@ -150,6 +150,10 @@ public class POISummary {
 
 
   public void convertHTMLTags(XWPFDocument document, String text, XWPFTableCell cell) {
+    if (text != null && text.isEmpty()) {
+      text = text.trim();
+    }
+
     List<Integer> startsPosList = new ArrayList<Integer>();
     List<Integer> finalPosList = new ArrayList<Integer>();
     List<String> tagsAddList = new ArrayList<String>();
@@ -179,18 +183,21 @@ public class POISummary {
     text = text.replaceAll("&nbsp;", " ");
     text = text.replaceAll("<span style=\"color: rgb(130, 130, 130); font-size: 0.98em;\">", "");
     text = text.replaceAll("<span style=\"color: rgb(130, 130, 130); font-size: 0.98em;", "");
+    text = text.replaceAll("<span style=\"color: rgb(130, 130, 130); font-size: 0.98em;\">", "");
     text = text.replaceAll("style=\"font-size: 0.98em; background-color: rgb(255, 255, 255)", "");
+    text = text.replaceAll("style=\"font-size: 0.98em; background-color: rgb(255, 255, 255);", "");
     text = text.replaceAll("</span>", "");
     text = text.replaceAll("title=\"\"", "");
     text = text.replaceAll("style=\"font-size: 0.98em;\"", "");
     text = text.replaceAll(" style=\"font-size: 0.98em;\"", "");
+    text = text.replaceAll("\" \">", "");
 
     /*
      * recognize the tag as a line break
      */
     text = text.replaceAll("\n", "");
     text = text.replaceAll("<table>", "\n");
-    text = text.replaceAll("</p>", "\n");
+    text = text.replaceAll("</p>", " \n");
     text = text.replaceAll("</tr>", "\n");
     text = text.replaceAll("<br>", "\n");
     // text = text.replaceAll("\r", " ");
@@ -403,8 +410,27 @@ public class POISummary {
                 break;
               }
             }
-
-            this.textHyperlink(url1, textIndicatorLink1, paragraph);
+            try {
+              this.textHyperlink(url1, textIndicatorLink1, paragraph);
+            } catch (Exception e) {
+              try {
+                paragraph.setAlignment(ParagraphAlignment.BOTH);
+                paragraphRun = paragraph.createRun();
+                paragraphRun.setFontFamily(FONT_TYPE);
+                paragraphRun.setText(url1 + " (" + textIndicatorLink1 + ")");
+              } catch (Exception x) {
+                if (cell != null) {
+                  paragraph = null;
+                  paragraph = cell.addParagraph();
+                  paragraph.setAlignment(ParagraphAlignment.BOTH);
+                  paragraphRun = paragraph.createRun();
+                } else {
+                  paragraph = document.createParagraph();
+                  paragraph.setAlignment(ParagraphAlignment.BOTH);
+                  paragraphRun = paragraph.createRun();
+                }
+              }
+            }
             break;
 
           /*
@@ -857,7 +883,7 @@ public class POISummary {
     for (int x = 0; x < table.getNumberOfRows(); x++) {
       if (x > 0) {
         XWPFTableRow row = table.getRow(x);
-        for (int y = 0; y < 4; y++) {
+        for (int y = 0; y < 6; y++) {
           XWPFTableCell cell = row.getCell(y);
 
           if (cell.getCTTc() == null) {
@@ -1984,7 +2010,9 @@ public class POISummary {
         } else {
 
           if (poiParameter.isHtml()) {
-            this.convertHTMLTags(null, poiParameter.getText(), dataRow.getCell(record));
+            if (poiParameter.getText() != null) {
+              this.convertHTMLTags(null, poiParameter.getText(), dataRow.getCell(record));
+            }
           } else {
             XWPFRun paragraphRun = paragraph.createRun();
             this.addParagraphTextBreak(paragraphRun, poiParameter.getText());

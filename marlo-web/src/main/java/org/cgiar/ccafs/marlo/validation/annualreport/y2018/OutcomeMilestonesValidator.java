@@ -223,16 +223,17 @@ public class OutcomeMilestonesValidator extends BaseValidator {
     }
 
     // Validate Milestone Evidence
-    if (!this.isValidString(milestone.getEvidence())
-      && this.wordCount(this.removeHtmlTags(milestone.getEvidence())) <= 50) {
-      action.addMessage(action.getText("Evidence"));
-      action.addMissingField(
-        "input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i + "].milestones[" + j + "].evidence");
-      action.getInvalidFields().put(
-        "input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i + "].milestones[" + j + "].evidence",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
-
+    /*
+     * if (!this.isValidString(milestone.getEvidence())
+     * && this.wordCount(this.removeHtmlTags(milestone.getEvidence())) <= 50) {
+     * action.addMessage(action.getText("Evidence"));
+     * action.addMissingField(
+     * "input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i + "].milestones[" + j + "].evidence");
+     * action.getInvalidFields().put(
+     * "input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i + "].milestones[" + j + "].evidence",
+     * InvalidFieldsMessages.EMPTYFIELD);
+     * }
+     */
 
     // Validate Cross Cutting
     if (milestone.getMarkers() == null || milestone.getMarkers().isEmpty()) {

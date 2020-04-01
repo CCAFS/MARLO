@@ -1709,7 +1709,7 @@ public class DeliverableAction extends BaseAction {
       }
 
 
-      this.saveCrossCutting(deliverableManagedState);
+      this.saveCrossCutting();
 
       // Reporting and upkeep
       if (this.isReportingActive() || this.isUpKeepActive()) {
@@ -1809,14 +1809,14 @@ public class DeliverableAction extends BaseAction {
    * 
    * @param delvierable
    */
-  public void saveCrossCutting(Deliverable deliverable) {
+  public void saveCrossCutting() {
 
     // Save form Information
-    if (deliverable.getCrossCuttingMarkers() != null) {
-      for (DeliverableCrossCuttingMarker crossCuttingOwner : deliverable.getCrossCuttingMarkers()) {
+    if (this.deliverable.getCrossCuttingMarkers() != null) {
+      for (DeliverableCrossCuttingMarker crossCuttingOwner : this.deliverable.getCrossCuttingMarkers()) {
         if (crossCuttingOwner.getId() == null) {
           DeliverableCrossCuttingMarker crossCuttingOwnerSave = new DeliverableCrossCuttingMarker();
-          crossCuttingOwnerSave.setDeliverable(deliverable);
+          crossCuttingOwnerSave.setDeliverable(this.deliverable);
           crossCuttingOwnerSave.setPhase(this.getActualPhase());
 
           CgiarCrossCuttingMarker cgiarCrossCuttingMarker = cgiarCrossCuttingMarkerManager
@@ -1840,7 +1840,7 @@ public class DeliverableAction extends BaseAction {
 
           deliverableCrossCuttingMarkerManager.saveDeliverableCrossCuttingMarker(crossCuttingOwnerSave);
           // This is to add deliverableCrossCuttingMarker to generate correct auditlog.
-          deliverable.getDeliverableCrossCuttingMarkers().add(crossCuttingOwnerSave);
+          this.deliverable.getDeliverableCrossCuttingMarkers().add(crossCuttingOwnerSave);
         } else {
           boolean hasChanges = false;
           DeliverableCrossCuttingMarker crossCuttingOwnerSave =
@@ -1879,7 +1879,7 @@ public class DeliverableAction extends BaseAction {
             deliverableCrossCuttingMarkerManager.saveDeliverableCrossCuttingMarker(crossCuttingOwnerSave);
           }
           // This is to add deliverableCrossCuttingMarker to generate correct auditlog.
-          deliverable.getDeliverableCrossCuttingMarkers().add(crossCuttingOwnerSave);
+          this.deliverable.getDeliverableCrossCuttingMarkers().add(crossCuttingOwnerSave);
 
         }
       }
