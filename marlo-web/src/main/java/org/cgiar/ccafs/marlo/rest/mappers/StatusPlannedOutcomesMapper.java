@@ -19,23 +19,21 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
-import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrossCuttingMarker;
-import org.cgiar.ccafs.marlo.rest.dto.CrosscuttingMarkersDTO;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcome;
+import org.cgiar.ccafs.marlo.rest.dto.StatusPlannedOutcomesDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "jsr330",
-  uses = {GlobalUnitMapper.class, CrossCuttingMarkerMapper.class, CrossCuttingMarkerScoreMapper.class})
-public interface ProjectPolicyCrosscuttingMarkersMapper {
+  uses = {CrpProgramMapper.class, OutcomeMapper.class, StatusPlannedMilestonesMapper.class})
+public interface StatusPlannedOutcomesMapper {
 
-  @Mappings({
-    @Mapping(source = "projectPolicyCrossCuttingMarker.cgiarCrossCuttingMarker", target = "crossCuttingmarker"),
-    @Mapping(source = "projectPolicyCrossCuttingMarker.repIndGenderYouthFocusLevel",
-      target = "crossCuttingmarkerScore")})
-  public abstract CrosscuttingMarkersDTO projectPolicyCrossCuttingMarkersToProjectPolicyCrosscuttingMarkersDTO(
-    ProjectPolicyCrossCuttingMarker projectPolicyCrossCuttingMarker);
-
+  @Mappings({@Mapping(source = "crpProgramOutcome", target = "outcome"),
+    @Mapping(source = "crpProgramOutcome.crpProgram", target = "crpProgram"),
+    @Mapping(source = "crpProgramOutcome.phase", target = "phase"), @Mapping(source = "summary", target = "summary")})
+  public abstract StatusPlannedOutcomesDTO reportSynthesisFlagshipProgressOutcomeToStatusPlannedOutcomesDTO(
+    ReportSynthesisFlagshipProgressOutcome reportSynthesisFlagshipProgressOutcome);
 
 }
