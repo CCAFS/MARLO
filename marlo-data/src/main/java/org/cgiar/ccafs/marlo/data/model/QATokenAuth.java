@@ -35,7 +35,7 @@ public class QATokenAuth extends MarloBaseEntity implements java.io.Serializable
   private Date updatedAt;
 
   @Expose
-  private Long crpId;
+  private String crpId;
 
   @Expose
   private String token;
@@ -65,7 +65,7 @@ public class QATokenAuth extends MarloBaseEntity implements java.io.Serializable
   }
 
 
-  public Long getCrpId() {
+  public String getCrpId() {
     return crpId;
   }
 
@@ -136,7 +136,7 @@ public class QATokenAuth extends MarloBaseEntity implements java.io.Serializable
   }
 
 
-  public void setCrpId(Long crpId) {
+  public void setCrpId(String crpId) {
     this.crpId = crpId;
   }
 

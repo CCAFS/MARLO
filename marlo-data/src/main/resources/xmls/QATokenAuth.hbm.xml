@@ -18,8 +18,8 @@
         <comment>The date time when the token was update.</comment>
       </column>
     </property>
-		<property name="crpId" type="java.lang.Long">
-			<column name="crp_id"/>
+		<property name="crpId" type="string">
+			<column name="crp_id" length="30" />
 		</property>
 		<property name="token" type="string">
 			<column name="token" length="200" />
