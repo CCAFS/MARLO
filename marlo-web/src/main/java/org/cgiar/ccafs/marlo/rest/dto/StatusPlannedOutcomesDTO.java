@@ -32,10 +32,11 @@ public class StatusPlannedOutcomesDTO {
   private OutcomeDTO outcome;
 
   @ApiModelProperty(notes = "Outcome Sumary", position = 3)
-  private String sumary;
+  private String summary;
 
   @ApiModelProperty(notes = "Milestones Status", position = 4)
   private List<StatusPlannedMilestonesDTO> milestones;
+
 
   @ApiModelProperty(notes = "Phase year/section", position = 5)
   private PhaseDTO phase;
@@ -43,6 +44,11 @@ public class StatusPlannedOutcomesDTO {
 
   public CrpProgramDTO getCrpProgram() {
     return crpProgram;
+  }
+
+
+  public List<StatusPlannedMilestonesDTO> getMilestones() {
+    return milestones;
   }
 
 
@@ -56,13 +62,18 @@ public class StatusPlannedOutcomesDTO {
   }
 
 
-  public String getSumary() {
-    return sumary;
+  public String getSummary() {
+    return summary;
   }
 
 
   public void setCrpProgram(CrpProgramDTO crpProgram) {
     this.crpProgram = crpProgram;
+  }
+
+
+  public void setMilestones(List<StatusPlannedMilestonesDTO> milestones) {
+    this.milestones = milestones;
   }
 
 
@@ -76,8 +87,8 @@ public class StatusPlannedOutcomesDTO {
   }
 
 
-  public void setSumary(String sumary) {
-    this.sumary = sumary;
+  public void setSummary(String sumary) {
+    this.summary = sumary;
   }
 
 }

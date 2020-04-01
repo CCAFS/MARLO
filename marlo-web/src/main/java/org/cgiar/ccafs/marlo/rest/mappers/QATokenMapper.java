@@ -13,29 +13,18 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-/**************
- * @author Diego Perez - CIAT/CCAFS
- **************/
-
 package org.cgiar.ccafs.marlo.rest.mappers;
 
-import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrossCuttingMarker;
-import org.cgiar.ccafs.marlo.rest.dto.CrosscuttingMarkersDTO;
+import org.cgiar.ccafs.marlo.data.model.QATokenAuth;
+import org.cgiar.ccafs.marlo.rest.dto.QATokenAuthDTO;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
 
-@Mapper(componentModel = "jsr330",
-  uses = {GlobalUnitMapper.class, CrossCuttingMarkerMapper.class, CrossCuttingMarkerScoreMapper.class})
-public interface ProjectPolicyCrosscuttingMarkersMapper {
+/**
+ * @author Luis Benavides - CIAT/CCAFS
+ */
+@Mapper(componentModel = "jsr330")
+public interface QATokenMapper {
 
-  @Mappings({
-    @Mapping(source = "projectPolicyCrossCuttingMarker.cgiarCrossCuttingMarker", target = "crossCuttingmarker"),
-    @Mapping(source = "projectPolicyCrossCuttingMarker.repIndGenderYouthFocusLevel",
-      target = "crossCuttingmarkerScore")})
-  public abstract CrosscuttingMarkersDTO projectPolicyCrossCuttingMarkersToProjectPolicyCrosscuttingMarkersDTO(
-    ProjectPolicyCrossCuttingMarker projectPolicyCrossCuttingMarker);
-
-
+  public abstract QATokenAuthDTO QATokenAuthToQATokenAuthDTO(QATokenAuth qATokenAuth);
 }
