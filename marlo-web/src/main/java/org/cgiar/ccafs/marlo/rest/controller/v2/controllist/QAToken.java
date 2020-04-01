@@ -15,6 +15,8 @@
 
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.QAToken.QATokenItem;
 import org.cgiar.ccafs.marlo.rest.dto.QATokenAuthDTO;
 import org.cgiar.ccafs.marlo.rest.errors.NotFoundException;
@@ -24,7 +26,9 @@ import javax.inject.Inject;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -45,10 +49,20 @@ public class QAToken {
 
   private static final Logger LOG = LoggerFactory.getLogger(QAToken.class);
   private QATokenItem<QAToken> qATokenItem;
+  private final UserManager userManager;
+
 
   @Inject
-  public QAToken(QATokenItem<QAToken> qATokenItem) {
+  public QAToken(QATokenItem<QAToken> qATokenItem, UserManager userManager) {
     this.qATokenItem = qATokenItem;
+    this.userManager = userManager;
+  }
+
+  private User getCurrentUser() {
+    Subject subject = SecurityUtils.getSubject();
+    Long principal = (Long) subject.getPrincipal();
+    User user = this.userManager.getUser(principal);
+    return user;
   }
 
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
@@ -59,7 +73,8 @@ public class QAToken {
     @ApiParam(value = "Email", required = true) @PathVariable String email,
     @ApiParam(value = "SMO code", required = true) @PathVariable String smoCode) {
 
-    ResponseEntity<QATokenAuthDTO> response = qATokenItem.getToken(name, username, email, smoCode);
+    ResponseEntity<QATokenAuthDTO> response =
+      qATokenItem.getToken(name, username, email, smoCode, this.getCurrentUser());
 
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", "Not Found");

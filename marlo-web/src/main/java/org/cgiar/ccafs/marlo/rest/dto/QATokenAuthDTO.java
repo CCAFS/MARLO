@@ -28,19 +28,19 @@ public class QATokenAuthDTO {
   @ApiModelProperty(notes = "QA Token id", position = 1)
   private Long id;
 
-  @JsonFormat(pattern = "yyyy-MM-dd")
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private Date createdAt;
 
-  @JsonFormat(pattern = "yyyy-MM-dd")
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private Date updatedAt;
 
   @ApiModelProperty(notes = "Crp id", position = 2)
-  private Long crpId;
+  private String crpId;
 
   @ApiModelProperty(notes = "Token", position = 3)
   private String token;
 
-  @JsonFormat(pattern = "yyyy-MM-dd")
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private Date expirationDate;
 
   @ApiModelProperty(notes = "Username", position = 4)
@@ -66,7 +66,7 @@ public class QATokenAuthDTO {
   }
 
 
-  public Long getCrpId() {
+  public String getCrpId() {
     return crpId;
   }
 
@@ -116,7 +116,7 @@ public class QATokenAuthDTO {
   }
 
 
-  public void setCrpId(Long crpId) {
+  public void setCrpId(String crpId) {
     this.crpId = crpId;
   }
 
