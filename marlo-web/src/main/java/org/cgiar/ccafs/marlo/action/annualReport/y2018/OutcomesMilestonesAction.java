@@ -796,6 +796,61 @@ public class OutcomesMilestonesAction extends BaseAction {
         }
       }
     }
+    List<Long> ids = new ArrayList<>();
+    List<ReportSynthesisFlagshipProgressOutcome> outcomeList = new ArrayList<>();
+    outcomeList = reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList();
+    if (reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList() != null) {
+      for (ReportSynthesisFlagshipProgressOutcome outcome : reportSynthesis.getReportSynthesisFlagshipProgress()
+        .getOutcomeList()) {
+
+        /*
+         * if (reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList() != null) {
+         * for (ReportSynthesisFlagshipProgressOutcome outcome : reportSynthesis.getReportSynthesisFlagshipProgress()
+         * .getOutcomeList()) {
+         * // setting milestones
+         * outcome.getCrpProgramOutcome()
+         * .setMilestones(outcome.getCrpProgramOutcome().getCrpMilestones().stream()
+         * .filter(c -> c.isActive() && (c.getYear().intValue() == this.getActualPhase().getYear()
+         * || (c.getExtendedYear() != null && c.getExtendedYear().intValue() == this.getActualPhase().getYear())))
+         * .collect(Collectors.toList()));
+         * if (outcome.getCrpProgramOutcome().getMilestones() != null) {
+         * for (CrpMilestone milestone : outcome.getCrpProgramOutcome().getMilestones()) {
+         * if (milestone.getYear() == this.getActualPhase().getYear()) {
+         * count++;
+         * }
+         * }
+         * if (count > 0 && outcomeList != null) {
+         * try {
+         * outcomeList.remove(outcome);
+         * } catch (Exception e) {
+         * }
+         * }
+         * }
+         * }
+         * }
+         */
+
+        if (outcome.getMilestones() != null) {
+          for (ReportSynthesisFlagshipProgressOutcomeMilestone milestone : outcome.getMilestones()) {
+
+            if (milestone.getCrpMilestone() != null
+              && milestone.getCrpMilestone().getYear() != this.getActualPhase().getYear()) {
+              ids.add(outcome.getId());
+              if (outcomeList != null) {
+                outcomeList.remove(outcome);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    if (outcomeList != null) {
+      outcomeList =
+        outcomeList.stream().filter(o -> o.getCrpProgramOutcome() != null && o.getCrpProgramOutcome().getId() != 1997)
+          .collect(Collectors.toList());
+      reportSynthesis.getReportSynthesisFlagshipProgress().setOutcomeList(outcomeList);
+    }
 
 
     // Get the Outcome milestones
