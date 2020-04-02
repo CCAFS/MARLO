@@ -24,6 +24,8 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
 import org.apache.poi.xwpf.usermodel.Borders;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
@@ -69,6 +71,7 @@ public class POISummary {
   private Phase phase;
 
   // Manager
+  @Inject
   UrlSynthesisLogManager urlSynthesisLogManager;
 
 
