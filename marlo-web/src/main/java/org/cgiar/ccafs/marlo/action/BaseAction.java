@@ -360,6 +360,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private DeliverableManager deliverableManager;
+  @Inject
+  private ProjectPolicyManager policyManager;
 
   private boolean draft;
 
