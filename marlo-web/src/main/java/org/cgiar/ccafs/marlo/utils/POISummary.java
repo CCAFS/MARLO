@@ -15,6 +15,11 @@
 
 package org.cgiar.ccafs.marlo.utils;
 
+import org.cgiar.ccafs.marlo.data.manager.UrlSynthesisLogManager;
+import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
+import org.cgiar.ccafs.marlo.data.model.UrlSynthesisLog;
+
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -61,6 +66,11 @@ public class POISummary {
 
   List<String> expressionsList = new ArrayList<String>();
   List<String> expressionsListClose = new ArrayList<String>();
+  private ReportSynthesis reportSynthesis;
+  private Phase phase;
+
+  // Manager
+  UrlSynthesisLogManager urlSynthesisLogManager;
 
 
   private void addExpressionsToList() {
@@ -324,7 +334,6 @@ public class POISummary {
             this.addParagraphTextBreakPOW2019(paragraphRun, stringTemp);
           }
 
-
           paragraphRun.setColor(TEXT_FONT_COLOR);
           paragraphRun.setFontFamily(FONT_TYPE);
           paragraphRun.setFontSize(11);
@@ -418,16 +427,29 @@ public class POISummary {
                 paragraphRun = paragraph.createRun();
                 paragraphRun.setFontFamily(FONT_TYPE);
                 paragraphRun.setText(url1 + " (" + textIndicatorLink1 + ")");
+
+                // Save log
+                UrlSynthesisLog urlSynthesisLog = new UrlSynthesisLog();
+                urlSynthesisLog.setErrorText(url1 + " - " + textIndicatorLink1);
+                urlSynthesisLogManager.saveUrlSynthesisLog(urlSynthesisLog);
               } catch (Exception x) {
                 if (cell != null) {
                   paragraph = null;
                   paragraph = cell.addParagraph();
                   paragraph.setAlignment(ParagraphAlignment.BOTH);
                   paragraphRun = paragraph.createRun();
+                  // Save log
+                  UrlSynthesisLog urlSynthesisLog = new UrlSynthesisLog();
+                  urlSynthesisLog.setErrorText(url1 + " - " + textIndicatorLink1);
+                  urlSynthesisLogManager.saveUrlSynthesisLog(urlSynthesisLog);
                 } else {
                   paragraph = document.createParagraph();
                   paragraph.setAlignment(ParagraphAlignment.BOTH);
                   paragraphRun = paragraph.createRun();
+                  // Save log
+                  UrlSynthesisLog urlSynthesisLog = new UrlSynthesisLog();
+                  urlSynthesisLog.setErrorText(url1 + " - " + textIndicatorLink1);
+                  urlSynthesisLogManager.saveUrlSynthesisLog(urlSynthesisLog);
                 }
               }
             }
@@ -531,6 +553,14 @@ public class POISummary {
     }
   }
 
+  public Phase getPhase() {
+    return phase;
+  }
+
+  public ReportSynthesis getReportSynthesis() {
+    return reportSynthesis;
+  }
+
 
   public void pageCenterBoldHeader(XWPFDocument document, String text) throws IOException {
     CTSectPr sectPr = document.getDocument().getBody().addNewSectPr();
@@ -566,6 +596,7 @@ public class POISummary {
     parsFooter[0] = footerParagraph;
     policy.createFooter(XWPFHeaderFooterPolicy.DEFAULT, parsFooter);
   }
+
 
   /**
    * Header title
@@ -670,6 +701,14 @@ public class POISummary {
       throw e;
     }
     return html;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
+  }
+
+  public void setReportSynthesis(ReportSynthesis reportSynthesis) {
+    this.reportSynthesis = reportSynthesis;
   }
 
   public void table10AnnualReport2018Style(XWPFTable table) {
