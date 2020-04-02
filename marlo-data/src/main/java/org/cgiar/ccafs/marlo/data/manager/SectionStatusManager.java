@@ -168,7 +168,7 @@ public interface SectionStatusManager {
     String sectionName);
 
 
-  public SectionStatus getSectionStatusByProjectPolicy(long projectInnovationID, String cycle, int year, Boolean upkeep,
+  public SectionStatus getSectionStatusByProjectPolicy(long projectPolicyID, String cycle, int year, Boolean upkeep,
     String sectionName);
 
   public SectionStatus getSectionStatusByReportSynthesis(long powbSynthesisID, String cycle, int year, Boolean upkeep,
