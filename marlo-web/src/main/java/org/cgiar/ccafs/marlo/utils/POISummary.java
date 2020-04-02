@@ -18,7 +18,6 @@ package org.cgiar.ccafs.marlo.utils;
 import org.cgiar.ccafs.marlo.data.manager.UrlSynthesisLogManager;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
-import org.cgiar.ccafs.marlo.data.model.UrlSynthesisLog;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -428,28 +427,18 @@ public class POISummary {
                 paragraphRun.setFontFamily(FONT_TYPE);
                 paragraphRun.setText(url1 + " (" + textIndicatorLink1 + ")");
 
-                // Save log
-                UrlSynthesisLog urlSynthesisLog = new UrlSynthesisLog();
-                urlSynthesisLog.setErrorText(url1 + " - " + textIndicatorLink1);
-                urlSynthesisLogManager.saveUrlSynthesisLog(urlSynthesisLog);
               } catch (Exception x) {
                 if (cell != null) {
                   paragraph = null;
                   paragraph = cell.addParagraph();
                   paragraph.setAlignment(ParagraphAlignment.BOTH);
                   paragraphRun = paragraph.createRun();
-                  // Save log
-                  UrlSynthesisLog urlSynthesisLog = new UrlSynthesisLog();
-                  urlSynthesisLog.setErrorText(url1 + " - " + textIndicatorLink1);
-                  urlSynthesisLogManager.saveUrlSynthesisLog(urlSynthesisLog);
+
                 } else {
                   paragraph = document.createParagraph();
                   paragraph.setAlignment(ParagraphAlignment.BOTH);
                   paragraphRun = paragraph.createRun();
-                  // Save log
-                  UrlSynthesisLog urlSynthesisLog = new UrlSynthesisLog();
-                  urlSynthesisLog.setErrorText(url1 + " - " + textIndicatorLink1);
-                  urlSynthesisLogManager.saveUrlSynthesisLog(urlSynthesisLog);
+
                 }
               }
             }
