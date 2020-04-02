@@ -327,21 +327,18 @@ public class PoliciesAction extends BaseAction {
    * @return Boolean object with the status of the deliverable
    */
   public Boolean isPolicyComplete(long policyID, long phaseID) {
-    ProjectPolicy policy = this.policyManager.getProjectPolicyById(policyID);
-    Phase phase = this.phaseManager.getPhaseById(phaseID);
+    // ProjectPolicy policy = this.policyManager.getProjectPolicyById(policyID);
+    // Phase phase = this.phaseManager.getPhaseById(phaseID);
 
-    if (policy.getProjectPolicyInfo(phase) != null) {
+    SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByProjectPolicy(policyID, "Reporting",
+      this.getActualPhase().getYear(), false, "policies");
 
-      SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByDeliverable(policy.getId(),
-        phase.getDescription(), phase.getYear(), phase.getUpkeep(), "policy");
-      if (sectionStatus == null) {
-        return false;
-      }
+    if (sectionStatus == null) {
+      return false;
+    }
 
-      if (sectionStatus.getMissingFields().length() != 0) {
-        return false;
-      }
-
+    if (sectionStatus.getMissingFields().length() != 0) {
+      return false;
     }
 
     return true;
