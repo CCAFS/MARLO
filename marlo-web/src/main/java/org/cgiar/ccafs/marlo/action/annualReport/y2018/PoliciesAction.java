@@ -326,7 +326,7 @@ public class PoliciesAction extends BaseAction {
       this.getActualPhase().getYear(), false, "policies");
 
     if (sectionStatus == null) {
-      return false;
+      return true;
     }
 
     if (sectionStatus.getMissingFields().length() != 0) {

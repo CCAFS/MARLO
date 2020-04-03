@@ -291,11 +291,11 @@ public class StudiesOICRAction extends BaseAction {
    */
   public Boolean isStudyComplete(long studyID, long phaseID) {
 
-    SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByCaseStudy(studyID, "Reporting",
-      this.getActualPhase().getYear(), false, "policies");
+    SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByProjectExpectedStudy(studyID, "Reporting",
+      this.getActualPhase().getYear(), false, "studies");
 
     if (sectionStatus == null) {
-      return false;
+      return true;
     }
 
     if (sectionStatus.getMissingFields().length() != 0) {
