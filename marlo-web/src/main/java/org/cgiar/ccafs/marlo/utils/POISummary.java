@@ -427,8 +427,15 @@ public class POISummary {
               try {
                 paragraph.setAlignment(ParagraphAlignment.BOTH);
                 paragraphRun = paragraph.createRun();
+                paragraphRun.setColor("FC0000");
                 paragraphRun.setFontFamily(FONT_TYPE);
                 paragraphRun.setText(url1 + " (" + textIndicatorLink1 + ")");
+                /*
+                 * UrlSynthesisLog urlSynthesisLog = new UrlSynthesisLog();
+                 * urlSynthesisLog.setErrorText(url1);
+                 * urlSynthesisLog.setErrorText(url1);
+                 * urlSynthesisLogManager.saveUrlSynthesisLog(urlSynthesisLog);
+                 */
 
               } catch (Exception x) {
                 if (cell != null) {
