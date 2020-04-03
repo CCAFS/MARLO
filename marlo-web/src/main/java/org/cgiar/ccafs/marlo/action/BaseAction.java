@@ -5847,7 +5847,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return
    */
   public Boolean isInnovationNew(long innovationId) {
-    if (innovationId != 0) {
+    if (innovationId != 0 && this.getActualPhase() != null) {
       Phase currentPhase = this.getActualPhase();
       Phase previousPhase = this.phaseManager.findPreviousPhase(currentPhase.getId());
 
