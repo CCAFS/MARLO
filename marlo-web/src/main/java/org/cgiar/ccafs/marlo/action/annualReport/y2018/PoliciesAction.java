@@ -21,7 +21,6 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
-import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndOrganizationTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndPolicyInvestimentTypeManager;
@@ -88,9 +87,7 @@ public class PoliciesAction extends BaseAction {
   private RepIndOrganizationTypeManager repIndOrganizationTypeManager;
   private RepIndStageProcessManager repIndStageProcessManager;
   private RepIndPolicyInvestimentTypeManager repIndInvestimentTypeManager;
-  private ProjectPolicyManager policyManager;
   private SectionStatusManager sectionStatusManager;
-  private PhaseManager phaseManager;
 
   // Variables
   private String transaction;
@@ -115,8 +112,7 @@ public class PoliciesAction extends BaseAction {
     ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
     ReportSynthesisFlagshipProgressPolicyManager reportSynthesisFlagshipProgressPolicyManager,
     RepIndOrganizationTypeManager repIndOrganizationTypeManager, RepIndStageProcessManager repIndStageProcessManager,
-    RepIndPolicyInvestimentTypeManager repIndInvestimentTypeManager, ProjectPolicyManager policyManager,
-    SectionStatusManager sectionStatusManager, PhaseManager phaseManager) {
+    RepIndPolicyInvestimentTypeManager repIndInvestimentTypeManager, SectionStatusManager sectionStatusManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -131,9 +127,7 @@ public class PoliciesAction extends BaseAction {
     this.repIndOrganizationTypeManager = repIndOrganizationTypeManager;
     this.repIndStageProcessManager = repIndStageProcessManager;
     this.repIndInvestimentTypeManager = repIndInvestimentTypeManager;
-    this.policyManager = policyManager;
     this.sectionStatusManager = sectionStatusManager;
-    this.phaseManager = phaseManager;
   }
 
 
@@ -321,14 +315,12 @@ public class PoliciesAction extends BaseAction {
 
   /**
    * This method get the status of an specific policy depending of the
-   * sectionStatuses and the year Previous deliverable will be marked as completed
+   * sectionStatuses
    *
    * @param policyID is the policy ID to be identified.
-   * @return Boolean object with the status of the deliverable
+   * @return Boolean object with the status of the policy
    */
   public Boolean isPolicyComplete(long policyID, long phaseID) {
-    // ProjectPolicy policy = this.policyManager.getProjectPolicyById(policyID);
-    // Phase phase = this.phaseManager.getPhaseById(phaseID);
 
     SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByProjectPolicy(policyID, "Reporting",
       this.getActualPhase().getYear(), false, "policies");
