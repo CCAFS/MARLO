@@ -287,7 +287,7 @@ public class StudiesOICRAction extends BaseAction {
    * sectionStatuses
    *
    * @param studyID is the policy ID to be identified.
-   * @return Boolean object with the status of the policy
+   * @return Boolean object with the status of the study
    */
   public Boolean isStudyComplete(long studyID, long phaseID) {
 
