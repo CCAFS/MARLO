@@ -1740,6 +1740,17 @@ public class DeliverableAction extends BaseAction {
       }
       deliverableInfoManager.saveDeliverableInfo(deliverableManagedState.getDeliverableInfo());
 
+      /*
+       * Delete the field 'justification' when the status is equals to Completed and this field has information
+       */
+      if (deliverableManagedState.getDeliverableInfo() != null
+        && deliverableManagedState.getDeliverableInfo().getStatus() != null) {
+        if ((deliverableManagedState.getDeliverableInfo().getStatus() == 3)
+          && deliverableManagedState.getDeliverableInfo().getModificationJustification() != null) {
+          deliverableManagedState.getDeliverableInfo().setModificationJustification(null);
+        }
+      }
+
       if (this.hasSpecificities(APConstants.CRP_LP6_ACTIVE) && this.isReportingActive()
         && this.getProjectLp6ContributionValue(project.getId(), this.getActualPhase().getId())) {
         this.updateProjectLp6ContributionDeliverable();
