@@ -5847,24 +5847,26 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return
    */
   public Boolean isInnovationNew(long innovationId) {
+    if (innovationId != 0) {
+      Phase currentPhase = this.getActualPhase();
+      Phase previousPhase = this.phaseManager.findPreviousPhase(currentPhase.getId());
 
-    Phase currentPhase = this.getActualPhase();
-    Phase previousPhase = this.phaseManager.findPreviousPhase(currentPhase.getId());
+      ProjectInnovation innovationNew = this.projectInnovationManager.getProjectInnovationById(innovationId);
 
-    ProjectInnovation innovationNew = this.projectInnovationManager.getProjectInnovationById(innovationId);
-
-    try {
-      List<ProjectInnovationInfo> innos = new ArrayList<>(innovationNew.getProjectInnovationInfos().stream()
-        .filter(i -> i.getPhase().getId().equals(previousPhase.getId())).collect(Collectors.toList()));
-      if (innos != null && !innos.isEmpty()) {
+      try {
+        List<ProjectInnovationInfo> innos = new ArrayList<>(innovationNew.getProjectInnovationInfos().stream()
+          .filter(i -> i.getPhase().getId().equals(previousPhase.getId())).collect(Collectors.toList()));
+        if (innos != null && !innos.isEmpty()) {
+          return false;
+        } else {
+          return true;
+        }
+      } catch (Exception e) {
         return false;
-      } else {
-        return true;
       }
-    } catch (Exception e) {
+    } else {
       return false;
     }
-
   }
 
   public boolean isLessonsActive() {
