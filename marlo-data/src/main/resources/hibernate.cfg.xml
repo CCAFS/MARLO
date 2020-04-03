@@ -450,5 +450,6 @@
     <mapping resource="xmls/ProjectExpectedStudyMilestones.hbm.xml" /> 
     <mapping resource="xmls/ProjectInnovationSubIdos.hbm.xml" /> 
     <mapping resource="xmls/QATokenAuth.hbm.xml" />
+    <mapping resource="xmls/UrlSynthesisLogs.hbm.xml" /> 
   </session-factory>
 </hibernate-configuration>
