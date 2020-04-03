@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.QATokenAuth;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.rest.dto.NewQATokenAuthDTO;
 import org.cgiar.ccafs.marlo.rest.dto.QATokenAuthDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
 import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
@@ -41,12 +42,16 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 /**
  * @author Luis Benavides - CIAT/CCAFS
  */
+@Configuration
+@PropertySource("classpath:global.properties")
 @Named
 public class QATokenItem<T> {
 
@@ -119,38 +124,41 @@ public class QATokenItem<T> {
   /**
    * Generate a QA TokenAuth
    * 
-   * @param name
-   * @param username
-   * @param email
-   * @param smoCode
+   * @param NewQATokenAuthDTO
    * @param User
    * @return a QATokenAuthDTO with the QATokenItem
    */
-  public ResponseEntity<QATokenAuthDTO> getToken(String name, String username, String email, String smoCode,
-    User user) {
+  public ResponseEntity<QATokenAuthDTO> getToken(NewQATokenAuthDTO newQATokenAuthDTO, User user) {
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
     QATokenAuth qATokenAuth = null;
+    String name = newQATokenAuthDTO.getName();
+    String username = newQATokenAuthDTO.getUsername();
+    String email = newQATokenAuthDTO.getEmail();
+    String smoCode = newQATokenAuthDTO.getSmocode();
 
-    GlobalUnit crpSmo = this.globalUnitManager.findGlobalUnitBySMOCode(smoCode.trim());
-
-    if (crpSmo == null) {
-      fieldErrors.add(new FieldErrorDTO("getToken", "smoCode", smoCode + " is an invalid smo code"));
+    if (this.valuesIsEmpty(newQATokenAuthDTO)) {
+      fieldErrors.add(new FieldErrorDTO("getToken", "newQATokenAuthDTO", "One or more of the values are empty"));
     } else {
+      GlobalUnit crpSmo = this.globalUnitManager.findGlobalUnitBySMOCode(smoCode.trim());
 
-      Set<CrpUser> lstUser = user.getCrpUsers();
-
-      if (!lstUser.stream().anyMatch(crp -> crp.getCrp().getAcronym().equalsIgnoreCase(crpSmo.getAcronym()))) {
-        fieldErrors.add(new FieldErrorDTO("getToken", "smoCode", smoCode + " is a smo code entity not autorized"));
+      if (crpSmo == null) {
+        fieldErrors.add(new FieldErrorDTO("getToken", "smoCode", smoCode + " is an invalid smo code"));
       } else {
-        if (!this.emailIsValid(email)) {
-          fieldErrors.add(new FieldErrorDTO("getToken", "email", email + " is an invalid email"));
-        } else {
-          qATokenAuth = this.createToken(name, username, email, smoCode, user);
-        }
 
+        Set<CrpUser> lstUser = user.getCrpUsers();
+
+        if (!lstUser.stream().anyMatch(crp -> crp.getCrp().getAcronym().equalsIgnoreCase(crpSmo.getAcronym()))) {
+          fieldErrors.add(new FieldErrorDTO("getToken", "smoCode", smoCode + " is a smo code entity not autorized"));
+        } else {
+          if (!this.emailIsValid(email)) {
+            fieldErrors.add(new FieldErrorDTO("getToken", "email", email + " is an invalid email"));
+          } else {
+            qATokenAuth = this.createToken(name, username, email, smoCode, user);
+          }
+
+        }
       }
     }
-
     // Validate all fields
     if (!fieldErrors.isEmpty()) {
       throw new MARLOFieldValidationException("Field Validation errors", "",
@@ -162,6 +170,14 @@ public class QATokenItem<T> {
     return Optional.ofNullable(qATokenAuth).map(this.qATokenMapper::QATokenAuthToQATokenAuthDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
 
+  }
+
+  private Boolean valuesIsEmpty(NewQATokenAuthDTO newQATokenAuthDTO) {
+    if (newQATokenAuthDTO.getName().isEmpty() || newQATokenAuthDTO.getUsername().isEmpty()
+      || newQATokenAuthDTO.getEmail().isEmpty() || newQATokenAuthDTO.getSmocode().isEmpty()) {
+      return true;
+    }
+    return false;
   }
 
 }

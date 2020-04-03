@@ -18,13 +18,16 @@ package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.QAToken.QATokenItem;
+import org.cgiar.ccafs.marlo.rest.dto.NewQATokenAuthDTO;
 import org.cgiar.ccafs.marlo.rest.dto.QATokenAuthDTO;
 import org.cgiar.ccafs.marlo.rest.errors.NotFoundException;
 import org.cgiar.ccafs.marlo.security.Permission;
 
 import javax.inject.Inject;
+import javax.validation.Valid;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -34,7 +37,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,6 +48,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 // @ApiIgnore
 @RestController
+@Validated
 @Api(tags = "QA Token")
 public class QAToken {
 
@@ -65,16 +70,12 @@ public class QAToken {
     return user;
   }
 
-  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/qatoken/{name}/{username}/{email}/{smoCode}", method = RequestMethod.GET,
-    produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<QATokenAuthDTO> getToken(@ApiParam(value = "Name", required = true) @PathVariable String name,
-    @ApiParam(value = "User name", required = true) @PathVariable String username,
-    @ApiParam(value = "Email", required = true) @PathVariable String email,
-    @ApiParam(value = "SMO code", required = true) @PathVariable String smoCode) {
-
-    ResponseEntity<QATokenAuthDTO> response =
-      qATokenItem.getToken(name, username, email, smoCode, this.getCurrentUser());
+  @ApiOperation(value = "${QAToken.qatoken.POST.value}", response = QATokenAuthDTO.class)
+  @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
+  @RequestMapping(value = "/qatoken/", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<QATokenAuthDTO> getToken(@ApiParam(value = "${QAToken.qatoken.POST.param.qatoken}",
+    required = true) @Valid @RequestBody NewQATokenAuthDTO newQATokenAuthDTO) {
+    ResponseEntity<QATokenAuthDTO> response = qATokenItem.getToken(newQATokenAuthDTO, this.getCurrentUser());
 
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", "Not Found");
