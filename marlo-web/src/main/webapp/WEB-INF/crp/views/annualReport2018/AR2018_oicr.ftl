@@ -158,9 +158,9 @@
              [/#if]
              [#if !expanded]
                <td class="text-center">
-              [#local isCompleted = true /]
-              [#if isCompleted]
-                <span class="icon-20 icon-check" title="Complete"></span> 
+               [#assign isStudyComplete  = action. isStudyComplete (item.id, actualPhase.id) /]
+               [#if isStudyComplete ]
+                  <span class="icon-20 icon-check" title="Complete"></span> 
                 [#else]
                   <span class="icon-20 icon-uncheck" title=""></span> 
               [/#if] 
