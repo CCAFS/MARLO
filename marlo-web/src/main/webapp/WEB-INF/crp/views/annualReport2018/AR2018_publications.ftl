@@ -241,6 +241,7 @@
             <th class="text-center col-md-1"> [@s.text name="${customLabel}.${name}.identifier" /] </th>
           [/#if]
           [#if allowPopups]
+            <th class="col-md-1 text-center">[@s.text name="${customLabel}.${name}.completeStatus" /]</th>
             <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
           [/#if]
         </tr>
@@ -321,6 +322,15 @@
                 </td>
               [/#if]
               [#if allowPopups]
+                [#-- Complete Status--]
+                <td class="text-center">
+                [#assign isPublicationComplete = true /]
+                 [#if isPublicationComplete]
+                    <span class="icon-20 icon-check" title="Complete"></span> 
+                    [#else]
+                      <span class="icon-20 icon-uncheck" title=""></span> 
+                  [/#if]   
+                </td>
                 [#-- Check --]
                 <td class="text-center">
                   [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.deliverablesIds?seq_contains(item.id))!true) /]
