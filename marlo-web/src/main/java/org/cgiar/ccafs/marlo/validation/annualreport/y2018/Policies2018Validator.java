@@ -97,4 +97,33 @@ public class Policies2018Validator extends BaseValidator {
 
   }
 
+  public void validatePMU(BaseAction action, ReportSynthesis reportSynthesis, boolean saving, boolean tableComplete) {
+    action.setInvalidFields(new HashMap<>());
+    if (reportSynthesis != null) {
+      if (!saving) {
+        Path path = this.getAutoSaveFilePath(reportSynthesis, action.getCrpID(), action);
+        if (path.toFile().exists()) {
+          action.addMissingField("draft");
+        }
+      }
+
+      if (tableComplete == false) {
+        action.addMessage(action.getText("Incomplete Policies"));
+        action.addMissingField("synthesis.AR2019Table2");
+      }
+
+      if (!action.getFieldErrors().isEmpty()) {
+        action.addActionError(action.getText("saving.fields.required"));
+      } else if (action.getValidationMessage().length() > 0) {
+        action.addActionMessage(
+          " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
+      }
+
+      this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
+        action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
+        ReportSynthesis2018SectionStatusEnum.POLICIES.getStatus(), action);
+    }
+
+  }
+
 }
