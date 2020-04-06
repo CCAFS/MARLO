@@ -328,7 +328,7 @@ public class PublicationsAction extends BaseAction {
   public Boolean isPublicationComplete(long deliverableID, long phaseID) {
 
     SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByDeliverable(deliverableID, "Reporting",
-      this.getActualPhase().getYear(), false, "publications");
+      this.getActualPhase().getYear(), false, "deliverableList");
 
     if (sectionStatus == null) {
       return true;
