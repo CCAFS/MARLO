@@ -181,6 +181,7 @@
             <th class="text-center"></th>
           [/#if]
           [#if !expanded]
+            <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.completeStatus" /] </th>
             <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
           [/#if]
         </tr>
@@ -258,7 +259,15 @@
               </td>
             [/#if]
             [#if !expanded]
-            <td class="text-center">
+              <td class="text-center">
+              [#assign isInnovationComplete = action.isInnovationComplete(item.id, actualPhase.id) /]
+              [#if  isInnovationComplete]
+                <span class="icon-20 icon-check" title="Complete"></span> 
+                [#else]
+                  <span class="icon-20 icon-uncheck" title=""></span> 
+              [/#if]   
+              </td>
+              <td class="text-center">
               [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.innovationsIds?seq_contains(item.id))!true) /]
               [@customForm.checkmark id="innovation-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.innovationsValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/] 
             </td>
@@ -267,7 +276,7 @@
           [/#list]
         [#else]
           <tr>
-            <td class="text-center" colspan="5"><i>No entries added yet.</i></td>
+            <td class="text-center" colspan="6"><i>No entries added yet.</i></td>
           </tr>
         [/#if]
       </tbody>

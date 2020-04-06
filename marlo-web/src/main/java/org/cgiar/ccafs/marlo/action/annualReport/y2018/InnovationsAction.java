@@ -29,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndStageInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
+import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -42,6 +43,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressInnovation;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisInnovationsByStageDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisInnovationsByTypeDTO;
+import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -86,6 +88,8 @@ public class InnovationsAction extends BaseAction {
   private ReportSynthesisFlagshipProgressInnovationManager reportSynthesisFlagshipProgressInnovationManager;
   private RepIndStageInnovationManager repIndStageInnovationManager;
   private RepIndInnovationTypeManager repIndInnovationTypeManager;
+  private SectionStatusManager sectionStatusManager;
+
 
   // Variables
   private String transaction;
@@ -110,8 +114,8 @@ public class InnovationsAction extends BaseAction {
     ProjectFocusManager projectFocusManager, ProjectManager projectManager,
     ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
     ReportSynthesisFlagshipProgressInnovationManager reportSynthesisFlagshipProgressInnovationManager,
-    RepIndStageInnovationManager repIndStageInnovationManager,
-    RepIndInnovationTypeManager repIndInnovationTypeManager) {
+    RepIndStageInnovationManager repIndStageInnovationManager, RepIndInnovationTypeManager repIndInnovationTypeManager,
+    SectionStatusManager sectionStatusManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -127,6 +131,7 @@ public class InnovationsAction extends BaseAction {
     this.reportSynthesisFlagshipProgressInnovationManager = reportSynthesisFlagshipProgressInnovationManager;
     this.repIndStageInnovationManager = repIndStageInnovationManager;
     this.repIndInnovationTypeManager = repIndInnovationTypeManager;
+    this.sectionStatusManager = sectionStatusManager;
   }
 
 
@@ -237,7 +242,6 @@ public class InnovationsAction extends BaseAction {
     return innovationsByTypeDTO;
   }
 
-
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
@@ -282,6 +286,7 @@ public class InnovationsAction extends BaseAction {
     return transaction;
   }
 
+
   public boolean isFlagship() {
     boolean isFP = false;
     if (liaisonInstitution != null) {
@@ -294,6 +299,30 @@ public class InnovationsAction extends BaseAction {
       }
     }
     return isFP;
+  }
+
+  /**
+   * This method get the status of an specific Innovation depending of the
+   * sectionStatuses
+   *
+   * @param innovationID is the innovation ID to be identified.
+   * @return Boolean object with the status of the innovation
+   */
+  public Boolean isInnovationComplete(long innovationID, long phaseID) {
+
+    SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByProjectInnovation(innovationID,
+      "Reporting", this.getActualPhase().getYear(), false, "innovations");
+
+    if (sectionStatus == null) {
+      return true;
+    }
+
+    if (sectionStatus.getMissingFields().length() != 0) {
+      return false;
+    }
+
+    return true;
+
   }
 
 

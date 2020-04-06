@@ -111,7 +111,8 @@
           <th></th>
           [/#if]
           [#if !expanded]
-          <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
+            <th class="col-md-1 text-center no-sort">[@s.text name="${customLabel}.${name}.completeStatus" /]</th>
+            <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
           [/#if]
         </tr>
       </thead>
@@ -145,8 +146,7 @@
                     <span class="programTag" style="border-color:${(liason.crpProgram.color)!'#444'}" title="${(liason.composedName)!}">${(liason.acronym)!}</span>
                   [/#list]
                 </div>
-                [/#if]
-                
+                [/#if]                
                 <a href="${url}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
               </td>
               <td>[@utils.tableText value=(item.projectExpectedStudyInfo.repIndStageStudy.name)!"" /]</td>
@@ -156,6 +156,16 @@
               <td>[@utils.tableList list=(item.subIdos)![] displayFieldName="srfSubIdo.description" /]</td>
               <td> <a href="${summaryPDF}" target="_blank"><img src="${baseUrlCdn}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" /></a>  </td>
              [/#if]
+             [#if !expanded]
+               <td class="text-center">
+               [#assign isStudyComplete  = action.isStudyComplete(item.id, actualPhase.id) /]
+               [#if isStudyComplete ]
+                  <span class="icon-20 icon-check" title="Complete"></span> 
+                [#else]
+                  <span class="icon-20 icon-uncheck" title=""></span> 
+              [/#if] 
+             [/#if]  
+              </td>
              [#if !expanded]
               <td class="text-center">
                 [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.studiesIds?seq_contains(item.id))!true) /]

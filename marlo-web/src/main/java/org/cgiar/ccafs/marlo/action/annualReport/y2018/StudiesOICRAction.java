@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
+import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -36,6 +37,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressStudy;
+import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -76,6 +78,8 @@ public class StudiesOICRAction extends BaseAction {
   private ProjectExpectedStudyManager projectExpectedStudyManager;
   private ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager;
   private ReportSynthesisFlagshipProgressStudyManager reportSynthesisFlagshipProgressStudyManager;
+  private SectionStatusManager sectionStatusManager;
+
 
   // Variables
   private String transaction;
@@ -95,7 +99,8 @@ public class StudiesOICRAction extends BaseAction {
     AuditLogManager auditLogManager, UserManager userManager, StudiesOICR2018Validator validator,
     CrpProgramManager crpProgramManager, ProjectExpectedStudyManager projectExpectedStudyManager,
     ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
-    ReportSynthesisFlagshipProgressStudyManager reportSynthesisFlagshipProgressStudyManager) {
+    ReportSynthesisFlagshipProgressStudyManager reportSynthesisFlagshipProgressStudyManager,
+    SectionStatusManager sectionStatusManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -107,6 +112,7 @@ public class StudiesOICRAction extends BaseAction {
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.reportSynthesisFlagshipProgressManager = reportSynthesisFlagshipProgressManager;
     this.reportSynthesisFlagshipProgressStudyManager = reportSynthesisFlagshipProgressStudyManager;
+    this.sectionStatusManager = sectionStatusManager;
   }
 
 
@@ -200,7 +206,6 @@ public class StudiesOICRAction extends BaseAction {
 
   }
 
-
   private Path getAutoSaveFilePath() {
     String composedClassName = reportSynthesis.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -244,10 +249,10 @@ public class StudiesOICRAction extends BaseAction {
     return synthesisID;
   }
 
+
   public String getTransaction() {
     return transaction;
   }
-
 
   public boolean isFlagship() {
     boolean isFP = false;
@@ -273,6 +278,31 @@ public class StudiesOICRAction extends BaseAction {
       }
     }
     return isFP;
+
+  }
+
+
+  /**
+   * This method get the status of an specific study depending of the
+   * sectionStatuses
+   *
+   * @param studyID is the study ID to be identified.
+   * @return Boolean object with the status of the study
+   */
+  public Boolean isStudyComplete(long studyID, long phaseID) {
+
+    SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByProjectExpectedStudy(studyID, "Reporting",
+      this.getActualPhase().getYear(), false, "studies");
+
+    if (sectionStatus == null) {
+      return true;
+    }
+
+    if (sectionStatus.getMissingFields().length() != 0) {
+      return false;
+    }
+
+    return true;
 
   }
 

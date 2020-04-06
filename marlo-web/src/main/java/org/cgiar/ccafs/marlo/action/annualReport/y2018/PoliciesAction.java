@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndStageProcessManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
+import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -42,6 +43,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressPolicy;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisPoliciesByOrganizationTypeDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisPoliciesByRepIndPolicyInvestimentTypeDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisPoliciesByRepIndStageProcessDTO;
+import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -85,6 +87,7 @@ public class PoliciesAction extends BaseAction {
   private RepIndOrganizationTypeManager repIndOrganizationTypeManager;
   private RepIndStageProcessManager repIndStageProcessManager;
   private RepIndPolicyInvestimentTypeManager repIndInvestimentTypeManager;
+  private SectionStatusManager sectionStatusManager;
 
   // Variables
   private String transaction;
@@ -109,7 +112,7 @@ public class PoliciesAction extends BaseAction {
     ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
     ReportSynthesisFlagshipProgressPolicyManager reportSynthesisFlagshipProgressPolicyManager,
     RepIndOrganizationTypeManager repIndOrganizationTypeManager, RepIndStageProcessManager repIndStageProcessManager,
-    RepIndPolicyInvestimentTypeManager repIndInvestimentTypeManager) {
+    RepIndPolicyInvestimentTypeManager repIndInvestimentTypeManager, SectionStatusManager sectionStatusManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -124,6 +127,7 @@ public class PoliciesAction extends BaseAction {
     this.repIndOrganizationTypeManager = repIndOrganizationTypeManager;
     this.repIndStageProcessManager = repIndStageProcessManager;
     this.repIndInvestimentTypeManager = repIndInvestimentTypeManager;
+    this.sectionStatusManager = sectionStatusManager;
   }
 
 
@@ -308,6 +312,30 @@ public class PoliciesAction extends BaseAction {
 
   }
 
+
+  /**
+   * This method get the status of an specific policy depending of the
+   * sectionStatuses
+   *
+   * @param policyID is the policy ID to be identified.
+   * @return Boolean object with the status of the policy
+   */
+  public Boolean isPolicyComplete(long policyID, long phaseID) {
+
+    SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByProjectPolicy(policyID, "Reporting",
+      this.getActualPhase().getYear(), false, "policies");
+
+    if (sectionStatus == null) {
+      return true;
+    }
+
+    if (sectionStatus.getMissingFields().length() != 0) {
+      return false;
+    }
+
+    return true;
+
+  }
 
   @Override
   public String next() {
@@ -506,6 +534,7 @@ public class PoliciesAction extends BaseAction {
 
   }
 
+
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -557,7 +586,6 @@ public class PoliciesAction extends BaseAction {
     }
   }
 
-
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
@@ -566,14 +594,15 @@ public class PoliciesAction extends BaseAction {
     this.liaisonInstitutionID = liaisonInstitutionID;
   }
 
+
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
   }
 
-
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
+
 
   public void setPoliciesByOrganizationTypeDTOs(
     List<ReportSynthesisPoliciesByOrganizationTypeDTO> policiesByOrganizationTypeDTOs) {

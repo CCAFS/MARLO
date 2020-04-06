@@ -176,11 +176,12 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     masterReport.getParameterValues().put("i8nInnovationRCrps", this.getText("projectInnovations.contributing"));
     masterReport.getParameterValues().put("i8nInnovationRGenderFocusLevel",
       this.getText("projectInnovations.genderRelevance"));
-    masterReport.getParameterValues().put("i8nInnovationRGenderExplaniation",
-      this.getText("projectInnovations.genderRelevance.explanation.readText"));
+    masterReport.getParameterValues().put("i8nInnovationRNew", this.getText("projectInnovations.isNew"));
     masterReport.getParameterValues().put("i8nInnovationRYouthFocusLevel",
       this.getText("projectInnovations.youthRelevance"));
     masterReport.getParameterValues().put("i8nInnovationRYouthExplaniation",
+      this.getText("projectInnovations.youthRelevance.explanation.readText"));
+    masterReport.getParameterValues().put("i8nInnovationRNew",
       this.getText("projectInnovations.youthRelevance.explanation.readText"));
     masterReport.getParameterValues().put("i8nProject", this.getText("summaries.oaprojects.projectTitle"));
     return masterReport;
@@ -330,12 +331,12 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         "organizations", "projectExpectedStudy", "descriptionStage", "leadOrganization", "contributingOrganization",
         "adaptativeResearch", "evidenceLink", "deliverables", "crps", "genderFocusLevel", "genderExplaniation",
         "youthFocusLevel", "youthExplaniation", "project", "oicr", "centers", "hasMilestones", "milestones", "subIdos",
-        "deliverableLink", "phaseID", "center"},
+        "deliverableLink", "phaseID", "center", "isNew"},
       new Class[] {Long.class, Boolean.class, Boolean.class, Boolean.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class},
       0);
     Long id = null;
     String title = null, narrative = null, phaseResearch = null, stageInnovation = null, innovationType = null,
@@ -344,7 +345,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       contributingOrganization = null, adaptativeResearch = null, evidenceLink = null, links = null,
       deliverables = null, crps = null, genderFocusLevel = null, genderExplaniation = null, youthFocusLevel = null,
       youthExplaniation = null, project = null, oicr = "", centers = "", hasMilestones = "", milestones = null,
-      subIdos = null, deliverableLink = "", phaseID = "", loggedCenter = "", deliverableID = "";
+      subIdos = null, deliverableLink = "", phaseID = "", loggedCenter = "", deliverableID = "", isNew = null;
     Boolean isRegional = false, isNational = false, isStage4 = false;
     // Id
     id = projectInnovationID;
@@ -400,6 +401,15 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     // Degree
     if (projectInnovationInfo.getRepIndDegreeInnovation() != null) {
       degreeInnovation = projectInnovationInfo.getRepIndDegreeInnovation().getName();
+    }
+
+    // Is new Innovation
+    if (this.isInnovationNew(projectInnovationID) != null) {
+      if (this.isInnovationNew(projectInnovationID) == true) {
+        isNew = "Yes";
+      } else {
+        isNew = "No";
+      }
     }
 
     // Has milestones
@@ -467,7 +477,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
      * new ArrayList<>(projectInnovationInfo.getProjectInnovation().getProjectInnovationSubIdos().stream()
      * .filter(o -> o.getPhase().getId().equals(this.getSelectedPhase().getId())).collect(Collectors.toList()));
      */
-    if (subIdosList != null) {
+    if (subIdosList != null && !subIdosList.isEmpty()) {
       Set<String> subIdosSet = new HashSet<>();
       for (ProjectInnovationSubIdo subIdo : subIdosList) {
         subIdosSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + subIdo.getSrfSubIdo().getId() + " - "
@@ -686,7 +696,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       contributionOfCrp, degreeInnovation, geographicScope, region, countries, organizations, projectExpectedStudy,
       descriptionStage, leadOrganization, contributingOrganization, adaptativeResearch, evidenceLink, deliverables,
       crps, genderFocusLevel, genderExplaniation, youthFocusLevel, youthExplaniation, project, oicr, centers,
-      hasMilestones, milestones, subIdos, deliverableLink, phaseID, loggedCenter});
+      hasMilestones, milestones, subIdos, deliverableLink, phaseID, loggedCenter, isNew});
     return model;
   }
 
