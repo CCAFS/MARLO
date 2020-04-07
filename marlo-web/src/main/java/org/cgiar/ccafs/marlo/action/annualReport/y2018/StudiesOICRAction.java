@@ -228,7 +228,8 @@ public class StudiesOICRAction extends BaseAction {
   }
 
 
-  public List<ProjectExpectedStudyInnovation> getInnovations(long studyID, long phaseID) {
+  public List<ProjectInnovation> getInnovations(long studyID, long phaseID) {
+    List<ProjectInnovation> projectInnovationList = new ArrayList<>();
     List<ProjectExpectedStudyInnovation> innovationList = new ArrayList<>();
     innovationList = projectExpectedStudyInnovationManager.findAll().stream()
       .filter(i -> i != null && i.getProjectExpectedStudy() != null && studyID != 0
@@ -244,11 +245,12 @@ public class StudiesOICRAction extends BaseAction {
             projectInnovationManager.getProjectInnovationById(studyInnovation.getProjectInnovation().getId());
           if (innovation != null) {
             innovation.setProjectInnovationInfo(innovation.getProjectInnovationInfo(this.getActualPhase()));
+            projectInnovationList.add(innovation);
           }
         }
       }
     }
-    return innovationList;
+    return projectInnovationList;
   }
 
 
@@ -272,7 +274,8 @@ public class StudiesOICRAction extends BaseAction {
   }
 
 
-  public List<ProjectExpectedStudyPolicy> getPolicies(long studyID, long phaseID) {
+  public List<ProjectPolicy> getPolicies(long studyID, long phaseID) {
+    List<ProjectPolicy> projectPolicyList = new ArrayList<>();
     List<ProjectExpectedStudyPolicy> policyList = new ArrayList<>();
     policyList = projectExpectedStudyPolicyManager.findAll().stream()
       .filter(i -> i != null && i.getProjectExpectedStudy() != null && studyID != 0
@@ -287,11 +290,12 @@ public class StudiesOICRAction extends BaseAction {
           policy = projectPolicyManager.getProjectPolicyById(studyPolicy.getProjectPolicy().getId());
           if (policy != null) {
             policy.setProjectPolicyInfo(policy.getProjectPolicyInfo(this.getActualPhase()));
+            projectPolicyList.add(policy);
           }
         }
       }
     }
-    return policyList;
+    return projectPolicyList;
   }
 
 
