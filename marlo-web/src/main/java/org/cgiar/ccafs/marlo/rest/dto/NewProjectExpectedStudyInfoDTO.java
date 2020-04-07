@@ -44,13 +44,13 @@ public class NewProjectExpectedStudyInfoDTO {
   @ApiModelProperty(notes = "Contact person", position = 7)
   private String contacts;
 
-  @ApiModelProperty(notes = "Short outcome/impact statement", position = 8)
+  @ApiModelProperty(notes = "Short outcome/impact statement (80 words max)", position = 8)
   private String outcomeImpactStatement;
 
-  @ApiModelProperty(notes = "Outcome story for communications use", position = 9)
+  @ApiModelProperty(notes = "Outcome story for communications use (400 words max)", position = 9)
   private String comunicationsMaterial;
 
-  @ApiModelProperty(notes = "Elaboration of Outcome/Impact Statement", position = 10)
+  @ApiModelProperty(notes = "Elaboration of Outcome/Impact Statement (400 words max)", position = 10)
   private String elaborationOutcomeImpactStatement;
 
   @ApiModelProperty(notes = "References cited", position = 11)
