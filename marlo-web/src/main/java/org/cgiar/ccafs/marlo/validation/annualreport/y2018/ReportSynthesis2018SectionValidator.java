@@ -586,11 +586,16 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
   public void validatePolicies(BaseAction action, ReportSynthesis reportSynthesis) {
 
     if (reportSynthesis.getReportSynthesisFlagshipProgress() == null) {
+
       ReportSynthesisFlagshipProgress flagshipProgress = new ReportSynthesisFlagshipProgress();
 
       // create one to one relation
       reportSynthesis.setReportSynthesisFlagshipProgress(flagshipProgress);
       flagshipProgress.setReportSynthesis(reportSynthesis);
+      if (reportSynthesis.getLiaisonInstitution() != null
+        && reportSynthesis.getLiaisonInstitution().getCrpProgram() == null) {
+
+      }
 
       policies2018Validator.validate(action, reportSynthesis, false);
 
