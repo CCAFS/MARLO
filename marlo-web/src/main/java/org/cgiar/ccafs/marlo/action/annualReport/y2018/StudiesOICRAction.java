@@ -98,7 +98,7 @@ public class StudiesOICRAction extends BaseAction {
   private List<LiaisonInstitution> liaisonInstitutions;
   private List<ProjectExpectedStudy> projectExpectedStudies;
   private Phase actualPhase;
-
+  private boolean tableComplete;
 
   @Inject
   public StudiesOICRAction(APConfig config, GlobalUnitManager crpManager,
@@ -353,13 +353,16 @@ public class StudiesOICRAction extends BaseAction {
       this.getActualPhase().getYear(), false, "studies");
 
     if (sectionStatus == null) {
+      tableComplete = true;
       return true;
     }
 
     if (sectionStatus.getMissingFields().length() != 0) {
+      tableComplete = false;
       return false;
     }
 
+    tableComplete = true;
     return true;
 
   }
@@ -382,6 +385,7 @@ public class StudiesOICRAction extends BaseAction {
     // Get current CRP
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
+    tableComplete = false;
 
     // If there is a history version being loaded
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
@@ -622,8 +626,14 @@ public class StudiesOICRAction extends BaseAction {
 
   @Override
   public void validate() {
-    if (save) {
-      validator.validate(this, reportSynthesis, true);
+    if (this.isPMU()) {
+      if (save) {
+        validator.validatePMU(this, reportSynthesis, true, tableComplete);
+      }
+    } else {
+      if (save) {
+        validator.validate(this, reportSynthesis, true);
+      }
     }
   }
 }
