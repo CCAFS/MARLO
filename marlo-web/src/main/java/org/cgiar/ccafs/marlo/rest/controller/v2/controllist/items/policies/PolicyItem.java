@@ -107,7 +107,6 @@ public class PolicyItem<T> {
   private ProjectPolicyOwnerManager projectPolicyOwnerManager;
   private RepIndPolicyInvestimentTypeManager repIndPolicyInvestimentTypeManager;
   private RepIndStageProcessManager repIndStageProcessManager;
-  private RepIndOrganizationTypeManager repIndOrganizationTypeManager;
   private RepIndPolicyTypeManager repIndPolicyTypeManager;
   private ProjectManager projectManager;
   private SrfSubIdoManager srfSubIdoManager;
@@ -144,7 +143,6 @@ public class PolicyItem<T> {
     this.projectPolicySubIdoManager = projectPolicySubIdoManager;
     this.repIndPolicyInvestimentTypeManager = repIndPolicyInvestimentTypeManager;
     this.repIndStageProcessManager = repIndStageProcessManager;
-    this.repIndOrganizationTypeManager = repIndOrganizationTypeManager;
     this.projectManager = projectManager;
     this.srfSubIdoManager = srfSubIdoManager;
     this.repIndGeographicScopeManager = repIndGeographicScopeManager;
@@ -396,6 +394,7 @@ public class PolicyItem<T> {
             projectPolicyInfo.setPhase(phase);
             projectPolicyInfo.setYear(newPolicyDTO.getProjectPoliciesInfo().getYear());
             projectPolicyInfo.setTitle(newPolicyDTO.getProjectPoliciesInfo().getTitle());
+            projectPolicyInfo.setDescription(newPolicyDTO.getProjectPoliciesInfo().getDescription());
             projectPolicyInfo.setNarrativeEvidence(newPolicyDTO.getProjectPoliciesInfo().getNarrativeEvidence());
             projectPolicyInfoManager.saveProjectPolicyInfo(projectPolicyInfo);
 
@@ -689,6 +688,7 @@ public class PolicyItem<T> {
         projectPolicyInfo.setPhase(phase);
         projectPolicyInfo.setYear(newPolicyDTO.getProjectPoliciesInfo().getYear());
         projectPolicyInfo.setTitle(newPolicyDTO.getProjectPoliciesInfo().getTitle());
+        projectPolicyInfo.setDescription(newPolicyDTO.getProjectPoliciesInfo().getDescription());
         projectPolicyInfo.setNarrativeEvidence(newPolicyDTO.getProjectPoliciesInfo().getNarrativeEvidence());
         projectPolicy.setProjectPolicyInfo(projectPolicyInfo);
 
