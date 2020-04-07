@@ -137,7 +137,9 @@
                 [@utils.tableText value=(item.composedName)!"" /]
                 
                 [#if isFromProject]<br /> <small>(From Project P${item.project.id})</small> [/#if]
-                
+                [#-- OICR Contributions --][#--
+                [#if !expanded] <div class="pull-right">[@oicrContributions element=item tiny=true /] [/#if]</div>
+                --]
                 [#if PMU]
                 <br />
                 <div class="form-group">
@@ -172,4 +174,93 @@
       </tbody>
     </table>
   </div>
+[/#macro]
+
+[#macro oicrContributions element tiny=false]
+  [#local policiesContributions = (action.getPolicies(element.id, actualPhase.id))![] ]
+  [#local innovationsContributions = (action.getInnovations(element.id, actualPhase.id))![] ]
+  [#local totalContributions = (policiesContributions?size +innovationsContributions?size)!0 ]
+  <button type="button" class="outcomesContributionButton btn btn-default btn-xs" data-toggle="modal" data-target="#oicr-${element.id}">
+    <span class="icon-20 project"></span> <strong>${totalContributions}</strong> [#if !tiny][@s.text name="expectedProgress.milestonesContributions" /][/#if]
+  </button>
+<div>${actualPhase.id}</div>
+  <!-- Modal -->
+  <div class="modal fade" id="oicr-${element.id}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">
+            [#-- [@s.text name="${customLabel}.table3.outcomeContributions" /]--]
+          </h4>
+        </div>
+        <div class="modal-body">
+          <div class="">
+          
+            [#-- Policies --]
+            [#if policiesContributions?has_content] 
+              <h4 class="simpleTitle">[@s.text name="expectedProgress.milestonesContributions.policiesTitle" /]</h4>
+              <div class="">
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th id="ids">[@s.text name="projectsList.projectids" /]</th>
+                      <th id="policyTitles" >[@s.text name="project.projectPolicyList.policyName" /]</th>
+                     [#--<th id="policyType">[@s.text name="project.projectPolicyList.type" /]</th>--]
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    [#list policiesContributions as policy]
+                      [#local policyUrl][@s.url namespace="/projects" action="${(crpSession)!}/policy"][@s.param name='policyID']${policy.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                      <tr>
+                        <th scope="row">${policy.id}</th>
+                        <td class="col-md-6">${(policy.projectPolicyInfo.title)!'Untitled'}</td>
+                         [#--<td>${(p.projectPolicyInfo.policyType.name?capitalize)!'none'}</td>--]
+                        <td> <a href="${policyUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
+                      </tr>
+                      [/#list]
+                  </tbody>
+                </table>
+              </div>
+            [/#if]
+            
+            [#-- innovation --]
+            [#if innovationsContributions?has_content] 
+              <h4 class="simpleTitle">[@s.text name="expectedProgress.milestonesContributions.innovations" /]</h4>
+              <div class="">
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th id="ids">[@s.text name="projectsList.projectids" /]</th>
+                    <th id="innovationTitles" >[@s.text name="project.innovationList.innovationName" /]</th>
+                    [#--<th id="innovationType">[@s.text name="project.innovationList.type" /]</th>--]
+                    [#--<th id="innovationRole" >[@s.text name="project.innovationList.role" /]</th>--]
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  [#list innovationsContributions as innovation]
+                    [#local innovationUrl][@s.url namespace="/projects" action="${(crpSession)!}/innovation"][@s.param name='innovationID']${innovation.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                    <tr>
+                      <th scope="row">${innovation.id}</th>
+                      <td class="col-md-6">${(innovation.projectInnovationInfo.title)!'Untitled'}</td>
+                      [#--<td>${(i.innovationInfo.innovationType.name?capitalize)!'none'}</td>
+                      <td class="col-md-6">${(i.projectInnovationInfo.title)!'Untitled'}</td>--]
+                      <td> <a href="${innovationUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
+                    </tr>
+                    [/#list]
+                </tbody>
+              </table>
+              </div>
+            [/#if]
+            
+          </div>
+        </div>
+        <div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div>
+      </div>
+    </div>
+  </div>
+  [#--
+  [/#if]--]
 [/#macro]
