@@ -24,6 +24,8 @@ import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPolicyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
@@ -37,6 +39,8 @@ import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressStudy;
@@ -82,6 +86,8 @@ public class StudiesOICRAction extends BaseAction {
   private ReportSynthesisFlagshipProgressStudyManager reportSynthesisFlagshipProgressStudyManager;
   private ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager;
   private ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager;
+  private ProjectPolicyManager projectPolicyManager;
+  private ProjectInnovationManager projectInnovationManager;
 
   // Variables
   private String transaction;
@@ -103,7 +109,8 @@ public class StudiesOICRAction extends BaseAction {
     ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
     ReportSynthesisFlagshipProgressStudyManager reportSynthesisFlagshipProgressStudyManager,
     ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager,
-    ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager) {
+    ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager, ProjectPolicyManager projectPolicyManager,
+    ProjectInnovationManager projectInnovationManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -117,6 +124,7 @@ public class StudiesOICRAction extends BaseAction {
     this.reportSynthesisFlagshipProgressStudyManager = reportSynthesisFlagshipProgressStudyManager;
     this.projectExpectedStudyInnovationManager = projectExpectedStudyInnovationManager;
     this.projectExpectedStudyPolicyManager = projectExpectedStudyPolicyManager;
+    this.projectInnovationManager = projectInnovationManager;
   }
 
 
@@ -227,6 +235,19 @@ public class StudiesOICRAction extends BaseAction {
         && i.getProjectExpectedStudy().getId() != null && i.getProjectExpectedStudy().getId().equals(studyID)
         && i.getPhase() != null && phaseID != 0 && i.getPhase().getId().equals(phaseID))
       .collect(Collectors.toList());
+    if (innovationList != null && !innovationList.isEmpty()) {
+      for (ProjectExpectedStudyInnovation studyInnovation : innovationList) {
+        if (studyInnovation != null && studyInnovation.getProjectInnovation() != null
+          && studyInnovation.getProjectInnovation().getId() != null) {
+          ProjectInnovation innovation = new ProjectInnovation();
+          innovation =
+            projectInnovationManager.getProjectInnovationById(studyInnovation.getProjectInnovation().getId());
+          if (innovation != null) {
+            innovation.setProjectInnovationInfo(innovation.getProjectInnovationInfo(this.getActualPhase()));
+          }
+        }
+      }
+    }
     return innovationList;
   }
 
@@ -258,6 +279,18 @@ public class StudiesOICRAction extends BaseAction {
         && i.getProjectExpectedStudy().getId() != null && i.getProjectExpectedStudy().getId().equals(studyID)
         && i.getPhase() != null && phaseID != 0 && i.getPhase().getId().equals(phaseID))
       .collect(Collectors.toList());
+    if (policyList != null && !policyList.isEmpty()) {
+      for (ProjectExpectedStudyPolicy studyPolicy : policyList) {
+        if (studyPolicy != null && studyPolicy.getProjectPolicy() != null
+          && studyPolicy.getProjectPolicy().getId() != null) {
+          ProjectPolicy policy = new ProjectPolicy();
+          policy = projectPolicyManager.getProjectPolicyById(studyPolicy.getProjectPolicy().getId());
+          if (policy != null) {
+            policy.setProjectPolicyInfo(policy.getProjectPolicyInfo(this.getActualPhase()));
+          }
+        }
+      }
+    }
     return policyList;
   }
 
