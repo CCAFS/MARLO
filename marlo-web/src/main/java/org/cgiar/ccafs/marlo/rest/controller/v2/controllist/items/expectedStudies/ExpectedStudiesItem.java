@@ -214,6 +214,17 @@ public class ExpectedStudiesItem<T> {
     this.projectExpectedStudyMapper = projectExpectedStudyMapper;
   }
 
+  private int countWords(String string) {
+    int wordCount = 0;
+    string = StringUtils.stripToEmpty(string);
+    if (!string.isEmpty()) {
+      String[] words = StringUtils.split(string);
+      wordCount = words.length;
+    }
+
+    return wordCount;
+  }
+
   public Long createExpectedStudy(NewProjectExpectedStudyDTO newProjectExpectedStudy, String entityAcronym, User user) {
     Long projectExpectedStudyID = null;
     Phase phase = null;
@@ -291,6 +302,7 @@ public class ExpectedStudiesItem<T> {
       List<ProjectExpectedStudyQuantification> ExpectedStudyQuantificationList =
         new ArrayList<ProjectExpectedStudyQuantification>();
       int hasPrimary = 0;
+      int wordCount = -1;
 
       if (newProjectExpectedStudy.getProjectExpectedStudyInfo() != null) {
         ProjectExpectedStudyInfo projectExpectedStudyInfo = new ProjectExpectedStudyInfo();
@@ -301,6 +313,41 @@ public class ExpectedStudiesItem<T> {
         } else {
           fieldErrors.add(new FieldErrorDTO("createExpectedStudy", "Title", "Please insert a valid title"));
         }
+
+        // shortOutcome
+        wordCount = this.countWords(newProjectExpectedStudy.getProjectExpectedStudyInfo().getOutcomeImpactStatement());
+        if (wordCount > 80) {
+          fieldErrors.add(new FieldErrorDTO("createExpectedStudy", "outcomeImpactStatement",
+            "Short outcome/impact statement excedes the maximum number of words (80 words)"));
+        } else {
+          projectExpectedStudyInfo.setOutcomeImpactStatement(
+            newProjectExpectedStudy.getProjectExpectedStudyInfo().getOutcomeImpactStatement());
+        }
+
+        // communicationsMaterial
+        wordCount = this.countWords(newProjectExpectedStudy.getProjectExpectedStudyInfo().getComunicationsMaterial());
+        if (wordCount > 400) {
+          fieldErrors.add(new FieldErrorDTO("createExpectedStudy", "comunicationsMaterial",
+            "Outcome story for communications use excedes the maximum number of words (400 words)"));
+        } else {
+          projectExpectedStudyInfo
+            .setComunicationsMaterial(newProjectExpectedStudy.getProjectExpectedStudyInfo().getComunicationsMaterial());
+        }
+
+        // elaborationOutcomeImpactStatement
+        wordCount =
+          this.countWords(newProjectExpectedStudy.getProjectExpectedStudyInfo().getElaborationOutcomeImpactStatement());
+        if (wordCount > 400) {
+          fieldErrors.add(new FieldErrorDTO("createExpectedStudy", "elaborationOutcomeImpactStatement",
+            "Elaboration of Outcome/Impact Statement excedes the maximum number of words (400 words)"));
+        } else {
+          projectExpectedStudyInfo.setElaborationOutcomeImpactStatement(
+            newProjectExpectedStudy.getProjectExpectedStudyInfo().getElaborationOutcomeImpactStatement());
+        }
+
+        // referencesText
+        projectExpectedStudyInfo
+          .setReferencesText(newProjectExpectedStudy.getProjectExpectedStudyInfo().getReferencesText());
 
         // DANGER! Magic number ahead
         if (newProjectExpectedStudy.getProjectExpectedStudyInfo().getYear() > 1900) {
@@ -1128,7 +1175,7 @@ public class ExpectedStudiesItem<T> {
 
     ProjectExpectedStudy projectExpectedStudy = projectExpectedStudyManager.getProjectExpectedStudyById(id.longValue());
 
-    if (projectExpectedStudy != null) {
+    if (projectExpectedStudy != null && fieldErrors.isEmpty()) {
       ProjectExpectedStudyInfo projectExpectedStudyInfo = projectExpectedStudy.getProjectExpectedStudyInfo(phase);
       // Flagship
       List<ProjectExpectedStudyFlagship> projectExpectedStudyFlagshipList =
@@ -1218,6 +1265,7 @@ public class ExpectedStudiesItem<T> {
     }
 
     if (!fieldErrors.isEmpty()) {
+      fieldErrors.forEach(e -> System.out.println(e.getMessage()));
       throw new MARLOFieldValidationException("Field Validation errors", "",
         fieldErrors.stream()
           .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
@@ -1314,6 +1362,7 @@ public class ExpectedStudiesItem<T> {
       List<ProjectExpectedStudyQuantification> expectedStudyQuantificationList =
         new ArrayList<ProjectExpectedStudyQuantification>();
       int hasPrimary = 0;
+      int wordCount = -1;
 
       if (newProjectExpectedStudy.getProjectExpectedStudyInfo() != null) {
         // update expected Study info
@@ -1328,6 +1377,41 @@ public class ExpectedStudiesItem<T> {
         } else {
           fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Title", "Please insert a valid title"));
         }
+
+        // shortOutcome
+        wordCount = this.countWords(newProjectExpectedStudy.getProjectExpectedStudyInfo().getOutcomeImpactStatement());
+        if (wordCount > 80) {
+          fieldErrors.add(new FieldErrorDTO("createExpectedStudy", "outcomeImpactStatement",
+            "Short outcome/impact statement excedes the maximum number of words (80 words)"));
+        } else {
+          projectExpectedStudyInfo.setOutcomeImpactStatement(
+            newProjectExpectedStudy.getProjectExpectedStudyInfo().getOutcomeImpactStatement());
+        }
+
+        // communicationsMaterial
+        wordCount = this.countWords(newProjectExpectedStudy.getProjectExpectedStudyInfo().getComunicationsMaterial());
+        if (wordCount > 400) {
+          fieldErrors.add(new FieldErrorDTO("createExpectedStudy", "comunicationsMaterial",
+            "Outcome story for communications use excedes the maximum number of words (400 words)"));
+        } else {
+          projectExpectedStudyInfo
+            .setComunicationsMaterial(newProjectExpectedStudy.getProjectExpectedStudyInfo().getComunicationsMaterial());
+        }
+
+        // elaborationOutcomeImpactStatement
+        wordCount =
+          this.countWords(newProjectExpectedStudy.getProjectExpectedStudyInfo().getElaborationOutcomeImpactStatement());
+        if (wordCount > 400) {
+          fieldErrors.add(new FieldErrorDTO("createExpectedStudy", "elaborationOutcomeImpactStatement",
+            "Elaboration of Outcome/Impact Statement excedes the maximum number of words (400 words)"));
+        } else {
+          projectExpectedStudyInfo.setElaborationOutcomeImpactStatement(
+            newProjectExpectedStudy.getProjectExpectedStudyInfo().getElaborationOutcomeImpactStatement());
+        }
+
+        // referencesText
+        projectExpectedStudyInfo
+          .setReferencesText(newProjectExpectedStudy.getProjectExpectedStudyInfo().getReferencesText());
 
         // DANGER! Magic number ahead
         if (newProjectExpectedStudy.getProjectExpectedStudyInfo().getYear() > 1900) {

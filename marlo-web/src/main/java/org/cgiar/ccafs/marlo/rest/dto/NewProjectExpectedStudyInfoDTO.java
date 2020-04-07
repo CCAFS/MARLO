@@ -23,11 +23,11 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class NewProjectExpectedStudyInfoDTO {
 
-  @ApiModelProperty(notes = "Expected year", position = 2)
-  private int year;
-
   @ApiModelProperty(notes = "Expected study title", position = 1)
   private String title;
+
+  @ApiModelProperty(notes = "Expected year", position = 2)
+  private int year;
 
   @ApiModelProperty(notes = "Expected study type code", position = 3)
   private Long studyType;
@@ -44,75 +44,106 @@ public class NewProjectExpectedStudyInfoDTO {
   @ApiModelProperty(notes = "Contact person", position = 7)
   private String contacts;
 
+  @ApiModelProperty(notes = "Short outcome/impact statement", position = 8)
+  private String outcomeImpactStatement;
+
+  @ApiModelProperty(notes = "Outcome story for communications use", position = 9)
+  private String comunicationsMaterial;
+
+  @ApiModelProperty(notes = "Elaboration of Outcome/Impact Statement", position = 10)
+  private String elaborationOutcomeImpactStatement;
+
+  @ApiModelProperty(notes = "References cited", position = 11)
+  private String referencesText;
+
+
+  public String getComunicationsMaterial() {
+    return comunicationsMaterial;
+  }
 
   public String getContacts() {
     return contacts;
   }
 
+  public String getElaborationOutcomeImpactStatement() {
+    return elaborationOutcomeImpactStatement;
+  }
 
   public Long getMaturityOfChange() {
     return maturityOfChange;
   }
 
+  public String getOutcomeImpactStatement() {
+    return outcomeImpactStatement;
+  }
+
+  public String getReferencesText() {
+    return referencesText;
+  }
 
   public long getStatus() {
     return status;
   }
 
-
   public Long getStudyType() {
     return studyType;
   }
-
 
   public Long getTag() {
     return tag;
   }
 
-
   public String getTitle() {
     return title;
   }
-
 
   public int getYear() {
     return year;
   }
 
 
+  public void setComunicationsMaterial(String comunicationsMaterial) {
+    this.comunicationsMaterial = comunicationsMaterial;
+  }
+
   public void setContacts(String contacts) {
     this.contacts = contacts;
   }
 
+  public void setElaborationOutcomeImpactStatement(String elaborationOutcomeImpactStatement) {
+    this.elaborationOutcomeImpactStatement = elaborationOutcomeImpactStatement;
+  }
 
   public void setMaturityOfChange(Long maturityOfChange) {
     this.maturityOfChange = maturityOfChange;
   }
 
+  public void setOutcomeImpactStatement(String outcomeImpactStatement) {
+    this.outcomeImpactStatement = outcomeImpactStatement;
+  }
+
+  public void setReferencesText(String referencesText) {
+    this.referencesText = referencesText;
+  }
 
   public void setStatus(long status) {
     this.status = status;
   }
 
-
   public void setStudyType(Long studyType) {
     this.studyType = studyType;
   }
-
 
   public void setTag(Long tag) {
     this.tag = tag;
   }
 
-
   public void setTitle(String title) {
     this.title = title;
   }
 
-
   public void setYear(int year) {
     this.year = year;
   }
-
 
 }
