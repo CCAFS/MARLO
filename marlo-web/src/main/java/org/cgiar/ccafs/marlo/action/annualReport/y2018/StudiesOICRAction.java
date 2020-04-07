@@ -23,9 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
@@ -85,8 +83,6 @@ public class StudiesOICRAction extends BaseAction {
   private ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager;
   private ReportSynthesisFlagshipProgressStudyManager reportSynthesisFlagshipProgressStudyManager;
   private ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager;
-  private ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager;
-  private ProjectPolicyManager projectPolicyManager;
   private ProjectInnovationManager projectInnovationManager;
 
   // Variables
@@ -109,7 +105,6 @@ public class StudiesOICRAction extends BaseAction {
     ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
     ReportSynthesisFlagshipProgressStudyManager reportSynthesisFlagshipProgressStudyManager,
     ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager,
-    ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager, ProjectPolicyManager projectPolicyManager,
     ProjectInnovationManager projectInnovationManager) {
     super(config);
     this.crpManager = crpManager;
@@ -123,7 +118,6 @@ public class StudiesOICRAction extends BaseAction {
     this.reportSynthesisFlagshipProgressManager = reportSynthesisFlagshipProgressManager;
     this.reportSynthesisFlagshipProgressStudyManager = reportSynthesisFlagshipProgressStudyManager;
     this.projectExpectedStudyInnovationManager = projectExpectedStudyInnovationManager;
-    this.projectExpectedStudyPolicyManager = projectExpectedStudyPolicyManager;
     this.projectInnovationManager = projectInnovationManager;
   }
 
@@ -253,7 +247,6 @@ public class StudiesOICRAction extends BaseAction {
     return projectInnovationList;
   }
 
-
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
@@ -275,29 +268,28 @@ public class StudiesOICRAction extends BaseAction {
 
 
   public List<ProjectPolicy> getPolicies(long studyID, long phaseID) {
-    List<ProjectPolicy> projectPolicyList = new ArrayList<>();
-    List<ProjectExpectedStudyPolicy> policyList = new ArrayList<>();
-    policyList = projectExpectedStudyPolicyManager.findAll().stream()
-      .filter(i -> i != null && i.getProjectExpectedStudy() != null && studyID != 0
-        && i.getProjectExpectedStudy().getId() != null && i.getProjectExpectedStudy().getId().equals(studyID)
-        && i.getPhase() != null && phaseID != 0 && i.getPhase().getId().equals(phaseID))
-      .collect(Collectors.toList());
-    if (policyList != null && !policyList.isEmpty()) {
-      for (ProjectExpectedStudyPolicy studyPolicy : policyList) {
-        if (studyPolicy != null && studyPolicy.getProjectPolicy() != null
-          && studyPolicy.getProjectPolicy().getId() != null) {
-          ProjectPolicy policy = new ProjectPolicy();
-          policy = projectPolicyManager.getProjectPolicyById(studyPolicy.getProjectPolicy().getId());
-          if (policy != null) {
-            policy.setProjectPolicyInfo(policy.getProjectPolicyInfo(this.getActualPhase()));
-            projectPolicyList.add(policy);
+    List<ProjectPolicy> policyList = new ArrayList<>();
+
+    if (studyID != 0) {
+      ProjectExpectedStudy expectedStudy = new ProjectExpectedStudy();
+      expectedStudy = projectExpectedStudyManager.getProjectExpectedStudyById(studyID);
+      if (expectedStudy != null) {
+        List<ProjectExpectedStudyPolicy> expectedStudypolicyList = new ArrayList<>();
+        expectedStudypolicyList = expectedStudy.getProjectExpectedStudyPolicies().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(this.getActualPhase().getId()))
+          .collect(Collectors.toList());
+
+        if (expectedStudypolicyList != null && expectedStudypolicyList.size() > 0) {
+          for (ProjectExpectedStudyPolicy projectExpectedStudyPolicy : expectedStudypolicyList) {
+            if (projectExpectedStudyPolicy.getProjectPolicy().getProjectPolicyInfo(this.getActualPhase()) != null) {
+              policyList.add(projectExpectedStudyPolicy.getProjectPolicy());
+            }
           }
         }
       }
     }
-    return projectPolicyList;
+    return policyList;
   }
-
 
   public List<ProjectExpectedStudy> getProjectExpectedStudies() {
     return projectExpectedStudies;
