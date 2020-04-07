@@ -118,10 +118,9 @@ public class Policies2018Validator extends BaseValidator {
         action.addActionMessage(
           " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
       }
-
+      // "ReportSynthesis2018SectionStatusEnum.POLICIES.getStatus()"
       this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
-        action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
-        ReportSynthesis2018SectionStatusEnum.POLICIES.getStatus(), action);
+        action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(), "Synthesis2019Table2", action);
     }
 
   }
