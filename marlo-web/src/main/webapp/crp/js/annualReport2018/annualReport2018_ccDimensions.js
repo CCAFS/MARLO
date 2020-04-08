@@ -63,6 +63,7 @@ function setGoogleCharts() {
         alignment: 'center',
         maxLines: 3
       },
+      isStacked: true
       /*
       slices: {
           0: {
