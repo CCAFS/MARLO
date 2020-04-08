@@ -21,7 +21,9 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
@@ -34,6 +36,10 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressStudy;
@@ -79,7 +85,8 @@ public class StudiesOICRAction extends BaseAction {
   private ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager;
   private ReportSynthesisFlagshipProgressStudyManager reportSynthesisFlagshipProgressStudyManager;
   private SectionStatusManager sectionStatusManager;
-
+  private ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager;
+  private ProjectInnovationManager projectInnovationManager;
 
   // Variables
   private String transaction;
@@ -91,7 +98,7 @@ public class StudiesOICRAction extends BaseAction {
   private List<LiaisonInstitution> liaisonInstitutions;
   private List<ProjectExpectedStudy> projectExpectedStudies;
   private Phase actualPhase;
-
+  private boolean tableComplete;
 
   @Inject
   public StudiesOICRAction(APConfig config, GlobalUnitManager crpManager,
@@ -100,7 +107,8 @@ public class StudiesOICRAction extends BaseAction {
     CrpProgramManager crpProgramManager, ProjectExpectedStudyManager projectExpectedStudyManager,
     ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
     ReportSynthesisFlagshipProgressStudyManager reportSynthesisFlagshipProgressStudyManager,
-    SectionStatusManager sectionStatusManager) {
+    ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager,
+    ProjectInnovationManager projectInnovationManager, SectionStatusManager sectionStatusManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -113,6 +121,8 @@ public class StudiesOICRAction extends BaseAction {
     this.reportSynthesisFlagshipProgressManager = reportSynthesisFlagshipProgressManager;
     this.reportSynthesisFlagshipProgressStudyManager = reportSynthesisFlagshipProgressStudyManager;
     this.sectionStatusManager = sectionStatusManager;
+    this.projectExpectedStudyInnovationManager = projectExpectedStudyInnovationManager;
+    this.projectInnovationManager = projectInnovationManager;
   }
 
 
@@ -215,6 +225,32 @@ public class StudiesOICRAction extends BaseAction {
   }
 
 
+  public List<ProjectInnovation> getInnovations(long studyID, long phaseID) {
+    List<ProjectInnovation> projectInnovationList = new ArrayList<>();
+    List<ProjectExpectedStudyInnovation> innovationList = new ArrayList<>();
+    innovationList = projectExpectedStudyInnovationManager.findAll().stream()
+      .filter(i -> i != null && i.getProjectExpectedStudy() != null && studyID != 0
+        && i.getProjectExpectedStudy().getId() != null && i.getProjectExpectedStudy().getId().equals(studyID)
+        && i.getPhase() != null && phaseID != 0 && i.getPhase().getId().equals(phaseID))
+      .collect(Collectors.toList());
+    if (innovationList != null && !innovationList.isEmpty()) {
+      for (ProjectExpectedStudyInnovation studyInnovation : innovationList) {
+        if (studyInnovation != null && studyInnovation.getProjectInnovation() != null
+          && studyInnovation.getProjectInnovation().getId() != null) {
+          ProjectInnovation innovation = new ProjectInnovation();
+          innovation =
+            projectInnovationManager.getProjectInnovationById(studyInnovation.getProjectInnovation().getId());
+          if (innovation != null) {
+            innovation.setProjectInnovationInfo(innovation.getProjectInnovationInfo(this.getActualPhase()));
+            projectInnovationList.add(innovation);
+          }
+        }
+      }
+    }
+    return projectInnovationList;
+  }
+
+
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
@@ -235,10 +271,33 @@ public class StudiesOICRAction extends BaseAction {
   }
 
 
+  public List<ProjectPolicy> getPolicies(long studyID, long phaseID) {
+    List<ProjectPolicy> policyList = new ArrayList<>();
+
+    if (studyID != 0) {
+      ProjectExpectedStudy expectedStudy = new ProjectExpectedStudy();
+      expectedStudy = projectExpectedStudyManager.getProjectExpectedStudyById(studyID);
+      if (expectedStudy != null) {
+        List<ProjectExpectedStudyPolicy> expectedStudypolicyList = new ArrayList<>();
+        expectedStudypolicyList = expectedStudy.getProjectExpectedStudyPolicies().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(this.getActualPhase().getId()))
+          .collect(Collectors.toList());
+
+        if (expectedStudypolicyList != null && expectedStudypolicyList.size() > 0) {
+          for (ProjectExpectedStudyPolicy projectExpectedStudyPolicy : expectedStudypolicyList) {
+            if (projectExpectedStudyPolicy.getProjectPolicy().getProjectPolicyInfo(this.getActualPhase()) != null) {
+              policyList.add(projectExpectedStudyPolicy.getProjectPolicy());
+            }
+          }
+        }
+      }
+    }
+    return policyList;
+  }
+
   public List<ProjectExpectedStudy> getProjectExpectedStudies() {
     return projectExpectedStudies;
   }
-
 
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
@@ -268,7 +327,6 @@ public class StudiesOICRAction extends BaseAction {
     return isFP;
   }
 
-
   @Override
   public boolean isPMU() {
     boolean isFP = false;
@@ -295,13 +353,16 @@ public class StudiesOICRAction extends BaseAction {
       this.getActualPhase().getYear(), false, "studies");
 
     if (sectionStatus == null) {
+      tableComplete = true;
       return true;
     }
 
     if (sectionStatus.getMissingFields().length() != 0) {
+      tableComplete = false;
       return false;
     }
 
+    tableComplete = true;
     return true;
 
   }
@@ -324,6 +385,7 @@ public class StudiesOICRAction extends BaseAction {
     // Get current CRP
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
+    tableComplete = false;
 
     // If there is a history version being loaded
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
@@ -475,7 +537,6 @@ public class StudiesOICRAction extends BaseAction {
 
   }
 
-
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -527,6 +588,7 @@ public class StudiesOICRAction extends BaseAction {
     }
   }
 
+
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
@@ -564,8 +626,14 @@ public class StudiesOICRAction extends BaseAction {
 
   @Override
   public void validate() {
-    if (save) {
-      validator.validate(this, reportSynthesis, true);
+    if (this.isPMU()) {
+      if (save) {
+        validator.validatePMU(this, reportSynthesis, true, tableComplete);
+      }
+    } else {
+      if (save) {
+        validator.validate(this, reportSynthesis, true);
+      }
     }
   }
 }

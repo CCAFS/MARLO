@@ -25,24 +25,43 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class NewStatusPlannedMilestoneDTO {
 
-  @ApiModelProperty(notes = "Milestone SMO code", position = 1)
+  @ApiModelProperty(notes = "Flagship SMO code", position = 1)
+  private String crpProgramCode;
+
+  @ApiModelProperty(notes = "Outcome SMO code", position = 2)
+  private String crpOutcomeCode;
+
+  @ApiModelProperty(notes = "Milestone SMO code", position = 3)
   private String milestoneCode;
 
-  @ApiModelProperty(notes = "Milestone Status", position = 2)
+  @ApiModelProperty(notes = "Milestone Status", position = 4)
   private List<NewCrosscuttingMarkersSynthesisDTO> crosscuttinmarkerList;
 
-  @ApiModelProperty(notes = "Milestone Status", position = 3)
+  @ApiModelProperty(notes = "Milestone Status", position = 5)
   private Long status;
 
-  @ApiModelProperty(notes = "Milestone Evidence", position = 4)
+  @ApiModelProperty(notes = "Milestone Evidence", position = 6)
   private String evidence;
 
-  @ApiModelProperty(notes = "Milestone Evidence Link", position = 5)
+  @ApiModelProperty(notes = "Milestone Evidence Link", position = 7)
   private String linkEvidence;
+
+  @ApiModelProperty(notes = "Phase (AR, POWB, UpKeep)", position = 8)
+  private PhaseDTO phase;
 
 
   public List<NewCrosscuttingMarkersSynthesisDTO> getCrosscuttinmarkerList() {
     return crosscuttinmarkerList;
+  }
+
+
+  public String getCrpOutcomeCode() {
+    return crpOutcomeCode;
+  }
+
+
+  public String getCrpProgramCode() {
+    return crpProgramCode;
   }
 
 
@@ -61,6 +80,11 @@ public class NewStatusPlannedMilestoneDTO {
   }
 
 
+  public PhaseDTO getPhase() {
+    return phase;
+  }
+
+
   public Long getStatus() {
     return status;
   }
@@ -68,6 +92,16 @@ public class NewStatusPlannedMilestoneDTO {
 
   public void setCrosscuttinmarkerList(List<NewCrosscuttingMarkersSynthesisDTO> crosscuttinmarkerList) {
     this.crosscuttinmarkerList = crosscuttinmarkerList;
+  }
+
+
+  public void setCrpOutcomeCode(String crpOutcomeCode) {
+    this.crpOutcomeCode = crpOutcomeCode;
+  }
+
+
+  public void setCrpProgramCode(String crpProgramCode) {
+    this.crpProgramCode = crpProgramCode;
   }
 
 
@@ -83,6 +117,11 @@ public class NewStatusPlannedMilestoneDTO {
 
   public void setMilestoneCode(String milestoneCode) {
     this.milestoneCode = milestoneCode;
+  }
+
+
+  public void setPhase(PhaseDTO phase) {
+    this.phase = phase;
   }
 
 

@@ -75,13 +75,8 @@ public class ExpectedStudies {
     @ApiParam(value = "${ExpectedStudies.OICR.POST.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${ExpectedStudies.OICR.POST.param.OICR}",
       required = true) @Valid @RequestBody NewProjectExpectedStudyDTO newProjectExpectedStudyDTO) {
-    Long policyId = new Long(0);
-    try {
-      policyId =
-        this.expectedStudiesItem.createExpectedStudy(newProjectExpectedStudyDTO, CGIAREntity, this.getCurrentUser());
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+    Long policyId =
+      this.expectedStudiesItem.createExpectedStudy(newProjectExpectedStudyDTO, CGIAREntity, this.getCurrentUser());
 
     ResponseEntity<Long> response = new ResponseEntity<Long>(policyId, HttpStatus.OK);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
