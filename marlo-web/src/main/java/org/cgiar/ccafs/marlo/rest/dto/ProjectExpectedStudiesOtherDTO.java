@@ -40,7 +40,7 @@ public class ProjectExpectedStudiesOtherDTO {
   private List<String> regions;
 
   @ApiModelProperty(notes = "Other geographic areas", position = 6)
-  private String scopeComments;
+  private String scopeComments; // cambiar
 
   @ApiModelProperty(notes = "CGIAR SLO target code list", position = 8)
   private List<String> srfSloTargetList;
