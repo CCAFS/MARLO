@@ -21,8 +21,11 @@ package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.statusPlannedOutcomes.StatusPlannedMilestonesItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.statusPlannedOutcomes.StatusPlannedOutcomesItem;
+import org.cgiar.ccafs.marlo.rest.dto.NewStatusPlannedMilestoneDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewStatusPlannedOutcomeDTO;
+import org.cgiar.ccafs.marlo.rest.dto.StatusPlannedMilestonesDTO;
 import org.cgiar.ccafs.marlo.rest.dto.StatusPlannedOutcomesDTO;
 import org.cgiar.ccafs.marlo.rest.errors.NotFoundException;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -59,13 +62,40 @@ public class StatusPlannedOutcomes {
   private Environment env;
   private final UserManager userManager;
   private StatusPlannedOutcomesItem<StatusPlannedOutcomesDTO> statusPlannedOutcomesItem;
+  private StatusPlannedMilestonesItem<StatusPlannedMilestonesDTO> statusPlannedMilestonesItem;
 
   @Inject
   public StatusPlannedOutcomes(StatusPlannedOutcomesItem<StatusPlannedOutcomesDTO> statusPlannedOutcomesItem,
-    UserManager userManager) {
+    StatusPlannedMilestonesItem<StatusPlannedMilestonesDTO> statusPlannedMilestonesItem, UserManager userManager) {
     super();
     this.userManager = userManager;
     this.statusPlannedOutcomesItem = statusPlannedOutcomesItem;
+    this.statusPlannedMilestonesItem = statusPlannedMilestonesItem;
+  }
+
+  @ApiOperation(tags = {"Table 5 - Status of Planned Outcomes and Milestones"},
+    value = "${StatusPlannedOutcomes.outcomes.POST.value}", response = StatusPlannedOutcomesDTO.class)
+  @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/statusMilestones", method = RequestMethod.POST,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Long> createStatusPlannedMilestones(
+    @ApiParam(value = "${StatusPlannedOutcomes.outcomes.POST.param.CGIAR}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${StatusPlannedOutcomes.outcomes.POST.param.statusPlannedOutcome}",
+      required = true) @Valid @RequestBody NewStatusPlannedMilestoneDTO newStatusPlanneMilestoneDTO) {
+    Long reportSythesisProgressOutcomesID = new Long(0);
+    try {
+      reportSythesisProgressOutcomesID = this.statusPlannedMilestonesItem
+        .createStatusPlannedMilestone(newStatusPlanneMilestoneDTO, CGIAREntity, this.getCurrentUser());
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    ResponseEntity<Long> response = new ResponseEntity<Long>(reportSythesisProgressOutcomesID, HttpStatus.OK);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("StatusPlannedOutcomes.outcomes.GET.id.404"));
+    }
+    return response;
   }
 
   @ApiOperation(tags = {"Table 5 - Status of Planned Outcomes and Milestones"},
@@ -120,5 +150,30 @@ public class StatusPlannedOutcomes {
     Long principal = (Long) subject.getPrincipal();
     User user = this.userManager.getUser(principal);
     return user;
+  }
+
+  @ApiOperation(tags = {"Table 5 - Status of Planned Outcomes and Milestones"},
+    value = "${StatusPlannedOutcomes.outcomes.PUT.value}", response = StatusPlannedOutcomesDTO.class)
+  @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/statusOutcomes", method = RequestMethod.PUT,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Long> updateStatusPlannedOutcome(
+    @ApiParam(value = "${StatusPlannedOutcomes.outcomes.PUT.param.CGIAR}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${StatusPlannedOutcomes.outcomes.PUT.param.statusPlannedOutcome}",
+      required = true) @Valid @RequestBody NewStatusPlannedOutcomeDTO newStatusPlannedOutcomeDTO) {
+    Long reportSythesisProgressOutcomesID = new Long(0);
+    try {
+      reportSythesisProgressOutcomesID = this.statusPlannedOutcomesItem
+        .updateStatusPlannedOutcome(newStatusPlannedOutcomeDTO, CGIAREntity, this.getCurrentUser());
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    ResponseEntity<Long> response = new ResponseEntity<Long>(reportSythesisProgressOutcomesID, HttpStatus.OK);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("StatusPlannedOutcomes.outcomes.PUT.id.404"));
+    }
+    return response;
   }
 }
