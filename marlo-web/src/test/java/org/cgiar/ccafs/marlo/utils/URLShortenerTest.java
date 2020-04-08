@@ -17,17 +17,34 @@ package org.cgiar.ccafs.marlo.utils;
 
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertNotEquals;
 
 public class URLShortenerTest {
 
   @Test
-  public void testGetShortUrlService() throws Exception {
+  public void testDetectAndShortenLinksEndsText() throws Exception {
+    URLShortener urlShortener = new URLShortener();
+    String url =
+      "url test: https://marlo.cgiar.org/projects/CCAFS/studySummary.do?studyID=2074&cycle=Reporting&year=2017";
+    String shortURL = urlShortener.detectAndShortenLinks(url);
+    assertNotEquals(url, shortURL);
+  }
+
+  @Test
+  public void testGetShortUrlServiceBugUseReplace() throws Exception {
     URLShortener urlShortener = new URLShortener();
     String url =
       "https://cgiar.sharepoint.com/:f:/r/sites/CCAFS/CRP%207%20Management/Reviewing%20and%20Reporting/Annual%20Reporting/TL%20and%20RPL%20Technical%20Reporting/2019/Internal%20Evidences/P266/Evidence%203247?csf=1&e=0xuOXI10";
     String shortURL = urlShortener.getShortUrlService(url);
-    assertThat(shortURL, notNullValue());
+    assertNotEquals(url, shortURL);
   }
+
+  @Test
+  public void testGetShortUrlServiceLessThat93Characters() throws Exception {
+    URLShortener urlShortener = new URLShortener();
+    String url = "https://marlo.cgiar.org/projects/CCAFS/studySummary.do?studyID=2074&cycle=Reporting&year=2017";
+    String shortURL = urlShortener.getShortUrlService(url);
+    assertNotEquals(url, shortURL);
+  }
+
 }

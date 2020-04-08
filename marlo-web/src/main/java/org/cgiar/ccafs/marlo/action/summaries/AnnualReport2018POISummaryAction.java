@@ -1373,8 +1373,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         + (projectExpectStudy.getId()).toString() + "&cycle=" + this.getCurrentCycle() + "&year="
         + this.getSelectedPhase().getYear();
 
-      POIField[] sData = {new POIField(title, ParagraphAlignment.LEFT, false, "000000", url),
-        new POIField(linkOICR, ParagraphAlignment.CENTER, false),
+      POIField[] sData = {new POIField(title, ParagraphAlignment.LEFT, false),
+        new POIField("Link", ParagraphAlignment.CENTER, false, "000000", url),
         new POIField(maturity, ParagraphAlignment.CENTER, false),
         new POIField(indicator, ParagraphAlignment.LEFT, false)};
       data = Arrays.asList(sData);
@@ -2530,7 +2530,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run = paragraph.createRun();
         run.setFontSize(13);
         run.setBold(true);
-        run.setText(this.getText("summaries.annualReport2018.table12"));
+        run.setText(this.getText("summaries.annualReport2019.table12"));
         paragraph.setStyle("heading 37");
         this.createTable12();
 
@@ -2575,7 +2575,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
         CTDocument1 doc = document.getDocument();
         CTBody body = doc.getBody();
-        poiSummary.pageHeader(document, this.getText("summaries.annualReportPlatform2018.header"));
+        poiSummary.pageHeader(document, this.getText("summaries.annualReportPlatform2019.header"));
 
         // Get datetime
         ZonedDateTime timezone = ZonedDateTime.now();
@@ -2590,7 +2590,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         // Cover
         poiSummary.textLineBreak(document, 6);
         poiSummary.textHeadCoverTitleAR2018(document.createParagraph(),
-          this.getText("summaries.annualReportPlatform2018.mainTitle"));
+          this.getText("summaries.annualReportPlatform2019.mainTitle"));
         document.createParagraph().setPageBreak(true);
 
         // Table of contents
@@ -2995,7 +2995,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run = paragraph.createRun();
         run.setFontSize(13);
         run.setBold(true);
-        run.setText(this.getText("summaries.annualReport2018.table12"));
+        run.setText(this.getText("summaries.annualReport2019.table12"));
         paragraph.setStyle("heading 37");
         this.createTable12();
 
