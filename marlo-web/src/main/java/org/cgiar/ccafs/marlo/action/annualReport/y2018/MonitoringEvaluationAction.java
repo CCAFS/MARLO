@@ -31,6 +31,7 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisMeliaEvaluationActionMa
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisMeliaEvaluationManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisMeliaManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisMeliaStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -51,6 +52,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaActionStudy;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaEvaluation;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaEvaluationAction;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaStudy;
+import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -105,6 +107,8 @@ public class MonitoringEvaluationAction extends BaseAction {
   private ReportSynthesisMeliaEvaluationManager reportSynthesisMeliaEvaluationManager;
   private ReportSynthesisMeliaEvaluationActionManager reportSynthesisMeliaEvaluationActionManager;
   private PhaseManager phaseManager;
+  private SectionStatusManager sectionStatusManager;
+
   // Variables
   private String transaction;
   private ReportSynthesis reportSynthesis;
@@ -123,6 +127,7 @@ public class MonitoringEvaluationAction extends BaseAction {
   private List<ReportSynthesisMeliaActionStudy> selectedExpectedStudies;
   private List<ProjectExpectedStudy> selectedExpectedSt;
   private Map<Integer, String> statuses;
+  private boolean tableComplete;
 
   @Inject
   public MonitoringEvaluationAction(APConfig config, GlobalUnitManager crpManager,
@@ -134,7 +139,8 @@ public class MonitoringEvaluationAction extends BaseAction {
     ReportSynthesisMeliaStudyManager reportSynthesisMeliaStudyManager,
     ReportSynthesisMeliaActionStudyManager reportSynthesisMeliaActionStudyManager,
     ReportSynthesisMeliaEvaluationManager reportSynthesisMeliaEvaluationManager, PhaseManager phaseManager,
-    ReportSynthesisMeliaEvaluationActionManager reportSynthesisMeliaEvaluationActionManager) {
+    ReportSynthesisMeliaEvaluationActionManager reportSynthesisMeliaEvaluationActionManager,
+    SectionStatusManager sectionStatusManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -152,6 +158,7 @@ public class MonitoringEvaluationAction extends BaseAction {
     this.reportSynthesisMeliaEvaluationManager = reportSynthesisMeliaEvaluationManager;
     this.reportSynthesisMeliaEvaluationActionManager = reportSynthesisMeliaEvaluationActionManager;
     this.phaseManager = phaseManager;
+    this.sectionStatusManager = sectionStatusManager;
   }
 
   /**
@@ -336,7 +343,6 @@ public class MonitoringEvaluationAction extends BaseAction {
     }
   }
 
-
   private Path getAutoSaveFilePath() {
     String composedClassName = reportSynthesis.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -345,10 +351,10 @@ public class MonitoringEvaluationAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-
   public List<ReportSynthesisMelia> getFlagshipMeliaProgress() {
     return flagshipMeliaProgress;
   }
+
 
   public List<PowbEvidencePlannedStudyDTO> getFlagshipPlannedList() {
     return flagshipPlannedList;
@@ -440,8 +446,36 @@ public class MonitoringEvaluationAction extends BaseAction {
 
   }
 
+  /**
+   * This method get the status of an specific study depending of the
+   * sectionStatuses
+   *
+   * @param expectedID is the study ID to be identified.
+   * @return Boolean object with the status of the study
+   */
+  public Boolean isStudyComplete(long expectedID, long phaseID) {
+
+    SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByProjectExpectedStudy(expectedID,
+      "Reporting", this.getActualPhase().getYear(), false, "studies");
+
+    if (sectionStatus == null) {
+      tableComplete = true;
+      return true;
+    }
+
+    if (sectionStatus.getMissingFields().length() != 0) {
+      tableComplete = false;
+      return false;
+    }
+
+    tableComplete = true;
+    return true;
+
+  }
+
   @Override
   public void prepare() throws Exception {
+    tableComplete = false;
     // Get current CRP
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());

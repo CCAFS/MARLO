@@ -163,6 +163,8 @@
           <th class="text-center col-md-4"> [@s.text name="${customLabel}.table10.publicationsLinks" /] </th>
           [/#if]
           [#if !expandedTable]
+            <th class="col-md-1 text-center"> <small>[@s.text name="${customLabel}.table11.completeStatus" /]</small>  </th>
+
             <th class="col-md-1 text-center"> <small>[@s.text name="${customLabel}.table10.includeAR" /]</small>  </th>
           [/#if]
         </tr>
@@ -205,6 +207,17 @@
               </td>
               [/#if]
               [#if !expandedTable]
+              
+              [#-- Complete Status--]
+              <td class="text-center">
+               [#assign isStudyComplete = action.isStudyComplete(item.id, actualPhase.id) /]
+                [#if isStudyComplete]
+                   <span class="icon-20 icon-check" title="Complete"></span> 
+                   [#else]
+                     <span class="icon-20 icon-uncheck" title=""></span> 
+                 [/#if]   
+               </td>
+                            
               <td class="text-center">
                 [#local isChecked = ((!reportSynthesis.reportSynthesisMelia.studiesIds?seq_contains(item.id))!true) /]
                 [@customForm.checkmark id="study-${(item.id)!}" name="reportSynthesis.reportSynthesisMelia.plannedStudiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
