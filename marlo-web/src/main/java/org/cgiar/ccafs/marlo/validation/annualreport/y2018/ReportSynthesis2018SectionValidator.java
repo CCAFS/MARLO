@@ -597,12 +597,12 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
 
       }
 
-      policies2018Validator.validate(action, reportSynthesis, false);
+      policies2018Validator.validateCheckButton(action, reportSynthesis, false);
 
       // save the changes
       reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
     } else {
-      policies2018Validator.validate(action, reportSynthesis, false);
+      policies2018Validator.validateCheckButton(action, reportSynthesis, false);
     }
 
   }
