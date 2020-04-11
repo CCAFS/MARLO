@@ -1544,7 +1544,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public Phase getActualPhase() {
     try {
       Map<Long, Phase> allPhases = null;
-      if (this.getSession() != null) {
+      if (this.getSession() != null && !this.getSession().isEmpty()) {
         if (!this.getSession().containsKey(APConstants.ALL_PHASES)) {
           List<Phase> phases = this.phaseManager.findAll().stream()
             .filter(c -> c.getCrp().getId().longValue() == this.getCrpID().longValue()).collect(Collectors.toList());
@@ -1566,16 +1566,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       allPhases = (Map<Long, Phase>) this.getSession().get(APConstants.ALL_PHASES);
 
       Long phaseID = this.getPhaseID();
-      if (phaseID != null) {
-        if (phaseID != 0L) {
-          Phase phase = allPhases.get(new Long(phaseID));
-          if (phase == null) {
-            phase = this.phaseManager.getPhaseById(phaseID);
-            return phase;
-          }
-
-          return phase;
+      if (phaseID != null && phaseID != 0L) {
+        Phase phase = null;
+        if (allPhases != null) {
+          phase = allPhases.get(new Long(phaseID));
         }
+        if (phase == null) {
+          phase = this.phaseManager.getPhaseById(phaseID);
+        }
+        return phase;
       }
 
       Map<String, Parameter> parameters = this.getParameters();
