@@ -214,10 +214,13 @@ public class Policies2018Validator extends BaseValidator {
           action.addMissingField("synthesis.AR2019Table2");
         }
       }
+      try {
+        this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
+          action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
+          ReportSynthesis2018SectionStatusEnum.POLICIES.getStatus(), action);
+      } catch (Exception e) {
 
-      this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
-        action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
-        ReportSynthesis2018SectionStatusEnum.POLICIES.getStatus(), action);
+      }
     }
 
   }
