@@ -109,7 +109,8 @@ public class Policies2018Validator extends BaseValidator {
         if (sectionStatus == null) {
           tableComplete = true;
           // sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
-        } else if (sectionStatus.getMissingFields().length() != 0) {
+        } else if (sectionStatus != null && sectionStatus.getMissingFields() != null
+          && sectionStatus.getMissingFields().length() != 0) {
           if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table2")) {
             sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
             tableComplete = true;
@@ -133,7 +134,8 @@ public class Policies2018Validator extends BaseValidator {
               sectionStatus = this.sectionStatusManager.getSectionStatusByProjectPolicy(policy.getId(), "Reporting",
                 action.getActualPhase().getYear(), false, "policies");
 
-              if (sectionStatus.getMissingFields().length() != 0) {
+              if (sectionStatus != null && sectionStatus.getMissingFields() != null
+                && sectionStatus.getMissingFields().length() != 0) {
                 count++;
               }
 

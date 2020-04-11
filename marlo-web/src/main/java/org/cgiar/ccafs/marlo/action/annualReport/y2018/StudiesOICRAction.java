@@ -628,7 +628,7 @@ public class StudiesOICRAction extends BaseAction {
   public void validate() {
     if (this.isPMU()) {
       if (save) {
-        validator.validatePMU(this, reportSynthesis, true, tableComplete);
+        validator.validateCheckButton(this, reportSynthesis, true);
       }
     } else {
       if (save) {
