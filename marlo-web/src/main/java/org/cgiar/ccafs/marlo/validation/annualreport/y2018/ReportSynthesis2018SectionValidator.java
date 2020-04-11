@@ -654,12 +654,12 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
       reportSynthesis.setReportSynthesisFlagshipProgress(flagshipProgress);
       flagshipProgress.setReportSynthesis(reportSynthesis);
 
-      studiesOICR2018Validator.validate(action, reportSynthesis, false);
+      studiesOICR2018Validator.validateCheckButton(action, reportSynthesis, false);
 
       // save the changes
       reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
     } else {
-      studiesOICR2018Validator.validate(action, reportSynthesis, false);
+      studiesOICR2018Validator.validateCheckButton(action, reportSynthesis, false);
     }
 
   }
