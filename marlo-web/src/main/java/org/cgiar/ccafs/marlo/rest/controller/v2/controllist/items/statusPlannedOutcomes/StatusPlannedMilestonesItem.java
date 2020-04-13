@@ -209,19 +209,39 @@ public class StatusPlannedMilestonesItem<T> {
       }
       reportSynthesisFlagshipProgressOutcome = reportSynthesisFlagshipProgressOutcomeManager
         .getOutcomeId(reportSynthesisFlagshipProgress.getId(), crpProgramOutcome.getId());
+      boolean newRSFPOutcome = false;
       if (reportSynthesisFlagshipProgressOutcome == null) {
         reportSynthesisFlagshipProgressOutcome = new ReportSynthesisFlagshipProgressOutcome();
         reportSynthesisFlagshipProgressOutcome.setCrpProgramOutcome(crpProgramOutcome);
+        reportSynthesisFlagshipProgressOutcome.setReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgress);
         reportSynthesisFlagshipProgressOutcome = reportSynthesisFlagshipProgressOutcomeManager
           .saveReportSynthesisFlagshipProgressOutcome(reportSynthesisFlagshipProgressOutcome);
+        newRSFPOutcome = true;
       }
-      List<ReportSynthesisFlagshipProgressOutcomeMilestone> reportSynthesisFlagshipProgressOutcomeMilestoneList =
-        reportSynthesisFlagshipProgressOutcome.getReportSynthesisFlagshipProgressOutcomeMilestones().stream()
-          .filter(c -> c.getCrpMilestone().equals(crpMilestone)).collect(Collectors.toList());
+      List<ReportSynthesisFlagshipProgressOutcomeMilestone> reportSynthesisFlagshipProgressOutcomeMilestoneList = null;
+      if (newRSFPOutcome) {
+        reportSynthesisFlagshipProgressOutcomeMilestoneList =
+          new ArrayList<ReportSynthesisFlagshipProgressOutcomeMilestone>();
+      } else {
+        reportSynthesisFlagshipProgressOutcomeMilestoneList =
+          reportSynthesisFlagshipProgressOutcome.getReportSynthesisFlagshipProgressOutcomeMilestones().stream()
+            .filter(c -> c.getCrpMilestone().equals(crpMilestone)).collect(Collectors.toList());
+      }
+      ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone = null;
+      boolean proceed = false;
       if (reportSynthesisFlagshipProgressOutcomeMilestoneList != null
         && reportSynthesisFlagshipProgressOutcomeMilestoneList.size() == 0) {
-        ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone =
-          new ReportSynthesisFlagshipProgressOutcomeMilestone();
+        reportSynthesisFlagshipProgressOutcomeMilestone = new ReportSynthesisFlagshipProgressOutcomeMilestone();
+        proceed = true;
+      } else {
+        reportSynthesisFlagshipProgressOutcomeMilestone = reportSynthesisFlagshipProgressOutcomeMilestoneList.get(0);
+        List<ReportSynthesisFlagshipProgressCrossCuttingMarker> obj = reportSynthesisFlagshipProgressOutcomeMilestone
+          .getReportSynthesisFlagshipProgressCrossCuttingMarkers().stream().collect(Collectors.toList());
+        if (obj != null && obj.size() > 0) {
+          proceed = true;
+        }
+      }
+      if (proceed) {
         reportSynthesisFlagshipProgressOutcomeMilestone
           .setReportSynthesisFlagshipProgressOutcome(reportSynthesisFlagshipProgressOutcome);
         reportSynthesisFlagshipProgressOutcomeMilestone.setCrpMilestone(crpMilestone);
@@ -247,8 +267,7 @@ public class StatusPlannedMilestonesItem<T> {
             if (repIndGenderYouthFocusLevel != null) {
               ReportSynthesisFlagshipProgressCrossCuttingMarker reportSynthesisFlagshipProgressCrossCuttingMarker =
                 new ReportSynthesisFlagshipProgressCrossCuttingMarker();
-              reportSynthesisFlagshipProgressCrossCuttingMarker
-                .setReportSynthesisFlagshipProgressOutcomeMilestone(reportSynthesisFlagshipProgressOutcomeMilestone);
+
               reportSynthesisFlagshipProgressCrossCuttingMarker.setJust(crosscuttingmarker.getJustification());
               reportSynthesisFlagshipProgressCrossCuttingMarker.setMarker(cgiarCrossCuttingMarker);
               reportSynthesisFlagshipProgressCrossCuttingMarker.setFocus(repIndGenderYouthFocusLevel);
@@ -268,12 +287,15 @@ public class StatusPlannedMilestonesItem<T> {
             .saveReportSynthesisFlagshipProgressOutcomeMilestone(reportSynthesisFlagshipProgressOutcomeMilestone);
           plannedMilestoneStatusID = reportSynthesisFlagshipProgressOutcomeMilestone.getId();
           for (ReportSynthesisFlagshipProgressCrossCuttingMarker reportSynthesisFlagshipProgressCrossCuttingMarker : reportSynthesisFlagshipProgressCrossCuttingMarkerList) {
+            reportSynthesisFlagshipProgressCrossCuttingMarker
+              .setReportSynthesisFlagshipProgressOutcomeMilestone(reportSynthesisFlagshipProgressOutcomeMilestone);
             reportSynthesisFlagshipProgressCrossCuttingMarkerManager
               .saveReportSynthesisFlagshipProgressCrossCuttingMarker(reportSynthesisFlagshipProgressCrossCuttingMarker);
           }
         }
       } else {
-        fieldErrors.add(new FieldErrorDTO("createStatusPlannedMilestone", "Milestone", "is an invalid CRP Milestone"));
+        fieldErrors.add(
+          new FieldErrorDTO("createStatusPlannedMilestone", "Milestone", "There is an Status of milestone created"));
       }
       if (!fieldErrors.isEmpty()) {
         fieldErrors.stream().forEach(f -> System.out.println(f.getMessage()));
@@ -282,6 +304,106 @@ public class StatusPlannedMilestonesItem<T> {
             .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
             .collect(Collectors.toList()));
       }
+    }
+    return plannedMilestoneStatusID;
+  }
+
+  public Long deleteStatusPlannedMilestone(String strphase, int year, String flagship, String outcome, String milestone,
+    String entityAcronym, User user) {
+    Long plannedMilestoneStatusID = null;
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
+    if (globalUnitEntity == null) {
+      fieldErrors.add(new FieldErrorDTO("deleteStatusPlannedOutcome", "GlobalUnitEntity",
+        entityAcronym + " is an invalid CGIAR entity acronym"));
+    }
+    Phase phase =
+      this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(entityAcronym)
+        && c.getYear() == year && c.getName().equalsIgnoreCase(strphase)).findFirst().get();
+
+    if (phase == null) {
+      fieldErrors.add(new FieldErrorDTO("deleteStatusPlannedOutcome", "phase", year + " is an invalid year"));
+    }
+
+    Set<CrpUser> lstUser = user.getCrpUsers();
+    if (!lstUser.stream().anyMatch(crp -> StringUtils.equalsIgnoreCase(crp.getCrp().getAcronym(), entityAcronym))) {
+      fieldErrors
+        .add(new FieldErrorDTO("deleteStatusPlannedOutcome", "GlobalUnitEntity", "CGIAR entity not autorized"));
+    }
+    CrpProgram crpProgram = null;
+    if (flagship != null && flagship.length() > 0) {
+      crpProgram = crpProgramManager.getCrpProgramBySmoCode(flagship);
+      if (crpProgram == null) {
+        fieldErrors.add(new FieldErrorDTO("deleteStatusPlannedOutcome", "CrpProgram", "is an invalid CRP Program"));
+      }
+    } else {
+      fieldErrors.add(new FieldErrorDTO("deleteStatusPlannedOutcome", "CrpProgram", "is an invalid CRP Program"));
+    }
+
+    CrpProgramOutcome crpProgramOutcome = null;
+    if (outcome != null && outcome.length() > 0) {
+      crpProgramOutcome = crpProgramOutcomeManager.getCrpProgramOutcome(outcome, phase);
+      if (crpProgramOutcome == null) {
+        fieldErrors.add(new FieldErrorDTO("deleteStatusPlannedOutcome", "Outcome", "is an invalid CRP Outcome"));
+      }
+    }
+    CrpMilestone crpMilestone = crpMilestoneManager.getCrpMilestoneByPhase(milestone, phase.getId());
+    if (crpMilestone == null) {
+      fieldErrors.add(new FieldErrorDTO("deleteStatusPlannedOutcome", "Milestone", "is an invalid CRP Milestone"));
+    }
+    ReportSynthesis reportSynthesis = null;
+    ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress = null;
+    ReportSynthesisFlagshipProgressOutcome reportSynthesisFlagshipProgressOutcome;
+    if (fieldErrors.isEmpty()) {
+      LiaisonInstitution liaisonInstitution =
+        liaisonInstitutionManager.findByAcronymAndCrp(crpProgram.getAcronym(), globalUnitEntity.getId());
+      reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
+      if (reportSynthesis != null) {
+        reportSynthesisFlagshipProgress =
+          reportSynthesisFlagshipProgressManager.getReportSynthesisFlagshipProgressById(reportSynthesis.getId());
+        if (reportSynthesisFlagshipProgress != null) {
+          reportSynthesisFlagshipProgressOutcome = reportSynthesisFlagshipProgressOutcomeManager
+            .getOutcomeId(reportSynthesisFlagshipProgress.getId(), crpProgramOutcome.getId());
+          if (reportSynthesisFlagshipProgressOutcome != null) {
+            List<ReportSynthesisFlagshipProgressOutcomeMilestone> reportSynthesisFlagshipProgressOutcomeMilestoneList =
+              reportSynthesisFlagshipProgressOutcome.getReportSynthesisFlagshipProgressOutcomeMilestones().stream()
+                .filter(c -> c.getCrpMilestone().equals(crpMilestone)).collect(Collectors.toList());
+            if (reportSynthesisFlagshipProgressOutcomeMilestoneList != null
+              && reportSynthesisFlagshipProgressOutcomeMilestoneList.size() > 0) {
+              ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone =
+                reportSynthesisFlagshipProgressOutcomeMilestoneList.get(0);
+              for (ReportSynthesisFlagshipProgressCrossCuttingMarker reportSynthesisFlagshipProgressCrossCuttingMarker : reportSynthesisFlagshipProgressOutcomeMilestone
+                .getReportSynthesisFlagshipProgressCrossCuttingMarkers().stream().collect(Collectors.toList())) {
+                reportSynthesisFlagshipProgressCrossCuttingMarkerManager
+                  .deleteReportSynthesisFlagshipProgressCrossCuttingMarker(
+                    reportSynthesisFlagshipProgressCrossCuttingMarker.getId());
+              }
+              plannedMilestoneStatusID = reportSynthesisFlagshipProgressOutcomeMilestone.getId();
+              reportSynthesisFlagshipProgressOutcomeMilestoneManager
+                .deleteReportSynthesisFlagshipProgressOutcomeMilestone(
+                  reportSynthesisFlagshipProgressOutcomeMilestone.getId());
+            } else {
+              fieldErrors
+                .add(new FieldErrorDTO("deleteStatusPlannedOutcome", "Milestone", "There is no milestone status"));
+            }
+          } else {
+            fieldErrors
+              .add(new FieldErrorDTO("deleteStatusPlannedOutcome", "Milestone", "There is no milestone status"));
+          }
+        } else {
+          fieldErrors.add(new FieldErrorDTO("deleteStatusPlannedOutcome", "Milestone", "There is no milestone status"));
+        }
+      } else {
+        fieldErrors.add(new FieldErrorDTO("deleteStatusPlannedOutcome", "Milestone", "There is no milestone status"));
+      }
+    }
+
+    if (!fieldErrors.isEmpty()) {
+      fieldErrors.stream().forEach(f -> System.out.println(f.getMessage()));
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
     }
     return plannedMilestoneStatusID;
   }
@@ -440,8 +562,13 @@ public class StatusPlannedMilestonesItem<T> {
           .add(new FieldErrorDTO("updateStatusPlannedMilestone", "ReportSynthesis", "There is no synthesis report"));
       }
     }
+    if (!fieldErrors.isEmpty()) {
+      fieldErrors.stream().forEach(f -> System.out.println(f.getMessage()));
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
+    }
     return plannedMilestoneStatusID;
   }
-
-
 }
