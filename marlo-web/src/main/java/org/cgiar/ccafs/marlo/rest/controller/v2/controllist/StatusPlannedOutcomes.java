@@ -83,13 +83,9 @@ public class StatusPlannedOutcomes {
       required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${StatusPlannedOutcomes.outcomes.POST.param.statusPlannedOutcome}",
       required = true) @Valid @RequestBody NewStatusPlannedMilestoneDTO newStatusPlanneMilestoneDTO) {
-    Long reportSythesisProgressOutcomesID = new Long(0);
-    try {
-      reportSythesisProgressOutcomesID = this.statusPlannedMilestonesItem
-        .createStatusPlannedMilestone(newStatusPlanneMilestoneDTO, CGIAREntity, this.getCurrentUser());
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+    Long reportSythesisProgressOutcomesID = this.statusPlannedMilestonesItem
+      .createStatusPlannedMilestone(newStatusPlanneMilestoneDTO, CGIAREntity, this.getCurrentUser());
+
 
     ResponseEntity<Long> response = new ResponseEntity<Long>(reportSythesisProgressOutcomesID, HttpStatus.OK);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
@@ -109,12 +105,10 @@ public class StatusPlannedOutcomes {
     @ApiParam(value = "${StatusPlannedOutcomes.outcomes.POST.param.statusPlannedOutcome}",
       required = true) @Valid @RequestBody NewStatusPlannedOutcomeDTO newStatusPlannedOutcomeDTO) {
     Long reportSythesisProgressOutcomesID = new Long(0);
-    try {
-      reportSythesisProgressOutcomesID = this.statusPlannedOutcomesItem
-        .createStatusPlannedOutcome(newStatusPlannedOutcomeDTO, CGIAREntity, this.getCurrentUser());
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+
+    reportSythesisProgressOutcomesID = this.statusPlannedOutcomesItem
+      .createStatusPlannedOutcome(newStatusPlannedOutcomeDTO, CGIAREntity, this.getCurrentUser());
+
 
     ResponseEntity<Long> response = new ResponseEntity<Long>(reportSythesisProgressOutcomesID, HttpStatus.OK);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
@@ -162,13 +156,8 @@ public class StatusPlannedOutcomes {
       required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${StatusPlannedOutcomes.outcomes.PUT.param.statusPlannedOutcome}",
       required = true) @Valid @RequestBody NewStatusPlannedOutcomeDTO newStatusPlannedOutcomeDTO) {
-    Long reportSythesisProgressOutcomesID = new Long(0);
-    try {
-      reportSythesisProgressOutcomesID = this.statusPlannedOutcomesItem
-        .updateStatusPlannedOutcome(newStatusPlannedOutcomeDTO, CGIAREntity, this.getCurrentUser());
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+    Long reportSythesisProgressOutcomesID = this.statusPlannedOutcomesItem
+      .updateStatusPlannedOutcome(newStatusPlannedOutcomeDTO, CGIAREntity, this.getCurrentUser());
 
     ResponseEntity<Long> response = new ResponseEntity<Long>(reportSythesisProgressOutcomesID, HttpStatus.OK);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
