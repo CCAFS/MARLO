@@ -168,7 +168,8 @@ public class PartnershipValidator extends BaseValidator {
           sectionStatusManager.deleteSectionStatus(sectionStatusID);
         } else
 
-        if (sectionStatus.getMissingFields().length() != 0) {
+        if (sectionStatus != null && sectionStatus.getMissingFields() != null
+          && sectionStatus.getMissingFields().length() != 0) {
           if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table8/9")) {
             sectionStatusManager.deleteSectionStatus(sectionStatusID);
             tableComplete = true;
