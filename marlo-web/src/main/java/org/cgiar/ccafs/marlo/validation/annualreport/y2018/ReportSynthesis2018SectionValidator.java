@@ -533,7 +533,7 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
       flagshipProgress.setReportSynthesis(reportSynthesis);
 
 
-      outcomeMilestonesValidator.validate(action, reportSynthesis, false);
+      outcomeMilestonesValidator.validatePMU(action, reportSynthesis, false);
 
       // save the changes
       reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
@@ -577,7 +577,7 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
 
       }
 
-      outcomeMilestonesValidator.validate(action, reportSynthesis, false);
+      outcomeMilestonesValidator.validatePMU(action, reportSynthesis, false);
     }
 
 
