@@ -182,7 +182,8 @@ public class Policies2018Validator extends BaseValidator {
         // sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
       } else
 
-      if (sectionStatus.getMissingFields().length() != 0) {
+      if (sectionStatus != null && sectionStatus.getMissingFields() != null
+        && sectionStatus.getMissingFields().length() != 0) {
         if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table2")) {
           sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
           tableComplete = true;
