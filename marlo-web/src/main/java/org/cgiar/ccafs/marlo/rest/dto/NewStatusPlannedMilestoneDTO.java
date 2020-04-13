@@ -46,8 +46,15 @@ public class NewStatusPlannedMilestoneDTO {
   @ApiModelProperty(notes = "Milestone Evidence Link", position = 7)
   private String linkEvidence;
 
-  @ApiModelProperty(notes = "Phase (AR, POWB, UpKeep)", position = 8)
+  @ApiModelProperty(notes = "Phase (AR, POWB, UpKeep)", position = 10)
   private PhaseDTO phase;
+
+  @ApiModelProperty(notes = "Year value for extended milestone", position = 8)
+  private int extendedYear;
+
+
+  @ApiModelProperty(notes = "Reason for extended or canceled milestone", position = 9)
+  private Long mainReason;
 
 
   public List<NewCrosscuttingMarkersSynthesisDTO> getCrosscuttinmarkerList() {
@@ -70,8 +77,18 @@ public class NewStatusPlannedMilestoneDTO {
   }
 
 
+  public int getExtendedYear() {
+    return extendedYear;
+  }
+
+
   public String getLinkEvidence() {
     return linkEvidence;
+  }
+
+
+  public Long getMainReason() {
+    return mainReason;
   }
 
 
@@ -110,8 +127,18 @@ public class NewStatusPlannedMilestoneDTO {
   }
 
 
+  public void setExtendedYear(int extendedYear) {
+    this.extendedYear = extendedYear;
+  }
+
+
   public void setLinkEvidence(String linkEvidence) {
     this.linkEvidence = linkEvidence;
+  }
+
+
+  public void setMainReason(Long mainReason) {
+    this.mainReason = mainReason;
   }
 
 
