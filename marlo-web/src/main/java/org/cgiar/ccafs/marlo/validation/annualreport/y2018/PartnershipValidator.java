@@ -18,12 +18,14 @@ package org.cgiar.ccafs.marlo.validation.annualreport.y2018;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
+import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis2018SectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnershipCollaboration;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnershipExternal;
+import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -41,10 +43,13 @@ public class PartnershipValidator extends BaseValidator {
 
   private final GlobalUnitManager crpManager;
   private final ReportSynthesisManager reportSynthesisManager;
+  private final SectionStatusManager sectionStatusManager;
 
-  public PartnershipValidator(GlobalUnitManager crpManager, ReportSynthesisManager reportSynthesisManager) {
+  public PartnershipValidator(GlobalUnitManager crpManager, ReportSynthesisManager reportSynthesisManager,
+    SectionStatusManager sectionStatusManager) {
     this.crpManager = crpManager;
     this.reportSynthesisManager = reportSynthesisManager;
+    this.sectionStatusManager = sectionStatusManager;
   }
 
 
@@ -148,6 +153,39 @@ public class PartnershipValidator extends BaseValidator {
         }
       }
 
+      if (action.isPMU()) {
+        boolean tableComplete = false;
+        SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
+          "Reporting", 2019, false, "externalPartnerships");
+        long sectionStatusID = 0;
+        if (sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(), "Reporting", 2019, false,
+          "externalPartnerships") != null) {
+          sectionStatusID = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(), "Reporting",
+            2019, false, "externalPartnerships").getId();
+        }
+        if (sectionStatus == null) {
+          tableComplete = true;
+          sectionStatusManager.deleteSectionStatus(sectionStatusID);
+        } else
+
+        if (sectionStatus.getMissingFields().length() != 0) {
+          if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table8/9")) {
+            sectionStatusManager.deleteSectionStatus(sectionStatusID);
+            tableComplete = true;
+          } else {
+            tableComplete = false;
+          }
+        } else {
+          tableComplete = true;
+          sectionStatusManager.deleteSectionStatus(sectionStatusID);
+        }
+
+
+        if (tableComplete == false) {
+          // action.addMessage(action.getText("Incomplete external partnerships"));
+          action.addMissingField("synthesis.AR2019Table8/9");
+        }
+      }
 
       if (!action.getFieldErrors().isEmpty()) {
         action.addActionError(action.getText("saving.fields.required"));

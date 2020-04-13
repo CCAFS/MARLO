@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
+import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
@@ -28,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesis2018SectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcome;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestone;
+import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -47,12 +49,14 @@ public class OutcomeMilestonesValidator extends BaseValidator {
   private final GlobalUnitManager crpManager;
   private final ReportSynthesisManager reportSynthesisManager;
   private final LiaisonInstitutionManager liaisonInstitutionManager;
+  private final SectionStatusManager sectionStatusManager;
 
   public OutcomeMilestonesValidator(GlobalUnitManager crpManager, ReportSynthesisManager reportSynthesisManager,
-    LiaisonInstitutionManager liaisonInstitutionManager) {
+    LiaisonInstitutionManager liaisonInstitutionManager, SectionStatusManager sectionStatusManager) {
     this.crpManager = crpManager;
     this.reportSynthesisManager = reportSynthesisManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
+    this.sectionStatusManager = sectionStatusManager;
   }
 
 
@@ -124,6 +128,46 @@ public class OutcomeMilestonesValidator extends BaseValidator {
           }
         }
       }
+
+      // Validate Flagships
+      // sectionStatusManager.
+      if (action.isPMU()) {
+        boolean tableComplete = false;
+        SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
+          "Reporting", 2019, false, "outomesMilestones");
+        long sectionStatusID = 0;
+        if (sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(), "Reporting", 2019, false,
+          "outomesMilestones") != null) {
+          sectionStatusID = sectionStatusManager
+            .getSectionStatusByReportSynthesis(reportSynthesis.getId(), "Reporting", 2019, false, "outomesMilestones")
+            .getId();
+        }
+        if (sectionStatus == null) {
+          tableComplete = true;
+          // sectionStatusManager.deleteSectionStatus(sectionStatusID);
+        } else if (sectionStatus.getMissingFields().length() != 0) {
+          if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table5")) {
+            sectionStatusManager.deleteSectionStatus(sectionStatusID);
+            tableComplete = true;
+          } else {
+            tableComplete = false;
+          }
+        } else {
+          tableComplete = true;
+          sectionStatusManager.deleteSectionStatus(sectionStatusID);
+        }
+
+        if (tableComplete == false) {
+          // action.addMessage(action.getText("Incomplete Outcomes and Milestones"));
+          action.addMissingField("synthesis.AR2019Table5");
+        }
+      }
+      /*
+       * action.addMessage(action.getText("Title"));
+       * action.addMissingField("projectPolicy.title");
+       * action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList.summary",
+       * InvalidFieldsMessages.EMPTYFIELD);
+       */
 
       if (!action.getFieldErrors().isEmpty()) {
         action.addActionError(action.getText("saving.fields.required"));
