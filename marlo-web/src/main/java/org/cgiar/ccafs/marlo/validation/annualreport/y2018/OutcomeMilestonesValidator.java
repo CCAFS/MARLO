@@ -145,7 +145,8 @@ public class OutcomeMilestonesValidator extends BaseValidator {
         if (sectionStatus == null) {
           tableComplete = true;
           // sectionStatusManager.deleteSectionStatus(sectionStatusID);
-        } else if (sectionStatus.getMissingFields().length() != 0) {
+        } else if (sectionStatus != null && sectionStatus.getMissingFields() != null
+          && sectionStatus.getMissingFields().length() != 0) {
           if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table5")) {
             sectionStatusManager.deleteSectionStatus(sectionStatusID);
             tableComplete = true;
@@ -218,7 +219,6 @@ public class OutcomeMilestonesValidator extends BaseValidator {
       action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
         + "].milestones[" + j + "].markers[" + k + "].focus.id", InvalidFieldsMessages.EMPTYFIELD);
     }
-
   }
 
   public void validateMilestones(BaseAction action, ReportSynthesisFlagshipProgressOutcomeMilestone milestone, int i,
@@ -309,6 +309,75 @@ public class OutcomeMilestonesValidator extends BaseValidator {
       this.validateMilestones(action, outcome.getMilestones().get(j), i, j);
     }
 
+
+  }
+
+  public void validatePMU(BaseAction action, ReportSynthesis reportSynthesis, boolean saving) {
+    action.setInvalidFields(new HashMap<>());
+    if (reportSynthesis != null) {
+      if (!saving) {
+        Path path = this.getAutoSaveFilePath(reportSynthesis, action.getCrpID(), action);
+        if (path.toFile().exists()) {
+          action.addMissingField("draft");
+        }
+      }
+      LiaisonInstitution liaisonInstitution =
+        liaisonInstitutionManager.getLiaisonInstitutionById(reportSynthesis.getLiaisonInstitution().getId());
+
+      // Validate Flagships
+      // sectionStatusManager.
+
+      boolean tableComplete = false;
+      SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
+        "Reporting", 2019, false, "outomesMilestones");
+      long sectionStatusID = 0;
+      if (sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(), "Reporting", 2019, false,
+        "outomesMilestones") != null) {
+        sectionStatusID = sectionStatusManager
+          .getSectionStatusByReportSynthesis(reportSynthesis.getId(), "Reporting", 2019, false, "outomesMilestones")
+          .getId();
+      }
+      if (sectionStatus == null) {
+        tableComplete = true;
+        // sectionStatusManager.deleteSectionStatus(sectionStatusID);
+      } else if (sectionStatus != null && sectionStatus.getMissingFields() != null
+        && sectionStatus.getMissingFields().length() != 0) {
+        if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table5") && sectionStatusID != 0) {
+          sectionStatusManager.deleteSectionStatus(sectionStatusID);
+          tableComplete = true;
+        } else {
+          tableComplete = false;
+        }
+      } else {
+        tableComplete = true;
+        if (sectionStatusID != 0) {
+          sectionStatusManager.deleteSectionStatus(sectionStatusID);
+        }
+      }
+
+      if (tableComplete == false) {
+        // action.addMessage(action.getText("Incomplete Outcomes and Milestones"));
+        action.addMissingField("synthesis.AR2019Table5");
+      }
+
+      /*
+       * action.addMessage(action.getText("Title"));
+       * action.addMissingField("projectPolicy.title");
+       * action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList.summary",
+       * InvalidFieldsMessages.EMPTYFIELD);
+       */
+
+      if (!action.getFieldErrors().isEmpty()) {
+        action.addActionError(action.getText("saving.fields.required"));
+      } else if (action.getValidationMessage().length() > 0) {
+        action.addActionMessage(
+          " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
+      }
+
+      this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
+        action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
+        ReportSynthesis2018SectionStatusEnum.OUTOMESMILESTONES.getStatus(), action);
+    }
 
   }
 
