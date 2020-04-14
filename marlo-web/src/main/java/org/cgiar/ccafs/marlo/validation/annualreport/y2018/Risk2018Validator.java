@@ -93,6 +93,79 @@ public class Risk2018Validator extends BaseValidator {
         }
       }
 
+      // Save Synthesis Flagship
+      if (reportSynthesis.getLiaisonInstitution() != null
+        && reportSynthesis.getLiaisonInstitution().getAcronym() != null && !action.isPMU()) {
+
+        String sSynthesisFlagships = action.getSynthesisFlagships().toString();
+
+
+        if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("1")) {
+          if (action.getSynthesisFlagships() != null && action.getSynthesisFlagships().toString().length() > 0) {
+            if (!sSynthesisFlagships.contains("1")) {
+              action.addSynthesisFlagship("F1");
+            }
+          } else {
+            action.addSynthesisFlagship("F1");
+          }
+        }
+        if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("2")) {
+          if (action.getSynthesisFlagships() != null && action.getSynthesisFlagships().toString().length() > 0) {
+            if (!sSynthesisFlagships.contains("2")) {
+              action.addSynthesisFlagship("F2");
+            }
+          } else {
+            action.addSynthesisFlagship("F2");
+          }
+        }
+        if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("3")) {
+          if (action.getSynthesisFlagships() != null && action.getSynthesisFlagships().toString().length() > 0) {
+            if (!sSynthesisFlagships.contains("3")) {
+              action.addSynthesisFlagship("F3");
+            }
+          } else {
+            action.addSynthesisFlagship("F3");
+          }
+        }
+        if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("4")) {
+          if (action.getSynthesisFlagships() != null && action.getSynthesisFlagships().toString().length() > 0) {
+            if (!sSynthesisFlagships.contains("4")) {
+              action.addSynthesisFlagship("F4");
+            }
+          } else {
+            action.addSynthesisFlagship("F4");
+          }
+        }
+        if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("5")) {
+          if (action.getSynthesisFlagships() != null && action.getSynthesisFlagships().toString().length() > 0) {
+            if (!sSynthesisFlagships.contains("5")) {
+              action.addSynthesisFlagship("F5");
+            }
+          } else {
+            action.addSynthesisFlagship("F5");
+          }
+        }
+        if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("6")) {
+          if (action.getSynthesisFlagships() != null && action.getSynthesisFlagships().toString().length() > 0) {
+            if (!sSynthesisFlagships.contains("6")) {
+              action.addSynthesisFlagship("F6");
+            }
+          } else {
+            action.addSynthesisFlagship("F6");
+          }
+        }
+        if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("PMU")) {
+          if (action.getSynthesisFlagships() != null && action.getSynthesisFlagships().toString().length() > 0) {
+            if (!sSynthesisFlagships.contains("PMU")) {
+              action.addSynthesisFlagship("PMU");
+            }
+          } else {
+            action.addSynthesisFlagship("PMU");
+          }
+        }
+      }
+
+
       if (!action.getFieldErrors().isEmpty()) {
         action.addActionError(action.getText("saving.fields.required"));
       } else if (action.getValidationMessage().length() > 0) {
