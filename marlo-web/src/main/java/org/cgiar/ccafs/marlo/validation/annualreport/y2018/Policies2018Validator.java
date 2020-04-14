@@ -206,8 +206,7 @@ public class Policies2018Validator extends BaseValidator {
             sectionStatus = this.sectionStatusManager.getSectionStatusByProjectPolicy(policy.getId(), "Reporting",
               action.getActualPhase().getYear(), false, "policies");
 
-            if (sectionStatus != null && sectionStatus.getMissingFields() != null
-              && sectionStatus.getMissingFields().length() != 0) {
+            if (sectionStatus != null && sectionStatus.getMissingFields() != null && sectionStatus.getMissingFields().length() != 0) {
               count++;
             }
 

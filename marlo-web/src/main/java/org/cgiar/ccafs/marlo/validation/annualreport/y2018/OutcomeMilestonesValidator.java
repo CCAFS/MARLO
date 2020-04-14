@@ -133,29 +133,28 @@ public class OutcomeMilestonesValidator extends BaseValidator {
       // sectionStatusManager.
       if (action.isPMU()) {
         boolean tableComplete = false;
-        SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
-          "Reporting", 2019, false, "outomesMilestones");
-        long sectionStatusID = 0;
+        SectionStatus sectionStatus = null;
         if (sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(), "Reporting", 2019, false,
           "outomesMilestones") != null) {
-          sectionStatusID = sectionStatusManager
-            .getSectionStatusByReportSynthesis(reportSynthesis.getId(), "Reporting", 2019, false, "outomesMilestones")
-            .getId();
+          sectionStatus = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(), "Reporting",
+            2019, false, "outomesMilestones");
         }
         if (sectionStatus == null) {
           tableComplete = true;
           // sectionStatusManager.deleteSectionStatus(sectionStatusID);
-        } else if (sectionStatus != null && sectionStatus.getMissingFields() != null
+        } else if (sectionStatus != null && sectionStatus.getId() != null && sectionStatus.getMissingFields() != null
           && sectionStatus.getMissingFields().length() != 0) {
-          if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table5")) {
-            sectionStatusManager.deleteSectionStatus(sectionStatusID);
+          if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table5") && sectionStatus.getId() != 0) {
+            sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
             tableComplete = true;
           } else {
             tableComplete = false;
           }
         } else {
           tableComplete = true;
-          sectionStatusManager.deleteSectionStatus(sectionStatusID);
+          if (sectionStatus != null && sectionStatus.getId() != null && sectionStatus.getId() != 0) {
+            sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+          }
         }
 
         if (tableComplete == false) {
@@ -176,10 +175,13 @@ public class OutcomeMilestonesValidator extends BaseValidator {
         action.addActionMessage(
           " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
       }
-
-      this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
-        action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
-        ReportSynthesis2018SectionStatusEnum.OUTOMESMILESTONES.getStatus(), action);
+      try {
+        this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
+          action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
+          ReportSynthesis2018SectionStatusEnum.OUTOMESMILESTONES.getStatus(), action);
+      } catch (Exception e) {
+        System.out.println(e);
+      }
     }
 
   }
@@ -366,9 +368,13 @@ public class OutcomeMilestonesValidator extends BaseValidator {
           " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
       }
 
-      this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
-        action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
-        ReportSynthesis2018SectionStatusEnum.OUTOMESMILESTONES.getStatus(), action);
+      try {
+        this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
+          action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
+          ReportSynthesis2018SectionStatusEnum.OUTOMESMILESTONES.getStatus(), action);
+      } catch (Exception e) {
+        System.out.println(e);
+      }
     }
 
   }

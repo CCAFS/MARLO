@@ -16,17 +16,23 @@
 package org.cgiar.ccafs.marlo.validation.annualreport.y2018;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
+import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis2018SectionStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.inject.Named;
 
@@ -38,10 +44,15 @@ public class Publications2018Validator extends BaseValidator {
 
   private final GlobalUnitManager crpManager;
   private final ReportSynthesisManager reportSynthesisManager;
+  private final SectionStatusManager sectionStatusManager;
+  private final DeliverableManager deliverableManager;
 
-  public Publications2018Validator(GlobalUnitManager crpManager, ReportSynthesisManager reportSynthesisManager) {
+  public Publications2018Validator(GlobalUnitManager crpManager, ReportSynthesisManager reportSynthesisManager,
+    SectionStatusManager sectionStatusManager, DeliverableManager deliverableManager) {
     this.crpManager = crpManager;
     this.reportSynthesisManager = reportSynthesisManager;
+    this.sectionStatusManager = sectionStatusManager;
+    this.deliverableManager = deliverableManager;
   }
 
 
@@ -88,6 +99,55 @@ public class Publications2018Validator extends BaseValidator {
       } else if (action.getValidationMessage().length() > 0) {
         action.addActionMessage(
           " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
+      }
+
+      if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
+        boolean tableComplete = false;
+        SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
+          "Reporting", 2019, false, "policies");
+
+        if (sectionStatus == null) {
+          tableComplete = true;
+          // sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+        } else
+
+        if (sectionStatus != null && sectionStatus.getId() != 0 && sectionStatus.getMissingFields() != null
+          && sectionStatus.getMissingFields().length() != 0) {
+          if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table2")) {
+            sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+            tableComplete = true;
+          } else {
+            tableComplete = false;
+          }
+        } else {
+          if (sectionStatus != null && sectionStatus.getId() != 0) {
+            tableComplete = true;
+            sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+          }
+        }
+
+        int count = 0;
+        List<Deliverable> deliverables = new ArrayList<>();
+        deliverables =
+          deliverableManager.getPublicationsList(reportSynthesis.getLiaisonInstitution(), action.getActualPhase());
+        if (deliverables != null && !deliverables.isEmpty()) {
+          for (Deliverable deliverable : deliverables) {
+            if (deliverable != null && deliverable.getId() != null) {
+              sectionStatus = new SectionStatus();
+              sectionStatus = this.sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(), "Reporting",
+                action.getActualPhase().getYear(), false, "publications");
+
+              if (sectionStatus != null && sectionStatus.getMissingFields() != null
+                && sectionStatus.getMissingFields().length() != 0) {
+                count++;
+              }
+            }
+          }
+
+          if (count > 0) {
+            action.addMissingField("synthesis.AR2019Table6");
+          }
+        }
       }
 
       this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
