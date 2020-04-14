@@ -142,6 +142,52 @@ public class Policies2018Validator extends BaseValidator {
             }
           }
 
+          // Save Synthesis Flagship
+          if (reportSynthesis.getLiaisonInstitution() != null
+            && reportSynthesis.getLiaisonInstitution().getAcronym() != null) {
+            if (action.getSynthesisFlagships() != null && action.getSynthesisFlagships().toString().length() > 0) {
+              String sSynthesisFlagships = action.getSynthesisFlagships().toString();
+
+
+              if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("1")) {
+                if (!sSynthesisFlagships.contains("1")) {
+                  action.addSynthesisFlagship("F1");
+                }
+              }
+              if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("2")) {
+                if (!sSynthesisFlagships.contains("2")) {
+                  action.addSynthesisFlagship("F2");
+                }
+              }
+              if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("3")) {
+                if (!sSynthesisFlagships.contains("3")) {
+                  action.addSynthesisFlagship("F3");
+                }
+              }
+              if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("4")) {
+                if (!sSynthesisFlagships.contains("4")) {
+                  action.addSynthesisFlagship("F4");
+                }
+              }
+              if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("5")) {
+                if (!sSynthesisFlagships.contains("5")) {
+                  action.addSynthesisFlagship("F5");
+                }
+              }
+              if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("6")) {
+                if (!sSynthesisFlagships.contains("6")) {
+                  action.addSynthesisFlagship("F6");
+                }
+              }
+              if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("PMU")) {
+                if (!sSynthesisFlagships.contains("PMU")) {
+                  action.addSynthesisFlagship("PMU");
+                }
+              }
+
+            }
+          }
+
           if (count > 0) {
             action.addMissingField("synthesis.AR2019Table2");
           }
@@ -206,7 +252,8 @@ public class Policies2018Validator extends BaseValidator {
             sectionStatus = this.sectionStatusManager.getSectionStatusByProjectPolicy(policy.getId(), "Reporting",
               action.getActualPhase().getYear(), false, "policies");
 
-            if (sectionStatus != null && sectionStatus.getMissingFields() != null && sectionStatus.getMissingFields().length() != 0) {
+            if (sectionStatus != null && sectionStatus.getMissingFields() != null
+              && sectionStatus.getMissingFields().length() != 0) {
               count++;
             }
 

@@ -261,14 +261,15 @@ public class POISummary {
               } catch (Exception e) {
                 textIndicatorLink = "link";
               }
+              try {
+                url = text.substring(text.indexOf("=", j) + 2, text.indexOf(">", j) - 1);
 
-              url = text.substring(text.indexOf("=", j) + 2, text.indexOf(">", j) - 1);
-
-
-              if (!url.contains("http://") && !url.contains("https://")) {
-                url = "http://" + url;
+                if (!url.contains("http://") && !url.contains("https://")) {
+                  url = "http://" + url;
+                }
+              } catch (Exception e) {
+                url = "()";
               }
-
               urlList.add(url);
               referenceList.add(textIndicatorLink);
             }
