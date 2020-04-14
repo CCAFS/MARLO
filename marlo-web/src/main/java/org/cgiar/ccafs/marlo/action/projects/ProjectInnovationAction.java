@@ -1623,18 +1623,14 @@ public class ProjectInnovationAction extends BaseAction {
       List<ProjectInnovationOrganization> organizationPrev =
         new ArrayList<>(projectInnovation.getProjectInnovationOrganizations().stream()
           .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-      if (organizationPrev != null && organizationPrev.size() > 0) {
-        for (ProjectInnovationOrganization innovationOrganization : organizationPrev) {
-          if (innovationOrganization != null && innovation.getOrganizations() != null
-            && innovation.getOrganizations().size() > 0) {
-            if (!innovation.getOrganizations().contains(innovationOrganization)
-              && innovationOrganization.getId() != null) {
-              projectInnovationOrganizationManager.deleteProjectInnovationOrganization(innovationOrganization.getId());
-            }
-          }
+
+      for (ProjectInnovationOrganization innovationOrganization : organizationPrev) {
+        if (innovation.getOrganizations() == null || !innovation.getOrganizations().contains(innovationOrganization)) {
+          projectInnovationOrganizationManager.deleteProjectInnovationOrganization(innovationOrganization.getId());
         }
       }
     }
+
     // Save form Information
     if (innovation.getOrganizations() != null) {
       for (ProjectInnovationOrganization innovationOrganization : innovation.getOrganizations()) {
