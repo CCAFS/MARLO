@@ -17,7 +17,9 @@ package org.cgiar.ccafs.marlo.action.bi;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.action.projects.ProjectDescriptionAction;
+import org.cgiar.ccafs.marlo.data.manager.BiParametersManager;
 import org.cgiar.ccafs.marlo.data.manager.BiReportsManager;
+import org.cgiar.ccafs.marlo.data.model.BiParameters;
 import org.cgiar.ccafs.marlo.data.model.BiReports;
 
 import java.util.List;
@@ -38,14 +40,22 @@ public class BiReportsAction extends BaseAction {
 
   // Managers
   private BiReportsManager biReportsManager;
+  private BiParametersManager biParametersManager;
 
   // Front-end
   private List<BiReports> biReports;
+  private List<BiParameters> biParameters;
 
   @Inject
-  public BiReportsAction(BiReportsManager biReportsManager) {
+  public BiReportsAction(BiReportsManager biReportsManager, BiParametersManager biParametersManager) {
     this.biReportsManager = biReportsManager;
+    this.biParametersManager = biParametersManager;
   }
+
+  public List<BiParameters> getBiParameters() {
+    return biParameters;
+  }
+
 
   public List<BiReports> getBiReports() {
     return biReports;
@@ -55,6 +65,12 @@ public class BiReportsAction extends BaseAction {
   @Override
   public void prepare() {
     biReports = biReportsManager.findAll();
+    biParameters = biParametersManager.findAll();
+  }
+
+
+  public void setBiParameters(List<BiParameters> biParameters) {
+    this.biParameters = biParameters;
   }
 
 
