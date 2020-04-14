@@ -18,11 +18,13 @@ package org.cgiar.ccafs.marlo.validation.annualreport.y2018;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
+import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis2018SectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTarget;
+import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -40,10 +42,14 @@ public class SrfProgressValidator extends BaseValidator {
 
   private final GlobalUnitManager crpManager;
   private final ReportSynthesisManager reportSynthesisManager;
+  private final SectionStatusManager sectionStatusManager;
 
-  public SrfProgressValidator(GlobalUnitManager crpManager, ReportSynthesisManager reportSynthesisManager) {
+
+  public SrfProgressValidator(GlobalUnitManager crpManager, ReportSynthesisManager reportSynthesisManager,
+    SectionStatusManager sectionStatusManager) {
     this.crpManager = crpManager;
     this.reportSynthesisManager = reportSynthesisManager;
+    this.sectionStatusManager = sectionStatusManager;
   }
 
 
@@ -106,6 +112,68 @@ public class SrfProgressValidator extends BaseValidator {
       } else if (action.getValidationMessage().length() > 0) {
         action.addActionMessage(
           " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
+      }
+
+      this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
+        action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
+        ReportSynthesis2018SectionStatusEnum.CRP_PROGRESS.getStatus(), action);
+    }
+  }
+
+  public void validateCheckButton(BaseAction action, ReportSynthesis reportSynthesis, boolean saving) {
+    action.setInvalidFields(new HashMap<>());
+    if (reportSynthesis != null) {
+      if (!saving) {
+        Path path = this.getAutoSaveFilePath(reportSynthesis, action.getCrpID(), action);
+        if (path.toFile().exists()) {
+          action.addMissingField("draft");
+        }
+      }
+
+      // Validate Summary
+      if (!(this.isValidString(reportSynthesis.getReportSynthesisSrfProgress().getSummary())
+        && this.wordCount(this.removeHtmlTags(reportSynthesis.getReportSynthesisSrfProgress().getSummary())) <= 400)) {
+        action.addMessage(action.getText("reportSynthesis.reportSynthesisSrfProgress.overallContribution"));
+        action.getInvalidFields().put("input-reportSynthesis.reportSynthesisSrfProgress.summary",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+
+      // Validate Targets
+      if (reportSynthesis.getReportSynthesisSrfProgress().getSloTargets() != null) {
+        for (int i = 0; i < reportSynthesis.getReportSynthesisSrfProgress().getSloTargets().size(); i++) {
+          this.validateTargets(action, reportSynthesis.getReportSynthesisSrfProgress().getSloTargets().get(i), i);
+        }
+      }
+
+
+      if (!action.getFieldErrors().isEmpty()) {
+        action.addActionError(action.getText("saving.fields.required"));
+      } else if (action.getValidationMessage().length() > 0) {
+        action.addActionMessage(
+          " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
+      }
+
+
+      boolean tableComplete = false;
+      SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
+        "Reporting", 2019, false, "crpProgress");
+
+      if (sectionStatus == null) {
+        tableComplete = true;
+        // sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+      } else
+
+      if (sectionStatus != null && sectionStatus.getMissingFields() != null
+        && sectionStatus.getMissingFields().length() != 0) {
+        if (sectionStatus.getMissingFields().contains("crpProgress1")) {
+          sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+          tableComplete = true;
+        } else {
+          tableComplete = false;
+        }
+      } else {
+        tableComplete = true;
+        sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
       }
 
       this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),

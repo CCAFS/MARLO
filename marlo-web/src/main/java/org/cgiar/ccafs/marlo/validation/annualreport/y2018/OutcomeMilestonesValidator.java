@@ -321,8 +321,6 @@ public class OutcomeMilestonesValidator extends BaseValidator {
           action.addMissingField("draft");
         }
       }
-      LiaisonInstitution liaisonInstitution =
-        liaisonInstitutionManager.getLiaisonInstitutionById(reportSynthesis.getLiaisonInstitution().getId());
 
       // Validate Flagships
       // sectionStatusManager.
@@ -330,28 +328,22 @@ public class OutcomeMilestonesValidator extends BaseValidator {
       boolean tableComplete = false;
       SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
         "Reporting", 2019, false, "outomesMilestones");
-      long sectionStatusID = 0;
-      if (sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(), "Reporting", 2019, false,
-        "outomesMilestones") != null) {
-        sectionStatusID = sectionStatusManager
-          .getSectionStatusByReportSynthesis(reportSynthesis.getId(), "Reporting", 2019, false, "outomesMilestones")
-          .getId();
-      }
+
       if (sectionStatus == null) {
         tableComplete = true;
         // sectionStatusManager.deleteSectionStatus(sectionStatusID);
       } else if (sectionStatus != null && sectionStatus.getMissingFields() != null
         && sectionStatus.getMissingFields().length() != 0) {
-        if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table5") && sectionStatusID != 0) {
-          sectionStatusManager.deleteSectionStatus(sectionStatusID);
+        if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table5") && sectionStatus.getId() != 0) {
+          sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
           tableComplete = true;
         } else {
           tableComplete = false;
         }
       } else {
         tableComplete = true;
-        if (sectionStatusID != 0) {
-          sectionStatusManager.deleteSectionStatus(sectionStatusID);
+        if (sectionStatus.getId() != 0) {
+          sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
         }
       }
 

@@ -901,7 +901,11 @@ public class SrfProgressAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      validator.validate(this, reportSynthesis, true);
+      if (this.isPMU()) {
+        validator.validateCheckButton(this, reportSynthesis, true);
+      } else {
+        validator.validate(this, reportSynthesis, true);
+      }
     }
   }
 
