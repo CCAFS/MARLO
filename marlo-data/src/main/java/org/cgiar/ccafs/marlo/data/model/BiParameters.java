@@ -22,53 +22,16 @@ import com.google.gson.annotations.Expose;
 /**
  * @author Luis Benavides - CIAT/CCAFS
  */
-public class BiReports extends MarloBaseEntity implements java.io.Serializable, IAuditLog {
+public class BiParameters extends MarloBaseEntity implements java.io.Serializable, IAuditLog {
 
-  private static final long serialVersionUID = 2402669967253699462L;
-
-  @Expose
-  private String reportName;
+  private static final long serialVersionUID = 4184202552072120327L;
 
   @Expose
-  private String reportId;
+  private String parameterName;
 
   @Expose
-  private String datasetId;
+  private String parameterValue;
 
-  @Expose
-  private String embedUrl;
-
-  @Expose
-  private Boolean isActive;
-
-  @Expose
-  private Boolean hasFilters;
-
-  @Expose
-  private GlobalUnit crp;
-
-  public GlobalUnit getCrp() {
-    return crp;
-  }
-
-
-  public String getDatasetId() {
-    return datasetId;
-  }
-
-
-  public String getEmbedUrl() {
-    return embedUrl;
-  }
-
-
-  public Boolean getHasFilters() {
-    return hasFilters;
-  }
-
-  public Boolean getIsActive() {
-    return isActive;
-  }
 
   @Override
   public String getLogDeatil() {
@@ -79,6 +42,7 @@ public class BiReports extends MarloBaseEntity implements java.io.Serializable, 
 
     return sb.toString();
   }
+
 
   @Override
   public String getModificationJustification() {
@@ -95,46 +59,18 @@ public class BiReports extends MarloBaseEntity implements java.io.Serializable, 
   }
 
 
-  public String getReportId() {
-    return reportId;
+  public String getParameterName() {
+    return parameterName;
   }
 
-
-  public String getReportName() {
-    return reportName;
+  public String getParameterValue() {
+    return parameterValue;
   }
-
 
   @Override
   public boolean isActive() {
     return true;
   }
-
-
-  public void setCrp(GlobalUnit crp) {
-    this.crp = crp;
-  }
-
-
-  public void setDatasetId(String datasetId) {
-    this.datasetId = datasetId;
-  }
-
-
-  public void setEmbedUrl(String embedUrl) {
-    this.embedUrl = embedUrl;
-  }
-
-
-  public void setHasFilters(Boolean hasFilters) {
-    this.hasFilters = hasFilters;
-  }
-
-
-  public void setIsActive(Boolean isActive) {
-    this.isActive = isActive;
-  }
-
 
   @Override
   public void setModifiedBy(User modifiedBy) {
@@ -142,14 +78,12 @@ public class BiReports extends MarloBaseEntity implements java.io.Serializable, 
 
   }
 
-
-  public void setReportId(String reportId) {
-    this.reportId = reportId;
+  public void setParameterName(String parameterName) {
+    this.parameterName = parameterName;
   }
 
-
-  public void setReportName(String reportName) {
-    this.reportName = reportName;
+  public void setParameterValue(String parameterValue) {
+    this.parameterValue = parameterValue;
   }
 
 
