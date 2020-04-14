@@ -35,11 +35,16 @@ import java.util.HashMap;
 
 import javax.inject.Named;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 @Named
 public class PartnershipValidator extends BaseValidator {
+
+  private static Logger LOG = LoggerFactory.getLogger(PartnershipValidator.class);
 
   private final GlobalUnitManager crpManager;
   private final ReportSynthesisManager reportSynthesisManager;
@@ -155,30 +160,29 @@ public class PartnershipValidator extends BaseValidator {
 
       if (action.isPMU()) {
         boolean tableComplete = false;
-        SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
-          "Reporting", 2019, false, "externalPartnerships");
-        long sectionStatusID = 0;
+        SectionStatus sectionStatus = null;
         if (sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(), "Reporting", 2019, false,
           "externalPartnerships") != null) {
-          sectionStatusID = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(), "Reporting",
-            2019, false, "externalPartnerships").getId();
+          sectionStatus = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(), "Reporting",
+            2019, false, "externalPartnerships");
         }
         if (sectionStatus == null) {
           tableComplete = true;
-          sectionStatusManager.deleteSectionStatus(sectionStatusID);
         } else
 
         if (sectionStatus != null && sectionStatus.getMissingFields() != null
           && sectionStatus.getMissingFields().length() != 0) {
           if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table8/9")) {
-            sectionStatusManager.deleteSectionStatus(sectionStatusID);
+            sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
             tableComplete = true;
           } else {
             tableComplete = false;
           }
         } else {
-          tableComplete = true;
-          sectionStatusManager.deleteSectionStatus(sectionStatusID);
+          if (sectionStatus != null) {
+            tableComplete = true;
+            sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+          }
         }
 
 
@@ -267,10 +271,13 @@ public class PartnershipValidator extends BaseValidator {
         action.addActionMessage(
           " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
       }
-
-      this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
-        action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
-        ReportSynthesis2018SectionStatusEnum.EXTERNAL_PARTNERSHIPS.getStatus(), action);
+      try {
+        this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
+          action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
+          ReportSynthesis2018SectionStatusEnum.EXTERNAL_PARTNERSHIPS.getStatus(), action);
+      } catch (Exception e) {
+        LOG.error("Error getting innovations list: " + e.getMessage());
+      }
     }
 
   }

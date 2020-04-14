@@ -36,11 +36,16 @@ import java.util.List;
 
 import javax.inject.Named;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author Andrés Valencia - CIAT/CCAFS
  */
 @Named
 public class Policies2018Validator extends BaseValidator {
+
+  private static Logger LOG = LoggerFactory.getLogger(Policies2018Validator.class);
 
   private final GlobalUnitManager crpManager;
   private final ReportSynthesisManager reportSynthesisManager;
@@ -371,7 +376,7 @@ public class Policies2018Validator extends BaseValidator {
           action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
           ReportSynthesis2018SectionStatusEnum.POLICIES.getStatus(), action);
       } catch (Exception e) {
-
+        LOG.error("Error getting innovations list: " + e.getMessage());
       }
     }
 

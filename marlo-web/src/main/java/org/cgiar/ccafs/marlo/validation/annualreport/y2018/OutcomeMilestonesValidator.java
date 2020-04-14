@@ -40,11 +40,16 @@ import java.util.List;
 
 import javax.inject.Named;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 @Named
 public class OutcomeMilestonesValidator extends BaseValidator {
+
+  private static Logger LOG = LoggerFactory.getLogger(OutcomeMilestonesValidator.class);
 
   private final GlobalUnitManager crpManager;
   private final ReportSynthesisManager reportSynthesisManager;
@@ -253,7 +258,7 @@ public class OutcomeMilestonesValidator extends BaseValidator {
           action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
           ReportSynthesis2018SectionStatusEnum.OUTOMESMILESTONES.getStatus(), action);
       } catch (Exception e) {
-        System.out.println(e);
+        LOG.error("Error getting innovations list: " + e.getMessage());
       }
     }
 
@@ -447,7 +452,7 @@ public class OutcomeMilestonesValidator extends BaseValidator {
           action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
           ReportSynthesis2018SectionStatusEnum.OUTOMESMILESTONES.getStatus(), action);
       } catch (Exception e) {
-        System.out.println(e);
+        LOG.error("Error getting innovations list: " + e.getMessage());
       }
     }
 
