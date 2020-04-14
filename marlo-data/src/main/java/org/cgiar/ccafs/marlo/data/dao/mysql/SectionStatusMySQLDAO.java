@@ -71,6 +71,19 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
   }
 
   @Override
+  public List<SectionStatus> getSectionsStatusByReportSynthesis(long synthesisID, String cycle, int year,
+    Boolean upkeep, String sectionName) {
+    List<SectionStatus> sectionStatuses = new ArrayList<>();
+    String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
+      + cycle + "' and year=" + year + " and upkeep=" + upkeep + " and report_synthesis_id=" + synthesisID;
+    sectionStatuses = super.findAll(query);
+    if (sectionStatuses.size() > 0) {
+      return sectionStatuses;
+    }
+    return null;
+  }
+
+  @Override
   public SectionStatus getSectionStatusByCaseStudy(long caseStudyID, String cycle, int year, Boolean upkeep,
     String sectionName) {
     String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
@@ -144,6 +157,7 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
     return null;
   }
 
+
   @Override
   public SectionStatus getSectionStatusByPowbSynthesis(long powbSynthesisID, String cycle, int year, Boolean upkeep,
     String sectionName) {
@@ -169,7 +183,6 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
     return null;
   }
 
-
   @Override
   public SectionStatus getSectionStatusByProjectCofunded(long projectID, String cycle, int year, Boolean upkeep,
     String sectionName) {
@@ -181,6 +194,7 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
     }
     return null;
   }
+
 
   @Override
   public SectionStatus getSectionStatusByProjectContributionToLP6(long projectLp6ContributionID, String cycle, int year,
@@ -194,7 +208,6 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
     }
     return null;
   }
-
 
   @Override
   public SectionStatus getSectionStatusByProjectExpectedStudy(long expectedID, String cycle, int year, Boolean upkeep,

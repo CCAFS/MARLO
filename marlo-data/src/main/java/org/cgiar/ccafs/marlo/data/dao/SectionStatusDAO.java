@@ -54,6 +54,9 @@ public interface SectionStatusDAO {
    */
   public List<SectionStatus> findAll();
 
+  public List<SectionStatus> getSectionsStatusByReportSynthesis(long synthesisID, String cycle, int year,
+    Boolean upkeep, String sectionName);
+
   public SectionStatus getSectionStatusByCaseStudy(long caseStudyID, String cycle, int year, Boolean upkeep,
     String sectionName);
 
