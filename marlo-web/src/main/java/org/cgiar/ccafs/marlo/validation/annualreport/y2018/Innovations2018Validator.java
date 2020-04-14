@@ -134,7 +134,7 @@ public class Innovations2018Validator extends BaseValidator {
         // sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
       } else
 
-      if (sectionStatus != null && sectionStatus.getMissingFields() != null
+      if (sectionStatus != null && sectionStatus.getId() != null && sectionStatus.getMissingFields() != null
         && sectionStatus.getMissingFields().length() != 0) {
         if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table4")) {
           sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
@@ -143,8 +143,10 @@ public class Innovations2018Validator extends BaseValidator {
           tableComplete = false;
         }
       } else {
-        tableComplete = true;
-        sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+        if (sectionStatus != null && sectionStatus.getId() != null) {
+          tableComplete = true;
+          sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+        }
       }
 
       int count = 0;
@@ -162,7 +164,6 @@ public class Innovations2018Validator extends BaseValidator {
               && sectionStatus.getMissingFields().length() != 0) {
               count++;
             }
-
           }
         }
 
@@ -170,10 +171,13 @@ public class Innovations2018Validator extends BaseValidator {
           action.addMissingField("synthesis.AR2019Table4");
         }
       }
-
-      this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
-        action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
-        ReportSynthesis2018SectionStatusEnum.INNOVATIONS.getStatus(), action);
+      try {
+        this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
+          action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
+          ReportSynthesis2018SectionStatusEnum.INNOVATIONS.getStatus(), action);
+      } catch (Exception e) {
+        System.out.println(e);
+      }
     }
 
   }
