@@ -312,8 +312,8 @@
                   <thead>
                     <tr>
                       <th id="ids">[@s.text name="${customLabel}.table4.innovationsOicrs.id" /]</th>
-                      <th id="policyTitles">[@s.text name="${customLabel}.table4.innovationsOicrs.oicrName" /]</th>
-                     [#--<th id="policyType">[@s.text name="project.projectPolicyList.type" /]</th>--]
+                     [#--<th id="innovationTitles">[@s.text name="${customLabel}.table4.innovationsOicrs.oicrName" /]</th>--]
+                     [#--<th id="innovationType">[@s.text name="project.projectPolicyList.type" /]</th>--]
                       <th></th>
                     </tr>
                   </thead>
@@ -321,7 +321,7 @@
                       [#local oicrUrl][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${element.projectInnovationInfo.projectExpectedStudy.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
                       <tr>
                         <th scope="row" class="col-md-1">${element.projectInnovationInfo.projectExpectedStudy.id}</th>
-                        <td>${(element.projectInnovationInfo.projectExpectedStudy.composedName)!'Untitled'}</td>
+                         [#--<td>${(element.projectInnovationInfo.projectExpectedStudy.composedName)!'Untitled'}</td>--]
                          [#--<td>${(p.projectPolicyInfo.policyType.name?capitalize)!'none'}</td>--]
                         <td class="col-md-2 text-center"> <a href="${oicrUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
                       </tr>
