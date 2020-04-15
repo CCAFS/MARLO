@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis2018SectionStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressInnovation;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -33,6 +34,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Named;
 
@@ -203,6 +205,27 @@ public class Innovations2018Validator extends BaseValidator {
           " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
       }
 
+      List<ProjectInnovation> projectInnovationsTable4 = null;
+      if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
+        // Get mark policies list
+
+        projectInnovationsTable4 = new ArrayList<>(projectInnovationManager
+          .getProjectInnovationsList(reportSynthesis.getLiaisonInstitution(), action.getActualPhase()));
+
+        if (reportSynthesis != null && reportSynthesis.getReportSynthesisFlagshipProgress() != null
+          && reportSynthesis.getReportSynthesisFlagshipProgress()
+            .getReportSynthesisFlagshipProgressInnovations() != null
+          && !reportSynthesis.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressInnovations()
+            .isEmpty()) {
+          for (ReportSynthesisFlagshipProgressInnovation flagshipProgressInnovation : reportSynthesis
+            .getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressInnovations().stream()
+            .filter(ro -> ro.isActive()).collect(Collectors.toList())) {
+            projectInnovationsTable4.remove(flagshipProgressInnovation.getProjectInnovation());
+          }
+        }
+        // System.out.println(projectPoliciesTable2.size() + "policies Marcados");
+      }
+
       boolean tableComplete = false;
       SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
         "Reporting", 2019, false, "innovations");
@@ -229,8 +252,13 @@ public class Innovations2018Validator extends BaseValidator {
 
       int count = 0;
       List<ProjectInnovation> innovations = new ArrayList<>();
-      innovations = projectInnovationManager.getProjectInnovationsList(reportSynthesis.getLiaisonInstitution(),
-        action.getActualPhase());
+      if (projectInnovationsTable4 != null) {
+        innovations = projectInnovationsTable4;
+      } else {
+        innovations = projectInnovationManager.getProjectInnovationsList(reportSynthesis.getLiaisonInstitution(),
+          action.getActualPhase());
+      }
+
       if (innovations != null && !innovations.isEmpty()) {
         for (ProjectInnovation innovation : innovations) {
           if (innovation != null && innovation.getId() != null) {
