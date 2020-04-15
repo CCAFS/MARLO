@@ -89,5 +89,9 @@
 		<property name="upkeep" type="java.lang.Boolean">
       <column name="upkeep" not-null="true"/>
     </property> 
+    <property name="synthesisFlagships" type="string">
+      <column name="synthesis_flagships" sql-type="TEXT" /> 
+    </property>
+
 	</class>
 </hibernate-mapping>
