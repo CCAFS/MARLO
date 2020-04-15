@@ -834,6 +834,14 @@ public class BaseValidator {
     } else {
       status.setMissingFields("");
     }
+
+    // Validate if the form have synthesis flagships information
+    String sSynthesisFlagships = action.getSynthesisFlagships().toString();
+    if (sSynthesisFlagships.length() > 0) {
+      status.setSynthesisFlagships(sSynthesisFlagships);
+    } else {
+      status.setSynthesisFlagships("");
+    }
     sectionStatusManager.saveSectionStatus(status);
   }
 

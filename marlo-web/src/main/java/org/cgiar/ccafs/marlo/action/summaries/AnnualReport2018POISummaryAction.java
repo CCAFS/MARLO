@@ -1173,11 +1173,13 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     POIField[] sHeader2 = {new POIField("", ParagraphAlignment.LEFT, bold, blackColor),
       new POIField("", ParagraphAlignment.LEFT, bold, blackColor),
       new POIField("", ParagraphAlignment.LEFT, bold, blackColor),
+      new POIField("", ParagraphAlignment.LEFT, bold, blackColor),
       new POIField(this.getText("summaries.annualReport2018.table2Gender"), ParagraphAlignment.LEFT, bold, blackColor),
       new POIField(this.getText("summaries.annualReport2018.table2Youth"), ParagraphAlignment.LEFT, bold, blackColor),
       new POIField(this.getText("summaries.annualReport2018.table2Capdev"), ParagraphAlignment.LEFT, bold, blackColor),
       new POIField(this.getText("summaries.annualReport2018.table2ClimateChange"), ParagraphAlignment.LEFT, bold,
-        blackColor),};
+        blackColor),
+      new POIField("", ParagraphAlignment.CENTER, bold, blackColor)};
 
     List<POIField> header = Arrays.asList(sHeader);
     List<POIField> header2 = Arrays.asList(sHeader2);
