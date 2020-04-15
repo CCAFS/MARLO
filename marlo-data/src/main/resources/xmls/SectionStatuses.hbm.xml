@@ -92,7 +92,8 @@
     <!--  
     <property name="synthesisFlagships" type="string">
       <column name="synthesis_flagships" sql-type="TEXT" />
-      -->
+ 
     </property>
+         -->
 	</class>
 </hibernate-mapping>
