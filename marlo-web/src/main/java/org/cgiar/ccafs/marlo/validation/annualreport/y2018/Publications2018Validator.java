@@ -128,7 +128,7 @@ public class Publications2018Validator extends BaseValidator {
 
         boolean tableComplete = false;
         SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
-          "Reporting", 2019, false, "policies");
+          "Reporting", 2019, false, "publications");
 
         if (sectionStatus == null) {
           tableComplete = true;
@@ -137,7 +137,7 @@ public class Publications2018Validator extends BaseValidator {
 
         if (sectionStatus != null && sectionStatus.getId() != 0 && sectionStatus.getMissingFields() != null
           && sectionStatus.getMissingFields().length() != 0) {
-          if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table2")) {
+          if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table2") && sectionStatus.getId() != null) {
             sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
             tableComplete = true;
           } else {
@@ -273,7 +273,6 @@ public class Publications2018Validator extends BaseValidator {
               }
             }
           }
-
         }
       }
 
