@@ -150,7 +150,7 @@
                 </div>              
                 [/#if]
                 [#-- OICR Contributions --]
-                [#if !expanded] [@oicrContributions element=item tiny=true /] [/#if]
+                [#if !expanded] [@oicrContributions element=item /] [/#if]
                 
                 <a href="${url}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
               </td>
@@ -189,7 +189,7 @@
   </div>
 [/#macro]
 
-[#macro oicrContributions element tiny=false]
+[#macro oicrContributions element]
   [#local policiesContributions = (action.getPolicies(element.id, actualPhase.id))![] ]
   [#local innovationsContributions = (action.getInnovations(element.id, actualPhase.id))![] ]
   [#local totalContributions = (policiesContributions?size +innovationsContributions?size)!0 ]
@@ -197,7 +197,7 @@
   [#if policiesContributions?has_content || innovationsContributions?has_content]
     <br /> 
     <button type="button" class="outcomesContributionButton btn btn-default btn-xs" data-toggle="modal" data-target="#oicrContributions-${element.id}">
-      <span class="icon-20 project"></span> <strong>${totalContributions}</strong> [#if !tiny][@s.text name="expectedProgress.milestonesContributions" /][/#if]
+      <span class="icon-20 project"></span> <strong>${totalContributions}</strong>
     </button>
     <!-- Modal -->
     <div class="modal fade" id="oicrContributions-${element.id}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">

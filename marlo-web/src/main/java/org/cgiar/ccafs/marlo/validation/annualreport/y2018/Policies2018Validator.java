@@ -287,15 +287,17 @@ public class Policies2018Validator extends BaseValidator {
 
       if (sectionStatus != null && sectionStatus.getMissingFields() != null
         && sectionStatus.getMissingFields().length() != 0) {
-        if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table2")) {
+        if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table2") && sectionStatus.getId() != 0) {
           sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
           tableComplete = true;
         } else {
           tableComplete = false;
         }
       } else {
-        tableComplete = true;
-        sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+        if (sectionStatus != null && sectionStatus.getId() != null) {
+          tableComplete = true;
+          sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+        }
       }
 
       int count = 0;
@@ -403,7 +405,7 @@ public class Policies2018Validator extends BaseValidator {
           action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
           ReportSynthesis2018SectionStatusEnum.POLICIES.getStatus(), action);
       } catch (Exception e) {
-        LOG.error("Error getting innovations list: " + e.getMessage());
+        LOG.error("Error getting policies validator: " + e.getMessage());
       }
     }
 
