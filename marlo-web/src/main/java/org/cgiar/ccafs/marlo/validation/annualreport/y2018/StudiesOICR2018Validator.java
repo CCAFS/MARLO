@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis2018SectionStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressStudy;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -33,6 +34,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Named;
 
@@ -177,6 +179,26 @@ public class StudiesOICR2018Validator extends BaseValidator {
           " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
       }
 
+      List<ProjectExpectedStudy> projectExpectedStudiesTable3 = null;
+      if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
+        // Get mark policies list
+
+        projectExpectedStudiesTable3 = new ArrayList<>(projectExpectedStudyManager
+          .getProjectStudiesList(reportSynthesis.getLiaisonInstitution(), action.getActualPhase()));
+
+        if (reportSynthesis != null && reportSynthesis.getReportSynthesisFlagshipProgress() != null
+          && reportSynthesis.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressStudies() != null
+          && !reportSynthesis.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressStudies()
+            .isEmpty()) {
+          for (ReportSynthesisFlagshipProgressStudy flagshipProgressStudy : reportSynthesis
+            .getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressStudies().stream()
+            .filter(ro -> ro.isActive()).collect(Collectors.toList())) {
+            projectExpectedStudiesTable3.remove(flagshipProgressStudy.getProjectExpectedStudy());
+          }
+        }
+        // System.out.println(projectPoliciesTable2.size() + "policies Marcados");
+      }
+
       boolean tableComplete = false;
       SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
         "Reporting", 2019, false, "oicr");
@@ -201,8 +223,12 @@ public class StudiesOICR2018Validator extends BaseValidator {
 
       int count = 0;
       List<ProjectExpectedStudy> expectedStudies = new ArrayList<>();
-      expectedStudies = projectExpectedStudyManager.getProjectStudiesList(reportSynthesis.getLiaisonInstitution(),
-        action.getActualPhase());
+      if (projectExpectedStudiesTable3 != null) {
+        expectedStudies = projectExpectedStudiesTable3;
+      } else {
+        expectedStudies = projectExpectedStudyManager.getProjectStudiesList(reportSynthesis.getLiaisonInstitution(),
+          action.getActualPhase());
+      }
       if (expectedStudies != null && !expectedStudies.isEmpty()) {
         for (ProjectExpectedStudy expected : expectedStudies) {
           if (expected != null && expected.getId() != null) {

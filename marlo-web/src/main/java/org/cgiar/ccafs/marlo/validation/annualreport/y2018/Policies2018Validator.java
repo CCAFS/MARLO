@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis2018SectionStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressPolicy;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -33,6 +34,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Named;
 
@@ -254,6 +256,26 @@ public class Policies2018Validator extends BaseValidator {
           " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
       }
 
+      List<ProjectPolicy> projectPoliciesTable2 = null;
+      if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
+        // Get mark policies list
+
+        projectPoliciesTable2 = new ArrayList<>(projectPolicyManager
+          .getProjectPoliciesList(reportSynthesis.getLiaisonInstitution(), action.getActualPhase()));
+
+        if (reportSynthesis != null && reportSynthesis.getReportSynthesisFlagshipProgress() != null
+          && reportSynthesis.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressPolicies() != null
+          && !reportSynthesis.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressPolicies()
+            .isEmpty()) {
+          for (ReportSynthesisFlagshipProgressPolicy flagshipProgressPolicy : reportSynthesis
+            .getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressPolicies().stream()
+            .filter(ro -> ro.isActive()).collect(Collectors.toList())) {
+            projectPoliciesTable2.remove(flagshipProgressPolicy.getProjectPolicy());
+          }
+        }
+        // System.out.println(projectPoliciesTable2.size() + "policies Marcados");
+      }
+
       boolean tableComplete = false;
       SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
         "Reporting", 2019, false, "policies");
@@ -278,8 +300,13 @@ public class Policies2018Validator extends BaseValidator {
 
       int count = 0;
       List<ProjectPolicy> projectPolicies = new ArrayList<>();
-      projectPolicies =
-        projectPolicyManager.getProjectPoliciesList(reportSynthesis.getLiaisonInstitution(), action.getActualPhase());
+      if (projectPoliciesTable2 != null) {
+        projectPolicies = projectPoliciesTable2;
+      } else {
+        projectPolicies =
+          projectPolicyManager.getProjectPoliciesList(reportSynthesis.getLiaisonInstitution(), action.getActualPhase());
+
+      }
       if (projectPolicies != null && !projectPolicies.isEmpty()) {
         for (ProjectPolicy policy : projectPolicies) {
           if (policy != null && policy.getId() != null) {

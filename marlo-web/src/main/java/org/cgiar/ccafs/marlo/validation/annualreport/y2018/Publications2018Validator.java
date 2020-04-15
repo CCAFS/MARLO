@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis2018SectionStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressDeliverable;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -33,6 +34,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Named;
 
@@ -102,6 +104,28 @@ public class Publications2018Validator extends BaseValidator {
       }
 
       if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
+
+        List<Deliverable> deliverablesTable6 = null;
+        if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
+          // Get mark policies list
+
+          deliverablesTable6 = new ArrayList<>(
+            deliverableManager.getPublicationsList(reportSynthesis.getLiaisonInstitution(), action.getActualPhase()));
+
+          if (reportSynthesis != null && reportSynthesis.getReportSynthesisFlagshipProgress() != null
+            && reportSynthesis.getReportSynthesisFlagshipProgress()
+              .getReportSynthesisFlagshipProgressDeliverables() != null
+            && !reportSynthesis.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressDeliverables()
+              .isEmpty()) {
+            for (ReportSynthesisFlagshipProgressDeliverable flagshipProgressDeliverable : reportSynthesis
+              .getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressDeliverables().stream()
+              .filter(ro -> ro.isActive()).collect(Collectors.toList())) {
+              deliverablesTable6.remove(flagshipProgressDeliverable.getDeliverable());
+            }
+          }
+          // System.out.println(projectPoliciesTable2.size() + "policies Marcados");
+        }
+
         boolean tableComplete = false;
         SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
           "Reporting", 2019, false, "policies");
@@ -128,8 +152,12 @@ public class Publications2018Validator extends BaseValidator {
 
         int count = 0;
         List<Deliverable> deliverables = new ArrayList<>();
-        deliverables =
-          deliverableManager.getPublicationsList(reportSynthesis.getLiaisonInstitution(), action.getActualPhase());
+        if (deliverablesTable6 != null) {
+          deliverables = deliverablesTable6;
+        } else {
+          deliverables =
+            deliverableManager.getPublicationsList(reportSynthesis.getLiaisonInstitution(), action.getActualPhase());
+        }
         if (deliverables != null && !deliverables.isEmpty()) {
           for (Deliverable deliverable : deliverables) {
             if (deliverable != null && deliverable.getId() != null) {
@@ -139,7 +167,33 @@ public class Publications2018Validator extends BaseValidator {
 
               if (sectionStatus != null && sectionStatus.getMissingFields() != null
                 && sectionStatus.getMissingFields().length() != 0) {
-                count++;
+                // count++;
+
+                // Volume
+                if (sectionStatus.getMissingFields().contains("Volume")) {
+                  count++;
+                }
+
+                // Issue
+                if (sectionStatus.getMissingFields().contains("Issue")) {
+                  count++;
+                }
+
+                // Page
+                if (sectionStatus.getMissingFields().contains("Pages")) {
+                  count++;
+                }
+
+                // Journal
+                if (sectionStatus.getMissingFields().contains("Journal")) {
+                  count++;
+                }
+
+                // ISI
+                if (sectionStatus.getMissingFields().contains("Is this journal article an ISI publication?")) {
+                  count++;
+                }
+
               }
             }
           }
