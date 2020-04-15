@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class ProjectInfoDTO {
 
-  private Long id;
+
   private String title;
   private String summary;
   @JsonFormat(pattern = "yyyy-MM-dd")
@@ -71,11 +71,6 @@ public class ProjectInfoDTO {
 
   public String getGenderAnalysis() {
     return genderAnalysis;
-  }
-
-
-  public Long getId() {
-    return id;
   }
 
 
@@ -126,11 +121,6 @@ public class ProjectInfoDTO {
 
   public void setGenderAnalysis(String genderAnalysis) {
     this.genderAnalysis = genderAnalysis;
-  }
-
-
-  public void setId(Long id) {
-    this.id = id;
   }
 
 
