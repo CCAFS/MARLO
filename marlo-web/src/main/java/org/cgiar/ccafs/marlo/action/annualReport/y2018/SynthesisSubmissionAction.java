@@ -89,13 +89,13 @@ public class SynthesisSubmissionAction extends BaseAction {
   public String execute() throws Exception {
     complete = false;
     ReportSynthesis reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
-    liaisonInstitutionID = reportSynthesis.getLiaisonInstitution().getId();
-    this.setPhaseID(reportSynthesis.getPhase().getId());
     if (reportSynthesis != null) {
+      liaisonInstitutionID = reportSynthesis.getLiaisonInstitution().getId();
+      this.setPhaseID(reportSynthesis.getPhase().getId());
+
       if (this.hasPermission("canSubmmit")) {
 
         boolean isCompleteAR = true;
-
 
         if (isCompleteAR) {
           List<Submission> submissions = reportSynthesis.getSubmissions().stream()

@@ -1383,10 +1383,13 @@ public class PartnershipsAction extends BaseAction {
         new ArrayList<>(externalDB.getReportSynthesisKeyPartnershipExternalMainAreas().stream()
           .filter(nu -> nu.isActive()).collect(Collectors.toList()));
 
-      for (ReportSynthesisKeyPartnershipExternalMainArea area : areaPrev) {
-        if (!external.getMainAreas().contains(area)) {
-          reportSynthesisKeyPartnershipExternalMainAreaManager
-            .deleteReportSynthesisKeyPartnershipExternalMainArea(area.getId());
+      if (areaPrev != null && !areaPrev.isEmpty()) {
+        for (ReportSynthesisKeyPartnershipExternalMainArea area : areaPrev) {
+          if (area != null && area.getId() != null && external != null && external.getMainAreas() != null
+            && !external.getMainAreas().contains(area)) {
+            reportSynthesisKeyPartnershipExternalMainAreaManager
+              .deleteReportSynthesisKeyPartnershipExternalMainArea(area.getId());
+          }
         }
       }
     }

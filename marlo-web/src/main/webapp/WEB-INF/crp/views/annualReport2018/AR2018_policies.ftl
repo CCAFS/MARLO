@@ -238,7 +238,7 @@
               [/#list]
             </div>
             [/#if]
-            
+            [#if !expanded] [@oicrPopup element=item /] [/#if]
             <a href="${url}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
           </td>
           [#-- Description --]
@@ -333,6 +333,58 @@
     </tbody>
   </table>
 
+[/#macro]
+
+[#macro oicrPopup element]
+  [#local totalContributions = (element.evidences?size)!0 ]
+  
+  [#if element.evidences?has_content]
+    <br /> 
+    <button type="button" class="policiesOicrsButton btn btn-default btn-xs" data-toggle="modal" data-target="#policiesOicrs-${element.id}">
+      <span class="icon-20 project"></span> <strong>${totalContributions}</strong>
+    </button>
+    <!-- Modal -->
+    <div class="modal fade" id="policiesOicrs-${element.id}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">
+              [@s.text name="${customLabel}.table2.policiesOicrs" /]
+            </h4>
+          </div>
+          <div class="modal-body">
+            <div class="">            
+              [#-- OICRs --]
+              <h4 class="simpleTitle">[@s.text name="${customLabel}.table2.policiesOicrs.oicrs" /]</h4>
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th id="ids">[@s.text name="${customLabel}.table2.policiesOicrs.id" /]</th>
+                      <th id="policyTitles">[@s.text name="${customLabel}.table2.policiesOicrs.oicrName" /]</th>
+                     [#--<th id="policyType">[@s.text name="project.projectPolicyList.type" /]</th>--]
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    [#list element.evidences as oicr]
+                      [#local oicrUrl][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${oicr.projectExpectedStudy.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                      <tr>
+                        <th scope="row" class="col-md-1">${oicr.projectExpectedStudy.id}</th>
+                        <td>${(oicr.projectExpectedStudy.composedName)!'Untitled'}</td>
+                         [#--<td>${(p.projectPolicyInfo.policyType.name?capitalize)!'none'}</td>--]
+                        <td class="col-md-2 text-center"> <a href="${oicrUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
+                      </tr>
+                      [/#list]
+                  </tbody>
+                </table>           
+            </div>
+          </div>
+          <div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div>
+        </div>
+      </div>
+    </div>
+  [/#if]
 [/#macro]
 
 [#function getMarker element name]

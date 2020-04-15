@@ -218,7 +218,9 @@ public class StudiesOICR2018Validator extends BaseValidator {
         }
       } else {
         tableComplete = true;
-        sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+        if (sectionStatus != null && sectionStatus.getId() != null && sectionStatus.getId() != 0) {
+          sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+        }
       }
 
       int count = 0;
