@@ -509,6 +509,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private StringBuilder validationMessage = new StringBuilder();
 
   private StringBuilder missingFields = new StringBuilder();
+  private StringBuilder synthesisFlagships = new StringBuilder();
 
   public BaseAction() {
     this.saveable = true;
@@ -561,6 +562,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       this.missingFields.append(";");
     }
     this.missingFields.append(field);
+  }
+
+  /**
+   * This method add a synthesis flagship separated by a semicolon (;).
+   *
+   * @param field is the name of the field.
+   */
+  public void addSynthesisFlagship(String flagship) {
+    if (this.synthesisFlagships.length() != 0) {
+      this.synthesisFlagships.append(";");
+    }
+    this.synthesisFlagships.append(flagship);
   }
 
   public void addUsers() {
@@ -4189,6 +4202,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.submission;
   }
 
+  public StringBuilder getSynthesisFlagships() {
+    return synthesisFlagships;
+  }
+
   public String getTimeZone() {
     TimeZone timeZone = TimeZone.getDefault();
     String display = timeZone.getDisplayName();
@@ -6910,6 +6927,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public void setSwitchSession(boolean switchSession) {
     this.switchSession = switchSession;
+  }
+
+  public void setSynthesisFlagships(StringBuilder synthesisFlagships) {
+    this.synthesisFlagships = synthesisFlagships;
   }
 
   public void setUrl(String url) {

@@ -471,7 +471,11 @@ public class FlagshipProgressAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      validator.validate(this, reportSynthesis, true, hasFlagshipProgress);
+      if (this.isPMU()) {
+        validator.validateCheckButton(this, reportSynthesis, true, hasFlagshipProgress);
+      } else {
+        validator.validate(this, reportSynthesis, true, hasFlagshipProgress);
+      }
     }
   }
 

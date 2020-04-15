@@ -329,16 +329,53 @@ public class PublicationsAction extends BaseAction {
 
     SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByDeliverable(deliverableID, "Reporting",
       this.getActualPhase().getYear(), false, "deliverableList");
+    int count = 0;
+    if (sectionStatus != null && sectionStatus.getMissingFields() != null
+      && sectionStatus.getMissingFields().length() != 0) {
+      // count++;
 
-    if (sectionStatus == null) {
-      return true;
+      // Volume
+      if (sectionStatus.getMissingFields().contains("Volume")) {
+        count++;
+      }
+
+      // Issue
+      if (sectionStatus.getMissingFields().contains("Issue")) {
+        count++;
+      }
+
+      // Page
+      if (sectionStatus.getMissingFields().contains("Pages")) {
+        count++;
+      }
+
+      // Journal
+      if (sectionStatus.getMissingFields().contains("Journal")) {
+        count++;
+      }
+
+      // ISI
+      if (sectionStatus.getMissingFields().contains("Is this journal article an ISI publication?")) {
+        count++;
+      }
+
     }
 
-    if (sectionStatus.getMissingFields().length() != 0) {
+    if (count == 0) {
+      return true;
+    } else {
       return false;
     }
 
-    return true;
+    /*
+     * if (sectionStatus == null) {
+     * return true;
+     * }
+     * if (sectionStatus.getMissingFields().length() != 0) {
+     * return false;
+     * }
+     */
+    // return true;
   }
 
 
