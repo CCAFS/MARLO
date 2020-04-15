@@ -37,11 +37,16 @@ import java.util.HashMap;
 
 import javax.inject.Named;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author Andrés Valencia - CIAT/CCAFS
  */
 @Named
 public class FlagshipProgress2018Validator extends BaseValidator {
+
+  private static Logger LOG = LoggerFactory.getLogger(FlagshipProgress2018Validator.class);
 
   private final GlobalUnitManager crpManager;
   private final ReportSynthesisManager reportSynthesisManager;
@@ -412,12 +417,19 @@ public class FlagshipProgress2018Validator extends BaseValidator {
         }
       } else {
         tableComplete = true;
-        sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+        if (sectionStatus != null && sectionStatus.getId() != null) {
+          sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+        }
       }
 
-      this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
-        action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
-        ReportSynthesis2018SectionStatusEnum.FLAGSHIP_PROGRESS.getStatus(), action);
+      try {
+        this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
+          action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
+          ReportSynthesis2018SectionStatusEnum.FLAGSHIP_PROGRESS.getStatus(), action);
+      } catch (Exception e) {
+        LOG.error("Error getting Flagships progress validators: " + e.getMessage());
+
+      }
     }
 
   }
