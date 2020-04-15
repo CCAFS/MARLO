@@ -74,14 +74,14 @@ public class StatusPlannedOutcomes {
   }
 
   @ApiOperation(tags = {"Table 5 - Status of Planned Outcomes and Milestones"},
-    value = "${StatusPlannedOutcomes.outcomes.POST.value}", response = StatusPlannedOutcomesDTO.class)
+    value = "${StatusPlannedOutcomes.milestones.POST.value}", response = StatusPlannedOutcomesDTO.class)
   @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIAREntity}/statusMilestones", method = RequestMethod.POST,
     produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Long> createStatusPlannedMilestones(
-    @ApiParam(value = "${StatusPlannedOutcomes.outcomes.POST.param.CGIAR}",
+  public ResponseEntity<Long> createStatusPlannedMilestone(
+    @ApiParam(value = "${StatusPlannedOutcomes.milestones.POST.param.CGIAR}",
       required = true) @PathVariable String CGIAREntity,
-    @ApiParam(value = "${StatusPlannedOutcomes.outcomes.POST.param.statusPlannedOutcome}",
+    @ApiParam(value = "${StatusPlannedOutcomes.milestones.POST.param.statusPlannedMilestone}",
       required = true) @Valid @RequestBody NewStatusPlannedMilestoneDTO newStatusPlanneMilestoneDTO) {
     Long reportSythesisProgressOutcomesID = this.statusPlannedMilestonesItem
       .createStatusPlannedMilestone(newStatusPlanneMilestoneDTO, CGIAREntity, this.getCurrentUser());
@@ -89,13 +89,13 @@ public class StatusPlannedOutcomes {
 
     ResponseEntity<Long> response = new ResponseEntity<Long>(reportSythesisProgressOutcomesID, HttpStatus.OK);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-      throw new NotFoundException("404", this.env.getProperty("StatusPlannedOutcomes.outcomes.GET.id.404"));
+      throw new NotFoundException("404", this.env.getProperty("StatusPlannedOutcomes.milestones.POST.id.404"));
     }
     return response;
   }
 
   @ApiOperation(tags = {"Table 5 - Status of Planned Outcomes and Milestones"},
-    value = "${StatusPlannedOutcomes.outcomes.POST.value}", response = StatusPlannedOutcomesDTO.class)
+    value = "${StatusPlannedOutcomes.outcomes.POST.value}", response = StatusPlannedMilestonesDTO.class)
   @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIAREntity}/statusOutcomes", method = RequestMethod.POST,
     produces = MediaType.APPLICATION_JSON_VALUE)
@@ -104,18 +104,44 @@ public class StatusPlannedOutcomes {
       required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${StatusPlannedOutcomes.outcomes.POST.param.statusPlannedOutcome}",
       required = true) @Valid @RequestBody NewStatusPlannedOutcomeDTO newStatusPlannedOutcomeDTO) {
-    Long reportSythesisProgressOutcomesID = new Long(0);
-
-    reportSythesisProgressOutcomesID = this.statusPlannedOutcomesItem
+    Long reportSythesisProgressOutcomeMilestoneID = this.statusPlannedOutcomesItem
       .createStatusPlannedOutcome(newStatusPlannedOutcomeDTO, CGIAREntity, this.getCurrentUser());
-
-
-    ResponseEntity<Long> response = new ResponseEntity<Long>(reportSythesisProgressOutcomesID, HttpStatus.OK);
+    ResponseEntity<Long> response = new ResponseEntity<Long>(reportSythesisProgressOutcomeMilestoneID, HttpStatus.OK);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("StatusPlannedOutcomes.outcomes.GET.id.404"));
     }
     return response;
   }
+
+  @ApiOperation(tags = {"Table 5 - Status of Planned Outcomes and Milestones"},
+    value = "${StatusPlannedOutcomes.milestones.DELETE.value}", response = StatusPlannedOutcomesDTO.class)
+  @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/statusMilestones", method = RequestMethod.DELETE,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Long> deleteStatusPlannedMilestone(
+    @ApiParam(value = "${StatusPlannedOutcomes.milestones.DELETE.param.CGIAR}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${StatusPlannedOutcomes.milestones.DELETE.param.phase}",
+      required = true) @RequestParam String strphase,
+    @ApiParam(value = "${StatusPlannedOutcomes.milestones.DELETE.param.year}",
+      required = true) @RequestParam Integer year,
+    @ApiParam(value = "${StatusPlannedOutcomes.milestones.DELETE.param.crpprogram.id}",
+      required = true) @RequestParam String flagship,
+    @ApiParam(value = "${StatusPlannedOutcomes.milestones.DELETE.param.outcome.id}",
+      required = true) @RequestParam String outcome,
+    @ApiParam(value = "${StatusPlannedOutcomes.milestones.DELETE.param.milestone.id}",
+      required = true) @RequestParam String milestone) {
+    Long reportSythesisProgressOutcomesID = this.statusPlannedMilestonesItem.deleteStatusPlannedMilestone(strphase,
+      year, flagship, outcome, milestone, CGIAREntity, this.getCurrentUser());
+
+
+    ResponseEntity<Long> response = new ResponseEntity<Long>(reportSythesisProgressOutcomesID, HttpStatus.OK);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("StatusPlannedOutcomes.milestones.DELETE.id.404"));
+    }
+    return response;
+  }
+
 
   @ApiOperation(tags = {"Table 5 - Status of Planned Outcomes and Milestones"},
     value = "${StatusPlannedOutcomes.outcomes.GET.id.value}", response = StatusPlannedOutcomesDTO.class)
@@ -144,6 +170,27 @@ public class StatusPlannedOutcomes {
     Long principal = (Long) subject.getPrincipal();
     User user = this.userManager.getUser(principal);
     return user;
+  }
+
+  @ApiOperation(tags = {"Table 5 - Status of Planned Outcomes and Milestones"},
+    value = "${StatusPlannedOutcomes.milestones.PUT.value}", response = StatusPlannedOutcomesDTO.class)
+  @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/statusMilestones", method = RequestMethod.PUT,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Long> updateStatusPlannedMilestone(
+    @ApiParam(value = "${StatusPlannedOutcomes.milestones.PUT.param.CGIAR}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${StatusPlannedOutcomes.milestones.PUT.param.statusPlannedMilestone}",
+      required = true) @Valid @RequestBody NewStatusPlannedMilestoneDTO newStatusPlanneMilestoneDTO) {
+    Long reportSythesisProgressOutcomesID = this.statusPlannedMilestonesItem
+      .updateStatusPlannedMilestone(newStatusPlanneMilestoneDTO, CGIAREntity, this.getCurrentUser());
+
+
+    ResponseEntity<Long> response = new ResponseEntity<Long>(reportSythesisProgressOutcomesID, HttpStatus.OK);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("StatusPlannedOutcomes.milestones.PUT.id.404"));
+    }
+    return response;
   }
 
   @ApiOperation(tags = {"Table 5 - Status of Planned Outcomes and Milestones"},
