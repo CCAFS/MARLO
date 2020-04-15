@@ -511,6 +511,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private StringBuilder validationMessage = new StringBuilder();
 
   private StringBuilder missingFields = new StringBuilder();
+  private StringBuilder synthesisFlagships = new StringBuilder();
 
   public BaseAction() {
     this.saveable = true;
@@ -563,6 +564,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       this.missingFields.append(";");
     }
     this.missingFields.append(field);
+  }
+
+  /**
+   * This method add a synthesis flagship separated by a semicolon (;).
+   *
+   * @param field is the name of the field.
+   */
+  public void addSynthesisFlagship(String flagship) {
+    if (this.synthesisFlagships.length() != 0) {
+      this.synthesisFlagships.append(";");
+    }
+    this.synthesisFlagships.append(flagship);
   }
 
   public void addUsers() {
@@ -1546,7 +1559,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public Phase getActualPhase() {
     try {
       Map<Long, Phase> allPhases = null;
-      if (this.getSession() != null) {
+      if (this.getSession() != null && !this.getSession().isEmpty()) {
         if (!this.getSession().containsKey(APConstants.ALL_PHASES)) {
           List<Phase> phases = this.phaseManager.findAll().stream()
             .filter(c -> c.getCrp().getId().longValue() == this.getCrpID().longValue()).collect(Collectors.toList());
@@ -1568,16 +1581,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       allPhases = (Map<Long, Phase>) this.getSession().get(APConstants.ALL_PHASES);
 
       Long phaseID = this.getPhaseID();
-      if (phaseID != null) {
-        if (phaseID != 0L) {
-          Phase phase = allPhases.get(new Long(phaseID));
-          if (phase == null) {
-            phase = this.phaseManager.getPhaseById(phaseID);
-            return phase;
-          }
-
-          return phase;
+      if (phaseID != null && phaseID != 0L) {
+        Phase phase = null;
+        if (allPhases != null) {
+          phase = allPhases.get(new Long(phaseID));
         }
+        if (phase == null) {
+          phase = this.phaseManager.getPhaseById(phaseID);
+        }
+        return phase;
       }
 
       Map<String, Parameter> parameters = this.getParameters();
@@ -4213,6 +4225,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public Submission getSubmission() {
     return this.submission;
+  }
+
+  public StringBuilder getSynthesisFlagships() {
+    return synthesisFlagships;
   }
 
   public String getTimeZone() {
@@ -7010,6 +7026,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public void setSwitchSession(boolean switchSession) {
     this.switchSession = switchSession;
+  }
+
+  public void setSynthesisFlagships(StringBuilder synthesisFlagships) {
+    this.synthesisFlagships = synthesisFlagships;
   }
 
   public void setUrl(String url) {
