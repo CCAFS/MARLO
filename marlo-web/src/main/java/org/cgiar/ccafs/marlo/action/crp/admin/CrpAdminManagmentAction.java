@@ -1063,7 +1063,46 @@ public class CrpAdminManagmentAction extends BaseAction {
           if (liaisonUsers.isEmpty()) {
 
             userRoleManager.deleteUserRole(userRole.getId());
+          } else {
+            boolean deletePmu = true;
+            for (LiaisonUser liaisonUser : liaisonUsers) {
+              if (liaisonUser.getProjects().stream()
+                .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase()) && c.getStatus() != null
+                  && (c.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+                    || c.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))
+                .collect(Collectors.toList()).isEmpty()) {
+                liaisonUserManager.deleteLiaisonUser(liaisonUser.getId());
+
+              } else {
+                deletePmu = false;
+                HashMap<String, String> error = new HashMap<>();
+                this.getInvalidFields().put("input-loggedCrp.programManagmenTeam[" + i + "].id",
+                  "PMU, can not be deleted");
+
+              }
+
+
+            }
+            if (deletePmu) {
+
+              this.notifyRoleProgramManagementUnassigned(userRole.getUser(), userRole.getRole());
+              userRoleManager.deleteUserRole(userRole.getId());
+
+            }
           }
+          this.checkCrpUserByRole(userRole.getUser());
+        }
+
+      } else {
+
+        List<LiaisonUser> liaisonUsers = liaisonUserManager.findAll().stream()
+          .filter(c -> c.getUser().getId().longValue() == userRole.getUser().getId().longValue()
+            && c.getLiaisonInstitution().getId().longValue() == cuId)
+          .collect(Collectors.toList());
+        if (liaisonUsers.isEmpty()) {
+
+          userRoleManager.deleteUserRole(userRole.getId());
+        } else {
           boolean deletePmu = true;
           for (LiaisonUser liaisonUser : liaisonUsers) {
             if (liaisonUser.getProjects().stream()
@@ -1089,42 +1128,6 @@ public class CrpAdminManagmentAction extends BaseAction {
             userRoleManager.deleteUserRole(userRole.getId());
 
           }
-          this.checkCrpUserByRole(userRole.getUser());
-        }
-
-      } else {
-
-        List<LiaisonUser> liaisonUsers = liaisonUserManager.findAll().stream()
-          .filter(c -> c.getUser().getId().longValue() == userRole.getUser().getId().longValue()
-            && c.getLiaisonInstitution().getId().longValue() == cuId)
-          .collect(Collectors.toList());
-        if (liaisonUsers.isEmpty()) {
-
-          userRoleManager.deleteUserRole(userRole.getId());
-        }
-        boolean deletePmu = true;
-        for (LiaisonUser liaisonUser : liaisonUsers) {
-          if (liaisonUser.getProjects().stream()
-            .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase()) && c.getStatus() != null
-              && (c.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                || c.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))
-            .collect(Collectors.toList()).isEmpty()) {
-            liaisonUserManager.deleteLiaisonUser(liaisonUser.getId());
-
-          } else {
-            deletePmu = false;
-            HashMap<String, String> error = new HashMap<>();
-            this.getInvalidFields().put("input-loggedCrp.programManagmenTeam[" + i + "].id", "PMU, can not be deleted");
-
-          }
-
-
-        }
-        if (deletePmu) {
-
-          this.notifyRoleProgramManagementUnassigned(userRole.getUser(), userRole.getRole());
-          userRoleManager.deleteUserRole(userRole.getId());
-
         }
         this.checkCrpUserByRole(userRole.getUser());
 
