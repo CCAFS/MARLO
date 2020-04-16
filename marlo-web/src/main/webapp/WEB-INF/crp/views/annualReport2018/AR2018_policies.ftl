@@ -12,7 +12,7 @@
   "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20200311",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js"
 ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20200311"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20200416"] /]
 
 [#assign breadCrumb = [
   {"label":"${currentSection}",   "nameSpace":"",             "action":""},
@@ -206,7 +206,7 @@
         [/#if]
         [#if !expanded]
         [#-- Complete Status    --]
-        <th class="col-md-1 text-center no-sort" rowspan="${rows}">[@s.text name="${customLabel}.table2.status" /]</th>
+        <th class="col-md-1 text-center no-sort" rowspan="${rows}">[@s.text name="${customLabel}.table2.missingFields" /]</th>
      
         <th class="col-md-1 text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.includeAR" /]</th>
         [/#if]        
@@ -239,7 +239,7 @@
             </div>
             [/#if]
             [#if !expanded] [@oicrPopup element=item /] [/#if]
-            <a href="${url}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
+            <a href="${url}" target="_blank" class="pull-right mt-1">[@s.text name="${customLabel}.table2.linkToPolicy" /] <span class="glyphicon glyphicon-new-window"></span></a>
           </td>
           [#-- Description --]
           <td class="text-center">[@utils.tableText value=(item.projectPolicyInfo.description)!"" /]</td>         
@@ -305,9 +305,9 @@
           [#-- Is Complete --]
           [#assign isPolicyComplete = action.isPolicyComplete(item.id, actualPhase.id) /]
            [#if isPolicyComplete]
-              <span class="icon-20 icon-check" title="Complete"></span> 
+              <span class="glyphicon glyphicon-ok-sign mf-icon check" title="Complete"></span> 
               [#else]
-                <span class="icon-20 icon-uncheck" title=""></span> 
+                <span class="glyphicon glyphicon-exclamation-sign mf-icon" title="Incomplete"></span> 
             [/#if]   
           </td>
           <td class="text-center">
@@ -335,13 +335,13 @@
 
 [/#macro]
 
-[#macro oicrPopup element]
+[#macro oicrPopup element tiny=false]
   [#local totalContributions = (element.evidences?size)!0 ]
   
   [#if element.evidences?has_content]
     <br /> 
     <button type="button" class="policiesOicrsButton btn btn-default btn-xs" data-toggle="modal" data-target="#policiesOicrs-${element.id}">
-      <span class="icon-20 project"></span> <strong>${totalContributions}</strong>
+      <span class="icon-20 project"></span> <strong>${totalContributions}</strong> [#if !tiny][@s.text name="${customLabel}.table2.linkToOicrs" /][/#if]
     </button>
     <!-- Modal -->
     <div class="modal fade" id="policiesOicrs-${element.id}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -362,7 +362,7 @@
                     <tr>
                       <th id="ids">[@s.text name="${customLabel}.table2.policiesOicrs.id" /]</th>
                       <th id="policyTitles">[@s.text name="${customLabel}.table2.policiesOicrs.oicrName" /]</th>
-                     [#--<th id="policyType">[@s.text name="project.projectPolicyList.type" /]</th>--]
+                      <th id="policyMaturityLevel">[@s.text name="${customLabel}.table2.policiesOicrs.maturityLevel" /]</th>
                       <th></th>
                     </tr>
                   </thead>
@@ -372,7 +372,7 @@
                       <tr>
                         <th scope="row" class="col-md-1">${oicr.projectExpectedStudy.id}</th>
                         <td>${(oicr.projectExpectedStudy.composedName)!'Untitled'}</td>
-                         [#--<td>${(p.projectPolicyInfo.policyType.name?capitalize)!'none'}</td>--]
+                        <td>${(oicr.projectExpectedStudy.projectExpectedStudyInfo.repIndStageStudy.name)!'Undefined'}</td>
                         <td class="col-md-2 text-center"> <a href="${oicrUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
                       </tr>
                       [/#list]
