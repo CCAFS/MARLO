@@ -35,8 +35,10 @@ import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Named;
 
@@ -107,29 +109,24 @@ public class OutcomeMilestonesValidator extends BaseValidator {
         liaisonInstitutionManager.getLiaisonInstitutionById(reportSynthesis.getLiaisonInstitution().getId());
 
       if (!this.isPMU(liaisonInstitution)) {
-
-
         if (liaisonInstitution.getCrpProgram() != null) {
           CrpProgram crpProgram = liaisonInstitution.getCrpProgram();
-
           if (crpProgram.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
-
             if (reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList() != null) {
-
               if (!reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList().isEmpty()) {
-
                 for (int i = 0; i < reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList().size(); i++) {
                   this.validateOutcomes(action,
                     reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList().get(i), i);
                 }
 
-
               } else {
                 action.addMissingField(action.getText("Not Expected Crp Progress"));
               }
+
             } else {
               action.addMissingField(action.getText("Not Expected Crp Progress"));
             }
+
           }
         }
       }
@@ -137,28 +134,48 @@ public class OutcomeMilestonesValidator extends BaseValidator {
       // Validate Flagships
       // sectionStatusManager.
       if (action.isPMU()) {
-        boolean tableComplete = false;
-        SectionStatus sectionStatus = null;
-        if (sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(), "Reporting", 2019, false,
-          "outomesMilestones") != null) {
-          sectionStatus = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(), "Reporting",
-            2019, false, "outomesMilestones");
+        List<LiaisonInstitution> liaisonInstitutionFromCrp = liaisonInstitutionManager.findAll().stream()
+          .filter(l -> l != null && l.isActive() && l.getCrp() != null && l.getCrp().getId() != null
+            && l.getCrp().getId().equals(action.getCurrentCrp().getId()) && l.getCrpProgram() != null
+            && l.getAcronym() != null && !l.getAcronym().contains(" "))
+          .collect(Collectors.toList());
+        ReportSynthesis reportSynthesisAux = null;
+
+        List<SectionStatus> statusOfEveryFlagship = new ArrayList<>();
+        SectionStatus statusOfFlagship = null;
+        for (LiaisonInstitution liaison : liaisonInstitutionFromCrp) {
+          reportSynthesisAux =
+            reportSynthesisManager.findSynthesis(reportSynthesis.getPhase().getId(), liaison.getId());
+          statusOfFlagship = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesisAux.getId(),
+            "Reporting", 2019, false, "outomesMilestones");
+          statusOfEveryFlagship.add(statusOfFlagship);
         }
-        if (sectionStatus == null) {
+
+        boolean tableComplete = false;
+        // SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
+        // "Reporting", 2019, false, "outomesMilestones");
+        if (statusOfEveryFlagship.isEmpty()) {
           tableComplete = true;
           // sectionStatusManager.deleteSectionStatus(sectionStatusID);
-        } else if (sectionStatus != null && sectionStatus.getId() != null && sectionStatus.getMissingFields() != null
-          && sectionStatus.getMissingFields().length() != 0) {
-          if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table5") && sectionStatus.getId() != 0) {
-            sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
-            tableComplete = true;
-          } else {
-            tableComplete = false;
-          }
         } else {
-          tableComplete = true;
-          if (sectionStatus != null && sectionStatus.getId() != null && sectionStatus.getId() != 0) {
-            sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+          for (SectionStatus sectionStatus : statusOfEveryFlagship) {
+            if ((sectionStatus != null && sectionStatus.getId() != null && sectionStatus.getMissingFields() != null
+              && !sectionStatus.getMissingFields().isEmpty() && sectionStatus.getId() != 0)) {
+              if (sectionStatus.getReportSynthesis().getLiaisonInstitution().getName().contains("PMU")) {
+                if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table5")) {
+                  sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+                  tableComplete = true;
+                } else {
+                  tableComplete = false;
+                  break;
+                }
+              } else {
+                tableComplete = true;
+              }
+            } else {
+              tableComplete = false;
+              break;
+            }
           }
         }
 
@@ -178,12 +195,10 @@ public class OutcomeMilestonesValidator extends BaseValidator {
       if (reportSynthesis.getLiaisonInstitution() != null
         && reportSynthesis.getLiaisonInstitution().getAcronym() != null && !action.isPMU()) {
 
-        String sSynthesisFlagships = action.getSynthesisFlagships().toString();
-
-
+        String synthesisFlagshipsString = action.getSynthesisFlagships().toString();
         if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("1")) {
           if (action.getSynthesisFlagships() != null && action.getSynthesisFlagships().toString().length() > 0) {
-            if (!sSynthesisFlagships.contains("1")) {
+            if (!synthesisFlagshipsString.contains("1")) {
               action.addSynthesisFlagship("F1");
             }
           } else {
@@ -192,7 +207,7 @@ public class OutcomeMilestonesValidator extends BaseValidator {
         }
         if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("2")) {
           if (action.getSynthesisFlagships() != null && action.getSynthesisFlagships().toString().length() > 0) {
-            if (!sSynthesisFlagships.contains("2")) {
+            if (!synthesisFlagshipsString.contains("2")) {
               action.addSynthesisFlagship("F2");
             }
           } else {
@@ -201,7 +216,7 @@ public class OutcomeMilestonesValidator extends BaseValidator {
         }
         if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("3")) {
           if (action.getSynthesisFlagships() != null && action.getSynthesisFlagships().toString().length() > 0) {
-            if (!sSynthesisFlagships.contains("3")) {
+            if (!synthesisFlagshipsString.contains("3")) {
               action.addSynthesisFlagship("F3");
             }
           } else {
@@ -210,7 +225,7 @@ public class OutcomeMilestonesValidator extends BaseValidator {
         }
         if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("4")) {
           if (action.getSynthesisFlagships() != null && action.getSynthesisFlagships().toString().length() > 0) {
-            if (!sSynthesisFlagships.contains("4")) {
+            if (!synthesisFlagshipsString.contains("4")) {
               action.addSynthesisFlagship("F4");
             }
           } else {
@@ -219,7 +234,7 @@ public class OutcomeMilestonesValidator extends BaseValidator {
         }
         if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("5")) {
           if (action.getSynthesisFlagships() != null && action.getSynthesisFlagships().toString().length() > 0) {
-            if (!sSynthesisFlagships.contains("5")) {
+            if (!synthesisFlagshipsString.contains("5")) {
               action.addSynthesisFlagship("F5");
             }
           } else {
@@ -228,7 +243,7 @@ public class OutcomeMilestonesValidator extends BaseValidator {
         }
         if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("6")) {
           if (action.getSynthesisFlagships() != null && action.getSynthesisFlagships().toString().length() > 0) {
-            if (!sSynthesisFlagships.contains("6")) {
+            if (!synthesisFlagshipsString.contains("6")) {
               action.addSynthesisFlagship("F6");
             }
           } else {
@@ -237,7 +252,7 @@ public class OutcomeMilestonesValidator extends BaseValidator {
         }
         if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("PMU")) {
           if (action.getSynthesisFlagships() != null && action.getSynthesisFlagships().toString().length() > 0) {
-            if (!sSynthesisFlagships.contains("PMU")) {
+            if (!synthesisFlagshipsString.contains("PMU")) {
               action.addSynthesisFlagship("PMU");
             }
           } else {
@@ -245,7 +260,6 @@ public class OutcomeMilestonesValidator extends BaseValidator {
           }
         }
       }
-
 
       if (!action.getFieldErrors().isEmpty()) {
         action.addActionError(action.getText("saving.fields.required"));
@@ -311,12 +325,12 @@ public class OutcomeMilestonesValidator extends BaseValidator {
       action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
         + "].milestones[" + j + "].milestonesStatus", InvalidFieldsMessages.EMPTYFIELD);;
     } else {
+      // status 3 = COMPLETED
       if (milestone.getMilestonesStatus().getId() != 3) {
         // Validate Milestone Reasons
         if (milestone.getReason() != null) {
-
           if (milestone.getReason().getId() != null && milestone.getReason().getId() != -1) {
-
+            // reason 7 = OTHER
             if (milestone.getReason().getId() == 7) {
               // Validate Other Reason
               if (!this.isValidString(milestone.getOtherReason())) {
