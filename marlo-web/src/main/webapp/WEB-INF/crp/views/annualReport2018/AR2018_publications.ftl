@@ -241,7 +241,7 @@
             <th class="text-center col-md-1"> [@s.text name="${customLabel}.${name}.identifier" /] </th>
           [/#if]
           [#if allowPopups]
-            <th class="col-md-1 text-center">[@s.text name="${customLabel}.${name}.completeStatus" /]</th>
+            <th class="col-md-1 text-center">[@s.text name="${customLabel}.${name}.missingFields" /]</th>
             <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
           [/#if]
         </tr>
@@ -277,7 +277,7 @@
                 </div>
                 [/#if]
                 
-                <a href="${url}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
+                <a href="${url}" target="_blank" class="pull-right">[@s.text name="${customLabel}.${name}.linkToPublication" /] <span class="glyphicon glyphicon-new-window"></span></a>
                 
               </td>
               [#if !allowPopups]
@@ -326,9 +326,9 @@
                 <td class="text-center">
                 [#assign isPublicationComplete = action.isPublicationComplete(item.id, actualPhase.id) /]
                  [#if isPublicationComplete]
-                    <span class="icon-20 icon-check" title="Complete"></span> 
+                    <span class="glyphicon glyphicon-ok-sign mf-icon check" title="Complete"></span> 
                     [#else]
-                      <span class="icon-20 icon-uncheck" title=""></span> 
+                      <span class="glyphicon glyphicon-exclamation-sign mf-icon" title="Incomplete"></span> 
                   [/#if]   
                 </td>
                 [#-- Check --]
