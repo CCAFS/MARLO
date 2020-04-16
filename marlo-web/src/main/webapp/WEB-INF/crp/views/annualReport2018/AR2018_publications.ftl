@@ -241,7 +241,7 @@
             <th class="text-center col-md-1"> [@s.text name="${customLabel}.${name}.identifier" /] </th>
           [/#if]
           [#if allowPopups]
-            <th class="col-md-1 text-center">[@s.text name="${customLabel}.${name}.completeStatus" /]</th>
+            <th class="col-md-1 text-center">[@s.text name="${customLabel}.${name}.missingFields" /]</th>
             <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
           [/#if]
         </tr>
@@ -277,7 +277,7 @@
                 </div>
                 [/#if]
                 
-                <a href="${url}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
+                <a href="${url}" target="_blank" class="pull-right">[@s.text name="${customLabel}.${name}.linkToPublication" /] <span class="glyphicon glyphicon-new-window"></span></a>
                 
               </td>
               [#if !allowPopups]
