@@ -163,7 +163,7 @@
           <th class="text-center col-md-4"> [@s.text name="${customLabel}.table10.publicationsLinks" /] </th>
           [/#if]
           [#if !expandedTable]
-            <th class="col-md-1 text-center"> <small>[@s.text name="${customLabel}.table11.completeStatus" /]</small>  </th>
+            <th class="col-md-1 text-center"> <small>[@s.text name="${customLabel}.table11.missingFields" /]</small>  </th>
 
             <th class="col-md-1 text-center"> <small>[@s.text name="${customLabel}.table10.includeAR" /]</small>  </th>
           [/#if]
