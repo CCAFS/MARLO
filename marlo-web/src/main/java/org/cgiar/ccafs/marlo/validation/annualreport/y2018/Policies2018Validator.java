@@ -118,15 +118,19 @@ public class Policies2018Validator extends BaseValidator {
           // sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
         } else if (sectionStatus != null && sectionStatus.getMissingFields() != null
           && sectionStatus.getMissingFields().length() != 0) {
-          if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table2")) {
+          if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table2") && sectionStatus.getId() != null
+            && sectionStatus.getId() != 0) {
             sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
             tableComplete = true;
           } else {
             tableComplete = false;
           }
         } else {
-          tableComplete = true;
-          sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+          if (sectionStatus != null && sectionStatus.getId() != null && sectionStatus.getId() != 0) {
+            tableComplete = true;
+            sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+          }
+
         }
 
 
@@ -287,14 +291,15 @@ public class Policies2018Validator extends BaseValidator {
 
       if (sectionStatus != null && sectionStatus.getMissingFields() != null
         && sectionStatus.getMissingFields().length() != 0) {
-        if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table2") && sectionStatus.getId() != 0) {
+        if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table2") && sectionStatus.getId() != null
+          && sectionStatus.getId() != 0) {
           sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
           tableComplete = true;
         } else {
           tableComplete = false;
         }
       } else {
-        if (sectionStatus != null && sectionStatus.getId() != null) {
+        if (sectionStatus != null && sectionStatus.getId() != null && sectionStatus.getId() != 0) {
           tableComplete = true;
           sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
         }
@@ -424,7 +429,7 @@ public class Policies2018Validator extends BaseValidator {
 
       SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
         "Reporting", 2019, false, "policies");
-      if (sectionStatus != null && sectionStatus.getId() != null
+      if (sectionStatus != null && sectionStatus.getId() != null && sectionStatus.getId() != 0
         && sectionStatus.getMissingFields().contains("synthesis.AR2019Table2")) {
         sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
       }
