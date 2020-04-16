@@ -209,7 +209,8 @@ public class StudiesOICR2018Validator extends BaseValidator {
       } else
 
       if (sectionStatus != null && sectionStatus.getMissingFields() != null
-        && sectionStatus.getMissingFields().length() != 0) {
+        && sectionStatus.getMissingFields().length() != 0 && sectionStatus.getId() != null
+        && sectionStatus.getId() != 0) {
         if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table3")) {
           sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
           tableComplete = true;
@@ -302,7 +303,7 @@ public class StudiesOICR2018Validator extends BaseValidator {
           action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
           ReportSynthesis2018SectionStatusEnum.OICR.getStatus(), action);
       } catch (Exception e) {
-        LOG.error("Error getting innovations list: " + e.getMessage());
+        LOG.error("Error getting studies list: " + e.getMessage());
       }
     }
 

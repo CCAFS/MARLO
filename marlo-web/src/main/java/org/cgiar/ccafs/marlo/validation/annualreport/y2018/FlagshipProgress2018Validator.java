@@ -409,7 +409,8 @@ public class FlagshipProgress2018Validator extends BaseValidator {
 
       if (sectionStatus != null && sectionStatus.getMissingFields() != null
         && sectionStatus.getMissingFields().length() != 0) {
-        if (sectionStatus.getMissingFields().contains("flagshipProgress1")) {
+        if (sectionStatus.getMissingFields().contains("flagshipProgress1") && sectionStatus.getId() != null
+          && sectionStatus.getId() != 0) {
           sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
           tableComplete = true;
         } else {
@@ -417,7 +418,7 @@ public class FlagshipProgress2018Validator extends BaseValidator {
         }
       } else {
         tableComplete = true;
-        if (sectionStatus != null && sectionStatus.getId() != null) {
+        if (sectionStatus != null && sectionStatus.getId() != null && sectionStatus.getId() != 0) {
           sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
         }
       }
