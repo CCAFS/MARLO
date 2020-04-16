@@ -111,7 +111,7 @@
           <th></th>
           [/#if]
           [#if !expanded]
-            <th class="col-md-1 text-center no-sort">[@s.text name="${customLabel}.${name}.completeStatus" /]</th>
+            <th class="col-md-1 text-center no-sort">[@s.text name="${customLabel}.${name}.missingFields" /]</th>
             <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
           [/#if]
         </tr>
@@ -152,7 +152,7 @@
                 [#-- OICR Contributions --]
                 [#if !expanded] [@oicrContributions element=item /] [/#if]
                 
-                <a href="${url}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
+                <a href="${url}" target="_blank" class="pull-right">[@s.text name="${customLabel}.${name}.linkToOicr" /] <span class="glyphicon glyphicon-new-window"></span></a>
               </td>
               <td>[@utils.tableText value=(item.projectExpectedStudyInfo.repIndStageStudy.name)!"" /]</td>
               <td class="text-center">[@utils.tableText value=(item.projectExpectedStudyInfo.evidenceTag.name)!"" /]</td>
@@ -189,7 +189,7 @@
   </div>
 [/#macro]
 
-[#macro oicrContributions element]
+[#macro oicrContributions element tiny=false]
   [#local policiesContributions = (action.getPolicies(element.id, actualPhase.id))![] ]
   [#local innovationsContributions = (action.getInnovations(element.id, actualPhase.id))![] ]
   [#local totalContributions = (policiesContributions?size +innovationsContributions?size)!0 ]
@@ -197,7 +197,7 @@
   [#if policiesContributions?has_content || innovationsContributions?has_content]
     <br /> 
     <button type="button" class="outcomesContributionButton btn btn-default btn-xs" data-toggle="modal" data-target="#oicrContributions-${element.id}">
-      <span class="icon-20 project"></span> <strong>${totalContributions}</strong>
+      <span class="icon-20 project"></span> <strong>${totalContributions}</strong> [#if !tiny][@s.text name="${customLabel}.table3.linkToPoliciesAndInnovations" /][/#if]
     </button>
     <!-- Modal -->
     <div class="modal fade" id="oicrContributions-${element.id}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
