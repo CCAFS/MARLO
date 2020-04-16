@@ -388,18 +388,30 @@ public class StatusPlannedOutcomesItem<T> {
           if (crpProgramOutcome != null) {
             List<ReportSynthesisFlagshipProgressOutcome> reportSynthesisFlagshipProgressOutcomeList =
               reportSynthesisFlagshipProgress.getReportSynthesisFlagshipProgressOutcomes().stream()
-                .filter(c -> c.getCrpProgramOutcome().equals(crpProgramOutcome)).collect(Collectors.toList());
+                .filter(c -> c.getCrpProgramOutcome().getId().equals(crpProgramOutcome.getId()))
+                .collect(Collectors.toList());
             if (reportSynthesisFlagshipProgressOutcomeList != null
               && reportSynthesisFlagshipProgressOutcomeList.size() > 0) {
               reportSynthesisFlagshipProgressOutcome = reportSynthesisFlagshipProgressOutcomeList.get(0);
               reportSynthesisFlagshipProgressOutcome.setSummary(newStatusPlannedOutcomeDTO.getSumary());
               reportSynthesisFlagshipProgressOutcome.setModifiedBy(user);
+              reportSynthesisFlagshipProgressOutcome = reportSynthesisFlagshipProgressOutcomeManager
+                .saveReportSynthesisFlagshipProgressOutcome(reportSynthesisFlagshipProgressOutcome);
+              if (reportSynthesisFlagshipProgressOutcome != null) {
+                plannedOutcomeStatusID = reportSynthesisFlagshipProgressOutcome.getId();
+              } else {
+                fieldErrors.add(new FieldErrorDTO("updateStatusPlannedOutcome", "plannedOutcomeStatusID",
+                  "can not save plannedOutcomeStatusID"));
+              }
 
             } else {
               fieldErrors.add(new FieldErrorDTO("updateStatusPlannedOutcome", "ReportSynthesisProgress",
                 "can not find synthesis progress outcome report"));
             }
 
+          } else {
+            fieldErrors.add(new FieldErrorDTO("updateStatusPlannedOutcome", "CrpProgramOutcome",
+              "can not find the outcome in this CRP"));
           }
         } else {
           fieldErrors.add(new FieldErrorDTO("updateStatusPlannedOutcome", "ReportSynthesisProgress",

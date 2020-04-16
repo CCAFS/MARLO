@@ -168,6 +168,10 @@ public class StatusPlannedMilestonesItem<T> {
       crpMilestoneManager.getCrpMilestoneByPhase(newStatusPlannedMilestoneDTO.getMilestoneCode(), phase.getId());
     if (crpMilestone == null) {
       fieldErrors.add(new FieldErrorDTO("createStatusPlannedMilestone", "Milestone", "is an invalid CRP Milestone"));
+    } else {
+      if (crpMilestone.getYear() != phase.getYear()) {
+        fieldErrors.add(new FieldErrorDTO("createStatusPlannedMilestone", "Milestone", "is an invalid year Milestone"));
+      }
     }
     RepIndMilestoneReason repIndMilestoneReason = null;
     GeneralStatus status = generalStatusManager.getGeneralStatusById(newStatusPlannedMilestoneDTO.getStatus());
@@ -225,7 +229,7 @@ public class StatusPlannedMilestonesItem<T> {
       } else {
         reportSynthesisFlagshipProgressOutcomeMilestoneList =
           reportSynthesisFlagshipProgressOutcome.getReportSynthesisFlagshipProgressOutcomeMilestones().stream()
-            .filter(c -> c.getCrpMilestone().equals(crpMilestone)).collect(Collectors.toList());
+            .filter(c -> c.getCrpMilestone().getId().equals(crpMilestone.getId())).collect(Collectors.toList());
       }
       ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone = null;
       boolean proceed = false;
