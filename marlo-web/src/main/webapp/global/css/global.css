@@ -4390,6 +4390,14 @@ li.fileUploaded span {
   background: url('../../global/images/sprite-icons-activities.png') 0 -150px;
 }
 
+.mf-icon {
+  font-size: 20px;
+}
+
+.mf-icon.check {
+  color:green;
+}
+
 .icon-neutral {
   background: url('../../global/images/sprite-icons-activities.png') 0 -88px;
 }
