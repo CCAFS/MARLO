@@ -38,11 +38,16 @@ import java.util.stream.Collectors;
 
 import javax.inject.Named;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author Andrés Valencia - CIAT/CCAFS
  */
 @Named
 public class Publications2018Validator extends BaseValidator {
+
+  private static Logger LOG = LoggerFactory.getLogger(Publications2018Validator.class);
 
   private final GlobalUnitManager crpManager;
   private final ReportSynthesisManager reportSynthesisManager;
@@ -137,7 +142,8 @@ public class Publications2018Validator extends BaseValidator {
 
         if (sectionStatus != null && sectionStatus.getId() != 0 && sectionStatus.getMissingFields() != null
           && sectionStatus.getMissingFields().length() != 0) {
-          if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table2") && sectionStatus.getId() != null) {
+          if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table2") && sectionStatus.getId() != null
+            && sectionStatus.getId() != 0) {
             sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
             tableComplete = true;
           } else {
@@ -276,9 +282,13 @@ public class Publications2018Validator extends BaseValidator {
         }
       }
 
-      this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
-        action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
-        ReportSynthesis2018SectionStatusEnum.PUBLICATIONS.getStatus(), action);
+      try {
+        this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
+          action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
+          ReportSynthesis2018SectionStatusEnum.PUBLICATIONS.getStatus(), action);
+      } catch (Exception e) {
+        LOG.error("Error getting publications validator: " + e.getMessage());
+      }
     }
 
   }
