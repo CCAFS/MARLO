@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
 @Named
 public class Publications2018Validator extends BaseValidator {
 
-  private static Logger LOG = LoggerFactory.getLogger(OutcomeMilestonesValidator.class);
+  private static Logger LOG = LoggerFactory.getLogger(Publications2018Validator.class);
 
   private final GlobalUnitManager crpManager;
   private final ReportSynthesisManager reportSynthesisManager;
@@ -287,7 +287,7 @@ public class Publications2018Validator extends BaseValidator {
           action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
           ReportSynthesis2018SectionStatusEnum.PUBLICATIONS.getStatus(), action);
       } catch (Exception e) {
-        LOG.error("Error getting innovations list: " + e.getMessage());
+        LOG.error("Error getting publications validator: " + e.getMessage());
       }
     }
 

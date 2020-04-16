@@ -172,14 +172,15 @@ public class PartnershipValidator extends BaseValidator {
 
         if (sectionStatus != null && sectionStatus.getMissingFields() != null
           && sectionStatus.getMissingFields().length() != 0) {
-          if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table8/9")) {
+          if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table8/9") && sectionStatus.getId() != null
+            && sectionStatus.getId() != 0) {
             sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
             tableComplete = true;
           } else {
             tableComplete = false;
           }
         } else {
-          if (sectionStatus != null) {
+          if (sectionStatus != null && sectionStatus.getId() != null && sectionStatus.getId() != 0) {
             tableComplete = true;
             sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
           }
@@ -276,7 +277,7 @@ public class PartnershipValidator extends BaseValidator {
           action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
           ReportSynthesis2018SectionStatusEnum.EXTERNAL_PARTNERSHIPS.getStatus(), action);
       } catch (Exception e) {
-        LOG.error("Error getting innovations list: " + e.getMessage());
+        LOG.error("Error getting partnerships delete: " + e.getMessage());
       }
     }
 
