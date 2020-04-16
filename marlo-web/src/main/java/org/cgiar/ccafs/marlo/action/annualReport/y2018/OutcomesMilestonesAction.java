@@ -798,8 +798,12 @@ public class OutcomesMilestonesAction extends BaseAction {
     }
     List<Long> ids = new ArrayList<>();
     List<ReportSynthesisFlagshipProgressOutcome> outcomeList = new ArrayList<>();
-    outcomeList = reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList();
-    if (reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList() != null) {
+    if (reportSynthesis != null && reportSynthesis.getReportSynthesisFlagshipProgress() != null
+      && reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList() != null) {
+      outcomeList = reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList();
+    }
+    if (reportSynthesis != null && reportSynthesis.getReportSynthesisFlagshipProgress() != null
+      && reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList() != null) {
       for (ReportSynthesisFlagshipProgressOutcome outcome : reportSynthesis.getReportSynthesisFlagshipProgress()
         .getOutcomeList()) {
 

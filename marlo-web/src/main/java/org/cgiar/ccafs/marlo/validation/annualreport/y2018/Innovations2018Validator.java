@@ -237,7 +237,8 @@ public class Innovations2018Validator extends BaseValidator {
 
       if (sectionStatus != null && sectionStatus.getId() != null && sectionStatus.getMissingFields() != null
         && sectionStatus.getMissingFields().length() != 0) {
-        if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table4")) {
+        if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table4") && sectionStatus.getId() != null
+          && sectionStatus.getId() != 0) {
           sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
           tableComplete = true;
         } else {
@@ -355,7 +356,7 @@ public class Innovations2018Validator extends BaseValidator {
           action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
           ReportSynthesis2018SectionStatusEnum.INNOVATIONS.getStatus(), action);
       } catch (Exception e) {
-        LOG.error("Error getting innovations list: " + e.getMessage());
+        LOG.error("Error getting innovations validators: " + e.getMessage());
       }
     }
 
