@@ -34,11 +34,16 @@ import java.util.HashMap;
 
 import javax.inject.Named;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 @Named
 public class SrfProgressValidator extends BaseValidator {
+
+  private static Logger LOG = LoggerFactory.getLogger(SrfProgressValidator.class);
 
   private final GlobalUnitManager crpManager;
   private final ReportSynthesisManager reportSynthesisManager;
@@ -235,7 +240,7 @@ public class SrfProgressValidator extends BaseValidator {
         // sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
       } else
 
-      if (sectionStatus != null && sectionStatus.getMissingFields() != null
+      if (sectionStatus != null && sectionStatus.getMissingFields() != null && sectionStatus.getId() != null
         && sectionStatus.getMissingFields().length() != 0) {
         if (sectionStatus.getMissingFields().contains("crpProgress1")) {
           sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
@@ -244,13 +249,20 @@ public class SrfProgressValidator extends BaseValidator {
           tableComplete = false;
         }
       } else {
-        tableComplete = true;
-        sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+        if (sectionStatus != null && sectionStatus.getId() != null) {
+          tableComplete = true;
+          sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+        }
       }
 
-      this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
-        action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
-        ReportSynthesis2018SectionStatusEnum.CRP_PROGRESS.getStatus(), action);
+      try {
+        this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
+          action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
+          ReportSynthesis2018SectionStatusEnum.CRP_PROGRESS.getStatus(), action);
+      } catch (Exception e) {
+        LOG.error("Error getting srfProgress  validators: " + e.getMessage());
+
+      }
     }
 
   }
