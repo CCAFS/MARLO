@@ -321,13 +321,17 @@ public class FlagshipProgress2018Validator extends BaseValidator {
             "Reporting", 2019, false, "flagshipProgress");
 
           // Add section status to statusOfEveryFlagship list if section status (statusOfFlagship) has missing fields
+          SectionStatus statusOfFPMU = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
+            "Reporting", 2019, false, "flagshipProgress1");
+
           if (statusOfFlagship != null && statusOfFlagship.getMissingFields() != null
             && !statusOfFlagship.getMissingFields().isEmpty()) {
 
             // Add flagship acronym with missing information to Section status in synthesis flagship field
-            if (statusOfFlagship.getSynthesisFlagships() != null
-              && !statusOfFlagship.getSynthesisFlagships().isEmpty()) {
-              if (!statusOfFlagship.getSynthesisFlagships().contains(liaison.getAcronym())) {
+            if (statusOfFPMU != null && statusOfFPMU.getSynthesisFlagships() != null
+              && !statusOfFPMU.getSynthesisFlagships().isEmpty()) {
+
+              if (!statusOfFPMU.getSynthesisFlagships().contains(liaison.getAcronym())) {
                 action.addSynthesisFlagship(liaison.getAcronym());
               }
             } else {
