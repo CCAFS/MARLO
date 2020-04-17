@@ -521,6 +521,7 @@ public class StatusPlannedMilestonesItem<T> {
                     repIndGenderYouthFocusLevelManager.getRepIndGenderYouthFocusLevelById(
                       Long.parseLong(crosscuttingmarker.getCrossCuttingmarkerScore()));
                   if (repIndGenderYouthFocusLevel != null) {
+                    boolean markerFound = false;
                     for (ReportSynthesisFlagshipProgressCrossCuttingMarker reportSynthesisFlagshipProgressCrossCuttingMarker : reportSynthesisFlagshipProgressOutcomeMilestone
                       .getReportSynthesisFlagshipProgressCrossCuttingMarkers().stream().collect(Collectors.toList())) {
                       if (crosscuttingmarker.getCrossCuttingmarker()
@@ -531,7 +532,17 @@ public class StatusPlannedMilestonesItem<T> {
                         reportSynthesisFlagshipProgressCrossCuttingMarker.setFocus(repIndGenderYouthFocusLevel);
                         reportSynthesisFlagshipProgressCrossCuttingMarkerList
                           .add(reportSynthesisFlagshipProgressCrossCuttingMarker);
+                        markerFound = true;
                       }
+                    }
+                    // is newest crosscutting marker
+                    if (!markerFound) {
+                      ReportSynthesisFlagshipProgressCrossCuttingMarker newCrossCuttingMarker =
+                        new ReportSynthesisFlagshipProgressCrossCuttingMarker();
+                      newCrossCuttingMarker.setFocus(repIndGenderYouthFocusLevel);
+                      newCrossCuttingMarker.setJust(crosscuttingmarker.getJustification());
+                      newCrossCuttingMarker.setMarker(cgiarCrossCuttingMarker);
+                      reportSynthesisFlagshipProgressCrossCuttingMarkerList.add(newCrossCuttingMarker);
                     }
                   } else {
                     fieldErrors.add(new FieldErrorDTO("createStatusPlannedMilestone", "CrossCuttingMarkerScore",
