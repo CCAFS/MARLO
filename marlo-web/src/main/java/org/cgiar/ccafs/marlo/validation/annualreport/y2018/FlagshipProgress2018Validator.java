@@ -33,7 +33,10 @@ import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Named;
 
@@ -294,6 +297,79 @@ public class FlagshipProgress2018Validator extends BaseValidator {
         }
       }
 
+      String flagshipsWithMisingInformation = "";
+      // Get all liaison institutions for current CRP
+      List<LiaisonInstitution> liaisonInstitutionsFromCrp = liaisonInstitutionManager.findAll().stream()
+        .filter(l -> l != null && l.isActive() && l.getCrp() != null && l.getCrp().getId() != null
+          && l.getCrp().getId().equals(action.getCurrentCrp().getId()) && l.getCrpProgram() != null
+          && l.getAcronym() != null && !l.getAcronym().contains(" "))
+        .collect(Collectors.toList());
+      ReportSynthesis reportSynthesisAux = null;
+
+      List<SectionStatus> statusOfEveryFlagship = new ArrayList<>();
+      SectionStatus statusOfFlagship = null;
+      if (liaisonInstitutionsFromCrp != null) {
+        // Order liaisonInstitutionsFromCrp list by acronyms
+        liaisonInstitutionsFromCrp = liaisonInstitutionsFromCrp.stream()
+          .sorted((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym())).collect(Collectors.toList());
+        for (LiaisonInstitution liaison : liaisonInstitutionsFromCrp) {
+
+          // Get report synthesis for each liaison Instution
+          reportSynthesisAux =
+            reportSynthesisManager.findSynthesis(reportSynthesis.getPhase().getId(), liaison.getId());
+          statusOfFlagship = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesisAux.getId(),
+            "Reporting", 2019, false, "flagshipProgress");
+
+          // Add section status to statusOfEveryFlagship list if section status (statusOfFlagship) has missing fields
+          if (statusOfFlagship != null && statusOfFlagship.getMissingFields() != null
+            && !statusOfFlagship.getMissingFields().isEmpty()) {
+
+            // Add flagship acronym with missing information to Section status in synthesis flagship field
+            if (statusOfFlagship.getSynthesisFlagships() != null
+              && !statusOfFlagship.getSynthesisFlagships().isEmpty()) {
+              if (!statusOfFlagship.getSynthesisFlagships().contains(liaison.getAcronym())) {
+                action.addSynthesisFlagship(liaison.getAcronym());
+              }
+            } else {
+              action.addSynthesisFlagship(liaison.getAcronym());
+            }
+            if (flagshipsWithMisingInformation != null && !flagshipsWithMisingInformation.isEmpty()) {
+              flagshipsWithMisingInformation += ", " + liaison.getAcronym();
+            } else {
+              flagshipsWithMisingInformation = liaison.getAcronym();
+            }
+            statusOfEveryFlagship.add(statusOfFlagship);
+          }
+        }
+      }
+
+      boolean tableComplete = false;
+
+      if (statusOfEveryFlagship == null || statusOfEveryFlagship.isEmpty()) {
+        tableComplete = true;
+      } else {
+        // If there are section status objects with missing information
+        for (SectionStatus sectionStatus : statusOfEveryFlagship) {
+          if ((sectionStatus != null && sectionStatus.getId() != null && sectionStatus.getMissingFields() != null
+            && !sectionStatus.getMissingFields().isEmpty() && sectionStatus.getId() != 0)) {
+            if (sectionStatus.getReportSynthesis().getLiaisonInstitution().getName().contains("PMU")) {
+
+              // If section status is from PMU - missing fields is set to empty
+              if (sectionStatus.getMissingFields() != null && !sectionStatus.getMissingFields().isEmpty()) {
+                sectionStatus.setMissingFields("");
+                sectionStatusManager.saveSectionStatus(sectionStatus);
+              }
+            } else {
+              // If section status is from flagship
+              tableComplete = false;
+              action.addMissingField("flagshipProgress1");
+              action.addMessage("Flagships with missing information :" + flagshipsWithMisingInformation);
+            }
+          }
+        }
+      }
+
+
       if (!(this.isValidString(reportSynthesis.getReportSynthesisFlagshipProgress().getExpandedResearchAreas()))) {
         action.addMissingField(action.getText("annualReport2018.flagshipProgress.expandedResearchAreas.readText"));
         action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.expandedResearchAreas",
@@ -318,77 +394,6 @@ public class FlagshipProgress2018Validator extends BaseValidator {
         }
       }
 
-      // Save Synthesis Flagship
-      if (reportSynthesis.getLiaisonInstitution() != null
-        && reportSynthesis.getLiaisonInstitution().getAcronym() != null && !action.isPMU()) {
-
-        String sSynthesisFlagships = action.getSynthesisFlagships().toString();
-
-
-        if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("1")) {
-          if (action.getSynthesisFlagships() != null && action.getSynthesisFlagships().toString().length() > 0) {
-            if (!sSynthesisFlagships.contains("1")) {
-              action.addSynthesisFlagship("F1");
-            }
-          } else {
-            action.addSynthesisFlagship("F1");
-          }
-        }
-        if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("2")) {
-          if (action.getSynthesisFlagships() != null && action.getSynthesisFlagships().toString().length() > 0) {
-            if (!sSynthesisFlagships.contains("2")) {
-              action.addSynthesisFlagship("F2");
-            }
-          } else {
-            action.addSynthesisFlagship("F2");
-          }
-        }
-        if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("3")) {
-          if (action.getSynthesisFlagships() != null && action.getSynthesisFlagships().toString().length() > 0) {
-            if (!sSynthesisFlagships.contains("3")) {
-              action.addSynthesisFlagship("F3");
-            }
-          } else {
-            action.addSynthesisFlagship("F3");
-          }
-        }
-        if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("4")) {
-          if (action.getSynthesisFlagships() != null && action.getSynthesisFlagships().toString().length() > 0) {
-            if (!sSynthesisFlagships.contains("4")) {
-              action.addSynthesisFlagship("F4");
-            }
-          } else {
-            action.addSynthesisFlagship("F4");
-          }
-        }
-        if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("5")) {
-          if (action.getSynthesisFlagships() != null && action.getSynthesisFlagships().toString().length() > 0) {
-            if (!sSynthesisFlagships.contains("5")) {
-              action.addSynthesisFlagship("F5");
-            }
-          } else {
-            action.addSynthesisFlagship("F5");
-          }
-        }
-        if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("6")) {
-          if (action.getSynthesisFlagships() != null && action.getSynthesisFlagships().toString().length() > 0) {
-            if (!sSynthesisFlagships.contains("6")) {
-              action.addSynthesisFlagship("F6");
-            }
-          } else {
-            action.addSynthesisFlagship("F6");
-          }
-        }
-        if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("PMU")) {
-          if (action.getSynthesisFlagships() != null && action.getSynthesisFlagships().toString().length() > 0) {
-            if (!sSynthesisFlagships.contains("PMU")) {
-              action.addSynthesisFlagship("PMU");
-            }
-          } else {
-            action.addSynthesisFlagship("PMU");
-          }
-        }
-      }
 
       if (!action.getFieldErrors().isEmpty()) {
         action.addActionError(action.getText("saving.fields.required"));
@@ -397,31 +402,6 @@ public class FlagshipProgress2018Validator extends BaseValidator {
           " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
       }
 
-
-      boolean tableComplete = false;
-      SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
-        "Reporting", 2019, false, "flagshipProgress");
-
-      if (sectionStatus == null) {
-        tableComplete = true;
-        // sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
-      } else
-
-      if (sectionStatus != null && sectionStatus.getMissingFields() != null
-        && sectionStatus.getMissingFields().length() != 0) {
-        if (sectionStatus.getMissingFields().contains("flagshipProgress1") && sectionStatus.getId() != null
-          && sectionStatus.getId() != 0) {
-          sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
-          tableComplete = true;
-        } else {
-          tableComplete = false;
-        }
-      } else {
-        tableComplete = true;
-        if (sectionStatus != null && sectionStatus.getId() != null && sectionStatus.getId() != 0) {
-          sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
-        }
-      }
 
       try {
         this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
