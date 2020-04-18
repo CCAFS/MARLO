@@ -311,7 +311,7 @@ public class InnovationsAction extends BaseAction {
   public Boolean isInnovationComplete(long innovationID, long phaseID) {
 
     SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByProjectInnovation(innovationID,
-      "Reporting", this.getActualPhase().getYear(), false, "innovations");
+      "Reporting", this.getActualPhase().getYear(), false, "innovationsList");
 
     if (sectionStatus == null) {
       return true;
