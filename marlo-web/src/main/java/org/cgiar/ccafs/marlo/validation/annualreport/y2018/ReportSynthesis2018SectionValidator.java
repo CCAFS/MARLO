@@ -555,7 +555,7 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
       flagshipProgress.setReportSynthesis(reportSynthesis);
 
       if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
-        outcomeMilestonesValidator.validatePMU(action, reportSynthesis, false);
+        outcomeMilestonesValidator.validate(action, reportSynthesis, false);
       } else {
         outcomeMilestonesValidator.validate(action, reportSynthesis, false);
       }
@@ -602,7 +602,7 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
 
       }
       if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
-        outcomeMilestonesValidator.validatePMU(action, reportSynthesis, false);
+        outcomeMilestonesValidator.validate(action, reportSynthesis, false);
       } else {
         outcomeMilestonesValidator.validate(action, reportSynthesis, false);
       }

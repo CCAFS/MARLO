@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.validation.annualreport.y2018;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -30,7 +31,10 @@ import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Named;
 
@@ -48,13 +52,14 @@ public class SrfProgressValidator extends BaseValidator {
   private final GlobalUnitManager crpManager;
   private final ReportSynthesisManager reportSynthesisManager;
   private final SectionStatusManager sectionStatusManager;
-
+  private final LiaisonInstitutionManager liaisonInstitutionManager;
 
   public SrfProgressValidator(GlobalUnitManager crpManager, ReportSynthesisManager reportSynthesisManager,
-    SectionStatusManager sectionStatusManager) {
+    SectionStatusManager sectionStatusManager, LiaisonInstitutionManager liaisonInstitutionManager) {
     this.crpManager = crpManager;
     this.reportSynthesisManager = reportSynthesisManager;
     this.sectionStatusManager = sectionStatusManager;
+    this.liaisonInstitutionManager = liaisonInstitutionManager;
   }
 
 
@@ -230,28 +235,81 @@ public class SrfProgressValidator extends BaseValidator {
           " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
       }
 
+      String flagshipsWithMisingInformation = "";
+      // Get all liaison institutions for current CRP
+      List<LiaisonInstitution> liaisonInstitutionsFromCrp = liaisonInstitutionManager.findAll().stream()
+        .filter(l -> l != null && l.isActive() && l.getCrp() != null && l.getCrp().getId() != null
+          && l.getCrp().getId().equals(action.getCurrentCrp().getId()) && l.getCrpProgram() != null
+          && l.getAcronym() != null && !l.getAcronym().contains(" "))
+        .collect(Collectors.toList());
+      ReportSynthesis reportSynthesisAux = null;
+
+      List<SectionStatus> statusOfEveryFlagship = new ArrayList<>();
+      SectionStatus statusOfFlagship = null;
+      if (liaisonInstitutionsFromCrp != null) {
+        // Order liaisonInstitutionsFromCrp list by acronyms
+        liaisonInstitutionsFromCrp = liaisonInstitutionsFromCrp.stream()
+          .sorted((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym())).collect(Collectors.toList());
+
+        for (LiaisonInstitution liaison : liaisonInstitutionsFromCrp) {
+
+          // Get report synthesis for each liaison Instution
+          reportSynthesisAux =
+            reportSynthesisManager.findSynthesis(reportSynthesis.getPhase().getId(), liaison.getId());
+          statusOfFlagship = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesisAux.getId(),
+            "Reporting", 2019, false, "crpProgress");
+
+          // Add flagship acronym with missing information to Section status in synthesis flagship field
+          SectionStatus statusOfFPMU = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
+            "Reporting", 2019, false, "crpProgress1");
+
+          // Add section status to statusOfEveryFlagship list if section status (statusOfFlagship) has missing fields
+          if (statusOfFlagship != null && statusOfFlagship.getMissingFields() != null
+            && !statusOfFlagship.getMissingFields().isEmpty()) {
+
+            // Add flagship acronym with missing information to Section status in synthesis flagship field
+            if (statusOfFPMU != null && statusOfFPMU.getSynthesisFlagships() != null
+              && !statusOfFPMU.getSynthesisFlagships().isEmpty()) {
+
+              if (!statusOfFPMU.getSynthesisFlagships().contains(liaison.getAcronym())) {
+                action.addSynthesisFlagship(liaison.getAcronym());
+              }
+            } else {
+              action.addSynthesisFlagship(liaison.getAcronym());
+            }
+            if (flagshipsWithMisingInformation != null && !flagshipsWithMisingInformation.isEmpty()) {
+              flagshipsWithMisingInformation += ", " + liaison.getAcronym();
+            } else {
+              flagshipsWithMisingInformation = liaison.getAcronym();
+            }
+            statusOfEveryFlagship.add(statusOfFlagship);
+          }
+        }
+      }
 
       boolean tableComplete = false;
-      SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
-        "Reporting", 2019, false, "crpProgress");
 
-      if (sectionStatus == null) {
+      if (statusOfEveryFlagship == null || statusOfEveryFlagship.isEmpty()) {
         tableComplete = true;
-        // sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
-      } else
-
-      if (sectionStatus != null && sectionStatus.getMissingFields() != null && sectionStatus.getId() != null
-        && sectionStatus.getMissingFields().length() != 0) {
-        if (sectionStatus.getMissingFields().contains("crpProgress1")) {
-          sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
-          tableComplete = true;
-        } else {
-          tableComplete = false;
-        }
       } else {
-        if (sectionStatus != null && sectionStatus.getId() != null) {
-          tableComplete = true;
-          sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+        // If there are section status objects with missing information
+        for (SectionStatus sectionStatus : statusOfEveryFlagship) {
+          if ((sectionStatus != null && sectionStatus.getId() != null && sectionStatus.getMissingFields() != null
+            && !sectionStatus.getMissingFields().isEmpty() && sectionStatus.getId() != 0)) {
+            if (sectionStatus.getReportSynthesis().getLiaisonInstitution().getName().contains("PMU")) {
+
+              // If section status is from PMU - missing fields is set to empty
+              if (sectionStatus.getMissingFields() != null && !sectionStatus.getMissingFields().isEmpty()) {
+                sectionStatus.setMissingFields("");
+                sectionStatusManager.saveSectionStatus(sectionStatus);
+              }
+            } else {
+              // If section status is from flagship
+              tableComplete = false;
+              action.addMissingField("crpProgress1");
+              action.addMessage("Flagships with missing information :" + flagshipsWithMisingInformation);
+            }
+          }
         }
       }
 
@@ -260,7 +318,7 @@ public class SrfProgressValidator extends BaseValidator {
           action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
           ReportSynthesis2018SectionStatusEnum.CRP_PROGRESS.getStatus(), action);
       } catch (Exception e) {
-        LOG.error("Error getting srfProgress  validators: " + e.getMessage());
+        LOG.error("Error getting srfProgress validators: " + e.getMessage());
 
       }
     }
