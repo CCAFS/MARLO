@@ -35,6 +35,7 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressMilesto
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressOutcomeMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
+import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
@@ -58,6 +59,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressCrossCutt
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressMilestone;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcome;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestone;
+import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -98,8 +100,7 @@ public class OutcomesMilestonesAction extends BaseAction {
 
   // Managers
   private GlobalUnitManager crpManager;
-
-
+  private SectionStatusManager sectionStatusManager;
   private LiaisonInstitutionManager liaisonInstitutionManager;
 
 
@@ -150,8 +151,7 @@ public class OutcomesMilestonesAction extends BaseAction {
 
   // variables
   private String transaction;
-
-
+  private String flagshipsIncomplete;
   private ReportSynthesis reportSynthesis;
 
 
@@ -186,7 +186,7 @@ public class OutcomesMilestonesAction extends BaseAction {
     RepIndMilestoneReasonManager repIndMilestoneReasonManager,
     ReportSynthesisFlagshipProgressOutcomeManager reportSynthesisFlagshipProgressOutcomeManager,
     ReportSynthesisFlagshipProgressOutcomeMilestoneManager reportSynthesisFlagshipProgressOutcomeMilestoneManager,
-    CrpProgramOutcomeManager crpProgramOutcomeManager) {
+    CrpProgramOutcomeManager crpProgramOutcomeManager, SectionStatusManager sectionStatusManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -210,6 +210,7 @@ public class OutcomesMilestonesAction extends BaseAction {
     this.reportSynthesisFlagshipProgressOutcomeMilestoneManager =
       reportSynthesisFlagshipProgressOutcomeMilestoneManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
+    this.sectionStatusManager = sectionStatusManager;
   }
 
 
@@ -308,6 +309,19 @@ public class OutcomesMilestonesAction extends BaseAction {
     return flagships;
   }
 
+  public void getFlagshipsWithMissingFields() {
+    SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
+      "Reporting", this.getActualPhase().getYear(), false, "outomesMilestones");
+
+    if (sectionStatus != null && sectionStatus.getMissingFields() != null && !sectionStatus.getMissingFields().isEmpty()
+      && sectionStatus.getMissingFields().length() != 0 && sectionStatus.getSynthesisFlagships() != null
+      && !sectionStatus.getSynthesisFlagships().isEmpty()
+      && sectionStatus.getMissingFields().contains("synthesis.AR2019Table5")) {
+      flagshipsIncomplete = sectionStatus.getSynthesisFlagships();
+    }
+
+  }
+
   public List<RepIndGenderYouthFocusLevel> getFocusLevels() {
     return focusLevels;
   }
@@ -327,6 +341,7 @@ public class OutcomesMilestonesAction extends BaseAction {
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
+
 
   /**
    * Get the information for the Milestones in the form
@@ -383,7 +398,6 @@ public class OutcomesMilestonesAction extends BaseAction {
       return null;
     }
   }
-
 
   public List<CrpProgramOutcome> getOutcomes() {
     return outcomes;
@@ -713,6 +727,8 @@ public class OutcomesMilestonesAction extends BaseAction {
           // save the changes
           reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
         }
+
+        this.getFlagshipsWithMissingFields();
 
 
         if (this.isFlagship()) {
