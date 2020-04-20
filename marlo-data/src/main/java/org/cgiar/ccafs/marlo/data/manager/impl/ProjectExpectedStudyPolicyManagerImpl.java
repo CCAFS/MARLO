@@ -112,6 +112,11 @@ public class ProjectExpectedStudyPolicyManagerImpl implements ProjectExpectedStu
     return projectExpectedStudyPolicyDAO.find(projectExpectedStudyPolicyID);
   }
 
+  @Override
+  public ProjectExpectedStudyPolicy getProjectExpectedStudyPolicyByPhase(Long expectedID, Long policyID, Long phaseID) {
+    return projectExpectedStudyPolicyDAO.getProjectExpectedStudyPolicyByPhase(expectedID, policyID, phaseID);
+  }
+
   public void saveExpectedStudyPolicyPhase(Phase next, long expectedID,
     ProjectExpectedStudyPolicy projectExpectedStudyPolicy) {
     Phase phase = phaseDAO.find(next.getId());

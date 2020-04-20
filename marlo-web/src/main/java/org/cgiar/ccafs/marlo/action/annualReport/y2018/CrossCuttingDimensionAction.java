@@ -87,8 +87,10 @@ public class CrossCuttingDimensionAction extends BaseAction {
   private Double totalParticipantFormalTraining = new Double(0);
   private Double totalParticipantFormalTrainingShortMale = new Double(0);
   private Double totalParticipantFormalTrainingLongMale = new Double(0);
+  private Double totalParticipantFormalTrainingPhdMale = new Double(0);
   private Double totalParticipantFormalTrainingShortFemale = new Double(0);
   private Double totalParticipantFormalTrainingLongFemale = new Double(0);
+  private Double totalParticipantFormalTrainingPhdFemale = new Double(0);
   private List<DeliverableParticipant> deliverableParticipants;
   private int indexTab;
 
@@ -187,6 +189,14 @@ public class CrossCuttingDimensionAction extends BaseAction {
     return totalParticipantFormalTrainingLongMale;
   }
 
+
+  public Double getTotalParticipantFormalTrainingPhdFemale() {
+    return totalParticipantFormalTrainingPhdFemale;
+  }
+
+  public Double getTotalParticipantFormalTrainingPhdMale() {
+    return totalParticipantFormalTrainingPhdMale;
+  }
 
   public Double getTotalParticipantFormalTrainingShortFemale() {
     return totalParticipantFormalTrainingShortFemale;
@@ -418,6 +428,12 @@ public class CrossCuttingDimensionAction extends BaseAction {
                 totalParticipantFormalTrainingLongFemale += numberFemales;
                 totalParticipantFormalTrainingLongMale += (numberParticipant - numberFemales);
               }
+              if (deliverableParticipant.getRepIndTrainingTerm().getId()
+                .equals(APConstants.REP_IND_TRAINING_TERMS_PHD)) {
+                totalParticipantFormalTrainingPhdFemale += numberFemales;
+                totalParticipantFormalTrainingPhdMale += (numberParticipant - numberFemales);
+              }
+
             }
           }
 
@@ -456,12 +472,7 @@ public class CrossCuttingDimensionAction extends BaseAction {
         .setGenderProblemsArisen(reportSynthesis.getReportSynthesisCrossCuttingDimension().getGenderProblemsArisen());
       crossCuttingDimensionDB
         .setYouthContribution(reportSynthesis.getReportSynthesisCrossCuttingDimension().getYouthContribution());
-      crossCuttingDimensionDB
-        .setYouthResearchFindings(reportSynthesis.getReportSynthesisCrossCuttingDimension().getYouthResearchFindings());
-      crossCuttingDimensionDB
-        .setYouthLearned(reportSynthesis.getReportSynthesisCrossCuttingDimension().getYouthLearned());
-      crossCuttingDimensionDB
-        .setYouthProblemsArisen(reportSynthesis.getReportSynthesisCrossCuttingDimension().getYouthProblemsArisen());
+
       crossCuttingDimensionDB
         .setCapDevKeyAchievements(reportSynthesis.getReportSynthesisCrossCuttingDimension().getCapDevKeyAchievements());
       crossCuttingDimensionDB.setClimateChangeKeyAchievements(
@@ -563,6 +574,14 @@ public class CrossCuttingDimensionAction extends BaseAction {
 
   public void setTotalParticipantFormalTrainingLongMale(Double totalParticipantFormalTrainingLongMale) {
     this.totalParticipantFormalTrainingLongMale = totalParticipantFormalTrainingLongMale;
+  }
+
+  public void setTotalParticipantFormalTrainingPhdFemale(Double totalParticipantFormalTrainingPhdFemale) {
+    this.totalParticipantFormalTrainingPhdFemale = totalParticipantFormalTrainingPhdFemale;
+  }
+
+  public void setTotalParticipantFormalTrainingPhdMale(Double totalParticipantFormalTrainingPhdMale) {
+    this.totalParticipantFormalTrainingPhdMale = totalParticipantFormalTrainingPhdMale;
   }
 
   public void setTotalParticipantFormalTrainingShortFemale(Double totalParticipantFormalTrainingShortFemale) {

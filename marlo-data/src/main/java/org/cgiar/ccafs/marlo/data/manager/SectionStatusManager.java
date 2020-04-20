@@ -52,6 +52,9 @@ public interface SectionStatusManager {
   public List<SectionStatus> findAll();
 
 
+  public List<SectionStatus> getSectionsStatusByReportSynthesis(long powbSynthesisID, String cycle, int year,
+    Boolean upkeep, String sectionName);
+
   /**
    * This method gets a sectionStatus object by a given sectionStatus identifier.
    * 
@@ -60,6 +63,7 @@ public interface SectionStatusManager {
    */
   public SectionStatus getSectionStatusByCaseStudy(long caseStudyID, String cycle, int year, Boolean upkeep,
     String sectionName);
+
 
   public SectionStatus getSectionStatusByCrpIndicators(long liaisonInstitutionID, String cycle, int year,
     Boolean upkeep, String sectionName);
@@ -73,7 +77,6 @@ public interface SectionStatusManager {
    */
   public SectionStatus getSectionStatusByCrpProgam(long crpProgramID, String sectionName, String cylce, int year,
     Boolean upkeep);
-
 
   /**
    * This method gets a sectionStatus object by a given sectionStatus identifier.
@@ -125,6 +128,7 @@ public interface SectionStatusManager {
   public SectionStatus getSectionStatusByProjectCofunded(long projectID, String cycle, int year, Boolean upkeep,
     String sectionName);
 
+
   /**
    * This method gets a sectionStatus object by a given sectionStatus identifier.
    * 
@@ -154,9 +158,9 @@ public interface SectionStatusManager {
   public SectionStatus getSectionStatusByProjectHighlight(long projectHighlightID, String cycle, int year,
     Boolean upkeep, String sectionName);
 
-
   public SectionStatus getSectionStatusByProjectInnovation(long projectInnovationID, String cycle, int year,
     Boolean upkeep, String sectionName);
+
 
   /**
    * This method gets a sectionStatus object by a given sectionStatus identifier.
@@ -167,8 +171,7 @@ public interface SectionStatusManager {
   public SectionStatus getSectionStatusByProjectOutcome(long projectID, String cycle, int year, Boolean upkeep,
     String sectionName);
 
-
-  public SectionStatus getSectionStatusByProjectPolicy(long projectInnovationID, String cycle, int year, Boolean upkeep,
+  public SectionStatus getSectionStatusByProjectPolicy(long projectPolicyID, String cycle, int year, Boolean upkeep,
     String sectionName);
 
   public SectionStatus getSectionStatusByReportSynthesis(long powbSynthesisID, String cycle, int year, Boolean upkeep,

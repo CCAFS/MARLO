@@ -160,8 +160,11 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
       reportSynthesis.setReportSynthesisSrfProgress(srfProgress);
       srfProgress.setReportSynthesis(reportSynthesis);
 
-      srfProgressValidator.validate(action, reportSynthesis, false);
-
+      if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
+        srfProgressValidator.validateCheckButton(action, reportSynthesis, false);
+      } else {
+        srfProgressValidator.validate(action, reportSynthesis, false);
+      }
       // save the changes
       reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
     } else {
@@ -173,8 +176,11 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
             .getReportSynthesisSrfProgressTargets().stream().filter(t -> t.isActive()).collect(Collectors.toList())));
       }
 
-      srfProgressValidator.validate(action, reportSynthesis, false);
-
+      if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
+        srfProgressValidator.validateCheckButton(action, reportSynthesis, false);
+      } else {
+        srfProgressValidator.validate(action, reportSynthesis, false);
+      }
     }
 
 
@@ -360,12 +366,19 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
       reportSynthesis.setReportSynthesisFlagshipProgress(flagshipProgress);
       flagshipProgress.setReportSynthesis(reportSynthesis);
 
-      flagshipProgress2018Validator.validate(action, reportSynthesis, false);
-
+      if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
+        flagshipProgress2018Validator.validateCheckButton(action, reportSynthesis, false, false);
+      } else {
+        flagshipProgress2018Validator.validate(action, reportSynthesis, false, false);
+      }
       // save the changes
       reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
     } else {
-      flagshipProgress2018Validator.validate(action, reportSynthesis, false);
+      if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
+        flagshipProgress2018Validator.validateCheckButton(action, reportSynthesis, false, false);
+      } else {
+        flagshipProgress2018Validator.validate(action, reportSynthesis, false, false);
+      }
     }
 
   }
@@ -419,12 +432,21 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
       reportSynthesis.setReportSynthesisFlagshipProgress(flagshipProgress);
       flagshipProgress.setReportSynthesis(reportSynthesis);
 
-      innovations2018Validator.validate(action, reportSynthesis, false);
+      if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
+        innovations2018Validator.validateCheckButton(action, reportSynthesis, false);
+      } else {
+        innovations2018Validator.validate(action, reportSynthesis, false);
+      }
 
       // save the changes
       reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
     } else {
-      innovations2018Validator.validate(action, reportSynthesis, false);
+      if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
+        innovations2018Validator.validateCheckButton(action, reportSynthesis, false);
+      } else {
+        innovations2018Validator.validate(action, reportSynthesis, false);
+      }
+
     }
 
   }
@@ -532,8 +554,11 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
       reportSynthesis.setReportSynthesisFlagshipProgress(flagshipProgress);
       flagshipProgress.setReportSynthesis(reportSynthesis);
 
-
-      outcomeMilestonesValidator.validate(action, reportSynthesis, false);
+      if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
+        outcomeMilestonesValidator.validate(action, reportSynthesis, false);
+      } else {
+        outcomeMilestonesValidator.validate(action, reportSynthesis, false);
+      }
 
       // save the changes
       reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
@@ -576,8 +601,11 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
         reportSynthesis.getReportSynthesisFlagshipProgress().setOutcomeList(reportOutcomes);
 
       }
-
-      outcomeMilestonesValidator.validate(action, reportSynthesis, false);
+      if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
+        outcomeMilestonesValidator.validate(action, reportSynthesis, false);
+      } else {
+        outcomeMilestonesValidator.validate(action, reportSynthesis, false);
+      }
     }
 
 
@@ -586,18 +614,30 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
   public void validatePolicies(BaseAction action, ReportSynthesis reportSynthesis) {
 
     if (reportSynthesis.getReportSynthesisFlagshipProgress() == null) {
+
       ReportSynthesisFlagshipProgress flagshipProgress = new ReportSynthesisFlagshipProgress();
 
       // create one to one relation
       reportSynthesis.setReportSynthesisFlagshipProgress(flagshipProgress);
       flagshipProgress.setReportSynthesis(reportSynthesis);
+      if (reportSynthesis.getLiaisonInstitution() != null
+        && reportSynthesis.getLiaisonInstitution().getCrpProgram() == null) {
 
-      policies2018Validator.validate(action, reportSynthesis, false);
+      }
+      if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
+        policies2018Validator.validateCheckButton(action, reportSynthesis, false);
+      } else {
+        policies2018Validator.validate(action, reportSynthesis, false);
+      }
 
       // save the changes
       reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
     } else {
-      policies2018Validator.validate(action, reportSynthesis, false);
+      if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
+        policies2018Validator.validateCheckButton(action, reportSynthesis, false);
+      } else {
+        policies2018Validator.validate(action, reportSynthesis, false);
+      }
     }
 
   }
@@ -648,13 +688,19 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
       // create one to one relation
       reportSynthesis.setReportSynthesisFlagshipProgress(flagshipProgress);
       flagshipProgress.setReportSynthesis(reportSynthesis);
-
-      studiesOICR2018Validator.validate(action, reportSynthesis, false);
-
+      if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
+        studiesOICR2018Validator.validateCheckButton(action, reportSynthesis, false);
+      } else {
+        studiesOICR2018Validator.validate(action, reportSynthesis, false);
+      }
       // save the changes
       reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
     } else {
-      studiesOICR2018Validator.validate(action, reportSynthesis, false);
+      if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
+        studiesOICR2018Validator.validateCheckButton(action, reportSynthesis, false);
+      } else {
+        studiesOICR2018Validator.validate(action, reportSynthesis, false);
+      }
     }
 
   }

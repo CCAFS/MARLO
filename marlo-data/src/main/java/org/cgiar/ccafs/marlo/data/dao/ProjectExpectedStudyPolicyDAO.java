@@ -56,10 +56,22 @@ public interface ProjectExpectedStudyPolicyDAO {
 
 
   /**
+   * This method gets a projectExpectedStudyPolicy object by a given projectExpectedStudyPolicy identifier.
+   * 
+   * @param expectedID is the projectExpectedStudyidentifier.
+   * @param policyID is the policy identifier.
+   * @param phaseID is the phase identifier.
+   * @return a ProjectExpectedStudyPolicy object.
+   */
+  public ProjectExpectedStudyPolicy getProjectExpectedStudyPolicyByPhase(Long expectedID, Long policyID, Long phaseID);
+
+  /**
    * This method saves the information of the given projectExpectedStudyPolicy
    * 
-   * @param projectExpectedStudyPolicy - is the projectExpectedStudyPolicy object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectExpectedStudyPolicy was
+   * @param projectExpectedStudyPolicy - is the projectExpectedStudyPolicy object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectExpectedStudyPolicy was
    *         updated
    *         or -1 is some error occurred.
    */

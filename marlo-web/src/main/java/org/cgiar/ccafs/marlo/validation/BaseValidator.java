@@ -638,6 +638,45 @@ public class BaseValidator {
   /**
    * This method saves the missing fields into the database for a section at project Innovation.
    * 
+   * @param projectInnovation is a Project Innovation.
+   * @param cycle could be 'Planning' or 'Reporting'
+   * @param upkeep could be '0' or '1'
+   * @param sectionName is the name of the section.
+   */
+  protected void saveMissingFields(Project project, ProjectInnovation innovation, String cycle, int year,
+    Boolean upkeep, String sectionName, BaseAction action) {
+    // Reporting missing fields into the database.
+    SectionStatus status =
+      sectionStatusManager.getSectionStatusByProjectInnovation(innovation.getId(), cycle, year, upkeep, sectionName);
+    if (status == null) {
+      status = new SectionStatus();
+      status.setCycle(cycle);
+      status.setYear(year);
+      status.setUpkeep(upkeep);
+      status.setProjectInnovation(innovation);
+      status.setSectionName(sectionName);
+      status.setProject(project);
+    }
+    status.setMissingFields(action.getMissingFields().toString());
+
+    if (status.getMissingFields().length() > 0) {
+      if (status.getMissingFields().equals("null")) {
+        status.setMissingFields("");
+      }
+      status.setMissingFields(status.getMissingFields());
+    } else {
+      status.setMissingFields("");
+    }
+
+    sectionStatusManager.saveSectionStatus(status);
+    // Not sure if this is still required to set the missingFields to length zero???
+    action.getMissingFields().setLength(0);
+  }
+
+
+  /**
+   * This method saves the missing fields into the database for a section at project Innovation.
+   * 
    * @param innovation is a Project Innovation.
    * @param cycle could be 'Planning' or 'Reporting'
    * @param upkeep could be '0' or '1'
@@ -695,7 +734,6 @@ public class BaseValidator {
     // Not sure if this is still required to set the missingFields to length zero???
     action.getMissingFields().setLength(0);
   }
-
 
   /**
    * This method saves the missing fields into the database for a section at project Policy.
@@ -833,6 +871,14 @@ public class BaseValidator {
       status.setMissingFields(sMissingField);
     } else {
       status.setMissingFields("");
+    }
+
+    // Validate if the form have synthesis flagships information
+    String sSynthesisFlagships = action.getSynthesisFlagships().toString();
+    if (sSynthesisFlagships.length() > 0) {
+      status.setSynthesisFlagships(sSynthesisFlagships);
+    } else {
+      status.setSynthesisFlagships("");
     }
     sectionStatusManager.saveSectionStatus(status);
   }

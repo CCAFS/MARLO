@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.rest.mappers;
 
 import org.cgiar.ccafs.marlo.data.model.RepIndPartnershipMainArea;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnershipExternalMainArea;
 import org.cgiar.ccafs.marlo.rest.dto.PartnershipMainAreaDTO;
 
 import org.mapstruct.Mapper;
@@ -36,5 +37,10 @@ public interface PartnershipMainAreaMapper {
   @Mappings({@Mapping(source = "id", target = "code")})
   public abstract PartnershipMainAreaDTO
     repIndPartnershipMainAreaToPartnershipMainArea(RepIndPartnershipMainArea repIndPartnershipMainArea);
+
+  @Mappings({@Mapping(source = "partnerArea.id", target = "code"),
+    @Mapping(source = "partnerArea.name", target = "name")})
+  public abstract PartnershipMainAreaDTO reportSynthesisKeyPartnershipExternalInstitutionToInstitutionDTO(
+    ReportSynthesisKeyPartnershipExternalMainArea keyPartnershipExternalMainArea);
 
 }

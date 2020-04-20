@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.validation.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CgiarCrossCuttingMarkerManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableUserManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
@@ -64,18 +65,20 @@ public class DeliverableValidator extends BaseValidator {
   private GlobalUnitManager crpManager;
   private ProjectManager projectManager;
   private ProjectPartnerPersonManager projectPartnerPersonManager;
+  private DeliverableUserManager deliverableUserManager;
   private CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager;
   private RepIndTypeActivityManager repIndTypeActivityManager;
 
   @Inject
   public DeliverableValidator(GlobalUnitManager crpManager, ProjectManager projectManager,
     ProjectPartnerPersonManager projectPartnerPersonManager,
-    CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager,
-    RepIndTypeActivityManager repIndTypeActivityManager) {
+    CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager, RepIndTypeActivityManager repIndTypeActivityManager,
+    DeliverableUserManager deliverableUserManager) {
     this.crpManager = crpManager;
     this.projectManager = projectManager;
     this.projectPartnerPersonManager = projectPartnerPersonManager;
     this.cgiarCrossCuttingMarkerManager = cgiarCrossCuttingMarkerManager;
+    this.deliverableUserManager = deliverableUserManager;
     this.repIndTypeActivityManager = repIndTypeActivityManager;
   }
 
@@ -454,7 +457,8 @@ public class DeliverableValidator extends BaseValidator {
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"geographicScopes"}));
     } else {
       for (DeliverableGeographicScope deliverableGeographicScope : deliverable.getGeographicScopes()) {
-        if (deliverableGeographicScope.getRepIndGeographicScope() != null) {
+        if (deliverableGeographicScope.getRepIndGeographicScope() != null
+          && deliverableGeographicScope.getRepIndGeographicScope().getId() != null) {
           if (deliverableGeographicScope.getRepIndGeographicScope().getId() == 2) {
             haveRegions = true;
           }
@@ -774,10 +778,13 @@ public class DeliverableValidator extends BaseValidator {
         }
 
         // Validation of Journal Article Name
-        if (!(this.isValidString(deliverablePublicationMetadata.getJournal())
-          && this.wordCount(deliverablePublicationMetadata.getJournal()) <= 100)) {
-          action.addMessage(action.getText("project.deliverable.publication.v.journal"));
-          action.getInvalidFields().put("input-deliverable.publication.journal", InvalidFieldsMessages.EMPTYFIELD);
+        if (deliverableInfo.getDeliverableType() != null && deliverableInfo.getDeliverableType().getId() != null
+          && deliverableInfo.getDeliverableType().getId() != 63) {
+          if (!(this.isValidString(deliverablePublicationMetadata.getJournal())
+            && this.wordCount(deliverablePublicationMetadata.getJournal()) <= 100)) {
+            action.addMessage(action.getText("project.deliverable.publication.v.journal"));
+            action.getInvalidFields().put("input-deliverable.publication.journal", InvalidFieldsMessages.EMPTYFIELD);
+          }
         }
 
         // Validation of ISI Question

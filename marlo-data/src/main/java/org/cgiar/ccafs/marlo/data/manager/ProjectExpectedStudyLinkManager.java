@@ -61,14 +61,25 @@ public interface ProjectExpectedStudyLinkManager {
   public ProjectExpectedStudyLink getProjectExpectedStudyLinkById(long projectExpectedStudyLinkID);
 
   /**
+   * This method gets a projectExpectedStudyLink object by a given projectExpectedStudy, phase identifier and link
+   * 
+   * @param expectedID is the projectExpectedStudy identifier.
+   * @param link is the url link
+   * @param phaseID is the phase identifier
+   * @return a ProjectExpectedStudyLink object.
+   */
+  public ProjectExpectedStudyLink getProjectExpectedStudyLinkByPhase(Long expectedID, String link, Long phaseID);
+
+  /**
    * This method saves the information of the given projectExpectedStudyLink
    * 
-   * @param projectExpectedStudyLink - is the projectExpectedStudyLink object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectExpectedStudyLink was
+   * @param projectExpectedStudyLink - is the projectExpectedStudyLink object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectExpectedStudyLink
+   *         was
    *         updated
    *         or -1 is some error occurred.
    */
   public ProjectExpectedStudyLink saveProjectExpectedStudyLink(ProjectExpectedStudyLink projectExpectedStudyLink);
-
 
 }

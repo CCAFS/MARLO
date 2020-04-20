@@ -60,15 +60,27 @@ public interface ProjectExpectedStudyCrpManager {
    */
   public ProjectExpectedStudyCrp getProjectExpectedStudyCrpById(long projectExpectedStudyCrpID);
 
+
+  /**
+   * This method gets a projectExpectedStudyCrp object by a given projectExpectedStudyCrp identifier.
+   * 
+   * @param expectedID is the projectExpectedStudyCrp identifier.
+   * @param crpID is the projectExpectedStudyCrp identifier.
+   * @param phaseID is the projectExpectedStudyCrp identifier.
+   * @return a ProjectExpectedStudyCrp object.
+   */
+  public ProjectExpectedStudyCrp getProjectExpectedStudyCrpByPhase(Long expectedID, Long crpID, Long phaseID);
+
+
   /**
    * This method saves the information of the given projectExpectedStudyCrp
    * 
-   * @param projectExpectedStudyCrp - is the projectExpectedStudyCrp object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectExpectedStudyCrp was
+   * @param projectExpectedStudyCrp - is the projectExpectedStudyCrp object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectExpectedStudyCrp
+   *         was
    *         updated
    *         or -1 is some error occurred.
    */
   public ProjectExpectedStudyCrp saveProjectExpectedStudyCrp(ProjectExpectedStudyCrp projectExpectedStudyCrp);
-
-
 }

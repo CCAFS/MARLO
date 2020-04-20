@@ -361,7 +361,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     masterReport.getParameterValues().put("i8nProjectPlanningMenu", "1. " + this.getText("projects.menu.description"));
     masterReport.getParameterValues().put("i8nPartnersPlanningMenu", "2. " + this.getText("projects.menu.partners"));
     masterReport.getParameterValues().put("i8nLocationsPlanningMenu", "3. " + this.getText("projects.menu.locations"));
-    if (this.getProject().getProjectInfo() != null && this.getProject().getProjectInfo().getAdministrative() != null
+    if (this.getProject() != null && this.getProject().getProjectInfo() != null
+      && this.getProject().getProjectInfo().getAdministrative() != null
       && this.getProject().getProjectInfo().getAdministrative() == true) {
       masterReport.getParameterValues().put("i8nExpectedStudiesPlanningMenu",
         "4. " + this.getText("projects.menu.expectedStudies"));
@@ -1182,8 +1183,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         this.getAllSubreports(hm, masteritemBand);
         // Uncomment to see which Subreports are detecting the method getAllSubreports
         // get project leader
-
-        ProjectPartner projectLeader = project.getLeader(this.getSelectedPhase());
+        ProjectPartner projectLeader = null;
+        if (this.getSelectedPhase() != null && project != null && project.getLeader(this.getSelectedPhase()) != null) {
+          projectLeader = project.getLeader(this.getSelectedPhase());
+        }
         // get Flagships related to the project sorted by acronym
         List<CrpProgram> flagships = new ArrayList<>();
         for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
@@ -1251,7 +1254,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         // Note: Contacts for partners are filled by queries inside the prpt
         // Subreport Partner Lessons
         args.clear();
-        this.fillSubreport((SubReport) hm.get("partner_lessons"), "partner_lessons", args);
+        // this.fillSubreport((SubReport) hm.get("partner_lessons"), "partner_lessons", args);
 
         // Subreport Locations
         args.clear();
@@ -1366,9 +1369,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         } else {
           model = this.getPartnersOtherTableModel(new ProjectPartner());
         }
-        break;
-      case "partner_lessons":
-        model = this.getPartnersLessonsTableModel();
         break;
       case "locations":
         model = this.getLocationsTableModel();
@@ -1943,13 +1943,12 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         "fl_contrib", "show_publication", "showCompilance", "deliv_description", "hasIntellectualAsset", "isPantent",
         "isPvp", "hasParticipants", "isAcademicDegree", "hasParticipantsText", "participantEvent",
         "participantActivityType", "participantAcademicDegree", "participantTotalParticipants", "participantFemales",
-        "participantType", "hasIntellectualAssetText", "intellectualAssetApplicants", "intellectualAssetType",
-        "intellectualAssetTitle", "intellectualAssetFillingType", "intellectualAssetPantentStatus",
-        "intellectualAssetPatentType", "intellectualAssetPvpVarietyName", "intellectualAssetPvpStatus",
-        "intellectualAssetPvpCountry", "intellectualAssetPvpApplicationNumber", "intellectualAssetPvpBreederCrop",
-        "intellectualAssetDateFilling", "intellectualAssetDateRegistration", "intellectualAssetDateExpiry",
-        "intellectualAssetAdditionalInformation", "intellectualAssetLinkPublished", "intellectualAssetCommunication",
-        "otherPartner", "deliv_confidential_url"},
+        "participantType", "intellectualAssetApplicants", "intellectualAssetType", "intellectualAssetTitle",
+        "intellectualAssetFillingType", "intellectualAssetPantentStatus", "intellectualAssetPatentType",
+        "intellectualAssetPvpVarietyName", "intellectualAssetPvpStatus", "intellectualAssetPvpCountry",
+        "intellectualAssetPvpApplicationNumber", "intellectualAssetPvpBreederCrop", "intellectualAssetDateFilling",
+        "intellectualAssetDateRegistration", "intellectualAssetDateExpiry", "intellectualAssetAdditionalInformation",
+        "intellectualAssetLinkPublished", "intellectualAssetCommunication", "otherPartner"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
@@ -1961,7 +1960,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class},
+        String.class},
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
     if (!project.getDeliverables().isEmpty()) {
@@ -2180,21 +2179,32 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         Boolean isRestricted = false;
         Boolean isLastTwoRestricted = false;
         Boolean showDelivLicenseModifications = false;
-        if (deliverable.getDeliverableDisseminations().stream().collect(Collectors.toList()).size() > 0
+        if (deliverable.getDeliverableDisseminations() != null
+          && deliverable.getDeliverableDisseminations().stream().collect(Collectors.toList()).size() > 0
           && deliverable.getDeliverableDisseminations().stream().collect(Collectors.toList()).get(0) != null) {
           // Get deliverable dissemination
-          DeliverableDissemination deliverableDissemination =
-            deliverable.getDeliverableDisseminations().stream().collect(Collectors.toList()).get(0);
-          if (deliverableDissemination.getAlreadyDisseminated() != null
+          DeliverableDissemination deliverableDissemination = null;
+          if (deliverable.getDeliverableDisseminations().stream()
+            .filter(
+              d -> d != null && d.getPhase() != null && d.getPhase().getId() != null && this.getActualPhase() != null
+                && this.getActualPhase().getId() != null && d.getPhase().getId().equals(this.getActualPhase().getId()))
+            .collect(Collectors.toList()) != null) {
+            deliverableDissemination = deliverable.getDeliverableDisseminations().stream()
+              .filter(d -> d != null && d.getPhase() != null && d.getPhase().getId() != null
+                && this.getActualPhase() != null && this.getActualPhase().getId() != null
+                && d.getPhase().getId().equals(this.getActualPhase().getId()))
+              .collect(Collectors.toList()).get(0);
+          }
+          if (deliverableDissemination != null && deliverableDissemination.getAlreadyDisseminated() != null
             && deliverableDissemination.getAlreadyDisseminated() == true) {
             isDisseminated = true;
             disseminated = "Yes";
           }
-          if (deliverableDissemination.getDisseminationChannel() != null
+          if (deliverableDissemination != null && deliverableDissemination.getDisseminationChannel() != null
             && !deliverableDissemination.getDisseminationChannel().isEmpty()) {
             RepositoryChannel repositoryChannel = repositoryChannelManager
               .getRepositoryChannelByShortName(deliverableDissemination.getDisseminationChannel());
-            if (repositoryChannel != null) {
+            if (repositoryChannel != null && repositoryChannel.getName() != null) {
               delivDisseminationChannel = repositoryChannel.getName();
             }
           }
@@ -2695,13 +2705,13 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           volume, issue, pages, journal, journalIndicators, acknowledge, flContrib, showPublication, showCompilance,
           deliv_description, hasIntellectualAsset, isPantent, isPvp, hasParticipants, isAcademicDegree,
           hasParticipantsText, participantEvent, participantActivityType, participantAcademicDegree,
-          participantTotalParticipants, participantFemales, participantType, hasIntellectualAssetText,
-          intellectualAssetApplicants, intellectualAssetType, intellectualAssetTitle, intellectualAssetFillingType,
-          intellectualAssetPantentStatus, intellectualAssetPatentType, intellectualAssetPvpVarietyName,
-          intellectualAssetPvpStatus, intellectualAssetPvpCountry, intellectualAssetPvpApplicationNumber,
-          intellectualAssetPvpBreederCrop, intellectualAssetDateFilling, intellectualAssetDateRegistration,
-          intellectualAssetDateExpiry, intellectualAssetAdditionalInformation, intellectualAssetLinkPublished,
-          intellectualAssetCommunication, otherPartner, delivConfidentialUrl});
+          participantTotalParticipants, participantFemales, participantType, intellectualAssetApplicants,
+          intellectualAssetType, intellectualAssetTitle, intellectualAssetFillingType, intellectualAssetPantentStatus,
+          intellectualAssetPatentType, intellectualAssetPvpVarietyName, intellectualAssetPvpStatus,
+          intellectualAssetPvpCountry, intellectualAssetPvpApplicationNumber, intellectualAssetPvpBreederCrop,
+          intellectualAssetDateFilling, intellectualAssetDateRegistration, intellectualAssetDateExpiry,
+          intellectualAssetAdditionalInformation, intellectualAssetLinkPublished, intellectualAssetCommunication,
+          otherPartner});
       }
     }
     return model;

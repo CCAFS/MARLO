@@ -449,31 +449,18 @@
 
       
       [#-- Components --]
-      [#if crpCCAFS]
-       [#list (report.components)![] as component]
-        <div class="form-group">
-          [#local customID = "${index}-${component.name}"]
-          <label for="${customID}">${component.label}:</label>
-          [#if component.type == "radio"]
-            [#list (component.data)![] as data]
-              <br />[@customForm.radioFlat id="${customID}-${data.value}" name="${component.name}" label="${data.label}" value="${data.value}" checked=(data_index == 0) cssClass="" cssClassLabel="font-normal" editable=false /]
-            [/#list]
-          [/#if]
-        </div>
-       [/#list]
-      [#else]
-        [#list (report.components)![] as component]
-        <div class="form-group">
-          [#local customID = "${index}-${component.name}"]
-          <label for="${customID}">${component.label}:</label>
-          [#if component.type == "radio"]
-            [#list (component.data)![] as data]
-              <br />[@customForm.radioFlat id="${customID}-${data.value}" name="${component.name}" label="${data.label}" value="${data.value}" checked=(data_index == 0) cssClass="" cssClassLabel="font-normal" editable=true /]
-            [/#list]
-          [/#if]
-        </div>
-       [/#list]
-      [/#if]
+      [#-- for CCAFS also it include this logic / tiquet 1903 --]
+      [#list (report.components)![] as component]
+      <div class="form-group">
+        [#local customID = "${index}-${component.name}"]
+        <label for="${customID}">${component.label}:</label>
+        [#if component.type == "radio"]
+          [#list (component.data)![] as data]
+            <br />[@customForm.radioFlat id="${customID}-${data.value}" name="${component.name}" label="${data.label}" value="${data.value}" checked=(data_index == 0) cssClass="" cssClassLabel="font-normal" editable=true /]
+          [/#list]
+        [/#if]
+      </div>
+      [/#list]
       
       [#--  Partner Type --]
       [#if report.partnerType??]

@@ -68,7 +68,7 @@ public class CountryOfficeRequestItem<T> {
   private GlobalUnitManager globalUnitManager;
   protected APConfig config;
   private boolean messageSent;
-  List<FieldErrorDTO> fieldErrors;
+  // List<FieldErrorDTO> fieldErrors;
 
 
   @Inject
@@ -82,7 +82,7 @@ public class CountryOfficeRequestItem<T> {
     this.globalUnitManager = globalUnitManager;
     this.sendMail = sendMail;
     this.config = config;
-    this.fieldErrors = new ArrayList<FieldErrorDTO>();
+    // this.fieldErrors = new ArrayList<FieldErrorDTO>();
 
   }
 
@@ -96,41 +96,40 @@ public class CountryOfficeRequestItem<T> {
    */
   public ResponseEntity<CountryOfficeRequestDTO>
     createCountryOfficeRequest(NewCountryOfficeRequestDTO newCountryOfficeRequestDTO, String entityAcronym, User user) {
-
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
 
     String regex = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
     Pattern pattern = Pattern.compile(regex);
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
     if (globalUnitEntity == null) {
-      this.fieldErrors
+      fieldErrors
         .add(new FieldErrorDTO("createOfficeLocationRequest", "GlobalUnitEntity", "Invalid CGIAR entity acronym"));
     }
     LocElement locElement = this.locElementManager.getLocElementByISOCode(newCountryOfficeRequestDTO.getCountryIso());
     if (locElement == null) {
-      this.fieldErrors
-        .add(new FieldErrorDTO("createOfficeLocationRequest", "Country", "Invalid country iso Alpha code"));
+      fieldErrors.add(new FieldErrorDTO("createOfficeLocationRequest", "Country", "Invalid country iso Alpha code"));
     }
 
     Institution institution =
       this.institutionManager.getInstitutionById(newCountryOfficeRequestDTO.getInstitutionCode());
     if (institution == null) {
-      this.fieldErrors.add(new FieldErrorDTO("createOfficeLocationRequest", "Institution", "Invalid institution code"));
+      fieldErrors.add(new FieldErrorDTO("createOfficeLocationRequest", "Institution", "Invalid institution code"));
     }
 
     // externalUserMail is mandatory
     if (newCountryOfficeRequestDTO.getExternalUserMail() != null) {
       Matcher matcher = pattern.matcher(newCountryOfficeRequestDTO.getExternalUserMail());
       if (!matcher.matches()) {
-        this.fieldErrors
+        fieldErrors
           .add(new FieldErrorDTO("createOfficeLocationRequest", "getExternalUserMail", "Bad external email format"));
       }
     } else {
-      this.fieldErrors
+      fieldErrors
         .add(new FieldErrorDTO("createOfficeLocationRequest", "getExternalUserMail", "External email is empty"));
     }
 
-    if (!this.fieldErrors.isEmpty()) {
-      throw new MARLOFieldValidationException("Field Validation errors", "", this.fieldErrors);
+    if (!fieldErrors.isEmpty()) {
+      throw new MARLOFieldValidationException("Field Validation errors", "", fieldErrors);
     }
 
     PartnerRequest partnerRequest = this.institutionMapper.NewCountryOfficeRequestDTOToPartnerRequest(

@@ -9,10 +9,10 @@
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
-  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js",
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20200310",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js"
   ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20190621"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20200420"] /]
 
 [#assign breadCrumb = [
   {"label":"${currentSection}",   "nameSpace":"",             "action":""},
@@ -64,8 +64,12 @@
                   <span>${(total)!}</span>
                 </div>
               </div>
+              <div class="col-md-8">
+              </div>
+             </div>
               
-              <div class="col-md-4">
+              <div class="form-group row">
+              <div class="col-md-6">
                 [#-- Chart 10 - Number of peer reviewed articles by Open Access status --]
                 <div id="chart10" class="chartBox simpleBox">
                   [#assign chartData = [
@@ -84,7 +88,7 @@
                 </div>
               </div>
               
-              <div class="col-md-4">
+              <div class="col-md-6">
                 [#-- Chart 11 - Number of peer reviewed articles by ISI status --]
                 <div id="chart11" class="chartBox simpleBox">
                   [#assign chartData = [
@@ -117,8 +121,8 @@
             
 
               <div class="form-group btn-group btn-group-sm pull-right" role="group" aria-label="...">
-                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-evidenceC"><span class="glyphicon glyphicon-fullscreen"></span> Table 6 to export</button>
-                <button type="button" class="btn btn-default btn-xs pull-right" data-toggle="modal" data-target="#modal-publications"><span class="glyphicon glyphicon-fullscreen"></span> See Full table 6</button>
+                <button type="button" class="btn btn-default evidenceD-export" data-toggle="modal" data-target="#modal-evidenceC"><span class="glyphicon glyphicon-fullscreen"></span> Export Evidence D</button>
+                <button type="button" class="btn btn-default btn-xs pull-right" data-toggle="modal" data-target="#modal-publications"><span class="glyphicon glyphicon-fullscreen"></span> See Full Evidence D</button>
               </div>
               
               
@@ -128,9 +132,10 @@
                   <div class="modal-content">
                     <div class="modal-header">
                       <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                      <h4 class="modal-title" id="myModalLabel"> Full Publications List to export</h4>
+                      <h4 class="modal-title" id="myModalLabel">Export Evidence D: Full Publications List</h4>
                     </div>
                     <div class="modal-body">
+                      <small><i>[@s.text name="${customLabel}.export.evidenceD.help" /]</i></small>
                       [#-- Full table --]
                       <div class="dataTableExport">
                         [@listOfPublicationsToExport name="fullList" list=(deliverables)![] /]
@@ -237,6 +242,7 @@
             <th class="text-center col-md-1"> [@s.text name="${customLabel}.${name}.identifier" /] </th>
           [/#if]
           [#if allowPopups]
+            <th class="col-md-1 text-center">[@s.text name="${customLabel}.${name}.missingFields" /]</th>
             <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
           [/#if]
         </tr>
@@ -272,7 +278,7 @@
                 </div>
                 [/#if]
                 
-                <a href="${url}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
+                <a href="${url}" target="_blank" class="pull-right">[@s.text name="${customLabel}.${name}.linkToPublication" /] <span class="glyphicon glyphicon-new-window"></span></a>
                 
               </td>
               [#if !allowPopups]
@@ -317,6 +323,15 @@
                 </td>
               [/#if]
               [#if allowPopups]
+                [#-- Complete Status--]
+                <td class="text-center">
+                [#assign isPublicationComplete = action.isPublicationComplete(item.id, actualPhase.id) /]
+                 [#if isPublicationComplete]
+                    <span class="glyphicon glyphicon-ok-sign mf-icon check" title="Complete"></span> 
+                    [#else]
+                      <span class="glyphicon glyphicon-exclamation-sign mf-icon" title="Incomplete"></span> 
+                  [/#if]   
+                </td>
                 [#-- Check --]
                 <td class="text-center">
                   [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.deliverablesIds?seq_contains(item.id))!true) /]

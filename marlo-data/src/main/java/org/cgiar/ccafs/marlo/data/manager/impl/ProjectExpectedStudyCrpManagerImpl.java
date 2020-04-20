@@ -110,6 +110,12 @@ public class ProjectExpectedStudyCrpManagerImpl implements ProjectExpectedStudyC
     return projectExpectedStudyCrpDAO.find(projectExpectedStudyCrpID);
   }
 
+  @Override
+  public ProjectExpectedStudyCrp getProjectExpectedStudyCrpByPhase(Long expectedID, Long crpID, Long phaseID) {
+
+    return projectExpectedStudyCrpDAO.getProjectExpectedStudyCrpByPhase(expectedID, crpID, phaseID);
+  }
+
   public void saveExpectedStudyCrpPhase(Phase next, long expectedID, ProjectExpectedStudyCrp projectExpectedStudyCrp) {
     Phase phase = phaseDAO.find(next.getId());
 

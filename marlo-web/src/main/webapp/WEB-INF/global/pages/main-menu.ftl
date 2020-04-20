@@ -15,12 +15,13 @@
   [#assign canAcessPublications = (action.canAcessPublications())!false ]
   [#assign canAcessCrp = (action.canAcessCrp())!false ]
   [#assign canAcessBI = (action.canAccessSuperAdmin())!false ]
-  [#assign canAcessCCAFS = (action.isCrpCCAFS())!false ]
+  [#assign canAcessCCAFS = (action.crpID == 1)!false ]
+  [#assign canAcessWLE = (action.crpID == 4)!false ]
 [#recover]
   [#assign canAcessPublications = false ]
   [#assign canAcessCrp = false ]
-  [#assign canAcessBI = false ]
   [#assign canAcessCCAFS = false ]
+  [#assign canAcessWLE = false ]
 [/#attempt]
 
 [#assign mainMenu= [
@@ -63,7 +64,7 @@
   [#-- SUMMARIES - ALL --]
   { 'slug': 'summaries', 'name': 'menu.summaries',      'namespace': '/summaries',       'action': '${(crpSession)!}/summaries',    'visible': logged, 'active': true }
   [#-- BI Module --]
-  { 'slug': 'bi', 'name': 'menu.bi',      'namespace': '/bi',       'action': '${(crpSession)!}/bi',    'visible': logged && canAcessCCAFS, 'active': true }
+  { 'slug': 'bi', 'name': 'menu.bi',      'namespace': '/bi',       'action': '${(crpSession)!}/bi',    'visible': logged && canAcessCCAFS || canAcessWLE, 'active': true }
 ]/]
 
 

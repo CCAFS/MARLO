@@ -81,6 +81,7 @@ public class FlagshipProgressAction extends BaseAction {
   private GlobalUnit loggedCrp;
   private List<LiaisonInstitution> liaisonInstitutions;
   private List<ReportSynthesisFlagshipProgress> flagshipsReportSynthesisFlagshipProgress;
+  private boolean hasFlagshipProgress;
 
 
   @Inject
@@ -167,6 +168,11 @@ public class FlagshipProgressAction extends BaseAction {
     return isFP;
   }
 
+  public boolean isHasFlagshipProgress() {
+    return hasFlagshipProgress;
+  }
+
+
   @Override
   public boolean isPMU() {
     boolean isPMU = false;
@@ -178,7 +184,6 @@ public class FlagshipProgressAction extends BaseAction {
     return isPMU;
 
   }
-
 
   @Override
   public String next() {
@@ -318,6 +323,30 @@ public class FlagshipProgressAction extends BaseAction {
     if (this.isPMU()) {
       flagshipsReportSynthesisFlagshipProgress = reportSynthesisFlagshipProgressManager
         .getFlagshipsReportSynthesisFlagshipProgress(liaisonInstitutions, phase.getId());
+      if (flagshipsReportSynthesisFlagshipProgress != null) {
+        int count = 0;
+        hasFlagshipProgress = false;
+        if (flagshipsReportSynthesisFlagshipProgress.stream()
+          .filter(f -> f != null && f.getProgressByFlagships() != null && !f.getProgressByFlagships().isEmpty())
+          .collect(Collectors.toList()) != null
+          && flagshipsReportSynthesisFlagshipProgress.stream()
+            .filter(f -> f != null && f.getProgressByFlagships() != null && !f.getProgressByFlagships().isEmpty())
+            .collect(Collectors.toList()).size() > 0) {
+          count++;
+        }
+        if (flagshipsReportSynthesisFlagshipProgress.stream()
+          .filter(f -> f != null && f.getDetailedAnnex() != null && !f.getDetailedAnnex().isEmpty())
+          .collect(Collectors.toList()) != null
+          && flagshipsReportSynthesisFlagshipProgress.stream()
+            .filter(f -> f != null && f.getDetailedAnnex() != null && !f.getDetailedAnnex().isEmpty())
+            .collect(Collectors.toList()).size() > 0) {
+          count++;
+        }
+
+        if (count > 0) {
+          hasFlagshipProgress = true;
+        }
+      }
     }
 
     // ADD PMU as liasion Institution too
@@ -331,7 +360,6 @@ public class FlagshipProgressAction extends BaseAction {
     this.setBasePermission(this.getText(Permission.REPORT_SYNTHESIS_FLAGSHIP_PROGRESS_BASE_PERMISSION, params));
 
   }
-
 
   @Override
   public String save() {
@@ -397,10 +425,14 @@ public class FlagshipProgressAction extends BaseAction {
     }
   }
 
-
   public void setFlagshipsReportSynthesisFlagshipProgress(
     List<ReportSynthesisFlagshipProgress> flagshipsReportSynthesisFlagshipProgress) {
     this.flagshipsReportSynthesisFlagshipProgress = flagshipsReportSynthesisFlagshipProgress;
+  }
+
+
+  public void setHasFlagshipProgress(boolean hasFlagshipProgress) {
+    this.hasFlagshipProgress = hasFlagshipProgress;
   }
 
 
@@ -439,7 +471,11 @@ public class FlagshipProgressAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      validator.validate(this, reportSynthesis, true);
+      if (this.isPMU()) {
+        validator.validateCheckButton(this, reportSynthesis, true, hasFlagshipProgress);
+      } else {
+        validator.validate(this, reportSynthesis, true, hasFlagshipProgress);
+      }
     }
   }
 

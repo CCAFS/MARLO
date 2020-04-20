@@ -86,9 +86,10 @@ public class PowbSynthesisSubmitAction extends BaseAction {
   public String execute() throws Exception {
     complete = false;
     PowbSynthesis powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
-    liaisonInstitutionID = powbSynthesis.getLiaisonInstitution().getId();
-    this.setPhaseID(powbSynthesis.getPhase().getId());
     if (powbSynthesis != null) {
+      liaisonInstitutionID = powbSynthesis.getLiaisonInstitution().getId();
+      this.setPhaseID(powbSynthesis.getPhase().getId());
+
       if (this.hasPermission("canSubmmit")) {
 
         boolean isCompletePOWB = false;

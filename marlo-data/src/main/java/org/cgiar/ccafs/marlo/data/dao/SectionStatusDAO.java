@@ -54,6 +54,9 @@ public interface SectionStatusDAO {
    */
   public List<SectionStatus> findAll();
 
+  public List<SectionStatus> getSectionsStatusByReportSynthesis(long synthesisID, String cycle, int year,
+    Boolean upkeep, String sectionName);
+
   public SectionStatus getSectionStatusByCaseStudy(long caseStudyID, String cycle, int year, Boolean upkeep,
     String sectionName);
 
@@ -96,7 +99,7 @@ public interface SectionStatusDAO {
   public SectionStatus getSectionStatusByProjectOutcome(long projectID, String cycle, int year, Boolean upkeep,
     String sectionName);
 
-  public SectionStatus getSectionStatusByProjectPolicy(long projectInnovationID, String cycle, int year, Boolean upkeep,
+  public SectionStatus getSectionStatusByProjectPolicy(long projectPolicyID, String cycle, int year, Boolean upkeep,
     String sectionName);
 
   public SectionStatus getSectionStatusByReportSynthesis(long synthesisID, String cycle, int year, Boolean upkeep,

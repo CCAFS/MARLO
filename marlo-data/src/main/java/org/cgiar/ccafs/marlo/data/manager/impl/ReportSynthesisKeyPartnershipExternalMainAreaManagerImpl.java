@@ -28,7 +28,8 @@ import javax.inject.Named;
  * @author CCAFS
  */
 @Named
-public class ReportSynthesisKeyPartnershipExternalMainAreaManagerImpl implements ReportSynthesisKeyPartnershipExternalMainAreaManager {
+public class ReportSynthesisKeyPartnershipExternalMainAreaManagerImpl
+  implements ReportSynthesisKeyPartnershipExternalMainAreaManager {
 
 
   private ReportSynthesisKeyPartnershipExternalMainAreaDAO reportSynthesisKeyPartnershipExternalMainAreaDAO;
@@ -36,22 +37,27 @@ public class ReportSynthesisKeyPartnershipExternalMainAreaManagerImpl implements
 
 
   @Inject
-  public ReportSynthesisKeyPartnershipExternalMainAreaManagerImpl(ReportSynthesisKeyPartnershipExternalMainAreaDAO reportSynthesisKeyPartnershipExternalMainAreaDAO) {
+  public ReportSynthesisKeyPartnershipExternalMainAreaManagerImpl(
+    ReportSynthesisKeyPartnershipExternalMainAreaDAO reportSynthesisKeyPartnershipExternalMainAreaDAO) {
     this.reportSynthesisKeyPartnershipExternalMainAreaDAO = reportSynthesisKeyPartnershipExternalMainAreaDAO;
 
 
   }
 
   @Override
-  public void deleteReportSynthesisKeyPartnershipExternalMainArea(long reportSynthesisKeyPartnershipExternalMainAreaId) {
+  public void
+    deleteReportSynthesisKeyPartnershipExternalMainArea(long reportSynthesisKeyPartnershipExternalMainAreaId) {
 
-    reportSynthesisKeyPartnershipExternalMainAreaDAO.deleteReportSynthesisKeyPartnershipExternalMainArea(reportSynthesisKeyPartnershipExternalMainAreaId);
+    reportSynthesisKeyPartnershipExternalMainAreaDAO
+      .deleteReportSynthesisKeyPartnershipExternalMainArea(reportSynthesisKeyPartnershipExternalMainAreaId);
   }
 
   @Override
-  public boolean existReportSynthesisKeyPartnershipExternalMainArea(long reportSynthesisKeyPartnershipExternalMainAreaID) {
+  public boolean
+    existReportSynthesisKeyPartnershipExternalMainArea(long reportSynthesisKeyPartnershipExternalMainAreaID) {
 
-    return reportSynthesisKeyPartnershipExternalMainAreaDAO.existReportSynthesisKeyPartnershipExternalMainArea(reportSynthesisKeyPartnershipExternalMainAreaID);
+    return reportSynthesisKeyPartnershipExternalMainAreaDAO
+      .existReportSynthesisKeyPartnershipExternalMainArea(reportSynthesisKeyPartnershipExternalMainAreaID);
   }
 
   @Override
@@ -62,13 +68,23 @@ public class ReportSynthesisKeyPartnershipExternalMainAreaManagerImpl implements
   }
 
   @Override
-  public ReportSynthesisKeyPartnershipExternalMainArea getReportSynthesisKeyPartnershipExternalMainAreaById(long reportSynthesisKeyPartnershipExternalMainAreaID) {
+  public ReportSynthesisKeyPartnershipExternalMainArea
+    getByPartnershipExternalIdAndMainAreaId(long partnershipExternalId, long mainAreaId) {
+
+    return reportSynthesisKeyPartnershipExternalMainAreaDAO
+      .getByPartnershipExternalIdAndMainAreaId(partnershipExternalId, mainAreaId);
+  }
+
+  @Override
+  public ReportSynthesisKeyPartnershipExternalMainArea
+    getReportSynthesisKeyPartnershipExternalMainAreaById(long reportSynthesisKeyPartnershipExternalMainAreaID) {
 
     return reportSynthesisKeyPartnershipExternalMainAreaDAO.find(reportSynthesisKeyPartnershipExternalMainAreaID);
   }
 
   @Override
-  public ReportSynthesisKeyPartnershipExternalMainArea saveReportSynthesisKeyPartnershipExternalMainArea(ReportSynthesisKeyPartnershipExternalMainArea reportSynthesisKeyPartnershipExternalMainArea) {
+  public ReportSynthesisKeyPartnershipExternalMainArea saveReportSynthesisKeyPartnershipExternalMainArea(
+    ReportSynthesisKeyPartnershipExternalMainArea reportSynthesisKeyPartnershipExternalMainArea) {
 
     return reportSynthesisKeyPartnershipExternalMainAreaDAO.save(reportSynthesisKeyPartnershipExternalMainArea);
   }

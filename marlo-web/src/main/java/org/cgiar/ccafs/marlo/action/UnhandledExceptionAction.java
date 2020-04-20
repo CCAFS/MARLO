@@ -107,6 +107,9 @@ public class UnhandledExceptionAction extends BaseAction {
       message.append("<b>ActionName: </b>" + this.getActionName() + ".</br>");
     }
 
+    message.append("</br></br><b>Exception message: </b></br></br>");
+    message.append(writer.toString() + "</br></br></br>");
+
     if (this.getRequest() != null) {
       HttpServletRequest httpServletRequest = this.getRequest();
       if (httpServletRequest.getParameterMap() != null && !httpServletRequest.getParameterMap().isEmpty()) {
@@ -127,9 +130,6 @@ public class UnhandledExceptionAction extends BaseAction {
         }
       }
     }
-
-    message.append("</br></br><b>Exception message: </b></br></br>");
-    message.append(writer.toString() + "</br></br></br>");
 
     sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, message.toString(), null,
       null, null, true);
