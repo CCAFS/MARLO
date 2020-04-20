@@ -589,16 +589,49 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
           && p.getPhase().getId() == this.getSelectedPhase().getId())
         .collect(Collectors.toList());
     }
+
+    if (contributingOrganizationsList != null) {
+      List<ProjectInnovationContributingOrganization> contributionsTemp = new ArrayList<>();
+      contributionsTemp = contributingOrganizationsList.stream().filter(c -> c != null && c.getInstitution() != null
+        && c.getInstitution().getAcronym() != null && !c.getInstitution().getAcronym().isEmpty())
+        .collect(Collectors.toList());
+      if (contributionsTemp != null && contributionsTemp.size() > 0
+        && contributionsTemp.size() == contributingOrganizationsList.size()) {
+        contributingOrganizationsList
+          .sort((o1, o2) -> o1.getInstitution().getAcronym().compareTo(o2.getInstitution().getAcronym()));
+      } else {
+        contributingOrganizationsList
+          .sort((o1, o2) -> o1.getInstitution().getComposedName().compareTo(o2.getInstitution().getComposedName()));
+      }
+    }
+
     if (contributingOrganizationsList != null && !contributingOrganizationsList.isEmpty()) {
-      Set<String> contributingSet = new HashSet<>();
+      String temp = "";
       for (ProjectInnovationContributingOrganization contributingOrganizationItem : contributingOrganizationsList) {
         if (contributingOrganizationItem.getInstitution() != null) {
-          contributingSet
-            .add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + contributingOrganizationItem.getInstitution().getComposedName());
+          if (!temp.isEmpty()) {
+            temp += "<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + contributingOrganizationItem.getInstitution().getComposedName();
+          } else {
+            temp = " ● " + contributingOrganizationItem.getInstitution().getComposedName();
+          }
         }
       }
-      contributingOrganization = String.join("", contributingSet);
+
+      contributingOrganization = temp;
     }
+
+    /*
+     * if (contributingOrganizationsList != null && !contributingOrganizationsList.isEmpty()) {
+     * Set<String> contributingSet = new HashSet<>();
+     * for (ProjectInnovationContributingOrganization contributingOrganizationItem : contributingOrganizationsList) {
+     * if (contributingOrganizationItem.getInstitution() != null) {
+     * contributingSet
+     * .add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + contributingOrganizationItem.getInstitution().getComposedName());
+     * }
+     * }
+     * contributingOrganization = String.join("", contributingSet);
+     * }
+     */
 
     // Adaptative research
     if (projectInnovationInfo.getAdaptativeResearchNarrative() != null
