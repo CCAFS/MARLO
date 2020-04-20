@@ -38,6 +38,10 @@ public class NewProjectExpectedStudiesOtherInfoDTO {
   private String commissioningStudy;
 
 
+  @ApiModelProperty(notes = "Expected study description", position = 6)
+  private String studyDescription;
+
+
   public String getCommissioningStudy() {
     return commissioningStudy;
   }
@@ -45,6 +49,11 @@ public class NewProjectExpectedStudiesOtherInfoDTO {
 
   public long getStatus() {
     return status;
+  }
+
+
+  public String getStudyDescription() {
+    return studyDescription;
   }
 
 
@@ -70,6 +79,11 @@ public class NewProjectExpectedStudiesOtherInfoDTO {
 
   public void setStatus(long status) {
     this.status = status;
+  }
+
+
+  public void setStudyDescription(String studyDescription) {
+    this.studyDescription = studyDescription;
   }
 
 
