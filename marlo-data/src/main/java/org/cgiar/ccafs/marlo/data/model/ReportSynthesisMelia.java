@@ -71,14 +71,15 @@ public class ReportSynthesisMelia extends MarloAuditableEntity implements java.i
     return true;
   }
 
-
   public List<ReportSynthesisMeliaEvaluation> getEvaluations() {
     return evaluations;
   }
 
+
   public List<ProjectExpectedStudy> getExpectedStudies() {
     return expectedStudies;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -102,11 +103,9 @@ public class ReportSynthesisMelia extends MarloAuditableEntity implements java.i
     return reportSynthesis;
   }
 
-
   public Set<ReportSynthesisMeliaEvaluation> getReportSynthesisMeliaEvaluations() {
     return reportSynthesisMeliaEvaluations;
   }
-
 
   public Set<ReportSynthesisMeliaStudy> getReportSynthesisMeliaStudies() {
     return reportSynthesisMeliaStudies;

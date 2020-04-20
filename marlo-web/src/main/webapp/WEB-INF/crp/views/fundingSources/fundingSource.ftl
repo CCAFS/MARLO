@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "MARLO Funding Sources" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-${fundingSource.id}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = ["select2", "blueimp-file-upload", "datatables.net", "datatables.net-bs","flat-flags"] /]
+[#assign pageLibs = ["select2", "blueimp-file-upload", "datatables.net", "datatables.net-bs","flag-icon-css"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/fieldsValidation.js",
   "${baseUrlMedia}/js/fundingSources/fundingSource.js?20181210",
@@ -451,7 +451,7 @@
                     <input class="cId" type="hidden" name="fundingSource.fundingCountry[${country_index}].locElement.isoAlpha2" value="${(country.locElement.isoAlpha2)!}" />
                     <input class="cPercentage" type="hidden" name="fundingSource.fundingCountry[${country_index}].percentage" value="${(country.percentage)!}" />
                     
-                    <span class="name"><span> <i class="flag-sm flag-sm-${(country.locElement.isoAlpha2)!}"></i> [@utils.wordCutter string=(country.locElement.name)!'' maxPos=15 /] </span></span>
+                    <span class="name"><span> <i class="flag-icon flag-icon-${(country.locElement.isoAlpha2?lower_case)!}"></i> [@utils.wordCutter string=(country.locElement.name)!'' maxPos=15 /] </span></span>
                     <div class="clearfix"></div>
                   </li>
               [/#list]

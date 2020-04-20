@@ -111,7 +111,8 @@
           <th></th>
           [/#if]
           [#if !expanded]
-          <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
+            <th class="col-md-1 text-center no-sort">[@s.text name="${customLabel}.${name}.missingFields" /]</th>
+            <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
           [/#if]
         </tr>
       </thead>
@@ -137,17 +138,21 @@
                 [@utils.tableText value=(item.composedName)!"" /]
                 
                 [#if isFromProject]<br /> <small>(From Project P${item.project.id})</small> [/#if]
-                
+                [#-- OICR Contributions --][#--
+                [#if !expanded] <div class="pull-right">[@oicrContributions element=item tiny=true /] [/#if]</div>
+                --]
                 [#if PMU]
                 <br />
                 <div class="form-group">
                   [#list (item.selectedFlahsgips)![] as liason]
                     <span class="programTag" style="border-color:${(liason.crpProgram.color)!'#444'}" title="${(liason.composedName)!}">${(liason.acronym)!}</span>
                   [/#list]
-                </div>
+                </div>              
                 [/#if]
+                [#-- OICR Contributions --]
+                [#if !expanded] [@oicrContributions element=item /] [/#if]
                 
-                <a href="${url}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
+                <a href="${url}" target="_blank" class="pull-right">[@s.text name="${customLabel}.${name}.linkToOicr" /] <span class="glyphicon glyphicon-new-window"></span></a>
               </td>
               <td>[@utils.tableText value=(item.projectExpectedStudyInfo.repIndStageStudy.name)!"" /]</td>
               <td class="text-center">[@utils.tableText value=(item.projectExpectedStudyInfo.evidenceTag.name)!"" /]</td>
@@ -156,6 +161,16 @@
               <td>[@utils.tableList list=(item.subIdos)![] displayFieldName="srfSubIdo.description" /]</td>
               <td> <a href="${summaryPDF}" target="_blank"><img src="${baseUrlCdn}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" /></a>  </td>
              [/#if]
+             [#if !expanded]
+               <td class="text-center">
+               [#assign isStudyComplete  = action.isStudyComplete(item.id, actualPhase.id) /]
+               [#if isStudyComplete ]
+                  <span class="glyphicon glyphicon-ok-sign mf-icon check" title="Complete"></span> 
+                [#else]
+                  <span class="glyphicon glyphicon-exclamation-sign mf-icon" title="Incomplete"></span> 
+              [/#if] 
+             [/#if]  
+              </td>
              [#if !expanded]
               <td class="text-center">
                 [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.studiesIds?seq_contains(item.id))!true) /]
@@ -172,4 +187,88 @@
       </tbody>
     </table>
   </div>
+[/#macro]
+
+[#macro oicrContributions element tiny=false]
+  [#local policiesContributions = (action.getPolicies(element.id, actualPhase.id))![] ]
+  [#local innovationsContributions = (action.getInnovations(element.id, actualPhase.id))![] ]
+  [#local totalContributions = (policiesContributions?size +innovationsContributions?size)!0 ]
+  
+  [#if policiesContributions?has_content || innovationsContributions?has_content]
+    <br /> 
+    <button type="button" class="outcomesContributionButton btn btn-default btn-xs" data-toggle="modal" data-target="#oicrContributions-${element.id}">
+      <span class="icon-20 project"></span> <strong>${totalContributions}</strong> [#if !tiny][@s.text name="${customLabel}.table3.linkToPoliciesAndInnovations" /][/#if]
+    </button>
+    <!-- Modal -->
+    <div class="modal fade" id="oicrContributions-${element.id}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">
+              [@s.text name="${customLabel}.table3.outcomeContributions" /]
+            </h4>
+          </div>
+          <div class="modal-body">
+            <div class="">            
+              [#-- Policies --]
+              [#if policiesContributions?has_content] 
+                <h4 class="simpleTitle">[@s.text name="${customLabel}.table3.outcomeContributions.policies" /]</h4>
+                  <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th id="ids">[@s.text name="${customLabel}.table3.outcomeContributions.id" /]</th>
+                        <th id="policyTitles">[@s.text name="${customLabel}.table3.outcomeContributions.policyName" /]</th>
+                       [#--<th id="policyType">[@s.text name="project.projectPolicyList.type" /]</th>--]
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      [#list policiesContributions as policy]
+                        [#local policyUrl][@s.url namespace="/projects" action="${(crpSession)!}/policy"][@s.param name='policyID']${policy.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                        <tr>
+                          <th scope="row" class="col-md-1">${policy.id}</th>
+                          <td>${(policy.projectPolicyInfo.title)!'Untitled'}</td>
+                           [#--<td>${(p.projectPolicyInfo.policyType.name?capitalize)!'none'}</td>--]
+                          <td class="col-md-2 text-center"> <a href="${policyUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
+                        </tr>
+                        [/#list]
+                    </tbody>
+                  </table>
+              [/#if]
+              
+              [#-- innovation --]
+              [#if innovationsContributions?has_content] 
+                <h4 class="simpleTitle">[@s.text name="${customLabel}.table3.outcomeContributions.innovations" /]</h4>              
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th id="ids">[@s.text name="${customLabel}.table3.outcomeContributions.id" /]</th>
+                      <th id="innovationTitles" >[@s.text name="${customLabel}.table3.outcomeContributions.innovationName" /]</th>
+                      [#--<th id="innovationType">[@s.text name="project.innovationList.type" /]</th>--]
+                      [#--<th id="innovationRole" >[@s.text name="project.innovationList.role" /]</th>--]
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    [#list innovationsContributions as innovation]
+                      [#local innovationUrl][@s.url namespace="/projects" action="${(crpSession)!}/innovation"][@s.param name='innovationID']${innovation.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                      <tr>
+                        <th scope="row" class="col-md-1">${innovation.id}</th>
+                        <td>${(innovation.projectInnovationInfo.title)!'Untitled'}</td>
+                        [#--<td>${(i.innovationInfo.innovationType.name?capitalize)!'none'}</td>
+                        <td class="col-md-6">${(i.projectInnovationInfo.title)!'Untitled'}</td>--]
+                        <td class="col-md-2 text-center"> <a href="${innovationUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
+                      </tr>
+                      [/#list]
+                  </tbody>
+                </table>
+              [/#if]            
+            </div>
+          </div>
+          <div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div>
+        </div>
+      </div>
+    </div>
+  [/#if]
 [/#macro]

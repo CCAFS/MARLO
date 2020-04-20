@@ -89,7 +89,8 @@ public class PublicationInterceptor extends AbstractInterceptor implements Seria
       boolean hasPublicationPermission =
         baseAction.hasPermission(baseAction.generatePermission(Permission.PUBLICATION_PERMISSION, publicationParams));
       boolean isCreator = user.getId().equals(deliverable.getCreatedBy().getId());
-      boolean isInDeliverablePhase = deliverable.getPhase().getId() == baseAction.getActualPhase().getId();
+      boolean isInDeliverablePhase =
+        deliverable.getPhase().getId().longValue() == baseAction.getActualPhase().getId().longValue();
       boolean isTransaction = parameters.get(APConstants.TRANSACTION_ID).isDefined();
       boolean isSaving = parameters.get("save").isDefined();
 

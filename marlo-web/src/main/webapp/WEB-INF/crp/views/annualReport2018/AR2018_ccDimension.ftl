@@ -10,7 +10,7 @@
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js",
-  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js" 
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20200406" 
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20190621"] /]
 
@@ -97,6 +97,7 @@
                     </div>
                   [/#if]
                 </div>
+                
                 <div id="tab-youth" role="tabpanel" class="tab-pane fade ">
                   [#-- 1.3.2 Youth --]
                   [#-- CRPs contribution to youth --]
@@ -104,13 +105,12 @@
                     [#-- Word Document Tag --]
                     [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
                     
-                    [@customForm.textArea name="${customName}.youthContribution" i18nkey="${customLabel}.youth.youthContribution" help="${customLabel}.youth.youthContribution.help" className="limitWords-${calculateLimitWords(600)}" helpIcon=false required=!isPlatform editable=editable allowTextEditor=true /]
+                    [@customForm.textArea name="${customName}.youthContribution" i18nkey="${customLabel}.youth.youthContribution" help="${customLabel}.youth.youthContribution.help" className="limitWords-${calculateLimitWords(600)}" helpIcon=false required=false editable=editable allowTextEditor=true /]
                   </div>
                   
-                  
                   [@customForm.helpLabel name="${customLabel}.youth.help" showIcon=false editable=editable /]
-                  
-                  [#-- Youth - Research findings --]
+                 
+                   [#-- Youth - Research findings --]
                   <div class="form-group">
                     [#-- Word Document Tag --]
                     [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
@@ -133,6 +133,7 @@
                     
                     [@customForm.textArea name="${customName}.youthProblemsArisen" i18nkey="${customLabel}.youth.problemsArisen" help="" className="limitWords-${calculateLimitWords(100)}" helpIcon=false required=!isPlatform editable=editable allowTextEditor=true /]
                   </div>
+                  
                   
                   [#if PMU]
                     [#-- Flagships - Youth Synthesis --]
@@ -204,62 +205,70 @@
                     <br />
                     
                     [#-- CapDevCharts--]
-                    <div class="form-group">
-                      <div class="row">
-                        <div class="col-md-4">
-                          <div id="" class="simpleBox numberBox">
+                    <div class="form-group row">
+                      <div class="col-md-4">
+                        <div id="" class="simpleBox numberBox">
                             <label for="">[@s.text name="${customLabel}.totalParticipants" /]</label><br />
                             <span>${(totalParticipants?number?string(",##0"))!0}</span>
-                          </div>
-                          <div id="" class="simpleBox numberBox">
+                         </div>
+                         <div id="" class="simpleBox numberBox">
                             <label for="">Participants in [@s.text name="${customLabel}.totalParticipantFormalTraining" /]</label><br />
                             <span>${(totalParticipantFormalTraining?number?string(",##0"))!0}</span>
-                          </div>
+                         </div>
+                      </div>
+                      <div class="col-md-8">
+                        [#-- Trainees in Short-Term --]
+                        <div id="chart12" class="chartBox simpleBox">
+                          [#assign chartData = [
+                            {"name":"Male",   "value": "${(totalParticipantFormalTrainingShortMale)!0}"},
+                            {"name":"Female", "value": "${(totalParticipantFormalTrainingShortFemale)!0}"}
+                          ] /] 
+                          <ul class="chartData" style="display:none">
+                            <li>
+                              <span>[@s.text name="${customLabel}" /]</span>
+                              <span>[@s.text name="Short-Term" /]</span>
+                              <span class="json">{"role":"annotation"}</span>
+                            </li>
+                            [#if (((totalParticipantFormalTrainingShortMale)!0) + ((totalParticipantFormalTrainingShortFemale)!0)) > 0 ]
+                              [#list chartData as data]
+                                <li>
+                                  <span>${data.name}</span>
+                                  <span class="number">${data.value}</span>
+                                  <span>${data.value}</span>
+                                </li>
+                              [/#list]
+                            [/#if]
+                          </ul>
                         </div>
-                        <div class="col-md-8">
-                          <div class="row">
-                            <div class="col-md-6">
-                              <div id="chart12" class="chartBox simpleBox">
-                                [#assign chartData = [
-                                    {"name":"Male",   "value": "${(totalParticipantFormalTrainingShortMale)!0}"},
-                                    {"name":"Female", "value": "${(totalParticipantFormalTrainingShortFemale)!0}"}
-                                  ] /] 
-                                <ul class="chartData" style="display:none">
-                                  <li>
-                                    <span>[@s.text name="${customLabel}.chart12" /]</span>
-                                    <span>[@s.text name="${customLabel}.chart12" /]</span>
-                                  </li>
-                                  [#if (((totalParticipantFormalTrainingShortMale)!0) + ((totalParticipantFormalTrainingShortFemale)!0)) > 0 ]
-                                    [#list chartData as data]
-                                      <li><span>${data.name}</span><span class="number">${data.value}</span></li>
-                                    [/#list]
-                                  [/#if]
-                                </ul>
-                              </div>
-                            </div>
-                            <div class="col-md-6">
-                              <div id="chart13" class="chartBox simpleBox">
-                                [#assign chartData = [
-                                    {"name":"Male",   "value": "${(totalParticipantFormalTrainingLongMale)!0}"},
-                                    {"name":"Female", "value": "${(totalParticipantFormalTrainingLongFemale)!0}"}
-                                  ] /] 
-                                <ul class="chartData" style="display:none">
-                                  <li>
-                                    <span>[@s.text name="${customLabel}.chart13" /]</span>
-                                    <span>[@s.text name="${customLabel}.chart13" /]</span>
-                                  </li>
-                                  [#if (((totalParticipantFormalTrainingLongMale)!0) + ((totalParticipantFormalTrainingLongFemale)!0)) > 0 ]
-                                    [#list chartData as data]
-                                      <li><span>${data.name}</span><span class="number">${data.value}</span></li>
-                                    [/#list]
-                                  [/#if]
-                                </ul>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                        <br />
+                        [#-- Trainees in Long-Term --]
+                        <div id="chart13" class="chartBox simpleBox">
+                          [#assign chartData = [
+                            {"name":"Male",   "value": "${(totalParticipantFormalTrainingLongMale)!0}",   "valuePhD": "${(totalParticipantFormalTrainingPhdMale)!0}"}
+                            {"name":"Female", "value": "${(totalParticipantFormalTrainingLongFemale)!0}",   "valuePhD": "${(totalParticipantFormalTrainingPhdFemale)!0}"}
+                          ] /] 
+                          <ul class="chartData" style="display:none">
+                            <li>
+                              <span>[@s.text name="${customLabel}.chart13" /]</span>
+                              <span>[@s.text name="Long-Term" /]</span>
+                              <span class="json">{"role":"annotation"}</span>
+                              <span>[@s.text name="PhD" /]</span>
+                              <span class="json">{"role":"annotation"}</span>
+                            </li>
+                            [#if (((totalParticipantFormalTrainingLongMale)!0) + ((totalParticipantFormalTrainingLongFemale)!0)) > 0 ]
+                              [#list chartData as data]
+                                <li><span>${data.name}</span>
+                                <span class="number">${data.value}</span>
+                                <span>${data.value}</span>
+                                <span class="number">${data.valuePhD}</span>
+                                <span>${data.valuePhD}</span></li>
+                              [/#list]
+                            [/#if]
+                          </ul>
+                         </div>
                       </div>
                     </div>
+                    
                     
                     [#-- Deliverables Participants & Trainees --]
                     <div class="form-group">
@@ -309,10 +318,12 @@
     <thead>
       <tr class="subHeader">
         <th id="tb-id">[@s.text name="${customLabel}.activitiesEventsTable.activityEvent" /]</th>
-        <th id="tb-title">[@s.text name="${customLabel}.activitiesEventsTable.type" /]</th>
-        <th id="tb-type">[@s.text name="${customLabel}.activitiesEventsTable.totalParticipants" /]</th>
-        <th id="tb-type">[@s.text name="${customLabel}.activitiesEventsTable.numberFemales" /]</th>
+        <th id="tb-title">[@s.text name="${customLabel}.activitiesEventsTable.type" /]</th>        
         <th id="tb-organization-type">[@s.text name="${customLabel}.activitiesEventsTable.typeParticipants" /]</th>
+        <th id="tb-type">[@s.text name="${customLabel}.activitiesEventsTable.numberMales" /]</th>
+        <th id="tb-type">[@s.text name="${customLabel}.activitiesEventsTable.numberFemales" /]</th>
+        <th id="tb-type">[@s.text name="${customLabel}.activitiesEventsTable.totalParticipants" /]</th>
+        <th id="tb-training-period">[@s.text name="${customLabel}.activitiesEventsTable.trainingPeriod" /]</th>
       </tr>
     </thead>
     <tbody>
@@ -331,18 +342,36 @@
           [#-- Activity Type --]
           <td class="">
             <small>[@utils.tableText value=(item.repIndTypeActivity.name)!"" /]</small>
+          </td>          
+          [#-- Type of participants --]
+          <td class="text-center">
+            [@utils.tableText value=(item.repIndTypeParticipant.name)!"" /]
+          </td>          
+          [#assign knowFemale = (item.dontKnowFemale)!false]
+          [#assign hasFemale = (item.females?has_content)!false]
+          [#-- Total Participants --]
+          <td class="text-center">
+            [#if knowFemale && !hasFemale ]
+              <i><small>Not specified</small></i>
+              [#else]
+              ${(item.males?number?string(",##0"))!0}
+            [/#if]
+          </td>
+          [#-- Number of females --]
+          <td class="text-center">
+          [#if knowFemale && !hasFemale ]
+            <i><small>Not specified</small></i>
+            [#else]
+            ${(item.females?number?string(",##0"))!0}
+          [/#if]
           </td>
           [#-- Total Participants --]
           <td class="text-center">
             ${(item.participants?number?string(",##0"))!0}
           </td>
-          [#-- Number of females --]
+          [#-- Training period of time --]
           <td class="text-center">
-            ${(item.females?number?string(",##0"))!0}
-          </td>
-          [#-- Type of participants --]
-          <td class="text-center">
-            [@utils.tableText value=(item.repIndTypeParticipant.name)!"" /]
+            [@utils.tableText value=(item.repIndTrainingTerm.name)!"" /]
           </td>
         </tr>
       [/#list]

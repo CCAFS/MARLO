@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.PolicyMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
@@ -51,9 +52,11 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -139,6 +142,8 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
     masterReport.getParameterValues().put("i8nColumnV", this.getText("policy.include.modification"));
     masterReport.getParameterValues().put("i8nColumnW", this.getText("policy.include.table"));
     masterReport.getParameterValues().put("i8nHeader", this.getText("policy.header.table"));
+    masterReport.getParameterValues().put("i8nDescription", this.getText("policy.description.readText"));
+    masterReport.getParameterValues().put("i8nMilestones", this.getText("policy.milestones.text"));
 
     return masterReport;
   }
@@ -383,11 +388,11 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
     TypedTableModel model = new TypedTableModel(
       new String[] {"paramA", "paramB", "paramC", "paramD", "paramE", "paramF", "paramG", "paramH", "paramI", "paramJ",
         "paramK", "paramL", "paramM", "paramN", "paramO", "paramP", "paramQ", "paramR", "paramS", "paramT", "paramU",
-        "paramV", "paramW", "policyURL"},
+        "paramV", "paramW", "policyURL", "description", "milestones"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class},
+        String.class, String.class, String.class},
       0);
 
     // Load the policies information
@@ -397,7 +402,8 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
       Long paramA = null, paramB = null;
       String paramC = "", paramD = "", paramE = "", paramF = "", paramG = "", paramH = "", paramI = "", paramJ = "",
         paramK = "", paramL = "", paramM = "", paramN = "", paramO = "", paramP = "", paramQ = "", paramR = "",
-        paramS = "", paramT = "", paramU = "", paramV = "", paramW = "", policyURL = "";
+        paramS = "", paramT = "", paramU = "", paramV = "", paramW = "", policyURL = "", description = "",
+        milestones = "", hasMilestones = "";
 
       // Condition to know if the project policy have information in the selected phase
       if (policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()) != null) {
@@ -412,6 +418,16 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
           paramC = policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()).getTitle();
         } else {
           paramC = "<Not Defined>";
+        }
+
+        // Description
+        if (policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()).getDescription() != null
+          && !policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()).getDescription()
+            .isEmpty()) {
+          description =
+            policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()).getDescription();
+        } else {
+          description = "<Not Defined>";
         }
         // Policy / Investment Type and amount (If Investment type Id = 3)
         if (policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase())
@@ -440,6 +456,41 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
           paramD = "<Not Defined>";
           paramE = "<Not Defined>";
         }
+
+        // Has milestones
+        if (policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase())
+          .getHasMilestones() != null) {
+
+          if (policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase())
+            .getHasMilestones() == true) {
+            hasMilestones = "Yes";
+          }
+          if (policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase())
+            .getHasMilestones() == false) {
+            hasMilestones = "No";
+          }
+        } else {
+          hasMilestones = "<Not Defined>";
+        }
+
+        // Milestones
+        policyEvidence.getProjectPolicy()
+          .setMilestones(new ArrayList<>(policyEvidence.getProjectPolicy().getPolicyMilestones().stream()
+            .filter(o -> o.getPhase().getId().equals(this.getSelectedPhase().getId())).collect(Collectors.toList())));
+
+        if (policyEvidence.getProjectPolicy().getMilestones() != null
+          && !policyEvidence.getProjectPolicy().getMilestones().isEmpty()) {
+          Set<String> milestonesSet = new HashSet<>();
+          for (PolicyMilestone milestone : policyEvidence.getProjectPolicy().getMilestones()) {
+            if (milestone.getCrpMilestone() != null && milestone.getCrpMilestone().getComposedName() != null) {
+              milestonesSet.add("● " + milestone.getCrpMilestone().getComposedName() + "\n");
+            }
+          }
+          milestones = String.join("", milestonesSet);
+        } else {
+          milestones = "<Not Defined>";
+        }
+
 
         // Organization type
 
@@ -565,7 +616,7 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
               .collect(Collectors.toList()));
           if (subIdos != null && !subIdos.isEmpty()) {
             for (ProjectPolicySubIdo subIdo : subIdos) {
-              paramN += "● " + subIdo.getSrfSubIdo().getDescription() + "\n";
+              paramN += "● " + subIdo.getSrfSubIdo().getId() + " - " + subIdo.getSrfSubIdo().getDescription() + "\n";
             }
           }
         } else {
@@ -628,7 +679,8 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
         boolean haveRegions = false;
         boolean haveCountries = false;
 
-        if (policyEvidence.getProjectPolicy().getProjectPolicyGeographicScopes() != null) {
+        if (policyEvidence.getProjectPolicy().getProjectPolicyGeographicScopes() != null
+          && !policyEvidence.getProjectPolicy().getProjectPolicyGeographicScopes().isEmpty()) {
 
           List<ProjectPolicyGeographicScope> geoScopes =
             new ArrayList<>(policyEvidence.getProjectPolicy().getProjectPolicyGeographicScopes().stream()
@@ -711,7 +763,8 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
       }
 
       model.addRow(new Object[] {paramA, paramB, paramC, paramD, paramE, paramF, paramG, paramH, paramI, paramJ, paramK,
-        paramL, paramM, paramN, paramO, paramP, paramQ, paramR, paramS, paramT, paramU, paramV, paramW, policyURL});
+        paramL, paramM, paramN, paramO, paramP, paramQ, paramR, paramS, paramT, paramU, paramV, paramW, policyURL,
+        description, milestones});
     }
     return model;
   }

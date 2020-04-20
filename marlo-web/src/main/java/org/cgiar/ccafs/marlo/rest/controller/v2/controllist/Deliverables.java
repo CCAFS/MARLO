@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.Deliverables.DeliverablesItem;
 import org.cgiar.ccafs.marlo.rest.dto.NewPublicationDTO;
 import org.cgiar.ccafs.marlo.rest.dto.PublicationDTO;
+import org.cgiar.ccafs.marlo.rest.errors.NotFoundException;
 import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.util.List;
@@ -49,7 +50,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Api(tags = "Deliverables")
+@Api(tags = "Table 6 - Peer-reviewed publications")
 public class Deliverables {
 
   private static final Logger LOG = LoggerFactory.getLogger(Deliverable.class);
@@ -71,7 +72,6 @@ public class Deliverables {
     super();
     this.publicationItem = publicationItem;
     this.userManager = userManager;
-
   }
 
   @ApiOperation(tags = {"Table 6 - Peer-reviewed publications"}, value = "${Deliverables.deliverable.POST.value}",
@@ -88,20 +88,64 @@ public class Deliverables {
     return response;
   }
 
+  @ApiOperation(tags = {"Table 6 - Peer-reviewed publications"}, value = "${Deliverables.deliverable.DELETE.id.value}",
+    response = PublicationDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/publications/{id}", method = RequestMethod.DELETE,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<PublicationDTO> deleteDeliverableById(
+    @ApiParam(value = "${Deliverables.deliverable.DELETE.id.param.CGIAR}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${Deliverables.deliverable.DELETE.id.param.id}", required = true) @PathVariable Long id,
+    @ApiParam(value = "${Deliverables.deliverable.DELETE.id.param.year}", required = true) @RequestParam Integer year,
+    @ApiParam(value = "${Deliverables.deliverable.DELETE.id.param.phase}",
+      required = true) @RequestParam String phase) {
+
+    ResponseEntity<PublicationDTO> response =
+      this.publicationItem.deleteDeliverableById(id, CGIAREntity, year, phase, this.getCurrentUser());
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("Deliverables.deliverable.DELETE.id.404"));
+    }
+
+    return response;
+  }
+
+  @ApiOperation(tags = {"Table 6 - Peer-reviewed publications"}, value = "${Deliverables.deliverable.GET.id.value}",
+    response = PublicationDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/publications/{id}", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<PublicationDTO> findDeliverableById(
+    @ApiParam(value = "${Deliverables.deliverable.GET.id.param.CGIAR}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${Deliverables.deliverable.GET.id.param.id}", required = true) @PathVariable Long id,
+    @ApiParam(value = "${Deliverables.deliverable.GET.id.param.year}", required = true) @RequestParam Integer year,
+    @ApiParam(value = "${Deliverables.deliverable.GET.id.param.phase}", required = true) @RequestParam String phase) {
+
+    ResponseEntity<PublicationDTO> response =
+      this.publicationItem.findDeliverableById(id, CGIAREntity, year, phase, this.getCurrentUser());
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("Deliverables.deliverable.GET.id.404"));
+    }
+
+    return response;
+  }
+
   /**
    * Get all deliverables by phase and CRP *
    * 
    * @return a DeliverablesDTO with deliverables item
    */
-  @ApiOperation(tags = {"Table 6 - Peer-reviewed publications"}, value = "${Deliverables.deliverable.all.value}",
+  @ApiOperation(tags = {"Table 6 - Peer-reviewed publications"}, value = "${Deliverables.deliverable.GET.all.value}",
     response = PublicationDTO.class, responseContainer = "List")
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIAREntity}/publications", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public List<PublicationDTO> getAllDeliverables(
-    @ApiParam(value = "${Deliverables.deliverable.GET.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
-    @ApiParam(value = "${Deliverables.deliverable.GET.id.param.year}", required = true) @RequestParam Integer year,
-    @ApiParam(value = "${Deliverables.deliverable.GET.id.param.phase}", required = true) @RequestParam String phase) {
+    @ApiParam(value = "${Deliverables.deliverable.GET.all.param.CGIAR}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${Deliverables.deliverable.GET.all.param.year}", required = true) @RequestParam Integer year,
+    @ApiParam(value = "${Deliverables.deliverable.GET.all.param.phase}", required = true) @RequestParam String phase) {
     return this.publicationItem.getAllDeliverables(CGIAREntity, year, phase, this.getCurrentUser());
   }
 
@@ -110,6 +154,28 @@ public class Deliverables {
     Long principal = (Long) subject.getPrincipal();
     User user = this.userManager.getUser(principal);
     return user;
+  }
+
+  @ApiOperation(tags = {"Table 6 - Peer-reviewed publications"}, value = "${Deliverables.deliverable.PUT.value}",
+    response = PublicationDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/publications/{id}", method = RequestMethod.PUT,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Long> putDeliverableById(
+    @ApiParam(value = "${Deliverables.deliverable.PUT.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${Deliverables.deliverable.PUT.param.id}", required = true) @PathVariable Long id,
+    @ApiParam(value = "${Deliverables.deliverable.PUT.param.deliverable}",
+      required = true) @Valid @RequestBody NewPublicationDTO newPublicationDTO) {
+
+    Long deliverableID =
+      this.publicationItem.putDeliverableById(id, newPublicationDTO, CGIAREntity, this.getCurrentUser());
+
+    ResponseEntity<Long> response = new ResponseEntity<Long>(deliverableID, HttpStatus.OK);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("Deliverables.deliverable.PUT.id.404"));
+    }
+
+    return response;
   }
 
 }

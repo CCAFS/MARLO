@@ -55,7 +55,13 @@ public interface CrpProgramOutcomeDAO {
    */
   public List<CrpProgramOutcome> findAll();
 
-
+  /**
+   * This method finds a CrpProgramOutcome by composeId and phase
+   * 
+   * @param composedId
+   * @param phase
+   * @return a CrpProgramOutcome object.
+   */
   public CrpProgramOutcome getCrpProgramOutcome(String composedId, Phase phase);
 
   /**

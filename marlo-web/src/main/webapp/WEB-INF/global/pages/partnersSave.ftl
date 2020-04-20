@@ -70,6 +70,7 @@
         [#if expectedID??]<input type="hidden" name="expectedID" value="${expectedID}"/>[/#if]
         [#if capdevID??]<input type="hidden" name="capdevID" value="${capdevID}"/>[/#if]
         [#if powbSynthesisID??]<input type="hidden" name="powbSynthesisID" value="${(powbSynthesisID)!}"/>[/#if]
+        [#if synthesisID??]<input type="hidden" name="synthesisID" value="${(synthesisID)!}"/>[/#if]
         <input type="hidden" name="context" value="${(context)!}" />
         <input type="hidden" name="phaseID" value="${actualPhase.id}"/>
         <div class="clearfix"></div>

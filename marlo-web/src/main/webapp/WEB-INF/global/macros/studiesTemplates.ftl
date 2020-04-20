@@ -470,7 +470,11 @@
       [#--  Comments for other studies--]
       [#if !isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
-        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.topLevelComments" i18nkey="study.comments"  placeholder="" className="limitWords-100" required=editable && !(isPolicy && stageProcessOne) editable=editable /]
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.topLevelComments" i18nkey="study.activityDescription"  placeholder="" className="limitWords-100" required=editable && !(isPolicy && stageProcessOne) editable=editable /]
+      </div>
+      
+      <div class="form-group stageProcessOne">
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.MELIAPublications" i18nkey="study.MELIAPublications"  placeholder="" help="study.MELIAPublications.help" helpIcon=false className="" required=false editable=editable /]
       </div>
       [/#if]
       
@@ -547,10 +551,10 @@
     [#-- Units --]
     <div class="form-group row">
       <div class="col-md-4">
-        [@customForm.input name="${customName}.number" i18nkey="study.quantification.number" help="study.quantification.number.help" className="numericInput" required=true editable=editable /]
+        [@customForm.input name="${customName}.number" i18nkey="study.quantification.number" className="numericInput" required=true editable=editable /]
       </div>
       <div class="col-md-4"> 
-        [@customForm.input name="${customName}.targetUnit" i18nkey="study.quantification.targetUnit" help="study.quantification.targetUnit.help" className="" required=true editable=editable /]
+        [@customForm.input name="${customName}.targetUnit" i18nkey="study.quantification.targetUnit" className="" required=true editable=editable /]
       </div> 
     </div>
     [#-- Comments --]

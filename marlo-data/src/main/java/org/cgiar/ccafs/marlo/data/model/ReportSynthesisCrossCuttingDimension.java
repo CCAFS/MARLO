@@ -112,6 +112,14 @@ public class ReportSynthesisCrossCuttingDimension extends MarloAuditableEntity
   private Double traineesLongTermMale;
 
 
+  @Expose
+  private Double traineesPhdFemale;
+
+
+  @Expose
+  private Double traineesPhdMale;
+
+
   public ReportSynthesisCrossCuttingDimension() {
   }
 
@@ -269,6 +277,14 @@ public class ReportSynthesisCrossCuttingDimension extends MarloAuditableEntity
     return traineesLongTermMale;
   }
 
+  public Double getTraineesPhdFemale() {
+    return traineesPhdFemale;
+  }
+
+  public Double getTraineesPhdMale() {
+    return traineesPhdMale;
+  }
+
   public Double getTraineesShortTermFemale() {
     return traineesShortTermFemale;
   }
@@ -408,6 +424,14 @@ public class ReportSynthesisCrossCuttingDimension extends MarloAuditableEntity
 
   public void setTraineesLongTermMale(Double traineesLongTermMale) {
     this.traineesLongTermMale = traineesLongTermMale;
+  }
+
+  public void setTraineesPhdFemale(Double traineesPhdFemale) {
+    this.traineesPhdFemale = traineesPhdFemale;
+  }
+
+  public void setTraineesPhdMale(Double traineesPhdMale) {
+    this.traineesPhdMale = traineesPhdMale;
   }
 
   public void setTraineesShortTermFemale(Double traineesShortTermFemale) {

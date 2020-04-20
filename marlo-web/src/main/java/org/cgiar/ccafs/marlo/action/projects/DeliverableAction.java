@@ -1709,7 +1709,7 @@ public class DeliverableAction extends BaseAction {
       }
 
 
-      this.saveCrossCutting(deliverableManagedState);
+      this.saveCrossCutting();
 
       // Reporting and upkeep
       if (this.isReportingActive() || this.isUpKeepActive()) {
@@ -1739,6 +1739,17 @@ public class DeliverableAction extends BaseAction {
         }
       }
       deliverableInfoManager.saveDeliverableInfo(deliverableManagedState.getDeliverableInfo());
+
+      /*
+       * Delete the field 'justification' when the status is equals to Completed and this field has information
+       */
+      if (deliverableManagedState.getDeliverableInfo() != null
+        && deliverableManagedState.getDeliverableInfo().getStatus() != null) {
+        if ((deliverableManagedState.getDeliverableInfo().getStatus() == 3)
+          && deliverableManagedState.getDeliverableInfo().getModificationJustification() != null) {
+          deliverableManagedState.getDeliverableInfo().setModificationJustification(null);
+        }
+      }
 
       if (this.hasSpecificities(APConstants.CRP_LP6_ACTIVE) && this.isReportingActive()
         && this.getProjectLp6ContributionValue(project.getId(), this.getActualPhase().getId())) {
@@ -1809,14 +1820,14 @@ public class DeliverableAction extends BaseAction {
    * 
    * @param delvierable
    */
-  public void saveCrossCutting(Deliverable deliverable) {
+  public void saveCrossCutting() {
 
     // Save form Information
-    if (deliverable.getCrossCuttingMarkers() != null) {
-      for (DeliverableCrossCuttingMarker crossCuttingOwner : deliverable.getCrossCuttingMarkers()) {
+    if (this.deliverable.getCrossCuttingMarkers() != null) {
+      for (DeliverableCrossCuttingMarker crossCuttingOwner : this.deliverable.getCrossCuttingMarkers()) {
         if (crossCuttingOwner.getId() == null) {
           DeliverableCrossCuttingMarker crossCuttingOwnerSave = new DeliverableCrossCuttingMarker();
-          crossCuttingOwnerSave.setDeliverable(deliverable);
+          crossCuttingOwnerSave.setDeliverable(this.deliverable);
           crossCuttingOwnerSave.setPhase(this.getActualPhase());
 
           CgiarCrossCuttingMarker cgiarCrossCuttingMarker = cgiarCrossCuttingMarkerManager
@@ -1840,7 +1851,7 @@ public class DeliverableAction extends BaseAction {
 
           deliverableCrossCuttingMarkerManager.saveDeliverableCrossCuttingMarker(crossCuttingOwnerSave);
           // This is to add deliverableCrossCuttingMarker to generate correct auditlog.
-          deliverable.getDeliverableCrossCuttingMarkers().add(crossCuttingOwnerSave);
+          this.deliverable.getDeliverableCrossCuttingMarkers().add(crossCuttingOwnerSave);
         } else {
           boolean hasChanges = false;
           DeliverableCrossCuttingMarker crossCuttingOwnerSave =
@@ -1879,7 +1890,7 @@ public class DeliverableAction extends BaseAction {
             deliverableCrossCuttingMarkerManager.saveDeliverableCrossCuttingMarker(crossCuttingOwnerSave);
           }
           // This is to add deliverableCrossCuttingMarker to generate correct auditlog.
-          deliverable.getDeliverableCrossCuttingMarkers().add(crossCuttingOwnerSave);
+          this.deliverable.getDeliverableCrossCuttingMarkers().add(crossCuttingOwnerSave);
 
         }
       }
@@ -1891,28 +1902,33 @@ public class DeliverableAction extends BaseAction {
       deliverable.setCrps(new ArrayList<>());
     }
     /* Delete */
-    Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
-    for (DeliverableCrp deliverableCrp : deliverableDB.getDeliverableCrps().stream()
-      .filter(c -> c != null && c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
-      .collect(Collectors.toList())) {
-      if (deliverable.getCrps() != null && !deliverable.getCrps().contains(deliverableCrp)) {
-        deliverableCrpManager.deleteDeliverableCrp(deliverableCrp.getId());
+    if (deliverableID != 0 && deliverableManager.getDeliverableById(deliverableID) != null) {
+      Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
+      for (DeliverableCrp deliverableCrp : deliverableDB.getDeliverableCrps().stream()
+        .filter(c -> c != null && c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+        .collect(Collectors.toList())) {
+        if (deliverableCrp != null && deliverableCrp.getId() != null && deliverable.getCrps() != null
+          && !deliverable.getCrps().contains(deliverableCrp)) {
+          deliverableCrpManager.deleteDeliverableCrp(deliverableCrp.getId());
+        }
       }
     }
 
     /* Save */
-    for (DeliverableCrp deliverableCrp : deliverable.getCrps()) {
-      if (deliverableCrp != null && deliverableCrp.getId() == null || deliverableCrp.getId().intValue() == -1) {
-        deliverableCrp.setId(null);
-        deliverableCrp.setDeliverable(deliverable);
-        deliverableCrp.setPhase(this.getActualPhase());
-        if (deliverableCrp.getGlobalUnit() != null && deliverableCrp.getGlobalUnit().getId() != null
-          && deliverableCrp.getGlobalUnit().getId() != -1) {
-          deliverableCrp.setCrpProgram(null);
-        } else {
-          deliverableCrp.setGlobalUnit(null);
+    if (deliverable.getCrps() != null) {
+      for (DeliverableCrp deliverableCrp : deliverable.getCrps()) {
+        if (deliverableCrp != null && deliverableCrp.getId() == null || deliverableCrp.getId().intValue() == -1) {
+          deliverableCrp.setId(null);
+          deliverableCrp.setDeliverable(deliverable);
+          deliverableCrp.setPhase(this.getActualPhase());
+          if (deliverableCrp.getGlobalUnit() != null && deliverableCrp.getGlobalUnit().getId() != null
+            && deliverableCrp.getGlobalUnit().getId() != -1) {
+            deliverableCrp.setCrpProgram(null);
+          } else {
+            deliverableCrp.setGlobalUnit(null);
+          }
+          deliverableCrpManager.saveDeliverableCrp(deliverableCrp);
         }
-        deliverableCrpManager.saveDeliverableCrp(deliverableCrp);
       }
     }
   }
@@ -2391,8 +2407,11 @@ public class DeliverableAction extends BaseAction {
       if (deliverable.getDissemination().getAlreadyDisseminated() != null) {
         dissemination.setAlreadyDisseminated(deliverable.getDissemination().getAlreadyDisseminated());
         if (deliverable.getDissemination().getAlreadyDisseminated().booleanValue()) {
-
-          dissemination.setDisseminationUrl(deliverable.getDissemination().getDisseminationUrl());
+          if (deliverable.getDissemination().getDisseminationUrl() != null) {
+            dissemination.setDisseminationUrl(deliverable.getDissemination().getDisseminationUrl().trim());
+          } else {
+            dissemination.setDisseminationUrl(deliverable.getDissemination().getDisseminationUrl());
+          }
           dissemination.setDisseminationChannel(deliverable.getDissemination().getDisseminationChannel());
         } else {
           dissemination.setDisseminationUrl(null);

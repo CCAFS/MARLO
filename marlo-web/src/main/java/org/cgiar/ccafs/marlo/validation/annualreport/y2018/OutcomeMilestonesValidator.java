@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
+import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
@@ -28,14 +29,21 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesis2018SectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcome;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestone;
+import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Named;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -43,15 +51,19 @@ import javax.inject.Named;
 @Named
 public class OutcomeMilestonesValidator extends BaseValidator {
 
+  private static Logger LOG = LoggerFactory.getLogger(OutcomeMilestonesValidator.class);
+
   private final GlobalUnitManager crpManager;
   private final ReportSynthesisManager reportSynthesisManager;
   private final LiaisonInstitutionManager liaisonInstitutionManager;
+  private final SectionStatusManager sectionStatusManager;
 
   public OutcomeMilestonesValidator(GlobalUnitManager crpManager, ReportSynthesisManager reportSynthesisManager,
-    LiaisonInstitutionManager liaisonInstitutionManager) {
+    LiaisonInstitutionManager liaisonInstitutionManager, SectionStatusManager sectionStatusManager) {
     this.crpManager = crpManager;
     this.reportSynthesisManager = reportSynthesisManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
+    this.sectionStatusManager = sectionStatusManager;
   }
 
 
@@ -97,28 +109,102 @@ public class OutcomeMilestonesValidator extends BaseValidator {
         liaisonInstitutionManager.getLiaisonInstitutionById(reportSynthesis.getLiaisonInstitution().getId());
 
       if (!this.isPMU(liaisonInstitution)) {
-
-
         if (liaisonInstitution.getCrpProgram() != null) {
           CrpProgram crpProgram = liaisonInstitution.getCrpProgram();
-
           if (crpProgram.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
-
             if (reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList() != null) {
-
               if (!reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList().isEmpty()) {
-
                 for (int i = 0; i < reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList().size(); i++) {
                   this.validateOutcomes(action,
                     reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList().get(i), i);
                 }
 
-
               } else {
                 action.addMissingField(action.getText("Not Expected Crp Progress"));
               }
+
             } else {
               action.addMissingField(action.getText("Not Expected Crp Progress"));
+            }
+
+          }
+        }
+      }
+
+      // Validate Flagships
+      if (action.isPMU()) {
+        String flagshipsWithMisingInformation = "";
+        // Get all liaison institutions for current CRP
+        List<LiaisonInstitution> liaisonInstitutionsFromCrp = liaisonInstitutionManager.findAll().stream()
+          .filter(l -> l != null && l.isActive() && l.getCrp() != null && l.getCrp().getId() != null
+            && l.getCrp().getId().equals(action.getCurrentCrp().getId()) && l.getCrpProgram() != null
+            && l.getAcronym() != null && !l.getAcronym().contains(" "))
+          .collect(Collectors.toList());
+        ReportSynthesis reportSynthesisAux = null;
+
+        List<SectionStatus> statusOfEveryFlagship = new ArrayList<>();
+        SectionStatus statusOfFlagship = null;
+        if (liaisonInstitutionsFromCrp != null) {
+          // Order liaisonInstitutionsFromCrp list by acronyms
+          liaisonInstitutionsFromCrp = liaisonInstitutionsFromCrp.stream()
+            .sorted((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym())).collect(Collectors.toList());
+          for (LiaisonInstitution liaison : liaisonInstitutionsFromCrp) {
+
+            // Get report synthesis for each liaison Instution
+            reportSynthesisAux =
+              reportSynthesisManager.findSynthesis(reportSynthesis.getPhase().getId(), liaison.getId());
+            statusOfFlagship = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesisAux.getId(),
+              "Reporting", 2019, false, "outomesMilestones");
+
+            // Add section status to statusOfEveryFlagship list if section status (statusOfFlagship) has missing fields
+            SectionStatus statusOfFPMU = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
+              "Reporting", 2019, false, "synthesis.AR2019Table5");
+
+            if (statusOfFlagship != null && statusOfFlagship.getMissingFields() != null
+              && !statusOfFlagship.getMissingFields().isEmpty()) {
+
+              // Add flagship acronym with missing information to Section status in synthesis flagship field
+              if (statusOfFPMU != null && statusOfFPMU.getSynthesisFlagships() != null
+                && !statusOfFPMU.getSynthesisFlagships().isEmpty()) {
+
+                if (!statusOfFPMU.getSynthesisFlagships().contains(liaison.getAcronym())) {
+                  action.addSynthesisFlagship(liaison.getAcronym());
+                }
+              } else {
+                action.addSynthesisFlagship(liaison.getAcronym());
+              }
+              if (flagshipsWithMisingInformation != null && !flagshipsWithMisingInformation.isEmpty()) {
+                flagshipsWithMisingInformation += ", " + liaison.getAcronym();
+              } else {
+                flagshipsWithMisingInformation = liaison.getAcronym();
+              }
+              statusOfEveryFlagship.add(statusOfFlagship);
+            }
+          }
+        }
+
+        boolean tableComplete = false;
+
+        if (statusOfEveryFlagship == null || statusOfEveryFlagship.isEmpty()) {
+          tableComplete = true;
+        } else {
+          // If there are section status objects with missing information
+          for (SectionStatus sectionStatus : statusOfEveryFlagship) {
+            if ((sectionStatus != null && sectionStatus.getId() != null && sectionStatus.getMissingFields() != null
+              && !sectionStatus.getMissingFields().isEmpty() && sectionStatus.getId() != 0)) {
+              if (sectionStatus.getReportSynthesis().getLiaisonInstitution().getName().contains("PMU")) {
+
+                // If section status is from PMU - missing fields is set to empty
+                if (sectionStatus.getMissingFields() != null && !sectionStatus.getMissingFields().isEmpty()) {
+                  sectionStatus.setMissingFields("");
+                  sectionStatusManager.saveSectionStatus(sectionStatus);
+                }
+              } else {
+                // If section status is from flagship
+                tableComplete = false;
+                action.addMissingField("synthesis.AR2019Table5");
+                action.addMessage("Flagships with missing information :" + flagshipsWithMisingInformation);
+              }
             }
           }
         }
@@ -130,12 +216,14 @@ public class OutcomeMilestonesValidator extends BaseValidator {
         action.addActionMessage(
           " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
       }
-
-      this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
-        action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
-        ReportSynthesis2018SectionStatusEnum.OUTOMESMILESTONES.getStatus(), action);
+      try {
+        this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
+          action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
+          ReportSynthesis2018SectionStatusEnum.OUTOMESMILESTONES.getStatus(), action);
+      } catch (Exception e) {
+        LOG.error("Error getting innovations list: " + e.getMessage());
+      }
     }
-
   }
 
   private void validateCrossCuttingMarkers(BaseAction action,
@@ -173,7 +261,6 @@ public class OutcomeMilestonesValidator extends BaseValidator {
       action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
         + "].milestones[" + j + "].markers[" + k + "].focus.id", InvalidFieldsMessages.EMPTYFIELD);
     }
-
   }
 
   public void validateMilestones(BaseAction action, ReportSynthesisFlagshipProgressOutcomeMilestone milestone, int i,
@@ -186,12 +273,12 @@ public class OutcomeMilestonesValidator extends BaseValidator {
       action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
         + "].milestones[" + j + "].milestonesStatus", InvalidFieldsMessages.EMPTYFIELD);;
     } else {
-      if (milestone.getMilestonesStatus().getId() != 1) {
+      // status 3 = COMPLETED
+      if (milestone.getMilestonesStatus().getId() != 3) {
         // Validate Milestone Reasons
         if (milestone.getReason() != null) {
-
           if (milestone.getReason().getId() != null && milestone.getReason().getId() != -1) {
-
+            // reason 7 = OTHER
             if (milestone.getReason().getId() == 7) {
               // Validate Other Reason
               if (!this.isValidString(milestone.getOtherReason())) {
@@ -222,17 +309,18 @@ public class OutcomeMilestonesValidator extends BaseValidator {
     }
 
     // Validate Milestone Evidence
-    if (!this.isValidString(milestone.getEvidence())
-      && this.wordCount(this.removeHtmlTags(milestone.getEvidence())) <= 50) {
-      action.addMessage(action.getText("Evidence"));
-      action.addMissingField(
-        "input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i + "].milestones[" + j + "].evidence");
-      action.getInvalidFields().put(
-        "input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i + "].milestones[" + j + "].evidence",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
-
-
+    /*
+     * if (milestone.getEvidence() != null && !milestone.getEvidence().isEmpty()) {
+     * if (this.wordCount(this.removeHtmlTags(milestone.getEvidence())) <= 200) {
+     * action.addMessage(action.getText("Evidence"));
+     * action.addMissingField("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
+     * + "].milestones[" + j + "].evidence");
+     * action.getInvalidFields().put(
+     * "input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i + "].milestones[" + j + "].evidence",
+     * InvalidFieldsMessages.EMPTYFIELD);
+     * }
+     * }
+     */
     // Validate Cross Cutting
     if (milestone.getMarkers() == null || milestone.getMarkers().isEmpty()) {
       action.addMessage(action.getText("crossCuttingMarkers"));
@@ -264,6 +352,80 @@ public class OutcomeMilestonesValidator extends BaseValidator {
     }
 
 
+  }
+
+  public void validatePMU(BaseAction action, ReportSynthesis reportSynthesis, boolean saving) {
+    action.setInvalidFields(new HashMap<>());
+    if (reportSynthesis != null) {
+      if (!saving) {
+        Path path = this.getAutoSaveFilePath(reportSynthesis, action.getCrpID(), action);
+        if (path.toFile().exists()) {
+          action.addMissingField("draft");
+        }
+      }
+
+      // Validate Flagships
+      // sectionStatusManager.
+
+      boolean tableComplete = false;
+      SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
+        "Reporting", 2019, false, "outomesMilestones");
+
+      if (sectionStatus == null) {
+        tableComplete = true;
+        // sectionStatusManager.deleteSectionStatus(sectionStatusID);
+      } else if (sectionStatus != null && sectionStatus.getMissingFields() != null
+        && sectionStatus.getMissingFields().length() != 0) {
+        if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table5") && sectionStatus.getId() != 0) {
+          sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+          tableComplete = true;
+        } else {
+          tableComplete = false;
+        }
+      } else {
+        tableComplete = true;
+        if (sectionStatus.getId() != 0) {
+          sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+        }
+      }
+
+      if (tableComplete == false) {
+        // action.addMessage(action.getText("Incomplete Outcomes and Milestones"));
+        action.addMissingField("synthesis.AR2019Table5");
+      }
+
+      /*
+       * action.addMessage(action.getText("Title"));
+       * action.addMissingField("projectPolicy.title");
+       * action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList.summary",
+       * InvalidFieldsMessages.EMPTYFIELD);
+       */
+
+      if (!action.getFieldErrors().isEmpty()) {
+        action.addActionError(action.getText("saving.fields.required"));
+      } else if (action.getValidationMessage().length() > 0) {
+        action.addActionMessage(
+          " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
+      }
+
+
+      try {
+        this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
+          action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
+          ReportSynthesis2018SectionStatusEnum.OUTOMESMILESTONES.getStatus(), action);
+      } catch (Exception e) {
+        LOG.error("Error getting innovations list: " + e.getMessage());
+      }
+    }
+
+  }
+
+  public void validateTable5(BaseAction action, List<String> missingFieldsList) {
+    if (missingFieldsList != null) {
+      for (String missingField : missingFieldsList) {
+        action.addMessage(missingField);
+      }
+    }
   }
 
 

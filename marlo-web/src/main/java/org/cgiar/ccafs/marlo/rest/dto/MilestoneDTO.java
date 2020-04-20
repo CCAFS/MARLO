@@ -27,9 +27,9 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class MilestoneDTO {
 
-  @ApiModelProperty(notes = "Id of milestone")
+  @ApiModelProperty(notes = "Composed Id of milestone")
   @NotNull
-  private Long id;
+  private String id;
 
   @ApiModelProperty(notes = "Milestone title")
   @NotNull
@@ -47,8 +47,8 @@ public class MilestoneDTO {
   @ApiModelProperty(notes = "Outcome of the milestone")
   private OutcomeDTO outcomeDTO;
 
-  public Long getId() {
-    return this.id;
+  public String getId() {
+    return id;
   }
 
   public OutcomeDTO getOutcomeDTO() {
@@ -71,7 +71,7 @@ public class MilestoneDTO {
     return this.year;
   }
 
-  public void setId(Long id) {
+  public void setId(String id) {
     this.id = id;
   }
 

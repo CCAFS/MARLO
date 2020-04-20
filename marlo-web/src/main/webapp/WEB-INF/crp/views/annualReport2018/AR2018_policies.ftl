@@ -9,10 +9,10 @@
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
-  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js",
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20200311",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js"
 ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20190621"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20200416"] /]
 
 [#assign breadCrumb = [
   {"label":"${currentSection}",   "nameSpace":"",             "action":""},
@@ -56,27 +56,63 @@
             </div>
             <br />
             <div class="form-group row">
-              <div class="col-md-4">
+              <div class="col-md-5">
                 <div class="simpleBox numberBox">
                   <label for="">[@s.text name="${customLabel}.indicatorI1.totalPolicies" /]</label><br />
                   <span class="animated infinite bounce">${(((total)!0)?number?string(",##0"))!0}</span>
                 </div>
-                [#-- Chart 7 - Level of maturity --]
-                <div id="chart7" class="chartBox simpleBox">
-                  <ul class="chartData" style="display:none">
+                [#-- Chart 7 - Level of maturity --][#--
+                <div  class="chartBox simpleBox">
+                Policies Level of Maturity
+                <center><img src="${baseUrlCdn}/global/images/ComingSoon-charts.png" height="130"></center>
+                </div>--]
+                 <div id="chart7" class="chartBox simpleBox">
+                   <ul class="chartData" style="display:none">
                     <li>
-                      <span> </span>
-                      <span> </span>
+                      <span></span>
+                      [#list (policiesByRepIndStageProcessDTOs)![] as data]
+                        [#if data.repIndStageProcess.name?contains("Level")]    
+                            <span>${data.repIndStageProcess.name}</span>
+                            <span class="json">{"role":"annotation"}</span> 
+                        [/#if]                    
+                      [/#list] 
                     </li>
+                    <li>
+                      <span></span>
+                      [#list (policiesByRepIndStageProcessDTOs)![] as data]
+                        [#if data.repIndStageProcess.name?contains("Level")]
+                          <span class="number">${data.projectPolicies?size}</span>
+                          <span>${data.projectPolicies?size}</span>
+                        [/#if]  
+                      [/#list]
+                    </li>
+                    [#--
+                    <li>
+                      <span></span>
+                      <span></span>
+                      <span class="json">{"role":"annotation"}</span>
+                      <span class="json">{"role":"style"}</span>
+                    </li>
+                       
                     [#list (policiesByRepIndStageProcessDTOs)![] as data]
-                      <li><span>${data.repIndStageProcess.name}</span><span class="number">${data.projectPolicies?size}</span></li>
+                      <li>
+                        <span>${data.repIndStageProcess.name}</span>
+                        <span class="number">${data.projectPolicies?size}</span>
+                        <span>${data.projectPolicies?size}</span>
+                      </li>
                     [/#list]
+                    --]
                   </ul>
                 </div> 
               </div>
-              <div class="col-md-8">
-                [#-- Chart 6 - Organizations designing/promulgating the policy --]
-                <div id="chart6" class="chartBox simpleBox">
+              
+              <div class="col-md-7">
+              [#--<div class="chartBox simpleBox">
+              Policies by Type
+                <center><img src="${baseUrlCdn}/global/images/ComingSoon-charts.png" height="180"></center>
+              </div>--]
+                [#-- Chart 6 - Policies by type --]
+                 <div id="chart6" class="chartBox simpleBox">
                   <ul class="chartData" style="display:none">
                     <li>
                       <span>[@s.text name="${customLabel}.indicatorI1.chart1.0" /]</span>
@@ -84,17 +120,15 @@
                       <span class="json">{"role":"style"}</span>
                       <span class="json">{"role":"annotation"}</span>
                     </li>
-                    [#list (policiesByOrganizationTypeDTOs)![] as data]
-                      [#assign policiesSize = (data.projectPolicies?size) /]
-                      [#if  policiesSize > 0]
+                                        
+                    [#list (policiesByRepIndInvestimentTypeDTOs)![] as data]
                       <li>
-                        <span>${(data.repIndOrganizationType.name)!}</span>
-                        <span class="number">${data.projectPolicies?size}</span>
-                        <span>#4285f4</span>
-                        <span>${data.projectPolicies?size}</span>
-                      </li>
-                      [/#if]
-                    [/#list]
+                          <span>${(data.repIndPolicyInvestimentType.name)!}</span>
+                          <span class="number">${data.projectPolicies?size}</span>
+                          <span>#1773b8</span>
+                          <span>${data.projectPolicies?size}</span>
+                      </li> 
+                    [/#list]          
                   </ul>
                 </div> 
               </div>
@@ -171,6 +205,9 @@
         <th class="text-center" rowspan="${rows}">Evidence(s)</th>
         [/#if]
         [#if !expanded]
+        [#-- Complete Status    --]
+        <th class="col-md-1 text-center no-sort" rowspan="${rows}">[@s.text name="${customLabel}.table2.missingFields" /]</th>
+     
         <th class="col-md-1 text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.includeAR" /]</th>
         [/#if]        
       </tr>
@@ -201,8 +238,8 @@
               [/#list]
             </div>
             [/#if]
-            
-            <a href="${url}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
+            [#if !expanded] [@oicrPopup element=item /] [/#if]
+            <a href="${url}" target="_blank" class="pull-right mt-1">[@s.text name="${customLabel}.table2.linkToPolicy" /] <span class="glyphicon glyphicon-new-window"></span></a>
           </td>
           [#-- Description --]
           <td class="text-center">[@utils.tableText value=(item.projectPolicyInfo.description)!"" /]</td>         
@@ -261,7 +298,18 @@
               [/#list]
             </td>
           [/#if]
+          
           [#if !expanded]
+          [#-- Complete Status--]
+          <td class="text-center">
+          [#-- Is Complete --]
+          [#assign isPolicyComplete = action.isPolicyComplete(item.id, actualPhase.id) /]
+           [#if isPolicyComplete]
+              <span class="glyphicon glyphicon-ok-sign mf-icon check" title="Complete"></span> 
+              [#else]
+                <span class="glyphicon glyphicon-exclamation-sign mf-icon" title="Incomplete"></span> 
+            [/#if]   
+          </td>
           <td class="text-center">
             [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.policiesIds?seq_contains(item.id))!true) /]
             <div class="hidden">${isChecked?string}</div>
@@ -273,6 +321,9 @@
     [#else]
       <tr>
         [#if !expanded]
+         [#-- Complete Status
+         <td class="text-center" colspan="6"><i>No entries added yet.</i></td>
+         --]
          <td class="text-center" colspan="5"><i>No entries added yet.</i></td>
         [#else]
          <td class="text-center" colspan="12"><i>No entries added yet.</i></td>
@@ -282,6 +333,58 @@
     </tbody>
   </table>
 
+[/#macro]
+
+[#macro oicrPopup element tiny=false]
+  [#local totalContributions = (element.evidences?size)!0 ]
+  
+  [#if element.evidences?has_content]
+    <br /> 
+    <button type="button" class="policiesOicrsButton btn btn-default btn-xs" data-toggle="modal" data-target="#policiesOicrs-${element.id}">
+      <span class="icon-20 project"></span> <strong>${totalContributions}</strong> [#if !tiny][@s.text name="${customLabel}.table2.linkToOicrs" /][/#if]
+    </button>
+    <!-- Modal -->
+    <div class="modal fade" id="policiesOicrs-${element.id}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">
+              [@s.text name="${customLabel}.table2.policiesOicrs" /]
+            </h4>
+          </div>
+          <div class="modal-body">
+            <div class="">            
+              [#-- OICRs --]
+              <h4 class="simpleTitle">[@s.text name="${customLabel}.table2.policiesOicrs.oicrs" /]</h4>
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th id="ids">[@s.text name="${customLabel}.table2.policiesOicrs.id" /]</th>
+                      <th id="policyTitles">[@s.text name="${customLabel}.table2.policiesOicrs.oicrName" /]</th>
+                      <th id="policyMaturityLevel">[@s.text name="${customLabel}.table2.policiesOicrs.maturityLevel" /]</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    [#list element.evidences as oicr]
+                      [#local oicrUrl][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${oicr.projectExpectedStudy.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                      <tr>
+                        <th scope="row" class="col-md-1">${oicr.projectExpectedStudy.id}</th>
+                        <td>${(oicr.projectExpectedStudy.composedName)!'Untitled'}</td>
+                        <td>${(oicr.projectExpectedStudy.projectExpectedStudyInfo.repIndStageStudy.name)!'Undefined'}</td>
+                        <td class="col-md-2 text-center"> <a href="${oicrUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
+                      </tr>
+                      [/#list]
+                  </tbody>
+                </table>           
+            </div>
+          </div>
+          <div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div>
+        </div>
+      </div>
+    </div>
+  [/#if]
 [/#macro]
 
 [#function getMarker element name]

@@ -1384,7 +1384,7 @@ public class PartnershipsAction extends BaseAction {
           .filter(nu -> nu.isActive()).collect(Collectors.toList()));
 
       for (ReportSynthesisKeyPartnershipExternalMainArea area : areaPrev) {
-        if (!external.getMainAreas().contains(area)) {
+        if (external.getMainAreas() == null || !external.getMainAreas().contains(area)) {
           reportSynthesisKeyPartnershipExternalMainAreaManager
             .deleteReportSynthesisKeyPartnershipExternalMainArea(area.getId());
         }

@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressDeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
+import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
@@ -40,6 +41,7 @@ import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressDeliverable;
+import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -82,6 +84,7 @@ public class PublicationsAction extends BaseAction {
   private ProjectManager projectManager;
   private ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager;
   private ReportSynthesisFlagshipProgressDeliverableManager reportSynthesisFlagshipProgressDeliverableManager;
+  private SectionStatusManager sectionStatusManager;
 
   // Variables
   private String transaction;
@@ -106,7 +109,8 @@ public class PublicationsAction extends BaseAction {
     AuditLogManager auditLogManager, UserManager userManager, Publications2018Validator validator,
     CrpProgramManager crpProgramManager, DeliverableManager deliverableManager, ProjectFocusManager projectFocusManager,
     ProjectManager projectManager, ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
-    ReportSynthesisFlagshipProgressDeliverableManager reportSynthesisFlagshipProgressDeliverableManager) {
+    ReportSynthesisFlagshipProgressDeliverableManager reportSynthesisFlagshipProgressDeliverableManager,
+    SectionStatusManager sectionStatusManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -120,6 +124,8 @@ public class PublicationsAction extends BaseAction {
     this.projectManager = projectManager;
     this.reportSynthesisFlagshipProgressManager = reportSynthesisFlagshipProgressManager;
     this.reportSynthesisFlagshipProgressDeliverableManager = reportSynthesisFlagshipProgressDeliverableManager;
+    this.sectionStatusManager = sectionStatusManager;
+
   }
 
 
@@ -311,6 +317,67 @@ public class PublicationsAction extends BaseAction {
     return isFP;
 
   }
+
+  /**
+   * This method get the status of an specific publication depending of the
+   * sectionStatuses
+   *
+   * @param deliverableID is the deliverable to be identified.
+   * @return Boolean object with the status of the study
+   */
+  public Boolean isPublicationComplete(long deliverableID, long phaseID) {
+
+    SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByDeliverable(deliverableID, "Reporting",
+      this.getActualPhase().getYear(), false, "deliverableList");
+    int count = 0;
+    if (sectionStatus != null && sectionStatus.getMissingFields() != null
+      && sectionStatus.getMissingFields().length() != 0) {
+      // count++;
+
+      // Volume
+      if (sectionStatus.getMissingFields().contains("Volume")) {
+        count++;
+      }
+
+      // Issue
+      if (sectionStatus.getMissingFields().contains("Issue")) {
+        count++;
+      }
+
+      // Page
+      if (sectionStatus.getMissingFields().contains("Pages")) {
+        count++;
+      }
+
+      // Journal
+      if (sectionStatus.getMissingFields().contains("Journal")) {
+        count++;
+      }
+
+      // ISI
+      if (sectionStatus.getMissingFields().contains("Is this journal article an ISI publication?")) {
+        count++;
+      }
+
+    }
+
+    if (count == 0) {
+      return true;
+    } else {
+      return false;
+    }
+
+    /*
+     * if (sectionStatus == null) {
+     * return true;
+     * }
+     * if (sectionStatus.getMissingFields().length() != 0) {
+     * return false;
+     * }
+     */
+    // return true;
+  }
+
 
   @Override
   public String next() {
@@ -548,7 +615,6 @@ public class PublicationsAction extends BaseAction {
     }
 
   }
-
 
   @Override
   public String save() {

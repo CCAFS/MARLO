@@ -17,9 +17,11 @@ package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.policies;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CgiarCrossCuttingMarkerManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.PolicyMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCrossCuttingMarkerManager;
@@ -38,10 +40,12 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndPolicyTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageProcessManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
+import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.PolicyMilestone;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCountry;
@@ -63,11 +67,12 @@ import org.cgiar.ccafs.marlo.rest.dto.CGIAREntityDTO;
 import org.cgiar.ccafs.marlo.rest.dto.CountryDTO;
 import org.cgiar.ccafs.marlo.rest.dto.CrosscuttingMarkersDTO;
 import org.cgiar.ccafs.marlo.rest.dto.GeographicScopeDTO;
+import org.cgiar.ccafs.marlo.rest.dto.NewMilestonesDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectPolicyDTO;
+import org.cgiar.ccafs.marlo.rest.dto.NewSrfSubIdoDTO;
 import org.cgiar.ccafs.marlo.rest.dto.PolicyOwnerTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectPolicyDTO;
 import org.cgiar.ccafs.marlo.rest.dto.RegionDTO;
-import org.cgiar.ccafs.marlo.rest.dto.SrfSubIdoDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
 import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
 import org.cgiar.ccafs.marlo.rest.mappers.ProjectPolicyMapper;
@@ -111,6 +116,8 @@ public class PolicyItem<T> {
   private ProjectPolicyMapper projectPolicyMapper;
   private CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager;
   private RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager;
+  private PolicyMilestoneManager policyMilestoneManager;
+  private CrpMilestoneManager crpMilestoneManager;
 
   @Inject
   public PolicyItem(GlobalUnitManager globalUnitManager, PhaseManager phaseManager,
@@ -125,7 +132,8 @@ public class PolicyItem<T> {
     RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager,
     ProjectPolicyCountryManager projectPolicyCountryManager, ProjectPolicyRegionManager projectPolicyRegionManager,
     ProjectPolicyCrossCuttingMarkerManager projectPolicyCrossCuttingMarkerManager,
-    ProjectPolicyOwnerManager projectPolicyOwnerManager, RepIndPolicyTypeManager repIndPolicyTypeManager) {
+    ProjectPolicyOwnerManager projectPolicyOwnerManager, RepIndPolicyTypeManager repIndPolicyTypeManager,
+    PolicyMilestoneManager policyMilestoneManager, CrpMilestoneManager crpMilestoneManager) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.projectPolicyManager = projectPolicyManager;
@@ -148,6 +156,8 @@ public class PolicyItem<T> {
     this.projectPolicyCrossCuttingMarkerManager = projectPolicyCrossCuttingMarkerManager;
     this.projectPolicyOwnerManager = projectPolicyOwnerManager;
     this.repIndPolicyTypeManager = repIndPolicyTypeManager;
+    this.policyMilestoneManager = policyMilestoneManager;
+    this.crpMilestoneManager = crpMilestoneManager;
   }
 
   public Long createPolicy(NewProjectPolicyDTO newPolicyDTO, String entityAcronym, User user) {
@@ -161,6 +171,7 @@ public class PolicyItem<T> {
     List<ProjectPolicyRegion> projectPolicyRegionList = new ArrayList<ProjectPolicyRegion>();
     List<ProjectPolicyCrossCuttingMarker> ProjectPolicyCrossCuttingMarkerList =
       new ArrayList<ProjectPolicyCrossCuttingMarker>();
+    List<PolicyMilestone> policyMilestones = new ArrayList<>();
     List<ProjectPolicyOwner> projectPolicyOwnerList = new ArrayList<ProjectPolicyOwner>();
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
@@ -237,17 +248,45 @@ public class PolicyItem<T> {
         }
         // validate sub-IDO
         if (newPolicyDTO.getSrfSubIdoList() != null && newPolicyDTO.getSrfSubIdoList().size() > 0) {
-          for (SrfSubIdoDTO subIdos : newPolicyDTO.getSrfSubIdoList()) {
-            SrfSubIdo srfSubIdo = srfSubIdoManager.getSrfSubIdoByCode(subIdos.getCode());
+          for (NewSrfSubIdoDTO subIdos : newPolicyDTO.getSrfSubIdoList()) {
+            SrfSubIdo srfSubIdo = srfSubIdoManager.getSrfSubIdoByCode(subIdos.getSubIdo());
             if (srfSubIdo == null) {
-              fieldErrors
-                .add(new FieldErrorDTO("createPolicy", "SrfSubIdo", subIdos.getCode() + " is an invalid Sub-IDO code"));
+              fieldErrors.add(
+                new FieldErrorDTO("createPolicy", "SrfSubIdo", subIdos.getSubIdo() + " is an invalid Sub-IDO code"));
             } else {
               ProjectPolicySubIdo projectPolicySubIdo = new ProjectPolicySubIdo();
               projectPolicySubIdo.setProjectPolicy(projectPolicy);
               projectPolicySubIdo.setPhase(phase);
               projectPolicySubIdo.setSrfSubIdo(srfSubIdo);
+              if (subIdos.getPrimary() != null && subIdos.getPrimary()) {
+                projectPolicySubIdo.setPrimary(subIdos.getPrimary());
+              } else {
+                projectPolicySubIdo.setPrimary(false);
+              }
               projectPolicySubIdoList.add(projectPolicySubIdo);
+            }
+          }
+        }
+        // validate milestones
+        if (newPolicyDTO.getMilestonesDTOs() != null && !newPolicyDTO.getMilestonesDTOs().isEmpty()) {
+          for (NewMilestonesDTO milestones : newPolicyDTO.getMilestonesDTOs()) {
+            if (milestones != null && !milestones.getMilestone().trim().isEmpty()) {
+              CrpMilestone crpMilestone =
+                crpMilestoneManager.getCrpMilestoneByPhase(milestones.getMilestone().trim(), phase.getId());
+              if (crpMilestone != null) {
+                PolicyMilestone policyMilestone = new PolicyMilestone();
+                policyMilestone.setCrpMilestone(crpMilestone);
+                policyMilestone.setPhase(phase);
+                if (milestones.getPrimary() != null && milestones.getPrimary()) {
+                  policyMilestone.setPrimary(milestones.getPrimary());
+                } else {
+                  policyMilestone.setPrimary(false);
+                }
+                policyMilestones.add(policyMilestone);
+              } else {
+                fieldErrors.add(new FieldErrorDTO("createPolicy", "Milestone",
+                  milestones.getMilestone() + " is an invalid CrpMilestone identifier"));
+              }
             }
           }
         }
@@ -370,6 +409,11 @@ public class PolicyItem<T> {
               projectPolicySubIdoManager.saveProjectPolicySubIdo(projectPolicySubIdo);
             }
 
+            for (PolicyMilestone policyMilestone : policyMilestones) {
+              policyMilestone.setPolicy(projectPolicy);
+              policyMilestoneManager.savePolicyMilestone(policyMilestone);
+            }
+
             for (ProjectPolicyGeographicScope projectPolicyGeographicScope : projectPolicyGeographicScopeList) {
               projectPolicyGeographicScope.setProjectPolicy(projectPolicy);
               projectPolicyGeographicScopeManager.saveProjectPolicyGeographicScope(projectPolicyGeographicScope);
@@ -405,6 +449,7 @@ public class PolicyItem<T> {
 
     // Validate all fields
     if (!fieldErrors.isEmpty()) {
+      fieldErrors.stream().forEach(f -> System.out.println(f.getMessage()));
       throw new MARLOFieldValidationException("Field Validation errors", "",
         fieldErrors.stream()
           .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
@@ -424,6 +469,7 @@ public class PolicyItem<T> {
   public ResponseEntity<ProjectPolicyDTO> deletePolicyById(Long id, String CGIARentityAcronym, Integer repoYear,
     String repoPhase, User user) {
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+
     Phase phase =
       this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
         && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().get();
@@ -431,16 +477,19 @@ public class PolicyItem<T> {
       fieldErrors.add(new FieldErrorDTO("createPolicy", "phase",
         new NewProjectPolicyDTO().getPhase().getYear() + " is an invalid year"));
     }
+
     ProjectPolicy projectPolicy = projectPolicyManager.getProjectPolicyById(id.longValue());
     if (projectPolicy != null) {
       if (projectPolicy.getProjectPolicyInfo() != null) {
         projectPolicy.getProjectPolicyInfo(phase);
         projectPolicy = this.getPolicyInfoPhase(projectPolicy, phase);
       }
+
       projectPolicyManager.deleteProjectPolicy(id);
     } else {
       fieldErrors.add(new FieldErrorDTO("deletePolicy", "Policies", id + " is an invalid policy Code"));
     }
+
     if (!fieldErrors.isEmpty()) {
       throw new MARLOFieldValidationException("Field Validation errors", "",
         fieldErrors.stream()
@@ -457,11 +506,13 @@ public class PolicyItem<T> {
     List<ProjectPolicyDTO> policyList = new ArrayList<ProjectPolicyDTO>();
     List<ProjectPolicy> projectPolicyList = new ArrayList<ProjectPolicy>();
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
     if (globalUnitEntity == null) {
       fieldErrors.add(new FieldErrorDTO("createInnovation", "GlobalUnitEntity",
         CGIARentityAcronym + " is an invalid CGIAR entity acronym"));
     }
+
     Phase phase =
       this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
         && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().get();
@@ -469,6 +520,7 @@ public class PolicyItem<T> {
       fieldErrors.add(new FieldErrorDTO("createPolicy", "phase",
         new NewProjectPolicyDTO().getPhase().getYear() + " is an invalid year"));
     }
+
     if (!fieldErrors.isEmpty()) {
       throw new MARLOFieldValidationException("Field Validation errors", "",
         fieldErrors.stream()
@@ -484,9 +536,11 @@ public class PolicyItem<T> {
         projectPolicy = this.getPolicyInfoPhase(projectPolicy, phase);
         projectPolicyList.add(projectPolicy);
       }
+
     }
-    policyList = projectPolicyList.stream()
-      .map(policy -> this.projectPolicyMapper.projectPolicyToProjectPolicyDTO(policy)).collect(Collectors.toList());
+
+    policyList = projectPolicyList.stream().map(this.projectPolicyMapper::projectPolicyToProjectPolicyDTO)
+      .collect(Collectors.toList());
     return policyList;
   }
 
@@ -495,6 +549,7 @@ public class PolicyItem<T> {
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
     ProjectPolicy projectPolicy = projectPolicyManager.getProjectPolicyById(id.longValue());
+
     Phase phase =
       this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
         && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().get();
@@ -509,6 +564,7 @@ public class PolicyItem<T> {
       fieldErrors.add(new FieldErrorDTO("findPolicy", "GlobalUnitEntity",
         CGIARentityAcronym + " is not an invalid CGIAR entity acronym"));
     }
+
     if (phase == null) {
       fieldErrors.add(new FieldErrorDTO("findPolicy", "phase", repoYear + " is an invalid year"));
     }
@@ -534,8 +590,8 @@ public class PolicyItem<T> {
   }
 
   public ProjectPolicy getPolicyInfoPhase(ProjectPolicy projectPolicy, Phase phase) {
-    final long projectPolicyID = projectPolicy.getId().longValue();
     if (projectPolicy != null) {
+      final long projectPolicyID = projectPolicy.getId().longValue();
       projectPolicy.getProjectPolicyInfo(phase);
 
       // Setting Geographic Scope
@@ -557,6 +613,13 @@ public class PolicyItem<T> {
       projectPolicy.setSubIdos(projectPolicySubIdoManager.findAll().stream()
         .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicyID
           && c.getPhase().getId().longValue() == phase.getId().longValue())
+        .collect(Collectors.toList()));
+      // Setting Milestones
+      projectPolicy.setMilestones(policyMilestoneManager.findAll().stream()
+        .filter(c -> c.getPolicy().getId().longValue() == projectPolicyID && c.getPhase().getId() == phase.getId())
+        .collect(Collectors.toList()));
+      System.out.println(policyMilestoneManager.findAll().stream()
+        .filter(c -> c.getPolicy().getId().longValue() == projectPolicyID && c.getPhase().getId() == phase.getId())
         .collect(Collectors.toList()));
       // setting countries
       projectPolicy.setCountries(projectPolicyCountryManager.findAll().stream()
@@ -596,6 +659,7 @@ public class PolicyItem<T> {
     List<ProjectPolicyRegion> projectPolicyRegionList = new ArrayList<ProjectPolicyRegion>();
     List<ProjectPolicyCrossCuttingMarker> ProjectPolicyCrossCuttingMarkerList =
       new ArrayList<ProjectPolicyCrossCuttingMarker>();
+    List<PolicyMilestone> policyMilestones = new ArrayList<>();
     List<ProjectPolicyOwner> projectPolicyOwnerList = new ArrayList<ProjectPolicyOwner>();
 
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
@@ -609,11 +673,11 @@ public class PolicyItem<T> {
           && c.getYear() == newPolicyDTO.getPhase().getYear()
           && c.getName().equalsIgnoreCase(newPolicyDTO.getPhase().getName()))
         .findFirst().get();
-
     if (phase == null) {
       fieldErrors.add(new FieldErrorDTO("createPolicy", "phase",
         new NewProjectPolicyDTO().getPhase().getYear() + " is an invalid year"));
     }
+
     ProjectPolicy projectPolicy = null;
     if (fieldErrors.size() == 0) {
       projectPolicy = projectPolicyManager.getProjectPolicyById(id.longValue());
@@ -646,17 +710,45 @@ public class PolicyItem<T> {
         }
         // validate sub-IDO
         if (newPolicyDTO.getSrfSubIdoList() != null && newPolicyDTO.getSrfSubIdoList().size() > 0) {
-          for (SrfSubIdoDTO subIdos : newPolicyDTO.getSrfSubIdoList()) {
-            SrfSubIdo srfSubIdo = srfSubIdoManager.getSrfSubIdoByCode(subIdos.getCode());
+          for (NewSrfSubIdoDTO subIdos : newPolicyDTO.getSrfSubIdoList()) {
+            SrfSubIdo srfSubIdo = srfSubIdoManager.getSrfSubIdoByCode(subIdos.getSubIdo());
             if (srfSubIdo == null) {
-              fieldErrors
-                .add(new FieldErrorDTO("createPolicy", "SrfSubIdo", subIdos.getCode() + " is an invalid Sub-IDO code"));
+              fieldErrors.add(
+                new FieldErrorDTO("createPolicy", "SrfSubIdo", subIdos.getSubIdo() + " is an invalid Sub-IDO code"));
             } else {
               ProjectPolicySubIdo projectPolicySubIdo = new ProjectPolicySubIdo();
               projectPolicySubIdo.setProjectPolicy(projectPolicy);
               projectPolicySubIdo.setPhase(phase);
               projectPolicySubIdo.setSrfSubIdo(srfSubIdo);
+              if (subIdos.getPrimary() != null && subIdos.getPrimary()) {
+                projectPolicySubIdo.setPrimary(subIdos.getPrimary());
+              } else {
+                projectPolicySubIdo.setPrimary(false);
+              }
               projectPolicySubIdoList.add(projectPolicySubIdo);
+            }
+          }
+        }
+        // validate milestones
+        if (newPolicyDTO.getMilestonesDTOs() != null && !newPolicyDTO.getMilestonesDTOs().isEmpty()) {
+          for (NewMilestonesDTO milestones : newPolicyDTO.getMilestonesDTOs()) {
+            if (milestones != null && !milestones.getMilestone().trim().isEmpty()) {
+              CrpMilestone crpMilestone =
+                crpMilestoneManager.getCrpMilestoneByPhase(milestones.getMilestone().trim(), phase.getId());
+              if (crpMilestone != null) {
+                PolicyMilestone policyMilestone = new PolicyMilestone();
+                policyMilestone.setCrpMilestone(crpMilestone);
+                policyMilestone.setPhase(phase);
+                if (milestones.getPrimary() != null && milestones.getPrimary()) {
+                  policyMilestone.setPrimary(milestones.getPrimary());
+                } else {
+                  policyMilestone.setPrimary(false);
+                }
+                policyMilestones.add(policyMilestone);
+              } else {
+                fieldErrors.add(new FieldErrorDTO("createPolicy", "Milestone",
+                  milestones.getMilestone() + " is an invalid CrpMilestone identifier"));
+              }
             }
           }
         }
@@ -808,6 +900,30 @@ public class PolicyItem<T> {
         for (ProjectPolicySubIdo obj : projectPolicySubIdoListDB) {
           if (!existingProjectPolicySubIdoList.contains(obj)) {
             projectPolicySubIdoManager.deleteProjectPolicySubIdo(obj.getId());
+          }
+        }
+
+        // *************Policy Milestone*****************/
+        List<PolicyMilestone> policyMilestoneDB =
+          policyMilestoneManager.findAll().stream().filter(c -> c.getPolicy().getId().longValue() == projectPolicyID
+            && c.getPhase().getId().longValue() == phase.getId().longValue()).collect(Collectors.toList());
+        List<PolicyMilestone> existingPolicyMilestonesList = new ArrayList<>();
+        for (PolicyMilestone policyMilestone : policyMilestones) {
+          policyMilestone.setPolicy(projectPolicy);
+
+          PolicyMilestone temp =
+            policyMilestoneManager.findByCrpMilestonePolicyAndPhase(policyMilestone.getCrpMilestone().getId(),
+              policyMilestone.getPolicy().getId(), policyMilestone.getPhase().getId());
+          if (temp != null) {
+            existingPolicyMilestonesList.add(temp);
+          } else {
+            policyMilestoneManager.savePolicyMilestone(policyMilestone);
+          }
+        }
+        // verify deleted policy_milestones
+        for (PolicyMilestone obj : policyMilestoneDB) {
+          if (!existingPolicyMilestonesList.contains(obj)) {
+            policyMilestoneManager.deletePolicyMilestone(obj.getId());
           }
         }
 

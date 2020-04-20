@@ -29,19 +29,24 @@ public interface ReportSynthesisKeyPartnershipExternalInstitutionManager {
   /**
    * This method removes a specific reportSynthesisKeyPartnershipExternalInstitution value from the database.
    * 
-   * @param reportSynthesisKeyPartnershipExternalInstitutionId is the reportSynthesisKeyPartnershipExternalInstitution identifier.
+   * @param reportSynthesisKeyPartnershipExternalInstitutionId is the reportSynthesisKeyPartnershipExternalInstitution
+   *        identifier.
    * @return true if the reportSynthesisKeyPartnershipExternalInstitution was successfully deleted, false otherwise.
    */
-  public void deleteReportSynthesisKeyPartnershipExternalInstitution(long reportSynthesisKeyPartnershipExternalInstitutionId);
+  public void
+    deleteReportSynthesisKeyPartnershipExternalInstitution(long reportSynthesisKeyPartnershipExternalInstitutionId);
 
 
   /**
-   * This method validate if the reportSynthesisKeyPartnershipExternalInstitution identify with the given id exists in the system.
+   * This method validate if the reportSynthesisKeyPartnershipExternalInstitution identify with the given id exists in
+   * the system.
    * 
-   * @param reportSynthesisKeyPartnershipExternalInstitutionID is a reportSynthesisKeyPartnershipExternalInstitution identifier.
+   * @param reportSynthesisKeyPartnershipExternalInstitutionID is a reportSynthesisKeyPartnershipExternalInstitution
+   *        identifier.
    * @return true if the reportSynthesisKeyPartnershipExternalInstitution exists, false otherwise.
    */
-  public boolean existReportSynthesisKeyPartnershipExternalInstitution(long reportSynthesisKeyPartnershipExternalInstitutionID);
+  public boolean
+    existReportSynthesisKeyPartnershipExternalInstitution(long reportSynthesisKeyPartnershipExternalInstitutionID);
 
 
   /**
@@ -51,24 +56,39 @@ public interface ReportSynthesisKeyPartnershipExternalInstitutionManager {
    */
   public List<ReportSynthesisKeyPartnershipExternalInstitution> findAll();
 
-
   /**
-   * This method gets a reportSynthesisKeyPartnershipExternalInstitution object by a given reportSynthesisKeyPartnershipExternalInstitution identifier.
+   * This method finds a reportSynthesisKeyPartnershipExternalInstitution by its foreign keys
+   * (ReportSynthesisKeyPartnershipCollaboration and Institution)
    * 
-   * @param reportSynthesisKeyPartnershipExternalInstitutionID is the reportSynthesisKeyPartnershipExternalInstitution identifier.
    * @return a ReportSynthesisKeyPartnershipExternalInstitution object.
    */
-  public ReportSynthesisKeyPartnershipExternalInstitution getReportSynthesisKeyPartnershipExternalInstitutionById(long reportSynthesisKeyPartnershipExternalInstitutionID);
+
+  public ReportSynthesisKeyPartnershipExternalInstitution
+    getByPartnershipExternalIdAndInstitutionId(long partnershipExternalId, long institutionId);
+
+  /**
+   * This method gets a reportSynthesisKeyPartnershipExternalInstitution object by a given
+   * reportSynthesisKeyPartnershipExternalInstitution identifier.
+   * 
+   * @param reportSynthesisKeyPartnershipExternalInstitutionID is the reportSynthesisKeyPartnershipExternalInstitution
+   *        identifier.
+   * @return a ReportSynthesisKeyPartnershipExternalInstitution object.
+   */
+  public ReportSynthesisKeyPartnershipExternalInstitution
+    getReportSynthesisKeyPartnershipExternalInstitutionById(long reportSynthesisKeyPartnershipExternalInstitutionID);
 
   /**
    * This method saves the information of the given reportSynthesisKeyPartnershipExternalInstitution
    * 
-   * @param reportSynthesisKeyPartnershipExternalInstitution - is the reportSynthesisKeyPartnershipExternalInstitution object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the reportSynthesisKeyPartnershipExternalInstitution was
+   * @param reportSynthesisKeyPartnershipExternalInstitution - is the reportSynthesisKeyPartnershipExternalInstitution
+   *        object with the new information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         reportSynthesisKeyPartnershipExternalInstitution was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ReportSynthesisKeyPartnershipExternalInstitution saveReportSynthesisKeyPartnershipExternalInstitution(ReportSynthesisKeyPartnershipExternalInstitution reportSynthesisKeyPartnershipExternalInstitution);
+  public ReportSynthesisKeyPartnershipExternalInstitution saveReportSynthesisKeyPartnershipExternalInstitution(
+    ReportSynthesisKeyPartnershipExternalInstitution reportSynthesisKeyPartnershipExternalInstitution);
 
 
 }

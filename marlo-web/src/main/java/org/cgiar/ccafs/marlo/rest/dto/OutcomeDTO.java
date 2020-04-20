@@ -24,10 +24,11 @@ public class OutcomeDTO implements Serializable {
   private static final long serialVersionUID = 1L;
 
   @ApiModelProperty(notes = "Outcome id")
-  private Long id;
+  private String id;
 
   @ApiModelProperty(notes = "Outcome description")
   private String description;
+
 
   @ApiModelProperty(notes = "Target Year")
   private Integer year;
@@ -41,9 +42,6 @@ public class OutcomeDTO implements Serializable {
   @ApiModelProperty(notes = "Target value")
   private BigDecimal value;
 
-  // @ApiModelProperty(notes = "List of sub-idos")
-  // private List<SrfSubIdoDTO> subIdoDTOs;
-
   public String getDescription() {
     return this.description;
   }
@@ -52,8 +50,11 @@ public class OutcomeDTO implements Serializable {
     return this.flagshipProgramDTO;
   }
 
-  public Long getId() {
-    return this.id;
+  // @ApiModelProperty(notes = "List of sub-idos")
+  // private List<SrfSubIdoDTO> subIdoDTOs;
+
+  public String getId() {
+    return id;
   }
 
   public TargetUnitDTO getTargetUnitDTO() {
@@ -76,7 +77,7 @@ public class OutcomeDTO implements Serializable {
     this.flagshipProgramDTO = flagshipProgramDTO;
   }
 
-  public void setId(Long id) {
+  public void setId(String id) {
     this.id = id;
   }
 

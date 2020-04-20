@@ -837,7 +837,7 @@ img.icon {
 
 .removeElement.sm {
   padding: 9px 10px;
-  z-index: 1000;
+  /*z-index: 1000;*/
 }
 
 .removeIcon {
@@ -4390,6 +4390,14 @@ li.fileUploaded span {
   background: url('../../global/images/sprite-icons-activities.png') 0 -150px;
 }
 
+.mf-icon {
+  font-size: 20px;
+}
+
+.mf-icon.check {
+  color:#8EA786;
+}
+
 .icon-neutral {
   background: url('../../global/images/sprite-icons-activities.png') 0 -88px;
 }
@@ -6996,4 +7004,10 @@ div.selectPrimary{
 
 li.currentSection#bi::before{
   color: #127fa8;
+}
+
+.menuContent.positionFixedTop #bi::before{
+  font-size: 5px;
+  padding: 0.3em 2.5em 0.3em 2.5em;
+  border-radius: 0em 0em 0.3em 0.3em;
 }

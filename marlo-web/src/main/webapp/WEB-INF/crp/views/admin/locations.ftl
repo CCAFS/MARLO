@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Locations" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = [ "select2", "flat-flags" ] /]
+[#assign pageLibs = [ "select2", "flag-icon-css" ] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/admin/locations.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js" ] 
@@ -213,7 +213,7 @@
       <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> <span class="name">${(element.name)!'{name}'}</span><br />
       <span class="coordinates" title="${(element.locElement.name)!'Undefined'}"> [@utilities.wordCutter string=(element.locElement.name)!'Undefined' maxPos=15 /] (${(element.locGeoposition.latitude)!}, ${(element.locGeoposition.longitude)!})</span>
     [#else]
-      <span class="flag-icon"><i class="flag-sm flag-sm-${(element.locElement.isoAlpha2?upper_case)!}"></i></span> <span class="name">${(element.name)!'{name}'}</span><br />
+      <span class="flag-icon"><i class="flag-icon flag-icon-${(element.locElement.isoAlpha2?lower_case)!}"></i></span> <span class="name">${(element.name)!'{name}'}</span><br />
     [/#if]
     [#-- Hidden inputs --]
     <input type="hidden" class="locElementId" name="${locElementName}.id" value="${(element.id)!}"/>

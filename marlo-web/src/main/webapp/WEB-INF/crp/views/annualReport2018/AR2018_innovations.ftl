@@ -9,7 +9,7 @@
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
-  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js",
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20200310",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js"
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20190621"] /]
@@ -68,7 +68,7 @@
             
             <div class="form-group row">
               [#-- Chart 8 - Innovations by Type --]
-              <div class="col-md-5">
+              <div class="col-md-6">
                 <div id="chart8" class="chartBox simpleBox">
                   <ul class="chartData" style="display:none">
                     <li>
@@ -87,9 +87,9 @@
                 </div>
               </div>
               
+              
               [#-- Chart 9 - Innovations by Stage --]
-              <div class="col-md-7">
-                
+              <div class="col-md-6">
                  <div id="chart9" class="chartBox simpleBox">
                   <ul class="chartData" style="display:none">
                     <li>
@@ -181,6 +181,7 @@
             <th class="text-center"></th>
           [/#if]
           [#if !expanded]
+            <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.missingFields" /] </th>
             <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
           [/#if]
         </tr>
@@ -203,7 +204,14 @@
                 [/#list]
               </div>
               [/#if]
-              <a href="${url}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
+              [#local hasOicr = ((item.projectInnovationInfo.projectExpectedStudy?has_content)!false) /]
+              [#if !expanded && isStageFour && hasOicr]
+                <br />
+                [#local oicrUrl][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${item.projectInnovationInfo.projectExpectedStudy.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                <span>[@s.text name="${customLabel}.${name}.linkToOicr" /] <a href="${oicrUrl}" target="_blank">${(item.projectInnovationInfo.projectExpectedStudy.composedName)!'Untitled'}</span></a>
+              [/#if]
+              [#-- [#if !expanded] [@oicrPopup element=item isStageFour=true /] [/#if] --]
+              <a href="${url}" target="_blank" class="pull-right">[@s.text name="${customLabel}.${name}.linkToInnovation" /] <span class="glyphicon glyphicon-new-window"></span></a>
             </td>
             [#-- 3. Description of Innovation  --]
             [#if expanded]
@@ -235,7 +243,7 @@
               </td>
               [#-- 10. Evidence for Innovation --]
               <td class="text-center">
-                [#if isStageFour]
+                [#if isStageFour && ((item.projectInnovationInfo.projectExpectedStudy?has_content)!false)]
                   [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(item.projectInnovationInfo.projectExpectedStudy.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
                   <p>
                     <a href="${summaryPDF}" class="btn btn-default btn-xs" target="_blank" style="text-decoration: none;" title="${(item.projectInnovationInfo.projectExpectedStudy.composedName)!''}">
@@ -258,7 +266,15 @@
               </td>
             [/#if]
             [#if !expanded]
-            <td class="text-center">
+              <td class="text-center">
+              [#assign isInnovationComplete = action.isInnovationComplete(item.id, actualPhase.id) /]
+              [#if  isInnovationComplete]
+                <span class="glyphicon glyphicon-ok-sign mf-icon check" title="Complete"></span> 
+                [#else]
+                  <span class="glyphicon glyphicon-exclamation-sign mf-icon" title="Incomplete"></span> 
+              [/#if]   
+              </td>
+              <td class="text-center">
               [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.innovationsIds?seq_contains(item.id))!true) /]
               [@customForm.checkmark id="innovation-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.innovationsValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/] 
             </td>
@@ -267,10 +283,21 @@
           [/#list]
         [#else]
           <tr>
-            <td class="text-center" colspan="5"><i>No entries added yet.</i></td>
+            <td class="text-center" colspan="6"><i>No entries added yet.</i></td>
           </tr>
         [/#if]
       </tbody>
     </table>
   </div>
+[/#macro]
+
+[#macro oicrPopup element isStageFour=false]
+  [#local totalContributions = 0 ]
+  [#if element.projectInnovationInfo.projectExpectedStudy?has_content && isStageFour]
+  <br />
+  [#local oicrUrl][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${element.projectInnovationInfo.projectExpectedStudy.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+  <span>OICR associated: </span><a href="${oicrUrl}" target="_blank">${(element.projectInnovationInfo.projectExpectedStudy.composedName)!'Untitled'}</span></a>  </td>
+  [#local totalContributions = 1 ]
+    
+  [/#if]
 [/#macro]

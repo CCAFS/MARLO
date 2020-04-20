@@ -14,7 +14,7 @@
         { 'slug': 'policies',             'name': 'annualReport2018.menu.policies',           'action': 'policies',             'active': true     },
         { 'slug': 'oicr',                 'name': 'annualReport2018.menu.oicr',               'action': 'oicr',                 'active': true     },
         { 'slug': 'innovations',          'name': 'annualReport2018.menu.innovations',        'action': 'innovations',          'active': true     },
-        { 'slug': 'outomesMilestones',    'name': 'annualReport2018.menu.outomesMilestones',  'action': 'outomesMilestones',    'active': true, 'onlyFlagship': !flagship, 'development': true  },
+        { 'slug': 'outomesMilestones',    'name': 'annualReport2018.menu.outomesMilestones',  'action': 'outomesMilestones',    'active': true     },
         { 'slug': 'publications',         'name': 'annualReport2018.menu.publications',       'action': 'publications',         'active': true }  
       ]
     },
@@ -94,9 +94,9 @@
   <div id="progressbar-${liaisonInstitutionID}" class="progressbar" style="display:none"></div>
 [/#if]
 
- 
-[#-- Submit button --]
-[#if false && canEdit && canSubmit]
+
+[#-- Submit button --] [#--
+[#if canEdit && canSubmit]
   [#assign showSubmit=(canSubmit && !submission && completed)]
   <a id="submitProject-${synthesisID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${crpSession}/submitAnnualReport"][@s.param name='synthesisID']${synthesisID}[/@s.param][/@s.url]" >
     [@s.text name="form.buttons.submit" /]
@@ -105,20 +105,20 @@
   <div></div>
 [/#if]
 
-[#-- Unsubmit button --]
-[#if false && (canUnSubmit && submission) && !crpClosed && !reportingActive]
+[#-- Unsubmit button --][#--
+[#if (canUnSubmit && submission) && !crpClosed && !reportingActive]
   <a id="submitProject-${liaisonInstitutionID}" class="projectUnSubmitButton" href="[@s.url action="${crpSession}/unsubmit"][@s.param name='liaisonInstitutionID']${liaisonInstitutionID}[/@s.param][/@s.url]" >
     [@s.text name="form.buttons.unsubmit" /]
   </a>
 [/#if]
-
+--]
 [#-- Generate WORD Document --]
 [#if true]
 <br />
 <div class="text-center">
   [#assign documentLink][@s.url namespace="/summaries" action="${crpSession}/AnnualReportSummary2018"][@s.param name='phaseID']${actualPhase.id}[/@s.param][/@s.url][/#assign]
   <a class="btn btn-default" href="${documentLink}" target="_blank">
-   <img  src="${baseUrlCdn}/global/images/icons/file-doc.png" alt="" /> Generate DOC file <br /> <small> (Beta version, this is still under development)</small>
+   <img  src="${baseUrlCdn}/global/images/icons/file-doc.png" alt="" /> Generate DOC file <br /> [#-- <small> (Beta version, this is still under development)</small> --]
   </a>
 </div>
 [/#if]

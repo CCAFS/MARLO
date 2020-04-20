@@ -360,6 +360,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private DeliverableManager deliverableManager;
+  @Inject
+  private ProjectPolicyManager policyManager;
 
   private boolean draft;
 
@@ -507,6 +509,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private StringBuilder validationMessage = new StringBuilder();
 
   private StringBuilder missingFields = new StringBuilder();
+  private StringBuilder synthesisFlagships = new StringBuilder();
 
   public BaseAction() {
     this.saveable = true;
@@ -559,6 +562,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       this.missingFields.append(";");
     }
     this.missingFields.append(field);
+  }
+
+  /**
+   * This method add a synthesis flagship separated by a semicolon (;).
+   *
+   * @param field is the name of the field.
+   */
+  public void addSynthesisFlagship(String flagship) {
+    if (this.synthesisFlagships.length() != 0) {
+      this.synthesisFlagships.append(";");
+    }
+    this.synthesisFlagships.append(flagship);
   }
 
   public void addUsers() {
@@ -1542,7 +1557,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public Phase getActualPhase() {
     try {
       Map<Long, Phase> allPhases = null;
-      if (this.getSession() != null) {
+      if (this.getSession() != null && !this.getSession().isEmpty()) {
         if (!this.getSession().containsKey(APConstants.ALL_PHASES)) {
           List<Phase> phases = this.phaseManager.findAll().stream()
             .filter(c -> c.getCrp().getId().longValue() == this.getCrpID().longValue()).collect(Collectors.toList());
@@ -1564,16 +1579,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       allPhases = (Map<Long, Phase>) this.getSession().get(APConstants.ALL_PHASES);
 
       Long phaseID = this.getPhaseID();
-      if (phaseID != null) {
-        if (phaseID != 0L) {
-          Phase phase = allPhases.get(new Long(phaseID));
-          if (phase == null) {
-            phase = this.phaseManager.getPhaseById(phaseID);
-            return phase;
-          }
-
-          return phase;
+      if (phaseID != null && phaseID != 0L) {
+        Phase phase = null;
+        if (allPhases != null) {
+          phase = allPhases.get(new Long(phaseID));
         }
+        if (phase == null) {
+          phase = this.phaseManager.getPhaseById(phaseID);
+        }
+        return phase;
       }
 
       Map<String, Parameter> parameters = this.getParameters();
@@ -1745,6 +1759,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
     }
     return this.years;
+  }
+
+  public List<Submission> getAllProjectSubmissionsByProjectID(long projectID) {
+    Project project = this.projectManager.getProjectById(projectID);
+    List<Submission> submissions = project.getSubmissions().stream()
+      .filter(c -> c.getCycle().equals(this.getCurrentCycle()) && c.getYear().intValue() == this.getCurrentCycleYear())
+      .collect(Collectors.toList());
+    if (submissions.isEmpty()) {
+      return new ArrayList<>();
+    }
+    return submissions;
   }
 
   /**
@@ -4177,6 +4202,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.submission;
   }
 
+  public StringBuilder getSynthesisFlagships() {
+    return synthesisFlagships;
+  }
+
   public String getTimeZone() {
     TimeZone timeZone = TimeZone.getDefault();
     String display = timeZone.getDisplayName();
@@ -4959,16 +4988,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return
    */
   public boolean isCompleteLiaisonSectionReport2018(long liaisonInstitutionID) {
-    Phase phase = this.getActualPhase();
+    if (liaisonInstitutionID != 0 && this.getActualPhase() != null && this.getActualPhase().getId() != null) {
+      Phase phase = this.getActualPhase();
 
-    ReportSynthesis reportSynthesis = this.reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
+      ReportSynthesis reportSynthesis = this.reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
 
-    if (reportSynthesis != null) {
-      return this.isCompleteReportSynthesis2018(reportSynthesis.getId());
+      if (reportSynthesis != null) {
+        return this.isCompleteReportSynthesis2018(reportSynthesis.getId());
+      } else {
+        return false;
+      }
     } else {
       return false;
     }
-
   }
 
   /**
@@ -5833,24 +5865,26 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return
    */
   public Boolean isInnovationNew(long innovationId) {
+    if (innovationId != 0 && this.getActualPhase() != null) {
+      Phase currentPhase = this.getActualPhase();
+      Phase previousPhase = this.phaseManager.findPreviousPhase(currentPhase.getId());
 
-    Phase currentPhase = this.getActualPhase();
-    Phase previousPhase = this.phaseManager.findPreviousPhase(currentPhase.getId());
+      ProjectInnovation innovationNew = this.projectInnovationManager.getProjectInnovationById(innovationId);
 
-    ProjectInnovation innovationNew = this.projectInnovationManager.getProjectInnovationById(innovationId);
-
-    try {
-      List<ProjectInnovationInfo> innos = new ArrayList<>(innovationNew.getProjectInnovationInfos().stream()
-        .filter(i -> i.getPhase().getId().equals(previousPhase.getId())).collect(Collectors.toList()));
-      if (innos != null && !innos.isEmpty()) {
+      try {
+        List<ProjectInnovationInfo> innos = new ArrayList<>(innovationNew.getProjectInnovationInfos().stream()
+          .filter(i -> i.getPhase().getId().equals(previousPhase.getId())).collect(Collectors.toList()));
+        if (innos != null && !innos.isEmpty()) {
+          return false;
+        } else {
+          return true;
+        }
+      } catch (Exception e) {
         return false;
-      } else {
-        return true;
       }
-    } catch (Exception e) {
+    } else {
       return false;
     }
-
   }
 
   public boolean isLessonsActive() {
@@ -6083,19 +6117,23 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean isProjectSubmitted(long projectID) {
-    if (this.getActualPhase() != null && this.getActualPhase().getUpkeep() != null
-      && !this.getActualPhase().getUpkeep()) {
-      Project project = this.projectManager.getProjectById(projectID);
-      List<Submission> submissions = project.getSubmissions().stream()
-        .filter(c -> c.getCycle() != null && this.getCurrentCycle() != null
-          && c.getCycle().equals(this.getCurrentCycle()) && c.getYear() != null
-          && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
-        .collect(Collectors.toList());
-      if (submissions.isEmpty()) {
+    try {
+      if (this.getActualPhase() != null && this.getActualPhase().getUpkeep() != null
+        && !this.getActualPhase().getUpkeep()) {
+        Project project = this.projectManager.getProjectById(projectID);
+        List<Submission> submissions = project.getSubmissions().stream()
+          .filter(c -> c.getCycle() != null && this.getCurrentCycle() != null
+            && c.getCycle().equals(this.getCurrentCycle()) && c.getYear() != null
+            && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
+          .collect(Collectors.toList());
+        if (submissions == null || submissions.isEmpty()) {
+          return false;
+        }
+        return true;
+      } else {
         return false;
       }
-      return true;
-    } else {
+    } catch (Exception e) {
       return false;
     }
   }
@@ -6122,9 +6160,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean isReportingActive() {
-
-    return this.getActualPhase().getDescription().equals(APConstants.REPORTING);
-
+    boolean reporting = false;
+    if (this.getActualPhase() != null && this.getActualPhase().getDescription() != null
+      && APConstants.REPORTING != null) {
+      reporting = this.getActualPhase().getDescription().equals(APConstants.REPORTING);
+    } else {
+      reporting = false;
+    }
+    return reporting;
   }
 
   public boolean isReportingActiveParam() {
@@ -6884,6 +6927,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public void setSwitchSession(boolean switchSession) {
     this.switchSession = switchSession;
+  }
+
+  public void setSynthesisFlagships(StringBuilder synthesisFlagships) {
+    this.synthesisFlagships = synthesisFlagships;
   }
 
   public void setUrl(String url) {
