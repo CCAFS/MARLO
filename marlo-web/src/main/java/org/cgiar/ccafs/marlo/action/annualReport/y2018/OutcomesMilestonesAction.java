@@ -320,6 +320,26 @@ public class OutcomesMilestonesAction extends BaseAction {
       flagshipsIncomplete = sectionStatus.getSynthesisFlagships();
     }
 
+    List<String> listOfFlagships = new ArrayList<>();
+    if (flagshipsIncomplete != null && !flagshipsIncomplete.isEmpty()) {
+      String textToSeparate = flagshipsIncomplete;
+      String separator = ";";
+      String[] arrayText = textToSeparate.split(separator);
+      for (String element : arrayText) {
+        listOfFlagships.add(element);
+      }
+    }
+
+    /*
+     * List<String> arraylist = new ArrayList<>();
+     * String textToSeparate = "Go,PHP,JavaScript,Python";
+     * String separator = ";";
+     * String[] arrayText = textToSeparate.split(separator);
+     * for (String element : arrayText) {
+     * arraylist.add(element);
+     * }
+     */
+
   }
 
   public List<RepIndGenderYouthFocusLevel> getFocusLevels() {
