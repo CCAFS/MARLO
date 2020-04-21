@@ -494,7 +494,6 @@ public class ExpectedStudiesOtherItem<T> {
               }
             }
           }
-
         }
       } else {
         fieldErrors.add(new FieldErrorDTO("createExpectedStudyOther", "Study Info", "There is no Study info"));
@@ -526,9 +525,7 @@ public class ExpectedStudiesOtherItem<T> {
         fieldErrors.add(new FieldErrorDTO("findExpectedStudy", "GlobalUnitEntity",
           "The Global Unit with acronym " + CGIARentityAcronym + " is not active."));
       }
-
     }
-
     Phase phase =
       this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
         && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().orElse(null);
@@ -557,7 +554,6 @@ public class ExpectedStudiesOtherItem<T> {
           new ArrayList<ProjectExpectedStudySrfTarget>();
         projectExpectedStudy.setSrfTargets(projectExpectedStudySrfTargetList);
       }
-
       // GeographicScope
       List<ProjectExpectedStudyGeographicScope> projectExpectedStudyGeographicScopeList =
         projectExpectedStudy.getProjectExpectedStudyGeographicScopes().stream()
@@ -591,6 +587,461 @@ public class ExpectedStudiesOtherItem<T> {
     return Optional.ofNullable(projectExpectedStudy)
       .map(this.projectExpectedStudiesOtherMapper::projectExpectedStudyToProjectExpectedStudiesOtherDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
+
+  public Long putExpectedStudyById(Long idExpectedStudy, NewProjectExpectedStudiesOtherDTO newProjectExpectedStudy,
+    String CGIARentityAcronym, User user) {
+    Long expectedStudyID = null;
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+    Phase phase = null;
+    Long id = null;
+
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
+    if (globalUnitEntity == null) {
+      fieldErrors.add(new FieldErrorDTO("UpdateExpectedStudy", "GlobalUnitEntity",
+        CGIARentityAcronym + " is not a valid CGIAR entity acronym"));
+    } else {
+      if (!globalUnitEntity.isActive()) {
+        fieldErrors.add(new FieldErrorDTO("UpdateExpectedStudy", "GlobalUnitEntity",
+          "The Global Unit with acronym " + CGIARentityAcronym + " is not active."));
+      }
+
+    }
+
+    Set<CrpUser> lstUser = user.getCrpUsers();
+    if (!lstUser.stream().anyMatch(crp -> crp.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym))) {
+      fieldErrors.add(new FieldErrorDTO("UpdateExpectedStudy", "GlobalUnitEntity", "CGIAR entity not autorized"));
+    }
+
+    if (newProjectExpectedStudy.getPhase() == null) {
+      fieldErrors.add(new FieldErrorDTO("UpdateExpectedStudy", "PhaseEntity", "Phase must not be null"));
+    } else {
+      if (newProjectExpectedStudy.getPhase().getName() == null
+        || newProjectExpectedStudy.getPhase().getName().trim().isEmpty()
+        || newProjectExpectedStudy.getPhase().getYear() == null
+        // DANGER! Magic number ahead
+        || newProjectExpectedStudy.getPhase().getYear() < 2015) {
+        fieldErrors.add(new FieldErrorDTO("UpdateExpectedStudy", "PhaseEntity", "Phase is invalid"));
+      } else {
+        phase = phaseManager.findAll().stream()
+          .filter(p -> p.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
+            && p.getYear() == newProjectExpectedStudy.getPhase().getYear()
+            && p.getName().equalsIgnoreCase(newProjectExpectedStudy.getPhase().getName()))
+          .findFirst().orElse(null);
+
+        if (phase == null) {
+          fieldErrors.add(new FieldErrorDTO("UpdateExpectedStudy", "phase", newProjectExpectedStudy.getPhase().getName()
+            + ' ' + newProjectExpectedStudy.getPhase().getYear() + " is an invalid phase"));
+        }
+      }
+    }
+
+    Project project = null;
+    if (newProjectExpectedStudy.getProject() != null) {
+      project = projectManager.getProjectById(newProjectExpectedStudy.getProject());
+      if (project == null) {
+        fieldErrors.add(new FieldErrorDTO("UpdateExpectedStudy", "Project",
+          newProjectExpectedStudy.getProject() + " is an project ID"));
+      }
+    } else {
+      fieldErrors.add(new FieldErrorDTO("UpdateExpectedStudy", "Project", "A projectID can not be null"));
+    }
+
+    ProjectExpectedStudy projectExpectedStudy =
+      this.projectExpectedStudyManager.getProjectExpectedStudyById(idExpectedStudy);
+    if (projectExpectedStudy == null) {
+      fieldErrors.add(new FieldErrorDTO("UpdateExpectedStudy", "ProjectExpectedStudy",
+        idExpectedStudy + " is an invalid ProjectExpectedStudy code"));
+    }
+
+    if (fieldErrors.size() == 0) {
+      expectedStudyID = projectExpectedStudy.getId();
+      List<RepIndGeographicScope> geographicScopeList = new ArrayList<RepIndGeographicScope>();
+      List<SrfSloIndicator> srfSloIndicatorList = new ArrayList<SrfSloIndicator>();
+      List<LocElement> countriesList = new ArrayList<>();
+      List<LocElement> regionsList = new ArrayList<>();
+      List<ProjectExpectedStudySubIdo> srfSubIdoList = new ArrayList<>();
+      int hasPrimary = 0;
+      int wordCount = -1;
+      if (newProjectExpectedStudy.getNewProjectExpectedStudiesOtherInfo() != null) {
+        ProjectExpectedStudyInfo projectExpectedStudyInfo = projectExpectedStudy.getProjectExpectedStudyInfo(phase);
+        if (projectExpectedStudyInfo == null) {
+          projectExpectedStudyInfo = new ProjectExpectedStudyInfo();
+        }
+        if (newProjectExpectedStudy.getNewProjectExpectedStudiesOtherInfo().getYear() > 1900) {
+          projectExpectedStudyInfo.setYear(newProjectExpectedStudy.getNewProjectExpectedStudiesOtherInfo().getYear());
+        } else {
+          fieldErrors.add(new FieldErrorDTO("UpdateExpectedStudy", "Year", "Please insert a valid year"));
+        }
+        projectExpectedStudyInfo.setPhase(phase);
+        projectExpectedStudyInfo.setCommissioningStudy(
+          newProjectExpectedStudy.getNewProjectExpectedStudiesOtherInfo().getCommissioningStudy());
+        projectExpectedStudyInfo
+          .setMELIAPublications(newProjectExpectedStudy.getNewProjectExpectedStudiesOtherInfo().getMELIAPublications());
+        wordCount = this.countWords(newProjectExpectedStudy.getNewProjectExpectedStudiesOtherInfo().getScopeComments());
+        if (wordCount > 30) {
+          fieldErrors.add(new FieldErrorDTO("createExpectedStudyOther", "ScopeComments",
+            "Scope Comments excedes the maximum number of words (30 words)"));
+        } else {
+          projectExpectedStudyInfo
+            .setScopeComments(newProjectExpectedStudy.getNewProjectExpectedStudiesOtherInfo().getScopeComments());
+        }
+
+        wordCount =
+          this.countWords(newProjectExpectedStudy.getNewProjectExpectedStudiesOtherInfo().getStudyDescription());
+        if (wordCount > 100) {
+          fieldErrors.add(new FieldErrorDTO("createExpectedStudyOther", "Description",
+            "Description excedes the maximum number of words (100 words)"));
+        } else {
+          projectExpectedStudyInfo
+            .setTopLevelComments(newProjectExpectedStudy.getNewProjectExpectedStudiesOtherInfo().getStudyDescription());
+        }
+        StudyType studyType = null;
+        if (newProjectExpectedStudy.getNewProjectExpectedStudiesOtherInfo().getStudyType() != null) {
+          studyType = studyTypeManager
+            .getStudyTypeById(newProjectExpectedStudy.getNewProjectExpectedStudiesOtherInfo().getStudyType());
+          if (studyType != null) {
+            // DANGER! Magic number ahead
+            if (studyType.getId() == 1) {
+              fieldErrors.add(new FieldErrorDTO("UpdateExpectedStudy", "Study Type",
+                "Study type with id " + newProjectExpectedStudy.getNewProjectExpectedStudiesOtherInfo().getStudyType()
+                  + " does not correspond with an MELIA study"));
+            } else {
+              projectExpectedStudyInfo.setStudyType(studyType);
+            }
+          } else {
+            fieldErrors.add(new FieldErrorDTO("UpdateExpectedStudy", "Study Type",
+              newProjectExpectedStudy.getNewProjectExpectedStudiesOtherInfo().getStudyType()
+                + " is an invalid study code"));
+          }
+        } else {
+          fieldErrors
+            .add(new FieldErrorDTO("UpdateExpectedStudy", "Study", "study identifier can not be null nor empty"));
+        }
+
+        GeneralStatus generalStatus = generalStatusManager
+          .getGeneralStatusById(newProjectExpectedStudy.getNewProjectExpectedStudiesOtherInfo().getStatus());
+        if (generalStatus != null) {
+          projectExpectedStudyInfo.setStatus(generalStatus);
+        } else {
+          fieldErrors.add(new FieldErrorDTO("UpdateExpectedStudy", "Status",
+            newProjectExpectedStudy.getNewProjectExpectedStudiesOtherInfo().getStatus()
+              + " is an invalid status code"));
+        }
+
+        if (fieldErrors.size() == 0) {
+          projectExpectedStudy.setPhase(phase.getId());
+          projectExpectedStudy.setProjectExpectedStudyInfo(projectExpectedStudyInfo);
+          // geographic
+          if (newProjectExpectedStudy.getGeographicScopes() != null
+            && newProjectExpectedStudy.getGeographicScopes().size() > 0) {
+            for (String geographicscope : newProjectExpectedStudy.getGeographicScopes()) {
+              if (geographicscope != null && !geographicscope.trim().isEmpty()) {
+                id = this.tryParseLong(geographicscope.trim(), fieldErrors, "putExpectedStudy", "GeographicScope");
+                if (id != null) {
+                  RepIndGeographicScope repIndGeographicScope =
+                    repIndGeographicScopeManager.getRepIndGeographicScopeById(id);
+                  if (repIndGeographicScope != null) {
+                    geographicScopeList.add(repIndGeographicScope);
+                  } else {
+                    fieldErrors.add(new FieldErrorDTO("UpdateExpectedStudy", "GeographicScope",
+                      id + " is an invalid geographicScope identifier"));
+                  }
+                }
+              } else {
+                fieldErrors.add(new FieldErrorDTO("UpdateExpectedStudy", "GeographicScope",
+                  "geographicScope identifier can not be null nor empty"));
+              }
+            }
+          }
+          // Slo Target
+          if (newProjectExpectedStudy.getSrfSloTargetList() != null
+            && newProjectExpectedStudy.getSrfSloTargetList().size() > 0) {
+            for (String sloTarget : newProjectExpectedStudy.getSrfSloTargetList()) {
+              if (sloTarget != null && !sloTarget.trim().isEmpty()) {
+                SrfSloIndicatorTarget srfSloIndicatorTarget =
+                  srfSloIndicatorTargetManager.findbyTargetIndicatorCode(sloTarget);
+                if (srfSloIndicatorTarget != null) {
+                  SrfSloIndicator srfSloIndicator =
+                    srfSloIndicatorManager.getSrfSloIndicatorById(srfSloIndicatorTarget.getSrfSloIndicator().getId());
+                  srfSloIndicatorList.add(srfSloIndicator);
+                } else {
+                  fieldErrors.add(new FieldErrorDTO("UpdateExpectedStudy", "SrfSloIndicatorTarget ",
+                    sloTarget + " is an invalid SLOIndicatorTarget identifier"));
+                }
+              } else {
+                fieldErrors.add(new FieldErrorDTO("UpdateExpectedStudy", "SrfSloIndicatorTarget",
+                  "sloTarget identifier can not be null nor empty"));
+              }
+            }
+          }
+          // countries
+          if (newProjectExpectedStudy.getCountries() != null && newProjectExpectedStudy.getCountries().size() > 0) {
+            for (String countries : newProjectExpectedStudy.getCountries()) {
+              if (countries != null && !countries.trim().isEmpty()) {
+                id = this.tryParseLong(countries.trim(), fieldErrors, "putExpectedStudy", "Country");
+                if (id != null) {
+                  LocElement country = this.locElementManager.getLocElementByNumericISOCode(id);
+                  if (country == null) {
+                    fieldErrors.add(new FieldErrorDTO("UpdateExpectedStudy", "Countries",
+                      countries + " is an invalid country ISO Code"));
+
+                  } else if (country.getLocElementType().getId() != APConstants.LOC_ELEMENT_TYPE_COUNTRY) {
+                    fieldErrors.add(
+                      new FieldErrorDTO("UpdateExpectedStudy", "Countries", countries + " is not a Country ISO code"));
+                  } else {
+                    countriesList.add(country);
+                  }
+                }
+              } else {
+                fieldErrors.add(
+                  new FieldErrorDTO("UpdateExpectedStudy", "Countries", "A Country code can not be null nor empty."));
+              }
+            }
+          }
+          // regions
+          if (newProjectExpectedStudy.getRegions() != null && newProjectExpectedStudy.getRegions().size() > 0) {
+            for (String region : newProjectExpectedStudy.getRegions()) {
+              if (region != null && !region.trim().isEmpty()) {
+                id = this.tryParseLong(region.trim(), fieldErrors, "UpdateExpectedStudy", "Region");
+                if (id != null) {
+                  LocElement country = this.locElementManager.getLocElementByNumericISOCode(id);
+                  if (country == null) {
+                    fieldErrors.add(
+                      new FieldErrorDTO("UpdateExpectedStudy", "Regions", region + " is an invalid region UM49 Code"));
+
+                  } else if (country.getLocElementType().getId() != APConstants.LOC_ELEMENT_TYPE_REGION) {
+                    fieldErrors
+                      .add(new FieldErrorDTO("UpdateExpectedStudy", "Regions", region + " is not a Region UM49 code"));
+                  } else {
+                    regionsList.add(country);
+                  }
+                }
+              } else {
+                fieldErrors
+                  .add(new FieldErrorDTO("UpdateExpectedStudy", "Regions", "A Region code can not be null nor empty."));
+              }
+            }
+          }
+          // subidos
+          if (newProjectExpectedStudy.getSrfSubIdoList() != null
+            && newProjectExpectedStudy.getSrfSubIdoList().size() > 0) {
+            if (newProjectExpectedStudy.getSrfSubIdoList().size() <= 3) {
+              hasPrimary = 0;
+              for (NewSrfSubIdoDTO subido : newProjectExpectedStudy.getSrfSubIdoList()) {
+                if (subido != null && subido.getSubIdo() != null && !subido.getSubIdo().trim().isEmpty()) {
+                  SrfSubIdo srfSubIdo = srfSubIdoManager.getSrfSubIdoByCode(subido.getSubIdo().trim());
+                  if (srfSubIdo == null || !srfSubIdo.isActive()) {
+                    fieldErrors.add(new FieldErrorDTO("UpdateExpectedStudy", "SubIDO",
+                      subido.getSubIdo() + " is an invalid subIDO Code"));
+                  } else {
+                    ProjectExpectedStudySubIdo obj = new ProjectExpectedStudySubIdo();
+                    obj.setSrfSubIdo(srfSubIdo);
+                    obj.setPrimary(subido.getPrimary() != null && subido.getPrimary());
+                    hasPrimary = hasPrimary + (obj.getPrimary() == true ? 1 : 0);
+                    srfSubIdoList.add(obj);
+                  }
+                } else {
+                  fieldErrors.add(
+                    new FieldErrorDTO("UpdateExpectedStudy", "SubIDO", "A Sub IDO code can not be null nor empty."));
+                }
+              }
+              if (hasPrimary == 0) {
+                fieldErrors.add(new FieldErrorDTO("UpdateExpectedStudy", "SubIDO",
+                  "There should be at least one Sub-IDO marked as primary"));
+              }
+              if (hasPrimary > 1) {
+                fieldErrors.add(new FieldErrorDTO("UpdateExpectedStudy", "SubIDO",
+                  "There can not be more than one Sub-IDO marked as primary"));
+              }
+            } else {
+              fieldErrors
+                .add(new FieldErrorDTO("UpdateExpectedStudy", "SubIDO", "There can not be more than three SubIDO(s)."));
+            }
+          }
+        }
+        if (fieldErrors.size() == 0 && project != null) {
+          projectExpectedStudy.setPhase(phase.getId());
+          projectExpectedStudy.setYear(phase.getYear());
+          projectExpectedStudy.setProject(project);
+          ProjectExpectedStudy projectExpectedStudyDB =
+            projectExpectedStudyManager.saveProjectExpectedStudy(projectExpectedStudy);
+          if (projectExpectedStudyDB != null) {
+            expectedStudyID = projectExpectedStudyDB.getId();
+            projectExpectedStudyInfo.setProjectExpectedStudy(projectExpectedStudyDB);
+            if (srfSloIndicatorList.size() > 0) {
+              projectExpectedStudyInfo.setIsSrfTarget("targetsOptionYes");
+            }
+            if (projectExpectedStudyInfoManager.saveProjectExpectedStudyInfo(projectExpectedStudyInfo) != null) {
+              Long phaseId = phase.getId();
+              // update geographicscope
+              // getting actual geographicscope
+              List<ProjectExpectedStudyGeographicScope> projectExpectedStudyGeographicScopeList =
+                projectExpectedStudy.getProjectExpectedStudyGeographicScopes().stream()
+                  .filter(c -> c.isActive() && c.getPhase().getId() == phaseId).collect(Collectors.toList());
+              // create existing geographicscope
+              List<ProjectExpectedStudyGeographicScope> existingProjectExpectedStudyGeographicScopeList =
+                new ArrayList<ProjectExpectedStudyGeographicScope>();
+              // save geographicscopes
+              for (RepIndGeographicScope repIndGeographicScope : geographicScopeList) {
+                ProjectExpectedStudyGeographicScope projectExpectedStudyGeographicScope =
+                  projectExpectedStudyGeographicScopeManager.getProjectExpectedStudyGeographicScopeByPhase(
+                    expectedStudyID, repIndGeographicScope.getId(), phase.getId());
+                if (projectExpectedStudyGeographicScope != null) {
+                  existingProjectExpectedStudyGeographicScopeList.add(projectExpectedStudyGeographicScope);
+                } else {
+                  projectExpectedStudyGeographicScope = new ProjectExpectedStudyGeographicScope();
+                  projectExpectedStudyGeographicScope.setPhase(phase);
+                  projectExpectedStudyGeographicScope.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudyGeographicScope.setRepIndGeographicScope(repIndGeographicScope);
+                  projectExpectedStudyGeographicScopeManager
+                    .saveProjectExpectedStudyGeographicScope(projectExpectedStudyGeographicScope);
+                }
+              }
+              // delete not existing
+              for (ProjectExpectedStudyGeographicScope obj : projectExpectedStudyGeographicScopeList) {
+                if (!existingProjectExpectedStudyGeographicScopeList.contains(obj)) {
+                  projectExpectedStudyGeographicScopeManager.deleteProjectExpectedStudyGeographicScope(obj.getId());
+                }
+              }
+
+              // countries
+              // getting actual countries
+              List<ProjectExpectedStudyCountry> projectExpectedStudyCountryList =
+                projectExpectedStudyCountryManager.findAll().stream()
+                  .filter(c -> c.isActive() && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId())
+                    && c.getPhase().getId() == phaseId)
+                  .collect(Collectors.toList());
+              // create existing countries
+              List<ProjectExpectedStudyCountry> existingProjectExpectedStudyCountryList =
+                new ArrayList<ProjectExpectedStudyCountry>();
+              // save countries
+              for (LocElement country : countriesList) {
+                ProjectExpectedStudyCountry projectExpectedStudyCountry = projectExpectedStudyCountryManager
+                  .getProjectExpectedStudyCountryByPhase(expectedStudyID, country.getId(), phase.getId());
+                if (projectExpectedStudyCountry != null) {
+                  existingProjectExpectedStudyCountryList.add(projectExpectedStudyCountry);
+                } else {
+                  projectExpectedStudyCountry = new ProjectExpectedStudyCountry();
+                  projectExpectedStudyCountry.setLocElement(country);
+                  projectExpectedStudyCountry.setPhase(phase);
+                  projectExpectedStudyCountry.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudyCountryManager.saveProjectExpectedStudyCountry(projectExpectedStudyCountry);
+                }
+              }
+              // delete not existing
+              for (ProjectExpectedStudyCountry obj : projectExpectedStudyCountryList) {
+                if (!existingProjectExpectedStudyCountryList.contains(obj)) {
+                  projectExpectedStudyCountryManager.deleteProjectExpectedStudyCountry(obj.getId());
+                }
+              }
+
+              // regions
+              // getting actual regions
+              List<ProjectExpectedStudyRegion> projectExpectedStudyRegionList =
+                projectExpectedStudyRegionManager.findAll().stream()
+                  .filter(c -> c.isActive() && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId())
+                    && c.getPhase().getId() == phaseId)
+                  .collect(Collectors.toList());
+              // create existing regions
+              List<ProjectExpectedStudyRegion> existingProjectExpectedStudyRegionList =
+                new ArrayList<ProjectExpectedStudyRegion>();
+              // save regions
+              for (LocElement region : regionsList) {
+                ProjectExpectedStudyRegion projectExpectedStudyRegion = projectExpectedStudyRegionManager
+                  .getProjectExpectedStudyRegionByPhase(expectedStudyID, region.getId(), phase.getId());
+                if (projectExpectedStudyRegion != null) {
+                  existingProjectExpectedStudyRegionList.add(projectExpectedStudyRegion);
+                } else {
+                  projectExpectedStudyRegion = new ProjectExpectedStudyRegion();
+                  projectExpectedStudyRegion.setLocElement(region);
+                  projectExpectedStudyRegion.setPhase(phase);
+                  projectExpectedStudyRegion.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudyRegionManager.saveProjectExpectedStudyRegion(projectExpectedStudyRegion);
+                }
+              }
+              // delete not existing regions
+              for (ProjectExpectedStudyRegion obj : projectExpectedStudyRegionList) {
+                if (!existingProjectExpectedStudyRegionList.contains(obj)) {
+                  projectExpectedStudyRegionManager.deleteProjectExpectedStudyRegion(obj.getId());
+                }
+              }
+
+              // SLO targets
+              // getting actual SLO targets
+              List<ProjectExpectedStudySrfTarget> projectExpectedStudySrfTargetList =
+                projectExpectedStudy.getProjectExpectedStudySrfTargets().stream()
+                  .filter(c -> c.isActive() && c.getPhase().getId() == phaseId).collect(Collectors.toList());
+              // create existing SLO targets
+              List<ProjectExpectedStudySrfTarget> existingProjectExpectedStudySrfTargetList =
+                new ArrayList<ProjectExpectedStudySrfTarget>();
+              // save SLO targets
+              for (SrfSloIndicator srfSloIndicator : srfSloIndicatorList.stream().distinct()
+                .collect(Collectors.toList())) {
+                ProjectExpectedStudySrfTarget projectExpectedStudySrfTarget = projectExpectedStudySrfTargetManager
+                  .getProjectExpectedStudySrfTargetByPhase(expectedStudyID, srfSloIndicator.getId(), phase.getId());
+                if (projectExpectedStudySrfTarget != null) {
+                  existingProjectExpectedStudySrfTargetList.add(projectExpectedStudySrfTarget);
+                } else {
+                  projectExpectedStudySrfTarget = new ProjectExpectedStudySrfTarget();
+                  projectExpectedStudySrfTarget.setSrfSloIndicator(srfSloIndicator);
+                  projectExpectedStudySrfTarget.setPhase(phase);
+                  projectExpectedStudySrfTarget.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudySrfTargetManager.saveProjectExpectedStudySrfTarget(projectExpectedStudySrfTarget);
+                }
+              }
+              // delete not existing SLO targets
+              for (ProjectExpectedStudySrfTarget obj : projectExpectedStudySrfTargetList) {
+                if (!existingProjectExpectedStudySrfTargetList.contains(obj)) {
+                  projectExpectedStudySrfTargetManager.deleteProjectExpectedStudySrfTarget(obj.getId());
+                }
+              }
+              // SudIDOs
+              // getting actual SudIDOs
+              List<ProjectExpectedStudySubIdo> projectExpectedStudySubIdoList =
+                projectExpectedStudy.getProjectExpectedStudySubIdos().stream()
+                  .filter(c -> c.isActive() && c.getPhase().getId() == phaseId).collect(Collectors.toList());
+              // create existing SudIDOs
+              List<ProjectExpectedStudySubIdo> existingProjectExpectedStudySubIdoList =
+                new ArrayList<ProjectExpectedStudySubIdo>();
+              // save SudIDOs
+              for (ProjectExpectedStudySubIdo srfSubIdo : srfSubIdoList) {
+                ProjectExpectedStudySubIdo projectExpectedStudySubIdo =
+                  projectExpectedStudySubIdoManager.getProjectExpectedStudySubIdoByPhase(expectedStudyID,
+                    srfSubIdo.getSrfSubIdo().getId(), phase.getId());
+                if (projectExpectedStudySubIdo != null) {
+                  existingProjectExpectedStudySubIdoList.add(projectExpectedStudySubIdo);
+                } else {
+                  projectExpectedStudySubIdo = new ProjectExpectedStudySubIdo();
+                  projectExpectedStudySubIdo.setSrfSubIdo(srfSubIdo.getSrfSubIdo());
+                  projectExpectedStudySubIdo.setPhase(phase);
+                  projectExpectedStudySubIdo.setProjectExpectedStudy(projectExpectedStudyDB);
+                  projectExpectedStudySubIdo.setPrimary(srfSubIdo.getPrimary());
+                  projectExpectedStudySubIdoManager.saveProjectExpectedStudySubIdo(projectExpectedStudySubIdo);
+                }
+              }
+              // delete not existing SudIDOs
+              for (ProjectExpectedStudySubIdo obj : projectExpectedStudySubIdoList) {
+                if (!existingProjectExpectedStudySubIdoList.contains(obj)) {
+                  projectExpectedStudySubIdoManager.deleteProjectExpectedStudySubIdo(obj.getId());
+                }
+              }
+            }
+          }
+        }
+      } else {
+        fieldErrors.add(new FieldErrorDTO("UpdateExpectedStudy", "ProjectExpectedStudyInfoEntity",
+          "Please enter a Project Expected Study Info"));
+      }
+    }
+    if (!fieldErrors.isEmpty()) {
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
+    }
+    return expectedStudyID;
+
   }
 
   public Long tryParseLong(String value, List<FieldErrorDTO> fieldErrors, String httpMethod, String field) {

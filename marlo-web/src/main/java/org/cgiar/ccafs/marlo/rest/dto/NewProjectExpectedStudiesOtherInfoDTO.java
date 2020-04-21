@@ -19,6 +19,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @author Luis Benavides - CIAT/CCAFS
+ * @author Modified by Diego Perez - CIAT/CCAFS
  */
 public class NewProjectExpectedStudiesOtherInfoDTO {
 
