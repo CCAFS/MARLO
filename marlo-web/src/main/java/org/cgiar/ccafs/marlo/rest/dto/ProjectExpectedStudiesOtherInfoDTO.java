@@ -13,43 +13,42 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
+/**************
+ * @author Diego Perez - CIAT/CCAFS
+ **************/
+
 package org.cgiar.ccafs.marlo.rest.dto;
+
+import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
 
 import io.swagger.annotations.ApiModelProperty;
 
-/**
- * @author Luis Benavides - CIAT/CCAFS
- */
-public class NewProjectExpectedStudiesOtherInfoDTO {
+public class ProjectExpectedStudiesOtherInfoDTO {
 
-  @ApiModelProperty(notes = "Expected year", position = 3)
-  private int year;
-
-  @ApiModelProperty(notes = "Expected study title", position = 4)
+  @ApiModelProperty(notes = "Expected study title", position = 1)
   private String title;
 
-  @ApiModelProperty(notes = "Expected study type code", position = 1)
-  private Long studyType;
+  @ApiModelProperty(notes = "Expected study title", position = 2)
+  private long year;
 
-  @ApiModelProperty(notes = "Expected study status", position = 2)
-  private long status;
+  @ApiModelProperty(notes = "Expected study type code", position = 3)
+  private StudyTypeDTO studyType;
 
-  @ApiModelProperty(notes = "Expected study commissioning", position = 5)
-  private String commissioningStudy;
+  @ApiModelProperty(notes = "Expected study status", position = 4)
+  private GeneralStatus status;
 
-  @ApiModelProperty(notes = "Other geographic areas", position = 6)
+  @ApiModelProperty(notes = "Description Study", position = 5)
+  private String description;
+
+  @ApiModelProperty(notes = "Melia Publications Links", position = 6)
+  private String MELIAPublications;
+
+  @ApiModelProperty(notes = "Scope comments", position = 7)
   private String scopeComments;
 
 
-  @ApiModelProperty(notes = "Expected study description", position = 6)
-  private String studyDescription;
-
-  @ApiModelProperty(notes = "Expected study Publications Link", position = 6)
-  private String MELIAPublications;
-
-
-  public String getCommissioningStudy() {
-    return commissioningStudy;
+  public String getDescription() {
+    return description;
   }
 
 
@@ -63,17 +62,12 @@ public class NewProjectExpectedStudiesOtherInfoDTO {
   }
 
 
-  public long getStatus() {
+  public GeneralStatus getStatus() {
     return status;
   }
 
 
-  public String getStudyDescription() {
-    return studyDescription;
-  }
-
-
-  public Long getStudyType() {
+  public StudyTypeDTO getStudyType() {
     return studyType;
   }
 
@@ -83,13 +77,13 @@ public class NewProjectExpectedStudiesOtherInfoDTO {
   }
 
 
-  public int getYear() {
+  public long getYear() {
     return year;
   }
 
 
-  public void setCommissioningStudy(String commissioningStudy) {
-    this.commissioningStudy = commissioningStudy;
+  public void setDescription(String description) {
+    this.description = description;
   }
 
 
@@ -103,17 +97,12 @@ public class NewProjectExpectedStudiesOtherInfoDTO {
   }
 
 
-  public void setStatus(long status) {
+  public void setStatus(GeneralStatus status) {
     this.status = status;
   }
 
 
-  public void setStudyDescription(String studyDescription) {
-    this.studyDescription = studyDescription;
-  }
-
-
-  public void setStudyType(Long studyType) {
+  public void setStudyType(StudyTypeDTO studyType) {
     this.studyType = studyType;
   }
 
@@ -123,8 +112,7 @@ public class NewProjectExpectedStudiesOtherInfoDTO {
   }
 
 
-  public void setYear(int year) {
+  public void setYear(long year) {
     this.year = year;
   }
-
 }

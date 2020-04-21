@@ -21,6 +21,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @author Luis Benavides - CIAT/CCAFS
+ * @author Modifdied by Diego Perez - CIAT/CCAFS
  */
 public class NewProjectExpectedStudiesOtherDTO {
 
@@ -39,9 +40,6 @@ public class NewProjectExpectedStudiesOtherDTO {
   @ApiModelProperty(notes = "Region AN94 code list", position = 5)
   private List<String> regions;
 
-  @ApiModelProperty(notes = "Other geographic areas", position = 6)
-  private String scopeComments;
-
 
   @ApiModelProperty(notes = "CGIAR SLO target code list", position = 8)
   private List<String> srfSloTargetList;
@@ -51,15 +49,9 @@ public class NewProjectExpectedStudiesOtherDTO {
   private List<NewSrfSubIdoDTO> srfSubIdoList;
 
 
-  @ApiModelProperty(notes = "Comments", position = 9)
-  private String comments;
-
   @ApiModelProperty(notes = "phase (POWB, AR, UpKeep)", position = 14)
   private PhaseDTO phase;
 
-  public String getComments() {
-    return comments;
-  }
 
   public List<String> getCountries() {
     return countries;
@@ -91,11 +83,6 @@ public class NewProjectExpectedStudiesOtherDTO {
   }
 
 
-  public String getScopeComments() {
-    return scopeComments;
-  }
-
-
   public List<String> getSrfSloTargetList() {
     return srfSloTargetList;
   }
@@ -103,11 +90,6 @@ public class NewProjectExpectedStudiesOtherDTO {
 
   public List<NewSrfSubIdoDTO> getSrfSubIdoList() {
     return srfSubIdoList;
-  }
-
-
-  public void setComments(String comments) {
-    this.comments = comments;
   }
 
 
@@ -139,11 +121,6 @@ public class NewProjectExpectedStudiesOtherDTO {
 
   public void setRegions(List<String> regions) {
     this.regions = regions;
-  }
-
-
-  public void setScopeComments(String scopeComments) {
-    this.scopeComments = scopeComments;
   }
 
 

@@ -21,6 +21,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @author Luis Benavides - CIAT/CCAFS
+ * @author Modified by Diego Perez - CIAT/CCAFS
  */
 public class ProjectExpectedStudiesOtherDTO {
 
@@ -28,43 +29,38 @@ public class ProjectExpectedStudiesOtherDTO {
   private Long project;
 
   @ApiModelProperty(notes = "Project expected studies other info", position = 2)
-  private NewProjectExpectedStudiesOtherInfoDTO newProjectExpectedStudiesOtherInfoDTO;
+  private ProjectExpectedStudiesOtherInfoDTO projectExpectedStudiesOtherInfo;
+
+  @ApiModelProperty(notes = "CGIAR Sub-IDOs List", position = 3)
+  private List<ProjectExpectedStudySubIdoDTO> srfSubIdoList;
 
   @ApiModelProperty(notes = "Geographic scope code list", position = 3)
-  private List<String> geographicScopes;
+  private List<GeographicScopeDTO> geographicScopes;
 
   @ApiModelProperty(notes = "Country ISO code list", position = 4)
-  private List<String> countries;
+  private List<CountryDTO> countries;
 
   @ApiModelProperty(notes = "Region AN94 code list", position = 5)
-  private List<String> regions;
-
-  @ApiModelProperty(notes = "Other geographic areas", position = 6)
-  private String scopeComments; // cambiar
+  private List<RegionDTO> regions;
 
   @ApiModelProperty(notes = "CGIAR SLO target code list", position = 8)
-  private List<String> srfSloTargetList;
+  private List<ProjectExpectedStudySrfSloTargetDTO> srfSloTargetList;
 
-  @ApiModelProperty(notes = "Comments", position = 9)
-  private String comments;
+  @ApiModelProperty(notes = "phase (POWB, AR, UpKeep)", position = 14)
+  private PhaseDTO phase;
 
-  public String getComments() {
-    return comments;
-  }
-
-
-  public List<String> getCountries() {
+  public List<CountryDTO> getCountries() {
     return countries;
   }
 
 
-  public List<String> getGeographicScopes() {
+  public List<GeographicScopeDTO> getGeographicScopes() {
     return geographicScopes;
   }
 
 
-  public NewProjectExpectedStudiesOtherInfoDTO getNewProjectExpectedStudiesOtherInfoDTO() {
-    return newProjectExpectedStudiesOtherInfoDTO;
+  public PhaseDTO getPhase() {
+    return phase;
   }
 
 
@@ -73,39 +69,38 @@ public class ProjectExpectedStudiesOtherDTO {
   }
 
 
-  public List<String> getRegions() {
+  public ProjectExpectedStudiesOtherInfoDTO getProjectExpectedStudiesOtherInfo() {
+    return projectExpectedStudiesOtherInfo;
+  }
+
+
+  public List<RegionDTO> getRegions() {
     return regions;
   }
 
 
-  public String getScopeComments() {
-    return scopeComments;
-  }
-
-
-  public List<String> getSrfSloTargetList() {
+  public List<ProjectExpectedStudySrfSloTargetDTO> getSrfSloTargetList() {
     return srfSloTargetList;
   }
 
 
-  public void setComments(String comments) {
-    this.comments = comments;
+  public List<ProjectExpectedStudySubIdoDTO> getSrfSubIdoList() {
+    return srfSubIdoList;
   }
 
 
-  public void setCountries(List<String> countries) {
+  public void setCountries(List<CountryDTO> countries) {
     this.countries = countries;
   }
 
 
-  public void setGeographicScopes(List<String> geographicScopes) {
+  public void setGeographicScopes(List<GeographicScopeDTO> geographicScopes) {
     this.geographicScopes = geographicScopes;
   }
 
 
-  public void setNewProjectExpectedStudiesOtherInfoDTO(
-    NewProjectExpectedStudiesOtherInfoDTO newProjectExpectedStudiesOtherInfoDTO) {
-    this.newProjectExpectedStudiesOtherInfoDTO = newProjectExpectedStudiesOtherInfoDTO;
+  public void setPhase(PhaseDTO phase) {
+    this.phase = phase;
   }
 
 
@@ -114,18 +109,22 @@ public class ProjectExpectedStudiesOtherDTO {
   }
 
 
-  public void setRegions(List<String> regions) {
+  public void setProjectExpectedStudiesOtherInfo(ProjectExpectedStudiesOtherInfoDTO projectExpectedStudiesOtherInfo) {
+    this.projectExpectedStudiesOtherInfo = projectExpectedStudiesOtherInfo;
+  }
+
+  public void setRegions(List<RegionDTO> regions) {
     this.regions = regions;
   }
 
 
-  public void setScopeComments(String scopeComments) {
-    this.scopeComments = scopeComments;
+  public void setSrfSloTargetList(List<ProjectExpectedStudySrfSloTargetDTO> srfSloTargetList) {
+    this.srfSloTargetList = srfSloTargetList;
   }
 
 
-  public void setSrfSloTargetList(List<String> srfSloTargetList) {
-    this.srfSloTargetList = srfSloTargetList;
+  public void setSrfSubIdoList(List<ProjectExpectedStudySubIdoDTO> srfSubIdoList) {
+    this.srfSubIdoList = srfSubIdoList;
   }
 
 }
