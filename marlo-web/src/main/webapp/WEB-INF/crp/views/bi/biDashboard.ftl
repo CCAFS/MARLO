@@ -1,8 +1,8 @@
 [#ftl]
 [#assign title = "MARLO BI" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = [""] /]
-[#assign customJS = ["" ] /]
+[#assign pageLibs = ["powerbi-client"] /]
+[#assign customJS = ["${baseUrlMedia}/js/bi/biDashboard.js", "${baseUrlCdn}/global/bower_components/powerbi-client/dist/powerbi.min.js" ] /]
 [#assign customCSS = [
   "${baseUrl}/crp/css/bi/biDashboard.css"
   ] 
@@ -16,7 +16,7 @@
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 
 [#attempt]
-  [#assign canAccessCCAFS = (action.crpID == 1)!false ]
+  [#assign canAccessCCAFS = false ]
   [#assign canAccessWLE = (action.crpID == 4)!false ]
 [#recover]
   [#assign canAccessCCAFS = false ]
@@ -24,6 +24,9 @@
 [/#attempt]
 
     <section class="container">
+    <div id="dashboardContainer" style="
+    height: 720px;
+    width: 1100px;"></div>
       [#if canAccessCCAFS]
            <div class="dashboard-tabs">
             [#-- Menu --]
