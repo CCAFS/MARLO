@@ -91,7 +91,6 @@
                           <h4 class="modal-title" id="myModalLabel">[@s.text name="${customLabel}.title" /]</h4>
                         </div>
                         <div class="modal-body">
-                          
                           [@tableOutcomesMilestones allowPopups=false  /]
                         </div>
                         <div class="modal-footer">
@@ -100,7 +99,15 @@
                       </div>
                     </div>
                   </div>
-                  
+                  [#--[#if true]--]
+                  [#if listOfFlagships?has_content]
+                    </br>
+                    <div class="pull-right"><span class="glyphicon glyphicon-exclamation-sign mf-icon" title="Incomplete"></span> Missing fields in
+                      [#list listOfFlagships as fp]
+                        ${fp},
+                      [/#list]
+                    </div>
+                  [/#if]
                   [#-- Table 5--]
                   [@tableOutcomesMilestones  /]
                 </div>
