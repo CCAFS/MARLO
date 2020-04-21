@@ -59,6 +59,7 @@
                   <div class="form-group btn-group btn-group-sm pull-right" role="group" aria-label="...">
                     <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-evidenceC"><span class="glyphicon glyphicon-fullscreen"></span> AR Evidence C</button>
                     <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-table5"><span class="glyphicon glyphicon-fullscreen"></span> See Full Table 5</button>
+                    [#-- Missing fields in FPs --]
                     [#if listOfFlagships?has_content]
                       </br>
                       <div class="missingFieldFp">

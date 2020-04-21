@@ -61,7 +61,6 @@
                   <div class="form-group">
                     [#-- Word Document Tag --]
                     [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
-                    
                     [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.narrative" className="" helpIcon=false required=true editable=editable allowTextEditor=true /]
                   </div>
                   
@@ -74,6 +73,17 @@
                     <button type="button" class="btn btn-default btn-xs pull-right" data-toggle="modal" data-target="#modal-policies">
                        <span class="glyphicon glyphicon-fullscreen"></span> See Full table 10
                     </button>
+                    [#-- Missing fields in FPs --]
+                    [#if listOfFlagships?has_content]
+                      </br>
+                      <div class="missingFieldFp">
+                        <div><span class="glyphicon glyphicon-exclamation-sign mffp-icon" title="Incomplete"></span> Missing fields in
+                        [#list listOfFlagships as fp]
+                         ${fp}[#if fp?index !=(listOfFlagships?size-1) ],[/#if]
+                        [/#list]
+                        </div>
+                       </div>
+                    [/#if]
                     <h4 class="subTitle headTitle annualReport-table">[@s.text name="${customLabel}.table10.title" /]</h4>
                     [@customForm.helpLabel name="${customLabel}.table10.help" showIcon=false editable=editable/]
                     [#-- Modal --]
@@ -212,10 +222,10 @@
               <td class="text-center">
                [#assign isStudyComplete = action.isStudyComplete(item.id, actualPhase.id) /]
                 [#if isStudyComplete]
-                   <span class="icon-20 icon-check" title="Complete"></span> 
-                   [#else]
-                     <span class="icon-20 icon-uncheck" title=""></span> 
-                 [/#if]   
+                    <span class="glyphicon glyphicon-ok-sign mf-icon check" title="Complete"></span> 
+                  [#else]
+                    <span class="glyphicon glyphicon-exclamation-sign mf-icon" title="Incomplete"></span>
+                [/#if]   
                </td>
                             
               <td class="text-center">

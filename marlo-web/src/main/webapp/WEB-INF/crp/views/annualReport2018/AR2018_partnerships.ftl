@@ -69,8 +69,7 @@
                       <div class="form-group">
                         [#-- Word Document Tag --]
                         [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
-                    
-                        [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.summary" help="${customLabel}.summary.help" className="limitWords-300" helpIcon=false required=true editable=editable allowTextEditor=true /]
+                        [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.summary" help="${customLabel}.summary.help" className="limitWords-300" helpIcon=false required=true editable=editable allowTextEditor=true /]  
                       </div>
                     [#else]
                       <div class="textArea">
@@ -80,10 +79,20 @@
                     [/#if]
                     <br />
                   </div>
-                
                   
                   [#-- Table 8: Key external partnerships --]
                   [#if PMU]
+                    [#-- Missing fields in FPs --]
+                    [#if listOfFlagships?has_content]
+                      <div class="missingFieldFp">
+                        <div><span class="glyphicon glyphicon-exclamation-sign mffp-icon" title="Incomplete"></span> Missing fields in
+                        [#list listOfFlagships as fp]
+                         ${fp}[#if fp?index !=(listOfFlagships?size-1) ],[/#if]
+                        [/#list]
+                        </div>
+                       </div>
+                       </br>
+                    [/#if]
                     <div class="form-group">
                       [#-- Word Document Tag --]
                       [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
@@ -188,12 +197,21 @@
                       </div>
                       
                       <hr />
+                      [#-- Missing fields in FPs --]
+                      [#if listOfFlagships?has_content]
+                        <div class="missingFieldFp">
+                          <div><span class="glyphicon glyphicon-exclamation-sign mffp-icon" title="Incomplete"></span> Missing fields in
+                          [#list listOfFlagships as fp]
+                           ${fp}[#if fp?index !=(listOfFlagships?size-1) ],[/#if]
+                          [/#list]
+                          </div>
+                         </div>
+                      [/#if]
                     [#else]
                     [#-- <div class="form-group">
                        [@utils.tableText value=(reportSynthesis.reportSynthesisKeyPartnership.crossCGIAR)!'' nobr=false emptyText="global.prefilledByPmu" /] 
                     </div> --]
                     [/#if]
-                  
                   [#-- Table 9: Internal Cross-CGIAR Collaborations --]
                   <div class="form-group">
                     <br />
