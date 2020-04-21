@@ -486,3 +486,12 @@ div#chart13 {
 .mt-1{
   margin-top: 4px;
 }
+
+.evidenceD-export {
+  margin-right: 5px;
+}
+
+.missingFieldFp{
+  margin-top: 16px;
+  text-align-last: right;
+}

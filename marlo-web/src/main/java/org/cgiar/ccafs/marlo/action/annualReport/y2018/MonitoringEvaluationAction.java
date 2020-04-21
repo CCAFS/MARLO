@@ -128,6 +128,7 @@ public class MonitoringEvaluationAction extends BaseAction {
   private List<ProjectExpectedStudy> selectedExpectedSt;
   private Map<Integer, String> statuses;
   private boolean tableComplete;
+  private List<String> listOfFlagships;
 
   @Inject
   public MonitoringEvaluationAction(APConfig config, GlobalUnitManager crpManager,
@@ -305,7 +306,6 @@ public class MonitoringEvaluationAction extends BaseAction {
     return flagshipPlannedList;
   }
 
-
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null && c.isActive()
@@ -355,9 +355,44 @@ public class MonitoringEvaluationAction extends BaseAction {
     return flagshipMeliaProgress;
   }
 
-
   public List<PowbEvidencePlannedStudyDTO> getFlagshipPlannedList() {
     return flagshipPlannedList;
+  }
+
+
+  public void getFlagshipsWithMissingFields() {
+    String flagshipsIncomplete = "";
+    listOfFlagships = new ArrayList<>();
+    SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
+      "Reporting", this.getActualPhase().getYear(), false, "melia");
+
+    if (sectionStatus != null && sectionStatus.getMissingFields() != null && !sectionStatus.getMissingFields().isEmpty()
+      && sectionStatus.getMissingFields().length() != 0 && sectionStatus.getSynthesisFlagships() != null
+      && !sectionStatus.getSynthesisFlagships().isEmpty()
+      && sectionStatus.getMissingFields().contains("synthesis.AR2019Table9/10")) {
+      flagshipsIncomplete = sectionStatus.getSynthesisFlagships();
+    }
+
+
+    if (flagshipsIncomplete != null && !flagshipsIncomplete.isEmpty()) {
+      String textToSeparate = flagshipsIncomplete;
+      String separator = ";";
+      String[] arrayText = textToSeparate.split(separator);
+      for (String element : arrayText) {
+        listOfFlagships.add(element);
+      }
+    }
+
+    /*
+     * List<String> arraylist = new ArrayList<>();
+     * String textToSeparate = "Go,PHP,JavaScript,Python";
+     * String separator = ";";
+     * String[] arrayText = textToSeparate.split(separator);
+     * for (String element : arrayText) {
+     * arraylist.add(element);
+     * }
+     */
+
   }
 
   public List<ReportSynthesisMeliaEvaluation> getFpSynthesisTable() {
@@ -374,6 +409,10 @@ public class MonitoringEvaluationAction extends BaseAction {
 
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
+  }
+
+  public List<String> getListOfFlagships() {
+    return listOfFlagships;
   }
 
   public GlobalUnit getLoggedCrp() {
@@ -565,6 +604,7 @@ public class MonitoringEvaluationAction extends BaseAction {
       liaisonInstitutionID = reportSynthesisDB.getLiaisonInstitution().getId();
       liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
 
+      this.getFlagshipsWithMissingFields();
       // Able to PMU Also
       this.studiesList(phase.getId(), liaisonInstitution);
 
@@ -1060,6 +1100,10 @@ public class MonitoringEvaluationAction extends BaseAction {
 
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
+  }
+
+  public void setListOfFlagships(List<String> listOfFlagships) {
+    this.listOfFlagships = listOfFlagships;
   }
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
