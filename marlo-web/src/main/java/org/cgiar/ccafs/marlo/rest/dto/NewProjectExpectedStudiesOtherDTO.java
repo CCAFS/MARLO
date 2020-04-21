@@ -28,7 +28,7 @@ public class NewProjectExpectedStudiesOtherDTO {
   private Long project;
 
   @ApiModelProperty(notes = "Project expected studies other info", position = 2)
-  private NewProjectExpectedStudiesOtherInfoDTO newProjectExpectedStudiesOtherInfoDTO;
+  private NewProjectExpectedStudiesOtherInfoDTO newProjectExpectedStudiesOtherInfo;
 
   @ApiModelProperty(notes = "Geographic scope code list", position = 3)
   private List<String> geographicScopes;
@@ -42,17 +42,24 @@ public class NewProjectExpectedStudiesOtherDTO {
   @ApiModelProperty(notes = "Other geographic areas", position = 6)
   private String scopeComments;
 
+
   @ApiModelProperty(notes = "CGIAR SLO target code list", position = 8)
   private List<String> srfSloTargetList;
+
+
+  @ApiModelProperty(notes = "CGIAR Sub-IDOs SMO code List", position = 10)
+  private List<NewSrfSubIdoDTO> srfSubIdoList;
+
 
   @ApiModelProperty(notes = "Comments", position = 9)
   private String comments;
 
+  @ApiModelProperty(notes = "phase (POWB, AR, UpKeep)", position = 14)
+  private PhaseDTO phase;
 
   public String getComments() {
     return comments;
   }
-
 
   public List<String> getCountries() {
     return countries;
@@ -64,8 +71,13 @@ public class NewProjectExpectedStudiesOtherDTO {
   }
 
 
-  public NewProjectExpectedStudiesOtherInfoDTO getNewProjectExpectedStudiesOtherInfoDTO() {
-    return newProjectExpectedStudiesOtherInfoDTO;
+  public NewProjectExpectedStudiesOtherInfoDTO getNewProjectExpectedStudiesOtherInfo() {
+    return newProjectExpectedStudiesOtherInfo;
+  }
+
+
+  public PhaseDTO getPhase() {
+    return phase;
   }
 
 
@@ -89,6 +101,11 @@ public class NewProjectExpectedStudiesOtherDTO {
   }
 
 
+  public List<NewSrfSubIdoDTO> getSrfSubIdoList() {
+    return srfSubIdoList;
+  }
+
+
   public void setComments(String comments) {
     this.comments = comments;
   }
@@ -104,9 +121,14 @@ public class NewProjectExpectedStudiesOtherDTO {
   }
 
 
-  public void setNewProjectExpectedStudiesOtherInfoDTO(
-    NewProjectExpectedStudiesOtherInfoDTO newProjectExpectedStudiesOtherInfoDTO) {
-    this.newProjectExpectedStudiesOtherInfoDTO = newProjectExpectedStudiesOtherInfoDTO;
+  public void
+    setNewProjectExpectedStudiesOtherInfo(NewProjectExpectedStudiesOtherInfoDTO newProjectExpectedStudiesOtherInfo) {
+    this.newProjectExpectedStudiesOtherInfo = newProjectExpectedStudiesOtherInfo;
+  }
+
+
+  public void setPhase(PhaseDTO phase) {
+    this.phase = phase;
   }
 
 
@@ -127,6 +149,11 @@ public class NewProjectExpectedStudiesOtherDTO {
 
   public void setSrfSloTargetList(List<String> srfSloTargetList) {
     this.srfSloTargetList = srfSloTargetList;
+  }
+
+
+  public void setSrfSubIdoList(List<NewSrfSubIdoDTO> srfSubIdoList) {
+    this.srfSubIdoList = srfSubIdoList;
   }
 
 

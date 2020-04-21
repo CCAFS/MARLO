@@ -35,6 +35,7 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressMilesto
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressOutcomeMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
+import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
@@ -58,6 +59,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressCrossCutt
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressMilestone;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcome;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestone;
+import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -82,11 +84,15 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 public class OutcomesMilestonesAction extends BaseAction {
+
+  private static Logger LOG = LoggerFactory.getLogger(OutcomeMilestonesValidator.class);
 
 
   private static final long serialVersionUID = -6827326398431411479L;
@@ -94,8 +100,7 @@ public class OutcomesMilestonesAction extends BaseAction {
 
   // Managers
   private GlobalUnitManager crpManager;
-
-
+  private SectionStatusManager sectionStatusManager;
   private LiaisonInstitutionManager liaisonInstitutionManager;
 
 
@@ -146,8 +151,7 @@ public class OutcomesMilestonesAction extends BaseAction {
 
   // variables
   private String transaction;
-
-
+  private String flagshipsIncomplete;
   private ReportSynthesis reportSynthesis;
 
 
@@ -182,7 +186,7 @@ public class OutcomesMilestonesAction extends BaseAction {
     RepIndMilestoneReasonManager repIndMilestoneReasonManager,
     ReportSynthesisFlagshipProgressOutcomeManager reportSynthesisFlagshipProgressOutcomeManager,
     ReportSynthesisFlagshipProgressOutcomeMilestoneManager reportSynthesisFlagshipProgressOutcomeMilestoneManager,
-    CrpProgramOutcomeManager crpProgramOutcomeManager) {
+    CrpProgramOutcomeManager crpProgramOutcomeManager, SectionStatusManager sectionStatusManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -206,6 +210,7 @@ public class OutcomesMilestonesAction extends BaseAction {
     this.reportSynthesisFlagshipProgressOutcomeMilestoneManager =
       reportSynthesisFlagshipProgressOutcomeMilestoneManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
+    this.sectionStatusManager = sectionStatusManager;
   }
 
 
@@ -304,6 +309,39 @@ public class OutcomesMilestonesAction extends BaseAction {
     return flagships;
   }
 
+  public void getFlagshipsWithMissingFields() {
+    SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
+      "Reporting", this.getActualPhase().getYear(), false, "outomesMilestones");
+
+    if (sectionStatus != null && sectionStatus.getMissingFields() != null && !sectionStatus.getMissingFields().isEmpty()
+      && sectionStatus.getMissingFields().length() != 0 && sectionStatus.getSynthesisFlagships() != null
+      && !sectionStatus.getSynthesisFlagships().isEmpty()
+      && sectionStatus.getMissingFields().contains("synthesis.AR2019Table5")) {
+      flagshipsIncomplete = sectionStatus.getSynthesisFlagships();
+    }
+
+    List<String> listOfFlagships = new ArrayList<>();
+    if (flagshipsIncomplete != null && !flagshipsIncomplete.isEmpty()) {
+      String textToSeparate = flagshipsIncomplete;
+      String separator = ";";
+      String[] arrayText = textToSeparate.split(separator);
+      for (String element : arrayText) {
+        listOfFlagships.add(element);
+      }
+    }
+
+    /*
+     * List<String> arraylist = new ArrayList<>();
+     * String textToSeparate = "Go,PHP,JavaScript,Python";
+     * String separator = ";";
+     * String[] arrayText = textToSeparate.split(separator);
+     * for (String element : arrayText) {
+     * arraylist.add(element);
+     * }
+     */
+
+  }
+
   public List<RepIndGenderYouthFocusLevel> getFocusLevels() {
     return focusLevels;
   }
@@ -323,6 +361,7 @@ public class OutcomesMilestonesAction extends BaseAction {
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
+
 
   /**
    * Get the information for the Milestones in the form
@@ -379,7 +418,6 @@ public class OutcomesMilestonesAction extends BaseAction {
       return null;
     }
   }
-
 
   public List<CrpProgramOutcome> getOutcomes() {
     return outcomes;
@@ -710,6 +748,8 @@ public class OutcomesMilestonesAction extends BaseAction {
           reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
         }
 
+        this.getFlagshipsWithMissingFields();
+
 
         if (this.isFlagship()) {
           // Setu up Milestones Flagship Table
@@ -798,12 +838,16 @@ public class OutcomesMilestonesAction extends BaseAction {
     }
     List<Long> ids = new ArrayList<>();
     List<ReportSynthesisFlagshipProgressOutcome> outcomeList = new ArrayList<>();
+    List<ReportSynthesisFlagshipProgressOutcome> toRemoveOutcomeList = new ArrayList<>();
     if (reportSynthesis != null && reportSynthesis.getReportSynthesisFlagshipProgress() != null
-      && reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList() != null) {
+      && reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList() != null
+      && reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList().size() > 0) {
       outcomeList = reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList();
     }
+    // try {
     if (reportSynthesis != null && reportSynthesis.getReportSynthesisFlagshipProgress() != null
-      && reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList() != null) {
+      && reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList() != null
+      && reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList().size() > 0) {
       for (ReportSynthesisFlagshipProgressOutcome outcome : reportSynthesis.getReportSynthesisFlagshipProgress()
         .getOutcomeList()) {
 
@@ -841,14 +885,19 @@ public class OutcomesMilestonesAction extends BaseAction {
               && milestone.getCrpMilestone().getYear() != this.getActualPhase().getYear()) {
               ids.add(outcome.getId());
               if (outcomeList != null) {
-                outcomeList.remove(outcome);
+                toRemoveOutcomeList.add(outcome);
               }
             }
           }
         }
       }
+      if (toRemoveOutcomeList != null) {
+        outcomeList.removeAll(toRemoveOutcomeList);
+      }
     }
-
+    // } catch (Exception e) {
+    // LOG.error("Error getting outcome list: " + e.getMessage());
+    // }
     if (outcomeList != null) {
       outcomeList =
         outcomeList.stream().filter(o -> o.getCrpProgramOutcome() != null && o.getCrpProgramOutcome().getId() != 1997)

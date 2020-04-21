@@ -165,9 +165,9 @@
                <td class="text-center">
                [#assign isStudyComplete  = action.isStudyComplete(item.id, actualPhase.id) /]
                [#if isStudyComplete ]
-                  <span class="icon-20 icon-check" title="Complete"></span> 
+                  <span class="glyphicon glyphicon-ok-sign mf-icon check" title="Complete"></span> 
                 [#else]
-                  <span class="icon-20 icon-uncheck" title=""></span> 
+                  <span class="glyphicon glyphicon-exclamation-sign mf-icon" title="Incomplete"></span> 
               [/#if] 
              [/#if]  
               </td>
