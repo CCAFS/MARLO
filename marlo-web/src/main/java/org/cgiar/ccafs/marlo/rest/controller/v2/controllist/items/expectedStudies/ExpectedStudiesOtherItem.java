@@ -58,12 +58,15 @@ import org.cgiar.ccafs.marlo.data.model.StudyType;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectExpectedStudiesOtherDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewSrfSubIdoDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectExpectedStudiesOtherDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
 import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
+import org.cgiar.ccafs.marlo.rest.mappers.ProjectExpectedStudiesOtherMapper;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -71,6 +74,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @Named
 public class ExpectedStudiesOtherItem<T> {
@@ -93,6 +98,9 @@ public class ExpectedStudiesOtherItem<T> {
   private ProjectExpectedStudySrfTargetManager projectExpectedStudySrfTargetManager;
   private ProjectExpectedStudySubIdoManager projectExpectedStudySubIdoManager;
 
+  private ProjectExpectedStudiesOtherMapper projectExpectedStudiesOtherMapper;
+
+
   @Inject
   public ExpectedStudiesOtherItem(GlobalUnitManager globalUnitManager, PhaseManager phaseManager,
     ProjectManager projectManager, StudyTypeManager studyTypeManager, GeneralStatusManager generalStatusManager,
@@ -105,7 +113,8 @@ public class ExpectedStudiesOtherItem<T> {
     ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager,
     ProjectExpectedStudyRegionManager projectExpectedStudyRegionManager,
     ProjectExpectedStudySrfTargetManager projectExpectedStudySrfTargetManager,
-    ProjectExpectedStudySubIdoManager projectExpectedStudySubIdoManager) {
+    ProjectExpectedStudySubIdoManager projectExpectedStudySubIdoManager,
+    ProjectExpectedStudiesOtherMapper projectExpectedStudiesOtherMapper) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.projectManager = projectManager;
@@ -123,6 +132,8 @@ public class ExpectedStudiesOtherItem<T> {
     this.projectExpectedStudyRegionManager = projectExpectedStudyRegionManager;
     this.projectExpectedStudySrfTargetManager = projectExpectedStudySrfTargetManager;
     this.projectExpectedStudySubIdoManager = projectExpectedStudySubIdoManager;
+
+    this.projectExpectedStudiesOtherMapper = projectExpectedStudiesOtherMapper;
 
   }
 
@@ -226,17 +237,18 @@ public class ExpectedStudiesOtherItem<T> {
           fieldErrors.add(new FieldErrorDTO("createExpectedStudyOther", "Year", "Please insert a valid year"));
         }
         projectExpectedStudyInfo.setPhase(phase);
-
-
         projectExpectedStudyInfo.setCommissioningStudy(
           newProjectExpectedStudiesOther.getNewProjectExpectedStudiesOtherInfo().getCommissioningStudy());
-
-        wordCount = this.countWords(newProjectExpectedStudiesOther.getScopeComments());
+        projectExpectedStudyInfo.setMELIAPublications(
+          newProjectExpectedStudiesOther.getNewProjectExpectedStudiesOtherInfo().getMELIAPublications());
+        wordCount =
+          this.countWords(newProjectExpectedStudiesOther.getNewProjectExpectedStudiesOtherInfo().getScopeComments());
         if (wordCount > 30) {
           fieldErrors.add(new FieldErrorDTO("createExpectedStudyOther", "ScopeComments",
             "Scope Comments excedes the maximum number of words (30 words)"));
         } else {
-          projectExpectedStudyInfo.setScopeComments(newProjectExpectedStudiesOther.getScopeComments());
+          projectExpectedStudyInfo.setScopeComments(
+            newProjectExpectedStudiesOther.getNewProjectExpectedStudiesOtherInfo().getScopeComments());
         }
 
         wordCount =
@@ -499,6 +511,86 @@ public class ExpectedStudiesOtherItem<T> {
           .collect(Collectors.toList()));
     }
     return expectedStudyID;
+  }
+
+  public ResponseEntity<ProjectExpectedStudiesOtherDTO> findExpectedStudyById(Long id, String CGIARentityAcronym,
+    Integer repoYear, String repoPhase, User user) {
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
+    if (globalUnitEntity == null) {
+      fieldErrors.add(new FieldErrorDTO("findExpectedStudy", "GlobalUnitEntity",
+        CGIARentityAcronym + " is not a valid CGIAR entity acronym"));
+    } else {
+      if (!globalUnitEntity.isActive()) {
+        fieldErrors.add(new FieldErrorDTO("findExpectedStudy", "GlobalUnitEntity",
+          "The Global Unit with acronym " + CGIARentityAcronym + " is not active."));
+      }
+
+    }
+
+    Phase phase =
+      this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
+        && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().orElse(null);
+    if (phase == null) {
+      fieldErrors
+        .add(new FieldErrorDTO("findExpectedStudyOther", "phase", repoPhase + ' ' + repoYear + " is an invalid phase"));
+    }
+
+    ProjectExpectedStudy projectExpectedStudy = projectExpectedStudyManager.getProjectExpectedStudyById(id.longValue());
+    if (projectExpectedStudy != null && fieldErrors.isEmpty()) {
+      ProjectExpectedStudyInfo projectExpectedStudyInfo = projectExpectedStudy.getProjectExpectedStudyInfo(phase);
+      // SubIDOs
+      List<ProjectExpectedStudySubIdo> projectExpectedStudySubIdoList =
+        projectExpectedStudy.getProjectExpectedStudySubIdos().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+      projectExpectedStudy.setSubIdos(projectExpectedStudySubIdoList);
+      if (projectExpectedStudyInfo.getIsSrfTarget() != null
+        && projectExpectedStudyInfo.getIsSrfTarget().equals("targetsOptionYes")) {
+        // SrfSlo
+        List<ProjectExpectedStudySrfTarget> projectExpectedStudySrfTargetList =
+          projectExpectedStudy.getProjectExpectedStudySrfTargets().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+        projectExpectedStudy.setSrfTargets(projectExpectedStudySrfTargetList);
+      } else {
+        List<ProjectExpectedStudySrfTarget> projectExpectedStudySrfTargetList =
+          new ArrayList<ProjectExpectedStudySrfTarget>();
+        projectExpectedStudy.setSrfTargets(projectExpectedStudySrfTargetList);
+      }
+
+      // GeographicScope
+      List<ProjectExpectedStudyGeographicScope> projectExpectedStudyGeographicScopeList =
+        projectExpectedStudy.getProjectExpectedStudyGeographicScopes().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+      projectExpectedStudy.setGeographicScopes(projectExpectedStudyGeographicScopeList);
+      // Regions
+      List<ProjectExpectedStudyRegion> projectExpectedStudyRegionList = projectExpectedStudyRegionManager
+        .findAll().stream().filter(c -> c.isActive()
+          && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
+        .collect(Collectors.toList());
+      projectExpectedStudy.setStudyRegions(projectExpectedStudyRegionList);
+      // Countries
+      List<ProjectExpectedStudyCountry> projectExpectedStudyCountryList = projectExpectedStudyCountryManager
+        .findAll().stream().filter(c -> c.isActive()
+          && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
+        .collect(Collectors.toList());
+      projectExpectedStudy.setCountries(projectExpectedStudyCountryList);
+    } else {
+      fieldErrors.add(new FieldErrorDTO("findExpectedStudyOther", "ProjectExpectedStudyEntity",
+        id + " is an invalid Project Expected Study Code"));
+    }
+
+    if (!fieldErrors.isEmpty()) {
+      fieldErrors.forEach(e -> System.out.println(e.getMessage()));
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
+    }
+
+    return Optional.ofNullable(projectExpectedStudy)
+      .map(this.projectExpectedStudiesOtherMapper::projectExpectedStudyToProjectExpectedStudiesOtherDTO)
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
   public Long tryParseLong(String value, List<FieldErrorDTO> fieldErrors, String httpMethod, String field) {
