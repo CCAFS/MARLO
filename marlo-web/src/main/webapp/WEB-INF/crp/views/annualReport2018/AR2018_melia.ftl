@@ -73,7 +73,7 @@
                     <button type="button" class="btn btn-default btn-xs pull-right" data-toggle="modal" data-target="#modal-policies">
                        <span class="glyphicon glyphicon-fullscreen"></span> See Full table 10
                     </button>
-                    [#-- Missing fields in FPs --]
+                    [#-- Missing fields in FPs --] [#--
                     [#if listOfFlagships?has_content]
                       </br>
                       <div class="missingFieldFp">
@@ -83,7 +83,7 @@
                         [/#list]
                         </div>
                        </div>
-                    [/#if]
+                    [/#if]--]
                     <h4 class="subTitle headTitle annualReport-table">[@s.text name="${customLabel}.table10.title" /]</h4>
                     [@customForm.helpLabel name="${customLabel}.table10.help" showIcon=false editable=editable/]
                     [#-- Modal --]
