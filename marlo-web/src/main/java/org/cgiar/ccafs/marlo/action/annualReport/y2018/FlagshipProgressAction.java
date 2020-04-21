@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
+import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -32,6 +33,7 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
+import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -71,6 +73,7 @@ public class FlagshipProgressAction extends BaseAction {
   private CrpProgramManager crpProgramManager;
   private FlagshipProgress2018Validator validator;
   private ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager;
+  private SectionStatusManager sectionStatusManager;
 
   // variables
   private String transaction;
@@ -82,6 +85,7 @@ public class FlagshipProgressAction extends BaseAction {
   private List<LiaisonInstitution> liaisonInstitutions;
   private List<ReportSynthesisFlagshipProgress> flagshipsReportSynthesisFlagshipProgress;
   private boolean hasFlagshipProgress;
+  private List<String> listOfFlagships;
 
 
   @Inject
@@ -89,7 +93,8 @@ public class FlagshipProgressAction extends BaseAction {
     LiaisonInstitutionManager liaisonInstitutionManager, ReportSynthesisManager reportSynthesisManager,
     AuditLogManager auditLogManager, UserManager userManager, CrpProgramManager crpProgramManager,
     FlagshipProgress2018Validator validator,
-    ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager) {
+    ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
+    SectionStatusManager sectionStatusManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -99,6 +104,7 @@ public class FlagshipProgressAction extends BaseAction {
     this.crpProgramManager = crpProgramManager;
     this.validator = validator;
     this.reportSynthesisFlagshipProgressManager = reportSynthesisFlagshipProgressManager;
+    this.sectionStatusManager = sectionStatusManager;
   }
 
 
@@ -124,10 +130,45 @@ public class FlagshipProgressAction extends BaseAction {
     return flagshipsReportSynthesisFlagshipProgress;
   }
 
+  public void getFlagshipsWithMissingFields() {
+    String flagshipsIncomplete = "";
+    listOfFlagships = new ArrayList<>();
+    SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
+      "Reporting", this.getActualPhase().getYear(), false, "flagshipProgress");
+
+    if (sectionStatus != null && sectionStatus.getMissingFields() != null && !sectionStatus.getMissingFields().isEmpty()
+      && sectionStatus.getMissingFields().length() != 0 && sectionStatus.getSynthesisFlagships() != null
+      && !sectionStatus.getSynthesisFlagships().isEmpty()
+      && sectionStatus.getMissingFields().contains("flagshipProgress1")) {
+      flagshipsIncomplete = sectionStatus.getSynthesisFlagships();
+    }
+
+
+    if (flagshipsIncomplete != null && !flagshipsIncomplete.isEmpty()) {
+      String textToSeparate = flagshipsIncomplete;
+      String separator = ";";
+      String[] arrayText = textToSeparate.split(separator);
+      for (String element : arrayText) {
+        listOfFlagships.add(element);
+      }
+    }
+
+    /*
+     * List<String> arraylist = new ArrayList<>();
+     * String textToSeparate = "Go,PHP,JavaScript,Python";
+     * String separator = ";";
+     * String[] arrayText = textToSeparate.split(separator);
+     * for (String element : arrayText) {
+     * arraylist.add(element);
+     * }
+     */
+
+  }
+
+
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
-
 
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
@@ -137,10 +178,14 @@ public class FlagshipProgressAction extends BaseAction {
     return liaisonInstitutions;
   }
 
+
+  public List<String> getListOfFlagships() {
+    return listOfFlagships;
+  }
+
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
-
 
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
@@ -153,6 +198,7 @@ public class FlagshipProgressAction extends BaseAction {
   public String getTransaction() {
     return transaction;
   }
+
 
   public boolean isFlagship() {
     boolean isFP = false;
@@ -171,7 +217,6 @@ public class FlagshipProgressAction extends BaseAction {
   public boolean isHasFlagshipProgress() {
     return hasFlagshipProgress;
   }
-
 
   @Override
   public boolean isPMU() {
@@ -361,6 +406,7 @@ public class FlagshipProgressAction extends BaseAction {
 
   }
 
+
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -425,20 +471,20 @@ public class FlagshipProgressAction extends BaseAction {
     }
   }
 
+
   public void setFlagshipsReportSynthesisFlagshipProgress(
     List<ReportSynthesisFlagshipProgress> flagshipsReportSynthesisFlagshipProgress) {
     this.flagshipsReportSynthesisFlagshipProgress = flagshipsReportSynthesisFlagshipProgress;
   }
 
-
   public void setHasFlagshipProgress(boolean hasFlagshipProgress) {
     this.hasFlagshipProgress = hasFlagshipProgress;
   }
 
-
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
+
 
   public void setLiaisonInstitutionID(Long liaisonInstitutionID) {
     this.liaisonInstitutionID = liaisonInstitutionID;
@@ -446,6 +492,10 @@ public class FlagshipProgressAction extends BaseAction {
 
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
+  }
+
+  public void setListOfFlagships(List<String> listOfFlagships) {
+    this.listOfFlagships = listOfFlagships;
   }
 
 
@@ -458,7 +508,6 @@ public class FlagshipProgressAction extends BaseAction {
     this.reportSynthesis = reportSynthesis;
   }
 
-
   public void setSynthesisID(Long synthesisID) {
     this.synthesisID = synthesisID;
   }
@@ -466,7 +515,6 @@ public class FlagshipProgressAction extends BaseAction {
   public void setTransaction(String transaction) {
     this.transaction = transaction;
   }
-
 
   @Override
   public void validate() {
