@@ -168,9 +168,6 @@ public class OutcomesMilestonesAction extends BaseAction {
   private List<CrpProgramOutcome> outcomes;
   private List<CrpProgram> flagships;
 
-  // Flagships with missing information
-  private List<CrpProgram> flagshipsList;
-
   private List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers;
   private List<RepIndGenderYouthFocusLevel> focusLevels;
   private List<RepIndMilestoneReason> reasons;

@@ -228,13 +228,6 @@ public class SrfProgressValidator extends BaseValidator {
       }
 
 
-      if (!action.getFieldErrors().isEmpty()) {
-        action.addActionError(action.getText("saving.fields.required"));
-      } else if (action.getValidationMessage().length() > 0) {
-        action.addActionMessage(
-          " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
-      }
-
       String flagshipsWithMisingInformation = "";
       // Get all liaison institutions for current CRP
       List<LiaisonInstitution> liaisonInstitutionsFromCrp = liaisonInstitutionManager.findAll().stream()
@@ -311,6 +304,13 @@ public class SrfProgressValidator extends BaseValidator {
             }
           }
         }
+      }
+
+      if (!action.getFieldErrors().isEmpty()) {
+        action.addActionError(action.getText("saving.fields.required"));
+      } else if (action.getValidationMessage().length() > 0) {
+        action.addActionMessage(
+          " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
       }
 
       try {
