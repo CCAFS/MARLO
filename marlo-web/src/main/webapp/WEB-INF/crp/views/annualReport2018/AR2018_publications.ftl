@@ -12,7 +12,7 @@
   "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20200310",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js"
   ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20190621"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20200420"] /]
 
 [#assign breadCrumb = [
   {"label":"${currentSection}",   "nameSpace":"",             "action":""},
@@ -121,8 +121,8 @@
             
 
               <div class="form-group btn-group btn-group-sm pull-right" role="group" aria-label="...">
-                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-evidenceC"><span class="glyphicon glyphicon-fullscreen"></span> Table 6 to export</button>
-                <button type="button" class="btn btn-default btn-xs pull-right" data-toggle="modal" data-target="#modal-publications"><span class="glyphicon glyphicon-fullscreen"></span> See Full table 6</button>
+                <button type="button" class="btn btn-default evidenceD-export" data-toggle="modal" data-target="#modal-evidenceC"><span class="glyphicon glyphicon-fullscreen"></span> Export Evidence D</button>
+                <button type="button" class="btn btn-default btn-xs pull-right" data-toggle="modal" data-target="#modal-publications"><span class="glyphicon glyphicon-fullscreen"></span> See Full Evidence D</button>
               </div>
               
               
@@ -132,9 +132,10 @@
                   <div class="modal-content">
                     <div class="modal-header">
                       <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                      <h4 class="modal-title" id="myModalLabel"> Full Publications List to export</h4>
+                      <h4 class="modal-title" id="myModalLabel">Export Evidence D: Full Publications List</h4>
                     </div>
                     <div class="modal-body">
+                      <small><i>[@s.text name="${customLabel}.export.evidenceD.help" /]</i></small>
                       [#-- Full table --]
                       <div class="dataTableExport">
                         [@listOfPublicationsToExport name="fullList" list=(deliverables)![] /]
