@@ -266,14 +266,11 @@ public class ExpectedStudiesItem<T> {
             && p.getYear() == newProjectExpectedStudy.getPhase().getYear()
             && p.getName().equalsIgnoreCase(newProjectExpectedStudy.getPhase().getName()))
           .findFirst().orElse(null);
-
         if (phase == null) {
           fieldErrors.add(new FieldErrorDTO("createExpectedStudy", "phase", newProjectExpectedStudy.getPhase().getName()
             + ' ' + newProjectExpectedStudy.getPhase().getYear() + " is an invalid phase"));
         }
-
       }
-
     }
 
     Project project = null;
