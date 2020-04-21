@@ -82,17 +82,6 @@
                   
                   [#-- Table 8: Key external partnerships --]
                   [#if PMU]
-                    [#-- Missing fields in FPs --]
-                    [#if listOfFlagships?has_content]
-                      <div class="missingFieldFp">
-                        <div><span class="glyphicon glyphicon-exclamation-sign mffp-icon" title="Incomplete"></span> Missing fields in
-                        [#list listOfFlagships as fp]
-                         ${fp}[#if fp?index !=(listOfFlagships?size-1) ],[/#if]
-                        [/#list]
-                        </div>
-                       </div>
-                       </br>
-                    [/#if]
                     <div class="form-group">
                       [#-- Word Document Tag --]
                       [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
@@ -197,16 +186,6 @@
                       </div>
                       
                       <hr />
-                      [#-- Missing fields in FPs --]
-                      [#if listOfFlagships?has_content]
-                        <div class="missingFieldFp">
-                          <div><span class="glyphicon glyphicon-exclamation-sign mffp-icon" title="Incomplete"></span> Missing fields in
-                          [#list listOfFlagships as fp]
-                           ${fp}[#if fp?index !=(listOfFlagships?size-1) ],[/#if]
-                          [/#list]
-                          </div>
-                         </div>
-                      [/#if]
                     [#else]
                     [#-- <div class="form-group">
                        [@utils.tableText value=(reportSynthesis.reportSynthesisKeyPartnership.crossCGIAR)!'' nobr=false emptyText="global.prefilledByPmu" /] 
