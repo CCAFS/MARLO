@@ -59,8 +59,10 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectExpectedStudiesOtherDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewSrfSubIdoDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
+import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -122,6 +124,17 @@ public class ExpectedStudiesOtherItem<T> {
     this.projectExpectedStudySrfTargetManager = projectExpectedStudySrfTargetManager;
     this.projectExpectedStudySubIdoManager = projectExpectedStudySubIdoManager;
 
+  }
+
+  private int countWords(String string) {
+    int wordCount = 0;
+    string = StringUtils.stripToEmpty(string);
+    if (!string.isEmpty()) {
+      String[] words = StringUtils.split(string);
+      wordCount = words.length;
+    }
+
+    return wordCount;
   }
 
   public Long createExpectedStudy(NewProjectExpectedStudiesOtherDTO newProjectExpectedStudiesOther,
@@ -194,8 +207,15 @@ public class ExpectedStudiesOtherItem<T> {
         ProjectExpectedStudyInfo projectExpectedStudyInfo = new ProjectExpectedStudyInfo();
         if (newProjectExpectedStudiesOther.getNewProjectExpectedStudiesOtherInfo().getTitle() != null
           && !newProjectExpectedStudiesOther.getNewProjectExpectedStudiesOtherInfo().getTitle().trim().isEmpty()) {
-          projectExpectedStudyInfo
-            .setTitle(newProjectExpectedStudiesOther.getNewProjectExpectedStudiesOtherInfo().getTitle());
+          wordCount =
+            this.countWords(newProjectExpectedStudiesOther.getNewProjectExpectedStudiesOtherInfo().getTitle());
+          if (wordCount > 25) {
+            fieldErrors.add(new FieldErrorDTO("createExpectedStudyOther", "Title",
+              "Title excedes the maximum number of words (25 words)"));
+          } else {
+            projectExpectedStudyInfo
+              .setTitle(newProjectExpectedStudiesOther.getNewProjectExpectedStudiesOtherInfo().getTitle());
+          }
         } else {
           fieldErrors.add(new FieldErrorDTO("createExpectedStudyOther", "Title", "Please insert a valid title"));
         }
@@ -203,12 +223,32 @@ public class ExpectedStudiesOtherItem<T> {
           projectExpectedStudyInfo
             .setYear(newProjectExpectedStudiesOther.getNewProjectExpectedStudiesOtherInfo().getYear());
         } else {
-          fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Year", "Please insert a valid year"));
+          fieldErrors.add(new FieldErrorDTO("createExpectedStudyOther", "Year", "Please insert a valid year"));
         }
         projectExpectedStudyInfo.setPhase(phase);
+
+
         projectExpectedStudyInfo.setCommissioningStudy(
           newProjectExpectedStudiesOther.getNewProjectExpectedStudiesOtherInfo().getCommissioningStudy());
-        projectExpectedStudyInfo.setScopeComments(newProjectExpectedStudiesOther.getScopeComments());
+
+        wordCount = this.countWords(newProjectExpectedStudiesOther.getScopeComments());
+        if (wordCount > 30) {
+          fieldErrors.add(new FieldErrorDTO("createExpectedStudyOther", "ScopeComments",
+            "Scope Comments excedes the maximum number of words (30 words)"));
+        } else {
+          projectExpectedStudyInfo.setScopeComments(newProjectExpectedStudiesOther.getScopeComments());
+        }
+
+        wordCount =
+          this.countWords(newProjectExpectedStudiesOther.getNewProjectExpectedStudiesOtherInfo().getStudyDescription());
+        if (wordCount > 100) {
+          fieldErrors.add(new FieldErrorDTO("createExpectedStudyOther", "Description",
+            "Description excedes the maximum number of words (100 words)"));
+        } else {
+          projectExpectedStudyInfo.setTopLevelComments(
+            newProjectExpectedStudiesOther.getNewProjectExpectedStudiesOtherInfo().getStudyDescription());
+        }
+
         StudyType studyType = null;
         if (newProjectExpectedStudiesOther.getNewProjectExpectedStudiesOtherInfo().getStudyType() != null) {
           studyType = studyTypeManager
@@ -378,8 +418,6 @@ public class ExpectedStudiesOtherItem<T> {
                 new FieldErrorDTO("createExpectedStudyOther", "SubIDO", "There can not be more than three SubIDO(s)."));
             }
           }
-
-
         }
         if (fieldErrors.size() == 0 && project != null) {
           projectExpectedStudy.setPhase(phase.getId());
@@ -442,13 +480,23 @@ public class ExpectedStudiesOtherItem<T> {
                 // to do Set as a primary if is necessary
                 projectExpectedStudySubIdoManager.saveProjectExpectedStudySubIdo(projectExpectedStudySubIdo);
               }
-
             }
           }
 
         }
+      } else {
+        fieldErrors.add(new FieldErrorDTO("createExpectedStudyOther", "Study Info", "There is no Study info"));
+      }
+    }
+    if (!fieldErrors.isEmpty()) {
+      for (FieldErrorDTO errors : fieldErrors) {
+        System.out.println("FieldErrorDTO " + errors.getMessage());
       }
 
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
     }
     return expectedStudyID;
   }
