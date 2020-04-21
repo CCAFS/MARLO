@@ -74,9 +74,22 @@
               
               [#-- Flagship Synthesis (1.2.2)--]
               </br>
+              [#-- Missing fields in FPs --]
+              [#if listOfFlagships?has_content && PMU]]                
+                <div class="missingFieldFp">
+                  <div><span class="glyphicon glyphicon-exclamation-sign mffp-icon" title="Incomplete"></span> Missing fields in
+                  [#list listOfFlagships as fp]
+                   ${fp}[#if fp?index !=(listOfFlagships?size-1) ],[/#if]
+                  [/#list]
+                  </div>
+                 </div>
+                 </br>
+              [/#if]
               <div class="form-group">
-                [#-- Word Document Tag --]
-                [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
+                  [#-- Word Document Tag --]
+                  [#if PMU]
+                  [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                [/#if]
                 <h4 class="simpleTitle">[@s.text name="${customLabel}.progressByFlagships" /]</h4>
                 [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableflagshipSynthesis" list=flagshipsReportSynthesisFlagshipProgress columns=["progressByFlagships", "detailedAnnex"] showTitle=false allInOne=true /]
               </div>
