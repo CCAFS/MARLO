@@ -269,9 +269,9 @@
               <td class="text-center">
               [#assign isInnovationComplete = action.isInnovationComplete(item.id, actualPhase.id) /]
               [#if  isInnovationComplete]
-                <span class="icon-20 icon-check" title="Complete"></span> 
+                <span class="glyphicon glyphicon-ok-sign mf-icon check" title="Complete"></span> 
                 [#else]
-                  <span class="icon-20 icon-uncheck" title=""></span> 
+                  <span class="glyphicon glyphicon-exclamation-sign mf-icon" title="Incomplete"></span> 
               [/#if]   
               </td>
               <td class="text-center">
@@ -297,8 +297,7 @@
   <br />
   [#local oicrUrl][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${element.projectInnovationInfo.projectExpectedStudy.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
   <span>OICR associated: </span><a href="${oicrUrl}" target="_blank">${(element.projectInnovationInfo.projectExpectedStudy.composedName)!'Untitled'}</span></a>  </td>
-    
-    [#local totalContributions = 1 ]
+  [#local totalContributions = 1 ]
     
   [/#if]
 [/#macro]

@@ -32,7 +32,8 @@ public interface StatusPlannedOutcomesMapper {
 
   @Mappings({@Mapping(source = "crpProgramOutcome", target = "outcome"),
     @Mapping(source = "crpProgramOutcome.crpProgram", target = "crpProgram"),
-    @Mapping(source = "crpProgramOutcome.phase", target = "phase"), @Mapping(source = "summary", target = "summary")})
+    @Mapping(source = "crpProgramOutcome.phase", target = "phase"), @Mapping(source = "summary", target = "summary"),
+    @Mapping(source = "milestones", target = "milestones")})
   public abstract StatusPlannedOutcomesDTO reportSynthesisFlagshipProgressOutcomeToStatusPlannedOutcomesDTO(
     ReportSynthesisFlagshipProgressOutcome reportSynthesisFlagshipProgressOutcome);
 

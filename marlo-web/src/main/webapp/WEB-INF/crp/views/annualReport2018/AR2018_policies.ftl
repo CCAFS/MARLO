@@ -305,9 +305,9 @@
           [#-- Is Complete --]
           [#assign isPolicyComplete = action.isPolicyComplete(item.id, actualPhase.id) /]
            [#if isPolicyComplete]
-              <span class="icon-20 icon-check" title="Complete"></span> 
+              <span class="glyphicon glyphicon-ok-sign mf-icon check" title="Complete"></span> 
               [#else]
-                <span class="icon-20 icon-uncheck" title=""></span> 
+                <span class="glyphicon glyphicon-exclamation-sign mf-icon" title="Incomplete"></span> 
             [/#if]   
           </td>
           <td class="text-center">
