@@ -94,6 +94,7 @@ public class PublicationsAction extends BaseAction {
   private GlobalUnit loggedCrp;
   private List<LiaisonInstitution> liaisonInstitutions;
   private List<Deliverable> deliverables;
+  private List<String> emptyFields;
   private Phase actualPhase;
   private Integer totalOpenAccess = 0;
   private Integer totalLimited = 0;
@@ -250,6 +251,23 @@ public class PublicationsAction extends BaseAction {
     return loggedCrp;
   }
 
+  public String getPublicationMissingFields(long id) {
+    String missingFieldsText = "";
+    if (emptyFields != null && !emptyFields.isEmpty()) {
+      if (emptyFields.contains("ID:" + id)) {
+        for (String field : emptyFields) {
+          if (missingFieldsText.isEmpty()) {
+            missingFieldsText = field;
+          } else {
+            missingFieldsText += ", " + field;
+          }
+        }
+      }
+    }
+    return missingFieldsText;
+  }
+
+
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
   }
@@ -304,7 +322,6 @@ public class PublicationsAction extends BaseAction {
     return isFP;
   }
 
-
   @Override
   public boolean isPMU() {
     boolean isFP = false;
@@ -325,7 +342,7 @@ public class PublicationsAction extends BaseAction {
    * @return Boolean object with the status of the study
    */
   public Boolean isPublicationComplete(long deliverableID, long phaseID) {
-    List<String> emptyFields = new ArrayList<>();
+    emptyFields = new ArrayList<>();
     Deliverable deliverable = new Deliverable();
     deliverable = deliverableManager.getDeliverableById(deliverableID);
     int count = 0;
@@ -409,6 +426,7 @@ public class PublicationsAction extends BaseAction {
      */
     // return true;
   }
+
 
   @Override
   public String next() {
@@ -644,11 +662,6 @@ public class PublicationsAction extends BaseAction {
         reportSynthesis.getReportSynthesisFlagshipProgress().getPlannedDeliverables().clear();
       }
     }
-
-  }
-
-
-  public void publicationMissingFields(long id) {
 
   }
 
