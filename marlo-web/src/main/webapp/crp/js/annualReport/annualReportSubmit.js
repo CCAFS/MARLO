@@ -54,8 +54,8 @@ function cancel() {
 
 function submitButtonEvent(e) {
   e.preventDefault();
-  var message = 'Are you sure you want to submit the synthesis now?';
-  message += 'Once submitted, you will no longer have editing rights.';
+  var message = 'Are you sure you want to indicate the Synthesis is ready? ';
+  message += 'From now on the SMO will be able to see your information.';
   noty({
       text: message,
       type: 'confirm',
