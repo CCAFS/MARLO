@@ -16,12 +16,18 @@
 package org.cgiar.ccafs.marlo.action.bi;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.action.projects.ProjectDescriptionAction;
 import org.cgiar.ccafs.marlo.data.manager.BiParametersManager;
 import org.cgiar.ccafs.marlo.data.manager.BiReportsManager;
 import org.cgiar.ccafs.marlo.data.model.BiParameters;
 import org.cgiar.ccafs.marlo.data.model.BiReports;
+import org.cgiar.ccafs.marlo.rest.services.deliverables.AzureClientAPI;
+import org.cgiar.ccafs.marlo.rest.services.deliverables.PowerBiClientAPI;
+import org.cgiar.ccafs.marlo.rest.services.deliverables.model.Datasets;
+import org.cgiar.ccafs.marlo.rest.services.deliverables.model.Identities;
+import org.cgiar.ccafs.marlo.rest.services.deliverables.model.PowerBiBody;
+import org.cgiar.ccafs.marlo.rest.services.deliverables.model.Reports;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -36,7 +42,16 @@ public class BiReportsAction extends BaseAction {
 
   private static final long serialVersionUID = 1329042468240291639L;
 
-  private static final Logger LOG = LoggerFactory.getLogger(ProjectDescriptionAction.class);
+  private static final Logger LOG = LoggerFactory.getLogger(BiReportsAction.class);
+
+  private final String CLIENT_CREDENCIALS = "client_credentials";
+
+  private final int API_TOKEN_URL = 0;
+  private final int AZURE_API_URL = 1;
+  private final int TENANT_ID = 2;
+  private final int SECRET = 3;
+  private final int APP_ID = 4;
+  private final int RESOURCE_URL = 5;
 
   // Managers
   private BiReportsManager biReportsManager;
@@ -50,6 +65,68 @@ public class BiReportsAction extends BaseAction {
   public BiReportsAction(BiReportsManager biReportsManager, BiParametersManager biParametersManager) {
     this.biReportsManager = biReportsManager;
     this.biParametersManager = biParametersManager;
+  }
+
+  private PowerBiBody generatePowerBiBody(String datasetId, String reportId) {
+    PowerBiBody powerBiBody = new PowerBiBody();
+
+    /* Datasets */
+    List<Datasets> datasets = new ArrayList<>();
+    Datasets dataset = new Datasets();
+    dataset.setId(datasetId);
+    datasets.add(dataset);
+    powerBiBody.setDatasets(datasets);
+
+    /* Reports */
+    List<Reports> reports = new ArrayList<>();
+    Reports report = new Reports();
+    report.setId(reportId);
+    reports.add(report);
+    powerBiBody.setReports(reports);
+
+    /* Identities */
+    List<Identities> identities = new ArrayList<>();
+    Identities identitie = new Identities();
+    identitie.setUsername(this.getCurrentUser().getUsername());
+
+    /* Roles */
+    List<String> roles = new ArrayList<>();
+    roles.add(this.getCurrentCrp().getAcronym());
+    identitie.setRoles(roles);
+
+    /* Datasets */
+    List<String> datasetsIdentities = new ArrayList<>();
+    datasetsIdentities.add(datasetId);
+    identitie.setDatasets(datasetsIdentities);
+
+    identities.add(identitie);
+    powerBiBody.setIdentities(identities);
+
+    return powerBiBody;
+  }
+
+
+  public String generateTokenBI(String datasetId, String reportId) {
+
+    AzureClientAPI azureClientAPI =
+      new AzureClientAPI(CLIENT_CREDENCIALS, this.biParameters.get(APP_ID).getParameterValue(),
+        this.biParameters.get(SECRET).getParameterValue(), this.biParameters.get(RESOURCE_URL).getParameterValue());
+
+    String azureApiUrl = this.biParameters.get(AZURE_API_URL).getParameterValue().replace("{tenantID}",
+      this.biParameters.get(TENANT_ID).getParameterValue());
+
+    String bearerToken = azureClientAPI.generateBearerToken(azureApiUrl);
+
+    if (bearerToken != null) {
+      PowerBiClientAPI powerBiClientAPI = new PowerBiClientAPI();
+
+      String token = powerBiClientAPI.generateToken(this.biParameters.get(API_TOKEN_URL).getParameterValue(),
+        bearerToken, this.generatePowerBiBody(datasetId, reportId));
+
+      return token;
+    }
+
+    return null;
   }
 
   public List<BiParameters> getBiParameters() {
