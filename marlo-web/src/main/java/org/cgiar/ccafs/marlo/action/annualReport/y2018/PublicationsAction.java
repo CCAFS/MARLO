@@ -41,7 +41,6 @@ import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressDeliverable;
-import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -326,36 +325,75 @@ public class PublicationsAction extends BaseAction {
    * @return Boolean object with the status of the study
    */
   public Boolean isPublicationComplete(long deliverableID, long phaseID) {
-
+    List<String> emptyFields = new ArrayList<>();
     Deliverable deliverable = new Deliverable();
     deliverable = deliverableManager.getDeliverableById(deliverableID);
-
-    SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByDeliverable(deliverableID, "Reporting",
-      this.getActualPhase().getYear(), false, "deliverableList");
     int count = 0;
-    if (sectionStatus != null && sectionStatus.getMissingFields() != null
-      && sectionStatus.getMissingFields().length() != 0) {
-      // count++;
+    if (deliverable != null) {
 
-      // Volume - Issue - Pages validation - at less one of these fields must be completed
-      if (sectionStatus.getMissingFields().contains("Volume") || sectionStatus.getMissingFields().contains("Issue")
-        || sectionStatus.getMissingFields().contains("Pages")) {
+      if (deliverable.getCrps() == null || deliverable.getCrps().isEmpty()) {
+        emptyFields.add("CRP");
         count++;
       }
 
-      // Journal
-      if (sectionStatus.getMissingFields().contains("Journal")) {
+      if (deliverable.getPublication() != null) {
+
+        // Is publication
+        if (deliverable.getPublication().getIsiPublication() == null) {
+          emptyFields.add("Is publication");
+          count++;
+        }
+      }
+
+      // Authors
+      if (deliverable.getUsers() == null || deliverable.getUsers().isEmpty()) {
+        emptyFields.add("Authors");
         count++;
       }
 
-      // ISI
-      if (sectionStatus.getMissingFields().contains("Is this journal article an ISI publication?")) {
-        count++;
-      }
+      if (deliverable.getMetadata() != null) {
 
+        // Unique identifier (DOI)
+        if (deliverable.getMetadataValue(36) == null || deliverable.getMetadataValue(36).isEmpty()) {
+          emptyFields.add("DOI");
+          count++;
+        }
+        // Date of Publication
+        if (deliverable.getMetadataValue(17) == null || deliverable.getMetadataValue(36).isEmpty()) {
+          emptyFields.add("Date of Publication");
+          count++;
+        }
+        // Article Title
+        if (deliverable.getMetadataValue(1) == null || deliverable.getMetadataValue(36).isEmpty()) {
+          emptyFields.add("Article Title");
+          count++;
+        }
+      }
     }
-
+    /*
+     * SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByDeliverable(deliverableID, "Reporting",
+     * this.getActualPhase().getYear(), false, "deliverableList");
+     * // int count = 0;
+     * if (sectionStatus != null && sectionStatus.getMissingFields() != null
+     * && sectionStatus.getMissingFields().length() != 0) {
+     * // count++;
+     * // Volume - Issue - Pages validation - at less one of these fields must be completed
+     * if (sectionStatus.getMissingFields().contains("Volume") || sectionStatus.getMissingFields().contains("Issue")
+     * || sectionStatus.getMissingFields().contains("Pages")) {
+     * count++;
+     * }
+     * // Journal
+     * if (sectionStatus.getMissingFields().contains("Journal")) {
+     * count++;
+     * }
+     * // ISI
+     * if (sectionStatus.getMissingFields().contains("Is this journal article an ISI publication?")) {
+     * count++;
+     * }
+     * }
+     */
     if (count == 0) {
+      emptyFields.add("ID:" + deliverable.getId());
       return true;
     } else {
       return false;
@@ -371,7 +409,6 @@ public class PublicationsAction extends BaseAction {
      */
     // return true;
   }
-
 
   @Override
   public String next() {
@@ -607,6 +644,11 @@ public class PublicationsAction extends BaseAction {
         reportSynthesis.getReportSynthesisFlagshipProgress().getPlannedDeliverables().clear();
       }
     }
+
+  }
+
+
+  public void publicationMissingFields(long id) {
 
   }
 
