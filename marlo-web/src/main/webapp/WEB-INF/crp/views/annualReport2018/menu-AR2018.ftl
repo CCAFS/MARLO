@@ -99,7 +99,7 @@
 [#-- Submit button --] 
 [#if canEdit && canSubmit && PMU]
   [#assign showSubmit=(canSubmit && !submission )]
-  <center><small style="display:${showSubmit?string('block','none')}"><i>Click when the SMO can start the QA process</i></small></center>
+  <center><small style="display:${showSubmit?string('block','none')}"><i>By clicking in this button, you concent the SMO to access the synthesis information as per the Annual Report template.</i></small></center>
   <a id="submitProject-${synthesisID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${crpSession}/submitAnnualReport"][@s.param name='synthesisID']${synthesisID}[/@s.param][/@s.url]" >
     [@s.text name="form.buttons.submitSynthesisAR" /]
   </a>
