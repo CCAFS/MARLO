@@ -512,6 +512,96 @@ public class ExpectedStudiesOtherItem<T> {
     return expectedStudyID;
   }
 
+  public ResponseEntity<ProjectExpectedStudiesOtherDTO> deleteExpectedStudyById(Long id, String CGIARentityAcronym,
+    Integer repoYear, String repoPhase, User user) {
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
+    if (globalUnitEntity == null) {
+      fieldErrors.add(new FieldErrorDTO("deleteExpectedStudyOther", "GlobalUnitEntity",
+        CGIARentityAcronym + " is not a valid CGIAR entity acronym"));
+    } else {
+      if (!globalUnitEntity.isActive()) {
+        fieldErrors.add(new FieldErrorDTO("deleteExpectedStudyOther", "GlobalUnitEntity",
+          "The Global Unit with acronym " + CGIARentityAcronym + " is not active."));
+      }
+
+    }
+
+    Set<CrpUser> lstUser = user.getCrpUsers();
+    if (!lstUser.stream()
+      .anyMatch(crp -> StringUtils.equalsIgnoreCase(crp.getCrp().getAcronym(), CGIARentityAcronym))) {
+      fieldErrors.add(new FieldErrorDTO("deleteExpectedStudyOther", "GlobalUnitEntity", "CGIAR entity not autorized"));
+    }
+
+    Phase phase =
+      this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
+        && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().orElse(null);
+    if (phase == null) {
+      fieldErrors.add(
+        new FieldErrorDTO("deleteExpectedStudyOther", "phase", repoPhase + ' ' + repoYear + " is an invalid phase"));
+    }
+
+    ProjectExpectedStudy projectExpectedStudy = this.projectExpectedStudyManager.getProjectExpectedStudyById(id);
+    if (projectExpectedStudy != null) {
+      ProjectExpectedStudyInfo projectExpectedStudyInfo = projectExpectedStudy.getProjectExpectedStudyInfo(phase);
+      if (projectExpectedStudyInfo != null) {
+        // SubIDOs
+        List<ProjectExpectedStudySubIdo> projectExpectedStudySubIdoList =
+          projectExpectedStudy.getProjectExpectedStudySubIdos().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+        projectExpectedStudy.setSubIdos(projectExpectedStudySubIdoList);
+        if (projectExpectedStudyInfo.getIsSrfTarget() != null
+          && projectExpectedStudyInfo.getIsSrfTarget().equals("Yes")) {
+          // SrfSlo
+          List<ProjectExpectedStudySrfTarget> projectExpectedStudySrfTargetList =
+            projectExpectedStudy.getProjectExpectedStudySrfTargets().stream()
+              .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+          projectExpectedStudy.setSrfTargets(projectExpectedStudySrfTargetList);
+        } else {
+          List<ProjectExpectedStudySrfTarget> projectExpectedStudySrfTargetList =
+            new ArrayList<ProjectExpectedStudySrfTarget>();
+          projectExpectedStudy.setSrfTargets(projectExpectedStudySrfTargetList);
+        }
+        // GeographicScope
+        List<ProjectExpectedStudyGeographicScope> projectExpectedStudyGeographicScopeList =
+          projectExpectedStudy.getProjectExpectedStudyGeographicScopes().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+        projectExpectedStudy.setGeographicScopes(projectExpectedStudyGeographicScopeList);
+        // Regions
+        List<ProjectExpectedStudyRegion> projectExpectedStudyRegionList = projectExpectedStudyRegionManager
+          .findAll().stream().filter(c -> c.isActive()
+            && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
+          .collect(Collectors.toList());
+        projectExpectedStudy.setStudyRegions(projectExpectedStudyRegionList);
+        // Countries
+        List<ProjectExpectedStudyCountry> projectExpectedStudyCountryList = projectExpectedStudyCountryManager
+          .findAll().stream().filter(c -> c.isActive()
+            && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
+          .collect(Collectors.toList());
+        projectExpectedStudy.setCountries(projectExpectedStudyCountryList);
+        projectExpectedStudyManager.deleteProjectExpectedStudy(projectExpectedStudy.getId());
+      } else {
+        fieldErrors.add(new FieldErrorDTO("deleteExpectedStudyOther", "ProjectExpectedStudyInfo",
+          id + " There is no information in this phase"));
+      }
+    } else {
+      fieldErrors.add(new FieldErrorDTO("deleteExpectedStudyOther", "ProjectExpectedStudyEntity",
+        id + " is an invalid Project Expected Study Code"));
+    }
+
+    if (!fieldErrors.isEmpty()) {
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
+    }
+
+    return Optional.ofNullable(projectExpectedStudy)
+      .map(this.projectExpectedStudiesOtherMapper::projectExpectedStudyToProjectExpectedStudiesOtherDTO)
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
+
   public ResponseEntity<ProjectExpectedStudiesOtherDTO> findExpectedStudyById(Long id, String CGIARentityAcronym,
     Integer repoYear, String repoPhase, User user) {
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
