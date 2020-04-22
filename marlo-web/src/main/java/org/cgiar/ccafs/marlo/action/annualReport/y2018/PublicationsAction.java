@@ -327,6 +327,9 @@ public class PublicationsAction extends BaseAction {
    */
   public Boolean isPublicationComplete(long deliverableID, long phaseID) {
 
+    Deliverable deliverable = new Deliverable();
+    deliverable = deliverableManager.getDeliverableById(deliverableID);
+
     SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByDeliverable(deliverableID, "Reporting",
       this.getActualPhase().getYear(), false, "deliverableList");
     int count = 0;
@@ -334,18 +337,9 @@ public class PublicationsAction extends BaseAction {
       && sectionStatus.getMissingFields().length() != 0) {
       // count++;
 
-      // Volume
-      if (sectionStatus.getMissingFields().contains("Volume")) {
-        count++;
-      }
-
-      // Issue
-      if (sectionStatus.getMissingFields().contains("Issue")) {
-        count++;
-      }
-
-      // Page
-      if (sectionStatus.getMissingFields().contains("Pages")) {
+      // Volume - Issue - Pages validation - at less one of these fields must be completed
+      if (sectionStatus.getMissingFields().contains("Volume") || sectionStatus.getMissingFields().contains("Issue")
+        || sectionStatus.getMissingFields().contains("Pages")) {
         count++;
       }
 
