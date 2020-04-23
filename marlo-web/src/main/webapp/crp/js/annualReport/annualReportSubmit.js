@@ -54,8 +54,8 @@ function cancel() {
 
 function submitButtonEvent(e) {
   e.preventDefault();
-  var message = 'Are you sure you want to indicate the Synthesis is ready? ';
-  message += 'From now on the SMO will be able to see your information.';
+  var message = 'Please confirm by clicking the OK button. ';
+  message += 'From now on, the SMO will use the Synthesis information as part of the Quality Assessment Process and later on for the CGIAR Results Dashboard.';
   noty({
       text: message,
       type: 'confirm',
