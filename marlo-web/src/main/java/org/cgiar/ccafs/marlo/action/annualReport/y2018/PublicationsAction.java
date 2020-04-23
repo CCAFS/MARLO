@@ -264,6 +264,9 @@ public class PublicationsAction extends BaseAction {
         }
       }
     }
+    if (!missingFieldsText.isEmpty()) {
+      missingFieldsText = missingFieldsText.replace("ID:" + id, "");
+    }
     return missingFieldsText;
   }
 
@@ -346,8 +349,11 @@ public class PublicationsAction extends BaseAction {
     Deliverable deliverable = new Deliverable();
     deliverable = deliverableManager.getDeliverableById(deliverableID);
     int count = 0;
+    int count2 = 0;
     if (deliverable != null) {
 
+      deliverable.setCrps(deliverable.getDeliverableCrps().stream()
+        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
       if (deliverable.getCrps() == null || deliverable.getCrps().isEmpty()) {
         emptyFields.add("CRP");
         count++;
@@ -360,6 +366,22 @@ public class PublicationsAction extends BaseAction {
           emptyFields.add("Is publication");
           count++;
         }
+
+        // Issue - Page - Volume
+        if (deliverable.getPublication().getVolume() == null || deliverable.getPublication().getVolume().isEmpty()) {
+          count2++;
+        }
+        if (deliverable.getPublication().getPages() == null || deliverable.getPublication().getPages().isEmpty()) {
+          count2++;
+        }
+        if (deliverable.getPublication().getIssue() == null || deliverable.getPublication().getIssue().isEmpty()) {
+          count2++;
+        }
+      }
+
+      if (count2 == 3) {
+        emptyFields.add("Issue/Pages/Volume");
+        count++;
       }
 
       // Authors
@@ -410,9 +432,9 @@ public class PublicationsAction extends BaseAction {
      * }
      */
     if (count == 0) {
-      emptyFields.add("ID:" + deliverable.getId());
       return true;
     } else {
+      emptyFields.add("ID:" + deliverable.getId());
       return false;
     }
 
