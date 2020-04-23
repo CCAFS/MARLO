@@ -144,7 +144,8 @@ public class Publications2018Validator extends BaseValidator {
           && sectionStatus.getMissingFields().length() != 0) {
           if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table6") && sectionStatus.getId() != null
             && sectionStatus.getId() != 0) {
-            sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+            // sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+            sectionStatus.setMissingFields("");
             tableComplete = true;
           } else {
             tableComplete = false;
@@ -152,7 +153,8 @@ public class Publications2018Validator extends BaseValidator {
         } else {
           if (sectionStatus != null && sectionStatus.getId() != 0) {
             tableComplete = true;
-            sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+            // sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+            sectionStatus.setMissingFields("");
           }
         }
 
@@ -243,18 +245,23 @@ public class Publications2018Validator extends BaseValidator {
           }
 
           if (count > 0) {
-            action.addMissingField("synthesis.AR2019Table6");
+            if (action.getMissingFields() != null && action.getMissingFields().length() > 0
+              && !action.getMissingFields().toString().isEmpty()) {
+              if (!action.getMissingFields().toString().contains("synthesis.AR2019Table6")) {
+                action.addMissingField("synthesis.AR2019Table6");
+              }
+            } else {
+              action.addMissingField("synthesis.AR2019Table6");
+            }
+
           }
         }
       }
 
-      try {
-        this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
-          action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
-          ReportSynthesis2018SectionStatusEnum.PUBLICATIONS.getStatus(), action);
-      } catch (Exception e) {
-        LOG.error("Error getting publications validator: " + e.getMessage());
-      }
+      this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
+        action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
+        ReportSynthesis2018SectionStatusEnum.PUBLICATIONS.getStatus(), action);
+
     }
 
   }
