@@ -23,11 +23,41 @@
   [#assign canAccessWLE = false ]
 [/#attempt]
 
+[#assign crp = "CCAFS" /]
+
+[#assign biReports = [
+   {"id":"1",   "reportName": "Submition",   "datasetId": "9bd72c88-3162-4a6b-a4cc-8422e61e9eeb",   "embeUrl": "https://app.powerbi.com/reportEmbed?reportId=50e6f7be-fef1-43cd-9983-4008f47f4a4d&groupId=37376d13-3df2-4447-aaa5-49c047533b4f&config=eyJjbHVzdGVyVXJsIjoiaHR0cHM6Ly93YWJpLW5vcnRoLWV1cm9wZS1yZWRpcmVjdC5hbmFseXNpcy53aW5kb3dzLm5ldC8ifQ%3D%3D",   "reportID": "50e6f7be-fef1-43cd-9983-4008f47f4a4d"}
+   {"id":"2", "reportName": "Deliverables",   "datasetId": "9bd72c88-3162-4a6b-a4cc-8422e61e9eeb",   "embeUrl": "https://app.powerbi.com/reportEmbed?reportId=50e6f7be-fef1-43cd-9983-4008f47f4a4d&groupId=37376d13-3df2-4447-aaa5-49c047533b4f&config=eyJjbHVzdGVyVXJsIjoiaHR0cHM6Ly93YWJpLW5vcnRoLWV1cm9wZS1yZWRpcmVjdC5hbmFseXNpcy53aW5kb3dzLm5ldC8ifQ%3D%3D",   "reportID": "50e6f7be-fef1-43cd-9983-4008f47f4a4d"}
+] /]
+
     <section class="container">
-    <div id="dashboardContainer" style="
-    height: 720px;
-    width: 1100px;"></div>
-      [#if canAccessCCAFS]
+     [#if biReports?has_content]
+
+       <div class="dashboard-tabs">
+        [#-- Menu --]
+        <ul class="nav nav-tabs" role="tablist">
+        [#list (biReports)![] as report]
+          <li role="presentation" class="[#if report?index ==0]active[/#if]">
+            <a index="${report?index+1}" href="#${report.id}" aria-controls="..." role="tab" data-toggle="tab">${report.reportName}</a>
+          </li>
+        [/#list]
+        </ul>
+        <div class="tab-content ">
+        [#list (biReports)![] as report]
+          <div id="${report.id}" role="tabpanel" class="tab-pane fade [#if report?index ==0]in active[/#if]">
+            <div id="dashboardContainer-${report.id}" style="height: 720px;width: 1100px;"></div>
+            <input type="hidden" id="reportName-${report.id}" name="reportName" value=${report.reportName} />
+            <input type="hidden" id="datasetId-${report.id}" name="datasetId" value=${report.datasetId} />
+            <input type="hidden" id="embeUrl-${report.id}" name="embeUrl" value=${report.embeUrl} />
+            <input type="hidden" id="crp-${report.id}" name="crp" value=${crp} />
+            <input type="hidden" id="reportID-${report.id}" name="reportID" value=${report.reportID} />
+          </div>
+        [/#list]
+       </div>
+     [/#if]
+
+     
+         [#if canAccessCCAFS]
            <div class="dashboard-tabs">
             [#-- Menu --]
             <ul class="nav nav-tabs" role="tablist"> 
