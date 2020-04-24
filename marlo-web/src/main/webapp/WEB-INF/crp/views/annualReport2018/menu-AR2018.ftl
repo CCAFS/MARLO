@@ -95,16 +95,18 @@
 [/#if]
 
 
-[#-- Submit button --] [#--
-[#if canEdit && canSubmit]
+[#-- Submit button --] 
+[#if canEdit && canSubmit && PMU]
   [#assign showSubmit=(canSubmit && !submission && completed)]
+  <center><small style="display:${showSubmit?string('block','none')}"><i>Click when the SMO can start the QA process</i></small></center>
   <a id="submitProject-${synthesisID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${crpSession}/submitAnnualReport"][@s.param name='synthesisID']${synthesisID}[/@s.param][/@s.url]" >
-    [@s.text name="form.buttons.submit" /]
+    [@s.text name="form.buttons.submitSynthesisAR" /]
   </a>
 [#else]
   <div></div>
 [/#if]
 
+[#--
 [#-- Unsubmit button --][#--
 [#if (canUnSubmit && submission) && !crpClosed && !reportingActive]
   <a id="submitProject-${liaisonInstitutionID}" class="projectUnSubmitButton" href="[@s.url action="${crpSession}/unsubmit"][@s.param name='liaisonInstitutionID']${liaisonInstitutionID}[/@s.param][/@s.url]" >

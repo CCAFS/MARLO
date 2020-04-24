@@ -59,8 +59,19 @@
                   <div class="form-group btn-group btn-group-sm pull-right" role="group" aria-label="...">
                     <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-evidenceC"><span class="glyphicon glyphicon-fullscreen"></span> AR Evidence C</button>
                     <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-table5"><span class="glyphicon glyphicon-fullscreen"></span> See Full Table 5</button>
+                    [#-- Missing fields in FPs --]
+                    [#if listOfFlagships?has_content]
+                      </br>
+                      <div class="missingFieldFp">
+                        <div><span class="glyphicon glyphicon-exclamation-sign mffp-icon" title="Incomplete"></span> Missing fields in
+                        [#list listOfFlagships as fp]
+                         ${fp}[#if fp?index !=(listOfFlagships?size-1) ],[/#if]
+                        [/#list]
+                        </div>
+                       </div>
+                    [/#if]
                   </div>
-                  
+
                   [#-- Table 5: Evidence C --]
                   <div class="modal fade" id="modal-evidenceC" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                     <div class="modal-dialog modal-lg" role="document">
@@ -91,7 +102,6 @@
                           <h4 class="modal-title" id="myModalLabel">[@s.text name="${customLabel}.title" /]</h4>
                         </div>
                         <div class="modal-body">
-                          
                           [@tableOutcomesMilestones allowPopups=false  /]
                         </div>
                         <div class="modal-footer">
@@ -100,7 +110,7 @@
                       </div>
                     </div>
                   </div>
-                  
+
                   [#-- Table 5--]
                   [@tableOutcomesMilestones  /]
                 </div>
