@@ -69,8 +69,7 @@
                       <div class="form-group">
                         [#-- Word Document Tag --]
                         [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
-                    
-                        [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.summary" help="${customLabel}.summary.help" className="limitWords-300" helpIcon=false required=true editable=editable allowTextEditor=true /]
+                        [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.summary" help="${customLabel}.summary.help" className="limitWords-300" helpIcon=false required=true editable=editable allowTextEditor=true /]  
                       </div>
                     [#else]
                       <div class="textArea">
@@ -80,7 +79,6 @@
                     [/#if]
                     <br />
                   </div>
-                
                   
                   [#-- Table 8: Key external partnerships --]
                   [#if PMU]
@@ -193,7 +191,6 @@
                        [@utils.tableText value=(reportSynthesis.reportSynthesisKeyPartnership.crossCGIAR)!'' nobr=false emptyText="global.prefilledByPmu" /] 
                     </div> --]
                     [/#if]
-                  
                   [#-- Table 9: Internal Cross-CGIAR Collaborations --]
                   <div class="form-group">
                     <br />

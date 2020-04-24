@@ -171,6 +171,7 @@ public class OutcomesMilestonesAction extends BaseAction {
   private List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers;
   private List<RepIndGenderYouthFocusLevel> focusLevels;
   private List<RepIndMilestoneReason> reasons;
+  private List<String> listOfFlagships;
 
 
   @Inject
@@ -310,6 +311,7 @@ public class OutcomesMilestonesAction extends BaseAction {
   }
 
   public void getFlagshipsWithMissingFields() {
+    listOfFlagships = new ArrayList<>();
     SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
       "Reporting", this.getActualPhase().getYear(), false, "outomesMilestones");
 
@@ -320,7 +322,7 @@ public class OutcomesMilestonesAction extends BaseAction {
       flagshipsIncomplete = sectionStatus.getSynthesisFlagships();
     }
 
-    List<String> listOfFlagships = new ArrayList<>();
+
     if (flagshipsIncomplete != null && !flagshipsIncomplete.isEmpty()) {
       String textToSeparate = flagshipsIncomplete;
       String separator = ";";
@@ -356,6 +358,10 @@ public class OutcomesMilestonesAction extends BaseAction {
 
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
+  }
+
+  public List<String> getListOfFlagships() {
+    return listOfFlagships;
   }
 
   public GlobalUnit getLoggedCrp() {
@@ -418,6 +424,7 @@ public class OutcomesMilestonesAction extends BaseAction {
       return null;
     }
   }
+
 
   public List<CrpProgramOutcome> getOutcomes() {
     return outcomes;
@@ -488,14 +495,10 @@ public class OutcomesMilestonesAction extends BaseAction {
     return synthesisID;
   }
 
-
   public String getTransaction() {
     return transaction;
   }
 
-  // public ReportSynthesisFlagshipProgressMilestone getReportSynthesisFlagshipProgressMilestone(Long crpMilestoneID) {
-  // return reportSynthesis.getReportSynthesisFlagshipProgress().getMilestones().get(this.getIndex(crpMilestoneID));
-  // }
 
   public boolean isFlagship() {
     boolean isFP = false;
@@ -510,6 +513,10 @@ public class OutcomesMilestonesAction extends BaseAction {
     }
     return isFP;
   }
+
+  // public ReportSynthesisFlagshipProgressMilestone getReportSynthesisFlagshipProgressMilestone(Long crpMilestoneID) {
+  // return reportSynthesis.getReportSynthesisFlagshipProgress().getMilestones().get(this.getIndex(crpMilestoneID));
+  // }
 
   @Override
   public boolean isPMU() {
@@ -1027,7 +1034,6 @@ public class OutcomesMilestonesAction extends BaseAction {
     }
   }
 
-
   /**
    * Save CrossCutting Information
    * 
@@ -1124,6 +1130,7 @@ public class OutcomesMilestonesAction extends BaseAction {
       }
     }
   }
+
 
   public void saveFlagshipProgressNewData(ReportSynthesisFlagshipProgress flagshipProgressDB) {
 
@@ -1225,10 +1232,10 @@ public class OutcomesMilestonesAction extends BaseAction {
     this.cgiarCrossCuttingMarkers = cgiarCrossCuttingMarkers;
   }
 
-
   public void setFlagships(List<CrpProgram> flagships) {
     this.flagships = flagships;
   }
+
 
   public void setFocusLevels(List<RepIndGenderYouthFocusLevel> focusLevels) {
     this.focusLevels = focusLevels;
@@ -1244,6 +1251,10 @@ public class OutcomesMilestonesAction extends BaseAction {
 
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
+  }
+
+  public void setListOfFlagships(List<String> listOfFlagships) {
+    this.listOfFlagships = listOfFlagships;
   }
 
 
