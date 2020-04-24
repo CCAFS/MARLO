@@ -19,13 +19,13 @@ $(document).ready(init);
 function executePetition() {
   console.log("EP BiReports");
 var data = {
-    datasetId: "61079568-dc02-4937-89fd-7b2e3f6131ab",
-    reportId: "e4952dae-b1b2-4371-9fb3-d4ff9cabb927"
+    datasetId: "9bd72c88-3162-4a6b-a4cc-8422e61e9eeb",
+    reportId: "50e6f7be-fef1-43cd-9983-4008f47f4a4d"
 }
 
 //Ajax to service
 $.ajax({
-  'url': 'https://localhost:8443/marlo-web/BiReportsTokenAction.do',
+  'url': 'https://localhost:8443/marlo-web/biReportsTokenAction.do',
   'type': "GET",
   'data': data,
   'dataType': "json",
