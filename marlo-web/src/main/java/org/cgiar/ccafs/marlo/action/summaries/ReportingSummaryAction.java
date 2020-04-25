@@ -2184,16 +2184,25 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           && deliverable.getDeliverableDisseminations().stream().collect(Collectors.toList()).get(0) != null) {
           // Get deliverable dissemination
           DeliverableDissemination deliverableDissemination = null;
-          if (deliverable.getDeliverableDisseminations().stream()
-            .filter(
-              d -> d != null && d.getPhase() != null && d.getPhase().getId() != null && this.getActualPhase() != null
-                && this.getActualPhase().getId() != null && d.getPhase().getId().equals(this.getActualPhase().getId()))
-            .collect(Collectors.toList()) != null) {
-            deliverableDissemination = deliverable.getDeliverableDisseminations().stream()
+          try {
+            if (deliverable.getDeliverableDisseminations().stream()
               .filter(d -> d != null && d.getPhase() != null && d.getPhase().getId() != null
                 && this.getActualPhase() != null && this.getActualPhase().getId() != null
                 && d.getPhase().getId().equals(this.getActualPhase().getId()))
-              .collect(Collectors.toList()).get(0);
+              .collect(Collectors.toList()) != null
+              && !deliverable.getDeliverableDisseminations().stream()
+                .filter(d -> d != null && d.getPhase() != null && d.getPhase().getId() != null
+                  && this.getActualPhase() != null && this.getActualPhase().getId() != null
+                  && d.getPhase().getId().equals(this.getActualPhase().getId()))
+                .collect(Collectors.toList()).isEmpty()) {
+              deliverableDissemination = deliverable.getDeliverableDisseminations().stream()
+                .filter(d -> d != null && d.getPhase() != null && d.getPhase().getId() != null
+                  && this.getActualPhase() != null && this.getActualPhase().getId() != null
+                  && d.getPhase().getId().equals(this.getActualPhase().getId()))
+                .collect(Collectors.toList()).get(0);
+            }
+          } catch (Exception e) {
+            LOG.error("Error getting Deliverable Disseminations: " + e.getMessage());
           }
           if (deliverableDissemination != null && deliverableDissemination.getAlreadyDisseminated() != null
             && deliverableDissemination.getAlreadyDisseminated() == true) {
