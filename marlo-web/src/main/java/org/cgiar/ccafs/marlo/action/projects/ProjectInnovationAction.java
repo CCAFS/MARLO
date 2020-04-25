@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationManager;
@@ -60,6 +61,7 @@ import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
@@ -151,6 +153,9 @@ public class ProjectInnovationAction extends BaseAction {
   private SrfSubIdoManager srfSubIdoManager;
   private ProjectInnovationSubIdoManager projectInnovationSubIdoManager;
   private SrfIdoManager srfIdoManager;
+  private ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager;
+  private ProjectExpectedStudyManager projectExpectedStudyManager;
+
 
   // Variables
   private long projectID;
@@ -216,7 +221,8 @@ public class ProjectInnovationAction extends BaseAction {
     ProjectInnovationSharedManager projectInnovationSharedManager,
     ProjectInnovationCenterManager projectInnovationCenterManager,
     ProjectInnovationMilestoneManager projectInnovationMilestoneManager, SrfSubIdoManager srfSubIdoManager,
-    ProjectInnovationSubIdoManager projectInnovationSubIdoManager, SrfIdoManager srfIdoManager) {
+    ProjectInnovationSubIdoManager projectInnovationSubIdoManager, SrfIdoManager srfIdoManager,
+    ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -249,9 +255,11 @@ public class ProjectInnovationAction extends BaseAction {
     this.projectInnovationSharedManager = projectInnovationSharedManager;
     this.projectInnovationCenterManager = projectInnovationCenterManager;
     this.projectInnovationMilestoneManager = projectInnovationMilestoneManager;
+    this.projectExpectedStudyInnovationManager = projectExpectedStudyInnovationManager;
     this.srfSubIdoManager = srfSubIdoManager;
     this.projectInnovationSubIdoManager = projectInnovationSubIdoManager;
     this.srfIdoManager = srfIdoManager;
+    this.projectExpectedStudyManager = projectExpectedStudyManager;
 
   }
 
@@ -675,6 +683,14 @@ public class ProjectInnovationAction extends BaseAction {
           }
         }
 
+        // Expected Study Innovations List Autosave
+        if (this.innovation.getStudies() != null) {
+          for (ProjectExpectedStudyInnovation projectExpectedStudyInnovation : this.innovation.getStudies()) {
+            projectExpectedStudyInnovation.setProjectExpectedStudy(this.projectExpectedStudyManager
+              .getProjectExpectedStudyById(projectExpectedStudyInnovation.getProjectExpectedStudy().getId()));
+          }
+        }
+
         // Innovation Center List Autosave
 
         if (innovation.getCenters() != null) {
@@ -827,6 +843,27 @@ public class ProjectInnovationAction extends BaseAction {
           this.innovation.setSharedInnovations(new ArrayList<>(this.innovation.getProjectInnovationShareds().stream()
             .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
+
+        // Expected Study Innovations List
+        if (this.innovation.getProjectExpectedStudyInnovations() != null) {
+          this.innovation.setStudies(new ArrayList<>(this.innovation.getProjectExpectedStudyInnovations().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+          // Get the ID of the principal Sub IDO if exist
+          if (innovation.getMilestones() != null) {
+            List<ProjectInnovationMilestone> projectPolicies = new ArrayList<ProjectInnovationMilestone>();
+
+            projectPolicies = innovation
+              .getMilestones().stream().filter(p -> p != null && p.isActive() && p.getPrimary() != null
+                && p.getPrimary() && p.getPhase() != null && p.getPhase().getId().equals(phase.getId()))
+              .collect(Collectors.toList());
+
+            if (projectPolicies != null && projectPolicies.size() > 0 && projectPolicies.get(0) != null) {
+              milestonePrimaryId = projectPolicies.get(0).getCrpMilestone().getId(); //
+              crpMilestonePrimary = projectPolicies.get(0).getCrpMilestone().getId(); //
+            }
+          }
+        }
+
       }
 
       if (!this.isDraft()) {
@@ -878,6 +915,7 @@ public class ProjectInnovationAction extends BaseAction {
 
       // SubIdos List
       subIdos = srfSubIdoManager.findAll();
+      this.expectedStudyList = new ArrayList<>();
 
       // Load Studies
       List<ProjectExpectedStudy> studies = project.getProjectExpectedStudies().stream()
@@ -1072,6 +1110,10 @@ public class ProjectInnovationAction extends BaseAction {
       if (innovation.getSubIdos() != null) {
         innovation.getSubIdos().clear();
       }
+
+      if (innovation.getStudies() != null) {
+        innovation.getStudies().clear();
+      }
       // HTTP Post info Values
       // innovation.getProjectInnovationInfo().setGenderFocusLevel(null);
       // innovation.getProjectInnovationInfo().setYouthFocusLevel(null);
@@ -1113,6 +1155,7 @@ public class ProjectInnovationAction extends BaseAction {
       this.saveProjects(innovationDB, phase);
       this.saveCenters(innovationDB, phase);
       this.saveMilestones(innovationDB, phase);
+      this.saveStudies(innovationDB, phase);
 
       this.saveGeographicScope(innovationDB, phase);
 
@@ -1739,6 +1782,50 @@ public class ProjectInnovationAction extends BaseAction {
           projectInnovationRegionManager.saveProjectInnovationRegion(innovationRegionSave);
           // This is to add innovationCrpSave to generate correct auditlog.
           innovation.getProjectInnovationRegions().add(innovationRegionSave);
+        }
+      }
+    }
+  }
+
+  /**
+   * Save Expected Studies Information
+   * 
+   * @param innovation
+   * @param phase
+   */
+  public void saveStudies(ProjectInnovation projectInnovation, Phase phase) {
+
+    // Search and deleted form Information
+    if (projectInnovation.getProjectExpectedStudyInnovations() != null
+      && projectInnovation.getProjectExpectedStudyInnovations().size() > 0) {
+      List<ProjectExpectedStudyInnovation> studyPrev =
+        new ArrayList<>(projectInnovation.getProjectExpectedStudyInnovations().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+      for (ProjectExpectedStudyInnovation studyInnovation : studyPrev) {
+        if (this.innovation.getStudies() == null || !this.innovation.getStudies().contains(studyInnovation)) {
+          this.projectExpectedStudyInnovationManager.deleteProjectExpectedStudyInnovation(studyInnovation.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (this.innovation.getStudies() != null) {
+      for (ProjectExpectedStudyInnovation studyInnovation : this.innovation.getStudies()) {
+        if (studyInnovation.getId() == null) {
+          ProjectExpectedStudyInnovation studyInnovationSave = new ProjectExpectedStudyInnovation();
+          studyInnovationSave.setProjectInnovation(projectInnovation);
+          studyInnovationSave.setPhase(phase);
+
+          ProjectExpectedStudy projectExpectedStudy = this.projectExpectedStudyManager
+            .getProjectExpectedStudyById(studyInnovation.getProjectExpectedStudy().getId());
+
+          studyInnovationSave.setProjectExpectedStudy(projectExpectedStudy);
+
+          this.projectExpectedStudyInnovationManager.saveProjectExpectedStudyInnovation(studyInnovationSave);
+          // This is to add studyInnovationSave to generate correct
+          // auditlog.
+          this.innovation.getProjectExpectedStudyInnovations().add(studyInnovationSave);
         }
       }
     }

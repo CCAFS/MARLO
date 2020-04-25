@@ -15,8 +15,10 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbExpenditureAreasManager;
@@ -58,6 +60,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicySubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesis2018SectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingDimension;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummary;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummaryBudget;
@@ -86,6 +89,7 @@ import org.cgiar.ccafs.marlo.utils.POISummary;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -195,6 +199,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
   private ReportSynthesisKeyPartnershipExternalManager reportSynthesisKeyPartnershipExternalManager;
   private ReportSynthesisKeyPartnershipCollaborationManager reportSynthesisKeyPartnershipCollaborationManager;
   private ReportSynthesisMeliaManager reportSynthesisMeliaManager;
+  private FileDBManager fileDBManager;
 
 
   private DeliverableManager deliverableManager;
@@ -243,7 +248,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     DeliverableManager deliverableManager,
     ReportSynthesisKeyPartnershipExternalManager reportSynthesisKeyPartnershipExternalManager,
     ReportSynthesisKeyPartnershipCollaborationManager reportSynthesisKeyPartnershipCollaborationManager,
-    ReportSynthesisMeliaManager reportSynthesisMeliaManager) {
+    ReportSynthesisMeliaManager reportSynthesisMeliaManager, FileDBManager fileDBManager) {
     super(config, crpManager, phaseManager, projectManager);
     document = new XWPFDocument();
     poiSummary = new POISummary();
@@ -261,6 +266,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     this.reportSynthesisKeyPartnershipExternalManager = reportSynthesisKeyPartnershipExternalManager;
     this.reportSynthesisKeyPartnershipCollaborationManager = reportSynthesisKeyPartnershipCollaborationManager;
     this.reportSynthesisMeliaManager = reportSynthesisMeliaManager;
+    this.fileDBManager = fileDBManager;
   }
 
   private void addAlmetricCrp() {
@@ -1838,7 +1844,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     for (ReportSynthesisKeyPartnershipExternal flagshipExternalPartnership : externalPartnerships) {
-      String leadFP = "", description = "", keyPartners = "", mainArea = "";
+      String leadFP = "", description = "", keyPartners = "", mainArea = "", documentationLink = "";
 
       if (flagshipExternalPartnership != null) {
 
@@ -1855,7 +1861,31 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         }
 
         if (flagshipExternalPartnership.getDescription() != null) {
-          description = flagshipExternalPartnership.getDescription();
+          description = flagshipExternalPartnership.getDescription() + "\n";
+        }
+
+        // Load File
+        if (flagshipExternalPartnership.getFile() != null) {
+          if (flagshipExternalPartnership.getFile().getId() != null) {
+            flagshipExternalPartnership
+              .setFile(fileDBManager.getFileDBById(flagshipExternalPartnership.getFile().getId()));
+          }
+        }
+        String url = APConstants.PARTNERSHIP_FOLDER.concat(File.separator).concat(this.getCrpSession())
+          .concat(File.separator).concat(this.getCrpSession() + "_")
+          .concat(ReportSynthesis2018SectionStatusEnum.EXTERNAL_PARTNERSHIPS.getStatus()).concat(File.separator);
+
+
+        if (flagshipExternalPartnership.getFile() != null
+          && flagshipExternalPartnership.getFile().getFileName() != null) {
+          documentationLink = config.getDownloadURL() + "/" + url.replace('\\', '/');
+
+          if (description != null && !description.isEmpty()) {
+            description += "\n •" + "Reference to any documentation evidencing the partnership agreements: "
+              + " <a href=" + documentationLink + flagshipExternalPartnership.getFile().getFileName() + ">Link</a>";
+            System.out.println(
+              "<a href=\" + documentationLink + flagshipExternalPartnership.getFile().getFileName() + \">Link</a>");
+          }
         }
 
         if (flagshipExternalPartnership.getInstitutions() != null) {
@@ -1894,10 +1924,10 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       } catch (Exception e) {
 
       }
-      POIField[] sData = {new POIField(leadFP, ParagraphAlignment.LEFT, false),
-        new POIField(description, ParagraphAlignment.LEFT, false),
-        new POIField(keyPartners, ParagraphAlignment.LEFT, false),
-        new POIField(mainArea, ParagraphAlignment.LEFT, false)};
+      POIField[] sData =
+        {new POIField(leadFP, ParagraphAlignment.LEFT, false), new POIField(description, ParagraphAlignment.LEFT, true),
+          new POIField(keyPartners, ParagraphAlignment.LEFT, false),
+          new POIField(mainArea, ParagraphAlignment.LEFT, false)};
       data = Arrays.asList(sData);
       datas.add(data);
     }
