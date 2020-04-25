@@ -1875,19 +1875,17 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           .concat(File.separator).concat(this.getCrpSession() + "_")
           .concat(ReportSynthesis2018SectionStatusEnum.EXTERNAL_PARTNERSHIPS.getStatus()).concat(File.separator);
 
-
-        if (flagshipExternalPartnership.getFile() != null
-          && flagshipExternalPartnership.getFile().getFileName() != null) {
-          documentationLink = config.getDownloadURL() + "/" + url.replace('\\', '/');
-
-          if (description != null && !description.isEmpty()) {
-            description += "\n •" + "Reference to any documentation evidencing the partnership agreements: "
-              + " <a href=" + documentationLink + flagshipExternalPartnership.getFile().getFileName() + ">Link</a>";
-            System.out.println(
-              "<a href=\" + documentationLink + flagshipExternalPartnership.getFile().getFileName() + \">Link</a>");
-          }
-        }
-
+        // config.getUploadsBaseFolder()
+        /*
+         * if (flagshipExternalPartnership.getFile() != null
+         * && flagshipExternalPartnership.getFile().getFileName() != null) {
+         * documentationLink = config.getDownloadURL() + "/" + url.replace('\\', '/');
+         * if (description != null && !description.isEmpty()) {
+         * description += "\n •" + "Reference to any documentation evidencing the partnership agreements: "
+         * + documentationLink + flagshipExternalPartnership.getFile().getFileName();
+         * }
+         * }
+         */
         if (flagshipExternalPartnership.getInstitutions() != null) {
           for (ReportSynthesisKeyPartnershipExternalInstitution institution : flagshipExternalPartnership
             .getInstitutions()) {
@@ -1924,10 +1922,10 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       } catch (Exception e) {
 
       }
-      POIField[] sData =
-        {new POIField(leadFP, ParagraphAlignment.LEFT, false), new POIField(description, ParagraphAlignment.LEFT, true),
-          new POIField(keyPartners, ParagraphAlignment.LEFT, false),
-          new POIField(mainArea, ParagraphAlignment.LEFT, false)};
+      POIField[] sData = {new POIField(leadFP, ParagraphAlignment.LEFT, false),
+        new POIField(description, ParagraphAlignment.LEFT, false),
+        new POIField(keyPartners, ParagraphAlignment.LEFT, false),
+        new POIField(mainArea, ParagraphAlignment.LEFT, false)};
       data = Arrays.asList(sData);
       datas.add(data);
     }
