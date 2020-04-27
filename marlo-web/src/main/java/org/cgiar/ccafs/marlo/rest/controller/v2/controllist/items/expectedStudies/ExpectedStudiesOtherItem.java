@@ -56,12 +56,12 @@ import org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.data.model.StudyType;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.rest.dto.MeliaDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectExpectedStudiesOtherDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewSrfSubIdoDTO;
-import org.cgiar.ccafs.marlo.rest.dto.ProjectExpectedStudiesOtherDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
 import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
-import org.cgiar.ccafs.marlo.rest.mappers.ProjectExpectedStudiesOtherMapper;
+import org.cgiar.ccafs.marlo.rest.mappers.MeliaMapper;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -98,7 +98,7 @@ public class ExpectedStudiesOtherItem<T> {
   private ProjectExpectedStudySrfTargetManager projectExpectedStudySrfTargetManager;
   private ProjectExpectedStudySubIdoManager projectExpectedStudySubIdoManager;
 
-  private ProjectExpectedStudiesOtherMapper projectExpectedStudiesOtherMapper;
+  private MeliaMapper projectExpectedStudiesOtherMapper;
 
 
   @Inject
@@ -114,7 +114,7 @@ public class ExpectedStudiesOtherItem<T> {
     ProjectExpectedStudyRegionManager projectExpectedStudyRegionManager,
     ProjectExpectedStudySrfTargetManager projectExpectedStudySrfTargetManager,
     ProjectExpectedStudySubIdoManager projectExpectedStudySubIdoManager,
-    ProjectExpectedStudiesOtherMapper projectExpectedStudiesOtherMapper) {
+    MeliaMapper projectExpectedStudiesOtherMapper) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.projectManager = projectManager;
@@ -148,7 +148,7 @@ public class ExpectedStudiesOtherItem<T> {
     return wordCount;
   }
 
-  public Long createExpectedStudy(NewProjectExpectedStudiesOtherDTO newProjectExpectedStudiesOther,
+  public Long createExpectedStudiesOther(NewProjectExpectedStudiesOtherDTO newProjectExpectedStudiesOther,
     String entityAcronym, User user) {
     Long expectedStudyID = null;
     Phase phase = null;
@@ -512,8 +512,8 @@ public class ExpectedStudiesOtherItem<T> {
     return expectedStudyID;
   }
 
-  public ResponseEntity<ProjectExpectedStudiesOtherDTO> deleteExpectedStudyById(Long id, String CGIARentityAcronym,
-    Integer repoYear, String repoPhase, User user) {
+  public ResponseEntity<MeliaDTO> deleteExpectedStudyById(Long id, String CGIARentityAcronym, Integer repoYear,
+    String repoPhase, User user) {
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
 
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
@@ -598,12 +598,12 @@ public class ExpectedStudiesOtherItem<T> {
     }
 
     return Optional.ofNullable(projectExpectedStudy)
-      .map(this.projectExpectedStudiesOtherMapper::projectExpectedStudyToProjectExpectedStudiesOtherDTO)
+      .map(this.projectExpectedStudiesOtherMapper::projectExpectedStudyToMeliaDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
-  public ResponseEntity<ProjectExpectedStudiesOtherDTO> findExpectedStudyById(Long id, String CGIARentityAcronym,
-    Integer repoYear, String repoPhase, User user) {
+  public ResponseEntity<MeliaDTO> findExpectedStudyById(Long id, String CGIARentityAcronym, Integer repoYear,
+    String repoPhase, User user) {
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
 
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
@@ -675,7 +675,7 @@ public class ExpectedStudiesOtherItem<T> {
     }
 
     return Optional.ofNullable(projectExpectedStudy)
-      .map(this.projectExpectedStudiesOtherMapper::projectExpectedStudyToProjectExpectedStudiesOtherDTO)
+      .map(this.projectExpectedStudiesOtherMapper::projectExpectedStudyToMeliaDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 

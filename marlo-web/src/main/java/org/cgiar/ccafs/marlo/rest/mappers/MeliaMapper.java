@@ -20,7 +20,7 @@
 package org.cgiar.ccafs.marlo.rest.mappers;
 
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
-import org.cgiar.ccafs.marlo.rest.dto.ProjectExpectedStudiesOtherDTO;
+import org.cgiar.ccafs.marlo.rest.dto.MeliaDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -28,18 +28,17 @@ import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "jsr330",
   uses = {ProjectExpectedStudySubIdoMapper.class, ProjectExpectedStudySrfSloTargetMapper.class,
-    GeographicScopeMapper.class, LocationMapper.class, ProjectExpectedStudiesOtherInfoMapper.class})
-public interface ProjectExpectedStudiesOtherMapper {
+    GeographicScopeMapper.class, LocationMapper.class, MeliaInfoMapper.class})
+public interface MeliaMapper {
 
   @Mappings({@Mapping(source = "projectExpectedStudy.projectExpectedStudyInfo.phase", target = "phase"),
     @Mapping(source = "projectExpectedStudy.subIdos", target = "srfSubIdoList"),
     @Mapping(source = "projectExpectedStudy.srfTargets", target = "srfSloTargetList"),
     @Mapping(source = "projectExpectedStudy.geographicScopes", target = "geographicScopes"),
     @Mapping(source = "projectExpectedStudy.studyRegions", target = "regions"),
-    @Mapping(source = "projectExpectedStudy.project.id", target = "project"),
+    @Mapping(source = "projectExpectedStudy.project.id", target = "projectID"),
     @Mapping(source = "projectExpectedStudy.countries", target = "countries"),
-    @Mapping(source = "projectExpectedStudy.projectExpectedStudyInfo", target = "projectExpectedStudiesOtherInfo")})
-  public abstract ProjectExpectedStudiesOtherDTO
-    projectExpectedStudyToProjectExpectedStudiesOtherDTO(ProjectExpectedStudy projectExpectedStudy);
+    @Mapping(source = "projectExpectedStudy.projectExpectedStudyInfo", target = "meliaInfo")})
+  public abstract MeliaDTO projectExpectedStudyToMeliaDTO(ProjectExpectedStudy projectExpectedStudy);
 
 }

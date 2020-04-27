@@ -20,19 +20,20 @@
 package org.cgiar.ccafs.marlo.rest.mappers;
 
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
-import org.cgiar.ccafs.marlo.rest.dto.ProjectExpectedStudiesOtherInfoDTO;
+import org.cgiar.ccafs.marlo.rest.dto.MeliaInfoDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "jsr330", uses = {StudyTypeMapper.class, MilestoneStatusMapper.class})
-public interface ProjectExpectedStudiesOtherInfoMapper {
+public interface MeliaInfoMapper {
 
   @Mappings({@Mapping(source = "projectExpectedStudyInfo.status", target = "status"),
     @Mapping(source = "projectExpectedStudyInfo.studyType", target = "studyType"),
-    @Mapping(source = "projectExpectedStudyInfo.topLevelComments", target = "description")})
-  public abstract ProjectExpectedStudiesOtherInfoDTO
-    projectExpectedStudyInfoToProjectExpectedStudiesOtherInfoDTO(ProjectExpectedStudyInfo projectExpectedStudyInfo);
+    @Mapping(source = "projectExpectedStudyInfo.topLevelComments", target = "description"),
+    @Mapping(source = "projectExpectedStudyInfo.MELIAPublications", target = "publications")})
+  public abstract MeliaInfoDTO
+    projectExpectedStudyInfoToPMeliaInfoDTO(ProjectExpectedStudyInfo projectExpectedStudyInfo);
 
 }
