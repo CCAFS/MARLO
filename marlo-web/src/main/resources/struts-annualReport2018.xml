@@ -263,5 +263,14 @@
       </result>
     </action>     
     
+    <action name="{crp}/downloadExternalPartnershipsFile"
+      class="org.cgiar.ccafs.marlo.action.annualReport.y2018.DownloadDocumentExternalPartnershipsAction"
+      method="downloadFile">
+      <result name="success" type="redirectAction">
+      <param name="filename">${filename}</param>
+      <param name="crp">${crp}</param>
+      </result>
+    </action>
+    
   </package>
 </struts>
