@@ -100,18 +100,10 @@ public class IFPRIEBraryClientAPI extends MetadataClientApi {
 
           // Separate Authors
           for (String string : authorsJson) {
-            // string = string.replace(", ", "{0}");
-
-            System.out.println("string: " + string);
             String div[] = string.split(", ");
-            System.out.println("div.length: " + div.length);
             if (div.length >= 2) {
-              System.out.println("div0: " + div[0]);
-              System.out.println("div1: " + div[1]);
-              // String firstName = div[1].replace("{0}", ", ");
               String firstName = div[1];
               String lastName = div[0];
-              System.out.println("First name: " + firstName);
               Author author = new Author(firstName);
               String names[] = author.getFirstName().split(", ");
               if (names.length >= 1) {
@@ -130,10 +122,7 @@ public class IFPRIEBraryClientAPI extends MetadataClientApi {
               if (author.getOrcidId() == null || author.getOrcidId().isEmpty()) {
                 // author.setOrcidId("No ORCID");
               }
-
               authors.add(author);
-
-
             }
           }
         } catch (JSONException e) {
