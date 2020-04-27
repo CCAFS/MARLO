@@ -189,7 +189,10 @@
         
           [#-- Specify an Outcome Case Study (Only if stage 4) --]
           <div class="form-group stageFourBlock-true" style="display:${isStageFour?string('block','none')}">
+            [#--  
             [@customForm.select name="innovation.projectInnovationInfo.projectExpectedStudy.id" label=""  i18nkey="projectInnovations.outcomeCaseStudy" listName="expectedStudyList" keyFieldName="id"  displayFieldName="composedNameAlternative"  multiple=false required=true  className="keyOutput" editable=editable/]
+            --]
+            [@customForm.elementsListComponent name="innovation.studies" elementType="projectExpectedStudy" elementList=innovation.studies label="projectInnovations.outcomeCaseStudy" helpIcon=false listName="expectedStudyList" keyFieldName="id" displayFieldName="composedNameAlternative" required=isEvidenceRequired/]
           </div>
                 
           [#-- Evidence Link --] 

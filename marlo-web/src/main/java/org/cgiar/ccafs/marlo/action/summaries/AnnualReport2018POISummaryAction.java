@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbExpenditureAreasManager;
@@ -195,6 +196,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
   private ReportSynthesisKeyPartnershipExternalManager reportSynthesisKeyPartnershipExternalManager;
   private ReportSynthesisKeyPartnershipCollaborationManager reportSynthesisKeyPartnershipCollaborationManager;
   private ReportSynthesisMeliaManager reportSynthesisMeliaManager;
+  private FileDBManager fileDBManager;
 
 
   private DeliverableManager deliverableManager;
@@ -243,7 +245,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     DeliverableManager deliverableManager,
     ReportSynthesisKeyPartnershipExternalManager reportSynthesisKeyPartnershipExternalManager,
     ReportSynthesisKeyPartnershipCollaborationManager reportSynthesisKeyPartnershipCollaborationManager,
-    ReportSynthesisMeliaManager reportSynthesisMeliaManager) {
+    ReportSynthesisMeliaManager reportSynthesisMeliaManager, FileDBManager fileDBManager) {
     super(config, crpManager, phaseManager, projectManager);
     document = new XWPFDocument();
     poiSummary = new POISummary();
@@ -261,6 +263,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     this.reportSynthesisKeyPartnershipExternalManager = reportSynthesisKeyPartnershipExternalManager;
     this.reportSynthesisKeyPartnershipCollaborationManager = reportSynthesisKeyPartnershipCollaborationManager;
     this.reportSynthesisMeliaManager = reportSynthesisMeliaManager;
+    this.fileDBManager = fileDBManager;
   }
 
   private void addAlmetricCrp() {
@@ -1838,7 +1841,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     for (ReportSynthesisKeyPartnershipExternal flagshipExternalPartnership : externalPartnerships) {
-      String leadFP = "", description = "", keyPartners = "", mainArea = "";
+      String leadFP = "", description = "", keyPartners = "", mainArea = "", documentationLink = "";
 
       if (flagshipExternalPartnership != null) {
 
@@ -1855,7 +1858,25 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         }
 
         if (flagshipExternalPartnership.getDescription() != null) {
-          description = flagshipExternalPartnership.getDescription();
+          description = flagshipExternalPartnership.getDescription() + "\n";
+        }
+
+        // Load File
+        if (flagshipExternalPartnership.getFile() != null) {
+          if (flagshipExternalPartnership.getFile().getId() != null) {
+            flagshipExternalPartnership
+              .setFile(fileDBManager.getFileDBById(flagshipExternalPartnership.getFile().getId()));
+          }
+        }
+
+        // Get link of external partnerships document
+        if (flagshipExternalPartnership.getFile() != null && flagshipExternalPartnership.getFile().getFileName() != null
+          && !flagshipExternalPartnership.getFile().getFileName().isEmpty()) {
+          documentationLink = config.getBaseUrl() + "/annualReport2018/" + this.getCrpSession()
+            + "/downloadExternalPartnershipsFile.do?filename=" + flagshipExternalPartnership.getFile().getFileName()
+            + "&crp=" + this.getCrpSession();
+          // description += "\n •Document link (BETA): " + documentationLink;
+
         }
 
         if (flagshipExternalPartnership.getInstitutions() != null) {
