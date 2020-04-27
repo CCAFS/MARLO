@@ -41,7 +41,6 @@ import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressDeliverable;
-import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -95,6 +94,7 @@ public class PublicationsAction extends BaseAction {
   private GlobalUnit loggedCrp;
   private List<LiaisonInstitution> liaisonInstitutions;
   private List<Deliverable> deliverables;
+  private List<String> emptyFields;
   private Phase actualPhase;
   private Integer totalOpenAccess = 0;
   private Integer totalLimited = 0;
@@ -251,6 +251,26 @@ public class PublicationsAction extends BaseAction {
     return loggedCrp;
   }
 
+  public String getPublicationMissingFields(long id) {
+    String missingFieldsText = "";
+    if (emptyFields != null && !emptyFields.isEmpty()) {
+      if (emptyFields.contains("ID:" + id)) {
+        for (String field : emptyFields) {
+          if (missingFieldsText.isEmpty()) {
+            missingFieldsText = field;
+          } else {
+            missingFieldsText += ", " + field;
+          }
+        }
+      }
+    }
+    if (!missingFieldsText.isEmpty()) {
+      missingFieldsText = missingFieldsText.replace("ID:" + id, "");
+    }
+    return missingFieldsText;
+  }
+
+
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
   }
@@ -305,7 +325,6 @@ public class PublicationsAction extends BaseAction {
     return isFP;
   }
 
-
   @Override
   public boolean isPMU() {
     boolean isFP = false;
@@ -326,44 +345,96 @@ public class PublicationsAction extends BaseAction {
    * @return Boolean object with the status of the study
    */
   public Boolean isPublicationComplete(long deliverableID, long phaseID) {
-
-    SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByDeliverable(deliverableID, "Reporting",
-      this.getActualPhase().getYear(), false, "deliverableList");
+    emptyFields = new ArrayList<>();
+    Deliverable deliverable = new Deliverable();
+    deliverable = deliverableManager.getDeliverableById(deliverableID);
     int count = 0;
-    if (sectionStatus != null && sectionStatus.getMissingFields() != null
-      && sectionStatus.getMissingFields().length() != 0) {
-      // count++;
+    int count2 = 0;
+    if (deliverable != null) {
 
-      // Volume
-      if (sectionStatus.getMissingFields().contains("Volume")) {
+      deliverable.setCrps(deliverable.getDeliverableCrps().stream()
+        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+      if (deliverable.getCrps() == null || deliverable.getCrps().isEmpty()) {
+        emptyFields.add("CRP");
         count++;
       }
 
-      // Issue
-      if (sectionStatus.getMissingFields().contains("Issue")) {
+      if (deliverable.getPublication() != null) {
+
+        // Is publication
+        if (deliverable.getPublication().getIsiPublication() == null) {
+          emptyFields.add("Is publication");
+          count++;
+        }
+
+        // Issue - Page - Volume
+        if (deliverable.getPublication().getVolume() == null || deliverable.getPublication().getVolume().isEmpty()) {
+          count2++;
+        }
+        if (deliverable.getPublication().getPages() == null || deliverable.getPublication().getPages().isEmpty()) {
+          count2++;
+        }
+        if (deliverable.getPublication().getIssue() == null || deliverable.getPublication().getIssue().isEmpty()) {
+          count2++;
+        }
+      }
+
+      if (count2 == 3) {
+        emptyFields.add("Issue/Pages/Volume");
         count++;
       }
 
-      // Page
-      if (sectionStatus.getMissingFields().contains("Pages")) {
+      // Authors
+      if (deliverable.getUsers() == null || deliverable.getUsers().isEmpty()) {
+        emptyFields.add("Authors");
         count++;
       }
 
-      // Journal
-      if (sectionStatus.getMissingFields().contains("Journal")) {
-        count++;
-      }
+      if (deliverable.getMetadata() != null) {
 
-      // ISI
-      if (sectionStatus.getMissingFields().contains("Is this journal article an ISI publication?")) {
-        count++;
+        // Unique identifier (DOI)
+        if (deliverable.getMetadataValue(36) == null || deliverable.getMetadataValue(36).isEmpty()) {
+          emptyFields.add("DOI");
+          count++;
+        }
+        // Date of Publication
+        if (deliverable.getMetadataValue(17) == null || deliverable.getMetadataValue(36).isEmpty()) {
+          emptyFields.add("Date of Publication");
+          count++;
+        }
+        // Article Title
+        if (deliverable.getMetadataValue(1) == null || deliverable.getMetadataValue(36).isEmpty()) {
+          emptyFields.add("Article Title");
+          count++;
+        }
       }
-
     }
-
+    /*
+     * SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByDeliverable(deliverableID, "Reporting",
+     * this.getActualPhase().getYear(), false, "deliverableList");
+     * // int count = 0;
+     * if (sectionStatus != null && sectionStatus.getMissingFields() != null
+     * && sectionStatus.getMissingFields().length() != 0) {
+     * // count++;
+     * // Volume - Issue - Pages validation - at less one of these fields must be completed
+     * if (sectionStatus.getMissingFields().contains("Volume") || sectionStatus.getMissingFields().contains("Issue")
+     * || sectionStatus.getMissingFields().contains("Pages")) {
+     * count++;
+     * }
+     * // Journal
+     * if (sectionStatus.getMissingFields().contains("Journal")) {
+     * count++;
+     * }
+     * // ISI
+     * if (sectionStatus.getMissingFields().contains("Is this journal article an ISI publication?")) {
+     * count++;
+     * }
+     * }
+     */
     if (count == 0) {
       return true;
     } else {
+      emptyFields.add("ID:" + deliverable.getId());
       return false;
     }
 

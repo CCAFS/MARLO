@@ -378,6 +378,7 @@
       [#-- Extended Year --]
       <div class="col-md-4 extendedYearBlock" style="display:${showExtendedYear?string('block', 'none')}">
        [@customForm.select name="${milestoneCustomName}.extendedYear" value="${(milestone.extendedYear)!-1}"  i18nkey="outcome.milestone.inputNewTargetYear" listName="milestoneYears"  required=true  className=" targetYear milestoneExtendedYear" editable=editable /]
+       [#if !editableMilestone][#if (milestone.extendedYear != -1)!false ]${(milestone.extendedYear)!}[/#if][/#if]
       </div>
     </div>
     
