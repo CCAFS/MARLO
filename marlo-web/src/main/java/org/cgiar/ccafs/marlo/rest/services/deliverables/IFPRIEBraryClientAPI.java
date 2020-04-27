@@ -65,6 +65,9 @@ public class IFPRIEBraryClientAPI extends MetadataClientApi {
       Gson gson = gsonBuilder.create();
       this.setDefaultEmptyValues(jo);
       List<Author> authors = new ArrayList<Author>();
+      List<Author> authors2 = new ArrayList<Author>();
+
+      // Get ORCID
       if (jo.has("orcid") && jo.get("orcid") != null) {
         try {
           String authorJson = jo.getString("orcid");
@@ -81,14 +84,63 @@ public class IFPRIEBraryClientAPI extends MetadataClientApi {
                 author.setLastName(names[0]);
               }
               author.setOrcidId(div[0]);
-              authors.add(author);
+              authors2.add(author);
             }
-
           }
         } catch (JSONException e) {
           LOG.error("No authors");
         }
       }
+
+      // Get authors metadata info
+      if (jo.has("creato") && jo.get("creato") != null) {
+        try {
+          String authorJson = jo.getString("creato");
+          String authorsJson[] = authorJson.split("; ");
+
+          // Separate Authors
+          for (String string : authorsJson) {
+            // string = string.replace(", ", "{0}");
+
+            System.out.println("string: " + string);
+            String div[] = string.split(", ");
+            System.out.println("div.length: " + div.length);
+            if (div.length >= 2) {
+              System.out.println("div0: " + div[0]);
+              System.out.println("div1: " + div[1]);
+              // String firstName = div[1].replace("{0}", ", ");
+              String firstName = div[1];
+              String lastName = div[0];
+              System.out.println("First name: " + firstName);
+              Author author = new Author(firstName);
+              String names[] = author.getFirstName().split(", ");
+              if (names.length >= 1) {
+                author.setFirstName(div[1]);
+                author.setLastName(div[0]);
+              }
+
+              if (authors2 != null && !authors2.isEmpty()) {
+                for (Author autor : authors2) {
+                  if (autor.getFirstName().contains(author.getFirstName()) && autor.getOrcidId() != null
+                    && !autor.getOrcidId().isEmpty()) {
+                    author.setOrcidId(autor.getOrcidId());
+                  }
+                }
+              }
+              if (author.getOrcidId() == null || author.getOrcidId().isEmpty()) {
+                // author.setOrcidId("No ORCID");
+              }
+
+              authors.add(author);
+
+
+            }
+          }
+        } catch (JSONException e) {
+          LOG.error("No authors");
+        }
+      }
+
 
       // get description
       if (jo.has("descri") && jo.get("descri") != null) {
