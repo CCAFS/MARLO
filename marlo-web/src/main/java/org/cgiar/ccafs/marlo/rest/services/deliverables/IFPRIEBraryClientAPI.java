@@ -111,16 +111,36 @@ public class IFPRIEBraryClientAPI extends MetadataClientApi {
                 author.setLastName(div[0]);
               }
 
+              // Compare Authors with ORCID list and set the respective information
               if (authors2 != null && !authors2.isEmpty()) {
                 for (Author autor : authors2) {
-                  if (autor.getFirstName().contains(author.getFirstName()) && autor.getOrcidId() != null
-                    && !autor.getOrcidId().isEmpty()) {
+                  String autorFirstName = autor.getFirstName();
+                  String authorFirstName = author.getFirstName();
+                  String autorLastName = autor.getLastName();
+                  String authorLastName = author.getLastName();
+
+                  if (autorFirstName.contains(" ")) {
+                    autorFirstName = autorFirstName.split(" ")[0];
+                  }
+                  if (authorFirstName.contains(" ")) {
+                    authorFirstName = authorFirstName.split(" ")[0];
+                  }
+
+                  if (autorLastName.contains(" ")) {
+                    autorLastName = autorLastName.split(" ")[0];
+                  }
+                  if (authorLastName.contains(" ")) {
+                    authorLastName = authorLastName.split(" ")[0];
+                  }
+
+                  if (autorFirstName.contains(authorFirstName) && autorLastName.contains(authorLastName)
+                    && autor.getOrcidId() != null && !autor.getOrcidId().isEmpty()) {
                     author.setOrcidId(autor.getOrcidId());
                   }
                 }
               }
               if (author.getOrcidId() == null || author.getOrcidId().isEmpty()) {
-                // author.setOrcidId("No ORCID");
+                author.setOrcidId("No ORCID");
               }
               authors.add(author);
             }
@@ -129,7 +149,6 @@ public class IFPRIEBraryClientAPI extends MetadataClientApi {
           LOG.error("No authors");
         }
       }
-
 
       // get description
       if (jo.has("descri") && jo.get("descri") != null) {
