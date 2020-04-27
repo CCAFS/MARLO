@@ -15,7 +15,6 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
@@ -60,7 +59,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicySubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesis2018SectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingDimension;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummary;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummaryBudget;
@@ -89,7 +87,6 @@ import org.cgiar.ccafs.marlo.utils.POISummary;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -1871,21 +1868,15 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
               .setFile(fileDBManager.getFileDBById(flagshipExternalPartnership.getFile().getId()));
           }
         }
-        String url = APConstants.PARTNERSHIP_FOLDER.concat(File.separator).concat(this.getCrpSession())
-          .concat(File.separator).concat(this.getCrpSession() + "_")
-          .concat(ReportSynthesis2018SectionStatusEnum.EXTERNAL_PARTNERSHIPS.getStatus()).concat(File.separator);
 
+        // Get link of external partnerships document
+        if (flagshipExternalPartnership.getFile() != null && flagshipExternalPartnership.getFile().getFileName() != null
+          && !flagshipExternalPartnership.getFile().getFileName().isEmpty()) {
+          documentationLink = config.getBaseUrl() + "/annualReport2018/" + this.getCrpSession()
+            + "/downloadExternalPartnershipsFile.do?filename=" + flagshipExternalPartnership.getFile().getFileName()
+            + "&crp=" + this.getCrpSession();
+          // description += "\n •Document link (BETA): " + documentationLink;
 
-        if (flagshipExternalPartnership.getFile() != null
-          && flagshipExternalPartnership.getFile().getFileName() != null) {
-          documentationLink = config.getDownloadURL() + "/" + url.replace('\\', '/');
-
-          if (description != null && !description.isEmpty()) {
-            description += "\n •" + "Reference to any documentation evidencing the partnership agreements: "
-              + " <a href=" + documentationLink + flagshipExternalPartnership.getFile().getFileName() + ">Link</a>";
-            System.out.println(
-              "<a href=\" + documentationLink + flagshipExternalPartnership.getFile().getFileName() + \">Link</a>");
-          }
         }
 
         if (flagshipExternalPartnership.getInstitutions() != null) {
@@ -1924,10 +1915,10 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       } catch (Exception e) {
 
       }
-      POIField[] sData =
-        {new POIField(leadFP, ParagraphAlignment.LEFT, false), new POIField(description, ParagraphAlignment.LEFT, true),
-          new POIField(keyPartners, ParagraphAlignment.LEFT, false),
-          new POIField(mainArea, ParagraphAlignment.LEFT, false)};
+      POIField[] sData = {new POIField(leadFP, ParagraphAlignment.LEFT, false),
+        new POIField(description, ParagraphAlignment.LEFT, false),
+        new POIField(keyPartners, ParagraphAlignment.LEFT, false),
+        new POIField(mainArea, ParagraphAlignment.LEFT, false)};
       data = Arrays.asList(sData);
       datas.add(data);
     }
