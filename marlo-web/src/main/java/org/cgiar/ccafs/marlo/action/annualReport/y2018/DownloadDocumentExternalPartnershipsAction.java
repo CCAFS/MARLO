@@ -24,12 +24,12 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.validation.annualreport.y2018.PartnershipValidator;
 
 import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URL;
 
 import javax.inject.Inject;
@@ -47,9 +47,7 @@ public class DownloadDocumentExternalPartnershipsAction extends BaseAction {
   private static final long serialVersionUID = 575869881576979848L;
 
   private static Logger LOG = LoggerFactory.getLogger(DownloadDocumentExternalPartnershipsAction.class);
-
   private PartnershipValidator validator;
-
   private ReportSynthesis reportSynthesis;
   private String filename;
   private String crp;
@@ -69,26 +67,38 @@ public class DownloadDocumentExternalPartnershipsAction extends BaseAction {
 
         String path_ = config.getUploadsBaseFolder() + "/" + APConstants.PARTNERSHIP_FOLDER + "/" + crp + "/" + crp
           + "_" + ReportSynthesis2018SectionStatusEnum.EXTERNAL_PARTNERSHIPS.getStatus() + "/" + filename;
-        path_ = path_.replace("=", "");
-
+        // path_ = path_.replace("=", "");
+        // path_ = path_.replace("/", File.separator);
 
         /*** test ***/
+        try {
+          File file = new File(path_);
+
+          FileInputStream in = new FileInputStream(path_);
+          OutputStream out = new FileOutputStream(file);
+
+          int b = 0;
+          while (b != -1) {
+            b = in.read();
+            if (b != -1) {
+              out.write(b);
+            }
+          }
+          out.close();
+          in.close();
+        } catch (Exception e) {
+          System.out.println(e);
+        }
         /*** fin test **/
 
 
-        // path_ = path_.replace("/", File.separator);
-
-        new FileInputStream(path_);
-
-        new ByteArrayOutputStream();
-
         // inputStream = new ByteArrayInputStream(fileInput.toByteArray());
 
-        try (BufferedInputStream in = new BufferedInputStream(new URL(path_).openStream());
+        try (BufferedInputStream in2 = new BufferedInputStream(new URL(path_).openStream());
           FileOutputStream fileOutputStream = new FileOutputStream(filename)) {
           byte dataBuffer[] = new byte[1024];
           int bytesRead;
-          while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
+          while ((bytesRead = in2.read(dataBuffer, 0, 1024)) != -1) {
             fileOutputStream.write(dataBuffer, 0, bytesRead);
           }
         } catch (IOException e) {
@@ -122,7 +132,6 @@ public class DownloadDocumentExternalPartnershipsAction extends BaseAction {
       return; // Stop here and go to execute method.
     }
   }
-
 
   @Override
   public void validate() {

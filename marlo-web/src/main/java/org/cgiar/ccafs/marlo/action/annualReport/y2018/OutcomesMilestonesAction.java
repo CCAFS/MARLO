@@ -612,7 +612,8 @@ public class OutcomesMilestonesAction extends BaseAction {
       for (CrpProgramOutcome crpProgramOutcome : crpProgram.getOutcomes()) {
 
         crpProgramOutcome.setMilestones(crpProgramOutcome.getCrpMilestones().stream()
-          .filter(c -> c.isActive() && c.getYear().intValue() == this.getActualPhase().getYear())
+          .filter(c -> c.isActive() && c.getYear().intValue() == this.getActualPhase().getYear()
+            || (c.getExtendedYear() != null && c.getExtendedYear().intValue() == this.getActualPhase().getYear()))
           .collect(Collectors.toList()));
 
         crpProgramOutcome.setSubIdos(
