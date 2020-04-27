@@ -19,29 +19,27 @@
 
 package org.cgiar.ccafs.marlo.rest.dto;
 
-import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
-
 import io.swagger.annotations.ApiModelProperty;
 
-public class ProjectExpectedStudiesOtherInfoDTO {
+public class MeliaInfoDTO {
 
   @ApiModelProperty(notes = "Expected study title", position = 1)
   private String title;
 
-  @ApiModelProperty(notes = "Expected study title", position = 2)
-  private long year;
+  @ApiModelProperty(notes = "Expected study year", position = 2)
+  private Long year;
 
   @ApiModelProperty(notes = "Expected study type code", position = 3)
   private StudyTypeDTO studyType;
 
   @ApiModelProperty(notes = "Expected study status", position = 4)
-  private GeneralStatus status;
+  private MilestoneStatusDTO status;
 
   @ApiModelProperty(notes = "Description Study", position = 5)
   private String description;
 
   @ApiModelProperty(notes = "Melia Publications Links", position = 6)
-  private String MELIAPublications;
+  private String publications;
 
   @ApiModelProperty(notes = "Scope comments", position = 7)
   private String scopeComments;
@@ -52,8 +50,8 @@ public class ProjectExpectedStudiesOtherInfoDTO {
   }
 
 
-  public String getMELIAPublications() {
-    return MELIAPublications;
+  public String getPublications() {
+    return publications;
   }
 
 
@@ -62,7 +60,7 @@ public class ProjectExpectedStudiesOtherInfoDTO {
   }
 
 
-  public GeneralStatus getStatus() {
+  public MilestoneStatusDTO getStatus() {
     return status;
   }
 
@@ -77,7 +75,7 @@ public class ProjectExpectedStudiesOtherInfoDTO {
   }
 
 
-  public long getYear() {
+  public Long getYear() {
     return year;
   }
 
@@ -87,8 +85,8 @@ public class ProjectExpectedStudiesOtherInfoDTO {
   }
 
 
-  public void setMELIAPublications(String mELIAPublications) {
-    MELIAPublications = mELIAPublications;
+  public void setPublications(String publications) {
+    this.publications = publications;
   }
 
 
@@ -97,7 +95,7 @@ public class ProjectExpectedStudiesOtherInfoDTO {
   }
 
 
-  public void setStatus(GeneralStatus status) {
+  public void setStatus(MilestoneStatusDTO status) {
     this.status = status;
   }
 
@@ -112,7 +110,7 @@ public class ProjectExpectedStudiesOtherInfoDTO {
   }
 
 
-  public void setYear(long year) {
+  public void setYear(Long year) {
     this.year = year;
   }
 }

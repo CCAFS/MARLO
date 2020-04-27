@@ -19,20 +19,22 @@ import java.util.List;
 
 import io.swagger.annotations.ApiModelProperty;
 
-/**
- * @author Luis Benavides - CIAT/CCAFS
- * @author Modified by Diego Perez - CIAT/CCAFS
- */
-public class ProjectExpectedStudiesOtherDTO {
 
-  @ApiModelProperty(notes = "Project ID", position = 1)
-  private Long project;
+public class MeliaDTO {
+
+  @ApiModelProperty(notes = "The Generated expected study id", position = 1)
+  private Long id;
+
+  @ApiModelProperty(notes = "Project ID", position = 2)
+  private String projectID;
+
 
   @ApiModelProperty(notes = "Project expected studies other info", position = 2)
-  private ProjectExpectedStudiesOtherInfoDTO projectExpectedStudiesOtherInfo;
+  private MeliaInfoDTO meliaInfo;
 
   @ApiModelProperty(notes = "CGIAR Sub-IDOs List", position = 3)
   private List<ProjectExpectedStudySubIdoDTO> srfSubIdoList;
+
 
   @ApiModelProperty(notes = "Geographic scope code list", position = 3)
   private List<GeographicScopeDTO> geographicScopes;
@@ -53,9 +55,16 @@ public class ProjectExpectedStudiesOtherDTO {
     return countries;
   }
 
-
   public List<GeographicScopeDTO> getGeographicScopes() {
     return geographicScopes;
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public MeliaInfoDTO getMeliaInfo() {
+    return meliaInfo;
   }
 
 
@@ -64,13 +73,8 @@ public class ProjectExpectedStudiesOtherDTO {
   }
 
 
-  public Long getProject() {
-    return project;
-  }
-
-
-  public ProjectExpectedStudiesOtherInfoDTO getProjectExpectedStudiesOtherInfo() {
-    return projectExpectedStudiesOtherInfo;
+  public String getProjectID() {
+    return projectID;
   }
 
 
@@ -99,19 +103,24 @@ public class ProjectExpectedStudiesOtherDTO {
   }
 
 
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+
+  public void setMeliaInfo(MeliaInfoDTO meliaInfo) {
+    this.meliaInfo = meliaInfo;
+  }
+
+
   public void setPhase(PhaseDTO phase) {
     this.phase = phase;
   }
 
-
-  public void setProject(Long project) {
-    this.project = project;
+  public void setProjectID(String projectID) {
+    this.projectID = projectID;
   }
 
-
-  public void setProjectExpectedStudiesOtherInfo(ProjectExpectedStudiesOtherInfoDTO projectExpectedStudiesOtherInfo) {
-    this.projectExpectedStudiesOtherInfo = projectExpectedStudiesOtherInfo;
-  }
 
   public void setRegions(List<RegionDTO> regions) {
     this.regions = regions;
@@ -126,5 +135,6 @@ public class ProjectExpectedStudiesOtherDTO {
   public void setSrfSubIdoList(List<ProjectExpectedStudySubIdoDTO> srfSubIdoList) {
     this.srfSubIdoList = srfSubIdoList;
   }
+
 
 }
