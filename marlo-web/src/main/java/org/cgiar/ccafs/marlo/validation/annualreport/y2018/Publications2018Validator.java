@@ -210,14 +210,25 @@ public class Publications2018Validator extends BaseValidator {
                   countB++;
                 }
 
+                int countAuthors = 0;
                 // Authors
                 if (deliverable.getUsers() == null || deliverable.getUsers().isEmpty()) {
+                  countAuthors++;
+                }
+                if (deliverable.getMetadata() != null) {
+                  // Authors Clarisa
+                  if (deliverable.getMetadataValue(38) == null || deliverable.getMetadataValue(38).isEmpty()) {
+                    countAuthors++;
+                  }
+                }
+
+                // Validate if the authors fields are null
+                if (countAuthors == 2) {
                   emptyFields.add("Authors");
                   countB++;
                 }
 
                 if (deliverable.getMetadata() != null) {
-
                   // Unique identifier (DOI)
                   if (deliverable.getMetadataValue(36) == null || deliverable.getMetadataValue(36).isEmpty()) {
                     emptyFields.add("DOI");
