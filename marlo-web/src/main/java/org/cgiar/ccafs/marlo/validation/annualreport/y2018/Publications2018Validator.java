@@ -220,6 +220,8 @@ public class Publications2018Validator extends BaseValidator {
                   if (deliverable.getMetadataValue(38) == null || deliverable.getMetadataValue(38).isEmpty()) {
                     countAuthors++;
                   }
+                } else {
+                  countAuthors++;
                 }
 
                 // Validate if the authors fields are null
