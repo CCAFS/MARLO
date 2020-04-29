@@ -852,60 +852,69 @@ public class OutcomesMilestonesAction extends BaseAction {
       && reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList().size() > 0) {
       outcomeList = reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList();
     }
-    // try {
-    if (reportSynthesis != null && reportSynthesis.getReportSynthesisFlagshipProgress() != null
-      && reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList() != null
-      && reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList().size() > 0) {
-      for (ReportSynthesisFlagshipProgressOutcome outcome : reportSynthesis.getReportSynthesisFlagshipProgress()
-        .getOutcomeList()) {
+    try {
+      if (reportSynthesis != null && reportSynthesis.getReportSynthesisFlagshipProgress() != null
+        && reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList() != null
+        && reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList().size() > 0) {
+        for (ReportSynthesisFlagshipProgressOutcome outcome : reportSynthesis.getReportSynthesisFlagshipProgress()
+          .getOutcomeList()) {
 
-        /*
-         * if (reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList() != null) {
-         * for (ReportSynthesisFlagshipProgressOutcome outcome : reportSynthesis.getReportSynthesisFlagshipProgress()
-         * .getOutcomeList()) {
-         * // setting milestones
-         * outcome.getCrpProgramOutcome()
-         * .setMilestones(outcome.getCrpProgramOutcome().getCrpMilestones().stream()
-         * .filter(c -> c.isActive() && (c.getYear().intValue() == this.getActualPhase().getYear()
-         * || (c.getExtendedYear() != null && c.getExtendedYear().intValue() == this.getActualPhase().getYear())))
-         * .collect(Collectors.toList()));
-         * if (outcome.getCrpProgramOutcome().getMilestones() != null) {
-         * for (CrpMilestone milestone : outcome.getCrpProgramOutcome().getMilestones()) {
-         * if (milestone.getYear() == this.getActualPhase().getYear()) {
-         * count++;
-         * }
-         * }
-         * if (count > 0 && outcomeList != null) {
-         * try {
-         * outcomeList.remove(outcome);
-         * } catch (Exception e) {
-         * }
-         * }
-         * }
-         * }
-         * }
-         */
+          /*
+           * if (reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList() != null) {
+           * for (ReportSynthesisFlagshipProgressOutcome outcome : reportSynthesis.getReportSynthesisFlagshipProgress()
+           * .getOutcomeList()) {
+           * // setting milestones
+           * outcome.getCrpProgramOutcome()
+           * .setMilestones(outcome.getCrpProgramOutcome().getCrpMilestones().stream()
+           * .filter(c -> c.isActive() && (c.getYear().intValue() == this.getActualPhase().getYear()
+           * || (c.getExtendedYear() != null && c.getExtendedYear().intValue() == this.getActualPhase().getYear())))
+           * .collect(Collectors.toList()));
+           * if (outcome.getCrpProgramOutcome().getMilestones() != null) {
+           * for (CrpMilestone milestone : outcome.getCrpProgramOutcome().getMilestones()) {
+           * if (milestone.getYear() == this.getActualPhase().getYear()) {
+           * count++;
+           * }
+           * }
+           * if (count > 0 && outcomeList != null) {
+           * try {
+           * outcomeList.remove(outcome);
+           * } catch (Exception e) {
+           * }
+           * }
+           * }
+           * }
+           * }
+           */
 
-        if (outcome.getMilestones() != null) {
-          for (ReportSynthesisFlagshipProgressOutcomeMilestone milestone : outcome.getMilestones()) {
-
-            if (milestone.getCrpMilestone() != null
-              && milestone.getCrpMilestone().getYear() != this.getActualPhase().getYear()) {
-              ids.add(outcome.getId());
-              if (outcomeList != null) {
-                toRemoveOutcomeList.add(outcome);
+          if (outcome.getMilestones() != null) {
+            for (ReportSynthesisFlagshipProgressOutcomeMilestone milestone : outcome.getMilestones()) {
+              if (milestone.getCrpMilestone() != null
+                && milestone.getCrpMilestone().getYear() != this.getActualPhase().getYear()) {
+                boolean delete = false;
+                if (milestone.getCrpMilestone().getExtendedYear() != null) {
+                  if (milestone.getCrpMilestone().getExtendedYear().longValue() != -1) {
+                    if (milestone.getCrpMilestone().getExtendedYear() != this.getActualPhase().getYear()) {
+                      delete = true;
+                    }
+                  }
+                }
+                if (delete) {
+                  ids.add(outcome.getId());
+                  if (outcomeList != null) {
+                    toRemoveOutcomeList.add(outcome);
+                  }
+                }
               }
             }
           }
         }
+        if (toRemoveOutcomeList != null) {
+          outcomeList.removeAll(toRemoveOutcomeList);
+        }
       }
-      if (toRemoveOutcomeList != null) {
-        outcomeList.removeAll(toRemoveOutcomeList);
-      }
+    } catch (Exception e) {
+      LOG.error("Error getting outcome list: " + e.getMessage());
     }
-    // } catch (Exception e) {
-    // LOG.error("Error getting outcome list: " + e.getMessage());
-    // }
     if (outcomeList != null) {
       outcomeList =
         outcomeList.stream().filter(o -> o.getCrpProgramOutcome() != null && o.getCrpProgramOutcome().getId() != 1997)
