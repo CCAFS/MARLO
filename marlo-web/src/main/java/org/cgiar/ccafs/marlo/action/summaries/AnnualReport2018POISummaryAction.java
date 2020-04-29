@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbExpenditureAreasManager;
@@ -195,6 +196,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
   private ReportSynthesisKeyPartnershipExternalManager reportSynthesisKeyPartnershipExternalManager;
   private ReportSynthesisKeyPartnershipCollaborationManager reportSynthesisKeyPartnershipCollaborationManager;
   private ReportSynthesisMeliaManager reportSynthesisMeliaManager;
+  private FileDBManager fileDBManager;
 
 
   private DeliverableManager deliverableManager;
@@ -243,7 +245,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     DeliverableManager deliverableManager,
     ReportSynthesisKeyPartnershipExternalManager reportSynthesisKeyPartnershipExternalManager,
     ReportSynthesisKeyPartnershipCollaborationManager reportSynthesisKeyPartnershipCollaborationManager,
-    ReportSynthesisMeliaManager reportSynthesisMeliaManager) {
+    ReportSynthesisMeliaManager reportSynthesisMeliaManager, FileDBManager fileDBManager) {
     super(config, crpManager, phaseManager, projectManager);
     document = new XWPFDocument();
     poiSummary = new POISummary();
@@ -261,6 +263,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     this.reportSynthesisKeyPartnershipExternalManager = reportSynthesisKeyPartnershipExternalManager;
     this.reportSynthesisKeyPartnershipCollaborationManager = reportSynthesisKeyPartnershipCollaborationManager;
     this.reportSynthesisMeliaManager = reportSynthesisMeliaManager;
+    this.fileDBManager = fileDBManager;
   }
 
   private void addAlmetricCrp() {
@@ -400,8 +403,9 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
   private void addExpectedCrp() {
     if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisSrfProgress() != null
       && reportSynthesisPMU.getReportSynthesisSrfProgress().getSummary() != null) {
+      // TODO the replaceAll() is a temporal solution. we need to check where the problem comes from
       String synthesisCrpDescription = reportSynthesisPMU.getReportSynthesisSrfProgress().getSummary() != null
-        ? reportSynthesisPMU.getReportSynthesisSrfProgress().getSummary() : "";
+        ? reportSynthesisPMU.getReportSynthesisSrfProgress().getSummary().replaceAll("&amp;", "&") : "";
       if (synthesisCrpDescription != null) {
         poiSummary.convertHTMLTags(document, synthesisCrpDescription, null);
       }
@@ -557,7 +561,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
   private void addNarrativeSection() {
     if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisNarrative() != null
       && reportSynthesisPMU.getReportSynthesisNarrative().getNarrative() != null) {
-      String narrative = reportSynthesisPMU.getReportSynthesisNarrative().getNarrative();
+      // TODO the replaceAll() is a temporal solution. we need to check where the problem comes from
+      String narrative = reportSynthesisPMU.getReportSynthesisNarrative().getNarrative().replaceAll("&amp;", "&");
       poiSummary.convertHTMLTags(document, narrative, null);
     }
   }
@@ -752,8 +757,10 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           }
         }
 
+        // TODO the replaceAll() is a temporal solution. we need to check where the problem comes from
         briefSummaries = reportSynthesisSrfProgressTarget.getBirefSummary() != null
-          ? reportSynthesisSrfProgressTarget.getBirefSummary() : "";
+          ? reportSynthesisSrfProgressTarget.getBirefSummary().replaceAll("&amp;", "&") : "";
+
         additionalContribution = reportSynthesisSrfProgressTarget.getAdditionalContribution() != null
           ? reportSynthesisSrfProgressTarget.getAdditionalContribution() : "";
 
@@ -1622,12 +1629,24 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
                   if (milestoneOb.getEvidence() != null) {
                     evidenceMilestone = milestoneOb.getEvidence();
+                    if (evidenceMilestone != null) {
+                      // TODO the replaceAll() is a temporal solution. we need to check where the problem comes from
+                      evidenceMilestone = evidenceMilestone.replaceAll("&amp;", "&");
+                    }
                   }
                   if (milestoneOb.getEvidenceLink() != null) {
                     evidence = milestoneOb.getEvidenceLink();
+                    if (evidence != null) {
+                      // TODO the replaceAll() is a temporal solution. we need to check where the problem comes from
+                      evidence = evidence.replaceAll("&amp;", "&");
+                    }
                   }
                   if (milestoneOb.getCrpMilestone().getStatusName() != null) {
                     milestoneStatus = milestoneOb.getCrpMilestone().getStatusName();
+                    if (milestoneStatus != null) {
+                      // TODO the replaceAll() is a temporal solution. we need to check where the problem comes from
+                      milestoneStatus = milestoneStatus.replaceAll("&amp;", "&");
+                    }
                   }
                 }
               }
@@ -1838,7 +1857,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     for (ReportSynthesisKeyPartnershipExternal flagshipExternalPartnership : externalPartnerships) {
-      String leadFP = "", description = "", keyPartners = "", mainArea = "";
+      String leadFP = "", description = "", keyPartners = "", mainArea = "", documentationLink = "";
 
       if (flagshipExternalPartnership != null) {
 
@@ -1855,7 +1874,25 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         }
 
         if (flagshipExternalPartnership.getDescription() != null) {
-          description = flagshipExternalPartnership.getDescription();
+          description = flagshipExternalPartnership.getDescription() + "\n";
+        }
+
+        // Load File
+        if (flagshipExternalPartnership.getFile() != null) {
+          if (flagshipExternalPartnership.getFile().getId() != null) {
+            flagshipExternalPartnership
+              .setFile(fileDBManager.getFileDBById(flagshipExternalPartnership.getFile().getId()));
+          }
+        }
+
+        // Get link of external partnerships document
+        if (flagshipExternalPartnership.getFile() != null && flagshipExternalPartnership.getFile().getFileName() != null
+          && !flagshipExternalPartnership.getFile().getFileName().isEmpty()) {
+          documentationLink = config.getBaseUrl() + "/annualReport2018/" + this.getCrpSession()
+            + "/downloadExternalPartnershipsFile.do?filename=" + flagshipExternalPartnership.getFile().getFileName()
+            + "&crp=" + this.getCrpSession();
+          // description += "\n •Document link (BETA): " + documentationLink;
+
         }
 
         if (flagshipExternalPartnership.getInstitutions() != null) {

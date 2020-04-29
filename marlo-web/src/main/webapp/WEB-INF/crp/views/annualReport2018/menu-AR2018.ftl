@@ -88,17 +88,18 @@
 [/#if]
 
 [#-- Check button --] 
-[#if canEdit && !completed && !submission]
+[#if canEdit]
   <p class="projectValidateButton-message text-center">Check for missing fields.<br /></p>
   <div id="validateProject-${liaisonInstitutionID}" class="projectValidateButton ${(project.type)!''}">[@s.text name="form.buttons.check" /]</div>
   <div id="progressbar-${liaisonInstitutionID}" class="progressbar" style="display:none"></div>
+  <br>
 [/#if]
 
 
 [#-- Submit button --] 
 [#if canEdit && canSubmit && PMU]
-  [#assign showSubmit=(canSubmit && !submission && completed)]
-  <center><small style="display:${showSubmit?string('block','none')}"><i>Click when the SMO can start the QA process</i></small></center>
+  [#assign showSubmit=(canSubmit && !submission )]
+  <center><small style="display:${showSubmit?string('block','none')}"><i>By clicking in this button, you allow the SMO to access all the data contained in the required tables in the template.</i></small></center>
   <a id="submitProject-${synthesisID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${crpSession}/submitAnnualReport"][@s.param name='synthesisID']${synthesisID}[/@s.param][/@s.url]" >
     [@s.text name="form.buttons.submitSynthesisAR" /]
   </a>

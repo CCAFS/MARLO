@@ -93,6 +93,7 @@ public class Publications2018Validator extends BaseValidator {
 
   public void validate(BaseAction action, ReportSynthesis reportSynthesis, boolean saving) {
     action.setInvalidFields(new HashMap<>());
+    List<String> emptyFields = new ArrayList<>();
     if (reportSynthesis != null) {
       if (!saving) {
         Path path = this.getAutoSaveFilePath(reportSynthesis, action.getCrpID(), action);
@@ -128,7 +129,6 @@ public class Publications2018Validator extends BaseValidator {
               deliverablesTable6.remove(flagshipProgressDeliverable.getDeliverable());
             }
           }
-          // System.out.println(projectPoliciesTable2.size() + "policies Marcados");
         }
 
         boolean tableComplete = false;
@@ -142,9 +142,10 @@ public class Publications2018Validator extends BaseValidator {
 
         if (sectionStatus != null && sectionStatus.getId() != 0 && sectionStatus.getMissingFields() != null
           && sectionStatus.getMissingFields().length() != 0) {
-          if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table2") && sectionStatus.getId() != null
+          if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table6") && sectionStatus.getId() != null
             && sectionStatus.getId() != 0) {
-            sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+            // sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+            sectionStatus.setMissingFields("");
             tableComplete = true;
           } else {
             tableComplete = false;
@@ -152,7 +153,8 @@ public class Publications2018Validator extends BaseValidator {
         } else {
           if (sectionStatus != null && sectionStatus.getId() != 0) {
             tableComplete = true;
-            sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+            // sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+            sectionStatus.setMissingFields("");
           }
         }
 
@@ -167,121 +169,107 @@ public class Publications2018Validator extends BaseValidator {
         if (deliverables != null && !deliverables.isEmpty()) {
           for (Deliverable deliverable : deliverables) {
             if (deliverable != null && deliverable.getId() != null) {
-              sectionStatus = new SectionStatus();
-              sectionStatus = this.sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(), "Reporting",
-                action.getActualPhase().getYear(), false, "publications");
 
-              if (sectionStatus != null && sectionStatus.getMissingFields() != null
-                && sectionStatus.getMissingFields().length() != 0) {
-                // count++;
-
-                // Volume
-                if (sectionStatus.getMissingFields().contains("Volume")) {
-                  count++;
+              // Validate Specific fields
+              deliverable = deliverableManager.getDeliverableById(deliverable.getId());
+              int countB = 0;
+              int count2 = 0;
+              if (deliverable != null) {
+                deliverable.setCrps(deliverable.getDeliverableCrps().stream()
+                  .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase()))
+                  .collect(Collectors.toList()));
+                if (deliverable.getCrps() == null || deliverable.getCrps().isEmpty()) {
+                  emptyFields.add("CRP");
+                  countB++;
                 }
 
-                // Issue
-                if (sectionStatus.getMissingFields().contains("Issue")) {
-                  count++;
+                if (deliverable.getPublication() != null) {
+
+                  // Is publication
+                  if (deliverable.getPublication().getIsiPublication() == null) {
+                    emptyFields.add("Is publication");
+                    countB++;
+                  }
+
+                  // Issue - Page - Volume
+                  if (deliverable.getPublication().getVolume() == null
+                    || deliverable.getPublication().getVolume().isEmpty()) {
+                    count2++;
+                  }
+                  if (deliverable.getPublication().getPages() == null
+                    || deliverable.getPublication().getPages().isEmpty()) {
+                    count2++;
+                  }
+                  if (deliverable.getPublication().getIssue() == null
+                    || deliverable.getPublication().getIssue().isEmpty()) {
+                    count2++;
+                  }
+                }
+                if (count2 == 3) {
+                  emptyFields.add("Issue/Pages/Volume");
+                  countB++;
                 }
 
-                // Page
-                if (sectionStatus.getMissingFields().contains("Pages")) {
-                  count++;
+                int countAuthors = 0;
+                // Authors
+                if (deliverable.getUsers() == null || deliverable.getUsers().isEmpty()) {
+                  countAuthors++;
+                }
+                if (deliverable.getMetadata() != null) {
+                  // Authors Clarisa
+                  if (deliverable.getMetadataValue(38) == null || deliverable.getMetadataValue(38).isEmpty()) {
+                    countAuthors++;
+                  }
+                } else {
+                  countAuthors++;
                 }
 
-                // Journal
-                if (sectionStatus.getMissingFields().contains("Journal")) {
-                  count++;
+                // Validate if the authors fields are null
+                if (countAuthors == 2) {
+                  emptyFields.add("Authors");
+                  countB++;
                 }
 
-                // ISI
-                if (sectionStatus.getMissingFields().contains("Is this journal article an ISI publication?")) {
-                  count++;
+                if (deliverable.getMetadata() != null) {
+                  // Unique identifier (DOI)
+                  if (deliverable.getMetadataValue(36) == null || deliverable.getMetadataValue(36).isEmpty()) {
+                    emptyFields.add("DOI");
+                    countB++;
+                  }
+                  // Date of Publication
+                  if (deliverable.getMetadataValue(17) == null || deliverable.getMetadataValue(36).isEmpty()) {
+                    emptyFields.add("Date of Publication");
+                    countB++;
+                  }
+                  // Article Title
+                  if (deliverable.getMetadataValue(1) == null || deliverable.getMetadataValue(36).isEmpty()) {
+                    emptyFields.add("Article Title");
+                    countB++;
+                  }
                 }
-
               }
+
+              if (countB > 0) {
+                emptyFields.add("ID:" + deliverable.getId());
+                count++;
+              }
+
             }
           }
 
           if (count > 0) {
-            action.addMissingField("synthesis.AR2019Table6");
-          }
+            if (action.getMissingFields() != null && action.getMissingFields().length() > 0
+              && !action.getMissingFields().toString().isEmpty()) {
+              if (!action.getMissingFields().toString().contains("synthesis.AR2019Table6")) {
+                action.addMissingField("synthesis.AR2019Table6");
+              }
+            } else {
+              action.addMissingField("synthesis.AR2019Table6");
+            }
 
-          // Save Synthesis Flagship
-          if (reportSynthesis.getLiaisonInstitution() != null
-            && reportSynthesis.getLiaisonInstitution().getAcronym() != null && !action.isPMU()) {
-
-            String sSynthesisFlagships = action.getSynthesisFlagships().toString();
-
-
-            if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("1")) {
-              if (action.getSynthesisFlagships() != null && action.getSynthesisFlagships().toString().length() > 0) {
-                if (!sSynthesisFlagships.contains("1")) {
-                  action.addSynthesisFlagship("F1");
-                }
-              } else {
-                action.addSynthesisFlagship("F1");
-              }
-            }
-            if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("2")) {
-              if (action.getSynthesisFlagships() != null && action.getSynthesisFlagships().toString().length() > 0) {
-                if (!sSynthesisFlagships.contains("2")) {
-                  action.addSynthesisFlagship("F2");
-                }
-              } else {
-                action.addSynthesisFlagship("F2");
-              }
-            }
-            if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("3")) {
-              if (action.getSynthesisFlagships() != null && action.getSynthesisFlagships().toString().length() > 0) {
-                if (!sSynthesisFlagships.contains("3")) {
-                  action.addSynthesisFlagship("F3");
-                }
-              } else {
-                action.addSynthesisFlagship("F3");
-              }
-            }
-            if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("4")) {
-              if (action.getSynthesisFlagships() != null && action.getSynthesisFlagships().toString().length() > 0) {
-                if (!sSynthesisFlagships.contains("4")) {
-                  action.addSynthesisFlagship("F4");
-                }
-              } else {
-                action.addSynthesisFlagship("F4");
-              }
-            }
-            if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("5")) {
-              if (action.getSynthesisFlagships() != null && action.getSynthesisFlagships().toString().length() > 0) {
-                if (!sSynthesisFlagships.contains("5")) {
-                  action.addSynthesisFlagship("F5");
-                }
-              } else {
-                action.addSynthesisFlagship("F5");
-              }
-            }
-            if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("6")) {
-              if (action.getSynthesisFlagships() != null && action.getSynthesisFlagships().toString().length() > 0) {
-                if (!sSynthesisFlagships.contains("6")) {
-                  action.addSynthesisFlagship("F6");
-                }
-              } else {
-                action.addSynthesisFlagship("F6");
-              }
-            }
-            if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("PMU")) {
-              if (action.getSynthesisFlagships() != null && action.getSynthesisFlagships().toString().length() > 0) {
-                if (!sSynthesisFlagships.contains("PMU")) {
-                  action.addSynthesisFlagship("PMU");
-                }
-              } else {
-                action.addSynthesisFlagship("PMU");
-              }
-            }
           }
         }
       }
-
       try {
         this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
           action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
