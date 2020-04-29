@@ -403,8 +403,9 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
   private void addExpectedCrp() {
     if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisSrfProgress() != null
       && reportSynthesisPMU.getReportSynthesisSrfProgress().getSummary() != null) {
+      // TODO the replaceAll() is a temporal solution. we need to check where the problem comes from
       String synthesisCrpDescription = reportSynthesisPMU.getReportSynthesisSrfProgress().getSummary() != null
-        ? reportSynthesisPMU.getReportSynthesisSrfProgress().getSummary() : "";
+        ? reportSynthesisPMU.getReportSynthesisSrfProgress().getSummary().replaceAll("&amp;", "&") : "";
       if (synthesisCrpDescription != null) {
         poiSummary.convertHTMLTags(document, synthesisCrpDescription, null);
       }
@@ -560,7 +561,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
   private void addNarrativeSection() {
     if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisNarrative() != null
       && reportSynthesisPMU.getReportSynthesisNarrative().getNarrative() != null) {
-      String narrative = reportSynthesisPMU.getReportSynthesisNarrative().getNarrative();
+      // TODO the replaceAll() is a temporal solution. we need to check where the problem comes from
+      String narrative = reportSynthesisPMU.getReportSynthesisNarrative().getNarrative().replaceAll("&amp;", "&");
       poiSummary.convertHTMLTags(document, narrative, null);
     }
   }
@@ -755,8 +757,10 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           }
         }
 
+        // TODO the replaceAll() is a temporal solution. we need to check where the problem comes from
         briefSummaries = reportSynthesisSrfProgressTarget.getBirefSummary() != null
-          ? reportSynthesisSrfProgressTarget.getBirefSummary() : "";
+          ? reportSynthesisSrfProgressTarget.getBirefSummary().replaceAll("&amp;", "&") : "";
+
         additionalContribution = reportSynthesisSrfProgressTarget.getAdditionalContribution() != null
           ? reportSynthesisSrfProgressTarget.getAdditionalContribution() : "";
 
@@ -1625,12 +1629,24 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
                   if (milestoneOb.getEvidence() != null) {
                     evidenceMilestone = milestoneOb.getEvidence();
+                    if (evidenceMilestone != null) {
+                      // TODO the replaceAll() is a temporal solution. we need to check where the problem comes from
+                      evidenceMilestone = evidenceMilestone.replaceAll("&amp;", "&");
+                    }
                   }
                   if (milestoneOb.getEvidenceLink() != null) {
                     evidence = milestoneOb.getEvidenceLink();
+                    if (evidence != null) {
+                      // TODO the replaceAll() is a temporal solution. we need to check where the problem comes from
+                      evidence = evidence.replaceAll("&amp;", "&");
+                    }
                   }
                   if (milestoneOb.getCrpMilestone().getStatusName() != null) {
                     milestoneStatus = milestoneOb.getCrpMilestone().getStatusName();
+                    if (milestoneStatus != null) {
+                      // TODO the replaceAll() is a temporal solution. we need to check where the problem comes from
+                      milestoneStatus = milestoneStatus.replaceAll("&amp;", "&");
+                    }
                   }
                 }
               }
