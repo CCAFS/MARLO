@@ -71,6 +71,10 @@ public class IFPRIEBraryClientAPI extends MetadataClientApi {
       if (jo.has("orcid") && jo.get("orcid") != null) {
         try {
           String authorJson = jo.getString("orcid");
+          if (authorJson != null && !authorJson.isEmpty()) {
+            authorJson = authorJson.replaceAll("’", "");
+            authorJson = authorJson.replaceAll("'", "");
+          }
           String authorsJson[] = authorJson.split("; ");
           for (String string : authorsJson) {
             string = string.replace(", ", "{0}");
@@ -96,6 +100,10 @@ public class IFPRIEBraryClientAPI extends MetadataClientApi {
       if (jo.has("creato") && jo.get("creato") != null) {
         try {
           String authorJson = jo.getString("creato");
+          if (authorJson != null && !authorJson.isEmpty()) {
+            authorJson = authorJson.replaceAll("’", "");
+            authorJson = authorJson.replaceAll("'", "");
+          }
           String authorsJson[] = authorJson.split("; ");
 
           // Separate Authors
