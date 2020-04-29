@@ -65,6 +65,9 @@ public class IFPRIEBraryClientAPI extends MetadataClientApi {
       Gson gson = gsonBuilder.create();
       this.setDefaultEmptyValues(jo);
       List<Author> authors = new ArrayList<Author>();
+      List<Author> authors2 = new ArrayList<Author>();
+
+      // Get ORCID
       if (jo.has("orcid") && jo.get("orcid") != null) {
         try {
           String authorJson = jo.getString("orcid");
@@ -81,9 +84,66 @@ public class IFPRIEBraryClientAPI extends MetadataClientApi {
                 author.setLastName(names[0]);
               }
               author.setOrcidId(div[0]);
+              authors2.add(author);
+            }
+          }
+        } catch (JSONException e) {
+          LOG.error("No authors");
+        }
+      }
+
+      // Get authors metadata info
+      if (jo.has("creato") && jo.get("creato") != null) {
+        try {
+          String authorJson = jo.getString("creato");
+          String authorsJson[] = authorJson.split("; ");
+
+          // Separate Authors
+          for (String string : authorsJson) {
+            String div[] = string.split(", ");
+            if (div.length >= 2) {
+              String firstName = div[1];
+              String lastName = div[0];
+              Author author = new Author(firstName);
+              String names[] = author.getFirstName().split(", ");
+              if (names.length >= 1) {
+                author.setFirstName(div[1]);
+                author.setLastName(div[0]);
+              }
+
+              // Compare Authors with ORCID list and set the respective information
+              if (authors2 != null && !authors2.isEmpty()) {
+                for (Author autor : authors2) {
+                  String autorFirstName = autor.getFirstName();
+                  String authorFirstName = author.getFirstName();
+                  String autorLastName = autor.getLastName();
+                  String authorLastName = author.getLastName();
+
+                  if (autorFirstName.contains(" ")) {
+                    autorFirstName = autorFirstName.split(" ")[0];
+                  }
+                  if (authorFirstName.contains(" ")) {
+                    authorFirstName = authorFirstName.split(" ")[0];
+                  }
+
+                  if (autorLastName.contains(" ")) {
+                    autorLastName = autorLastName.split(" ")[0];
+                  }
+                  if (authorLastName.contains(" ")) {
+                    authorLastName = authorLastName.split(" ")[0];
+                  }
+
+                  if (autorFirstName.contains(authorFirstName) && autorLastName.contains(authorLastName)
+                    && autor.getOrcidId() != null && !autor.getOrcidId().isEmpty()) {
+                    author.setOrcidId(autor.getOrcidId());
+                  }
+                }
+              }
+              if (author.getOrcidId() == null || author.getOrcidId().isEmpty()) {
+                author.setOrcidId("No ORCID");
+              }
               authors.add(author);
             }
-
           }
         } catch (JSONException e) {
           LOG.error("No authors");
