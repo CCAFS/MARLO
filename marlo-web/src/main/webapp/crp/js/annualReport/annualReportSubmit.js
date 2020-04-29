@@ -54,8 +54,7 @@ function cancel() {
 
 function submitButtonEvent(e) {
   e.preventDefault();
-  var message = 'Please confirm by clicking the OK button. ';
-  message += 'From now on, the SMO will use the Synthesis information as part of the Quality Assessment Process and later on for the CGIAR Results Dashboard.';
+  var message = 'By clicking OK, from this point forward, the SMO will have access to your Annual Reporting data from MARLO ';
   noty({
       text: message,
       type: 'confirm',
