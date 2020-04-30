@@ -1556,12 +1556,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
                   subIdos += "• " + subIdo.getSrfSubIdo().getDescription() + "\n";
                 }
               }
-              /*
-               * if (outcome.getSubIdos().get(0).getSrfSubIdo() != null
-               * && outcome.getSubIdos().get(0).getSrfSubIdo().getDescription() != null) {
-               * subIdos = outcome.getSubIdos().get(0).getSrfSubIdo().getDescription();
-               * }
-               */
             }
 
             for (CrpMilestone crpMilestone : outcome.getMilestones()) {
