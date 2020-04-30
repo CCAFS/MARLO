@@ -57,6 +57,7 @@ import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.data.model.StudyType;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.MeliaDTO;
+import org.cgiar.ccafs.marlo.rest.dto.NewInnovationDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectExpectedStudiesOtherDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewSrfSubIdoDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
@@ -600,6 +601,63 @@ public class ExpectedStudiesOtherItem<T> {
     return Optional.ofNullable(projectExpectedStudy)
       .map(this.projectExpectedStudiesOtherMapper::projectExpectedStudyToMeliaDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
+
+  public List<MeliaDTO> findAllMeliaByGlobalUnit(String CGIARentityAcronym, Integer repoYear, String repoPhase,
+    User user) {
+    List<MeliaDTO> meliaList = new ArrayList<MeliaDTO>();
+    List<ProjectExpectedStudy> projectExpectedStudyList = new ArrayList<ProjectExpectedStudy>();
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
+    if (globalUnitEntity == null) {
+      fieldErrors.add(
+        new FieldErrorDTO("allMelia", "GlobalUnitEntity", CGIARentityAcronym + " is an invalid CGIAR entity acronym"));
+    }
+    Phase phase =
+      this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
+        && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().get();
+
+    if (phase == null) {
+      fieldErrors.add(
+        new FieldErrorDTO("allMelia", "phase", new NewInnovationDTO().getPhase().getYear() + " is an invalid year"));
+    }
+    if (!fieldErrors.isEmpty()) {
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
+    } else {
+      List<ProjectExpectedStudyInfo> projectExpectedStudyInfoList =
+        phase.getProjectExpectedStudyInfos().stream().filter(c -> c.getPhase().getId().equals(phase.getId())
+          && c.getYear().longValue() == repoYear && c.getStudyType().getId() != 1).collect(Collectors.toList());
+      for (ProjectExpectedStudyInfo projectExpectedStudyInfo : projectExpectedStudyInfoList) {
+        ProjectExpectedStudy projectExpectedStudy =
+          projectExpectedStudyManager.getProjectExpectedStudyById(projectExpectedStudyInfo.getId());
+        projectExpectedStudy.setProjectExpectedStudyInfo(projectExpectedStudyInfo);
+        projectExpectedStudy.setCountries(projectExpectedStudyCountryManager
+          .findAll().stream().filter(c -> c.isActive()
+            && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
+          .collect(Collectors.toList()));
+        projectExpectedStudy.setStudyRegions(projectExpectedStudyRegionManager
+          .findAll().stream().filter(c -> c.isActive()
+            && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
+          .collect(Collectors.toList()));
+        projectExpectedStudy.setGeographicScopes(projectExpectedStudy.getProjectExpectedStudyGeographicScopes().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList()));
+        projectExpectedStudy.setSrfTargets(projectExpectedStudy.getProjectExpectedStudySrfTargets().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList()));
+        projectExpectedStudy.setSubIdos(projectExpectedStudy.getProjectExpectedStudySubIdos().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList()));
+        projectExpectedStudyList.add(projectExpectedStudy);
+      }
+
+      meliaList = projectExpectedStudyList.stream()
+        .map(melia -> this.projectExpectedStudiesOtherMapper.projectExpectedStudyToMeliaDTO(melia))
+        .collect(Collectors.toList());
+
+    }
+
+    return meliaList;
   }
 
   public ResponseEntity<MeliaDTO> findExpectedStudyById(Long id, String CGIARentityAcronym, Integer repoYear,
