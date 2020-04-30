@@ -193,6 +193,8 @@ public class POISummary {
     text = text.replaceAll("   ", "");
     text = text.replaceAll("<a></a>", "");
     text = text.replaceAll("&nbsp;", " ");
+    text = text.replaceAll("<font>", " ");
+    text = text.replaceAll("</font>", " ");
     text = text.replaceAll("<span style=\"color: rgb(130, 130, 130); font-size: 0.98em;\">", "");
     text = text.replaceAll("<span style=\"color: rgb(130, 130, 130); font-size: 0.98em;", "");
     text = text.replaceAll("<span style=\"color: rgb(130, 130, 130); font-size: 0.98em;\">", "");
