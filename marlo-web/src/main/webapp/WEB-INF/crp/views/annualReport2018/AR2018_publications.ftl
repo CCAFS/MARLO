@@ -283,7 +283,15 @@
               </td>
               [#if !allowPopups]
               [#-- Authors --]
-              <td>[@utils.tableList list=(item.users)![] displayFieldName="composedName" nobr=true class="authorsList mCustomScrollbar" scroll=true /]</td>
+              <td>
+                [#if item.getMetadataValue(38)?has_content && !item.users?has_content ]
+                  <div class="authorsList mCustomScrollbar">
+                    ${item.getMetadataValue(38)} 
+                  </div>
+                [#else]
+                  [@utils.tableList list=(item.users)![] displayFieldName="composedName" nobr=true class="authorsList mCustomScrollbar" scroll=true /]
+                [/#if]
+              </td>
               [#-- Date of Publication --]
               <td>[@utils.tableText value=(item.getMetadataValue(17))!"" /]</td>
               [/#if]
