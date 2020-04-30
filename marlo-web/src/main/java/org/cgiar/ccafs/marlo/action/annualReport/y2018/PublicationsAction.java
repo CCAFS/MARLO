@@ -358,10 +358,12 @@ public class PublicationsAction extends BaseAction {
 
       deliverable.setCrps(deliverable.getDeliverableCrps().stream()
         .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
-      if (deliverable.getCrps() == null || deliverable.getCrps().isEmpty()) {
-        emptyFields.add("CRP");
-        count++;
-      }
+      /*
+       * if (deliverable.getCrps() == null || deliverable.getCrps().isEmpty()) {
+       * emptyFields.add("CRP");
+       * count++;
+       * }
+       */
 
       if (deliverable.getPublication() != null) {
 
