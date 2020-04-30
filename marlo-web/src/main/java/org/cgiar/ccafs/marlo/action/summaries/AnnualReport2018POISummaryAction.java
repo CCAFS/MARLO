@@ -35,6 +35,7 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisMeliaManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisSrfProgressTargetManager;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
+import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
@@ -1549,11 +1550,11 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
             int milestone_index = 0;
             outcome.setSubIdos(
               outcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-            if (outcome.getSubIdos() != null && outcome.getSubIdos().size() > 0
-              && outcome.getSubIdos().get(0) != null) {
-              if (outcome.getSubIdos().get(0).getSrfSubIdo() != null
-                && outcome.getSubIdos().get(0).getSrfSubIdo().getDescription() != null) {
-                subIdos = outcome.getSubIdos().get(0).getSrfSubIdo().getDescription();
+            if (outcome.getSubIdos() != null && outcome.getSubIdos().size() > 0) {
+              for (CrpOutcomeSubIdo subIdo : outcome.getSubIdos()) {
+                if (subIdo.getSrfSubIdo() != null && subIdo.getSrfSubIdo().getDescription() != null) {
+                  subIdos += "• " + subIdo.getSrfSubIdo().getDescription() + "\n";
+                }
               }
             }
 

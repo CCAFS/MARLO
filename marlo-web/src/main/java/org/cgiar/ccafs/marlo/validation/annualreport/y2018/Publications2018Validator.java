@@ -178,11 +178,12 @@ public class Publications2018Validator extends BaseValidator {
                 deliverable.setCrps(deliverable.getDeliverableCrps().stream()
                   .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase()))
                   .collect(Collectors.toList()));
-                if (deliverable.getCrps() == null || deliverable.getCrps().isEmpty()) {
-                  emptyFields.add("CRP");
-                  countB++;
-                }
-
+                /*
+                 * if (deliverable.getCrps() == null || deliverable.getCrps().isEmpty()) {
+                 * emptyFields.add("CRP");
+                 * countB++;
+                 * }
+                 */
                 if (deliverable.getPublication() != null) {
 
                   // Is publication
