@@ -439,7 +439,11 @@
    
   [#-- Creator/Authors --]
   <div class="form-group">
-    <label for="">[@s.text name="metadata.creator" /]:  </label>
+  
+    [#if !(deliverable.users?has_content) && deliverable.getMetadataValue(38)?has_content]
+      [@metadataField title="creator" encodedName="marlo.authors" type="textArea" require=false/]
+    [#else]
+    <label for="">[@s.text name="metadata.creator" /]:  </label>    
     [#-- Hidden input --]
     [@metadataField title="authors" encodedName="marlo.authors" type="hidden" require=false/]
     [#-- Some Instructions  --]
@@ -458,6 +462,7 @@
         <p class="emptyText text-center "> [@s.text name="project.deliverable.dissemination.notCreators" /]</p>
       [/#if]
     </div>
+
     [#-- Add an author --]
     [#if editable]
     <div class="dottedBox authorVisibles" style="display:${isMetadataHide("marlo.authors")?string('none','block')}">
@@ -472,7 +477,9 @@
     </div>
     <div class="clearfix"></div>
     </div>
-    [/#if] 
+    [/#if]
+    
+    [/#if]
   </div>
   
   <div class="publicationMetadataBlock" style="display:${displayDeliverableRule(deliverable, deliverablePublicationMetadata)!};">
