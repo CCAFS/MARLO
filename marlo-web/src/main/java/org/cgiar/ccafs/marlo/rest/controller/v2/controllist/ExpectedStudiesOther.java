@@ -28,6 +28,8 @@ import org.cgiar.ccafs.marlo.rest.dto.ProjectExpectedStudyDTO;
 import org.cgiar.ccafs.marlo.rest.errors.NotFoundException;
 import org.cgiar.ccafs.marlo.security.Permission;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import com.opensymphony.xwork2.inject.Inject;
@@ -78,9 +80,9 @@ public class ExpectedStudiesOther {
       required = true) @Valid @RequestBody NewProjectExpectedStudiesOtherDTO newProjectExpectedStudyDTO) {
 
     MeliaDTO obj = new MeliaDTO();
-    // Long studyID = this.expectedStudiesOtherItem.createExpectedStudiesOther(newProjectExpectedStudyDTO, CGIAREntity,
-    // this.getCurrentUser());
-    ResponseEntity<Long> response = new ResponseEntity<Long>(new Long(0), HttpStatus.OK);
+    Long studyID = this.expectedStudiesOtherItem.createExpectedStudiesOther(newProjectExpectedStudyDTO, CGIAREntity,
+      this.getCurrentUser());
+    ResponseEntity<Long> response = new ResponseEntity<Long>(studyID, HttpStatus.OK);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("ExpectedStudies.MELIA.GET.id.404"));
     }
@@ -88,9 +90,9 @@ public class ExpectedStudiesOther {
   }
 
   @ApiOperation(tags = {"Table 10 - Monitoring, Evaluation, Learning and Impact Assessment (MELIA)"},
-    value = "${ExpectedStudies.MELIA.DELETE.id.value}", response = ProjectExpectedStudyDTO.class)
-  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/{CGIAREntity}/Studies/{id}", method = RequestMethod.DELETE,
+    value = "${ExpectedStudies.MELIA.DELETE.id.value}", response = MeliaDTO.class)
+  @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/MELIA/{id}", method = RequestMethod.DELETE,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<MeliaDTO> deleteExpectedStudyById(
     @ApiParam(value = "${ExpectedStudies.MELIA.DELETE.id.param.CGIAR}",
@@ -108,9 +110,21 @@ public class ExpectedStudiesOther {
   }
 
   @ApiOperation(tags = {"Table 10 - Monitoring, Evaluation, Learning and Impact Assessment (MELIA)"},
+    value = "${ExpectedStudies.MELIA.GET.all.value}", response = MeliaDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/MeliaList", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<MeliaDTO> findAllMeliaByGlobalUnit(
+    @ApiParam(value = "${ExpectedStudies.MELIA.GET.all.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${ExpectedStudies.MELIA.GET.all.param.year}", required = true) @RequestParam Integer year,
+    @ApiParam(value = "${ExpectedStudies.MELIA.GET.all.param.phase}", required = true) @RequestParam String phase) {
+    return this.expectedStudiesOtherItem.findAllMeliaByGlobalUnit(CGIAREntity, year, phase, this.getCurrentUser());
+  }
+
+  @ApiOperation(tags = {"Table 10 - Monitoring, Evaluation, Learning and Impact Assessment (MELIA)"},
     value = "${ExpectedStudies.MELIA.GET.id.value}", response = ProjectExpectedStudyDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/{CGIAREntity}/Studies/{id}", method = RequestMethod.GET,
+  @RequestMapping(value = "/{CGIAREntity}/MELIA/{id}", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<MeliaDTO> findExpectedStudyById(
     @ApiParam(value = "${ExpectedStudies.MELIA.GET.id.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
