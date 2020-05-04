@@ -355,7 +355,7 @@
     [#-- Title --]
     <div class="form-group grayBox">
       <div class="pull-right">[@milestoneContributions element=element /]</div>
-      <p class="text-justify"><strong>Milestone for ${actualPhase.year}</strong> - ${(element.title)!} </p>
+      <p class="text-justify"><strong>[#if (element.milestonesStatus.id == 4)!false ]Milestone of ${element.year} extended to ${actualPhase.year}[#else]Milestone for ${actualPhase.year}[/#if]</strong> - ${(element.title)!} </p>
     </div>
     
     
