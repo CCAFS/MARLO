@@ -101,6 +101,7 @@ import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
 import org.cgiar.ccafs.marlo.rest.mappers.ProjectExpectedStudyMapper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -1208,9 +1209,12 @@ public class ExpectedStudiesItem<T> {
           .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
       projectExpectedStudy.setGeographicScopes(projectExpectedStudyGeographicScopeList);
       // Institutions
+      Comparator<ProjectExpectedStudyInstitution> compareByNameInstitution = (ProjectExpectedStudyInstitution o1,
+        ProjectExpectedStudyInstitution o2) -> o1.getInstitution().getName().compareTo(o2.getInstitution().getName());
       List<ProjectExpectedStudyInstitution> projectExpectedStudyInstitutionList =
         projectExpectedStudy.getProjectExpectedStudyInstitutions().stream()
           .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+      Collections.sort(projectExpectedStudyInstitutionList, compareByNameInstitution);
       projectExpectedStudy.setInstitutions(projectExpectedStudyInstitutionList);
       // CRPs contribution
       List<ProjectExpectedStudyCrp> projectExpectedStudyCrpList = projectExpectedStudy.getProjectExpectedStudyCrps()
@@ -1237,7 +1241,8 @@ public class ExpectedStudiesItem<T> {
       projectExpectedStudy.setQuantifications(projectExpectedStudyQuantificationList);
       // Links
       List<ProjectExpectedStudyLink> projectExpectedStudyLinkList = projectExpectedStudy.getProjectExpectedStudyLinks()
-        .stream().filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+        .stream().filter(c -> c.isActive() && c.getPhase().equals(phase))
+        .sorted(Comparator.comparing(ProjectExpectedStudyLink::getLink)).collect(Collectors.toList());
       projectExpectedStudy.setLinks(projectExpectedStudyLinkList);
 
       // innovations
