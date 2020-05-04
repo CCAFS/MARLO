@@ -170,8 +170,10 @@ public class CCDimension2018Validator extends BaseValidator {
             // Get report synthesis for each liaison Instution
             reportSynthesisAux =
               reportSynthesisManager.findSynthesis(reportSynthesis.getPhase().getId(), liaison.getId());
-            statusOfFlagship = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesisAux.getId(),
-              "Reporting", 2019, false, "ccDimensions");
+            if (reportSynthesisAux != null) {
+              statusOfFlagship = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesisAux.getId(),
+                "Reporting", 2019, false, "ccDimensions");
+            }
 
             // Add section status to statusOfEveryFlagship list if section status (statusOfFlagship) has missing fields
             SectionStatus statusOfFPMU = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
