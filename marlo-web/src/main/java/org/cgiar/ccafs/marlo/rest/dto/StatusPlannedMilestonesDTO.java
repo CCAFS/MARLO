@@ -31,10 +31,15 @@ public class StatusPlannedMilestonesDTO {
   @ApiModelProperty(notes = "Milestone Status", position = 2)
   private MilestoneStatusDTO status;
 
-  @ApiModelProperty(notes = "Milestone Status Evidence link", position = 1)
+  @ApiModelProperty(notes = "Milestone Status Evidence Justification", position = 3)
   private String evidence;
 
-  @ApiModelProperty(notes = "Milestone Cross Cutting Markers", position = 1)
+
+  @ApiModelProperty(notes = "Milestone Status Evidence links", position = 3)
+  private String evidenceLink;
+
+
+  @ApiModelProperty(notes = "Milestone Cross Cutting Markers", position = 5)
   private List<CrosscuttingMarkersDTO> crossCuttingMarkerList;
 
 
@@ -42,9 +47,13 @@ public class StatusPlannedMilestonesDTO {
     return crossCuttingMarkerList;
   }
 
-
   public String getEvidence() {
     return evidence;
+  }
+
+
+  public String getEvidenceLink() {
+    return evidenceLink;
   }
 
 
@@ -65,6 +74,11 @@ public class StatusPlannedMilestonesDTO {
 
   public void setEvidence(String evidence) {
     this.evidence = evidence;
+  }
+
+
+  public void setEvidenceLink(String evidenceLink) {
+    this.evidenceLink = evidenceLink;
   }
 
 

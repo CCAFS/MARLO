@@ -754,6 +754,9 @@ public final class APConstants {
   public static final String DATABASE_COUNTRY_FILENAME = "GeoLite2-Country.mmdb";
   public static final String DATABASE_CITY_FILENAME = "GeoLite2-City.mmdb";
 
+  // Clarisa PMU constant
+  public static final String CLARISA_ACRONYM_PMU = "PMU";
+
   // Clarisa public
   public static final String CLARISA_PUBLIC = "clarisa_public";
   public static final int CLARISA_PUBLICATIONS_STATUS = 3;
