@@ -439,44 +439,47 @@
    
   [#-- Creator/Authors --]
   <div class="form-group">
-    [#if flagshipslistName == "flagshipsList" && !deliverable.users?has_content]  
-      [@metadataField title="authors" encodedName="marlo.authors" type="textArea" require=false/]
+  
+    [#if !(deliverable.users?has_content) && deliverable.getMetadataValue(38)?has_content]
+      [@metadataField title="creator" encodedName="marlo.authors" type="textArea" require=false/]
     [#else]
-      <label for="">[@s.text name="metadata.creator" /]:  </label>
-      [#-- Hidden input --]
-      [@metadataField title="authors" encodedName="marlo.authors" type="hidden" require=false/]
-      [#-- Some Instructions  --]
-      [#if editable]
-        <div class="note authorVisibles" style="display:${isMetadataHide("marlo.authors")?string('none','block')}">
-        [@s.text name = "project.deliverable.dissemination.authorsInfo" /]
-        </div>
+    <label for="">[@s.text name="metadata.creator" /]:  </label>    
+    [#-- Hidden input --]
+    [@metadataField title="authors" encodedName="marlo.authors" type="hidden" require=false/]
+    [#-- Some Instructions  --]
+    [#if editable]
+      <div class="note authorVisibles" style="display:${isMetadataHide("marlo.authors")?string('none','block')}">
+      [@s.text name = "project.deliverable.dissemination.authorsInfo" /]
+      </div>
+    [/#if]
+    [#-- Authors List --]
+    <div class="authorsList simpleBox row" >
+      [#if deliverable.users?has_content]
+        [#list deliverable.users as author]
+          [@deliverableMacros.authorMacro element=author index=author_index name="deliverable.users"  /]
+        [/#list]
+      [#else]
+        <p class="emptyText text-center "> [@s.text name="project.deliverable.dissemination.notCreators" /]</p>
       [/#if]
-      [#-- Authors List --]
-      <div class="authorsList simpleBox row" >
-        [#if deliverable.users?has_content]
-          [#list deliverable.users as author]
-            [@deliverableMacros.authorMacro element=author index=author_index name="deliverable.users"  /]
-          [/#list]
-        [#else]
-          <p class="emptyText text-center "> [@s.text name="project.deliverable.dissemination.notCreators" /]</p>
-        [/#if]
+    </div>
+
+    [#-- Add an author --]
+    [#if editable]
+    <div class="dottedBox authorVisibles" style="display:${isMetadataHide("marlo.authors")?string('none','block')}">
+    <label for="">Add an Author:</label>
+    <div class="form-group">
+      <div class="pull-left" style="width:25%"><input class="form-control input-sm lName"  placeholder="Last Name" type="text" /> </div>
+      <div class="pull-left" style="width:25%"><input class="form-control input-sm fName"  placeholder="First Name" type="text" /> </div>
+      <div class="pull-left" style="width:36%"><input class="form-control input-sm oId"    placeholder="ORCID (e.g. orcid.org/0000-0002-6066...)" type="text" title="ORCID is a nonprofit helping create a world in which all who participate in research, scholarship and innovation are uniquely identified and connected to their contributions and affiliations, across disciplines, borders, and time."/> </div>
+      <div class="pull-right" style="width:14%">
+        <div id="" class="addAuthor text-right"><div class="button-blue"><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="project.deliverable.dissemination.addAuthor" /]</div></div>
       </div>
-      [#-- Add an author --]
-      [#if editable]
-      <div class="dottedBox authorVisibles" style="display:${isMetadataHide("marlo.authors")?string('none','block')}">
-      <label for="">Add an Author:</label>
-      <div class="form-group">
-        <div class="pull-left" style="width:25%"><input class="form-control input-sm lName"  placeholder="Last Name" type="text" /> </div>
-        <div class="pull-left" style="width:25%"><input class="form-control input-sm fName"  placeholder="First Name" type="text" /> </div>
-        <div class="pull-left" style="width:36%"><input class="form-control input-sm oId"    placeholder="ORCID (e.g. orcid.org/0000-0002-6066...)" type="text" title="ORCID is a nonprofit helping create a world in which all who participate in research, scholarship and innovation are uniquely identified and connected to their contributions and affiliations, across disciplines, borders, and time."/> </div>
-        <div class="pull-right" style="width:14%">
-          <div id="" class="addAuthor text-right"><div class="button-blue"><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="project.deliverable.dissemination.addAuthor" /]</div></div>
-        </div>
-      </div>
-      <div class="clearfix"></div>
-      </div>
-      [/#if] 
-    [/#if]    
+    </div>
+    <div class="clearfix"></div>
+    </div>
+    [/#if]
+    
+    [/#if]
   </div>
   
   <div class="publicationMetadataBlock" style="display:${displayDeliverableRule(deliverable, deliverablePublicationMetadata)!};">
