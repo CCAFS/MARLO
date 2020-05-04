@@ -958,7 +958,7 @@ public class ProjectInnovationAction extends BaseAction {
         .collect(Collectors.toList());
 
       if (evidences != null) {
-        if (expectedStudyList != null || !expectedStudyList.isEmpty()) {
+        if (expectedStudyList != null && !expectedStudyList.isEmpty()) {
           expectedStudyList.addAll(evidences);
         } else {
           expectedStudyList = evidences;
