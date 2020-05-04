@@ -951,6 +951,20 @@ public class ProjectInnovationAction extends BaseAction {
           .collect(Collectors.toList());
       }
 
+      List<ProjectExpectedStudy> evidences = projectExpectedStudyManager.findAll().stream()
+        .filter(s -> s != null && s.getProject() == null && s.getProjectExpectedStudyInfo(this.getActualPhase()) != null
+          && s.getProjectExpectedStudyInfo().getPhase() != null
+          && s.getProjectExpectedStudyInfo().getPhase().getId().equals(this.getActualPhase().getId()))
+        .collect(Collectors.toList());
+
+      if (evidences != null) {
+        if (expectedStudyList != null || !expectedStudyList.isEmpty()) {
+          expectedStudyList.addAll(evidences);
+        } else {
+          expectedStudyList = evidences;
+        }
+      }
+
       if (phase != null && phase.getDeliverableInfos() != null && project != null
         && phase.getDeliverableInfos().size() > 0) {
         List<DeliverableInfo> infos = phase.getDeliverableInfos().stream()
