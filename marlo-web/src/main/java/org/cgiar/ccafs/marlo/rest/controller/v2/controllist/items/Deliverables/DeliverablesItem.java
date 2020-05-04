@@ -696,14 +696,24 @@ public class DeliverablesItem<T> {
         deliverableInfoManager.saveDeliverableInfo(deliverableInfo);
 
         // create deliverable dissemination data ???
-        DeliverableDissemination deliverableDissemination = deliverable.getDissemination();
+        final long phaseID = phase.getId();
+        DeliverableDissemination deliverableDissemination = deliverable.getDeliverableDisseminations().stream()
+          .filter(c -> c.getPhase().getId().longValue() == phaseID).findFirst().orElse(null);
+
+        if (deliverableDissemination == null) {
+          deliverableDissemination = new DeliverableDissemination();
+        }
         deliverableDissemination.setIsOpenAccess(newPublicationDTO.getIsOpenAccess());
         deliverableDissemination.setDeliverable(deliverable);
         deliverableDissemination.setPhase(phase);
         deliverableDisseminationManager.saveDeliverableDissemination(deliverableDissemination);
 
         // creatte deliverable publication metadata
-        DeliverablePublicationMetadata deliverablePublicationMetadata = deliverable.getPublication();
+        DeliverablePublicationMetadata deliverablePublicationMetadata = deliverable.getDeliverablePublicationMetadatas()
+          .stream().filter(m -> m.getPhase().getId() == phaseID).findFirst().orElse(null);
+        if (deliverablePublicationMetadata == null) {
+          deliverablePublicationMetadata = new DeliverablePublicationMetadata();
+        }
         deliverablePublicationMetadata.setDeliverable(deliverable);
         deliverablePublicationMetadata.setIssue(newPublicationDTO.getIssue());
         deliverablePublicationMetadata.setJournal(newPublicationDTO.getJournal());
@@ -715,7 +725,7 @@ public class DeliverablesItem<T> {
 
         // get element ID from econded_name to get Handle and DOI and create
         Long phaseId = phase.getId();
-        List<DeliverableMetadataElement> phaseMetadata = deliverable.getMetadataElements().stream()
+        List<DeliverableMetadataElement> phaseMetadata = deliverable.getDeliverableMetadataElements().stream()
           .filter(m -> m.getPhase().getId() == phaseId).collect(Collectors.toList());
         Map<String, DeliverableMetadataElement> metadataElements = this.getMetadataElements(phaseMetadata);
         if (metadataElements != null && !metadataElements.isEmpty()) {
@@ -778,14 +788,39 @@ public class DeliverablesItem<T> {
           deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementAuthors);
         }
 
+
         for (DeliverableUserDTO deliverableUserDTO : newPublicationDTO.getAuthorList()) {
-          DeliverableUser deliverableUser = new DeliverableUser();
-          deliverableUser.setFirstName(deliverableUserDTO.getFirstName());
-          deliverableUser.setLastName(deliverableUserDTO.getLastName());
-          deliverableUser.setDeliverable(deliverable);
-          deliverableUser.setPhase(phase);
-          deliverableUserManager.saveDeliverableUser(deliverableUser);
+          boolean found = false;
+          for (DeliverableUser authorsList : deliverable.getDeliverableUsers().stream().filter(c -> c.isActive())
+            .collect(Collectors.toList())) {
+            if (deliverableUserDTO.getFirstName().toUpperCase().equals(authorsList.getFirstName().toUpperCase())
+              && deliverableUserDTO.getLastName().toUpperCase().equals(authorsList.getLastName().toUpperCase())) {
+              found = true;
+            }
+          }
+          if (!found) {
+            DeliverableUser deliverableUser = new DeliverableUser();
+            deliverableUser.setFirstName(deliverableUserDTO.getFirstName());
+            deliverableUser.setLastName(deliverableUserDTO.getLastName());
+            deliverableUser.setDeliverable(deliverable);
+            deliverableUser.setPhase(phase);
+            deliverableUserManager.saveDeliverableUser(deliverableUser);
+          }
         }
+        for (DeliverableUser authorsList : deliverable.getDeliverableUsers().stream().filter(c -> c.isActive())
+          .collect(Collectors.toList())) {
+          boolean found = true;
+          for (DeliverableUserDTO deliverableUserDTO : newPublicationDTO.getAuthorList()) {
+            if (deliverableUserDTO.getFirstName().toUpperCase().equals(authorsList.getFirstName().toUpperCase())
+              && deliverableUserDTO.getLastName().toUpperCase().equals(authorsList.getLastName().toUpperCase())) {
+              found = false;
+            }
+          }
+          if (found) {
+            deliverableUserManager.deleteDeliverableUser(authorsList.getId());
+          }
+        }
+
       } else {
         fieldErrors.add(new FieldErrorDTO("putDeliverable", "phase", "Error while creating a publication "));
         throw new MARLOFieldValidationException("Field Validation errors", "",

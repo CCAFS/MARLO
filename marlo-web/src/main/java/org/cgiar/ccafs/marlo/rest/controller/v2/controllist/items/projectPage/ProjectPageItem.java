@@ -64,6 +64,11 @@ public class ProjectPageItem<T> {
     this.projectPageMapper = projectPageMapper;
   }
 
+  public List<ProjectPageDTO> findAllProjectPage(String globalUnit) {
+    List<ProjectPageDTO> ppList = new ArrayList<ProjectPageDTO>();
+    return ppList;
+  }
+
   /**
    * find a project requesting by Id
    * 
