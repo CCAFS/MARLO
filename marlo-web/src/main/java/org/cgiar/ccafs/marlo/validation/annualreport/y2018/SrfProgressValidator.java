@@ -243,39 +243,44 @@ public class SrfProgressValidator extends BaseValidator {
         // Order liaisonInstitutionsFromCrp list by acronyms
         liaisonInstitutionsFromCrp = liaisonInstitutionsFromCrp.stream()
           .sorted((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym())).collect(Collectors.toList());
+        if (liaisonInstitutionsFromCrp != null && reportSynthesis != null && reportSynthesis.getPhase() != null) {
+          for (LiaisonInstitution liaison : liaisonInstitutionsFromCrp) {
 
-        for (LiaisonInstitution liaison : liaisonInstitutionsFromCrp) {
-
-          // Get report synthesis for each liaison Instution
-          reportSynthesisAux =
-            reportSynthesisManager.findSynthesis(reportSynthesis.getPhase().getId(), liaison.getId());
-          statusOfFlagship = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesisAux.getId(),
-            "Reporting", 2019, false, "crpProgress");
-
-          // Add flagship acronym with missing information to Section status in synthesis flagship field
-          SectionStatus statusOfFPMU = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
-            "Reporting", 2019, false, "crpProgress1");
-
-          // Add section status to statusOfEveryFlagship list if section status (statusOfFlagship) has missing fields
-          if (statusOfFlagship != null && statusOfFlagship.getMissingFields() != null
-            && !statusOfFlagship.getMissingFields().isEmpty()) {
+            // Get report synthesis for each liaison Instution
+            if (liaison != null && liaison.getId() != null) {
+              reportSynthesisAux =
+                reportSynthesisManager.findSynthesis(reportSynthesis.getPhase().getId(), liaison.getId());
+            }
+            if (reportSynthesisAux != null) {
+              statusOfFlagship = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesisAux.getId(),
+                "Reporting", 2019, false, "crpProgress");
+            }
 
             // Add flagship acronym with missing information to Section status in synthesis flagship field
-            if (statusOfFPMU != null && statusOfFPMU.getSynthesisFlagships() != null
-              && !statusOfFPMU.getSynthesisFlagships().isEmpty()) {
+            SectionStatus statusOfFPMU = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
+              "Reporting", 2019, false, "crpProgress1");
 
-              if (!statusOfFPMU.getSynthesisFlagships().contains(liaison.getAcronym())) {
+            // Add section status to statusOfEveryFlagship list if section status (statusOfFlagship) has missing fields
+            if (statusOfFlagship != null && statusOfFlagship.getMissingFields() != null
+              && !statusOfFlagship.getMissingFields().isEmpty()) {
+
+              // Add flagship acronym with missing information to Section status in synthesis flagship field
+              if (statusOfFPMU != null && statusOfFPMU.getSynthesisFlagships() != null
+                && !statusOfFPMU.getSynthesisFlagships().isEmpty()) {
+
+                if (!statusOfFPMU.getSynthesisFlagships().contains(liaison.getAcronym())) {
+                  action.addSynthesisFlagship(liaison.getAcronym());
+                }
+              } else {
                 action.addSynthesisFlagship(liaison.getAcronym());
               }
-            } else {
-              action.addSynthesisFlagship(liaison.getAcronym());
+              if (flagshipsWithMisingInformation != null && !flagshipsWithMisingInformation.isEmpty()) {
+                flagshipsWithMisingInformation += ", " + liaison.getAcronym();
+              } else {
+                flagshipsWithMisingInformation = liaison.getAcronym();
+              }
+              statusOfEveryFlagship.add(statusOfFlagship);
             }
-            if (flagshipsWithMisingInformation != null && !flagshipsWithMisingInformation.isEmpty()) {
-              flagshipsWithMisingInformation += ", " + liaison.getAcronym();
-            } else {
-              flagshipsWithMisingInformation = liaison.getAcronym();
-            }
-            statusOfEveryFlagship.add(statusOfFlagship);
           }
         }
       }
