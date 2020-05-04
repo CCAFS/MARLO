@@ -221,6 +221,10 @@ public class PublicationsAction extends BaseAction {
 
   }
 
+  public void getAuthorsFromClarisa() {
+
+  }
+
   private Path getAutoSaveFilePath() {
     String composedClassName = reportSynthesis.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -233,6 +237,7 @@ public class PublicationsAction extends BaseAction {
     return deliverables;
   }
 
+
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
@@ -242,7 +247,6 @@ public class PublicationsAction extends BaseAction {
     return liaisonInstitutionID;
   }
 
-
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
@@ -250,6 +254,7 @@ public class PublicationsAction extends BaseAction {
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
+
 
   public String getPublicationMissingFields(long id) {
     String missingFieldsText = "";
@@ -305,7 +310,6 @@ public class PublicationsAction extends BaseAction {
     return totalOpenAccess;
   }
 
-
   public String getTransaction() {
     return transaction;
   }
@@ -354,10 +358,12 @@ public class PublicationsAction extends BaseAction {
 
       deliverable.setCrps(deliverable.getDeliverableCrps().stream()
         .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
-      if (deliverable.getCrps() == null || deliverable.getCrps().isEmpty()) {
-        emptyFields.add("CRP");
-        count++;
-      }
+      /*
+       * if (deliverable.getCrps() == null || deliverable.getCrps().isEmpty()) {
+       * emptyFields.add("CRP");
+       * count++;
+       * }
+       */
 
       if (deliverable.getPublication() != null) {
 
@@ -384,8 +390,20 @@ public class PublicationsAction extends BaseAction {
         count++;
       }
 
+      int countAuthors = 0;
       // Authors
       if (deliverable.getUsers() == null || deliverable.getUsers().isEmpty()) {
+        countAuthors++;
+      }
+      if (deliverable.getMetadata() != null) {
+        // Authors Clarisa
+        if (deliverable.getMetadataValue(38) == null || deliverable.getMetadataValue(38).isEmpty()) {
+          countAuthors++;
+        }
+      }
+
+      // Validate if the authors fields are null
+      if (countAuthors == 2) {
         emptyFields.add("Authors");
         count++;
       }
@@ -611,6 +629,15 @@ public class PublicationsAction extends BaseAction {
     List<Deliverable> selectedDeliverables = new ArrayList<Deliverable>();
     if (deliverables != null && !deliverables.isEmpty()) {
       deliverables.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+      /*
+       * for (Deliverable deliverableTemp : deliverables) {
+       * String temp = "";
+       * if (deliverableTemp.getUsers() == null || deliverableTemp.getUsers().isEmpty()) {
+       * if (deliverableTemp.getMetadataValue(38) != null && !deliverableTemp.getMetadataValue(38).isEmpty()) {
+       * }
+       * }
+       * }
+       */
       selectedDeliverables.addAll(deliverables);
       // Remove unchecked deliverables
       if (reportSynthesis.getReportSynthesisFlagshipProgress().getDeliverables() != null

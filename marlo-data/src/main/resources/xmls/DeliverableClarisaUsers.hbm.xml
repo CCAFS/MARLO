@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jan 26, 2017 3:46:03 PM by Hibernate Tools 4.3.1.Final -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.DeliverableClarisaUser" table="deliverable_clarisa_users" optimistic-lock="none">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="deliverable" class="org.cgiar.ccafs.marlo.data.model.Deliverable" fetch="select">
+            <column name="deliverable_id" not-null="true" />
+        </many-to-one>
+        <property name="firstName" type="string">
+            <column name="first_name" length="500" not-null="true" />
+        </property>
+        <property name="lastName" type="string">
+            <column name="last_name" length="500" not-null="true" />
+        </property>
+        <property name="elementId" type="string">
+            <column name="element_id" not-null="true" />
+        </property>
+         <many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
+            <column name="id_phase" />
+        </many-to-one>
+    </class>
+</hibernate-mapping>

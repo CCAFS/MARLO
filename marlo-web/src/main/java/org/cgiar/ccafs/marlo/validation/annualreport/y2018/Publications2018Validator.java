@@ -178,11 +178,12 @@ public class Publications2018Validator extends BaseValidator {
                 deliverable.setCrps(deliverable.getDeliverableCrps().stream()
                   .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase()))
                   .collect(Collectors.toList()));
-                if (deliverable.getCrps() == null || deliverable.getCrps().isEmpty()) {
-                  emptyFields.add("CRP");
-                  countB++;
-                }
-
+                /*
+                 * if (deliverable.getCrps() == null || deliverable.getCrps().isEmpty()) {
+                 * emptyFields.add("CRP");
+                 * countB++;
+                 * }
+                 */
                 if (deliverable.getPublication() != null) {
 
                   // Is publication
@@ -210,14 +211,27 @@ public class Publications2018Validator extends BaseValidator {
                   countB++;
                 }
 
+                int countAuthors = 0;
                 // Authors
                 if (deliverable.getUsers() == null || deliverable.getUsers().isEmpty()) {
+                  countAuthors++;
+                }
+                if (deliverable.getMetadata() != null) {
+                  // Authors Clarisa
+                  if (deliverable.getMetadataValue(38) == null || deliverable.getMetadataValue(38).isEmpty()) {
+                    countAuthors++;
+                  }
+                } else {
+                  countAuthors++;
+                }
+
+                // Validate if the authors fields are null
+                if (countAuthors == 2) {
                   emptyFields.add("Authors");
                   countB++;
                 }
 
                 if (deliverable.getMetadata() != null) {
-
                   // Unique identifier (DOI)
                   if (deliverable.getMetadataValue(36) == null || deliverable.getMetadataValue(36).isEmpty()) {
                     emptyFields.add("DOI");

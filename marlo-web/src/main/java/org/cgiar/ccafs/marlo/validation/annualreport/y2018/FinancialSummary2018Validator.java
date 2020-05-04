@@ -206,7 +206,7 @@ public class FinancialSummary2018Validator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     }
     // Validate W1 Planned
-    if (!this.isValidNumber(String.valueOf(budget.getW1Planned())) || budget.getW1Planned() < 0) {
+    if (!this.isValidNumber(String.valueOf(budget.getW1Planned()))) {
       action.addMessage("w1Planned" + "[" + i + "]");
       action.getInvalidFields().put(
         "input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].w1Planned",
@@ -214,7 +214,7 @@ public class FinancialSummary2018Validator extends BaseValidator {
     }
 
     // Validate W3 Planned
-    if (!this.isValidNumber(String.valueOf(budget.getW3Planned())) || budget.getW3Planned() < 0) {
+    if (!this.isValidNumber(String.valueOf(budget.getW3Planned()))) {
       action.addMessage("w3Planned" + "[" + i + "]");
       action.getInvalidFields().put(
         "input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].w3Planned",
@@ -222,7 +222,7 @@ public class FinancialSummary2018Validator extends BaseValidator {
     }
 
     // Validate Bilateral Planned
-    if (!this.isValidNumber(String.valueOf(budget.getBilateralPlanned())) || budget.getBilateralPlanned() < 0) {
+    if (!this.isValidNumber(String.valueOf(budget.getBilateralPlanned()))) {
       // action.addMessage("bilateralPlanned" + "[" + i + "]");
       // action.getInvalidFields().put(
       // "input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].bilateralPlanned",
@@ -230,21 +230,21 @@ public class FinancialSummary2018Validator extends BaseValidator {
     }
 
     // Validate W1 Actual
-    if (!this.isValidNumber(String.valueOf(budget.getW1Actual())) || budget.getW1Actual() < 0) {
+    if (!this.isValidNumber(String.valueOf(budget.getW1Actual()))) {
       action.addMessage("w1Actual" + "[" + i + "]");
       action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].w1Actual",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
     // Validate W3 Actual
-    if (!this.isValidNumber(String.valueOf(budget.getW3Actual())) || budget.getW3Actual() < 0) {
+    if (!this.isValidNumber(String.valueOf(budget.getW3Actual()))) {
       action.addMessage("w3Actual" + "[" + i + "]");
       action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].w3Actual",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
     // Validate Bilateral Actual
-    if (!this.isValidNumber(String.valueOf(budget.getBilateralActual())) || budget.getBilateralActual() < 0) {
+    if (!this.isValidNumber(String.valueOf(budget.getBilateralActual()))) {
       // action.addMessage("bilateralActual" + "[" + i + "]");
       // action.getInvalidFields().put(
       // "input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].bilateralActual",
