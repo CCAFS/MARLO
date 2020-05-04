@@ -25,21 +25,50 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class NewStatusPlannedMilestoneDTO {
 
-  @ApiModelProperty(notes = "Milestone SMO code", position = 1)
+  @ApiModelProperty(notes = "Flagship SMO code", position = 1)
+  private String crpProgramCode;
+
+  @ApiModelProperty(notes = "Outcome SMO code", position = 2)
+  private String crpOutcomeCode;
+
+  @ApiModelProperty(notes = "Milestone SMO code", position = 3)
   private String milestoneCode;
 
-  @ApiModelProperty(notes = "Milestone Status", position = 2)
+  @ApiModelProperty(notes = "Milestone Status", position = 4)
   private List<NewCrosscuttingMarkersSynthesisDTO> crosscuttinmarkerList;
 
-  @ApiModelProperty(notes = "Milestone Status", position = 3)
+  @ApiModelProperty(notes = "Milestone Status", position = 5)
   private Long status;
 
-  @ApiModelProperty(notes = "Milestone Evidence", position = 4)
+  @ApiModelProperty(notes = "Milestone Evidence", position = 6)
   private String evidence;
+
+  @ApiModelProperty(notes = "Milestone Evidence Link", position = 7)
+  private String linkEvidence;
+
+  @ApiModelProperty(notes = "Phase (AR, POWB, UpKeep)", position = 10)
+  private PhaseDTO phase;
+
+  @ApiModelProperty(notes = "Year value for extended milestone", position = 8)
+  private int extendedYear;
+
+
+  @ApiModelProperty(notes = "Reason for extended or canceled milestone", position = 9)
+  private Long mainReason;
 
 
   public List<NewCrosscuttingMarkersSynthesisDTO> getCrosscuttinmarkerList() {
     return crosscuttinmarkerList;
+  }
+
+
+  public String getCrpOutcomeCode() {
+    return crpOutcomeCode;
+  }
+
+
+  public String getCrpProgramCode() {
+    return crpProgramCode;
   }
 
 
@@ -48,8 +77,28 @@ public class NewStatusPlannedMilestoneDTO {
   }
 
 
+  public int getExtendedYear() {
+    return extendedYear;
+  }
+
+
+  public String getLinkEvidence() {
+    return linkEvidence;
+  }
+
+
+  public Long getMainReason() {
+    return mainReason;
+  }
+
+
   public String getMilestoneCode() {
     return milestoneCode;
+  }
+
+
+  public PhaseDTO getPhase() {
+    return phase;
   }
 
 
@@ -63,13 +112,43 @@ public class NewStatusPlannedMilestoneDTO {
   }
 
 
+  public void setCrpOutcomeCode(String crpOutcomeCode) {
+    this.crpOutcomeCode = crpOutcomeCode;
+  }
+
+
+  public void setCrpProgramCode(String crpProgramCode) {
+    this.crpProgramCode = crpProgramCode;
+  }
+
+
   public void setEvidence(String evidence) {
     this.evidence = evidence;
   }
 
 
+  public void setExtendedYear(int extendedYear) {
+    this.extendedYear = extendedYear;
+  }
+
+
+  public void setLinkEvidence(String linkEvidence) {
+    this.linkEvidence = linkEvidence;
+  }
+
+
+  public void setMainReason(Long mainReason) {
+    this.mainReason = mainReason;
+  }
+
+
   public void setMilestoneCode(String milestoneCode) {
     this.milestoneCode = milestoneCode;
+  }
+
+
+  public void setPhase(PhaseDTO phase) {
+    this.phase = phase;
   }
 
 

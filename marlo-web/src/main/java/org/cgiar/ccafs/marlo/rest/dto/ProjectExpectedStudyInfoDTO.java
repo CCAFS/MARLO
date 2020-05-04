@@ -23,12 +23,11 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class ProjectExpectedStudyInfoDTO {
 
+  @ApiModelProperty(notes = "Expected study title", position = 1)
+  private String title;
 
   @ApiModelProperty(notes = "Expected study title", position = 2)
   private long year;
-
-  @ApiModelProperty(notes = "Expected study title", position = 1)
-  private String title;
 
   @ApiModelProperty(notes = "Expected study type code", position = 3)
   private StudyTypeDTO studyType;
@@ -54,59 +53,77 @@ public class ProjectExpectedStudyInfoDTO {
   @ApiModelProperty(notes = "ClimateChange Level", position = 10)
   private CrossCuttingMarkerScoreDTO climateChangeLevel;
 
-  @ApiModelProperty(notes = "Capdev Level", position = 1)
+  @ApiModelProperty(notes = "Capdev Level", position = 11)
   private CrossCuttingMarkerScoreDTO capdevLevel;
+
+  @ApiModelProperty(notes = "Short outcome/impact statement", position = 12)
+  private String outcomeImpactStatement;
+
+  @ApiModelProperty(notes = "Outcome story for communications use", position = 13)
+  private String comunicationsMaterial;
+
+  @ApiModelProperty(notes = "Elaboration of Outcome/Impact Statement", position = 14)
+  private String elaborationOutcomeImpactStatement;
+
+  @ApiModelProperty(notes = "References cited", position = 15)
+  private String referencesText;
 
 
   public CrossCuttingMarkerScoreDTO getCapdevLevel() {
     return capdevLevel;
   }
 
-
   public CrossCuttingMarkerScoreDTO getClimateChangeLevel() {
     return climateChangeLevel;
   }
 
+  public String getComunicationsMaterial() {
+    return comunicationsMaterial;
+  }
 
   public String getContacts() {
     return contacts;
   }
 
+  public String getElaborationOutcomeImpactStatement() {
+    return elaborationOutcomeImpactStatement;
+  }
 
   public CrossCuttingMarkerScoreDTO getGenderLevel() {
     return genderLevel;
   }
 
-
   public MaturityOfChangeDTO getMaturityOfChange() {
     return maturityOfChange;
   }
 
+  public String getOutcomeImpactStatement() {
+    return outcomeImpactStatement;
+  }
+
+  public String getReferencesText() {
+    return referencesText;
+  }
 
   public long getStatus() {
     return status;
   }
 
-
   public StudyTypeDTO getStudyType() {
     return studyType;
   }
-
 
   public TagDTO getTag() {
     return tag;
   }
 
-
   public String getTitle() {
     return title;
   }
 
-
   public long getYear() {
     return year;
   }
-
 
   public CrossCuttingMarkerScoreDTO getYouthLevel() {
     return youthLevel;
@@ -117,60 +134,64 @@ public class ProjectExpectedStudyInfoDTO {
     this.capdevLevel = capdevLevel;
   }
 
-
   public void setClimateChangeLevel(CrossCuttingMarkerScoreDTO climateChangeLevel) {
     this.climateChangeLevel = climateChangeLevel;
   }
 
+  public void setComunicationsMaterial(String comunicationsMaterial) {
+    this.comunicationsMaterial = comunicationsMaterial;
+  }
 
   public void setContacts(String contacts) {
     this.contacts = contacts;
   }
 
+  public void setElaborationOutcomeImpactStatement(String elaborationOutcomeImpactStatement) {
+    this.elaborationOutcomeImpactStatement = elaborationOutcomeImpactStatement;
+  }
 
   public void setGenderLevel(CrossCuttingMarkerScoreDTO genderLevel) {
     this.genderLevel = genderLevel;
   }
 
-
   public void setMaturityOfChange(MaturityOfChangeDTO maturityOfChange) {
     this.maturityOfChange = maturityOfChange;
   }
 
+  public void setOutcomeImpactStatement(String outcomeImpactStatement) {
+    this.outcomeImpactStatement = outcomeImpactStatement;
+  }
+
+  public void setReferencesText(String referencesText) {
+    this.referencesText = referencesText;
+  }
 
   public void setStatus(long status) {
     this.status = status;
   }
 
-
   public void setStatus(Long status) {
     this.status = status;
   }
-
 
   public void setStudyType(StudyTypeDTO studyType) {
     this.studyType = studyType;
   }
 
-
   public void setTag(TagDTO tag) {
     this.tag = tag;
   }
-
 
   public void setTitle(String title) {
     this.title = title;
   }
 
-
   public void setYear(long year) {
     this.year = year;
   }
 
-
   public void setYouthLevel(CrossCuttingMarkerScoreDTO youthLevel) {
     this.youthLevel = youthLevel;
   }
-
 
 }
