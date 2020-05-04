@@ -19,23 +19,21 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
-import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrossCuttingMarker;
-import org.cgiar.ccafs.marlo.rest.dto.CrosscuttingMarkersDTO;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
+import org.cgiar.ccafs.marlo.rest.dto.MeliaInfoDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
-@Mapper(componentModel = "jsr330",
-  uses = {GlobalUnitMapper.class, CrossCuttingMarkerMapper.class, CrossCuttingMarkerScoreMapper.class})
-public interface ProjectPolicyCrosscuttingMarkersMapper {
+@Mapper(componentModel = "jsr330", uses = {StudyTypeMapper.class, MilestoneStatusMapper.class})
+public interface MeliaInfoMapper {
 
-  @Mappings({
-    @Mapping(source = "projectPolicyCrossCuttingMarker.cgiarCrossCuttingMarker", target = "crossCuttingmarker"),
-    @Mapping(source = "projectPolicyCrossCuttingMarker.repIndGenderYouthFocusLevel",
-      target = "crossCuttingmarkerScore")})
-  public abstract CrosscuttingMarkersDTO projectPolicyCrossCuttingMarkersToProjectPolicyCrosscuttingMarkersDTO(
-    ProjectPolicyCrossCuttingMarker projectPolicyCrossCuttingMarker);
-
+  @Mappings({@Mapping(source = "projectExpectedStudyInfo.status", target = "status"),
+    @Mapping(source = "projectExpectedStudyInfo.studyType", target = "studyType"),
+    @Mapping(source = "projectExpectedStudyInfo.topLevelComments", target = "description"),
+    @Mapping(source = "projectExpectedStudyInfo.MELIAPublications", target = "publications")})
+  public abstract MeliaInfoDTO
+    projectExpectedStudyInfoToPMeliaInfoDTO(ProjectExpectedStudyInfo projectExpectedStudyInfo);
 
 }

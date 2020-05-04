@@ -15,24 +15,30 @@
 
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 
-import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.projectPage.ProjectPageItem;
-import org.cgiar.ccafs.marlo.rest.dto.ProjectPageDTO;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.QAToken.QATokenItem;
+import org.cgiar.ccafs.marlo.rest.dto.NewQATokenAuthDTO;
+import org.cgiar.ccafs.marlo.rest.dto.QATokenAuthDTO;
 import org.cgiar.ccafs.marlo.rest.errors.NotFoundException;
 import org.cgiar.ccafs.marlo.security.Permission;
 
-import java.util.List;
-
 import javax.inject.Inject;
+import javax.validation.Valid;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,40 +48,36 @@ import org.springframework.web.bind.annotation.RestController;
  */
 // @ApiIgnore
 @RestController
-@Api(tags = "Project Page")
-public class ProjectPage {
+@Validated
+@Api(tags = "QA Token")
+public class QAToken {
 
-  private static final Logger LOG = LoggerFactory.getLogger(ProjectPage.class);
-  private ProjectPageItem<ProjectPage> projectPageItem;
+  private static final Logger LOG = LoggerFactory.getLogger(QAToken.class);
+  private QATokenItem<QAToken> qATokenItem;
+  private final UserManager userManager;
+
 
   @Inject
-  public ProjectPage(ProjectPageItem<ProjectPage> projectPageItem) {
-    this.projectPageItem = projectPageItem;
+  public QAToken(QATokenItem<QAToken> qATokenItem, UserManager userManager) {
+    this.qATokenItem = qATokenItem;
+    this.userManager = userManager;
   }
 
-  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/{CGIAREntity}/projectpageList", method = RequestMethod.GET,
-    produces = MediaType.APPLICATION_JSON_VALUE)
-  public List<ProjectPageDTO>
-    findAllProjectPage(@ApiParam(value = "CGIAR entity", required = true) @PathVariable String CGIAREntity) {
-
-    List<ProjectPageDTO> pplist = projectPageItem.findAllProjectPage(CGIAREntity);
-
-
-    return pplist;
+  private User getCurrentUser() {
+    Subject subject = SecurityUtils.getSubject();
+    Long principal = (Long) subject.getPrincipal();
+    User user = this.userManager.getUser(principal);
+    return user;
   }
 
-  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/{CGIAREntity}/projectpage/{id}", method = RequestMethod.GET,
-    produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<ProjectPageDTO> findProjectById(
-    @ApiParam(value = "CGIAR entity", required = true) @PathVariable String CGIAREntity,
-    @ApiParam(value = "Project Id", required = true) @PathVariable Long id) {
-
-    ResponseEntity<ProjectPageDTO> response = projectPageItem.findProjectPageById(id, CGIAREntity);
+  @ApiOperation(value = "${QAToken.qatoken.POST.value}", response = QATokenAuthDTO.class)
+  @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
+  @RequestMapping(value = "/qatoken/", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<QATokenAuthDTO> getToken(@ApiParam(value = "${QAToken.qatoken.POST.param.qatoken}",
+    required = true) @Valid @RequestBody NewQATokenAuthDTO newQATokenAuthDTO) {
+    ResponseEntity<QATokenAuthDTO> response = qATokenItem.getToken(newQATokenAuthDTO, this.getCurrentUser());
 
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-      // TODO add correctly documentation
       throw new NotFoundException("404", "Not Found");
     }
     return response;

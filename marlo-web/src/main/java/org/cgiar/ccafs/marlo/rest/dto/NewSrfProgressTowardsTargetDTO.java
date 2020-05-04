@@ -35,8 +35,9 @@ public class NewSrfProgressTowardsTargetDTO {
   @ApiModelProperty(notes = "Phase (AR, POWB) - Year", position = 5)
   private PhaseDTO phase;
 
-  @ApiModelProperty(notes = "Flagship / Module SMO Code", position = 1)
-  private String flagshipProgramId;
+  // Always PMU
+  // @ApiModelProperty(notes = "Flagship / Module SMO Code", position = 1)
+  // private String flagshipProgramId;
 
 
   public String getAdditionalContribution() {
@@ -47,9 +48,9 @@ public class NewSrfProgressTowardsTargetDTO {
     return briefSummary;
   }
 
-  public String getFlagshipProgramId() {
-    return flagshipProgramId;
-  }
+  // public String getFlagshipProgramId() {
+  // return flagshipProgramId;
+  // }
 
   public PhaseDTO getPhase() {
     return phase;
@@ -68,9 +69,9 @@ public class NewSrfProgressTowardsTargetDTO {
     this.briefSummary = briefSummary;
   }
 
-  public void setFlagshipProgramId(String flagshipProgramId) {
-    this.flagshipProgramId = flagshipProgramId;
-  }
+  // public void setFlagshipProgramId(String flagshipProgramId) {
+  // this.flagshipProgramId = flagshipProgramId;
+  // }
 
   public void setPhase(PhaseDTO phase) {
     this.phase = phase;
