@@ -8,6 +8,7 @@
   [#local isPolicy = ((element.projectExpectedStudyInfo.isContribution)!false) ]
   [#local stageProcessOne = ((element.projectExpectedStudyInfo.repIndStageProcess.id == 1))!false ]
   [#local isStatusExtended = (element.projectExpectedStudyInfo.status.id == 4)!false]
+  [#local isOtherStatus = (element.projectExpectedStudyInfo.status.id != 4)!false]
 
   
   <div id="${customId}" class="caseStudy evidenceBlock isNew-${isNew?string}" style="display:${template?string('none','block')}">
@@ -29,12 +30,13 @@
         <div class="col-md-4">
           [#assign dbExpectedYear = ((element.projectExpectedStudyInfo.year)!currentCycleYear)  ]
           
-        
-          [#if isStatusExtended]
+         
+         <div class="block-extendedYear" style="display:${isStatusExtended?string('block', 'none')}">
             [@customForm.select name="${customName}.projectExpectedStudyInfo.year" className="setSelect2" i18nkey="study.year" listName="project.projectInfo.getYears(${currentCycleYear})" header=false required=true editable=editable /]
-          [#else]               
+            </div>
+          <div class="block-year" style="display:${isOtherStatus?string('block', 'none')}">
             [@customForm.select name="${customName}.projectExpectedStudyInfo.year" className="setSelect2" i18nkey="study.year" listName="getExpectedStudiesYears(${(expectedID)!})" header=false required=true editable=editable /]
-          [/#if]
+          </div>
           [#if editable=false]
             ${element.projectExpectedStudyInfo.year}
           [/#if]
