@@ -27,12 +27,14 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectImpacts;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectImpactsValidator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -69,14 +71,49 @@ public class ProjectImpactsAction extends BaseAction {
   private List<ProjectImpacts> historyProjectImpacts;
   private Project project;
 
+  private ProjectImpactsValidator validator;
+
   @Inject
   public ProjectImpactsAction(APConfig config, GlobalUnitManager crpManager, ProjectManager projectManager,
-    AuditLogManager auditLogManager, ProjectImpactsManager projectImpactsManager) {
+    AuditLogManager auditLogManager, ProjectImpactsManager projectImpactsManager, ProjectImpactsValidator validator) {
     super(config);
     this.projectImpactsManager = projectImpactsManager;
     this.crpManager = crpManager;
     this.projectManager = projectManager;
     this.auditLogManager = auditLogManager;
+    this.validator = validator;
+  }
+
+  /**
+   * In this method it is checked if there is a draft file and it is eliminated
+   * 
+   * @return Sucess always
+   */
+  @Override
+  public String cancel() {
+    // get the path auto save
+    Path path = this.getAutoSaveFilePath();
+    // if file exist
+    if (path.toFile().exists()) {
+      // delete the file
+      boolean fileDeleted = path.toFile().delete();
+    }
+
+    // Set the action No draft
+    this.setDraft(false);
+
+    // Put succes message to front
+    Collection<String> messages = this.getActionMessages();
+    if (!messages.isEmpty()) {
+      String validationMessage = messages.iterator().next();
+      this.setActionMessages(null);
+      this.addActionMessage("draft:" + this.getText("cancel.autoSave"));
+    } else {
+      this.addActionMessage("draft:" + this.getText("cancel.autoSave"));
+    }
+    messages = this.getActionMessages();
+
+    return SUCCESS;
   }
 
   public ProjectImpacts getActualProjectImpact() {
@@ -98,6 +135,7 @@ public class ProjectImpactsAction extends BaseAction {
 
     return newProjectImpact;
   }
+
 
   /**
    * The name of the autosave file is constructed and the path is searched
@@ -281,4 +319,13 @@ public class ProjectImpactsAction extends BaseAction {
   public void setTransaction(String transaction) {
     this.transaction = transaction;
   }
+
+  @Override
+  public void validate() {
+    // if is saving call the validator to check for the missing fields
+    if (save) {
+      validator.validate(this, actualProjectImpact, true);
+    }
+  }
+
 }
