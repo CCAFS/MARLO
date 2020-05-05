@@ -584,7 +584,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         boolean haveRegions = false;
         boolean haveCountries = false;
 
-        if (this.expectedStudy.getGeographicScopes() != null) {
+        if (this.expectedStudy != null && this.expectedStudy.getGeographicScopes() != null
+          && !this.expectedStudy.getGeographicScopes().isEmpty()
+          && this.expectedStudy.getGeographicScopes().size() > 0) {
           for (ProjectExpectedStudyGeographicScope projectExpectedStudyGeographicScope : this.expectedStudy
             .getGeographicScopes()) {
             projectExpectedStudyGeographicScope.setRepIndGeographicScope(this.geographicScopeManager
