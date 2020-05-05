@@ -892,6 +892,20 @@ public class ProjectPolicyAction extends BaseAction {
             && ex.getProjectExpectedStudyInfo().getStudyType().getId().intValue() == 1 && ex.getProject() != null)
           .collect(Collectors.toList());
       }
+
+      List<ProjectExpectedStudy> evidences = projectExpectedStudyManager.findAll().stream()
+        .filter(s -> s != null && s.getProject() == null && s.getProjectExpectedStudyInfo(this.getActualPhase()) != null
+          && s.getProjectExpectedStudyInfo().getPhase() != null
+          && s.getProjectExpectedStudyInfo().getPhase().getId().equals(this.getActualPhase().getId()))
+        .collect(Collectors.toList());
+      if (evidences != null && !evidences.isEmpty()) {
+        if (expectedStudyList != null && !expectedStudyList.isEmpty()) {
+          expectedStudyList.addAll(evidences);
+        } else {
+          expectedStudyList = evidences;
+        }
+      }
+
       // Crps/Platforms List
       crps = globalUnitManager.findAll().stream()
         .filter(gu -> gu.isActive() && (gu.getGlobalUnitType().getId() == 1 || gu.getGlobalUnitType().getId() == 3))
