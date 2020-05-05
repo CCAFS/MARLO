@@ -17,6 +17,9 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.google.gson.annotations.Expose;
 
 /**
@@ -32,6 +35,8 @@ public class ProjectImpacts extends MarloAuditableEntity implements java.io.Seri
   private Project project;
   @Expose
   private String answer;
+
+  private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
 
   public String getAnswer() {
@@ -57,6 +62,11 @@ public class ProjectImpacts extends MarloAuditableEntity implements java.io.Seri
   }
 
 
+  public Set<SectionStatus> getSectionStatuses() {
+    return sectionStatuses;
+  }
+
+
   @Override
   public boolean isActive() {
     return true;
@@ -67,12 +77,17 @@ public class ProjectImpacts extends MarloAuditableEntity implements java.io.Seri
     this.answer = answer;
   }
 
+
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
 
   public void setProject(Project project) {
     this.project = project;
+  }
+
+  public void setSectionStatuses(Set<SectionStatus> sectionStatuses) {
+    this.sectionStatuses = sectionStatuses;
   }
 
 }
