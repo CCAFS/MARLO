@@ -592,13 +592,15 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             projectExpectedStudyGeographicScope.setRepIndGeographicScope(this.geographicScopeManager
               .getRepIndGeographicScopeById(projectExpectedStudyGeographicScope.getRepIndGeographicScope().getId()));
 
-            if (projectExpectedStudyGeographicScope.getRepIndGeographicScope().getId() == 2) {
-              haveRegions = true;
-            }
+            if (projectExpectedStudyGeographicScope.getRepIndGeographicScope() != null) {
+              if (projectExpectedStudyGeographicScope.getRepIndGeographicScope().getId() == 2) {
+                haveRegions = true;
+              }
 
-            if (projectExpectedStudyGeographicScope.getRepIndGeographicScope().getId() != 1
-              && projectExpectedStudyGeographicScope.getRepIndGeographicScope().getId() != 2) {
-              haveCountries = true;
+              if (projectExpectedStudyGeographicScope.getRepIndGeographicScope().getId() != 1
+                && projectExpectedStudyGeographicScope.getRepIndGeographicScope().getId() != 2) {
+                haveCountries = true;
+              }
             }
 
           }
@@ -630,7 +632,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
 
         // Expected Study SubIdo List Autosave
-        if (this.expectedStudy.getSubIdos() != null) {
+        if (this.expectedStudy.getSubIdos() != null && !this.expectedStudy.getSubIdos().isEmpty()
+          && this.expectedStudy.getSubIdos().size() > 0) {
           for (ProjectExpectedStudySubIdo projectExpectedStudySubIdo : this.expectedStudy.getSubIdos()) {
             projectExpectedStudySubIdo
               .setSrfSubIdo(this.srfSubIdoManager.getSrfSubIdoById(projectExpectedStudySubIdo.getSrfSubIdo().getId()));
@@ -638,7 +641,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
 
         // Expected Study Flagship List Autosave
-        if (this.expectedStudy.getFlagships() != null) {
+        if (this.expectedStudy.getFlagships() != null && !this.expectedStudy.getFlagships().isEmpty()) {
           for (ProjectExpectedStudyFlagship projectExpectedStudyFlagship : this.expectedStudy.getFlagships()) {
             projectExpectedStudyFlagship.setCrpProgram(
               this.crpProgramManager.getCrpProgramById(projectExpectedStudyFlagship.getCrpProgram().getId()));
@@ -646,7 +649,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
 
         // Expected Study Regions (Flagships) List Autosave
-        if (this.expectedStudy.getRegions() != null) {
+        if (this.expectedStudy.getRegions() != null && !this.expectedStudy.getRegions().isEmpty()) {
           for (ProjectExpectedStudyFlagship projectExpectedStudyFlagship : this.expectedStudy.getRegions()) {
             projectExpectedStudyFlagship.setCrpProgram(
               this.crpProgramManager.getCrpProgramById(projectExpectedStudyFlagship.getCrpProgram().getId()));
@@ -654,7 +657,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
 
         // Expected Study Crp List Autosave
-        if (this.expectedStudy.getCrps() != null) {
+        if (this.expectedStudy.getCrps() != null && !this.expectedStudy.getCrps().isEmpty()) {
           for (ProjectExpectedStudyCrp projectExpectedStudyCrp : this.expectedStudy.getCrps()) {
             projectExpectedStudyCrp
               .setGlobalUnit(this.crpManager.getGlobalUnitById(projectExpectedStudyCrp.getGlobalUnit().getId()));
@@ -662,7 +665,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
 
         // Expected Study Center List Autosave
-        if (this.expectedStudy.getCenters() != null) {
+        if (this.expectedStudy.getCenters() != null && !this.expectedStudy.getCenters().isEmpty()) {
           for (ProjectExpectedStudyCenter projectExpectedStudyCenter : this.expectedStudy.getCenters()) {
             projectExpectedStudyCenter.setInstitution(
               this.institutionManager.getInstitutionById(projectExpectedStudyCenter.getInstitution().getId()));
