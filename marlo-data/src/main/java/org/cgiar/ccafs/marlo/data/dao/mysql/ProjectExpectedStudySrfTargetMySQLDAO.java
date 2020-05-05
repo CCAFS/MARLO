@@ -73,7 +73,7 @@ public class ProjectExpectedStudySrfTargetMySQLDAO extends AbstractMarloDAO<Proj
   public ProjectExpectedStudySrfTarget getProjectExpectedStudySrfTargetByPhase(Long expectedID, Long srfSloIndicatorID,
     Long PhaseID) {
     String query = "from " + ProjectExpectedStudySrfTarget.class.getName() + " where expected_id=" + expectedID
-      + " and srf_target_id=" + srfSloIndicatorID + " id_phase=" + PhaseID;
+      + " and srf_target_id=" + srfSloIndicatorID + " and id_phase=" + PhaseID;
     List<ProjectExpectedStudySrfTarget> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
