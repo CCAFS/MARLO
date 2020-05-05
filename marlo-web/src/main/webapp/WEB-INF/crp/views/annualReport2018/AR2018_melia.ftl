@@ -182,8 +182,13 @@
       <tbody>
         [#if list?has_content]
           [#list list as item]
+            [#local isFromProject = (item.project??)!false]
+            [#if isFromProject]
             [#local url][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${item.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
             [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(item.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
+            [#else]
+              [#local url][@s.url namespace="/studies" action="${(crpSession)!}/study"][@s.param name='expectedID']${item.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+            [/#if]
             [#-- Is new --]
             [#local isNew = (action.isEvidenceNew(item.id)) /]
             <tr>
