@@ -84,6 +84,9 @@ public class ProjectExpectedStudyInfoDTO {
   private String referencesText;
 
 
+  @ApiModelProperty(notes = "CGIAR Innovations found", position = 16)
+  private String cgiarInnovation;
+
   public String getCapdevDescribe() {
     return capdevDescribe;
   }
@@ -91,6 +94,10 @@ public class ProjectExpectedStudyInfoDTO {
 
   public CrossCuttingMarkerScoreDTO getCapdevLevel() {
     return capdevLevel;
+  }
+
+  public String getCgiarInnovation() {
+    return cgiarInnovation;
   }
 
 
@@ -113,6 +120,7 @@ public class ProjectExpectedStudyInfoDTO {
     return contacts;
   }
 
+
   public String getElaborationOutcomeImpactStatement() {
     return elaborationOutcomeImpactStatement;
   }
@@ -125,10 +133,10 @@ public class ProjectExpectedStudyInfoDTO {
     return genderLevel;
   }
 
-
   public MaturityOfChangeDTO getMaturityOfChange() {
     return maturityOfChange;
   }
+
 
   public String getOutcomeImpactStatement() {
     return outcomeImpactStatement;
@@ -172,6 +180,10 @@ public class ProjectExpectedStudyInfoDTO {
 
   public void setCapdevLevel(CrossCuttingMarkerScoreDTO capdevLevel) {
     this.capdevLevel = capdevLevel;
+  }
+
+  public void setCgiarInnovation(String cgiarInnovation) {
+    this.cgiarInnovation = cgiarInnovation;
   }
 
   public void setClimateChangeDescribe(String climateChangeDescribe) {
