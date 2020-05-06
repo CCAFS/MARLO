@@ -2761,7 +2761,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
 
     }
-    allYears.add(this.getActualPhase().getYear());
+
+    if (allYears != null && this.getActualPhase().getYear() != 0
+      && !allYears.contains(this.getActualPhase().getYear())) {
+      allYears.add(this.getActualPhase().getYear());
+    }
     return allYears;
   }
 
