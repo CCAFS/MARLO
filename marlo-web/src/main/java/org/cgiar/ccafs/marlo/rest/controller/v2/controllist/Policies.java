@@ -164,21 +164,15 @@ public class Policies {
   @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIAREntity}/policies/{id}", method = RequestMethod.PUT,
     produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<ProjectPolicyDTO> putPolicy(
+  public ResponseEntity<Long> putPolicy(
     @ApiParam(value = "${Policy.policies.PUT.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${Policy.policies.PUT.param.id}", required = true) @PathVariable Long id,
     @ApiParam(value = "${Policy.policies.PUT.param.policy}",
       required = true) @Valid @RequestBody NewProjectPolicyDTO newPolicyDTO) {
-
-    ResponseEntity<ProjectPolicyDTO> response = null;
-    try {
-      response = this.policyItem.putPolicyById(id, newPolicyDTO, CGIAREntity, this.getCurrentUser());
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-
+    Long policyID = this.policyItem.putPolicyById(id, newPolicyDTO, CGIAREntity, this.getCurrentUser());
+    ResponseEntity<Long> response = new ResponseEntity<Long>(policyID, HttpStatus.OK);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-      throw new NotFoundException("404", this.env.getProperty("Policy.policies.PUT.id.404"));
+      throw new NotFoundException("404", this.env.getProperty("Policy.policies.GET.id.404"));
     }
     return response;
   }
