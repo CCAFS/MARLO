@@ -26,12 +26,9 @@ import org.cgiar.ccafs.marlo.rest.dto.QATokenAuthDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
 import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
 import org.cgiar.ccafs.marlo.rest.mappers.QATokenMapper;
-import org.cgiar.ccafs.marlo.utils.MD5Convert;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -54,8 +51,6 @@ import org.springframework.http.ResponseEntity;
 @PropertySource("classpath:global.properties")
 @Named
 public class QATokenItem<T> {
-
-  private static final int SECONDS_EXPIRATION = 60;
 
   // Managers and mappers
   private QATokenAuthManager qATokenManager;
@@ -81,29 +76,7 @@ public class QATokenItem<T> {
    * @return a QATokenAuth
    */
   private QATokenAuth createToken(String name, String username, String email, String smoCode, User user) {
-    Calendar c = Calendar.getInstance();
-    String textBeforeMD5 = null;
-    QATokenAuth qATokenAuth = new QATokenAuth();
-
-    Date currentDate = c.getTime();
-    c.add(Calendar.SECOND, SECONDS_EXPIRATION);
-    Date expirationDate = c.getTime();
-
-    textBeforeMD5 = user.getId().toString() + username.trim() + currentDate;
-
-    qATokenAuth.setCreatedAt(currentDate);
-    qATokenAuth.setUpdatedAt(currentDate);
-    qATokenAuth.setCrpId(smoCode.trim());
-    qATokenAuth.setToken(MD5Convert.stringToMD5(textBeforeMD5));
-    qATokenAuth.setExpirationDate(expirationDate);
-    qATokenAuth.setUsername(username.trim());
-    qATokenAuth.setEmail(email.trim());
-    qATokenAuth.setName(name.trim());
-    qATokenAuth.setAppUser(user.getId());
-
-    qATokenManager.saveQATokenAuth(qATokenAuth);
-
-    return qATokenAuth;
+    return qATokenManager.generateQATokenAuth(name, username, email, smoCode, user.getId().toString());
   }
 
   /**
