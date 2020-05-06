@@ -254,9 +254,9 @@ public class ExpectedStudiesOtherItem<T> {
 
         wordCount =
           this.countWords(newProjectExpectedStudiesOther.getNewProjectExpectedStudiesOtherInfo().getStudyDescription());
-        if (wordCount > 200) {
+        if (wordCount > 500) {
           fieldErrors.add(new FieldErrorDTO("createExpectedStudyOther", "Description",
-            "Description excedes the maximum number of words (200 words)"));
+            "Description excedes the maximum number of words (500 words)"));
         } else {
           projectExpectedStudyInfo.setTopLevelComments(
             newProjectExpectedStudiesOther.getNewProjectExpectedStudiesOtherInfo().getStudyDescription());
