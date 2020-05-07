@@ -65,19 +65,6 @@ public class QATokenItem<T> {
     this.qATokenMapper = qATokenMapper;
   }
 
-  /**
-   * Create a QA TokenAuth
-   * 
-   * @param name
-   * @param username
-   * @param email
-   * @param smoCode
-   * @param User
-   * @return a QATokenAuth
-   */
-  private QATokenAuth createToken(String name, String username, String email, String smoCode, User user) {
-    return qATokenManager.generateQATokenAuth(name, username, email, smoCode, user.getId().toString());
-  }
 
   /**
    * Validate format email
@@ -126,7 +113,7 @@ public class QATokenItem<T> {
           if (!this.emailIsValid(email)) {
             fieldErrors.add(new FieldErrorDTO("getToken", "email", email + " is an invalid email"));
           } else {
-            qATokenAuth = this.createToken(name, username, email, smoCode, user);
+            qATokenAuth = qATokenManager.generateQATokenAuth(name, username, email, smoCode, user.getId().toString());
           }
 
         }
