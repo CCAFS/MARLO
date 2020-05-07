@@ -659,8 +659,7 @@ public class PolicyItem<T> {
    * @return a NewProjectPolicyDTO with the policy Item
    */
 
-  public ResponseEntity<ProjectPolicyDTO> putPolicyById(Long id, NewProjectPolicyDTO newPolicyDTO, String entityAcronym,
-    User user) {
+  public Long putPolicyById(Long id, NewProjectPolicyDTO newPolicyDTO, String entityAcronym, User user) {
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
     List<ProjectPolicyCrp> projectPolicyCrpList = new ArrayList<ProjectPolicyCrp>();
     List<ProjectPolicySubIdo> projectPolicySubIdoList = new ArrayList<ProjectPolicySubIdo>();
@@ -672,7 +671,7 @@ public class PolicyItem<T> {
     List<PolicyMilestone> policyMilestones = new ArrayList<>();
     List<ProjectPolicyOwner> projectPolicyOwnerList = new ArrayList<ProjectPolicyOwner>();
     String strippedId = null;
-
+    Long policyID = null;
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
     if (globalUnitEntity == null) {
       fieldErrors.add(new FieldErrorDTO("createInnovation", "GlobalUnitEntity",
@@ -1089,9 +1088,10 @@ public class PolicyItem<T> {
         fieldErrors.stream()
           .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
           .collect(Collectors.toList()));
+    } else {
+      policyID = projectPolicy.getId();
     }
-    return Optional.ofNullable(projectPolicy).map(this.projectPolicyMapper::projectPolicyToProjectPolicyDTO)
-      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    return policyID;
   }
 
   public Long tryParseLong(String value, List<FieldErrorDTO> fieldErrors, String httpMethod, String field) {
