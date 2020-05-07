@@ -336,10 +336,10 @@ public class ExpectedStudiesItem<T> {
         }
 
         // CGIAR innovations
-        if (newProjectExpectedStudy.getProjectExpectedStudyInfo().getCgiarInnovations() != null
-          && !newProjectExpectedStudy.getProjectExpectedStudyInfo().getCgiarInnovations().isEmpty()) {
+        if (newProjectExpectedStudy.getProjectExpectedStudyInfo().getCgiarInnovation() != null
+          && !newProjectExpectedStudy.getProjectExpectedStudyInfo().getCgiarInnovation().isEmpty()) {
           projectExpectedStudyInfo
-            .setCgiarInnovation(newProjectExpectedStudy.getProjectExpectedStudyInfo().getCgiarInnovations());
+            .setCgiarInnovation(newProjectExpectedStudy.getProjectExpectedStudyInfo().getCgiarInnovation());
         }
         // elaborationOutcomeImpactStatement
         wordCount =
@@ -1419,10 +1419,10 @@ public class ExpectedStudiesItem<T> {
         }
 
         // cgiar Innovations
-        if (newProjectExpectedStudy.getProjectExpectedStudyInfo().getCgiarInnovations() != null
-          && !newProjectExpectedStudy.getProjectExpectedStudyInfo().getCgiarInnovations().isEmpty()) {
+        if (newProjectExpectedStudy.getProjectExpectedStudyInfo().getCgiarInnovation() != null
+          && !newProjectExpectedStudy.getProjectExpectedStudyInfo().getCgiarInnovation().isEmpty()) {
           projectExpectedStudyInfo
-            .setCgiarInnovation(newProjectExpectedStudy.getProjectExpectedStudyInfo().getCgiarInnovations());
+            .setCgiarInnovation(newProjectExpectedStudy.getProjectExpectedStudyInfo().getCgiarInnovation());
         }
 
         // elaborationOutcomeImpactStatement

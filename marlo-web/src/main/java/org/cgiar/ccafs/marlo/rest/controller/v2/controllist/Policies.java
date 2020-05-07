@@ -78,11 +78,9 @@ public class Policies {
     @ApiParam(value = "${Policy.policies.POST.param.policy}",
       required = true) @Valid @RequestBody NewProjectPolicyDTO newProjectPolicyDTO) {
     Long policyId = new Long(0);
-    try {
-      policyId = this.policyItem.createPolicy(newProjectPolicyDTO, CGIAREntity, this.getCurrentUser());
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+
+    policyId = this.policyItem.createPolicy(newProjectPolicyDTO, CGIAREntity, this.getCurrentUser());
+
 
     ResponseEntity<Long> response = new ResponseEntity<Long>(policyId, HttpStatus.OK);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
@@ -103,11 +101,8 @@ public class Policies {
     @ApiParam(value = "${Policy.policies.DELETE.id.param.phase}", required = true) @RequestParam String phase) {
 
     ResponseEntity<ProjectPolicyDTO> response = null;
-    try {
-      response = this.policyItem.deletePolicyById(id, CGIAREntity, year, phase, this.getCurrentUser());
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+
+    response = this.policyItem.deletePolicyById(id, CGIAREntity, year, phase, this.getCurrentUser());
 
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("Policy.policies.DELETE.id.404"));
@@ -140,14 +135,12 @@ public class Policies {
 
 
     ResponseEntity<ProjectPolicyDTO> response = null;
-    try {
-      response = this.policyItem.findPolicyById(id, CGIAREntity, year, phase, this.getCurrentUser());
-      if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-        throw new NotFoundException("404", this.env.getProperty("Policy.policies.GET.id.404"));
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
+
+    response = this.policyItem.findPolicyById(id, CGIAREntity, year, phase, this.getCurrentUser());
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("Policy.policies.GET.id.404"));
     }
+
 
     return response;
   }
