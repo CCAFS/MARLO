@@ -1,23 +1,30 @@
 [#ftl]
-[#assign title = "Project Description" /]
+[#assign title = "Project Impacts" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectDescription.js", 
+[#assign customJS = [ 
   "${baseUrlCdn}/global/js/autoSave.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js"
   ] 
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/projects/projectDescription.css"
+  ""
   ] 
 /]
+
+[#assign breadCrumb = [
+  {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
+  {"text":"P${project.id}", "nameSpace":"/projects", "action":"${crpSession}/description", "param": "projectID=${project.id?c}&edit=true&phaseID=${(actualPhase.id)!}"},
+  {"label":"projectImpacts", "nameSpace":"/projects", "action":""}
+] /]
+
 [#assign currentSection = "projects" /]
-[#assign currentStage = "description" /]
+[#assign currentStage = "covid19" /]
 [#assign hideJustification = true /]
 [#assign isCrpProject = (action.isProjectCrpOrPlatform(project.id))!false ]
 [#assign isCenterProject = (action.isProjectCenter(project.id))!false ]
 
+[#import "/WEB-INF/global/macros/utils.ftl" as utilities /]
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
@@ -32,14 +39,21 @@
           <h3 class="headTitle">[@s.text name="projects.impacts.covid19Title" /]</h3>
           <div id="projectImpactCovid19" class="borderBox">
             <div class="form-group">
-              [@customForm.textArea name="actualProjectImpact.answer" i18nkey="projects.impacts.covid19Title" required=true className="project-title limitWords-100" editable=editable && action.hasPermission("title") /]
+              [@customForm.input name="actualProjectImpact.answer" type="text" i18nkey="projects.impacts.covid19ImpactQuestion${actualPhase.year}" placeholder="" help="projects.impacts.covid19ImpactHelp" className="project-title limitWords-100" helpIcon=false required=true editable=editable && action.hasPermission("title") /]
+            [#if actualPhase.year = 2021]
+              </br>
+              [#list historyProjectImpacts as historicProject]
+                <label>[@s.text name="projects.impacts.covid19.answer" /]</label>
+                <div>${historicProject.answer}</div>
+              [/#list]  
+            [/#if]
             </div>
           </div>  
         </div>
-          [#-- Section Buttons & hidden inputs--]
-          [#include "/WEB-INF/crp/views/projects/buttons-projects.ftl" /]
-      [/@s.form]
-      
+        [#-- Section Buttons & hidden inputs--]
+        [#include "/WEB-INF/crp/views/projects/buttons-projects.ftl" /]
+      [/@s.form]  
     </div>
 </section>
 
+[#include "/WEB-INF/global/pages/footer.ftl"]
