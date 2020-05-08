@@ -236,6 +236,19 @@ public class Publications2018Validator extends BaseValidator {
                   if (deliverable.getMetadataValue(36) == null || deliverable.getMetadataValue(36).isEmpty()) {
                     emptyFields.add("DOI");
                     countB++;
+                  } else {
+                    if (deliverable.getDissemination() != null && deliverable.getDissemination().getHasDOI() != null
+                      && deliverable.getDissemination().getHasDOI() == true) {
+
+                      if (deliverable.getDissemination().getArticleUrl() == null
+                        || deliverable.getDissemination().getArticleUrl().isEmpty()) {
+                        count++;
+                      }
+
+                    } else {
+                      // If the mark of No DOI is empty
+                      count++;
+                    }
                   }
                   // Date of Publication
                   if (deliverable.getMetadataValue(17) == null || deliverable.getMetadataValue(36).isEmpty()) {

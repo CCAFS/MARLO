@@ -57,11 +57,11 @@ public class NewProjectExpectedStudyInfoDTO {
   private String referencesText;
 
   @ApiModelProperty(notes = "CGIAR Innovations found", position = 12)
-  private String cgiarInnovations;
+  private String cgiarInnovation;
 
 
-  public String getCgiarInnovations() {
-    return cgiarInnovations;
+  public String getCgiarInnovation() {
+    return cgiarInnovation;
   }
 
 
@@ -109,8 +109,8 @@ public class NewProjectExpectedStudyInfoDTO {
     return year;
   }
 
-  public void setCgiarInnovations(String cgiarInnovations) {
-    this.cgiarInnovations = cgiarInnovations;
+  public void setCgiarInnovation(String cgiarInnovation) {
+    this.cgiarInnovation = cgiarInnovation;
   }
 
 
