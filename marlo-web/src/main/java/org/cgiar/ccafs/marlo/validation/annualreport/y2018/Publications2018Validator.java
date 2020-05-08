@@ -178,11 +178,12 @@ public class Publications2018Validator extends BaseValidator {
                 deliverable.setCrps(deliverable.getDeliverableCrps().stream()
                   .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase()))
                   .collect(Collectors.toList()));
-                if (deliverable.getCrps() == null || deliverable.getCrps().isEmpty()) {
-                  emptyFields.add("CRP");
-                  countB++;
-                }
-
+                /*
+                 * if (deliverable.getCrps() == null || deliverable.getCrps().isEmpty()) {
+                 * emptyFields.add("CRP");
+                 * countB++;
+                 * }
+                 */
                 if (deliverable.getPublication() != null) {
 
                   // Is publication
@@ -235,6 +236,19 @@ public class Publications2018Validator extends BaseValidator {
                   if (deliverable.getMetadataValue(36) == null || deliverable.getMetadataValue(36).isEmpty()) {
                     emptyFields.add("DOI");
                     countB++;
+                  } else {
+                    if (deliverable.getDissemination() != null && deliverable.getDissemination().getHasDOI() != null
+                      && deliverable.getDissemination().getHasDOI() == true) {
+
+                      if (deliverable.getDissemination().getArticleUrl() == null
+                        || deliverable.getDissemination().getArticleUrl().isEmpty()) {
+                        count++;
+                      }
+
+                    } else {
+                      // If the mark of No DOI is empty
+                      count++;
+                    }
                   }
                   // Date of Publication
                   if (deliverable.getMetadataValue(17) == null || deliverable.getMetadataValue(36).isEmpty()) {

@@ -65,8 +65,8 @@ import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.CGIAREntityDTO;
 import org.cgiar.ccafs.marlo.rest.dto.CountryDTO;
-import org.cgiar.ccafs.marlo.rest.dto.CrosscuttingMarkersDTO;
 import org.cgiar.ccafs.marlo.rest.dto.GeographicScopeDTO;
+import org.cgiar.ccafs.marlo.rest.dto.NewCrosscuttingMarkersDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewMilestonesDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectPolicyDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewSrfSubIdoDTO;
@@ -87,6 +87,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -107,7 +108,6 @@ public class PolicyItem<T> {
   private ProjectPolicyOwnerManager projectPolicyOwnerManager;
   private RepIndPolicyInvestimentTypeManager repIndPolicyInvestimentTypeManager;
   private RepIndStageProcessManager repIndStageProcessManager;
-  private RepIndOrganizationTypeManager repIndOrganizationTypeManager;
   private RepIndPolicyTypeManager repIndPolicyTypeManager;
   private ProjectManager projectManager;
   private SrfSubIdoManager srfSubIdoManager;
@@ -144,7 +144,6 @@ public class PolicyItem<T> {
     this.projectPolicySubIdoManager = projectPolicySubIdoManager;
     this.repIndPolicyInvestimentTypeManager = repIndPolicyInvestimentTypeManager;
     this.repIndStageProcessManager = repIndStageProcessManager;
-    this.repIndOrganizationTypeManager = repIndOrganizationTypeManager;
     this.projectManager = projectManager;
     this.srfSubIdoManager = srfSubIdoManager;
     this.repIndGeographicScopeManager = repIndGeographicScopeManager;
@@ -173,6 +172,7 @@ public class PolicyItem<T> {
       new ArrayList<ProjectPolicyCrossCuttingMarker>();
     List<PolicyMilestone> policyMilestones = new ArrayList<>();
     List<ProjectPolicyOwner> projectPolicyOwnerList = new ArrayList<ProjectPolicyOwner>();
+    String strippedId = null;
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
     if (globalUnitEntity == null) {
@@ -344,27 +344,36 @@ public class PolicyItem<T> {
           }
         }
         // validate crosscutting markers
+        Long id = null;
         if (newPolicyDTO.getCrossCuttingMarkers() != null && newPolicyDTO.getCrossCuttingMarkers().size() > 0) {
-          for (CrosscuttingMarkersDTO crosscuttingmarker : newPolicyDTO.getCrossCuttingMarkers()) {
-            CgiarCrossCuttingMarker cgiarCrossCuttingMarker = cgiarCrossCuttingMarkerManager
-              .getCgiarCrossCuttingMarkerById(crosscuttingmarker.getCrossCuttingmarker().getCode());
-            if (cgiarCrossCuttingMarker == null) {
-              fieldErrors.add(new FieldErrorDTO("createPolicy", "Crosscuttingmarker",
-                cgiarCrossCuttingMarker + " is an invalid Crosscuttingmarker Code"));
-
-            } else {
-              RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel = repIndGenderYouthFocusLevelManager
-                .getRepIndGenderYouthFocusLevelById(crosscuttingmarker.getCrossCuttingmarkerScore().getCode());
-              if (repIndGenderYouthFocusLevel == null) {
-                fieldErrors.add(new FieldErrorDTO("createPolicy", "CrosscuttingmarkerScore",
-                  cgiarCrossCuttingMarker + " is an invalid GenderYouthFocusLevel ISO Code"));
+          for (NewCrosscuttingMarkersDTO crosscuttingmarker : newPolicyDTO.getCrossCuttingMarkers()) {
+            strippedId = StringUtils.stripToNull(crosscuttingmarker.getCrossCuttingmarker());
+            id = this.tryParseLong(strippedId, fieldErrors, "createPolicy", "Crosscuttingmarker");
+            if (id != null) {
+              CgiarCrossCuttingMarker cgiarCrossCuttingMarker =
+                cgiarCrossCuttingMarkerManager.getCgiarCrossCuttingMarkerById(id);
+              if (cgiarCrossCuttingMarker == null) {
+                fieldErrors.add(new FieldErrorDTO("createPolicy", "Crosscuttingmarker",
+                  id + " is an invalid Crosscuttingmarker Code"));
               } else {
-                ProjectPolicyCrossCuttingMarker projectPolicyCrossCuttingMarker = new ProjectPolicyCrossCuttingMarker();
-                projectPolicyCrossCuttingMarker.setCgiarCrossCuttingMarker(cgiarCrossCuttingMarker);
-                projectPolicyCrossCuttingMarker.setRepIndGenderYouthFocusLevel(repIndGenderYouthFocusLevel);
-                projectPolicyCrossCuttingMarker.setPhase(phase);
-                projectPolicyCrossCuttingMarker.setProjectPolicy(projectPolicy);
-                ProjectPolicyCrossCuttingMarkerList.add(projectPolicyCrossCuttingMarker);
+                strippedId = StringUtils.stripToNull(crosscuttingmarker.getCrossCuttingmarkerScore());
+                id = this.tryParseLong(strippedId, fieldErrors, "createPolicy", "CrosscuttingmarkerScore");
+                if (id != null) {
+                  RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
+                    repIndGenderYouthFocusLevelManager.getRepIndGenderYouthFocusLevelById(id);
+                  if (repIndGenderYouthFocusLevel == null) {
+                    fieldErrors.add(new FieldErrorDTO("createPolicy", "CrosscuttingmarkerScore",
+                      id + " is an invalid GenderYouthFocusLevel ISO Code"));
+                  } else {
+                    ProjectPolicyCrossCuttingMarker projectPolicyCrossCuttingMarker =
+                      new ProjectPolicyCrossCuttingMarker();
+                    projectPolicyCrossCuttingMarker.setCgiarCrossCuttingMarker(cgiarCrossCuttingMarker);
+                    projectPolicyCrossCuttingMarker.setRepIndGenderYouthFocusLevel(repIndGenderYouthFocusLevel);
+                    projectPolicyCrossCuttingMarker.setPhase(phase);
+                    projectPolicyCrossCuttingMarker.setProjectPolicy(projectPolicy);
+                    ProjectPolicyCrossCuttingMarkerList.add(projectPolicyCrossCuttingMarker);
+                  }
+                }
               }
             }
           }
@@ -396,6 +405,7 @@ public class PolicyItem<T> {
             projectPolicyInfo.setPhase(phase);
             projectPolicyInfo.setYear(newPolicyDTO.getProjectPoliciesInfo().getYear());
             projectPolicyInfo.setTitle(newPolicyDTO.getProjectPoliciesInfo().getTitle());
+            projectPolicyInfo.setDescription(newPolicyDTO.getProjectPoliciesInfo().getDescription());
             projectPolicyInfo.setNarrativeEvidence(newPolicyDTO.getProjectPoliciesInfo().getNarrativeEvidence());
             projectPolicyInfoManager.saveProjectPolicyInfo(projectPolicyInfo);
 
@@ -649,8 +659,7 @@ public class PolicyItem<T> {
    * @return a NewProjectPolicyDTO with the policy Item
    */
 
-  public ResponseEntity<ProjectPolicyDTO> putPolicyById(Long id, NewProjectPolicyDTO newPolicyDTO, String entityAcronym,
-    User user) {
+  public Long putPolicyById(Long id, NewProjectPolicyDTO newPolicyDTO, String entityAcronym, User user) {
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
     List<ProjectPolicyCrp> projectPolicyCrpList = new ArrayList<ProjectPolicyCrp>();
     List<ProjectPolicySubIdo> projectPolicySubIdoList = new ArrayList<ProjectPolicySubIdo>();
@@ -661,7 +670,8 @@ public class PolicyItem<T> {
       new ArrayList<ProjectPolicyCrossCuttingMarker>();
     List<PolicyMilestone> policyMilestones = new ArrayList<>();
     List<ProjectPolicyOwner> projectPolicyOwnerList = new ArrayList<ProjectPolicyOwner>();
-
+    String strippedId = null;
+    Long policyID = null;
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
     if (globalUnitEntity == null) {
       fieldErrors.add(new FieldErrorDTO("createInnovation", "GlobalUnitEntity",
@@ -689,6 +699,7 @@ public class PolicyItem<T> {
         projectPolicyInfo.setPhase(phase);
         projectPolicyInfo.setYear(newPolicyDTO.getProjectPoliciesInfo().getYear());
         projectPolicyInfo.setTitle(newPolicyDTO.getProjectPoliciesInfo().getTitle());
+        projectPolicyInfo.setDescription(newPolicyDTO.getProjectPoliciesInfo().getDescription());
         projectPolicyInfo.setNarrativeEvidence(newPolicyDTO.getProjectPoliciesInfo().getNarrativeEvidence());
         projectPolicy.setProjectPolicyInfo(projectPolicyInfo);
 
@@ -805,27 +816,36 @@ public class PolicyItem<T> {
           }
         }
         // validate crosscutting markers
+        Long idCross = null;
         if (newPolicyDTO.getCrossCuttingMarkers() != null && newPolicyDTO.getCrossCuttingMarkers().size() > 0) {
-          for (CrosscuttingMarkersDTO crosscuttingmarker : newPolicyDTO.getCrossCuttingMarkers()) {
-            CgiarCrossCuttingMarker cgiarCrossCuttingMarker = cgiarCrossCuttingMarkerManager
-              .getCgiarCrossCuttingMarkerById(crosscuttingmarker.getCrossCuttingmarker().getCode());
-            if (cgiarCrossCuttingMarker == null) {
-              fieldErrors.add(new FieldErrorDTO("createPolicy", "Crosscuttingmarker",
-                cgiarCrossCuttingMarker + " is an invalid Crosscuttingmarker Code"));
-
-            } else {
-              RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel = repIndGenderYouthFocusLevelManager
-                .getRepIndGenderYouthFocusLevelById(crosscuttingmarker.getCrossCuttingmarkerScore().getCode());
-              if (repIndGenderYouthFocusLevel == null) {
-                fieldErrors.add(new FieldErrorDTO("createPolicy", "CrosscuttingmarkerScore",
-                  cgiarCrossCuttingMarker + " is an invalid GenderYouthFocusLevel ISO Code"));
+          for (NewCrosscuttingMarkersDTO crosscuttingmarker : newPolicyDTO.getCrossCuttingMarkers()) {
+            strippedId = StringUtils.stripToNull(crosscuttingmarker.getCrossCuttingmarker());
+            idCross = this.tryParseLong(strippedId, fieldErrors, "createPolicy", "Crosscuttingmarker");
+            if (idCross != null) {
+              CgiarCrossCuttingMarker cgiarCrossCuttingMarker =
+                cgiarCrossCuttingMarkerManager.getCgiarCrossCuttingMarkerById(idCross);
+              if (cgiarCrossCuttingMarker == null) {
+                fieldErrors.add(new FieldErrorDTO("createPolicy", "Crosscuttingmarker",
+                  idCross + " is an invalid Crosscuttingmarker Code"));
               } else {
-                ProjectPolicyCrossCuttingMarker projectPolicyCrossCuttingMarker = new ProjectPolicyCrossCuttingMarker();
-                projectPolicyCrossCuttingMarker.setCgiarCrossCuttingMarker(cgiarCrossCuttingMarker);
-                projectPolicyCrossCuttingMarker.setRepIndGenderYouthFocusLevel(repIndGenderYouthFocusLevel);
-                projectPolicyCrossCuttingMarker.setPhase(phase);
-                projectPolicyCrossCuttingMarker.setProjectPolicy(projectPolicy);
-                ProjectPolicyCrossCuttingMarkerList.add(projectPolicyCrossCuttingMarker);
+                strippedId = StringUtils.stripToNull(crosscuttingmarker.getCrossCuttingmarkerScore());
+                idCross = this.tryParseLong(strippedId, fieldErrors, "createPolicy", "CrosscuttingmarkerScore");
+                if (idCross != null) {
+                  RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
+                    repIndGenderYouthFocusLevelManager.getRepIndGenderYouthFocusLevelById(idCross);
+                  if (repIndGenderYouthFocusLevel == null) {
+                    fieldErrors.add(new FieldErrorDTO("createPolicy", "CrosscuttingmarkerScore",
+                      idCross + " is an invalid GenderYouthFocusLevel ISO Code"));
+                  } else {
+                    ProjectPolicyCrossCuttingMarker projectPolicyCrossCuttingMarker =
+                      new ProjectPolicyCrossCuttingMarker();
+                    projectPolicyCrossCuttingMarker.setCgiarCrossCuttingMarker(cgiarCrossCuttingMarker);
+                    projectPolicyCrossCuttingMarker.setRepIndGenderYouthFocusLevel(repIndGenderYouthFocusLevel);
+                    projectPolicyCrossCuttingMarker.setPhase(phase);
+                    projectPolicyCrossCuttingMarker.setProjectPolicy(projectPolicy);
+                    ProjectPolicyCrossCuttingMarkerList.add(projectPolicyCrossCuttingMarker);
+                  }
+                }
               }
             }
           }
@@ -1063,13 +1083,26 @@ public class PolicyItem<T> {
 
 
     if (!fieldErrors.isEmpty()) {
+      fieldErrors.forEach(e -> System.out.println(e.getMessage()));
       throw new MARLOFieldValidationException("Field Validation errors", "",
         fieldErrors.stream()
           .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
           .collect(Collectors.toList()));
+    } else {
+      policyID = projectPolicy.getId();
     }
-    return Optional.ofNullable(projectPolicy).map(this.projectPolicyMapper::projectPolicyToProjectPolicyDTO)
-      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    return policyID;
+  }
+
+  public Long tryParseLong(String value, List<FieldErrorDTO> fieldErrors, String httpMethod, String field) {
+    Long result = null;
+    try {
+      result = Long.parseLong(value);
+    } catch (NumberFormatException nfe) {
+      fieldErrors
+        .add(new FieldErrorDTO(httpMethod, field, value + " is an invalid " + field + " numeric identification code"));
+    }
+    return result;
   }
 
 }

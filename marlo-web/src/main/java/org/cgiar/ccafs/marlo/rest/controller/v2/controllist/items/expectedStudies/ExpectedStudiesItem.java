@@ -51,6 +51,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorManager;
+import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.StudyTypeManager;
 import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
@@ -85,6 +86,7 @@ import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageStudy;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicator;
+import org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.data.model.StudyType;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -99,6 +101,7 @@ import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
 import org.cgiar.ccafs.marlo.rest.mappers.ProjectExpectedStudyMapper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -121,6 +124,7 @@ public class ExpectedStudiesItem<T> {
   private RepIndStageStudyManager repIndStageStudyManager;
   private RepIndGeographicScopeManager repIndGeographicScopeManager;
   private SrfSloIndicatorManager srfSloIndicatorManager;
+  private SrfSloIndicatorTargetManager srfSloIndicatorTargetManager;
   private SrfSubIdoManager srfSubIdoManager;
   private CrpProgramManager crpProgramManager;
   private LocElementManager locElementManager;
@@ -155,8 +159,8 @@ public class ExpectedStudiesItem<T> {
   @Inject
   public ExpectedStudiesItem(GlobalUnitManager globalUnitManager, PhaseManager phaseManager,
     RepIndStageStudyManager repIndStageStudyManager, RepIndGeographicScopeManager repIndGeographicScopeManager,
-    SrfSloIndicatorManager srfSloIndicatorManager, SrfSubIdoManager srfSubIdoManager,
-    CrpProgramManager crpProgramManager, LocElementManager locElementManager,
+    SrfSloIndicatorManager srfSloIndicatorManager, SrfSloIndicatorTargetManager srfSloIndicatorTargetManager,
+    SrfSubIdoManager srfSubIdoManager, CrpProgramManager crpProgramManager, LocElementManager locElementManager,
     ProjectInnovationManager projectInnovationManager, ProjectPolicyManager projectPolicyManager,
     InstitutionManager institutionManager, CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager,
     RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager, EvidenceTagManager evidenceTagManager,
@@ -210,8 +214,19 @@ public class ExpectedStudiesItem<T> {
     this.projectManager = projectManager;
     this.crpMilestoneManager = crpMilestoneManager;
     this.projectExpectedStudySubIdoManager = projectExpectedStudySubIdoManager;
-
+    this.srfSloIndicatorTargetManager = srfSloIndicatorTargetManager;
     this.projectExpectedStudyMapper = projectExpectedStudyMapper;
+  }
+
+  private int countWords(String string) {
+    int wordCount = 0;
+    string = StringUtils.stripToEmpty(string);
+    if (!string.isEmpty()) {
+      String[] words = StringUtils.split(string);
+      wordCount = words.length;
+    }
+
+    return wordCount;
   }
 
   public Long createExpectedStudy(NewProjectExpectedStudyDTO newProjectExpectedStudy, String entityAcronym, User user) {
@@ -252,14 +267,11 @@ public class ExpectedStudiesItem<T> {
             && p.getYear() == newProjectExpectedStudy.getPhase().getYear()
             && p.getName().equalsIgnoreCase(newProjectExpectedStudy.getPhase().getName()))
           .findFirst().orElse(null);
-
         if (phase == null) {
           fieldErrors.add(new FieldErrorDTO("createExpectedStudy", "phase", newProjectExpectedStudy.getPhase().getName()
             + ' ' + newProjectExpectedStudy.getPhase().getYear() + " is an invalid phase"));
         }
-
       }
-
     }
 
     Project project = null;
@@ -291,6 +303,7 @@ public class ExpectedStudiesItem<T> {
       List<ProjectExpectedStudyQuantification> ExpectedStudyQuantificationList =
         new ArrayList<ProjectExpectedStudyQuantification>();
       int hasPrimary = 0;
+      int wordCount = -1;
 
       if (newProjectExpectedStudy.getProjectExpectedStudyInfo() != null) {
         ProjectExpectedStudyInfo projectExpectedStudyInfo = new ProjectExpectedStudyInfo();
@@ -301,6 +314,48 @@ public class ExpectedStudiesItem<T> {
         } else {
           fieldErrors.add(new FieldErrorDTO("createExpectedStudy", "Title", "Please insert a valid title"));
         }
+
+        // shortOutcome
+        wordCount = this.countWords(newProjectExpectedStudy.getProjectExpectedStudyInfo().getOutcomeImpactStatement());
+        if (wordCount > 80) {
+          fieldErrors.add(new FieldErrorDTO("createExpectedStudy", "outcomeImpactStatement",
+            "Short outcome/impact statement excedes the maximum number of words (80 words)"));
+        } else {
+          projectExpectedStudyInfo.setOutcomeImpactStatement(
+            newProjectExpectedStudy.getProjectExpectedStudyInfo().getOutcomeImpactStatement());
+        }
+
+        // communicationsMaterial
+        wordCount = this.countWords(newProjectExpectedStudy.getProjectExpectedStudyInfo().getComunicationsMaterial());
+        if (wordCount > 400) {
+          fieldErrors.add(new FieldErrorDTO("createExpectedStudy", "comunicationsMaterial",
+            "Outcome story for communications use excedes the maximum number of words (400 words)"));
+        } else {
+          projectExpectedStudyInfo
+            .setComunicationsMaterial(newProjectExpectedStudy.getProjectExpectedStudyInfo().getComunicationsMaterial());
+        }
+
+        // CGIAR innovations
+        if (newProjectExpectedStudy.getProjectExpectedStudyInfo().getCgiarInnovation() != null
+          && !newProjectExpectedStudy.getProjectExpectedStudyInfo().getCgiarInnovation().isEmpty()) {
+          projectExpectedStudyInfo
+            .setCgiarInnovation(newProjectExpectedStudy.getProjectExpectedStudyInfo().getCgiarInnovation());
+        }
+        // elaborationOutcomeImpactStatement
+        wordCount =
+          this.countWords(newProjectExpectedStudy.getProjectExpectedStudyInfo().getElaborationOutcomeImpactStatement());
+        if (wordCount > 400) {
+          fieldErrors.add(new FieldErrorDTO("createExpectedStudy", "elaborationOutcomeImpactStatement",
+            "Elaboration of Outcome/Impact Statement excedes the maximum number of words (400 words)"));
+        } else {
+          projectExpectedStudyInfo.setElaborationOutcomeImpactStatement(
+            newProjectExpectedStudy.getProjectExpectedStudyInfo().getElaborationOutcomeImpactStatement());
+        }
+
+        // referencesText
+        projectExpectedStudyInfo
+          .setReferencesText(newProjectExpectedStudy.getProjectExpectedStudyInfo().getReferencesText());
+
 
         // DANGER! Magic number ahead
         if (newProjectExpectedStudy.getProjectExpectedStudyInfo().getYear() > 1900) {
@@ -338,10 +393,12 @@ public class ExpectedStudiesItem<T> {
           generalStatusManager.getGeneralStatusById(newProjectExpectedStudy.getProjectExpectedStudyInfo().getStatus());
         if (generalStatus != null) {
           projectExpectedStudyInfo.setStatus(generalStatus);
+
         } else {
           fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Status",
             newProjectExpectedStudy.getProjectExpectedStudyInfo().getStatus() + " is an invalid status code"));
         }
+
 
         EvidenceTag evidenceTag = null;
         if (newProjectExpectedStudy.getProjectExpectedStudyInfo().getTag() != null) {
@@ -412,16 +469,17 @@ public class ExpectedStudiesItem<T> {
             && newProjectExpectedStudy.getSrfSloTargetList().size() > 0) {
             for (String sloTarget : newProjectExpectedStudy.getSrfSloTargetList()) {
               if (sloTarget != null && !sloTarget.trim().isEmpty()) {
-                id = this.tryParseLong(sloTarget.trim(), fieldErrors, "CreateExpectedStudy", "SrfSloIndicatorTarget");
-                if (id != null) {
-                  SrfSloIndicator srfSloIndicator = srfSloIndicatorManager.getSrfSloIndicatorById(id);
-                  if (srfSloIndicator != null) {
-                    srfSloIndicatorList.add(srfSloIndicator);
-                  } else {
-                    fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "SrfSloIndicatorTarget ",
-                      sloTarget + " is an invalid SLOIndicatorTarget identifier"));
-                  }
+                SrfSloIndicatorTarget srfSloIndicatorTarget =
+                  srfSloIndicatorTargetManager.findbyTargetIndicatorCode(sloTarget);
+                if (srfSloIndicatorTarget != null) {
+                  SrfSloIndicator srfSloIndicator =
+                    srfSloIndicatorManager.getSrfSloIndicatorById(srfSloIndicatorTarget.getSrfSloIndicator().getId());
+                  srfSloIndicatorList.add(srfSloIndicator);
+                } else {
+                  fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "SrfSloIndicatorTarget ",
+                    sloTarget + " is an invalid SLOIndicatorTarget identifier"));
                 }
+
               } else {
                 fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "SrfSloIndicatorTarget",
                   "sloTarget identifier can not be null nor empty"));
@@ -723,18 +781,22 @@ public class ExpectedStudiesItem<T> {
                         if (cgiarCrossCuttingMarker.getId()
                           .longValue() == APConstants.CGIAR_CROSS_CUTTING_MARKERS_GENDER) {
                           projectExpectedStudyInfo.setGenderLevel(repIndGenderYouthFocusLevel);
+                          projectExpectedStudyInfo.setDescribeGender(crosscuttingmark.getDescription());
                         }
                         if (cgiarCrossCuttingMarker.getId()
                           .longValue() == APConstants.CGIAR_CROSS_CUTTING_MARKERS_YOUTH) {
                           projectExpectedStudyInfo.setYouthLevel(repIndGenderYouthFocusLevel);
+                          projectExpectedStudyInfo.setDescribeYouth(crosscuttingmark.getDescription());
                         }
                         if (cgiarCrossCuttingMarker.getId()
                           .longValue() == APConstants.CGIAR_CROSS_CUTTING_MARKERS_CAPDEV) {
                           projectExpectedStudyInfo.setCapdevLevel(repIndGenderYouthFocusLevel);
+                          projectExpectedStudyInfo.setDescribeCapdev(crosscuttingmark.getDescription());
                         }
                         if (cgiarCrossCuttingMarker.getId()
                           .longValue() == APConstants.CGIAR_CROSS_CUTTING_MARKERS_CLIMATECHANGE) {
                           projectExpectedStudyInfo.setClimateChangeLevel(repIndGenderYouthFocusLevel);
+                          projectExpectedStudyInfo.setDescribeClimateChange(crosscuttingmark.getDescription());
                         }
                       }
                     }
@@ -838,7 +900,8 @@ public class ExpectedStudiesItem<T> {
                 }
 
                 // SLO targets
-                for (SrfSloIndicator srfSloIndicator : srfSloIndicatorList) {
+                for (SrfSloIndicator srfSloIndicator : srfSloIndicatorList.stream().distinct()
+                  .collect(Collectors.toList())) {
                   ProjectExpectedStudySrfTarget projectExpectedStudySrfTarget = new ProjectExpectedStudySrfTarget();
                   projectExpectedStudySrfTarget.setSrfSloIndicator(srfSloIndicator);
                   projectExpectedStudySrfTarget.setPhase(phase);
@@ -1128,7 +1191,7 @@ public class ExpectedStudiesItem<T> {
 
     ProjectExpectedStudy projectExpectedStudy = projectExpectedStudyManager.getProjectExpectedStudyById(id.longValue());
 
-    if (projectExpectedStudy != null) {
+    if (projectExpectedStudy != null && fieldErrors.isEmpty()) {
       ProjectExpectedStudyInfo projectExpectedStudyInfo = projectExpectedStudy.getProjectExpectedStudyInfo(phase);
       // Flagship
       List<ProjectExpectedStudyFlagship> projectExpectedStudyFlagshipList =
@@ -1141,7 +1204,7 @@ public class ExpectedStudiesItem<T> {
           .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
       projectExpectedStudy.setSubIdos(projectExpectedStudySubIdoList);
       if (projectExpectedStudyInfo.getIsSrfTarget() != null
-        && projectExpectedStudyInfo.getIsSrfTarget().equals("Yes")) {
+        && projectExpectedStudyInfo.getIsSrfTarget().equals("targetsOptionYes")) {
         // SrfSlo
         List<ProjectExpectedStudySrfTarget> projectExpectedStudySrfTargetList =
           projectExpectedStudy.getProjectExpectedStudySrfTargets().stream()
@@ -1159,9 +1222,12 @@ public class ExpectedStudiesItem<T> {
           .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
       projectExpectedStudy.setGeographicScopes(projectExpectedStudyGeographicScopeList);
       // Institutions
+      Comparator<ProjectExpectedStudyInstitution> compareByNameInstitution = (ProjectExpectedStudyInstitution o1,
+        ProjectExpectedStudyInstitution o2) -> o1.getInstitution().getName().compareTo(o2.getInstitution().getName());
       List<ProjectExpectedStudyInstitution> projectExpectedStudyInstitutionList =
         projectExpectedStudy.getProjectExpectedStudyInstitutions().stream()
           .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+      Collections.sort(projectExpectedStudyInstitutionList, compareByNameInstitution);
       projectExpectedStudy.setInstitutions(projectExpectedStudyInstitutionList);
       // CRPs contribution
       List<ProjectExpectedStudyCrp> projectExpectedStudyCrpList = projectExpectedStudy.getProjectExpectedStudyCrps()
@@ -1188,7 +1254,8 @@ public class ExpectedStudiesItem<T> {
       projectExpectedStudy.setQuantifications(projectExpectedStudyQuantificationList);
       // Links
       List<ProjectExpectedStudyLink> projectExpectedStudyLinkList = projectExpectedStudy.getProjectExpectedStudyLinks()
-        .stream().filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+        .stream().filter(c -> c.isActive() && c.getPhase().equals(phase))
+        .sorted(Comparator.comparing(ProjectExpectedStudyLink::getLink)).collect(Collectors.toList());
       projectExpectedStudy.setLinks(projectExpectedStudyLinkList);
 
       // innovations
@@ -1218,6 +1285,7 @@ public class ExpectedStudiesItem<T> {
     }
 
     if (!fieldErrors.isEmpty()) {
+      fieldErrors.forEach(e -> System.out.println(e.getMessage()));
       throw new MARLOFieldValidationException("Field Validation errors", "",
         fieldErrors.stream()
           .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
@@ -1314,6 +1382,7 @@ public class ExpectedStudiesItem<T> {
       List<ProjectExpectedStudyQuantification> expectedStudyQuantificationList =
         new ArrayList<ProjectExpectedStudyQuantification>();
       int hasPrimary = 0;
+      int wordCount = -1;
 
       if (newProjectExpectedStudy.getProjectExpectedStudyInfo() != null) {
         // update expected Study info
@@ -1328,6 +1397,48 @@ public class ExpectedStudiesItem<T> {
         } else {
           fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Title", "Please insert a valid title"));
         }
+
+        // shortOutcome
+        wordCount = this.countWords(newProjectExpectedStudy.getProjectExpectedStudyInfo().getOutcomeImpactStatement());
+        if (wordCount > 80) {
+          fieldErrors.add(new FieldErrorDTO("createExpectedStudy", "outcomeImpactStatement",
+            "Short outcome/impact statement excedes the maximum number of words (80 words)"));
+        } else {
+          projectExpectedStudyInfo.setOutcomeImpactStatement(
+            newProjectExpectedStudy.getProjectExpectedStudyInfo().getOutcomeImpactStatement());
+        }
+
+        // communicationsMaterial
+        wordCount = this.countWords(newProjectExpectedStudy.getProjectExpectedStudyInfo().getComunicationsMaterial());
+        if (wordCount > 400) {
+          fieldErrors.add(new FieldErrorDTO("createExpectedStudy", "comunicationsMaterial",
+            "Outcome story for communications use excedes the maximum number of words (400 words)"));
+        } else {
+          projectExpectedStudyInfo
+            .setComunicationsMaterial(newProjectExpectedStudy.getProjectExpectedStudyInfo().getComunicationsMaterial());
+        }
+
+        // cgiar Innovations
+        if (newProjectExpectedStudy.getProjectExpectedStudyInfo().getCgiarInnovation() != null
+          && !newProjectExpectedStudy.getProjectExpectedStudyInfo().getCgiarInnovation().isEmpty()) {
+          projectExpectedStudyInfo
+            .setCgiarInnovation(newProjectExpectedStudy.getProjectExpectedStudyInfo().getCgiarInnovation());
+        }
+
+        // elaborationOutcomeImpactStatement
+        wordCount =
+          this.countWords(newProjectExpectedStudy.getProjectExpectedStudyInfo().getElaborationOutcomeImpactStatement());
+        if (wordCount > 400) {
+          fieldErrors.add(new FieldErrorDTO("createExpectedStudy", "elaborationOutcomeImpactStatement",
+            "Elaboration of Outcome/Impact Statement excedes the maximum number of words (400 words)"));
+        } else {
+          projectExpectedStudyInfo.setElaborationOutcomeImpactStatement(
+            newProjectExpectedStudy.getProjectExpectedStudyInfo().getElaborationOutcomeImpactStatement());
+        }
+
+        // referencesText
+        projectExpectedStudyInfo
+          .setReferencesText(newProjectExpectedStudy.getProjectExpectedStudyInfo().getReferencesText());
 
         // DANGER! Magic number ahead
         if (newProjectExpectedStudy.getProjectExpectedStudyInfo().getYear() > 1900) {
@@ -1439,15 +1550,15 @@ public class ExpectedStudiesItem<T> {
             && newProjectExpectedStudy.getSrfSloTargetList().size() > 0) {
             for (String sloTarget : newProjectExpectedStudy.getSrfSloTargetList()) {
               if (sloTarget != null && !sloTarget.trim().isEmpty()) {
-                id = this.tryParseLong(sloTarget.trim(), fieldErrors, "putExpectedStudy", "SrfSloIndicatorTarget");
-                if (id != null) {
-                  SrfSloIndicator srfSloIndicator = srfSloIndicatorManager.getSrfSloIndicatorById(id);
-                  if (srfSloIndicator != null) {
-                    srfSloIndicatorList.add(srfSloIndicator);
-                  } else {
-                    fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "SrfSloIndicatorTarget ",
-                      sloTarget + " is an invalid SLOIndicatorTarget identifier"));
-                  }
+                SrfSloIndicatorTarget srfSloIndicatorTarget =
+                  srfSloIndicatorTargetManager.findbyTargetIndicatorCode(sloTarget);
+                if (srfSloIndicatorTarget != null) {
+                  SrfSloIndicator srfSloIndicator =
+                    srfSloIndicatorManager.getSrfSloIndicatorById(srfSloIndicatorTarget.getSrfSloIndicator().getId());
+                  srfSloIndicatorList.add(srfSloIndicator);
+                } else {
+                  fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "SrfSloIndicatorTarget ",
+                    sloTarget + " is an invalid SLOIndicatorTarget identifier"));
                 }
               } else {
                 fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "SrfSloIndicatorTarget",
@@ -1748,18 +1859,23 @@ public class ExpectedStudiesItem<T> {
                         if (cgiarCrossCuttingMarker.getId()
                           .longValue() == APConstants.CGIAR_CROSS_CUTTING_MARKERS_GENDER) {
                           projectExpectedStudyInfo.setGenderLevel(repIndGenderYouthFocusLevel);
+                          projectExpectedStudyInfo.setDescribeGender(crosscuttingmark.getDescription());;
+
                         }
                         if (cgiarCrossCuttingMarker.getId()
                           .longValue() == APConstants.CGIAR_CROSS_CUTTING_MARKERS_YOUTH) {
                           projectExpectedStudyInfo.setYouthLevel(repIndGenderYouthFocusLevel);
+                          projectExpectedStudyInfo.setDescribeYouth(crosscuttingmark.getDescription());
                         }
                         if (cgiarCrossCuttingMarker.getId()
                           .longValue() == APConstants.CGIAR_CROSS_CUTTING_MARKERS_CAPDEV) {
                           projectExpectedStudyInfo.setCapdevLevel(repIndGenderYouthFocusLevel);
+                          projectExpectedStudyInfo.setDescribeCapdev(crosscuttingmark.getDescription());
                         }
                         if (cgiarCrossCuttingMarker.getId()
                           .longValue() == APConstants.CGIAR_CROSS_CUTTING_MARKERS_CLIMATECHANGE) {
                           projectExpectedStudyInfo.setClimateChangeLevel(repIndGenderYouthFocusLevel);
+                          projectExpectedStudyInfo.setDescribeClimateChange(crosscuttingmark.getDescription());
                         }
                       }
                     }
@@ -1965,7 +2081,8 @@ public class ExpectedStudiesItem<T> {
               List<ProjectExpectedStudySrfTarget> existingProjectExpectedStudySrfTargetList =
                 new ArrayList<ProjectExpectedStudySrfTarget>();
               // save SLO targets
-              for (SrfSloIndicator srfSloIndicator : srfSloIndicatorList) {
+              for (SrfSloIndicator srfSloIndicator : srfSloIndicatorList.stream().distinct()
+                .collect(Collectors.toList())) {
                 ProjectExpectedStudySrfTarget projectExpectedStudySrfTarget = projectExpectedStudySrfTargetManager
                   .getProjectExpectedStudySrfTargetByPhase(expectedStudyID, srfSloIndicator.getId(), phase.getId());
                 if (projectExpectedStudySrfTarget != null) {

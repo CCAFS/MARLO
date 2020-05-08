@@ -15,6 +15,7 @@
 
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.ParticipantsCapDev;
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
@@ -49,7 +50,6 @@ import org.springframework.http.ResponseEntity;
 public class ParticipantsCapDevItem<T> {
 
   // Managers and mappers
-  private static final String ACRONYM_PMU = "PMU";
   private GlobalUnitManager globalUnitManager;
   private PhaseManager phaseManager;
   private LiaisonInstitutionManager liaisonInstitutionManager;
@@ -118,7 +118,7 @@ public class ParticipantsCapDevItem<T> {
       } else {
 
         LiaisonInstitution liaisonInstitution =
-          this.liaisonInstitutionManager.findByAcronymAndCrp(ACRONYM_PMU, globalUnitEntity.getId());
+          this.liaisonInstitutionManager.findByAcronymAndCrp(APConstants.CLARISA_ACRONYM_PMU, globalUnitEntity.getId());
 
         if (liaisonInstitution == null) {
           fieldErrors

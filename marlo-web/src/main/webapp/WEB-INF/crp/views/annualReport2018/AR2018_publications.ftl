@@ -12,7 +12,7 @@
   "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20200310",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js"
   ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20200420"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20200430"] /]
 
 [#assign breadCrumb = [
   {"label":"${currentSection}",   "nameSpace":"",             "action":""},
@@ -283,7 +283,15 @@
               </td>
               [#if !allowPopups]
               [#-- Authors --]
-              <td>[@utils.tableList list=(item.users)![] displayFieldName="composedName" nobr=true class="authorsList mCustomScrollbar" scroll=true /]</td>
+              <td>
+                [#if item.getMetadataValue(38)?has_content && !item.users?has_content ]
+                  <div class="authorsList mCustomScrollbar">
+                    ${item.getMetadataValue(38)} 
+                  </div>
+                [#else]
+                  [@utils.tableList list=(item.users)![] displayFieldName="composedName" nobr=true class="authorsList mCustomScrollbar" scroll=true /]
+                [/#if]
+              </td>
               [#-- Date of Publication --]
               <td>[@utils.tableText value=(item.getMetadataValue(17))!"" /]</td>
               [/#if]
@@ -404,9 +412,13 @@
               [#-- Authors --]
               <td>
                 [#compress]
-                [#list (item.users)![] as user]
-                  ${(user.composedName)!}[#sep]; [/#sep]
-                [/#list]
+                  [#if item.getMetadataValue(38)?has_content && !item.users?has_content ]
+                      ${item.getMetadataValue(38)} 
+                  [#else]
+                    [#list (item.users)![] as user]
+                      ${(user.composedName)!}[#sep]; [/#sep]
+                    [/#list]
+                  [/#if]
                 [/#compress]
               </td>
               [#-- Date of Publication --]
