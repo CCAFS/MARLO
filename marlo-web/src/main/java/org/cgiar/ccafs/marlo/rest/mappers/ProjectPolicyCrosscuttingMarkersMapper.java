@@ -34,7 +34,8 @@ public interface ProjectPolicyCrosscuttingMarkersMapper {
     @Mapping(source = "projectPolicyCrossCuttingMarker.cgiarCrossCuttingMarker", target = "crossCuttingmarker"),
     @Mapping(source = "projectPolicyCrossCuttingMarker.repIndGenderYouthFocusLevel",
       target = "crossCuttingmarkerScore")})
-  public abstract CrosscuttingMarkersDTO
-    projectPolicyCrossCuttingMarkersToProjectPolicyCrosscuttingMarkersDTO(
-      ProjectPolicyCrossCuttingMarker projectPolicyCrossCuttingMarker);
+  public abstract CrosscuttingMarkersDTO projectPolicyCrossCuttingMarkersToProjectPolicyCrosscuttingMarkersDTO(
+    ProjectPolicyCrossCuttingMarker projectPolicyCrossCuttingMarker);
+
+
 }

@@ -593,7 +593,7 @@ public class InnovationItem<T> {
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
     if (globalUnitEntity == null) {
-      fieldErrors.add(new FieldErrorDTO("createInnovation", "GlobalUnitEntity",
+      fieldErrors.add(new FieldErrorDTO("allInnovation", "GlobalUnitEntity",
         CGIARentityAcronym + " is an invalid CGIAR entity acronym"));
     }
     Phase phase =
@@ -601,7 +601,7 @@ public class InnovationItem<T> {
         && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().get();
 
     if (phase == null) {
-      fieldErrors.add(new FieldErrorDTO("createInnovation", "phase",
+      fieldErrors.add(new FieldErrorDTO("allInnovation", "phase",
         new NewInnovationDTO().getPhase().getYear() + " is an invalid year"));
     }
 
