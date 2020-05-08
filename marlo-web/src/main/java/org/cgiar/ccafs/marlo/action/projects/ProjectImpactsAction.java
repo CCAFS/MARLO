@@ -36,7 +36,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -128,9 +127,8 @@ public class ProjectImpactsAction extends BaseAction {
 
     if (projectImpacts != null) {
 
-      return projectImpacts.stream()
-        .filter(c -> c.isActive() && c.getProject().getId() == project.getId() && c.getPhase().getId() == phase.getId())
-        .findFirst().orElse(newProjectImpact);
+      return projectImpacts.stream().filter(c -> c.isActive() && c.getProject().getId().equals(project.getId())
+        && c.getPhase().getId().equals(phase.getId())).findFirst().orElse(newProjectImpact);
     }
 
     return newProjectImpact;
@@ -165,11 +163,8 @@ public class ProjectImpactsAction extends BaseAction {
     List<ProjectImpacts> historyProjectImpacts = new ArrayList();
 
     if (projectImpacts != null) {
-
-      historyProjectImpacts = projectImpacts.stream()
-        .filter(c -> c.isActive() && c.getProject().getId() == actualProjectImpact.getProject().getId()
-          && c.getPhase().getId() != actualProjectImpact.getPhase().getId())
-        .collect(Collectors.toList());
+      projectImpacts.remove(actualProjectImpact);
+      historyProjectImpacts = projectImpacts;
     }
 
     return historyProjectImpacts;
