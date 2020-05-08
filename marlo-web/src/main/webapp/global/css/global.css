@@ -1933,6 +1933,10 @@ a.currentReportingSection li, a.currentSection li {
   background: rgb(254, 247, 207);
 }
 
+#secondaryMenu ul li ul > li.hasBackground:hover {
+  background: antiquewhite;
+}
+
 #secondaryMenu ul li > ul li {
   margin: 2px 0 3px 0;
   list-style: none;
