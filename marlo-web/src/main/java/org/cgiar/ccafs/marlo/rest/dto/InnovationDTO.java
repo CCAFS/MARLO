@@ -78,6 +78,9 @@ public class InnovationDTO {
   @ApiModelProperty(notes = "CGIAR Sub-IDOs List", position = 143)
   private List<ProjectInnovationSubIdoDTO> srfSubIdoList;
 
+  @ApiModelProperty(notes = "OCIR List", position = 144)
+  private List<ProjectExpectedStudyNameDTO> projectExpetedStudyList;
+
 
   @ApiModelProperty(notes = "Phase year/section", position = 160)
   private PhaseDTO phase;
@@ -102,6 +105,7 @@ public class InnovationDTO {
     return this.descriptionStage;
   }
 
+
   public Boolean getEquitativeEffort() {
     return equitativeEffort;
   }
@@ -110,7 +114,6 @@ public class InnovationDTO {
   public String getEvidenceLink() {
     return this.evidenceLink;
   }
-
 
   public List<GeographicScopeDTO> getGeographicScopes() {
     return this.geographicScopes;
@@ -159,6 +162,11 @@ public class InnovationDTO {
 
   public ProjectDTO getProject() {
     return project;
+  }
+
+
+  public List<ProjectExpectedStudyNameDTO> getProjectExpetedStudyList() {
+    return projectExpetedStudyList;
   }
 
 
@@ -259,6 +267,11 @@ public class InnovationDTO {
 
   public void setProject(ProjectDTO project) {
     this.project = project;
+  }
+
+
+  public void setProjectExpetedStudyList(List<ProjectExpectedStudyNameDTO> projectExpetedStudyList) {
+    this.projectExpetedStudyList = projectExpetedStudyList;
   }
 
 
