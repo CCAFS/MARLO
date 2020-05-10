@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.summaries;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationDeliverableManager;
@@ -29,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
@@ -93,6 +95,8 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
   private final ProjectInnovationCountryManager projectInnovationCountryManager;
   private final ProjectInnovationMilestoneManager projectInnovationMilestoneManager;
   private final ProjectInnovationSubIdoManager projectInnovationSubIdoManager;
+  private ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager;
+
 
   // Parameters
   private long startTime;
@@ -114,7 +118,8 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     ProjectInnovationRegionManager projectInnovationRegionManager,
     ProjectInnovationCountryManager projectInnovationCountryManager,
     ProjectInnovationMilestoneManager projectInnovationMilestoneManager,
-    ProjectInnovationSubIdoManager projectInnovationSubIdoManager) {
+    ProjectInnovationSubIdoManager projectInnovationSubIdoManager,
+    ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.projectInnovationManager = projectInnovationManager;
     this.resourceManager = resourceManager;
@@ -125,6 +130,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     this.projectInnovationCountryManager = projectInnovationCountryManager;
     this.projectInnovationMilestoneManager = projectInnovationMilestoneManager;
     this.projectInnovationSubIdoManager = projectInnovationSubIdoManager;
+    this.projectExpectedStudyInnovationManager = projectExpectedStudyInnovationManager;
   }
 
   /**
@@ -382,15 +388,34 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         }
 
         // Studies
+        List<ProjectExpectedStudyInnovation> studyInnovations = new ArrayList<>();
+
+        // Expected Study Innovations List
+        studyInnovations = projectExpectedStudyInnovationManager.findAll().stream()
+          .filter(p -> p != null && p.getPhase().getId().equals(this.getActualPhase().getId())
+            && p.getProjectInnovation().getId().equals(projectInnovationInfo.getProjectExpectedStudy().getId()))
+          .collect(Collectors.toList());
+
         if (projectInnovationInfo.getProjectExpectedStudy() != null && projectInnovationInfo.getProjectExpectedStudy()
           .getProjectExpectedStudyInfo(this.getSelectedPhase()) != null) {
-          projectExpectedStudy = projectInnovationInfo.getProjectExpectedStudy().getId() + " - "
-            + projectInnovationInfo.getProjectExpectedStudy().getProjectExpectedStudyInfo().getTitle();
+
+          if (studyInnovations != null) {
+            projectExpectedStudy = projectInnovationInfo.getProjectExpectedStudy().getId() + " - "
+              + projectInnovationInfo.getProjectExpectedStudy().getProjectExpectedStudyInfo().getTitle();
+          }
+
+          for (ProjectExpectedStudyInnovation studyInnovation : studyInnovations) {
+            oicr += this.getBaseUrl() + "/projects/" + this.getLoggedCrp().getAcronym() + "/studySummary.do?studyID="
+              + studyInnovation.getProjectExpectedStudy().getId() + "&cycle=" + this.getSelectedCycle() + "&year="
+              + this.getSelectedPhase().getYear() + " /n";
+          }
 
           // oicr link
-          oicr = this.getBaseUrl() + "/projects/" + this.getLoggedCrp().getAcronym() + "/studySummary.do?studyID="
-            + projectInnovationInfo.getProjectExpectedStudy().getId() + "&cycle=" + this.getSelectedCycle() + "&year="
-            + this.getSelectedPhase().getYear();
+          /*
+           * oicr = this.getBaseUrl() + "/projects/" + this.getLoggedCrp().getAcronym() + "/studySummary.do?studyID="
+           * + projectInnovationInfo.getProjectExpectedStudy().getId() + "&cycle=" + this.getSelectedCycle() + "&year="
+           * + this.getSelectedPhase().getYear();
+           */
         }
       }
     }
