@@ -414,6 +414,19 @@ public class PublicationsAction extends BaseAction {
         if (deliverable.getMetadataValue(36) == null || deliverable.getMetadataValue(36).isEmpty()) {
           emptyFields.add("DOI");
           count++;
+        } else {
+          if (deliverable.getDissemination() != null && deliverable.getDissemination().getHasDOI() != null
+            && deliverable.getDissemination().getHasDOI() == true) {
+
+            if (deliverable.getDissemination().getArticleUrl() == null
+              || deliverable.getDissemination().getArticleUrl().isEmpty()) {
+              count++;
+            }
+
+          } else {
+            // If the mark of No DOI is empty
+            count++;
+          }
         }
         // Date of Publication
         if (deliverable.getMetadataValue(17) == null || deliverable.getMetadataValue(36).isEmpty()) {
@@ -427,28 +440,8 @@ public class PublicationsAction extends BaseAction {
         }
       }
     }
-    /*
-     * SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByDeliverable(deliverableID, "Reporting",
-     * this.getActualPhase().getYear(), false, "deliverableList");
-     * // int count = 0;
-     * if (sectionStatus != null && sectionStatus.getMissingFields() != null
-     * && sectionStatus.getMissingFields().length() != 0) {
-     * // count++;
-     * // Volume - Issue - Pages validation - at less one of these fields must be completed
-     * if (sectionStatus.getMissingFields().contains("Volume") || sectionStatus.getMissingFields().contains("Issue")
-     * || sectionStatus.getMissingFields().contains("Pages")) {
-     * count++;
-     * }
-     * // Journal
-     * if (sectionStatus.getMissingFields().contains("Journal")) {
-     * count++;
-     * }
-     * // ISI
-     * if (sectionStatus.getMissingFields().contains("Is this journal article an ISI publication?")) {
-     * count++;
-     * }
-     * }
-     */
+
+
     if (count == 0) {
       return true;
     } else {
