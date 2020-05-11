@@ -85,7 +85,7 @@
       </div>
       
       [#-- New Expected Year - Extended = 4 or exist--]
-      <div id="newExpectedYear" class="col-md-4" style="display:${(hasExpectedYear || isStatusExtended)?string('block','none')}">
+      <div id="newExpectedYear" class="col-md-4" style="display:${(hasExpectedYear)?string('block','none')}">
         [#assign startExpectedYear = ((deliverable.deliverableInfo.year)!currentCycleYear)  ]
         [#if editable || editStatus]
           [@customForm.select name="deliverable.deliverableInfo.newExpectedYear"  i18nkey="deliverable.newExpectedYear"  listName="project.projectInfo.getYears(${startExpectedYear})" header=true  multiple=false required=true  className="yearNewExpected" editable=editable || editStatus/]
