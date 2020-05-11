@@ -26,11 +26,12 @@ public class ProjectExpectedStudyInfoDTO {
   @ApiModelProperty(notes = "Expected study title", position = 1)
   private String title;
 
-  @ApiModelProperty(notes = "Expected study title", position = 2)
+  @ApiModelProperty(notes = "Expected study year", position = 2)
   private long year;
 
   @ApiModelProperty(notes = "Expected study type code", position = 3)
   private StudyTypeDTO studyType;
+
 
   @ApiModelProperty(notes = "Expected study status", position = 4)
   private Long status;
@@ -47,14 +48,26 @@ public class ProjectExpectedStudyInfoDTO {
   @ApiModelProperty(notes = "Gender Level", position = 8)
   private CrossCuttingMarkerScoreDTO genderLevel;
 
+  @ApiModelProperty(notes = "Gender Description", position = 8)
+  private String genderDescribe;
+
   @ApiModelProperty(notes = "Youth Level", position = 9)
   private CrossCuttingMarkerScoreDTO youthLevel;
+
+  @ApiModelProperty(notes = "Youth Description", position = 9)
+  private String youthDescribe;
 
   @ApiModelProperty(notes = "ClimateChange Level", position = 10)
   private CrossCuttingMarkerScoreDTO climateChangeLevel;
 
+  @ApiModelProperty(notes = "ClimateChange Description", position = 10)
+  private String climateChangeDescribe;
+
   @ApiModelProperty(notes = "Capdev Level", position = 11)
   private CrossCuttingMarkerScoreDTO capdevLevel;
+
+  @ApiModelProperty(notes = "Capdev Description", position = 11)
+  private String capdevDescribe;
 
   @ApiModelProperty(notes = "Short outcome/impact statement", position = 12)
   private String outcomeImpactStatement;
@@ -62,31 +75,58 @@ public class ProjectExpectedStudyInfoDTO {
   @ApiModelProperty(notes = "Outcome story for communications use", position = 13)
   private String comunicationsMaterial;
 
+
   @ApiModelProperty(notes = "Elaboration of Outcome/Impact Statement", position = 14)
   private String elaborationOutcomeImpactStatement;
 
+
   @ApiModelProperty(notes = "References cited", position = 15)
   private String referencesText;
+
+
+  @ApiModelProperty(notes = "CGIAR Innovations found", position = 16)
+  private String cgiarInnovation;
+
+  public String getCapdevDescribe() {
+    return capdevDescribe;
+  }
 
 
   public CrossCuttingMarkerScoreDTO getCapdevLevel() {
     return capdevLevel;
   }
 
+  public String getCgiarInnovation() {
+    return cgiarInnovation;
+  }
+
+
+  public String getClimateChangeDescribe() {
+    return climateChangeDescribe;
+  }
+
+
   public CrossCuttingMarkerScoreDTO getClimateChangeLevel() {
     return climateChangeLevel;
   }
+
 
   public String getComunicationsMaterial() {
     return comunicationsMaterial;
   }
 
+
   public String getContacts() {
     return contacts;
   }
 
+
   public String getElaborationOutcomeImpactStatement() {
     return elaborationOutcomeImpactStatement;
+  }
+
+  public String getGenderDescribe() {
+    return genderDescribe;
   }
 
   public CrossCuttingMarkerScoreDTO getGenderLevel() {
@@ -96,6 +136,7 @@ public class ProjectExpectedStudyInfoDTO {
   public MaturityOfChangeDTO getMaturityOfChange() {
     return maturityOfChange;
   }
+
 
   public String getOutcomeImpactStatement() {
     return outcomeImpactStatement;
@@ -125,13 +166,28 @@ public class ProjectExpectedStudyInfoDTO {
     return year;
   }
 
+  public String getYouthDescribe() {
+    return youthDescribe;
+  }
+
   public CrossCuttingMarkerScoreDTO getYouthLevel() {
     return youthLevel;
   }
 
+  public void setCapdevDescribe(String capdevDescribe) {
+    this.capdevDescribe = capdevDescribe;
+  }
 
   public void setCapdevLevel(CrossCuttingMarkerScoreDTO capdevLevel) {
     this.capdevLevel = capdevLevel;
+  }
+
+  public void setCgiarInnovation(String cgiarInnovation) {
+    this.cgiarInnovation = cgiarInnovation;
+  }
+
+  public void setClimateChangeDescribe(String climateChangeDescribe) {
+    this.climateChangeDescribe = climateChangeDescribe;
   }
 
   public void setClimateChangeLevel(CrossCuttingMarkerScoreDTO climateChangeLevel) {
@@ -142,12 +198,17 @@ public class ProjectExpectedStudyInfoDTO {
     this.comunicationsMaterial = comunicationsMaterial;
   }
 
+
   public void setContacts(String contacts) {
     this.contacts = contacts;
   }
 
   public void setElaborationOutcomeImpactStatement(String elaborationOutcomeImpactStatement) {
     this.elaborationOutcomeImpactStatement = elaborationOutcomeImpactStatement;
+  }
+
+  public void setGenderDescribe(String genderDescribe) {
+    this.genderDescribe = genderDescribe;
   }
 
   public void setGenderLevel(CrossCuttingMarkerScoreDTO genderLevel) {
@@ -188,6 +249,10 @@ public class ProjectExpectedStudyInfoDTO {
 
   public void setYear(long year) {
     this.year = year;
+  }
+
+  public void setYouthDescribe(String youthDescribe) {
+    this.youthDescribe = youthDescribe;
   }
 
   public void setYouthLevel(CrossCuttingMarkerScoreDTO youthLevel) {

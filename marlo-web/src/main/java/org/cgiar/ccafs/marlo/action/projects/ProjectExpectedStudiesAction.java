@@ -222,6 +222,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   // AR 2019 Sel-List
   private List<Institution> centers;
   private List<CrpMilestone> milestones;
+  private int newExpectedYear;
 
   @Inject
   public ProjectExpectedStudiesAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
@@ -406,6 +407,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return this.myProjects;
   }
 
+  public int getNewExpectedYear() {
+    return newExpectedYear;
+  }
+
   public List<RepIndOrganizationType> getOrganizationTypes() {
     return this.organizationTypes;
   }
@@ -555,6 +560,14 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             .getEvidenceTagById(this.expectedStudy.getProjectExpectedStudyInfo().getEvidenceTag().getId()));
         }
 
+        // Load new Expected Year
+        if (this.expectedStudy.getProjectExpectedStudyInfo().getStatus() != null
+          && this.expectedStudy.getProjectExpectedStudyInfo().getStatus().getId() != null
+          && this.expectedStudy.getProjectExpectedStudyInfo().getStatus().getId() == 4
+          && this.expectedStudy.getProjectExpectedStudyInfo().getYear() != 0) {
+          newExpectedYear = this.expectedStudy.getProjectExpectedStudyInfo().getYear();
+        }
+
       }
     } else {
       this.expectedStudy = this.projectExpectedStudyManager.getProjectExpectedStudyById(this.expectedID);
@@ -592,13 +605,15 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             projectExpectedStudyGeographicScope.setRepIndGeographicScope(this.geographicScopeManager
               .getRepIndGeographicScopeById(projectExpectedStudyGeographicScope.getRepIndGeographicScope().getId()));
 
-            if (projectExpectedStudyGeographicScope.getRepIndGeographicScope().getId() == 2) {
-              haveRegions = true;
-            }
+            if (projectExpectedStudyGeographicScope.getRepIndGeographicScope() != null) {
+              if (projectExpectedStudyGeographicScope.getRepIndGeographicScope().getId() == 2) {
+                haveRegions = true;
+              }
 
-            if (projectExpectedStudyGeographicScope.getRepIndGeographicScope().getId() != 1
-              && projectExpectedStudyGeographicScope.getRepIndGeographicScope().getId() != 2) {
-              haveCountries = true;
+              if (projectExpectedStudyGeographicScope.getRepIndGeographicScope().getId() != 1
+                && projectExpectedStudyGeographicScope.getRepIndGeographicScope().getId() != 2) {
+                haveCountries = true;
+              }
             }
 
           }
@@ -630,7 +645,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
 
         // Expected Study SubIdo List Autosave
-        if (this.expectedStudy.getSubIdos() != null) {
+        if (this.expectedStudy.getSubIdos() != null && !this.expectedStudy.getSubIdos().isEmpty()
+          && this.expectedStudy.getSubIdos().size() > 0) {
           for (ProjectExpectedStudySubIdo projectExpectedStudySubIdo : this.expectedStudy.getSubIdos()) {
             projectExpectedStudySubIdo
               .setSrfSubIdo(this.srfSubIdoManager.getSrfSubIdoById(projectExpectedStudySubIdo.getSrfSubIdo().getId()));
@@ -638,7 +654,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
 
         // Expected Study Flagship List Autosave
-        if (this.expectedStudy.getFlagships() != null) {
+        if (this.expectedStudy.getFlagships() != null && !this.expectedStudy.getFlagships().isEmpty()) {
           for (ProjectExpectedStudyFlagship projectExpectedStudyFlagship : this.expectedStudy.getFlagships()) {
             projectExpectedStudyFlagship.setCrpProgram(
               this.crpProgramManager.getCrpProgramById(projectExpectedStudyFlagship.getCrpProgram().getId()));
@@ -646,7 +662,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
 
         // Expected Study Regions (Flagships) List Autosave
-        if (this.expectedStudy.getRegions() != null) {
+        if (this.expectedStudy.getRegions() != null && !this.expectedStudy.getRegions().isEmpty()) {
           for (ProjectExpectedStudyFlagship projectExpectedStudyFlagship : this.expectedStudy.getRegions()) {
             projectExpectedStudyFlagship.setCrpProgram(
               this.crpProgramManager.getCrpProgramById(projectExpectedStudyFlagship.getCrpProgram().getId()));
@@ -654,7 +670,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
 
         // Expected Study Crp List Autosave
-        if (this.expectedStudy.getCrps() != null) {
+        if (this.expectedStudy.getCrps() != null && !this.expectedStudy.getCrps().isEmpty()) {
           for (ProjectExpectedStudyCrp projectExpectedStudyCrp : this.expectedStudy.getCrps()) {
             projectExpectedStudyCrp
               .setGlobalUnit(this.crpManager.getGlobalUnitById(projectExpectedStudyCrp.getGlobalUnit().getId()));
@@ -662,7 +678,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
 
         // Expected Study Center List Autosave
-        if (this.expectedStudy.getCenters() != null) {
+        if (this.expectedStudy.getCenters() != null && !this.expectedStudy.getCenters().isEmpty()) {
           for (ProjectExpectedStudyCenter projectExpectedStudyCenter : this.expectedStudy.getCenters()) {
             projectExpectedStudyCenter.setInstitution(
               this.institutionManager.getInstitutionById(projectExpectedStudyCenter.getInstitution().getId()));
@@ -1346,6 +1362,13 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           .setReferencesFile(this.expectedStudy.getProjectExpectedStudyInfo().getReferencesFile());
       }
 
+      // Setup new expected year
+      if (this.expectedStudy.getProjectExpectedStudyInfo().getStatus() != null
+        && this.expectedStudy.getProjectExpectedStudyInfo().getStatus().getId() != null
+        && this.expectedStudy.getProjectExpectedStudyInfo().getStatus().getId() == 4 && newExpectedYear != 0) {
+        this.expectedStudy.getProjectExpectedStudyInfo().setYear(newExpectedYear);
+      }
+
       // Setup focusLevel
       if (this.expectedStudy.getProjectExpectedStudyInfo().getGenderLevel() != null) {
         RepIndGenderYouthFocusLevel focusLevel = this.focusLevelManager.getRepIndGenderYouthFocusLevelById(
@@ -1552,8 +1575,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
       }
     }
-
   }
+
 
   /**
    * Save Expected Studies Flagships Information
@@ -2310,6 +2333,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   public void setMyProjects(List<Project> myProjects) {
     this.myProjects = myProjects;
+  }
+
+  public void setNewExpectedYear(int newExpectedYear) {
+    this.newExpectedYear = newExpectedYear;
   }
 
   public void setOrganizationTypes(List<RepIndOrganizationType> organizationTypes) {

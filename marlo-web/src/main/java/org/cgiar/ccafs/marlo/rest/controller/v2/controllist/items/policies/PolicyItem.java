@@ -22,6 +22,8 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.PolicyMilestoneManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCrossCuttingMarkerManager;
@@ -47,6 +49,9 @@ import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PolicyMilestone;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrossCuttingMarker;
@@ -107,6 +112,7 @@ public class PolicyItem<T> {
   private ProjectPolicyCrossCuttingMarkerManager projectPolicyCrossCuttingMarkerManager;
   private ProjectPolicyOwnerManager projectPolicyOwnerManager;
   private RepIndPolicyInvestimentTypeManager repIndPolicyInvestimentTypeManager;
+  private ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager;
   private RepIndStageProcessManager repIndStageProcessManager;
   private RepIndPolicyTypeManager repIndPolicyTypeManager;
   private ProjectManager projectManager;
@@ -118,6 +124,7 @@ public class PolicyItem<T> {
   private RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager;
   private PolicyMilestoneManager policyMilestoneManager;
   private CrpMilestoneManager crpMilestoneManager;
+  private ProjectExpectedStudyManager projectExpectedStudyManager;
 
   @Inject
   public PolicyItem(GlobalUnitManager globalUnitManager, PhaseManager phaseManager,
@@ -133,7 +140,9 @@ public class PolicyItem<T> {
     ProjectPolicyCountryManager projectPolicyCountryManager, ProjectPolicyRegionManager projectPolicyRegionManager,
     ProjectPolicyCrossCuttingMarkerManager projectPolicyCrossCuttingMarkerManager,
     ProjectPolicyOwnerManager projectPolicyOwnerManager, RepIndPolicyTypeManager repIndPolicyTypeManager,
-    PolicyMilestoneManager policyMilestoneManager, CrpMilestoneManager crpMilestoneManager) {
+    PolicyMilestoneManager policyMilestoneManager, CrpMilestoneManager crpMilestoneManager,
+    ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager,
+    ProjectExpectedStudyManager projectExpectedStudyManager) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.projectPolicyManager = projectPolicyManager;
@@ -157,6 +166,8 @@ public class PolicyItem<T> {
     this.repIndPolicyTypeManager = repIndPolicyTypeManager;
     this.policyMilestoneManager = policyMilestoneManager;
     this.crpMilestoneManager = crpMilestoneManager;
+    this.projectExpectedStudyPolicyManager = projectExpectedStudyPolicyManager;
+    this.projectExpectedStudyManager = projectExpectedStudyManager;
   }
 
   public Long createPolicy(NewProjectPolicyDTO newPolicyDTO, String entityAcronym, User user) {
@@ -646,6 +657,20 @@ public class PolicyItem<T> {
         .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicyID
           && c.getPhase().getId().longValue() == phase.getId().longValue())
         .collect(Collectors.toList()));
+      // setting OCIRs
+      List<ProjectExpectedStudyPolicy> projectExpectedStudyPolicyList = new ArrayList<ProjectExpectedStudyPolicy>();
+      for (ProjectExpectedStudyPolicy projectExpectedStudyPolicy : projectExpectedStudyPolicyManager.findAll().stream()
+        .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicyID
+          && c.getPhase().getId().longValue() == phase.getId().longValue())
+        .collect(Collectors.toList())) {
+        ProjectExpectedStudy projectExpectedStudy = projectExpectedStudyManager
+          .getProjectExpectedStudyById(projectExpectedStudyPolicy.getProjectExpectedStudy().getId());
+        ProjectExpectedStudyInfo info = projectExpectedStudy.getProjectExpectedStudyInfo(phase);
+        projectExpectedStudy.setProjectExpectedStudyInfo(info);
+        projectExpectedStudyPolicy.setProjectExpectedStudy(projectExpectedStudy);
+        projectExpectedStudyPolicyList.add(projectExpectedStudyPolicy);
+      }
+      projectPolicy.setEvidences(projectExpectedStudyPolicyList);
     }
     return projectPolicy;
   }
@@ -659,8 +684,7 @@ public class PolicyItem<T> {
    * @return a NewProjectPolicyDTO with the policy Item
    */
 
-  public ResponseEntity<ProjectPolicyDTO> putPolicyById(Long id, NewProjectPolicyDTO newPolicyDTO, String entityAcronym,
-    User user) {
+  public Long putPolicyById(Long id, NewProjectPolicyDTO newPolicyDTO, String entityAcronym, User user) {
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
     List<ProjectPolicyCrp> projectPolicyCrpList = new ArrayList<ProjectPolicyCrp>();
     List<ProjectPolicySubIdo> projectPolicySubIdoList = new ArrayList<ProjectPolicySubIdo>();
@@ -672,7 +696,7 @@ public class PolicyItem<T> {
     List<PolicyMilestone> policyMilestones = new ArrayList<>();
     List<ProjectPolicyOwner> projectPolicyOwnerList = new ArrayList<ProjectPolicyOwner>();
     String strippedId = null;
-
+    Long policyID = null;
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
     if (globalUnitEntity == null) {
       fieldErrors.add(new FieldErrorDTO("createInnovation", "GlobalUnitEntity",
@@ -1089,9 +1113,10 @@ public class PolicyItem<T> {
         fieldErrors.stream()
           .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
           .collect(Collectors.toList()));
+    } else {
+      policyID = projectPolicy.getId();
     }
-    return Optional.ofNullable(projectPolicy).map(this.projectPolicyMapper::projectPolicyToProjectPolicyDTO)
-      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    return policyID;
   }
 
   public Long tryParseLong(String value, List<FieldErrorDTO> fieldErrors, String httpMethod, String field) {

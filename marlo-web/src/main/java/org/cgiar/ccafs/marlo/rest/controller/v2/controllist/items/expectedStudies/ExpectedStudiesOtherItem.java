@@ -221,9 +221,9 @@ public class ExpectedStudiesOtherItem<T> {
           && !newProjectExpectedStudiesOther.getNewProjectExpectedStudiesOtherInfo().getTitle().trim().isEmpty()) {
           wordCount =
             this.countWords(newProjectExpectedStudiesOther.getNewProjectExpectedStudiesOtherInfo().getTitle());
-          if (wordCount > 25) {
+          if (wordCount > 50) {
             fieldErrors.add(new FieldErrorDTO("createExpectedStudyOther", "Title",
-              "Title excedes the maximum number of words (25 words)"));
+              "Title excedes the maximum number of words (50 words)"));
           } else {
             projectExpectedStudyInfo
               .setTitle(newProjectExpectedStudiesOther.getNewProjectExpectedStudiesOtherInfo().getTitle());
@@ -244,7 +244,7 @@ public class ExpectedStudiesOtherItem<T> {
           newProjectExpectedStudiesOther.getNewProjectExpectedStudiesOtherInfo().getMELIAPublications());
         wordCount =
           this.countWords(newProjectExpectedStudiesOther.getNewProjectExpectedStudiesOtherInfo().getScopeComments());
-        if (wordCount > 30) {
+        if (wordCount > 50) {
           fieldErrors.add(new FieldErrorDTO("createExpectedStudyOther", "ScopeComments",
             "Scope Comments excedes the maximum number of words (30 words)"));
         } else {
@@ -254,9 +254,9 @@ public class ExpectedStudiesOtherItem<T> {
 
         wordCount =
           this.countWords(newProjectExpectedStudiesOther.getNewProjectExpectedStudiesOtherInfo().getStudyDescription());
-        if (wordCount > 100) {
+        if (wordCount > 500) {
           fieldErrors.add(new FieldErrorDTO("createExpectedStudyOther", "Description",
-            "Description excedes the maximum number of words (100 words)"));
+            "Description excedes the maximum number of words (500 words)"));
         } else {
           projectExpectedStudyInfo.setTopLevelComments(
             newProjectExpectedStudiesOther.getNewProjectExpectedStudiesOtherInfo().getStudyDescription());
