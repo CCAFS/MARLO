@@ -372,7 +372,11 @@ function justificationByStatus(statusId) {
         showNewExpectedComponent(false);
       } else {
         console.log("else");
-        showNewExpectedComponent(isStatusExtended(statusId) || hasExpectedYear);
+        if(statusId==3 || statusId==4) {
+          showNewExpectedComponent(true);
+        } else {
+          showNewExpectedComponent(false);
+        }
       }
     }
 
