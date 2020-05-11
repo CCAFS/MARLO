@@ -58,10 +58,14 @@ public class ProjectPolicyDTO {
   @ApiModelProperty(notes = "Milestones", position = 110)
   private List<PolicyMilestoneDTO> milestones;
 
+  @ApiModelProperty(notes = "OCIR List", position = 120)
+  private List<ProjectExpectedStudyNameDTO> projectExpetedStudyList;
+
 
   public List<CountryDTO> getCountries() {
     return countries;
   }
+
 
   public List<CrosscuttingMarkersDTO> getCrossCuttingMarkers() {
     return crossCuttingMarkers;
@@ -87,6 +91,10 @@ public class ProjectPolicyDTO {
     return project;
   }
 
+  public List<ProjectExpectedStudyNameDTO> getProjectExpetedStudyList() {
+    return projectExpetedStudyList;
+  }
+
   public ProjectPoliciesInfoDTO getProjectPoliciesInfo() {
     return projectPoliciesInfo;
   }
@@ -103,10 +111,10 @@ public class ProjectPolicyDTO {
     return srfSubIdoList;
   }
 
-
   public void setCountries(List<CountryDTO> countries) {
     this.countries = countries;
   }
+
 
   public void setCrossCuttingMarkers(List<CrosscuttingMarkersDTO> crossCuttingMarkers) {
     this.crossCuttingMarkers = crossCuttingMarkers;
@@ -130,6 +138,10 @@ public class ProjectPolicyDTO {
 
   public void setProject(Long project) {
     this.project = project;
+  }
+
+  public void setProjectExpetedStudyList(List<ProjectExpectedStudyNameDTO> projectExpetedStudyList) {
+    this.projectExpetedStudyList = projectExpetedStudyList;
   }
 
   public void setProjectPoliciesInfo(ProjectPoliciesInfoDTO projectPoliciesInfo) {
