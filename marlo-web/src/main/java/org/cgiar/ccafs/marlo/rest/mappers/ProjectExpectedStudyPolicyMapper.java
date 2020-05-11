@@ -20,6 +20,7 @@
 package org.cgiar.ccafs.marlo.rest.mappers;
 
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectExpectedStudyNameDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectExpectedStudyPolicyDTO;
 
 import org.mapstruct.Mapper;
@@ -28,6 +29,14 @@ import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "jsr330")
 public interface ProjectExpectedStudyPolicyMapper {
+
+  @Mappings({@Mapping(source = "projectExpectedStudyPolicy.projectExpectedStudy.id", target = "id"),
+    @Mapping(source = "projectExpectedStudyPolicy.projectExpectedStudy.projectExpectedStudyInfo.title",
+      target = "title"),
+    @Mapping(source = "projectExpectedStudyPolicy.projectExpectedStudy.projectExpectedStudyInfo.year",
+      target = "year")})
+  public abstract ProjectExpectedStudyNameDTO
+    ProjectExpectedStudyPolicyToProjectExpectedStudyNameDTO(ProjectExpectedStudyPolicy projectExpectedStudyPolicy);
 
   @Mappings({@Mapping(source = "projectExpectedStudyPolicy.projectPolicy.id", target = "projectPolicyID")})
   public abstract ProjectExpectedStudyPolicyDTO

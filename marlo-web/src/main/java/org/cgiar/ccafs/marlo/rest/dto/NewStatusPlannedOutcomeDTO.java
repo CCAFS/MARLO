@@ -19,8 +19,6 @@
 
 package org.cgiar.ccafs.marlo.rest.dto;
 
-import java.util.List;
-
 import io.swagger.annotations.ApiModelProperty;
 
 public class NewStatusPlannedOutcomeDTO {
@@ -35,9 +33,6 @@ public class NewStatusPlannedOutcomeDTO {
   @ApiModelProperty(notes = "Narrative", position = 3)
   private String sumary;
 
-
-  @ApiModelProperty(notes = "Status Milestones List", position = 4)
-  private List<NewStatusPlannedMilestoneDTO> statusMilestoneList;
 
   @ApiModelProperty(notes = "Phase (AR, POWB, UpKeep)", position = 1)
   private PhaseDTO phase;
@@ -55,11 +50,6 @@ public class NewStatusPlannedOutcomeDTO {
 
   public PhaseDTO getPhase() {
     return phase;
-  }
-
-
-  public List<NewStatusPlannedMilestoneDTO> getStatusMilestoneList() {
-    return statusMilestoneList;
   }
 
 
@@ -82,9 +72,6 @@ public class NewStatusPlannedOutcomeDTO {
     this.phase = phase;
   }
 
-  public void setStatusMilestoneList(List<NewStatusPlannedMilestoneDTO> statusMilestoneList) {
-    this.statusMilestoneList = statusMilestoneList;
-  }
 
   public void setSumary(String sumary) {
     this.sumary = sumary;

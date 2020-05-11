@@ -74,6 +74,15 @@ public interface ProjectDAO {
   public List<CrpProgram> getPrograms(long projectID, int type, long idPhase);
 
   /**
+   * This method gets a project List by a given GlobalUnit identifier.
+   * 
+   * @param globalunit_id is the GlobalUnit identifier.
+   * @return a Project List.
+   */
+
+  public List<Project> getProjectWebPageList(Long globalunit_id);
+
+  /**
    * Get the list of permissions that the user can access and edit.
    * 
    * @param userId - The user Id.
@@ -95,6 +104,5 @@ public interface ProjectDAO {
   public Project save(Project project, String section, List<String> relationsName);
 
   public Project save(Project project, String section, List<String> relationsName, Phase phase);
-
 
 }

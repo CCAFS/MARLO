@@ -140,5 +140,13 @@
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationSubIdo" />
     </set>
+    <set name="projectExpectedStudyInnovations" table="project_expected_study_innovations"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="project_innovation_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation" />
+    </set>
 	</class>
 </hibernate-mapping>

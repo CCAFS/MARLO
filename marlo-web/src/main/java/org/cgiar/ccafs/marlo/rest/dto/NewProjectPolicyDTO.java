@@ -47,7 +47,7 @@ public class NewProjectPolicyDTO {
   private List<PolicyOwnerTypeDTO> owners;
 
   @ApiModelProperty(notes = "Crosscutting Markers List", position = 6)
-  private List<CrosscuttingMarkersDTO> crossCuttingMarkers;
+  private List<NewCrosscuttingMarkersDTO> crossCuttingMarkers;
 
   @ApiModelProperty(notes = "Regions ", position = 12)
   private List<RegionDTO> regions;
@@ -59,11 +59,16 @@ public class NewProjectPolicyDTO {
   @ApiModelProperty(notes = "CGIAR Milestones List", position = 5)
   private List<NewMilestonesDTO> milestonesDTOs;
 
+  @ApiModelProperty(notes = "Outcome Impact Case Report List", position = 8)
+  private List<String> projectExpectedStudyList;
+
+
   public List<CountryDTO> getCountries() {
     return countries;
   }
 
-  public List<CrosscuttingMarkersDTO> getCrossCuttingMarkers() {
+
+  public List<NewCrosscuttingMarkersDTO> getCrossCuttingMarkers() {
     return crossCuttingMarkers;
   }
 
@@ -87,6 +92,11 @@ public class NewProjectPolicyDTO {
     return project;
   }
 
+  public List<String> getProjectExpectedStudyList() {
+    return projectExpectedStudyList;
+  }
+
+
   public ProjectPoliciesInfoDTO getProjectPoliciesInfo() {
     return projectPoliciesInfo;
   }
@@ -99,16 +109,16 @@ public class NewProjectPolicyDTO {
     return regions;
   }
 
+
   public List<NewSrfSubIdoDTO> getSrfSubIdoList() {
     return srfSubIdoList;
   }
-
 
   public void setCountries(List<CountryDTO> countries) {
     this.countries = countries;
   }
 
-  public void setCrossCuttingMarkers(List<CrosscuttingMarkersDTO> crossCuttingMarkers) {
+  public void setCrossCuttingMarkers(List<NewCrosscuttingMarkersDTO> crossCuttingMarkers) {
     this.crossCuttingMarkers = crossCuttingMarkers;
   }
 
@@ -128,13 +138,21 @@ public class NewProjectPolicyDTO {
     this.phase = phase;
   }
 
+
   public void setProject(Long project) {
     this.project = project;
   }
 
+
+  public void setProjectExpectedStudyList(List<String> projectExpectedStudyList) {
+    this.projectExpectedStudyList = projectExpectedStudyList;
+  }
+
+
   public void setProjectPoliciesInfo(ProjectPoliciesInfoDTO projectPoliciesInfo) {
     this.projectPoliciesInfo = projectPoliciesInfo;
   }
+
 
   public void setProjectPolicyCrpDTO(List<CGIAREntityDTO> projectPolicyCrpDTO) {
     this.projectPolicyCrpDTO = projectPolicyCrpDTO;

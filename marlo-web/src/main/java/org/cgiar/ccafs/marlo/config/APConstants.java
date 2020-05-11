@@ -172,6 +172,7 @@ public final class APConstants {
   public static final String ERROR_PASSWORD_EXPIRED = "ERROR_PASSWORD_EXPIRED";
 
   public static final String FILE_TYPE_REQUEST = "fileType";
+  public static final String FILENAME = "filename";
   public static final String FILTER_BY = "filterBy";
   public static final String FLAGSHIP_ID = "flagshipID";
   public static final String FUNDING_SOURCE_REQUEST_ID = "fundingSourceID";
@@ -752,6 +753,9 @@ public final class APConstants {
   // GeoiIp maps database
   public static final String DATABASE_COUNTRY_FILENAME = "GeoLite2-Country.mmdb";
   public static final String DATABASE_CITY_FILENAME = "GeoLite2-City.mmdb";
+
+  // Clarisa PMU constant
+  public static final String CLARISA_ACRONYM_PMU = "PMU";
 
   // Clarisa public
   public static final String CLARISA_PUBLIC = "clarisa_public";

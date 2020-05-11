@@ -78,7 +78,7 @@ public class ProjectExpectedStudyQuantificationMySQLDAO
     String typeQuantification, Long number, String targetUnit, Long phaseID) {
     String query = "from " + ProjectExpectedStudyQuantification.class.getName() + " where expected_id=" + expectedID
       + "and id_phase=" + phaseID + " and type_quantification='" + typeQuantification + "' and number=" + number
-      + " and targe_unit='" + targetUnit + "'";
+      + " and target_unit='" + targetUnit + "'";
     List<ProjectExpectedStudyQuantification> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);

@@ -100,9 +100,11 @@
 
 [#macro crpItem element] 
   [#if element.marlo && element.login]
-    <li id="crp-${element.acronym}" title="${element.login?string('', 'Coming soon...')}">
-      <img class="${element.login?string('animated bounceIn', '')}" src="${baseUrlCdn}/global/images/crps/${element.acronym}.png" alt="${element.name}" />
-    </li>
+    [#if element.id != 17 && element.id != 27]
+      <li id="crp-${element.acronym}" title="${element.login?string('', 'Coming soon...')}">
+        <img class="${element.login?string('animated bounceIn', '')}" src="${baseUrlCdn}/global/images/crps/${element.acronym}.png" alt="${element.name}" />
+      </li>
+    [/#if]
   [/#if]
 [/#macro]
 

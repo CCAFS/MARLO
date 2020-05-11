@@ -19,6 +19,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @author Luis Benavides - CIAT/CCAFS
+ * @author Modified by Diego Perez - CIAT/CCAFS
  */
 public class NewProjectExpectedStudiesOtherInfoDTO {
 
@@ -37,14 +38,39 @@ public class NewProjectExpectedStudiesOtherInfoDTO {
   @ApiModelProperty(notes = "Expected study commissioning", position = 5)
   private String commissioningStudy;
 
+  @ApiModelProperty(notes = "Other geographic areas", position = 6)
+  private String scopeComments;
+
+
+  @ApiModelProperty(notes = "Expected study description", position = 6)
+  private String studyDescription;
+
+  @ApiModelProperty(notes = "Expected study Publications Link", position = 6)
+  private String MELIAPublications;
+
 
   public String getCommissioningStudy() {
     return commissioningStudy;
   }
 
 
+  public String getMELIAPublications() {
+    return MELIAPublications;
+  }
+
+
+  public String getScopeComments() {
+    return scopeComments;
+  }
+
+
   public long getStatus() {
     return status;
+  }
+
+
+  public String getStudyDescription() {
+    return studyDescription;
   }
 
 
@@ -68,8 +94,23 @@ public class NewProjectExpectedStudiesOtherInfoDTO {
   }
 
 
+  public void setMELIAPublications(String mELIAPublications) {
+    MELIAPublications = mELIAPublications;
+  }
+
+
+  public void setScopeComments(String scopeComments) {
+    this.scopeComments = scopeComments;
+  }
+
+
   public void setStatus(long status) {
     this.status = status;
+  }
+
+
+  public void setStudyDescription(String studyDescription) {
+    this.studyDescription = studyDescription;
   }
 
 
