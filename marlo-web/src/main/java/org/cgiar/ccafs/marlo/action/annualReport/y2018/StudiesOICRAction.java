@@ -99,6 +99,7 @@ public class StudiesOICRAction extends BaseAction {
   private List<ProjectExpectedStudy> projectExpectedStudies;
   private Phase actualPhase;
   private boolean tableComplete;
+  private String flagshipsIncomplete;
 
   @Inject
   public StudiesOICRAction(APConfig config, GlobalUnitManager crpManager,
@@ -225,6 +226,20 @@ public class StudiesOICRAction extends BaseAction {
   }
 
 
+  public void getFlagshipsWithMissingFields() {
+    SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
+      "Reporting", this.getActualPhase().getYear(), false, "synthesis.AR2019Table3");
+
+    if (sectionStatus != null && sectionStatus.getMissingFields() != null && !sectionStatus.getMissingFields().isEmpty()
+      && sectionStatus.getMissingFields().length() != 0 && sectionStatus.getSynthesisFlagships() != null
+      && !sectionStatus.getSynthesisFlagships().isEmpty()) {
+      System.out.println("flagships with missing fields" + sectionStatus.getSynthesisFlagships());
+      flagshipsIncomplete = sectionStatus.getSynthesisFlagships();
+    }
+
+  }
+
+
   public List<ProjectInnovation> getInnovations(long studyID, long phaseID) {
     List<ProjectInnovation> projectInnovationList = new ArrayList<>();
     List<ProjectExpectedStudyInnovation> innovationList = new ArrayList<>();
@@ -270,7 +285,6 @@ public class StudiesOICRAction extends BaseAction {
     return loggedCrp;
   }
 
-
   public List<ProjectPolicy> getPolicies(long studyID, long phaseID) {
     List<ProjectPolicy> policyList = new ArrayList<>();
 
@@ -299,6 +313,7 @@ public class StudiesOICRAction extends BaseAction {
     return projectExpectedStudies;
   }
 
+
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
   }
@@ -307,7 +322,6 @@ public class StudiesOICRAction extends BaseAction {
   public Long getSynthesisID() {
     return synthesisID;
   }
-
 
   public String getTransaction() {
     return transaction;
@@ -327,6 +341,7 @@ public class StudiesOICRAction extends BaseAction {
     return isFP;
   }
 
+
   @Override
   public boolean isPMU() {
     boolean isFP = false;
@@ -338,7 +353,6 @@ public class StudiesOICRAction extends BaseAction {
     return isFP;
 
   }
-
 
   /**
    * This method get the status of an specific study depending of the
@@ -496,6 +510,8 @@ public class StudiesOICRAction extends BaseAction {
           // save the changes
           reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
         }
+
+        this.getFlagshipsWithMissingFields();
 
 
         reportSynthesis.getReportSynthesisFlagshipProgress().setProjectStudies(new ArrayList<>());

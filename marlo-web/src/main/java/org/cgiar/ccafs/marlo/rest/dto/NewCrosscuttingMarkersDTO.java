@@ -34,6 +34,10 @@ public class NewCrosscuttingMarkersDTO {
   private String crossCuttingmarkerScore;
 
 
+  @ApiModelProperty("Crosscuting Marker Description (Optional)")
+  private String description;
+
+
   public String getCrossCuttingmarker() {
     return crossCuttingmarker;
   }
@@ -44,6 +48,11 @@ public class NewCrosscuttingMarkersDTO {
   }
 
 
+  public String getDescription() {
+    return description;
+  }
+
+
   public void setCrossCuttingmarker(String crossCuttingmarker) {
     this.crossCuttingmarker = crossCuttingmarker;
   }
@@ -51,6 +60,11 @@ public class NewCrosscuttingMarkersDTO {
 
   public void setCrossCuttingmarkerScore(String crossCuttingmarkerScore) {
     this.crossCuttingmarkerScore = crossCuttingmarkerScore;
+  }
+
+
+  public void setDescription(String description) {
+    this.description = description;
   }
 
 }

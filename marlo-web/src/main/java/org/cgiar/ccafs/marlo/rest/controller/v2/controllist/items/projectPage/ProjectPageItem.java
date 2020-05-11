@@ -64,6 +64,35 @@ public class ProjectPageItem<T> {
     this.projectPageMapper = projectPageMapper;
   }
 
+  public List<ProjectPageDTO> findAllProjectPage(String globalUnitAcronym) {
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+    List<ProjectPageDTO> ppList = new ArrayList<ProjectPageDTO>();
+    GlobalUnit globalUnit = globalUnitManager.findGlobalUnitByAcronym(globalUnitAcronym);
+    List<Project> projectList = new ArrayList<Project>();
+    if (globalUnit == null) {
+      fieldErrors.add(new FieldErrorDTO("ProjectPageDTO", "GlobalUnitEntity", "Invalid CGIAR entity acronym"));
+    } else {
+      Boolean crpProjectPage = globalUnit.getCustomParameters().stream()
+        .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_PROJECT_PAGE))
+        .allMatch(t -> (t.getValue() == null) ? false : t.getValue().equalsIgnoreCase(STRING_TRUE));
+      // is project web page expose enable by CRP parameter
+      if (crpProjectPage) {
+
+        for (Project project : projectManager.getProjectWebPageList(globalUnit.getId())) {
+          project = (project != null) ? this.getProjectInformation(project, globalUnit) : null;
+          projectList.add(project);
+        }
+      }
+    }
+
+    if (!fieldErrors.isEmpty()) {
+      throw new MARLOFieldValidationException("Field Validation errors", "", fieldErrors);
+    }
+    ppList = projectList.stream().map(projects -> this.projectPageMapper.projectToProjectPageDTO(projects))
+      .collect(Collectors.toList());
+    return ppList;
+  }
+
   /**
    * find a project requesting by Id
    * 

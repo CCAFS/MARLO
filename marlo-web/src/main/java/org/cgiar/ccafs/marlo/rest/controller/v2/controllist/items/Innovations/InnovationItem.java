@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCrpManager;
@@ -45,6 +46,9 @@ import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
@@ -115,6 +119,7 @@ public class InnovationItem<T> {
   private ProjectInnovationMilestoneManager projectInnovationMilestoneManager;
   private SrfSubIdoManager srfSubIdoManager;
   private ProjectInnovationSubIdoManager projectInnovationSubIdoManager;
+  private ProjectExpectedStudyManager projectExpectedStudyManager;
 
 
   // Variables
@@ -138,7 +143,8 @@ public class InnovationItem<T> {
     ProjectInnovationRegionManager projectInnovationRegionManager,
     ProjectInnovationGeographicScopeManager projectInnovationGeographicScopeManager,
     CrpMilestoneManager crpMilestoneManager, ProjectInnovationMilestoneManager projectInnovationMilestoneManager,
-    SrfSubIdoManager srfSubIdoManager, ProjectInnovationSubIdoManager projectInnovationSubIdoManager) {
+    SrfSubIdoManager srfSubIdoManager, ProjectInnovationSubIdoManager projectInnovationSubIdoManager,
+    ProjectExpectedStudyManager projectExpectedStudyManager) {
     this.projectInnovationManager = projectInnovationManager;
     this.innovationMapper = innovationMapper;
     this.phaseManager = phaseManager;
@@ -162,6 +168,7 @@ public class InnovationItem<T> {
     this.projectInnovationMilestoneManager = projectInnovationMilestoneManager;
     this.srfSubIdoManager = srfSubIdoManager;
     this.projectInnovationSubIdoManager = projectInnovationSubIdoManager;
+    this.projectExpectedStudyManager = projectExpectedStudyManager;
   }
 
   /**
@@ -593,7 +600,7 @@ public class InnovationItem<T> {
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
     if (globalUnitEntity == null) {
-      fieldErrors.add(new FieldErrorDTO("createInnovation", "GlobalUnitEntity",
+      fieldErrors.add(new FieldErrorDTO("allInnovation", "GlobalUnitEntity",
         CGIARentityAcronym + " is an invalid CGIAR entity acronym"));
     }
     Phase phase =
@@ -601,7 +608,7 @@ public class InnovationItem<T> {
         && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().get();
 
     if (phase == null) {
-      fieldErrors.add(new FieldErrorDTO("createInnovation", "phase",
+      fieldErrors.add(new FieldErrorDTO("allInnovation", "phase",
         new NewInnovationDTO().getPhase().getYear() + " is an invalid year"));
     }
 
@@ -704,6 +711,20 @@ public class InnovationItem<T> {
         .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
       innovation.setSubIdos(innovation.getProjectInnovationSubIdos().stream()
         .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+      List<ProjectExpectedStudyInnovation> projectExpectedStudyInnovationList =
+        new ArrayList<ProjectExpectedStudyInnovation>();
+      for (ProjectExpectedStudyInnovation projectExpectedStudyInnovation : innovation
+        .getProjectExpectedStudyInnovations().stream()
+        .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())) {
+        ProjectExpectedStudy projectExpectedStudy = projectExpectedStudyManager
+          .getProjectExpectedStudyById(projectExpectedStudyInnovation.getProjectExpectedStudy().getId());
+        ProjectExpectedStudyInfo info = projectExpectedStudy.getProjectExpectedStudyInfo(phase);
+        projectExpectedStudy.setProjectExpectedStudyInfo(info);
+        projectExpectedStudyInnovation.setProjectExpectedStudy(projectExpectedStudy);
+
+        projectExpectedStudyInnovationList.add(projectExpectedStudyInnovation);
+      }
+      innovation.setStudies(projectExpectedStudyInnovationList);
     }
 
     // Validate all fields

@@ -17,19 +17,25 @@ package org.cgiar.ccafs.marlo.validation.annualreport.y2018;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
+import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis2018SectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaEvaluation;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaEvaluationAction;
+import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Named;
 
@@ -41,10 +47,15 @@ public class MonitoringEvaluationValidator extends BaseValidator {
 
   private final GlobalUnitManager crpManager;
   private final ReportSynthesisManager reportSynthesisManager;
+  private final LiaisonInstitutionManager liaisonInstitutionManager;
+  private final SectionStatusManager sectionStatusManager;
 
-  public MonitoringEvaluationValidator(GlobalUnitManager crpManager, ReportSynthesisManager reportSynthesisManager) {
+  public MonitoringEvaluationValidator(GlobalUnitManager crpManager, ReportSynthesisManager reportSynthesisManager,
+    LiaisonInstitutionManager liaisonInstitutionManager, SectionStatusManager sectionStatusManager) {
     this.crpManager = crpManager;
     this.reportSynthesisManager = reportSynthesisManager;
+    this.liaisonInstitutionManager = liaisonInstitutionManager;
+    this.sectionStatusManager = sectionStatusManager;
   }
 
 
@@ -95,84 +106,88 @@ public class MonitoringEvaluationValidator extends BaseValidator {
 
       if (this.isPMU(this.getLiaisonInstitution(action, reportSynthesis.getId()))) {
 
-        // Validate Evaluations
-        if (reportSynthesis.getReportSynthesisMelia().getEvaluations() != null
-          && !reportSynthesis.getReportSynthesisMelia().getEvaluations().isEmpty()) {
-          for (int i = 0; i < reportSynthesis.getReportSynthesisMelia().getEvaluations().size(); i++) {
-            this.validateEvaluations(action, reportSynthesis.getReportSynthesisMelia().getEvaluations().get(i), i);
-          }
-        }
+        String flagshipsWithMisingInformation = "";
+        // Get all liaison institutions for current CRP
+        List<LiaisonInstitution> liaisonInstitutionsFromCrp = liaisonInstitutionManager.findAll().stream()
+          .filter(l -> l != null && l.isActive() && l.getCrp() != null && l.getCrp().getId() != null
+            && l.getCrp().getId().equals(action.getCurrentCrp().getId()) && l.getCrpProgram() != null
+            && l.getAcronym() != null && !l.getAcronym().contains(" "))
+          .collect(Collectors.toList());
+        ReportSynthesis reportSynthesisAux = null;
 
-      }
+        List<SectionStatus> statusOfEveryFlagship = new ArrayList<>();
+        SectionStatus statusOfFlagship = null;
+        if (liaisonInstitutionsFromCrp != null) {
+          // Order liaisonInstitutionsFromCrp list by acronyms
+          liaisonInstitutionsFromCrp = liaisonInstitutionsFromCrp.stream()
+            .sorted((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym())).collect(Collectors.toList());
+          for (LiaisonInstitution liaison : liaisonInstitutionsFromCrp) {
 
-      // Save Synthesis Flagship
-      if (reportSynthesis.getLiaisonInstitution() != null
-        && reportSynthesis.getLiaisonInstitution().getAcronym() != null && !action.isPMU()) {
+            // Get report synthesis for each liaison Instution
+            reportSynthesisAux =
+              reportSynthesisManager.findSynthesis(reportSynthesis.getPhase().getId(), liaison.getId());
+            if (reportSynthesisAux != null) {
+              statusOfFlagship = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesisAux.getId(),
+                "Reporting", 2019, false, "melia");
+            }
 
-        String sSynthesisFlagships = action.getSynthesisFlagships().toString();
+            // Add section status to statusOfEveryFlagship list if section status (statusOfFlagship) has missing fields
+            SectionStatus statusOfFPMU = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
+              "Reporting", 2019, false, "synthesis.AR2019Table9/10");
 
+            if (statusOfFlagship != null && statusOfFlagship.getMissingFields() != null
+              && !statusOfFlagship.getMissingFields().isEmpty()) {
 
-        if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("1")) {
-          if (action.getSynthesisFlagships() != null && action.getSynthesisFlagships().toString().length() > 0) {
-            if (!sSynthesisFlagships.contains("1")) {
-              action.addSynthesisFlagship("F1");
+              // Add flagship acronym with missing information to Section status in synthesis flagship field
+              if (statusOfFPMU != null && statusOfFPMU.getSynthesisFlagships() != null
+                && !statusOfFPMU.getSynthesisFlagships().isEmpty()) {
+
+                if (!statusOfFPMU.getSynthesisFlagships().contains(liaison.getAcronym())) {
+                  action.addSynthesisFlagship(liaison.getAcronym());
+                }
+              } else {
+                action.addSynthesisFlagship(liaison.getAcronym());
+              }
+              if (flagshipsWithMisingInformation != null && !flagshipsWithMisingInformation.isEmpty()) {
+                flagshipsWithMisingInformation += ", " + liaison.getAcronym();
+              } else {
+                flagshipsWithMisingInformation = liaison.getAcronym();
+              }
+              statusOfEveryFlagship.add(statusOfFlagship);
             }
-          } else {
-            action.addSynthesisFlagship("F1");
           }
-        }
-        if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("2")) {
-          if (action.getSynthesisFlagships() != null && action.getSynthesisFlagships().toString().length() > 0) {
-            if (!sSynthesisFlagships.contains("2")) {
-              action.addSynthesisFlagship("F2");
-            }
+          boolean tableComplete = false;
+
+          if (statusOfEveryFlagship == null || statusOfEveryFlagship.isEmpty()) {
+            tableComplete = true;
           } else {
-            action.addSynthesisFlagship("F2");
+            // If there are section status objects with missing information
+            for (SectionStatus sectionStatus : statusOfEveryFlagship) {
+              if ((sectionStatus != null && sectionStatus.getId() != null && sectionStatus.getMissingFields() != null
+                && !sectionStatus.getMissingFields().isEmpty() && sectionStatus.getId() != 0)) {
+                if (sectionStatus.getReportSynthesis().getLiaisonInstitution().getName().contains("PMU")) {
+
+                  // If section status is from PMU - missing fields is set to empty
+                  if (sectionStatus.getMissingFields() != null && !sectionStatus.getMissingFields().isEmpty()) {
+                    sectionStatus.setMissingFields("");
+                    sectionStatusManager.saveSectionStatus(sectionStatus);
+                  }
+                } else {
+                  // If section status is from flagship
+                  tableComplete = false;
+                  action.addMissingField("synthesis.AR2019Table9/10");
+                  action.addMessage("Flagships with missing information :" + flagshipsWithMisingInformation);
+                }
+              }
+            }
           }
-        }
-        if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("3")) {
-          if (action.getSynthesisFlagships() != null && action.getSynthesisFlagships().toString().length() > 0) {
-            if (!sSynthesisFlagships.contains("3")) {
-              action.addSynthesisFlagship("F3");
+
+          // Validate Evaluations
+          if (reportSynthesis.getReportSynthesisMelia().getEvaluations() != null
+            && !reportSynthesis.getReportSynthesisMelia().getEvaluations().isEmpty()) {
+            for (int i = 0; i < reportSynthesis.getReportSynthesisMelia().getEvaluations().size(); i++) {
+              this.validateEvaluations(action, reportSynthesis.getReportSynthesisMelia().getEvaluations().get(i), i);
             }
-          } else {
-            action.addSynthesisFlagship("F3");
-          }
-        }
-        if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("4")) {
-          if (action.getSynthesisFlagships() != null && action.getSynthesisFlagships().toString().length() > 0) {
-            if (!sSynthesisFlagships.contains("4")) {
-              action.addSynthesisFlagship("F4");
-            }
-          } else {
-            action.addSynthesisFlagship("F4");
-          }
-        }
-        if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("5")) {
-          if (action.getSynthesisFlagships() != null && action.getSynthesisFlagships().toString().length() > 0) {
-            if (!sSynthesisFlagships.contains("5")) {
-              action.addSynthesisFlagship("F5");
-            }
-          } else {
-            action.addSynthesisFlagship("F5");
-          }
-        }
-        if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("6")) {
-          if (action.getSynthesisFlagships() != null && action.getSynthesisFlagships().toString().length() > 0) {
-            if (!sSynthesisFlagships.contains("6")) {
-              action.addSynthesisFlagship("F6");
-            }
-          } else {
-            action.addSynthesisFlagship("F6");
-          }
-        }
-        if (reportSynthesis.getLiaisonInstitution().getAcronym().contains("PMU")) {
-          if (action.getSynthesisFlagships() != null && action.getSynthesisFlagships().toString().length() > 0) {
-            if (!sSynthesisFlagships.contains("PMU")) {
-              action.addSynthesisFlagship("PMU");
-            }
-          } else {
-            action.addSynthesisFlagship("PMU");
           }
         }
       }

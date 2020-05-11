@@ -44,7 +44,7 @@ public interface ProjectExpectedStudyMapper {
     @Mapping(source = "projectExpectedStudy.institutions", target = "institutionsList"),
     @Mapping(source = "projectExpectedStudy.flagships", target = "flagshipsList"),
     @Mapping(source = "projectExpectedStudy.geographicScopes", target = "geographicScopes"),
-    @Mapping(source = "projectExpectedStudy.regions", target = "regions"),
+    @Mapping(source = "projectExpectedStudy.studyRegions", target = "regions"),
     @Mapping(source = "projectExpectedStudy.project.id", target = "project"),
     @Mapping(source = "projectExpectedStudy.countries", target = "countries"),
     @Mapping(source = "projectExpectedStudy.policies", target = "policiesCodeList"),

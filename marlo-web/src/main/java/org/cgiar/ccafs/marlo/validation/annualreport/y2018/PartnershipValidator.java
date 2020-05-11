@@ -26,16 +26,12 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis2018SectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnershipCollaboration;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnershipExternal;
-import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.inject.Named;
 
@@ -165,80 +161,75 @@ public class PartnershipValidator extends BaseValidator {
       }
 
       if (action.isPMU()) {
-        String flagshipsWithMisingInformation = "";
-        // Get all liaison institutions for current CRP
-        List<LiaisonInstitution> liaisonInstitutionsFromCrp = liaisonInstitutionManager.findAll().stream()
-          .filter(l -> l != null && l.isActive() && l.getCrp() != null && l.getCrp().getId() != null
-            && l.getCrp().getId().equals(action.getCurrentCrp().getId()) && l.getCrpProgram() != null
-            && l.getAcronym() != null && !l.getAcronym().contains(" "))
-          .collect(Collectors.toList());
-        ReportSynthesis reportSynthesisAux = null;
 
-        List<SectionStatus> statusOfEveryFlagship = new ArrayList<>();
-        SectionStatus statusOfFlagship = null;
-        if (liaisonInstitutionsFromCrp != null) {
-          // Order liaisonInstitutionsFromCrp list by acronyms
-          liaisonInstitutionsFromCrp = liaisonInstitutionsFromCrp.stream()
-            .sorted((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym())).collect(Collectors.toList());
-          for (LiaisonInstitution liaison : liaisonInstitutionsFromCrp) {
-
-            // Get report synthesis for each liaison Instution
-            reportSynthesisAux =
-              reportSynthesisManager.findSynthesis(reportSynthesis.getPhase().getId(), liaison.getId());
-            statusOfFlagship = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesisAux.getId(),
-              "Reporting", 2019, false, "externalPartnerships");
-
-            // Add section status to statusOfEveryFlagship list if section status (statusOfFlagship) has missing fields
-            SectionStatus statusOfFPMU = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
-              "Reporting", 2019, false, "synthesis.AR2019Table8/9");
-
-            if (statusOfFlagship != null && statusOfFlagship.getMissingFields() != null
-              && !statusOfFlagship.getMissingFields().isEmpty()) {
-
-              // Add flagship acronym with missing information to Section status in synthesis flagship field
-              if (statusOfFPMU != null && statusOfFPMU.getSynthesisFlagships() != null
-                && !statusOfFPMU.getSynthesisFlagships().isEmpty()) {
-
-                if (!statusOfFPMU.getSynthesisFlagships().contains(liaison.getAcronym())) {
-                  action.addSynthesisFlagship(liaison.getAcronym());
-                }
-              } else {
-                action.addSynthesisFlagship(liaison.getAcronym());
-              }
-              if (flagshipsWithMisingInformation != null && !flagshipsWithMisingInformation.isEmpty()) {
-                flagshipsWithMisingInformation += ", " + liaison.getAcronym();
-              } else {
-                flagshipsWithMisingInformation = liaison.getAcronym();
-              }
-              statusOfEveryFlagship.add(statusOfFlagship);
-            }
-          }
-        }
-
-        boolean tableComplete = false;
-        if (statusOfEveryFlagship == null || statusOfEveryFlagship.isEmpty()) {
-          tableComplete = true;
-        } else {
-          // If there are section status objects with missing information
-          for (SectionStatus sectionStatus : statusOfEveryFlagship) {
-            if ((sectionStatus != null && sectionStatus.getId() != null && sectionStatus.getMissingFields() != null
-              && !sectionStatus.getMissingFields().isEmpty() && sectionStatus.getId() != 0)) {
-              if (sectionStatus.getReportSynthesis().getLiaisonInstitution().getName().contains("PMU")) {
-
-                // If section status is from PMU - missing fields is set to empty
-                if (sectionStatus.getMissingFields() != null && !sectionStatus.getMissingFields().isEmpty()) {
-                  sectionStatus.setMissingFields("");
-                  sectionStatusManager.saveSectionStatus(sectionStatus);
-                }
-              } else {
-                // If section status is from flagship
-                tableComplete = false;
-                action.addMissingField("synthesis.AR2019Table8/9");
-                action.addMessage("Flagships with missing information :" + flagshipsWithMisingInformation);
-              }
-            }
-          }
-        }
+        /*
+         * String flagshipsWithMisingInformation = "";
+         * // Get all liaison institutions for current CRP
+         * List<LiaisonInstitution> liaisonInstitutionsFromCrp = liaisonInstitutionManager.findAll().stream()
+         * .filter(l -> l != null && l.isActive() && l.getCrp() != null && l.getCrp().getId() != null
+         * && l.getCrp().getId().equals(action.getCurrentCrp().getId()) && l.getCrpProgram() != null
+         * && l.getAcronym() != null && !l.getAcronym().contains(" "))
+         * .collect(Collectors.toList());
+         * ReportSynthesis reportSynthesisAux = null;
+         * List<SectionStatus> statusOfEveryFlagship = new ArrayList<>();
+         * SectionStatus statusOfFlagship = null;
+         * if (liaisonInstitutionsFromCrp != null) {
+         * // Order liaisonInstitutionsFromCrp list by acronyms
+         * liaisonInstitutionsFromCrp = liaisonInstitutionsFromCrp.stream()
+         * .sorted((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym())).collect(Collectors.toList());
+         * for (LiaisonInstitution liaison : liaisonInstitutionsFromCrp) {
+         * // Get report synthesis for each liaison Instution
+         * reportSynthesisAux =
+         * reportSynthesisManager.findSynthesis(reportSynthesis.getPhase().getId(), liaison.getId());
+         * statusOfFlagship = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesisAux.getId(),
+         * "Reporting", 2019, false, "externalPartnerships");
+         * // Add section status to statusOfEveryFlagship list if section status (statusOfFlagship) has missing fields
+         * SectionStatus statusOfFPMU = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
+         * "Reporting", 2019, false, "synthesis.AR2019Table8/9");
+         * if (statusOfFlagship != null && statusOfFlagship.getMissingFields() != null
+         * && !statusOfFlagship.getMissingFields().isEmpty()) {
+         * // Add flagship acronym with missing information to Section status in synthesis flagship field
+         * if (statusOfFPMU != null && statusOfFPMU.getSynthesisFlagships() != null
+         * && !statusOfFPMU.getSynthesisFlagships().isEmpty()) {
+         * if (!statusOfFPMU.getSynthesisFlagships().contains(liaison.getAcronym())) {
+         * action.addSynthesisFlagship(liaison.getAcronym());
+         * }
+         * } else {
+         * action.addSynthesisFlagship(liaison.getAcronym());
+         * }
+         * if (flagshipsWithMisingInformation != null && !flagshipsWithMisingInformation.isEmpty()) {
+         * flagshipsWithMisingInformation += ", " + liaison.getAcronym();
+         * } else {
+         * flagshipsWithMisingInformation = liaison.getAcronym();
+         * }
+         * statusOfEveryFlagship.add(statusOfFlagship);
+         * }
+         * }
+         * }
+         * boolean tableComplete = false;
+         * if (statusOfEveryFlagship == null || statusOfEveryFlagship.isEmpty()) {
+         * tableComplete = true;
+         * } else {
+         * // If there are section status objects with missing information
+         * for (SectionStatus sectionStatus : statusOfEveryFlagship) {
+         * if ((sectionStatus != null && sectionStatus.getId() != null && sectionStatus.getMissingFields() != null
+         * && !sectionStatus.getMissingFields().isEmpty() && sectionStatus.getId() != 0)) {
+         * if (sectionStatus.getReportSynthesis().getLiaisonInstitution().getName().contains("PMU")) {
+         * // If section status is from PMU - missing fields is set to empty
+         * if (sectionStatus.getMissingFields() != null && !sectionStatus.getMissingFields().isEmpty()) {
+         * sectionStatus.setMissingFields("");
+         * sectionStatusManager.saveSectionStatus(sectionStatus);
+         * }
+         * } else {
+         * // If section status is from flagship
+         * tableComplete = false;
+         * action.addMissingField("synthesis.AR2019Table8/9");
+         * action.addMessage("Flagships with missing information :" + flagshipsWithMisingInformation);
+         * }
+         * }
+         * }
+         * }
+         */
       }
 
       if (!action.getFieldErrors().isEmpty()) {

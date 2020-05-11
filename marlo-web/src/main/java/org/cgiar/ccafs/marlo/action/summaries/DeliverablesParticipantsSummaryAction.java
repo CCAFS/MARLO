@@ -433,26 +433,27 @@ public class DeliverablesParticipantsSummaryAction extends BaseSummariesAction i
               paramP = "No";
             }
           }
-
-          if (deliverableParticipant.getDontKnowFemale() != null && deliverableParticipant.getDontKnowFemale()) {
-            // paramQ - Number of females (Possible <Not applicable>)
-            paramQ = "<Not Applicable>";
-            // paramR - Female Estimate (Possible <Not applicable>)
-            paramR = "<Not Applicable>";
-          } else {
-            // paramQ - Number of females (Possible <Not applicable>)
-            if (deliverableParticipant.getFemales() != null) {
-              paramQ = deliverableParticipant.getFemales() + "";
-            }
-            // paramR - Female Estimate (Possible <Not applicable>)
-            if (deliverableParticipant.getEstimateFemales() != null) {
-              if (deliverableParticipant.getEstimateFemales()) {
-                paramR = "Yes";
-              } else {
-                paramR = "No";
-              }
+          /*
+           * if (deliverableParticipant.getDontKnowFemale() != null && deliverableParticipant.getDontKnowFemale()) {
+           * // paramQ - Number of females (Possible <Not applicable>)
+           * paramQ = "<Not Applicable>";
+           * // paramR - Female Estimate (Possible <Not applicable>)
+           * paramR = "<Not Applicable>";
+           * } else {
+           */
+          // paramQ - Number of females (Possible <Not applicable>)
+          if (deliverableParticipant.getFemales() != null) {
+            paramQ = deliverableParticipant.getFemales() + "";
+          }
+          // paramR - Female Estimate (Possible <Not applicable>)
+          if (deliverableParticipant.getEstimateFemales() != null) {
+            if (deliverableParticipant.getEstimateFemales()) {
+              paramR = "Yes";
+            } else {
+              paramR = "No";
             }
           }
+          // }
           // paramS - Type of Participant(s)
           if (deliverableParticipant.getRepIndTypeParticipant() != null) {
             paramS = deliverableParticipant.getRepIndTypeParticipant().getName();

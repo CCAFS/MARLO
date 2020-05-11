@@ -4394,6 +4394,11 @@ li.fileUploaded span {
   font-size: 20px;
 }
 
+.mffp-icon {
+  font-size: 18px;
+  color: slategray;
+}
+
 .mf-icon.check {
   color:#8EA786;
 }

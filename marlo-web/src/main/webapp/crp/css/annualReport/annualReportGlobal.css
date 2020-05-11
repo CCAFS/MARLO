@@ -459,6 +459,7 @@ p.dacMarker.level-4 {
 
 .authorsList {
   max-height: 80px;
+  max-width: 180px;
   overflow: auto;
   align-items: center;
 }
@@ -489,4 +490,9 @@ div#chart13 {
 
 .evidenceD-export {
   margin-right: 5px;
+}
+
+.missingFieldFp{
+  margin-top: 16px;
+  text-align-last: right;
 }

@@ -81,6 +81,15 @@ public interface ProjectManager {
   public Project getProjectById(long projectID);
 
   /**
+   * This method gets a project List by a given GlobalUnit identifier.
+   * 
+   * @param globalunit_id is the GlobalUnit identifier.
+   * @return a Project List.
+   */
+
+  public List<Project> getProjectWebPageList(Long globalunit_id);
+
+  /**
    * Get the list of projects that the user can access and edit.
    * 
    * @param userId - The user Id.

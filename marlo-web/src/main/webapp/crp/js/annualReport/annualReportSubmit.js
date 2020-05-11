@@ -54,8 +54,7 @@ function cancel() {
 
 function submitButtonEvent(e) {
   e.preventDefault();
-  var message = 'Are you sure you want to submit the synthesis now?';
-  message += 'Once submitted, you will no longer have editing rights.';
+  var message = 'By clicking OK, from this point forward, the SMO will have access to your Annual Reporting data from MARLO ';
   noty({
       text: message,
       type: 'confirm',

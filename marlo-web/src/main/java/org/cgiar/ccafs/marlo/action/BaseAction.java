@@ -2740,12 +2740,27 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
               && c.getPhase().getYear() < (this.getActualPhase().getYear()))
             .collect(Collectors.toList());
         if (projectExpectedStudyInfoList2.size() > 0) {
-          allYears.add(projectExpectedStudyInfoList2.get(0).getYear());
+          if (allYears != null && projectExpectedStudyInfoList2 != null && projectExpectedStudyInfoList2.get(0) != null
+            && projectExpectedStudyInfoList2.get(0).getYear() != null
+            && !allYears.contains(projectExpectedStudyInfoList2.get(0).getYear())) {
+            allYears.add(projectExpectedStudyInfoList2.get(0).getYear());
+          }
+        }
+
+        // Add year of previous phase
+        Phase previousPhase = this.phaseManager.findPreviousPhase(this.getActualPhase().getId());
+        if (allYears != null && previousPhase != null && previousPhase.getYear() != 0
+          && !allYears.contains(previousPhase.getYear())) {
+          allYears.add(previousPhase.getYear());
         }
       }
 
     }
-    allYears.add(this.getActualPhase().getYear());
+
+    if (allYears != null && this.getActualPhase().getYear() != 0
+      && !allYears.contains(this.getActualPhase().getYear())) {
+      allYears.add(this.getActualPhase().getYear());
+    }
     return allYears;
   }
 

@@ -426,12 +426,12 @@
       [#-- Alternative url Check --]
       <div class="col-md-6 isOtherUrl">
         <br />
-        [@customForm.checkmark id="" name="project.deliverable.dissemination.hasDOI" i18nkey="project.deliverable.hasDOI" help="" paramText="" value="true" helpIcon=true disabled=false editable=editable checked=(deliverable.dissemination.hasDOI)!false cssClass="isOtherUrl" cssClassLabel=""  /]
+        [@customForm.checkmark id="" name="deliverable.dissemination.hasDOI" i18nkey="project.deliverable.hasDOI" help="" paramText="" value="true" helpIcon=true disabled=false editable=editable checked=(deliverable.dissemination.hasDOI)!false cssClass="isOtherUrl" cssClassLabel=""  /]
       </div>
 
       [#-- Alternative url TextField --]
       <div class="col-md-6 other-url" style="display:${(isOtherUrl)?string('block','none')}">
-        [@customForm.input name="project.deliverable.dissemination.articleUrl" type="text" i18nkey="project.deliverable.articleURL"  placeholder="" required=true editable=editable /]
+        [@customForm.input name="deliverable.dissemination.articleUrl" type="text" i18nkey="project.deliverable.articleURL"  placeholder="" required=true editable=editable /]
       </div>
    </div>
    
@@ -439,7 +439,11 @@
    
   [#-- Creator/Authors --]
   <div class="form-group">
-    <label for="">[@s.text name="metadata.creator" /]:  </label>
+  
+    [#if !(deliverable.users?has_content) && deliverable.getMetadataValue(38)?has_content]
+      [@metadataField title="creator" encodedName="marlo.authors" type="textArea" require=false/]
+    [#else]
+    <label for="">[@s.text name="metadata.creator" /]:  </label>    
     [#-- Hidden input --]
     [@metadataField title="authors" encodedName="marlo.authors" type="hidden" require=false/]
     [#-- Some Instructions  --]
@@ -458,6 +462,7 @@
         <p class="emptyText text-center "> [@s.text name="project.deliverable.dissemination.notCreators" /]</p>
       [/#if]
     </div>
+
     [#-- Add an author --]
     [#if editable]
     <div class="dottedBox authorVisibles" style="display:${isMetadataHide("marlo.authors")?string('none','block')}">
@@ -472,7 +477,9 @@
     </div>
     <div class="clearfix"></div>
     </div>
-    [/#if] 
+    [/#if]
+    
+    [/#if]
   </div>
   
   <div class="publicationMetadataBlock" style="display:${displayDeliverableRule(deliverable, deliverablePublicationMetadata)!};">

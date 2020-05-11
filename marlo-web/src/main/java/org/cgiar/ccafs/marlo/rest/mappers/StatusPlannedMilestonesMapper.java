@@ -19,9 +19,23 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
-import org.mapstruct.Mapper;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestone;
+import org.cgiar.ccafs.marlo.rest.dto.StatusPlannedMilestonesDTO;
 
-@Mapper(componentModel = "jsr330")
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
+
+@Mapper(componentModel = "jsr330",
+  uses = {MilestoneMapper.class, CgiarCrossCuttingMarkersMapper.class, MilestoneStatusMapper.class})
 public interface StatusPlannedMilestonesMapper {
+
+
+  @Mappings({@Mapping(source = "crpMilestone", target = "milestone"),
+    @Mapping(source = "markers", target = "crossCuttingMarkerList"),
+    @Mapping(source = "milestonesStatus", target = "status")})
+  public abstract StatusPlannedMilestonesDTO
+    ReportSynthesisFlagshipProgressOutcomeMilestoneToStatusPlannedMilestonesDTO(
+      ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone);
 
 }

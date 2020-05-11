@@ -20,6 +20,8 @@ import org.cgiar.ccafs.marlo.rest.dto.ProjectPageDTO;
 import org.cgiar.ccafs.marlo.rest.errors.NotFoundException;
 import org.cgiar.ccafs.marlo.security.Permission;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import io.swagger.annotations.Api;
@@ -49,6 +51,18 @@ public class ProjectPage {
   @Inject
   public ProjectPage(ProjectPageItem<ProjectPage> projectPageItem) {
     this.projectPageItem = projectPageItem;
+  }
+
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/projectpageList", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<ProjectPageDTO>
+    findAllProjectPage(@ApiParam(value = "CGIAR entity", required = true) @PathVariable String CGIAREntity) {
+
+    List<ProjectPageDTO> pplist = projectPageItem.findAllProjectPage(CGIAREntity);
+
+
+    return pplist;
   }
 
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)

@@ -19,7 +19,7 @@
 
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.progressTowards;
 
-import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
@@ -27,7 +27,6 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisSrfProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisSrfProgressTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorManager;
-import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
@@ -68,7 +67,7 @@ public class ProgressTowardsItem<T> {
   private LiaisonInstitutionManager liaisonInstitutionManager;
   private ReportSynthesisManager reportSynthesisManager;
   private ReportSynthesisSrfProgressManager reportSynthesisSrfProgressManager;
-  private CrpProgramManager crpProgramManager;
+  // private CrpProgramManager crpProgramManager;
   private SrfSloIndicatorManager srfSloIndicatorManager;
 
   private SrfProgressTowardsTargetMapper srfProgressTowardsTargetMapper;
@@ -77,14 +76,14 @@ public class ProgressTowardsItem<T> {
   public ProgressTowardsItem(GlobalUnitManager globalUnitManager, PhaseManager phaseManager,
     ReportSynthesisSrfProgressTargetManager reportSynthesisSrfProgressTargetManager,
     ReportSynthesisManager reportSynthesisManager, LiaisonInstitutionManager liaisonInstitutionManager,
-    CrpProgramManager crpProgramManager, ReportSynthesisSrfProgressManager reportSynthesisSrfProgressManager,
+    /* CrpProgramManager crpProgramManager, */ReportSynthesisSrfProgressManager reportSynthesisSrfProgressManager,
     SrfProgressTowardsTargetMapper srfProgressTowardsTargetMapper, SrfSloIndicatorManager srfSloIndicatorManager) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.reportSynthesisSrfProgressTargetManager = reportSynthesisSrfProgressTargetManager;
     this.reportSynthesisManager = reportSynthesisManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
-    this.crpProgramManager = crpProgramManager;
+    // this.crpProgramManager = crpProgramManager;
     this.reportSynthesisSrfProgressManager = reportSynthesisSrfProgressManager;
     this.srfSloIndicatorManager = srfSloIndicatorManager;
 
@@ -94,7 +93,8 @@ public class ProgressTowardsItem<T> {
   public Long createProgressTowards(NewSrfProgressTowardsTargetDTO newSrfProgressTowardsTargetDTO,
     String CGIARentityAcronym, User user) {
     Long srfProgressTargetId = null;
-    CrpProgram crpProgram = null;
+    // CrpProgram crpProgram = null;
+    LiaisonInstitution liaisonInstitution = null;
     ReportSynthesisSrfProgressTarget reportSynthesisSrfProgressTarget = null;
     Phase phase = null;
     String strippedId = null;
@@ -143,27 +143,35 @@ public class ProgressTowardsItem<T> {
       }
     }
 
-    strippedId = StringUtils.stripToNull(newSrfProgressTowardsTargetDTO.getFlagshipProgramId());
-    if (strippedId != null) {
-      crpProgram = crpProgramManager.getCrpProgramBySmoCode(strippedId);
-      if (crpProgram == null) {
-        fieldErrors.add(new FieldErrorDTO("createProgressTowards", "FlagshipEntity",
-          newSrfProgressTowardsTargetDTO.getFlagshipProgramId() + " is an invalid CRP Program SMO code."));
-      } else {
-        if (!StringUtils.equalsIgnoreCase(crpProgram.getCrp().getAcronym(), strippedEntityAcronym)) {
-          fieldErrors.add(new FieldErrorDTO("createProgressTowards", "FlagshipEntity",
-            "The CRP Program SMO Code entered does not correspond to the GlobalUnit with acronym "
-              + CGIARentityAcronym));
-        }
+    if (globalUnitEntity != null) {
+      liaisonInstitution =
+        liaisonInstitutionManager.findByAcronymAndCrp(APConstants.CLARISA_ACRONYM_PMU, globalUnitEntity.getId());
+      if (liaisonInstitution == null) {
+        fieldErrors.add(new FieldErrorDTO("createProgressTowards", "LiaisonInstitutionEntity",
+          "A Liaison Institution with the acronym " + APConstants.CLARISA_ACRONYM_PMU + " could not be found for "
+            + CGIARentityAcronym));
       }
-    } else {
-      fieldErrors.add(new FieldErrorDTO("createProgressTowards", "FlagshipEntity",
-        "CRP Program SMO code can not be null nor empty."));
     }
+    // strippedId = StringUtils.stripToNull(newSrfProgressTowardsTargetDTO.getFlagshipProgramId());
+    // if (strippedId != null) {
+    // crpProgram = crpProgramManager.getCrpProgramBySmoCode(strippedId);
+    // if (crpProgram == null) {
+    // fieldErrors.add(new FieldErrorDTO("createProgressTowards", "FlagshipEntity",
+    // newSrfProgressTowardsTargetDTO.getFlagshipProgramId() + " is an invalid CRP Program SMO code."));
+    // } else {
+    // if (!StringUtils.equalsIgnoreCase(crpProgram.getCrp().getAcronym(), strippedEntityAcronym)) {
+    // fieldErrors.add(new FieldErrorDTO("createProgressTowards", "FlagshipEntity",
+    // "The CRP Program SMO Code entered does not correspond to the GlobalUnit with acronym "
+    // + CGIARentityAcronym));
+    // }
+    // }
+    // } else {
+    // fieldErrors.add(new FieldErrorDTO("createProgressTowards", "FlagshipEntity",
+    // "CRP Program SMO code can not be null nor empty."));
+    // }
 
     if (fieldErrors.isEmpty()) {
       ReportSynthesis reportSynthesis = null;
-      LiaisonInstitution liaisonInstitution = null;
       ReportSynthesisSrfProgress reportSynthesisSrfProgress = null;
       SrfSloIndicatorTarget srfSloIndicatorTarget = null;
       SrfSloIndicator srfSloIndicator = null;
@@ -180,11 +188,13 @@ public class ProgressTowardsItem<T> {
           Long phaseId = phase.getId();
           Long sloIndicatorId = id;
 
-          reportSynthesisSrfProgressTarget =
-            reportSynthesisSrfProgressTargetManager.findAll().stream()
-              .filter(pt -> pt.getReportSynthesisSrfProgress().getReportSynthesis().getPhase().getId() == phaseId
-                && pt.getSrfSloIndicatorTarget().getSrfSloIndicator().getId() == sloIndicatorId)
-              .findFirst().orElse(null);
+          reportSynthesisSrfProgressTarget = reportSynthesisSrfProgressTargetManager.findAll().stream()
+            .filter(pt -> pt.getReportSynthesisSrfProgress().getReportSynthesis().getPhase().getId() == phaseId
+              && StringUtils.equalsIgnoreCase(
+                pt.getReportSynthesisSrfProgress().getReportSynthesis().getLiaisonInstitution().getAcronym(),
+                APConstants.CLARISA_ACRONYM_PMU)
+              && pt.getSrfSloIndicatorTarget().getSrfSloIndicator().getId() == sloIndicatorId)
+            .findFirst().orElse(null);
 
           if (reportSynthesisSrfProgressTarget != null) {
             fieldErrors.add(new FieldErrorDTO("createProgressTowards", "ReportSynthesisSrfProgressTargetEntity",
@@ -225,9 +235,12 @@ public class ProgressTowardsItem<T> {
       // end SrfSloIndicatorTarget
 
       // start ReportSynthesis
-      if (crpProgram != null) {
-        liaisonInstitution =
-          liaisonInstitutionManager.findByAcronymAndCrp(crpProgram.getAcronym(), globalUnitEntity.getId());
+      // if (crpProgram != null) {
+      // liaisonInstitution =
+      // liaisonInstitutionManager.findByAcronymAndCrp(crpProgram.getAcronym(), globalUnitEntity.getId());
+      // reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
+      // }
+      if (liaisonInstitution != null) {
         reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
       }
       // end ReportSynthesis
@@ -250,8 +263,6 @@ public class ProgressTowardsItem<T> {
         // creating new ReportSynthesis if it does not exist
         if (reportSynthesis == null) {
           reportSynthesis = new ReportSynthesis();
-          liaisonInstitution =
-            liaisonInstitutionManager.findByAcronymAndCrp(crpProgram.getAcronym(), globalUnitEntity.getId());
           reportSynthesis.setLiaisonInstitution(liaisonInstitution);
           reportSynthesis.setPhase(phase);
           reportSynthesisManager.saveReportSynthesis(reportSynthesis);
@@ -408,7 +419,7 @@ public class ProgressTowardsItem<T> {
       // not all ReportSynthesis have a ReportSynthesisSrfProgress, so we need to filter out those to avoid exceptions
       progressTowardsTargets = reportSynthesisManager.findAll().stream()
         .filter(rs -> rs.getPhase().getId() == phase.getId() && rs.getReportSynthesisSrfProgress() != null
-          && rs.getReportSynthesisSrfProgress().isActive() == true)
+          && rs.getReportSynthesisSrfProgress().isActive() == true && rs.isActive() == true)
         .flatMap(rs -> rs.getReportSynthesisSrfProgress().getReportSynthesisSrfProgressTargets().stream())
         .map(srfProgressTowardsTargetMapper::reportSynthesisSrfProgressTargetToSrfProgressTowardsTargetsDTO)
         .collect(Collectors.toList());
@@ -522,7 +533,8 @@ public class ProgressTowardsItem<T> {
     NewSrfProgressTowardsTargetDTO newSrfProgressTowardsTargetDTO, String CGIARentityAcronym, User user) {
     Long idProgressTowardsDB = null;
     Phase phase = null;
-    CrpProgram crpProgram = null;
+    // CrpProgram crpProgram = null;
+    LiaisonInstitution liaisonInstitution = null;
     String strippedId = null;
 
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
@@ -569,23 +581,33 @@ public class ProgressTowardsItem<T> {
       }
     }
 
-    strippedId = StringUtils.stripToNull(newSrfProgressTowardsTargetDTO.getFlagshipProgramId());
-    if (strippedId != null) {
-      crpProgram = crpProgramManager.getCrpProgramBySmoCode(strippedId);
-      if (crpProgram == null) {
-        fieldErrors.add(new FieldErrorDTO("putProgressTowards", "CrpProgramEntity",
-          newSrfProgressTowardsTargetDTO.getFlagshipProgramId() + " is an invalid CRP Program SMO Code"));
-      } else {
-        if (!StringUtils.equalsIgnoreCase(crpProgram.getCrp().getAcronym(), strippedEntityAcronym)) {
-          fieldErrors.add(new FieldErrorDTO("putProgressTowards", "FlagshipEntity",
-            "The CRP Program SMO Code entered does not correspond to the GlobalUnit with acronym "
-              + CGIARentityAcronym));
-        }
+    if (globalUnitEntity != null) {
+      liaisonInstitution =
+        liaisonInstitutionManager.findByAcronymAndCrp(APConstants.CLARISA_ACRONYM_PMU, globalUnitEntity.getId());
+      if (liaisonInstitution == null) {
+        fieldErrors.add(
+          new FieldErrorDTO("putProgressTowards", "LiaisonInstitutionEntity", "A Liaison Institution with the acronym "
+            + APConstants.CLARISA_ACRONYM_PMU + " could not be found for " + CGIARentityAcronym));
       }
-    } else {
-      fieldErrors.add(
-        new FieldErrorDTO("putProgressTowards", "CrpProgramEntity", "CRP Program SMO code can not be null nor empty."));
     }
+
+    // strippedId = StringUtils.stripToNull(newSrfProgressTowardsTargetDTO.getFlagshipProgramId());
+    // if (strippedId != null) {
+    // crpProgram = crpProgramManager.getCrpProgramBySmoCode(strippedId);
+    // if (crpProgram == null) {
+    // fieldErrors.add(new FieldErrorDTO("putProgressTowards", "CrpProgramEntity",
+    // newSrfProgressTowardsTargetDTO.getFlagshipProgramId() + " is an invalid CRP Program SMO Code"));
+    // } else {
+    // if (!StringUtils.equalsIgnoreCase(crpProgram.getCrp().getAcronym(), strippedEntityAcronym)) {
+    // fieldErrors.add(new FieldErrorDTO("putProgressTowards", "FlagshipEntity",
+    // "The CRP Program SMO Code entered does not correspond to the GlobalUnit with acronym "
+    // + CGIARentityAcronym));
+    // }
+    // }
+    // } else {
+    // fieldErrors.add(
+    // new FieldErrorDTO("putProgressTowards", "CrpProgramEntity", "CRP Program SMO code can not be null nor empty."));
+    // }
 
     ReportSynthesisSrfProgressTarget reportSynthesisSrfProgressTarget =
       reportSynthesisSrfProgressTargetManager.getReportSynthesisSrfProgressTargetById(idProgressTowards);
@@ -661,12 +683,13 @@ public class ProgressTowardsItem<T> {
 
       reportSynthesisSrfProgressTarget.setSrfSloIndicatorTarget(srfSloIndicatorTarget);
 
-      LiaisonInstitution liaisonInstitution =
-        liaisonInstitutionManager.findByAcronymAndCrp(crpProgram.getAcronym(), globalUnitEntity.getId());
-      if (liaisonInstitution == null) {
-        fieldErrors.add(new FieldErrorDTO("putProgressTowards", "LiaisonInstitutionEntity",
-          "A Liaison Institution with the acronym " + crpProgram.getAcronym() + " could not be found"));
-      } else {
+      // liaisonInstitution =
+      // liaisonInstitutionManager.findByAcronymAndCrp(crpProgram.getAcronym(), globalUnitEntity.getId());
+      // if (liaisonInstitution == null) {
+      // fieldErrors.add(new FieldErrorDTO("putProgressTowards", "LiaisonInstitutionEntity",
+      // "A Liaison Institution with the acronym " + crpProgram.getAcronym() + " could not be found"));
+      // } else {
+      if (liaisonInstitution != null) {
         reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
         if (reportSynthesis == null) {
           fieldErrors.add(new FieldErrorDTO("putProgressTowards", "ReportSynthesisEntity",
