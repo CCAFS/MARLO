@@ -188,11 +188,13 @@ public class ProgressTowardsItem<T> {
           Long phaseId = phase.getId();
           Long sloIndicatorId = id;
 
-          reportSynthesisSrfProgressTarget =
-            reportSynthesisSrfProgressTargetManager.findAll().stream()
-              .filter(pt -> pt.getReportSynthesisSrfProgress().getReportSynthesis().getPhase().getId() == phaseId
-                && pt.getSrfSloIndicatorTarget().getSrfSloIndicator().getId() == sloIndicatorId)
-              .findFirst().orElse(null);
+          reportSynthesisSrfProgressTarget = reportSynthesisSrfProgressTargetManager.findAll().stream()
+            .filter(pt -> pt.getReportSynthesisSrfProgress().getReportSynthesis().getPhase().getId() == phaseId
+              && StringUtils.equalsIgnoreCase(
+                pt.getReportSynthesisSrfProgress().getReportSynthesis().getLiaisonInstitution().getAcronym(),
+                APConstants.CLARISA_ACRONYM_PMU)
+              && pt.getSrfSloIndicatorTarget().getSrfSloIndicator().getId() == sloIndicatorId)
+            .findFirst().orElse(null);
 
           if (reportSynthesisSrfProgressTarget != null) {
             fieldErrors.add(new FieldErrorDTO("createProgressTowards", "ReportSynthesisSrfProgressTargetEntity",

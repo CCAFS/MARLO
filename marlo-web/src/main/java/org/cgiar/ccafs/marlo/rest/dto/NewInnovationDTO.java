@@ -76,6 +76,10 @@ public class NewInnovationDTO {
   private List<NewSrfSubIdoDTO> srfSubIdoList;
 
 
+  @ApiModelProperty(notes = "Outcome Impact Case Report List", position = 92)
+  private List<String> projectExpectedStudyList;
+
+
   @ApiModelProperty(notes = "Phase year/section", position = 140)
   private PhaseDTO phase;
 
@@ -89,6 +93,7 @@ public class NewInnovationDTO {
     return this.contributingInstitutions;
   }
 
+
   public List<CountryDTO> getCountries() {
     return this.countries;
   }
@@ -97,7 +102,6 @@ public class NewInnovationDTO {
   public String getDescriptionStage() {
     return this.descriptionStage;
   }
-
 
   public Boolean getEquitativeEffort() {
     return this.equitativeEffort;
@@ -151,6 +155,11 @@ public class NewInnovationDTO {
 
   public ProjectDTO getProject() {
     return this.project;
+  }
+
+
+  public List<String> getProjectExpectedStudyList() {
+    return projectExpectedStudyList;
   }
 
 
@@ -246,6 +255,11 @@ public class NewInnovationDTO {
 
   public void setProject(ProjectDTO project) {
     this.project = project;
+  }
+
+
+  public void setProjectExpectedStudyList(List<String> projectExpectedStudyList) {
+    this.projectExpectedStudyList = projectExpectedStudyList;
   }
 
 
