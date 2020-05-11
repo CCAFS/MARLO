@@ -347,11 +347,12 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     Long id = null;
     String title = null, narrative = null, phaseResearch = null, stageInnovation = null, innovationType = null,
       contributionOfCrp = null, degreeInnovation = null, geographicScope = null, region = null, countries = null,
-      organizations = null, projectExpectedStudy = null, descriptionStage = null, leadOrganization = null,
-      contributingOrganization = null, adaptativeResearch = null, evidenceLink = null, links = null,
-      deliverables = null, crps = null, genderFocusLevel = null, genderExplaniation = null, youthFocusLevel = null,
-      youthExplaniation = null, project = null, oicr = "", centers = "", hasMilestones = "", milestones = null,
-      subIdos = null, deliverableLink = "", phaseID = "", loggedCenter = "", deliverableID = "", isNew = null;
+      organizations = null, projectExpectedStudy = null, projectExpectedStudies = null, descriptionStage = null,
+      leadOrganization = null, contributingOrganization = null, adaptativeResearch = null, evidenceLink = null,
+      links = null, deliverables = null, crps = null, genderFocusLevel = null, genderExplaniation = null,
+      youthFocusLevel = null, youthExplaniation = null, project = null, oicr = "", centers = "", hasMilestones = "",
+      milestones = null, subIdos = null, deliverableLink = "", phaseID = "", loggedCenter = "", deliverableID = "",
+      isNew = null;
     Boolean isRegional = false, isNational = false, isStage4 = false;
     // Id
     id = projectInnovationID;
@@ -402,12 +403,19 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
           if (studyInnovations != null) {
             projectExpectedStudy = projectInnovationInfo.getProjectExpectedStudy().getId() + " - "
               + projectInnovationInfo.getProjectExpectedStudy().getProjectExpectedStudyInfo().getTitle();
+
           }
 
           for (ProjectExpectedStudyInnovation studyInnovation : studyInnovations) {
-            oicr += this.getBaseUrl() + "/projects/" + this.getLoggedCrp().getAcronym() + "/studySummary.do?studyID="
-              + studyInnovation.getProjectExpectedStudy().getId() + "&cycle=" + this.getSelectedCycle() + "&year="
-              + this.getSelectedPhase().getYear() + " /n";
+
+            projectExpectedStudies = studyInnovation.getProjectExpectedStudy().getId() + " - "
+              + studyInnovation.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()).getTitle();
+
+            /*
+             * oicr += this.getBaseUrl() + "/projects/" + this.getLoggedCrp().getAcronym() + "/studySummary.do?studyID="
+             * + studyInnovation.getProjectExpectedStudy().getId() + "&cycle=" + this.getSelectedCycle() + "&year="
+             * + this.getSelectedPhase().getYear() + "";
+             */
           }
 
           // oicr link
@@ -751,7 +759,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     }
 
     model.addRow(new Object[] {id, isRegional, isNational, isStage4, title, narrative, stageInnovation, innovationType,
-      contributionOfCrp, degreeInnovation, geographicScope, region, countries, organizations, projectExpectedStudy,
+      contributionOfCrp, degreeInnovation, geographicScope, region, countries, organizations, projectExpectedStudies,
       descriptionStage, leadOrganization, contributingOrganization, adaptativeResearch, evidenceLink, deliverables,
       crps, genderFocusLevel, genderExplaniation, youthFocusLevel, youthExplaniation, project, oicr, centers,
       hasMilestones, milestones, subIdos, deliverableLink, phaseID, loggedCenter, isNew});
