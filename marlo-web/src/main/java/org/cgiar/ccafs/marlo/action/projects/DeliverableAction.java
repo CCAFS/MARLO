@@ -2427,6 +2427,15 @@ public class DeliverableAction extends BaseAction {
         dissemination.setConfidentialUrl(null);
       }
 
+      if (deliverable.getDissemination().getHasDOI() != null && deliverable.getDissemination().getHasDOI() == true) {
+        dissemination.setHasDOI(true);
+      }
+
+      if (deliverable.getDissemination().getArticleUrl() != null
+        && !deliverable.getDissemination().getArticleUrl().isEmpty()) {
+        dissemination.setArticleUrl(deliverable.getDissemination().getArticleUrl());
+      }
+
       dissemination.setPhase(this.getActualPhase());
       deliverableDisseminationManager.saveDeliverableDissemination(dissemination);
 

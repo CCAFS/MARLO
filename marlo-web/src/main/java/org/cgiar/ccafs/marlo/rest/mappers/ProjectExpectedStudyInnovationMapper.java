@@ -21,6 +21,7 @@ package org.cgiar.ccafs.marlo.rest.mappers;
 
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectExpectedStudyInnovationDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectExpectedStudyNameDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -31,6 +32,14 @@ public interface ProjectExpectedStudyInnovationMapper {
 
   @Mappings({@Mapping(source = "projectExpectedStudyInnovation.projectInnovation.id", target = "projectInnovationID")})
   public abstract ProjectExpectedStudyInnovationDTO projectExpectedStudyInnovationToProjectExpectedStudyInnovationDTO(
+    ProjectExpectedStudyInnovation projectExpectedStudyInnovation);
+
+  @Mappings({@Mapping(source = "projectExpectedStudyInnovation.projectExpectedStudy.id", target = "id"),
+    @Mapping(source = "projectExpectedStudyInnovation.projectExpectedStudy.projectExpectedStudyInfo.title",
+      target = "title"),
+    @Mapping(source = "projectExpectedStudyInnovation.projectExpectedStudy.projectExpectedStudyInfo.year",
+      target = "year")})
+  public abstract ProjectExpectedStudyNameDTO ProjectExpectedStudyInnovationToProjectExpectedStudyNameDTO(
     ProjectExpectedStudyInnovation projectExpectedStudyInnovation);
 
 }

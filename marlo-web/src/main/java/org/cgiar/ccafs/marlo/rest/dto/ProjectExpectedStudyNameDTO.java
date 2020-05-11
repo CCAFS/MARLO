@@ -21,50 +21,46 @@ package org.cgiar.ccafs.marlo.rest.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class NewCrosscuttingMarkersDTO {
+public class ProjectExpectedStudyNameDTO {
+
+  @ApiModelProperty(notes = "The Generated OICR id")
+  private Long id;
+
+  @ApiModelProperty(notes = "OICR Title")
+  private String title;
+
+  @ApiModelProperty(notes = "OICR Year")
+  private int year;
 
 
-  @ApiModelProperty(
-    notes = "CrossCutting marker identifier (1-Gender," + "2-Youth," + "3-CapDev," + "4-Climate Change)", position = 1)
-  private String crossCuttingmarker;
-
-  @ApiModelProperty(
-    notes = "CrossCutting marker score (1-Not Targeted," + "2-Significant," + "3-Principal," + "4-Not applicable)",
-    position = 2)
-  private String crossCuttingmarkerScore;
-
-
-  @ApiModelProperty("Crosscuting Marker Description (Optional)")
-  private String description;
-
-
-  public String getCrossCuttingmarker() {
-    return crossCuttingmarker;
+  public Long getId() {
+    return id;
   }
 
 
-  public String getCrossCuttingmarkerScore() {
-    return crossCuttingmarkerScore;
+  public String getTitle() {
+    return title;
   }
 
 
-  public String getDescription() {
-    return description;
+  public int getYear() {
+    return year;
   }
 
 
-  public void setCrossCuttingmarker(String crossCuttingmarker) {
-    this.crossCuttingmarker = crossCuttingmarker;
+  public void setId(Long id) {
+    this.id = id;
   }
 
 
-  public void setCrossCuttingmarkerScore(String crossCuttingmarkerScore) {
-    this.crossCuttingmarkerScore = crossCuttingmarkerScore;
+  public void setTitle(String title) {
+    this.title = title;
   }
 
 
-  public void setDescription(String description) {
-    this.description = description;
+  public void setYear(int year) {
+    this.year = year;
   }
+
 
 }

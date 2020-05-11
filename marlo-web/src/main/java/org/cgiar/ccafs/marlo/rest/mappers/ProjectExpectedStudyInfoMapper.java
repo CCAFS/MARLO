@@ -33,7 +33,11 @@ public interface ProjectExpectedStudyInfoMapper {
   @Mappings({@Mapping(source = "projectExpectedStudyInfo.status.id", target = "status"),
     @Mapping(source = "projectExpectedStudyInfo.studyType", target = "studyType"),
     @Mapping(source = "projectExpectedStudyInfo.evidenceTag", target = "tag"),
-    @Mapping(source = "projectExpectedStudyInfo.repIndStageStudy", target = "maturityOfChange")})
+    @Mapping(source = "projectExpectedStudyInfo.repIndStageStudy", target = "maturityOfChange"),
+    @Mapping(source = "projectExpectedStudyInfo.describeGender", target = "genderDescribe"),
+    @Mapping(source = "projectExpectedStudyInfo.describeYouth", target = "youthDescribe"),
+    @Mapping(source = "projectExpectedStudyInfo.describeClimateChange", target = "climateChangeDescribe"),
+    @Mapping(source = "projectExpectedStudyInfo.describeCapdev", target = "capdevDescribe")})
   public abstract ProjectExpectedStudyInfoDTO
     projectExpectedStudyInfoToProjectExpectedStudyInfoDTO(ProjectExpectedStudyInfo projectExpectedStudyInfo);
 

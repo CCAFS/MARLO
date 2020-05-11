@@ -335,6 +335,12 @@ public class ExpectedStudiesItem<T> {
             .setComunicationsMaterial(newProjectExpectedStudy.getProjectExpectedStudyInfo().getComunicationsMaterial());
         }
 
+        // CGIAR innovations
+        if (newProjectExpectedStudy.getProjectExpectedStudyInfo().getCgiarInnovation() != null
+          && !newProjectExpectedStudy.getProjectExpectedStudyInfo().getCgiarInnovation().isEmpty()) {
+          projectExpectedStudyInfo
+            .setCgiarInnovation(newProjectExpectedStudy.getProjectExpectedStudyInfo().getCgiarInnovation());
+        }
         // elaborationOutcomeImpactStatement
         wordCount =
           this.countWords(newProjectExpectedStudy.getProjectExpectedStudyInfo().getElaborationOutcomeImpactStatement());
@@ -349,6 +355,7 @@ public class ExpectedStudiesItem<T> {
         // referencesText
         projectExpectedStudyInfo
           .setReferencesText(newProjectExpectedStudy.getProjectExpectedStudyInfo().getReferencesText());
+
 
         // DANGER! Magic number ahead
         if (newProjectExpectedStudy.getProjectExpectedStudyInfo().getYear() > 1900) {
@@ -386,10 +393,12 @@ public class ExpectedStudiesItem<T> {
           generalStatusManager.getGeneralStatusById(newProjectExpectedStudy.getProjectExpectedStudyInfo().getStatus());
         if (generalStatus != null) {
           projectExpectedStudyInfo.setStatus(generalStatus);
+
         } else {
           fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Status",
             newProjectExpectedStudy.getProjectExpectedStudyInfo().getStatus() + " is an invalid status code"));
         }
+
 
         EvidenceTag evidenceTag = null;
         if (newProjectExpectedStudy.getProjectExpectedStudyInfo().getTag() != null) {
@@ -772,18 +781,22 @@ public class ExpectedStudiesItem<T> {
                         if (cgiarCrossCuttingMarker.getId()
                           .longValue() == APConstants.CGIAR_CROSS_CUTTING_MARKERS_GENDER) {
                           projectExpectedStudyInfo.setGenderLevel(repIndGenderYouthFocusLevel);
+                          projectExpectedStudyInfo.setDescribeGender(crosscuttingmark.getDescription());
                         }
                         if (cgiarCrossCuttingMarker.getId()
                           .longValue() == APConstants.CGIAR_CROSS_CUTTING_MARKERS_YOUTH) {
                           projectExpectedStudyInfo.setYouthLevel(repIndGenderYouthFocusLevel);
+                          projectExpectedStudyInfo.setDescribeYouth(crosscuttingmark.getDescription());
                         }
                         if (cgiarCrossCuttingMarker.getId()
                           .longValue() == APConstants.CGIAR_CROSS_CUTTING_MARKERS_CAPDEV) {
                           projectExpectedStudyInfo.setCapdevLevel(repIndGenderYouthFocusLevel);
+                          projectExpectedStudyInfo.setDescribeCapdev(crosscuttingmark.getDescription());
                         }
                         if (cgiarCrossCuttingMarker.getId()
                           .longValue() == APConstants.CGIAR_CROSS_CUTTING_MARKERS_CLIMATECHANGE) {
                           projectExpectedStudyInfo.setClimateChangeLevel(repIndGenderYouthFocusLevel);
+                          projectExpectedStudyInfo.setDescribeClimateChange(crosscuttingmark.getDescription());
                         }
                       }
                     }
@@ -1405,6 +1418,13 @@ public class ExpectedStudiesItem<T> {
             .setComunicationsMaterial(newProjectExpectedStudy.getProjectExpectedStudyInfo().getComunicationsMaterial());
         }
 
+        // cgiar Innovations
+        if (newProjectExpectedStudy.getProjectExpectedStudyInfo().getCgiarInnovation() != null
+          && !newProjectExpectedStudy.getProjectExpectedStudyInfo().getCgiarInnovation().isEmpty()) {
+          projectExpectedStudyInfo
+            .setCgiarInnovation(newProjectExpectedStudy.getProjectExpectedStudyInfo().getCgiarInnovation());
+        }
+
         // elaborationOutcomeImpactStatement
         wordCount =
           this.countWords(newProjectExpectedStudy.getProjectExpectedStudyInfo().getElaborationOutcomeImpactStatement());
@@ -1839,18 +1859,23 @@ public class ExpectedStudiesItem<T> {
                         if (cgiarCrossCuttingMarker.getId()
                           .longValue() == APConstants.CGIAR_CROSS_CUTTING_MARKERS_GENDER) {
                           projectExpectedStudyInfo.setGenderLevel(repIndGenderYouthFocusLevel);
+                          projectExpectedStudyInfo.setDescribeGender(crosscuttingmark.getDescription());;
+
                         }
                         if (cgiarCrossCuttingMarker.getId()
                           .longValue() == APConstants.CGIAR_CROSS_CUTTING_MARKERS_YOUTH) {
                           projectExpectedStudyInfo.setYouthLevel(repIndGenderYouthFocusLevel);
+                          projectExpectedStudyInfo.setDescribeYouth(crosscuttingmark.getDescription());
                         }
                         if (cgiarCrossCuttingMarker.getId()
                           .longValue() == APConstants.CGIAR_CROSS_CUTTING_MARKERS_CAPDEV) {
                           projectExpectedStudyInfo.setCapdevLevel(repIndGenderYouthFocusLevel);
+                          projectExpectedStudyInfo.setDescribeCapdev(crosscuttingmark.getDescription());
                         }
                         if (cgiarCrossCuttingMarker.getId()
                           .longValue() == APConstants.CGIAR_CROSS_CUTTING_MARKERS_CLIMATECHANGE) {
                           projectExpectedStudyInfo.setClimateChangeLevel(repIndGenderYouthFocusLevel);
+                          projectExpectedStudyInfo.setDescribeClimateChange(crosscuttingmark.getDescription());
                         }
                       }
                     }
