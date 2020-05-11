@@ -323,7 +323,11 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
       while (year < calendarEnd.get(Calendar.YEAR)) {
         year++;
         // Adding the year to the list.
-        if (allYears != null && !allYears.isEmpty() && !allYears.contains(year)) {
+        if (!allYears.isEmpty()) {
+          if (!allYears.contains(year)) {
+            allYears.add(year);
+          }
+        } else {
           allYears.add(year);
         }
 
