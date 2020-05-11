@@ -233,32 +233,31 @@ public class Publications2018Validator extends BaseValidator {
 
                 if (deliverable.getMetadata() != null) {
                   // Unique identifier (DOI)
-                  if (deliverable.getMetadataValue(36) == null || deliverable.getMetadataValue(36).isEmpty()) {
-                    emptyFields.add("DOI");
-                    countB++;
+                  if (deliverable.getMetadataValue(36) != null || deliverable.getMetadataValue(36).isEmpty()) {
+                    // Has DOI
                   } else {
-                    if (deliverable.getDissemination() != null && deliverable.getDissemination().getHasDOI() != null
-                      && deliverable.getDissemination().getHasDOI() == true) {
-
-                      if (deliverable.getDissemination().getArticleUrl() == null
-                        || deliverable.getDissemination().getArticleUrl().isEmpty()) {
-                        count++;
-                      }
-
+                    if (deliverable.getDissemination(action.getActualPhase()) != null
+                      && deliverable.getDissemination(action.getActualPhase()).getHasDOI() != null
+                      && deliverable.getDissemination(action.getActualPhase()).getArticleUrl() != null
+                      && !deliverable.getDissemination(action.getActualPhase()).getArticleUrl().isEmpty()) {
+                      // Has DOI
                     } else {
                       // If the mark of No DOI is empty
+                      emptyFields.add("DOI");
                       count++;
                     }
                   }
                   // Date of Publication
-                  if (deliverable.getMetadataValue(17) == null || deliverable.getMetadataValue(36).isEmpty()) {
+                  if ((deliverable.getMetadataValue(17) == null || deliverable.getMetadataValue(17).isEmpty())
+                    && (deliverable.getMetadataValue(16) == null || deliverable.getMetadataValue(16).isEmpty())) {
                     emptyFields.add("Date of Publication");
-                    countB++;
+                    count++;
                   }
                   // Article Title
-                  if (deliverable.getMetadataValue(1) == null || deliverable.getMetadataValue(36).isEmpty()) {
+                  if ((deliverable.getMetadataValue(1) == null || deliverable.getMetadataValue(1).isEmpty())
+                    && (deliverable.getMetadataValue(0) == null || deliverable.getMetadataValue(0).isEmpty())) {
                     emptyFields.add("Article Title");
-                    countB++;
+                    count++;
                   }
                 }
               }
