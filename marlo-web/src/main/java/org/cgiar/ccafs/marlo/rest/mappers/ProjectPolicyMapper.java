@@ -29,7 +29,8 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "jsr330",
   uses = {ProjectPoliciesInfoMapper.class, ProjectPolicyCrosscuttingMarkersMapper.class,
     ProjectPolicyGeographicScopeMapper.class, ProjectPolicyCrpMapper.class, ProjectPolicySubIdoMapper.class,
-    LocationMapper.class, ProjectPolicyOwnerMapper.class, PolicyMilestoneMapper.class})
+    LocationMapper.class, ProjectPolicyOwnerMapper.class, PolicyMilestoneMapper.class,
+    ProjectExpectedStudyPolicyMapper.class})
 public interface ProjectPolicyMapper {
 
   @Mappings({@Mapping(source = "projectPolicyDTO.project", target = "project.id"),})
@@ -43,7 +44,8 @@ public interface ProjectPolicyMapper {
     @Mapping(source = "projectPolicy.regions", target = "regions"),
     @Mapping(source = "projectPolicy.countries", target = "countries"),
     @Mapping(source = "projectPolicy.project.id", target = "project"),
-    @Mapping(source = "projectPolicy.owners", target = "owners"),})
+    @Mapping(source = "projectPolicy.owners", target = "owners"),
+    @Mapping(source = "projectPolicy.evidences", target = "projectExpetedStudyList")})
   public abstract ProjectPolicyDTO projectPolicyToProjectPolicyDTO(ProjectPolicy projectPolicy);
 
 }
