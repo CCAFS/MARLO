@@ -26,7 +26,7 @@ VALUES ( '1', 'crp_show_section_impact_covid19', 'Show section impact of COVID-1
 
 INSERT INTO `custom_parameters` (`parameter_id`, `value`, `created_by`, `is_active`, `active_since`, `modified_by`, `modification_justification`, `global_unit_id`)
 SELECT @@identity, `value`, `created_by`, `is_active`, `active_since`, `modified_by`, `modification_justification`, `global_unit_id`
-FROM `marlo`.`custom_parameters` WHERE parameter_id = 217;
+FROM `custom_parameters` WHERE parameter_id = 217;
 
 INSERT INTO `parameters` (`global_unit_type_id`, `key`, `description`, `format`, `category`)
 VALUES ( '3', 'crp_show_section_impact_covid19', 'Show section impact of COVID-19', '1', '2');
