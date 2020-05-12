@@ -53,6 +53,19 @@ public interface QATokenAuthManager {
 
 
   /**
+   * This method generate token directly on database and saves the information
+   * 
+   * @param name - is the name of the user who generates the token
+   * @param username - is the username of the user who generates the token
+   * @param email - is the email of the user who generates the token
+   * @param smoCode - is the smoCode of the user who generates the token
+   * @param userId - is the userId of the user who generates the token
+   * @return a QATokenAuth object
+   */
+
+  public QATokenAuth generateQATokenAuth(String name, String username, String email, String smoCode, String userId);
+
+  /**
    * This method gets a qATokenAuth object by a given qATokenAuth identifier.
    * 
    * @param qATokenAuthID is the qATokenAuth identifier.
@@ -60,15 +73,13 @@ public interface QATokenAuthManager {
    */
   public QATokenAuth getQATokenAuthById(long qATokenAuthID);
 
+
   /**
    * This method saves the information of the given qATokenAuth
    * 
    * @param qATokenAuth - is the qATokenAuth object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the qATokenAuth was
-   *         updated
-   *         or -1 is some error occurred.
+   * @return a QATokenAuth object
    */
   public QATokenAuth saveQATokenAuth(QATokenAuth qATokenAuth);
-
 
 }
