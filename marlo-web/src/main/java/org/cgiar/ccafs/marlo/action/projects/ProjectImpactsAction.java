@@ -123,12 +123,13 @@ public class ProjectImpactsAction extends BaseAction {
     ProjectImpacts newProjectImpact = new ProjectImpacts();;
 
     newProjectImpact.setProject(project);
-    newProjectImpact.setPhase(phase);
+    newProjectImpact.setYear(phase.getYear());;
 
     if (projectImpacts != null) {
 
-      return projectImpacts.stream().filter(c -> c.isActive() && c.getProject().getId().equals(project.getId())
-        && c.getPhase().getId().equals(phase.getId())).findFirst().orElse(newProjectImpact);
+      return projectImpacts.stream()
+        .filter(c -> c.isActive() && c.getProject().getId().equals(project.getId()) && c.getYear() == phase.getYear())
+        .findFirst().orElse(newProjectImpact);
     }
 
     return newProjectImpact;

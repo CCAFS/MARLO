@@ -24,7 +24,7 @@
     { 'title': 'General Information', 'show': true,
       'items': [
       { 'slug': 'description',  'name': 'projects.menu.description',  'action': 'description',  'active': true, "showCheck": isGlobalUnitProject},
-      { 'slug': 'covid19',  'name': 'projects.menu.impacts.covid19',  'action': 'impacts',  'active': true, "showCheck": isGlobalUnitProject, 'show': action.hasSpecificities('crp_show_section_impact_covid19'), 'hasBackground':true, 'icon':'virus'},
+      { 'slug': 'covid19',  'name': 'projects.menu.impacts.covid19',  'action': 'impacts',  'active': true, "showCheck": isGlobalUnitProject, 'show': action.hasSpecificities('crp_show_section_impact_covid19') && action.isYearToShowSectionCovid19(), 'hasBackground':true, 'icon':'virus'},
       { 'slug': 'partners',  'name': 'projects.menu.partners',  'action': 'partners',  'active': true, "showCheck": isGlobalUnitProject },
       { 'slug': 'locations',  'name': 'projects.menu.locations',  'action': 'locations',  'active': true, "showCheck": isGlobalUnitProject  }
       ]
