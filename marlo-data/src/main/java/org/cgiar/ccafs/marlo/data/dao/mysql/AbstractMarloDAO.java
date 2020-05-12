@@ -92,6 +92,29 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
     return result;
 
   }
+
+  /**
+   * This method make a query that returns a object result from the function.
+   * 
+   * @param function is a string representing an SQL query.
+   */
+  public Object executeFunction(String function) {
+    return this.resultFunction(this.findCustomQuery(function));
+  }
+
+  /**
+   * Pass String based hibernate query.
+   * 
+   * @param sqlQuery
+   */
+  public void executeUpdateQuery(String sqlQuery) {
+
+    Query query = this.sessionFactory.getCurrentSession().createSQLQuery(sqlQuery);
+    query.setFlushMode(FlushMode.COMMIT);
+    query.executeUpdate();
+  }
+
+
   //
   // /**
   // * Performs either a save or update depending on if there is an identifier or not.
@@ -110,19 +133,6 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
 
 
   /**
-   * Pass String based hibernate query.
-   * 
-   * @param sqlQuery
-   */
-  public void executeUpdateQuery(String sqlQuery) {
-
-    Query query = this.sessionFactory.getCurrentSession().createSQLQuery(sqlQuery);
-    query.setFlushMode(FlushMode.COMMIT);
-    query.executeUpdate();
-  }
-
-
-  /**
    * This method finds a specific record from the database and transform it to a database model object.
    * 
    * @param clazz represents the class of the database model object.
@@ -134,6 +144,7 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
 
     return obj;
   }
+
 
   protected List<T> findAll(Query hibernateQuery) {
     hibernateQuery.setFlushMode(FlushMode.COMMIT);
@@ -174,7 +185,6 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
 
   }
 
-
   protected List<T> findEveryone(Class<T> clazz) {
     Query query = sessionFactory.getCurrentSession().createQuery("from " + clazz.getName());
     query.setFlushMode(FlushMode.COMMIT);
@@ -184,6 +194,7 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
     return list;
 
   }
+
 
   /**
    * Allows clients to create the HibernateQuery and set parameters on it.
@@ -197,7 +208,6 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
     T object = clazz.cast(hibernateQuery.uniqueResult());
     return object;
   }
-
 
   /**
    * This method make a query that returns a single object result from the model.
@@ -214,6 +224,16 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
   }
 
 
+  /**
+   * Return the sessionFactory. DAOs are free to get this and use it to perform custom queries.
+   * 
+   * @return
+   */
+  SessionFactory getSessionFactory() {
+    return this.sessionFactory;
+  }
+
+
   // /**
   // * Return the ID for the entity or null
   // *
@@ -227,16 +247,6 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
   // }
   // return null;
   // }
-
-  /**
-   * Return the sessionFactory. DAOs are free to get this and use it to perform custom queries.
-   * 
-   * @return
-   */
-  SessionFactory getSessionFactory() {
-    return this.sessionFactory;
-  }
-
 
   /**
    * Get the user id that is in the temporally table (permissions)
@@ -256,6 +266,20 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
       return idT;
     }
     return idT;
+  }
+
+  /**
+   * This method return a object result from the function.
+   * 
+   * @param result is a List<Map<String, Object>> representing the result the function
+   */
+  private Object resultFunction(List<Map<String, Object>> result) {
+    for (Map<String, Object> list1 : result) {
+      for (Map.Entry<String, Object> entry : list1.entrySet()) {
+        return entry.getValue();
+      }
+    }
+    return null;
   }
 
 
