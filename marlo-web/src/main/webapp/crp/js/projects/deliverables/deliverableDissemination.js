@@ -274,8 +274,8 @@ function addDisseminationEvents() {
       $('.other-url').css("display","none");
     }
   });
-  var crp = $('form').attr("name").split('_');
-  $('#'+crp[0]+'_deliverable_deliverable_deliverableInfo_deliverableType_id').on('change', function() {
+  var crp = $('form').attr("name");
+  $('#'+crp+'_deliverable_deliverableInfo_deliverableType_id').on('change', function() {
     var doiField = $('.metadataElement-doi').find('div.input ').children()[3];
 
     if(this.value == '63'){
@@ -827,8 +827,8 @@ function formatStateCountries(state) {
  *
  */
 function validateSubCategorySelector() {
-  var crp = $('form').attr("name").split('_');
-  var selector = $('#'+crp[0]+'_deliverable_deliverable_deliverableInfo_deliverableType_id');
+  var crp = $('form').attr("name");
+  var selector = $('#'+crp+'_deliverable_deliverableInfo_deliverableType_id');
   var doiField = $('.metadataElement-doi').find('div.input ').children()[3];
 
   if(selector.val() == '63'){
