@@ -72,6 +72,14 @@ public class QATokenAuthMySQLDAO extends AbstractMarloDAO<QATokenAuth, Long> imp
   }
 
   @Override
+  public QATokenAuth generate(String name, String username, String email, String smoCode, String userId) {
+    String query =
+      "SELECT getQAToken('" + name + "','" + username + "','" + email + "','" + smoCode + "','" + userId + "')";
+    return super.find(QATokenAuth.class, new Long((String) super.executeFunction(query)));
+  }
+
+
+  @Override
   public QATokenAuth save(QATokenAuth qATokenAuth) {
     if (qATokenAuth.getId() == null) {
       super.saveEntity(qATokenAuth);
