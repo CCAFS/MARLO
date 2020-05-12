@@ -418,6 +418,10 @@ public class PolicyItem<T> {
             projectPolicyInfo.setTitle(newPolicyDTO.getProjectPoliciesInfo().getTitle());
             projectPolicyInfo.setDescription(newPolicyDTO.getProjectPoliciesInfo().getDescription());
             projectPolicyInfo.setNarrativeEvidence(newPolicyDTO.getProjectPoliciesInfo().getNarrativeEvidence());
+            projectPolicyInfo.setHasMilestones(false);
+            if (newPolicyDTO.getMilestonesDTOs().size() > 0) {
+              projectPolicyInfo.setHasMilestones(true);
+            }
             projectPolicyInfoManager.saveProjectPolicyInfo(projectPolicyInfo);
 
             for (ProjectPolicyCrp projectPolicyCrp : projectPolicyCrpList) {
@@ -896,6 +900,10 @@ public class PolicyItem<T> {
       // can update
       if (fieldErrors.isEmpty()) {
         final long projectPolicyID = id;
+        projectPolicyInfo.setHasMilestones(false);
+        if (newPolicyDTO.getMilestonesDTOs().size() > 0) {
+          projectPolicyInfo.setHasMilestones(true);
+        }
         projectPolicyInfoManager.saveProjectPolicyInfo(projectPolicyInfo);
         // *************Policy CRP*****************/
         // getting saved projectPolicyCRPList
@@ -937,6 +945,7 @@ public class PolicyItem<T> {
             projectPolicySubIdo.getSrfSubIdo().getId().longValue(), projectPolicySubIdo.getPhase().getId().longValue());
           if (temp != null) {
             existingProjectPolicySubIdoList.add(temp);
+            projectPolicySubIdoManager.saveProjectPolicySubIdo(temp);
           } else {
             projectPolicySubIdoManager.saveProjectPolicySubIdo(projectPolicySubIdo);
           }
