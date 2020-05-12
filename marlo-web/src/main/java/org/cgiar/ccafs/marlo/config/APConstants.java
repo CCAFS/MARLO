@@ -127,6 +127,8 @@ public final class APConstants {
   public static final String CRP_GENERIC_PROJECT = "crp_generic_project";
   public static final String CRP_GENERIC_PROJECT_VALUE = "crp_generic_project_value";
   public static final String CRP_SHOW_SECTION_IMPACT_COVID19 = "crp_show_section_impact_covid19";
+  public static final String CRP_SHOW_SECTION_IMPACT_COVID19_RANGES_YEARS =
+    "crp_show_section_impact_covid19_ranges_years";
 
   public static final String IS_EXPECTED_DELIVERABLE_REPORT_All_YEARS_VISIBLE =
     "is_expected_deliverable_report_all_years_visible";

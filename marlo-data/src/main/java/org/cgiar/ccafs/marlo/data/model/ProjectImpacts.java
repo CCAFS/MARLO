@@ -30,9 +30,9 @@ public class ProjectImpacts extends MarloAuditableEntity implements java.io.Seri
   private static final long serialVersionUID = 4102290809840317791L;
 
   @Expose
-  private Phase phase;
-  @Expose
   private Project project;
+  @Expose
+  private int year;
   @Expose
   private String answer;
 
@@ -52,11 +52,6 @@ public class ProjectImpacts extends MarloAuditableEntity implements java.io.Seri
   }
 
 
-  public Phase getPhase() {
-    return phase;
-  }
-
-
   public Project getProject() {
     return project;
   }
@@ -64,6 +59,11 @@ public class ProjectImpacts extends MarloAuditableEntity implements java.io.Seri
 
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
+  }
+
+
+  public int getYear() {
+    return year;
   }
 
 
@@ -78,16 +78,19 @@ public class ProjectImpacts extends MarloAuditableEntity implements java.io.Seri
   }
 
 
-  public void setPhase(Phase phase) {
-    this.phase = phase;
-  }
-
   public void setProject(Project project) {
     this.project = project;
   }
 
+
   public void setSectionStatuses(Set<SectionStatus> sectionStatuses) {
     this.sectionStatuses = sectionStatuses;
   }
+
+
+  public void setYear(int year) {
+    this.year = year;
+  }
+
 
 }
