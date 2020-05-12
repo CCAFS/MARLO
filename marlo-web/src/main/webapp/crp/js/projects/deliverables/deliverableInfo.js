@@ -372,7 +372,15 @@ function justificationByStatus(statusId) {
         showNewExpectedComponent(false);
       } else {
         console.log("else");
-        showNewExpectedComponent(isStatusExtended(statusId) || hasExpectedYear);
+        if(statusId==4) {
+          showNewExpectedComponent(true);
+          $('.expectedDisabled').hide();
+        } else if(statusId==3){
+          showNewExpectedComponent(true);
+          $('.expectedDisabled').show();
+        } else {
+          showNewExpectedComponent(false);
+        }
       }
     }
 
