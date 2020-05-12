@@ -177,7 +177,7 @@ SET @preparedStatement = (
 SELECT ",
 			@parameter_id,
 			", '2020-2021', `created_by`, `is_active`, `active_since`, `modified_by`, `modification_justification`, `global_unit_id`
-FROM `custom_parameters` WHERE parameter_id = 248;"
+FROM `custom_parameters` WHERE parameter_id = 200;"
 		)
 	)
 );
