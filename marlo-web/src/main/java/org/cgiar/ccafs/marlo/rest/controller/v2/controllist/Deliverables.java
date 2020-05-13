@@ -166,12 +166,7 @@ public class Deliverables {
     @ApiParam(value = "${Deliverables.deliverable.PUT.param.id}", required = true) @PathVariable Long id,
     @ApiParam(value = "${Deliverables.deliverable.PUT.param.deliverable}",
       required = true) @Valid @RequestBody NewPublicationDTO newPublicationDTO) {
-    try {
-      Long deliverableID =
-        this.publicationItem.putDeliverableById(id, newPublicationDTO, CGIAREntity, this.getCurrentUser());
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+
     Long deliverableID =
       this.publicationItem.putDeliverableById(id, newPublicationDTO, CGIAREntity, this.getCurrentUser());
 
