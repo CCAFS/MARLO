@@ -158,9 +158,18 @@ public interface SectionStatusManager {
   public SectionStatus getSectionStatusByProjectHighlight(long projectHighlightID, String cycle, int year,
     Boolean upkeep, String sectionName);
 
+  /**
+   * This method gets a sectionStatus object by a given sectionStatus identifier.
+   * 
+   * @param projectID is the project impacts identifier.
+   * @return a SectionStatus object.
+   */
+  public SectionStatus getSectionStatusByProjectImpacts(Long id, String cycle, int year, Boolean upkeep,
+    String sectionName);
+
+
   public SectionStatus getSectionStatusByProjectInnovation(long projectInnovationID, String cycle, int year,
     Boolean upkeep, String sectionName);
-
 
   /**
    * This method gets a sectionStatus object by a given sectionStatus identifier.
@@ -185,6 +194,7 @@ public interface SectionStatusManager {
    */
   public SectionStatus getSectionStatusBySynthesisMog(long ipProgramID, String cycle, int year, Boolean upkeep,
     String sectionName);
+
 
   /**
    * This method saves the information of the given sectionStatus
