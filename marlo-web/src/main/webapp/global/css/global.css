@@ -1925,6 +1925,18 @@ a.currentReportingSection li, a.currentSection li {
   font-weight: bold;
 }
 
+#secondaryMenu ul li ul > li.currentSection.hasBackground {
+  background: antiquewhite;
+}
+
+#secondaryMenu ul li ul > li.hasBackground {
+  background: rgb(254, 247, 207);
+}
+
+#secondaryMenu ul li ul > li.hasBackground:hover {
+  background: antiquewhite;
+}
+
 #secondaryMenu ul li > ul li {
   margin: 2px 0 3px 0;
   list-style: none;
@@ -6994,6 +7006,15 @@ div.selectPrimary{
 
 .primary-label {
   font-size: 10px
+}
+
+.primary-element {
+  height: 1em;
+  width: 1em;
+  border-radius: 100%;
+  margin-left: 1.5em;
+  margin-bottom: 0.6em;
+  color: #57a7b5;
 }
 
 .menuContent #bi::before{

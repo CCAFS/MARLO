@@ -15,9 +15,9 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
-import org.cgiar.ccafs.marlo.data.dao.QATokenAuthDAO;
-import org.cgiar.ccafs.marlo.data.manager.QATokenAuthManager;
-import org.cgiar.ccafs.marlo.data.model.QATokenAuth;
+import org.cgiar.ccafs.marlo.data.dao.ProjectImpactsDAO;
+import org.cgiar.ccafs.marlo.data.manager.ProjectImpactsManager;
+import org.cgiar.ccafs.marlo.data.model.ProjectImpacts;
 
 import java.util.List;
 
@@ -28,55 +28,54 @@ import javax.inject.Named;
  * @author CCAFS
  */
 @Named
-public class QATokenAuthManagerImpl implements QATokenAuthManager {
+public class ProjectImpactsManagerImpl implements ProjectImpactsManager {
 
 
-  private QATokenAuthDAO qATokenAuthDAO;
+  private ProjectImpactsDAO projectImpactsDAO;
   // Managers
 
 
   @Inject
-  public QATokenAuthManagerImpl(QATokenAuthDAO qATokenAuthDAO) {
-    this.qATokenAuthDAO = qATokenAuthDAO;
+  public ProjectImpactsManagerImpl(ProjectImpactsDAO projectImpactsDAO) {
+    this.projectImpactsDAO = projectImpactsDAO;
 
 
   }
 
   @Override
-  public void deleteQATokenAuth(long qATokenAuthId) {
+  public void deleteProjectImpacts(long projectImpactsId) {
 
-    qATokenAuthDAO.deleteQATokenAuth(qATokenAuthId);
+    projectImpactsDAO.deleteProjectImpacts(projectImpactsId);
   }
 
   @Override
-  public boolean existQATokenAuth(long qATokenAuthID) {
+  public boolean existProjectImpacts(long projectImpactsID) {
 
-    return qATokenAuthDAO.existQATokenAuth(qATokenAuthID);
+    return projectImpactsDAO.existProjectImpacts(projectImpactsID);
   }
 
   @Override
-  public List<QATokenAuth> findAll() {
+  public List<ProjectImpacts> findAll() {
 
-    return qATokenAuthDAO.findAll();
+    return projectImpactsDAO.findAll();
 
   }
 
   @Override
-  public QATokenAuth generateQATokenAuth(String name, String username, String email, String smoCode, String userId) {
+  public ProjectImpacts getProjectImpactsById(long projectImpactsID) {
 
-    return qATokenAuthDAO.generate(name, username, email, smoCode, userId);
+    return projectImpactsDAO.find(projectImpactsID);
   }
 
   @Override
-  public QATokenAuth getQATokenAuthById(long qATokenAuthID) {
-
-    return qATokenAuthDAO.find(qATokenAuthID);
+  public List<ProjectImpacts> getProjectImpactsByProjectId(long projectId) {
+    return projectImpactsDAO.findByProjectId(projectId);
   }
 
   @Override
-  public QATokenAuth saveQATokenAuth(QATokenAuth qATokenAuth) {
+  public ProjectImpacts saveProjectImpacts(ProjectImpacts projectImpacts) {
 
-    return qATokenAuthDAO.save(qATokenAuth);
+    return projectImpactsDAO.save(projectImpacts);
   }
 
 
