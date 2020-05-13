@@ -944,6 +944,7 @@ public class PolicyItem<T> {
             projectPolicySubIdo.getProjectPolicy().getId().longValue(),
             projectPolicySubIdo.getSrfSubIdo().getId().longValue(), projectPolicySubIdo.getPhase().getId().longValue());
           if (temp != null) {
+            temp.setPrimary(projectPolicySubIdo.getPrimary());
             existingProjectPolicySubIdoList.add(temp);
             projectPolicySubIdoManager.saveProjectPolicySubIdo(temp);
           } else {
@@ -969,7 +970,9 @@ public class PolicyItem<T> {
             policyMilestoneManager.findByCrpMilestonePolicyAndPhase(policyMilestone.getCrpMilestone().getId(),
               policyMilestone.getPolicy().getId(), policyMilestone.getPhase().getId());
           if (temp != null) {
+            temp.setPrimary(policyMilestone.getPrimary());
             existingPolicyMilestonesList.add(temp);
+            policyMilestoneManager.savePolicyMilestone(temp);
           } else {
             policyMilestoneManager.savePolicyMilestone(policyMilestone);
           }
