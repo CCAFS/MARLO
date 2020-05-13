@@ -5107,10 +5107,15 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
               .collect(Collectors.toList());
         }
 
-        for (ProjectExpectedStudyLink projectLink : projectLinkList) {
-          if (projectLink.getLink() != null) {
-            comunicationsMaterial += projectLink.getLink();
+        if (projectLinkList != null) {
+          Set<String> comunicationsMaterialSet = new HashSet<>();
+          for (ProjectExpectedStudyLink projectLink : projectLinkList) {
+            if (projectLink.getLink() != null) {
+              comunicationsMaterialSet
+                .add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + urlShortener.getShortUrlService(projectLink.getLink()));
+            }
           }
+          comunicationsMaterial = String.join("", comunicationsMaterialSet);
         }
 
         // Key Contributions
