@@ -267,7 +267,7 @@
             [/#if]
             [#if !expanded]
               <td class="text-center">
-              [#assign isInnovationComplete = action.isInnovationComplete(item.id, actualPhase.id) /]
+              [#assign isInnovationComplete = action.isInnovationComplete(item.id, actualPhase.id)!false /]
               [#if  isInnovationComplete]
                 <span class="glyphicon glyphicon-ok-sign mf-icon check" title="Complete"></span> 
                 [#else]
