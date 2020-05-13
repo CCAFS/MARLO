@@ -48,7 +48,7 @@ function executePetition( idReport ) {
 
   //Ajax to service
   $.ajax({
-    'url': 'https://localhost:8443/marlo-web/biReportsTokenAction.do',
+    'url': baseURL + '/biReportsTokenAction.do',
     'type': "GET",
     'data': data,
     'dataType': "json",
