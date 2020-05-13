@@ -163,7 +163,7 @@
              [/#if]
              [#if !expanded]
                <td class="text-center">
-               [#assign isStudyComplete  = action.isStudyComplete(item.id, actualPhase.id) /]
+               [#assign isStudyComplete  = action.isStudyComplete(item.id, actualPhase.id)!false /]
                [#if isStudyComplete ]
                   <span class="glyphicon glyphicon-ok-sign mf-icon check" title="Complete"></span> 
                 [#else]
