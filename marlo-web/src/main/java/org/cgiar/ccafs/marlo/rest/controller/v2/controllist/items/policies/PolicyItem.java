@@ -418,6 +418,10 @@ public class PolicyItem<T> {
             projectPolicyInfo.setTitle(newPolicyDTO.getProjectPoliciesInfo().getTitle());
             projectPolicyInfo.setDescription(newPolicyDTO.getProjectPoliciesInfo().getDescription());
             projectPolicyInfo.setNarrativeEvidence(newPolicyDTO.getProjectPoliciesInfo().getNarrativeEvidence());
+            projectPolicyInfo.setHasMilestones(false);
+            if (newPolicyDTO.getMilestonesDTOs() != null && newPolicyDTO.getMilestonesDTOs().size() > 0) {
+              projectPolicyInfo.setHasMilestones(true);
+            }
             projectPolicyInfoManager.saveProjectPolicyInfo(projectPolicyInfo);
 
             for (ProjectPolicyCrp projectPolicyCrp : projectPolicyCrpList) {
@@ -896,6 +900,10 @@ public class PolicyItem<T> {
       // can update
       if (fieldErrors.isEmpty()) {
         final long projectPolicyID = id;
+        projectPolicyInfo.setHasMilestones(false);
+        if (newPolicyDTO.getMilestonesDTOs() != null && newPolicyDTO.getMilestonesDTOs().size() > 0) {
+          projectPolicyInfo.setHasMilestones(true);
+        }
         projectPolicyInfoManager.saveProjectPolicyInfo(projectPolicyInfo);
         // *************Policy CRP*****************/
         // getting saved projectPolicyCRPList
@@ -936,7 +944,9 @@ public class PolicyItem<T> {
             projectPolicySubIdo.getProjectPolicy().getId().longValue(),
             projectPolicySubIdo.getSrfSubIdo().getId().longValue(), projectPolicySubIdo.getPhase().getId().longValue());
           if (temp != null) {
+            temp.setPrimary(projectPolicySubIdo.getPrimary());
             existingProjectPolicySubIdoList.add(temp);
+            projectPolicySubIdoManager.saveProjectPolicySubIdo(temp);
           } else {
             projectPolicySubIdoManager.saveProjectPolicySubIdo(projectPolicySubIdo);
           }
@@ -960,7 +970,9 @@ public class PolicyItem<T> {
             policyMilestoneManager.findByCrpMilestonePolicyAndPhase(policyMilestone.getCrpMilestone().getId(),
               policyMilestone.getPolicy().getId(), policyMilestone.getPhase().getId());
           if (temp != null) {
+            temp.setPrimary(policyMilestone.getPrimary());
             existingPolicyMilestonesList.add(temp);
+            policyMilestoneManager.savePolicyMilestone(temp);
           } else {
             policyMilestoneManager.savePolicyMilestone(policyMilestone);
           }
