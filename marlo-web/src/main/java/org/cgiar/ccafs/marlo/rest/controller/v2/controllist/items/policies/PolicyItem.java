@@ -419,7 +419,7 @@ public class PolicyItem<T> {
             projectPolicyInfo.setDescription(newPolicyDTO.getProjectPoliciesInfo().getDescription());
             projectPolicyInfo.setNarrativeEvidence(newPolicyDTO.getProjectPoliciesInfo().getNarrativeEvidence());
             projectPolicyInfo.setHasMilestones(false);
-            if (newPolicyDTO.getMilestonesDTOs().size() > 0) {
+            if (newPolicyDTO.getMilestonesDTOs() != null && newPolicyDTO.getMilestonesDTOs().size() > 0) {
               projectPolicyInfo.setHasMilestones(true);
             }
             projectPolicyInfoManager.saveProjectPolicyInfo(projectPolicyInfo);
@@ -901,7 +901,7 @@ public class PolicyItem<T> {
       if (fieldErrors.isEmpty()) {
         final long projectPolicyID = id;
         projectPolicyInfo.setHasMilestones(false);
-        if (newPolicyDTO.getMilestonesDTOs().size() > 0) {
+        if (newPolicyDTO.getMilestonesDTOs() != null && newPolicyDTO.getMilestonesDTOs().size() > 0) {
           projectPolicyInfo.setHasMilestones(true);
         }
         projectPolicyInfoManager.saveProjectPolicyInfo(projectPolicyInfo);
