@@ -189,7 +189,8 @@ public class DeliverablesItem<T> {
             metadataElements.stream().filter(me -> me.getEcondedName().equals(APConstants.METADATAELEMENTHANDLE))
               .collect(Collectors.toList()).get(0);
           deliverableMetadataElementHandle.setMetadataElement(metadataElementHandle);
-          deliverableMetadataElementHandle.setElementValue(deliverableDTO.getHandle());
+          deliverableMetadataElementHandle
+            .setElementValue(deliverableDTO.getHandle() == null ? "" : deliverableDTO.getHandle());
           deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementHandle);
 
           // deliverable metadataelement DOI
@@ -200,7 +201,7 @@ public class DeliverablesItem<T> {
             metadataElements.stream().filter(me -> me.getEcondedName().equals(APConstants.METADATAELEMENTDOI))
               .collect(Collectors.toList()).get(0);
           deliverableMetadataElementDoi.setMetadataElement(metadataElementDoi);
-          deliverableMetadataElementDoi.setElementValue(deliverableDTO.getDoi());
+          deliverableMetadataElementDoi.setElementValue(deliverableDTO.getDoi() == null ? "" : deliverableDTO.getDoi());
           deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementDoi);
 
           // deliverable metadataelement Title
@@ -211,7 +212,8 @@ public class DeliverablesItem<T> {
             metadataElements.stream().filter(me -> me.getEcondedName().equals(APConstants.METADATAELEMENTTITLE))
               .collect(Collectors.toList()).get(0);
           deliverableMetadataElementTitle.setMetadataElement(metadataElementTitle);
-          deliverableMetadataElementTitle.setElementValue(deliverableDTO.getTitle());
+          deliverableMetadataElementTitle
+            .setElementValue(deliverableDTO.getTitle() == null ? "" : deliverableDTO.getTitle());
           deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementTitle);
 
           // deliverable metadataelement Citation
@@ -734,7 +736,8 @@ public class DeliverablesItem<T> {
             metadataElements.get(APConstants.METADATAELEMENTHANDLE);
           deliverableMetadataElementHandle.setDeliverable(deliverable);
           deliverableMetadataElementHandle.setPhase(phase);
-          deliverableMetadataElementHandle.setElementValue(newPublicationDTO.getHandle());
+          deliverableMetadataElementHandle
+            .setElementValue(newPublicationDTO.getHandle() == null ? "" : newPublicationDTO.getHandle());
           deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementHandle);
 
           // deliverable metadataelement DOI
@@ -742,7 +745,8 @@ public class DeliverablesItem<T> {
             metadataElements.get(APConstants.METADATAELEMENTDOI);
           deliverableMetadataElementDoi.setDeliverable(deliverable);
           deliverableMetadataElementDoi.setPhase(phase);
-          deliverableMetadataElementDoi.setElementValue(newPublicationDTO.getDoi());
+          deliverableMetadataElementDoi
+            .setElementValue(newPublicationDTO.getDoi() == null ? "" : newPublicationDTO.getDoi());
           deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementDoi);
 
           // deliverable metadataelement Title
@@ -750,7 +754,8 @@ public class DeliverablesItem<T> {
             metadataElements.get(APConstants.METADATAELEMENTTITLE);
           deliverableMetadataElementTitle.setDeliverable(deliverable);
           deliverableMetadataElementTitle.setPhase(phase);
-          deliverableMetadataElementTitle.setElementValue(newPublicationDTO.getTitle());
+          deliverableMetadataElementTitle
+            .setElementValue(newPublicationDTO.getTitle() == null ? "" : newPublicationDTO.getTitle());
           deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementTitle);
 
           // deliverable metadataelement Citation
