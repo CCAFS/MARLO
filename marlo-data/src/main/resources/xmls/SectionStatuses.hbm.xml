@@ -70,6 +70,7 @@
       class="org.cgiar.ccafs.marlo.data.model.ProjectPolicy" fetch="select">
       <column name="project_policy_id" />
     </many-to-one>
+
 		<property name="sectionName" type="string">
 			<column name="section_name" not-null="true">
 				<comment>Some section name (would be the action name)</comment>

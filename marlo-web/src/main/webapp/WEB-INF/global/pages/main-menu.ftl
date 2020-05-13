@@ -57,6 +57,7 @@
     'subItems' : [
       { 'slug': 'annualReport', 'name': 'menu.synthesis.annualReport', 'namespace': '/${reportingDefaultNamespace}',  'action': '${(crpSession)!}/${reportingDefaultAction}',  'visible': logged, 'active': true },
       { 'slug': 'projectsEvaluation', 'name': 'menu.synthesis.projectsEvaluation', 'namespace': '/synthesis',  'action': '${(crpSession)!}/projectsEvaluation',  'visible': logged, 'active': false, "development": true }
+      [#-- { 'slug': 'qualityAssessment', 'name': 'menu.synthesis.qualityAssessment', 'namespace': '/qa',  'action': '${(crpSession)!}/qa',  'visible': logged, 'active': true }--]
     ]
   },
   [#-- Cap Dev - CENTER --]

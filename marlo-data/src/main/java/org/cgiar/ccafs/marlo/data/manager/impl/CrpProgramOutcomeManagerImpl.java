@@ -395,6 +395,27 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
           crpMilestoneAdd.setValue(crpMilestone.getValue());
           crpMilestoneAdd.setYear(crpMilestone.getYear());
 
+          if (crpMilestone.getPowbIndAssesmentRisk() != null) {
+            crpMilestoneAdd.setPowbIndAssesmentRisk(crpMilestone.getPowbIndAssesmentRisk());
+          }
+          if (crpMilestone.getPowbIndMilestoneRisk() != null) {
+            crpMilestoneAdd.setPowbIndMilestoneRisk(crpMilestone.getPowbIndMilestoneRisk());
+          }
+
+          if (crpMilestone.getPowbMilestoneOtherRisk() != null) {
+            crpMilestoneAdd.setPowbMilestoneOtherRisk(crpMilestone.getPowbMilestoneOtherRisk());
+          }
+          if (crpMilestone.getPowbMilestoneVerification() != null) {
+            crpMilestoneAdd.setPowbMilestoneVerification(crpMilestone.getPowbMilestoneVerification());
+          }
+          if (crpMilestone.getGenderFocusLevel() != null) {
+            crpMilestoneAdd.setGenderFocusLevel(crpMilestone.getGenderFocusLevel());
+          }
+          if (crpMilestone.getYouthFocusLevel() != null) {
+            crpMilestoneAdd.setYouthFocusLevel(crpMilestone.getYouthFocusLevel());
+          }
+
+
           if (crpMilestone.getExtendedYear() != null) {
             if (crpMilestone.getExtendedYear() != -1) {
               crpMilestoneAdd.setExtendedYear(crpMilestone.getExtendedYear());

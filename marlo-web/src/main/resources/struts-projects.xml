@@ -1102,6 +1102,25 @@
 			</result>
 		</action>
 
+    <action name="{crp}/impacts"
+      class="org.cgiar.ccafs.marlo.action.projects.ProjectImpactsAction">
+      <interceptor-ref
+        name="editProjectsStack" />
+      <result name="input">/WEB-INF/crp/views/projects/projectImpacts.ftl
+      </result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/impacts</param>
+        <param name="edit">true</param>
+        <param name="phaseID">${phaseID}</param>
+        <param name="projectID">${projectID}</param>
+      </result>
+      <result name="redirect" type="redirectAction">
+        <param name="actionName">${crpSession}/impacts</param>
+        <param name="edit">true</param>
+        <param name="phaseID">${phaseID}</param>
+        <param name="projectID">${projectID}</param>
+      </result>
+    </action>
 
 
 	</package>
