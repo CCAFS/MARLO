@@ -354,108 +354,113 @@ public class PublicationsAction extends BaseAction {
     deliverable = deliverableManager.getDeliverableById(deliverableID);
     int count = 0;
     int count2 = 0;
-    if (deliverable != null) {
+    try {
 
-      deliverable.setCrps(deliverable.getDeliverableCrps().stream()
-        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
-      /*
-       * if (deliverable.getCrps() == null || deliverable.getCrps().isEmpty()) {
-       * emptyFields.add("CRP");
-       * count++;
-       * }
-       */
+      if (deliverable != null) {
 
-      if (deliverable.getPublication() != null) {
+        deliverable.setCrps(deliverable.getDeliverableCrps().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+        /*
+         * if (deliverable.getCrps() == null || deliverable.getCrps().isEmpty()) {
+         * emptyFields.add("CRP");
+         * count++;
+         * }
+         */
 
-        // Is publication
-        if (deliverable.getPublication().getIsiPublication() == null) {
-          emptyFields.add("Is publication");
+        if (deliverable.getPublication() != null) {
+
+          // Is publication
+          if (deliverable.getPublication().getIsiPublication() == null) {
+            emptyFields.add("Is publication");
+            count++;
+          }
+
+          // Issue - Page - Volume
+          if (deliverable.getPublication().getVolume() == null || deliverable.getPublication().getVolume().isEmpty()) {
+            count2++;
+          }
+          if (deliverable.getPublication().getPages() == null || deliverable.getPublication().getPages().isEmpty()) {
+            count2++;
+          }
+          if (deliverable.getPublication().getIssue() == null || deliverable.getPublication().getIssue().isEmpty()) {
+            count2++;
+          }
+        }
+
+        if (count2 == 3) {
+          emptyFields.add("Issue/Pages/Volume");
           count++;
         }
 
-        // Issue - Page - Volume
-        if (deliverable.getPublication().getVolume() == null || deliverable.getPublication().getVolume().isEmpty()) {
-          count2++;
-        }
-        if (deliverable.getPublication().getPages() == null || deliverable.getPublication().getPages().isEmpty()) {
-          count2++;
-        }
-        if (deliverable.getPublication().getIssue() == null || deliverable.getPublication().getIssue().isEmpty()) {
-          count2++;
-        }
-      }
-
-      if (count2 == 3) {
-        emptyFields.add("Issue/Pages/Volume");
-        count++;
-      }
-
-      int countAuthors = 0;
-      // Authors
-      if (deliverable.getUsers() == null || deliverable.getUsers().isEmpty()) {
-        countAuthors++;
-      }
-      if (deliverable.getMetadata() != null) {
-        // Authors Clarisa
-        if (deliverable.getMetadataValue(38) == null || deliverable.getMetadataValue(38).isEmpty()) {
+        int countAuthors = 0;
+        // Authors
+        if (deliverable.getUsers() == null || deliverable.getUsers().isEmpty()) {
           countAuthors++;
         }
-      }
+        if (deliverable.getMetadata() != null) {
+          // Authors Clarisa
+          if (deliverable.getMetadataValue(38) == null || deliverable.getMetadataValue(38).isEmpty()) {
+            countAuthors++;
+          }
+        }
 
-      // Validate if the authors fields are null
-      if (countAuthors == 2) {
-        emptyFields.add("Authors");
-        count++;
-      }
+        // Validate if the authors fields are null
+        if (countAuthors == 2) {
+          emptyFields.add("Authors");
+          count++;
+        }
 
-      if (deliverable.getMetadata() != null) {
-        // Unique identifier (DOI)
-        if (deliverable.getMetadataValue(36) != null || deliverable.getMetadataValue(36).isEmpty()) {
-          // Has DOI
-        } else {
-          if (deliverable.getDissemination(this.getActualPhase()) != null
-            && deliverable.getDissemination(this.getActualPhase()).getHasDOI() != null
-            && deliverable.getDissemination(this.getActualPhase()).getArticleUrl() != null
-            && !deliverable.getDissemination(this.getActualPhase()).getArticleUrl().isEmpty()) {
+        if (deliverable.getMetadata() != null) {
+          // Unique identifier (DOI)
+          if (deliverable.getMetadataValue(36) != null || deliverable.getMetadataValue(36).isEmpty()) {
             // Has DOI
           } else {
-            // If the mark of No DOI is empty
-            emptyFields.add("DOI");
+            if (deliverable.getDissemination(this.getActualPhase()) != null
+              && deliverable.getDissemination(this.getActualPhase()).getHasDOI() != null
+              && deliverable.getDissemination(this.getActualPhase()).getArticleUrl() != null
+              && !deliverable.getDissemination(this.getActualPhase()).getArticleUrl().isEmpty()) {
+              // Has DOI
+            } else {
+              // If the mark of No DOI is empty
+              emptyFields.add("DOI");
+              count++;
+            }
+          }
+          // Date of Publication
+          if ((deliverable.getMetadataValue(17) == null || deliverable.getMetadataValue(17).isEmpty())
+            && (deliverable.getMetadataValue(16) == null || deliverable.getMetadataValue(16).isEmpty())) {
+            emptyFields.add("Date of Publication");
+            count++;
+          }
+          // Article Title
+          if ((deliverable.getMetadataValue(1) == null || deliverable.getMetadataValue(1).isEmpty())
+            && (deliverable.getMetadataValue(0) == null || deliverable.getMetadataValue(0).isEmpty())) {
+            emptyFields.add("Article Title");
             count++;
           }
         }
-        // Date of Publication
-        if ((deliverable.getMetadataValue(17) == null || deliverable.getMetadataValue(17).isEmpty())
-          && (deliverable.getMetadataValue(16) == null || deliverable.getMetadataValue(16).isEmpty())) {
-          emptyFields.add("Date of Publication");
-          count++;
-        }
-        // Article Title
-        if ((deliverable.getMetadataValue(1) == null || deliverable.getMetadataValue(1).isEmpty())
-          && (deliverable.getMetadataValue(0) == null || deliverable.getMetadataValue(0).isEmpty())) {
-          emptyFields.add("Article Title");
-          count++;
-        }
       }
-    }
 
 
-    if (count == 0) {
-      return true;
-    } else {
-      emptyFields.add("ID:" + deliverable.getId());
+      if (count == 0) {
+        return true;
+      } else {
+        emptyFields.add("ID:" + deliverable.getId());
+        return false;
+      }
+
+      /*
+       * if (sectionStatus == null) {
+       * return true;
+       * }
+       * if (sectionStatus.getMissingFields().length() != 0) {
+       * return false;
+       * }
+       */
+      // return true;
+    } catch (Exception e) {
       return false;
     }
-
-    /*
-     * if (sectionStatus == null) {
-     * return true;
-     * }
-     * if (sectionStatus.getMissingFields().length() != 0) {
-     * return false;
-     * }
-     */
-    // return true;
   }
 
 
