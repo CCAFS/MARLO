@@ -477,7 +477,7 @@ public class InnovationItem<T> {
         projectInnovation = this.projectInnovationManager.saveProjectInnovation(projectInnovation);
         innovationID = projectInnovation.getId();
         projectInnovationInfo.setProjectInnovation(projectInnovation);
-        if (newInnovationDTO.getMilestonesCodeList().size() > 0) {
+        if (newInnovationDTO.getMilestonesCodeList() != null && newInnovationDTO.getMilestonesCodeList().size() > 0) {
           projectInnovationInfo.setHasMilestones(true);
         }
         this.projectInnovationInfoManager.saveProjectInnovationInfo(projectInnovationInfo);
@@ -1083,7 +1083,8 @@ public class InnovationItem<T> {
             innovation = this.projectInnovationManager.saveProjectInnovation(innovation);
             if (innovation != null) {
               projectInnovationInfo.setHasMilestones(false);
-              if (newInnovationDTO.getMilestonesCodeList().size() > 0) {
+              if (newInnovationDTO.getMilestonesCodeList() != null
+                && newInnovationDTO.getMilestonesCodeList().size() > 0) {
                 projectInnovationInfo.setHasMilestones(true);
               }
               this.projectInnovationInfoManager.saveProjectInnovationInfo(projectInnovationInfo);
