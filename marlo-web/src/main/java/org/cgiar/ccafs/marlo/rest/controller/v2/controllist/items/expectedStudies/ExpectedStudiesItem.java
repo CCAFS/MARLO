@@ -559,6 +559,23 @@ public class ExpectedStudiesItem<T> {
                   new FieldErrorDTO("CreateExpectedStudy", "Countries", "A Country code can not be null nor empty."));
               }
             }
+            // verification for single or multiple countries
+            if (countriesList.size() == 1) {
+              geographicScopeList
+                .removeIf(g -> g.getId() != null && (g.getId() == APConstants.REP_IND_GEOGRAPHIC_SCOPE_MULTINATIONAL
+                  || g.getId() == APConstants.REP_IND_GEOGRAPHIC_SCOPE_NATIONAL));
+              // should not cause exception
+              geographicScopeList.add(repIndGeographicScopeManager
+                .getRepIndGeographicScopeById(APConstants.REP_IND_GEOGRAPHIC_SCOPE_NATIONAL));
+            } else if (countriesList.size() > 1) {
+              geographicScopeList
+                .removeIf(g -> g.getId() != null && (g.getId() == APConstants.REP_IND_GEOGRAPHIC_SCOPE_NATIONAL
+                  || g.getId() == APConstants.REP_IND_GEOGRAPHIC_SCOPE_MULTINATIONAL));
+              // should not cause exception
+              geographicScopeList.add(repIndGeographicScopeManager
+                .getRepIndGeographicScopeById(APConstants.REP_IND_GEOGRAPHIC_SCOPE_MULTINATIONAL));
+            }
+
           } /*
              * else {
              * fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Countries", "Please enter the Country(ies)."));
@@ -1639,6 +1656,23 @@ public class ExpectedStudiesItem<T> {
                   .add(new FieldErrorDTO("putExpectedStudy", "Countries", "A Country code can not be null nor empty."));
               }
             }
+            // verification for single or multiple countries
+            if (countriesList.size() == 1) {
+              geographicScopeList
+                .removeIf(g -> g.getId() != null && (g.getId() == APConstants.REP_IND_GEOGRAPHIC_SCOPE_MULTINATIONAL
+                  || g.getId() == APConstants.REP_IND_GEOGRAPHIC_SCOPE_NATIONAL));
+              // should not cause exception
+              geographicScopeList.add(repIndGeographicScopeManager
+                .getRepIndGeographicScopeById(APConstants.REP_IND_GEOGRAPHIC_SCOPE_NATIONAL));
+            } else if (countriesList.size() > 1) {
+              geographicScopeList
+                .removeIf(g -> g.getId() != null && (g.getId() == APConstants.REP_IND_GEOGRAPHIC_SCOPE_NATIONAL
+                  || g.getId() == APConstants.REP_IND_GEOGRAPHIC_SCOPE_MULTINATIONAL));
+              // should not cause exception
+              geographicScopeList.add(repIndGeographicScopeManager
+                .getRepIndGeographicScopeById(APConstants.REP_IND_GEOGRAPHIC_SCOPE_MULTINATIONAL));
+            }
+
           } /*
              * else {
              * fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Countries", "Please enter the Country(ies)."));

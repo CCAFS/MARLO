@@ -339,7 +339,7 @@
               [#if allowPopups]
                 [#-- Complete Status--]
                 <td class="text-center">
-                [#assign isPublicationComplete = action.isPublicationComplete(item.id, actualPhase.id) /]
+                [#assign isPublicationComplete = action.isPublicationComplete(item.id, actualPhase.id)!false /]
                  [#if isPublicationComplete]
                     <span class="glyphicon glyphicon-ok-sign mf-icon check" title="Complete"></span> 
                     [#else]
