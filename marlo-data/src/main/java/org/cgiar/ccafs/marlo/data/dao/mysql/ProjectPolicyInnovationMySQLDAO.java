@@ -70,6 +70,20 @@ public class ProjectPolicyInnovationMySQLDAO extends AbstractMarloDAO<ProjectPol
   }
 
   @Override
+  public ProjectPolicyInnovation getProjectPolicyInnovationByPhase(Long projectPolicyID, Long projectInnovationID,
+    Long phaseID) {
+    String query =
+      "from " + ProjectPolicyInnovation.class.getName() + " WHERE project_policy_id=" + projectPolicyID.longValue()
+        + " AND project_innovation_id=" + projectInnovationID.longValue() + " AND id_phase=" + phaseID.longValue();
+    List<ProjectPolicyInnovation> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+
+  }
+
+  @Override
   public ProjectPolicyInnovation save(ProjectPolicyInnovation projectPolicyInnovation) {
     if (projectPolicyInnovation.getId() == null) {
       super.saveEntity(projectPolicyInnovation);
