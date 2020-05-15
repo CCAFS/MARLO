@@ -1,52 +1,32 @@
-
 $(document).ready(init);
 
 function init() {
-  // Setting ID to Date-picker input
-
-
-
-  //reportId = $('input[name=reportID]').val();
-  //datasetId = $('input[name=datasetId]').val();
-
-  //console.log(embedUrl);
-  //console.log(reportId);
-  //console.log(datasetId);
-  //setTokenData();
   var idReport = $(".tab-pane.fade.active.in").attr('id');
-  console.log(idReport);
   executePetition(idReport);
   addEvents();
 }
 
 function addEvents(){
-  $('li[role="presentation"]').on("click", function() {
+  $('li[role="presentation"]').each(function( index ) {
     var idReport = $(this).children().first().attr('class');
-    //console.log(reportDbId);
-    //$('input#embeUrl-'+reportDbId).val()
-    //embedUrl = $('input#embeUrl-'+reportDbId).val();
-    //reportId = $('input#reportID-'+reportDbId).val();
-    //datasetId = $('input#datasetId-'+reportDbId).val();
-    //console.log(embedUrl);
-    //console.log(reportId);
-    //console.log(datasetId);
-    //console.log($('input#reportName-'+reportDbId).val());
     executePetition(idReport);
   });
+  /*
+  $('li[role="presentation"]').on("click", function() {
+    var idReport = $(this).children().first().attr('class');
+    executePetition(idReport);
+  });*/
 }
 
 //Peticion to BireportsTokenAction
 function executePetition( idReport ) {
-  console.log("EP BiReports");
   var $inputsContainer = $('#'+idReport);
-  console.log('#'+idReport);
-  console.log($inputsContainer);
   var data = {
       datasetId: $inputsContainer.find('input[name=datasetId]').val(),
       reportId: $inputsContainer.find('input[name=reportId]').val()
   }
 
-  //Ajax to service
+  //Ajax to petition in back to PowerBi
   $.ajax({
     'url': baseURL + '/biReportsTokenAction.do',
     'type': "GET",
@@ -57,14 +37,9 @@ function executePetition( idReport ) {
         $('#metadata-output').html("Searching ... " + data.metadataID);
     },
     success: function(metadata) {
-      console.log("BireportsTokenAction");
-
       var embedUrl = $inputsContainer.find('input[name=embedUrl]').val();
       var reportId = $inputsContainer.find('input[name=reportId]').val();
-      console.log(embedUrl);
-      console.log(reportId);
-      console.log(metadata.token);
-      embedPBI(metadata.token, embedUrl, reportId);
+      embedPBI(metadata.token, embedUrl, reportId, idReport);
     },
     complete: function() {
       $(".deliverableDisseminationUrl").removeClass('input-loading');
@@ -74,41 +49,8 @@ function executePetition( idReport ) {
     }
   });
 }
-
 /*
-// Function that requests to the Api the bearer token necessary for the embed token
-function generateBearerToken(baseURL, data) {
-  var token = '';
-  $.ajax({
-    'url': baseURL,
-    'type': "POST",
-    "headers": {
-      "Content-Type": ["application/x-www-form-urlencoded", "application/x-www-form-urlencoded"],
-    },
-    'data': data,
-    success: function (metadata) {
-      if (jQuery.isEmptyObject(metadata)) {
-        console.log('empty');
-      } else {
-        $.each(metadata, function (key, value) {
-          if (key == 'access_token') {
-            token = value;
-          }
-        });
-        // Generate the embed token with the bearer generated
-        generateToken(baseUrl, tokenData, token);
-      }
-    },
-    complete: function () {
-      // console.log(token);
-    },
-    error: function () {
-      console.log("error");
-    }
-  });
-}
-
-// Generate the embed token with the bearer generated
+// Generate the embed token with the bearer generated (JS petition)
 function generateToken(baseURL, data, bearerToken) {
   var token = '';
   $.ajax({
@@ -144,7 +86,7 @@ function generateToken(baseURL, data, bearerToken) {
 }*/
 
 // Embed Dashboard
-function embedPBI(embedToken, embededURL, dashboardId) {
+function embedPBI(embedToken, embededURL, dashboardId, contentId) {
   // Get models. models contains enums that can be used.
   var models = window['powerbi-client'].models;
   var permissions = models.Permissions.All;
@@ -169,9 +111,7 @@ function embedPBI(embedToken, embededURL, dashboardId) {
 
   // Get a reference to the embedded dashboard HTML element
   //$embedContainer =
-  //var reportDbId = $('input[name=id]').val();
-  var $dashboardContainer = $(".tab-pane.fade.active.in").children().first();
-  console.log($dashboardContainer);
+  var $dashboardContainer = $("#"+contentId).children().first();
   var dashboard = powerbi.embed($dashboardContainer.get(0), config);
 
   // Dashboard.off removes a given event handler if it exists.
@@ -190,14 +130,6 @@ function embedPBI(embedToken, embededURL, dashboardId) {
   dashboard.off("tileClicked");
 
 }
-
-/*
-// Embed Dashboard
-function embed(userRoles) {
-  var url = baseUrlAzure.replace("{tenantID}", tenantID);
-  tokenData.identities[0].roles = userRoles;
-  generateBearerToken(url, bearerData)
-}*/
 
 function filterAcronym(value) {
   // Build the filter you want to use. For more information, See Constructing
