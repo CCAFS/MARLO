@@ -392,10 +392,14 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         List<ProjectExpectedStudyInnovation> studyInnovations = new ArrayList<>();
 
         // Expected Study Innovations List
-        studyInnovations = projectExpectedStudyInnovationManager.findAll().stream()
-          .filter(p -> p != null && p.getPhase().getId().equals(this.getActualPhase().getId())
-            && p.getProjectInnovation().getId().equals(projectInnovationInfo.getProjectExpectedStudy().getId()))
-          .collect(Collectors.toList());
+        if (projectExpectedStudyInnovationManager.findAll() != null && projectExpectedStudyInnovationManager.findAll()
+          .stream().filter(p -> p != null && p.getPhase().getId().equals(this.getActualPhase().getId())
+            && p.getProjectInnovation().getId().equals(projectInnovationInfo.getProjectInnovation().getId())) != null) {
+          studyInnovations = projectExpectedStudyInnovationManager.findAll().stream()
+            .filter(p -> p != null && p.getPhase().getId().equals(this.getActualPhase().getId())
+              && p.getProjectInnovation().getId().equals(projectInnovationInfo.getProjectInnovation().getId()))
+            .collect(Collectors.toList());
+        }
 
         if (projectInnovationInfo.getProjectExpectedStudy() != null && projectInnovationInfo.getProjectExpectedStudy()
           .getProjectExpectedStudyInfo(this.getSelectedPhase()) != null) {
