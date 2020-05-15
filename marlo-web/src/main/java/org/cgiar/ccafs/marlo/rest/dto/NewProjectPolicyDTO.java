@@ -59,27 +59,35 @@ public class NewProjectPolicyDTO {
   @ApiModelProperty(notes = "CGIAR Milestones List", position = 5)
   private List<NewMilestonesDTO> milestonesCodeList;
 
+
   @ApiModelProperty(notes = "Outcome Impact Case Report List", position = 8)
   private List<String> projectExpectedStudyList;
 
+  @ApiModelProperty(notes = "Contributing innovations code list", position = 8)
+  private List<String> innovationCodeList;
 
   public List<CountryDTO> getCountries() {
     return countries;
   }
 
-
   public List<NewCrosscuttingMarkersDTO> getCrossCuttingMarkers() {
     return crossCuttingMarkers;
   }
+
 
   public List<GeographicScopeDTO> getGeographicScopes() {
     return geographicScopes;
   }
 
 
+  public List<String> getInnovationCodeList() {
+    return innovationCodeList;
+  }
+
   public List<NewMilestonesDTO> getMilestonesCodeList() {
     return milestonesCodeList;
   }
+
 
   public List<PolicyOwnerTypeDTO> getOwners() {
     return owners;
@@ -93,10 +101,10 @@ public class NewProjectPolicyDTO {
     return project;
   }
 
-
   public List<String> getProjectExpectedStudyList() {
     return projectExpectedStudyList;
   }
+
 
   public ProjectPoliciesInfoDTO getProjectPoliciesInfo() {
     return projectPoliciesInfo;
@@ -106,10 +114,10 @@ public class NewProjectPolicyDTO {
     return projectPolicyCrpDTO;
   }
 
-
   public List<RegionDTO> getRegions() {
     return regions;
   }
+
 
   public List<NewSrfSubIdoDTO> getSrfSubIdoList() {
     return srfSubIdoList;
@@ -123,9 +131,13 @@ public class NewProjectPolicyDTO {
     this.crossCuttingMarkers = crossCuttingMarkers;
   }
 
-
   public void setGeographicScopes(List<GeographicScopeDTO> geographicScopes) {
     this.geographicScopes = geographicScopes;
+  }
+
+
+  public void setInnovationCodeList(List<String> innovationCodeList) {
+    this.innovationCodeList = innovationCodeList;
   }
 
 
