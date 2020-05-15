@@ -9,6 +9,9 @@
 /]
 [#assign currentSection = "bi" /] 
 
+[#assign breadCrumb = [
+  {"label":"${currentSection}",   "nameSpace":"",             "action":""}
+]/]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
@@ -26,8 +29,7 @@
 [#assign crp = "CCAFS" /]
 
     <section class="container">
-     [#if biReports?has_content]
-
+    [#if biReports?has_content]
        <div class="dashboard-tabs">
         [#-- Menu --]
         <ul class="nav nav-tabs" role="tablist">
