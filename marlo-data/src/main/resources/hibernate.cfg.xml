@@ -453,8 +453,6 @@
     <mapping resource="xmls/BiParameters.hbm.xml" />
     <mapping resource="xmls/QATokenAuth.hbm.xml" />
     <mapping resource="xmls/UrlSynthesisLogs.hbm.xml" /> 
-    <!--  
     <mapping resource="xmls/ProjectImpacts.hbm.xml" />
-    -->
   </session-factory>
 </hibernate-configuration>

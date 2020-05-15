@@ -735,21 +735,19 @@ public class ExpectedStudiesItem<T> {
             for (NewMilestonesDTO milestones : newProjectExpectedStudy.getMilestonesCodeList()) {
               if (milestones != null && milestones.getMilestone() != null
                 && !milestones.getMilestone().trim().isEmpty()) {
-                id =
-                  this.tryParseLong(milestones.getMilestone().trim(), fieldErrors, "CreateExpectedStudy", "Milestone");
-                if (id != null) {
-                  CrpMilestone crpMilestone = crpMilestoneManager.getCrpMilestoneById(id);
-                  if (crpMilestone != null && crpMilestone.isActive()) {
-                    ProjectExpectedStudyMilestone obj = new ProjectExpectedStudyMilestone();
-                    obj.setCrpMilestone(crpMilestone);
-                    obj.setPrimary(milestones.getPrimary() != null && milestones.getPrimary());
-                    hasPrimary = hasPrimary + (obj.getPrimary() == true ? 1 : 0);
-                    milestoneList.add(obj);
-                  } else {
-                    fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Milestone",
-                      milestones.getMilestone() + " is an invalid Milestone identifier"));
-                  }
+                CrpMilestone crpMilestone =
+                  crpMilestoneManager.getCrpMilestoneByPhase(milestones.getMilestone(), phase.getId());
+                if (crpMilestone != null && crpMilestone.isActive()) {
+                  ProjectExpectedStudyMilestone obj = new ProjectExpectedStudyMilestone();
+                  obj.setCrpMilestone(crpMilestone);
+                  obj.setPrimary(milestones.getPrimary() != null && milestones.getPrimary());
+                  hasPrimary = hasPrimary + (obj.getPrimary() == true ? 1 : 0);
+                  milestoneList.add(obj);
+                } else {
+                  fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Milestone",
+                    milestones.getMilestone() + " is an invalid Milestone identifier"));
                 }
+
               } else {
                 fieldErrors.add(
                   new FieldErrorDTO("CreateExpectedStudy", "Milestone", "A Milestone code can not be null nor empty."));
@@ -1831,20 +1829,19 @@ public class ExpectedStudiesItem<T> {
             for (NewMilestonesDTO milestones : newProjectExpectedStudy.getMilestonesCodeList()) {
               if (milestones != null && milestones.getMilestone() != null
                 && !milestones.getMilestone().trim().isEmpty()) {
-                id = this.tryParseLong(milestones.getMilestone().trim(), fieldErrors, "putExpectedStudy", "Milestone");
-                if (id != null) {
-                  CrpMilestone crpMilestone = crpMilestoneManager.getCrpMilestoneById(id);
-                  if (crpMilestone != null && crpMilestone.isActive()) {
-                    ProjectExpectedStudyMilestone obj = new ProjectExpectedStudyMilestone();
-                    obj.setCrpMilestone(crpMilestone);
-                    obj.setPrimary(milestones.getPrimary() != null && milestones.getPrimary());
-                    hasPrimary = hasPrimary + (obj.getPrimary() == true ? 1 : 0);
-                    milestoneList.add(obj);
-                  } else {
-                    fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Milestone",
-                      milestones.getMilestone() + " is an invalid Milestone identifier"));
-                  }
+                CrpMilestone crpMilestone =
+                  crpMilestoneManager.getCrpMilestoneByPhase(milestones.getMilestone(), phase.getId());
+                if (crpMilestone != null && crpMilestone.isActive()) {
+                  ProjectExpectedStudyMilestone obj = new ProjectExpectedStudyMilestone();
+                  obj.setCrpMilestone(crpMilestone);
+                  obj.setPrimary(milestones.getPrimary() != null && milestones.getPrimary());
+                  hasPrimary = hasPrimary + (obj.getPrimary() == true ? 1 : 0);
+                  milestoneList.add(obj);
+                } else {
+                  fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Milestone",
+                    milestones.getMilestone() + " is an invalid Milestone identifier"));
                 }
+
               } else {
                 fieldErrors.add(
                   new FieldErrorDTO("putExpectedStudy", "Milestone", "A Milestone code can not be null nor empty."));
