@@ -55,11 +55,16 @@ public interface ProjectPolicyInnovationDAO {
   public List<ProjectPolicyInnovation> findAll();
 
 
+  public ProjectPolicyInnovation getProjectPolicyInnovationByPhase(Long projectPolicyID, Long projectInnovationID,
+    Long phaseID);
+
   /**
    * This method saves the information of the given projectPolicyInnovation
    * 
-   * @param projectPolicyInnovation - is the projectPolicyInnovation object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectPolicyInnovation was
+   * @param projectPolicyInnovation - is the projectPolicyInnovation object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectPolicyInnovation
+   *         was
    *         updated
    *         or -1 is some error occurred.
    */
