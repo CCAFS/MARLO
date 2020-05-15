@@ -62,6 +62,10 @@ public class ProjectPolicyDTO {
   private List<ProjectExpectedStudyNameDTO> projectExpetedStudyList;
 
 
+  @ApiModelProperty(notes = "Innovations List", position = 120)
+  private List<ProjectInnovationNameDTO> projectInnovationList;
+
+
   public List<CountryDTO> getCountries() {
     return countries;
   }
@@ -71,9 +75,11 @@ public class ProjectPolicyDTO {
     return crossCuttingMarkers;
   }
 
+
   public List<ProjectPolicyGeographicScopeDTO> getGeographicScopes() {
     return geographicScopes;
   }
+
 
   public Long getId() {
     return id;
@@ -93,6 +99,10 @@ public class ProjectPolicyDTO {
 
   public List<ProjectExpectedStudyNameDTO> getProjectExpetedStudyList() {
     return projectExpetedStudyList;
+  }
+
+  public List<ProjectInnovationNameDTO> getProjectInnovationList() {
+    return projectInnovationList;
   }
 
   public ProjectPoliciesInfoDTO getProjectPoliciesInfo() {
@@ -115,10 +125,10 @@ public class ProjectPolicyDTO {
     this.countries = countries;
   }
 
-
   public void setCrossCuttingMarkers(List<CrosscuttingMarkersDTO> crossCuttingMarkers) {
     this.crossCuttingMarkers = crossCuttingMarkers;
   }
+
 
   public void setGeographicScopes(List<ProjectPolicyGeographicScopeDTO> geographicScopes) {
     this.geographicScopes = geographicScopes;
@@ -142,6 +152,10 @@ public class ProjectPolicyDTO {
 
   public void setProjectExpetedStudyList(List<ProjectExpectedStudyNameDTO> projectExpetedStudyList) {
     this.projectExpetedStudyList = projectExpetedStudyList;
+  }
+
+  public void setProjectInnovationList(List<ProjectInnovationNameDTO> projectInnovationList) {
+    this.projectInnovationList = projectInnovationList;
   }
 
   public void setProjectPoliciesInfo(ProjectPoliciesInfoDTO projectPoliciesInfo) {
