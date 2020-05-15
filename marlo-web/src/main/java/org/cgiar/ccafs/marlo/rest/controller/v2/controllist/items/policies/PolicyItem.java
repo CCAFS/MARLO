@@ -1089,6 +1089,12 @@ public class PolicyItem<T> {
             projectPolicyGeographicScopeManager.saveProjectPolicyGeographicScope(projectPolicyGeographicScope);
           }
         }
+        // verify deleted GeographicScope
+        for (ProjectPolicyGeographicScope obj : projectPolicyGeographicScopeListDB) {
+          if (!existingProjectPolicyGeographicScopeList.contains(obj)) {
+            projectPolicyGeographicScopeManager.deleteProjectPolicyGeographicScope(obj.getId());
+          }
+        }
 
         // *************Policy Innovations*****************/
         List<ProjectPolicyInnovation> projectPolicyInnovationListDB = projectPolicyInnovationManager.findAll().stream()
