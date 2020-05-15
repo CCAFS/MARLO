@@ -26,3 +26,4 @@ FROM `custom_parameters` WHERE parameter_id = 200;
 INSERT INTO `parameters` (`global_unit_type_id`, `key`, `description`, `format`, `category`)
 VALUES ( '3', 'crp_show_section_impact_covid19', 'Show section impact of COVID-19', '1', '2');
 INSERT INTO `parameters` (`global_unit_type_id`, `key`, `description`, `format`, `category`)
+VALUES ( '4', 'crp_show_section_impact_covid19', 'Show section impact of COVID-19', '1', '2');
