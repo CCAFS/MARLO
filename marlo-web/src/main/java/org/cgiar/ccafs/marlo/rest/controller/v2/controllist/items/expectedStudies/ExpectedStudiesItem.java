@@ -741,7 +741,9 @@ public class ExpectedStudiesItem<T> {
                   ProjectExpectedStudyMilestone obj = new ProjectExpectedStudyMilestone();
                   obj.setCrpMilestone(crpMilestone);
                   obj.setPrimary(milestones.getPrimary() != null && milestones.getPrimary());
-                  hasPrimary = hasPrimary + (obj.getPrimary() == true ? 1 : 0);
+                  if (obj.getPrimary()) {
+                    hasPrimary += 1;
+                  }
                   milestoneList.add(obj);
                 } else {
                   fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Milestone",
@@ -753,10 +755,7 @@ public class ExpectedStudiesItem<T> {
                   new FieldErrorDTO("CreateExpectedStudy", "Milestone", "A Milestone code can not be null nor empty."));
               }
             }
-            if (hasPrimary == 0) {
-              fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Milestone",
-                "There should be at least one milestone marked as primary"));
-            }
+
             if (hasPrimary > 1) {
               fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Milestone",
                 "There can not be more than one milestone marked as primary"));
@@ -880,7 +879,10 @@ public class ExpectedStudiesItem<T> {
               if (projectPolicyList.size() > 0) {
                 projectExpectedStudyInfo.setIsContribution(true);
               }
-
+              if (newProjectExpectedStudy.getMilestonesCodeList() != null
+                && newProjectExpectedStudy.getMilestonesCodeList().size() > 0) {
+                projectExpectedStudyInfo.setHasMilestones(true);
+              }
               if (srfSloIndicatorList.size() > 0) {
                 projectExpectedStudyInfo.setIsSrfTarget("targetsOptionYes");
               }
@@ -1835,7 +1837,9 @@ public class ExpectedStudiesItem<T> {
                   ProjectExpectedStudyMilestone obj = new ProjectExpectedStudyMilestone();
                   obj.setCrpMilestone(crpMilestone);
                   obj.setPrimary(milestones.getPrimary() != null && milestones.getPrimary());
-                  hasPrimary = hasPrimary + (obj.getPrimary() == true ? 1 : 0);
+                  if (obj.getPrimary()) {
+                    hasPrimary += 1;
+                  }
                   milestoneList.add(obj);
                 } else {
                   fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Milestone",
@@ -1847,10 +1851,7 @@ public class ExpectedStudiesItem<T> {
                   new FieldErrorDTO("putExpectedStudy", "Milestone", "A Milestone code can not be null nor empty."));
               }
             }
-            if (hasPrimary == 0) {
-              fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Milestone",
-                "There should be at least one milestone marked as primary"));
-            }
+
             if (hasPrimary > 1) {
               fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Milestone",
                 "There can not be more than one milestone marked as primary"));
@@ -1978,6 +1979,10 @@ public class ExpectedStudiesItem<T> {
             }
             if (srfSloIndicatorList.size() > 0) {
               projectExpectedStudyInfo.setIsSrfTarget("targetsOptionYes");
+            }
+            if (newProjectExpectedStudy.getMilestonesCodeList() != null
+              && newProjectExpectedStudy.getMilestonesCodeList().size() > 0) {
+              projectExpectedStudyInfo.setHasMilestones(true);
             }
             if (projectExpectedStudyInfoManager.saveProjectExpectedStudyInfo(projectExpectedStudyInfo) != null) {
               // update flashsip/module

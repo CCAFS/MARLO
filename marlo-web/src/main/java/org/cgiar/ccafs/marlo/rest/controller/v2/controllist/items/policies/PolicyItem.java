@@ -279,8 +279,8 @@ public class PolicyItem<T> {
           }
         }
         // validate milestones
-        if (newPolicyDTO.getMilestonesDTOs() != null && !newPolicyDTO.getMilestonesDTOs().isEmpty()) {
-          for (NewMilestonesDTO milestones : newPolicyDTO.getMilestonesDTOs()) {
+        if (newPolicyDTO.getMilestonesCodeList() != null && !newPolicyDTO.getMilestonesCodeList().isEmpty()) {
+          for (NewMilestonesDTO milestones : newPolicyDTO.getMilestonesCodeList()) {
             if (milestones != null && !milestones.getMilestone().trim().isEmpty()) {
               CrpMilestone crpMilestone =
                 crpMilestoneManager.getCrpMilestoneByPhase(milestones.getMilestone().trim(), phase.getId());
@@ -419,7 +419,7 @@ public class PolicyItem<T> {
             projectPolicyInfo.setDescription(newPolicyDTO.getProjectPoliciesInfo().getDescription());
             projectPolicyInfo.setNarrativeEvidence(newPolicyDTO.getProjectPoliciesInfo().getNarrativeEvidence());
             projectPolicyInfo.setHasMilestones(false);
-            if (newPolicyDTO.getMilestonesDTOs() != null && newPolicyDTO.getMilestonesDTOs().size() > 0) {
+            if (newPolicyDTO.getMilestonesCodeList() != null && newPolicyDTO.getMilestonesCodeList().size() > 0) {
               projectPolicyInfo.setHasMilestones(true);
             }
             projectPolicyInfoManager.saveProjectPolicyInfo(projectPolicyInfo);
@@ -770,8 +770,8 @@ public class PolicyItem<T> {
           }
         }
         // validate milestones
-        if (newPolicyDTO.getMilestonesDTOs() != null && !newPolicyDTO.getMilestonesDTOs().isEmpty()) {
-          for (NewMilestonesDTO milestones : newPolicyDTO.getMilestonesDTOs()) {
+        if (newPolicyDTO.getMilestonesCodeList() != null && !newPolicyDTO.getMilestonesCodeList().isEmpty()) {
+          for (NewMilestonesDTO milestones : newPolicyDTO.getMilestonesCodeList()) {
             if (milestones != null && !milestones.getMilestone().trim().isEmpty()) {
               CrpMilestone crpMilestone =
                 crpMilestoneManager.getCrpMilestoneByPhase(milestones.getMilestone().trim(), phase.getId());
@@ -901,7 +901,7 @@ public class PolicyItem<T> {
       if (fieldErrors.isEmpty()) {
         final long projectPolicyID = id;
         projectPolicyInfo.setHasMilestones(false);
-        if (newPolicyDTO.getMilestonesDTOs() != null && newPolicyDTO.getMilestonesDTOs().size() > 0) {
+        if (newPolicyDTO.getMilestonesCodeList() != null && newPolicyDTO.getMilestonesCodeList().size() > 0) {
           projectPolicyInfo.setHasMilestones(true);
         }
         projectPolicyInfoManager.saveProjectPolicyInfo(projectPolicyInfo);
