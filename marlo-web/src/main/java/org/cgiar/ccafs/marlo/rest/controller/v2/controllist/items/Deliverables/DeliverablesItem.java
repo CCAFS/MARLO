@@ -234,7 +234,7 @@ public class DeliverablesItem<T> {
           }
           // if authors not been saved by list, citation can be udapte by authors single row field
           if (authors.isEmpty() && deliverableDTO.getAuthors() != null
-            && deliverableDTO.getAuthors().trim().isEmpty()) {
+            && !deliverableDTO.getAuthors().trim().isEmpty()) {
             authors = deliverableDTO.getAuthors().trim();
           }
 
@@ -773,10 +773,17 @@ public class DeliverablesItem<T> {
               .append(author.getFirstName());
           }
           // if authors not been saved by list, citation can be udapte by authors single row field
-          if (newPublicationDTO.getAuthorList() != null && newPublicationDTO.getAuthorList().isEmpty()
-            && newPublicationDTO.getAuthors() != null && newPublicationDTO.getAuthors().trim().isEmpty()) {
-            elementCitation.append(elementCitation.length() > 0 ? ',' : "")
-              .append(newPublicationDTO.getAuthors().trim());
+          if (newPublicationDTO.getAuthorList() != null) {
+            if (newPublicationDTO.getAuthorList().isEmpty() && newPublicationDTO.getAuthors() != null
+              && !newPublicationDTO.getAuthors().trim().isEmpty()) {
+              elementCitation.append(elementCitation.length() > 0 ? ',' : "")
+                .append(newPublicationDTO.getAuthors().trim());
+            }
+          } else {
+            if (newPublicationDTO.getAuthors() != null && !newPublicationDTO.getAuthors().trim().isEmpty()) {
+              elementCitation.append(elementCitation.length() > 0 ? ',' : "")
+                .append(newPublicationDTO.getAuthors().trim());
+            }
           }
 
           deliverableMetadataElementCitation.setElementValue(elementCitation.append(',')
