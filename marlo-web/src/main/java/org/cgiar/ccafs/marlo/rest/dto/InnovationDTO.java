@@ -45,11 +45,17 @@ public class InnovationDTO {
   @ApiModelProperty(notes = "Innovation Type", position = 70)
   private InnovationTypeDTO innovationType;
 
+  @ApiModelProperty(notes = "Number of individual improved lines/varietiesr", position = 71)
+  private Long innovationNumber;
+
+
   @ApiModelProperty(notes = "Other Innovation Type description", position = 75)
   private String otherInnovationType;
 
+
   @ApiModelProperty(notes = "Geographic Scope", position = 80)
   private List<GeographicScopeDTO> geographicScopes;
+
 
   @ApiModelProperty(notes = "Regions", position = 90)
   private List<RegionDTO> regions;
@@ -81,10 +87,8 @@ public class InnovationDTO {
   @ApiModelProperty(notes = "OCIR List", position = 144)
   private List<ProjectExpectedStudyNameDTO> projectExpetedStudyList;
 
-
   @ApiModelProperty(notes = "Phase year/section", position = 160)
   private PhaseDTO phase;
-
 
   public List<CGIAREntityDTO> getContributingCGIAREntities() {
     return this.contributingCGIAREntities;
@@ -115,6 +119,7 @@ public class InnovationDTO {
     return this.evidenceLink;
   }
 
+
   public List<GeographicScopeDTO> getGeographicScopes() {
     return this.geographicScopes;
   }
@@ -122,6 +127,10 @@ public class InnovationDTO {
 
   public Long getId() {
     return this.id;
+  }
+
+  public Long getInnovationNumber() {
+    return innovationNumber;
   }
 
 
@@ -227,6 +236,11 @@ public class InnovationDTO {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+
+  public void setInnovationNumber(Long innovationNumber) {
+    this.innovationNumber = innovationNumber;
   }
 
 
