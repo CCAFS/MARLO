@@ -232,7 +232,11 @@ public class DeliverablesItem<T> {
               authors = authors + "," + author.getLastName() + " " + author.getFirstName();
             }
           }
-
+          // if authors not been saved by list, citation can be udapte by authors single row field
+          if (authors.isEmpty() && deliverableDTO.getAuthors() != null
+            && deliverableDTO.getAuthors().trim().isEmpty()) {
+            authors = deliverableDTO.getAuthors().trim();
+          }
 
           deliverableMetadataElementCitation.setElementValue(authors + "," + deliverableDTO.getYear() + ","
             + deliverableDTO.getTitle() + "," + deliverableDTO.getJournal() + "," + deliverableDTO.getVolume() + ","
@@ -767,6 +771,12 @@ public class DeliverablesItem<T> {
           for (DeliverableUserDTO author : newPublicationDTO.getAuthorList()) {
             elementCitation.append(elementCitation.length() > 0 ? ',' : "").append(author.getLastName()).append(' ')
               .append(author.getFirstName());
+          }
+          // if authors not been saved by list, citation can be udapte by authors single row field
+          if (newPublicationDTO.getAuthorList().isEmpty() && newPublicationDTO.getAuthors() != null
+            && newPublicationDTO.getAuthors().trim().isEmpty()) {
+            elementCitation.append(elementCitation.length() > 0 ? ',' : "")
+              .append(newPublicationDTO.getAuthors().trim());
           }
 
           deliverableMetadataElementCitation.setElementValue(elementCitation.append(',')
