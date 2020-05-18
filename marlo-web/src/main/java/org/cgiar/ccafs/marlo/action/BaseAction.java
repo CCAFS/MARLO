@@ -6350,20 +6350,25 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean isYearToShowSectionCovid19() {
-    String rangesYears = (String) this.getSession().get(APConstants.CRP_SHOW_SECTION_IMPACT_COVID19_RANGES_YEARS);
-
-    String[] years = rangesYears.split("-");
-    if (years.length == 2) {
-      if (Integer.parseInt(years[0]) <= this.getActualPhase().getYear()
-        && Integer.parseInt(years[1]) >= this.getActualPhase().getYear()) {
-        return true;
-      }
-    } else {
-      if (years.length == 1) {
-        if (Integer.parseInt(years[0]) <= this.getActualPhase().getYear()) {
-          return true;
+    try {
+      if (Boolean.parseBoolean(this.getSession().get(APConstants.CRP_SHOW_SECTION_IMPACT_COVID19).toString())) {
+        String rangesYears = (String) this.getSession().get(APConstants.CRP_SHOW_SECTION_IMPACT_COVID19_RANGES_YEARS);
+        String[] years = rangesYears.split("-");
+        if (years.length == 2) {
+          if (Integer.parseInt(years[0]) <= this.getActualPhase().getYear()
+            && Integer.parseInt(years[1]) >= this.getActualPhase().getYear()) {
+            return true;
+          }
+        } else {
+          if (years.length == 1) {
+            if (Integer.parseInt(years[0]) <= this.getActualPhase().getYear()) {
+              return true;
+            }
+          }
         }
       }
+    } catch (Exception e) {
+      return false;
     }
     return false;
   }
