@@ -238,9 +238,9 @@ public class DeliverablesItem<T> {
             authors = deliverableDTO.getAuthors().trim();
           }
 
-          deliverableMetadataElementCitation.setElementValue(authors + "," + deliverableDTO.getYear() + ","
-            + deliverableDTO.getTitle() + "," + deliverableDTO.getJournal() + "," + deliverableDTO.getVolume() + ","
-            + deliverableDTO.getIssue() + "," + deliverableDTO.getNpages());
+          deliverableMetadataElementCitation.setElementValue(authors + (authors.isEmpty() ? "" : ",")
+            + deliverableDTO.getYear() + "," + deliverableDTO.getTitle() + "," + deliverableDTO.getJournal() + ","
+            + deliverableDTO.getVolume() + "," + deliverableDTO.getIssue() + "," + deliverableDTO.getNpages());
           deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementCitation);
 
           // deliverable metadataelement Publication
@@ -773,8 +773,8 @@ public class DeliverablesItem<T> {
               .append(author.getFirstName());
           }
           // if authors not been saved by list, citation can be udapte by authors single row field
-          if (newPublicationDTO.getAuthorList().isEmpty() && newPublicationDTO.getAuthors() != null
-            && newPublicationDTO.getAuthors().trim().isEmpty()) {
+          if (newPublicationDTO.getAuthorList() != null && newPublicationDTO.getAuthorList().isEmpty()
+            && newPublicationDTO.getAuthors() != null && newPublicationDTO.getAuthors().trim().isEmpty()) {
             elementCitation.append(elementCitation.length() > 0 ? ',' : "")
               .append(newPublicationDTO.getAuthors().trim());
           }
