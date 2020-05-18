@@ -917,8 +917,8 @@ public class OutcomesMilestonesAction extends BaseAction {
     }
     if (outcomeList != null) {
       outcomeList =
-        outcomeList.stream().filter(o -> o.getCrpProgramOutcome() != null && o.getCrpProgramOutcome().getId() != 1997)
-          .collect(Collectors.toList());
+        outcomeList.stream().filter(o -> o.getCrpProgramOutcome() != null && o.getCrpProgramOutcome().getId() != 1997
+          && o.getCrpProgramOutcome().getId() != 5689).collect(Collectors.toList());
       reportSynthesis.getReportSynthesisFlagshipProgress().setOutcomeList(outcomeList);
     }
 
@@ -953,6 +953,12 @@ public class OutcomesMilestonesAction extends BaseAction {
     outcomes.addAll(outcomesSet);
     outcomes.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
 
+    if (outcomesList != null && !outcomesList.isEmpty() && outcomesList.size() > 0) {
+      outcomesList = outcomesList.stream()
+        .filter(
+          o -> o != null && o.getMilestones() != null && !o.getMilestones().isEmpty() && o.getMilestones().size() > 0)
+        .collect(Collectors.toList());
+    }
 
     // Cross Cutting Markers
     cgiarCrossCuttingMarkers = cgiarCrossCuttingMarkerManager.findAll();
