@@ -167,6 +167,9 @@ public class Permission {
   public static final String PROJECT_LP6_BASE_PERMISSION = "crp:{0}:project:{1}:contributionsLP6";
   public static final String PROJECT_LP6_EDIT_PERMISSION = "crp:{0}:project:{1}:contributionsLP6:canEdit";
 
+  public static final String PROJECT_COVID19_BASE_PERMISSION = "crp:{0}:project:{1}:impacts";
+  public static final String PROJECT_COVID19_EDIT_PERMISSION = "crp:{0}:project:{1}:impacts:canEdit";
+
   public static final String PROJECT_FUNDING_SOURCE_BASE_PERMISSION = "crp:{0}:fundingSource:{1}:canEdit";
   public static final String PROJECT_FUNDING_SOURCE_BUDGET_PERMISSION = "crp:{0}:fundingSource:{1}:budget";
   public static final String PROJECT_FUNDING_SOURCE_ADD_BUDGET_PERMISSION = "crp:{0}:fundingSource:budget";
