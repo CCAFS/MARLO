@@ -240,6 +240,13 @@ public class InnovationItem<T> {
     if (repIndInnovationType == null) {
       fieldErrors.add(new FieldErrorDTO("createInnovation", "Innovation Type",
         newInnovationDTO.getInnovationType() + " is an invalid innovation type code"));
+    } else {
+      if (newInnovationDTO.getInnovationType().getCode() == 1) {
+        if (newInnovationDTO.getInnovationNumber() == null || newInnovationDTO.getInnovationNumber() == 0) {
+          fieldErrors.add(
+            new FieldErrorDTO("createInnovation", "InnovationNumber", "Number of innovations need to be more than 1"));
+        }
+      }
     }
     if (newInnovationDTO.getProject() == null) {
       fieldErrors.add(new FieldErrorDTO("createInnovation", "Project ID", "Innovation need an invalid project id"));
@@ -268,6 +275,8 @@ public class InnovationItem<T> {
       projectInnovationInfo.setRepIndInnovationType(repIndInnovationType);
       projectInnovationInfo.setEvidenceLink(newInnovationDTO.getEvidenceLink());
       projectInnovationInfo.setClearLead(newInnovationDTO.getEquitativeEffort());
+      projectInnovationInfo
+        .setInnovationNumber(repIndInnovationType.getId() == 1 ? newInnovationDTO.getInnovationNumber() : null);
 
 
       // SAVE innovation CRP
@@ -800,6 +809,13 @@ public class InnovationItem<T> {
         if (repIndInnovationType == null) {
           fieldErrors.add(new FieldErrorDTO("createInnovation", "Innovation Type",
             newInnovationDTO.getInnovationType() + " is an invalid innovation type code"));
+        } else {
+          if (newInnovationDTO.getInnovationType().getCode() == 1) {
+            if (newInnovationDTO.getInnovationNumber() == null || newInnovationDTO.getInnovationNumber() == 0) {
+              fieldErrors.add(new FieldErrorDTO("createInnovation", "InnovationNumber",
+                "Number of innovations need to be more than 1"));
+            }
+          }
         }
 
         Project project = this.projectManager.getProjectById(newInnovationDTO.getProject().getId());
@@ -827,6 +843,8 @@ public class InnovationItem<T> {
           projectInnovationInfo.setRepIndInnovationType(repIndInnovationType);
           projectInnovationInfo.setEvidenceLink(newInnovationDTO.getEvidenceLink());
           projectInnovationInfo.setClearLead(newInnovationDTO.getEquitativeEffort());
+          projectInnovationInfo
+            .setInnovationNumber(repIndInnovationType.getId() == 1 ? newInnovationDTO.getInnovationNumber() : null);
 
 
           // let's check Organizations
