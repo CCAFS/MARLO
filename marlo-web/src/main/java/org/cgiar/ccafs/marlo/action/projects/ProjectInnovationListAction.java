@@ -24,7 +24,6 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
@@ -94,15 +93,7 @@ public class ProjectInnovationListAction extends BaseAction {
     innovationID = projectInnovation.getId();
 
     if (innovationID > 0) {
-
-      ProjectInnovationCrp projectInnovationCrp = new ProjectInnovationCrp();
-
-      projectInnovationCrp.setGlobalUnit(this.getCurrentCrp());
-      projectInnovationCrp.setPhase(this.getActualPhase());
-      projectInnovationCrp.setProjectInnovation(projectInnovation);
-
-      projectInnovationCrpManager.saveProjectInnovationCrp(projectInnovationCrp);
-
+      
       return SUCCESS;
     }
 
