@@ -42,11 +42,17 @@ public class NewInnovationDTO {
   @ApiModelProperty(notes = "Innovation Type identifier", position = 60)
   private InnovationTypeDTO innovationType;
 
+  @ApiModelProperty(notes = "Number of individual improved lines/varietiesr", position = 61)
+  private Long innovationNumber;
+
+
   @ApiModelProperty(notes = "Other Innovation Type description", position = 65)
   private String otherInnovationType;
 
+
   @ApiModelProperty(notes = "Geographic Scopes identifier", position = 70)
   private List<GeographicScopeDTO> geographicScopes;
+
 
   @ApiModelProperty(notes = "Regions codes", position = 80)
   private List<RegionDTO> regions;
@@ -75,10 +81,8 @@ public class NewInnovationDTO {
   @ApiModelProperty(notes = "CGIAR Sub-IDOs SMO code List", position = 134)
   private List<NewSrfSubIdoDTO> srfSubIdoList;
 
-
   @ApiModelProperty(notes = "Outcome Impact Case Report List", position = 92)
   private List<String> projectExpectedStudyList;
-
 
   @ApiModelProperty(notes = "Phase year/section", position = 140)
   private PhaseDTO phase;
@@ -103,6 +107,7 @@ public class NewInnovationDTO {
     return this.descriptionStage;
   }
 
+
   public Boolean getEquitativeEffort() {
     return this.equitativeEffort;
   }
@@ -112,9 +117,13 @@ public class NewInnovationDTO {
     return this.evidenceLink;
   }
 
-
   public List<GeographicScopeDTO> getGeographicScopes() {
     return this.geographicScopes;
+  }
+
+
+  public Long getInnovationNumber() {
+    return innovationNumber;
   }
 
 
@@ -215,6 +224,11 @@ public class NewInnovationDTO {
 
   public void setGeographicScopes(List<GeographicScopeDTO> geographicScopes) {
     this.geographicScopes = geographicScopes;
+  }
+
+
+  public void setInnovationNumber(Long innovationNumber) {
+    this.innovationNumber = innovationNumber;
   }
 
 
