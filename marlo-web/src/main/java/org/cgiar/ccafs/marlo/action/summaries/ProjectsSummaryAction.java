@@ -597,6 +597,22 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
           crossCutting += " Capacity Development";
         }
       }
+      if (project.getProjectInfo().getCrossCuttingGender() != null
+        && project.getProjectInfo().getCrossCuttingGender() == true) {
+        if (crossCutting.length() > 0) {
+          crossCutting += ", Gender";
+        } else {
+          crossCutting += " Gender";
+        }
+      }
+      if (project.getProjectInfo().getCrossCuttingYouth() != null
+        && project.getProjectInfo().getCrossCuttingYouth() == true) {
+        if (crossCutting.length() > 0) {
+          crossCutting += ", Youth";
+        } else {
+          crossCutting += " Youth";
+        }
+      }
       if (project.getProjectInfo().getCrossCuttingClimate() != null
         && project.getProjectInfo().getCrossCuttingClimate() == true) {
         if (crossCutting.length() > 0) {
