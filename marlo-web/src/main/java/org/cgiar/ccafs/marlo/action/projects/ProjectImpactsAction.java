@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectImpacts;
+import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectImpactsValidator;
@@ -267,6 +268,10 @@ public class ProjectImpactsAction extends BaseAction {
         this.setDraft(false);
       }
     }
+
+    String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
+    this.setBasePermission(this.getText(Permission.PROJECT_COVID19_BASE_PERMISSION, params));
+
   }
 
 
