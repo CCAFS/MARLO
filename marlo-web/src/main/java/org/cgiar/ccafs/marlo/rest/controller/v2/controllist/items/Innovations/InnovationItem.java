@@ -242,9 +242,10 @@ public class InnovationItem<T> {
         newInnovationDTO.getInnovationType() + " is an invalid innovation type code"));
     } else {
       if (newInnovationDTO.getInnovationType().getCode() == 1) {
-        if (newInnovationDTO.getInnovationNumber() == null || newInnovationDTO.getInnovationNumber() == 0) {
+        if (newInnovationDTO.getInnovationNumber() == null
+          || (newInnovationDTO.getInnovationNumber() != null && newInnovationDTO.getInnovationNumber() == 0)) {
           fieldErrors.add(
-            new FieldErrorDTO("createInnovation", "InnovationNumber", "Number of innovations need to be more than 1"));
+            new FieldErrorDTO("createInnovation", "InnovationNumber", "Number of innovations need to be more than 0"));
         }
       }
     }
@@ -704,6 +705,9 @@ public class InnovationItem<T> {
 
     // innovation.setAllbyPhase(phase);
     if (innovation.getProjectInnovationInfo(phase) != null) {
+      if (innovation.getProjectInnovationInfo().getInnovationNumber() == null) {
+        innovation.getProjectInnovationInfo().setInnovationNumber(new Long(0));
+      }
       innovation.setCountries(
         this.projectInnovationCountryManager.getInnovationCountrybyPhase(innovation.getId(), phase.getId()));
       innovation.setRegions(innovation.getProjectInnovationRegions().stream()
@@ -728,6 +732,7 @@ public class InnovationItem<T> {
         ProjectExpectedStudy projectExpectedStudy = projectExpectedStudyManager
           .getProjectExpectedStudyById(projectExpectedStudyInnovation.getProjectExpectedStudy().getId());
         ProjectExpectedStudyInfo info = projectExpectedStudy.getProjectExpectedStudyInfo(phase);
+
         projectExpectedStudy.setProjectExpectedStudyInfo(info);
         projectExpectedStudyInnovation.setProjectExpectedStudy(projectExpectedStudy);
 
@@ -811,9 +816,10 @@ public class InnovationItem<T> {
             newInnovationDTO.getInnovationType() + " is an invalid innovation type code"));
         } else {
           if (newInnovationDTO.getInnovationType().getCode() == 1) {
-            if (newInnovationDTO.getInnovationNumber() == null || newInnovationDTO.getInnovationNumber() == 0) {
+            if (newInnovationDTO.getInnovationNumber() == null
+              || (newInnovationDTO.getInnovationNumber() != null && newInnovationDTO.getInnovationNumber() == 0)) {
               fieldErrors.add(new FieldErrorDTO("createInnovation", "InnovationNumber",
-                "Number of innovations need to be more than 1"));
+                "Number of innovations need to be more than 0"));
             }
           }
         }
