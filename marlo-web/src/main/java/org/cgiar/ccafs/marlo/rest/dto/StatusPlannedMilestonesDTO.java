@@ -34,16 +34,17 @@ public class StatusPlannedMilestonesDTO {
   @ApiModelProperty(notes = "Milestone Status Evidence Justification", position = 3)
   private String evidence;
 
-
-  @ApiModelProperty(notes = "Milestone Status Evidence links", position = 3)
+  @ApiModelProperty(notes = "Milestone Status Evidence links", position = 4)
   private String evidenceLink;
 
-
   @ApiModelProperty(notes = "Milestone Cross Cutting Markers", position = 5)
-  private List<CrosscuttingMarkersDTO> crossCuttingMarkerList;
+  private List<CrosscuttingMarkersJustificationDTO> crossCuttingMarkerList;
+
+  @ApiModelProperty(notes = "If status = 7. Other, please state", position = 6)
+  public String otherJustification;
 
 
-  public List<CrosscuttingMarkersDTO> getCrossCuttingMarkerList() {
+  public List<CrosscuttingMarkersJustificationDTO> getCrossCuttingMarkerList() {
     return crossCuttingMarkerList;
   }
 
@@ -51,45 +52,45 @@ public class StatusPlannedMilestonesDTO {
     return evidence;
   }
 
-
   public String getEvidenceLink() {
     return evidenceLink;
   }
-
 
   public MilestoneDTO getMilestone() {
     return milestone;
   }
 
+  public String getOtherJustification() {
+    return otherJustification;
+  }
 
   public MilestoneStatusDTO getStatus() {
     return status;
   }
 
 
-  public void setCrossCuttingMarkerList(List<CrosscuttingMarkersDTO> crossCuttingMarkerList) {
+  public void setCrossCuttingMarkerList(List<CrosscuttingMarkersJustificationDTO> crossCuttingMarkerList) {
     this.crossCuttingMarkerList = crossCuttingMarkerList;
   }
-
 
   public void setEvidence(String evidence) {
     this.evidence = evidence;
   }
 
-
   public void setEvidenceLink(String evidenceLink) {
     this.evidenceLink = evidenceLink;
   }
-
 
   public void setMilestone(MilestoneDTO milestone) {
     this.milestone = milestone;
   }
 
+  public void setOtherJustification(String otherJustification) {
+    this.otherJustification = otherJustification;
+  }
 
   public void setStatus(MilestoneStatusDTO status) {
     this.status = status;
   }
-
 
 }

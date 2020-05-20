@@ -33,7 +33,8 @@ public interface StatusPlannedMilestonesMapper {
 
   @Mappings({@Mapping(source = "crpMilestone", target = "milestone"),
     @Mapping(source = "markers", target = "crossCuttingMarkerList"),
-    @Mapping(source = "milestonesStatus", target = "status")})
+    @Mapping(source = "milestonesStatus", target = "status"),
+    @Mapping(source = "otherReason", target = "otherJustification")})
   public abstract StatusPlannedMilestonesDTO
     ReportSynthesisFlagshipProgressOutcomeMilestoneToStatusPlannedMilestonesDTO(
       ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone);
