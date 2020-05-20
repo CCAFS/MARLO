@@ -40,20 +40,22 @@ public class NewStatusPlannedMilestoneDTO {
   @ApiModelProperty(notes = "Milestone Status", position = 5)
   private Long status;
 
-  @ApiModelProperty(notes = "Milestone Evidence", position = 6)
+  @ApiModelProperty(notes = "If status = 7. Other, please state", position = 6)
+  public String otherJustification;
+
+  @ApiModelProperty(notes = "Milestone Evidence", position = 7)
   private String evidence;
 
-  @ApiModelProperty(notes = "Milestone Evidence Link", position = 7)
+  @ApiModelProperty(notes = "Milestone Evidence Link", position = 8)
   private String linkEvidence;
 
-  @ApiModelProperty(notes = "Phase (AR, POWB, UpKeep)", position = 10)
+  @ApiModelProperty(notes = "Phase (AR, POWB, UpKeep)", position = 11)
   private PhaseDTO phase;
 
-  @ApiModelProperty(notes = "Year value for extended milestone", position = 8)
+  @ApiModelProperty(notes = "Year value for extended milestone", position = 9)
   private int extendedYear;
 
-
-  @ApiModelProperty(notes = "Reason for extended or canceled milestone", position = 9)
+  @ApiModelProperty(notes = "Reason for extended or canceled milestone", position = 10)
   private Long mainReason;
 
 
@@ -61,46 +63,41 @@ public class NewStatusPlannedMilestoneDTO {
     return crosscuttinmarkerList;
   }
 
-
   public String getCrpOutcomeCode() {
     return crpOutcomeCode;
   }
-
 
   public String getCrpProgramCode() {
     return crpProgramCode;
   }
 
-
   public String getEvidence() {
     return evidence;
   }
-
 
   public int getExtendedYear() {
     return extendedYear;
   }
 
-
   public String getLinkEvidence() {
     return linkEvidence;
   }
-
 
   public Long getMainReason() {
     return mainReason;
   }
 
-
   public String getMilestoneCode() {
     return milestoneCode;
   }
 
+  public String getOtherJustification() {
+    return otherJustification;
+  }
 
   public PhaseDTO getPhase() {
     return phase;
   }
-
 
   public Long getStatus() {
     return status;
@@ -111,50 +108,44 @@ public class NewStatusPlannedMilestoneDTO {
     this.crosscuttinmarkerList = crosscuttinmarkerList;
   }
 
-
   public void setCrpOutcomeCode(String crpOutcomeCode) {
     this.crpOutcomeCode = crpOutcomeCode;
   }
-
 
   public void setCrpProgramCode(String crpProgramCode) {
     this.crpProgramCode = crpProgramCode;
   }
 
-
   public void setEvidence(String evidence) {
     this.evidence = evidence;
   }
-
 
   public void setExtendedYear(int extendedYear) {
     this.extendedYear = extendedYear;
   }
 
-
   public void setLinkEvidence(String linkEvidence) {
     this.linkEvidence = linkEvidence;
   }
-
 
   public void setMainReason(Long mainReason) {
     this.mainReason = mainReason;
   }
 
-
   public void setMilestoneCode(String milestoneCode) {
     this.milestoneCode = milestoneCode;
   }
 
+  public void setOtherJustification(String otherJustification) {
+    this.otherJustification = otherJustification;
+  }
 
   public void setPhase(PhaseDTO phase) {
     this.phase = phase;
   }
 
-
   public void setStatus(Long status) {
     this.status = status;
   }
-
 
 }
