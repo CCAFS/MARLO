@@ -38,8 +38,8 @@
         <div class="col-md-9">
           <h3 class="headTitle">[@s.text name="projects.impacts.covid19Title" /]</h3>
           <div id="projectImpactCovid19" class="borderBox">
-            <div class="form-group">
-              [@customForm.input name="actualProjectImpact.answer" type="text" i18nkey="projects.impacts.covid19ImpactQuestion${actualPhase.year}" placeholder="" help="projects.impacts.covid19ImpactHelp" className="project-title limitWords-100" helpIcon=false required=true editable=editable /]
+            <div class="form-group">        
+              [@customForm.textArea name="actualProjectImpact.answer" i18nkey="projects.impacts.covid19ImpactQuestion${actualPhase.year}" placeholder="" help="projects.impacts.covid19ImpactHelp" className="project-title limitWords-100" helpIcon=false required=true editable=editable /]
             [#if actualPhase.year = 2021]
               </br>
               [#list historyProjectImpacts as historicProject]
