@@ -40,8 +40,11 @@ public class StatusPlannedMilestonesDTO {
   @ApiModelProperty(notes = "Milestone Cross Cutting Markers", position = 5)
   private List<CrosscuttingMarkersJustificationDTO> crossCuttingMarkerList;
 
-  @ApiModelProperty(notes = "If status = 7. Other, please state", position = 6)
-  public String otherJustification;
+  @ApiModelProperty(notes = "Main reason for Milestone Status", position = 6)
+  public MilestoneReasonDTO reason;
+
+  @ApiModelProperty(notes = "If main reason = 7. Other, please state", position = 7)
+  public String otherReason;
 
 
   public List<CrosscuttingMarkersJustificationDTO> getCrossCuttingMarkerList() {
@@ -60,8 +63,12 @@ public class StatusPlannedMilestonesDTO {
     return milestone;
   }
 
-  public String getOtherJustification() {
-    return otherJustification;
+  public String getOtherReason() {
+    return otherReason;
+  }
+
+  public MilestoneReasonDTO getReason() {
+    return reason;
   }
 
   public MilestoneStatusDTO getStatus() {
@@ -85,8 +92,12 @@ public class StatusPlannedMilestonesDTO {
     this.milestone = milestone;
   }
 
-  public void setOtherJustification(String otherJustification) {
-    this.otherJustification = otherJustification;
+  public void setOtherReason(String otherJustification) {
+    this.otherReason = otherJustification;
+  }
+
+  public void setReason(MilestoneReasonDTO reason) {
+    this.reason = reason;
   }
 
   public void setStatus(MilestoneStatusDTO status) {
