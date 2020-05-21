@@ -40,23 +40,23 @@ public class NewStatusPlannedMilestoneDTO {
   @ApiModelProperty(notes = "Milestone Status", position = 5)
   private Long status;
 
-  @ApiModelProperty(notes = "If status = 7. Other, please state", position = 6)
-  public String otherJustification;
-
-  @ApiModelProperty(notes = "Milestone Evidence", position = 7)
+  @ApiModelProperty(notes = "Milestone Evidence", position = 6)
   private String evidence;
 
-  @ApiModelProperty(notes = "Milestone Evidence Link", position = 8)
+  @ApiModelProperty(notes = "Milestone Evidence Link", position = 7)
   private String linkEvidence;
+
+  @ApiModelProperty(notes = "Year value for extended milestone", position = 8)
+  private int extendedYear;
+
+  @ApiModelProperty(notes = "Reason for extended or canceled milestone", position = 9)
+  private Long mainReason;
+
+  @ApiModelProperty(notes = "If main reason = 7. Other, please state", position = 10)
+  public String otherReason;
 
   @ApiModelProperty(notes = "Phase (AR, POWB, UpKeep)", position = 11)
   private PhaseDTO phase;
-
-  @ApiModelProperty(notes = "Year value for extended milestone", position = 9)
-  private int extendedYear;
-
-  @ApiModelProperty(notes = "Reason for extended or canceled milestone", position = 10)
-  private Long mainReason;
 
 
   public List<NewCrosscuttingMarkersSynthesisDTO> getCrosscuttinmarkerList() {
@@ -91,8 +91,8 @@ public class NewStatusPlannedMilestoneDTO {
     return milestoneCode;
   }
 
-  public String getOtherJustification() {
-    return otherJustification;
+  public String getOtherReason() {
+    return otherReason;
   }
 
   public PhaseDTO getPhase() {
@@ -136,8 +136,8 @@ public class NewStatusPlannedMilestoneDTO {
     this.milestoneCode = milestoneCode;
   }
 
-  public void setOtherJustification(String otherJustification) {
-    this.otherJustification = otherJustification;
+  public void setOtherReason(String otherJustification) {
+    this.otherReason = otherJustification;
   }
 
   public void setPhase(PhaseDTO phase) {
