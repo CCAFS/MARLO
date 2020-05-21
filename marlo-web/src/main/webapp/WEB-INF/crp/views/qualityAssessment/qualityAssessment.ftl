@@ -2,7 +2,8 @@
 [#assign title = "Quality Assessment" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [""] /]
-[#assign customJS = [  "${baseUrlMedia}/js/qualityAssessment/qualityAssessment.js" ] /]
+[#assign customJS = [""] /]
+[#-- ${baseUrlMedia}/js/qualityAssessment/qualityAssessment.js --]
 [#assign customCSS = [
   "${baseUrl}/crp/css/qualityAssessment/qualityAssessment.css"
   ] 
@@ -24,7 +25,7 @@
             <h3 class="headTitle">[@s.text name="summaries.qualityAssessment.title" /]</h3>
             <div id="" class="">
               <div>
-                <iframe width="100%" height="1500px" src="http://qatest.ciat.cgiar.org/crp?crp_id=${qATokenAuth.crpId}&token=${qATokenAuth.token}" frameborder="0"></iframe>
+                <iframe width="100%"  height="1600px" src="http://qatest.ciat.cgiar.org/crp?crp_id=${qATokenAuth.crpId}&token=25f5b35b062334dc0a5f55e6dc15a924" frameborder="0" scrolling="no"></iframe>
               </div>
             </div>  
       </div>
