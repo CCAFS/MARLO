@@ -81,6 +81,7 @@ import org.cgiar.ccafs.marlo.rest.dto.NewMilestonesDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectPolicyDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewSrfSubIdoDTO;
 import org.cgiar.ccafs.marlo.rest.dto.PolicyOwnerTypeDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectPolicyARDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectPolicyDTO;
 import org.cgiar.ccafs.marlo.rest.dto.RegionDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
@@ -571,9 +572,9 @@ public class PolicyItem<T> {
 
   }
 
-  public List<ProjectPolicyDTO> findAllPoliciesByGlobalUnit(String CGIARentityAcronym, Integer repoYear,
+  public List<ProjectPolicyARDTO> findAllPoliciesByGlobalUnit(String CGIARentityAcronym, Integer repoYear,
     String repoPhase, User user) {
-    List<ProjectPolicyDTO> policyList = new ArrayList<ProjectPolicyDTO>();
+    List<ProjectPolicyARDTO> policyList = new ArrayList<ProjectPolicyARDTO>();
     List<ProjectPolicy> projectPolicyList = new ArrayList<ProjectPolicy>();
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
 
@@ -604,14 +605,16 @@ public class PolicyItem<T> {
       for (ProjectPolicyInfo projectPolicyInfo : projectPolicyInfoList) {
         ProjectPolicy projectPolicy =
           projectPolicyManager.getProjectPolicyById(projectPolicyInfo.getProjectPolicy().getId());
-        projectPolicy.setProjectPolicyInfo(projectPolicyInfo);
-        projectPolicy = this.getPolicyInfoPhase(projectPolicy, phase);
-        projectPolicyList.add(projectPolicy);
+        if (projectPolicy.isActive()) {
+          projectPolicy.setProjectPolicyInfo(projectPolicyInfo);
+          projectPolicy = this.getPolicyInfoPhase(projectPolicy, phase);
+          projectPolicyList.add(projectPolicy);
+        }
       }
 
     }
 
-    policyList = projectPolicyList.stream().map(this.projectPolicyMapper::projectPolicyToProjectPolicyDTO)
+    policyList = projectPolicyList.stream().map(this.projectPolicyMapper::projectPolicyToProjectPolicyARDTO)
       .collect(Collectors.toList());
     return policyList;
   }

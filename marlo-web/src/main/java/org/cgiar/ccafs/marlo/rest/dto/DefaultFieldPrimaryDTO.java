@@ -23,23 +23,49 @@ import javax.validation.constraints.NotNull;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class DefaultField {
+public class DefaultFieldPrimaryDTO {
 
-  @ApiModelProperty(notes = "ID")
+  @ApiModelProperty(notes = "ID", position = 1)
   @NotNull
-  private Long id;
+  private String id;
 
 
-  @ApiModelProperty(notes = "Name Description")
+  @ApiModelProperty(notes = "Name/Description", position = 2)
   @NotNull
   private String name;
+
+
+  @ApiModelProperty(notes = "Primary", position = 3)
+  private Boolean primary;
+
+
+  public String getId() {
+    return id;
+  }
 
 
   public String getName() {
     return name;
   }
 
+
+  public Boolean getPrimary() {
+    return primary;
+  }
+
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+
   public void setName(String name) {
     this.name = name;
   }
+
+
+  public void setPrimary(Boolean primary) {
+    this.primary = primary;
+  }
+
 }
