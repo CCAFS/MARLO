@@ -13,29 +13,33 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
+/**************
+ * @author Diego Perez - CIAT/CCAFS
+ **************/
+
 package org.cgiar.ccafs.marlo.rest.dto;
+
+import javax.validation.constraints.NotNull;
 
 import io.swagger.annotations.ApiModelProperty;
 
-/**
- * @author Hermes Jiménez - CIAT/CCAFS
- */
+public class DefaultField {
 
-
-public class ProjectDTO {
-
-  @ApiModelProperty(notes = "Project id", position = 1)
+  @ApiModelProperty(notes = "ID")
+  @NotNull
   private Long id;
 
 
-  public Long getId() {
-    return id;
+  @ApiModelProperty(notes = "Name Description")
+  @NotNull
+  private String name;
+
+
+  public String getName() {
+    return name;
   }
 
-
-  public void setId(Long id) {
-    this.id = id;
+  public void setName(String name) {
+    this.name = name;
   }
-
-
 }
