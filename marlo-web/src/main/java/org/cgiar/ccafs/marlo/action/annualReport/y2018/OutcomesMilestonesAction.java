@@ -846,6 +846,7 @@ public class OutcomesMilestonesAction extends BaseAction {
     }
     List<Long> ids = new ArrayList<>();
     List<ReportSynthesisFlagshipProgressOutcome> outcomeList = new ArrayList<>();
+    List<ReportSynthesisFlagshipProgressOutcome> outcomeList2 = new ArrayList<>();
     List<ReportSynthesisFlagshipProgressOutcome> toRemoveOutcomeList = new ArrayList<>();
     if (reportSynthesis != null && reportSynthesis.getReportSynthesisFlagshipProgress() != null
       && reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList() != null
@@ -915,13 +916,6 @@ public class OutcomesMilestonesAction extends BaseAction {
     } catch (Exception e) {
       LOG.error("Error getting outcome list: " + e.getMessage());
     }
-    if (outcomeList != null) {
-      outcomeList =
-        outcomeList.stream().filter(o -> o.getCrpProgramOutcome() != null && o.getCrpProgramOutcome().getId() != 1997
-          && o.getCrpProgramOutcome().getId() != 5689).collect(Collectors.toList());
-      reportSynthesis.getReportSynthesisFlagshipProgress().setOutcomeList(outcomeList);
-    }
-
 
     // Get the Outcome milestones
     outcomes = new ArrayList<>();
@@ -959,6 +953,23 @@ public class OutcomesMilestonesAction extends BaseAction {
           o -> o != null && o.getMilestones() != null && !o.getMilestones().isEmpty() && o.getMilestones().size() > 0)
         .collect(Collectors.toList());
     }
+    if (outcomesList != null && !outcomesList.isEmpty() && outcomesList.size() > 0 && outcomeList != null) {
+      for (CrpProgramOutcome outcomeCrp : outcomesList) {
+        for (ReportSynthesisFlagshipProgressOutcome outcome : outcomeList) {
+          if (outcome != null && outcome.getCrpProgramOutcome() != null
+            && outcome.getCrpProgramOutcome().getId() != null
+            && outcome.getCrpProgramOutcome().getId().equals(outcomeCrp.getId())) {
+            outcomeList2.add(outcome);
+          }
+        }
+      }
+    }
+    outcomeList = outcomeList2;
+    if (outcomeList != null) {
+      outcomeList = outcomeList.stream().filter(o -> o.getCrpProgramOutcome() != null).collect(Collectors.toList());
+      reportSynthesis.getReportSynthesisFlagshipProgress().setOutcomeList(outcomeList);
+    }
+
 
     // Cross Cutting Markers
     cgiarCrossCuttingMarkers = cgiarCrossCuttingMarkerManager.findAll();
@@ -1173,6 +1184,7 @@ public class OutcomesMilestonesAction extends BaseAction {
           flagshipProgressOutcomeNew = reportSynthesisFlagshipProgressOutcomeManager
             .getReportSynthesisFlagshipProgressOutcomeById(flagshipProgressOutcome.getId());
         }
+
 
         flagshipProgressOutcomeNew.setSummary(flagshipProgressOutcome.getSummary());
         flagshipProgressOutcomeNew.setCrpProgramOutcome(flagshipProgressOutcome.getCrpProgramOutcome());
