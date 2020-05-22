@@ -81,7 +81,7 @@ public class ProjectImpactsValidator extends BaseValidator {
   }
 
   private void validateImpacts(BaseAction action, ProjectImpacts projectImpacts) {
-    if (!(this.isValidString(projectImpacts.getAnswer()) && this.wordCount(projectImpacts.getAnswer()) <= 100)) {
+    if (!(this.isValidString(projectImpacts.getAnswer()) && this.wordCount(projectImpacts.getAnswer()) <= 300)) {
       action.addMessage(action.getText("projects.impacts.covid19.answer"));
       action.getInvalidFields().put("input-projects.impacts.covid19.answer", InvalidFieldsMessages.EMPTYFIELD);
     }

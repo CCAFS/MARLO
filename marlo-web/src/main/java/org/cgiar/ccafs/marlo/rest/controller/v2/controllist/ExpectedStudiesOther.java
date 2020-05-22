@@ -54,7 +54,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Api(tags = "Table 10 ")
+@Api(tags = "Table 10 - Monitoring, Evaluation, Learning and Impact Assessment (MELIA)")
 public class ExpectedStudiesOther {
 
   private static final Logger LOG = LoggerFactory.getLogger(ExpectedStudies.class);

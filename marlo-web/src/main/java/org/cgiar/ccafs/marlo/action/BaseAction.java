@@ -2750,7 +2750,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
 
     }
-    allYears.add(this.getActualPhase().getYear());
+    // Avoid to duplicate the actual year phase in allYears List
+    if (allYears != null && !allYears.contains(this.getActualPhase().getYear())) {
+      allYears.add(this.getActualPhase().getYear());
+    }
+
     return allYears;
   }
 

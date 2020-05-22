@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.policies.PolicyItem;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectPolicyDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectPolicyARDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectPolicyDTO;
 import org.cgiar.ccafs.marlo.rest.errors.NotFoundException;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -118,7 +119,7 @@ public class Policies {
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIAREntity}/policies", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
-  public List<ProjectPolicyDTO> findAllPoliciesByGlobalUnit(
+  public List<ProjectPolicyARDTO> findAllPoliciesByGlobalUnit(
     @ApiParam(value = "${Policy.policies.GET.all.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${Policy.policies.GET.all.param.year}", required = true) @RequestParam Integer year,
     @ApiParam(value = "${Policy.policies.GET.all.param.phase}", required = true) @RequestParam String phase) {

@@ -115,6 +115,7 @@
                   [@tableOutcomesMilestones  /]
                 </div>
               [#else]
+                <div>${outcomes?size}</div>
                 [#list outcomes as outcome]
                   [@annualReport2018OutcomesMacro element=outcome name="${customName}.outcomeList" index=outcome_index /]
                 [/#list]
@@ -209,27 +210,29 @@
                 [#if isOutcomeRow && !allowPopups]
                   <td rowspan="${outcomesSize}" class="milestonesSize-${outcomesSize}">
                     [@utils.tableText value=(reportedOutcome.summary)!"" emptyText="global.prefilledByFlagship"/]
-                  </td>
+                  </td>                
                 [/#if]
                 [#-- Milestone --]
-                <td> ${milestone.composedName} [#if allowPopups] <div class="pull-right">[@milestoneContributions element=milestone tiny=true /] [/#if]</div></td>
-                [#-- Milestone Status --]
-                <td class="text-center"> 
-                  [#local reportedMilestone= (action.getMilestone((reportedOutcome.id)!-1 , milestone.id))! ]
-                  [@utils.tableText value=(reportedMilestone.crpMilestone.milestonesStatus.name)!"" emptyText="global.prefilledByFlagship" /]
-                </td>
-                [#if !allowPopups]
-                  [#-- Milestone Evidence --]
-                  <td class="urlify">[@utils.tableText value=(reportedMilestone.evidence)!"" emptyText="global.prefilledByFlagship" /] </td>
-                  [#-- Link to Evidences --]
-                  <td class="urlify">[@utils.tableText value=(reportedMilestone.evidenceLink)!"" emptyText="global.prefilledByFlagship" /] </td>
-                  [#-- Cross Cutting markers --]
-                  [#list cgiarCrossCuttingMarkers as marker]
-                    [#local reportedCrossCuting =  (action.getCrossCuttingMarker( ((reportedMilestone.id)!-1), marker.id ))! ]
-                    <td class="text-center">
-                      <p class="dacMarker level-${(reportedCrossCuting.focus.id)!""}" title="${(reportedCrossCuting.focus.powbName)!""}">${(reportedCrossCuting.focus.acronym)!""}</p>
-                    </td>
-                  [/#list]
+                [#if milestone.isActive()]
+                  <td> ${milestone.composedName} [#if allowPopups] <div class="pull-right">[@milestoneContributions element=milestone tiny=true /] [/#if]</div></td>
+                  [#-- Milestone Status --]
+                  <td class="text-center"> 
+                    [#local reportedMilestone= (action.getMilestone((reportedOutcome.id)!-1 , milestone.id))! ]
+                    [@utils.tableText value=(reportedMilestone.crpMilestone.milestonesStatus.name)!"" emptyText="global.prefilledByFlagship" /]
+                  </td>
+                  [#if !allowPopups]
+                    [#-- Milestone Evidence --]
+                    <td class="urlify">[@utils.tableText value=(reportedMilestone.evidence)!"" emptyText="global.prefilledByFlagship" /] </td>
+                    [#-- Link to Evidences --]
+                    <td class="urlify">[@utils.tableText value=(reportedMilestone.evidenceLink)!"" emptyText="global.prefilledByFlagship" /] </td>
+                    [#-- Cross Cutting markers --]
+                    [#list cgiarCrossCuttingMarkers as marker]
+                      [#local reportedCrossCuting =  (action.getCrossCuttingMarker( ((reportedMilestone.id)!-1), marker.id ))! ]
+                      <td class="text-center">
+                        <p class="dacMarker level-${(reportedCrossCuting.focus.id)!""}" title="${(reportedCrossCuting.focus.powbName)!""}">${(reportedCrossCuting.focus.acronym)!""}</p>
+                      </td>
+                    [/#list]
+                  [/#if]
                 [/#if]
               </tr>
             [/#list]
@@ -314,7 +317,7 @@
     <div class="form-group">
       [#-- Word Document Tag --]
       [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
-              
+      <div>${customName}</div>       
       <input type="hidden" name="${customName}.id" value="${(annualReportElement.id)!}"/>
       <input type="hidden" name="${customName}.crpProgramOutcome.id" value="${(element.id)!}"/>
       [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.outcome.progressNarrative" help="${customLabel}.outcome.progressNarrative.help" className="limitWords-200" helpIcon=false required=true editable=editable allowTextEditor=true /]
@@ -336,6 +339,7 @@
     <h4 class="simpleTitle">[@s.text name="${customLabel}.milestones.title" /]</h4>
     <div class="form-group">
        [#list element.milestones as milestone]
+        <div>${milestone_index}</div>
         [@annualReport2018MilestoneMacro element=milestone name="${customName}.milestones" index=milestone_index reportedOutcomeID=(annualReportElement.id)!-1 /]
       [/#list]
     </div> 
