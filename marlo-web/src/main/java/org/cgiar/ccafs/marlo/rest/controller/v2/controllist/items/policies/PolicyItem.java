@@ -598,7 +598,9 @@ public class PolicyItem<T> {
           .collect(Collectors.toList()));
     } else {
       List<ProjectPolicyInfo> projectPolicyInfoList = phase.getProjectPolicyInfos().stream()
-        .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
+        .filter(
+          c -> c.isActive() && c.getYear().longValue() == phase.getYear() && c.getPhase().getId().equals(phase.getId()))
+        .collect(Collectors.toList());
       for (ProjectPolicyInfo projectPolicyInfo : projectPolicyInfoList) {
         ProjectPolicy projectPolicy =
           projectPolicyManager.getProjectPolicyById(projectPolicyInfo.getProjectPolicy().getId());

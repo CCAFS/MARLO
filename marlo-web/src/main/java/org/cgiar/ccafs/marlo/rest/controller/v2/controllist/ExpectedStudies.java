@@ -27,6 +27,8 @@ import org.cgiar.ccafs.marlo.rest.dto.ProjectExpectedStudyDTO;
 import org.cgiar.ccafs.marlo.rest.errors.NotFoundException;
 import org.cgiar.ccafs.marlo.security.Permission;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import com.opensymphony.xwork2.inject.Inject;
@@ -105,6 +107,18 @@ public class ExpectedStudies {
     return response;
   }
 
+  @ApiOperation(tags = {"Table 3 - Outcome/ Impact Case Reports"}, value = "${ExpectedStudies.OICR.GET.all.value}",
+    response = ProjectExpectedStudyDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/OICRS", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<ProjectExpectedStudyDTO> findAllExpectedStudyByGlobalUnit(
+    @ApiParam(value = "${ExpectedStudies.OICR.GET.all.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${ExpectedStudies.OICR.GET.all.param.year}", required = true) @RequestParam Integer year,
+    @ApiParam(value = "${ExpectedStudies.OICR.GET.all.param.phase}", required = true) @RequestParam String phase) {
+    return this.expectedStudiesItem.findAllExpectedStudyByGlobalUnit(CGIAREntity, year, phase, this.getCurrentUser());
+  }
+
   @ApiOperation(tags = {"Table 3 - Outcome/ Impact Case Reports"}, value = "${ExpectedStudies.OICR.GET.id.value}",
     response = ProjectExpectedStudyDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
@@ -142,7 +156,7 @@ public class ExpectedStudies {
   @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIAREntity}/OICR/{id}", method = RequestMethod.PUT,
     produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Long> putInnovation(
+  public ResponseEntity<Long> putExpectedStudy(
     @ApiParam(value = "${ExpectedStudies.OICR.PUT.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${ExpectedStudies.OICR.PUT.param.id}", required = true) @PathVariable Long id,
     @ApiParam(value = "${ExpectedStudies.OICR.PUT.param.innovation}",
