@@ -36,3 +36,49 @@ ul.nav li a {
 .timeline-phases {
   display:none;
 }
+
+.reportsButtons > span{
+  cursor: pointer;
+}
+
+.reportsButtons > span > p{
+  font-family: 'Open Sans', sans-serif;
+  color: #1da5ce;
+  text-align: center;
+  font-size: 1.3em;
+  line-height: 0.9em;
+  margin-bottom: 4px; 
+}
+
+.reportSection {
+    padding: 3px 11px;
+    border: 1px solid #D2D2D2;
+    margin-bottom: 5px;
+    border-radius: 3px;
+    position: relative;
+    text-align: center;
+  /* text-align: center; */
+}
+
+.reportSection:last-child {
+  margin-right: 0;
+}
+
+.reportSection a {
+  text-decoration: none;
+  color: #B3B2B2;
+  font-size: 1.2em;
+}
+
+.reportSection.current {
+  background: #1DA5CE;
+  border-color: #1DA5CE;
+}
+
+.reportSection.current a {
+  color: #fff;
+}
+
+.containerBI{
+  width: 98vw; 
+}
