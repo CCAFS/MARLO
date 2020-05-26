@@ -17,8 +17,11 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectImpactsDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectImpactsManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectImpacts;
+import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ReportProjectImpactsCovid19DTO;
 
@@ -40,10 +43,12 @@ public class ProjectImpactsManagerImpl implements ProjectImpactsManager {
   private ProjectImpactsDAO projectImpactsDAO;
 
   // Managers
+  private ProjectInfoManager projectInfoManager;
 
   @Inject
-  public ProjectImpactsManagerImpl(ProjectImpactsDAO projectImpactsDAO) {
+  public ProjectImpactsManagerImpl(ProjectImpactsDAO projectImpactsDAO, ProjectInfoManager projectInfoManager) {
     this.projectImpactsDAO = projectImpactsDAO;
+    this.projectInfoManager = projectInfoManager;
   }
 
   @Override
@@ -81,13 +86,18 @@ public class ProjectImpactsManagerImpl implements ProjectImpactsManager {
   public List<ReportProjectImpactsCovid19DTO> getProjectImpactsByProjectAndYears(Phase phase) {
     List<ReportProjectImpactsCovid19DTO> reportProjectImpactsCovid19DTO = new ArrayList();
     List<ProjectImpacts> projectImpacts = this.getProjectImpactsByPhase(phase);
-    for (ProjectImpacts projectImpact : projectImpacts) {
-      String projectId = projectImpact.getProject().getId().toString();
-      if (reportProjectImpactsCovid19DTO.stream().anyMatch(c -> c.getProjectId().equals(projectId))) {
-        reportProjectImpactsCovid19DTO.stream().filter(c -> c.getProjectId().equals(projectId))
-          .forEach(e -> e.getAnswer().put(projectImpact.getYear(), projectImpact.getAnswer()));
-      } else {
-        reportProjectImpactsCovid19DTO.add(this.projectImpactsToReportProjectImpactsCovid19DTO(projectImpact, phase));
+    if (projectImpacts != null) {
+      for (ProjectImpacts projectImpact : projectImpacts) {
+        String projectId = projectImpact.getProject().getId().toString();
+        ProjectInfo info = new ProjectInfo();
+        info = projectInfoManager.getProjectInfoByProjectPhase(new Long(projectId), phase.getId());
+        projectImpact.getProject().setProjectInfo(info);
+        if (reportProjectImpactsCovid19DTO.stream().anyMatch(c -> c.getProjectId().equals(projectId))) {
+          reportProjectImpactsCovid19DTO.stream().filter(c -> c.getProjectId().equals(projectId))
+            .forEach(e -> e.getAnswer().put(projectImpact.getYear(), projectImpact.getAnswer()));
+        } else {
+          reportProjectImpactsCovid19DTO.add(this.projectImpactsToReportProjectImpactsCovid19DTO(projectImpact, phase));
+        }
       }
     }
     return reportProjectImpactsCovid19DTO;
@@ -124,13 +134,10 @@ public class ProjectImpactsManagerImpl implements ProjectImpactsManager {
           + " " + (projectLeader.getUser().getLastName() == null ? "" : projectLeader.getUser().getLastName()));
     }
 
-    ProjectPartnerPerson managementLiasion =
-      projectImpact.getProject().getRolPersonDB(phase, ACRONYM_ROL_MANAGEMENT_LIAISON);
+    LiaisonInstitution managementLiasion = projectImpact.getProject().getProjectInfo().getLiaisonInstitution();
 
     if (managementLiasion != null) {
-      ReportProjectImpactsCovid19DTO.setManagementLiasion(
-        (managementLiasion.getUser().getFirstName() == null ? "" : managementLiasion.getUser().getFirstName()) + " "
-          + (managementLiasion.getUser().getLastName() == null ? "" : managementLiasion.getUser().getLastName()));
+      ReportProjectImpactsCovid19DTO.setManagementLiasion(managementLiasion.getName());
     }
 
     HashMap<Integer, String> answer = new HashMap<Integer, String>();
