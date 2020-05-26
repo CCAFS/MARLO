@@ -1123,26 +1123,6 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     return regionsValue;
   }
 
-  /**
-   * This method returns the project partner person who is plays a roll specific.
-   * 
-   * @return a PartnerPerson object with the information requested. Or null if the project doesn't have a rol.
-   */
-  public ProjectPartnerPerson getRolPersonDB(Phase phase, String rolAcronym) {
-    for (ProjectPartner partner : projectPartners.stream()
-      .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())) {
-      for (ProjectPartnerPerson person : partner.getProjectPartnerPersons()) {
-        if (person.isActive()) {
-          if (person.getContactType().equals(rolAcronym)) {
-            return person;
-          }
-        }
-      }
-    }
-    return null;
-  }
-
-
   public List<ProjectScope> getScopes() {
     return scopes;
   }

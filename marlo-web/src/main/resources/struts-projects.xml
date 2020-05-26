@@ -324,7 +324,7 @@
 			</result>
 		</action>
 
-    <action name="{crp}/ImpactCovid19Summary"
+    <action name="{crp}/impactCovid19Summary"
       class="org.cgiar.ccafs.marlo.action.summaries.ImpactCovid19SummaryAction">
       <interceptor-ref name="homeStack" />
       <result name="success" type="stream">
