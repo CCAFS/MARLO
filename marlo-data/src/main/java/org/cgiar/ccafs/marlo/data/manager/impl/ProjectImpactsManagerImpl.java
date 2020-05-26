@@ -17,7 +17,6 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectImpactsDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectImpactsManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectImpacts;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
@@ -41,13 +40,10 @@ public class ProjectImpactsManagerImpl implements ProjectImpactsManager {
   private ProjectImpactsDAO projectImpactsDAO;
 
   // Managers
-  private ProjectInfoManager projectInfoManager;
 
   @Inject
-  public ProjectImpactsManagerImpl(ProjectImpactsDAO projectImpactsDAO, ProjectInfoManager projectInfoManager) {
+  public ProjectImpactsManagerImpl(ProjectImpactsDAO projectImpactsDAO) {
     this.projectImpactsDAO = projectImpactsDAO;
-    this.projectInfoManager = projectInfoManager;
-
   }
 
   @Override

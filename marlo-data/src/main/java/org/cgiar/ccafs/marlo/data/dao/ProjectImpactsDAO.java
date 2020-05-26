@@ -18,7 +18,6 @@ package org.cgiar.ccafs.marlo.data.dao;
 
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectImpacts;
-import org.cgiar.ccafs.marlo.data.model.ReportProjectImpactsCovid19DTO;
 
 import java.util.List;
 
@@ -55,14 +54,6 @@ public interface ProjectImpactsDAO {
    * @return a list from ProjectImpacts null if no exist records
    */
   public List<ProjectImpacts> findAll();
-
-
-  /**
-   * This method gets a list of projectImpacts that are active and in a phase specific
-   * 
-   * @return a list from ReportProjectImpactsCovid19DTO null if no exist records
-   */
-  public List<ReportProjectImpactsCovid19DTO> findByProjectAndYears(Phase selectedPhase);
 
   /**
    * This method gets a projectImpacts object by a given project identifier.

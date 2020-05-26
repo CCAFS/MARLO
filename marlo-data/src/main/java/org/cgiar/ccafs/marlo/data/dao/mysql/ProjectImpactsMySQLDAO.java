@@ -19,10 +19,8 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.ProjectImpactsDAO;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectImpacts;
-import org.cgiar.ccafs.marlo.data.model.ReportProjectImpactsCovid19DTO;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,8 +31,6 @@ import org.hibernate.SessionFactory;
 
 @Named
 public class ProjectImpactsMySQLDAO extends AbstractMarloDAO<ProjectImpacts, Long> implements ProjectImpactsDAO {
-
-  private static String ACRONYM_ROL_MANAGEMENT_LIAISON = "ML";
 
   @Inject
   public ProjectImpactsMySQLDAO(SessionFactory sessionFactory) {
@@ -76,25 +72,6 @@ public class ProjectImpactsMySQLDAO extends AbstractMarloDAO<ProjectImpacts, Lon
   }
 
   @Override
-  public List<ReportProjectImpactsCovid19DTO> findByProjectAndYears(Phase selectedPhase) {
-    List<ReportProjectImpactsCovid19DTO> reportProjectImpactsCovid19DTO = new ArrayList();
-    List<ProjectImpacts> projectImpacts = this.findAll();
-
-    for (ProjectImpacts projectImpact : projectImpacts) {
-      if (reportProjectImpactsCovid19DTO.stream()
-        .anyMatch(c -> c.getProjectId().equals(projectImpact.getId().toString()))) {
-
-        reportProjectImpactsCovid19DTO.stream().filter(c -> c.getProjectId().equals(projectImpact.getId().toString()))
-          .forEach(e -> e.getAnswer().put(projectImpact.getYear(), projectImpact.getAnswer()));
-      } else {
-        reportProjectImpactsCovid19DTO
-          .add(this.projectImpactsToReportProjectImpactsCovid19DTO(projectImpact, selectedPhase));
-      }
-    }
-    return reportProjectImpactsCovid19DTO;
-  }
-
-  @Override
   public List<ProjectImpacts> findByProjectId(long projectId) {
     String query = "from " + ProjectImpacts.class.getName() + " where is_active=1 and project_id=" + projectId;
     List<ProjectImpacts> list = super.findAll(query);
@@ -127,34 +104,6 @@ public class ProjectImpactsMySQLDAO extends AbstractMarloDAO<ProjectImpacts, Lon
       return projectImpacts;
     }
     return null;
-  }
-
-  public ReportProjectImpactsCovid19DTO projectImpactsToReportProjectImpactsCovid19DTO(ProjectImpacts projectImpact,
-    Phase selectedPhase) {
-    ReportProjectImpactsCovid19DTO ReportProjectImpactsCovid19DTO = new ReportProjectImpactsCovid19DTO();
-
-    ReportProjectImpactsCovid19DTO.setProjectId(projectImpact.getProject().getId().toString());
-    ReportProjectImpactsCovid19DTO.setTitle(projectImpact.getProject().getProjecInfoPhase(selectedPhase).getTitle());
-
-    if (projectImpact.getProject().getProjectInfo().getSummary() != null
-      && !projectImpact.getProject().getProjectInfo().getSummary().isEmpty()) {
-      ReportProjectImpactsCovid19DTO.setProjectSummary(projectImpact.getProject().getProjectInfo().getSummary());
-    }
-
-    ReportProjectImpactsCovid19DTO
-      .setProjectLeader(projectImpact.getProject().getLeaderPersonDB(selectedPhase).getUser().getFirstName() + " "
-        + projectImpact.getProject().getLeaderPersonDB(selectedPhase).getUser().getLastName());
-
-    ReportProjectImpactsCovid19DTO.setManagementLiasion(
-      projectImpact.getProject().getRolPersonDB(selectedPhase, ACRONYM_ROL_MANAGEMENT_LIAISON).getUser().getFirstName()
-        + " " + projectImpact.getProject().getRolPersonDB(selectedPhase, ACRONYM_ROL_MANAGEMENT_LIAISON).getUser()
-          .getLastName());
-
-    HashMap<Integer, String> answer = new HashMap<Integer, String>();
-    answer.put(projectImpact.getYear(), projectImpact.getAnswer());
-    ReportProjectImpactsCovid19DTO.setAnswer(answer);
-
-    return ReportProjectImpactsCovid19DTO;
   }
 
   @Override
