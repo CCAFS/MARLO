@@ -340,17 +340,17 @@ public class OutcomesMilestonesAction extends BaseAction {
       milestone = reportSynthesisFlagshipProgressOutcomeMilestoneManager.getMilestoneId(outcomeID, milestoneID);
       if (milestone != null) {
         // why is this setting local variables that are never being used?
-        String outcomeInfo = "";
-        String milestoneInfo = "";
+        // String outcomeInfo = "";
+        // String milestoneInfo = "";
         if (crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeID) != null
           && crpMilestoneManager.getCrpMilestoneById(milestoneID) != null) {
           if (crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeID).getCrpProgram() != null
             && crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeID).getCrpProgram().getAcronym() != null) {
-            outcomeInfo = crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeID).getCrpProgram().getAcronym()
-              + " - " + crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeID).getDescription();
+            // outcomeInfo = crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeID).getCrpProgram().getAcronym()
+            // + " - " + crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeID).getDescription();
           }
           if (crpMilestoneManager.getCrpMilestoneById(milestoneID).getComposedName() != null) {
-            milestoneInfo = crpMilestoneManager.getCrpMilestoneById(milestoneID).getComposedName();
+            // milestoneInfo = crpMilestoneManager.getCrpMilestoneById(milestoneID).getComposedName();
           }
         }
 
