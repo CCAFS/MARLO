@@ -132,6 +132,9 @@ public class ProjectImpactsManagerImpl implements ProjectImpactsManager {
       ReportProjectImpactsCovid19DTO
         .setProjectLeader((projectLeader.getUser().getFirstName() == null ? "" : projectLeader.getUser().getFirstName())
           + " " + (projectLeader.getUser().getLastName() == null ? "" : projectLeader.getUser().getLastName()));
+
+      ReportProjectImpactsCovid19DTO
+        .setProjectLeaderEmail(projectLeader.getUser().getEmail() == null ? "" : projectLeader.getUser().getEmail());
     }
 
     LiaisonInstitution managementLiasion = projectImpact.getProject().getProjectInfo().getLiaisonInstitution();
@@ -145,6 +148,8 @@ public class ProjectImpactsManagerImpl implements ProjectImpactsManager {
     ReportProjectImpactsCovid19DTO.setAnswer(answer);
 
     ReportProjectImpactsCovid19DTO.setProjectUrl("P" + projectImpact.getProject().getId().toString());
+
+    ReportProjectImpactsCovid19DTO.setPhaseId(phase.getId().toString());
 
     return ReportProjectImpactsCovid19DTO;
   }
