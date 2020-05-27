@@ -33,6 +33,7 @@ public class ReportProjectImpactsCovid19DTO implements java.io.Serializable {
   private String projectUrl;
   private String phaseId;
   private String projectLeaderEmail;
+  private String managementLiasionAcronym;
 
 
   public Map<Integer, String> getAnswer() {
@@ -45,6 +46,11 @@ public class ReportProjectImpactsCovid19DTO implements java.io.Serializable {
   }
 
 
+  public String getManagementLiasionAcronym() {
+    return managementLiasionAcronym;
+  }
+
+
   public String getPhaseId() {
     return phaseId;
   }
@@ -53,6 +59,7 @@ public class ReportProjectImpactsCovid19DTO implements java.io.Serializable {
   public String getProjectId() {
     return projectId;
   }
+
 
   public String getProjectLeader() {
     return projectLeader;
@@ -80,6 +87,10 @@ public class ReportProjectImpactsCovid19DTO implements java.io.Serializable {
 
   public void setManagementLiasion(String managementLiasion) {
     this.managementLiasion = managementLiasion;
+  }
+
+  public void setManagementLiasionAcronym(String managementLiasionAcronym) {
+    this.managementLiasionAcronym = managementLiasionAcronym;
   }
 
   public void setPhaseId(String phaseId) {
