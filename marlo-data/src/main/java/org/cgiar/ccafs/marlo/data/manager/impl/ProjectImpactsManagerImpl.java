@@ -141,6 +141,7 @@ public class ProjectImpactsManagerImpl implements ProjectImpactsManager {
 
     if (managementLiasion != null) {
       ReportProjectImpactsCovid19DTO.setManagementLiasion(managementLiasion.getName());
+      ReportProjectImpactsCovid19DTO.setManagementLiasionAcronym(managementLiasion.getAcronym());
     }
 
     HashMap<Integer, String> answer = new HashMap<Integer, String>();
