@@ -308,6 +308,12 @@ public class ProjectInnovationManagerImpl implements ProjectInnovationManager {
   }
 
   @Override
+  public Boolean isInnovationExcluded(Long innovationId, Long phaseId) {
+
+    return projectInnovationDAO.isInnovationExcluded(innovationId, phaseId);
+  }
+
+  @Override
   public ProjectInnovation saveProjectInnovation(ProjectInnovation projectInnovation) {
     return projectInnovationDAO.save(projectInnovation);
   }

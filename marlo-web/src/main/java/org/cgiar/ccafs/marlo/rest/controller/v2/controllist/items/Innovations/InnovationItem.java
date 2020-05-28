@@ -637,7 +637,7 @@ public class InnovationItem<T> {
       for (ProjectInnovationInfo projectInnovationInfo : projectInnovationInfoList) {
         ProjectInnovation innovation =
           this.projectInnovationManager.getProjectInnovationById(projectInnovationInfo.getProjectInnovation().getId());
-        if (innovation.isActive()) {
+        if (innovation.isActive() && projectInnovationManager.isInnovationExcluded(innovation.getId(), phase.getId())) {
           innovation.setProjectInnovationInfo(projectInnovationInfo);
           innovation.setCountries(
             this.projectInnovationCountryManager.getInnovationCountrybyPhase(innovation.getId(), phase.getId()));
