@@ -82,7 +82,7 @@ public class ProjectInnovationARDTO {
   private String evidenceLink;
 
   @ApiModelProperty(notes = "Contributing CRPs/Platforms", position = 140)
-  private List<DefaultFieldDTO> contributingCGIAREntities;
+  private List<DefaultFieldStringDTO> contributingCGIAREntities;
 
   @ApiModelProperty(notes = "Contributing milestone list", position = 142)
   private List<MilestoneNameDTO> milestonesList;
@@ -95,7 +95,7 @@ public class ProjectInnovationARDTO {
   private List<ProjectExpectedStudyNameDTO> projectExpetedStudyList;
 
 
-  public List<DefaultFieldDTO> getContributingCGIAREntities() {
+  public List<DefaultFieldStringDTO> getContributingCGIAREntities() {
     return contributingCGIAREntities;
   }
 
@@ -205,7 +205,7 @@ public class ProjectInnovationARDTO {
   }
 
 
-  public void setContributingCGIAREntities(List<DefaultFieldDTO> contributingCGIAREntities) {
+  public void setContributingCGIAREntities(List<DefaultFieldStringDTO> contributingCGIAREntities) {
     this.contributingCGIAREntities = contributingCGIAREntities;
   }
 
