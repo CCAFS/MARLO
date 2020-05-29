@@ -22,8 +22,8 @@ import io.swagger.annotations.ApiModelProperty;
  */
 public class NewQATokenAuthDTO {
 
-  @ApiModelProperty(notes = "Cgiar Entity Code", position = 2)
-  private String cgiarEntityCode;
+  @ApiModelProperty(notes = "Crp id value of Smo code", position = 2)
+  private String smocode;
 
   @ApiModelProperty(notes = "Username", position = 4)
   private String username;
@@ -33,11 +33,6 @@ public class NewQATokenAuthDTO {
 
   @ApiModelProperty(notes = "Name", position = 6)
   private String name;
-
-
-  public String getCgiarEntityCode() {
-    return cgiarEntityCode;
-  }
 
 
   public String getEmail() {
@@ -50,13 +45,13 @@ public class NewQATokenAuthDTO {
   }
 
 
-  public String getUsername() {
-    return username;
+  public String getSmocode() {
+    return smocode;
   }
 
 
-  public void setCgiarEntityCode(String cgiarEntityCode) {
-    this.cgiarEntityCode = cgiarEntityCode;
+  public String getUsername() {
+    return username;
   }
 
 
@@ -67,6 +62,11 @@ public class NewQATokenAuthDTO {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+
+  public void setSmocode(String smocode) {
+    this.smocode = smocode;
   }
 
 

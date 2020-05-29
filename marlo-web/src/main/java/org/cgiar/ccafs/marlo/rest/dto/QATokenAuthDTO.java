@@ -34,8 +34,8 @@ public class QATokenAuthDTO {
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "America/Bogota")
   private Date updatedAt;
 
-  @ApiModelProperty(notes = "Cgiar Entity Code", position = 2)
-  private String cgiarEntityCode;
+  @ApiModelProperty(notes = "Crp id", position = 2)
+  private String crpId;
 
   @ApiModelProperty(notes = "Token", position = 3)
   private String token;
@@ -61,13 +61,13 @@ public class QATokenAuthDTO {
   }
 
 
-  public String getCgiarEntityCode() {
-    return cgiarEntityCode;
+  public Date getCreatedAt() {
+    return createdAt;
   }
 
 
-  public Date getCreatedAt() {
-    return createdAt;
+  public String getCrpId() {
+    return crpId;
   }
 
 
@@ -111,13 +111,13 @@ public class QATokenAuthDTO {
   }
 
 
-  public void setCgiarEntityCode(String cgiarEntityCode) {
-    this.cgiarEntityCode = cgiarEntityCode;
+  public void setCreatedAt(Date createdAt) {
+    this.createdAt = createdAt;
   }
 
 
-  public void setCreatedAt(Date createdAt) {
-    this.createdAt = createdAt;
+  public void setCrpId(String crpId) {
+    this.crpId = crpId;
   }
 
 
