@@ -66,7 +66,6 @@ public class OutcomeMilestonesValidator extends BaseValidator {
     this.sectionStatusManager = sectionStatusManager;
   }
 
-
   private Path getAutoSaveFilePath(ReportSynthesis reportSynthesis, long crpID, BaseAction baseAction) {
     GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = reportSynthesis.getClass().getSimpleName();
@@ -78,13 +77,11 @@ public class OutcomeMilestonesValidator extends BaseValidator {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-
   public LiaisonInstitution getLiaisonInstitution(BaseAction action, long synthesisID) {
     ReportSynthesis reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
     LiaisonInstitution liaisonInstitution = reportSynthesis.getLiaisonInstitution();
     return liaisonInstitution;
   }
-
 
   public boolean isPMU(LiaisonInstitution liaisonInstitution) {
     boolean isFP = false;
@@ -105,9 +102,9 @@ public class OutcomeMilestonesValidator extends BaseValidator {
           action.addMissingField("draft");
         }
       }
+
       LiaisonInstitution liaisonInstitution =
         liaisonInstitutionManager.getLiaisonInstitutionById(reportSynthesis.getLiaisonInstitution().getId());
-
       if (!this.isPMU(liaisonInstitution)) {
         if (liaisonInstitution.getCrpProgram() != null) {
           CrpProgram crpProgram = liaisonInstitution.getCrpProgram();
@@ -118,15 +115,12 @@ public class OutcomeMilestonesValidator extends BaseValidator {
                   this.validateOutcomes(action,
                     reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList().get(i), i);
                 }
-
               } else {
                 action.addMissingField(action.getText("Not Expected Crp Progress"));
               }
-
             } else {
               action.addMissingField(action.getText("Not Expected Crp Progress"));
             }
-
           }
         }
       }
@@ -149,7 +143,6 @@ public class OutcomeMilestonesValidator extends BaseValidator {
           liaisonInstitutionsFromCrp = liaisonInstitutionsFromCrp.stream()
             .sorted((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym())).collect(Collectors.toList());
           for (LiaisonInstitution liaison : liaisonInstitutionsFromCrp) {
-
             // Get report synthesis for each liaison Instution
             reportSynthesisAux =
               reportSynthesisManager.findSynthesis(reportSynthesis.getPhase().getId(), liaison.getId());
@@ -164,11 +157,9 @@ public class OutcomeMilestonesValidator extends BaseValidator {
 
             if (statusOfFlagship != null && statusOfFlagship.getMissingFields() != null
               && !statusOfFlagship.getMissingFields().isEmpty()) {
-
               // Add flagship acronym with missing information to Section status in synthesis flagship field
               if (statusOfFPMU != null && statusOfFPMU.getSynthesisFlagships() != null
                 && !statusOfFPMU.getSynthesisFlagships().isEmpty()) {
-
                 if (!statusOfFPMU.getSynthesisFlagships().contains(liaison.getAcronym())) {
                   action.addSynthesisFlagship(liaison.getAcronym());
                 }
@@ -180,22 +171,22 @@ public class OutcomeMilestonesValidator extends BaseValidator {
               } else {
                 flagshipsWithMisingInformation = liaison.getAcronym();
               }
+
               statusOfEveryFlagship.add(statusOfFlagship);
             }
           }
         }
 
-        boolean tableComplete = false;
+        // boolean tableComplete = false;
 
         if (statusOfEveryFlagship == null || statusOfEveryFlagship.isEmpty()) {
-          tableComplete = true;
+          // tableComplete = true;
         } else {
           // If there are section status objects with missing information
           for (SectionStatus sectionStatus : statusOfEveryFlagship) {
             if ((sectionStatus != null && sectionStatus.getId() != null && sectionStatus.getMissingFields() != null
               && !sectionStatus.getMissingFields().isEmpty() && sectionStatus.getId() != 0)) {
               if (sectionStatus.getReportSynthesis().getLiaisonInstitution().getName().contains("PMU")) {
-
                 // If section status is from PMU - missing fields is set to empty
                 if (sectionStatus.getMissingFields() != null && !sectionStatus.getMissingFields().isEmpty()) {
                   sectionStatus.setMissingFields("");
@@ -203,7 +194,7 @@ public class OutcomeMilestonesValidator extends BaseValidator {
                 }
               } else {
                 // If section status is from flagship
-                tableComplete = false;
+                // tableComplete = false;
                 action.addMissingField("synthesis.AR2019Table5");
                 action.addMessage("Flagships with missing information :" + flagshipsWithMisingInformation);
               }
@@ -218,6 +209,7 @@ public class OutcomeMilestonesValidator extends BaseValidator {
         action.addActionMessage(
           " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
       }
+
       try {
         this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
           action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
@@ -230,7 +222,6 @@ public class OutcomeMilestonesValidator extends BaseValidator {
 
   private void validateCrossCuttingMarkers(BaseAction action,
     ReportSynthesisFlagshipProgressCrossCuttingMarker crossCuttingMarker, int i, int j, int k) {
-
     // Validate each Cross Cutting Markers
     if (crossCuttingMarker.getFocus() != null) {
       if (crossCuttingMarker.getFocus().getId() == null || crossCuttingMarker.getFocus().getId() == -1) {
@@ -267,7 +258,6 @@ public class OutcomeMilestonesValidator extends BaseValidator {
 
   public void validateMilestones(BaseAction action, ReportSynthesisFlagshipProgressOutcomeMilestone milestone, int i,
     int j) {
-
     // Validate Milestone Status
     if (milestone.getMilestonesStatus() == null) {
       action.addMessage(action.getText("Milestone Status"));
@@ -291,7 +281,6 @@ public class OutcomeMilestonesValidator extends BaseValidator {
                   + "].milestones[" + j + "].otherReason", InvalidFieldsMessages.EMPTYFIELD);
               }
             }
-
           } else {
             action.addMessage(action.getText("Milestone Reason"));
             action.addMissingField("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
@@ -299,7 +288,6 @@ public class OutcomeMilestonesValidator extends BaseValidator {
             action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
               + "].milestones[" + j + "].reason.id", InvalidFieldsMessages.EMPTYFIELD);
           }
-
         } else {
           action.addMessage(action.getText("Milestone Reason"));
           action.addMissingField("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
@@ -333,12 +321,10 @@ public class OutcomeMilestonesValidator extends BaseValidator {
       for (int k = 0; k < milestone.getMarkers().size(); k++) {
         this.validateCrossCuttingMarkers(action, milestone.getMarkers().get(k), i, j, k);
       }
-
     }
   }
 
   private void validateOutcomes(BaseAction action, ReportSynthesisFlagshipProgressOutcome outcome, int i) {
-
     // Validate Summary
     if (!(this.isValidString(outcome.getSummary())
       && this.wordCount(this.removeHtmlTags(outcome.getSummary())) <= 200)) {
@@ -352,8 +338,6 @@ public class OutcomeMilestonesValidator extends BaseValidator {
     for (int j = 0; j < outcome.getMilestones().size(); j++) {
       this.validateMilestones(action, outcome.getMilestones().get(j), i, j);
     }
-
-
   }
 
   public void validatePMU(BaseAction action, ReportSynthesis reportSynthesis, boolean saving) {
@@ -365,7 +349,6 @@ public class OutcomeMilestonesValidator extends BaseValidator {
           action.addMissingField("draft");
         }
       }
-
       // Validate Flagships
       // sectionStatusManager.
 
@@ -429,6 +412,4 @@ public class OutcomeMilestonesValidator extends BaseValidator {
       }
     }
   }
-
-
 }
