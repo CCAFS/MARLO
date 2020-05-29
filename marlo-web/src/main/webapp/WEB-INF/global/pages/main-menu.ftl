@@ -30,9 +30,9 @@
   [#-- HOME - Logged --]
   { 'slug': 'home',           'name': 'menu.home',          'namespace': '/',               'action': '${(crpSession)!}/crpDashboard',    'icon': 'home',     'visible': logged, 'active': true },
   [#-- IMPACT PATHWAY - CRP --]
-  { 'slug': 'impactPathway',  'name': 'menu.impactPathway', 'namespace': '/impactPathway',  'action': '${(crpSession)!}/outcomes',        'visible': logged && !centerGlobalUnit, 'active': true },
+  { 'slug': 'impactPathway',  'name': 'menu.impactPathway', 'namespace': '/impactPathway',  'action': '${(crpSession)!}/outcomes',        'visible': logged && !centerGlobalUnit, 'active': false, "development": true },
   [#-- IMPACT PATHWAY - CENTER --]
-  { 'slug': 'impactPathway',  'name': 'menu.impactPathway', 'namespace': '/impactPathway',  'action': '${(crpSession)!}/programimpacts',  'visible': logged && centerGlobalUnit, 'active': true },
+  { 'slug': 'impactPathway',  'name': 'menu.impactPathway', 'namespace': '/impactPathway',  'action': '${(crpSession)!}/programimpacts',  'visible': logged && centerGlobalUnit, 'active': false, "development": true },
   [#-- MONITORING OUTCOMES - CENTER --]
   { 'slug': 'outcomes',       'name': 'menu.outcomes',      'namespace': '/monitoring',       'action': '${(crpSession)!}/monitoringOutcomesList',                      'visible': logged && centerGlobalUnit, 'active': true },
   [#-- PROJECTS - ALL --]
@@ -81,6 +81,7 @@
       <a href="${url}" onclick="return ${item.active?string}" class="action-${item.action}" title="[#if item.help?? && item.help][@s.text name="${item.name}.help" /][/#if]">
         [#if item.icon?has_content]<span class="glyphicon glyphicon-${item.icon}"></span> [/#if]
         [@s.text name=item.name ][@s.param]${(crpSession?upper_case)!'CRP'}[/@s.param] [/@s.text]
+        [#if (item.development)!false][@utils.underConstruction title="global.underConstruction" width="18px" height="18px" /][/#if]
       </a>
       [#if item.subItems?has_content]
         <ul class="subMenuItems subMenu">
