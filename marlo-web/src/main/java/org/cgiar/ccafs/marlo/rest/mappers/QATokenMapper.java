@@ -19,8 +19,6 @@ import org.cgiar.ccafs.marlo.data.model.QATokenAuth;
 import org.cgiar.ccafs.marlo.rest.dto.QATokenAuthDTO;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
 
 /**
  * @author Luis Benavides - CIAT/CCAFS
@@ -28,6 +26,5 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "jsr330")
 public interface QATokenMapper {
 
-  @Mappings({@Mapping(source = "crpId", target = "cgiarEntityCode")})
   public abstract QATokenAuthDTO QATokenAuthToQATokenAuthDTO(QATokenAuth qATokenAuth);
 }

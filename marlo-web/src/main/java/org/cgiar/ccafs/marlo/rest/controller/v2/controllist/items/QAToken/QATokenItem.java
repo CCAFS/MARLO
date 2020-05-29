@@ -94,7 +94,7 @@ public class QATokenItem<T> {
     String name = newQATokenAuthDTO.getName();
     String username = newQATokenAuthDTO.getUsername();
     String email = newQATokenAuthDTO.getEmail();
-    String smoCode = newQATokenAuthDTO.getCgiarEntityCode();
+    String smoCode = newQATokenAuthDTO.getSmocode();
 
     if (this.valuesIsEmpty(newQATokenAuthDTO)) {
       fieldErrors.add(new FieldErrorDTO("getToken", "newQATokenAuthDTO", "One or more of the values are empty"));
@@ -102,14 +102,13 @@ public class QATokenItem<T> {
       GlobalUnit crpSmo = this.globalUnitManager.findGlobalUnitBySMOCode(smoCode.trim());
 
       if (crpSmo == null) {
-        fieldErrors.add(new FieldErrorDTO("getToken", "cgiarEntityCode", smoCode + " is an invalid cgiar entity code"));
+        fieldErrors.add(new FieldErrorDTO("getToken", "smoCode", smoCode + " is an invalid smo code"));
       } else {
 
         Set<CrpUser> lstUser = user.getCrpUsers();
 
         if (!lstUser.stream().anyMatch(crp -> crp.getCrp().getAcronym().equalsIgnoreCase(crpSmo.getAcronym()))) {
-          fieldErrors
-            .add(new FieldErrorDTO("getToken", "cgiarEntityCode", smoCode + " is a cgiar entity code not autorized"));
+          fieldErrors.add(new FieldErrorDTO("getToken", "smoCode", smoCode + " is a smo code entity not autorized"));
         } else {
           if (!this.emailIsValid(email)) {
             fieldErrors.add(new FieldErrorDTO("getToken", "email", email + " is an invalid email"));
@@ -135,7 +134,7 @@ public class QATokenItem<T> {
 
   private Boolean valuesIsEmpty(NewQATokenAuthDTO newQATokenAuthDTO) {
     if (newQATokenAuthDTO.getName().isEmpty() || newQATokenAuthDTO.getUsername().isEmpty()
-      || newQATokenAuthDTO.getEmail().isEmpty() || newQATokenAuthDTO.getCgiarEntityCode().isEmpty()) {
+      || newQATokenAuthDTO.getEmail().isEmpty() || newQATokenAuthDTO.getSmocode().isEmpty()) {
       return true;
     }
     return false;
