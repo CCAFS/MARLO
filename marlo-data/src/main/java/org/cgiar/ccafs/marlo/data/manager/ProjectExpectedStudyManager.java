@@ -98,6 +98,17 @@ public interface ProjectExpectedStudyManager {
   public List<ProjectExpectedStudy> getUserStudies(long userId, String crp);
 
   /**
+   * This method gets the information if a study was unchecked to exclude on reporting for the given
+   * projectExpectedStudy and phase
+   * 
+   * @param projectExpectedStudyId - is study identifier.
+   * @param phaseId - is phase identifier
+   * @param typeStudy - is study type 1-OICR, 2-MELIA
+   * @return a boolean representing if study was excluded from Reporting 0-Included, 1-Excluded
+   */
+  public Boolean isStudyExcluded(Long projectExpectedStudyId, Long phaseId, Long typeStudy);
+
+  /**
    * This method saves the information of the given projectExpectedStudy
    * 
    * @param projectExpectedStudy - is the projectExpectedStudy object with the new information to be added/updated.
@@ -110,6 +121,7 @@ public interface ProjectExpectedStudyManager {
   public ProjectExpectedStudy save(ProjectExpectedStudy projectExpectedStudy, String section,
     List<String> relationsName, Phase phase);
 
+
   /**
    * This method saves the information of the given projectExpectedStudy
    * 
@@ -119,4 +131,5 @@ public interface ProjectExpectedStudyManager {
    *         or -1 is some error occurred.
    */
   public ProjectExpectedStudy saveProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy);
+
 }

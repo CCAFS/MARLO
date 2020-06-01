@@ -605,7 +605,8 @@ public class PolicyItem<T> {
       for (ProjectPolicyInfo projectPolicyInfo : projectPolicyInfoList) {
         ProjectPolicy projectPolicy =
           projectPolicyManager.getProjectPolicyById(projectPolicyInfo.getProjectPolicy().getId());
-        if (projectPolicy.isActive()) {
+
+        if (projectPolicy.isActive() && projectPolicyManager.isPolicyExcluded(projectPolicy.getId(), phase.getId())) {
           projectPolicy.setProjectPolicyInfo(projectPolicyInfo);
           projectPolicy = this.getPolicyInfoPhase(projectPolicy, phase);
           projectPolicyList.add(projectPolicy);

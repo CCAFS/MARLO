@@ -20,6 +20,10 @@
 package org.cgiar.ccafs.marlo.rest.mappers;
 
 import org.cgiar.ccafs.marlo.data.model.PolicyMilestone;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyMilestone;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationMilestone;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicySubIdo;
 import org.cgiar.ccafs.marlo.rest.dto.DefaultFieldPrimaryDTO;
 import org.cgiar.ccafs.marlo.rest.dto.MilestoneNameDTO;
@@ -35,9 +39,39 @@ public interface DefaultFieldPrimaryMapper {
     @Mapping(source = "crpMilestone.title", target = "name"), @Mapping(source = "primary", target = "primary")})
   public abstract MilestoneNameDTO policyMilestoneToMilestoneNameDTO(PolicyMilestone policyMilestone);
 
+  // **************** Studies
+
+  @Mappings({@Mapping(source = "crpMilestone.composeID", target = "id"),
+    @Mapping(source = "crpMilestone.title", target = "name"), @Mapping(source = "primary", target = "primary")})
+  public abstract MilestoneNameDTO
+    projectExpectedStudyMilestoneToMilestoneNameDTO(ProjectExpectedStudyMilestone projectExpectedStudyMilestone);
+
+  @Mappings({@Mapping(source = "srfSubIdo.smoCode", target = "id"),
+    @Mapping(source = "srfSubIdo.description", target = "name"), @Mapping(source = "primary", target = "primary")})
+  public abstract DefaultFieldPrimaryDTO
+    projectExpectedStudySubIdoToDefaultFieldPrimaryDTO(ProjectExpectedStudySubIdo projectExpectedStudySubIdo);
+
+
+  // ****************Innovations
+
+  @Mappings({@Mapping(source = "crpMilestone.composeID", target = "id"),
+    @Mapping(source = "crpMilestone.title", target = "name"), @Mapping(source = "primary", target = "primary")})
+  public abstract MilestoneNameDTO
+    projectInnovationMilestoneToMilestoneNameDTO(ProjectInnovationMilestone projectInnovationMilestone);
+
+  @Mappings({@Mapping(source = "srfSubIdo.smoCode", target = "id"),
+    @Mapping(source = "srfSubIdo.description", target = "name"), @Mapping(source = "primary", target = "primary")})
+  public abstract DefaultFieldPrimaryDTO
+    projectInnovationSubIdoToDefaultFieldPrimaryDTO(ProjectInnovationSubIdo projectInnovationSubIdo);
+
+
+  // ****************Policies
+
+
   @Mappings({@Mapping(source = "srfSubIdo.smoCode", target = "id"),
     @Mapping(source = "srfSubIdo.description", target = "name"), @Mapping(source = "primary", target = "primary")})
   public abstract DefaultFieldPrimaryDTO
     projectPolicySubIdoToDefaultFieldPrimaryDTO(ProjectPolicySubIdo projectPolicySubIdo);
+
 
 }

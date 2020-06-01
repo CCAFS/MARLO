@@ -324,6 +324,15 @@
 			</result>
 		</action>
 
+    <action name="{crp}/impactCovid19Summary"
+      class="org.cgiar.ccafs.marlo.action.summaries.ImpactCovid19SummaryAction">
+      <interceptor-ref name="homeStack" />
+      <result name="success" type="stream">
+        <param name="inputName">inputStream</param>
+        <param name="contentType">${contentType}</param>
+        <param name="contentDisposition">filename="${fileName}"</param>
+      </result>
+    </action>
 
 		<action name="{crp}/highlights"
 			class="org.cgiar.ccafs.marlo.action.projects.ProjectHighListAction">

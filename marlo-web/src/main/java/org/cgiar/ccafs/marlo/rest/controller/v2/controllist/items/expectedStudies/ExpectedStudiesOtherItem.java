@@ -56,6 +56,7 @@ import org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.data.model.StudyType;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.rest.dto.MeliaARDTO;
 import org.cgiar.ccafs.marlo.rest.dto.MeliaDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewInnovationDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectExpectedStudiesOtherDTO;
@@ -621,9 +622,9 @@ public class ExpectedStudiesOtherItem<T> {
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
-  public List<MeliaDTO> findAllMeliaByGlobalUnit(String CGIARentityAcronym, Integer repoYear, String repoPhase,
+  public List<MeliaARDTO> findAllMeliaByGlobalUnit(String CGIARentityAcronym, Integer repoYear, String repoPhase,
     User user) {
-    List<MeliaDTO> meliaList = new ArrayList<MeliaDTO>();
+    List<MeliaARDTO> meliaList = new ArrayList<MeliaARDTO>();
     List<ProjectExpectedStudy> projectExpectedStudyList = new ArrayList<ProjectExpectedStudy>();
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
@@ -645,32 +646,36 @@ public class ExpectedStudiesOtherItem<T> {
           .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
           .collect(Collectors.toList()));
     } else {
-      List<ProjectExpectedStudyInfo> projectExpectedStudyInfoList =
-        phase.getProjectExpectedStudyInfos().stream().filter(c -> c.getPhase().getId().equals(phase.getId())
-          && c.getYear().longValue() == repoYear && c.getStudyType().getId() != 1).collect(Collectors.toList());
+      List<ProjectExpectedStudyInfo> projectExpectedStudyInfoList = phase
+        .getProjectExpectedStudyInfos().stream().filter(c -> c.getPhase().getId().equals(phase.getId())
+          && c.getYear().longValue() == repoYear && c.getStudyType() != null && c.getStudyType().getId() != 1)
+        .collect(Collectors.toList());
       for (ProjectExpectedStudyInfo projectExpectedStudyInfo : projectExpectedStudyInfoList) {
-        ProjectExpectedStudy projectExpectedStudy =
-          projectExpectedStudyManager.getProjectExpectedStudyById(projectExpectedStudyInfo.getId());
-        projectExpectedStudy.setProjectExpectedStudyInfo(projectExpectedStudyInfo);
-        projectExpectedStudy.setCountries(projectExpectedStudyCountryManager
-          .findAll().stream().filter(c -> c.isActive()
-            && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
-          .collect(Collectors.toList()));
-        projectExpectedStudy.setStudyRegions(projectExpectedStudyRegionManager
-          .findAll().stream().filter(c -> c.isActive()
-            && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
-          .collect(Collectors.toList()));
-        projectExpectedStudy.setGeographicScopes(projectExpectedStudy.getProjectExpectedStudyGeographicScopes().stream()
-          .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList()));
-        projectExpectedStudy.setSrfTargets(projectExpectedStudy.getProjectExpectedStudySrfTargets().stream()
-          .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList()));
-        projectExpectedStudy.setSubIdos(projectExpectedStudy.getProjectExpectedStudySubIdos().stream()
-          .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList()));
-        projectExpectedStudyList.add(projectExpectedStudy);
+        ProjectExpectedStudy projectExpectedStudy = projectExpectedStudyManager
+          .getProjectExpectedStudyById(projectExpectedStudyInfo.getProjectExpectedStudy().getId());
+        if (projectExpectedStudy != null && projectExpectedStudy.isActive()
+          && projectExpectedStudyManager.isStudyExcluded(projectExpectedStudy.getId(), phase.getId(), new Long(2))) {
+          projectExpectedStudy.setProjectExpectedStudyInfo(projectExpectedStudyInfo);
+          projectExpectedStudy.setCountries(projectExpectedStudyCountryManager
+            .findAll().stream().filter(c -> c.isActive()
+              && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
+            .collect(Collectors.toList()));
+          projectExpectedStudy.setStudyRegions(projectExpectedStudyRegionManager
+            .findAll().stream().filter(c -> c.isActive()
+              && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
+            .collect(Collectors.toList()));
+          projectExpectedStudy.setGeographicScopes(projectExpectedStudy.getProjectExpectedStudyGeographicScopes()
+            .stream().filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList()));
+          projectExpectedStudy.setSrfTargets(projectExpectedStudy.getProjectExpectedStudySrfTargets().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList()));
+          projectExpectedStudy.setSubIdos(projectExpectedStudy.getProjectExpectedStudySubIdos().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList()));
+          projectExpectedStudyList.add(projectExpectedStudy);
+        }
       }
 
       meliaList = projectExpectedStudyList.stream()
-        .map(melia -> this.projectExpectedStudiesOtherMapper.projectExpectedStudyToMeliaDTO(melia))
+        .map(melia -> this.projectExpectedStudiesOtherMapper.projectExpectedStudyToMeliaARDTO(melia))
         .collect(Collectors.toList());
 
     }

@@ -94,6 +94,7 @@ import org.cgiar.ccafs.marlo.rest.dto.NewCrosscuttingMarkersDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewMilestonesDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectExpectedStudyDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewSrfSubIdoDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectExpectedStudiesARDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectExpectedStudyDTO;
 import org.cgiar.ccafs.marlo.rest.dto.QuantificationDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
@@ -1182,10 +1183,10 @@ public class ExpectedStudiesItem<T> {
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
-  public List<ProjectExpectedStudyDTO> findAllExpectedStudyByGlobalUnit(String CGIARentityAcronym, Integer repoYear,
+  public List<ProjectExpectedStudiesARDTO> findAllExpectedStudyByGlobalUnit(String CGIARentityAcronym, Integer repoYear,
     String repoPhase, User user) {
 
-    List<ProjectExpectedStudyDTO> projectExpectedStudyList = new ArrayList<ProjectExpectedStudyDTO>();
+    List<ProjectExpectedStudiesARDTO> projectExpectedStudyList = new ArrayList<ProjectExpectedStudiesARDTO>();
     List<ProjectExpectedStudy> expectedStudyList = new ArrayList<ProjectExpectedStudy>();
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
@@ -1214,7 +1215,8 @@ public class ExpectedStudiesItem<T> {
       for (ProjectExpectedStudyInfo projectExpectedStudyInfo : projectExpectedStudyInfoList) {
         ProjectExpectedStudy projectExpectedStudy = projectExpectedStudyManager
           .getProjectExpectedStudyById(projectExpectedStudyInfo.getProjectExpectedStudy().getId());
-        if (projectExpectedStudy.isActive()) {
+        if (projectExpectedStudy.isActive()
+          && projectExpectedStudyManager.isStudyExcluded(projectExpectedStudy.getId(), phase.getId(), new Long(1))) {
           projectExpectedStudy = this.getExpectedStudyInfo(projectExpectedStudy, phase);
           expectedStudyList.add(projectExpectedStudy);
         }
@@ -1229,7 +1231,7 @@ public class ExpectedStudiesItem<T> {
     }
 
     projectExpectedStudyList = expectedStudyList.stream()
-      .map(oicr -> this.projectExpectedStudyMapper.projectExpectedStudyToProjectExpectedStudyDTO(oicr))
+      .map(oicr -> this.projectExpectedStudyMapper.projectExpectedStudyToProjectExpectedStudyARDTO(oicr))
       .collect(Collectors.toList());
 
     return projectExpectedStudyList;
