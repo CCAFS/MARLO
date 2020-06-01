@@ -35,7 +35,7 @@ public class ProjectPolicyARDTO {
   private ProjectPoliciesInfoDTO projectPolicyInfo;
 
   @ApiModelProperty(notes = "CRPs/Platforms identifier", position = 4)
-  private List<DefaultFieldDTO> crps;
+  private List<DefaultFieldStringDTO> crps;
 
   @ApiModelProperty(notes = "CGIAR Sub-IDOs List", position = 5)
   private List<DefaultFieldPrimaryDTO> subIdos;
@@ -75,7 +75,7 @@ public class ProjectPolicyARDTO {
   }
 
 
-  public List<DefaultFieldDTO> getCrps() {
+  public List<DefaultFieldStringDTO> getCrps() {
     return crps;
   }
 
@@ -140,7 +140,7 @@ public class ProjectPolicyARDTO {
   }
 
 
-  public void setCrps(List<DefaultFieldDTO> crps) {
+  public void setCrps(List<DefaultFieldStringDTO> crps) {
     this.crps = crps;
   }
 

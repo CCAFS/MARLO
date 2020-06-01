@@ -23,10 +23,12 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.expectedStudies.ExpectedStudiesItem;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectExpectedStudyDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectExpectedStudiesARDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectExpectedStudyDTO;
 import org.cgiar.ccafs.marlo.rest.errors.NotFoundException;
 import org.cgiar.ccafs.marlo.security.Permission;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -108,15 +110,23 @@ public class ExpectedStudies {
   }
 
   @ApiOperation(tags = {"Table 3 - Outcome/ Impact Case Reports"}, value = "${ExpectedStudies.OICR.GET.all.value}",
-    response = ProjectExpectedStudyDTO.class)
+    response = ProjectExpectedStudiesARDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIAREntity}/OICRS", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
-  public List<ProjectExpectedStudyDTO> findAllExpectedStudyByGlobalUnit(
+  public List<ProjectExpectedStudiesARDTO> findAllExpectedStudyByGlobalUnit(
     @ApiParam(value = "${ExpectedStudies.OICR.GET.all.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${ExpectedStudies.OICR.GET.all.param.year}", required = true) @RequestParam Integer year,
     @ApiParam(value = "${ExpectedStudies.OICR.GET.all.param.phase}", required = true) @RequestParam String phase) {
-    return this.expectedStudiesItem.findAllExpectedStudyByGlobalUnit(CGIAREntity, year, phase, this.getCurrentUser());
+    List<ProjectExpectedStudiesARDTO> studiesList = new ArrayList<ProjectExpectedStudiesARDTO>();
+    try {
+      studiesList =
+        this.expectedStudiesItem.findAllExpectedStudyByGlobalUnit(CGIAREntity, year, phase, this.getCurrentUser());
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    return studiesList;
   }
 
   @ApiOperation(tags = {"Table 3 - Outcome/ Impact Case Reports"}, value = "${ExpectedStudies.OICR.GET.id.value}",

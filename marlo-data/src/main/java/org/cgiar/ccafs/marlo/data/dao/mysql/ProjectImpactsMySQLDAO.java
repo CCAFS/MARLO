@@ -17,9 +17,12 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectImpactsDAO;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectImpacts;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -28,7 +31,6 @@ import org.hibernate.SessionFactory;
 
 @Named
 public class ProjectImpactsMySQLDAO extends AbstractMarloDAO<ProjectImpacts, Long> implements ProjectImpactsDAO {
-
 
   @Inject
   public ProjectImpactsMySQLDAO(SessionFactory sessionFactory) {
@@ -80,6 +82,31 @@ public class ProjectImpactsMySQLDAO extends AbstractMarloDAO<ProjectImpacts, Lon
   }
 
   @Override
+  public List<ProjectImpacts> getProjectImpactsByPhase(Phase phase) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT DISTINCT pi.id ");
+    query.append("FROM project_impacts AS pi ");
+    query.append("INNER JOIN projects_info AS pin ");
+    query.append("ON pi.project_id = pin.project_id ");
+    query.append("WHERE pi.is_active = 1 AND pin.id_phase = " + phase.getId());
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<ProjectImpacts> projectImpacts = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        ProjectImpacts projectImpact = this.find(Long.parseLong(map.get("id").toString()));
+        projectImpacts.add(projectImpact);
+      }
+    }
+
+    if (projectImpacts.size() > 0) {
+      return projectImpacts;
+    }
+    return null;
+  }
+
+  @Override
   public ProjectImpacts save(ProjectImpacts projectImpacts) {
     if (projectImpacts.getId() == null) {
       super.saveEntity(projectImpacts);
@@ -90,6 +117,5 @@ public class ProjectImpactsMySQLDAO extends AbstractMarloDAO<ProjectImpacts, Lon
 
     return projectImpacts;
   }
-
 
 }

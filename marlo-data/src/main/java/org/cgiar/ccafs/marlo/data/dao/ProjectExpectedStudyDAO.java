@@ -83,6 +83,17 @@ public interface ProjectExpectedStudyDAO {
   public List<Map<String, Object>> getUserStudies(long userId, String crp);
 
   /**
+   * This method gets the information if a study was unchecked to exclude on reporting for the given
+   * projectExpectedStudy and phase
+   * 
+   * @param projectExpectedStudyId - is study identifier.
+   * @param phaseId - is phase identifier
+   * @param typeStudy - is study type 1-OICR, 2-MELIA
+   * @return a boolean representing if study was excluded from Reporting false-Included, true-Excluded
+   */
+  public Boolean isStudyExcluded(Long projectExpectedStudyId, Long phaseId, Long typeStudy);
+
+  /**
    * This method saves the information of the given projectExpectedStudy
    * 
    * @param projectExpectedStudy - is the projectExpectedStudy object with the new information to be added/updated.
