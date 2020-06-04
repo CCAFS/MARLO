@@ -36,13 +36,29 @@ public class ProjectPageDTO {
   @ApiModelProperty(notes = "Project information", position = 2)
   private ProjectInfoDTO projectInfo;
 
+  @ApiModelProperty(notes = "Regional Program", position = 2)
   private List<CrpProgramDTO> regions;
+
+  @ApiModelProperty(notes = "CRP Program", position = 2)
   private List<CrpProgramDTO> flagships;
+
+  @ApiModelProperty(notes = "Regions", position = 9)
+  private List<DefaultFieldDTO> projectRegions;
+
+
+  @ApiModelProperty(notes = "Countries", position = 10)
+  private List<DefaultFieldDTO> countries;
+
+
+  public List<DefaultFieldDTO> getCountries() {
+    return countries;
+  }
 
 
   public Date getCreateDate() {
     return createDate;
   }
+
 
   public List<CrpProgramDTO> getFlagships() {
     return flagships;
@@ -52,13 +68,21 @@ public class ProjectPageDTO {
     return id;
   }
 
-
   public ProjectInfoDTO getProjectInfo() {
     return projectInfo;
   }
 
+  public List<DefaultFieldDTO> getProjectRegions() {
+    return projectRegions;
+  }
+
   public List<CrpProgramDTO> getRegions() {
     return regions;
+  }
+
+
+  public void setCountries(List<DefaultFieldDTO> countries) {
+    this.countries = countries;
   }
 
   public void setCreateDate(Date createDate) {
@@ -69,7 +93,6 @@ public class ProjectPageDTO {
     this.flagships = flagships;
   }
 
-
   public void setId(Long id) {
     this.id = id;
   }
@@ -79,9 +102,13 @@ public class ProjectPageDTO {
     this.projectInfo = projectInfo;
   }
 
+
+  public void setProjectRegions(List<DefaultFieldDTO> projectRegions) {
+    this.projectRegions = projectRegions;
+  }
+
   public void setRegions(List<CrpProgramDTO> regions) {
     this.regions = regions;
   }
-
 
 }

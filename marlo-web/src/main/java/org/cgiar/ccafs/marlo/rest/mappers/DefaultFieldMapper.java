@@ -34,6 +34,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationRegion;
+import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyGeographicScope;
@@ -123,12 +124,17 @@ public interface DefaultFieldMapper {
 
 
   // *****Policies*******//
-
   @Mappings({@Mapping(source = "locElement.isoNumeric", target = "id"),
     @Mapping(source = "locElement.name", target = "name")})
   public abstract DefaultFieldDTO
     projectInnovationRegionToDefaultFieldDTO(ProjectInnovationRegion projectInnovationRegion);
 
+  // **********Projectpage**************
+  @Mappings({@Mapping(source = "locElement.isoNumeric", target = "id"),
+    @Mapping(source = "locElement.name", target = "name")})
+  public abstract DefaultFieldDTO projectLocationToDefaultFieldDTO(ProjectLocation projectLocation);
+
+  // *****Policies*******//
   @Mappings({@Mapping(source = "locElement.isoNumeric", target = "id"),
     @Mapping(source = "locElement.name", target = "name")})
   public abstract DefaultFieldDTO projectPolicyCountryToDefaultFieldDTO(ProjectPolicyCountry projectPolicyCountry);
@@ -137,11 +143,11 @@ public interface DefaultFieldMapper {
     @Mapping(source = "globalUnit.name", target = "name")})
   public abstract DefaultFieldStringDTO projectPolicyCrpToDefaultFieldStringDTO(ProjectPolicyCrp projectPolicyCrp);
 
+
   @Mappings({@Mapping(source = "repIndGeographicScope.id", target = "id"),
     @Mapping(source = "repIndGeographicScope.name", target = "name")})
   public abstract DefaultFieldDTO
     projectPolicyGeographicScopeToDefaultFieldDTO(ProjectPolicyGeographicScope projectPolicyGeographicScope);
-
 
   @Mappings({@Mapping(source = "locElement.isoNumeric", target = "id"),
     @Mapping(source = "locElement.name", target = "name")})
