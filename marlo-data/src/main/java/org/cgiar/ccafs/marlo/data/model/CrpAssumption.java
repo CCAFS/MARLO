@@ -44,6 +44,15 @@ public class CrpAssumption extends MarloAuditableEntity implements java.io.Seria
     this.description = description;
   }
 
+  public void copyFields(CrpAssumption other) {
+    this.setActive(other.isActive());
+    this.setActiveSince(other.getActiveSince());
+    this.setCreatedBy(other.getCreatedBy());
+    this.setDescription(other.getDescription());
+    this.setModificationJustification(other.getModificationJustification());
+    this.setModifiedBy(other.getModifiedBy());
+  }
+
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
