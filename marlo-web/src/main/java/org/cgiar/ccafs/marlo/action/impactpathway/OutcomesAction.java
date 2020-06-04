@@ -957,6 +957,7 @@ public class OutcomesAction extends BaseAction {
         }
 
         milestone.copyFields(incomingMilestone);
+        milestone.setPhaseCreated(this.getActualPhase());
         milestone.setCrpProgramOutcome(programOutcomeOld);
         milestone = crpMilestoneManager.saveCrpMilestone(milestone);
 
@@ -1027,7 +1028,8 @@ public class OutcomesAction extends BaseAction {
         outcomeSubIdo = crpOutcomeSubIdoManager.saveCrpOutcomeSubIdo(outcomeSubIdo);
 
         crpOutcomeSubIdoManager.replicate(outcomeSubIdo, nextPhase);
-        this.saveAssumptions(outcomeSubIdo, incomingOutcomeSubIdo);
+        // FIXME commented until fixed
+        // this.saveAssumptions(outcomeSubIdo, incomingOutcomeSubIdo);
       }
     }
   }
