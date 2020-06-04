@@ -30,7 +30,7 @@ public abstract class MilestoneMapper {
   private static final Logger LOG = LoggerFactory.getLogger(MilestoneMapper.class);
 
   @Mappings({@Mapping(source = "crpProgramOutcome", target = "outcomeDTO"),
-    @Mapping(source = "srfTargetUnit", target = "targetUnitDTO"),})
+    @Mapping(source = "srfTargetUnit", target = "targetUnitDTO"), @Mapping(source = "composeID", target = "id")})
   public abstract MilestoneDTO crpMilestoneToMilestoneDTO(CrpMilestone crpMilestone);
 
   public abstract CrpMilestone milestoneDTOToCrpMilestone(MilestoneDTO milestoneDTO);

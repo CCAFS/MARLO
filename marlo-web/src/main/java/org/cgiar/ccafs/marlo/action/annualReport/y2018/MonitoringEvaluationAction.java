@@ -26,10 +26,12 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisMeliaActionStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisMeliaEvaluationActionManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisMeliaEvaluationManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisMeliaManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisMeliaStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -46,9 +48,11 @@ import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressStudyDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMelia;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaActionStudy;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaEvaluation;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaEvaluationAction;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaStudy;
+import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -99,9 +103,12 @@ public class MonitoringEvaluationAction extends BaseAction {
   private ProjectManager projectManager;
   private ProjectExpectedStudyManager projectExpectedStudyManager;
   private ReportSynthesisMeliaStudyManager reportSynthesisMeliaStudyManager;
+  private ReportSynthesisMeliaActionStudyManager reportSynthesisMeliaActionStudyManager;
   private ReportSynthesisMeliaEvaluationManager reportSynthesisMeliaEvaluationManager;
   private ReportSynthesisMeliaEvaluationActionManager reportSynthesisMeliaEvaluationActionManager;
   private PhaseManager phaseManager;
+  private SectionStatusManager sectionStatusManager;
+
   // Variables
   private String transaction;
   private ReportSynthesis reportSynthesis;
@@ -115,7 +122,13 @@ public class MonitoringEvaluationAction extends BaseAction {
   private List<PowbEvidencePlannedStudyDTO> flagshipPlannedList;
   private List<ReportSynthesisMeliaEvaluation> fpSynthesisTable;
   private List<ReportSynthesisMelia> flagshipMeliaProgress;
+  private List<ProjectExpectedStudy> projectExpectedStudies;
+  private List<ReportSynthesisMeliaActionStudy> projectExpectedStudyConverted;
+  private List<ReportSynthesisMeliaActionStudy> selectedExpectedStudies;
+  private List<ProjectExpectedStudy> selectedExpectedSt;
   private Map<Integer, String> statuses;
+  private boolean tableComplete;
+  private List<String> listOfFlagships;
 
   @Inject
   public MonitoringEvaluationAction(APConfig config, GlobalUnitManager crpManager,
@@ -125,8 +138,10 @@ public class MonitoringEvaluationAction extends BaseAction {
     ProjectFocusManager projectFocusManager, ProjectManager projectManager,
     ProjectExpectedStudyManager projectExpectedStudyManager,
     ReportSynthesisMeliaStudyManager reportSynthesisMeliaStudyManager,
+    ReportSynthesisMeliaActionStudyManager reportSynthesisMeliaActionStudyManager,
     ReportSynthesisMeliaEvaluationManager reportSynthesisMeliaEvaluationManager, PhaseManager phaseManager,
-    ReportSynthesisMeliaEvaluationActionManager reportSynthesisMeliaEvaluationActionManager) {
+    ReportSynthesisMeliaEvaluationActionManager reportSynthesisMeliaEvaluationActionManager,
+    SectionStatusManager sectionStatusManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -140,9 +155,11 @@ public class MonitoringEvaluationAction extends BaseAction {
     this.projectManager = projectManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.reportSynthesisMeliaStudyManager = reportSynthesisMeliaStudyManager;
+    this.reportSynthesisMeliaActionStudyManager = reportSynthesisMeliaActionStudyManager;
     this.reportSynthesisMeliaEvaluationManager = reportSynthesisMeliaEvaluationManager;
     this.reportSynthesisMeliaEvaluationActionManager = reportSynthesisMeliaEvaluationActionManager;
     this.phaseManager = phaseManager;
+    this.sectionStatusManager = sectionStatusManager;
   }
 
   /**
@@ -213,26 +230,22 @@ public class MonitoringEvaluationAction extends BaseAction {
         .collect(Collectors.toList()));
 
       for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
-
         if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()) != null) {
+          if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType() != null
+            && projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType().getId() != 1
+            && projectExpectedStudy.getProjectExpectedStudyInfo().getStatus() != null
+            && projectExpectedStudy.getProjectExpectedStudyInfo().getYear().equals(this.getCurrentCycleYear())) {
+            ReportSynthesisFlagshipProgressStudyDTO dto = new ReportSynthesisFlagshipProgressStudyDTO();
 
-          if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()) != null) {
-            if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType() != null
-              && projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType().getId() != 1
-              && projectExpectedStudy.getProjectExpectedStudyInfo().getStatus() != null
-              && projectExpectedStudy.getProjectExpectedStudyInfo().getYear().equals(this.getCurrentCycleYear())) {
-              ReportSynthesisFlagshipProgressStudyDTO dto = new ReportSynthesisFlagshipProgressStudyDTO();
-
-              dto.setProjectExpectedStudy(projectExpectedStudy);
-              List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
-              liaisonInstitutions.add(this.liaisonInstitution);
-              dto.setLiaisonInstitutions(liaisonInstitutions);
-              flagshipPlannedList.add(dto);
-              break;
-
-            }
+            dto.setProjectExpectedStudy(projectExpectedStudy);
+            List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
+            liaisonInstitutions.add(this.liaisonInstitution);
+            dto.setLiaisonInstitutions(liaisonInstitutions);
+            flagshipPlannedList.add(dto);
+            // break;
           }
         }
+
       }
 
       // Get deleted studies
@@ -303,6 +316,33 @@ public class MonitoringEvaluationAction extends BaseAction {
     return liaisonInstitutionId;
   }
 
+  public void getAllProjectExpectedStudies() {
+    projectExpectedStudies = new ArrayList<>();
+    if (projectExpectedStudyManager.findAll() != null) {
+
+      // Get global unit studies
+      projectExpectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
+        .filter(es -> es.isActive() && es.getProjectExpectedStudyInfo(this.getActualPhase()) != null
+          && es.getProjectExpectedStudyInfo(this.getActualPhase()).getYear().equals(this.getCurrentCycleYear()))
+        .collect(Collectors.toList()));
+    }
+
+    projectExpectedStudyConverted = new ArrayList<>();
+    if (projectExpectedStudies != null) {
+      Long i = (long) 1;
+      for (ProjectExpectedStudy study : projectExpectedStudies) {
+        ReportSynthesisMeliaActionStudy meliaActionStudy = new ReportSynthesisMeliaActionStudy();
+        if (study != null && study.getId() != null) {
+          meliaActionStudy
+            .setProjectExpectedStudy(projectExpectedStudyManager.getProjectExpectedStudyById(study.getId()));
+          meliaActionStudy.setId(i);
+          projectExpectedStudyConverted.add(meliaActionStudy);
+        }
+        i++;
+      }
+    }
+  }
+
   private Path getAutoSaveFilePath() {
     String composedClassName = reportSynthesis.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -317,6 +357,42 @@ public class MonitoringEvaluationAction extends BaseAction {
 
   public List<PowbEvidencePlannedStudyDTO> getFlagshipPlannedList() {
     return flagshipPlannedList;
+  }
+
+
+  public void getFlagshipsWithMissingFields() {
+    String flagshipsIncomplete = "";
+    listOfFlagships = new ArrayList<>();
+    SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
+      "Reporting", this.getActualPhase().getYear(), false, "melia");
+
+    if (sectionStatus != null && sectionStatus.getMissingFields() != null && !sectionStatus.getMissingFields().isEmpty()
+      && sectionStatus.getMissingFields().length() != 0 && sectionStatus.getSynthesisFlagships() != null
+      && !sectionStatus.getSynthesisFlagships().isEmpty()
+      && sectionStatus.getMissingFields().contains("synthesis.AR2019Table9/10")) {
+      flagshipsIncomplete = sectionStatus.getSynthesisFlagships();
+    }
+
+
+    if (flagshipsIncomplete != null && !flagshipsIncomplete.isEmpty()) {
+      String textToSeparate = flagshipsIncomplete;
+      String separator = ";";
+      String[] arrayText = textToSeparate.split(separator);
+      for (String element : arrayText) {
+        listOfFlagships.add(element);
+      }
+    }
+
+    /*
+     * List<String> arraylist = new ArrayList<>();
+     * String textToSeparate = "Go,PHP,JavaScript,Python";
+     * String separator = ";";
+     * String[] arrayText = textToSeparate.split(separator);
+     * for (String element : arrayText) {
+     * arraylist.add(element);
+     * }
+     */
+
   }
 
   public List<ReportSynthesisMeliaEvaluation> getFpSynthesisTable() {
@@ -335,6 +411,10 @@ public class MonitoringEvaluationAction extends BaseAction {
     return liaisonInstitutions;
   }
 
+  public List<String> getListOfFlagships() {
+    return listOfFlagships;
+  }
+
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
@@ -343,8 +423,24 @@ public class MonitoringEvaluationAction extends BaseAction {
     return phaseManager;
   }
 
+  public List<ProjectExpectedStudy> getProjectExpectedStudies() {
+    return projectExpectedStudies;
+  }
+
+  public List<ReportSynthesisMeliaActionStudy> getProjectExpectedStudyConverted() {
+    return projectExpectedStudyConverted;
+  }
+
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
+  }
+
+  public List<ProjectExpectedStudy> getSelectedExpectedSt() {
+    return selectedExpectedSt;
+  }
+
+  public List<ReportSynthesisMeliaActionStudy> getSelectedExpectedStudies() {
+    return selectedExpectedStudies;
   }
 
   public Map<Integer, String> getStatuses() {
@@ -389,8 +485,36 @@ public class MonitoringEvaluationAction extends BaseAction {
 
   }
 
+  /**
+   * This method get the status of an specific study depending of the
+   * sectionStatuses
+   *
+   * @param expectedID is the study ID to be identified.
+   * @return Boolean object with the status of the study
+   */
+  public Boolean isStudyComplete(long expectedID, long phaseID) {
+
+    SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByProjectExpectedStudy(expectedID,
+      "Reporting", this.getActualPhase().getYear(), false, "studies");
+
+    if (sectionStatus == null) {
+      tableComplete = true;
+      return true;
+    }
+
+    if (sectionStatus.getMissingFields().length() != 0) {
+      tableComplete = false;
+      return false;
+    }
+
+    tableComplete = true;
+    return true;
+
+  }
+
   @Override
   public void prepare() throws Exception {
+    tableComplete = false;
     // Get current CRP
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
@@ -480,6 +604,7 @@ public class MonitoringEvaluationAction extends BaseAction {
       liaisonInstitutionID = reportSynthesisDB.getLiaisonInstitution().getId();
       liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
 
+      this.getFlagshipsWithMissingFields();
       // Able to PMU Also
       this.studiesList(phase.getId(), liaisonInstitution);
 
@@ -534,15 +659,23 @@ public class MonitoringEvaluationAction extends BaseAction {
               && !reportSynthesis.getReportSynthesisMelia().getEvaluations().isEmpty()) {
               for (ReportSynthesisMeliaEvaluation reportSynthesisMeliaEvaluation : reportSynthesis
                 .getReportSynthesisMelia().getEvaluations()) {
+
                 if (reportSynthesisMeliaEvaluation.getReportSynthesisMeliaEvaluationActions() != null
                   && !reportSynthesisMeliaEvaluation.getReportSynthesisMeliaEvaluationActions().isEmpty()) {
                   reportSynthesisMeliaEvaluation.setMeliaEvaluationActions(
                     new ArrayList<>(reportSynthesisMeliaEvaluation.getReportSynthesisMeliaEvaluationActions().stream()
                       .filter(e -> e.isActive()).collect(Collectors.toList())));
                 }
+                /*
+                 * if (reportSynthesisMeliaEvaluation.getReportSynthesisMeliaActionStudies() != null
+                 * && !reportSynthesisMeliaEvaluation.getReportSynthesisMeliaActionStudies().isEmpty()) {
+                 * reportSynthesisMeliaEvaluation.setMeliaActionsStudy(
+                 * new ArrayList<>(reportSynthesisMeliaEvaluation.getReportSynthesisMeliaActionStudies().stream()
+                 * .filter(e -> e.isActive()).collect(Collectors.toList())));
+                 * }
+                 */
               }
             }
-
           }
         }
       }
@@ -564,6 +697,8 @@ public class MonitoringEvaluationAction extends BaseAction {
       .collect(Collectors.toList());
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
 
+    // Get all expected studies
+    this.getAllProjectExpectedStudies();
 
     if (this.isPMU()) {
       // Table I-1 PMU Information
@@ -683,6 +818,15 @@ public class MonitoringEvaluationAction extends BaseAction {
                 .deleteReportSynthesisMeliaEvaluationAction(reportSynthesisMeliaEvaluationAction.getId());
             }
           }
+          // Delete actions studies
+          if (evaluation.getReportSynthesisMeliaActionStudies() != null
+            && !evaluation.getReportSynthesisMeliaActionStudies().isEmpty()) {
+            for (ReportSynthesisMeliaActionStudy reportSynthesisMeliaEvaluationAction : evaluation
+              .getMeliaActionsStudy()) {
+              reportSynthesisMeliaActionStudyManager
+                .deleteReportSynthesisMeliaActionStudy(reportSynthesisMeliaEvaluationAction.getId());
+            }
+          }
         }
       }
     }
@@ -700,6 +844,7 @@ public class MonitoringEvaluationAction extends BaseAction {
           evaluationSave.setRecommendation(evaluation.getRecommendation());
           evaluationSave.setManagementResponse(evaluation.getManagementResponse());
           evaluationSave.setComments(evaluation.getComments());
+          evaluationSave.setEvidences(evaluation.getEvidences());
           evaluationSave = reportSynthesisMeliaEvaluationManager.saveReportSynthesisMeliaEvaluation(evaluationSave);
 
           // Save evaluationActions
@@ -713,6 +858,18 @@ public class MonitoringEvaluationAction extends BaseAction {
             reportSynthesisMeliaEvaluationActionManager
               .saveReportSynthesisMeliaEvaluationAction(meliaEvaluationActionSave);
           }
+
+          // Save evaluation Actions studies
+          if (evaluation.getMeliaActionsStudy() != null) {
+            for (ReportSynthesisMeliaActionStudy reportSynthesisMeliaActionStudy : evaluation.getMeliaActionsStudy()) {
+              ReportSynthesisMeliaActionStudy meliaEvaluationActionSave = new ReportSynthesisMeliaActionStudy();
+              meliaEvaluationActionSave
+                .setProjectExpectedStudy(reportSynthesisMeliaActionStudy.getProjectExpectedStudy());
+              meliaEvaluationActionSave.setReportSynthesisMeliaEvaluation(evaluationSave);
+              reportSynthesisMeliaActionStudyManager
+                .saveReportSynthesisMeliaActionStudy(reportSynthesisMeliaActionStudy);
+            }
+          }
         } else {
 
           ReportSynthesisMeliaEvaluation evaluationPrev =
@@ -723,6 +880,7 @@ public class MonitoringEvaluationAction extends BaseAction {
           evaluationPrev.setRecommendation(evaluation.getRecommendation());
           evaluationPrev.setManagementResponse(evaluation.getManagementResponse());
           evaluationPrev.setComments(evaluation.getComments());
+          evaluationPrev.setEvidences(evaluation.getEvidences());
 
           List<ReportSynthesisMeliaEvaluationAction> evaluationActionsPrev =
             new ArrayList<>(evaluationPrev.getReportSynthesisMeliaEvaluationActions().stream()
@@ -767,12 +925,86 @@ public class MonitoringEvaluationAction extends BaseAction {
 
           }
 
-          reportSynthesisMeliaEvaluationManager.saveReportSynthesisMeliaEvaluation(evaluationPrev);
+          // Save evaluation actions studies test
+          if (selectedExpectedSt != null) {
+            for (ProjectExpectedStudy reportSynthesisMeliaActionStudy : selectedExpectedSt) {
+
+              if (reportSynthesisMeliaActionStudy.getId() == null) {
+                ReportSynthesisMeliaActionStudy meliaEvaluationActionSave = new ReportSynthesisMeliaActionStudy();
+                meliaEvaluationActionSave.setProjectExpectedStudy(reportSynthesisMeliaActionStudy);
+                meliaEvaluationActionSave.setReportSynthesisMeliaEvaluation(evaluationPrev);
+                reportSynthesisMeliaActionStudyManager.saveReportSynthesisMeliaActionStudy(meliaEvaluationActionSave);
+              } else {
+                /*
+                 * ReportSynthesisMeliaActionStudy evaluationActionUpdate = reportSynthesisMeliaActionStudyManager
+                 * .getReportSynthesisMeliaActionStudyById(reportSynthesisMeliaActionStudy.getId());
+                 * evaluationActionUpdate
+                 * .setProjectExpectedStudy(reportSynthesisMeliaActionStudy);
+                 * evaluationActionUpdate.setReportSynthesisMeliaEvaluation(evaluationPrev);
+                 * reportSynthesisMeliaActionStudyManager.saveReportSynthesisMeliaActionStudy(evaluationActionUpdate);
+                 * reportSynthesisMeliaEvaluationManager.saveReportSynthesisMeliaEvaluation(evaluationPrev);
+                 */
+              }
+
+            }
+
+          }
+
+          // Save evaluation actions studies
+          if (evaluation.getMeliaActionsStudy() != null && !evaluation.getMeliaActionsStudy().isEmpty()) {
+            for (ReportSynthesisMeliaActionStudy reportSynthesisMeliaActionStudy : evaluation.getMeliaActionsStudy()) {
+
+              if (reportSynthesisMeliaActionStudy.getId() == null) {
+                ReportSynthesisMeliaActionStudy meliaEvaluationActionSave = new ReportSynthesisMeliaActionStudy();
+                meliaEvaluationActionSave
+                  .setProjectExpectedStudy(reportSynthesisMeliaActionStudy.getProjectExpectedStudy());
+                meliaEvaluationActionSave.setReportSynthesisMeliaEvaluation(evaluationPrev);
+                reportSynthesisMeliaActionStudyManager.saveReportSynthesisMeliaActionStudy(meliaEvaluationActionSave);
+              } else {
+                ReportSynthesisMeliaActionStudy evaluationActionUpdate = reportSynthesisMeliaActionStudyManager
+                  .getReportSynthesisMeliaActionStudyById(reportSynthesisMeliaActionStudy.getId());
+
+                evaluationActionUpdate
+                  .setProjectExpectedStudy(reportSynthesisMeliaActionStudy.getProjectExpectedStudy());
+                evaluationActionUpdate.setReportSynthesisMeliaEvaluation(evaluationPrev);
+                reportSynthesisMeliaActionStudyManager.saveReportSynthesisMeliaActionStudy(evaluationActionUpdate);
+                reportSynthesisMeliaEvaluationManager.saveReportSynthesisMeliaEvaluation(evaluationPrev);
+              }
+
+            }
+
+          }
+          // Save evaluation actions studies test 3
+          if (selectedExpectedStudies != null) {
+            for (ReportSynthesisMeliaActionStudy reportSynthesisMeliaActionStudy : selectedExpectedStudies) {
+
+              if (reportSynthesisMeliaActionStudy.getId() == null
+                && reportSynthesisMeliaActionStudy.getProjectExpectedStudy() != null
+                && reportSynthesisMeliaActionStudy.getProjectExpectedStudy().getId() != null) {
+                ReportSynthesisMeliaActionStudy meliaEvaluationActionSave = new ReportSynthesisMeliaActionStudy();
+                meliaEvaluationActionSave.setProjectExpectedStudy(projectExpectedStudyManager
+                  .getProjectExpectedStudyById(reportSynthesisMeliaActionStudy.getProjectExpectedStudy().getId()));
+                meliaEvaluationActionSave.setReportSynthesisMeliaEvaluation(evaluationPrev);
+                reportSynthesisMeliaActionStudyManager.saveReportSynthesisMeliaActionStudy(meliaEvaluationActionSave);
+              } else {
+                ReportSynthesisMeliaActionStudy evaluationActionUpdate = reportSynthesisMeliaActionStudyManager
+                  .getReportSynthesisMeliaActionStudyById(reportSynthesisMeliaActionStudy.getId());
+
+                evaluationActionUpdate
+                  .setProjectExpectedStudy(reportSynthesisMeliaActionStudy.getProjectExpectedStudy());
+                evaluationActionUpdate.setReportSynthesisMeliaEvaluation(evaluationPrev);
+                reportSynthesisMeliaActionStudyManager.saveReportSynthesisMeliaActionStudy(evaluationActionUpdate);
+                reportSynthesisMeliaEvaluationManager.saveReportSynthesisMeliaEvaluation(evaluationPrev);
+              }
+
+            }
+
+          }
+
+
         }
       }
     }
-
-
   }
 
   public void saveStudies(ReportSynthesisMelia meliaDB) {
@@ -870,6 +1102,10 @@ public class MonitoringEvaluationAction extends BaseAction {
     this.liaisonInstitutions = liaisonInstitutions;
   }
 
+  public void setListOfFlagships(List<String> listOfFlagships) {
+    this.listOfFlagships = listOfFlagships;
+  }
+
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
@@ -878,10 +1114,27 @@ public class MonitoringEvaluationAction extends BaseAction {
     this.phaseManager = phaseManager;
   }
 
+  public void setProjectExpectedStudies(List<ProjectExpectedStudy> projectExpectedStudies) {
+    this.projectExpectedStudies = projectExpectedStudies;
+  }
+
+  public void setProjectExpectedStudyConverted(List<ReportSynthesisMeliaActionStudy> projectExpectedStudyConverted) {
+    this.projectExpectedStudyConverted = projectExpectedStudyConverted;
+  }
+
+
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
     this.reportSynthesis = reportSynthesis;
   }
 
+
+  public void setSelectedExpectedSt(List<ProjectExpectedStudy> selectedExpectedSt) {
+    this.selectedExpectedSt = selectedExpectedSt;
+  }
+
+  public void setSelectedExpectedStudies(List<ReportSynthesisMeliaActionStudy> selectedExpectedStudies) {
+    this.selectedExpectedStudies = selectedExpectedStudies;
+  }
 
   public void setStatuses(Map<Integer, String> statuses) {
     this.statuses = statuses;

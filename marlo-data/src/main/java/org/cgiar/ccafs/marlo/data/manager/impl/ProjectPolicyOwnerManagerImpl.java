@@ -109,6 +109,12 @@ public class ProjectPolicyOwnerManagerImpl implements ProjectPolicyOwnerManager 
     return projectPolicyOwnerDAO.find(projectPolicyOwnerID);
   }
 
+  @Override
+  public ProjectPolicyOwner getProjectPolicyOwnerById(long projectPolicyID, long policyTypID, long phaseID) {
+
+    return projectPolicyOwnerDAO.getProjectPolicyOwnerById(projectPolicyID, policyTypID, phaseID);
+  }
+
   public void savePolicyOwnerPhase(Phase next, long policyID, ProjectPolicyOwner projectPolicyOwner) {
 
     Phase phase = phaseDAO.find(next.getId());

@@ -14,9 +14,14 @@
 [#attempt]
   [#assign canAcessPublications = (action.canAcessPublications())!false ]
   [#assign canAcessCrp = (action.canAcessCrp())!false ]
+  [#assign canAcessBI = (action.canAccessSuperAdmin())!false ]
+  [#assign canAcessCCAFS = (action.crpID == 1)!false ]
+  [#assign canAcessWLE = (action.crpID == 4)!false ]
 [#recover]
   [#assign canAcessPublications = false ]
   [#assign canAcessCrp = false ]
+  [#assign canAcessCCAFS = false ]
+  [#assign canAcessWLE = false ]
 [/#attempt]
 
 [#assign mainMenu= [
@@ -25,9 +30,9 @@
   [#-- HOME - Logged --]
   { 'slug': 'home',           'name': 'menu.home',          'namespace': '/',               'action': '${(crpSession)!}/crpDashboard',    'icon': 'home',     'visible': logged, 'active': true },
   [#-- IMPACT PATHWAY - CRP --]
-  { 'slug': 'impactPathway',  'name': 'menu.impactPathway', 'namespace': '/impactPathway',  'action': '${(crpSession)!}/outcomes',        'visible': logged && !centerGlobalUnit, 'active': true },
+  { 'slug': 'impactPathway',  'name': 'menu.impactPathway', 'namespace': '/impactPathway',  'action': '${(crpSession)!}/outcomes',        'visible': logged && !centerGlobalUnit, 'active': false, "development": true },
   [#-- IMPACT PATHWAY - CENTER --]
-  { 'slug': 'impactPathway',  'name': 'menu.impactPathway', 'namespace': '/impactPathway',  'action': '${(crpSession)!}/programimpacts',  'visible': logged && centerGlobalUnit, 'active': true },
+  { 'slug': 'impactPathway',  'name': 'menu.impactPathway', 'namespace': '/impactPathway',  'action': '${(crpSession)!}/programimpacts',  'visible': logged && centerGlobalUnit, 'active': false, "development": true },
   [#-- MONITORING OUTCOMES - CENTER --]
   { 'slug': 'outcomes',       'name': 'menu.outcomes',      'namespace': '/monitoring',       'action': '${(crpSession)!}/monitoringOutcomesList',                      'visible': logged && centerGlobalUnit, 'active': true },
   [#-- PROJECTS - ALL --]
@@ -51,14 +56,16 @@
   { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/${reportingDefaultNamespace}',       'action': '${(crpSession)!}/${reportingDefaultAction}',    'visible': logged && reportingActive && !centerGlobalUnit && !upKeepActive, 'active': true,    
     'subItems' : [
       { 'slug': 'annualReport', 'name': 'menu.synthesis.annualReport', 'namespace': '/${reportingDefaultNamespace}',  'action': '${(crpSession)!}/${reportingDefaultAction}',  'visible': logged, 'active': true },
-      { 'slug': 'projectsEvaluation', 'name': 'menu.synthesis.projectsEvaluation', 'namespace': '/synthesis',  'action': '${(crpSession)!}/projectsEvaluation',  'visible': logged, 'active': false, "development": true }
+      [#-- { 'slug': 'projectsEvaluation', 'name': 'menu.synthesis.projectsEvaluation', 'namespace': '/synthesis',  'action': '${(crpSession)!}/projectsEvaluation',  'visible': logged, 'active': false, "development": true }--]
+      { 'slug': 'qualityAssessment', 'name': 'menu.synthesis.qualityAssessment', 'namespace': '/qa',  'action': '${(crpSession)!}/qa',  'visible': logged, 'active': true }
     ]
   },
   [#-- Cap Dev - CENTER --]
   { 'slug': 'capdev', 'name': 'menu.capdev',      'namespace': '/capdev',       'action': '${(centerSession)!}/capdev',    'visible': logged && centerGlobalUnit, 'active': action.centerCapDevActive()}, 
   [#-- SUMMARIES - ALL --]
   { 'slug': 'summaries', 'name': 'menu.summaries',      'namespace': '/summaries',       'action': '${(crpSession)!}/summaries',    'visible': logged, 'active': true }
-
+  [#-- BI Module --]
+  { 'slug': 'bi', 'name': 'menu.bi',      'namespace': '/bi',       'action': '${(crpSession)!}/bi',    'visible': logged && canAcessCCAFS || canAcessWLE, 'active': true }
 ]/]
 
 
@@ -74,6 +81,7 @@
       <a href="${url}" onclick="return ${item.active?string}" class="action-${item.action}" title="[#if item.help?? && item.help][@s.text name="${item.name}.help" /][/#if]">
         [#if item.icon?has_content]<span class="glyphicon glyphicon-${item.icon}"></span> [/#if]
         [@s.text name=item.name ][@s.param]${(crpSession?upper_case)!'CRP'}[/@s.param] [/@s.text]
+        [#if (item.development)!false][@utils.underConstruction title="global.underConstruction" width="18px" height="18px" /][/#if]
       </a>
       [#if item.subItems?has_content]
         <ul class="subMenuItems subMenu">

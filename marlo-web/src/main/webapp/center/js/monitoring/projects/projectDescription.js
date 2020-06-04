@@ -47,11 +47,11 @@ function init() {
   $('#requestModal button.requestButton').on('click', function() {
     var $modal = $(this).parents('.modal');
     var outcomeID = $modal.find('select#outcomeID').val();
-    
+
     if(outcomeID == -1){
       return
     }
-    
+
     $.ajax({
         url: baseURL + '/outputRequest.do',
         data: $('#requestModal form').serialize(),
@@ -78,10 +78,10 @@ function init() {
     if(option.val() != "-1") {
       var countryISO = $(option).val();
       var countryName = $(option).text();
-      
+
       // Add Country
       addCountry(countryISO, countryName);
-      
+
       // Reset select
       option.val("-1");
       option.trigger('change.select2');
@@ -123,7 +123,7 @@ function init() {
       $(this).addClass("radio-checked");
     }
   });
-  
+
   // Is this project has a global dimension
   $(".isGlobal .button-label").on("click", function() {
     var valueSelected = $(this).hasClass('yes-button-label');
@@ -156,9 +156,9 @@ function init() {
       $(this).find(".errorTag").fadeIn(2000);
     });
   });
-  
-  
-  
+
+
+
   // Cross cutting checkbox
   $('.crossCutting input.optionable').on('click', function(){
     var checkedOptions = $('.crossCutting input.optionable:checked').length;
@@ -169,11 +169,11 @@ function init() {
       $('.crossCutting input.na').prop('checked', true);
     }
   })
-  
+
   $('.crossCutting input.na').on('click', function(){
     $('.crossCutting input.optionable').prop('checked', false);
   });
-  
+
 }
 
 /** FUNCTIONS Funding Sources * */
@@ -181,8 +181,8 @@ function init() {
 /** COUNTRIES SELECT FUNCTIONS * */
 // Add a new country element
 function addCountry(countryISO, countryName) {
-  var canAdd = true; 
-  
+  var canAdd = true;
+
   var $list = $("#countryList").find(".list");
   var $item = $("#countryTemplate").clone(true).removeAttr("id");
   var v = countryName.length > 12 ? countryName.substr(0, 12) + ' ... ' : countryName;
@@ -200,7 +200,7 @@ function addCountry(countryISO, countryName) {
 
   // Set country parameters
   $item.find(".name").attr("title", countryName);
-  var $state = $('<span> <i class="flag-sm flag-sm-' + countryISO + '"></i>  ' + v + '</span>');
+  var $state = $('<span> <i class="flag-icon flag-icon-' + countryISO.toLowerCase() + '"></i>  ' + v + '</span>');
   $item.find(".name").html($state);
   $item.find(".cId").val(countryISO);
   $item.find(".id").val(-1);
@@ -209,7 +209,7 @@ function addCountry(countryISO, countryName) {
   updateCountryList($list);
   checkCountryList($list);
 
- 
+
 
 }
 
@@ -349,15 +349,15 @@ function updateFundingSource() {
   $(".fundingSourceList").find('.fundingSources').each(function(i,e) {
     // Set numeric index
     $(e).find('span.index').text(i+1);
-    
+
     // Set indexes
     $(e).setNameIndexes(1, i);
-    
+
     // Update radio elements
     $(e).find('.radio-input').each(function(iRadio, radioInput){
       $(radioInput).attr('id', 'radio-'+ radioInput.value +'-'+ i).next().attr('for', 'radio-'+ radioInput.value +'-'+ i);
     });
-    
+
 
   });
 }
@@ -526,7 +526,7 @@ function formatState(state) {
   var $state = "";
   if(state.element.value != "-1") {
     $state =
-        $('<span> <i class="flag-sm flag-sm-' + state.element.value.toUpperCase() + '"></i>  ' + state.text + '</span>');
+        $('<span> <i class="flag-icon flag-icon-' + state.element.value.toLowerCase() + '"></i>  ' + state.text + '</span>');
   } else {
     $state = $('<span>' + state.text + '</span>');
   }

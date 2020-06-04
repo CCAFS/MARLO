@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,13 +16,14 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.data.dao.CrpMilestoneDAO;
+import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -32,13 +33,15 @@ public class CrpMilestoneManagerImpl implements CrpMilestoneManager {
 
 
   private CrpMilestoneDAO crpAssumptionDAO;
+  private PhaseDAO phaseDAO;
+
   // Managers
 
 
   @Inject
-  public CrpMilestoneManagerImpl(CrpMilestoneDAO crpAssumptionDAO) {
+  public CrpMilestoneManagerImpl(CrpMilestoneDAO crpAssumptionDAO, PhaseDAO phaseDAO) {
     this.crpAssumptionDAO = crpAssumptionDAO;
-
+    this.phaseDAO = phaseDAO;
 
   }
 
@@ -68,10 +71,37 @@ public class CrpMilestoneManagerImpl implements CrpMilestoneManager {
   }
 
   @Override
+  public CrpMilestone getCrpMilestoneByPhase(String composedID, long phaseID) {
+
+    return crpAssumptionDAO.getCrpMilestoneByPhase(composedID, phaseID);
+  }
+
+  @Override
   public CrpMilestone saveCrpMilestone(CrpMilestone crpAssumption) {
 
     return crpAssumptionDAO.save(crpAssumption);
   }
 
+  /*
+   * public void saveInnovationCenterPhase(Phase next, long innovationid, CrpMilestone crpMilestone) {
+   * Phase phase = phaseDAO.find(next.getId());
+   * List<ProjectInnovationCenter> projectInnovatioCenters =
+   * crpAssumptionDAO.findAll().stream()
+   * .filter(c -> c.getcr().getId().longValue() == innovationid
+   * && c.getPhase().getId().equals(phase.getId())
+   * && c.getInstitution().getId().equals(projectInnovationCenter.getInstitution().getId()))
+   * .collect(Collectors.toList());
+   * if (projectInnovatioCenters.isEmpty()) {
+   * ProjectInnovationCenter projectInnovationCenterAdd = new ProjectInnovationCenter();
+   * projectInnovationCenterAdd.setProjectInnovation(projectInnovationCenter.getProjectInnovation());
+   * projectInnovationCenterAdd.setPhase(phase);
+   * projectInnovationCenterAdd.setInstitution(projectInnovationCenter.getInstitution());
+   * crpAssumptionDAO.save(projectInnovationCenterAdd);
+   * }
+   * if (phase.getNext() != null) {
+   * this.saveInnovationCenterPhase(phase.getNext(), innovationid, projectInnovationCenter);
+   * }
+   * }
+   */
 
 }

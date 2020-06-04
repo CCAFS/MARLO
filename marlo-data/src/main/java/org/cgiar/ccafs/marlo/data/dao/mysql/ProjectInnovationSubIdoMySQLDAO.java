@@ -27,7 +27,8 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class ProjectInnovationSubIdoMySQLDAO extends AbstractMarloDAO<ProjectInnovationSubIdo, Long> implements ProjectInnovationSubIdoDAO {
+public class ProjectInnovationSubIdoMySQLDAO extends AbstractMarloDAO<ProjectInnovationSubIdo, Long>
+  implements ProjectInnovationSubIdoDAO {
 
 
   @Inject
@@ -63,6 +64,18 @@ public class ProjectInnovationSubIdoMySQLDAO extends AbstractMarloDAO<ProjectInn
     List<ProjectInnovationSubIdo> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
+    }
+    return null;
+
+  }
+
+  @Override
+  public ProjectInnovationSubIdo getProjectInnovationSubIdoByPhase(Long innovationID, Long subIdoID, Long phaseID) {
+    String query = "from " + ProjectInnovationSubIdo.class.getName() + " where project_innovation_id=" + innovationID
+      + " AND sub_ido_id=" + subIdoID + " AND id_phase=" + phaseID;
+    List<ProjectInnovationSubIdo> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
     }
     return null;
 

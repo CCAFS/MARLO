@@ -55,27 +55,22 @@ public class ProjectPolicyRegionManagerImpl implements ProjectPolicyRegionManage
     ProjectPolicyRegion projectPolicyRegion = this.getProjectPolicyRegionById(projectPolicyRegionId);
 
 
-    // Conditions to Project Policy Works In AR phase and Upkeep Phase
-    if (projectPolicyRegion.getPhase().getDescription().equals(APConstants.PLANNING)
-      && projectPolicyRegion.getPhase().getNext() != null) {
-      this.deleteProjectPolicyRegionPhase(projectPolicyRegion.getPhase().getNext(),
-        projectPolicyRegion.getProjectPolicy().getId(), projectPolicyRegion);
-    }
+    Phase phase = null;
 
-    if (projectPolicyRegion.getPhase().getDescription().equals(APConstants.REPORTING)) {
-      if (projectPolicyRegion.getPhase().getNext() != null
-        && projectPolicyRegion.getPhase().getNext().getNext() != null) {
-        Phase upkeepPhase = projectPolicyRegion.getPhase().getNext().getNext();
-        if (upkeepPhase != null) {
-          this.deleteProjectPolicyRegionPhase(upkeepPhase, projectPolicyRegion.getProjectPolicy().getId(),
-            projectPolicyRegion);
+    if (projectPolicyRegion.getPhase().getNext() != null) {
+      if (projectPolicyRegion.getPhase().getDescription().equals(APConstants.REPORTING)) {
+        // upkeepPhase
+        if (projectPolicyRegion.getPhase().getNext().getNext() != null) {
+          phase = projectPolicyRegion.getPhase().getNext().getNext();
         }
+      } else {
+        // include AP.Constants.PLANNING and others
+        phase = projectPolicyRegion.getPhase().getNext();
       }
     }
 
-    if (projectPolicyRegion.getPhase().getNext() != null) {
-      this.deleteProjectPolicyRegionPhase(projectPolicyRegion.getPhase().getNext(),
-        projectPolicyRegion.getProjectPolicy().getId(), projectPolicyRegion);
+    if (phase != null) {
+      this.deleteProjectPolicyRegionPhase(phase, projectPolicyRegion.getProjectPolicy().getId(), projectPolicyRegion);
     }
 
     projectPolicyRegionDAO.deleteProjectPolicyRegion(projectPolicyRegionId);
@@ -120,6 +115,12 @@ public class ProjectPolicyRegionManagerImpl implements ProjectPolicyRegionManage
   public ProjectPolicyRegion getProjectPolicyRegionById(long projectPolicyRegionID) {
 
     return projectPolicyRegionDAO.find(projectPolicyRegionID);
+  }
+
+  @Override
+  public ProjectPolicyRegion getProjectPolicyRegionByPhase(long projectPolicyID, long regionID, long phaseID) {
+
+    return projectPolicyRegionDAO.getProjectPolicyRegionByPhase(projectPolicyID, regionID, phaseID);
   }
 
   @Override

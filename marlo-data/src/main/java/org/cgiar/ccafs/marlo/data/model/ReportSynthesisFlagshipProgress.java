@@ -173,10 +173,10 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
     return null;
   }
 
-
   public String getInnovationsValue() {
     return innovationsValue;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -192,7 +192,6 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
   public List<ReportSynthesisFlagshipProgressOutcome> getOutcomeList() {
     return outcomeList;
   }
-
 
   public String getOverallProgress() {
     return overallProgress;
@@ -213,10 +212,10 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
     return plannedPolicies;
   }
 
+
   public List<ReportSynthesisFlagshipProgressStudy> getPlannedStudies() {
     return plannedStudies;
   }
-
 
   /**
    * @return Get an array of policies IDs checked.
@@ -253,14 +252,15 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
     return projectPolicies;
   }
 
+
   public List<ProjectExpectedStudy> getProjectStudies() {
     return projectStudies;
   }
 
-
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
   }
+
 
   public Set<ReportSynthesisFlagshipProgressDeliverable> getReportSynthesisFlagshipProgressDeliverables() {
     return reportSynthesisFlagshipProgressDeliverables;
@@ -269,7 +269,6 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
   public Set<ReportSynthesisFlagshipProgressInnovation> getReportSynthesisFlagshipProgressInnovations() {
     return reportSynthesisFlagshipProgressInnovations;
   }
-
 
   public Set<ReportSynthesisFlagshipProgressMilestone> getReportSynthesisFlagshipProgressMilestones() {
     return reportSynthesisFlagshipProgressMilestones;
@@ -285,10 +284,10 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
     return reportSynthesisFlagshipProgressPolicies;
   }
 
+
   public Set<ReportSynthesisFlagshipProgressStudy> getReportSynthesisFlagshipProgressStudies() {
     return reportSynthesisFlagshipProgressStudies;
   }
-
 
   /**
    * @return Get an array of studies IDs checked.

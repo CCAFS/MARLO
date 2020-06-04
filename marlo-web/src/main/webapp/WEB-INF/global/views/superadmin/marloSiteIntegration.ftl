@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "MARLO Sites Integration" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = ["flat-flags"] /]
+[#assign pageLibs = ["flag-icon-css"] /]
 [#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/marloSLOs.js" ] /]
 [#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css" ] /]
 [#assign currentSection = "superadmin" /]
@@ -102,7 +102,7 @@
     [#-- IDO Title --]
     <div class="blockTitle closed">
       <div class="row">
-        <div class="col-md-3"><i class="flag-sm flag-sm-${(element.code?upper_case)!}"></i> ${(element.name)!'New Site'} <strong>${(element.plus)!}</strong></div>
+        <div class="col-md-3"><i class="flag-icon flag-icon-${(element.code?lower_case)!}"></i> ${(element.name)!'New Site'} <strong>${(element.plus)!}</strong></div>
         <div class="col-md-4"><span>${(element.leaders[0].composedName)!}</span> </div>
         <div class="col-md-5"><small>(${(element.center)!})</small></div>
       </div>

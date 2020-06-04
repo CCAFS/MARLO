@@ -36,6 +36,7 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisKeyPartnershipExternalM
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisKeyPartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisKeyPartnershipPmuManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
+import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -62,6 +63,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnershipExternal;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnershipExternalInstitution;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnershipExternalMainArea;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnershipPmu;
+import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -100,6 +102,7 @@ public class PartnershipsAction extends BaseAction {
   private static Logger LOG = LoggerFactory.getLogger(PartnershipsAction.class);
 
   // Managers
+  private SectionStatusManager sectionStatusManager;
   private GlobalUnitManager crpManager;
   private LiaisonInstitutionManager liaisonInstitutionManager;
   private ReportSynthesisManager reportSynthesisManager;
@@ -150,6 +153,7 @@ public class PartnershipsAction extends BaseAction {
   private List<PartnershipsSynthesis> projectPartners;
   private List<GlobalUnit> globalUnits;
   private int indexTab;
+  private List<String> listOfFlagships;
 
   @Inject
   public PartnershipsAction(APConfig config, GlobalUnitManager crpManager,
@@ -165,7 +169,8 @@ public class PartnershipsAction extends BaseAction {
     ReportSynthesisKeyPartnershipCollaborationManager reportSynthesisKeyPartnershipCollaborationManager,
     ReportSynthesisKeyPartnershipCollaborationCrpManager reportSynthesisKeyPartnershipCollaborationCrpManager,
     ReportSynthesisKeyPartnershipPmuManager reportSynthesisKeyPartnershipPmuManager,
-    ReportSynthesisKeyPartnershipCollaborationPmuManager reportSynthesisKeyPartnershipCollaborationPmuManager) {
+    ReportSynthesisKeyPartnershipCollaborationPmuManager reportSynthesisKeyPartnershipCollaborationPmuManager,
+    SectionStatusManager sectionStatusManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -189,6 +194,7 @@ public class PartnershipsAction extends BaseAction {
     this.reportSynthesisKeyPartnershipCollaborationCrpManager = reportSynthesisKeyPartnershipCollaborationCrpManager;
     this.reportSynthesisKeyPartnershipPmuManager = reportSynthesisKeyPartnershipPmuManager;
     this.reportSynthesisKeyPartnershipCollaborationPmuManager = reportSynthesisKeyPartnershipCollaborationPmuManager;
+    this.sectionStatusManager = sectionStatusManager;
   }
 
   public Long firstFlagship() {
@@ -298,7 +304,6 @@ public class PartnershipsAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-
   public GlobalUnitManager getCrpManager() {
     return crpManager;
   }
@@ -311,11 +316,9 @@ public class PartnershipsAction extends BaseAction {
     return externalPartnerships;
   }
 
-
   public List<ReportSynthesisKeyPartnershipCollaboration> getFlagshipExternalCollaborations() {
     return flagshipExternalCollaborations;
   }
-
 
   public List<ReportSynthesisKeyPartnershipExternal> getFlagshipExternalPartnerships() {
     return flagshipExternalPartnerships;
@@ -324,6 +327,42 @@ public class PartnershipsAction extends BaseAction {
 
   public List<ReportSynthesisExternalPartnershipDTO> getFlagshipPlannedList() {
     return flagshipPlannedList;
+  }
+
+
+  public void getFlagshipsWithMissingFields() {
+    String flagshipsIncomplete = "";
+    listOfFlagships = new ArrayList<>();
+    SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
+      "Reporting", this.getActualPhase().getYear(), false, "externalPartnerships");
+
+    if (sectionStatus != null && sectionStatus.getMissingFields() != null && !sectionStatus.getMissingFields().isEmpty()
+      && sectionStatus.getMissingFields().length() != 0 && sectionStatus.getSynthesisFlagships() != null
+      && !sectionStatus.getSynthesisFlagships().isEmpty()
+      && sectionStatus.getMissingFields().contains("synthesis.AR2019Table8/9")) {
+      flagshipsIncomplete = sectionStatus.getSynthesisFlagships();
+    }
+
+
+    if (flagshipsIncomplete != null && !flagshipsIncomplete.isEmpty()) {
+      String textToSeparate = flagshipsIncomplete;
+      String separator = ";";
+      String[] arrayText = textToSeparate.split(separator);
+      for (String element : arrayText) {
+        listOfFlagships.add(element);
+      }
+    }
+
+    /*
+     * List<String> arraylist = new ArrayList<>();
+     * String textToSeparate = "Go,PHP,JavaScript,Python";
+     * String separator = ";";
+     * String[] arrayText = textToSeparate.split(separator);
+     * for (String element : arrayText) {
+     * arraylist.add(element);
+     * }
+     */
+
   }
 
 
@@ -349,6 +388,11 @@ public class PartnershipsAction extends BaseAction {
 
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
+  }
+
+
+  public List<String> getListOfFlagships() {
+    return listOfFlagships;
   }
 
 
@@ -515,6 +559,7 @@ public class PartnershipsAction extends BaseAction {
       synthesisID = reportSynthesisDB.getId();
       liaisonInstitutionID = reportSynthesisDB.getLiaisonInstitution().getId();
       liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
+      this.getFlagshipsWithMissingFields();
 
       Path path = this.getAutoSaveFilePath();
       // Verify if there is a Draft file
@@ -1367,7 +1412,6 @@ public class PartnershipsAction extends BaseAction {
     }
   }
 
-
   /**
    * Save Key External Partnership Main Areas Information
    */
@@ -1384,7 +1428,7 @@ public class PartnershipsAction extends BaseAction {
           .filter(nu -> nu.isActive()).collect(Collectors.toList()));
 
       for (ReportSynthesisKeyPartnershipExternalMainArea area : areaPrev) {
-        if (!external.getMainAreas().contains(area)) {
+        if (external.getMainAreas() == null || !external.getMainAreas().contains(area)) {
           reportSynthesisKeyPartnershipExternalMainAreaManager
             .deleteReportSynthesisKeyPartnershipExternalMainArea(area.getId());
         }
@@ -1457,6 +1501,7 @@ public class PartnershipsAction extends BaseAction {
     this.indexTab = indexTab;
   }
 
+
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
@@ -1467,6 +1512,10 @@ public class PartnershipsAction extends BaseAction {
 
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
+  }
+
+  public void setListOfFlagships(List<String> listOfFlagships) {
+    this.listOfFlagships = listOfFlagships;
   }
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {

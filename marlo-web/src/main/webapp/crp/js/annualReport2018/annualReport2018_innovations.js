@@ -50,6 +50,13 @@ function setGoogleCharts() {
           width: '80%',
           height: '90%'
       },
+      hAxis: {
+        baseline:'none',
+        textPosition: 'none',
+        gridlines: {
+          count: 0
+        }
+      },
       legend: {
         position: "none"
       },

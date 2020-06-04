@@ -62,6 +62,12 @@ public class SectionStatusManagerImpl implements SectionStatusManager {
   }
 
   @Override
+  public List<SectionStatus> getSectionsStatusByReportSynthesis(long powbSynthesisID, String cycle, int year,
+    Boolean upkeep, String sectionName) {
+    return sectionStatusDAO.getSectionsStatusByReportSynthesis(powbSynthesisID, cycle, year, upkeep, sectionName);
+  }
+
+  @Override
   public SectionStatus getSectionStatusByCaseStudy(long caseStudyID, String cycle, int year, Boolean upkeep,
     String sectionName) {
     return sectionStatusDAO.getSectionStatusByCaseStudy(caseStudyID, cycle, year, upkeep, sectionName);
@@ -138,6 +144,13 @@ public class SectionStatusManagerImpl implements SectionStatusManager {
   public SectionStatus getSectionStatusByProjectHighlight(long projectHighlightID, String cycle, int year,
     Boolean upkeep, String sectionName) {
     return sectionStatusDAO.getSectionStatusByProjectHighlight(projectHighlightID, cycle, year, upkeep, sectionName);
+  }
+
+  @Override
+  public SectionStatus getSectionStatusByProjectImpacts(Long projectImpactID, String cycle, int year, Boolean upkeep,
+    String sectionName) {
+
+    return sectionStatusDAO.getSectionStatusByProjectImpacts(projectImpactID, cycle, year, upkeep, sectionName);
   }
 
   @Override

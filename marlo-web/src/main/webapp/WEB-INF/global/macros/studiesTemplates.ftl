@@ -7,6 +7,9 @@
   
   [#local isPolicy = ((element.projectExpectedStudyInfo.isContribution)!false) ]
   [#local stageProcessOne = ((element.projectExpectedStudyInfo.repIndStageProcess.id == 1))!false ]
+  [#local isStatusExtended = (element.projectExpectedStudyInfo.status.id == 4)!false]
+  [#local isOtherStatus = (element.projectExpectedStudyInfo.status.id != 4)!false]
+
   
   <div id="${customId}" class="caseStudy evidenceBlock isNew-${isNew?string}" style="display:${template?string('none','block')}">
     <div class="borderBox">
@@ -26,7 +29,18 @@
         </div>
         <div class="col-md-4">
           [#assign dbExpectedYear = ((element.projectExpectedStudyInfo.year)!currentCycleYear)  ]
+          
+           [#--
           [@customForm.select name="${customName}.projectExpectedStudyInfo.year" className="setSelect2" i18nkey="study.year" listName="getExpectedStudiesYears(${(expectedID)!})" header=false required=true editable=editable /]
+            --]  
+          
+         <div class="block-extendedYear" style="display:${isStatusExtended?string('block', 'none')}">
+            [@customForm.select name="newExpectedYear" className="setSelect2" i18nkey="study.year" listName="project.projectInfo.getYears(${currentCycleYear})" header=false required=true editable=editable /]
+            </div>
+          <div class="block-year" style="display:${(!isStatusExtended && isOtherStatus)?string('block', 'none')}">
+            [@customForm.select name="${customName}.projectExpectedStudyInfo.year" className="setSelect2" i18nkey="study.year" listName="getExpectedStudiesYears(${(expectedID)!})" header=false required=true editable=editable /]
+          </div>
+               
           [#if editable=false]
             ${element.projectExpectedStudyInfo.year}
           [/#if]
@@ -175,7 +189,7 @@
         [/#if]
         [#-- Sub IDOs (maxLimit=3) --]
         <div class="form-group simpleBox">
-          [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="study.stratgicResultsLink.subIDOs"  listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description"/]
+          [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="study.stratgicResultsLink.subIDOs"  listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description" hasPrimary=true/]
         </div> 
         
         [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]      
@@ -215,7 +229,7 @@
       </div>
         
        <div class="form-group simpleBox block-${studyMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
-          [@customForm.elementsListComponent name="${customName}.milestones" elementType="crpMilestone" elementList=(element.milestones)![] label="study.milestones"  listName="milestones" keyFieldName="id" displayFieldName="composedName" /]
+          [@customForm.elementsListComponent name="${customName}.milestones" elementType="crpMilestone" elementList=(element.milestones)![] label="study.milestones"  listName="milestones" keyFieldName="id" displayFieldName="composedName" hasPrimary=true /]
           <div class="note">[@s.text name="study.milestones.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/contributionsCrpList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
          <br/>      
         </div>
@@ -470,7 +484,11 @@
       [#--  Comments for other studies--]
       [#if !isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
-        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.topLevelComments" i18nkey="study.comments"  placeholder="" className="limitWords-100" required=editable && !(isPolicy && stageProcessOne) editable=editable /]
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.topLevelComments" i18nkey="study.activityDescription"  placeholder="" className="limitWords-100" required=editable && !(isPolicy && stageProcessOne) editable=editable /]
+      </div>
+      
+      <div class="form-group stageProcessOne">
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.MELIAPublications" i18nkey="study.MELIAPublications"  placeholder="" help="study.MELIAPublications.help" helpIcon=false className="" required=false editable=editable /]
       </div>
       [/#if]
       
@@ -547,10 +565,10 @@
     [#-- Units --]
     <div class="form-group row">
       <div class="col-md-4">
-        [@customForm.input name="${customName}.number" i18nkey="study.quantification.number" help="study.quantification.number.help" className="numericInput" required=true editable=editable /]
+        [@customForm.input name="${customName}.number" i18nkey="study.quantification.number" className="numericInput" required=true editable=editable /]
       </div>
       <div class="col-md-4"> 
-        [@customForm.input name="${customName}.targetUnit" i18nkey="study.quantification.targetUnit" help="study.quantification.targetUnit.help" className="" required=true editable=editable /]
+        [@customForm.input name="${customName}.targetUnit" i18nkey="study.quantification.targetUnit" className="" required=true editable=editable /]
       </div> 
     </div>
     [#-- Comments --]

@@ -110,6 +110,13 @@ public class ProjectPolicyInnovationManagerImpl implements ProjectPolicyInnovati
     return projectPolicyInnovationDAO.find(projectPolicyInnovationID);
   }
 
+  @Override
+  public ProjectPolicyInnovation getProjectPolicyInnovationByPhase(Long projectPolicyID, Long projectInnovationID,
+    Long phaseID) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
   public void savePolicyInnovationPhase(Phase next, long policyID, ProjectPolicyInnovation projectPolicyInnovation) {
 
     Phase phase = phaseDAO.find(next.getId());

@@ -3,7 +3,7 @@
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <!-- Generated Aug 23, 2016 1:40:35 PM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
-	<class name="org.cgiar.ccafs.marlo.data.model.Deliverable" table="deliverables"
+	<class name="org.cgiar.ccafs.marlo.data.model.Deliverable" table="deliverables" 
 		optimistic-lock="none">
 		<id name="id" type="java.lang.Long">
 			<column name="id" />
@@ -37,7 +37,7 @@
 			<column name="is_publication" />
 		</property>
 
-		<property name="activeSince" type="timestamp" update="false">
+		<property name="activeSince" type="timestamp" update="false" >
 			<column name="active_since" length="19" not-null="true" />
 		</property>
 		<property name="createDate" type="timestamp">

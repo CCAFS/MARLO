@@ -2,6 +2,7 @@ $(document).ready(init);
 $( document ).ready(function() {
   validateSubCategorySelector();
 });
+
 function init() {
 
   // Setting ID to Date-picker input
@@ -273,22 +274,51 @@ function addDisseminationEvents() {
       $('.other-url').css("display","none");
     }
   });
+  var crp = $('form').attr("name");
+  $('#'+crp+'_deliverable_deliverableInfo_deliverableType_id').on('change', function() {
+    var doiField = $('.metadataElement-doi').find('div.input ').children()[3];
 
-  $('#CCAFS_deliverable_deliverable_deliverableInfo_deliverableType_id').on('change', function() {
     if(this.value == '63'){
-      console.log('true');
-      $('.conditionalRequire .requiredTag').slideDown();
-      $('.isOtherUrlContentBox').css("display","block");
-      console.log('true');
-
+      $('.acknowledge'+crp[0]+' .requiredTag').slideDown();
+      $('.metadataElement-volume .requiredTag').slideDown();
+      $('.metadataElement-issue .requiredTag').slideDown();
+      $('.metadataElement-pages .requiredTag').slideDown();
+      $('.isIsiJournal .requiredTag').slideDown();
+      if(doiField.value ==''){
+        displayExtraFieldUrl(true,true);
+      }else{
+          displayExtraFieldUrl(false,true);
+      }
     }else{
-      $('.isOtherUrlContentBox').css("display","none");
-      $('.conditionalRequire .requiredTag').slideUp();
-      console.log($('.conditionalRequire .requiredTag'));
+      $('.acknowledge'+crp[0]+' .requiredTag').slideUp();
+      $('.metadataElement-volume .requiredTag').slideUp();
+      $('.metadataElement-issue .requiredTag').slideUp();
+      $('.metadataElement-pages .requiredTag').slideUp();
+      $('.isIsiJournal .requiredTag').slideUp();
+      displayExtraFieldUrl(false,false);
     }
-    console.log(this.value);
   });
 
+}
+
+function displayExtraFieldUrl(display,showRequiredTag){
+  if(display){
+    //$('.conditionalRequire .requiredTag').slideDown();
+    $('.isOtherUrlContentBox').css("display","block");
+  }else{
+    $('.isOtherUrlContentBox').css("display","none");
+    //$('.conditionalRequire .requiredTag').slideUp();
+    //console.log($('.conditionalRequire .requiredTag'));
+  }
+
+  if(showRequiredTag){
+    $('.conditionalRequire .requiredTag').slideDown();
+    // $('.isOtherUrlContentBox').css("display","block");
+  }else{
+    //$('.isOtherUrlContentBox').css("display","none");
+    $('.conditionalRequire .requiredTag').slideUp();
+    //console.log($('.conditionalRequire .requiredTag'));
+  }
 }
 
 function addFlagship(idCRPProgram,text) {
@@ -495,7 +525,6 @@ function checkNextAuthorItems(block) {
  */
 function setMetadata(data) {
   console.log(data);
-
   // Text area & Inputs fields
   $.each(data, function(key,value) {
     var $parent = $('.metadataElement-' + key);
@@ -503,6 +532,7 @@ function setMetadata(data) {
     var $input = $parent.find(".metadataValue");
     var $text = $parent.find(".metadataText");
     var $hide = $parent.find('.hide');
+
 
     if(value) {
       $input.val(value);
@@ -563,6 +593,15 @@ function setMetadata(data) {
   // Sync Deliverable
   syncDeliverable();
 
+  var doiField = $('.metadataElement-doi').find('div.input ').children()[3];
+  var selector = $('select[name="deliverable.deliverableInfo.deliverableType.id"]');
+  if(selector.val() == '63' && (doiField.value =='')){
+    displayExtraFieldUrl(true,true);
+  }else{
+    if(selector.val() == '63'){
+      displayExtraFieldUrl(false,true);
+    }
+  }
 }
 
 function setOpenAccess(openAccess) {
@@ -592,7 +631,7 @@ function setISI(isi) {
     $('input#optionISI-yes').prop('checked', true);
   }
   if(isi === "false") {
-    $('input#optionISI-no').prop('checked', false);
+    $('input#optionISI-no').prop('checked', true);
   }
   if(isi === "") {
     $('input#optionISI-yes').prop('checked', false);
@@ -656,6 +695,12 @@ function unSyncDeliverable() {
     $text.text("").parent().hide();
     $hide.val("false");
   });
+
+  var doiField = $('.metadataElement-doi').find('div.input ').children()[3];
+  var selector = $('select[name="deliverable.deliverableInfo.deliverableType.id"]');
+  if(selector.val() == '63' && (doiField.value =='')){
+    displayExtraFieldUrl(true,true);
+  }
 
   // Show authors
   $('.author').removeClass('hideAuthor');
@@ -726,6 +771,7 @@ function getMetadata(channel,url) {
         } else {
           // Setting Metadata
           setMetadata(metadata);
+
           // Show a message indicating the medatada harves was successfully
           $('#metadata-output').empty().append("Found metadata successfully in " + channel);
         }
@@ -766,7 +812,7 @@ function formatStateCountries(state) {
   if(!state.id) {
     return state.text;
   }
-  var flag = '<i class="flag-sm flag-sm-' + state.element.value.toUpperCase() + '"></i> ';
+  var flag = '<i class="flag-icon flag-icon-' + state.element.value.toLowerCase() + '"></i> ';
   var $state;
   if(state.id != -1) {
     $state = $('<span>' + flag + state.text + '</span>');
@@ -781,17 +827,27 @@ function formatStateCountries(state) {
  *
  */
 function validateSubCategorySelector() {
-  var selector = $('select[name="deliverable.deliverableInfo.deliverableType.id"]');
-  console.log(selector.val());
-  if(selector.val() == '63'){
-    console.log('true');
-    $('.conditionalRequire .requiredTag').slideDown();
-    $('.isOtherUrlContentBox').css("display","block");
-    console.log('true');
-  }else{
-    $('.isOtherUrlContentBox').css("display","none");
-    $('.conditionalRequire .requiredTag').slideUp();
-    //console.log($('.conditionalRequire .requiredTag'));
-  }
+  var crp = $('form').attr("name");
+  var selector = $('#'+crp+'_deliverable_deliverableInfo_deliverableType_id');
+  var doiField = $('.metadataElement-doi').find('div.input ').children()[3];
 
+  if(selector.val() == '63'){
+    $('.acknowledge'+crp[0]+' .requiredTag').slideDown();
+    $('.metadataElement-volume .requiredTag').slideDown();
+    $('.metadataElement-issue .requiredTag').slideDown();
+    $('.metadataElement-pages .requiredTag').slideDown();
+    $('.isIsiJournal .requiredTag').slideDown();
+    if(doiField.value ==''){
+      displayExtraFieldUrl(true,true);
+    }else{
+        displayExtraFieldUrl(false,true);
+    }
+  }else{
+    $('.acknowledge'+crp[0]+' .requiredTag').slideUp();
+    $('.metadataElement-volume .requiredTag').slideUp();
+    $('.metadataElement-issue .requiredTag').slideUp();
+    $('.metadataElement-pages .requiredTag').slideUp();
+    $('.isIsiJournal .requiredTag').slideUp();
+    displayExtraFieldUrl(false,false);
+  }
 };

@@ -54,6 +54,9 @@ public interface SectionStatusDAO {
    */
   public List<SectionStatus> findAll();
 
+  public List<SectionStatus> getSectionsStatusByReportSynthesis(long synthesisID, String cycle, int year,
+    Boolean upkeep, String sectionName);
+
   public SectionStatus getSectionStatusByCaseStudy(long caseStudyID, String cycle, int year, Boolean upkeep,
     String sectionName);
 
@@ -90,13 +93,16 @@ public interface SectionStatusDAO {
   public SectionStatus getSectionStatusByProjectHighlight(long projectHighlightID, String cycle, int year,
     Boolean upkeep, String sectionName);
 
+  public SectionStatus getSectionStatusByProjectImpacts(Long projectImpactID, String cycle, int year, Boolean upkeep,
+    String sectionName);
+
   public SectionStatus getSectionStatusByProjectInnovation(long projectInnovationID, String cycle, int year,
     Boolean upkeep, String sectionName);
 
   public SectionStatus getSectionStatusByProjectOutcome(long projectID, String cycle, int year, Boolean upkeep,
     String sectionName);
 
-  public SectionStatus getSectionStatusByProjectPolicy(long projectInnovationID, String cycle, int year, Boolean upkeep,
+  public SectionStatus getSectionStatusByProjectPolicy(long projectPolicyID, String cycle, int year, Boolean upkeep,
     String sectionName);
 
   public SectionStatus getSectionStatusByReportSynthesis(long synthesisID, String cycle, int year, Boolean upkeep,
@@ -114,4 +120,5 @@ public interface SectionStatusDAO {
    *         or -1 is some error occurred.
    */
   public SectionStatus save(SectionStatus sectionStatus);
+
 }

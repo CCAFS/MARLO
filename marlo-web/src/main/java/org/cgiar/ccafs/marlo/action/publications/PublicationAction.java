@@ -68,7 +68,6 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicRegion;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
-import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
 import org.cgiar.ccafs.marlo.data.model.DeliverableLeader;
 import org.cgiar.ccafs.marlo.data.model.DeliverableLocation;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
@@ -866,13 +865,15 @@ public class PublicationAction extends BaseAction {
           .filter(c -> c.isActive() && c.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList()));
         deliverable.setCrps(deliverable.getDeliverableCrps().stream()
           .filter(c -> c.isActive() && c.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList()));
-        if (this.hasSpecificities(this.crpDeliverableIntellectualAsset())) {
-          if (deliverable.getDeliverableIntellectualAssets() != null) {
-            List<DeliverableIntellectualAsset> intellectualAssets =
-              deliverable.getDeliverableIntellectualAssets().stream()
-                .filter(c -> c.isActive() && c.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList());
-          }
-        }
+        /*
+         * if (this.hasSpecificities(this.crpDeliverableIntellectualAsset())) {
+         * if (deliverable.getDeliverableIntellectualAssets() != null) {
+         * List<DeliverableIntellectualAsset> intellectualAssets =
+         * deliverable.getDeliverableIntellectualAssets().stream()
+         * .filter(c -> c.isActive() && c.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList());
+         * }
+         * }
+         */
 
         if (deliverable.getDeliverableParticipants() != null) {
           List<DeliverableParticipant> deliverableParticipants = deliverable.getDeliverableParticipants().stream()
@@ -1209,7 +1210,7 @@ public class PublicationAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_DELIVERABLE_GENDER_LEVELS);
       relationsName.add(APConstants.PROJECT_DELIVERABLE_CRPS);
       if (this.hasSpecificities(this.crpDeliverableIntellectualAsset())) {
-        relationsName.add(APConstants.PROJECT_DELIVERABLES_INTELLECTUAL_RELATION);
+        // relationsName.add(APConstants.PROJECT_DELIVERABLES_INTELLECTUAL_RELATION);
       }
       relationsName.add(APConstants.PROJECT_DELIVERABLES_PARTICIPANT_RELATION);
       relationsName.add(APConstants.PROJECT_DELIVERABLE_LOCATIONS);
@@ -1537,7 +1538,11 @@ public class PublicationAction extends BaseAction {
         dissemination.setAlreadyDisseminated(deliverable.getDissemination().getAlreadyDisseminated());
         if (deliverable.getDissemination().getAlreadyDisseminated().booleanValue()) {
 
-          dissemination.setDisseminationUrl(deliverable.getDissemination().getDisseminationUrl());
+          if (deliverable.getDissemination().getDisseminationUrl() != null) {
+            dissemination.setDisseminationUrl(deliverable.getDissemination().getDisseminationUrl().trim());
+          } else {
+            dissemination.setDisseminationUrl(deliverable.getDissemination().getDisseminationUrl());
+          }
           dissemination.setDisseminationChannel(deliverable.getDissemination().getDisseminationChannel());
         } else {
           dissemination.setDisseminationUrl(null);

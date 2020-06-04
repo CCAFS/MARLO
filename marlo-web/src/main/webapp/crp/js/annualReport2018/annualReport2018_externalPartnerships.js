@@ -33,6 +33,8 @@ function init() {
 
 function attachEvents() {
 
+  popups();
+
   // Add a Key Partnership
   $('.addKeyPartnership').on('click', addKeyPartnership);
 

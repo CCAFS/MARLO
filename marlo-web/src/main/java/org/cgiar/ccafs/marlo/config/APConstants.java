@@ -123,6 +123,12 @@ public final class APConstants {
   public static final Long CRP_DASHBOARD_CENTER_IDENTIFICATION = new Long(4);
   public static final String CRP_ENABLE_BUDGETBYCOAS = "crp_budgetbycoas";
   public static final String CRP_PPA_ENABLE_PROJECT_DESCRIPTION = "crp_ppa_enable_project_description";
+  public static final String CRP_PROJECT_PAGE = "crp_project_page";
+  public static final String CRP_GENERIC_PROJECT = "crp_generic_project";
+  public static final String CRP_GENERIC_PROJECT_VALUE = "crp_generic_project_value";
+  public static final String CRP_SHOW_SECTION_IMPACT_COVID19 = "crp_show_section_impact_covid19";
+  public static final String CRP_SHOW_SECTION_IMPACT_COVID19_RANGES_YEARS =
+    "crp_show_section_impact_covid19_ranges_years";
 
   public static final String IS_EXPECTED_DELIVERABLE_REPORT_All_YEARS_VISIBLE =
     "is_expected_deliverable_report_all_years_visible";
@@ -170,6 +176,7 @@ public final class APConstants {
   public static final String ERROR_PASSWORD_EXPIRED = "ERROR_PASSWORD_EXPIRED";
 
   public static final String FILE_TYPE_REQUEST = "fileType";
+  public static final String FILENAME = "filename";
   public static final String FILTER_BY = "filterBy";
   public static final String FLAGSHIP_ID = "flagshipID";
   public static final String FUNDING_SOURCE_REQUEST_ID = "fundingSourceID";
@@ -563,6 +570,11 @@ public final class APConstants {
   /** cross cutting scores ****/
   public static final long CROSS_CUTTING_NOT_TARGETED = 0;
 
+  public static final long CGIAR_CROSS_CUTTING_MARKERS_GENDER = 1;
+  public static final long CGIAR_CROSS_CUTTING_MARKERS_YOUTH = 2;
+  public static final long CGIAR_CROSS_CUTTING_MARKERS_CAPDEV = 3;
+  public static final long CGIAR_CROSS_CUTTING_MARKERS_CLIMATECHANGE = 4;
+
   /**
    * -------------------------------------------------------------------------------
    * *******************************************************************************
@@ -737,6 +749,14 @@ public final class APConstants {
   public static final String REP_IND_SYNTHESIS_TYPE_ACTIVITY_FORMAL_TRAINING = "Formal Training";
   public static final long REP_IND_TRAINING_TERMS_SHORT = 1;
   public static final long REP_IND_TRAINING_TERMS_LONG = 2;
+  public static final long REP_IND_TRAINING_TERMS_PHD = 4;
+  public static final long REP_IND_POLICY_INVESTIMENT_TYPES_POLICY = 1;
+  public static final long REP_IND_POLICY_INVESTIMENT_TYPES_LEGALINSTRUMENT = 2;
+  public static final long REP_IND_POLICY_INVESTIMENT_TYPES_BUDGET = 3;
+  public static final long REP_IND_POLICY_INVESTIMENT_TYPES_CURRICULUM = 4;
+  public static final long REP_IND_GEOGRAPHIC_SCOPE_NATIONAL = 4;
+  public static final long REP_IND_GEOGRAPHIC_SCOPE_MULTINATIONAL = 3;
+
 
   // Capdev Parameters
   public static final String CRP_CD_ROLE = "crp_cd_role";
@@ -749,6 +769,9 @@ public final class APConstants {
   // GeoiIp maps database
   public static final String DATABASE_COUNTRY_FILENAME = "GeoLite2-Country.mmdb";
   public static final String DATABASE_CITY_FILENAME = "GeoLite2-City.mmdb";
+
+  // Clarisa PMU constant
+  public static final String CLARISA_ACRONYM_PMU = "PMU";
 
   // Clarisa public
   public static final String CLARISA_PUBLIC = "clarisa_public";

@@ -91,6 +91,13 @@ public class ProjectManagerImpl implements ProjectManager {
   }
 
   @Override
+  public List<Project> getProjectWebPageList(Long globalunit_id) {
+
+    return projectDAO.getProjectWebPageList(globalunit_id);
+  }
+
+
+  @Override
   public List<Project> getUserProjects(long userId, String crp) {
     List<Project> projects = new ArrayList<>();
 
@@ -104,7 +111,6 @@ public class ProjectManagerImpl implements ProjectManager {
 
     return projects;
   }
-
 
   @Override
   public Project saveProject(Project project) {

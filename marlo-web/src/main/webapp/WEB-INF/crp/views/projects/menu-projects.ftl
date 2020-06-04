@@ -24,13 +24,14 @@
     { 'title': 'General Information', 'show': true,
       'items': [
       { 'slug': 'description',  'name': 'projects.menu.description',  'action': 'description',  'active': true, "showCheck": isGlobalUnitProject},
+      { 'slug': 'covid19',  'name': 'projects.menu.impacts.covid19',  'action': 'impacts',  'active': true, "showCheck": isGlobalUnitProject, 'show': action.hasSpecificities('crp_show_section_impact_covid19') && action.isYearToShowSectionCovid19(), 'hasBackground':true, 'icon':'virus'},
       { 'slug': 'partners',  'name': 'projects.menu.partners',  'action': 'partners',  'active': true, "showCheck": isGlobalUnitProject },
       { 'slug': 'locations',  'name': 'projects.menu.locations',  'action': 'locations',  'active': true, "showCheck": isGlobalUnitProject  }
       ]
     },
     { 'title': 'Outcomes', 'show': isCrpProject,
       'items': [
-      { 'slug': 'contributionsCrpList',  'name': 'projects.menu.contributionsCrpList',  'action': 'contributionsCrpList',  'active': true, 'show':!phaseOne  && ((!project.projectInfo.administrative)!false) , "showCheck": isGlobalUnitProject},
+      { 'slug': 'contributionsCrpList',  'name': 'projects.menu.contributionsCrpList',  'action': 'contributionsCrpList',  'active': false, 'show':!phaseOne  && ((!project.projectInfo.administrative)!false) , "showCheck": isGlobalUnitProject, "development": true},
       { 'slug': 'contributionsLP6',  'name': 'projects.menu.contributionLP6',  'action': 'contributionsLP6',  'active': true, 'show': ((action.getProjectLp6ContributionValue(project.id, actualPhase.id))!false) && action.hasSpecificities('crp_lp6_active') && reportingActive, "showCheck": isGlobalUnitProject},
       { 'slug': 'projectOutcomes',  'name': 'projects.menu.projectOutcomes',  'action': 'outcomesPandR',  'active': true, 'show':  phaseOne && !project.projectInfo.administrative , "showCheck": isGlobalUnitProject},
       { 'slug': 'ccafsOutcomes',  'name': 'projects.menu.ccafsOutcomes',  'action': 'ccafsOutcomes',  'active': true, 'show': phaseOne && !project.projectInfo.administrative , "showCheck": isGlobalUnitProject },
@@ -93,8 +94,9 @@
             [/#if]
             [#assign hasDraft = (action.getAutoSaveFilePath(project.class.simpleName, item.action, project.id))!false /]
             [#if (item.show)!true ]
-              <li id="menu-${item.action}" class="${hasDraft?string('draft', '')} [#if item.slug == currentStage]currentSection[/#if] [#if (item.showCheck)!true] ${submitStatus?string('submitted','toSubmit')} [/#if] ${(item.active)?string('enabled','disabled')}">
+              <li id="menu-${item.action}" class="${hasDraft?string('draft', '')} [#if item.slug == currentStage]currentSection[/#if] [#if (item.hasBackground)!false]hasBackground[/#if] [#if (item.showCheck)!true] ${submitStatus?string('submitted','toSubmit')} [/#if] ${(item.active)?string('enabled','disabled')}">
                 <a href="[@s.url action="${crpSession}/${item.action}"][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" onclick="return ${item.active?string}" class="action-${crpSession}/${item.action}">
+                  [#if (item.icon?has_content)!false][@menuIcon name="${item.icon}" width="15px" height="15px" /][/#if]
                   [#-- Name --]
                   [@s.text name=item.name/]
                   [#if (item.development)!false][@utils.underConstruction title="global.underConstruction" width="20px" height="20px" /][/#if]
@@ -181,3 +183,9 @@
 
 [#-- Project Submit JS --]
 [#assign customJS = [ "${baseUrlMedia}/js/projects/projectSubmit.js?20180530" ] + customJS  /]
+
+[#macro menuIcon name="" show=true width="" height="" ]
+  <span style="display:${show?string('inline','none')};">
+    <img src="${baseUrlCdn}/global/images/${name}.png" width="${width!'10px'}" height="${height!'10px'}" />
+  </span>
+[/#macro]

@@ -429,13 +429,18 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
             deliverables.add(deliverable);
           } else {
             if (deliverableInfo != null && deliverable.getDeliverableInfo().getStatus() != null
+
               && ((deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-                && (deliverableInfo.getYear() == this.getSelectedYear() || (deliverableInfo.getNewExpectedYear() != null
-                  && deliverableInfo.getNewExpectedYear().intValue() >= this.getSelectedYear())))
+                && ((deliverableInfo.getYear() == this.getSelectedYear())
+                  || (deliverableInfo.getNewExpectedYear() != null
+                    && deliverableInfo.getNewExpectedYear().intValue() >= this.getSelectedYear())))
+
                 || (deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-                  && (deliverableInfo.getYear() == this.getSelectedYear()
-                    || (deliverableInfo.getNewExpectedYear() != null
-                      && deliverableInfo.getNewExpectedYear().intValue() == this.getSelectedYear())))
+                  && (
+                  // (deliverableInfo.getYear() == this.getSelectedYear()) ||
+                  (deliverableInfo.getNewExpectedYear() != null
+                    && deliverableInfo.getNewExpectedYear().intValue() == this.getSelectedYear())))
+
                 || (deliverableInfo.getStatus().intValue() == Integer
                   .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
                   && (deliverableInfo.getYear() == this.getSelectedYear()
@@ -1254,7 +1259,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
               regions += ", " + programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
             }
           }
-          if (deliverable.getProject().getProjecInfoPhase(this.getSelectedPhase()).getNoRegional() != null
+          if (deliverable != null && deliverable.getProject() != null
+            && deliverable.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
+            && deliverable.getProject().getProjecInfoPhase(this.getSelectedPhase()).getNoRegional() != null
             && deliverable.getProject().getProjecInfoPhase(this.getSelectedPhase()).getNoRegional()) {
             if (regions != null && !regions.isEmpty()) {
               LOG.warn("Project is global and has regions selected");
@@ -1782,7 +1789,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
       new String[] {"publication_id", "title", "publication_sub_type", "deliv_year", "leader",
         "deliv_dissemination_channel", "deliv_dissemination_url", "deliv_open_access", "deliv_license", "titleMetadata",
         "descriptionMetadata", "dateMetadata", "languageMetadata", "countryMetadata", "keywordsMetadata",
-        "citationMetadata", "HandleMetadata", "DOIMetadata", "creator_authors", "F", "A", "I", "R", "restricted_access",
+        "citationMetadata", "HandleMetadata", "DOIMetadata", "creator_authors", "F", "A", "I", "R",
         "deliv_license_modifications", "volume", "issue", "pages", "journal", "journal_indicators", "acknowledge",
         "fl_contrib", "flagships", "regions", "added_by", "phaseID", "gender", "youth", "cap", "keyOutput", "outcomes",
         "geographicScope", "region", "country", "fundingSources"},
@@ -1790,8 +1797,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, Long.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, Long.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, String.class, String.class},
       0);
 
 
@@ -2458,9 +2465,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         model.addRow(new Object[] {publicationId, title, publicationSubType, delivYear, leader,
           delivDisseminationChannel, delivDisseminationUrl, delivOpenAccess, delivLicense, titleMetadata,
           descriptionMetadata, dateMetadata, languageMetadata, countryMetadata, keywordsMetadata, citationMetadata,
-          HandleMetadata, DOIMetadata, creatorAuthors, F, A, I, R, restrictedAccess, delivLicenseModifications, volume,
-          issue, pages, journal, journalIndicators, acknowledge, flContrib, flagships, regions, addedBy, phaseID,
-          gender, youth, cap, keyOutput, outcomes, geographicScope, region, country, fundingSources});
+          HandleMetadata, DOIMetadata, creatorAuthors, F, A, I, R, delivLicenseModifications, volume, issue, pages,
+          journal, journalIndicators, acknowledge, flContrib, flagships, regions, addedBy, phaseID, gender, youth, cap,
+          keyOutput, outcomes, geographicScope, region, country, fundingSources});
       }
     }
     return model;

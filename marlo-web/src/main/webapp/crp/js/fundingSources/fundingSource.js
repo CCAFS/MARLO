@@ -73,6 +73,11 @@ function init() {
     }
   });
 
+  // Agreement status & Donor
+  $('form select').select2({
+    width: "100%"
+  });
+
   // Activate Popup
   popups();
 
@@ -157,7 +162,7 @@ function init() {
   $(".removeRegion").on("click", removeRegion);
 
   // Setting Currency Inputs
-  $('form .currencyInput').currencyInput();
+  $('.currencyInput').currencyInput();
 
   /* Select2 multiple for country and region select */
   $('.countriesSelect').select2({
@@ -171,6 +176,11 @@ function init() {
 
   // Check Funding type
   onChangeFundingType($fundingType.val());
+
+  // Funding Window / Budget type
+  $("select.type").select2({
+    templateResult: budgetTypeTemplate
+  });
 
   // When select center as Funding Window
   var lastDonor = -1;
@@ -397,7 +407,7 @@ function keyupBudgetYear() {
 
   var grantAmount = $('#grantTotalAmount input').val();
   var total = 0
-  $('form .currencyInput').each(function(i,e) {
+  $('.currencyInput').each(function(i,e) {
     total = total + removeCurrencyFormat(e.value || "0");
   });
   $('#grantTotalAmount .remaining').text(setCurrencyFormat(grantAmount - total));
@@ -495,6 +505,120 @@ function addContactAutoComplete() {
     $("input.contactEmail").autocomplete(autocompleteOptions).autocomplete("instance")._renderItem = renderItem;
   }
 }
+/**
+ * Add a new lead partner element function
+ *
+ * @param option means an option tag from the select
+ * @returns
+ */
+function addLeadPartner(option) {
+  var canAdd = true;
+  console.log(option.val());
+  if(option.val() == "-1") {
+    canAdd = false;
+  }
+
+  var $list = $(option).parents(".select").parents("#leadPartnerList").find(".list");
+  var $item = $("#leadPartnerTemplate").clone(true).removeAttr("id");
+  var v = $(option).text().length > 80 ? $(option).text().substr(0, 80) + ' ... ' : $(option).text();
+
+  // Check if is already selected
+  $list.find('.leadPartners').each(function(i,e) {
+    if($(e).find('input.fId').val() == option.val()) {
+      canAdd = false;
+      return;
+    }
+  });
+  if(!canAdd) {
+    return;
+  }
+
+  // Set funding source parameters
+  $item.find(".name").attr("title", $(option).text());
+  $item.find(".name").html(v);
+  $item.find(".fId").val(option.val());
+  $item.find(".id").val(-1);
+  $list.append($item);
+  $item.show('slow');
+  updateLeadPartner($list);
+  checkLeadPartnerItems($list);
+
+  // Reset select
+  $(option).val("-1");
+  $(option).trigger('change.select2');
+
+}
+
+/**
+ * Remove lead partner function
+ *
+ * @returns
+ */
+function removeLeadPartner() {
+  var $list = $(this).parents('.list');
+  var $item = $(this).parents('.leadPartners');
+  var value = $item.find(".fId").val();
+  var name = $item.find(".name").attr("title");
+
+  var $select = $(".institution");
+  $item.hide(200, function() {
+    $item.remove();
+    checkLeadPartnerItems($list);
+    updateLeadPartner($list);
+  });
+  // Add funding source option again
+  $select.addOption(value, name);
+  $select.trigger("change.select2");
+}
+
+/**
+ * Update indexes for "Managing partners" of funding source
+ *
+ * @param $list List of lead partners
+ * @returns
+ */
+function updateLeadPartner($list) {
+  // Hide All divisions block
+  $('.divisionBlock').hide();
+
+  $($list).find('.leadPartners').each(function(i,e) {
+    // Show division block
+    var institutionID = $(e).find('.fId').val();
+    $('.division-' + institutionID).show();
+    // Set funding sources indexes
+    $(e).setNameIndexes(1, i);
+  });
+}
+
+/**
+ * Check if there is any lead partners and show a text message
+ *
+ * @param block Container with lead partners elements
+ * @returns
+ */
+function checkLeadPartnerItems(block) {
+
+  // Check if CIAT is in the partners list
+  var CIAT_ID = 46;
+  if($('input.fId[value="' + CIAT_ID + '"]').exists()) {
+    $('.buttons-field, .financeChannel, .extensionDateBlock').show();
+  } else {
+    $('.buttons-field, .financeChannel, .extensionDateBlock').hide();
+    if(isSynced) {
+      unSyncFundingSource();
+    }
+  }
+
+  refreshYears();
+
+  var items = $(block).find('.leadPartners').length;
+  if(items == 0) {
+    $(block).parent().find('p.emptyText').fadeIn();
+  } else {
+    $(block).parent().find('p.emptyText').fadeOut();
+  }
+}
+
 
 /**
  * Add a new country to the Funding source locations
@@ -527,7 +651,7 @@ function addCountry(countryISO,countryName,percentage) {
 
   // Set country parameters
   $item.find(".name").attr("title", countryName);
-  var $state = $('<span> <i class="flag-sm flag-sm-' + countryISO + '"></i>  ' + v + '</span>');
+  var $state = $('<span> <i class="flag-icon flag-icon-' + countryISO.toLowerCase() + '"></i>  ' + v + '</span>');
   $item.find(".name").html($state);
   $item.find(".cId").val(countryISO);
   $item.find(".cPercentage").val(percentage);
@@ -992,9 +1116,12 @@ function getInstitutionsBudgetByType(budgetTypeID) {
         budgetTypeID: budgetTypeID
       },
       beforeSend: function() {
+        $('.loading').show();
       },
       success: function(m) {
-        // Loading list of institutions
+        $donorSelectLists.empty();
+        $donorSelectLists.addOption("-1", "Select an option...");
+
         $.each(m.institutions, function(i,e) {
           arrayKeyValues.push([
               e.id, e.name
@@ -1028,8 +1155,9 @@ function changeDonorByFundingType(budgetType,$donorSelect) {
     if(((currentDonorId == "-1") || (currentDonorId == cgConsortiumId)) && (budgetType == W1W2)) {
       // Set CGIAR System Organization
       $donorSelect.val(cgConsortiumId).attr("disabled", true).trigger("change");
-      $donorParent.append('<input type="hidden" id="donorHiddenInput" name="' + currentDonorName + '" value="'
-          + cgConsortiumId + '" />');
+      $donorSelect.parents('.select').parent().append(
+          '<input type="hidden" id="donorHiddenInput" name="' + currentDonorName + '" value="' + cgConsortiumId
+              + '" />');
     } else if(budgetType != W1W2) {
       $donorSelect.attr("disabled", false).trigger("change");
       $('#donorHiddenInput').remove();
@@ -1044,7 +1172,7 @@ function formatState(state) {
   var $state = "";
   if(state.element.value != "-1") {
     $state =
-        $('<span> <i class="flag-sm flag-sm-' + state.element.value.toUpperCase() + '"></i>  ' + state.text + '</span>');
+        $('<span> <i class="flag-icon flag-icon-' + state.element.value.toLowerCase() + '"></i>  ' + state.text + '</span>');
   } else {
     $state = $('<span>' + state.text + '</span>');
   }

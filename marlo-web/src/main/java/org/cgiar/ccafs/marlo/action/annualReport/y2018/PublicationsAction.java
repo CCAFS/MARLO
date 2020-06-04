@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressDeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
+import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
@@ -82,6 +83,7 @@ public class PublicationsAction extends BaseAction {
   private ProjectManager projectManager;
   private ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager;
   private ReportSynthesisFlagshipProgressDeliverableManager reportSynthesisFlagshipProgressDeliverableManager;
+  private SectionStatusManager sectionStatusManager;
 
   // Variables
   private String transaction;
@@ -92,6 +94,7 @@ public class PublicationsAction extends BaseAction {
   private GlobalUnit loggedCrp;
   private List<LiaisonInstitution> liaisonInstitutions;
   private List<Deliverable> deliverables;
+  private List<String> emptyFields;
   private Phase actualPhase;
   private Integer totalOpenAccess = 0;
   private Integer totalLimited = 0;
@@ -106,7 +109,8 @@ public class PublicationsAction extends BaseAction {
     AuditLogManager auditLogManager, UserManager userManager, Publications2018Validator validator,
     CrpProgramManager crpProgramManager, DeliverableManager deliverableManager, ProjectFocusManager projectFocusManager,
     ProjectManager projectManager, ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
-    ReportSynthesisFlagshipProgressDeliverableManager reportSynthesisFlagshipProgressDeliverableManager) {
+    ReportSynthesisFlagshipProgressDeliverableManager reportSynthesisFlagshipProgressDeliverableManager,
+    SectionStatusManager sectionStatusManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -120,6 +124,8 @@ public class PublicationsAction extends BaseAction {
     this.projectManager = projectManager;
     this.reportSynthesisFlagshipProgressManager = reportSynthesisFlagshipProgressManager;
     this.reportSynthesisFlagshipProgressDeliverableManager = reportSynthesisFlagshipProgressDeliverableManager;
+    this.sectionStatusManager = sectionStatusManager;
+
   }
 
 
@@ -215,6 +221,10 @@ public class PublicationsAction extends BaseAction {
 
   }
 
+  public void getAuthorsFromClarisa() {
+
+  }
+
   private Path getAutoSaveFilePath() {
     String composedClassName = reportSynthesis.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -227,6 +237,7 @@ public class PublicationsAction extends BaseAction {
     return deliverables;
   }
 
+
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
@@ -236,7 +247,6 @@ public class PublicationsAction extends BaseAction {
     return liaisonInstitutionID;
   }
 
-
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
@@ -244,6 +254,27 @@ public class PublicationsAction extends BaseAction {
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
+
+
+  public String getPublicationMissingFields(long id) {
+    String missingFieldsText = "";
+    if (emptyFields != null && !emptyFields.isEmpty()) {
+      if (emptyFields.contains("ID:" + id)) {
+        for (String field : emptyFields) {
+          if (missingFieldsText.isEmpty()) {
+            missingFieldsText = field;
+          } else {
+            missingFieldsText += ", " + field;
+          }
+        }
+      }
+    }
+    if (!missingFieldsText.isEmpty()) {
+      missingFieldsText = missingFieldsText.replace("ID:" + id, "");
+    }
+    return missingFieldsText;
+  }
+
 
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
@@ -279,7 +310,6 @@ public class PublicationsAction extends BaseAction {
     return totalOpenAccess;
   }
 
-
   public String getTransaction() {
     return transaction;
   }
@@ -299,7 +329,6 @@ public class PublicationsAction extends BaseAction {
     return isFP;
   }
 
-
   @Override
   public boolean isPMU() {
     boolean isFP = false;
@@ -311,6 +340,129 @@ public class PublicationsAction extends BaseAction {
     return isFP;
 
   }
+
+  /**
+   * This method get the status of an specific publication depending of the
+   * sectionStatuses
+   *
+   * @param deliverableID is the deliverable to be identified.
+   * @return Boolean object with the status of the study
+   */
+  public Boolean isPublicationComplete(long deliverableID, long phaseID) {
+    emptyFields = new ArrayList<>();
+    Deliverable deliverable = new Deliverable();
+    deliverable = deliverableManager.getDeliverableById(deliverableID);
+    int count = 0;
+    int count2 = 0;
+    try {
+
+      if (deliverable != null) {
+
+        deliverable.setCrps(deliverable.getDeliverableCrps().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+        /*
+         * if (deliverable.getCrps() == null || deliverable.getCrps().isEmpty()) {
+         * emptyFields.add("CRP");
+         * count++;
+         * }
+         */
+
+        if (deliverable.getPublication() != null) {
+
+          // Is publication
+          if (deliverable.getPublication().getIsiPublication() == null) {
+            emptyFields.add("Is publication");
+            count++;
+          }
+
+          // Issue - Page - Volume
+          if (deliverable.getPublication().getVolume() == null || deliverable.getPublication().getVolume().isEmpty()) {
+            count2++;
+          }
+          if (deliverable.getPublication().getPages() == null || deliverable.getPublication().getPages().isEmpty()) {
+            count2++;
+          }
+          if (deliverable.getPublication().getIssue() == null || deliverable.getPublication().getIssue().isEmpty()) {
+            count2++;
+          }
+        }
+
+        if (count2 == 3) {
+          emptyFields.add("Issue/Pages/Volume");
+          count++;
+        }
+
+        int countAuthors = 0;
+        // Authors
+        if (deliverable.getUsers() == null || deliverable.getUsers().isEmpty()) {
+          countAuthors++;
+        }
+        if (deliverable.getMetadata() != null) {
+          // Authors Clarisa
+          if (deliverable.getMetadataValue(38) == null || deliverable.getMetadataValue(38).isEmpty()) {
+            countAuthors++;
+          }
+        }
+
+        // Validate if the authors fields are null
+        if (countAuthors == 2) {
+          emptyFields.add("Authors");
+          count++;
+        }
+
+        if (deliverable.getMetadata() != null) {
+          // Unique identifier (DOI)
+          if (deliverable.getMetadataValue(36) != null || deliverable.getMetadataValue(36).isEmpty()) {
+            // Has DOI
+          } else {
+            if (deliverable.getDissemination(this.getActualPhase()) != null
+              && deliverable.getDissemination(this.getActualPhase()).getHasDOI() != null
+              && deliverable.getDissemination(this.getActualPhase()).getArticleUrl() != null
+              && !deliverable.getDissemination(this.getActualPhase()).getArticleUrl().isEmpty()) {
+              // Has DOI
+            } else {
+              // If the mark of No DOI is empty
+              emptyFields.add("DOI");
+              count++;
+            }
+          }
+          // Date of Publication
+          if ((deliverable.getMetadataValue(17) == null || deliverable.getMetadataValue(17).isEmpty())
+            && (deliverable.getMetadataValue(16) == null || deliverable.getMetadataValue(16).isEmpty())) {
+            emptyFields.add("Date of Publication");
+            count++;
+          }
+          // Article Title
+          if ((deliverable.getMetadataValue(1) == null || deliverable.getMetadataValue(1).isEmpty())
+            && (deliverable.getMetadataValue(0) == null || deliverable.getMetadataValue(0).isEmpty())) {
+            emptyFields.add("Article Title");
+            count++;
+          }
+        }
+      }
+
+
+      if (count == 0) {
+        return true;
+      } else {
+        emptyFields.add("ID:" + deliverable.getId());
+        return false;
+      }
+
+      /*
+       * if (sectionStatus == null) {
+       * return true;
+       * }
+       * if (sectionStatus.getMissingFields().length() != 0) {
+       * return false;
+       * }
+       */
+      // return true;
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
 
   @Override
   public String next() {
@@ -473,6 +625,15 @@ public class PublicationsAction extends BaseAction {
     List<Deliverable> selectedDeliverables = new ArrayList<Deliverable>();
     if (deliverables != null && !deliverables.isEmpty()) {
       deliverables.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+      /*
+       * for (Deliverable deliverableTemp : deliverables) {
+       * String temp = "";
+       * if (deliverableTemp.getUsers() == null || deliverableTemp.getUsers().isEmpty()) {
+       * if (deliverableTemp.getMetadataValue(38) != null && !deliverableTemp.getMetadataValue(38).isEmpty()) {
+       * }
+       * }
+       * }
+       */
       selectedDeliverables.addAll(deliverables);
       // Remove unchecked deliverables
       if (reportSynthesis.getReportSynthesisFlagshipProgress().getDeliverables() != null
@@ -548,7 +709,6 @@ public class PublicationsAction extends BaseAction {
     }
 
   }
-
 
   @Override
   public String save() {

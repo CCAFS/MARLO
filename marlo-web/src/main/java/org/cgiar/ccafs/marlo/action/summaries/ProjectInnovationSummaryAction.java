@@ -18,23 +18,30 @@ package org.cgiar.ccafs.marlo.action.summaries;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationDeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationRegionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationDeliverable;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationRegion;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSubIdo;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.URLShortener;
 
@@ -86,6 +93,10 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
   private final ProjectInnovationGeographicScopeManager projectInnovationGeographicScopeManager;
   private final ProjectInnovationRegionManager projectInnovationRegionManager;
   private final ProjectInnovationCountryManager projectInnovationCountryManager;
+  private final ProjectInnovationMilestoneManager projectInnovationMilestoneManager;
+  private final ProjectInnovationSubIdoManager projectInnovationSubIdoManager;
+  private ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager;
+
 
   // Parameters
   private long startTime;
@@ -105,7 +116,10 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     ProjectInnovationDeliverableManager projectInnovationDeliverableManager,
     ProjectInnovationGeographicScopeManager projectInnovationGeographicScopeManager,
     ProjectInnovationRegionManager projectInnovationRegionManager,
-    ProjectInnovationCountryManager projectInnovationCountryManager) {
+    ProjectInnovationCountryManager projectInnovationCountryManager,
+    ProjectInnovationMilestoneManager projectInnovationMilestoneManager,
+    ProjectInnovationSubIdoManager projectInnovationSubIdoManager,
+    ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.projectInnovationManager = projectInnovationManager;
     this.resourceManager = resourceManager;
@@ -114,6 +128,9 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     this.projectInnovationGeographicScopeManager = projectInnovationGeographicScopeManager;
     this.projectInnovationRegionManager = projectInnovationRegionManager;
     this.projectInnovationCountryManager = projectInnovationCountryManager;
+    this.projectInnovationMilestoneManager = projectInnovationMilestoneManager;
+    this.projectInnovationSubIdoManager = projectInnovationSubIdoManager;
+    this.projectExpectedStudyInnovationManager = projectExpectedStudyInnovationManager;
   }
 
   /**
@@ -146,11 +163,17 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       this.getText("caseStudy.caseStudyTitle"));
     masterReport.getParameterValues().put("i8nInnovationRDescriptionStage",
       this.getText("projectInnovations.stageDescription.readText"));
+    masterReport.getParameterValues().put("i8nInnovationHasMilestones",
+      this.getText("projectInnovations.hasMilestones"));
+    masterReport.getParameterValues().put("i8nInnovationMilestones", this.getText("projectInnovations.milestones"));
+    masterReport.getParameterValues().put("i8nInnovationSubIdos", this.getText("projectInnovations.subIdos"));
 
     masterReport.getParameterValues().put("i8nInnovationLeadOrganization",
       this.getText("projectInnovations.leadOrganization"));
     masterReport.getParameterValues().put("i8nInnovationContributionOrganization",
       this.getText("projectInnovations.contributingOrganizations"));
+    masterReport.getParameterValues().put("i8nInnovationContributionCenters",
+      this.getText("projectInnovations.contributingCenters"));
     masterReport.getParameterValues().put("i8nInnovationAdaptativeResearch", "projectInnovations.adaptativeResearch");
     masterReport.getParameterValues().put("i8nInnovationREvidenceLink",
       this.getText("summaries.innovation.evidenceLink"));
@@ -159,11 +182,12 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     masterReport.getParameterValues().put("i8nInnovationRCrps", this.getText("projectInnovations.contributing"));
     masterReport.getParameterValues().put("i8nInnovationRGenderFocusLevel",
       this.getText("projectInnovations.genderRelevance"));
-    masterReport.getParameterValues().put("i8nInnovationRGenderExplaniation",
-      this.getText("projectInnovations.genderRelevance.explanation.readText"));
+    masterReport.getParameterValues().put("i8nInnovationRNew", this.getText("projectInnovations.isNew"));
     masterReport.getParameterValues().put("i8nInnovationRYouthFocusLevel",
       this.getText("projectInnovations.youthRelevance"));
     masterReport.getParameterValues().put("i8nInnovationRYouthExplaniation",
+      this.getText("projectInnovations.youthRelevance.explanation.readText"));
+    masterReport.getParameterValues().put("i8nInnovationRNew",
       this.getText("projectInnovations.youthRelevance.explanation.readText"));
     masterReport.getParameterValues().put("i8nProject", this.getText("summaries.oaprojects.projectTitle"));
     return masterReport;
@@ -312,8 +336,10 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         "innovationType", "contributionOfCrp", "degreeInnovation", "geographicScope", "region", "countries",
         "organizations", "projectExpectedStudy", "descriptionStage", "leadOrganization", "contributingOrganization",
         "adaptativeResearch", "evidenceLink", "deliverables", "crps", "genderFocusLevel", "genderExplaniation",
-        "youthFocusLevel", "youthExplaniation", "project", "oicr"},
+        "youthFocusLevel", "youthExplaniation", "project", "oicr", "centers", "hasMilestones", "milestones", "subIdos",
+        "deliverableLink", "phaseID", "center", "isNew"},
       new Class[] {Long.class, Boolean.class, Boolean.class, Boolean.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class},
@@ -321,10 +347,12 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     Long id = null;
     String title = null, narrative = null, phaseResearch = null, stageInnovation = null, innovationType = null,
       contributionOfCrp = null, degreeInnovation = null, geographicScope = null, region = null, countries = null,
-      organizations = null, projectExpectedStudy = null, descriptionStage = null, leadOrganization = null,
-      contributingOrganization = null, adaptativeResearch = null, evidenceLink = null, links = null,
-      deliverables = null, crps = null, genderFocusLevel = null, genderExplaniation = null, youthFocusLevel = null,
-      youthExplaniation = null, project = null, oicr = "";
+      organizations = null, projectExpectedStudy = null, projectExpectedStudies = null, descriptionStage = null,
+      leadOrganization = null, contributingOrganization = null, adaptativeResearch = null, evidenceLink = null,
+      links = null, deliverables = null, crps = null, genderFocusLevel = null, genderExplaniation = null,
+      youthFocusLevel = null, youthExplaniation = null, project = null, oicr = "", centers = "", hasMilestones = "",
+      milestones = null, subIdos = null, deliverableLink = "", phaseID = "", loggedCenter = "", deliverableID = "",
+      isNew = null;
     Boolean isRegional = false, isNational = false, isStage4 = false;
     // Id
     id = projectInnovationID;
@@ -361,16 +389,45 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         }
 
         // Studies
+        List<ProjectExpectedStudyInnovation> studyInnovations = new ArrayList<>();
+
+        // Expected Study Innovations List
+        if (projectExpectedStudyInnovationManager.findAll() != null && projectExpectedStudyInnovationManager.findAll()
+          .stream().filter(p -> p != null && p.getPhase().getId().equals(this.getActualPhase().getId())
+            && p.getProjectInnovation().getId().equals(projectInnovationInfo.getProjectInnovation().getId())) != null) {
+          studyInnovations = projectExpectedStudyInnovationManager.findAll().stream()
+            .filter(p -> p != null && p.getPhase().getId().equals(this.getActualPhase().getId())
+              && p.getProjectInnovation().getId().equals(projectInnovationInfo.getProjectInnovation().getId()))
+            .collect(Collectors.toList());
+        }
+
         if (projectInnovationInfo.getProjectExpectedStudy() != null && projectInnovationInfo.getProjectExpectedStudy()
           .getProjectExpectedStudyInfo(this.getSelectedPhase()) != null) {
-          projectExpectedStudy = projectInnovationInfo.getProjectExpectedStudy().getId() + " - "
-            + projectInnovationInfo.getProjectExpectedStudy().getProjectExpectedStudyInfo().getTitle();
+
+          if (studyInnovations != null) {
+            projectExpectedStudy = projectInnovationInfo.getProjectExpectedStudy().getId() + " - "
+              + projectInnovationInfo.getProjectExpectedStudy().getProjectExpectedStudyInfo().getTitle();
+
+          }
+
+          for (ProjectExpectedStudyInnovation studyInnovation : studyInnovations) {
+
+            projectExpectedStudies = studyInnovation.getProjectExpectedStudy().getId() + " - "
+              + studyInnovation.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()).getTitle();
+
+            /*
+             * oicr += this.getBaseUrl() + "/projects/" + this.getLoggedCrp().getAcronym() + "/studySummary.do?studyID="
+             * + studyInnovation.getProjectExpectedStudy().getId() + "&cycle=" + this.getSelectedCycle() + "&year="
+             * + this.getSelectedPhase().getYear() + "";
+             */
+          }
 
           // oicr link
-          oicr = this.getBaseUrl() + "/projects/" + this.getLoggedCrp().getAcronym() + "/studySummary.do?studyID="
-            + projectInnovationInfo.getProjectExpectedStudy().getId() + "&cycle=" + this.getSelectedCycle() + "&year="
-            + this.getSelectedPhase().getYear();
-          System.out.println(oicr);
+          /*
+           * oicr = this.getBaseUrl() + "/projects/" + this.getLoggedCrp().getAcronym() + "/studySummary.do?studyID="
+           * + projectInnovationInfo.getProjectExpectedStudy().getId() + "&cycle=" + this.getSelectedCycle() + "&year="
+           * + this.getSelectedPhase().getYear();
+           */
         }
       }
     }
@@ -382,6 +439,98 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     if (projectInnovationInfo.getRepIndDegreeInnovation() != null) {
       degreeInnovation = projectInnovationInfo.getRepIndDegreeInnovation().getName();
     }
+
+    // Is new Innovation
+    if (this.isInnovationNew(projectInnovationID) != null) {
+      if (this.isInnovationNew(projectInnovationID) == true) {
+        isNew = "Yes";
+      } else {
+        isNew = "No";
+      }
+    }
+
+    // Has milestones
+    if (projectInnovationInfo.getHasMilestones() != null) {
+
+      if (projectInnovationInfo.getHasMilestones() == true) {
+        hasMilestones = "Yes";
+      }
+      if (projectInnovationInfo.getHasMilestones() == false) {
+        hasMilestones = "No";
+      }
+    } else {
+      hasMilestones = "<Not Defined>";
+    }
+
+    // Milestones
+    /*
+     * projectInnovationInfo.getProjectInnovation().setMilestones(
+     * new ArrayList<>(projectInnovationInfo.getProjectInnovation().getProjectInnovationMilestones().stream()
+     * .filter(o -> o.getPhase().getId().equals(this.getSelectedPhase().getId())).collect(Collectors.toList())));
+     */
+    /*
+     * if (projectInnovationInfo.getProjectInnovation().getMilestones() != null) {
+     * Set<String> milestonesSet = new HashSet<>();
+     * for (ProjectInnovationMilestone milestone : projectInnovationInfo.getProjectInnovation().getMilestones()) {
+     * if (milestone.getCrpMilestone() != null && milestone.getCrpMilestone().getComposedName() != null) {
+     * milestonesSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + milestone.getCrpMilestone().getComposedName());
+     * }
+     * }
+     * milestones = String.join("", milestonesSet);
+     * } else {
+     * milestones = "<Not Defined>";
+     * }
+     */
+
+
+    // List<ProjectInnovationMilestone> projectInnovationMilestoneList = new ArrayList<>();
+    List<ProjectInnovationMilestone> projectInnovationMilestoneList = new ArrayList<>();
+    projectInnovationMilestoneList = projectInnovationMilestoneManager.findAll().stream()
+      .filter(pi -> pi.getPhase().getId().equals(this.getSelectedPhase().getId())
+        && pi.getProjectInnovation().getId().equals(projectInnovationInfo.getProjectInnovation().getId()))
+      .collect(Collectors.toList());
+
+    if (projectInnovationMilestoneList != null && !projectInnovationMilestoneList.isEmpty()) {
+      Set<String> milestonesSet = new HashSet<>();
+      for (ProjectInnovationMilestone milestone : projectInnovationMilestoneList) {
+        if (milestone.getCrpMilestone() != null && milestone.getCrpMilestone().getTitle() != null) {
+          milestonesSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + milestone.getCrpMilestone().getTitle());
+        }
+      }
+      milestones = String.join("", milestonesSet);
+    } else {
+      milestones = "No milestones associated";
+    }
+
+    // Sub Idos
+
+    List<ProjectInnovationSubIdo> subIdosList = projectInnovationSubIdoManager.findAll().stream()
+      .filter(pi -> pi.getPhase().getId().equals(this.getSelectedPhase().getId())
+        && pi.getProjectInnovation().getId().equals(projectInnovationInfo.getProjectInnovation().getId()))
+      .collect(Collectors.toList());
+
+    /*
+     * List<ProjectInnovationSubIdo> subIdosList =
+     * new ArrayList<>(projectInnovationInfo.getProjectInnovation().getProjectInnovationSubIdos().stream()
+     * .filter(o -> o.getPhase().getId().equals(this.getSelectedPhase().getId())).collect(Collectors.toList()));
+     */
+    if (subIdosList != null && !subIdosList.isEmpty()) {
+      Set<String> subIdosSet = new HashSet<>();
+      for (ProjectInnovationSubIdo subIdo : subIdosList) {
+        subIdosSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + subIdo.getSrfSubIdo().getId() + " - "
+          + subIdo.getSrfSubIdo().getDescription());
+      }
+      subIdos = String.join("", subIdosSet);
+
+    } else {
+      subIdos = "<Not Defined>";
+    }
+
+    // phaseID
+    phaseID = this.getSelectedPhase().getId().toString();
+
+    // Center
+    loggedCenter = this.getLoggedCrp().getAcronym();
 
     // Geographic Scope
     List<ProjectInnovationGeographicScope> projectInnovationGeographicScopeList =
@@ -477,16 +626,49 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
           && p.getPhase().getId() == this.getSelectedPhase().getId())
         .collect(Collectors.toList());
     }
+
+    if (contributingOrganizationsList != null) {
+      List<ProjectInnovationContributingOrganization> contributionsTemp = new ArrayList<>();
+      contributionsTemp = contributingOrganizationsList.stream().filter(c -> c != null && c.getInstitution() != null
+        && c.getInstitution().getAcronym() != null && !c.getInstitution().getAcronym().isEmpty())
+        .collect(Collectors.toList());
+      if (contributionsTemp != null && contributionsTemp.size() > 0
+        && contributionsTemp.size() == contributingOrganizationsList.size()) {
+        contributingOrganizationsList
+          .sort((o1, o2) -> o1.getInstitution().getAcronym().compareTo(o2.getInstitution().getAcronym()));
+      } else {
+        contributingOrganizationsList
+          .sort((o1, o2) -> o1.getInstitution().getComposedName().compareTo(o2.getInstitution().getComposedName()));
+      }
+    }
+
     if (contributingOrganizationsList != null && !contributingOrganizationsList.isEmpty()) {
-      Set<String> contributingSet = new HashSet<>();
+      String temp = "";
       for (ProjectInnovationContributingOrganization contributingOrganizationItem : contributingOrganizationsList) {
         if (contributingOrganizationItem.getInstitution() != null) {
-          contributingSet
-            .add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + contributingOrganizationItem.getInstitution().getComposedName());
+          if (!temp.isEmpty()) {
+            temp += "<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + contributingOrganizationItem.getInstitution().getComposedName();
+          } else {
+            temp = " ● " + contributingOrganizationItem.getInstitution().getComposedName();
+          }
         }
       }
-      contributingOrganization = String.join("", contributingSet);
+
+      contributingOrganization = temp;
     }
+
+    /*
+     * if (contributingOrganizationsList != null && !contributingOrganizationsList.isEmpty()) {
+     * Set<String> contributingSet = new HashSet<>();
+     * for (ProjectInnovationContributingOrganization contributingOrganizationItem : contributingOrganizationsList) {
+     * if (contributingOrganizationItem.getInstitution() != null) {
+     * contributingSet
+     * .add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + contributingOrganizationItem.getInstitution().getComposedName());
+     * }
+     * }
+     * contributingOrganization = String.join("", contributingSet);
+     * }
+     */
 
     // Adaptative research
     if (projectInnovationInfo.getAdaptativeResearchNarrative() != null
@@ -510,19 +692,38 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         .filter(p -> p.getProjectInnovation().getId().equals(projectInnovationInfo.getProjectInnovation().getId())
           && p.getPhase().getId().equals(this.getSelectedPhase().getId()))
         .collect(Collectors.toList());
-
     if (projectInnovationDeliverables != null && projectInnovationDeliverables.size() > 0) {
       Set<String> deliverablesSet = new HashSet<>();
       for (ProjectInnovationDeliverable projectInnovationDeliverable : projectInnovationDeliverables) {
         if (projectInnovationDeliverable.getDeliverable() != null
           && projectInnovationDeliverable.getDeliverable().getId() != null
           && projectInnovationDeliverable.getDeliverable().getDeliverableInfo(this.getSelectedPhase()) != null) {
+          String url = this.getBaseUrl() + "/projects/" + loggedCenter + "/deliverable.do?deliverableID="
+            + projectInnovationDeliverable.getDeliverable().getId() + "&phaseID=" + phaseID;
+          url = urlShortener.getShortUrlService(url);
           deliverablesSet
             .add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + "D" + projectInnovationDeliverable.getDeliverable().getId() + " - "
-              + projectInnovationDeliverable.getDeliverable().getDeliverableInfo().getTitle());
+              + projectInnovationDeliverable.getDeliverable().getDeliverableInfo().getTitle() + "<br>(" + url + ")");
         }
       }
       deliverables = String.join("", deliverablesSet);
+    }
+
+    if (projectInnovationInfo.getProjectInnovation().getProjectInnovationCenters() != null) {
+      projectInnovationInfo.getProjectInnovation()
+        .setCenters(new ArrayList<>(projectInnovationInfo.getProjectInnovation().getProjectInnovationCenters().stream()
+          .filter(c -> c.isActive() && c.getPhase().getId().equals(this.getSelectedPhase().getId()))
+          .collect(Collectors.toList())));
+    }
+    if (projectInnovationInfo.getProjectInnovation().getCenters() != null) {
+      Set<String> centerSet = new HashSet<>();
+
+      for (ProjectInnovationCenter center : projectInnovationInfo.getProjectInnovation().getCenters()) {
+        if (center.getInstitution() != null && center.getInstitution().getComposedName() != null) {
+          centerSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + center.getInstitution().getComposedName());
+        }
+      }
+      centers = String.join("", centerSet);
     }
 
     // Contributions CRPS/Platforms
@@ -562,9 +763,10 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     }
 
     model.addRow(new Object[] {id, isRegional, isNational, isStage4, title, narrative, stageInnovation, innovationType,
-      contributionOfCrp, degreeInnovation, geographicScope, region, countries, organizations, projectExpectedStudy,
+      contributionOfCrp, degreeInnovation, geographicScope, region, countries, organizations, projectExpectedStudies,
       descriptionStage, leadOrganization, contributingOrganization, adaptativeResearch, evidenceLink, deliverables,
-      crps, genderFocusLevel, genderExplaniation, youthFocusLevel, youthExplaniation, project, oicr});
+      crps, genderFocusLevel, genderExplaniation, youthFocusLevel, youthExplaniation, project, oicr, centers,
+      hasMilestones, milestones, subIdos, deliverableLink, phaseID, loggedCenter, isNew});
     return model;
   }
 

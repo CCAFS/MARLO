@@ -41,6 +41,9 @@
 		<property name="textWhom" type="string">
 			<column name="text_whon" length="65535" />
 		</property>
+		<property name="evidences" type="string">
+			<column name="evidences" length="65535" />
+		</property>
 		<property name="textWhen" type="string">
 			<column name="text_when" length="65535" />
 		</property>
@@ -58,6 +61,15 @@
 		</property>
 		<set name="reportSynthesisMeliaEvaluationActions"
 			table="report_synthesis_melia_evaluation_actions" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="report_synthesis_melia_evaluation_id" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaEvaluationAction" />
+		</set>
+		<set name="reportSynthesisMeliaActionStudies"
+			table="report_synthesis_melia_action_studies" inverse="true"
 			lazy="true" fetch="select">
 			<key>
 				<column name="report_synthesis_melia_evaluation_id" />

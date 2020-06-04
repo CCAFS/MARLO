@@ -12,6 +12,7 @@ import java.net.URL;
  */
 public class URLShortener {
 
+  private static final int LENGTH_LINK = 80;
 
   public URLShortener() {
   }
@@ -64,13 +65,17 @@ public class URLShortener {
           if (text.charAt(i) == ' ') {
             finalUrl = i - 1;
           }
+
+          if ((i + 1) == text.length()) {
+            finalUrl = i + 1;
+          }
         }
 
         if (startUrl > 0) {
           if (finalUrl > 0) {
 
             url = text.substring(startUrl, finalUrl);
-            if (url.length() > 93) {
+            if (url.length() > LENGTH_LINK) {
               String shortURL = null;
               try {
                 shortURL = this.getShortUrlService(url);
@@ -80,7 +85,7 @@ public class URLShortener {
               }
 
               if (shortURL != null) {
-                referenceText = referenceText.replaceAll(url, shortURL);
+                referenceText = referenceText.replace(url, shortURL);
               }
             }
 
@@ -144,6 +149,10 @@ public class URLShortener {
           if (text.charAt(i) == ' ') {
             finalUrl = i - 1;
           }
+
+          if ((i + 1) == text.length()) {
+            finalUrl = i;
+          }
         }
 
         if (startUrl > 0) {
@@ -160,7 +169,7 @@ public class URLShortener {
               }
 
               if (shortURL != null) {
-                referenceText = referenceText.replaceAll(url, shortURL);
+                referenceText = referenceText.replace(url, shortURL);
               }
             }
 
@@ -182,8 +191,9 @@ public class URLShortener {
   public String getShortUrlService(String link) {
     String output = null;
     String shortUrl = null;
+    link = link.trim();
 
-    if (link.length() > 93) {
+    if (link.length() > LENGTH_LINK) {
 
       try {
 

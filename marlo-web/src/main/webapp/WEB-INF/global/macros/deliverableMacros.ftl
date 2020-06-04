@@ -151,9 +151,9 @@
       <label class="col-md-9 yesNoLabel" for="">Is this deliverable Open Access? [@customForm.req required=reportingActive /]</label>
       <div class="col-md-3">[@customForm.yesNoInputDeliverable name="${customName}.isOpenAccess"  editable=editable inverse=false cssClass="type-accessible inverted-true text-center" /]  </div>
     </div> 
-    <div class="block-accessible" style="display: ${((!deliverable.dissemination.isOpenAccess)!false)?string("block","none")};">
+    [#--  <div class="block-accessible" style="display: ${((!deliverable.dissemination.isOpenAccess)!false)?string("block","none")};">
       <hr />
-      [#local oaRestrictions = [
+     [#local oaRestrictions = [
         {"value": "intellectualProperty", "isChecked": (deliverable.dissemination.intellectualProperty)!false },
         {"value": "limitedExclusivity", "isChecked": (deliverable.dissemination.limitedExclusivity)!false }
         {"value": "restrictedUseAgreement", "isChecked": (deliverable.dissemination.restrictedUseAgreement)!false }
@@ -173,6 +173,7 @@
         </div>
       </div>
     </div>
+     --]
   </div>
 [/#macro]
 
@@ -182,7 +183,7 @@
 <div class="simpleBox">
   <div class="form-group row yesNoInputDeliverable">
     <label class="col-md-9 yesNoLabel" for="">[@s.text name="deliverable.involveParticipants.title" /] [@customForm.req required=reportingActive /]</label>
-    <div class="col-md-3">[@customForm.yesNoInputDeliverable name="${customName}.hasParticipants"  editable=editable inverse=false  cssClass="type-involveParticipants text-center" neutral=true  /] </div>  
+    <div class="col-md-3">[@customForm.yesNoInputDeliverableParticipants name="${customName}.hasParticipants"  editable=editable inverse=false  cssClass="type-involveParticipants text-center" neutral=true  /] </div>  
   </div>
   
   <div class="block-involveParticipants" style="display:${((deliverable.deliverableParticipant.hasParticipants)!false)?string('block','none')}">
@@ -425,12 +426,12 @@
       [#-- Alternative url Check --]
       <div class="col-md-6 isOtherUrl">
         <br />
-        [@customForm.checkmark id="" name="project.deliverable.dissemination.hasDOI" i18nkey="project.deliverable.hasDOI" help="" paramText="" value="true" helpIcon=true disabled=false editable=editable checked=(deliverable.dissemination.hasDOI)!false cssClass="isOtherUrl" cssClassLabel=""  /]
+        [@customForm.checkmark id="" name="deliverable.dissemination.hasDOI" i18nkey="project.deliverable.hasDOI" help="" paramText="" value="true" helpIcon=true disabled=false editable=editable checked=(deliverable.dissemination.hasDOI)!false cssClass="isOtherUrl" cssClassLabel=""  /]
       </div>
 
       [#-- Alternative url TextField --]
       <div class="col-md-6 other-url" style="display:${(isOtherUrl)?string('block','none')}">
-        [@customForm.input name="project.deliverable.dissemination.articleUrl" type="text" i18nkey="project.deliverable.articleURL"  placeholder="" required=true editable=editable /]
+        [@customForm.input name="deliverable.dissemination.articleUrl" type="text" i18nkey="project.deliverable.articleURL"  placeholder="" required=true editable=editable /]
       </div>
    </div>
    
@@ -438,7 +439,11 @@
    
   [#-- Creator/Authors --]
   <div class="form-group">
-    <label for="">[@s.text name="metadata.creator" /]:  </label>
+  
+    [#if !(deliverable.users?has_content) && deliverable.getMetadataValue(38)?has_content]
+      [@metadataField title="creator" encodedName="marlo.authors" type="textArea" require=false/]
+    [#else]
+    <label for="">[@s.text name="metadata.creator" /]:  </label>    
     [#-- Hidden input --]
     [@metadataField title="authors" encodedName="marlo.authors" type="hidden" require=false/]
     [#-- Some Instructions  --]
@@ -457,6 +462,7 @@
         <p class="emptyText text-center "> [@s.text name="project.deliverable.dissemination.notCreators" /]</p>
       [/#if]
     </div>
+
     [#-- Add an author --]
     [#if editable]
     <div class="dottedBox authorVisibles" style="display:${isMetadataHide("marlo.authors")?string('none','block')}">
@@ -471,7 +477,9 @@
     </div>
     <div class="clearfix"></div>
     </div>
-    [/#if] 
+    [/#if]
+    
+    [/#if]
   </div>
   
   <div class="publicationMetadataBlock" style="display:${displayDeliverableRule(deliverable, deliverablePublicationMetadata)!};">
@@ -494,10 +502,10 @@
       [@customForm.input name="deliverable.publication.journal" i18nkey="project.deliverable.dissemination.journalName" className="metadataValue" type="text" disabled=!editable  required=true editable=editable /]
     </div>
     
-    [#-- Is ISI Journal --]
-    <div class="form-group">
+    [#-- Is ISI Journal--]
+    <div class="form-group isIsiJournal">
       <label for="">[@s.text name="deliverable.isiPublication" /] [@customForm.req required=editable /]
-      [@customForm.helpLabel name="deliverable.isiPublication.help" showIcon=false editable=editable/]</label> <br />
+      <p><i class="helpLabel">[@s.text name="deliverable.isiPublication.help"][@s.param]<a href="http://mjl.clarivate.com/">http://mjl.clarivate.com/</a>[/@s.param][/@s.text]</i></p></label> <br />
       [#local isISI = (deliverable.publication.isiPublication?string)!"" /]
       [@customForm.radioFlat id="optionISI-yes"  name="deliverable.publication.isiPublication" i18nkey="Yes"  value="true"  checked=(isISI == "true")  cssClass="radioType-optionISI" cssClassLabel="font-normal radio-label-yes" editable=editable /] 
       [@customForm.radioFlat id="optionISI-no"   name="deliverable.publication.isiPublication" i18nkey="No"   value="false" checked=(isISI == "false") cssClass="radioType-optionISI" cssClassLabel="font-normal radio-label-no"  editable=editable /] 
@@ -518,9 +526,9 @@
     </div>  --]
     <hr />
     [#-- Does the publication acknowledge {CRP}? --]
-    <div class="row yesNoInputDeliverable">
+    <div class="row yesNoInputDeliverable [#if crpSession=="CCAFS"]acknowledgeCCAFS[/#if]">
       <div class="col-md-9">
-        <label class="yesNoLabel">[@s.text name="project.deliverable.dissemination.acknowledgeQuestion" ][@s.param]${(crpSession?upper_case)!}[/@s.param][/@s.text]</label>
+        <label class="yesNoLabel">[@s.text name="project.deliverable.dissemination.acknowledgeQuestion" ][@s.param]${(crpSession?upper_case)!}[/@s.param][/@s.text][@customForm.req required=false /]</label>
         <p class="message"><i><small>[@s.text name="project.deliverable.dissemination.acknowledgeQuestion.help" ][@s.param]${(crpSession?upper_case)!}[/@s.param][/@s.text]</small></i></p>
       </div>
       <div class="col-md-3">[@customForm.yesNoInputDeliverable name="deliverable.publication.publicationAcknowledge"  editable=editable inverse=false  cssClass="acknowledge text-center" /] </div> 

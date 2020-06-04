@@ -83,6 +83,9 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   private String topLevelComments;
 
   @Expose
+  private String MELIAPublications;
+
+  @Expose
   private String scopeComments;
 
   @Expose
@@ -145,7 +148,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
 
   @Expose
   public String otherStudyType;
-  
+
   @Expose
   private Boolean hasMilestones;
 
@@ -238,6 +241,11 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   }
 
 
+  public Boolean getHasMilestones() {
+    return hasMilestones;
+  }
+
+
   public Boolean getIsContribution() {
     return isContribution;
   }
@@ -260,25 +268,21 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return sb.toString();
   }
 
+  public String getMELIAPublications() {
+    return MELIAPublications;
+  }
+
   @Override
   public String getModificationJustification() {
     return "";
   }
+
 
   @Override
   public User getModifiedBy() {
     User u = new User();
     u.setId(new Long(3));
     return u;
-  }
-
-  public Boolean getHasMilestones() {
-	return hasMilestones;
-  }
-
-
-  public void setHasMilestones(Boolean hasMilestones) {
-	this.hasMilestones = hasMilestones;
   }
 
 
@@ -472,6 +476,10 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.genderLevel = genderLevel;
   }
 
+  public void setHasMilestones(Boolean hasMilestones) {
+    this.hasMilestones = hasMilestones;
+  }
+
   public void setIsContribution(Boolean isContribution) {
     this.isContribution = isContribution;
   }
@@ -484,6 +492,9 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.isSrfTarget = isSrfTarget;
   }
 
+  public void setMELIAPublications(String mELIAPublications) {
+    MELIAPublications = mELIAPublications;
+  }
 
   @Override
   public void setModifiedBy(User modifiedBy) {
@@ -495,7 +506,6 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.otherCrossCuttingDimensions = otherCrossCuttingDimensions;
   }
 
-
   public void setOtherCrossCuttingSelection(String otherCrossCuttingSelection) {
     this.otherCrossCuttingSelection = otherCrossCuttingSelection;
   }
@@ -505,9 +515,11 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.otherStudyType = otherStudyType;
   }
 
+
   public void setOutcomeFile(FileDB outcomeFile) {
     this.outcomeFile = outcomeFile;
   }
+
 
   public void setOutcomeImpactStatement(String outcomeImpactStatement) {
     this.outcomeImpactStatement = outcomeImpactStatement;

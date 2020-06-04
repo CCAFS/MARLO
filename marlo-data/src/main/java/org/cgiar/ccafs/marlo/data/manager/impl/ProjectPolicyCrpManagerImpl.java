@@ -112,6 +112,11 @@ public class ProjectPolicyCrpManagerImpl implements ProjectPolicyCrpManager {
   }
 
 
+  @Override
+  public ProjectPolicyCrp getProjectPolicyCrpByPhase(long policyID, long crpID, long phaseID) {
+    return projectPolicyCrpDAO.getProjectPolicyCrpByPhase(policyID, crpID, phaseID);
+  }
+
   public void savePolicyCrpPhase(Phase next, long policyID, ProjectPolicyCrp projectPolicyCrp) {
 
     Phase phase = phaseDAO.find(next.getId());

@@ -67,9 +67,14 @@
       <div id="deliverableYear" class="col-md-4 form-group">
         [#--  [#assign canNotEditYear = (deliverable.deliverableInfo.status == 4)!false || !action.candEditYear(deliverable.id)/]  --]
          [#assign dbExpectedYear = ((deliverable.deliverableInfo.year)!currentCycleYear)  ]
+         [#if isDeliverableNew && reportingActive]
+          [#assign projectExpectedYear = "project.projectInfo.getYearActualPhase(${currentCycleYear})"]
+          [#else]
+          [#assign projectExpectedYear = "project.projectInfo.getAllYearsPhase(${dbExpectedYear})"]
+         [/#if]
         [#if editable ]
           <div class="overlay" style="display:${((!isDeliverableNew || isStatusExtended || hasExpectedYear))?string('block', 'none')}"></div>
-          [@customForm.select name="deliverable.deliverableInfo.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.projectInfo.getAllYearsPhase(${dbExpectedYear})" header=false required=true className="yearExpected"  /]
+          [@customForm.select name="deliverable.deliverableInfo.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName=projectExpectedYear header=false required=true className="yearExpected"  /]
         [#else]
            <div class="select">
             <label for="">[@s.text name="project.deliverable.generalInformation.year" /]:</label>
@@ -80,9 +85,10 @@
       </div>
       
       [#-- New Expected Year - Extended = 4 or exist--]
-      <div id="newExpectedYear" class="col-md-4" style="display:${(hasExpectedYear || isStatusExtended)?string('block','none')}">
+      <div id="newExpectedYear" class="col-md-4" style="display:${(hasExpectedYear)?string('block','none')}">
         [#assign startExpectedYear = ((deliverable.deliverableInfo.year)!currentCycleYear)  ]
         [#if editable || editStatus]
+          <div class="overlay expectedDisabled" style="display:${(!isStatusExtended)?string('block', 'none')}"></div>
           [@customForm.select name="deliverable.deliverableInfo.newExpectedYear"  i18nkey="deliverable.newExpectedYear"  listName="project.projectInfo.getYears(${startExpectedYear})" header=true  multiple=false required=true  className="yearNewExpected" editable=editable || editStatus/]
         [#else]
           <div class="select">

@@ -60,6 +60,9 @@ public interface ProjectPolicySubIdoManager {
    */
   public ProjectPolicySubIdo getProjectPolicySubIdoById(long projectPolicySubIdoID);
 
+  public ProjectPolicySubIdo getProjectPolicySubIdoByPhase(long projectPolicyID, long SubIdoID, long phaseID);
+
+
   /**
    * This method saves the information of the given projectPolicySubIdo
    * 
@@ -69,6 +72,5 @@ public interface ProjectPolicySubIdoManager {
    *         or -1 is some error occurred.
    */
   public ProjectPolicySubIdo saveProjectPolicySubIdo(ProjectPolicySubIdo projectPolicySubIdo);
-
 
 }

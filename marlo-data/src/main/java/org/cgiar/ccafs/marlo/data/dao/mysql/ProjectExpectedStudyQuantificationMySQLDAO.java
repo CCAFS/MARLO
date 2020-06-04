@@ -40,7 +40,9 @@ public class ProjectExpectedStudyQuantificationMySQLDAO
   public void deleteProjectExpectedStudyQuantification(long projectExpectedStudyQuantificationId) {
     ProjectExpectedStudyQuantification projectExpectedStudyQuantification =
       this.find(projectExpectedStudyQuantificationId);
-    this.delete(projectExpectedStudyQuantification);
+    if (projectExpectedStudyQuantification != null) {
+      this.delete(projectExpectedStudyQuantification);
+    }
   }
 
   @Override
@@ -66,6 +68,20 @@ public class ProjectExpectedStudyQuantificationMySQLDAO
     List<ProjectExpectedStudyQuantification> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
+    }
+    return null;
+
+  }
+
+  @Override
+  public ProjectExpectedStudyQuantification getProjectExpectedStudyQuantificationByPhase(Long expectedID,
+    String typeQuantification, Long number, String targetUnit, Long phaseID) {
+    String query = "from " + ProjectExpectedStudyQuantification.class.getName() + " where expected_id=" + expectedID
+      + "and id_phase=" + phaseID + " and type_quantification='" + typeQuantification + "' and number=" + number
+      + " and target_unit='" + targetUnit + "'";
+    List<ProjectExpectedStudyQuantification> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
     }
     return null;
 

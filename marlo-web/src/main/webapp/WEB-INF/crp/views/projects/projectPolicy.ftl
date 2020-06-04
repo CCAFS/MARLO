@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Project Policy" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${policyID}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = [ "select2", "blueimp-file-upload" "flat-flags", "components-font-awesome"] /]
+[#assign pageLibs = [ "select2", "blueimp-file-upload", "flag-icon-css", "components-font-awesome"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectPolicy.js",
   "${baseUrlCdn}/global/js/autoSave.js",
@@ -108,7 +108,7 @@
       <div class="col-md-4">
         [@customForm.select name="${customName}.projectPolicyInfo.year" className="setSelect2" i18nkey="policy.year" listName="getPoliciesYears(${policyID})" required=true editable=editable/]
         [#if editable=false]
-          ${element.projectPolicyInfo.year}
+          ${(element.projectPolicyInfo.year)!}
         [/#if]
       </div>      
       <div class="col-md-8">
@@ -194,7 +194,7 @@
     </div>
         
      <div class="form-group simpleBox block-${policyMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
-       [@customForm.elementsListComponent name="${customName}.milestones" elementType="crpMilestone" elementList=(element.milestones)![] label="policy.milestones" helpIcon=false listName="milestoneList" keyFieldName="id" displayFieldName="composedName" required=false /]
+       [@customForm.elementsListComponent name="${customName}.milestones" elementType="crpMilestone" elementList=(element.milestones)![] label="policy.milestones" helpIcon=false listName="milestoneList" keyFieldName="id" displayFieldName="composedName" required=false hasPrimary=true/]
        
        [#--[@customForm.primaryListComponent name="${customName}.milestones" checkName="milestonePrimaryId" elementType="crpMilestone" elementList=(element.milestones)!"" label="policy.milestones" labelPrimary="policy.primaryMilestone" helpIcon=false listName="milestoneList" keyFieldName="id" displayFieldName="composedName" required=false /]
        --]
@@ -217,7 +217,7 @@
     
     [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]      
     <div class="form-group simpleBox">
-      [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=(element.subIdos)![] label="policy.subIDOs" helpIcon=false listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description" required=false /]
+      [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=(element.subIdos)![] label="policy.subIDOs" helpIcon=false listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description" required=true hasPrimary=true /]
      [#--  <div class="buttonSubIdo-content"><br> <div class="selectSubIDO" ><span class=""></span>View sub-IDOs</div></div> --]
       [#--[@customForm.primaryListComponent name="${customName}.subIdos" checkName="subIdoPrimaryId" elementType="srfSubIdo" elementList=(element.subIdos)!"" label="policy.subIDOs" labelPrimary="policy.primarySubIdo" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description" required=false /]
        --]
@@ -241,7 +241,7 @@
             [#local markerElement = (action.getPolicyCrossCuttingMarker(marker.id))!{} ]
             <input type="hidden"  name="${customName}.crossCuttingMarkers[${marker_index}].id" value="${(markerElement.id)!}"/>
             <input type="hidden"  name="${customName}.crossCuttingMarkers[${marker_index}].cgiarCrossCuttingMarker.id" value="${marker.id}"/>
-            [@customForm.select   name="${customName}.crossCuttingMarkers[${marker_index}].repIndGenderYouthFocusLevel.id" value="${(markerElement.repIndGenderYouthFocusLevel.id)!-1}" className="setSelect2" i18nkey="${marker.name}" listName="focusLevels" keyFieldName="id"  displayFieldName="powbName" required=true editable=editable/]
+            [@customForm.select   name="${customName}.crossCuttingMarkers[${marker_index}].repIndGenderYouthFocusLevel.id" value="${(markerElement.repIndGenderYouthFocusLevel.id)!-1}" valueName="${(markerElement.repIndGenderYouthFocusLevel.powbName)!}" className="setSelect2" i18nkey="${marker.name}" listName="focusLevels" keyFieldName="id"  displayFieldName="powbName" required=true editable=editable/]
           </div>
         [/#list]
       </div>

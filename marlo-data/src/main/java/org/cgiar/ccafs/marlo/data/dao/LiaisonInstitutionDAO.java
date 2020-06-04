@@ -63,6 +63,15 @@ public interface LiaisonInstitutionDAO {
   public LiaisonInstitution findByAcronym(String acronym);
 
   /**
+   * This method gets a liaisonInstitution object by a given liaisonInstitution acronym and Crp identifier..
+   * 
+   * @param acronym is the liaisonInstitution acronym.
+   * @param crpID is the crp identifier
+   * @return a LiaisonInstitution object.
+   */
+  public LiaisonInstitution findByAcronymAndCrp(String acronym, Long crpID);
+
+  /**
    * This method gets a liaisonInstitution object by a given institution and Crp identifier.
    * 
    * @author avalencia - CCAFS
