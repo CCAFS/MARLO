@@ -72,13 +72,18 @@ public class ProjectPage {
     @ApiParam(value = "CGIAR entity", required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "Project Id", required = true) @PathVariable Long id) {
 
-    ResponseEntity<ProjectPageDTO> response = projectPageItem.findProjectPageById(id, CGIAREntity);
-
-    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-      // TODO add correctly documentation
-      throw new NotFoundException("404", "Not Found");
+    try {
+      ResponseEntity<ProjectPageDTO> response = projectPageItem.findProjectPageById(id, CGIAREntity);
+      if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+        // TODO add correctly documentation
+        throw new NotFoundException("404", "Not Found");
+      }
+      return response;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
     }
-    return response;
+
   }
 
 }
