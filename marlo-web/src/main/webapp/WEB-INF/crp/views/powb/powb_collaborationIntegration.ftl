@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "POWB Synthesis" /]
 [#assign currentSectionString = "powb-${actionName?replace('/','-')}-${liaisonInstitutionID}" /]
-[#assign pageLibs = [ "select2", "flat-flags", "datatables.net", "datatables.net-bs" ] /]
+[#assign pageLibs = [ "select2", "flag-icon-css", "datatables.net", "datatables.net-bs" ] /]
 [#assign customJS = [ "${baseUrlMedia}/js/powb/powb_collaborationIntegration.js" ] /]
 [#assign customCSS = [ "${baseUrlMedia}/css/powb/powbGlobal.css" ] /]
 [#assign currentSection = "synthesis" /]
@@ -291,7 +291,7 @@
       [#if locElements?has_content]
         [#list locElements as locElement]
           <tr>
-            <td> <i class="flag-sm flag-sm-${(locElement.isoAlpha2?upper_case)!}"></i> ${locElement.name} </td>
+            <td> <i class="flag-icon flag-icon-${(locElement.isoAlpha2?lower_case)!}"></i> ${locElement.name} </td>
             <td class="col-md-4">
               [#if (locElement.projects?has_content)!false]
                 [#list locElement.projects as project]

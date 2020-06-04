@@ -38,6 +38,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.ByteArrayInputStream;
@@ -275,12 +276,12 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
         "expectedStudies", "phaseID", "crossCutting", "type", "locations", "start_date", "end_date", "budgetw1w2",
         "totalw3bilateralcenter", "ppa", "global", "regional", "regionLoc", "countryLoc", "deliverables2017",
         "deliverables2018", "deliverables2019", "deliverables2020", "deliverables2021", "deliverables2022",
-        "projectCollaborators", "projectCoordinators"},
+        "projectCollaborators", "projectCoordinators", "submitted"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, Integer.class, Integer.class, Integer.class, Integer.class, Long.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class},
       0);
     // Status of projects
     String[] statuses = null;
@@ -312,6 +313,7 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
       String deliverables2022 = "";
       String collaborators = "";
       String coordinators = "";
+      String submitted = "";
 
       if (project.getProjectInfo().getSummary() != null && !project.getProjectInfo().getSummary().isEmpty()) {
         projectSummary = project.getProjectInfo().getSummary();
@@ -595,6 +597,22 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
           crossCutting += " Capacity Development";
         }
       }
+      if (project.getProjectInfo().getCrossCuttingGender() != null
+        && project.getProjectInfo().getCrossCuttingGender() == true) {
+        if (crossCutting.length() > 0) {
+          crossCutting += ", Gender";
+        } else {
+          crossCutting += " Gender";
+        }
+      }
+      if (project.getProjectInfo().getCrossCuttingYouth() != null
+        && project.getProjectInfo().getCrossCuttingYouth() == true) {
+        if (crossCutting.length() > 0) {
+          crossCutting += ", Youth";
+        } else {
+          crossCutting += " Youth";
+        }
+      }
       if (project.getProjectInfo().getCrossCuttingClimate() != null
         && project.getProjectInfo().getCrossCuttingClimate() == true) {
         if (crossCutting.length() > 0) {
@@ -817,6 +835,24 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
         hasW1W2Co = false;
       }
 
+      // Is project Submitted
+      List<Submission> submission = this.getAllProjectSubmissionsByProjectID(project.getId());
+      if (submission != null && submission.size() > 0) {
+        submitted = "Yes";
+        if (submission.size() > 1) {
+          submitted = "Yes";
+          for (Submission submitedProject : submission) {
+            if (submitedProject.isUnSubmit() != null && submitedProject.isUnSubmit() == true) {
+              submitted = "No";
+            } else {
+              submitted = "Yes";
+            }
+          }
+        }
+      } else {
+        submitted = "No";
+      }
+
       String w1w2 = null;
       String w3 = null;
       String bilateral = null;
@@ -867,7 +903,7 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
         institutionLeader, projectLeaderName, activitiesOnGoing, expectedDeliverables, outcomes, expectedStudies,
         this.getSelectedPhase().getId(), crossCutting, type, locations, startDate, endDate, w1w2, bilateral, ppa,
         global, regional, regionLoc, countryLoc, deliverables2017, deliverables2018, deliverables2019, deliverables2020,
-        deliverables2021, deliverables2022, collaborators, coordinators});
+        deliverables2021, deliverables2022, collaborators, coordinators, submitted});
     }
     return model;
   }

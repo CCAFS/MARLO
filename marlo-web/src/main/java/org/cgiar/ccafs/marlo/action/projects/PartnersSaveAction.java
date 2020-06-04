@@ -29,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.manager.PartnerRequestManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.ActivityPartner;
 import org.cgiar.ccafs.marlo.data.model.CapacityDevelopment;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInfo;
@@ -40,6 +41,7 @@ import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
@@ -87,6 +89,7 @@ public class PartnersSaveAction extends BaseAction {
   private ProjectExpectedStudyManager projectExpectedStudyManager;
   private ICapacityDevelopmentService capacityDevelopmentManager;
   private PowbSynthesisManager powbSynthesisManager;
+  private ReportSynthesisManager reportSynthesisManager;
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
   private final SendMailS sendMail;
@@ -102,6 +105,7 @@ public class PartnersSaveAction extends BaseAction {
   private int projectID;
   private int fundingSourceID;
   private int powbSynthesisID;
+  private int synthesisID;
   private int expectedID;
   private int activityID;
   private int capdevID;
@@ -112,7 +116,8 @@ public class PartnersSaveAction extends BaseAction {
     InstitutionTypeManager institutionManager, InstitutionManager institutionsManager, ProjectManager projectManager,
     PartnerRequestManager partnerRequestManager, FundingSourceManager fundingSourceManager,
     GlobalUnitManager crpManager, SendMailS sendMail, ProjectExpectedStudyManager projectExpectedStudyManager,
-    ICapacityDevelopmentService capacityDevelopmentManager, PowbSynthesisManager powbSynthesisManager) {
+    ICapacityDevelopmentService capacityDevelopmentManager, PowbSynthesisManager powbSynthesisManager,
+    ReportSynthesisManager reportSynthesisManager) {
     super(config);
     this.locationManager = locationManager;
     this.institutionManager = institutionManager;
@@ -125,6 +130,7 @@ public class PartnersSaveAction extends BaseAction {
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.capacityDevelopmentManager = capacityDevelopmentManager;
     this.powbSynthesisManager = powbSynthesisManager;
+    this.reportSynthesisManager = reportSynthesisManager;
   }
 
   public void addCapDevMessage(StringBuilder message, PartnerRequest partnerRequest,
@@ -158,11 +164,21 @@ public class PartnersSaveAction extends BaseAction {
     partnerRequestModifications.setRequestSource(sourceMessage);
   }
 
-
   public void addProjectMessage(StringBuilder message, PartnerRequest partnerRequest,
     PartnerRequest partnerRequestModifications) {
     ProjectInfo projectInfo = projectManager.getProjectById(projectID).getProjecInfoPhase(this.getActualPhase());
     String sourceMessage = "" + context + " Project: (" + projectID + ") - " + projectInfo.getTitle();
+    message.append(sourceMessage);
+    partnerRequest.setRequestSource(sourceMessage);
+    partnerRequestModifications.setRequestSource(sourceMessage);
+  }
+
+  public void addReportSynthesisMessage(StringBuilder message, PartnerRequest partnerRequest,
+    PartnerRequest partnerRequestModifications) {
+    System.out.println(synthesisID);
+    ReportSynthesis reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
+    String sourceMessage = "" + context + " Report Synthesis: (" + synthesisID + ") - "
+      + reportSynthesis.getLiaisonInstitution().getComposedName();
     message.append(sourceMessage);
     partnerRequest.setRequestSource(sourceMessage);
     partnerRequestModifications.setRequestSource(sourceMessage);
@@ -229,9 +245,14 @@ public class PartnersSaveAction extends BaseAction {
   }
 
 
+  public int getSynthesisID() {
+    return synthesisID;
+  }
+
   public boolean isMessageSent() {
     return messageSent;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -282,6 +303,15 @@ public class PartnersSaveAction extends BaseAction {
         this.getCurrentUser().getEmail(), powbSynthesisID);
     }
 
+    // Take the AR Synthesis id only the first time the page loads
+    if (this.getRequest().getParameter(APConstants.REPORT_SYNTHESIS_ID) != null
+      && Integer.parseInt(this.getRequest().getParameter(APConstants.REPORT_SYNTHESIS_ID)) != 0) {
+      synthesisID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.REPORT_SYNTHESIS_ID)));
+      pageRequestName = "reportSynthesis";
+      LOG.info("The user {} load the request partner section related to the reportSynthesis {}.",
+        this.getCurrentUser().getEmail(), synthesisID);
+    }
+
     this.countriesList = locationManager.findAll().stream()
       .filter(c -> c.isActive() && c.getLocElementType().getId().longValue() == 2).collect(Collectors.toList());
     this.institutionTypesList =
@@ -298,7 +328,6 @@ public class PartnersSaveAction extends BaseAction {
       LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
     }
   }
-
 
   @Override
   public String save() {
@@ -381,7 +410,7 @@ public class PartnersSaveAction extends BaseAction {
     }
     message.append(" </br>");
 
-
+    System.out.println("pageRequestName" + synthesisID);
     switch (pageRequestName) {
       case "projects":
         this.addProjectMessage(message, partnerRequest, partnerRequestModifications);
@@ -401,6 +430,10 @@ public class PartnersSaveAction extends BaseAction {
 
       case "powbSynthesis":
         this.addPowbSynthesisMessage(message, partnerRequest, partnerRequestModifications);
+        break;
+
+      case "reportSynthesis":
+        this.addReportSynthesisMessage(message, partnerRequest, partnerRequestModifications);
         break;
 
     }
@@ -445,10 +478,10 @@ public class PartnersSaveAction extends BaseAction {
     this.activityID = activityID;
   }
 
+
   public void setActivityPartner(ActivityPartner activityPartner) {
     this.activityPartner = activityPartner;
   }
-
 
   public void setCapdevID(int capdevID) {
     this.capdevID = capdevID;
@@ -470,10 +503,10 @@ public class PartnersSaveAction extends BaseAction {
     this.institutions = institutions;
   }
 
+
   public void setLocationId(long locationId) {
     this.locationId = locationId;
   }
-
 
   public void setMessageSent(boolean messageSent) {
     this.messageSent = messageSent;
@@ -483,9 +516,12 @@ public class PartnersSaveAction extends BaseAction {
     this.powbSynthesisID = powbSynthesisID;
   }
 
-
   public void setProjectID(int projectID) {
     this.projectID = projectID;
+  }
+
+  public void setSynthesisID(int synthesisID) {
+    this.synthesisID = synthesisID;
   }
 
 

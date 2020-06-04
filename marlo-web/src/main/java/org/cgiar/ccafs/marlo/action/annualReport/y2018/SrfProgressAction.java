@@ -31,6 +31,7 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrpProgressTargetManage
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisSrfProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisSrfProgressTargetManager;
+import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
@@ -48,6 +49,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpProgressTarget;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTarget;
+import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget;
 import org.cgiar.ccafs.marlo.data.model.StudiesStatusPlanningEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -84,7 +86,7 @@ public class SrfProgressAction extends BaseAction {
 
   // Managers
   private GlobalUnitManager crpManager;
-
+  private SectionStatusManager sectionStatusManager;
   private LiaisonInstitutionManager liaisonInstitutionManager;
 
 
@@ -99,7 +101,7 @@ public class SrfProgressAction extends BaseAction {
 
 
   private ReportSynthesisSrfProgressManager reportSynthesisSrfProgressManager;
-
+  private String flagshipsIncomplete;
   private SrfProgressValidator validator;
 
   private ReportSynthesisSrfProgressTargetManager reportSynthesisSrfProgressTargetManager;
@@ -137,6 +139,7 @@ public class SrfProgressAction extends BaseAction {
   private List<ReportSynthesisSrfProgress> flagshipSrfProgress;
 
   private List<ProjectExpectedStudy> studiesList;
+  private List<String> listOfFlagships;
 
 
   @Inject
@@ -150,7 +153,7 @@ public class SrfProgressAction extends BaseAction {
     ReportSynthesisCrpProgressTargetManager reportSynthesisCrpProgressTargetManager,
     SrfSloIndicatorTargetManager srfSloIndicatorTargetManager, PhaseManager phaseManager,
     ReportSynthesisSrfProgressTargetManager reportSynthesisSrfProgressTargetManager,
-    ReportSynthesisSrfProgressManager reportSynthesisSrfProgressManager) {
+    ReportSynthesisSrfProgressManager reportSynthesisSrfProgressManager, SectionStatusManager sectionStatusManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -166,6 +169,7 @@ public class SrfProgressAction extends BaseAction {
     this.projectFocusManager = projectFocusManager;
     this.projectManager = projectManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
+    this.sectionStatusManager = sectionStatusManager;
   }
 
 
@@ -246,14 +250,36 @@ public class SrfProgressAction extends BaseAction {
   }
 
 
+  public void getFlagshipsWithMissingFields() {
+    listOfFlagships = new ArrayList<>();
+    SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
+      "Reporting", this.getActualPhase().getYear(), false, "crpProgress");
+
+    if (sectionStatus != null && sectionStatus.getMissingFields() != null && !sectionStatus.getMissingFields().isEmpty()
+      && sectionStatus.getMissingFields().length() != 0 && sectionStatus.getSynthesisFlagships() != null
+      && !sectionStatus.getSynthesisFlagships().isEmpty()
+      && sectionStatus.getMissingFields().contains("crpProgress1")) {
+      flagshipsIncomplete = sectionStatus.getSynthesisFlagships();
+    }
+
+    if (flagshipsIncomplete != null && !flagshipsIncomplete.isEmpty()) {
+      String textToSeparate = flagshipsIncomplete;
+      String separator = ";";
+      String[] arrayText = textToSeparate.split(separator);
+      for (String element : arrayText) {
+        listOfFlagships.add(element);
+      }
+    }
+  }
+
   public List<ReportSynthesisCrpProgressTarget> getFpSynthesisTable() {
     return fpSynthesisTable;
   }
 
+
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
-
 
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
@@ -263,9 +289,14 @@ public class SrfProgressAction extends BaseAction {
     return liaisonInstitutions;
   }
 
+  public List<String> getListOfFlagships() {
+    return listOfFlagships;
+  }
+
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
+
 
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
@@ -274,7 +305,6 @@ public class SrfProgressAction extends BaseAction {
   public List<SrfSloIndicatorTarget> getSloTargets() {
     return sloTargets;
   }
-
 
   public List<ProjectExpectedStudy> getStudiesList() {
     return studiesList;
@@ -473,7 +503,7 @@ public class SrfProgressAction extends BaseAction {
       synthesisID = reportSynthesisDB.getId();
       liaisonInstitutionID = reportSynthesisDB.getLiaisonInstitution().getId();
       liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
-
+      this.getFlagshipsWithMissingFields();
       Path path = this.getAutoSaveFilePath();
       // Verify if there is a Draft file
       if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
@@ -698,6 +728,10 @@ public class SrfProgressAction extends BaseAction {
     this.liaisonInstitutions = liaisonInstitutions;
   }
 
+  public void setListOfFlagships(List<String> listOfFlagships) {
+    this.listOfFlagships = listOfFlagships;
+  }
+
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
@@ -901,7 +935,11 @@ public class SrfProgressAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      validator.validate(this, reportSynthesis, true);
+      if (this.isPMU()) {
+        validator.validateCheckButton(this, reportSynthesis, true);
+      } else {
+        validator.validate(this, reportSynthesis, true);
+      }
     }
   }
 

@@ -449,6 +449,30 @@
   </div>
 [/#macro]
 
+[#macro yesNoInputDeliverableParticipants name label="" disabled=false editable=true inverse=false value="" yesLabel="Yes" noLabel="No" cssClass="" neutral=false]
+  [#if value == ""]
+    [#assign customValue][@s.property value="${name}"/][/#assign]
+  [#else]
+    [#assign customValue=value /]
+  [/#if]
+  <div class="onoffswitch ${changedField(name)} ${cssClass}">
+    [#if label?has_content]
+      <label for="${name}">[@s.text name=label/]</label>
+    [/#if]
+    <div class="button-wrap radio-inline">  
+      [#if editable]
+        [#-- Yes Button --]
+        <input id="${name}-yes" class="radio-input yesInput" type="radio" name="${name}" value="true" [#if (customValue == "true")!false]checked[/#if] />
+        <label for="${name}-yes" class="${neutral?string('neutral', '')} yes-button-label button-label value-true [#if (customValue == "true")!false]radio-checked[/#if]"> ${yesLabel} </label>
+        [#-- No Button --]
+        <input id="${name}-no" class="radio-input noInput" type="radio" name="${name}" value="false" [#if (customValue != "true")!false]checked[/#if] />
+        <label for="${name}-no" class="${neutral?string('neutral', '')} no-button-label button-label value-false [#if (customValue != "true")!false]radio-checked[/#if]"> ${noLabel} </label>
+      [#else]
+        <p style="text-align:center; display: inline-block"> [#if customValue=="true"]Yes[#elseif customValue == "false"]No[#else]Not selected[/#if]</p>
+      [/#if]
+    </div>
+  </div>
+[/#macro]
 
 
 [#macro radioFlat id name i18nkey="" label="" disabled=false editable=true value="" checked=true cssClass="" cssClassLabel="" inline=true columns=0]
@@ -547,7 +571,7 @@
   [#return '']
 [/#function]
 
-[#macro elementsListComponent name elementType id="" elementList=[] label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true forceEditable=false onlyElementIDs=false]
+[#macro elementsListComponent name elementType id="" elementList=[] label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true hasPrimary=false forceEditable=false onlyElementIDs=false]
   [#attempt]
     [#local list = ((listName?eval)?sort_by((displayFieldName?split("."))))![] /] 
   [#recover]
@@ -569,11 +593,12 @@
       <div class="loading listComponentLoading" style="display:none"></div>
       <ul class="list">
         [#if elementList?has_content]
-          [#list elementList as item][@listElementMacro name=name element=item type=elementType id=id index=item_index keyFieldName=keyFieldName displayFieldName=displayFieldName indexLevel=indexLevel /][/#list]
+          [#if hasPrimary]<label class="primary-label">[#if editable]Set as primary [#else] Primary[/#if]</label>[/#if]
+          [#list elementList as item][@listElementMacro name=name element=item type=elementType id=id index=item_index keyFieldName=keyFieldName displayFieldName=displayFieldName indexLevel=indexLevel hasPrimary=hasPrimary/][/#list]
         [/#if]
       </ul>
       [#if editable]
-        <select name="" id="" class="setSelect2 maxLimit-${maxLimit} elementType-${composedID} indexLevel-${indexLevel}">
+        <select name="" id="" class="setSelect2 maxLimit-${maxLimit} elementType-${composedID} indexLevel-${indexLevel}[#if (hasPrimary)!false] primarySelect[/#if]">
           <option value="-1">[@s.text name="form.select.placeholder" /]</option>
           [#list list as item]
             <option value="${(item[keyFieldName])!}">${(item[displayFieldName])!'null'}</option>
@@ -585,7 +610,7 @@
     </div>
     [#-- Element item Template --]
     <ul style="display:none">
-      [@listElementMacro name="${name}" element={} type=elementType id=id index=-1 indexLevel=indexLevel template=true onlyElementIDs=onlyElementIDs isEditable=(editable || forceEditable) /]
+      [@listElementMacro name="${name}" element={} type=elementType id=id index=-1 indexLevel=indexLevel template=true hasPrimary=hasPrimary onlyElementIDs=onlyElementIDs isEditable=(editable || forceEditable) /]
     </ul>
   </div>
 [/#macro]
@@ -657,12 +682,46 @@
   </div>
 [/#macro]
 
-[#macro listElementMacro element name type id="" index=-1 keyFieldName="id" displayFieldName="composedName" indexLevel=1 template=false]
+[#macro listElementMacro element name type id="" index=-1 keyFieldName="id" displayFieldName="composedName" indexLevel=1 template=false hasPrimary=false]
   [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
   [#local composedID = "${type}" /]
   [#if id?has_content]
     [#local composedID = "${type}-${id}" /]
   [/#if]
+  [#if hasPrimary]
+    [#attempt]
+     [#if template]
+      [#local primaryValue = false /]
+     [#else]
+      [#local primaryValue = "${customName}.primary"?eval!false /]
+     [/#if]
+    [#recover]
+      [#local primaryValue = false /]
+    [/#attempt]
+    <li class="[#if template]relationElement-template[/#if] relationElement indexLevel-${indexLevel}">
+      [#-- Remove button --]
+      [#if editable]<div class="removeElement sm removeIcon removeElementType-${composedID}" title="Remove"></div>[/#if] 
+          <div class="form-group row primary-list">
+          <div class="col-md-1 primary-radio">
+          [#if editable]
+            [@radioFlat id="${customName}.primary" name="${customName}.primary" value="true" cssClassLabel="radio-label-yes" editable=editable checked=(primaryValue)!false /]
+            [#else]
+              [#if primaryValue==true]
+                <span class="primary-element glyphicon glyphicon-ok-sign"></span>
+              [/#if]
+          [/#if]
+          </div>
+          <div class="col-md-1"></div>
+          <div class="col-md-10">
+          [#-- Hidden Inputs --]
+          <input type="hidden" class="elementID" name="${customName}.id" value="${(element.id)!}" />
+          <input type="hidden" class="elementRelationID" name="${customName}.${type}.id" value="${(element[type][keyFieldName])!}" />
+          [#-- Title --]
+          <span class="elementName">${(element[type][displayFieldName])!'{elementNameUndefined}'}</span>
+          </div>
+          </div>
+      </li>  
+  [#else]
   <li class="[#if template]relationElement-template[/#if] relationElement indexLevel-${indexLevel}">
     [#-- Hidden Inputs --]
     <input type="hidden" class="elementID" name="${customName}.id" value="${(element.id)!}" />
@@ -672,6 +731,7 @@
     [#-- Title --]
     <span class="elementName">${(element[type][displayFieldName])!'{elementNameUndefined}'}</span>
   </li>
+  [/#if]
 [/#macro]
 
 [#macro helpViewMore name=""]

@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Project Partners" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = ["select2", "flat-flags"] /]
+[#assign pageLibs = ["select2", "flag-icon-css"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/fieldsValidation.js", 
   "${baseUrlCdn}/global/js/usersManagement.js", 
@@ -526,7 +526,7 @@
     [#if editable]<div class="removeLocElement removeIcon" title="Remove Location"></div>[/#if] 
     
     [#-- Location Name --]
-    <span class="flag-icon"><i class="flag-sm flag-sm-${(element.locElement.isoAlpha2?upper_case)!}"></i></span> <span class="name">${(element.composedName)!'{name}'}</span><br />
+    <span class="flag-icon"><i class="flag-icon flag-icon-${(element.locElement.isoAlpha2?lower_case)!}"></i></span> <span class="name">${(element.composedName)!'{name}'}</span><br />
     
     [#-- Hidden inputs --]
     <input type="hidden" class="locElementCountry" name="${locElementName}.locElement.isoAlpha2" value="${(element.locElement.isoAlpha2)!}" /> 

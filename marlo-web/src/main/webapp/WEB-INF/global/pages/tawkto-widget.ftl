@@ -36,6 +36,7 @@
         'fullName': '${(userTag)!} ${(currentUser.composedCompleteName)!"No Name"}',
         'userName' : '${(currentUser.username)!"No User name"}',
         'userId': '${(currentUser.id)!"No ID"}',
+        'email': '${(currentUser.email)!"No User email"}',
         'composedId': '${(currentUser.composedID)!"No Composed ID"}',
         'userTags': '[${(roles)!}${(roles?has_content && liasons?has_content)?string(',','')}${(liasons)!}]'
         

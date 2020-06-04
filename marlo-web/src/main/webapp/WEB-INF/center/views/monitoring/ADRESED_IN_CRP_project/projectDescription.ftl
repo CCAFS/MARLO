@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Project Description" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = ["select2","flat-flags"] /]
+[#assign pageLibs = ["select2","flag-icon-css"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/fieldsValidation.js",
   "${baseUrlCdn}/global/js/usersManagement.js", 
@@ -195,7 +195,7 @@
                           [/#if]
                             <input class="id" type="hidden" name="project.projectCountries[${country_index}].id" value="${(country.id)!-1}" />
                             <input class="cId" type="hidden" name="project.projectCountries[${country_index}].locElement.isoAlpha2" value="${(country.locElement.isoAlpha2)!}" />
-                            <span class="name"><span> <i class="flag-sm flag-sm-${(country.locElement.isoAlpha2)!}"></i> [@utilities.wordCutter string=(country.locElement.name)! maxPos=20 /]</span></span>
+                            <span class="name"><span> <i class="flag-icon flag-icon-${(country.locElement.isoAlpha2?lower_case)!}"></i> [@utilities.wordCutter string=(country.locElement.name)! maxPos=20 /]</span></span>
                             <div class="clearfix"></div>
                           </li>
                       [/#list]

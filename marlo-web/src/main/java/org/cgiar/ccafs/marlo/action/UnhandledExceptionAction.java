@@ -116,7 +116,7 @@ public class UnhandledExceptionAction extends BaseAction {
         // Order Parameters
         SortedSet<String> keys = new TreeSet<>(httpServletRequest.getParameterMap().keySet());
 
-        message.append("<b>Parameters: </b></br>");
+        message.append("<b>Parameters: </b>");
         for (String parameter : keys) {
           if (httpServletRequest.getParameterMap().get(parameter) != null
             && httpServletRequest.getParameterMap().get(parameter).length > 0) {

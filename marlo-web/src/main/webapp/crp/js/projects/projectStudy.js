@@ -43,6 +43,18 @@ function init() {
 
 function attachEvents() {
 
+  //Expected Year
+  $('select.statusSelect').on('change', function() {
+    console.log(this.value);
+    if(this.value == 4) {
+      $('.block-extendedYear').slideDown();
+      $('.block-year').slideUp();
+    } else {
+      $('.block-extendedYear').slideUp();
+      $('.block-year').slideDown();
+    }
+  });
+
   // On change studyType
   $('select.studyType').on('change', function() {
 

@@ -28,6 +28,8 @@ import org.mapstruct.Mapper;
 public interface ProjectMapper {
 
 
+  public abstract Project projectDTOToProject(ProjectDTO projectDTO);
+
   public abstract ProjectDTO projectToProjectDTO(Project project);
 
 }

@@ -51,6 +51,9 @@ public class MetadataApiFactory {
     if (clientType.equalsIgnoreCase("melDspace")) {
       return new MELDSpaceClientAPI();
     }
+    if (clientType.equalsIgnoreCase("melDataverse")) {
+      return new MELDataverseClientAPI();
+    }
     return null;
   }
 

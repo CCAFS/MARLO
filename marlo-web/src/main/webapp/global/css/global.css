@@ -843,6 +843,7 @@ img.icon {
 
 .removeElement.sm {
   padding: 9px 10px;
+  /*z-index: 1000;*/
 }
 
 .removeIcon {
@@ -1941,6 +1942,18 @@ a.currentReportingSection li, a.currentSection li {
 
 #secondaryMenu ul li ul > li.currentSection {
   font-weight: bold;
+}
+
+#secondaryMenu ul li ul > li.currentSection.hasBackground {
+  background: antiquewhite;
+}
+
+#secondaryMenu ul li ul > li.hasBackground {
+  background: rgb(254, 247, 207);
+}
+
+#secondaryMenu ul li ul > li.hasBackground:hover {
+  background: antiquewhite;
 }
 
 #secondaryMenu ul li > ul li {
@@ -4378,6 +4391,27 @@ li.fileUploaded span {
   vertical-align: middle;
 }
 
+.icon-20.policies {
+  background-image: url(../../global/images/icons-policies.png);
+  background-position: -28px 0px;
+  background-size: 358%;
+  vertical-align: middle;
+}
+
+.icon-20.innovations {
+  background-image: url(../../global/images/icons-innovations.png);
+  background-position: -28px 0px;
+  background-size: 358%;
+  vertical-align: middle;
+}
+
+.icon-20.evidences {
+  background-image: url(../../global/images/icons-evidences.png);
+  background-position: -28px 0px;
+  background-size: 358%;
+  vertical-align: middle;
+}
+
 
 .icon-uncheck {
   background: url('../../global/images/sprite-icons-activities.png') 0 -85px;
@@ -4385,6 +4419,19 @@ li.fileUploaded span {
 
 .icon-check {
   background: url('../../global/images/sprite-icons-activities.png') 0 -150px;
+}
+
+.mf-icon {
+  font-size: 20px;
+}
+
+.mffp-icon {
+  font-size: 18px;
+  color: slategray;
+}
+
+.mf-icon.check {
+  color:#8EA786;
 }
 
 .icon-neutral {
@@ -6992,4 +7039,49 @@ div.selectPrimary{
   position: relative;
   display: grid;
   grid-auto-rows: auto;
+}
+
+.primary-radio  {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  padding-top: 5px
+}
+
+.primary-list {
+  margin-bottom: 0px;
+}
+
+.primary-label {
+  font-size: 10px
+}
+
+.primary-element {
+  height: 1em;
+  width: 1em;
+  border-radius: 100%;
+  margin-left: 1.5em;
+  margin-bottom: 0.6em;
+  color: #57a7b5;
+}
+
+.menuContent #bi::before{
+  content: "BETA";
+  color: #0277a2;
+  font-size: 9px;
+  position: absolute;
+  top: 0em;
+  background-color: rgb(154, 226, 128);
+  padding: 0.3em 1.1em 0.3em 1.1em;
+  border-radius: 0em 0em 0.3em 0.3em;
+}
+
+li.currentSection#bi::before{
+  color: #127fa8;
+}
+
+.menuContent.positionFixedTop #bi::before{
+  font-size: 5px;
+  padding: 0.3em 2.5em 0.3em 2.5em;
+  border-radius: 0em 0em 0.3em 0.3em;
 }

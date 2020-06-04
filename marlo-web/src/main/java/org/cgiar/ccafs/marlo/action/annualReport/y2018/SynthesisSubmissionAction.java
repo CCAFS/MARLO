@@ -89,39 +89,39 @@ public class SynthesisSubmissionAction extends BaseAction {
   public String execute() throws Exception {
     complete = false;
     ReportSynthesis reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
-    liaisonInstitutionID = reportSynthesis.getLiaisonInstitution().getId();
-    this.setPhaseID(reportSynthesis.getPhase().getId());
     if (reportSynthesis != null) {
-      if (this.hasPermission("canSubmmit")) {
+      liaisonInstitutionID = reportSynthesis.getLiaisonInstitution().getId();
+      this.setPhaseID(reportSynthesis.getPhase().getId());
 
-        boolean isCompleteAR = true;
+      // if (this.hasPermission("canSubmmit")) {
 
+      boolean isCompleteAR = true;
 
-        if (isCompleteAR) {
-          List<Submission> submissions = reportSynthesis.getSubmissions().stream()
-            .filter(c -> c.getCycle().equals(this.getActualPhase().getDescription())
-              && c.getYear().intValue() == this.getActualPhase().getYear()
-              && (c.isUnSubmit() == null || !c.isUnSubmit()))
-            .collect(Collectors.toList());
+      if (isCompleteAR) {
+        List<Submission> submissions = reportSynthesis.getSubmissions().stream()
+          .filter(c -> c.getCycle().equals(this.getActualPhase().getDescription())
+            && c.getYear().intValue() == this.getActualPhase().getYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
+          .collect(Collectors.toList());
 
-          if (submissions.isEmpty()) {
-            this.submitAR2018(reportSynthesis);
-            complete = true;
-          } else {
-            Submission submission = submissionManager.getSubmissionById(submissions.get(0).getId());
-            submission.setUser(userManager.getUser(submission.getUser().getId()));
-            this.setSubmission(submission);
-            complete = true;
-          }
-
-          return SUCCESS;
+        if (submissions.isEmpty()) {
+          this.submitAR2018(reportSynthesis);
+          complete = true;
         } else {
-          return NOT_AUTHORIZED;
+          Submission submission = submissionManager.getSubmissionById(submissions.get(0).getId());
+          submission.setUser(userManager.getUser(submission.getUser().getId()));
+          this.setSubmission(submission);
+          complete = true;
         }
 
+        return SUCCESS;
       } else {
         return NOT_AUTHORIZED;
       }
+      /*
+       * } else {
+       * return NOT_AUTHORIZED;
+       * }
+       */
     } else {
       return NOT_AUTHORIZED;
     }

@@ -17,17 +17,23 @@ package org.cgiar.ccafs.marlo.validation.annualreport.y2018;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
+import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis2018SectionStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Named;
 
@@ -39,10 +45,15 @@ public class CCDimension2018Validator extends BaseValidator {
 
   private final GlobalUnitManager crpManager;
   private final ReportSynthesisManager reportSynthesisManager;
+  private final LiaisonInstitutionManager liaisonInstitutionManager;
+  private final SectionStatusManager sectionStatusManager;
 
-  public CCDimension2018Validator(GlobalUnitManager crpManager, ReportSynthesisManager reportSynthesisManager) {
+  public CCDimension2018Validator(GlobalUnitManager crpManager, ReportSynthesisManager reportSynthesisManager,
+    LiaisonInstitutionManager liaisonInstitutionManager, SectionStatusManager sectionStatusManager) {
     this.crpManager = crpManager;
     this.reportSynthesisManager = reportSynthesisManager;
+    this.liaisonInstitutionManager = liaisonInstitutionManager;
+    this.sectionStatusManager = sectionStatusManager;
   }
 
 
@@ -103,17 +114,21 @@ public class CCDimension2018Validator extends BaseValidator {
       }
 
       // Validate Youth
-      if (!this.isValidString(reportSynthesis.getReportSynthesisCrossCuttingDimension().getYouthContribution())) {
-        action.addMessage(action.getText("annualReport2018.ccDimensions.youth.youthContribution.readText"));
-        action.getInvalidFields().put("input-reportSynthesis.reportSynthesisCrossCuttingDimension.youthContribution",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
+      /*
+       * if (!this.isValidString(reportSynthesis.getReportSynthesisCrossCuttingDimension().getYouthContribution())) {
+       * action.addMessage(action.getText("annualReport2018.ccDimensions.youth.youthContribution.readText"));
+       * action.getInvalidFields().put("input-reportSynthesis.reportSynthesisCrossCuttingDimension.youthContribution",
+       * InvalidFieldsMessages.EMPTYFIELD);
+       * }
+       */
+
       if (!this.isValidString(reportSynthesis.getReportSynthesisCrossCuttingDimension().getYouthResearchFindings())) {
         action.addMessage(action.getText("annualReport2018.ccDimensions.youth.researchFindings.readText"));
         action.getInvalidFields().put(
           "input-reportSynthesis.reportSynthesisCrossCuttingDimension.youthResearchFindings",
           InvalidFieldsMessages.EMPTYFIELD);
       }
+
       if (!this.isValidString(reportSynthesis.getReportSynthesisCrossCuttingDimension().getYouthLearned())) {
         action.addMessage(action.getText("annualReport2018.ccDimensions.youth.learned.readText"));
         action.getInvalidFields().put("input-reportSynthesis.reportSynthesisCrossCuttingDimension.youthLearned",
@@ -131,6 +146,87 @@ public class CCDimension2018Validator extends BaseValidator {
         action.getInvalidFields().put(
           "input-reportSynthesis.reportSynthesisCrossCuttingDimension.capDevKeyAchievements",
           InvalidFieldsMessages.EMPTYFIELD);
+      }
+
+      // Validate Flagships
+      if (action.isPMU()) {
+        String flagshipsWithMisingInformation = "";
+        // Get all liaison institutions for current CRP
+        List<LiaisonInstitution> liaisonInstitutionsFromCrp = liaisonInstitutionManager.findAll().stream()
+          .filter(l -> l != null && l.isActive() && l.getCrp() != null && l.getCrp().getId() != null
+            && l.getCrp().getId().equals(action.getCurrentCrp().getId()) && l.getCrpProgram() != null
+            && l.getAcronym() != null && !l.getAcronym().contains(" "))
+          .collect(Collectors.toList());
+        ReportSynthesis reportSynthesisAux = null;
+
+        List<SectionStatus> statusOfEveryFlagship = new ArrayList<>();
+        SectionStatus statusOfFlagship = null;
+        if (liaisonInstitutionsFromCrp != null) {
+          // Order liaisonInstitutionsFromCrp list by acronyms
+          liaisonInstitutionsFromCrp = liaisonInstitutionsFromCrp.stream()
+            .sorted((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym())).collect(Collectors.toList());
+          for (LiaisonInstitution liaison : liaisonInstitutionsFromCrp) {
+
+            // Get report synthesis for each liaison Instution
+            reportSynthesisAux =
+              reportSynthesisManager.findSynthesis(reportSynthesis.getPhase().getId(), liaison.getId());
+            if (reportSynthesisAux != null) {
+              statusOfFlagship = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesisAux.getId(),
+                "Reporting", 2019, false, "ccDimensions");
+            }
+
+            // Add section status to statusOfEveryFlagship list if section status (statusOfFlagship) has missing fields
+            SectionStatus statusOfFPMU = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
+              "Reporting", 2019, false, "ccDimensions1");
+
+            if (statusOfFlagship != null && statusOfFlagship.getMissingFields() != null
+              && !statusOfFlagship.getMissingFields().isEmpty()) {
+
+              // Add flagship acronym with missing information to Section status in synthesis flagship field
+              if (statusOfFPMU != null && statusOfFPMU.getSynthesisFlagships() != null
+                && !statusOfFPMU.getSynthesisFlagships().isEmpty()) {
+
+                if (!statusOfFPMU.getSynthesisFlagships().contains(liaison.getAcronym())) {
+                  action.addSynthesisFlagship(liaison.getAcronym());
+                }
+              } else {
+                action.addSynthesisFlagship(liaison.getAcronym());
+              }
+              if (flagshipsWithMisingInformation != null && !flagshipsWithMisingInformation.isEmpty()) {
+                flagshipsWithMisingInformation += ", " + liaison.getAcronym();
+              } else {
+                flagshipsWithMisingInformation = liaison.getAcronym();
+              }
+              statusOfEveryFlagship.add(statusOfFlagship);
+            }
+          }
+        }
+
+        boolean tableComplete = false;
+
+        if (statusOfEveryFlagship == null || statusOfEveryFlagship.isEmpty()) {
+          tableComplete = true;
+        } else {
+          // If there are section status objects with missing information
+          for (SectionStatus sectionStatus : statusOfEveryFlagship) {
+            if ((sectionStatus != null && sectionStatus.getId() != null && sectionStatus.getMissingFields() != null
+              && !sectionStatus.getMissingFields().isEmpty() && sectionStatus.getId() != 0)) {
+              if (sectionStatus.getReportSynthesis().getLiaisonInstitution().getName().contains("PMU")) {
+
+                // If section status is from PMU - missing fields is set to empty
+                if (sectionStatus.getMissingFields() != null && !sectionStatus.getMissingFields().isEmpty()) {
+                  sectionStatus.setMissingFields("");
+                  sectionStatusManager.saveSectionStatus(sectionStatus);
+                }
+              } else {
+                // If section status is from flagship
+                tableComplete = false;
+                action.addMissingField("ccDimensions1");
+                action.addMessage("ccDimensions with missing information :" + flagshipsWithMisingInformation);
+              }
+            }
+          }
+        }
       }
 
       if (!action.getFieldErrors().isEmpty()) {

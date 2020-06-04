@@ -10,7 +10,7 @@
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js",
-  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20190327"
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20200330"
   ]
 /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20190621"] /]
@@ -69,8 +69,7 @@
                       <div class="form-group">
                         [#-- Word Document Tag --]
                         [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
-                    
-                        [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.summary" help="${customLabel}.summary.help" className="limitWords-300" helpIcon=false required=true editable=editable allowTextEditor=true /]
+                        [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.summary" help="${customLabel}.summary.help" className="limitWords-300" helpIcon=false required=true editable=editable allowTextEditor=true /]  
                       </div>
                     [#else]
                       <div class="textArea">
@@ -80,7 +79,6 @@
                     [/#if]
                     <br />
                   </div>
-                
                   
                   [#-- Table 8: Key external partnerships --]
                   [#if PMU]
@@ -193,7 +191,6 @@
                        [@utils.tableText value=(reportSynthesis.reportSynthesisKeyPartnership.crossCGIAR)!'' nobr=false emptyText="global.prefilledByPmu" /] 
                     </div> --]
                     [/#if]
-                  
                   [#-- Table 9: Internal Cross-CGIAR Collaborations --]
                   <div class="form-group">
                     <br />
@@ -323,6 +320,16 @@
       <div class="form-group">
         [@customForm.elementsListComponent name="${customName}.institutions" id="${(element.id)!'TEMPLATE'}" elementType="institution" elementList=(element.institutions)![] label="${customLabel}.table7.partners" help=""  listName="partners" keyFieldName="id" displayFieldName="composedName" indexLevel=2 /]
       </div>
+      
+      [#-- Request partner adition   --]
+       <p id="addPartnerText" class="helpMessage">
+        [@s.text name="global.addInstitutionMessage" /]
+        <a class="popup" href="[@s.url namespace="/projects" action='${crpSession}/partnerSave' ][@s.param name='synthesisID']${(reportSynthesis.id)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+          [@s.text name="projectPartners.addPartnerMessage.second" /]
+        </a>
+       </p>
+       
+      <br>
     
       [#-- Upload Template --]
       <div class="form-group" style="position:relative" listname="">
@@ -337,7 +344,7 @@
           required=false
         /]
       </div>
-    
+      
   </div>
 [/#macro]
 

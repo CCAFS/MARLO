@@ -95,11 +95,13 @@ public class ProjectBudgetsValidator extends BaseValidator {
         }
       }
 
-      int totalPartnerBudgetsCurrentYear = 0;
-      if (project.getBudgets() != null && project.getBudgets().size() > 0) {
-        long total = 0;
-        int i = 0;
-        for (ProjectBudget projectBudget : project.getBudgets()) {
+      if (!action.getActualPhase().getName().contains("AR")) {
+
+        int totalPartnerBudgetsCurrentYear = 0;
+        if (project.getBudgets() != null && project.getBudgets().size() > 0) {
+          long total = 0;
+          int i = 0;
+          for (ProjectBudget projectBudget : project.getBudgets()) {
 
           if (projectBudget != null) {
             if (projectBudget.getYear() == action.getCurrentCycleYear()) {
@@ -129,18 +131,9 @@ public class ProjectBudgetsValidator extends BaseValidator {
                 }
 
                 total = total + projectBudget.getAmount().longValue();
-
-                // Rationale
-
-                if (!(this.isValidString(projectBudget.getRationale())
-                  && this.wordCount(projectBudget.getRationale()) <= 100)) {
-                  action.addMessage(action.getText("projectBudgets.rationale"));
-                  action.getInvalidFields().put("input-project.budgets[" + i + "].rationale",
-                    InvalidFieldsMessages.EMPTYFIELD);
-                }
               }
-
             }
+            
           }
           i++;
         }
@@ -201,7 +194,7 @@ public class ProjectBudgetsValidator extends BaseValidator {
         action.addActionMessage(
           " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
       }
-
+    }
       this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
         action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.BUDGET.getStatus(), action);
 

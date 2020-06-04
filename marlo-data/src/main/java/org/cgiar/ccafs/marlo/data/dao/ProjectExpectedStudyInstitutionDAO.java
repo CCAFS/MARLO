@@ -56,10 +56,23 @@ public interface ProjectExpectedStudyInstitutionDAO {
 
 
   /**
+   * This method gets a projectExpectedStudyInstitution object by a given projectExpectedStudyInstitution identifier.
+   * 
+   * @param expectedID is the projectExpectedStudy identifier.
+   * @param institutionID is the Institution identifier.
+   * @param phaseID is the phase identifier.
+   * @return a ProjectExpectedStudyInstitution object.
+   */
+  public ProjectExpectedStudyInstitution getProjectExpectedStudyInstitutionByPhase(Long expectedID, Long institutionID,
+    Long phaseID);
+
+  /**
    * This method saves the information of the given projectExpectedStudyInstitution
    * 
-   * @param projectExpectedStudyInstitution - is the projectExpectedStudyInstitution object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectExpectedStudyInstitution was
+   * @param projectExpectedStudyInstitution - is the projectExpectedStudyInstitution object with the new information to
+   *        be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectExpectedStudyInstitution was
    *         updated
    *         or -1 is some error occurred.
    */

@@ -276,6 +276,23 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
 
 
   @Override
+  public List<Project> getProjectWebPageList(Long globalunit_id) {
+    List<Project> projectList = new ArrayList<Project>();
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT projects.* FROM projects ");
+    query.append("INNER JOIN project_webpage ON projects.id=project_webpage.project_id ");
+    query.append("INNER JOIN global_unit_projects gup on gup.project_id = projects.id ");
+    query.append("WHERE project_webpage.is_active=1 and gup.origin=1 and gup.global_unit_id=" + globalunit_id);
+    List<Map<String, Object>> list = super.findCustomQuery(query.toString());
+    for (Map<String, Object> map : list) {
+      Project project = this.find(Long.parseLong(map.get("id").toString()));
+      projectList.add(project);
+    }
+    return projectList;
+  }
+
+
+  @Override
   public List<Map<String, Object>> getUserProjects(long userId, String crp) {
     List<Map<String, Object>> list = new ArrayList<>();
     StringBuilder builder = new StringBuilder();
@@ -304,7 +321,6 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
     return project;
   }
 
-
   @Override
   public Project save(Project project, String sectionName, List<String> relationsName) {
     if (project.getId() == null) {
@@ -316,6 +332,7 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
 
     return project;
   }
+
 
   @Override
   public Project save(Project project, String sectionName, List<String> relationsName, Phase phase) {

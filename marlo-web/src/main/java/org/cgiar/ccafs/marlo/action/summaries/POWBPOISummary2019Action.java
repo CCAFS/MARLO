@@ -197,8 +197,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
   private ProjectExpectedStudyRegionManager projectExpectedStudyRegionManager;
 
 
-
-
   // Parameters
   private POISummary poiSummary;
   private List<PowbSynthesis> powbSynthesisList;
@@ -230,7 +228,10 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     CrpPpaPartnerManager crpPpaPartnerManager, UserManager userManager,
     POWB2019Data<POWBPOISummary2019Action> powb2019Data,
     PowbFinancialPlannedBudgetManager powbFinancialPlannedBudgetManager,
-    DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager, ProjectExpectedStudyGeographicScopeManager projectExpectedStudyGeographicScopeManager, ProjectExpectedStudyRegionManager projectExpectedStudyRegionManager, ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager) {
+    DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager,
+    ProjectExpectedStudyGeographicScopeManager projectExpectedStudyGeographicScopeManager,
+    ProjectExpectedStudyRegionManager projectExpectedStudyRegionManager,
+    ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager) {
     super(config, crpManager, phaseManager, projectManager);
     document = new XWPFDocument();
     poiSummary = new POISummary();
@@ -585,7 +586,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
             }
 
             for (CrpOutcomeSubIdo subIdo : outcome.getSubIdos()) {
-              if (subIdo.getSrfSubIdo() != null) {
+              if (subIdo != null && subIdo.getSrfSubIdo() != null) {
                 String primary = "";
                 if (subIdo.getPrimary() == true) {
                   primary = " {primary} ";
@@ -794,136 +795,135 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
             title = "";
           }
 
-          
+
           /******************************************************
            * 
            * 
            */
           /*
-          // Geographic Scope
-          if (projectExpectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope() != null) {
-            geographicScope = projectExpectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope().getName();
-            // Regional
-            if (projectExpectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope().getId()
-              .equals(this.getReportingIndGeographicScopeRegional())) {
-
-              List<ProjectExpectedStudyCountry> studyRegions =
-                projectExpectedStudy.getProjectExpectedStudyCountries().stream()
-                  .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())
-                    && c.getLocElement() != null && c.getLocElement().getLocElementType() != null
-                    && c.getLocElement().getLocElementType().getId() == 1)
-                  .collect(Collectors.toList());
-              if (studyRegions != null && studyRegions.size() > 0) {
-                Set<String> countriesSet = new HashSet<>();
-                for (ProjectExpectedStudyCountry studyCountry : studyRegions) {
-                  countriesSet.add(studyCountry.getLocElement().getName());
-                }
-                geographicScope = geographicScope + "," + countriesSet;
-              }
-
-            }
-            // Country
-            if (!projectExpectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope().getId()
-              .equals(this.getReportingIndGeographicScopeGlobal())
-              && !projectExpectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope().getId()
-                .equals(this.getReportingIndGeographicScopeRegional())) {
-              List<ProjectExpectedStudyCountry> studyCountries =
-                projectExpectedStudy.getProjectExpectedStudyCountries().stream()
-                  .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())
-                    && c.getLocElement() != null && c.getLocElement().getLocElementType() != null
-                    && c.getLocElement().getLocElementType().getId() == 2)
-                  .collect(Collectors.toList());
-              if (studyCountries != null && studyCountries.size() > 0) {
-                Set<String> countriesSet = new HashSet<>();
-                for (ProjectExpectedStudyCountry studyCountry : studyCountries) {
-                  countriesSet.add(studyCountry.getLocElement().getName());
-                }
-                geographicScope = geographicScope + "," + countriesSet;
-              }
-            }
-          } else {
-            geographicScope = "";
-          }
-          */
+           * // Geographic Scope
+           * if (projectExpectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope() != null) {
+           * geographicScope = projectExpectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope().getName();
+           * // Regional
+           * if (projectExpectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope().getId()
+           * .equals(this.getReportingIndGeographicScopeRegional())) {
+           * List<ProjectExpectedStudyCountry> studyRegions =
+           * projectExpectedStudy.getProjectExpectedStudyCountries().stream()
+           * .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())
+           * && c.getLocElement() != null && c.getLocElement().getLocElementType() != null
+           * && c.getLocElement().getLocElementType().getId() == 1)
+           * .collect(Collectors.toList());
+           * if (studyRegions != null && studyRegions.size() > 0) {
+           * Set<String> countriesSet = new HashSet<>();
+           * for (ProjectExpectedStudyCountry studyCountry : studyRegions) {
+           * countriesSet.add(studyCountry.getLocElement().getName());
+           * }
+           * geographicScope = geographicScope + "," + countriesSet;
+           * }
+           * }
+           * // Country
+           * if (!projectExpectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope().getId()
+           * .equals(this.getReportingIndGeographicScopeGlobal())
+           * && !projectExpectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope().getId()
+           * .equals(this.getReportingIndGeographicScopeRegional())) {
+           * List<ProjectExpectedStudyCountry> studyCountries =
+           * projectExpectedStudy.getProjectExpectedStudyCountries().stream()
+           * .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())
+           * && c.getLocElement() != null && c.getLocElement().getLocElementType() != null
+           * && c.getLocElement().getLocElementType().getId() == 2)
+           * .collect(Collectors.toList());
+           * if (studyCountries != null && studyCountries.size() > 0) {
+           * Set<String> countriesSet = new HashSet<>();
+           * for (ProjectExpectedStudyCountry studyCountry : studyCountries) {
+           * countriesSet.add(studyCountry.getLocElement().getName());
+           * }
+           * geographicScope = geographicScope + "," + countriesSet;
+           * }
+           * }
+           * } else {
+           * geographicScope = "";
+           * }
+           */
           /***********************************
            * 
            * 
            */
           // Geographic scope new - Load information
-          
+
           // Setup Geographic Scope
-          
+
           if (projectExpectedStudy.getProjectExpectedStudyGeographicScopes() != null) {
-        	  projectExpectedStudy
-              .setGeographicScopes(new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyGeographicScopes().stream()
-                .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId())).collect(Collectors.toList())));
+            projectExpectedStudy
+              .setGeographicScopes(new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyGeographicScopes()
+                .stream().filter(o -> o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
+                .collect(Collectors.toList())));
           }
           // Expected Study Countries List
           if (projectExpectedStudy.getProjectExpectedStudyCountries() == null) {
-        	  projectExpectedStudy.setCountries(new ArrayList<>());
+            projectExpectedStudy.setCountries(new ArrayList<>());
           } else {
             List<ProjectExpectedStudyCountry> countries = this.projectExpectedStudyCountryManager
-              .getProjectExpectedStudyCountrybyPhase(projectExpectedStudy.getId(), this.getSelectedPhase().getId()).stream()
-              .filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 2)
+              .getProjectExpectedStudyCountrybyPhase(projectExpectedStudy.getId(), this.getSelectedPhase().getId())
+              .stream().filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 2)
               .collect(Collectors.toList());
             projectExpectedStudy.setCountries(countries);
           }
 
           if (projectExpectedStudy.getProjectExpectedStudyRegions() == null) {
-        	  projectExpectedStudy.setStudyRegions(new ArrayList<>());
+            projectExpectedStudy.setStudyRegions(new ArrayList<>());
           } else {
             List<ProjectExpectedStudyRegion> geographics = this.projectExpectedStudyRegionManager
-              .getProjectExpectedStudyRegionbyPhase(projectExpectedStudy.getId(), this.getSelectedPhase().getId()).stream()
-              .filter(sc -> sc.getLocElement().getLocElementType().getId() == 1).collect(Collectors.toList());
+              .getProjectExpectedStudyRegionbyPhase(projectExpectedStudy.getId(), this.getSelectedPhase().getId())
+              .stream().filter(sc -> sc.getLocElement().getLocElementType().getId() == 1).collect(Collectors.toList());
             projectExpectedStudy.setStudyRegions(geographics);
           }
 
           // Show geographic scope information
           geographicScope = "";
-          
+
           // Geographic scope indicators
           if (projectExpectedStudy.getGeographicScopes() != null) {
-        	  for(ProjectExpectedStudyGeographicScope gs : projectExpectedStudy.getGeographicScopes()) {
-        		  if (gs.getRepIndGeographicScope() != null && gs.getRepIndGeographicScope().getName() != null) {
-        			  if(geographicScope.isEmpty()) {
-        				geographicScope = gs.getRepIndGeographicScope().getName();
-        			  } else {
-        				geographicScope += ", " + gs.getRepIndGeographicScope().getName();
-        			  }
-        		  }
-        	  }
+            for (ProjectExpectedStudyGeographicScope gs : projectExpectedStudy.getGeographicScopes()) {
+              if (gs.getRepIndGeographicScope() != null && gs.getRepIndGeographicScope().getName() != null) {
+                if (geographicScope.isEmpty()) {
+                  geographicScope = gs.getRepIndGeographicScope().getName();
+                } else {
+                  geographicScope += ", " + gs.getRepIndGeographicScope().getName();
+                }
+              }
+            }
           }
-          
+
           // Geographic scope countries
           if (projectExpectedStudy.getCountries() != null) {
-        	  for(ProjectExpectedStudyCountry gs : projectExpectedStudy.getCountries()) {
-        		  if (gs.getLocElement() != null && gs.getLocElement().getName() != null) {
-        			  if(geographicScope.isEmpty()) {
-        				geographicScope = gs.getLocElement().getName();
-        			  } else {
-        				geographicScope += ", " + gs.getLocElement().getName();
-        			  }
-        		  }
-        	  }
+            for (ProjectExpectedStudyCountry gs : projectExpectedStudy.getCountries()) {
+              if (gs.getLocElement() != null && gs.getLocElement().getName() != null) {
+                if (geographicScope.isEmpty()) {
+                  geographicScope = gs.getLocElement().getName();
+                } else {
+                  geographicScope += ", " + gs.getLocElement().getName();
+                }
+              }
+            }
           }
-          
+
           // Geographic scope regions
           if (projectExpectedStudy.getRegions() != null) {
-        	  for(ProjectExpectedStudyRegion gs : projectExpectedStudy.getStudyRegions()) {
-        		  if (gs.getLocElement() != null && gs.getLocElement().getName() != null) {
-        			  if(geographicScope.isEmpty()) {
-        				  geographicScope = gs.getLocElement().getName();
-        			  } else {
-        				  geographicScope += ", " + gs.getLocElement().getName();
-        			  }
-        		  }
-        	  }
+            for (ProjectExpectedStudyRegion gs : projectExpectedStudy.getStudyRegions()) {
+              if (gs.getLocElement() != null && gs.getLocElement().getName() != null) {
+                if (geographicScope.isEmpty()) {
+                  geographicScope = gs.getLocElement().getName();
+                } else {
+                  geographicScope += ", " + gs.getLocElement().getName();
+                }
+              }
+            }
           }
-          
+
           /*****
            * 
            */
-          
+
           if (projectExpectedStudy.getProjectExpectedStudyInfo().getCommissioningStudy() != null) {
             commissioningStudy = projectExpectedStudy.getProjectExpectedStudyInfo().getCommissioningStudy();
           } else {
@@ -2053,8 +2053,10 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       for (CrpProgramOutcome crpProgramOutcome : crpProgram.getOutcomes()) {
 
         crpProgramOutcome.setMilestones(crpProgramOutcome.getCrpMilestones().stream()
-          .filter(c -> c.isActive() && ((c.getYear().intValue() == this.getSelectedPhase().getYear())
-                  || (c.getExtendedYear() != null && c.getExtendedYear().equals(this.getSelectedPhase().getYear()))) && c.getIsPowb()!= null && c.getIsPowb())
+          .filter(c -> c.isActive()
+            && ((c.getYear().intValue() == this.getSelectedPhase().getYear())
+              || (c.getExtendedYear() != null && c.getExtendedYear().equals(this.getSelectedPhase().getYear())))
+            && c.getIsPowb() != null && c.getIsPowb())
           .collect(Collectors.toList()));
         crpProgramOutcome.setSubIdos(
           crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));

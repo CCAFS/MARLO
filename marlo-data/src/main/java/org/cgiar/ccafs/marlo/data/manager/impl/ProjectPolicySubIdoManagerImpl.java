@@ -13,7 +13,6 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager.impl;
-
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectPolicySubIdoDAO;
@@ -33,14 +32,17 @@ import javax.inject.Named;
 @Named
 public class ProjectPolicySubIdoManagerImpl implements ProjectPolicySubIdoManager {
 
+
   private ProjectPolicySubIdoDAO projectPolicySubIdoDAO;
   // Managers
   private PhaseDAO phaseDAO;
+
 
   @Inject
   public ProjectPolicySubIdoManagerImpl(ProjectPolicySubIdoDAO projectPolicySubIdoDAO, PhaseDAO phaseDAO) {
     this.projectPolicySubIdoDAO = projectPolicySubIdoDAO;
     this.phaseDAO = phaseDAO;
+
 
   }
 
@@ -65,17 +67,19 @@ public class ProjectPolicySubIdoManagerImpl implements ProjectPolicySubIdoManage
             projectPolicySubIdo);
         }
       }
-    }
+  }
 
     projectPolicySubIdoDAO.deleteProjectPolicySubIdo(projectPolicySubIdoId);
   }
 
+
   public void deleteProjectPolicySubIdoPhase(Phase next, long policyID, ProjectPolicySubIdo projectPolicySubIdo) {
     Phase phase = phaseDAO.find(next.getId());
 
-    List<ProjectPolicySubIdo> projectPolicySubIdos =
-      phase.getProjectPolicySubIdos().stream().filter(c -> c.getProjectPolicy().getId().longValue() == policyID
-        && c.getSrfSubIdo().getId().equals(projectPolicySubIdo.getSrfSubIdo().getId())).collect(Collectors.toList());
+    List<ProjectPolicySubIdo> projectPolicySubIdos = phase.getProjectPolicySubIdos().stream()
+      .filter(c -> c.isActive() && c.getProjectPolicy().getId().longValue() == policyID
+        && c.getSrfSubIdo().getId().equals(projectPolicySubIdo.getSrfSubIdo().getId()))
+      .collect(Collectors.toList());
 
     for (ProjectPolicySubIdo projectPolicySubIdoDB : projectPolicySubIdos) {
       projectPolicySubIdoDAO.deleteProjectPolicySubIdo(projectPolicySubIdoDB.getId());
@@ -105,6 +109,12 @@ public class ProjectPolicySubIdoManagerImpl implements ProjectPolicySubIdoManage
     return projectPolicySubIdoDAO.find(projectPolicySubIdoID);
   }
 
+  @Override
+  public ProjectPolicySubIdo getProjectPolicySubIdoByPhase(long projectPolicyID, long SubIdoID, long phaseID) {
+
+    return projectPolicySubIdoDAO.getProjectPolicySubIdoByPhase(projectPolicyID, SubIdoID, phaseID);
+  }
+
   public void savePolicySubIdoPhase(Phase next, long policyID, ProjectPolicySubIdo projectPolicySubIdo) {
 
     Phase phase = phaseDAO.find(next.getId());
@@ -118,9 +128,9 @@ public class ProjectPolicySubIdoManagerImpl implements ProjectPolicySubIdoManage
       projectPolicySubIdoAdd.setProjectPolicy(projectPolicySubIdo.getProjectPolicy());
       projectPolicySubIdoAdd.setPhase(phase);
       projectPolicySubIdoAdd.setSrfSubIdo(projectPolicySubIdo.getSrfSubIdo());
-      projectPolicySubIdoAdd.setPrimary(projectPolicySubIdo.getPrimary());
       projectPolicySubIdoDAO.save(projectPolicySubIdoAdd);
     }
+
 
     if (phase.getNext() != null) {
       this.savePolicySubIdoPhase(phase.getNext(), policyID, projectPolicySubIdo);
@@ -132,6 +142,7 @@ public class ProjectPolicySubIdoManagerImpl implements ProjectPolicySubIdoManage
 
     ProjectPolicySubIdo subIdo = projectPolicySubIdoDAO.save(projectPolicySubIdo);
     Phase phase = phaseDAO.find(subIdo.getPhase().getId());
+
 
     // Conditions to Project Policy Works In AR phase and Upkeep Phase
     if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
@@ -150,5 +161,6 @@ public class ProjectPolicySubIdoManagerImpl implements ProjectPolicySubIdoManage
 
     return subIdo;
   }
+
 
 }

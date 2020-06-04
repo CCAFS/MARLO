@@ -16,7 +16,7 @@
 package org.cgiar.ccafs.marlo.rest.mappers;
 
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget;
-import org.cgiar.ccafs.marlo.rest.dto.SrfSloTargetDTO;
+import org.cgiar.ccafs.marlo.rest.dto.SrfSloIndicatorTargetDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -25,15 +25,15 @@ import org.mapstruct.Mappings;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-@Mapper(componentModel = "jsr330")
+@Mapper(componentModel = "jsr330", uses = {SrfSloIndicatorMapper.class})
 public interface SrfSloIndicatorTargetMapper {
 
+  @Mappings({@Mapping(source = "srfSloDTO", target = "srfSloIndicator"), @Mapping(source = "code", target = "id")})
   public abstract SrfSloIndicatorTarget
-    srfSloIndicatorTargetDTOToSrfSloIndicatorTarget(SrfSloTargetDTO srfSloIndicatorTargetDTO);
+    srfSloIndicatorTargetDTOToSrfSloIndicatorTarget(SrfSloIndicatorTargetDTO srfSloIndicatorTargetDTO);
 
-  @Mappings({@Mapping(source = "targetsIndicator", target = "code"),
-    @Mapping(source = "srfSloIndicatorTarget.srfSloIndicator.srfSlo", target = "srfSloDTO")})
-  public abstract SrfSloTargetDTO
+  @Mappings({@Mapping(source = "srfSloIndicator", target = "srfSloDTO"), @Mapping(source = "id", target = "code")})
+  public abstract SrfSloIndicatorTargetDTO
     srfSloIndicatorTargetToSrfSloIndicatorTargetDTO(SrfSloIndicatorTarget srfSloIndicatorTarget);
 
 }

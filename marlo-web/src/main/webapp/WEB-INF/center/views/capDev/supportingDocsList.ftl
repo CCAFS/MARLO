@@ -5,7 +5,7 @@
   "${baseUrlMedia}/css/capDev/capacityDevelopment.css"
   ] 
 /]
-[#assign pageLibs = ["datatables.net", "datatables.net-bs","select2","flat-flags"] /]
+[#assign pageLibs = ["datatables.net", "datatables.net-bs","select2","flag-icon-css"] /]
 [#assign customJS = ["${baseUrlMedia}/js/capDev/supportingDocuments.js"] /]
 [#assign currentSection = "capdev" /]
 [#assign currentStage = "supportingDocuments" /]

@@ -1,7 +1,11 @@
 [#ftl]
 [#assign title = "MARLO Funding Sources" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-${fundingSource.id}-phase-${(actualPhase.id)!}" /]
+<<<<<<< HEAD
 [#assign pageLibs = ["select2", "blueimp-file-upload", "datatables.net", "datatables.net-bs","flat-flags", "vue"] /]
+=======
+[#assign pageLibs = ["select2", "blueimp-file-upload", "datatables.net", "datatables.net-bs","flag-icon-css"] /]
+>>>>>>> staging
 [#assign customJS = [
   "${baseUrlCdn}/global/js/fieldsValidation.js",
   "${baseUrlMedia}/js/fundingSources/fundingSource.js?20190905",
@@ -514,10 +518,56 @@
               [/#list]
               </optgroup>
             [/#if]
+<<<<<<< HEAD
             [#if regionLists?has_content]
             <optgroup label="World Bank classifies regions">
               [#list regionLists as region]
               <option value="${(region.id)!}-${(region.locElementType.scope?c)!}">${(region.name)!}</option>
+=======
+            </ul>
+            [#if editable ]
+              <select name="" id="regionSelect" class="regionsSelect">
+                <option value="-1">Select an option...</option>
+                [#if scopeRegionLists?has_content]
+                  <optgroup label="${(loggedCrp.acronym?upper_case)!} regions">
+                  [#list scopeRegionLists as region]
+                  <option value="${(region.id)!}-${(region.scope?c)!}">${(region.name)!}</option>
+                  [/#list]
+                  </optgroup>
+                [/#if]
+                [#if regionLists?has_content]
+                <optgroup label="World Bank classifies regions">
+                  [#list regionLists as region]
+                  <option value="${(region.id)!}-${(region.locElementType.scope?c)!}">${(region.name)!}</option>
+                  [/#list]
+                  </optgroup>
+                [/#if]
+              </select>
+            [/#if] 
+          </div>
+        </div>
+      </div>
+      
+      [#-- SELECT COUNTRIES --]
+      <div class="form-group row">
+        <div class="panel tertiary col-md-12">
+         <div class="panel-head"><label for=""> [@customForm.text name="projectCofunded.listCountries" readText=!editable /]:</label></div>
+          <div id="countryList" class="panel-body" listname="fundingSource.fundingCountry"> 
+            <ul class="list">
+            [#if fundingSource.fundingCountry?has_content]
+              [#list fundingSource.fundingCountry as country]
+                  <li id="" class="country clearfix col-md-3">
+                  [#if editable ]
+                    <div class="removeCountry syncVisibles removeIcon" style="display:${isSynced?string('none', 'block')}" title="Remove country"></div>
+                  [/#if]
+                    <input class="id" type="hidden" name="fundingSource.fundingCountry[${country_index}].id" value="${(country.id)!-1}" />
+                    <input class="cId" type="hidden" name="fundingSource.fundingCountry[${country_index}].locElement.isoAlpha2" value="${(country.locElement.isoAlpha2)!}" />
+                    <input class="cPercentage" type="hidden" name="fundingSource.fundingCountry[${country_index}].percentage" value="${(country.percentage)!}" />
+                    
+                    <span class="name"><span> <i class="flag-icon flag-icon-${(country.locElement.isoAlpha2?lower_case)!}"></i> [@utils.wordCutter string=(country.locElement.name)!'' maxPos=15 /] </span></span>
+                    <div class="clearfix"></div>
+                  </li>
+>>>>>>> staging
               [/#list]
               </optgroup>
             [/#if]

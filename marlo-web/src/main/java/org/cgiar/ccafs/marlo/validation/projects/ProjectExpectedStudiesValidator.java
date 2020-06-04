@@ -140,18 +140,20 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
 
     // validate Milestones
     if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null
-      && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getStudyType() != null
-      && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getStudyType().getId()
-        .intValue() == 1) {
+      && baseAction.getActualPhase().getName() != null && baseAction.getActualPhase().getName().contains("AR")
+      && projectExpectedStudy.getProjectExpectedStudyInfo().getStudyType() != null
+      && projectExpectedStudy.getProjectExpectedStudyInfo().getStudyType().getId().intValue() == 1) {
       if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null
         && (projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() != null
           && projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() == true
-          && (projectExpectedStudy.getMilestones() == null))
+          && (projectExpectedStudy.getMilestones() == null || projectExpectedStudy.getMilestones().isEmpty()))
         || projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() == null) {
-        action.addMessage(action.getText("milestoneList"));
-        action.addMissingField("study.milestones");
-        action.getInvalidFields().put("list-study.milestones",
+
+        action.addMessage(action.getText("milestones"));
+        action.addMissingField("expectedStudy.milestones");
+        action.getInvalidFields().put("list-expectedStudy.milestones",
           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"milestones"}));
+
       }
     }
 

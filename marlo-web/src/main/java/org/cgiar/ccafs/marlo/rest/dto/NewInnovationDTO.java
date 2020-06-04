@@ -42,11 +42,17 @@ public class NewInnovationDTO {
   @ApiModelProperty(notes = "Innovation Type identifier", position = 60)
   private InnovationTypeDTO innovationType;
 
+  @ApiModelProperty(notes = "Number of individual improved lines/varietiesr", position = 61)
+  private Long innovationNumber;
+
+
   @ApiModelProperty(notes = "Other Innovation Type description", position = 65)
   private String otherInnovationType;
 
+
   @ApiModelProperty(notes = "Geographic Scopes identifier", position = 70)
   private List<GeographicScopeDTO> geographicScopes;
+
 
   @ApiModelProperty(notes = "Regions codes", position = 80)
   private List<RegionDTO> regions;
@@ -69,8 +75,18 @@ public class NewInnovationDTO {
   @ApiModelProperty(notes = "Contributing CRPs/Platforms codes", position = 130)
   private List<CGIAREntityDTO> contributingCGIAREntities;
 
+  @ApiModelProperty(notes = "Contributing milestones code list", position = 135)
+  private List<NewMilestonesDTO> milestonesCodeList;
+
+  @ApiModelProperty(notes = "CGIAR Sub-IDOs SMO code List", position = 134)
+  private List<NewSrfSubIdoDTO> srfSubIdoList;
+
+  @ApiModelProperty(notes = "Outcome Impact Case Report List", position = 92)
+  private List<String> projectExpectedStudyList;
+
   @ApiModelProperty(notes = "Phase year/section", position = 140)
   private PhaseDTO phase;
+
 
   public List<CGIAREntityDTO> getContributingCGIAREntities() {
     return this.contributingCGIAREntities;
@@ -101,9 +117,13 @@ public class NewInnovationDTO {
     return this.evidenceLink;
   }
 
-
   public List<GeographicScopeDTO> getGeographicScopes() {
     return this.geographicScopes;
+  }
+
+
+  public Long getInnovationNumber() {
+    return innovationNumber;
   }
 
 
@@ -114,6 +134,11 @@ public class NewInnovationDTO {
 
   public InstitutionDTO getLeadOrganization() {
     return this.leadOrganization;
+  }
+
+
+  public List<NewMilestonesDTO> getMilestonesCodeList() {
+    return milestonesCodeList;
   }
 
 
@@ -142,8 +167,18 @@ public class NewInnovationDTO {
   }
 
 
+  public List<String> getProjectExpectedStudyList() {
+    return projectExpectedStudyList;
+  }
+
+
   public List<RegionDTO> getRegions() {
     return this.regions;
+  }
+
+
+  public List<NewSrfSubIdoDTO> getSrfSubIdoList() {
+    return srfSubIdoList;
   }
 
 
@@ -192,6 +227,11 @@ public class NewInnovationDTO {
   }
 
 
+  public void setInnovationNumber(Long innovationNumber) {
+    this.innovationNumber = innovationNumber;
+  }
+
+
   public void setInnovationType(InnovationTypeDTO innovationType) {
     this.innovationType = innovationType;
   }
@@ -199,6 +239,11 @@ public class NewInnovationDTO {
 
   public void setLeadOrganization(InstitutionDTO leadOrganization) {
     this.leadOrganization = leadOrganization;
+  }
+
+
+  public void setMilestonesCodeList(List<NewMilestonesDTO> milestonesCodeList) {
+    this.milestonesCodeList = milestonesCodeList;
   }
 
 
@@ -227,8 +272,18 @@ public class NewInnovationDTO {
   }
 
 
+  public void setProjectExpectedStudyList(List<String> projectExpectedStudyList) {
+    this.projectExpectedStudyList = projectExpectedStudyList;
+  }
+
+
   public void setRegions(List<RegionDTO> regions) {
     this.regions = regions;
+  }
+
+
+  public void setSrfSubIdoList(List<NewSrfSubIdoDTO> srfSubIdoList) {
+    this.srfSubIdoList = srfSubIdoList;
   }
 
 

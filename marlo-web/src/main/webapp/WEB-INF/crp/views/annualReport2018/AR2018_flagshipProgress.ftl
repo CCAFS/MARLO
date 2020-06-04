@@ -48,7 +48,7 @@
               <div class="form-group">
                 [#-- Word Document Tag --]
                 [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
-                [@customForm.textArea name="${customName}.progressByFlagships" i18nkey="${customLabel}.progressByFlagships" help="${customLabel}.progressByFlagships.help" className="limitWords-200" helpIcon=false required=true editable=editable allowTextEditor=true /]
+                [@customForm.textArea name="${customName}.progressByFlagships" i18nkey="${customLabel}.progressByFlagships" help="${customLabel}.progressByFlagships.help" className="limitWords-200" helpIcon=false required=false editable=editable allowTextEditor=true /]
               </div>
               [#-- Detailed annex --]
               <div class="form-group">
@@ -58,18 +58,38 @@
                 [@customForm.textArea name="${customName}.detailedAnnex" i18nkey="${customLabel}.detailedAnnex" className="limitWords-800" helpIcon=false required=false editable=editable allowTextEditor=true /]
               </div>
             [#else]
+              
               [#-- Overall CRP progress --]
               <div class="form-group">
+              [#if (hasFlagshipProgress)!false]
+                [#assign limit="250"]
+                [#else]
+                [#assign limit="1000"]
+              [/#if]
+               
                 [#-- Word Document Tag --]
                 [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
-                [@customForm.textArea name="${customName}.overallProgress" i18nkey="${customLabel}.overallProgress" help="${customLabel}.overallProgress.help" className="limitWords-250" helpIcon=false required=true editable=editable allowTextEditor=true /]
+                [@customForm.textArea name="${customName}.overallProgress" i18nkey="${customLabel}.overallProgress" help="${customLabel}.overallProgress.help" className="limitWords-${limit}" helpIcon=false required=true editable=editable allowTextEditor=true /]
               </div>
               
               [#-- Flagship Synthesis (1.2.2)--]
               </br>
+              [#-- Missing fields in FPs --]
+              [#if listOfFlagships?has_content && PMU]]                
+                <div class="missingFieldFp">
+                  <div><span class="glyphicon glyphicon-exclamation-sign mffp-icon" title="Incomplete"></span> Missing fields in
+                  [#list listOfFlagships as fp]
+                   ${fp}[#if fp?index !=(listOfFlagships?size-1) ],[/#if]
+                  [/#list]
+                  </div>
+                 </div>
+                 </br>
+              [/#if]
               <div class="form-group">
-                [#-- Word Document Tag --]
-                [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
+                  [#-- Word Document Tag --]
+                  [#if PMU]
+                  [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                [/#if]
                 <h4 class="simpleTitle">[@s.text name="${customLabel}.progressByFlagships" /]</h4>
                 [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableflagshipSynthesis" list=flagshipsReportSynthesisFlagshipProgress columns=["progressByFlagships", "detailedAnnex"] showTitle=false allInOne=true /]
               </div>

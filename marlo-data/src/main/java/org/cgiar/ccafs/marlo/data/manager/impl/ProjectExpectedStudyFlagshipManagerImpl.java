@@ -107,6 +107,14 @@ public class ProjectExpectedStudyFlagshipManagerImpl implements ProjectExpectedS
   }
 
   @Override
+  public ProjectExpectedStudyFlagship findProjectExpectedStudyFlagshipbyPhase(Long expectedStudyId, Long flagshipId,
+    Long phaseId) {
+
+    return projectExpectedStudyFlagshipDAO.findProjectExpectedStudyFlagshipbyPhase(expectedStudyId, flagshipId,
+      phaseId);
+  }
+
+  @Override
   public ProjectExpectedStudyFlagship getProjectExpectedStudyFlagshipById(long projectExpectedStudyFlagshipID) {
 
     return projectExpectedStudyFlagshipDAO.find(projectExpectedStudyFlagshipID);

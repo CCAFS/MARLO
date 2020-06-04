@@ -15,10 +15,16 @@
 
 package org.cgiar.ccafs.marlo.utils;
 
+import org.cgiar.ccafs.marlo.data.manager.UrlSynthesisLogManager;
+import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
+
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
 import org.apache.poi.xwpf.usermodel.Borders;
@@ -61,6 +67,12 @@ public class POISummary {
 
   List<String> expressionsList = new ArrayList<String>();
   List<String> expressionsListClose = new ArrayList<String>();
+  private ReportSynthesis reportSynthesis;
+  private Phase phase;
+
+  // Manager
+  @Inject
+  UrlSynthesisLogManager urlSynthesisLogManager;
 
 
   private void addExpressionsToList() {
@@ -150,6 +162,10 @@ public class POISummary {
 
 
   public void convertHTMLTags(XWPFDocument document, String text, XWPFTableCell cell) {
+    if (text != null && text.isEmpty()) {
+      text = text.trim();
+    }
+
     List<Integer> startsPosList = new ArrayList<Integer>();
     List<Integer> finalPosList = new ArrayList<Integer>();
     List<String> tagsAddList = new ArrayList<String>();
@@ -177,20 +193,25 @@ public class POISummary {
     text = text.replaceAll("   ", "");
     text = text.replaceAll("<a></a>", "");
     text = text.replaceAll("&nbsp;", " ");
+    text = text.replaceAll("<font>", " ");
+    text = text.replaceAll("</font>", " ");
     text = text.replaceAll("<span style=\"color: rgb(130, 130, 130); font-size: 0.98em;\">", "");
     text = text.replaceAll("<span style=\"color: rgb(130, 130, 130); font-size: 0.98em;", "");
+    text = text.replaceAll("<span style=\"color: rgb(130, 130, 130); font-size: 0.98em;\">", "");
     text = text.replaceAll("style=\"font-size: 0.98em; background-color: rgb(255, 255, 255)", "");
+    text = text.replaceAll("style=\"font-size: 0.98em; background-color: rgb(255, 255, 255);", "");
     text = text.replaceAll("</span>", "");
     text = text.replaceAll("title=\"\"", "");
     text = text.replaceAll("style=\"font-size: 0.98em;\"", "");
     text = text.replaceAll(" style=\"font-size: 0.98em;\"", "");
+    text = text.replaceAll("\" \">", "");
 
     /*
      * recognize the tag as a line break
      */
     text = text.replaceAll("\n", "");
     text = text.replaceAll("<table>", "\n");
-    text = text.replaceAll("</p>", "\n");
+    text = text.replaceAll("</p>", " \n");
     text = text.replaceAll("</tr>", "\n");
     text = text.replaceAll("<br>", "\n");
     // text = text.replaceAll("\r", " ");
@@ -242,14 +263,15 @@ public class POISummary {
               } catch (Exception e) {
                 textIndicatorLink = "link";
               }
+              try {
+                url = text.substring(text.indexOf("=", j) + 2, text.indexOf(">", j) - 1);
 
-              url = text.substring(text.indexOf("=", j) + 2, text.indexOf(">", j) - 1);
-
-
-              if (!url.contains("http://") && !url.contains("https://")) {
-                url = "http://" + url;
+                if (!url.contains("http://") && !url.contains("https://")) {
+                  url = "http://" + url;
+                }
+              } catch (Exception e) {
+                url = "()";
               }
-
               urlList.add(url);
               referenceList.add(textIndicatorLink);
             }
@@ -316,7 +338,6 @@ public class POISummary {
           if (stringTemp != null) {
             this.addParagraphTextBreakPOW2019(paragraphRun, stringTemp);
           }
-
 
           paragraphRun.setColor(TEXT_FONT_COLOR);
           paragraphRun.setFontFamily(FONT_TYPE);
@@ -403,8 +424,37 @@ public class POISummary {
                 break;
               }
             }
+            try {
+              this.textHyperlink(url1, textIndicatorLink1, paragraph);
+            } catch (Exception e) {
+              try {
+                paragraph.setAlignment(ParagraphAlignment.BOTH);
+                paragraphRun = paragraph.createRun();
+                paragraphRun.setColor("FC0000");
+                paragraphRun.setFontFamily(FONT_TYPE);
+                paragraphRun.setText(url1 + " (" + textIndicatorLink1 + ")");
+                /*
+                 * UrlSynthesisLog urlSynthesisLog = new UrlSynthesisLog();
+                 * urlSynthesisLog.setErrorText(url1);
+                 * urlSynthesisLog.setErrorText(url1);
+                 * urlSynthesisLogManager.saveUrlSynthesisLog(urlSynthesisLog);
+                 */
 
-            this.textHyperlink(url1, textIndicatorLink1, paragraph);
+              } catch (Exception x) {
+                if (cell != null) {
+                  paragraph = null;
+                  paragraph = cell.addParagraph();
+                  paragraph.setAlignment(ParagraphAlignment.BOTH);
+                  paragraphRun = paragraph.createRun();
+
+                } else {
+                  paragraph = document.createParagraph();
+                  paragraph.setAlignment(ParagraphAlignment.BOTH);
+                  paragraphRun = paragraph.createRun();
+
+                }
+              }
+            }
             break;
 
           /*
@@ -505,6 +555,14 @@ public class POISummary {
     }
   }
 
+  public Phase getPhase() {
+    return phase;
+  }
+
+  public ReportSynthesis getReportSynthesis() {
+    return reportSynthesis;
+  }
+
 
   public void pageCenterBoldHeader(XWPFDocument document, String text) throws IOException {
     CTSectPr sectPr = document.getDocument().getBody().addNewSectPr();
@@ -541,6 +599,7 @@ public class POISummary {
     policy.createFooter(XWPFHeaderFooterPolicy.DEFAULT, parsFooter);
   }
 
+
   /**
    * Header title
    * 
@@ -557,6 +616,27 @@ public class POISummary {
     ctHeader.setStringValue(text);
     XWPFParagraph headerParagraph = new XWPFParagraph(ctpHeader, document);
     headerParagraph.setAlignment(ParagraphAlignment.RIGHT);
+    XWPFParagraph[] parsHeader = new XWPFParagraph[1];
+    parsHeader[0] = headerParagraph;
+    policy.createHeader(XWPFHeaderFooterPolicy.DEFAULT, parsHeader);
+  }
+
+  /**
+   * Header title
+   * 
+   * @param document
+   * @param text
+   * @throws IOException
+   */
+  public void pageHeaderCenter(XWPFDocument document, String text) throws IOException {
+    CTSectPr sectPr = document.getDocument().getBody().addNewSectPr();
+    XWPFHeaderFooterPolicy policy = new XWPFHeaderFooterPolicy(document, sectPr);
+    CTP ctpHeader = CTP.Factory.newInstance();
+    CTR ctrHeader = ctpHeader.addNewR();
+    CTText ctHeader = ctrHeader.addNewT();
+    ctHeader.setStringValue(text);
+    XWPFParagraph headerParagraph = new XWPFParagraph(ctpHeader, document);
+    headerParagraph.setAlignment(ParagraphAlignment.CENTER);
     XWPFParagraph[] parsHeader = new XWPFParagraph[1];
     parsHeader[0] = headerParagraph;
     policy.createHeader(XWPFHeaderFooterPolicy.DEFAULT, parsHeader);
@@ -623,6 +703,14 @@ public class POISummary {
       throw e;
     }
     return html;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
+  }
+
+  public void setReportSynthesis(ReportSynthesis reportSynthesis) {
+    this.reportSynthesis = reportSynthesis;
   }
 
   public void table10AnnualReport2018Style(XWPFTable table) {
@@ -836,7 +924,7 @@ public class POISummary {
     for (int x = 0; x < table.getNumberOfRows(); x++) {
       if (x > 0) {
         XWPFTableRow row = table.getRow(x);
-        for (int y = 0; y < 4; y++) {
+        for (int y = 0; y < 6; y++) {
           XWPFTableCell cell = row.getCell(y);
 
           if (cell.getCTTc() == null) {
@@ -1963,7 +2051,9 @@ public class POISummary {
         } else {
 
           if (poiParameter.isHtml()) {
-            this.convertHTMLTags(null, poiParameter.getText(), dataRow.getCell(record));
+            if (poiParameter.getText() != null) {
+              this.convertHTMLTags(null, poiParameter.getText(), dataRow.getCell(record));
+            }
           } else {
             XWPFRun paragraphRun = paragraph.createRun();
             this.addParagraphTextBreak(paragraphRun, poiParameter.getText());

@@ -82,10 +82,14 @@ public class ProjectExpectedStudyQuantificationManagerImpl implements ProjectExp
 
     List<ProjectExpectedStudyQuantification> projectExpectedStudyQuantifications =
       phase.getProjectExpectedStudyQuantifications().stream()
-        .filter(c -> c.isActive() && c.getProjectExpectedStudy().getId().longValue() == expectedID
-          && c.getNumber().equals(projectExpectedStudyQuantification.getNumber())
-          && c.getComments().equals(projectExpectedStudyQuantification.getComments())
+        .filter(c -> c != null && c.isActive() && c.getProjectExpectedStudy() != null && expectedID != 0
+          && c.getProjectExpectedStudy().getId().longValue() == expectedID && c.getNumber() != null
+          && c.getNumber().equals(projectExpectedStudyQuantification.getNumber()) && c.getComments() != null
+          && c.getComments().equals(projectExpectedStudyQuantification.getComments()) && c.getTargetUnit() != null
           && c.getTargetUnit().equals(projectExpectedStudyQuantification.getTargetUnit())
+          && c.getTypeQuantification() != null && c.getTypeQuantification() != null
+          && projectExpectedStudyQuantification != null
+          && projectExpectedStudyQuantification.getTypeQuantification() != null
           && c.getTypeQuantification().equals(projectExpectedStudyQuantification.getTypeQuantification()))
         .collect(Collectors.toList());
 
@@ -121,16 +125,30 @@ public class ProjectExpectedStudyQuantificationManagerImpl implements ProjectExp
     return projectExpectedStudyQuantificationDAO.find(projectExpectedStudyQuantificationID);
   }
 
+  @Override
+  public ProjectExpectedStudyQuantification getProjectExpectedStudyQuantificationByPhase(Long expectedID,
+    String typeQuantification, Long number, String targetUnit, Long phaseID) {
+
+    return projectExpectedStudyQuantificationDAO.getProjectExpectedStudyQuantificationByPhase(expectedID,
+      typeQuantification, number, targetUnit, phaseID);
+  }
+
   public void saveExpectedStudyQuantificationPhase(Phase next, long expectedID,
     ProjectExpectedStudyQuantification projectExpectedStudyQuantification) {
     Phase phase = phaseDAO.find(next.getId());
 
     List<ProjectExpectedStudyQuantification> projectExpectedStudyQuantifications =
       phase.getProjectExpectedStudyQuantifications().stream()
-        .filter(c -> c.isActive() && c.getProjectExpectedStudy().getId().longValue() == expectedID
-          && c.getNumber() == projectExpectedStudyQuantification.getNumber()
-          && c.getComments().equals(projectExpectedStudyQuantification.getComments())
+        .filter(c -> c.isActive() && expectedID != 0 && c.getProjectExpectedStudy() != null
+          && c.getProjectExpectedStudy().getId() != null
+          && c.getProjectExpectedStudy().getId().longValue() == expectedID && c.getNumber() != 0
+          && projectExpectedStudyQuantification != null && projectExpectedStudyQuantification.getNumber() != null
+          && c.getNumber() == projectExpectedStudyQuantification.getNumber() && c.getComments() != null
+          && projectExpectedStudyQuantification.getComments() != null
+          && c.getComments().equals(projectExpectedStudyQuantification.getComments()) && c.getTargetUnit() != null
+          && projectExpectedStudyQuantification.getTargetUnit() != null
           && c.getTargetUnit().equals(projectExpectedStudyQuantification.getTargetUnit())
+          && c.getTypeQuantification() != null && projectExpectedStudyQuantification.getTypeQuantification() != null
           && c.getTypeQuantification().equals(projectExpectedStudyQuantification.getTypeQuantification()))
         .collect(Collectors.toList());
 

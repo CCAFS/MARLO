@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Capacity Development" /]
 [#assign currentSectionString = "capdev-${actionName?replace('/','-')}-${capdevID}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = ["select2","flat-flags", "pickadate"] /]
+[#assign pageLibs = ["select2","flag-icon-css", "pickadate"] /]
 [#assign customCSS = [
   "${baseUrlCdn}/global/css/customDataTable.css",
   "${baseUrlMedia}/css/capDev/capacityDevelopment.css"

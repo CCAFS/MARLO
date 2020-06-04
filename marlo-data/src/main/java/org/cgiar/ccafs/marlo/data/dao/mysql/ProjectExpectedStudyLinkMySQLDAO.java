@@ -89,6 +89,17 @@ public class ProjectExpectedStudyLinkMySQLDAO extends AbstractMarloDAO<ProjectEx
   }
 
   @Override
+  public ProjectExpectedStudyLink getProjectExpectedStudyLinkByPhase(Long expectedID, String link, Long phaseID) {
+    String query = "from " + ProjectExpectedStudyLink.class.getName() + " where expected_id=" + expectedID
+      + " and link='" + link + "' and id_phase=" + phaseID;
+    List<ProjectExpectedStudyLink> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+  @Override
   public ProjectExpectedStudyLink save(ProjectExpectedStudyLink projectExpectedStudyLink) {
     if (projectExpectedStudyLink.getId() == null) {
       super.saveEntity(projectExpectedStudyLink);
