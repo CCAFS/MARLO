@@ -19,8 +19,8 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
+import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Institution;
-import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyFlagship;
@@ -54,10 +54,8 @@ public interface DefaultFieldMapper {
   public abstract DefaultFieldDTO InstitutionToDefaultFieldDTO(Institution institution);
 
 
-  @Mappings({@Mapping(source = "crpClusterOfActivity.identifier", target = "id"),
-    @Mapping(source = "crpClusterOfActivity.description", target = "name")})
-  public abstract DefaultFieldStringDTO
-    projectClusterActivityToDefaultFieldStringDTO(ProjectClusterActivity projectClusterActivity);
+  @Mappings({@Mapping(source = "composeID", target = "id"), @Mapping(source = "title", target = "name")})
+  public abstract DefaultFieldStringDTO pActivityToDefaultFieldStringDTO(Activity activity);
 
   // ***********Studies****************//
   @Mappings({@Mapping(source = "locElement.isoNumeric", target = "id"),
