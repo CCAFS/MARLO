@@ -71,8 +71,8 @@
             [#list (biReports)![] as report]
                 <div id="BIreport-${report.id}-contentOptions" class="" style="display:[#if report?index !=0]none[/#if];">
                   <div id="dashboardContainer-${report.id}" style="height: 720px;"></div>
+                  <input type="hidden" id="datasetId-${report.id}" name="id" value=${report.id} />
                   <input type="hidden" id="reportName-${report.id}" name="reportName" value=${report.reportName} />
-                  <input type="hidden" id="datasetId-${report.id}" name="datasetId" value=${report.datasetId} />
                   <input type="hidden" id="embeUrl-${report.id}" name="embedUrl" value=${report.embedUrl} /> 
                   <input type="hidden" id="reportID-${report.id}" name="reportId" value=${report.reportId} />
                 </div>

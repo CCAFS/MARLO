@@ -27,8 +27,7 @@ function addEvents(){
 function executePetition( idReport ) {
   var $inputsContainer = $('#'+idReport+'-contentOptions');
   var data = {
-      datasetId: $inputsContainer.find('input[name=datasetId]').val(),
-      reportId: $inputsContainer.find('input[name=reportId]').val()
+      id: $inputsContainer.find('input[name=id]').val()
   }
 
   //Ajax to petition in back to PowerBi
