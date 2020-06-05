@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.model.CrpAssumption;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -61,6 +62,14 @@ public interface CrpAssumptionManager {
   public CrpAssumption getCrpAssumptionById(long crpAssumptionID);
 
   /**
+   * Replicates a sub-ido assumption, starting from the given phase
+   * 
+   * @param originalCrpAssumption sub-ido assumption to be replicated
+   * @param initialPhase initial replication phase
+   */
+  public void replicate(CrpAssumption originalCrpAssumption, Phase initialPhase);
+
+  /**
    * This method saves the information of the given crpAssumption
    * 
    * @param crpAssumption - is the crpAssumption object with the new information to be added/updated.
@@ -69,6 +78,5 @@ public interface CrpAssumptionManager {
    *         or -1 is some error occurred.
    */
   public CrpAssumption saveCrpAssumption(CrpAssumption crpAssumption);
-
 
 }

@@ -17,7 +17,10 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.CrpAssumptionDAO;
 import org.cgiar.ccafs.marlo.data.manager.CrpAssumptionManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpOutcomeSubIdoManager;
 import org.cgiar.ccafs.marlo.data.model.CrpAssumption;
+import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -30,48 +33,55 @@ import javax.inject.Named;
 @Named
 public class CrpAssumptionManagerImpl implements CrpAssumptionManager {
 
-
+  // DAO
   private CrpAssumptionDAO crpAssumptionDAO;
-  // Managers
 
+  // Manager
+  private CrpOutcomeSubIdoManager crpOutcomeSubIdoManager;
 
   @Inject
-  public CrpAssumptionManagerImpl(CrpAssumptionDAO crpAssumptionDAO) {
+  public CrpAssumptionManagerImpl(CrpAssumptionDAO crpAssumptionDAO, CrpOutcomeSubIdoManager crpOutcomeSubIdoManager) {
     this.crpAssumptionDAO = crpAssumptionDAO;
-
-
+    this.crpOutcomeSubIdoManager = crpOutcomeSubIdoManager;
   }
 
   @Override
   public void deleteCrpAssumption(long crpAssumptionId) {
-
     crpAssumptionDAO.deleteCrpAssumption(crpAssumptionId);
   }
 
   @Override
   public boolean existCrpAssumption(long crpAssumptionID) {
-
     return crpAssumptionDAO.existCrpAssumption(crpAssumptionID);
   }
 
   @Override
   public List<CrpAssumption> findAll() {
-
     return crpAssumptionDAO.findAll();
-
   }
 
   @Override
   public CrpAssumption getCrpAssumptionById(long crpAssumptionID) {
-
     return crpAssumptionDAO.find(crpAssumptionID);
   }
 
   @Override
-  public CrpAssumption saveCrpAssumption(CrpAssumption crpAssumption) {
+  // TODO i have NO CLUE how to replicate these. Pending.
+  public void replicate(CrpAssumption originalCrpAssumption, Phase initialPhase) {
+    Phase current = initialPhase;
+    String outcomeComposedId = originalCrpAssumption.getCrpOutcomeSubIdo().getCrpProgramOutcome().getComposeID();
+    Long subIdoId = originalCrpAssumption.getCrpOutcomeSubIdo().getSrfSubIdo().getId();
 
-    return crpAssumptionDAO.save(crpAssumption);
+    while (current != null) {
+      CrpOutcomeSubIdo outcomeSubIdo = crpOutcomeSubIdoManager
+        .getCrpOutcomeSubIdoByOutcomeComposedIdPhaseAndSubIdo(outcomeComposedId, current.getId(), subIdoId);
+
+      current = current.getNext();
+    }
   }
 
-
+  @Override
+  public CrpAssumption saveCrpAssumption(CrpAssumption crpAssumption) {
+    return crpAssumptionDAO.save(crpAssumption);
+  }
 }

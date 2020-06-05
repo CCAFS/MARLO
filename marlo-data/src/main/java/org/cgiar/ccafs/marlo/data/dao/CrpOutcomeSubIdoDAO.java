@@ -54,6 +54,16 @@ public interface CrpOutcomeSubIdoDAO {
    */
   public List<CrpOutcomeSubIdo> findAll();
 
+  /**
+   * This method finds a CrpOutcomeSubIdo in the given phase by an outcome composeId and a Srf SubIdo ID
+   * 
+   * @param composedId the composed id of the original outcome
+   * @param phaseId the id of the phase
+   * @param subIdoId the Srf SubIdo ID
+   * @return a CrpOutcomeSubIdo, null if not found.
+   */
+  public CrpOutcomeSubIdo getCrpOutcomeSubIdoByOutcomeComposedIdPhaseAndSubIdo(String outcomeComposedId, long phaseId,
+    long subIdoId);
 
   /**
    * This method saves the information of the given crpOutcomeSubIdo
@@ -64,4 +74,5 @@ public interface CrpOutcomeSubIdoDAO {
    *         or -1 is some error occurred.
    */
   public CrpOutcomeSubIdo save(CrpOutcomeSubIdo crpOutcomeSubIdo);
+
 }
