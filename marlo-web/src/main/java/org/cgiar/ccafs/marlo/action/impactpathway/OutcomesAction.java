@@ -715,9 +715,11 @@ public class OutcomesAction extends BaseAction {
     // }
     // }
 
-    int oldIndex = 0;
+    int oldIndex = 0, oldActiveAssumptionSize = 0;
     // FIXME nullpointer here when the incoming list has no assumptions
-    int oldActiveAssumptionSize = oldAssumptions.size();
+    if (oldAssumptions != null && oldAssumptions.isEmpty()) {
+      oldActiveAssumptionSize = oldAssumptions.size();
+    }
 
     for (CrpAssumption incomingAssumption : incomingAssumptions) {
       String assumptionText = StringUtils.stripToNull(incomingAssumption.getDescription());
@@ -1029,7 +1031,7 @@ public class OutcomesAction extends BaseAction {
 
         crpOutcomeSubIdoManager.replicate(outcomeSubIdo, nextPhase);
         // FIXME commented until fixed
-        // this.saveAssumptions(outcomeSubIdo, incomingOutcomeSubIdo);
+        this.saveAssumptions(outcomeSubIdo, incomingOutcomeSubIdo);
       }
     }
   }
