@@ -22,13 +22,13 @@ import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectPageDTO;
@@ -198,21 +198,15 @@ public class ProjectPageItem<T> {
     }
 
     // cluster of activities
-    List<ProjectClusterActivity> projectClusterActivities = new ArrayList<>();
-    for (ProjectClusterActivity projectClusterActivity : project.getProjectClusterActivities().stream()
-      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(phase)).collect(Collectors.toList())) {
-      projectClusterActivity.setCrpClusterOfActivity(crpClusterOfActivityManager
-        .getCrpClusterOfActivityById(projectClusterActivity.getCrpClusterOfActivity().getId()));
-      projectClusterActivity.getCrpClusterOfActivity().setLeaders(projectClusterActivity.getCrpClusterOfActivity()
-        .getCrpClusterActivityLeaders().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-      projectClusterActivities.add(projectClusterActivity);
-    }
+    List<Activity> activities = project.getActivities().stream().filter(a -> a.isActive() && a.getPhase().equals(phase))
+      .collect(Collectors.toList());
+
 
     project.setRegions(regions);
     project.setFlagships(programs);
     project.setProjectRegions(projectRegions);
     project.setLocations(projectCountries);
-    project.setClusterActivities(projectClusterActivities);
+    project.setProjectActivities(activities);
 
 
     return project;
