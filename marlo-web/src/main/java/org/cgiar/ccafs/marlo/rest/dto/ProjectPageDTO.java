@@ -42,12 +42,20 @@ public class ProjectPageDTO {
   @ApiModelProperty(notes = "CRP Program", position = 2)
   private List<CrpProgramDTO> flagships;
 
-  @ApiModelProperty(notes = "Regions", position = 9)
+  @ApiModelProperty(notes = "Project Regions", position = 9)
   private List<DefaultFieldDTO> projectRegions;
 
 
-  @ApiModelProperty(notes = "Countries", position = 10)
+  @ApiModelProperty(notes = "Project Countries", position = 10)
   private List<DefaultFieldDTO> countries;
+
+  @ApiModelProperty(notes = "Cluster of Activities", position = 11)
+  private List<DefaultFieldStringDTO> activities;
+
+
+  public List<DefaultFieldStringDTO> getActivities() {
+    return activities;
+  }
 
 
   public List<DefaultFieldDTO> getCountries() {
@@ -64,6 +72,7 @@ public class ProjectPageDTO {
     return flagships;
   }
 
+
   public Long getId() {
     return id;
   }
@@ -78,6 +87,10 @@ public class ProjectPageDTO {
 
   public List<CrpProgramDTO> getRegions() {
     return regions;
+  }
+
+  public void setActivities(List<DefaultFieldStringDTO> activities) {
+    this.activities = activities;
   }
 
 
