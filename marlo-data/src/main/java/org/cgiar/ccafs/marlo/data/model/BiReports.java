@@ -47,6 +47,10 @@ public class BiReports extends MarloBaseEntity implements java.io.Serializable, 
   @Expose
   private GlobalUnit crp;
 
+  @Expose
+  private Boolean hasRlsSecurity;
+
+
   public GlobalUnit getCrp() {
     return crp;
   }
@@ -65,6 +69,12 @@ public class BiReports extends MarloBaseEntity implements java.io.Serializable, 
   public Boolean getHasFilters() {
     return hasFilters;
   }
+
+
+  public Boolean getHasRlsSecurity() {
+    return hasRlsSecurity;
+  }
+
 
   public Boolean getIsActive() {
     return isActive;
@@ -85,7 +95,6 @@ public class BiReports extends MarloBaseEntity implements java.io.Serializable, 
 
     return "";
   }
-
 
   @Override
   public User getModifiedBy() {
@@ -128,6 +137,11 @@ public class BiReports extends MarloBaseEntity implements java.io.Serializable, 
 
   public void setHasFilters(Boolean hasFilters) {
     this.hasFilters = hasFilters;
+  }
+
+
+  public void setHasRlsSecurity(Boolean hasRlsSecurity) {
+    this.hasRlsSecurity = hasRlsSecurity;
   }
 
 

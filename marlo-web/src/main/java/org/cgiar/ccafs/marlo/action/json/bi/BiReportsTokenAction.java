@@ -58,10 +58,8 @@ public class BiReportsTokenAction extends BaseAction {
   private BiParametersManager biParametersManager;
 
   // Front-end
-  private List<BiReports> biReports;
   private List<BiParameters> biParameters;
-  private String datasetId;
-  private String reportId;
+  private Long id;
   private String token;
 
   @Inject
@@ -72,50 +70,58 @@ public class BiReportsTokenAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    this.token = this.generateTokenBI(this.datasetId, this.reportId);
-    return SUCCESS;
+    BiReports biReport = biReportsManager.getBiReportsById(this.getId());
+
+    if (biReport != null) {
+      this.token = this.generateTokenBI(biReport);
+      return SUCCESS;
+    }
+    return ERROR;
   }
 
 
-  private PowerBiBody generatePowerBiBody(String datasetId, String reportId) {
+  private PowerBiBody generatePowerBiBody(BiReports biReport) {
     PowerBiBody powerBiBody = new PowerBiBody();
 
     /* Datasets */
     List<Datasets> datasets = new ArrayList<>();
     Datasets dataset = new Datasets();
-    dataset.setId(datasetId);
+    dataset.setId(biReport.getDatasetId());
     datasets.add(dataset);
     powerBiBody.setDatasets(datasets);
 
     /* Reports */
     List<Reports> reports = new ArrayList<>();
     Reports report = new Reports();
-    report.setId(reportId);
+    report.setId(biReport.getReportId());
     reports.add(report);
     powerBiBody.setReports(reports);
 
-    /* Identities */
-    List<Identities> identities = new ArrayList<>();
-    Identities identitie = new Identities();
-    identitie.setUsername(this.getCurrentUser().getUsername());
+    if (biReport.getHasRlsSecurity()) {
 
-    /* Roles */
-    List<String> roles = new ArrayList<>();
-    roles.add(this.getCurrentCrp().getAcronym());
-    identitie.setRoles(roles);
+      /* Identities */
+      List<Identities> identities = new ArrayList<>();
+      Identities identitie = new Identities();
+      identitie.setUsername(this.getCurrentUser().getUsername());
 
-    /* Datasets */
-    List<String> datasetsIdentities = new ArrayList<>();
-    datasetsIdentities.add(datasetId);
-    identitie.setDatasets(datasetsIdentities);
+      /* Roles */
+      List<String> roles = new ArrayList<>();
+      roles.add(this.getCurrentCrp().getAcronym());
+      identitie.setRoles(roles);
 
-    identities.add(identitie);
-    powerBiBody.setIdentities(identities);
+      /* Datasets */
+      List<String> datasetsIdentities = new ArrayList<>();
+      datasetsIdentities.add(biReport.getDatasetId());
+      identitie.setDatasets(datasetsIdentities);
+
+      identities.add(identitie);
+      powerBiBody.setIdentities(identities);
+    }
 
     return powerBiBody;
   }
 
-  private String generateTokenBI(String datasetId, String reportId) {
+  private String generateTokenBI(BiReports biReport) {
 
     AzureClientAPI azureClientAPI =
       new AzureClientAPI(CLIENT_CREDENCIALS, this.biParameters.get(APP_ID).getParameterValue(),
@@ -130,7 +136,7 @@ public class BiReportsTokenAction extends BaseAction {
       PowerBiClientAPI powerBiClientAPI = new PowerBiClientAPI();
 
       String token = powerBiClientAPI.generateToken(this.biParameters.get(API_TOKEN_URL).getParameterValue(),
-        bearerToken, this.generatePowerBiBody(datasetId, reportId));
+        bearerToken, this.generatePowerBiBody(biReport));
 
       return token;
     }
@@ -138,32 +144,21 @@ public class BiReportsTokenAction extends BaseAction {
     return null;
   }
 
-  public String getDatasetId() {
-    return datasetId;
+  public Long getId() {
+    return id;
   }
-
-  public String getReportId() {
-    return reportId;
-  }
-
 
   public String getToken() {
     return token;
   }
 
-
   @Override
   public void prepare() throws Exception {
-    biReports = biReportsManager.findAll();
     biParameters = biParametersManager.findAll();
   }
 
-  public void setDatasetId(String datasetId) {
-    this.datasetId = datasetId;
-  }
-
-  public void setReportId(String reportId) {
-    this.reportId = reportId;
+  public void setId(Long id) {
+    this.id = id;
   }
 
   public void setToken(String token) {
