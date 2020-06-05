@@ -33,7 +33,8 @@ public interface ProjectPageMapper {
   public abstract Project projectPageDTOToProject(ProjectPageDTO projectPageDTO);
 
   @Mappings({@Mapping(source = "project.locations", target = "countries"),
-    @Mapping(source = "project.projectRegions", target = "projectRegions")})
+    @Mapping(source = "project.projectRegions", target = "projectRegions"),
+    @Mapping(source = "project.clusterActivities", target = "activities")})
   public abstract ProjectPageDTO projectToProjectPageDTO(Project project);
 
 }
