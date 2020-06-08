@@ -550,9 +550,12 @@ function setMetadata(data) {
         $input.val(authorsNameArray.join('; '));
       }
       if(key == 'doi') {
-        var pos = value.indexOf("/", 8);
-        var formattedDoiUrl = value.substring(pos+1);
-        $input.val(formattedDoiUrl);
+        console.log(value);
+        if(value.indexOf('doi.org') > -1){
+          var pos = value.indexOf("/", 8);
+          var formattedDoiUrl = value.substring(pos+1);
+          $input.val(formattedDoiUrl);
+        }
       }
     } else {
       $input.attr('readOnly', false);
