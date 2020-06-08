@@ -550,7 +550,6 @@ function setMetadata(data) {
         $input.val(authorsNameArray.join('; '));
       }
       if(key == 'doi') {
-        console.log(value);
         if(value.indexOf('doi.org') > -1){
           var pos = value.indexOf("/", 8);
           var formattedDoiUrl = value.substring(pos+1);
