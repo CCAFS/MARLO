@@ -854,6 +854,13 @@
 				<param name="edit">true</param>
 				<param name="phaseID">${phaseID}</param>
 			</result>
+			<result name="cancel" type="redirectAction">
+				<param name="actionName">${crpSession}/innovation</param>
+				<param name="innovationID">${innovation.id}</param>
+				<param name="cancel">true</param>
+				<param name="edit">true</param>
+				<param name="phaseID">${phaseID}</param>
+			</result>
 			<result name="redirect" type="redirectAction">
 				<param name="actionName">${url}</param>
 				<param name="edit">true</param>
