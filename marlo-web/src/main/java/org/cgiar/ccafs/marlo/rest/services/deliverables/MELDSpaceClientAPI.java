@@ -72,7 +72,7 @@ public class MELDSpaceClientAPI extends MetadataClientApi {
         String keyValue = key.getStringValue();
         keyValue = keyValue.substring(3);
 
-        if (keyValue.equals("contributor.author")) {
+        if (keyValue.equals("contributor.author") || keyValue.equals("contributor") || keyValue.equals("creator")) {
           Author author = new Author(value.getStringValue());
           String names[] = author.getFirstName().split(", ");
           if (names.length == 2) {
