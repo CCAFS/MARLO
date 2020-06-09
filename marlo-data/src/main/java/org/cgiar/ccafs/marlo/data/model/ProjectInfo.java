@@ -321,7 +321,7 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
       calendarEnd.set(Calendar.YEAR, 2050);
 
       while (year < calendarEnd.get(Calendar.YEAR)) {
-        year++;
+
         // Adding the year to the list.
         if (allYears.size() > 0) {
           if (!allYears.contains(year)) {
@@ -330,7 +330,7 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
         } else {
           allYears.add(year);
         }
-
+        year++;
         // Adding a year (365 days) to the start date.
 
       }
