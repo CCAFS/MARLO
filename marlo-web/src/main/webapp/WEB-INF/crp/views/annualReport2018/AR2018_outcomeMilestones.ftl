@@ -115,7 +115,6 @@
                   [@tableOutcomesMilestones  /]
                 </div>
               [#else]
-                <div>${outcomes?size}</div>
                 [#list outcomes as outcome]
                   [@annualReport2018OutcomesMacro element=outcome name="${customName}.outcomeList" index=outcome_index /]
                 [/#list]
@@ -316,8 +315,7 @@
     [#-- Narrative on progress --]
     <div class="form-group">
       [#-- Word Document Tag --]
-      [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
-      <div>${customName}</div>       
+      [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]      
       <input type="hidden" name="${customName}.id" value="${(annualReportElement.id)!}"/>
       <input type="hidden" name="${customName}.crpProgramOutcome.id" value="${(element.id)!}"/>
       [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.outcome.progressNarrative" help="${customLabel}.outcome.progressNarrative.help" className="limitWords-200" helpIcon=false required=true editable=editable allowTextEditor=true /]
@@ -339,7 +337,6 @@
     <h4 class="simpleTitle">[@s.text name="${customLabel}.milestones.title" /]</h4>
     <div class="form-group">
        [#list element.milestones as milestone]
-        <div>${milestone_index}</div>
         [@annualReport2018MilestoneMacro element=milestone name="${customName}.milestones" index=milestone_index reportedOutcomeID=(annualReportElement.id)!-1 /]
       [/#list]
     </div> 
