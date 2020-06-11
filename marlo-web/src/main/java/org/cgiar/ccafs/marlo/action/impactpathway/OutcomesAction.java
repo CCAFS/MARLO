@@ -924,6 +924,13 @@ public class OutcomesAction extends BaseAction {
           incomingMilestone.setPowbIndMilestoneRisk(powbIndMilestoneRisk);
         }
 
+        if (incomingMilestone.getMilestonesStatus() != null
+          && incomingMilestone.getMilestonesStatus().getId() != null) {
+          GeneralStatus generalStatus =
+            generalStatusManager.getGeneralStatusById(incomingMilestone.getMilestonesStatus().getId());
+          incomingMilestone.setMilestonesStatus(generalStatus);
+        }
+
         if (incomingMilestone.getPowbIndFollowingMilestone() != null
           && incomingMilestone.getPowbIndFollowingMilestone().getId() != null) {
           PowbIndFollowingMilestone powbIndFollowingMilestone = powbIndFollowingMilestoneManager
