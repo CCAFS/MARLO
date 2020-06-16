@@ -21,13 +21,14 @@ import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
 public class CrpOutcomeSubIdoMySQLDAO extends AbstractMarloDAO<CrpOutcomeSubIdo, Long> implements CrpOutcomeSubIdoDAO {
-
 
   @Inject
   public CrpOutcomeSubIdoMySQLDAO(SessionFactory sessionFactory) {
@@ -47,14 +48,13 @@ public class CrpOutcomeSubIdoMySQLDAO extends AbstractMarloDAO<CrpOutcomeSubIdo,
     if (crpOutcomeSubIdo == null) {
       return false;
     }
-    return true;
 
+    return true;
   }
 
   @Override
   public CrpOutcomeSubIdo find(long id) {
     return super.find(CrpOutcomeSubIdo.class, id);
-
   }
 
   @Override
@@ -64,8 +64,24 @@ public class CrpOutcomeSubIdoMySQLDAO extends AbstractMarloDAO<CrpOutcomeSubIdo,
     if (list.size() > 0) {
       return list;
     }
-    return null;
 
+    return null;
+  }
+
+  @Override
+  public CrpOutcomeSubIdo getCrpOutcomeSubIdoByOutcomeComposedIdPhaseAndSubIdo(String outcomeComposedId, long phaseId,
+    long subIdoId) {
+    String query = "select distinct cosi from CrpOutcomeSubIdo cosi " + "join cosi.crpProgramOutcome cpo "
+      + "with cpo.composeID = :composeID and cpo.active=true " + "and cpo.phase.id = :phaseID "
+      + " where cosi.srfSubIdo.id = :subIdoID";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("composeID", outcomeComposedId);
+    createQuery.setParameter("phaseID", phaseId);
+    createQuery.setParameter("subIdoID", subIdoId);
+
+    CrpOutcomeSubIdo result = super.findSingleResult(CrpOutcomeSubIdo.class, createQuery);
+    return result;
   }
 
   @Override
@@ -75,8 +91,7 @@ public class CrpOutcomeSubIdoMySQLDAO extends AbstractMarloDAO<CrpOutcomeSubIdo,
     } else {
       crpOutcomeSubIdo = super.update(crpOutcomeSubIdo);
     }
+
     return crpOutcomeSubIdo;
   }
-
-
 }
