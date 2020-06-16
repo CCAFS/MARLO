@@ -20,9 +20,11 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationRegion;
+import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyRegion;
 import org.cgiar.ccafs.marlo.rest.dto.CountryDTO;
+import org.cgiar.ccafs.marlo.rest.dto.LocElementDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ParentRegionDTO;
 import org.cgiar.ccafs.marlo.rest.dto.RegionDTO;
 
@@ -73,6 +75,11 @@ public interface LocationMapper {
     @Mapping(source = "locElement.name", target = "name"),
     @Mapping(source = "locElement.locElement", target = "parentRegion")})
   public abstract RegionDTO projectInnovationRegionToRegionDTO(ProjectInnovationRegion projectInnovationRegion);
+
+  @Mappings({@Mapping(source = "locElement.isoNumeric", target = "id"),
+    @Mapping(source = "locElement.name", target = "name"),
+    @Mapping(source = "locElement.isoAlpha2", target = "isoAlpha2")})
+  public abstract LocElementDTO projectLocationToDefaultFieldDTO(ProjectLocation projectLocation);
 
   @Mappings({@Mapping(source = "projectPolicyCountry.locElement.isoNumeric", target = "code"),
     @Mapping(source = "projectPolicyCountry.locElement.isoAlpha2", target = "isoAlpha2"),
