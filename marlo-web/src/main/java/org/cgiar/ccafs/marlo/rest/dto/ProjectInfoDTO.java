@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.rest.dto;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -27,17 +28,36 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public class ProjectInfoDTO {
 
 
+  @ApiModelProperty(notes = "Project title", position = 1)
   private String title;
+
+  @ApiModelProperty(notes = "Project Sumary", position = 2)
   private String summary;
+
+  @ApiModelProperty(notes = "Project start date", position = 3)
   @JsonFormat(pattern = "yyyy-MM-dd")
   private Date startDate;
+
+  @ApiModelProperty(notes = "Project end date", position = 4)
   @JsonFormat(pattern = "yyyy-MM-dd")
   private Date endDate;
+
+  @ApiModelProperty(notes = "Gender Analisys", position = 10)
   private String genderAnalysis;
+
+  @ApiModelProperty(notes = "Gender Dimension", position = 5)
   private Boolean crossCuttingGender;
+
+  @ApiModelProperty(notes = "Youth Dimension", position = 6)
   private Boolean crossCuttingYouth;
+
+  @ApiModelProperty(notes = "Capacity development dimension", position = 7)
   private Boolean crossCuttingCapacity;
+
+  @ApiModelProperty(notes = "Climate change dimension", position = 8)
   private Boolean crossCuttingClimate;
+
+  @ApiModelProperty(notes = "Not aplicable dimension", position = 9)
   private Boolean crossCuttingNa;
 
   public Boolean getCrossCuttingCapacity() {

@@ -13,29 +13,40 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.mappers;
-
-import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.rest.dto.ProjectPageDTO;
-
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
-
-/**
- * @author Luis Fernando - CIAT/CCAFS
+/**************
  * @author Diego Perez - CIAT/CCAFS
- */
+ **************/
 
-@Mapper(componentModel = "jsr330", uses = {ProjecInfoMapper.class, LocationMapper.class, DefaultFieldMapper.class})
-public interface ProjectPageMapper {
+package org.cgiar.ccafs.marlo.rest.dto;
+
+import io.swagger.annotations.ApiModelProperty;
+
+public class ProjectPagePoliciesDTO {
+
+  @ApiModelProperty(notes = "Policy Title", position = 1)
+  private String title;
+
+  @ApiModelProperty(notes = "Policy External link", position = 2)
+  private String externalLink;
 
 
-  public abstract Project projectPageDTOToProject(ProjectPageDTO projectPageDTO);
+  public String getExternalLink() {
+    return externalLink;
+  }
 
-  @Mappings({@Mapping(source = "project.locations", target = "projectCountries"),
-    @Mapping(source = "project.projectRegions", target = "projectRegions"),
-    @Mapping(source = "project.projectActivities", target = "activities")})
-  public abstract ProjectPageDTO projectToProjectPageDTO(Project project);
+
+  public String getTitle() {
+    return title;
+  }
+
+
+  public void setExternalLink(String externalLink) {
+    this.externalLink = externalLink;
+  }
+
+
+  public void setTitle(String title) {
+    this.title = title;
+  }
 
 }
