@@ -26,6 +26,8 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPolicyRegion;
 import org.cgiar.ccafs.marlo.rest.dto.CountryDTO;
 import org.cgiar.ccafs.marlo.rest.dto.LocElementDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ParentRegionDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectPageCountriesDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectPageRegionsDTO;
 import org.cgiar.ccafs.marlo.rest.dto.RegionDTO;
 
 import org.mapstruct.Mapper;
@@ -80,6 +82,14 @@ public interface LocationMapper {
     @Mapping(source = "locElement.name", target = "name"),
     @Mapping(source = "locElement.isoAlpha2", target = "isoAlpha2")})
   public abstract LocElementDTO projectLocationToDefaultFieldDTO(ProjectLocation projectLocation);
+
+  @Mappings({@Mapping(source = "locElement.isoAlpha2", target = "isoAlpha"),
+    @Mapping(source = "locElement.name", target = "name")})
+  public abstract ProjectPageCountriesDTO projectLocationToProjectPageCountriesDTO(ProjectLocation projectLocation);
+
+  @Mappings({@Mapping(source = "locElement.isoNumeric", target = "UM49code"),
+    @Mapping(source = "locElement.name", target = "name")})
+  public abstract ProjectPageRegionsDTO projectLocationToProjectPageRegionsDTO(ProjectLocation projectLocation);
 
   @Mappings({@Mapping(source = "projectPolicyCountry.locElement.isoNumeric", target = "code"),
     @Mapping(source = "projectPolicyCountry.locElement.isoAlpha2", target = "isoAlpha2"),
