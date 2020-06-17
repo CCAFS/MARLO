@@ -27,7 +27,7 @@ import org.mapstruct.Mappings;
  * @author Diego Perez - CIAT/CCAFS
  */
 
-@Mapper(componentModel = "jsr330", uses = {ProjecInfoMapper.class, LocationMapper.class, DefaultFieldMapper.class})
+@Mapper(componentModel = "jsr330", uses = {ProjecInfoMapper.class, LocationMapper.class})
 public interface ProjectPageMapper {
 
 
