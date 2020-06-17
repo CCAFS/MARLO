@@ -24,6 +24,9 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
+import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -197,9 +200,29 @@ public class ProjectPageItem<T> {
       }
     }
 
-    // cluster of activities
-    List<Activity> activities = project.getActivities().stream().filter(a -> a.isActive() && a.getPhase().equals(phase))
+    // activities ongoing or complete
+    List<Activity> activities = project.getActivities().stream()
+      .filter(a -> a.isActive() && a.getPhase().equals(phase)
+        && (a.getActivityStatus().longValue() == 3 || a.getActivityStatus().longValue() == 2))
       .collect(Collectors.toList());
+
+    // Deliverables complete
+
+    List<Deliverable> deliverables = new ArrayList<Deliverable>();
+    for (Deliverable deliverable : project.getDeliverables().stream().filter(c -> c.isActive())
+      .collect(Collectors.toList())) {
+      DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(phase);
+      if (deliverableInfo != null && deliverableInfo.getStatus().longValue() == 3) {
+        deliverable.setDeliverableInfo(deliverableInfo);
+        DeliverableDissemination deliverableDissemination = deliverable.getDissemination(phase);
+        deliverable.setDissemination(deliverableDissemination);
+        deliverable.setIsFindable(this.isF(deliverable));
+        deliverable.setIsAccesible(this.isA(deliverable));
+        deliverable.setIsInteroperable(this.isI(deliverable));
+        deliverable.setIsReusable(this.isR(deliverable));
+        deliverables.add(deliverable);
+      }
+    }
 
 
     project.setRegions(regions);
@@ -207,9 +230,99 @@ public class ProjectPageItem<T> {
     project.setProjectRegions(projectRegions);
     project.setLocations(projectCountries);
     project.setProjectActivities(activities);
+    project.setProjectDeliverables(deliverables);
 
 
     return project;
+  }
+
+  private Boolean isA(Deliverable deliverableBD) {
+    try {
+      if (deliverableBD.getDissemination().getIsOpenAccess() != null
+        && deliverableBD.getDissemination().getIsOpenAccess().booleanValue()) {
+        return true;
+      }
+
+      if (deliverableBD.getDissemination().getIsOpenAccess() == null) {
+        return null;
+      }
+      return false;
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
+  private Boolean isF(Deliverable deliverableBD) {
+    try {
+      if (deliverableBD.getDissemination().getAlreadyDisseminated() != null) {
+        if (deliverableBD.getDissemination().getAlreadyDisseminated().booleanValue()) {
+          if (deliverableBD.getDissemination().getDisseminationChannel() != null) {
+            if (deliverableBD.getDissemination().getDisseminationChannel().equals("other")) {
+              if (deliverableBD.getDissemination().getDisseminationUrl() != null
+                && !deliverableBD.getDissemination().getDisseminationUrl().trim().isEmpty()) {
+                return true;
+              }
+            } else {
+              if (deliverableBD.getDissemination().getSynced() != null
+                && deliverableBD.getDissemination().getSynced()) {
+                return true;
+              }
+            }
+          }
+        } else {
+          return false;
+        }
+      } else {
+        return null;
+      }
+      return null;
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
+  private Boolean isI(Deliverable deliverableBD) {
+    try {
+      if (deliverableBD.getDissemination().getAlreadyDisseminated() != null
+        && deliverableBD.getDissemination().getAlreadyDisseminated().booleanValue()) {
+        String channel = deliverableBD.getDissemination().getDisseminationChannel();
+        String link = deliverableBD.getDissemination().getDisseminationUrl().replaceAll(" ", "%20");;
+        if (channel == null || channel.equals("-1")) {
+          return null;
+        }
+        if (link == null || link.equals("-1") || link.isEmpty()) {
+          return null;
+        }
+
+        // If the deliverable is synced
+        if (deliverableBD.getDissemination().getSynced() != null
+          && deliverableBD.getDissemination().getSynced().booleanValue()) {
+          return true;
+        }
+        return null;
+      }
+      if (deliverableBD.getDissemination().getAlreadyDisseminated() == null) {
+        return null;
+      }
+    } catch (Exception e) {
+      return null;
+    }
+    return null;
+  }
+
+  public Boolean isR(Deliverable deliverableBD) {
+    try {
+
+      if (deliverableBD.getDeliverableInfo().getAdoptedLicense() == null) {
+        return null;
+      }
+      if (deliverableBD.getDeliverableInfo().getAdoptedLicense()) {
+        return true;
+      }
+      return false;
+    } catch (Exception e) {
+      return false;
+    }
   }
 
 }
