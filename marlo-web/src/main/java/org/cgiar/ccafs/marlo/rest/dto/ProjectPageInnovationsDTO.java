@@ -13,18 +13,41 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
+/**************
+ * @author Diego Perez - CIAT/CCAFS
+ **************/
+
 package org.cgiar.ccafs.marlo.rest.dto;
 
+import io.swagger.annotations.ApiModelProperty;
 
-/**
- * @author Hermes Jiménez - CIAT/CCAFS
- */
+public class ProjectPageInnovationsDTO {
+
+  @ApiModelProperty(notes = "Innovation Title", position = 1)
+  private String title;
+
+  @ApiModelProperty(notes = "Innovation External link", position = 2)
+  private String externalLink;
 
 
-public class ClusterOfActivityDTO {
+  public String getExternalLink() {
+    return externalLink;
+  }
 
-  private Long id;
-  private String identifier;
-  private String description;
+
+  public String getTitle() {
+    return title;
+  }
+
+
+  public void setExternalLink(String externalLink) {
+    this.externalLink = externalLink;
+  }
+
+
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
 
 }

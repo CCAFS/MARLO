@@ -16,15 +16,21 @@
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.projectPage;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpClusterOfActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectPageDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
 import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
@@ -52,16 +58,23 @@ public class ProjectPageItem<T> {
   private ProjectManager projectManager;
   private PhaseManager phaseManager;
   private GlobalUnitManager globalUnitManager;
+  private ProjectLocationManager projectLocationManager;
+  private LocElementManager locElementManager;
+  private CrpClusterOfActivityManager crpClusterOfActivityManager;
   private ProjectPageMapper projectPageMapper;
 
 
   @Inject
   public ProjectPageItem(ProjectManager projectManager, PhaseManager phaseManager, GlobalUnitManager globalUnitManager,
-    ProjectPageMapper projectPageMapper) {
+    ProjectLocationManager projectLocationManager, LocElementManager locElementManager,
+    CrpClusterOfActivityManager crpClusterOfActivityManager, ProjectPageMapper projectPageMapper) {
     this.projectManager = projectManager;
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.projectPageMapper = projectPageMapper;
+    this.projectLocationManager = projectLocationManager;
+    this.locElementManager = locElementManager;
+    this.crpClusterOfActivityManager = crpClusterOfActivityManager;
   }
 
   public List<ProjectPageDTO> findAllProjectPage(String globalUnitAcronym) {
@@ -165,11 +178,35 @@ public class ProjectPageItem<T> {
         && c.getCrpProgram().getCrp().getId().equals(globalUnit.getId()))
       .collect(Collectors.toList())) {
       regions.add(projectFocuses.getCrpProgram());
-
     }
+
+    List<ProjectLocation> projectRegions = new ArrayList<ProjectLocation>();
+    List<ProjectLocation> projectCountries = new ArrayList<ProjectLocation>();
+    for (ProjectLocation projectLocations : projectLocationManager.findAll().stream()
+      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().getId().equals(phase.getId())
+        && c.getProject().getId().longValue() == project.getId().longValue())
+      .collect(Collectors.toList())) {
+      LocElement loc = locElementManager.getLocElementById(projectLocations.getLocElement().getId());
+      if (loc != null) {
+        projectLocations.setLocElement(loc);
+        if (loc.getLocElementType().getId().longValue() == 1) {
+          projectRegions.add(projectLocations);
+        } else if (loc.getLocElementType().getId().longValue() == 2) {
+          projectCountries.add(projectLocations);
+        }
+      }
+    }
+
+    // cluster of activities
+    List<Activity> activities = project.getActivities().stream().filter(a -> a.isActive() && a.getPhase().equals(phase))
+      .collect(Collectors.toList());
+
 
     project.setRegions(regions);
     project.setFlagships(programs);
+    project.setProjectRegions(projectRegions);
+    project.setLocations(projectCountries);
+    project.setProjectActivities(activities);
 
 
     return project;

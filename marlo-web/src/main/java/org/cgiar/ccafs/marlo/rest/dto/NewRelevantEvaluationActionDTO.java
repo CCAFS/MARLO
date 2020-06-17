@@ -13,48 +13,54 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
+/**************
+ * @author Diego Perez - CIAT/CCAFS
+ **************/
+
 package org.cgiar.ccafs.marlo.rest.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 
-/**
- * @author Hermes Jiménez - CIAT/CCAFS
- */
+public class NewRelevantEvaluationActionDTO {
+
+  @ApiModelProperty(notes = "Action Description", position = 5)
+  private String actionName;
+
+  @ApiModelProperty(notes = "Who was doing this action?", position = 5)
+  private String byWhom;
+
+  @ApiModelProperty(notes = "When this action was done?", position = 5)
+  private String byWhen;
 
 
-public class LocElementDTO {
-
-  @ApiModelProperty(notes = "The Generated location id", position = 1)
-  private Long id;
-
-  @ApiModelProperty(notes = "Location name", position = 2)
-  private String name;
-
-  @ApiModelProperty(notes = "Location acronym", position = 3)
-  private String isoAlpha2;
-
-  public Long getId() {
-    return id;
+  public String getActionName() {
+    return actionName;
   }
 
-  public String getIsoAlpha2() {
-    return isoAlpha2;
+
+  public String getByWhen() {
+    return byWhen;
   }
 
-  public String getName() {
-    return name;
+
+  public String getByWhom() {
+    return byWhom;
   }
 
-  public void setId(Long id) {
-    this.id = id;
+
+  public void setActionName(String actionName) {
+    this.actionName = actionName;
   }
 
-  public void setIsoAlpha2(String isoAlpha2) {
-    this.isoAlpha2 = isoAlpha2;
+
+  public void setByWhen(String byWhen) {
+    this.byWhen = byWhen;
   }
 
-  public void setName(String name) {
-    this.name = name;
+
+  public void setByWhom(String byWhom) {
+    this.byWhom = byWhom;
   }
+
 
 }

@@ -13,48 +13,48 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
+/**************
+ * @author Diego Perez - CIAT/CCAFS
+ **************/
+
 package org.cgiar.ccafs.marlo.rest.dto;
+
+import javax.validation.constraints.NotNull;
 
 import io.swagger.annotations.ApiModelProperty;
 
-/**
- * @author Hermes Jiménez - CIAT/CCAFS
- */
+public class ProjectPageMilestonesDTO {
 
-
-public class LocElementDTO {
-
-  @ApiModelProperty(notes = "The Generated location id", position = 1)
-  private Long id;
-
-  @ApiModelProperty(notes = "Location name", position = 2)
+  @ApiModelProperty(notes = "ID", position = 1)
+  @NotNull
+  private String id;
+  @ApiModelProperty(notes = "Milestone Name/Description", position = 2)
+  @NotNull
   private String name;
+  @ApiModelProperty(notes = "Milestone year", position = 3)
+  private int year;
 
-  @ApiModelProperty(notes = "Location acronym", position = 3)
-  private String isoAlpha2;
-
-  public Long getId() {
+  public String getId() {
     return id;
-  }
-
-  public String getIsoAlpha2() {
-    return isoAlpha2;
   }
 
   public String getName() {
     return name;
   }
 
-  public void setId(Long id) {
-    this.id = id;
+  public int getYear() {
+    return year;
   }
 
-  public void setIsoAlpha2(String isoAlpha2) {
-    this.isoAlpha2 = isoAlpha2;
+  public void setId(String id) {
+    this.id = id;
   }
 
   public void setName(String name) {
     this.name = name;
   }
 
+  public void setYear(int year) {
+    this.year = year;
+  }
 }
