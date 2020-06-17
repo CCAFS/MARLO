@@ -26,22 +26,9 @@ public class ProjectPagePoliciesDTO {
   @ApiModelProperty(notes = "Policy Title", position = 1)
   private String title;
 
-  @ApiModelProperty(notes = "Policy External link", position = 2)
-  private String externalLink;
-
-
-  public String getExternalLink() {
-    return externalLink;
-  }
-
 
   public String getTitle() {
     return title;
-  }
-
-
-  public void setExternalLink(String externalLink) {
-    this.externalLink = externalLink;
   }
 
 
