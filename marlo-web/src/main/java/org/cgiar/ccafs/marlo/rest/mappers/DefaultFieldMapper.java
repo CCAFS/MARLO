@@ -19,6 +19,7 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
+import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrp;
@@ -51,8 +52,11 @@ public interface DefaultFieldMapper {
 
   public abstract DefaultFieldDTO InstitutionToDefaultFieldDTO(Institution institution);
 
-  // ***********Studies****************//
 
+  @Mappings({@Mapping(source = "composeID", target = "id"), @Mapping(source = "title", target = "name")})
+  public abstract DefaultFieldStringDTO pActivityToDefaultFieldStringDTO(Activity activity);
+
+  // ***********Studies****************//
   @Mappings({@Mapping(source = "locElement.isoNumeric", target = "id"),
     @Mapping(source = "locElement.name", target = "name")})
   public abstract DefaultFieldDTO
@@ -93,13 +97,13 @@ public interface DefaultFieldMapper {
   public abstract DefaultFieldDTO
     projectExpectedStudyRegionToDefaultFieldDTO(ProjectExpectedStudyRegion projectExpectedStudyRegion);
 
+
+  // *******Innovations**********//
+
   @Mappings({@Mapping(source = "srfSloIndicator.id", target = "id"),
     @Mapping(source = "srfSloIndicator.title", target = "name")})
   public abstract DefaultFieldDTO
     projectExpectedStudySrfTargetToDefaultFieldDTO(ProjectExpectedStudySrfTarget projectExpectedStudySrfTarget);
-
-
-  // *******Innovations**********//
 
   @Mappings({@Mapping(source = "institution.id", target = "id"),
     @Mapping(source = "institution.name", target = "name")})
@@ -116,22 +120,24 @@ public interface DefaultFieldMapper {
   public abstract DefaultFieldStringDTO
     projectInnovationCrpToDefaultFieldStringDTO(ProjectInnovationCrp projectInnovationCrp);
 
+
   @Mappings({@Mapping(source = "repIndGeographicScope.id", target = "id"),
     @Mapping(source = "repIndGeographicScope.name", target = "name")})
   public abstract DefaultFieldDTO projectInnovationGeographicScopeToDefaultFieldDTO(
     ProjectInnovationGeographicScope projectInnovationGeographicScope);
 
-
   // *****Policies*******//
-
   @Mappings({@Mapping(source = "locElement.isoNumeric", target = "id"),
     @Mapping(source = "locElement.name", target = "name")})
   public abstract DefaultFieldDTO
     projectInnovationRegionToDefaultFieldDTO(ProjectInnovationRegion projectInnovationRegion);
 
+
+  // *****Policies*******//
   @Mappings({@Mapping(source = "locElement.isoNumeric", target = "id"),
     @Mapping(source = "locElement.name", target = "name")})
   public abstract DefaultFieldDTO projectPolicyCountryToDefaultFieldDTO(ProjectPolicyCountry projectPolicyCountry);
+
 
   @Mappings({@Mapping(source = "globalUnit.smoCode", target = "id"),
     @Mapping(source = "globalUnit.name", target = "name")})
@@ -141,7 +147,6 @@ public interface DefaultFieldMapper {
     @Mapping(source = "repIndGeographicScope.name", target = "name")})
   public abstract DefaultFieldDTO
     projectPolicyGeographicScopeToDefaultFieldDTO(ProjectPolicyGeographicScope projectPolicyGeographicScope);
-
 
   @Mappings({@Mapping(source = "locElement.isoNumeric", target = "id"),
     @Mapping(source = "locElement.name", target = "name")})

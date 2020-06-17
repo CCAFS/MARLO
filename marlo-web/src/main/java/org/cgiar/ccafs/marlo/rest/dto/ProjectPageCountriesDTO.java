@@ -13,48 +13,43 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
+/**************
+ * @author Diego Perez - CIAT/CCAFS
+ **************/
+
 package org.cgiar.ccafs.marlo.rest.dto;
+
+import javax.validation.constraints.NotNull;
 
 import io.swagger.annotations.ApiModelProperty;
 
-/**
- * @author Hermes Jiménez - CIAT/CCAFS
- */
+public class ProjectPageCountriesDTO {
 
 
-public class LocElementDTO {
+  @ApiModelProperty(notes = "Country ISO alpha", position = 1)
+  private String isoAlpha;
 
-  @ApiModelProperty(notes = "The Generated location id", position = 1)
-  private Long id;
-
-  @ApiModelProperty(notes = "Location name", position = 2)
+  @ApiModelProperty(notes = "Country Name", position = 2)
+  @NotNull
   private String name;
 
-  @ApiModelProperty(notes = "Location acronym", position = 3)
-  private String isoAlpha2;
 
-  public Long getId() {
-    return id;
+  public String getIsoAlpha() {
+    return isoAlpha;
   }
 
-  public String getIsoAlpha2() {
-    return isoAlpha2;
-  }
 
   public String getName() {
     return name;
   }
 
-  public void setId(Long id) {
-    this.id = id;
+
+  public void setIsoAlpha(String isoAlpha) {
+    this.isoAlpha = isoAlpha;
   }
 
-  public void setIsoAlpha2(String isoAlpha2) {
-    this.isoAlpha2 = isoAlpha2;
-  }
 
   public void setName(String name) {
     this.name = name;
   }
-
 }

@@ -13,48 +13,53 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
+/**************
+ * @author Diego Perez - CIAT/CCAFS
+ **************/
+
 package org.cgiar.ccafs.marlo.rest.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 
-/**
- * @author Hermes Jiménez - CIAT/CCAFS
- */
+public class ProjectPageActivitiesDTO {
 
-
-public class LocElementDTO {
-
-  @ApiModelProperty(notes = "The Generated location id", position = 1)
+  @ApiModelProperty(notes = "Activity ID", position = 1)
   private Long id;
 
-  @ApiModelProperty(notes = "Location name", position = 2)
-  private String name;
+  @ApiModelProperty(notes = "Activity Title", position = 2)
+  private String title;
 
-  @ApiModelProperty(notes = "Location acronym", position = 3)
-  private String isoAlpha2;
+  @ApiModelProperty(notes = "Activity Description", position = 3)
+  private String description;
+
+
+  public String getDescription() {
+    return description;
+  }
+
 
   public Long getId() {
     return id;
   }
 
-  public String getIsoAlpha2() {
-    return isoAlpha2;
+
+  public String getTitle() {
+    return title;
   }
 
-  public String getName() {
-    return name;
+
+  public void setDescription(String description) {
+    this.description = description;
   }
+
 
   public void setId(Long id) {
     this.id = id;
   }
 
-  public void setIsoAlpha2(String isoAlpha2) {
-    this.isoAlpha2 = isoAlpha2;
-  }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setTitle(String title) {
+    this.title = title;
   }
 
 }

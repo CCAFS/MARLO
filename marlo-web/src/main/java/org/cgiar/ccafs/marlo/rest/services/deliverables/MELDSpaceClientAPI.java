@@ -66,18 +66,43 @@ public class MELDSpaceClientAPI extends MetadataClientApi {
       Element metadata = xmlReaderConnectionUtil.getXmlRestClient(link);
       List<Author> authors = new ArrayList<Author>();
       List<Element> elements = metadata.elements();
+
+      // Get author ORCID
+      Map<String, String> authorMap = new HashMap<String, String>();
+      for (Element element : elements) {
+        Element key = element.element("key");
+        Element value = element.element("value");
+        String keyValue = key.getStringValue();
+        keyValue = keyValue.substring(3);
+        if (keyValue.equals("creator.id")) {
+          if (value.getStringValue() != null && !value.getStringValue().isEmpty()) {
+            String authorInfo[] = value.getStringValue().split(": ");
+            authorMap.put(authorInfo[0].trim(), authorInfo[1].trim());
+          }
+        }
+      }
+
       for (Element element : elements) {
         Element key = element.element("key");
         Element value = element.element("value");
         String keyValue = key.getStringValue();
         keyValue = keyValue.substring(3);
 
-        if (keyValue.equals("contributor.author")) {
+        if (keyValue.equals("contributor.author") || keyValue.equals("contributor") || keyValue.equals("creator")) {
           Author author = new Author(value.getStringValue());
           String names[] = author.getFirstName().split(", ");
           if (names.length == 2) {
             author.setFirstName(names[1]);
             author.setLastName(names[0]);
+          }
+          if (authorMap != null && !authorMap.isEmpty() && authorMap.size() > 0) {
+            if (authorMap.containsKey(value.getStringValue().trim())) {
+              author.setOrcidId(authorMap.get(value.getStringValue().trim()));
+            } else {
+              author.setOrcidId("No ORCID");
+            }
+          } else {
+            author.setOrcidId("No ORCID");
           }
           authors.add(author);
         } else if (keyValue.equals("identifier.status")) {
@@ -111,7 +136,6 @@ public class MELDSpaceClientAPI extends MetadataClientApi {
         }
 
       }
-
 
       this.setDoi(jo);
 

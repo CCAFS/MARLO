@@ -264,6 +264,29 @@ public class ProjectInnovationAction extends BaseAction {
   }
 
   /**
+   * this is not functional, but is added to prevent a strange exception. Taken from DeliverableAction.
+   */
+  @Override
+  public String cancel() {
+    Path path = this.getAutoSaveFilePath();
+
+    if (path.toFile().exists()) {
+      path.toFile().delete();
+    }
+
+    this.setDraft(false);
+
+    if (this.getActionMessages().isEmpty()) {
+      this.setActionMessages(null);
+      this.addActionMessage("draft:" + this.getText("cancel.autoSave"));
+    } else {
+      this.addActionMessage("draft:" + this.getText("cancel.autoSave"));
+    }
+
+    return SUCCESS;
+  }
+
+  /**
    * Delete all LocElements Records when Geographic Scope is Global or NULL
    * 
    * @param policy

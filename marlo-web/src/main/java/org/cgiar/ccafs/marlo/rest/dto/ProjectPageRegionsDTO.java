@@ -13,48 +13,45 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
+/**************
+ * @author Diego Perez - CIAT/CCAFS
+ **************/
+
 package org.cgiar.ccafs.marlo.rest.dto;
+
+import javax.validation.constraints.NotNull;
 
 import io.swagger.annotations.ApiModelProperty;
 
-/**
- * @author Hermes Jiménez - CIAT/CCAFS
- */
+public class ProjectPageRegionsDTO {
+
+  @ApiModelProperty(notes = "ID Region")
+  @NotNull
+  private Long UM49code;
 
 
-public class LocElementDTO {
-
-  @ApiModelProperty(notes = "The Generated location id", position = 1)
-  private Long id;
-
-  @ApiModelProperty(notes = "Location name", position = 2)
+  @ApiModelProperty(notes = "Region Name")
+  @NotNull
   private String name;
 
-  @ApiModelProperty(notes = "Location acronym", position = 3)
-  private String isoAlpha2;
-
-  public Long getId() {
-    return id;
-  }
-
-  public String getIsoAlpha2() {
-    return isoAlpha2;
-  }
 
   public String getName() {
     return name;
   }
 
-  public void setId(Long id) {
-    this.id = id;
+
+  public Long getUM49code() {
+    return UM49code;
   }
 
-  public void setIsoAlpha2(String isoAlpha2) {
-    this.isoAlpha2 = isoAlpha2;
-  }
 
   public void setName(String name) {
     this.name = name;
+  }
+
+
+  public void setUM49code(Long uM49code) {
+    UM49code = uM49code;
   }
 
 }

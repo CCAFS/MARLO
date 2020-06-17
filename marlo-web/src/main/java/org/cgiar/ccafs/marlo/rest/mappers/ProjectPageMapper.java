@@ -19,17 +19,23 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectPageDTO;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 /**
  * @author Luis Fernando - CIAT/CCAFS
+ * @author Diego Perez - CIAT/CCAFS
  */
 
-@Mapper(componentModel = "jsr330", uses = {ProjecInfoMapper.class})
+@Mapper(componentModel = "jsr330", uses = {ProjecInfoMapper.class, LocationMapper.class})
 public interface ProjectPageMapper {
 
 
   public abstract Project projectPageDTOToProject(ProjectPageDTO projectPageDTO);
 
+  @Mappings({@Mapping(source = "project.locations", target = "projectCountries"),
+    @Mapping(source = "project.projectRegions", target = "projectRegions"),
+    @Mapping(source = "project.projectActivities", target = "activities")})
   public abstract ProjectPageDTO projectToProjectPageDTO(Project project);
 
 }
