@@ -34,14 +34,14 @@ public class ProjectPagePartnersDTO {
   @ApiModelProperty(notes = "Institution acronym", position = 3)
   private String institutionAcronym;
 
-  @ApiModelProperty(notes = "Instutution Locations", position = 4)
-  private List<LocElementDTO> partnerLocations;
+  @ApiModelProperty(notes = "Institution website", position = 4)
+  private String webStie;
 
-  @ApiModelProperty(notes = "Project Leader", position = 5)
+  @ApiModelProperty(notes = "Instutution Locations", position = 5)
+  private List<LocElementDTO> partnerOfficeLocations;
+
+  @ApiModelProperty(notes = "Project Leader", position = 6)
   private UserDTO projectLeader;
-
-  @ApiModelProperty(notes = "Project Coordinator List", position = 6)
-  private List<UserDTO> projectCoordinator;
 
 
   public String getInstitutionAcronym() {
@@ -59,18 +59,18 @@ public class ProjectPagePartnersDTO {
   }
 
 
-  public List<LocElementDTO> getPartnerLocations() {
-    return partnerLocations;
-  }
-
-
-  public List<UserDTO> getProjectCoordinator() {
-    return projectCoordinator;
+  public List<LocElementDTO> getPartnerOfficeLocations() {
+    return partnerOfficeLocations;
   }
 
 
   public UserDTO getProjectLeader() {
     return projectLeader;
+  }
+
+
+  public String getWebStie() {
+    return webStie;
   }
 
 
@@ -89,18 +89,18 @@ public class ProjectPagePartnersDTO {
   }
 
 
-  public void setPartnerLocations(List<LocElementDTO> partnerLocations) {
-    this.partnerLocations = partnerLocations;
-  }
-
-
-  public void setProjectCoordinator(List<UserDTO> projectCoordinator) {
-    this.projectCoordinator = projectCoordinator;
+  public void setPartnerOfficeLocations(List<LocElementDTO> partnerOfficeLocations) {
+    this.partnerOfficeLocations = partnerOfficeLocations;
   }
 
 
   public void setProjectLeader(UserDTO projectLeader) {
     this.projectLeader = projectLeader;
+  }
+
+
+  public void setWebStie(String webStie) {
+    this.webStie = webStie;
   }
 
 

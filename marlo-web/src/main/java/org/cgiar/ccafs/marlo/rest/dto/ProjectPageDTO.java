@@ -46,14 +46,14 @@ public class ProjectPageDTO {
   private List<CrpProgramDTO> flagships;
 
   @ApiModelProperty(notes = "Project Regions", position = 9)
-  private List<DefaultFieldDTO> projectRegions;
+  private List<ProjectPageRegionsDTO> projectRegions;
 
 
   @ApiModelProperty(notes = "Project Countries", position = 10)
-  private List<DefaultFieldDTO> projectCountries;
+  private List<ProjectPageCountriesDTO> projectCountries;
 
   @ApiModelProperty(notes = "Cluster of Activities", position = 11)
-  private List<DefaultFieldStringDTO> activities;
+  private List<ProjectPageActivitiesDTO> activities;
 
   @ApiModelProperty(notes = "Innovations", position = 12)
   private int numberInnovations;
@@ -71,11 +71,11 @@ public class ProjectPageDTO {
   private int numberPartners;
 
   @ApiModelProperty(notes = "Contributing Outcomes and Milestones", position = 17)
-  private List<ProjectPageOutcomesDTO> outcomesList;
+  private List<ProjectPageOutcomesDTO> outcomesContributing;
 
 
   @ApiModelProperty(notes = "Expected Studies List", position = 18)
-  private List<ProjectPageStudiesDTO> studiesList;
+  private List<ProjectPageStudiesDTO> outcomeImpactCaseReports;
 
   @ApiModelProperty(notes = "Expected Studies List", position = 19)
   private List<ProjectPagePartnersDTO> partnersList;
@@ -93,7 +93,7 @@ public class ProjectPageDTO {
   private List<ProjectPagePoliciesDTO> policiesList;
 
 
-  public List<DefaultFieldStringDTO> getActivities() {
+  public List<ProjectPageActivitiesDTO> getActivities() {
     return activities;
   }
 
@@ -148,8 +148,13 @@ public class ProjectPageDTO {
   }
 
 
-  public List<ProjectPageOutcomesDTO> getOutcomesList() {
-    return outcomesList;
+  public List<ProjectPageStudiesDTO> getOutcomeImpactCaseReports() {
+    return outcomeImpactCaseReports;
+  }
+
+
+  public List<ProjectPageOutcomesDTO> getOutcomesContributing() {
+    return outcomesContributing;
   }
 
 
@@ -163,29 +168,26 @@ public class ProjectPageDTO {
   }
 
 
-  public List<DefaultFieldDTO> getProjectCountries() {
+  public List<ProjectPageCountriesDTO> getProjectCountries() {
     return projectCountries;
   }
-
 
   public ProjectInfoDTO getProjectInfo() {
     return projectInfo;
   }
 
 
-  public List<DefaultFieldDTO> getProjectRegions() {
+  public List<ProjectPageRegionsDTO> getProjectRegions() {
     return projectRegions;
   }
+
 
   public List<CrpProgramDTO> getRegions() {
     return regions;
   }
 
-  public List<ProjectPageStudiesDTO> getStudiesList() {
-    return studiesList;
-  }
 
-  public void setActivities(List<DefaultFieldStringDTO> activities) {
+  public void setActivities(List<ProjectPageActivitiesDTO> activities) {
     this.activities = activities;
   }
 
@@ -214,11 +216,9 @@ public class ProjectPageDTO {
     this.innovationsList = innovationsList;
   }
 
-
   public void setNumberDeliverables(int numberDeliverables) {
     this.numberDeliverables = numberDeliverables;
   }
-
 
   public void setNumberInnovations(int numberInnovations) {
     this.numberInnovations = numberInnovations;
@@ -232,12 +232,19 @@ public class ProjectPageDTO {
     this.numberPolicies = numberPolicies;
   }
 
+
   public void setNumberStudies(int numberStudies) {
     this.numberStudies = numberStudies;
   }
 
-  public void setOutcomesList(List<ProjectPageOutcomesDTO> outcomesList) {
-    this.outcomesList = outcomesList;
+
+  public void setOutcomeImpactCaseReports(List<ProjectPageStudiesDTO> outcomeImpactCaseReports) {
+    this.outcomeImpactCaseReports = outcomeImpactCaseReports;
+  }
+
+
+  public void setOutcomesContributing(List<ProjectPageOutcomesDTO> outcomesContributing) {
+    this.outcomesContributing = outcomesContributing;
   }
 
 
@@ -249,16 +256,18 @@ public class ProjectPageDTO {
     this.policiesList = policiesList;
   }
 
-  public void setProjectCountries(List<DefaultFieldDTO> projectCountries) {
+
+  public void setProjectCountries(List<ProjectPageCountriesDTO> projectCountries) {
     this.projectCountries = projectCountries;
   }
+
 
   public void setProjectInfo(ProjectInfoDTO projectInfo) {
     this.projectInfo = projectInfo;
   }
 
 
-  public void setProjectRegions(List<DefaultFieldDTO> projectRegions) {
+  public void setProjectRegions(List<ProjectPageRegionsDTO> projectRegions) {
     this.projectRegions = projectRegions;
   }
 
@@ -267,8 +276,5 @@ public class ProjectPageDTO {
     this.regions = regions;
   }
 
-  public void setStudiesList(List<ProjectPageStudiesDTO> studiesList) {
-    this.studiesList = studiesList;
-  }
 
 }

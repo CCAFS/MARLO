@@ -25,30 +25,56 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class ProjectPageOutcomesDTO {
 
-  @ApiModelProperty(notes = "Outcome", position = 1)
-  private DefaultFieldDTO outcome;
+  @ApiModelProperty(notes = "Outcome Identifier", position = 1)
+  private long outcomeID;
 
-  @ApiModelProperty(notes = "Milestones List", position = 2)
-  private List<MilestoneNameDTO> milestones;
+  @ApiModelProperty(notes = "Outcome name", position = 2)
+  private String outcomeName;
+
+  @ApiModelProperty(notes = "Flagship identifier", position = 3)
+  private CrpProgramDTO flagship;
+
+  @ApiModelProperty(notes = "Milestones List", position = 4)
+  private List<ProjectPageMilestonesDTO> milestones;
 
 
-  public List<MilestoneNameDTO> getMilestones() {
+  public CrpProgramDTO getFlagship() {
+    return flagship;
+  }
+
+
+  public List<ProjectPageMilestonesDTO> getMilestones() {
     return milestones;
   }
 
 
-  public DefaultFieldDTO getOutcome() {
-    return outcome;
+  public long getOutcomeID() {
+    return outcomeID;
   }
 
 
-  public void setMilestones(List<MilestoneNameDTO> milestones) {
+  public String getOutcomeName() {
+    return outcomeName;
+  }
+
+
+  public void setFlagship(CrpProgramDTO flagship) {
+    this.flagship = flagship;
+  }
+
+
+  public void setMilestones(List<ProjectPageMilestonesDTO> milestones) {
     this.milestones = milestones;
   }
 
 
-  public void setOutcome(DefaultFieldDTO outcome) {
-    this.outcome = outcome;
+  public void setOutcomeID(long outcomeID) {
+    this.outcomeID = outcomeID;
+  }
+
+
+  public void setOutcomeName(String outcomeName) {
+    this.outcomeName = outcomeName;
   }
 
 

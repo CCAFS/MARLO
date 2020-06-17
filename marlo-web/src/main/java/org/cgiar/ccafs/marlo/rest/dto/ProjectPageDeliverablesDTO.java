@@ -29,30 +29,33 @@ public class ProjectPageDeliverablesDTO {
   @ApiModelProperty(notes = "Publication Title", position = 2)
   private String title;
 
-  @ApiModelProperty(notes = "FAIR principles (Findable)", position = 3)
+  @ApiModelProperty(notes = "Publication Year", position = 3)
+  private String year;
+
+
+  @ApiModelProperty(notes = "FAIR principles (Findable)", position = 4)
   private Boolean findable;
 
-  @ApiModelProperty(notes = "FAIR principles (Accesible)", position = 4)
+
+  @ApiModelProperty(notes = "FAIR principles (Accesible)", position = 5)
   private Boolean accesible;
 
-  @ApiModelProperty(notes = "FAIR principles (Findable)", position = 5)
+  @ApiModelProperty(notes = "FAIR principles (Findable)", position = 6)
   private Boolean interoperable;
 
-  @ApiModelProperty(notes = "FAIR principles (Findable)", position = 6)
+  @ApiModelProperty(notes = "FAIR principles (Findable)", position = 7)
   private Boolean reusable;
 
-  @ApiModelProperty(notes = "External Link", position = 7)
+  @ApiModelProperty(notes = "External Link", position = 8)
   private String externalLink;
 
   public Boolean getAccesible() {
     return accesible;
   }
 
-
   public String getExternalLink() {
     return externalLink;
   }
-
 
   public Boolean getFindable() {
     return findable;
@@ -76,6 +79,11 @@ public class ProjectPageDeliverablesDTO {
 
   public String getTitle() {
     return title;
+  }
+
+
+  public String getYear() {
+    return year;
   }
 
 
@@ -108,7 +116,12 @@ public class ProjectPageDeliverablesDTO {
     this.reusable = reusable;
   }
 
+
   public void setTitle(String title) {
     this.title = title;
+  }
+
+  public void setYear(String year) {
+    this.year = year;
   }
 }
