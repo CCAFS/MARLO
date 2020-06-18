@@ -83,7 +83,7 @@ public interface LocationMapper {
     @Mapping(source = "locElement.isoAlpha2", target = "isoAlpha2")})
   public abstract LocElementDTO projectLocationToDefaultFieldDTO(ProjectLocation projectLocation);
 
-  @Mappings({@Mapping(source = "locElement.isoAlpha2", target = "isoAlpha"),
+  @Mappings({@Mapping(source = "locElement.isoAlpha2", target = "isoAlpha2"),
     @Mapping(source = "locElement.name", target = "name")})
   public abstract ProjectPageCountriesDTO projectLocationToProjectPageCountriesDTO(ProjectLocation projectLocation);
 

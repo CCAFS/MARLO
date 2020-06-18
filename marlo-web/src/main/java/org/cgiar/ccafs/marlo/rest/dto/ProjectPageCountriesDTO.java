@@ -27,15 +27,15 @@ public class ProjectPageCountriesDTO {
 
 
   @ApiModelProperty(notes = "Country ISO alpha", position = 1)
-  private String isoAlpha;
+  private String isoAlpha2;
 
   @ApiModelProperty(notes = "Country Name", position = 2)
   @NotNull
   private String name;
 
 
-  public String getIsoAlpha() {
-    return isoAlpha;
+  public String getIsoAlpha2() {
+    return isoAlpha2;
   }
 
 
@@ -44,8 +44,8 @@ public class ProjectPageCountriesDTO {
   }
 
 
-  public void setIsoAlpha(String isoAlpha) {
-    this.isoAlpha = isoAlpha;
+  public void setIsoAlpha2(String isoAlpha2) {
+    this.isoAlpha2 = isoAlpha2;
   }
 
 

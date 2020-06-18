@@ -34,6 +34,8 @@ import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicyInfo;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectPageDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
 import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
@@ -224,6 +226,17 @@ public class ProjectPageItem<T> {
       }
     }
 
+    // Policies
+    List<ProjectPolicy> policies = new ArrayList<ProjectPolicy>();
+    for (ProjectPolicy policy : project.getProjectPolicies().stream().filter(c -> c.isActive())
+      .collect(Collectors.toList())) {
+      ProjectPolicyInfo projectPolicyInfo = policy.getProjectPolicyInfo(phase);
+      if (projectPolicyInfo != null) {
+        policy.setProjectPolicyInfo(projectPolicyInfo);
+        policies.add(policy);
+      }
+    }
+
 
     project.setRegions(regions);
     project.setFlagships(programs);
@@ -231,6 +244,7 @@ public class ProjectPageItem<T> {
     project.setLocations(projectCountries);
     project.setProjectActivities(activities);
     project.setProjectDeliverables(deliverables);
+    project.setPolicies(policies);
 
 
     return project;

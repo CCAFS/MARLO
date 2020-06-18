@@ -35,7 +35,7 @@ public class ProjectPagePartnersDTO {
   private String institutionAcronym;
 
   @ApiModelProperty(notes = "Institution website", position = 4)
-  private String webStie;
+  private String website;
 
   @ApiModelProperty(notes = "Instutution Locations", position = 5)
   private List<LocElementDTO> partnerOfficeLocations;
@@ -69,8 +69,8 @@ public class ProjectPagePartnersDTO {
   }
 
 
-  public String getWebStie() {
-    return webStie;
+  public String getWebsite() {
+    return website;
   }
 
 
@@ -99,8 +99,8 @@ public class ProjectPagePartnersDTO {
   }
 
 
-  public void setWebStie(String webStie) {
-    this.webStie = webStie;
+  public void setWebsite(String website) {
+    this.website = website;
   }
 
 
