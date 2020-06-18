@@ -33,6 +33,8 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyInfo;
@@ -40,6 +42,7 @@ import org.cgiar.ccafs.marlo.rest.dto.ProjectPageDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
 import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
 import org.cgiar.ccafs.marlo.rest.mappers.ProjectPageMapper;
+import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,12 +70,13 @@ public class ProjectPageItem<T> {
   private LocElementManager locElementManager;
   private CrpClusterOfActivityManager crpClusterOfActivityManager;
   private ProjectPageMapper projectPageMapper;
+  protected APConfig config;
 
 
   @Inject
   public ProjectPageItem(ProjectManager projectManager, PhaseManager phaseManager, GlobalUnitManager globalUnitManager,
     ProjectLocationManager projectLocationManager, LocElementManager locElementManager,
-    CrpClusterOfActivityManager crpClusterOfActivityManager, ProjectPageMapper projectPageMapper) {
+    CrpClusterOfActivityManager crpClusterOfActivityManager, ProjectPageMapper projectPageMapper, APConfig config) {
     this.projectManager = projectManager;
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
@@ -80,6 +84,7 @@ public class ProjectPageItem<T> {
     this.projectLocationManager = projectLocationManager;
     this.locElementManager = locElementManager;
     this.crpClusterOfActivityManager = crpClusterOfActivityManager;
+    this.config = config;
   }
 
   public List<ProjectPageDTO> findAllProjectPage(String globalUnitAcronym) {
@@ -237,6 +242,21 @@ public class ProjectPageItem<T> {
       }
     }
 
+    // innovations
+    List<ProjectInnovation> innovations = new ArrayList<ProjectInnovation>();
+    for (ProjectInnovation innovation : project.getProjectInnovations().stream().filter(c -> c.isActive())
+      .collect(Collectors.toList())) {
+      ProjectInnovationInfo projectInnovationInfo = innovation.getProjectInnovationInfo(phase);
+      if (projectInnovationInfo != null) {
+        innovation.setProjectInnovationInfo(projectInnovationInfo);
+        String pdflink = config.getClarisa_summaries_pdf() + "summaries/" + globalUnit.getAcronym()
+          + "/projectInnovationSummary.do?innovationID=" + innovation.getId().longValue() + "&phaseID="
+          + phase.getId().longValue();
+        innovation.setPdfLink(pdflink);
+        innovations.add(innovation);
+      }
+    }
+
 
     project.setRegions(regions);
     project.setFlagships(programs);
@@ -245,6 +265,7 @@ public class ProjectPageItem<T> {
     project.setProjectActivities(activities);
     project.setProjectDeliverables(deliverables);
     project.setPolicies(policies);
+    project.setInnovations(innovations);
 
 
     return project;

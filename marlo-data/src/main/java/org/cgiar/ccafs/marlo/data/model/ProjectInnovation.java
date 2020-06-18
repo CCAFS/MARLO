@@ -81,9 +81,14 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   private List<ProjectInnovationMilestone> milestones;
   private List<ProjectInnovationSubIdo> subIdos;
 
+  // clarisa field
+  private String pdfLink;
+
+
   public List<ProjectInnovationCenter> getCenters() {
     return centers;
   }
+
 
   public String getComposedName() {
     if ((this.projectInnovationInfo != null) && (this.projectInnovationInfo.getTitle() != null)
@@ -109,7 +114,6 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     }
   }
 
-
   public List<ProjectInnovationContributingOrganization> getContributingOrganizations() {
     return this.contributingOrganizations;
   }
@@ -118,6 +122,7 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     return new ArrayList<>(this.getProjectInnovationContributingOrganization().stream()
       .filter(pc -> pc.isActive() && pc.getPhase().equals(phase)).collect(Collectors.toList()));
   }
+
 
   public List<ProjectInnovationCountry> getCountries() {
     return this.countries;
@@ -168,6 +173,10 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     return this.organizations;
   }
 
+  public String getPdfLink() {
+    return pdfLink;
+  }
+
   public Project getProject() {
     return this.project;
   }
@@ -175,7 +184,6 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   public Set<ProjectExpectedStudyInnovation> getProjectExpectedStudyInnovations() {
     return projectExpectedStudyInnovations;
   }
-
 
   public Set<ProjectInnovationCenter> getProjectInnovationCenters() {
     return projectInnovationCenters;
@@ -190,6 +198,7 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   public Set<ProjectInnovationCountry> getProjectInnovationCountries() {
     return this.projectInnovationCountries;
   }
+
 
   public Set<ProjectInnovationCrp> getProjectInnovationCrps() {
     return this.projectInnovationCrps;
@@ -236,10 +245,10 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     return projectInnovationMilestones;
   }
 
-
   public Set<ProjectInnovationOrganization> getProjectInnovationOrganizations() {
     return this.projectInnovationOrganizations;
   }
+
 
   public List<ProjectInnovationOrganization> getProjectInnovationOrganizations(Phase phase) {
     return new ArrayList<>(this.getProjectInnovationOrganizations().stream()
@@ -344,6 +353,10 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
 
   public void setOrganizations(List<ProjectInnovationOrganization> organizations) {
     this.organizations = organizations;
+  }
+
+  public void setPdfLink(String pdfLink) {
+    this.pdfLink = pdfLink;
   }
 
   public void setProject(Project project) {
