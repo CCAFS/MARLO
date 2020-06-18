@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.rest.mappers;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.rest.dto.InnovationDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectInnovationARDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectPageInnovationsDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -77,4 +78,11 @@ public interface InnovationMapper {
     @Mapping(source = "projectInnovation.subIdos", target = "srfSubIdoList"),
     @Mapping(source = "projectInnovation.studies", target = "projectExpetedStudyList")})
   public abstract InnovationDTO projectInnovationToInnovationDTO(ProjectInnovation projectInnovation);
+
+  @Mappings({@Mapping(source = "projectInnovationInfo.title", target = "title"),
+    @Mapping(source = "pdfLink", target = "externalLink")})
+  public abstract ProjectPageInnovationsDTO
+    projectInnovationToProjectPageInnovationsDTO(ProjectInnovation projectInnovation);
+
+
 }
