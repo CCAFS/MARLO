@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -24,6 +25,15 @@ import java.util.List;
  */
 
 public interface CrpMilestoneManager {
+
+
+  /**
+   * clone the milestones
+   * 
+   * @param crpProgramOutcome outcome original
+   * @param crpProgramOutcomeAdd outcome new
+   */
+  // public void addCrpMilestones(CrpProgramOutcome crpProgramOutcome, CrpProgramOutcome crpProgramOutcomeAdd);
 
 
   /**
@@ -51,7 +61,6 @@ public interface CrpMilestoneManager {
    */
   public List<CrpMilestone> findAll();
 
-
   /**
    * This method gets a crpMilestone object by a given crpMilestone identifier.
    * 
@@ -70,6 +79,14 @@ public interface CrpMilestoneManager {
   public CrpMilestone getCrpMilestoneByPhase(String composedID, long phaseID);
 
   /**
+   * Replicates a milestone, starting from the given phase
+   * 
+   * @param originalCrpMilestone Milestone to be replicated
+   * @param initialPhase initial replication phase
+   */
+  public void replicate(CrpMilestone originalCrpMilestone, Phase initialPhase);
+
+  /**
    * This method saves the information of the given crpMilestone
    * 
    * @param crpMilestone - is the crpMilestone object with the new information to be added/updated.
@@ -79,5 +96,11 @@ public interface CrpMilestoneManager {
    */
   public CrpMilestone saveCrpMilestone(CrpMilestone crpMilestone);
 
-
+  /**
+   * Detect and make changes of milestones, comparing the previous (DB) outcome with an incoming outcome (front-end)
+   * 
+   * @param programOutcomeOld outcome to be updated
+   * @param programOutcomeIncoming incoming outcome (modified)
+   */
+  // public void updateMilestones(CrpProgramOutcome programOutcomeOld, CrpProgramOutcome programOutcomeIncoming);
 }

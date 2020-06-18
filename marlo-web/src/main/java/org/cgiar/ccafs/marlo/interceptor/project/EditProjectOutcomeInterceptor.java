@@ -112,10 +112,15 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
 
 
     // String projectParameter = ((String[]) parameters.get(APConstants.PROJECT_OUTCOME_REQUEST_ID))[0];
-    String projectParameter = parameters.get(APConstants.PROJECT_OUTCOME_REQUEST_ID).getMultipleValues()[0];
+    String projectParameter = null;
+    if (parameters.get(APConstants.PROJECT_OUTCOME_REQUEST_ID).getMultipleValues() != null) {
+      projectParameter = parameters.get(APConstants.PROJECT_OUTCOME_REQUEST_ID).getMultipleValues()[0];
+    }
     boolean contactPointEditProject = baseAction.hasSpecificities(APConstants.CRP_CONTACT_POINT_EDIT_PROJECT);
 
-    projectOutcomeId = Long.parseLong(projectParameter);
+    if (projectParameter != null && !projectParameter.isEmpty()) {
+      projectOutcomeId = Long.parseLong(projectParameter);
+    }
 
     ProjectOutcome outcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeId);
     if (!outcome.getPhase().equals(baseAction.getActualPhase())) {
