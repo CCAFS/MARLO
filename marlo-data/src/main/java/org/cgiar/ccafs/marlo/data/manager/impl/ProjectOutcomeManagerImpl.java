@@ -516,7 +516,9 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
             projectMilestoneAdd.setProjectOutcome(projectOutcomePrev);
             projectMilestoneAdd.setYear(projectMilestone.getYear());
             projectMilestoneAdd.setActive(projectMilestone.isActive());
-            projectMilestoneDAO.save(projectMilestoneAdd);
+            if (projectMilestoneAdd.getCrpMilestone() != null) {
+              projectMilestoneDAO.save(projectMilestoneAdd);
+            }
 
           } else {
             ProjectMilestone milestone = projectOutcomePrev.getProjectMilestones().stream()
