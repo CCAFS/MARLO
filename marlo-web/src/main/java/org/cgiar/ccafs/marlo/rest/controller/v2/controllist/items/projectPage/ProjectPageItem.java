@@ -36,6 +36,8 @@ import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
+import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
+import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyInfo;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectPageDTO;
@@ -257,6 +259,17 @@ public class ProjectPageItem<T> {
       }
     }
 
+    // contributing outcomes
+    List<ProjectOutcome> projectOutcomes = new ArrayList<ProjectOutcome>();
+    for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream()
+      .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())) {
+      List<ProjectMilestone> milestones = new ArrayList<ProjectMilestone>();
+      milestones = projectOutcome.getProjectMilestones().stream().filter(c -> c != null && c.isActive())
+        .collect(Collectors.toList());
+      projectOutcome.setMilestones(milestones);
+      projectOutcomes.add(projectOutcome);
+    }
+
 
     project.setRegions(regions);
     project.setFlagships(programs);
@@ -266,6 +279,7 @@ public class ProjectPageItem<T> {
     project.setProjectDeliverables(deliverables);
     project.setPolicies(policies);
     project.setInnovations(innovations);
+    project.setOutcomes(projectOutcomes);
 
 
     return project;

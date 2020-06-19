@@ -28,7 +28,7 @@ import org.mapstruct.Mappings;
  */
 
 @Mapper(componentModel = "jsr330", uses = {ProjecInfoMapper.class, LocationMapper.class, DeliverablesMapper.class,
-  ProjectPolicyMapper.class, InnovationMapper.class})
+  ProjectPolicyMapper.class, InnovationMapper.class, ProjectOutcomesMapper.class})
 public interface ProjectPageMapper {
 
 
@@ -40,6 +40,7 @@ public interface ProjectPageMapper {
     @Mapping(source = "project.projectDeliverables", target = "deliverablesList"),
     @Mapping(source = "project.policies", target = "policiesList"),
     @Mapping(source = "project.innovations", target = "innovationsList"),
+    @Mapping(source = "project.outcomes", target = "outcomesContributing"),
     @Mapping(expression = "java(project.getProjectDeliverables().size())", target = "numberDeliverables"),
     @Mapping(expression = "java(project.getPolicies().size())", target = "numberPolicies"),
     @Mapping(expression = "java(project.getInnovations().size())", target = "numberInnovations")})
