@@ -29,8 +29,6 @@ import io.swagger.annotations.ApiParam;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -49,8 +47,7 @@ public class ProjectPage {
 
   private static final Logger LOG = LoggerFactory.getLogger(ProjectPage.class);
   private ProjectPageItem<ProjectPage> projectPageItem;
-  @Autowired
-  private Environment env;
+
 
   @Inject
   public ProjectPage(ProjectPageItem<ProjectPage> projectPageItem) {
@@ -80,7 +77,7 @@ public class ProjectPage {
       ResponseEntity<ProjectPageDTO> response = projectPageItem.findProjectPageById(id, CGIAREntity);
       if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
         // TODO add correctly documentation
-
+        LOG.error("Not Found");
         throw new NotFoundException("404", "Not Found");
       }
       return response;

@@ -16,7 +16,6 @@
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.projectPage;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpClusterOfActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
@@ -28,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
@@ -38,6 +38,9 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyInfo;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectPageDTO;
@@ -70,7 +73,6 @@ public class ProjectPageItem<T> {
   private GlobalUnitManager globalUnitManager;
   private ProjectLocationManager projectLocationManager;
   private LocElementManager locElementManager;
-  private CrpClusterOfActivityManager crpClusterOfActivityManager;
   private ProjectPageMapper projectPageMapper;
   protected APConfig config;
 
@@ -78,14 +80,13 @@ public class ProjectPageItem<T> {
   @Inject
   public ProjectPageItem(ProjectManager projectManager, PhaseManager phaseManager, GlobalUnitManager globalUnitManager,
     ProjectLocationManager projectLocationManager, LocElementManager locElementManager,
-    CrpClusterOfActivityManager crpClusterOfActivityManager, ProjectPageMapper projectPageMapper, APConfig config) {
+    ProjectPageMapper projectPageMapper, APConfig config) {
     this.projectManager = projectManager;
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.projectPageMapper = projectPageMapper;
     this.projectLocationManager = projectLocationManager;
     this.locElementManager = locElementManager;
-    this.crpClusterOfActivityManager = crpClusterOfActivityManager;
     this.config = config;
   }
 
@@ -271,6 +272,31 @@ public class ProjectPageItem<T> {
     }
 
 
+    // project partners
+    List<ProjectPartner> partners = new ArrayList<ProjectPartner>();
+    for (ProjectPartner projectPartner : project.getProjectPartners().stream()
+      .filter(c -> c != null && c.isActive() && c.getPhase().getId().equals(phase.getId()))
+      .collect(Collectors.toList())) {
+      // search partner office location
+      List<InstitutionLocation> locations = new ArrayList<InstitutionLocation>();
+      for (ProjectPartnerLocation partnersLocation : projectPartner.getProjectPartnerLocations().stream()
+        .filter(c -> c.isActive()).collect(Collectors.toList())) {
+        locations.add(partnersLocation.getInstitutionLocation());
+      }
+      projectPartner.setSelectedLocations(locations);
+      // search if this partner has projectLeader
+      List<ProjectPartnerPerson> projectPartnerPersons = new ArrayList<ProjectPartnerPerson>();
+      for (ProjectPartnerPerson projectPartnerPerson : projectPartner.getProjectPartnerPersons().stream()
+        .filter(c -> c.isActive()).collect(Collectors.toList())) {
+        if (projectPartnerPerson.getContactType().equals("PL")) {
+          projectPartnerPersons.add(projectPartnerPerson);
+        }
+      }
+      // add Project leader if exist
+      projectPartner.setPartnerLeader(projectPartnerPersons.size() == 0 ? null : projectPartnerPersons.get(0));
+      partners.add(projectPartner);
+    }
+
     project.setRegions(regions);
     project.setFlagships(programs);
     project.setProjectRegions(projectRegions);
@@ -280,6 +306,7 @@ public class ProjectPageItem<T> {
     project.setPolicies(policies);
     project.setInnovations(innovations);
     project.setOutcomes(projectOutcomes);
+    project.setPartners(partners);
 
 
     return project;

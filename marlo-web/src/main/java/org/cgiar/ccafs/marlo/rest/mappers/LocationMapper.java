@@ -15,6 +15,7 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
+import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
@@ -43,6 +44,11 @@ public interface LocationMapper {
 
   @Mappings({@Mapping(source = "code", target = "isoNumeric")})
   public abstract LocElement countryDTOToLocElement(CountryDTO countryDTO);
+
+  @Mappings({@Mapping(source = "locElement.isoNumeric", target = "id"),
+    @Mapping(source = "locElement.name", target = "name"),
+    @Mapping(source = "locElement.isoAlpha2", target = "isoAlpha2")})
+  public abstract LocElementDTO institutionLocationToLocElementDTO(InstitutionLocation instututionLocation);
 
   @Mappings({@Mapping(source = "isoNumeric", target = "code"), @Mapping(source = "locElement", target = "regionDTO")})
   public abstract CountryDTO locElementToCountryDTO(LocElement locElement);
@@ -96,6 +102,7 @@ public interface LocationMapper {
     @Mapping(source = "projectPolicyCountry.locElement.name", target = "name"),
     @Mapping(source = "projectPolicyCountry.locElement.locElement", target = "regionDTO")})
   public abstract CountryDTO projectPolicyCountryToCountryDTO(ProjectPolicyCountry projectPolicyCountry);
+
 
   @Mappings({@Mapping(source = "projectPolicyRegion.locElement.isoNumeric", target = "UM49Code"),
     @Mapping(source = "locElement.name", target = "name"),
