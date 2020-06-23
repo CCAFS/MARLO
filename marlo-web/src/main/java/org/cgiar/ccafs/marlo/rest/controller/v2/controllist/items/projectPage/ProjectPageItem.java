@@ -32,6 +32,8 @@ import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
@@ -50,6 +52,8 @@ import org.cgiar.ccafs.marlo.rest.mappers.ProjectPageMapper;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -296,6 +300,46 @@ public class ProjectPageItem<T> {
       projectPartner.setPartnerLeader(projectPartnerPersons.size() == 0 ? null : projectPartnerPersons.get(0));
       partners.add(projectPartner);
     }
+    /*
+     * Comparator<ProjectPartner> partnerComparator =
+     * (ProjectPartner o1, ProjectPartner o2) -> (o1.getInstitution().isPPA(phase.getCrp().getId().longValue(),
+     * phase) == o2.getInstitution().isPPA(phase.getCrp().getId().longValue(), phase)) ? 0 : 1;
+     */
+    Collections.sort(partners, new Comparator<ProjectPartner>() {
+
+      @Override
+      public int compare(ProjectPartner o1, ProjectPartner o2) {
+        Boolean a1 = o1.getInstitution().isPPA(o1.getPhase().getCrp().getId(), phase);
+        Boolean a2 = o2.getInstitution().isPPA(o1.getPhase().getCrp().getId(), phase);
+
+        return (a1 ^ a2) ? ((a1 ^ true) ? 1 : -1) : 0;
+      }
+
+    });
+    // Collections.reverse(partners);
+
+    // Outcome impact case reports
+    List<ProjectExpectedStudy> outcomeImpactCaseReports = new ArrayList<ProjectExpectedStudy>();
+    for (ProjectExpectedStudy projectExpectedStudy : project.getProjectExpectedStudies().stream()
+      .filter(c -> c.isActive()).collect(Collectors.toList())) {
+      ProjectExpectedStudyInfo projectExpectedStudyInfo = projectExpectedStudy.getProjectExpectedStudyInfo(phase);
+      if (projectExpectedStudyInfo != null && projectExpectedStudyInfo.isActive()) {
+        if (projectExpectedStudyInfo.getStudyType() != null
+          && projectExpectedStudyInfo.getStudyType().getId().longValue() == 1) {
+          projectExpectedStudy.setProjectExpectedStudyInfo(projectExpectedStudyInfo);
+          if (projectExpectedStudyInfo.getIsPublic()) {
+            String pdflink = config.getClarisa_summaries_pdf() + "projects/" + globalUnit.getAcronym()
+              + "/studySummary.do?studyID=" + projectExpectedStudy.getId().longValue() + "&cycle="
+              + phase.getDescription() + "&year=" + phase.getYear();
+            projectExpectedStudy.setPdfLink(pdflink);
+          } else {
+            projectExpectedStudy.setPdfLink("Link not provided");
+          }
+          outcomeImpactCaseReports.add(projectExpectedStudy);
+        }
+      }
+    }
+
 
     project.setRegions(regions);
     project.setFlagships(programs);
@@ -307,6 +351,7 @@ public class ProjectPageItem<T> {
     project.setInnovations(innovations);
     project.setOutcomes(projectOutcomes);
     project.setPartners(partners);
+    project.setExpectedStudies(outcomeImpactCaseReports);
 
 
     return project;

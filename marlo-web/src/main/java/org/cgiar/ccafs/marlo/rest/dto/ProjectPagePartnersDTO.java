@@ -21,6 +21,7 @@ package org.cgiar.ccafs.marlo.rest.dto;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 
 public class ProjectPagePartnersDTO {
@@ -41,6 +42,7 @@ public class ProjectPagePartnersDTO {
   private List<LocElementDTO> partnerOfficeLocations;
 
   @ApiModelProperty(notes = "Project Leader", position = 6)
+  @JsonInclude(JsonInclude.Include.NON_NULL)
   private UserDTO projectLeader;
 
 
