@@ -37,7 +37,10 @@
             <column name="project_impact_id" />
           </key>
         <one-to-many class="org.cgiar.ccafs.marlo.data.model.SectionStatus" />
-    </set>  
+        </set>  
+        <many-to-one name="projectImpactsCategories" class="org.cgiar.ccafs.marlo.data.model.ProjectImpactsCategories" fetch="select">
+            <column name="project_impact_category_id" />
+        </many-to-one>
         
     </class>
 </hibernate-mapping>
