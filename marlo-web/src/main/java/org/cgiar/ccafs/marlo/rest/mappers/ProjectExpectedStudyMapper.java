@@ -22,6 +22,7 @@ package org.cgiar.ccafs.marlo.rest.mappers;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectExpectedStudiesARDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectExpectedStudyDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectPageStudiesDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -75,6 +76,11 @@ public interface ProjectExpectedStudyMapper {
 
   public abstract ProjectExpectedStudyDTO
     projectExpectedStudyToProjectExpectedStudyDTO(ProjectExpectedStudy projectExpectedStudy);
+
+  @Mappings({@Mapping(source = "projectExpectedStudyInfo.title", target = "title"),
+    @Mapping(source = "pdfLink", target = "externalLink")})
+  public abstract ProjectPageStudiesDTO
+    projectExpectedStudyToProjectPageStudiesDTO(ProjectExpectedStudy projectExpectedStudy);
 
 
 }

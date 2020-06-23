@@ -27,8 +27,9 @@ import org.mapstruct.Mappings;
  * @author Diego Perez - CIAT/CCAFS
  */
 
-@Mapper(componentModel = "jsr330", uses = {ProjecInfoMapper.class, LocationMapper.class, DeliverablesMapper.class,
-  ProjectPolicyMapper.class, InnovationMapper.class, ProjectOutcomesMapper.class, ProjectPartnerMapper.class})
+@Mapper(componentModel = "jsr330",
+  uses = {ProjecInfoMapper.class, LocationMapper.class, DeliverablesMapper.class, ProjectPolicyMapper.class,
+    InnovationMapper.class, ProjectOutcomesMapper.class, ProjectPartnerMapper.class, ProjectExpectedStudyMapper.class})
 public interface ProjectPageMapper {
 
 
@@ -42,9 +43,11 @@ public interface ProjectPageMapper {
     @Mapping(source = "project.innovations", target = "innovationsList"),
     @Mapping(source = "project.outcomes", target = "outcomesContributing"),
     @Mapping(source = "project.partners", target = "partnersList"),
+    @Mapping(source = "project.expectedStudies", target = "outcomeImpactCaseReports"),
     @Mapping(expression = "java(project.getProjectDeliverables().size())", target = "numberDeliverables"),
     @Mapping(expression = "java(project.getPolicies().size())", target = "numberPolicies"),
     @Mapping(expression = "java(project.getPartners().size())", target = "numberPartners"),
+    @Mapping(expression = "java(project.getExpectedStudies().size())", target = "numberStudies"),
     @Mapping(expression = "java(project.getInnovations().size())", target = "numberInnovations")})
   public abstract ProjectPageDTO projectToProjectPageDTO(Project project);
 
