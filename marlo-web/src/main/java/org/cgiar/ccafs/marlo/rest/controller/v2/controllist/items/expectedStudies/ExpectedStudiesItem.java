@@ -559,6 +559,23 @@ public class ExpectedStudiesItem<T> {
                   new FieldErrorDTO("CreateExpectedStudy", "Countries", "A Country code can not be null nor empty."));
               }
             }
+            // verification for single or multiple countries
+            if (countriesList.size() == 1) {
+              geographicScopeList
+                .removeIf(g -> g.getId() != null && (g.getId() == APConstants.REP_IND_GEOGRAPHIC_SCOPE_MULTINATIONAL
+                  || g.getId() == APConstants.REP_IND_GEOGRAPHIC_SCOPE_NATIONAL));
+              // should not cause exception
+              geographicScopeList.add(repIndGeographicScopeManager
+                .getRepIndGeographicScopeById(APConstants.REP_IND_GEOGRAPHIC_SCOPE_NATIONAL));
+            } else if (countriesList.size() > 1) {
+              geographicScopeList
+                .removeIf(g -> g.getId() != null && (g.getId() == APConstants.REP_IND_GEOGRAPHIC_SCOPE_NATIONAL
+                  || g.getId() == APConstants.REP_IND_GEOGRAPHIC_SCOPE_MULTINATIONAL));
+              // should not cause exception
+              geographicScopeList.add(repIndGeographicScopeManager
+                .getRepIndGeographicScopeById(APConstants.REP_IND_GEOGRAPHIC_SCOPE_MULTINATIONAL));
+            }
+
           } /*
              * else {
              * fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Countries", "Please enter the Country(ies)."));
@@ -718,30 +735,27 @@ public class ExpectedStudiesItem<T> {
             for (NewMilestonesDTO milestones : newProjectExpectedStudy.getMilestonesCodeList()) {
               if (milestones != null && milestones.getMilestone() != null
                 && !milestones.getMilestone().trim().isEmpty()) {
-                id =
-                  this.tryParseLong(milestones.getMilestone().trim(), fieldErrors, "CreateExpectedStudy", "Milestone");
-                if (id != null) {
-                  CrpMilestone crpMilestone = crpMilestoneManager.getCrpMilestoneById(id);
-                  if (crpMilestone != null && crpMilestone.isActive()) {
-                    ProjectExpectedStudyMilestone obj = new ProjectExpectedStudyMilestone();
-                    obj.setCrpMilestone(crpMilestone);
-                    obj.setPrimary(milestones.getPrimary() != null && milestones.getPrimary());
-                    hasPrimary = hasPrimary + (obj.getPrimary() == true ? 1 : 0);
-                    milestoneList.add(obj);
-                  } else {
-                    fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Milestone",
-                      milestones.getMilestone() + " is an invalid Milestone identifier"));
+                CrpMilestone crpMilestone =
+                  crpMilestoneManager.getCrpMilestoneByPhase(milestones.getMilestone(), phase.getId());
+                if (crpMilestone != null && crpMilestone.isActive()) {
+                  ProjectExpectedStudyMilestone obj = new ProjectExpectedStudyMilestone();
+                  obj.setCrpMilestone(crpMilestone);
+                  obj.setPrimary(milestones.getPrimary() != null && milestones.getPrimary());
+                  if (obj.getPrimary()) {
+                    hasPrimary += 1;
                   }
+                  milestoneList.add(obj);
+                } else {
+                  fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Milestone",
+                    milestones.getMilestone() + " is an invalid Milestone identifier"));
                 }
+
               } else {
                 fieldErrors.add(
                   new FieldErrorDTO("CreateExpectedStudy", "Milestone", "A Milestone code can not be null nor empty."));
               }
             }
-            if (hasPrimary == 0) {
-              fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Milestone",
-                "There should be at least one milestone marked as primary"));
-            }
+
             if (hasPrimary > 1) {
               fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Milestone",
                 "There can not be more than one milestone marked as primary"));
@@ -865,7 +879,10 @@ public class ExpectedStudiesItem<T> {
               if (projectPolicyList.size() > 0) {
                 projectExpectedStudyInfo.setIsContribution(true);
               }
-
+              if (newProjectExpectedStudy.getMilestonesCodeList() != null
+                && newProjectExpectedStudy.getMilestonesCodeList().size() > 0) {
+                projectExpectedStudyInfo.setHasMilestones(true);
+              }
               if (srfSloIndicatorList.size() > 0) {
                 projectExpectedStudyInfo.setIsSrfTarget("targetsOptionYes");
               }
@@ -1639,6 +1656,23 @@ public class ExpectedStudiesItem<T> {
                   .add(new FieldErrorDTO("putExpectedStudy", "Countries", "A Country code can not be null nor empty."));
               }
             }
+            // verification for single or multiple countries
+            if (countriesList.size() == 1) {
+              geographicScopeList
+                .removeIf(g -> g.getId() != null && (g.getId() == APConstants.REP_IND_GEOGRAPHIC_SCOPE_MULTINATIONAL
+                  || g.getId() == APConstants.REP_IND_GEOGRAPHIC_SCOPE_NATIONAL));
+              // should not cause exception
+              geographicScopeList.add(repIndGeographicScopeManager
+                .getRepIndGeographicScopeById(APConstants.REP_IND_GEOGRAPHIC_SCOPE_NATIONAL));
+            } else if (countriesList.size() > 1) {
+              geographicScopeList
+                .removeIf(g -> g.getId() != null && (g.getId() == APConstants.REP_IND_GEOGRAPHIC_SCOPE_NATIONAL
+                  || g.getId() == APConstants.REP_IND_GEOGRAPHIC_SCOPE_MULTINATIONAL));
+              // should not cause exception
+              geographicScopeList.add(repIndGeographicScopeManager
+                .getRepIndGeographicScopeById(APConstants.REP_IND_GEOGRAPHIC_SCOPE_MULTINATIONAL));
+            }
+
           } /*
              * else {
              * fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Countries", "Please enter the Country(ies)."));
@@ -1797,29 +1831,27 @@ public class ExpectedStudiesItem<T> {
             for (NewMilestonesDTO milestones : newProjectExpectedStudy.getMilestonesCodeList()) {
               if (milestones != null && milestones.getMilestone() != null
                 && !milestones.getMilestone().trim().isEmpty()) {
-                id = this.tryParseLong(milestones.getMilestone().trim(), fieldErrors, "putExpectedStudy", "Milestone");
-                if (id != null) {
-                  CrpMilestone crpMilestone = crpMilestoneManager.getCrpMilestoneById(id);
-                  if (crpMilestone != null && crpMilestone.isActive()) {
-                    ProjectExpectedStudyMilestone obj = new ProjectExpectedStudyMilestone();
-                    obj.setCrpMilestone(crpMilestone);
-                    obj.setPrimary(milestones.getPrimary() != null && milestones.getPrimary());
-                    hasPrimary = hasPrimary + (obj.getPrimary() == true ? 1 : 0);
-                    milestoneList.add(obj);
-                  } else {
-                    fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Milestone",
-                      milestones.getMilestone() + " is an invalid Milestone identifier"));
+                CrpMilestone crpMilestone =
+                  crpMilestoneManager.getCrpMilestoneByPhase(milestones.getMilestone(), phase.getId());
+                if (crpMilestone != null && crpMilestone.isActive()) {
+                  ProjectExpectedStudyMilestone obj = new ProjectExpectedStudyMilestone();
+                  obj.setCrpMilestone(crpMilestone);
+                  obj.setPrimary(milestones.getPrimary() != null && milestones.getPrimary());
+                  if (obj.getPrimary()) {
+                    hasPrimary += 1;
                   }
+                  milestoneList.add(obj);
+                } else {
+                  fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Milestone",
+                    milestones.getMilestone() + " is an invalid Milestone identifier"));
                 }
+
               } else {
                 fieldErrors.add(
                   new FieldErrorDTO("putExpectedStudy", "Milestone", "A Milestone code can not be null nor empty."));
               }
             }
-            if (hasPrimary == 0) {
-              fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Milestone",
-                "There should be at least one milestone marked as primary"));
-            }
+
             if (hasPrimary > 1) {
               fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Milestone",
                 "There can not be more than one milestone marked as primary"));
@@ -1947,6 +1979,10 @@ public class ExpectedStudiesItem<T> {
             }
             if (srfSloIndicatorList.size() > 0) {
               projectExpectedStudyInfo.setIsSrfTarget("targetsOptionYes");
+            }
+            if (newProjectExpectedStudy.getMilestonesCodeList() != null
+              && newProjectExpectedStudy.getMilestonesCodeList().size() > 0) {
+              projectExpectedStudyInfo.setHasMilestones(true);
             }
             if (projectExpectedStudyInfoManager.saveProjectExpectedStudyInfo(projectExpectedStudyInfo) != null) {
               // update flashsip/module

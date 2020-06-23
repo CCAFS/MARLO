@@ -62,6 +62,12 @@ public class QATokenAuthManagerImpl implements QATokenAuthManager {
   }
 
   @Override
+  public QATokenAuth generateQATokenAuth(String name, String username, String email, String smoCode, String userId) {
+
+    return qATokenAuthDAO.generate(name, username, email, smoCode, userId);
+  }
+
+  @Override
   public QATokenAuth getQATokenAuthById(long qATokenAuthID) {
 
     return qATokenAuthDAO.find(qATokenAuthID);

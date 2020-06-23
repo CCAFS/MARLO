@@ -57,28 +57,37 @@ public class NewProjectPolicyDTO {
 
 
   @ApiModelProperty(notes = "CGIAR Milestones List", position = 5)
-  private List<NewMilestonesDTO> milestonesDTOs;
+  private List<NewMilestonesDTO> milestonesCodeList;
+
 
   @ApiModelProperty(notes = "Outcome Impact Case Report List", position = 8)
   private List<String> projectExpectedStudyList;
 
+  @ApiModelProperty(notes = "Contributing innovations code list", position = 8)
+  private List<String> innovationCodeList;
 
   public List<CountryDTO> getCountries() {
     return countries;
   }
 
-
   public List<NewCrosscuttingMarkersDTO> getCrossCuttingMarkers() {
     return crossCuttingMarkers;
   }
+
 
   public List<GeographicScopeDTO> getGeographicScopes() {
     return geographicScopes;
   }
 
-  public List<NewMilestonesDTO> getMilestonesDTOs() {
-    return milestonesDTOs;
+
+  public List<String> getInnovationCodeList() {
+    return innovationCodeList;
   }
+
+  public List<NewMilestonesDTO> getMilestonesCodeList() {
+    return milestonesCodeList;
+  }
+
 
   public List<PolicyOwnerTypeDTO> getOwners() {
     return owners;
@@ -126,9 +135,16 @@ public class NewProjectPolicyDTO {
     this.geographicScopes = geographicScopes;
   }
 
-  public void setMilestonesDTOs(List<NewMilestonesDTO> milestonesDTOs) {
-    this.milestonesDTOs = milestonesDTOs;
+
+  public void setInnovationCodeList(List<String> innovationCodeList) {
+    this.innovationCodeList = innovationCodeList;
   }
+
+
+  public void setMilestonesCodeList(List<NewMilestonesDTO> milestonesCodeList) {
+    this.milestonesCodeList = milestonesCodeList;
+  }
+
 
   public void setOwners(List<PolicyOwnerTypeDTO> owners) {
     this.owners = owners;

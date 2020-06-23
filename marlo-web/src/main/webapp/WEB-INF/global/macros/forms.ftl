@@ -594,7 +594,7 @@
       <div class="loading listComponentLoading" style="display:none"></div>
       <ul class="list[#if (hasPrimary)!false] primary[/#if]">
         [#if elementList?has_content]
-          [#if hasPrimary]<label class="primary-label">Set as primary</label>[/#if]
+          [#if hasPrimary]<label class="primary-label">[#if editable]Set as primary [#else] Primary[/#if]</label>[/#if]
           [#list elementList as item][@listElementMacro name=name element=item type=elementType id=id index=item_index keyFieldName=keyFieldName displayFieldName=displayFieldName indexLevel=indexLevel hasPrimary=hasPrimary/][/#list]
         [/#if]
       </ul>
@@ -702,7 +702,13 @@
       [#if editable]<div class="removeElement sm removeIcon removeElementType-${composedID}" title="Remove"></div>[/#if] 
           <div class="form-group row primary-list">
           <div class="col-md-1 primary-radio">
-          [@radioFlat id="${customName}.primary" name="${customName}.primary" value="true" cssClassLabel="radio-label-yes" editable=editable checked=(primaryValue)!false /]
+          [#if editable]
+            [@radioFlat id="${customName}.primary" name="${customName}.primary" value="true" cssClassLabel="radio-label-yes" editable=editable checked=(primaryValue)!false /]
+            [#else]
+              [#if primaryValue==true]
+                <span class="primary-element glyphicon glyphicon-ok-sign"></span>
+              [/#if]
+          [/#if]
           </div>
           <div class="col-md-1"></div>
           <div class="col-md-10">

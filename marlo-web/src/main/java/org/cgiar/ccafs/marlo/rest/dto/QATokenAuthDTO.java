@@ -28,10 +28,10 @@ public class QATokenAuthDTO {
   @ApiModelProperty(notes = "QA Token id", position = 1)
   private Long id;
 
-  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "America/Bogota")
   private Date createdAt;
 
-  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "America/Bogota")
   private Date updatedAt;
 
   @ApiModelProperty(notes = "Crp id", position = 2)
@@ -40,7 +40,7 @@ public class QATokenAuthDTO {
   @ApiModelProperty(notes = "Token", position = 3)
   private String token;
 
-  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "America/Bogota")
   private Date expirationDate;
 
   @ApiModelProperty(notes = "Username", position = 4)

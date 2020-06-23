@@ -744,6 +744,9 @@ public final class APConstants {
   public static final long REP_IND_POLICY_INVESTIMENT_TYPES_LEGALINSTRUMENT = 2;
   public static final long REP_IND_POLICY_INVESTIMENT_TYPES_BUDGET = 3;
   public static final long REP_IND_POLICY_INVESTIMENT_TYPES_CURRICULUM = 4;
+  public static final long REP_IND_GEOGRAPHIC_SCOPE_NATIONAL = 4;
+  public static final long REP_IND_GEOGRAPHIC_SCOPE_MULTINATIONAL = 3;
+
 
   // Capdev Parameters
   public static final String CRP_CD_ROLE = "crp_cd_role";

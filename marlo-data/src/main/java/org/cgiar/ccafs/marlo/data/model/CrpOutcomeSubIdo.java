@@ -31,9 +31,6 @@ import com.google.gson.annotations.Expose;
  */
 public class CrpOutcomeSubIdo extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
 
-  /**
-   * 
-   */
   private static final long serialVersionUID = 7556470694083733136L;
 
   @Expose
@@ -52,8 +49,18 @@ public class CrpOutcomeSubIdo extends MarloAuditableEntity implements java.io.Se
 
   private HashMap<Long, String> subIdoList;
 
-
   public CrpOutcomeSubIdo() {
+  }
+
+  public void copyFields(CrpOutcomeSubIdo other) {
+    this.setActive(other.isActive());
+    this.setActiveSince(other.getActiveSince());
+    this.setContribution(other.getContribution());
+    this.setCreatedBy(other.getCreatedBy());
+    this.setModificationJustification(other.getModificationJustification());
+    this.setModifiedBy(other.getModifiedBy());
+    this.setPrimary(other.getPrimary() != null ? other.getPrimary() : Boolean.FALSE);
+    this.setSrfSubIdo(other.getSrfSubIdo());
   }
 
   @Override
@@ -61,12 +68,15 @@ public class CrpOutcomeSubIdo extends MarloAuditableEntity implements java.io.Se
     if (this == obj) {
       return true;
     }
+
     if (obj == null) {
       return false;
     }
+
     if (this.getClass() != obj.getClass()) {
       return false;
     }
+
     CrpOutcomeSubIdo other = (CrpOutcomeSubIdo) obj;
     if (this.getId() == null) {
       if (other.getId() != null) {
@@ -75,6 +85,7 @@ public class CrpOutcomeSubIdo extends MarloAuditableEntity implements java.io.Se
     } else if (!this.getId().equals(other.getId())) {
       return false;
     }
+
     return true;
   }
 
@@ -146,18 +157,13 @@ public class CrpOutcomeSubIdo extends MarloAuditableEntity implements java.io.Se
     this.srfSubIdo = srfSubIdo;
   }
 
-
   public void setSubIdoList(HashMap<Long, String> subIdoList) {
     this.subIdoList = subIdoList;
   }
-
 
   @Override
   public String toString() {
     return "CrpOutcomeSubIdo [id=" + this.getId() + ", crpProgramOutcome=" + crpProgramOutcome + ", srfSubIdo="
       + srfSubIdo + ", contribution=" + contribution + "]";
   }
-
-
 }
-

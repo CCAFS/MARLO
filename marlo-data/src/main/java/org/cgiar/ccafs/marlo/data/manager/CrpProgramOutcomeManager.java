@@ -54,6 +54,15 @@ public interface CrpProgramOutcomeManager {
 
 
   /**
+   * This method finds all CrpProgramOutcomes from the given phase by composeId
+   * 
+   * @param composedId the composed id of the original outcome
+   * @param phaseId the id of the phase
+   * @return a CrpProgramOutcome list.
+   */
+  public List<CrpProgramOutcome> getAllCrpProgramOutcomesByComposedIdFromPhase(String composedId, long phaseId);
+
+  /**
    * This method finds a CrpProgramOutcome by composeId and phase
    * 
    * @param composedId
@@ -71,6 +80,14 @@ public interface CrpProgramOutcomeManager {
   public CrpProgramOutcome getCrpProgramOutcomeById(long crpProgramOutcomeID);
 
   /**
+   * Replicates an outcome, starting from the given phase
+   * 
+   * @param originalCrpProgramOutcome outcome to be replicated
+   * @param initialPhase initial replication phase
+   */
+  public void replicate(CrpProgramOutcome originalCrpProgramOutcome, Phase initialPhase);
+
+  /**
    * This method saves the information of the given crpProgramOutcome
    * 
    * @param crpProgramOutcome - is the crpProgramOutcome object with the new information to be added/updated.
@@ -79,6 +96,16 @@ public interface CrpProgramOutcomeManager {
    *         or -1 is some error occurred.
    */
   public CrpProgramOutcome saveCrpProgramOutcome(CrpProgramOutcome crpProgramOutcome);
+
+  /**
+   * Detect and make changes of an outcome, comparing the previous (DB) outcome with an incoming outcome (front-end)
+   * 
+   * @param programOutcomeIncoming incoming outcome (modified)
+   * @param phaseId the phase id
+   * @param crpProgramId the crp program id
+   * @return
+   */
+  // public CrpProgramOutcome updateOutcome(CrpProgramOutcome programOutcomeIncoming, long phaseId, long crpProgramId);
 
 
 }
