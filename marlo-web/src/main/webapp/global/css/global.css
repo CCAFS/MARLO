@@ -7008,6 +7008,15 @@ div.selectPrimary{
   font-size: 10px
 }
 
+.primary-element {
+  height: 1em;
+  width: 1em;
+  border-radius: 100%;
+  margin-left: 1.5em;
+  margin-bottom: 0.6em;
+  color: #57a7b5;
+}
+
 .menuContent #bi::before{
   content: "BETA";
   color: #0277a2;

@@ -16,6 +16,7 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectImpacts;
 
 import java.util.List;
@@ -54,7 +55,6 @@ public interface ProjectImpactsDAO {
    */
   public List<ProjectImpacts> findAll();
 
-
   /**
    * This method gets a projectImpacts object by a given project identifier.
    * 
@@ -62,6 +62,14 @@ public interface ProjectImpactsDAO {
    * @return a list from ProjectImpacts null if no exist records
    */
   public List<ProjectImpacts> findByProjectId(long projectId);
+
+  /**
+   * This method gets a projectImpacts object by phase.
+   * 
+   * @param phase is a object phase.
+   * @return a ProjectImpacts object.
+   */
+  public List<ProjectImpacts> getProjectImpactsByPhase(Phase phase);
 
   /**
    * This method saves the information of the given projectImpacts

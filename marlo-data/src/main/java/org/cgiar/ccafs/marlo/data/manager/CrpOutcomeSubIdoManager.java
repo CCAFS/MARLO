@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -34,7 +35,6 @@ public interface CrpOutcomeSubIdoManager {
    */
   public void deleteCrpOutcomeSubIdo(long crpOutcomeSubIdoId);
 
-
   /**
    * This method validate if the crpOutcomeSubIdo identify with the given id exists in the system.
    * 
@@ -42,7 +42,6 @@ public interface CrpOutcomeSubIdoManager {
    * @return true if the crpOutcomeSubIdo exists, false otherwise.
    */
   public boolean existCrpOutcomeSubIdo(long crpOutcomeSubIdoID);
-
 
   /**
    * This method gets a list of crpOutcomeSubIdo that are active
@@ -59,6 +58,25 @@ public interface CrpOutcomeSubIdoManager {
    * @return a CrpOutcomeSubIdo object.
    */
   public CrpOutcomeSubIdo getCrpOutcomeSubIdoById(long crpOutcomeSubIdoID);
+
+  /**
+   * This method finds a CrpOutcomeSubIdo in the given phase by an outcome composeId and a Srf SubIdo ID
+   * 
+   * @param composedId the composed id of the original outcome
+   * @param phaseId the id of the phase
+   * @param subIdoId the Srf SubIdo ID
+   * @return a CrpOutcomeSubIdo, null if not found.
+   */
+  public CrpOutcomeSubIdo getCrpOutcomeSubIdoByOutcomeComposedIdPhaseAndSubIdo(String outcomeComposedId, long phaseId,
+    long subIdoId);
+
+  /**
+   * Replicates an outcome sub-ido, starting from the given phase
+   * 
+   * @param originalCrpOutcomeSubIdo outcome sub-ido to be replicated
+   * @param initialPhase initial replication phase
+   */
+  public void replicate(CrpOutcomeSubIdo originalCrpOutcomeSubIdo, Phase initialPhase);
 
   /**
    * This method saves the information of the given crpOutcomeSubIdo

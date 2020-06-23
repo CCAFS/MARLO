@@ -43,6 +43,7 @@ public interface InnovationMapper {
     @Mapping(source = "projectInnovation.projectInnovationInfo.leadOrganization", target = "leadOrganization"),
     @Mapping(source = "contributingOrganizations", target = "contributingInstitutions"),
     @Mapping(source = "projectInnovation.projectInnovationInfo.repIndInnovationType", target = "innovationType"),
+    @Mapping(source = "projectInnovation.projectInnovationInfo.innovationNumber", target = "innovationNumber"),
     @Mapping(source = "regions", target = "regions"), @Mapping(source = "countries", target = "countries"),
     @Mapping(source = "geographicScopes", target = "geographicScopes"),
     @Mapping(source = "projectInnovation.projectInnovationInfo.evidenceLink", target = "evidenceLink"),

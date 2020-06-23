@@ -24,12 +24,14 @@ import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.PolicyMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPolicyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyInfoManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyOwnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyRegionManager;
@@ -52,12 +54,15 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyOwner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicySubIdo;
@@ -111,6 +116,7 @@ public class PolicyItem<T> {
   private ProjectPolicyRegionManager projectPolicyRegionManager;
   private ProjectPolicyCrossCuttingMarkerManager projectPolicyCrossCuttingMarkerManager;
   private ProjectPolicyOwnerManager projectPolicyOwnerManager;
+  private ProjectPolicyInnovationManager projectPolicyInnovationManager;
   private RepIndPolicyInvestimentTypeManager repIndPolicyInvestimentTypeManager;
   private ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager;
   private RepIndStageProcessManager repIndStageProcessManager;
@@ -125,6 +131,8 @@ public class PolicyItem<T> {
   private PolicyMilestoneManager policyMilestoneManager;
   private CrpMilestoneManager crpMilestoneManager;
   private ProjectExpectedStudyManager projectExpectedStudyManager;
+
+  private ProjectInnovationManager projectInnovationManager;
 
   @Inject
   public PolicyItem(GlobalUnitManager globalUnitManager, PhaseManager phaseManager,
@@ -142,7 +150,8 @@ public class PolicyItem<T> {
     ProjectPolicyOwnerManager projectPolicyOwnerManager, RepIndPolicyTypeManager repIndPolicyTypeManager,
     PolicyMilestoneManager policyMilestoneManager, CrpMilestoneManager crpMilestoneManager,
     ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager,
-    ProjectExpectedStudyManager projectExpectedStudyManager) {
+    ProjectExpectedStudyManager projectExpectedStudyManager,
+    ProjectPolicyInnovationManager projectPolicyInnovationManager, ProjectInnovationManager projectInnovationManager) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.projectPolicyManager = projectPolicyManager;
@@ -168,6 +177,8 @@ public class PolicyItem<T> {
     this.crpMilestoneManager = crpMilestoneManager;
     this.projectExpectedStudyPolicyManager = projectExpectedStudyPolicyManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
+    this.projectPolicyInnovationManager = projectPolicyInnovationManager;
+    this.projectInnovationManager = projectInnovationManager;
   }
 
   public Long createPolicy(NewProjectPolicyDTO newPolicyDTO, String entityAcronym, User user) {
@@ -182,7 +193,9 @@ public class PolicyItem<T> {
     List<ProjectPolicyCrossCuttingMarker> ProjectPolicyCrossCuttingMarkerList =
       new ArrayList<ProjectPolicyCrossCuttingMarker>();
     List<PolicyMilestone> policyMilestones = new ArrayList<>();
+    List<ProjectPolicyInnovation> projectPolicyInnovationsList = new ArrayList<ProjectPolicyInnovation>();
     List<ProjectPolicyOwner> projectPolicyOwnerList = new ArrayList<ProjectPolicyOwner>();
+
     String strippedId = null;
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
@@ -279,8 +292,8 @@ public class PolicyItem<T> {
           }
         }
         // validate milestones
-        if (newPolicyDTO.getMilestonesDTOs() != null && !newPolicyDTO.getMilestonesDTOs().isEmpty()) {
-          for (NewMilestonesDTO milestones : newPolicyDTO.getMilestonesDTOs()) {
+        if (newPolicyDTO.getMilestonesCodeList() != null && !newPolicyDTO.getMilestonesCodeList().isEmpty()) {
+          for (NewMilestonesDTO milestones : newPolicyDTO.getMilestonesCodeList()) {
             if (milestones != null && !milestones.getMilestone().trim().isEmpty()) {
               CrpMilestone crpMilestone =
                 crpMilestoneManager.getCrpMilestoneByPhase(milestones.getMilestone().trim(), phase.getId());
@@ -318,6 +331,33 @@ public class PolicyItem<T> {
             }
           }
         }
+
+        // validate Innovations
+        if (newPolicyDTO.getInnovationCodeList() != null && newPolicyDTO.getInnovationCodeList().size() > 0) {
+          for (String innovation : newPolicyDTO.getInnovationCodeList()) {
+            if (innovation != null && !innovation.trim().isEmpty()) {
+              if (this.tryParseLong(innovation.trim(), fieldErrors, "createPolicy", "Innovation") != null) {
+                ProjectInnovation projectInnovation =
+                  projectInnovationManager.getProjectInnovationById(Long.valueOf(innovation));
+                if (projectInnovation != null) {
+                  ProjectPolicyInnovation projectPolicyInnovation = new ProjectPolicyInnovation();
+                  projectPolicyInnovation.setPhase(phase);
+                  projectPolicyInnovation.setProjectPolicy(projectPolicy);
+                  projectPolicyInnovation.setProjectInnovation(projectInnovation);
+                  projectPolicyInnovationsList.add(projectPolicyInnovation);
+                } else {
+                  fieldErrors.add(new FieldErrorDTO("createPolicy", "Innovation",
+                    innovation + " is an invalid innovation identifier"));
+                }
+              }
+            } else {
+              fieldErrors
+                .add(new FieldErrorDTO("createPolicy", "Innovation", "An Innovation code can not be null nor empty."));
+            }
+          }
+        }
+
+
         // validate countries
         if (newPolicyDTO.getCountries() != null && newPolicyDTO.getCountries().size() > 0) {
           for (CountryDTO iso : newPolicyDTO.getCountries()) {
@@ -418,6 +458,10 @@ public class PolicyItem<T> {
             projectPolicyInfo.setTitle(newPolicyDTO.getProjectPoliciesInfo().getTitle());
             projectPolicyInfo.setDescription(newPolicyDTO.getProjectPoliciesInfo().getDescription());
             projectPolicyInfo.setNarrativeEvidence(newPolicyDTO.getProjectPoliciesInfo().getNarrativeEvidence());
+            projectPolicyInfo.setHasMilestones(false);
+            if (newPolicyDTO.getMilestonesCodeList() != null && newPolicyDTO.getMilestonesCodeList().size() > 0) {
+              projectPolicyInfo.setHasMilestones(true);
+            }
             projectPolicyInfoManager.saveProjectPolicyInfo(projectPolicyInfo);
 
             for (ProjectPolicyCrp projectPolicyCrp : projectPolicyCrpList) {
@@ -459,6 +503,11 @@ public class PolicyItem<T> {
             for (ProjectPolicyOwner projectPolicyOwner : projectPolicyOwnerList) {
               projectPolicyOwner.setProjectPolicy(projectPolicy);
               projectPolicyOwnerManager.saveProjectPolicyOwner(projectPolicyOwner);
+            }
+
+            for (ProjectPolicyInnovation projectPolicyInnovation : projectPolicyInnovationsList) {
+              projectPolicyInnovation.setProjectPolicy(projectPolicy);
+              projectPolicyInnovationManager.saveProjectPolicyInnovation(projectPolicyInnovation);
             }
 
           }
@@ -657,6 +706,21 @@ public class PolicyItem<T> {
         .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicyID
           && c.getPhase().getId().longValue() == phase.getId().longValue())
         .collect(Collectors.toList()));
+      // setting innvoations
+
+      List<ProjectPolicyInnovation> projectPolicyInnovationList = new ArrayList<ProjectPolicyInnovation>();
+      for (ProjectPolicyInnovation projectPolicyInnovation : projectPolicyInnovationManager.findAll().stream()
+        .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicyID
+          && c.getPhase().getId().longValue() == phase.getId().longValue())
+        .collect(Collectors.toList())) {
+        ProjectInnovation projectInnovation =
+          projectInnovationManager.getProjectInnovationById(projectPolicyInnovation.getProjectInnovation().getId());
+        ProjectInnovationInfo projectInnovationInfo = projectInnovation.getProjectInnovationInfo(phase);
+        projectInnovation.setProjectInnovationInfo(projectInnovationInfo);
+        projectPolicyInnovation.setProjectInnovation(projectInnovation);
+        projectPolicyInnovationList.add(projectPolicyInnovation);
+      }
+      projectPolicy.setInnovations(projectPolicyInnovationList);
       // setting OCIRs
       List<ProjectExpectedStudyPolicy> projectExpectedStudyPolicyList = new ArrayList<ProjectExpectedStudyPolicy>();
       for (ProjectExpectedStudyPolicy projectExpectedStudyPolicy : projectExpectedStudyPolicyManager.findAll().stream()
@@ -693,6 +757,7 @@ public class PolicyItem<T> {
     List<ProjectPolicyRegion> projectPolicyRegionList = new ArrayList<ProjectPolicyRegion>();
     List<ProjectPolicyCrossCuttingMarker> ProjectPolicyCrossCuttingMarkerList =
       new ArrayList<ProjectPolicyCrossCuttingMarker>();
+    List<ProjectPolicyInnovation> projectPolicyInnovationList = new ArrayList<ProjectPolicyInnovation>();
     List<PolicyMilestone> policyMilestones = new ArrayList<>();
     List<ProjectPolicyOwner> projectPolicyOwnerList = new ArrayList<ProjectPolicyOwner>();
     String strippedId = null;
@@ -766,8 +831,8 @@ public class PolicyItem<T> {
           }
         }
         // validate milestones
-        if (newPolicyDTO.getMilestonesDTOs() != null && !newPolicyDTO.getMilestonesDTOs().isEmpty()) {
-          for (NewMilestonesDTO milestones : newPolicyDTO.getMilestonesDTOs()) {
+        if (newPolicyDTO.getMilestonesCodeList() != null && !newPolicyDTO.getMilestonesCodeList().isEmpty()) {
+          for (NewMilestonesDTO milestones : newPolicyDTO.getMilestonesCodeList()) {
             if (milestones != null && !milestones.getMilestone().trim().isEmpty()) {
               CrpMilestone crpMilestone =
                 crpMilestoneManager.getCrpMilestoneByPhase(milestones.getMilestone().trim(), phase.getId());
@@ -802,6 +867,31 @@ public class PolicyItem<T> {
               projectPolicyGeographicScope.setProjectPolicy(projectPolicy);
               projectPolicyGeographicScope.setRepIndGeographicScope(geoScope);
               projectPolicyGeographicScopeList.add(projectPolicyGeographicScope);
+            }
+          }
+        }
+
+        // validate Innovations
+        if (newPolicyDTO.getInnovationCodeList() != null && newPolicyDTO.getInnovationCodeList().size() > 0) {
+          for (String innovation : newPolicyDTO.getInnovationCodeList()) {
+            if (innovation != null && !innovation.trim().isEmpty()) {
+              if (this.tryParseLong(innovation.trim(), fieldErrors, "createPolicy", "Innovation") != null) {
+                ProjectInnovation projectInnovation =
+                  projectInnovationManager.getProjectInnovationById(Long.valueOf(innovation));
+                if (projectInnovation != null) {
+                  ProjectPolicyInnovation projectPolicyInnovation = new ProjectPolicyInnovation();
+                  projectPolicyInnovation.setPhase(phase);
+                  projectPolicyInnovation.setProjectPolicy(projectPolicy);
+                  projectPolicyInnovation.setProjectInnovation(projectInnovation);
+                  projectPolicyInnovationList.add(projectPolicyInnovation);
+                } else {
+                  fieldErrors.add(new FieldErrorDTO("createPolicy", "Innovation",
+                    innovation + " is an invalid innovation identifier"));
+                }
+              }
+            } else {
+              fieldErrors
+                .add(new FieldErrorDTO("createPolicy", "Innovation", "An Innovation code can not be null nor empty."));
             }
           }
         }
@@ -896,6 +986,10 @@ public class PolicyItem<T> {
       // can update
       if (fieldErrors.isEmpty()) {
         final long projectPolicyID = id;
+        projectPolicyInfo.setHasMilestones(false);
+        if (newPolicyDTO.getMilestonesCodeList() != null && newPolicyDTO.getMilestonesCodeList().size() > 0) {
+          projectPolicyInfo.setHasMilestones(true);
+        }
         projectPolicyInfoManager.saveProjectPolicyInfo(projectPolicyInfo);
         // *************Policy CRP*****************/
         // getting saved projectPolicyCRPList
@@ -936,7 +1030,9 @@ public class PolicyItem<T> {
             projectPolicySubIdo.getProjectPolicy().getId().longValue(),
             projectPolicySubIdo.getSrfSubIdo().getId().longValue(), projectPolicySubIdo.getPhase().getId().longValue());
           if (temp != null) {
+            temp.setPrimary(projectPolicySubIdo.getPrimary());
             existingProjectPolicySubIdoList.add(temp);
+            projectPolicySubIdoManager.saveProjectPolicySubIdo(temp);
           } else {
             projectPolicySubIdoManager.saveProjectPolicySubIdo(projectPolicySubIdo);
           }
@@ -960,7 +1056,9 @@ public class PolicyItem<T> {
             policyMilestoneManager.findByCrpMilestonePolicyAndPhase(policyMilestone.getCrpMilestone().getId(),
               policyMilestone.getPolicy().getId(), policyMilestone.getPhase().getId());
           if (temp != null) {
+            temp.setPrimary(policyMilestone.getPrimary());
             existingPolicyMilestonesList.add(temp);
+            policyMilestoneManager.savePolicyMilestone(temp);
           } else {
             policyMilestoneManager.savePolicyMilestone(policyMilestone);
           }
@@ -991,10 +1089,35 @@ public class PolicyItem<T> {
             projectPolicyGeographicScopeManager.saveProjectPolicyGeographicScope(projectPolicyGeographicScope);
           }
         }
-        // verify deleted geographicscope
+        // verify deleted GeographicScope
         for (ProjectPolicyGeographicScope obj : projectPolicyGeographicScopeListDB) {
           if (!existingProjectPolicyGeographicScopeList.contains(obj)) {
             projectPolicyGeographicScopeManager.deleteProjectPolicyGeographicScope(obj.getId());
+          }
+        }
+
+        // *************Policy Innovations*****************/
+        List<ProjectPolicyInnovation> projectPolicyInnovationListDB = projectPolicyInnovationManager.findAll().stream()
+          .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicyID
+            && c.getPhase().getId().longValue() == phase.getId().longValue())
+          .collect(Collectors.toList());
+        List<ProjectPolicyInnovation> existingProjectPolicyInnovationList = new ArrayList<ProjectPolicyInnovation>();
+        for (ProjectPolicyInnovation projectPolicyInnovation : projectPolicyInnovationList) {
+          projectPolicyInnovation.setProjectPolicy(projectPolicy);
+          ProjectPolicyInnovation temp = projectPolicyInnovationManager.getProjectPolicyInnovationByPhase(
+            projectPolicyInnovation.getProjectPolicy().getId().longValue(),
+            projectPolicyInnovation.getProjectInnovation().getId().longValue(),
+            projectPolicyInnovation.getPhase().getId().longValue());
+          if (temp != null) {
+            existingProjectPolicyInnovationList.add(temp);
+          } else {
+            projectPolicyInnovationManager.saveProjectPolicyInnovation(projectPolicyInnovation);
+          }
+        }
+        // verify deleted innovations
+        for (ProjectPolicyInnovation obj : projectPolicyInnovationListDB) {
+          if (!existingProjectPolicyInnovationList.contains(obj)) {
+            projectPolicyInnovationManager.deleteProjectPolicyInnovation(obj.getId());
           }
         }
         // *************Policy Countries*****************/

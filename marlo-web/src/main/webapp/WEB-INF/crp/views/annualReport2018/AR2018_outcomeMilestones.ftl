@@ -209,27 +209,29 @@
                 [#if isOutcomeRow && !allowPopups]
                   <td rowspan="${outcomesSize}" class="milestonesSize-${outcomesSize}">
                     [@utils.tableText value=(reportedOutcome.summary)!"" emptyText="global.prefilledByFlagship"/]
-                  </td>
+                  </td>                
                 [/#if]
                 [#-- Milestone --]
-                <td> ${milestone.composedName} [#if allowPopups] <div class="pull-right">[@milestoneContributions element=milestone tiny=true /] [/#if]</div></td>
-                [#-- Milestone Status --]
-                <td class="text-center"> 
-                  [#local reportedMilestone= (action.getMilestone((reportedOutcome.id)!-1 , milestone.id))! ]
-                  [@utils.tableText value=(reportedMilestone.crpMilestone.milestonesStatus.name)!"" emptyText="global.prefilledByFlagship" /]
-                </td>
-                [#if !allowPopups]
-                  [#-- Milestone Evidence --]
-                  <td class="urlify">[@utils.tableText value=(reportedMilestone.evidence)!"" emptyText="global.prefilledByFlagship" /] </td>
-                  [#-- Link to Evidences --]
-                  <td class="urlify">[@utils.tableText value=(reportedMilestone.evidenceLink)!"" emptyText="global.prefilledByFlagship" /] </td>
-                  [#-- Cross Cutting markers --]
-                  [#list cgiarCrossCuttingMarkers as marker]
-                    [#local reportedCrossCuting =  (action.getCrossCuttingMarker( ((reportedMilestone.id)!-1), marker.id ))! ]
-                    <td class="text-center">
-                      <p class="dacMarker level-${(reportedCrossCuting.focus.id)!""}" title="${(reportedCrossCuting.focus.powbName)!""}">${(reportedCrossCuting.focus.acronym)!""}</p>
-                    </td>
-                  [/#list]
+                [#if milestone.isActive()]
+                  <td> ${milestone.composedName} [#if allowPopups] <div class="pull-right">[@milestoneContributions element=milestone tiny=true /] [/#if]</div></td>
+                  [#-- Milestone Status --]
+                  <td class="text-center"> 
+                    [#local reportedMilestone= (action.getMilestone((reportedOutcome.id)!-1 , milestone.id))! ]
+                    [@utils.tableText value=(reportedMilestone.crpMilestone.milestonesStatus.name)!"" emptyText="global.prefilledByFlagship" /]
+                  </td>
+                  [#if !allowPopups]
+                    [#-- Milestone Evidence --]
+                    <td class="urlify">[@utils.tableText value=(reportedMilestone.evidence)!"" emptyText="global.prefilledByFlagship" /] </td>
+                    [#-- Link to Evidences --]
+                    <td class="urlify">[@utils.tableText value=(reportedMilestone.evidenceLink)!"" emptyText="global.prefilledByFlagship" /] </td>
+                    [#-- Cross Cutting markers --]
+                    [#list cgiarCrossCuttingMarkers as marker]
+                      [#local reportedCrossCuting =  (action.getCrossCuttingMarker( ((reportedMilestone.id)!-1), marker.id ))! ]
+                      <td class="text-center">
+                        <p class="dacMarker level-${(reportedCrossCuting.focus.id)!""}" title="${(reportedCrossCuting.focus.powbName)!""}">${(reportedCrossCuting.focus.acronym)!""}</p>
+                      </td>
+                    [/#list]
+                  [/#if]
                 [/#if]
               </tr>
             [/#list]
@@ -313,8 +315,7 @@
     [#-- Narrative on progress --]
     <div class="form-group">
       [#-- Word Document Tag --]
-      [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
-              
+      [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]      
       <input type="hidden" name="${customName}.id" value="${(annualReportElement.id)!}"/>
       <input type="hidden" name="${customName}.crpProgramOutcome.id" value="${(element.id)!}"/>
       [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.outcome.progressNarrative" help="${customLabel}.outcome.progressNarrative.help" className="limitWords-200" helpIcon=false required=true editable=editable allowTextEditor=true /]
