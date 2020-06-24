@@ -32,9 +32,15 @@ public class ProjectImpactsCategories extends MarloAuditableEntity implements ja
   @Expose
   private String description;
 
+  public String getComposedName() {
+    return this.name + " - " + this.description;
+
+  }
+
   public String getDescription() {
     return description;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -59,10 +65,7 @@ public class ProjectImpactsCategories extends MarloAuditableEntity implements ja
     this.description = description;
   }
 
-
   public void setName(String name) {
     this.name = name;
   }
-
-
 }
