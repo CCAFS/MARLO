@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectImpacts;
+import org.cgiar.ccafs.marlo.data.model.ProjectImpactsCategories;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ReportProjectImpactsCovid19DTO;
@@ -151,6 +152,15 @@ public class ProjectImpactsManagerImpl implements ProjectImpactsManager {
     ReportProjectImpactsCovid19DTO.setProjectUrl("P" + projectImpact.getProject().getId().toString());
 
     ReportProjectImpactsCovid19DTO.setPhaseId(phase.getId().toString());
+
+    ProjectImpactsCategories projectImpactsCategories = projectImpact.getProjectImpactsCategories();
+
+    if (projectImpactsCategories != null) {
+      String nameImpactCategory = projectImpactsCategories.getName() == null ? "" : projectImpactsCategories.getName();
+      String descriptionImpactCategory =
+        projectImpactsCategories.getDescription() == null ? "" : projectImpactsCategories.getDescription();
+      ReportProjectImpactsCovid19DTO.setImpactCategory(nameImpactCategory + " - " + descriptionImpactCategory);
+    }
 
     return ReportProjectImpactsCovid19DTO;
   }
