@@ -17,39 +17,25 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.rest.dto;
+package org.cgiar.ccafs.marlo.rest.mappers;
 
-import javax.validation.constraints.NotNull;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectPagePartnersDTO;
 
-import io.swagger.annotations.ApiModelProperty;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
-public class ProjectPageCountriesDTO {
+@Mapper(componentModel = "jsr330", uses = {LocationMapper.class, UserMapper.class})
+public interface ProjectPartnerMapper {
 
-
-  @ApiModelProperty(notes = "Country ISO alpha", position = 1)
-  private String isoAlpha2;
-
-  @ApiModelProperty(notes = "Country Name", position = 2)
-  @NotNull
-  private String name;
-
-
-  public String getIsoAlpha2() {
-    return isoAlpha2;
-  }
-
-
-  public String getName() {
-    return name;
-  }
+  @Mappings({@Mapping(source = "institution.id", target = "institutionID"),
+    @Mapping(source = "institution.name", target = "instutitionName"),
+    @Mapping(source = "institution.acronym", target = "institutionAcronym"),
+    @Mapping(source = "institution.websiteLink", target = "website"),
+    @Mapping(source = "selectedLocations", target = "partnerOfficeLocations"),
+    @Mapping(source = "partnerLeader", target = "projectLeader")})
+  public abstract ProjectPagePartnersDTO projectPartnerToProjectPagePartnersDTO(ProjectPartner projectPartner);
 
 
-  public void setIsoAlpha2(String isoAlpha2) {
-    this.isoAlpha2 = isoAlpha2;
-  }
-
-
-  public void setName(String name) {
-    this.name = name;
-  }
 }

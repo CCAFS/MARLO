@@ -17,39 +17,22 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.rest.dto;
+package org.cgiar.ccafs.marlo.rest.mappers;
 
-import javax.validation.constraints.NotNull;
+import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectPageOutcomesDTO;
 
-import io.swagger.annotations.ApiModelProperty;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
-public class ProjectPageCountriesDTO {
+@Mapper(componentModel = "jsr330", uses = {CrpProgramMapper.class, ProjectMilestonesMapper.class})
+public interface ProjectOutcomesMapper {
 
+  @Mappings({@Mapping(source = "crpProgramOutcome.id", target = "outcomeID"),
+    @Mapping(source = "crpProgramOutcome.description", target = "outcomeName"),
+    @Mapping(source = "crpProgramOutcome.crpProgram", target = "flagship"),
+    @Mapping(source = "milestones", target = "milestones")})
+  public abstract ProjectPageOutcomesDTO projectOutcomeToProjectPageOutcomesDTO(ProjectOutcome projectOutcome);
 
-  @ApiModelProperty(notes = "Country ISO alpha", position = 1)
-  private String isoAlpha2;
-
-  @ApiModelProperty(notes = "Country Name", position = 2)
-  @NotNull
-  private String name;
-
-
-  public String getIsoAlpha2() {
-    return isoAlpha2;
-  }
-
-
-  public String getName() {
-    return name;
-  }
-
-
-  public void setIsoAlpha2(String isoAlpha2) {
-    this.isoAlpha2 = isoAlpha2;
-  }
-
-
-  public void setName(String name) {
-    this.name = name;
-  }
 }
