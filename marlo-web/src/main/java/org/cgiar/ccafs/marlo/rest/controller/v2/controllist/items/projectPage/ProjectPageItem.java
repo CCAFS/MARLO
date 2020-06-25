@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
@@ -170,188 +171,196 @@ public class ProjectPageItem<T> {
    * @return
    */
   public Project getProjectInformation(Project project, GlobalUnit globalUnit) {
+    CustomParameter param = globalUnit.getCustomParameters().stream()
+      .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_PROJECT_PAGE_YEAR)).findFirst().get();
+    int projectPageYear = param == null ? -1 : Integer.parseInt(param.getValue());
 
-    Phase phase = phaseManager.getActivePhase(globalUnit.getId());
+    //
 
-    // Get the Project Info
-    project.getProjecInfoPhase(phase);
-
-
-    // Get the Flagship and Programs Regions that belongs in the Project
-    List<CrpProgram> programs = new ArrayList<>();
-    for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().getId().equals(phase.getId())
-        && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
-        && c.getCrpProgram().getCrp().getId().equals(globalUnit.getId()))
-      .collect(Collectors.toList())) {
-      programs.add(projectFocuses.getCrpProgram());
-    }
-
-    List<CrpProgram> regions = new ArrayList<>();
-
-    for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().getId().equals(phase.getId())
-        && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
-        && c.getCrpProgram().getCrp().getId().equals(globalUnit.getId()))
-      .collect(Collectors.toList())) {
-      regions.add(projectFocuses.getCrpProgram());
-    }
-
-    List<ProjectLocation> projectRegions = new ArrayList<ProjectLocation>();
-    List<ProjectLocation> projectCountries = new ArrayList<ProjectLocation>();
-    for (ProjectLocation projectLocations : projectLocationManager.findAll().stream()
-      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().getId().equals(phase.getId())
-        && c.getProject().getId().longValue() == project.getId().longValue())
-      .collect(Collectors.toList())) {
-      LocElement loc = locElementManager.getLocElementById(projectLocations.getLocElement().getId());
-      if (loc != null) {
-        projectLocations.setLocElement(loc);
-        if (loc.getLocElementType().getId().longValue() == 1) {
-          projectRegions.add(projectLocations);
-        } else if (loc.getLocElementType().getId().longValue() == 2) {
-          projectCountries.add(projectLocations);
-        }
-      }
-    }
-
-    // activities ongoing or complete
-    List<Activity> activities = project.getActivities().stream()
-      .filter(a -> a.isActive() && a.getPhase().equals(phase)
-        && (a.getActivityStatus().longValue() == 3 || a.getActivityStatus().longValue() == 2))
-      .collect(Collectors.toList());
-
-    // Deliverables complete
-
-    List<Deliverable> deliverables = new ArrayList<Deliverable>();
-    for (Deliverable deliverable : project.getDeliverables().stream().filter(c -> c.isActive())
-      .collect(Collectors.toList())) {
-      DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(phase);
-      if (deliverableInfo != null && deliverableInfo.getStatus().longValue() == 3) {
-        deliverable.setDeliverableInfo(deliverableInfo);
-        DeliverableDissemination deliverableDissemination = deliverable.getDissemination(phase);
-        deliverable.setDissemination(deliverableDissemination);
-        deliverable.setIsFindable(this.isF(deliverable));
-        deliverable.setIsAccesible(this.isA(deliverable));
-        deliverable.setIsInteroperable(this.isI(deliverable));
-        deliverable.setIsReusable(this.isR(deliverable));
-        deliverables.add(deliverable);
-      }
-    }
-
-    // Policies
-    List<ProjectPolicy> policies = new ArrayList<ProjectPolicy>();
-    for (ProjectPolicy policy : project.getProjectPolicies().stream().filter(c -> c.isActive())
-      .collect(Collectors.toList())) {
-      ProjectPolicyInfo projectPolicyInfo = policy.getProjectPolicyInfo(phase);
-      if (projectPolicyInfo != null) {
-        policy.setProjectPolicyInfo(projectPolicyInfo);
-        policies.add(policy);
-      }
-    }
-
-    // innovations
-    List<ProjectInnovation> innovations = new ArrayList<ProjectInnovation>();
-    for (ProjectInnovation innovation : project.getProjectInnovations().stream().filter(c -> c.isActive())
-      .collect(Collectors.toList())) {
-      ProjectInnovationInfo projectInnovationInfo = innovation.getProjectInnovationInfo(phase);
-      if (projectInnovationInfo != null) {
-        innovation.setProjectInnovationInfo(projectInnovationInfo);
-        String pdflink = config.getClarisa_summaries_pdf() + "summaries/" + globalUnit.getAcronym()
-          + "/projectInnovationSummary.do?innovationID=" + innovation.getId().longValue() + "&phaseID="
-          + phase.getId().longValue();
-        innovation.setPdfLink(pdflink);
-        innovations.add(innovation);
-      }
-    }
-
-    // contributing outcomes
-    List<ProjectOutcome> projectOutcomes = new ArrayList<ProjectOutcome>();
-    for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream()
-      .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())) {
-      List<ProjectMilestone> milestones = new ArrayList<ProjectMilestone>();
-      milestones = projectOutcome.getProjectMilestones().stream().filter(c -> c != null && c.isActive())
-        .collect(Collectors.toList());
-      projectOutcome.setMilestones(milestones);
-      projectOutcomes.add(projectOutcome);
-    }
+    Phase phase = phaseManager.findCycle("Reporting", projectPageYear, false, globalUnit.getId().longValue());
+    if (phase != null) {
+      // Get the Project Info
+      project.getProjecInfoPhase(phase);
 
 
-    // project partners
-    List<ProjectPartner> partners = new ArrayList<ProjectPartner>();
-    for (ProjectPartner projectPartner : project.getProjectPartners().stream()
-      .filter(c -> c != null && c.isActive() && c.getPhase().getId().equals(phase.getId()))
-      .collect(Collectors.toList())) {
-      // search partner office location
-      List<InstitutionLocation> locations = new ArrayList<InstitutionLocation>();
-      for (ProjectPartnerLocation partnersLocation : projectPartner.getProjectPartnerLocations().stream()
-        .filter(c -> c.isActive()).collect(Collectors.toList())) {
-        locations.add(partnersLocation.getInstitutionLocation());
-      }
-      projectPartner.setSelectedLocations(locations);
-      // search if this partner has projectLeader
-      List<ProjectPartnerPerson> projectPartnerPersons = new ArrayList<ProjectPartnerPerson>();
-      for (ProjectPartnerPerson projectPartnerPerson : projectPartner.getProjectPartnerPersons().stream()
-        .filter(c -> c.isActive()).collect(Collectors.toList())) {
-        if (projectPartnerPerson.getContactType().equals("PL")) {
-          projectPartnerPersons.add(projectPartnerPerson);
-        }
-      }
-      // add Project leader if exist
-      projectPartner.setPartnerLeader(projectPartnerPersons.size() == 0 ? null : projectPartnerPersons.get(0));
-      partners.add(projectPartner);
-    }
-    /*
-     * Comparator<ProjectPartner> partnerComparator =
-     * (ProjectPartner o1, ProjectPartner o2) -> (o1.getInstitution().isPPA(phase.getCrp().getId().longValue(),
-     * phase) == o2.getInstitution().isPPA(phase.getCrp().getId().longValue(), phase)) ? 0 : 1;
-     */
-    Collections.sort(partners, new Comparator<ProjectPartner>() {
-
-      @Override
-      public int compare(ProjectPartner o1, ProjectPartner o2) {
-        Boolean a1 = o1.getInstitution().isPPA(o1.getPhase().getCrp().getId(), phase);
-        Boolean a2 = o2.getInstitution().isPPA(o1.getPhase().getCrp().getId(), phase);
-
-        return (a1 ^ a2) ? ((a1 ^ true) ? 1 : -1) : 0;
+      // Get the Flagship and Programs Regions that belongs in the Project
+      List<CrpProgram> programs = new ArrayList<>();
+      for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().getId().equals(phase.getId())
+          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+          && c.getCrpProgram().getCrp().getId().equals(globalUnit.getId()))
+        .collect(Collectors.toList())) {
+        programs.add(projectFocuses.getCrpProgram());
       }
 
-    });
-    // Collections.reverse(partners);
+      List<CrpProgram> regions = new ArrayList<>();
 
-    // Outcome impact case reports
-    List<ProjectExpectedStudy> outcomeImpactCaseReports = new ArrayList<ProjectExpectedStudy>();
-    for (ProjectExpectedStudy projectExpectedStudy : project.getProjectExpectedStudies().stream()
-      .filter(c -> c.isActive()).collect(Collectors.toList())) {
-      ProjectExpectedStudyInfo projectExpectedStudyInfo = projectExpectedStudy.getProjectExpectedStudyInfo(phase);
-      if (projectExpectedStudyInfo != null && projectExpectedStudyInfo.isActive()) {
-        if (projectExpectedStudyInfo.getStudyType() != null
-          && projectExpectedStudyInfo.getStudyType().getId().longValue() == 1) {
-          projectExpectedStudy.setProjectExpectedStudyInfo(projectExpectedStudyInfo);
-          if (projectExpectedStudyInfo.getIsPublic()) {
-            String pdflink = config.getClarisa_summaries_pdf() + "projects/" + globalUnit.getAcronym()
-              + "/studySummary.do?studyID=" + projectExpectedStudy.getId().longValue() + "&cycle="
-              + phase.getDescription() + "&year=" + phase.getYear();
-            projectExpectedStudy.setPdfLink(pdflink);
-          } else {
-            projectExpectedStudy.setPdfLink("Link not provided");
+      for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().getId().equals(phase.getId())
+          && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
+          && c.getCrpProgram().getCrp().getId().equals(globalUnit.getId()))
+        .collect(Collectors.toList())) {
+        regions.add(projectFocuses.getCrpProgram());
+      }
+      final long projectID = project.getId();
+      List<ProjectLocation> projectRegions = new ArrayList<ProjectLocation>();
+      List<ProjectLocation> projectCountries = new ArrayList<ProjectLocation>();
+      for (ProjectLocation projectLocations : projectLocationManager
+        .findAll().stream().filter(c -> c.isActive() && c.getPhase() != null
+          && c.getPhase().getId().equals(phase.getId()) && c.getProject().getId().longValue() == projectID)
+        .collect(Collectors.toList())) {
+        LocElement loc = locElementManager.getLocElementById(projectLocations.getLocElement().getId());
+        if (loc != null) {
+          projectLocations.setLocElement(loc);
+          if (loc.getLocElementType().getId().longValue() == 1) {
+            projectRegions.add(projectLocations);
+          } else if (loc.getLocElementType().getId().longValue() == 2) {
+            projectCountries.add(projectLocations);
           }
-          outcomeImpactCaseReports.add(projectExpectedStudy);
         }
       }
+
+      // activities ongoing or complete
+      List<Activity> activities = project.getActivities().stream()
+        .filter(a -> a.isActive() && a.getPhase().equals(phase)
+          && (a.getActivityStatus().longValue() == 3 || a.getActivityStatus().longValue() == 2))
+        .collect(Collectors.toList());
+
+      // Deliverables complete
+
+      List<Deliverable> deliverables = new ArrayList<Deliverable>();
+      for (Deliverable deliverable : project.getDeliverables().stream().filter(c -> c.isActive())
+        .collect(Collectors.toList())) {
+        DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(phase);
+        if (deliverableInfo != null && deliverableInfo.getStatus().longValue() == 3) {
+          deliverable.setDeliverableInfo(deliverableInfo);
+          DeliverableDissemination deliverableDissemination = deliverable.getDissemination(phase);
+          deliverable.setDissemination(deliverableDissemination);
+          deliverable.setIsFindable(this.isF(deliverable));
+          deliverable.setIsAccesible(this.isA(deliverable));
+          deliverable.setIsInteroperable(this.isI(deliverable));
+          deliverable.setIsReusable(this.isR(deliverable));
+          deliverables.add(deliverable);
+        }
+      }
+
+      // Policies
+      List<ProjectPolicy> policies = new ArrayList<ProjectPolicy>();
+      for (ProjectPolicy policy : project.getProjectPolicies().stream().filter(c -> c.isActive())
+        .collect(Collectors.toList())) {
+        ProjectPolicyInfo projectPolicyInfo = policy.getProjectPolicyInfo(phase);
+        if (projectPolicyInfo != null) {
+          policy.setProjectPolicyInfo(projectPolicyInfo);
+          policies.add(policy);
+        }
+      }
+
+      // innovations
+      List<ProjectInnovation> innovations = new ArrayList<ProjectInnovation>();
+      for (ProjectInnovation innovation : project.getProjectInnovations().stream().filter(c -> c.isActive())
+        .collect(Collectors.toList())) {
+        ProjectInnovationInfo projectInnovationInfo = innovation.getProjectInnovationInfo(phase);
+        if (projectInnovationInfo != null) {
+          innovation.setProjectInnovationInfo(projectInnovationInfo);
+          String pdflink = config.getClarisa_summaries_pdf() + "summaries/" + globalUnit.getAcronym()
+            + "/projectInnovationSummary.do?innovationID=" + innovation.getId().longValue() + "&phaseID="
+            + phase.getId().longValue();
+          innovation.setPdfLink(pdflink);
+          innovations.add(innovation);
+        }
+      }
+
+      // contributing outcomes
+      List<ProjectOutcome> projectOutcomes = new ArrayList<ProjectOutcome>();
+      for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream()
+        .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())) {
+        List<ProjectMilestone> milestones = new ArrayList<ProjectMilestone>();
+        milestones = projectOutcome.getProjectMilestones().stream().filter(c -> c != null && c.isActive())
+          .collect(Collectors.toList());
+        projectOutcome.setMilestones(milestones);
+        projectOutcomes.add(projectOutcome);
+      }
+
+
+      // project partners
+      List<ProjectPartner> partners = new ArrayList<ProjectPartner>();
+      for (ProjectPartner projectPartner : project.getProjectPartners().stream()
+        .filter(c -> c != null && c.isActive() && c.getPhase().getId().equals(phase.getId()))
+        .collect(Collectors.toList())) {
+        // search partner office location
+        List<InstitutionLocation> locations = new ArrayList<InstitutionLocation>();
+        for (ProjectPartnerLocation partnersLocation : projectPartner.getProjectPartnerLocations().stream()
+          .filter(c -> c.isActive()).collect(Collectors.toList())) {
+          locations.add(partnersLocation.getInstitutionLocation());
+        }
+        projectPartner.setSelectedLocations(locations);
+        // search if this partner has projectLeader
+        List<ProjectPartnerPerson> projectPartnerPersons = new ArrayList<ProjectPartnerPerson>();
+        for (ProjectPartnerPerson projectPartnerPerson : projectPartner.getProjectPartnerPersons().stream()
+          .filter(c -> c.isActive()).collect(Collectors.toList())) {
+          if (projectPartnerPerson.getContactType().equals("PL")) {
+            projectPartnerPersons.add(projectPartnerPerson);
+          }
+        }
+        // add Project leader if exist
+        projectPartner.setPartnerLeader(projectPartnerPersons.size() == 0 ? null : projectPartnerPersons.get(0));
+        partners.add(projectPartner);
+      }
+      /*
+       * Comparator<ProjectPartner> partnerComparator =
+       * (ProjectPartner o1, ProjectPartner o2) -> (o1.getInstitution().isPPA(phase.getCrp().getId().longValue(),
+       * phase) == o2.getInstitution().isPPA(phase.getCrp().getId().longValue(), phase)) ? 0 : 1;
+       */
+      Collections.sort(partners, new Comparator<ProjectPartner>() {
+
+        @Override
+        public int compare(ProjectPartner o1, ProjectPartner o2) {
+          Boolean a1 = o1.getInstitution().isPPA(o1.getPhase().getCrp().getId(), phase);
+          Boolean a2 = o2.getInstitution().isPPA(o1.getPhase().getCrp().getId(), phase);
+
+          return (a1 ^ a2) ? ((a1 ^ true) ? 1 : -1) : 0;
+        }
+
+      });
+      // Collections.reverse(partners);
+
+      // Outcome impact case reports
+      List<ProjectExpectedStudy> outcomeImpactCaseReports = new ArrayList<ProjectExpectedStudy>();
+      for (ProjectExpectedStudy projectExpectedStudy : project.getProjectExpectedStudies().stream()
+        .filter(c -> c.isActive()).collect(Collectors.toList())) {
+        ProjectExpectedStudyInfo projectExpectedStudyInfo = projectExpectedStudy.getProjectExpectedStudyInfo(phase);
+        if (projectExpectedStudyInfo != null && projectExpectedStudyInfo.isActive()) {
+          if (projectExpectedStudyInfo.getStudyType() != null
+            && projectExpectedStudyInfo.getStudyType().getId().longValue() == 1) {
+            projectExpectedStudy.setProjectExpectedStudyInfo(projectExpectedStudyInfo);
+            if (projectExpectedStudyInfo.getIsPublic()) {
+              String pdflink = config.getClarisa_summaries_pdf() + "projects/" + globalUnit.getAcronym()
+                + "/studySummary.do?studyID=" + projectExpectedStudy.getId().longValue() + "&cycle="
+                + phase.getDescription() + "&year=" + phase.getYear();
+              projectExpectedStudy.setPdfLink(pdflink);
+            } else {
+              projectExpectedStudy.setPdfLink("Link not provided");
+            }
+            outcomeImpactCaseReports.add(projectExpectedStudy);
+          }
+        }
+      }
+
+
+      project.setRegions(regions);
+      project.setFlagships(programs);
+      project.setProjectRegions(projectRegions);
+      project.setLocations(projectCountries);
+      project.setProjectActivities(activities);
+      project.setProjectDeliverables(deliverables);
+      project.setPolicies(policies);
+      project.setInnovations(innovations);
+      project.setOutcomes(projectOutcomes);
+      project.setPartners(partners);
+      project.setExpectedStudies(outcomeImpactCaseReports);
+    } else {
+      project = null;
     }
-
-
-    project.setRegions(regions);
-    project.setFlagships(programs);
-    project.setProjectRegions(projectRegions);
-    project.setLocations(projectCountries);
-    project.setProjectActivities(activities);
-    project.setProjectDeliverables(deliverables);
-    project.setPolicies(policies);
-    project.setInnovations(innovations);
-    project.setOutcomes(projectOutcomes);
-    project.setPartners(partners);
-    project.setExpectedStudies(outcomeImpactCaseReports);
 
 
     return project;
