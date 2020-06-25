@@ -143,6 +143,18 @@
 			<result name="input">/WEB-INF/crp/views/admin/marloInstitutions.ftl
 			</result>
 		</action>
+		
+		<action name="{crp}/crpDeliverables"
+      class="org.cgiar.ccafs.marlo.action.crp.admin.CrpDeliverablesAction">
+      <!-- interceptor-ref name="autoLogin" / -->
+      <interceptor-ref name="crpAdminStack" />
+      <result name="input">/WEB-INF/crp/views/admin/crpDeliverables.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/crpDeliverables</param>
+        <param name="edit">true</param>
+        <param name="phaseID">${phaseID}</param>
+      </result>
+    </action>
 
 		<!-- End Partners & Country offices requested -->
 
