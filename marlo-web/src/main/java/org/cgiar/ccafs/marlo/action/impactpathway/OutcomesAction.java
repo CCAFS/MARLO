@@ -888,11 +888,15 @@ public class OutcomesAction extends BaseAction {
     incomingMilestones = programOutcomeIncoming.getMilestones();
     if (incomingMilestones != null) {
       for (CrpMilestone incomingMilestone : incomingMilestones) {
-        CrpMilestone milestone = crpMilestoneManager.getCrpMilestoneByPhase(incomingMilestone.getComposeID(),
-          programOutcomeOld.getPhase().getId());
+        CrpMilestone milestone = null;
+        if (incomingMilestone.getComposeID() != null && !incomingMilestone.getComposeID().isEmpty()) {
+          milestone = crpMilestoneManager.getCrpMilestoneByPhase(incomingMilestone.getComposeID(),
+            programOutcomeOld.getPhase().getId());
+        }
 
-        if (milestone == null) {
-          milestone = new CrpMilestone();
+
+        if (milestone != null && milestone.getComposeID() != null && !milestone.getComposeID().isEmpty()) {
+          // Validate null fields in CrpMilestone object
           // newCrpMilestone.copyFields(incomingMilestone);
           //
           // newCrpMilestone.setComposeID(incomingMilestone.getComposeID());
@@ -901,14 +905,18 @@ public class OutcomesAction extends BaseAction {
           // newCrpMilestone.setComposeID(programOutcomeOld.getComposeID() + "-" + newCrpMilestone.getId());
           // newCrpMilestone = crpMilestoneManager.saveCrpMilestone(newCrpMilestone);
           // crpMilestoneManager.replicate(newCrpMilestone, programOutcomeIncoming.getPhase());
-        } /*
-           * else {
-           * if (StringUtils.stripToNull(milestone.getComposeID()) == null) {
-           * // LOG.debug(programOutcomeOld.toString() + programOutcomeOld.getPhase());
-           * /// crpMilestone.setComposeID(programOutcomeOld.getComposeID() + "-" + oldMilestone.getId());
-           * milestone.setComposeID(programOutcomeOld.getComposeID() + "-" + milestone.getId());
-           * }
-           */
+        } else {
+          milestone = new CrpMilestone();
+        }
+        /*
+         * }
+         * else {
+         * if (StringUtils.stripToNull(milestone.getComposeID()) == null) {
+         * // LOG.debug(programOutcomeOld.toString() + programOutcomeOld.getPhase());
+         * /// crpMilestone.setComposeID(programOutcomeOld.getComposeID() + "-" + oldMilestone.getId());
+         * milestone.setComposeID(programOutcomeOld.getComposeID() + "-" + milestone.getId());
+         * }
+         */
 
         if (incomingMilestone.getPowbIndAssesmentRisk() != null
           && incomingMilestone.getPowbIndAssesmentRisk().getId() != null) {
@@ -922,6 +930,13 @@ public class OutcomesAction extends BaseAction {
           PowbIndMilestoneRisk powbIndMilestoneRisk = powbIndMilestoneRiskManager
             .getPowbIndMilestoneRiskById(incomingMilestone.getPowbIndMilestoneRisk().getId());
           incomingMilestone.setPowbIndMilestoneRisk(powbIndMilestoneRisk);
+        }
+
+        if (incomingMilestone.getMilestonesStatus() != null
+          && incomingMilestone.getMilestonesStatus().getId() != null) {
+          GeneralStatus generalStatus =
+            generalStatusManager.getGeneralStatusById(incomingMilestone.getMilestonesStatus().getId());
+          incomingMilestone.setMilestonesStatus(generalStatus);
         }
 
         if (incomingMilestone.getPowbIndFollowingMilestone() != null
@@ -957,6 +972,7 @@ public class OutcomesAction extends BaseAction {
             .getRepIndGenderYouthFocusLevelById(incomingMilestone.getGenderFocusLevel().getId());
           incomingMilestone.setGenderFocusLevel(repIndGenderYouthFocusLevel);
         }
+
 
         milestone.copyFields(incomingMilestone);
         milestone.setPhaseCreated(this.getActualPhase());
