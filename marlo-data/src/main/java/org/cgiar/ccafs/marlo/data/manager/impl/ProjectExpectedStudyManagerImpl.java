@@ -328,6 +328,12 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
   }
 
   @Override
+  public Boolean isStudyExcluded(Long projectExpectedStudyId, Long phaseId, Long typeStudy) {
+
+    return projectExpectedStudyDAO.isStudyExcluded(projectExpectedStudyId, phaseId, typeStudy);
+  }
+
+  @Override
   public ProjectExpectedStudy save(ProjectExpectedStudy projectExpectedStudy, String section,
     List<String> relationsName, Phase phase) {
     return projectExpectedStudyDAO.save(projectExpectedStudy, section, relationsName, phase);
@@ -337,5 +343,6 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
   public ProjectExpectedStudy saveProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy) {
     return projectExpectedStudyDAO.save(projectExpectedStudy);
   }
+
 
 }

@@ -33,6 +33,7 @@ public class NewCrosscuttingMarkersSynthesisDTO {
     position = 2)
   private String crossCuttingmarkerScore;
 
+  @ApiModelProperty(notes = "CrossCutting marker score justification", position = 3)
   private String justification;
 
 
@@ -40,11 +41,9 @@ public class NewCrosscuttingMarkersSynthesisDTO {
     return crossCuttingmarker;
   }
 
-
   public String getCrossCuttingmarkerScore() {
     return crossCuttingmarkerScore;
   }
-
 
   public String getJustification() {
     return justification;
@@ -55,11 +54,9 @@ public class NewCrosscuttingMarkersSynthesisDTO {
     this.crossCuttingmarker = crossCuttingmarker;
   }
 
-
   public void setCrossCuttingmarkerScore(String crossCuttingmarkerScore) {
     this.crossCuttingmarkerScore = crossCuttingmarkerScore;
   }
-
 
   public void setJustification(String justification) {
     this.justification = justification;

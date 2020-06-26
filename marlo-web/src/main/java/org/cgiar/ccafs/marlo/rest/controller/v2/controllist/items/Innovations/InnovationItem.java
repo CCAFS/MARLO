@@ -74,6 +74,7 @@ import org.cgiar.ccafs.marlo.rest.dto.NewInnovationDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewMilestonesDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewSrfSubIdoDTO;
 import org.cgiar.ccafs.marlo.rest.dto.OrganizationTypeDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectInnovationARDTO;
 import org.cgiar.ccafs.marlo.rest.dto.RegionDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
 import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
@@ -603,9 +604,9 @@ public class InnovationItem<T> {
 
   }
 
-  public List<InnovationDTO> findAllInnovationsByGlobalUnit(String CGIARentityAcronym, Integer repoYear,
+  public List<ProjectInnovationARDTO> findAllInnovationsByGlobalUnit(String CGIARentityAcronym, Integer repoYear,
     String repoPhase, User user) {
-    List<InnovationDTO> innovationList = new ArrayList<InnovationDTO>();
+    List<ProjectInnovationARDTO> innovationList = new ArrayList<ProjectInnovationARDTO>();
     List<ProjectInnovation> projectInnovationList = new ArrayList<ProjectInnovation>();
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
@@ -636,29 +637,30 @@ public class InnovationItem<T> {
       for (ProjectInnovationInfo projectInnovationInfo : projectInnovationInfoList) {
         ProjectInnovation innovation =
           this.projectInnovationManager.getProjectInnovationById(projectInnovationInfo.getProjectInnovation().getId());
-        innovation.setProjectInnovationInfo(projectInnovationInfo);
-        innovation.setCountries(
-          this.projectInnovationCountryManager.getInnovationCountrybyPhase(innovation.getId(), phase.getId()));
-        innovation.setRegions(innovation.getProjectInnovationRegions().stream()
-          .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-        innovation.setGeographicScopes(innovation.getProjectInnovationGeographicScopes().stream()
-          .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-        innovation.setContributingOrganizations(innovation.getProjectInnovationContributingOrganization().stream()
-          .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-        innovation.setCrps(innovation.getProjectInnovationCrps().stream()
-          .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-        innovation.setOrganizations(innovation.getProjectInnovationOrganizations().stream()
-          .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-        innovation.setMilestones(innovation.getProjectInnovationMilestones().stream()
-          .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-        innovation.setSubIdos(innovation.getProjectInnovationSubIdos().stream()
-          .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-        projectInnovationList.add(innovation);
+        if (innovation.isActive() && projectInnovationManager.isInnovationExcluded(innovation.getId(), phase.getId())) {
+          innovation.setProjectInnovationInfo(projectInnovationInfo);
+          innovation.setCountries(
+            this.projectInnovationCountryManager.getInnovationCountrybyPhase(innovation.getId(), phase.getId()));
+          innovation.setRegions(innovation.getProjectInnovationRegions().stream()
+            .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+          innovation.setGeographicScopes(innovation.getProjectInnovationGeographicScopes().stream()
+            .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+          innovation.setContributingOrganizations(innovation.getProjectInnovationContributingOrganization().stream()
+            .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+          innovation.setCrps(innovation.getProjectInnovationCrps().stream()
+            .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+          innovation.setOrganizations(innovation.getProjectInnovationOrganizations().stream()
+            .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+          innovation.setMilestones(innovation.getProjectInnovationMilestones().stream()
+            .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+          innovation.setSubIdos(innovation.getProjectInnovationSubIdos().stream()
+            .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+          projectInnovationList.add(innovation);
+        }
       }
-
     }
     innovationList = projectInnovationList.stream()
-      .map(innovations -> this.innovationMapper.projectInnovationToInnovationDTO(innovations))
+      .map(innovations -> this.innovationMapper.projectInnovationToInnovationARDTO(innovations))
       .collect(Collectors.toList());
     return innovationList;
 
