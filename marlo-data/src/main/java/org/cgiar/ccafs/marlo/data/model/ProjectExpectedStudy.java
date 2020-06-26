@@ -134,8 +134,13 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
   private Set<ProjectExpectedStudyMilestone> projectExpectedStudyMilestones =
     new HashSet<ProjectExpectedStudyMilestone>(0);
 
+  // clarisa field
+  private String pdfLink;
+
+
   public ProjectExpectedStudy() {
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -267,6 +272,10 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
 
   public String getOtherType() {
     return otherType;
+  }
+
+  public String getPdfLink() {
+    return pdfLink;
   }
 
   public Long getPhase() {
@@ -517,6 +526,10 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
 
   public void setOtherType(String otherType) {
     this.otherType = otherType;
+  }
+
+  public void setPdfLink(String pdfLink) {
+    this.pdfLink = pdfLink;
   }
 
   public void setPhase(Long phase) {

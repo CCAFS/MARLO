@@ -22,20 +22,28 @@ package org.cgiar.ccafs.marlo.rest.mappers;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestone;
 import org.cgiar.ccafs.marlo.rest.dto.StatusPlannedMilestonesDTO;
 
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 
-@Mapper(componentModel = "jsr330",
-  uses = {MilestoneMapper.class, CgiarCrossCuttingMarkersMapper.class, MilestoneStatusMapper.class})
-public interface StatusPlannedMilestonesMapper {
+@Mapper(componentModel = "jsr330", uses = {MilestoneMapper.class, CgiarCrossCuttingMarkersMapper.class,
+  MilestoneStatusMapper.class, MilestoneReasonMapper.class})
+public abstract class StatusPlannedMilestonesMapper {
 
+  @AfterMapping
+  protected void removeOtherReasonIfOther(@MappingTarget StatusPlannedMilestonesDTO statusPlannedMilestonesDTO) {
+    if (statusPlannedMilestonesDTO.getReason() == null
+      || (statusPlannedMilestonesDTO.getReason() != null && statusPlannedMilestonesDTO.getReason().getId() != 7)) {
+      statusPlannedMilestonesDTO.setOtherReason(null);
+    }
+  }
 
   @Mappings({@Mapping(source = "crpMilestone", target = "milestone"),
     @Mapping(source = "markers", target = "crossCuttingMarkerList"),
-    @Mapping(source = "milestonesStatus", target = "status")})
+    @Mapping(source = "crpMilestone.milestonesStatus", target = "status")})
   public abstract StatusPlannedMilestonesDTO
     ReportSynthesisFlagshipProgressOutcomeMilestoneToStatusPlannedMilestonesDTO(
       ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone);
-
 }
