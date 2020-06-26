@@ -15,10 +15,6 @@
 
 package org.cgiar.ccafs.marlo.rest.dto;
 
-import java.util.Date;
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
@@ -30,57 +26,15 @@ public class ProjectDTO {
 
   @ApiModelProperty(notes = "Project id", position = 1)
   private Long id;
-  @JsonFormat(pattern = "yyyy-MM-dd")
-  private Date createDate;
 
-  @ApiModelProperty(notes = "Project information", position = 2)
-  private ProjectInfoDTO projectInfo;
-
-  private List<CrpProgramDTO> regions;
-  private List<CrpProgramDTO> flagships;
-
-
-  public Date getCreateDate() {
-    return createDate;
-  }
-
-  public List<CrpProgramDTO> getFlagships() {
-    return flagships;
-  }
 
   public Long getId() {
     return id;
   }
 
 
-  public ProjectInfoDTO getProjectInfo() {
-    return projectInfo;
-  }
-
-  public List<CrpProgramDTO> getRegions() {
-    return regions;
-  }
-
-  public void setCreateDate(Date createDate) {
-    this.createDate = createDate;
-  }
-
-  public void setFlagships(List<CrpProgramDTO> flagships) {
-    this.flagships = flagships;
-  }
-
-
   public void setId(Long id) {
     this.id = id;
-  }
-
-
-  public void setProjectInfo(ProjectInfoDTO projectInfo) {
-    this.projectInfo = projectInfo;
-  }
-
-  public void setRegions(List<CrpProgramDTO> regions) {
-    this.regions = regions;
   }
 
 

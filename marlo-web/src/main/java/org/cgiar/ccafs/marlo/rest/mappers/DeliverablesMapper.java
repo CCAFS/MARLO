@@ -15,12 +15,23 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectPageDeliverablesDTO;
+
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 
-@Mapper(componentModel = "jsr330",
-  uses = {DeliverableInfoMapper.class, DeliverableDisseminationMapper.class, GlobalUnitMapper.class})
+@Mapper(componentModel = "jsr330", uses = {DeliverableInfoMapper.class})
 public abstract interface DeliverablesMapper {
 
+  @Mappings({@Mapping(source = "deliverableInfo.title", target = "title"),
+    @Mapping(source = "deliverableInfo.year", target = "year"), @Mapping(source = "isFindable", target = "findable"),
+    @Mapping(source = "isAccesible", target = "accesible"),
+    @Mapping(source = "isInteroperable", target = "interoperable"),
+    @Mapping(source = "isReusable", target = "reusable"),
+    @Mapping(source = "dissemination.disseminationUrl", target = "externalLink")})
+  public abstract ProjectPageDeliverablesDTO deliverableToProjectPageDeliverablesDTO(Deliverable deliverable);
 
 }

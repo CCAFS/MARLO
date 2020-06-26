@@ -146,6 +146,28 @@ public class ProjectExpectedStudyMySQLDAO extends AbstractMarloDAO<ProjectExpect
   }
 
   @Override
+  public Boolean isStudyExcluded(Long projectExpectedStudyId, Long phaseId, Long typeStudy) {
+    StringBuilder query = new StringBuilder();
+    if (typeStudy.longValue() == 1) {
+      query.append("select is_study_excluded(" + projectExpectedStudyId.longValue() + "," + phaseId.longValue()
+        + ") as isStudyExcluded");
+    } else {
+      query.append("select is_melia_excluded(" + projectExpectedStudyId.longValue() + "," + phaseId.longValue()
+        + ") as isStudyExcluded");
+    }
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        if (Long.parseLong(map.get("isStudyExcluded").toString()) == 0) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  @Override
   public ProjectExpectedStudy save(ProjectExpectedStudy projectExpectedStudy) {
     if (projectExpectedStudy.getId() == null) {
       super.saveEntity(projectExpectedStudy);

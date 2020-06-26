@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -69,6 +70,22 @@ public class ProjectInnovationMySQLDAO extends AbstractMarloDAO<ProjectInnovatio
     }
     return null;
 
+  }
+
+  @Override
+  public Boolean isInnovationExcluded(Long innovationId, Long phaseId) {
+    StringBuilder query = new StringBuilder();
+    query.append("select is_innovation_excluded(" + innovationId.longValue() + "," + phaseId.longValue()
+      + ") as isInnovationExcluded");
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        if (Long.parseLong(map.get("isInnovationExcluded").toString()) == 0) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   @Override

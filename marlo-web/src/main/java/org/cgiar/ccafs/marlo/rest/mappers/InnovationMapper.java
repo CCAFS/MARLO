@@ -17,6 +17,8 @@ package org.cgiar.ccafs.marlo.rest.mappers;
 
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.rest.dto.InnovationDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectInnovationARDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectPageInnovationsDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -30,8 +32,30 @@ import org.mapstruct.Mappings;
   uses = {StageOfInnovationMapper.class, InstitutionMapper.class, InnovationTypeMapper.class, LocationMapper.class,
     InstitutionTypeMapper.class, ContributionOfCrpMapper.class, GlobalUnitMapper.class, GeographicScopeMapper.class,
     PhaseMapper.class, ProjectInnovationMilestoneMapper.class, ProjectInnovationSubIdoMapper.class,
-    ProjectExpectedStudyInnovationMapper.class})
+    ProjectExpectedStudyInnovationMapper.class, DefaultFieldMapper.class, DefaultFieldPrimaryMapper.class})
 public interface InnovationMapper {
+
+  @Mappings({@Mapping(source = "project.id", target = "project"),
+    @Mapping(source = "projectInnovationInfo.title", target = "title"),
+    @Mapping(source = "projectInnovationInfo.narrative", target = "narrative"),
+    @Mapping(source = "projectInnovationInfo.year", target = "year"),
+    @Mapping(source = "projectInnovation.projectInnovationInfo.clearLead", target = "equitativeEffort"),
+    @Mapping(source = "projectInnovation.projectInnovationInfo.repIndStageInnovation", target = "stageOfInnovation"),
+    @Mapping(source = "organizations", target = "nextUserOrganizationTypes"),
+    @Mapping(source = "projectInnovationInfo.descriptionStage", target = "descriptionStage"),
+    @Mapping(source = "projectInnovationInfo.repIndInnovationType", target = "innovationType"),
+    @Mapping(source = "projectInnovationInfo.innovationNumber", target = "innovationNumber"),
+    @Mapping(source = "projectInnovationInfo.otherInnovationType", target = "otherInnovationType"),
+    @Mapping(source = "geographicScopes", target = "geographicScopes"),
+    @Mapping(source = "projectInnovationInfo.evidenceLink", target = "evidenceLink"),
+    @Mapping(source = "crps", target = "contributingCGIAREntities"), @Mapping(source = "regions", target = "regions"),
+    @Mapping(source = "countries", target = "countries"),
+    @Mapping(source = "projectInnovationInfo.leadOrganization", target = "leadOrganization"),
+    @Mapping(source = "contributingOrganizations", target = "contributingInstitutions"),
+    @Mapping(source = "projectInnovation.milestones", target = "milestonesList"),
+    @Mapping(source = "projectInnovation.subIdos", target = "srfSubIdoList"),
+    @Mapping(source = "projectInnovation.studies", target = "projectExpetedStudyList")})
+  public abstract ProjectInnovationARDTO projectInnovationToInnovationARDTO(ProjectInnovation projectInnovation);
 
 
   @Mappings({@Mapping(source = "projectInnovation.projectInnovationInfo.title", target = "title"),
@@ -54,6 +78,11 @@ public interface InnovationMapper {
     @Mapping(source = "projectInnovation.subIdos", target = "srfSubIdoList"),
     @Mapping(source = "projectInnovation.studies", target = "projectExpetedStudyList")})
   public abstract InnovationDTO projectInnovationToInnovationDTO(ProjectInnovation projectInnovation);
+
+  @Mappings({@Mapping(source = "projectInnovationInfo.title", target = "title"),
+    @Mapping(source = "pdfLink", target = "externalLink")})
+  public abstract ProjectPageInnovationsDTO
+    projectInnovationToProjectPageInnovationsDTO(ProjectInnovation projectInnovation);
 
 
 }
