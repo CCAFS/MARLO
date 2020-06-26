@@ -292,7 +292,15 @@ public class ProjectImpactsAction extends BaseAction {
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
+
+      // no impact category selected
+
+      if (actualProjectImpact.getProjectImpactCategoryId() == -1) {
+        actualProjectImpact.setProjectImpactCategoryId(null);
+      }
+
       projectImpactsManager.saveProjectImpacts(actualProjectImpact);
+
       return SUCCESS;
     } else {
       return NOT_AUTHORIZED;
