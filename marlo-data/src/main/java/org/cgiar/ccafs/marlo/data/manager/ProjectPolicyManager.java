@@ -92,6 +92,8 @@ public interface ProjectPolicyManager {
    */
   public List<ProjectPolicy> getProjectPolicyByPhase(Phase phase);
 
+  public Boolean isPolicyExcluded(Long policyId, Long phaseId);
+
   /**
    * This method saves the information of the given projectPolicy
    * 

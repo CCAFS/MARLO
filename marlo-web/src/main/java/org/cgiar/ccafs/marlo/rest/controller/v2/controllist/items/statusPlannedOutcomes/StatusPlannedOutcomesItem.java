@@ -19,15 +19,11 @@
 
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.statusPlannedOutcomes;
 
-import org.cgiar.ccafs.marlo.data.manager.CgiarCrossCuttingMarkerManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
-import org.cgiar.ccafs.marlo.data.manager.GeneralStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
-import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressOutcomeManager;
@@ -71,7 +67,6 @@ public class StatusPlannedOutcomesItem<T> {
   private PhaseManager phaseManager;
   private GlobalUnitManager globalUnitManager;
   private CrpProgramManager crpProgramManager;
-  private CrpMilestoneManager crpMilestoneManager;
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
   private ReportSynthesisManager reportSynthesisManager;
   private ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager;
@@ -79,25 +74,23 @@ public class StatusPlannedOutcomesItem<T> {
   private ReportSynthesisFlagshipProgressOutcomeMilestoneManager reportSynthesisFlagshipProgressOutcomeMilestoneManager;
   private ReportSynthesisFlagshipProgressCrossCuttingMarkerManager reportSynthesisFlagshipProgressCrossCuttingMarkerManager;
   private LiaisonInstitutionManager liaisonInstitutionManager;
-  private GeneralStatusManager generalStatusManager;
-  private CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager;
-  private RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager;
+  // private GeneralStatusManager generalStatusManager;
+  // private CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager;
+  // private RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager;
+  // private CrpMilestoneManager crpMilestoneManager;
 
   private StatusPlannedOutcomesMapper statusPlannedOutcomesMapper;
 
 
   @Inject
   public StatusPlannedOutcomesItem(GlobalUnitManager globalUnitManager, PhaseManager phaseManager,
-    CrpProgramManager crpProgramManager, CrpMilestoneManager crpMilestoneManager,
-    CrpProgramOutcomeManager crpProgramOutcomeManager, ReportSynthesisManager reportSynthesisManager,
+    CrpProgramManager crpProgramManager, CrpProgramOutcomeManager crpProgramOutcomeManager,
+    ReportSynthesisManager reportSynthesisManager,
     ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
     ReportSynthesisFlagshipProgressOutcomeManager reportSynthesisFlagshipProgressOutcomeManager,
     ReportSynthesisFlagshipProgressOutcomeMilestoneManager reportSynthesisFlagshipProgressOutcomeMilestoneManager,
     ReportSynthesisFlagshipProgressCrossCuttingMarkerManager reportSynthesisFlagshipProgressCrossCuttingMarkerManager,
-    LiaisonInstitutionManager liaisonInstitutionManager, GeneralStatusManager generalStatusManager,
-    CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager,
-    RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager,
-    StatusPlannedOutcomesMapper statusPlannedOutcomesMapper) {
+    LiaisonInstitutionManager liaisonInstitutionManager, StatusPlannedOutcomesMapper statusPlannedOutcomesMapper) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.crpProgramManager = crpProgramManager;
@@ -106,10 +99,10 @@ public class StatusPlannedOutcomesItem<T> {
     this.reportSynthesisFlagshipProgressManager = reportSynthesisFlagshipProgressManager;
     this.reportSynthesisFlagshipProgressOutcomeManager = reportSynthesisFlagshipProgressOutcomeManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
-    this.crpMilestoneManager = crpMilestoneManager;
-    this.generalStatusManager = generalStatusManager;
-    this.cgiarCrossCuttingMarkerManager = cgiarCrossCuttingMarkerManager;
-    this.repIndGenderYouthFocusLevelManager = repIndGenderYouthFocusLevelManager;
+    // this.crpMilestoneManager = crpMilestoneManager;
+    // this.generalStatusManager = generalStatusManager;
+    // this.cgiarCrossCuttingMarkerManager = cgiarCrossCuttingMarkerManager;
+    // this.repIndGenderYouthFocusLevelManager = repIndGenderYouthFocusLevelManager;
     this.reportSynthesisFlagshipProgressOutcomeMilestoneManager =
       reportSynthesisFlagshipProgressOutcomeMilestoneManager;
     this.reportSynthesisFlagshipProgressCrossCuttingMarkerManager =
@@ -117,57 +110,112 @@ public class StatusPlannedOutcomesItem<T> {
     this.statusPlannedOutcomesMapper = statusPlannedOutcomesMapper;
   }
 
-
-  public Long createStatusPlannedOutcome(NewStatusPlannedOutcomeDTO newStatusPlannedOutcomeDTO, String entityAcronym,
-    User user) {
+  public Long createStatusPlannedOutcome(NewStatusPlannedOutcomeDTO newStatusPlannedOutcomeDTO,
+    String CGIARentityAcronym, User user) {
     Long plannedOutcomeStatusID = null;
+    CrpProgram crpProgram = null;
+    Phase phase = null;
+    LiaisonInstitution liaisonInstitution = null;
+
+    CrpProgramOutcome crpProgramOutcome = null;
+    ReportSynthesis reportSynthesis = null;
+    ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress = null;
+    ReportSynthesisFlagshipProgressOutcome reportSynthesisFlagshipProgressOutcome = null;
+
+    String strippedId = null;
+
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
-    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
+
+    String strippedEntityAcronym = StringUtils.stripToNull(CGIARentityAcronym);
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(strippedEntityAcronym);
     if (globalUnitEntity == null) {
       fieldErrors.add(new FieldErrorDTO("createStatusPlannedOutcome", "GlobalUnitEntity",
-        entityAcronym + " is an invalid CGIAR entity acronym"));
+        CGIARentityAcronym + " is not a valid CGIAR entity acronym"));
+    } else {
+      if (!globalUnitEntity.isActive()) {
+        fieldErrors.add(new FieldErrorDTO("createStatusPlannedOutcome", "GlobalUnitEntity",
+          "The Global Unit with acronym " + CGIARentityAcronym + " is not active."));
+      }
     }
-    Phase phase = this.phaseManager.findAll().stream()
-      .filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(entityAcronym)
-        && c.getYear() == newStatusPlannedOutcomeDTO.getPhase().getYear()
-        && c.getName().equalsIgnoreCase(newStatusPlannedOutcomeDTO.getPhase().getName()))
-      .findFirst().get();
 
-    if (phase == null) {
-      fieldErrors.add(new FieldErrorDTO("createStatusPlannedOutcome", "phase",
-        newStatusPlannedOutcomeDTO.getPhase().getYear() + " is an invalid year"));
+    if (newStatusPlannedOutcomeDTO.getPhase() == null) {
+      fieldErrors.add(new FieldErrorDTO("createStatusPlannedOutcome", "PhaseEntity", "Phase must not be null"));
+    } else {
+      String strippedPhaseName = StringUtils.stripToNull(newStatusPlannedOutcomeDTO.getPhase().getName());
+      if (strippedPhaseName == null || newStatusPlannedOutcomeDTO.getPhase().getYear() == null
+      // DANGER! Magic number ahead
+        || newStatusPlannedOutcomeDTO.getPhase().getYear() < 2015) {
+        fieldErrors.add(new FieldErrorDTO("createStatusPlannedOutcome", "PhaseEntity", "Phase is invalid"));
+      } else {
+        phase = phaseManager.findAll().stream()
+          .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), strippedEntityAcronym)
+            && p.getYear() == newStatusPlannedOutcomeDTO.getPhase().getYear()
+            && StringUtils.equalsIgnoreCase(p.getName(), strippedPhaseName) && p.isActive())
+          .findFirst().orElse(null);
+
+        if (phase == null) {
+          fieldErrors.add(
+            new FieldErrorDTO("createStatusPlannedOutcome", "phase", newStatusPlannedOutcomeDTO.getPhase().getName()
+              + ' ' + newStatusPlannedOutcomeDTO.getPhase().getYear() + " is an invalid phase"));
+        }
+      }
     }
 
     Set<CrpUser> lstUser = user.getCrpUsers();
-    if (!lstUser.stream().anyMatch(crp -> StringUtils.equalsIgnoreCase(crp.getCrp().getAcronym(), entityAcronym))) {
+    if (!lstUser.stream()
+      .anyMatch(crp -> StringUtils.equalsIgnoreCase(crp.getCrp().getAcronym(), CGIARentityAcronym))) {
       fieldErrors
         .add(new FieldErrorDTO("createStatusPlannedOutcome", "GlobalUnitEntity", "CGIAR entity not autorized"));
     }
-    CrpProgram crpProgram = null;
-    if (newStatusPlannedOutcomeDTO.getCrpProgramCode() != null
-      && newStatusPlannedOutcomeDTO.getCrpProgramCode().length() > 0) {
-      crpProgram = crpProgramManager.getCrpProgramBySmoCode(newStatusPlannedOutcomeDTO.getCrpProgramCode());
+
+    strippedId = StringUtils.stripToNull(newStatusPlannedOutcomeDTO.getCrpProgramCode());
+    if (strippedId != null) {
+      crpProgram = crpProgramManager.getCrpProgramBySmoCode(strippedId);
       if (crpProgram == null) {
-        fieldErrors.add(new FieldErrorDTO("createStatusPlannedOutcome", "CrpProgram", "is an invalid CRP Program"));
+        fieldErrors.add(new FieldErrorDTO("createStatusPlannedOutcome", "FlagshipEntity",
+          newStatusPlannedOutcomeDTO.getCrpProgramCode() + " is an invalid CRP Program SMO code."));
+      } else {
+        if (!StringUtils.equalsIgnoreCase(crpProgram.getCrp().getAcronym(), strippedEntityAcronym)) {
+          fieldErrors.add(new FieldErrorDTO("createStatusPlannedOutcome", "FlagshipEntity",
+            "The CRP Program SMO Code entered does not correspond to the GlobalUnit with acronym "
+              + CGIARentityAcronym));
+        }
       }
     } else {
-      fieldErrors.add(new FieldErrorDTO("createStatusPlannedOutcome", "CrpProgram", "is an invalid CRP Program"));
+      fieldErrors.add(new FieldErrorDTO("createStatusPlannedOutcome", "FlagshipEntity",
+        "CRP Program SMO code can not be null nor empty."));
     }
-    CrpProgramOutcome crpProgramOutcome = null;
-    if (newStatusPlannedOutcomeDTO.getCrpOutcomeCode() != null
-      && newStatusPlannedOutcomeDTO.getCrpOutcomeCode().length() > 0) {
-      crpProgramOutcome =
-        crpProgramOutcomeManager.getCrpProgramOutcome(newStatusPlannedOutcomeDTO.getCrpOutcomeCode(), phase);
+
+    if (globalUnitEntity != null && crpProgram != null) {
+      liaisonInstitution =
+        liaisonInstitutionManager.findByAcronymAndCrp(crpProgram.getAcronym(), globalUnitEntity.getId());
+      if (liaisonInstitution == null) {
+        fieldErrors.add(new FieldErrorDTO("createStatusPlannedOutcome", "LiaisonInstitutionEntity",
+          "A Liaison Institution with the acronym " + crpProgram.getAcronym() + " could not be found for "
+            + CGIARentityAcronym));
+      }
+    } else {
+      fieldErrors.add(new FieldErrorDTO("createStatusPlannedOutcome", "LiaisonInstitutionEntity",
+        "A Liaison Institution can not be found if either the CRP or the Flagship/Module is invalid"));
+    }
+
+    strippedId = StringUtils.stripToNull(newStatusPlannedOutcomeDTO.getCrpOutcomeCode());
+    if (strippedId != null) {
+      crpProgramOutcome = crpProgramOutcomeManager.getCrpProgramOutcome(strippedId, phase);
       if (crpProgramOutcome == null) {
         fieldErrors.add(new FieldErrorDTO("createStatusPlannedOutcome", "Outcome", "is an invalid CRP Outcome"));
+      } else {
+        if (!crpProgramOutcome.getCrpProgram().getId().equals(crpProgram.getId())) {
+          fieldErrors.add(new FieldErrorDTO("createStatusPlannedOutcome", "Outcome",
+            "The entered CRP Outcome do not correspond with the CRP Program given"));
+        }
       }
+    } else {
+      fieldErrors.add(new FieldErrorDTO("createStatusPlannedOutcome", "CrpProgramOutcomeEntity",
+        "CRP Program Outcome composed ID code can not be null nor empty."));
     }
-    ReportSynthesis reportSynthesis = null;
-    ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress = null;
-    ReportSynthesisFlagshipProgressOutcome reportSynthesisFlagshipProgressOutcome;
+
     if (fieldErrors.isEmpty()) {
-      LiaisonInstitution liaisonInstitution =
-        liaisonInstitutionManager.findByAcronymAndCrp(crpProgram.getAcronym(), globalUnitEntity.getId());
       reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
       if (reportSynthesis == null) {
         reportSynthesis = new ReportSynthesis();
@@ -237,7 +285,7 @@ public class StatusPlannedOutcomesItem<T> {
             }
           } else {
             fieldErrors.add(new FieldErrorDTO("createStatusPlannedOutcome", "ReportSynthesisFlagshipOutocome",
-              "Report Synthesis flagship outcome alredy exists"));
+              "A Report Synthesis Flagship Outcome alredy exists. If you want to update it, please use the PUT method"));
           }
 
         }
@@ -257,39 +305,68 @@ public class StatusPlannedOutcomesItem<T> {
 
   public ResponseEntity<StatusPlannedOutcomesDTO> findStatusPlannedOutcome(String outcomeID, String CGIARentityAcronym,
     Integer repoYear, String repoPhase, User user) {
-    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
-    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
-    if (globalUnitEntity == null) {
-      fieldErrors.add(new FieldErrorDTO("createStatusPlannedOutcome", "GlobalUnitEntity",
-        CGIARentityAcronym + " is an invalid CGIAR entity acronym"));
-    }
-    Phase phase =
-      this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
-        && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().get();
+    String strippedId = null;
+    LiaisonInstitution liaisonInstitution = null;
+    CrpProgramOutcome crpProgramOutcome = null;
+    ReportSynthesisFlagshipProgressOutcome reportSynthesisFlagshipProgressOutcome = null;
 
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+
+    String strippedEntityAcronym = StringUtils.stripToNull(CGIARentityAcronym);
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(strippedEntityAcronym);
+    if (globalUnitEntity == null) {
+      fieldErrors.add(new FieldErrorDTO("findStatusPlannedOutcomeById", "GlobalUnitEntity",
+        CGIARentityAcronym + " is not a valid CGIAR entity acronym"));
+    } else {
+      if (!globalUnitEntity.isActive()) {
+        fieldErrors.add(new FieldErrorDTO("findStatusPlannedOutcomeById", "GlobalUnitEntity",
+          "The Global Unit with acronym " + CGIARentityAcronym + " is not active."));
+      }
+    }
+
+    String strippedRepoPhase = StringUtils.stripToNull(repoPhase);
+    Phase phase = this.phaseManager.findAll().stream()
+      .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), strippedEntityAcronym)
+        && p.getYear() == repoYear && StringUtils.equalsIgnoreCase(p.getName(), strippedRepoPhase) && p.isActive())
+      .findFirst().orElse(null);
     if (phase == null) {
-      fieldErrors.add(new FieldErrorDTO("createStatusPlannedOutcome", "phase", " is an invalid phase-year"));
+      fieldErrors.add(new FieldErrorDTO("findStatusPlannedOutcomeById", "phase",
+        repoPhase + ' ' + repoYear + " is an invalid phase"));
     }
 
     Set<CrpUser> lstUser = user.getCrpUsers();
     if (!lstUser.stream()
       .anyMatch(crp -> StringUtils.equalsIgnoreCase(crp.getCrp().getAcronym(), CGIARentityAcronym))) {
       fieldErrors
-        .add(new FieldErrorDTO("createStatusPlannedOutcome", "GlobalUnitEntity", "CGIAR entity not autorized"));
+        .add(new FieldErrorDTO("findStatusPlannedOutcomeById", "GlobalUnitEntity", "CGIAR entity not autorized"));
     }
-    ReportSynthesisFlagshipProgressOutcome reportSynthesisFlagshipProgressOutcome = null;
 
-    CrpProgramOutcome crpProgramOutcome = null;
-    if (outcomeID != null && outcomeID.length() > 0) {
-      crpProgramOutcome = crpProgramOutcomeManager.getCrpProgramOutcome(outcomeID, phase);
+    strippedId = StringUtils.stripToNull(outcomeID);
+    if (strippedId != null && phase != null) {
+      crpProgramOutcome = crpProgramOutcomeManager.getCrpProgramOutcome(strippedId, phase);
       if (crpProgramOutcome == null) {
-        fieldErrors.add(new FieldErrorDTO("createStatusPlannedOutcome", "Outcome", "is an invalid CRP Outcome"));
+        fieldErrors.add(
+          new FieldErrorDTO("findStatusPlannedOutcomeById", "Outcome", strippedId + " is an invalid CRP Outcome code"));
       }
+    } else {
+      fieldErrors.add(new FieldErrorDTO("findStatusPlannedOutcomeById", "CrpProgramOutcomeEntity",
+        "A CRP Program Outcome with composed ID " + strippedId + " do not exist for the given phase."));
+    }
+
+    if (globalUnitEntity != null && crpProgramOutcome != null) {
+      liaisonInstitution = liaisonInstitutionManager.findByAcronymAndCrp(crpProgramOutcome.getCrpProgram().getAcronym(),
+        globalUnitEntity.getId());
+      if (liaisonInstitution == null) {
+        fieldErrors.add(new FieldErrorDTO("findStatusPlannedOutcomeById", "LiaisonInstitutionEntity",
+          "A Liaison Institution with the acronym " + crpProgramOutcome.getCrpProgram().getAcronym()
+            + " could not be found for " + CGIARentityAcronym));
+      }
+    } else {
+      fieldErrors.add(new FieldErrorDTO("findStatusPlannedOutcomeById", "LiaisonInstitutionEntity",
+        "A Liaison Institution can not be found if either the CRP or the Flagship/Module is invalid"));
     }
 
     if (fieldErrors.isEmpty()) {
-      LiaisonInstitution liaisonInstitution = liaisonInstitutionManager
-        .findByAcronymAndCrp(crpProgramOutcome.getCrpProgram().getAcronym(), globalUnitEntity.getId());
       ReportSynthesis reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
       if (reportSynthesis != null) {
         ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress =
@@ -322,96 +399,163 @@ public class StatusPlannedOutcomesItem<T> {
               reportSynthesisFlagshipProgressOutcomeMilestoneList.add(reportSynthesisFlagshipProgressOutcomeMilestone);
             }
             reportSynthesisFlagshipProgressOutcome.setMilestones(reportSynthesisFlagshipProgressOutcomeMilestoneList);
+          } else {
+            fieldErrors.add(new FieldErrorDTO("findStatusPlannedOutcomeById", "ReportSynthesisEntity",
+              "There is no Report Synthesis Progress Outcome for the phase and flagship/module!"));
           }
+        } else {
+          fieldErrors.add(new FieldErrorDTO("findStatusPlannedOutcomeById", "ReportSynthesisEntity",
+            "There is no Report Synthesis Progress for the phase and flagship/module!"));
         }
+      } else {
+        fieldErrors.add(new FieldErrorDTO("findStatusPlannedOutcomeById", "ReportSynthesisEntity",
+          "There is no Report Synthesis for the phase and flagship/module!"));
       }
     }
+
     if (!fieldErrors.isEmpty()) {
+      fieldErrors.stream().forEach(f -> System.out.println(f.getMessage()));
       throw new MARLOFieldValidationException("Field Validation errors", "",
         fieldErrors.stream()
           .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
           .collect(Collectors.toList()));
     }
+
     return Optional.ofNullable(reportSynthesisFlagshipProgressOutcome)
       .map(this.statusPlannedOutcomesMapper::reportSynthesisFlagshipProgressOutcomeToStatusPlannedOutcomesDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
-  public Long updateStatusPlannedOutcome(NewStatusPlannedOutcomeDTO newStatusPlannedOutcomeDTO, String entityAcronym,
-    User user) {
+  public Long updateStatusPlannedOutcome(NewStatusPlannedOutcomeDTO newStatusPlannedOutcomeDTO,
+    String CGIARentityAcronym, User user) {
     Long plannedOutcomeStatusID = null;
+    String strippedId = null;
+    CrpProgram crpProgram = null;
+    Phase phase = null;
+    LiaisonInstitution liaisonInstitution = null;
+
+    CrpProgramOutcome crpProgramOutcome = null;
+    ReportSynthesis reportSynthesis = null;
+    ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress = null;
+    ReportSynthesisFlagshipProgressOutcome reportSynthesisFlagshipProgressOutcome = null;
+
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
-    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
+
+    String strippedEntityAcronym = StringUtils.stripToNull(CGIARentityAcronym);
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(strippedEntityAcronym);
     if (globalUnitEntity == null) {
       fieldErrors.add(new FieldErrorDTO("updateStatusPlannedOutcome", "GlobalUnitEntity",
-        entityAcronym + " is an invalid CGIAR entity acronym"));
+        CGIARentityAcronym + " is not a valid CGIAR entity acronym"));
+    } else {
+      if (!globalUnitEntity.isActive()) {
+        fieldErrors.add(new FieldErrorDTO("updateStatusPlannedOutcome", "GlobalUnitEntity",
+          "The Global Unit with acronym " + CGIARentityAcronym + " is not active."));
+      }
     }
-    Phase phase = this.phaseManager.findAll().stream()
-      .filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(entityAcronym)
-        && c.getYear() == newStatusPlannedOutcomeDTO.getPhase().getYear()
-        && c.getName().equalsIgnoreCase(newStatusPlannedOutcomeDTO.getPhase().getName()))
-      .findFirst().get();
 
-    if (phase == null) {
-      fieldErrors.add(new FieldErrorDTO("updateStatusPlannedOutcome", "phase",
-        newStatusPlannedOutcomeDTO.getPhase().getYear() + " is an invalid year"));
+    if (newStatusPlannedOutcomeDTO.getPhase() == null) {
+      fieldErrors.add(new FieldErrorDTO("updateStatusPlannedOutcome", "PhaseEntity", "Phase must not be null"));
+    } else {
+      String strippedPhaseName = StringUtils.stripToNull(newStatusPlannedOutcomeDTO.getPhase().getName());
+      if (strippedPhaseName == null || newStatusPlannedOutcomeDTO.getPhase().getYear() == null
+      // DANGER! Magic number ahead
+        || newStatusPlannedOutcomeDTO.getPhase().getYear() < 2015) {
+        fieldErrors.add(new FieldErrorDTO("updateStatusPlannedOutcome", "PhaseEntity", "Phase is invalid"));
+      } else {
+        phase = phaseManager.findAll().stream()
+          .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), strippedEntityAcronym)
+            && p.getYear() == newStatusPlannedOutcomeDTO.getPhase().getYear()
+            && StringUtils.equalsIgnoreCase(p.getName(), strippedPhaseName) && p.isActive())
+          .findFirst().orElse(null);
+
+        if (phase == null) {
+          fieldErrors.add(
+            new FieldErrorDTO("updateStatusPlannedOutcome", "phase", newStatusPlannedOutcomeDTO.getPhase().getName()
+              + ' ' + newStatusPlannedOutcomeDTO.getPhase().getYear() + " is an invalid phase"));
+        }
+      }
     }
 
     Set<CrpUser> lstUser = user.getCrpUsers();
-    if (!lstUser.stream().anyMatch(crp -> StringUtils.equalsIgnoreCase(crp.getCrp().getAcronym(), entityAcronym))) {
+    if (!lstUser.stream()
+      .anyMatch(crp -> StringUtils.equalsIgnoreCase(crp.getCrp().getAcronym(), CGIARentityAcronym))) {
       fieldErrors
         .add(new FieldErrorDTO("updateStatusPlannedOutcome", "GlobalUnitEntity", "CGIAR entity not autorized"));
     }
 
-    CrpProgram crpProgram = null;
-    if (newStatusPlannedOutcomeDTO.getCrpProgramCode() != null
-      && newStatusPlannedOutcomeDTO.getCrpProgramCode().length() > 0) {
-      crpProgram = crpProgramManager.getCrpProgramBySmoCode(newStatusPlannedOutcomeDTO.getCrpProgramCode());
+    strippedId = StringUtils.stripToNull(newStatusPlannedOutcomeDTO.getCrpProgramCode());
+    if (strippedId != null) {
+      crpProgram = crpProgramManager.getCrpProgramBySmoCode(strippedId);
       if (crpProgram == null) {
-        fieldErrors.add(new FieldErrorDTO("updateStatusPlannedOutcome", "CrpProgram", "is an invalid CRP Program"));
+        fieldErrors.add(new FieldErrorDTO("updateStatusPlannedOutcome", "FlagshipEntity",
+          newStatusPlannedOutcomeDTO.getCrpProgramCode() + " is an invalid CRP Program SMO code."));
+      } else {
+        if (!StringUtils.equalsIgnoreCase(crpProgram.getCrp().getAcronym(), strippedEntityAcronym)) {
+          fieldErrors.add(new FieldErrorDTO("updateStatusPlannedOutcome", "FlagshipEntity",
+            "The CRP Program SMO Code entered does not correspond to the GlobalUnit with acronym "
+              + CGIARentityAcronym));
+        }
       }
     } else {
-      fieldErrors.add(new FieldErrorDTO("updateStatusPlannedOutcome", "CrpProgram", "is an invalid CRP Program"));
+      fieldErrors.add(new FieldErrorDTO("updateStatusPlannedOutcome", "FlagshipEntity",
+        "CRP Program SMO code can not be null nor empty."));
     }
-    ReportSynthesis reportSynthesis = null;
-    ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress = null;
-    ReportSynthesisFlagshipProgressOutcome reportSynthesisFlagshipProgressOutcome;
-    if (fieldErrors.isEmpty()) {
-      LiaisonInstitution liaisonInstitution =
+
+    if (globalUnitEntity != null && crpProgram != null) {
+      liaisonInstitution =
         liaisonInstitutionManager.findByAcronymAndCrp(crpProgram.getAcronym(), globalUnitEntity.getId());
+      if (liaisonInstitution == null) {
+        fieldErrors.add(new FieldErrorDTO("updateStatusPlannedOutcome", "LiaisonInstitutionEntity",
+          "A Liaison Institution with the acronym " + crpProgram.getAcronym() + " could not be found for "
+            + CGIARentityAcronym));
+      }
+    } else {
+      fieldErrors.add(new FieldErrorDTO("updateStatusPlannedOutcome", "LiaisonInstitutionEntity",
+        "A Liaison Institution can not be found if either the CRP or the Flagship/Module is invalid"));
+    }
+
+    strippedId = StringUtils.stripToNull(newStatusPlannedOutcomeDTO.getCrpOutcomeCode());
+    if (strippedId != null) {
+      crpProgramOutcome =
+        crpProgramOutcomeManager.getCrpProgramOutcome(newStatusPlannedOutcomeDTO.getCrpOutcomeCode(), phase);
+      if (crpProgramOutcome == null) {
+        fieldErrors.add(new FieldErrorDTO("updateStatusPlannedOutcome", "Outcome", "is an invalid CRP Outcome"));
+      } else {
+        if (!crpProgramOutcome.getCrpProgram().getId().equals(crpProgram.getId())) {
+          fieldErrors.add(new FieldErrorDTO("updateStatusPlannedOutcome", "Outcome",
+            "The entered CRP Outcome do not correspond with the CRP Program given"));
+        }
+      }
+    } else {
+      fieldErrors.add(new FieldErrorDTO("updateStatusPlannedOutcome", "CrpProgramOutcomeEntity",
+        "CRP Program Outcome composed ID code can not be null nor empty."));
+    }
+
+    if (fieldErrors.isEmpty()) {
       reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
       if (reportSynthesis != null) {
         reportSynthesisFlagshipProgress = reportSynthesis.getReportSynthesisFlagshipProgress();
         if (reportSynthesisFlagshipProgress != null) {
-          CrpProgramOutcome crpProgramOutcome =
-            crpProgramOutcomeManager.getCrpProgramOutcome(newStatusPlannedOutcomeDTO.getCrpOutcomeCode(), phase);
-          if (crpProgramOutcome != null) {
-            List<ReportSynthesisFlagshipProgressOutcome> reportSynthesisFlagshipProgressOutcomeList =
-              reportSynthesisFlagshipProgress.getReportSynthesisFlagshipProgressOutcomes().stream()
-                .filter(c -> c.getCrpProgramOutcome().getId().equals(crpProgramOutcome.getId()))
-                .collect(Collectors.toList());
-            if (reportSynthesisFlagshipProgressOutcomeList != null
-              && reportSynthesisFlagshipProgressOutcomeList.size() > 0) {
-              reportSynthesisFlagshipProgressOutcome = reportSynthesisFlagshipProgressOutcomeList.get(0);
-              reportSynthesisFlagshipProgressOutcome.setSummary(newStatusPlannedOutcomeDTO.getSumary());
-              reportSynthesisFlagshipProgressOutcome.setModifiedBy(user);
-              reportSynthesisFlagshipProgressOutcome = reportSynthesisFlagshipProgressOutcomeManager
-                .saveReportSynthesisFlagshipProgressOutcome(reportSynthesisFlagshipProgressOutcome);
-              if (reportSynthesisFlagshipProgressOutcome != null) {
-                plannedOutcomeStatusID = reportSynthesisFlagshipProgressOutcome.getId();
-              } else {
-                fieldErrors.add(new FieldErrorDTO("updateStatusPlannedOutcome", "plannedOutcomeStatusID",
-                  "can not save plannedOutcomeStatusID"));
-              }
-
+          Long cpoId = crpProgramOutcome.getId();
+          List<ReportSynthesisFlagshipProgressOutcome> reportSynthesisFlagshipProgressOutcomeList =
+            reportSynthesisFlagshipProgress.getReportSynthesisFlagshipProgressOutcomes().stream()
+              .filter(c -> c.getCrpProgramOutcome().getId().equals(cpoId)).collect(Collectors.toList());
+          if (reportSynthesisFlagshipProgressOutcomeList != null
+            && reportSynthesisFlagshipProgressOutcomeList.size() > 0) {
+            reportSynthesisFlagshipProgressOutcome = reportSynthesisFlagshipProgressOutcomeList.get(0);
+            reportSynthesisFlagshipProgressOutcome.setSummary(newStatusPlannedOutcomeDTO.getSumary());
+            reportSynthesisFlagshipProgressOutcome.setModifiedBy(user);
+            reportSynthesisFlagshipProgressOutcome = reportSynthesisFlagshipProgressOutcomeManager
+              .saveReportSynthesisFlagshipProgressOutcome(reportSynthesisFlagshipProgressOutcome);
+            if (reportSynthesisFlagshipProgressOutcome != null) {
+              plannedOutcomeStatusID = reportSynthesisFlagshipProgressOutcome.getId();
             } else {
-              fieldErrors.add(new FieldErrorDTO("updateStatusPlannedOutcome", "ReportSynthesisProgress",
-                "can not find synthesis progress outcome report"));
+              fieldErrors.add(new FieldErrorDTO("updateStatusPlannedOutcome", "plannedOutcomeStatusID",
+                "can not save plannedOutcomeStatusID"));
             }
-
           } else {
-            fieldErrors.add(new FieldErrorDTO("updateStatusPlannedOutcome", "CrpProgramOutcome",
-              "can not find the outcome in this CRP"));
+            fieldErrors.add(new FieldErrorDTO("updateStatusPlannedOutcome", "ReportSynthesisProgress",
+              "can not find synthesis progress outcome report"));
           }
         } else {
           fieldErrors.add(new FieldErrorDTO("updateStatusPlannedOutcome", "ReportSynthesisProgress",
@@ -423,7 +567,6 @@ public class StatusPlannedOutcomesItem<T> {
       }
     }
 
-
     // Validate all fields
     if (!fieldErrors.isEmpty()) {
       fieldErrors.stream().forEach(f -> System.out.println(f.getMessage()));
@@ -432,6 +575,7 @@ public class StatusPlannedOutcomesItem<T> {
           .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
           .collect(Collectors.toList()));
     }
+
     return plannedOutcomeStatusID;
   }
 }
