@@ -16,6 +16,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectImpactsDAO;
+import org.cgiar.ccafs.marlo.data.manager.ProjectImpactsCategoriesManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectImpactsManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
@@ -45,11 +46,14 @@ public class ProjectImpactsManagerImpl implements ProjectImpactsManager {
 
   // Managers
   private ProjectInfoManager projectInfoManager;
+  private ProjectImpactsCategoriesManager projectImpactsCategoriesManager;
 
   @Inject
-  public ProjectImpactsManagerImpl(ProjectImpactsDAO projectImpactsDAO, ProjectInfoManager projectInfoManager) {
+  public ProjectImpactsManagerImpl(ProjectImpactsDAO projectImpactsDAO, ProjectInfoManager projectInfoManager,
+    ProjectImpactsCategoriesManager projectImpactsCategoriesManager) {
     this.projectImpactsDAO = projectImpactsDAO;
     this.projectInfoManager = projectInfoManager;
+    this.projectImpactsCategoriesManager = projectImpactsCategoriesManager;
   }
 
   @Override
@@ -153,9 +157,11 @@ public class ProjectImpactsManagerImpl implements ProjectImpactsManager {
 
     ReportProjectImpactsCovid19DTO.setPhaseId(phase.getId().toString());
 
-    ProjectImpactsCategories projectImpactsCategories = projectImpact.getProjectImpactsCategories();
+    Long projectImpactsCategoriesID = projectImpact.getProjectImpactCategoryId();
 
-    if (projectImpactsCategories != null) {
+    if (projectImpactsCategoriesID != null) {
+      ProjectImpactsCategories projectImpactsCategories =
+        projectImpactsCategoriesManager.getProjectImpactsCategoriesById(projectImpactsCategoriesID);
       String nameImpactCategory = projectImpactsCategories.getName() == null ? "" : projectImpactsCategories.getName();
       String descriptionImpactCategory =
         projectImpactsCategories.getDescription() == null ? "" : projectImpactsCategories.getDescription();

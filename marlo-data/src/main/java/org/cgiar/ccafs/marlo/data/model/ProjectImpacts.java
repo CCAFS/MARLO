@@ -36,7 +36,7 @@ public class ProjectImpacts extends MarloAuditableEntity implements java.io.Seri
   @Expose
   private String answer;
   @Expose
-  private ProjectImpactsCategories projectImpactsCategories;
+  private Long projectImpactCategoryId;
 
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
@@ -59,8 +59,8 @@ public class ProjectImpacts extends MarloAuditableEntity implements java.io.Seri
   }
 
 
-  public ProjectImpactsCategories getProjectImpactsCategories() {
-    return projectImpactsCategories;
+  public Long getProjectImpactCategoryId() {
+    return projectImpactCategoryId;
   }
 
 
@@ -90,8 +90,8 @@ public class ProjectImpacts extends MarloAuditableEntity implements java.io.Seri
   }
 
 
-  public void setProjectImpactsCategories(ProjectImpactsCategories projectImpactsCategories) {
-    this.projectImpactsCategories = projectImpactsCategories;
+  public void setProjectImpactCategoryId(Long projectImpactCategoryId) {
+    this.projectImpactCategoryId = projectImpactCategoryId;
   }
 
 
