@@ -19,12 +19,14 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectImpactsCategoriesManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectImpactsManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectImpacts;
+import org.cgiar.ccafs.marlo.data.model.ProjectImpactsCategories;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -62,6 +64,7 @@ public class ProjectImpactsAction extends BaseAction {
   private ProjectImpactsManager projectImpactsManager;
   private String transaction;
   private AuditLogManager auditLogManager;
+  private ProjectImpactsCategoriesManager projectImpactsCategoriesManager;
 
   // Front-end
   private long projectID;
@@ -70,18 +73,21 @@ public class ProjectImpactsAction extends BaseAction {
   private ProjectImpacts actualProjectImpact;
   private List<ProjectImpacts> historyProjectImpacts;
   private Project project;
+  private List<ProjectImpactsCategories> projectImpactsCategories;
 
   private ProjectImpactsValidator validator;
 
   @Inject
   public ProjectImpactsAction(APConfig config, GlobalUnitManager crpManager, ProjectManager projectManager,
-    AuditLogManager auditLogManager, ProjectImpactsManager projectImpactsManager, ProjectImpactsValidator validator) {
+    AuditLogManager auditLogManager, ProjectImpactsManager projectImpactsManager, ProjectImpactsValidator validator,
+    ProjectImpactsCategoriesManager projectImpactsCategoriesManager) {
     super(config);
     this.projectImpactsManager = projectImpactsManager;
     this.crpManager = crpManager;
     this.projectManager = projectManager;
     this.auditLogManager = auditLogManager;
     this.validator = validator;
+    this.projectImpactsCategoriesManager = projectImpactsCategoriesManager;
   }
 
   /**
@@ -198,6 +204,11 @@ public class ProjectImpactsAction extends BaseAction {
   }
 
 
+  public List<ProjectImpactsCategories> getProjectImpactsCategories() {
+    return projectImpactsCategories;
+  }
+
+
   public String getTransaction() {
     return transaction;
   }
@@ -269,6 +280,9 @@ public class ProjectImpactsAction extends BaseAction {
       }
     }
 
+    projectImpactsCategories = new ArrayList<ProjectImpactsCategories>();
+    projectImpactsCategories = projectImpactsCategoriesManager.findAll();
+
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_COVID19_BASE_PERMISSION, params));
 
@@ -278,17 +292,25 @@ public class ProjectImpactsAction extends BaseAction {
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
+
+      // no impact category selected
+
+      if (actualProjectImpact.getProjectImpactCategoryId() == -1) {
+        actualProjectImpact.setProjectImpactCategoryId(null);
+      }
+
       projectImpactsManager.saveProjectImpacts(actualProjectImpact);
+
       return SUCCESS;
     } else {
       return NOT_AUTHORIZED;
     }
   }
 
-
   public void setActualProjectImpact(ProjectImpacts actualProjectImpact) {
     this.actualProjectImpact = actualProjectImpact;
   }
+
 
   public void setCrpManager(GlobalUnitManager crpManager) {
     this.crpManager = crpManager;
@@ -302,7 +324,6 @@ public class ProjectImpactsAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
-
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
@@ -315,6 +336,11 @@ public class ProjectImpactsAction extends BaseAction {
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
+  }
+
+
+  public void setProjectImpactsCategories(List<ProjectImpactsCategories> projectImpactsCategories) {
+    this.projectImpactsCategories = projectImpactsCategories;
   }
 
   public void setTransaction(String transaction) {
