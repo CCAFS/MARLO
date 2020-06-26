@@ -43,7 +43,7 @@
               [@customForm.textArea name="actualProjectImpact.answer" i18nkey="projects.impacts.covid19ImpactQuestion${actualPhase.year}" placeholder="" help="projects.impacts.covid19ImpactHelp" className="project-title limitWords-300" helpIcon=false required=true editable=editable /]
             
               [#-- project category --]
-                  [@customForm.select name="actualProjectImpact.projectImpactsCategories.id" className="impactsCategoriesSelect" i18nkey="projects.impacts.covid19CategoryTitle"  disabled=!editable  listName="projectImpactsCategories" keyFieldName="id"  displayFieldName="composedName" required=false editable=editable /]
+              [@customForm.select name="actualProjectImpact.projectImpactCategoryId" className="impactsCategoriesSelect" i18nkey="projects.impacts.covid19CategoryTitle"  disabled=!editable  listName="projectImpactsCategories" keyFieldName="id"  displayFieldName="composedName" required=false editable=editable /]
             [#if actualPhase.year = 2021]
               </br>
               [#list historyProjectImpacts as historicProject]
