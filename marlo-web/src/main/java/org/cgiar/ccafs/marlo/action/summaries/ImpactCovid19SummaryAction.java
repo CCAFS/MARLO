@@ -92,6 +92,7 @@ public class ImpactCovid19SummaryAction extends BaseSummariesAction implements S
       this.getText("summaries.impacts.projectLeaderEmail"));
     masterReport.getParameterValues().put("i8nManagementLiasionAcronym",
       this.getText("summaries.impacts.managementLiasionAcronym"));
+    masterReport.getParameterValues().put("i8nImpactCategory", this.getText("summaries.impacts.impactCategory"));
 
     return masterReport;
   }
@@ -195,9 +196,10 @@ public class ImpactCovid19SummaryAction extends BaseSummariesAction implements S
   private TypedTableModel getImpactCovid19TableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"projectId", "title", "projectSummary", "projectLeader", "managementLiasion", "answer2020Covid19",
-        "answer2021Covid19", "projectUrl", "phaseId", "projectLeaderEmail", "managementLiasionAcronym"},
+        "answer2021Covid19", "projectUrl", "phaseId", "projectLeaderEmail", "managementLiasionAcronym",
+        "impactCategory"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, Long.class, String.class, String.class},
+        String.class, Long.class, String.class, String.class, String.class},
       0);
 
     List<ReportProjectImpactsCovid19DTO> reportProjectImpactsCovid19DTO =
@@ -210,7 +212,8 @@ public class ImpactCovid19SummaryAction extends BaseSummariesAction implements S
         reportProjectImpactCovid19DTO.getManagementLiasion(), reportProjectImpactCovid19DTO.getAnswer().get(2020),
         reportProjectImpactCovid19DTO.getAnswer().get(2021), reportProjectImpactCovid19DTO.getProjectUrl(),
         reportProjectImpactCovid19DTO.getPhaseId(), reportProjectImpactCovid19DTO.getProjectLeaderEmail(),
-        reportProjectImpactCovid19DTO.getManagementLiasionAcronym()});
+        reportProjectImpactCovid19DTO.getManagementLiasionAcronym(),
+        reportProjectImpactCovid19DTO.getImpactCategory()});
     }
     return model;
   }
