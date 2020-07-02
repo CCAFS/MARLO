@@ -40,6 +40,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicRegion;
+import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
 import org.cgiar.ccafs.marlo.data.model.DeliverableLocation;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
@@ -225,6 +226,24 @@ public class CrpDeliverablesAction extends BaseAction {
     }
 
     return users;
+  }
+
+  public void moveDeliverables() {
+    long idPhaseToMove = 0, idDeliverableToMove = 0;
+    if (idPhaseToMove != 0 && idDeliverableToMove != 0) {
+      Phase phaseToMove = phaseManager.getPhaseById(idPhaseToMove);
+      Deliverable deliverableToMove = deliverableManager.getDeliverableById(idDeliverableToMove);
+
+      if (deliverableToMove != null) {
+        List<DeliverableInfo> deliverableInfos =
+          deliverableInfoManager.findAll().stream().filter(di -> di != null && di.getDeliverable() != null
+            && di.isActive() && di.getDeliverable().getId().equals(idDeliverableToMove)).collect(Collectors.toList());
+        if (deliverableInfos != null && !deliverableInfos.isEmpty()) {
+
+        }
+      }
+    }
+
   }
 
   @Override
