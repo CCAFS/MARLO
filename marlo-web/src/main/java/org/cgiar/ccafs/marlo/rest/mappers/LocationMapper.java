@@ -15,15 +15,20 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
+import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationRegion;
+import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyRegion;
 import org.cgiar.ccafs.marlo.rest.dto.CountryDTO;
+import org.cgiar.ccafs.marlo.rest.dto.LocElementDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ParentRegionDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectPageCountriesDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectPageRegionsDTO;
 import org.cgiar.ccafs.marlo.rest.dto.RegionDTO;
 
 import org.mapstruct.Mapper;
@@ -39,6 +44,11 @@ public interface LocationMapper {
 
   @Mappings({@Mapping(source = "code", target = "isoNumeric")})
   public abstract LocElement countryDTOToLocElement(CountryDTO countryDTO);
+
+  @Mappings({@Mapping(source = "locElement.isoNumeric", target = "id"),
+    @Mapping(source = "locElement.name", target = "name"),
+    @Mapping(source = "locElement.isoAlpha2", target = "isoAlpha2")})
+  public abstract LocElementDTO institutionLocationToLocElementDTO(InstitutionLocation instututionLocation);
 
   @Mappings({@Mapping(source = "isoNumeric", target = "code"), @Mapping(source = "locElement", target = "regionDTO")})
   public abstract CountryDTO locElementToCountryDTO(LocElement locElement);
@@ -74,11 +84,25 @@ public interface LocationMapper {
     @Mapping(source = "locElement.locElement", target = "parentRegion")})
   public abstract RegionDTO projectInnovationRegionToRegionDTO(ProjectInnovationRegion projectInnovationRegion);
 
+  @Mappings({@Mapping(source = "locElement.isoNumeric", target = "id"),
+    @Mapping(source = "locElement.name", target = "name"),
+    @Mapping(source = "locElement.isoAlpha2", target = "isoAlpha2")})
+  public abstract LocElementDTO projectLocationToDefaultFieldDTO(ProjectLocation projectLocation);
+
+  @Mappings({@Mapping(source = "locElement.isoAlpha2", target = "isoAlpha2"),
+    @Mapping(source = "locElement.name", target = "name")})
+  public abstract ProjectPageCountriesDTO projectLocationToProjectPageCountriesDTO(ProjectLocation projectLocation);
+
+  @Mappings({@Mapping(source = "locElement.isoNumeric", target = "UM49code"),
+    @Mapping(source = "locElement.name", target = "name")})
+  public abstract ProjectPageRegionsDTO projectLocationToProjectPageRegionsDTO(ProjectLocation projectLocation);
+
   @Mappings({@Mapping(source = "projectPolicyCountry.locElement.isoNumeric", target = "code"),
     @Mapping(source = "projectPolicyCountry.locElement.isoAlpha2", target = "isoAlpha2"),
     @Mapping(source = "projectPolicyCountry.locElement.name", target = "name"),
     @Mapping(source = "projectPolicyCountry.locElement.locElement", target = "regionDTO")})
   public abstract CountryDTO projectPolicyCountryToCountryDTO(ProjectPolicyCountry projectPolicyCountry);
+
 
   @Mappings({@Mapping(source = "projectPolicyRegion.locElement.isoNumeric", target = "UM49Code"),
     @Mapping(source = "locElement.name", target = "name"),

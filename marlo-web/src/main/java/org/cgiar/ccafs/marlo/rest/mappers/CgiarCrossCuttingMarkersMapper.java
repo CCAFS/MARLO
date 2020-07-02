@@ -21,6 +21,7 @@ package org.cgiar.ccafs.marlo.rest.mappers;
 
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.rest.dto.CrosscuttingMarkersDTO;
+import org.cgiar.ccafs.marlo.rest.dto.CrosscuttingMarkersJustificationDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -34,5 +35,13 @@ public interface CgiarCrossCuttingMarkersMapper {
     @Mapping(source = "reportSynthesisFlagshipProgressCrossCuttingMarker.focus", target = "crossCuttingmarkerScore")})
   public abstract CrosscuttingMarkersDTO reportSynthesisFlagshipProgressCrossCuttingMarkerToCrosscuttingMarkersDTO(
     ReportSynthesisFlagshipProgressCrossCuttingMarker reportSynthesisFlagshipProgressCrossCuttingMarker);
+
+  @Mappings({
+    @Mapping(source = "reportSynthesisFlagshipProgressCrossCuttingMarker.marker", target = "crossCuttingmarker"),
+    @Mapping(source = "reportSynthesisFlagshipProgressCrossCuttingMarker.focus", target = "crossCuttingmarkerScore"),
+    @Mapping(source = "reportSynthesisFlagshipProgressCrossCuttingMarker.just", target = "scoreJustification")})
+  public abstract CrosscuttingMarkersJustificationDTO
+    reportSynthesisFlagshipProgressCrossCuttingMarkerToCrosscuttingMarkersJustificationDTO(
+      ReportSynthesisFlagshipProgressCrossCuttingMarker reportSynthesisFlagshipProgressCrossCuttingMarker);
 
 }

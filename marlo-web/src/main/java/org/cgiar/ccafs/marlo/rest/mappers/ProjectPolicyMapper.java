@@ -20,6 +20,8 @@
 package org.cgiar.ccafs.marlo.rest.mappers;
 
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectPagePoliciesDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectPolicyARDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectPolicyDTO;
 
 import org.mapstruct.Mapper;
@@ -30,11 +32,22 @@ import org.mapstruct.Mappings;
   uses = {ProjectPoliciesInfoMapper.class, ProjectPolicyCrosscuttingMarkersMapper.class,
     ProjectPolicyGeographicScopeMapper.class, ProjectPolicyCrpMapper.class, ProjectPolicySubIdoMapper.class,
     LocationMapper.class, ProjectPolicyOwnerMapper.class, PolicyMilestoneMapper.class,
-    ProjectExpectedStudyPolicyMapper.class, ProjectPolicyInnovationMapper.class})
+    ProjectExpectedStudyPolicyMapper.class, ProjectPolicyInnovationMapper.class, DefaultFieldMapper.class,
+    DefaultFieldPrimaryMapper.class})
 public interface ProjectPolicyMapper {
 
   @Mappings({@Mapping(source = "projectPolicyDTO.project", target = "project.id"),})
   public abstract ProjectPolicy projectPolicyDTOToProjectPolicy(ProjectPolicyDTO projectPolicyDTO);
+
+  @Mappings({@Mapping(source = "projectPolicy.projectPolicyInfo.title", target = "title"),})
+  public abstract ProjectPagePoliciesDTO projectPolicyToProjectPagePoliciesDTO(ProjectPolicy projectPolicy);
+
+
+  @Mappings({@Mapping(source = "projectPolicy.project.id", target = "project"),
+    @Mapping(source = "projectPolicy.crps", target = "crps"),
+    @Mapping(source = "projectPolicy.evidences", target = "projectExpetedStudyList"),
+    @Mapping(source = "projectPolicy.innovations", target = "projectInnovationList")})
+  public abstract ProjectPolicyARDTO projectPolicyToProjectPolicyARDTO(ProjectPolicy projectPolicy);
 
   @Mappings({@Mapping(source = "projectPolicy.crps", target = "projectPolicyCrpDTO"),
     @Mapping(source = "projectPolicy.subIdos", target = "srfSubIdoList"),

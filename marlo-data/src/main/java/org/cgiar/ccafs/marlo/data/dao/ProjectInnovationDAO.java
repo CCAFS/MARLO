@@ -56,6 +56,8 @@ public interface ProjectInnovationDAO {
   public List<ProjectInnovation> findAll();
 
 
+  public Boolean isInnovationExcluded(Long innovationId, Long phaseId);
+
   /**
    * This method saves the information of the given projectInnovation
    * 

@@ -22,12 +22,14 @@ package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.expectedStudies.ExpectedStudiesOtherItem;
+import org.cgiar.ccafs.marlo.rest.dto.MeliaARDTO;
 import org.cgiar.ccafs.marlo.rest.dto.MeliaDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectExpectedStudiesOtherDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectExpectedStudyDTO;
 import org.cgiar.ccafs.marlo.rest.errors.NotFoundException;
 import org.cgiar.ccafs.marlo.security.Permission;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -54,7 +56,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Api(tags = "Table 10 ")
+@Api(tags = "Table 10 - Monitoring, Evaluation, Learning and Impact Assessment (MELIA)")
 public class ExpectedStudiesOther {
 
   private static final Logger LOG = LoggerFactory.getLogger(ExpectedStudies.class);
@@ -114,11 +116,18 @@ public class ExpectedStudiesOther {
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIAREntity}/MeliaList", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
-  public List<MeliaDTO> findAllMeliaByGlobalUnit(
+  public List<MeliaARDTO> findAllMeliaByGlobalUnit(
     @ApiParam(value = "${ExpectedStudies.MELIA.GET.all.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${ExpectedStudies.MELIA.GET.all.param.year}", required = true) @RequestParam Integer year,
     @ApiParam(value = "${ExpectedStudies.MELIA.GET.all.param.phase}", required = true) @RequestParam String phase) {
-    return this.expectedStudiesOtherItem.findAllMeliaByGlobalUnit(CGIAREntity, year, phase, this.getCurrentUser());
+    List<MeliaARDTO> meliaList = new ArrayList<MeliaARDTO>();
+    try {
+      meliaList =
+        this.expectedStudiesOtherItem.findAllMeliaByGlobalUnit(CGIAREntity, year, phase, this.getCurrentUser());
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return meliaList;
   }
 
   @ApiOperation(tags = {"Table 10 - Monitoring, Evaluation, Learning and Impact Assessment (MELIA)"},

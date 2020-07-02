@@ -81,6 +81,7 @@ import org.cgiar.ccafs.marlo.rest.dto.NewMilestonesDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectPolicyDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewSrfSubIdoDTO;
 import org.cgiar.ccafs.marlo.rest.dto.PolicyOwnerTypeDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectPolicyARDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectPolicyDTO;
 import org.cgiar.ccafs.marlo.rest.dto.RegionDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
@@ -571,9 +572,9 @@ public class PolicyItem<T> {
 
   }
 
-  public List<ProjectPolicyDTO> findAllPoliciesByGlobalUnit(String CGIARentityAcronym, Integer repoYear,
+  public List<ProjectPolicyARDTO> findAllPoliciesByGlobalUnit(String CGIARentityAcronym, Integer repoYear,
     String repoPhase, User user) {
-    List<ProjectPolicyDTO> policyList = new ArrayList<ProjectPolicyDTO>();
+    List<ProjectPolicyARDTO> policyList = new ArrayList<ProjectPolicyARDTO>();
     List<ProjectPolicy> projectPolicyList = new ArrayList<ProjectPolicy>();
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
 
@@ -598,18 +599,23 @@ public class PolicyItem<T> {
           .collect(Collectors.toList()));
     } else {
       List<ProjectPolicyInfo> projectPolicyInfoList = phase.getProjectPolicyInfos().stream()
-        .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
+        .filter(
+          c -> c.isActive() && c.getYear().longValue() == phase.getYear() && c.getPhase().getId().equals(phase.getId()))
+        .collect(Collectors.toList());
       for (ProjectPolicyInfo projectPolicyInfo : projectPolicyInfoList) {
         ProjectPolicy projectPolicy =
           projectPolicyManager.getProjectPolicyById(projectPolicyInfo.getProjectPolicy().getId());
-        projectPolicy.setProjectPolicyInfo(projectPolicyInfo);
-        projectPolicy = this.getPolicyInfoPhase(projectPolicy, phase);
-        projectPolicyList.add(projectPolicy);
+
+        if (projectPolicy.isActive() && projectPolicyManager.isPolicyExcluded(projectPolicy.getId(), phase.getId())) {
+          projectPolicy.setProjectPolicyInfo(projectPolicyInfo);
+          projectPolicy = this.getPolicyInfoPhase(projectPolicy, phase);
+          projectPolicyList.add(projectPolicy);
+        }
       }
 
     }
 
-    policyList = projectPolicyList.stream().map(this.projectPolicyMapper::projectPolicyToProjectPolicyDTO)
+    policyList = projectPolicyList.stream().map(this.projectPolicyMapper::projectPolicyToProjectPolicyARDTO)
       .collect(Collectors.toList());
     return policyList;
   }
@@ -791,6 +797,36 @@ public class PolicyItem<T> {
         projectPolicyInfo.setTitle(newPolicyDTO.getProjectPoliciesInfo().getTitle());
         projectPolicyInfo.setDescription(newPolicyDTO.getProjectPoliciesInfo().getDescription());
         projectPolicyInfo.setNarrativeEvidence(newPolicyDTO.getProjectPoliciesInfo().getNarrativeEvidence());
+        // policy investiment type
+        if (newPolicyDTO.getProjectPoliciesInfo().getRepIndPolicyInvestimentType() != null) {
+          RepIndPolicyInvestimentType repIndPolicyInvestimentType =
+            this.repIndPolicyInvestimentTypeManager.getRepIndPolicyInvestimentTypeById(
+              newPolicyDTO.getProjectPoliciesInfo().getRepIndPolicyInvestimentType().getCode().longValue());
+          if (repIndPolicyInvestimentType == null) {
+            fieldErrors.add(new FieldErrorDTO("createPolicy", "repIndPolicyInvestimentType",
+              new NewProjectPolicyDTO().getProjectPoliciesInfo().getRepIndPolicyInvestimentType().getCode()
+                + " is an invalid investiment type code"));
+          } else {
+            projectPolicyInfo.setRepIndPolicyInvestimentType(repIndPolicyInvestimentType);
+          }
+        } else {
+          fieldErrors.add(
+            new FieldErrorDTO("createPolicy", "repIndPolicyInvestimentType", "policy investiment type is need it"));
+        }
+        // policy info maturity level
+        if (newPolicyDTO.getProjectPoliciesInfo().getRepIndStageProcess() != null) {
+          RepIndStageProcess repIndStageProcess = repIndStageProcessManager.getRepIndStageProcessById(
+            newPolicyDTO.getProjectPoliciesInfo().getRepIndStageProcess().getCode().longValue());
+          if (repIndStageProcess == null) {
+            fieldErrors.add(new FieldErrorDTO("createPolicy", "repIndStageProcess",
+              new NewProjectPolicyDTO().getProjectPoliciesInfo().getRepIndStageProcess().getCode()
+                + " is an invalid maturity level code"));
+          } else {
+            projectPolicyInfo.setRepIndStageProcess(repIndStageProcess);
+          }
+        } else {
+          fieldErrors.add(new FieldErrorDTO("createPolicy", "repIndStageProcess", "policy maturity level is need it"));
+        }
         projectPolicy.setProjectPolicyInfo(projectPolicyInfo);
 
         // validate crp contributing

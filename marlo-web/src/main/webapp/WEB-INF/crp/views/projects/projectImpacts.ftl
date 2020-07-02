@@ -3,6 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [ 
+  "${baseUrlMedia}/js/projects/projectImpacts.js", 
   "${baseUrlCdn}/global/js/autoSave.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js"
   ] 
@@ -40,6 +41,9 @@
           <div id="projectImpactCovid19" class="borderBox">
             <div class="form-group">        
               [@customForm.textArea name="actualProjectImpact.answer" i18nkey="projects.impacts.covid19ImpactQuestion${actualPhase.year}" placeholder="" help="projects.impacts.covid19ImpactHelp" className="project-title limitWords-300" helpIcon=false required=true editable=editable /]
+            
+              [#-- project category --]
+              [@customForm.select name="actualProjectImpact.projectImpactCategoryId" className="impactsCategoriesSelect" i18nkey="projects.impacts.covid19CategoryTitle"  disabled=!editable  listName="projectImpactsCategories" keyFieldName="id"  displayFieldName="composedName" required=false editable=editable required=true/]
             [#if actualPhase.year = 2021]
               </br>
               [#list historyProjectImpacts as historicProject]

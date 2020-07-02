@@ -99,6 +99,22 @@ public class ProjectPolicyMySQLDAO extends AbstractMarloDAO<ProjectPolicy, Long>
   }
 
   @Override
+  public Boolean isPolicyExcluded(Long policyId, Long phaseId) {
+    StringBuilder query = new StringBuilder();
+    query.append(
+      "select is_policy_excluded(" + policyId.longValue() + "," + phaseId.longValue() + ") as isPolicyExcluded");
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        if (Long.parseLong(map.get("isPolicyExcluded").toString()) == 0) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  @Override
   public ProjectPolicy save(ProjectPolicy projectPolicy) {
     if (projectPolicy.getId() == null) {
       super.saveEntity(projectPolicy);
