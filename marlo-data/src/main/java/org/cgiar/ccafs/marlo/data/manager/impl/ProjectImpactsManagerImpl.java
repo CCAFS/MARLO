@@ -16,11 +16,13 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectImpactsDAO;
+import org.cgiar.ccafs.marlo.data.manager.ProjectImpactsCategoriesManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectImpactsManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectImpacts;
+import org.cgiar.ccafs.marlo.data.model.ProjectImpactsCategories;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ReportProjectImpactsCovid19DTO;
@@ -44,11 +46,14 @@ public class ProjectImpactsManagerImpl implements ProjectImpactsManager {
 
   // Managers
   private ProjectInfoManager projectInfoManager;
+  private ProjectImpactsCategoriesManager projectImpactsCategoriesManager;
 
   @Inject
-  public ProjectImpactsManagerImpl(ProjectImpactsDAO projectImpactsDAO, ProjectInfoManager projectInfoManager) {
+  public ProjectImpactsManagerImpl(ProjectImpactsDAO projectImpactsDAO, ProjectInfoManager projectInfoManager,
+    ProjectImpactsCategoriesManager projectImpactsCategoriesManager) {
     this.projectImpactsDAO = projectImpactsDAO;
     this.projectInfoManager = projectInfoManager;
+    this.projectImpactsCategoriesManager = projectImpactsCategoriesManager;
   }
 
   @Override
@@ -151,6 +156,17 @@ public class ProjectImpactsManagerImpl implements ProjectImpactsManager {
     ReportProjectImpactsCovid19DTO.setProjectUrl("P" + projectImpact.getProject().getId().toString());
 
     ReportProjectImpactsCovid19DTO.setPhaseId(phase.getId().toString());
+
+    Long projectImpactsCategoriesID = projectImpact.getProjectImpactCategoryId();
+
+    if (projectImpactsCategoriesID != null) {
+      ProjectImpactsCategories projectImpactsCategories =
+        projectImpactsCategoriesManager.getProjectImpactsCategoriesById(projectImpactsCategoriesID);
+      String nameImpactCategory = projectImpactsCategories.getName() == null ? "" : projectImpactsCategories.getName();
+      String descriptionImpactCategory =
+        projectImpactsCategories.getDescription() == null ? "" : projectImpactsCategories.getDescription();
+      ReportProjectImpactsCovid19DTO.setImpactCategory(nameImpactCategory + " - " + descriptionImpactCategory);
+    }
 
     return ReportProjectImpactsCovid19DTO;
   }
