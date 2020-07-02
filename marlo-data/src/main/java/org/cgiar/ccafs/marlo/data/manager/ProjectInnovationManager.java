@@ -86,6 +86,8 @@ public interface ProjectInnovationManager {
   public List<ProjectInnovation> getProjectInnovationsNoSynthesisList(LiaisonInstitution liaisonInstitution,
     Phase phase);
 
+  public Boolean isInnovationExcluded(Long innovationId, Long phaseId);
+
   /**
    * This method saves the information of the given projectInnovation
    * 
@@ -95,6 +97,7 @@ public interface ProjectInnovationManager {
    *         or -1 is some error occurred.
    */
   public ProjectInnovation saveProjectInnovation(ProjectInnovation projectInnovation);
+
 
   /**
    * This method saves the information of the given projectInnovation
@@ -108,6 +111,5 @@ public interface ProjectInnovationManager {
    */
   public ProjectInnovation saveProjectInnovation(ProjectInnovation projectInnovation, String section,
     List<String> relationsName, Phase phase);
-
 
 }

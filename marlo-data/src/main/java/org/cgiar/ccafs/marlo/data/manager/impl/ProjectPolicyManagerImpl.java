@@ -318,6 +318,12 @@ public class ProjectPolicyManagerImpl implements ProjectPolicyManager {
   }
 
   @Override
+  public Boolean isPolicyExcluded(Long policyId, Long phaseId) {
+
+    return projectPolicyDAO.isPolicyExcluded(policyId, phaseId);
+  }
+
+  @Override
   public ProjectPolicy saveProjectPolicy(ProjectPolicy projectPolicy) {
 
     return projectPolicyDAO.save(projectPolicy);
