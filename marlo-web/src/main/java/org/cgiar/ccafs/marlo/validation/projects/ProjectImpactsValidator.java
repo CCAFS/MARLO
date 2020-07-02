@@ -86,6 +86,15 @@ public class ProjectImpactsValidator extends BaseValidator {
       action.getInvalidFields().put("input-projects.impacts.covid19.answer", InvalidFieldsMessages.EMPTYFIELD);
     }
 
+    if (projectImpacts.getProjectImpactCategoryId() != null) {
+      if (projectImpacts.getProjectImpactCategoryId() == -1) {
+        action.addMessage(action.getText("projects.impacts.covid19CategoryTitle"));
+        action.getInvalidFields().put("input-projects.impacts.covid19.categoryTitle", InvalidFieldsMessages.EMPTYFIELD);
+      }
+    } else {
+      action.addMessage(action.getText("projects.impacts.covid19CategoryTitle"));
+      action.getInvalidFields().put("input-projects.impacts.covid19.categoryTitle", InvalidFieldsMessages.EMPTYFIELD);
+    }
 
   }
 

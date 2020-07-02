@@ -37,7 +37,9 @@
             <column name="project_impact_id" />
           </key>
         <one-to-many class="org.cgiar.ccafs.marlo.data.model.SectionStatus" />
-    </set>  
-        
+        </set>
+        <property name="projectImpactCategoryId" type="java.lang.Long">
+          <column name="project_impact_category_id"/>
+        </property>
     </class>
 </hibernate-mapping>
