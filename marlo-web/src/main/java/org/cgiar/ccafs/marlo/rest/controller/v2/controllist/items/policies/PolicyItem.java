@@ -797,6 +797,36 @@ public class PolicyItem<T> {
         projectPolicyInfo.setTitle(newPolicyDTO.getProjectPoliciesInfo().getTitle());
         projectPolicyInfo.setDescription(newPolicyDTO.getProjectPoliciesInfo().getDescription());
         projectPolicyInfo.setNarrativeEvidence(newPolicyDTO.getProjectPoliciesInfo().getNarrativeEvidence());
+        // policy investiment type
+        if (newPolicyDTO.getProjectPoliciesInfo().getRepIndPolicyInvestimentType() != null) {
+          RepIndPolicyInvestimentType repIndPolicyInvestimentType =
+            this.repIndPolicyInvestimentTypeManager.getRepIndPolicyInvestimentTypeById(
+              newPolicyDTO.getProjectPoliciesInfo().getRepIndPolicyInvestimentType().getCode().longValue());
+          if (repIndPolicyInvestimentType == null) {
+            fieldErrors.add(new FieldErrorDTO("createPolicy", "repIndPolicyInvestimentType",
+              new NewProjectPolicyDTO().getProjectPoliciesInfo().getRepIndPolicyInvestimentType().getCode()
+                + " is an invalid investiment type code"));
+          } else {
+            projectPolicyInfo.setRepIndPolicyInvestimentType(repIndPolicyInvestimentType);
+          }
+        } else {
+          fieldErrors.add(
+            new FieldErrorDTO("createPolicy", "repIndPolicyInvestimentType", "policy investiment type is need it"));
+        }
+        // policy info maturity level
+        if (newPolicyDTO.getProjectPoliciesInfo().getRepIndStageProcess() != null) {
+          RepIndStageProcess repIndStageProcess = repIndStageProcessManager.getRepIndStageProcessById(
+            newPolicyDTO.getProjectPoliciesInfo().getRepIndStageProcess().getCode().longValue());
+          if (repIndStageProcess == null) {
+            fieldErrors.add(new FieldErrorDTO("createPolicy", "repIndStageProcess",
+              new NewProjectPolicyDTO().getProjectPoliciesInfo().getRepIndStageProcess().getCode()
+                + " is an invalid maturity level code"));
+          } else {
+            projectPolicyInfo.setRepIndStageProcess(repIndStageProcess);
+          }
+        } else {
+          fieldErrors.add(new FieldErrorDTO("createPolicy", "repIndStageProcess", "policy maturity level is need it"));
+        }
         projectPolicy.setProjectPolicyInfo(projectPolicyInfo);
 
         // validate crp contributing
