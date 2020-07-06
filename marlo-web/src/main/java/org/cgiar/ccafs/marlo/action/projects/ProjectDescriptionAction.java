@@ -125,6 +125,7 @@ public class ProjectDescriptionAction extends BaseAction {
   private CenterOutcomeManager centerOutcomeManager;
   private LiaisonUserManager liaisonUserManager;
   private HistoryComparator historyComparator;
+  private CrpProgramManager crpProgramManager;
 
   private List<CrpProgram> centerPrograms;
   private List<CrpProgram> regionPrograms;
@@ -172,7 +173,8 @@ public class ProjectDescriptionAction extends BaseAction {
     CrpClusterOfActivityManager crpClusterOfActivityManager, LocElementTypeManager locationManager,
     ProjectScopeManager projectLocationManager, HistoryComparator historyComparator,
     ProjectInfoManager projectInfoManagerManager, GlobalUnitProjectManager globalUnitProjectManager,
-    CenterOutcomeManager centerOutcomeManager, ProjectCenterOutcomeManager projectCenterOutcomeManager) {
+    CenterOutcomeManager centerOutcomeManager, ProjectCenterOutcomeManager projectCenterOutcomeManager,
+    CrpProgramManager crpProgramManager) {
     super(config);
     this.projectManager = projectManager;
     this.projectInfoManagerManager = projectInfoManagerManager;
@@ -196,6 +198,7 @@ public class ProjectDescriptionAction extends BaseAction {
     this.globalUnitProjectManager = globalUnitProjectManager;
     this.projectCenterOutcomeManager = projectCenterOutcomeManager;
     this.centerOutcomeManager = centerOutcomeManager;
+    this.crpProgramManager = crpProgramManager;
   }
 
   /**
@@ -617,6 +620,7 @@ public class ProjectDescriptionAction extends BaseAction {
         project.setFlagshipValue("");
         project.setRegionsValue("");
         List<CrpProgram> programs = new ArrayList<>();
+
         for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
           .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
             && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
@@ -696,13 +700,29 @@ public class ProjectDescriptionAction extends BaseAction {
 
     allOwners = new ArrayList<LiaisonUser>();
     // load the liason users for the crp
-    allOwners.addAll(loggedCrp.getLiasonUsers());
+    if (this.isCenterGlobalUnit()) {
+      if (!this.getActualPhase().getCrp().isCenterType()) {
+        allOwners.addAll(this.getActualPhase().getCrp().getLiasonUsers());
+      } else {
+        allOwners.addAll(loggedCrp.getLiasonUsers());
+      }
+    } else {
+      allOwners.addAll(loggedCrp.getLiasonUsers());
+    }
+
     liaisonInstitutions = new ArrayList<LiaisonInstitution>();
     if (this.isCenterGlobalUnit()) {
-      liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
-        .filter(c -> c.isActive() && c.getCrpProgram() != null
-          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-        .collect(Collectors.toList()));
+      // dperez 2019-11-20
+      if (!this.getActualPhase().getCrp().isCenterType()) {
+        liaisonInstitutions.addAll(this.getActualPhase().getCrp().getLiaisonInstitutions().stream()
+          .filter(c -> c.isActive() && c.getCrpProgram() != null).collect(Collectors.toList()));
+      } else {
+        liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
+          .filter(c -> c.isActive() && c.getCrpProgram() != null
+            && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+          .collect(Collectors.toList()));
+      }
+
     } else {
     	if (this.hasSpecificities(APConstants.CRP_PPA_ENABLE_PROJECT_DESCRIPTION)) {
     		 liaisonInstitutions
@@ -730,9 +750,26 @@ public class ProjectDescriptionAction extends BaseAction {
     // load the flaghsips an regions
     programFlagships = new ArrayList<>();
     regionFlagships = new ArrayList<>();
-    programFlagships.addAll(loggedCrp.getCrpPrograms().stream()
-      .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-      .collect(Collectors.toList()));
+    if (this.isCenterGlobalUnit()) {
+      if (!this.getActualPhase().getCrp().isCenterType()) {
+        List<CrpProgram> crpProgramList = crpProgramManager.findAll();
+        crpProgramList = crpProgramList.stream()
+          .filter(c -> c.getCrp().getId().longValue() == this.getActualPhase().getCrp().getId().longValue())
+          .collect(Collectors.toList());
+        programFlagships.addAll(crpProgramList.stream()
+          .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+          .collect(Collectors.toList()));
+      } else {
+        programFlagships.addAll(loggedCrp.getCrpPrograms().stream()
+          .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+          .collect(Collectors.toList()));
+      }
+    } else {
+      programFlagships.addAll(loggedCrp.getCrpPrograms().stream()
+        .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        .collect(Collectors.toList()));
+    }
+
 
     programFlagships.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
     clusterofActivites = new ArrayList<>();
@@ -743,10 +780,28 @@ public class ProjectDescriptionAction extends BaseAction {
     }
 
     // add regions programs
-    regionFlagships.addAll(loggedCrp.getCrpPrograms().stream()
-      .filter(c -> c.isActive() && c.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
-      .collect(Collectors.toList()));
-    regionFlagships.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
+    if (this.isCenterGlobalUnit()) {
+      if (!this.getActualPhase().getCrp().isCenterType()) {
+        List<CrpProgram> crpProgramList = crpProgramManager.findAll();
+        crpProgramList = crpProgramList.stream()
+          .filter(c -> c.getCrp().getId().longValue() == this.getActualPhase().getCrp().getId().longValue())
+          .collect(Collectors.toList());
+        regionFlagships.addAll(crpProgramList.stream()
+          .filter(c -> c.isActive() && c.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+          .collect(Collectors.toList()));
+        regionFlagships.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
+      } else {
+        regionFlagships.addAll(loggedCrp.getCrpPrograms().stream()
+          .filter(c -> c.isActive() && c.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+          .collect(Collectors.toList()));
+        regionFlagships.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
+      }
+    } else {
+      regionFlagships.addAll(loggedCrp.getCrpPrograms().stream()
+        .filter(c -> c.isActive() && c.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+        .collect(Collectors.toList()));
+      regionFlagships.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
+    }
 
 
     // Center Outcomes
@@ -1048,6 +1103,11 @@ public class ProjectDescriptionAction extends BaseAction {
               projectCenterOutcome = projectCenterOutcomeManager.saveProjectCenterOutcome(projectCenterOutcome);
               // This add centerOutcome to generate correct auditlog.
               project.getProjectCenterOutcomes().add(projectCenterOutcome);
+            } else {
+              // update or reply info
+              ProjectCenterOutcome ProjectCenterOutcomeDB =
+                projectCenterOutcomeManager.getProjectCenterOutcomeById(projectCenterOutcome.getId());
+              projectCenterOutcome = projectCenterOutcomeManager.saveProjectCenterOutcome(ProjectCenterOutcomeDB);
             }
           }
 

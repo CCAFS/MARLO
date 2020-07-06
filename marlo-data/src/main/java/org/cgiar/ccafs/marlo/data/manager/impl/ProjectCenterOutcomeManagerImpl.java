@@ -15,11 +15,15 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectCenterOutcomeDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectCenterOutcomeManager;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectCenterOutcome;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -32,20 +36,46 @@ public class ProjectCenterOutcomeManagerImpl implements ProjectCenterOutcomeMana
 
 
   private ProjectCenterOutcomeDAO projectCenterOutcomeDAO;
+  private PhaseDAO phaseDAO;
   // Managers
 
 
   @Inject
-  public ProjectCenterOutcomeManagerImpl(ProjectCenterOutcomeDAO projectCenterOutcomeDAO) {
+  public ProjectCenterOutcomeManagerImpl(ProjectCenterOutcomeDAO projectCenterOutcomeDAO, PhaseDAO phaseDAO) {
     this.projectCenterOutcomeDAO = projectCenterOutcomeDAO;
-
+    this.phaseDAO = phaseDAO;
 
   }
 
   @Override
   public void deleteProjectCenterOutcome(long projectCenterOutcomeId) {
+    ProjectCenterOutcome projectCenterOutcome = this.getProjectCenterOutcomeById(projectCenterOutcomeId);
+    Phase currentPhase = phaseDAO.find(projectCenterOutcome.getPhase().getId());
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+      if (projectCenterOutcome.getPhase().getNext() != null) {
+        this.deleteProjectCenterOutcomePhase(currentPhase, projectCenterOutcomeId, projectCenterOutcome);
+      }
+    }
+    // projectCenterOutcomeDAO.deleteProjectCenterOutcome(projectCenterOutcomeId);
+  }
 
-    projectCenterOutcomeDAO.deleteProjectCenterOutcome(projectCenterOutcomeId);
+  public void deleteProjectCenterOutcomePhase(Phase next, long projectCenterOutcomeID,
+    ProjectCenterOutcome projectCenterOutcome) {
+    Phase phase = phaseDAO.find(next.getId());
+    List<ProjectCenterOutcome> projectCenterOutcomeList = projectCenterOutcomeDAO.getProjectCenterOutcomeByPhase(
+      next.getId(), projectCenterOutcome.getProject().getId(), projectCenterOutcome.getCenterOutcome().getId());
+    projectCenterOutcomeList =
+      projectCenterOutcomeList.stream()
+        .filter(c -> c.isActive()
+          && c.getProject().getId().longValue() == projectCenterOutcome.getProject().getId().longValue()
+          && c.getCenterOutcome().getId().longValue() == projectCenterOutcome.getCenterOutcome().getId().longValue())
+        .collect(Collectors.toList());
+    for (ProjectCenterOutcome projectCenterOutcomeDB : projectCenterOutcomeList) {
+      projectCenterOutcomeDAO.deleteProjectCenterOutcome(projectCenterOutcomeDB.getId());
+    }
+    if (phase.getNext() != null) {
+      this.deleteProjectCenterOutcomePhase(next.getNext(), projectCenterOutcomeID, projectCenterOutcome);
+    }
   }
 
   @Override
@@ -68,9 +98,45 @@ public class ProjectCenterOutcomeManagerImpl implements ProjectCenterOutcomeMana
   }
 
   @Override
-  public ProjectCenterOutcome saveProjectCenterOutcome(ProjectCenterOutcome projectCenterOutcome) {
+  public List<ProjectCenterOutcome> getProjectCenterOutcomeByPhase(Long phaseID, Long ProjectID, Long centerOutcomeID) {
+    return projectCenterOutcomeDAO.getProjectCenterOutcomeByPhase(phaseID, ProjectID, centerOutcomeID);
+  }
 
-    return projectCenterOutcomeDAO.save(projectCenterOutcome);
+  public void saveInfoPhase(Phase next, long projectCenterOutcomeID, ProjectCenterOutcome projectCenterOutcome) {
+    Phase phase = phaseDAO.find(next.getId());
+    List<ProjectCenterOutcome> projectCenterOutcomeList = projectCenterOutcomeDAO.getProjectCenterOutcomeByPhase(
+      next.getId(), projectCenterOutcome.getProject().getId(), projectCenterOutcome.getCenterOutcome().getId());
+    projectCenterOutcomeList =
+      projectCenterOutcomeList.stream()
+        .filter(c -> c.isActive()
+          && c.getProject().getId().longValue() == projectCenterOutcome.getProject().getId().longValue()
+          && c.getCenterOutcome().getId().longValue() == projectCenterOutcome.getCenterOutcome().getId().longValue())
+        .collect(Collectors.toList());
+    if (projectCenterOutcomeList.isEmpty()) {
+      ProjectCenterOutcome projectCenterOutcomeAdd = new ProjectCenterOutcome();
+      projectCenterOutcomeAdd.setProject(projectCenterOutcome.getProject());
+      projectCenterOutcomeAdd.setCenterOutcome(projectCenterOutcome.getCenterOutcome());
+      projectCenterOutcomeAdd.setPhase(phase);
+      projectCenterOutcomeDAO.save(projectCenterOutcomeAdd);
+    } else {
+
+    }
+    if (phase.getNext() != null) {
+      this.saveInfoPhase(phase.getNext(), projectCenterOutcomeID, projectCenterOutcome);
+    }
+  }
+
+  @Override
+  public ProjectCenterOutcome saveProjectCenterOutcome(ProjectCenterOutcome projectCenterOutcome) {
+    Phase phase = projectCenterOutcome.getPhase();
+    ProjectCenterOutcome projectCenterOutcomeDB = projectCenterOutcomeDAO.save(projectCenterOutcome);
+
+    if (phase.getDescription().equals(APConstants.PLANNING)) {
+      if (phase.getNext() != null) {
+        this.saveInfoPhase(phase.getNext(), projectCenterOutcome.getId(), projectCenterOutcome);
+      }
+    }
+    return projectCenterOutcomeDB;
   }
 
 
