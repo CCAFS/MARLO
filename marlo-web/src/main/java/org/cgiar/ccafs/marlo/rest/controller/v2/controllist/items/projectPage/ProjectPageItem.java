@@ -333,7 +333,7 @@ public class ProjectPageItem<T> {
           if (projectExpectedStudyInfo.getStudyType() != null
             && projectExpectedStudyInfo.getStudyType().getId().longValue() == 1) {
             projectExpectedStudy.setProjectExpectedStudyInfo(projectExpectedStudyInfo);
-            if (projectExpectedStudyInfo.getIsPublic()) {
+            if (projectExpectedStudyInfo.getIsPublic() != null && projectExpectedStudyInfo.getIsPublic()) {
               String pdflink = config.getClarisa_summaries_pdf() + "projects/" + globalUnit.getAcronym()
                 + "/studySummary.do?studyID=" + projectExpectedStudy.getId().longValue() + "&cycle="
                 + phase.getDescription() + "&year=" + phase.getYear();
