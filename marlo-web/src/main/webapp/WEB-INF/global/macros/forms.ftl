@@ -510,6 +510,9 @@
       <span class="checkmark centered-${centered?string}"></span>
        [#if label?has_content || i18nkey?has_content]<label for="${id}" class="labelText ${cssClassLabel}">[#if i18nkey?has_content][@s.text name=i18nkey /][#else]${label}[/#if]</label>[/#if]
     [#else]
+    [#if checked]
+      <input id="${id}" class="${cssClass}" type="hidden" name="${name}" value="${value}"  >
+    [/#if]
       <p class="checked-${checked?string}">
         [#if label?has_content || i18nkey?has_content ]<span class="${cssClassLabel}">[#if i18nkey?has_content][@s.text name=i18nkey /][#else]${label}[/#if]</span>[[/#if] 
       </p>

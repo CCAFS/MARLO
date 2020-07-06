@@ -127,9 +127,12 @@ public class EditProjectExpenditureInterceptor extends AbstractInterceptor imple
         String params[] =
           {crp.getAcronym(), project.getId() + "", baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "")};
         if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
-          isAdmin = true;
-          canEdit = true;
-          editParameter = true;
+          if (!loggedCrp.isCenterType()) {
+            isAdmin = true;
+            canEdit = true;
+            editParameter = true;
+          }
+
         } else {
 
           if (baseAction.getActualPhase().getDescription().equals(APConstants.REPORTING)) {

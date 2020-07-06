@@ -136,6 +136,7 @@ import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsFlagship;
+import org.cgiar.ccafs.marlo.data.model.ProjectCenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
@@ -160,6 +161,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesis2018SectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
+import org.cgiar.ccafs.marlo.data.model.SharedProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -2737,6 +2739,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           && c.getPhase().getYear() == (this.getActualPhase().getYear()))
         .collect(Collectors.toList());
     List<Integer> allYears = new ArrayList<>();
+    if (projectExpectedStudyInfoList == null) {
+      projectExpectedStudyInfoList = new ArrayList<ProjectExpectedStudyInfo>();
+    }
     if (projectExpectedStudyInfoList.size() > 0) {
       if (projectExpectedStudyInfoList.get(0).getYear() != this.getActualPhase().getYear()) {
         allYears.add(projectExpectedStudyInfoList.get(0).getYear());
@@ -2890,6 +2895,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         && c.getPhase().getName().equals(APConstants.PROJECT_INDICATOR_PHASE_PREVIOUS_NAME)
         && c.getPhase().getYear() == (this.getActualPhase().getYear()))
       .collect(Collectors.toList());
+    if (projectInnovationInfoList == null) {
+      projectInnovationInfoList = new ArrayList<ProjectInnovationInfo>();
+    }
     List<Integer> allYears = new ArrayList<>();
     if (projectInnovationInfoList.size() > 0) {
       if (projectInnovationInfoList.get(0).getYear() != this.getActualPhase().getYear()) {
@@ -3092,7 +3100,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public LDAPUser getOutlookUser(String email) {
     LDAPService service = new LDAPService();
-    if (this.config.isProduction()) {
+    if (config.isProduction()) {
       service.setInternalConnection(false);
     } else {
       service.setInternalConnection(true);
@@ -3249,6 +3257,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           && c.getPhase().getName().equals(APConstants.PROJECT_INDICATOR_PHASE_PREVIOUS_NAME)
           && c.getPhase().getYear() == (this.getActualPhase().getYear()))
         .collect(Collectors.toList());
+    if (projectPolicyInfoList == null) {
+      projectPolicyInfoList = new ArrayList<ProjectPolicyInfo>();
+    }
     List<Integer> allYears = new ArrayList<>();
     if (projectPolicyInfoList.size() > 0) {
       if (projectPolicyInfoList.get(0).getYear() != this.getActualPhase().getYear()) {
@@ -3404,6 +3415,20 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     } else {
       return new ArrayList<>();
     }
+  }
+
+  public boolean getProjectCenterSectionStatus(String section, long projectID, Phase phase) {
+    boolean returnValue = false;
+
+    if (SharedProjectSectionStatusEnum.value(section.toUpperCase()) == null) {
+      return false;
+    }
+    switch (SharedProjectSectionStatusEnum.value(section.toUpperCase())) {
+      case CENTER_MAPPING:
+        returnValue = this.isCenterMappingComplete(projectID, phase);
+        break;
+    }
+    return returnValue;
   }
 
   public Boolean getProjectLp6ContributionValue(long projectID, long phaseID) {
@@ -4366,6 +4391,31 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return haveBudget;
   }
 
+  // permision based in centers Logic
+  public boolean hasCenterPermissions(long projectID) {
+    GlobalUnit crpLog = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    crpLog = crpManager.getGlobalUnitById(crpLog.getId());
+    if (crpLog.isCenterType()) {
+      if (!this.isRole(APConstants.CENTER_ADMIN) && !this.isRole(APConstants.CENTER_SUPER_ADMIN)) {
+        Project project = projectManager.getProjectById(projectID);
+        for (ProjectFocus projectFocus : project.getProjectFocuses().stream()
+          .filter(c -> c.isActive() && c.getPhase().getDescription().equals(this.getActualPhase().getDescription())
+            && c.getPhase().getYear() == this.getActualPhase().getYear())
+          .collect(Collectors.toList())) {
+          CrpProgramLeader crpProgramLeader =
+            crpProgramLeaderManager.getCrpProgramLeaderByProgram(projectFocus.getCrpProgram().getId().longValue(),
+              crpLog.getId().longValue(), this.getCurrentUser().getId().longValue());
+          if (crpProgramLeader != null) {
+            return true;
+          }
+        }
+      } else {
+        return true;
+      }
+    }
+    return false;
+  }
+
   public Boolean hasDeliverableRule(DeliverableInfo deliverableInfo, String rule) {
     if (deliverableInfo != null && deliverableInfo.getDeliverableType() != null
       && deliverableInfo.getDeliverableType().getId() != null && deliverableInfo.getDeliverableType().getId() != -1) {
@@ -4757,6 +4807,42 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       if (this.getCurrentCrp().getGlobalUnitType().getId().intValue() == 4) {
         return true;
       }
+    }
+    return false;
+  }
+
+  public boolean isCenterMappingComplete(long projectID, Phase phase) {
+    Project project = projectManager.getProjectById(projectID);
+    List<ProjectFocus> projectFocusFlagship = project.getProjectFocuses().stream()
+      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(phase)
+        && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+        && c.getCrpProgram().getCrp().getId().equals(phase.getCrp().getId()))
+      .collect(Collectors.toList());
+    if (projectFocusFlagship.isEmpty()) {
+      return false;
+    }
+
+    List<ProjectFocus> projectFocusRegional = project.getProjectFocuses().stream()
+      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(phase)
+        && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+        && c.getCrpProgram().getCrp().getId().equals(phase.getCrp().getId()))
+      .collect(Collectors.toList());
+    if (projectFocusRegional.isEmpty()) {
+      return false;
+    }
+
+    List<ProjectCenterOutcome> projectCenterOutcomes = project.getProjectCenterOutcomes().stream()
+      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(phase)).collect(Collectors.toList());
+    if (projectCenterOutcomes.isEmpty()) {
+      return false;
+    }
+    return true;
+  }
+
+  public boolean isCenterProgramMapping(String acronym) {
+    String OptionalActionName = this.getActionName().replaceAll(acronym + "/", "");
+    if (OptionalActionName.equals(SharedProjectSectionStatusEnum.CENTER_MAPPING.getStatus())) {
+      return true;
     }
     return false;
   }
@@ -5709,7 +5795,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean isExpectedDeliverablesReportAllYearsVisible() {
-    // Specificity for show expected deliverable summary - all years selection - in summaries section
+    // Specificity for show expected deliverable summary - all years selection - in
+    // summaries section
     Boolean isVisible = false;
     try {
       if (this.hasSpecificities(APConstants.IS_EXPECTED_DELIVERABLE_REPORT_All_YEARS_VISIBLE)) {
@@ -6191,6 +6278,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
+  public boolean isSubmit(long projectID, int year, String cyle) {
+    Project project = this.projectManager.getProjectById(projectID);
+    List<Submission> submissions = project.getSubmissions().stream()
+      .filter(
+        c -> c.getCycle().equals(cyle) && c.getYear().intValue() == year && (c.isUnSubmit() == null || !c.isUnSubmit()))
+      .collect(Collectors.toList());
+    if (submissions.isEmpty()) {
+      return false;
+    }
+    return true;
+  }
+
   /**
    * ************************ CENTER METHOD ********************* Check if the
    * impact pathway is submitted
@@ -6491,7 +6590,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public void loadLessons(GlobalUnit crp, Project project, String actionName) {
 
-    Project projectDB = this.projectManager.getProjectById(project.getId());
+    Project projectDB = projectManager.getProjectById(project.getId());
     if (this.isReportingActive()) {
 
       List<ProjectComponentLesson> lessons = projectDB.getProjectComponentLessons().stream()
