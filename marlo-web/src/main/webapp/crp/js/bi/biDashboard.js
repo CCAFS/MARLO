@@ -23,30 +23,23 @@ function addEvents(){
   });*/
 }
 
-//Peticion to BireportsTokenAction
+//Request to BireportsTokenAction
 function executePetition( idReport ) {
   var $inputsContainer = $('#'+idReport+'-contentOptions');
   var data = {
-      id: $inputsContainer.find('input[name=id]').val()
+      id: idReport.replace("BIreport-", "")
   }
 
-  //Ajax to petition in back to PowerBi
+  //Ajax request to back for PowerBi
   $.ajax({
     'url': baseURL + '/biReportsTokenAction.do',
     'type': "GET",
     'data': data,
     'dataType': "json",
-    beforeSend: function() {
-        $(".deliverableDisseminationUrl").addClass('input-loading');
-        $('#metadata-output').html("Searching ... " + data.metadataID);
-    },
     success: function(metadata) {
       var embedUrl = $inputsContainer.find('input[name=embedUrl]').val();
       var reportId = $inputsContainer.find('input[name=reportId]').val();
       embedPBI(metadata.token, embedUrl, reportId, idReport);
-    },
-    complete: function() {
-      $(".deliverableDisseminationUrl").removeClass('input-loading');
     },
     error: function(e) {
       console.log("error");
@@ -125,6 +118,7 @@ function embedPBI(embedToken, embededURL, dashboardId, contentId) {
   dashboard.on("loaded", function () {
     console.log("loaded");
     removeNavPanel(contentId);
+    //removeFilterPanel(contentId);
   });
 
   dashboard.on("error", function (event) {
@@ -135,6 +129,7 @@ function embedPBI(embedToken, embededURL, dashboardId, contentId) {
   dashboard.off("tileClicked");
 }
 
+//Function to set a value for the acronym filter, value is an array
 function filterAcronym(value) {
   // Build the filter you want to use. For more information, See Constructing
   // Filters in https://github.com/Microsoft/PowerBI-JavaScript/wiki/Filters.
@@ -146,12 +141,12 @@ function filterAcronym(value) {
       hierarchyLevel: "acronym"
     },
     operator: "In",
-    values: [value]
+    values: value
   };
 
   // Get a reference to the embedded report HTML element
   var currentID = $("div[class$='current']").attr("id");
-  var embedContainer = $('#dashboardContainer-'+ currentID.split('-')[1])[0];
+  var embedContainer = $("#"+currentID+'-contentOptions').children().first()[0];
 
   // Get a reference to the embedded report.
   report = powerbi.get(embedContainer);
@@ -167,41 +162,49 @@ function filterAcronym(value) {
     });
 }
 
-function removeFilterPanel(){
+//Function to remove the filter panel
+function removeFilterPanel(contentId){
+  var newSettings = {
+      panes: {
+        filters: {
+          visible: false
+        }
+      }
+  };
 //Get a reference to the embedded report HTML element
-  var currentID = $("div[class$='current']").attr("id");
-  var embedContainer = $('#dashboardContainer-'+ currentID.split('-')[1])[0];
+  //var currentID = $("div[class$='current']").attr("id");
+  var embedContainer = $("#"+contentId+'-contentOptions').children().first()[0];
 
   // Get a reference to the embedded report.
   report = powerbi.get(embedContainer);
 
   // Remove the filters currently applied to the report.
-  report.removeFilters()
+  report.updateSettings(newSettings)
       .then(function () {
-          Log.logText("Report filters were removed.");
+        console.log("Report filters were removed.");
       })
       .catch(function (errors) {
-          Log.log(errors);
+        console.log(errors);
       });
 }
-
-function removeFilterPanel(){
+/*
+function removeFilters(){
 //Get a reference to the embedded report HTML element
   var currentID = $("div[class$='current']").attr("id");
-  var embedContainer = $('#dashboardContainer-'+ currentID.split('-')[1])[0];
+  var embedContainer = $("#"+currentID+'-contentOptions').children().first()[0];
   // Get a reference to the embedded report.
   report = powerbi.get(embedContainer);
-
   // Remove the filters currently applied to the report.
   report.removeFilters()
       .then(function () {
-          Log.logText("Report filters were removed.");
+        console.log("Report filters were removed.");
       })
       .catch(function (errors) {
-          Log.log(errors);
+        console.log(errors);
       });
-}
+}*/
 
+//Function to remove the navPanel
 function removeNavPanel (contentId) {
 //The new settings that you want to apply to the report.
   const newSettings = {
@@ -214,10 +217,6 @@ function removeNavPanel (contentId) {
 
   // Get a reference to the embedded report HTML element
   var embedContainer = $("#"+contentId+'-contentOptions').children().first()[0];
-  console.log(embedContainer.clientWidth);
-  console.log(embedContainer.clientHeight);
-  console.log($("#"+contentId+'-contentOptions').children().first().clientWidth);
-  console.log($("#"+contentId+'-contentOptions').children().first().clientHeight);
   // Get a reference to the embedded report.
   report = powerbi.get(embedContainer);
 
