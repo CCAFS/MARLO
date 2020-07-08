@@ -146,4 +146,35 @@ public class ActionTakenItem<T> {
     return relevantActionID;
   }
 
+  public Long updateActionTaken(NewRelevantEvaluationDTO relevantAction, String entityAcronym, User user) {
+    Long relevantActionID = null;
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
+    if (globalUnitEntity == null) {
+      fieldErrors.add(new FieldErrorDTO("updateActionTaken", "GlobalUnitEntity",
+        entityAcronym + " is an invalid CGIAR entity acronym"));
+    }
+    Phase phase = this.phaseManager.findAll().stream()
+      .filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(entityAcronym)
+        && c.getYear() == relevantAction.getPhase().getYear()
+        && c.getName().equalsIgnoreCase(relevantAction.getPhase().getName()))
+      .findFirst().get();
+
+    if (phase == null) {
+      fieldErrors.add(new FieldErrorDTO("updateActionTaken", "phase",
+        new NewProjectPolicyDTO().getPhase().getYear() + " is an invalid year"));
+    }
+    if (fieldErrors.isEmpty()) {
+      LiaisonInstitution liaisonInstitution =
+        this.liaisonInstitutionManager.findByAcronymAndCrp(APConstants.CLARISA_ACRONYM_PMU, globalUnitEntity.getId());
+      if (liaisonInstitution == null) {
+        fieldErrors.add(new FieldErrorDTO("updateActionTaken", "LiaisonInstitution", "invalid liaison institution"));
+      } else {
+
+      }
+    }
+
+    return relevantActionID;
+  }
+
 }
