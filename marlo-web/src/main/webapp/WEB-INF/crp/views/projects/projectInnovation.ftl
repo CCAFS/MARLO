@@ -54,9 +54,7 @@
           <div class="form-group row">
             <div class="col-md-4">
               [@customForm.select name="innovation.projectInnovationInfo.year" className="setSelect2" i18nkey="policy.year" listName="getInnovationsYears(${innovationID})" header=false required=true editable=editable /]
-              [#if editable=false]
-                ${(innovation.projectInnovationInfo.year)!""}
-              [/#if]
+              
             </div>
             <div class="col-md-8">
               [#assign guideSheetURL = "https://drive.google.com/file/d/1JvceA0bdvqS5Een056ctL7zJr3hidToe/view" /]
