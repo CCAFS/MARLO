@@ -36,14 +36,10 @@
           
          <div class="block-extendedYear" style="display:${isStatusExtended?string('block', 'none')}">
             [@customForm.select name="newExpectedYear" className="setSelect2" i18nkey="study.year" listName="project.projectInfo.getYears(${currentCycleYear})" header=false required=true editable=editable /]
-            </div>
+          </div>
           <div class="block-year" style="display:${(!isStatusExtended && isOtherStatus)?string('block', 'none')}">
             [@customForm.select name="${customName}.projectExpectedStudyInfo.year" className="setSelect2" i18nkey="study.year" listName="getExpectedStudiesYears(${(expectedID)!})" header=false required=true editable=editable /]
           </div>
-               
-          [#if editable=false]
-            ${element.projectExpectedStudyInfo.year}
-          [/#if]
         </div>
       </div>
       

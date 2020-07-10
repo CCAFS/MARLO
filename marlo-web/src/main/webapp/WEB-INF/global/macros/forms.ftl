@@ -183,6 +183,8 @@
             [#else]
               [#if !(key?has_content)]
                 ${requiredText}   [@s.text name="form.values.fieldEmpty" /]
+              [#else]
+                ${key}
               [/#if]
             [/#if]
           [#else]
