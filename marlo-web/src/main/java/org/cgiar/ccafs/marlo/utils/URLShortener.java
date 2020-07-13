@@ -67,7 +67,7 @@ public class URLShortener {
           }
 
           if ((i + 1) == text.length()) {
-            finalUrl = i;
+            finalUrl = i + 1;
           }
         }
 

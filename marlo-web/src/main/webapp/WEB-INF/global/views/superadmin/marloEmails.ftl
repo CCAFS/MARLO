@@ -67,12 +67,12 @@
                 <tr id="emailrow-${email.id}">
                   <td>${email.id}</td>
                   <td>
-                    <a href="#" class="" data-toggle="modal" data-target="#emailPopup-${email.id}">${email.subject}</a>
+                    <a href="#" class="" data-toggle="modal" data-target="#emailPopup-${email.id}">${(email.subject)!""}</a>
                   </td>
                   <td>
-                    <a href="#" class="" data-toggle="modal" data-target="#emailPopup-${email.id}">${email.error}</a>
+                    <a href="#" class="" data-toggle="modal" data-target="#emailPopup-${email.id}">${(email.error)!""}</a>
                   </td>
-                  <td>${email.date}</td>
+                  <td>${(email.date)!""}</td>
                   <td>${(email.messageID)!}</td>
                 </tr>
               [/#list]

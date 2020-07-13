@@ -62,6 +62,8 @@ public interface ProjectPolicyDAO {
    */
   public List<ProjectPolicy> getProjectPolicyByPhase(Phase phase);
 
+  public Boolean isPolicyExcluded(Long policyId, Long phaseId);
+
   /**
    * This method saves the information of the given projectPolicy
    * 
@@ -73,4 +75,6 @@ public interface ProjectPolicyDAO {
   public ProjectPolicy save(ProjectPolicy projectPolicy);
 
   public ProjectPolicy save(ProjectPolicy projectPolicy, String section, List<String> relationsName, Phase phase);
+
+
 }

@@ -15,6 +15,7 @@
 
 package org.cgiar.ccafs.marlo.rest.dto;
 
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -23,8 +24,37 @@ package org.cgiar.ccafs.marlo.rest.dto;
 
 public class LocElementDTO {
 
+  @ApiModelProperty(notes = "The Generated location id", position = 1)
   private Long id;
+
+  @ApiModelProperty(notes = "Location name", position = 2)
   private String name;
+
+  @ApiModelProperty(notes = "Location acronym", position = 3)
   private String isoAlpha2;
+
+  public Long getId() {
+    return id;
+  }
+
+  public String getIsoAlpha2() {
+    return isoAlpha2;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public void setIsoAlpha2(String isoAlpha2) {
+    this.isoAlpha2 = isoAlpha2;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
 
 }

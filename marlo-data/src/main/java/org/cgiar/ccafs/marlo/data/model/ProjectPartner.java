@@ -60,9 +60,13 @@ public class ProjectPartner extends MarloAuditableEntity implements java.io.Seri
 
   private List<ProjectPartnerPartnership> partnerPartnerships = new ArrayList<>();
 
+  // clarisa field
+  private ProjectPartnerPerson partnerLeader;
+
 
   public ProjectPartner() {
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -126,14 +130,18 @@ public class ProjectPartner extends MarloAuditableEntity implements java.io.Seri
     return partnerContributors;
   }
 
+  public ProjectPartnerPerson getPartnerLeader() {
+    return partnerLeader;
+  }
+
   public List<ProjectPartnerPartnership> getPartnerPartnerships() {
     return partnerPartnerships;
   }
 
-
   public List<ProjectPartnerPerson> getPartnerPersons() {
     return partnerPersons;
   }
+
 
   public String getPersonComposedName(int partnerPersonID) {
     if (partnerPersonID <= 0) {
@@ -173,7 +181,6 @@ public class ProjectPartner extends MarloAuditableEntity implements java.io.Seri
     return this.projectPartnerContributions;
   }
 
-
   public Set<ProjectPartnerContribution> getProjectPartnerContributors() {
     return this.projectPartnerContributors;
   }
@@ -187,6 +194,7 @@ public class ProjectPartner extends MarloAuditableEntity implements java.io.Seri
   public Set<ProjectPartnerOverall> getProjectPartnerOveralls() {
     return this.projectPartnerOveralls;
   }
+
 
   public ProjectPartnerPartnership getProjectPartnerPartnership() {
     return projectPartnerPartnership;
@@ -262,6 +270,10 @@ public class ProjectPartner extends MarloAuditableEntity implements java.io.Seri
 
   public void setPartnerContributors(List<ProjectPartnerContribution> partnerContributors) {
     this.partnerContributors = partnerContributors;
+  }
+
+  public void setPartnerLeader(ProjectPartnerPerson partnerLeader) {
+    this.partnerLeader = partnerLeader;
   }
 
   public void setPartnerPartnerships(List<ProjectPartnerPartnership> partnerPartnerships) {

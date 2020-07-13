@@ -29,7 +29,6 @@ import org.hibernate.SessionFactory;
 @Named
 public class CrpAssumptionMySQLDAO extends AbstractMarloDAO<CrpAssumption, Long> implements CrpAssumptionDAO {
 
-
   @Inject
   public CrpAssumptionMySQLDAO(SessionFactory sessionFactory) {
     super(sessionFactory);
@@ -48,14 +47,13 @@ public class CrpAssumptionMySQLDAO extends AbstractMarloDAO<CrpAssumption, Long>
     if (crpAssumption == null) {
       return false;
     }
-    return true;
 
+    return true;
   }
 
   @Override
   public CrpAssumption find(long id) {
     return super.find(CrpAssumption.class, id);
-
   }
 
   @Override
@@ -65,8 +63,8 @@ public class CrpAssumptionMySQLDAO extends AbstractMarloDAO<CrpAssumption, Long>
     if (list.size() > 0) {
       return list;
     }
-    return null;
 
+    return null;
   }
 
   @Override
@@ -77,9 +75,7 @@ public class CrpAssumptionMySQLDAO extends AbstractMarloDAO<CrpAssumption, Long>
       crpAssumption = super.update(crpAssumption);
     }
 
-
     return crpAssumption;
   }
-
 
 }

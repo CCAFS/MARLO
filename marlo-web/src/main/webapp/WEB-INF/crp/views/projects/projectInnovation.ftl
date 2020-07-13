@@ -54,9 +54,7 @@
           <div class="form-group row">
             <div class="col-md-4">
               [@customForm.select name="innovation.projectInnovationInfo.year" className="setSelect2" i18nkey="policy.year" listName="getInnovationsYears(${innovationID})" header=false required=true editable=editable /]
-              [#if editable=false]
-                ${(innovation.projectInnovationInfo.year)!""}
-              [/#if]
+              
             </div>
             <div class="col-md-8">
               [#assign guideSheetURL = "https://drive.google.com/file/d/1JvceA0bdvqS5Een056ctL7zJr3hidToe/view" /]
@@ -160,10 +158,9 @@
            <div class="form-group isClearLead">
             [@customForm.checkmark id="" name="clearLead" i18nkey="projectInnovations.clearLead" help="" paramText="" value="true" helpIcon=true disabled=false editable=editable checked=(innovation.projectInnovationInfo.clearLead)!false cssClass="isClearLead" cssClassLabel=""  /]
            </div>
-           
           [#-- Lead Organization --]
-          <div class="form-group lead-organization">
-            [@customForm.select name="innovation.projectInnovationInfo.leadOrganization.id" label=""  i18nkey="projectInnovations.leadOrganization" listName="institutions" keyFieldName="id"  displayFieldName="composedName" required=!(isClearLead)  className="" editable=editable/]
+          <div class="form-group lead-organization" style="display:${isClearLead?string('none','block')}">
+            [@customForm.select name="innovation.projectInnovationInfo.leadOrganization.id" label=""  i18nkey="projectInnovations.leadOrganization" listName="institutions" keyFieldName="id"  displayFieldName="composedName" required=true  className="" editable=editable/]
           </div>
           
           [#-- Top Five Contributing Organizations --]

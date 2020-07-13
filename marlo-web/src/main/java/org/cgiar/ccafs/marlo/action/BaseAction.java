@@ -2740,27 +2740,16 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
               && c.getPhase().getYear() < (this.getActualPhase().getYear()))
             .collect(Collectors.toList());
         if (projectExpectedStudyInfoList2.size() > 0) {
-          if (allYears != null && projectExpectedStudyInfoList2 != null && projectExpectedStudyInfoList2.get(0) != null
-            && projectExpectedStudyInfoList2.get(0).getYear() != null
-            && !allYears.contains(projectExpectedStudyInfoList2.get(0).getYear())) {
-            allYears.add(projectExpectedStudyInfoList2.get(0).getYear());
-          }
-        }
-
-        // Add year of previous phase
-        Phase previousPhase = this.phaseManager.findPreviousPhase(this.getActualPhase().getId());
-        if (allYears != null && previousPhase != null && previousPhase.getYear() != 0
-          && !allYears.contains(previousPhase.getYear())) {
-          allYears.add(previousPhase.getYear());
+          allYears.add(projectExpectedStudyInfoList2.get(0).getYear());
         }
       }
 
     }
-
-    if (allYears != null && this.getActualPhase().getYear() != 0
-      && !allYears.contains(this.getActualPhase().getYear())) {
+    // Avoid to duplicate the actual year phase in allYears List
+    if (allYears != null && !allYears.contains(this.getActualPhase().getYear())) {
       allYears.add(this.getActualPhase().getYear());
     }
+
     return allYears;
   }
 
@@ -6362,6 +6351,30 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
 
+  }
+
+  public boolean isYearToShowSectionCovid19() {
+    try {
+      if (Boolean.parseBoolean(this.getSession().get(APConstants.CRP_SHOW_SECTION_IMPACT_COVID19).toString())) {
+        String rangesYears = (String) this.getSession().get(APConstants.CRP_SHOW_SECTION_IMPACT_COVID19_RANGES_YEARS);
+        String[] years = rangesYears.split("-");
+        if (years.length == 2) {
+          if (Integer.parseInt(years[0]) <= this.getActualPhase().getYear()
+            && Integer.parseInt(years[1]) >= this.getActualPhase().getYear()) {
+            return true;
+          }
+        } else {
+          if (years.length == 1) {
+            if (Integer.parseInt(years[0]) <= this.getActualPhase().getYear()) {
+              return true;
+            }
+          }
+        }
+      }
+    } catch (Exception e) {
+      return false;
+    }
+    return false;
   }
 
   public void loadDissemination(Deliverable deliverableBD) {

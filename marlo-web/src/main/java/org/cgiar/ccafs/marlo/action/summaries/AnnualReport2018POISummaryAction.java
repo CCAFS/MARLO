@@ -889,6 +889,10 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
             evidence = action.getReportSynthesisMeliaEvaluation().getEvidences();
           }
 
+          if (evidence != null && !evidence.isEmpty()) {
+            evidence = evidence.replaceAll("&amp;", "&");
+          }
+
           if (action != null && action.getActions() != null) {
             actions += poiSummary.replaceHTMLTags(action.getActions());
           }

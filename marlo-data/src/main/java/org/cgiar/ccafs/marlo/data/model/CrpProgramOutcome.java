@@ -88,6 +88,21 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
   public CrpProgramOutcome() {
   }
 
+  public void copyFields(CrpProgramOutcome other) {
+    this.setActive(other.isActive());
+    this.setActiveSince(other.getActiveSince());
+    this.setComposeID(other.getComposeID());
+    this.setCreatedBy(other.getCreatedBy());
+    this.setCrpProgram(other.getCrpProgram());
+    this.setDescription(other.getDescription());
+    this.setFile(other.getFile());
+    this.setIndicator(other.getIndicator());
+    this.setModificationJustification(other.getModificationJustification());
+    this.setModifiedBy(other.getModifiedBy());
+    this.setSrfTargetUnit(other.getSrfTargetUnit());
+    this.setValue(other.getValue());
+    this.setYear(other.getYear());
+  }
 
   @Override
   public boolean equals(Object obj) {
@@ -109,10 +124,10 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
     return true;
   }
 
-
   public String getComposedName() {
     return this.getCrpProgram().getAcronym() + " Outcome: " + description;
   }
+
 
   public String getComposeID() {
     if (composeID != null) {
@@ -130,7 +145,6 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
     return crpClusterKeyOutputOutcomes;
   }
 
-
   public Set<CrpMilestone> getCrpMilestones() {
     return this.crpMilestones;
   }
@@ -143,19 +157,19 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
     return this.crpProgram;
   }
 
+
   public Set<CrpProgramOutcomeIndicator> getCrpProgramOutcomeIndicators() {
     return crpProgramOutcomeIndicators;
   }
-
 
   public Set<Deliverable> getDeliverables() {
     return deliverables;
   }
 
+
   public String getDescription() {
     return this.description;
   }
-
 
   public FileDB getFile() {
     return file;
@@ -188,10 +202,10 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
     return phase;
   }
 
+
   public Set<ProjectFurtherContribution> getProjectFurtherContributions() {
     return projectFurtherContributions;
   }
-
 
   public Set<ProjectOutcome> getProjectOutcomes() {
     return projectOutcomes;
@@ -229,6 +243,7 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
     this.crpOutcomeSubIdos = crpOutcomeSubIdos;
   }
 
+
   public void setCrpProgram(CrpProgram crpProgram) {
     this.crpProgram = crpProgram;
   }
@@ -237,7 +252,6 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
   public void setCrpProgramOutcomeIndicators(Set<CrpProgramOutcomeIndicator> crpProgramOutcomeIndicators) {
     this.crpProgramOutcomeIndicators = crpProgramOutcomeIndicators;
   }
-
 
   public void setDeliverables(Set<Deliverable> deliverables) {
     this.deliverables = deliverables;

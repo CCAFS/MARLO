@@ -121,9 +121,14 @@ public class APConfig {
   @Value("${clarisa.mapDatabase.path}")
   private String CLARISA_MAP_DATABASE_PATH;
 
+
   // Path to get the base URL of media hosted in the CDN
   @Value("${cdn.url}")
   private String CDN_URL;
+
+  // Path for Summaries Links
+  @Value("${clarisa.summariesPDF}")
+  private String CLARISA_SUMMARIES_PDF;
 
   public APConfig() {
   }
@@ -211,6 +216,14 @@ public class APConfig {
     }
 
     return PROJECT_BILATERAL_PROPOSAL_FOLDER;
+  }
+
+  public String getClarisa_summaries_pdf() {
+    if (CLARISA_SUMMARIES_PDF == null) {
+      LOG.error("there is not an CLARISA_SUMMARIES_PDF configured.");
+      return null;
+    }
+    return CLARISA_SUMMARIES_PDF;
   }
 
   public String getClarisaMapDatabase() {

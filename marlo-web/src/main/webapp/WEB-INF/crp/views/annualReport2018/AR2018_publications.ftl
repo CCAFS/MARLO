@@ -316,7 +316,13 @@
               [#if !allowPopups]
                 [#-- DOI or Handle --]
                 <td class="text-center">
-                [#local doi = (item.getMetadataValue(36))!"" /]
+                [#if item.getMetadataValue(36)?has_content]
+                  [#local doi = item.getMetadataValue(36) /]
+                [#elseif item.dissemination.articleUrl?has_content]
+                  [#local doi = item.dissemination.articleUrl /]
+                [#else]
+                  [#local doi = "" /]
+                [/#if]
                 
                 [#if doi?has_content && doi?contains("http") && !(doi?contains(";"))]
                 <a target="_blank" href="${doi}"><span class="glyphicon glyphicon-link"></span></a>
@@ -333,7 +339,7 @@
               [#if allowPopups]
                 [#-- Complete Status--]
                 <td class="text-center">
-                [#assign isPublicationComplete = action.isPublicationComplete(item.id, actualPhase.id) /]
+                [#assign isPublicationComplete = action.isPublicationComplete(item.id, actualPhase.id)!false /]
                  [#if isPublicationComplete]
                     <span class="glyphicon glyphicon-ok-sign mf-icon check" title="Complete"></span> 
                     [#else]
@@ -437,7 +443,13 @@
               <td class="text-center">${((item.publication.isiPublication)!false)?string('Yes', 'No')}</td>
               [#-- DOI or Handle --]
               <td class="text-center">
-                [#local doi = (item.getMetadataValue(36))!"" /]
+              [#if item.getMetadataValue(36)?has_content]
+                [#local doi = item.getMetadataValue(36) /]
+              [#elseif item.dissemination.articleUrl?has_content]
+                [#local doi = item.dissemination.articleUrl /]
+              [#else]
+                [#local doi = "" /]
+              [/#if]
                 ${doi}
               </td> 
               [#-- Check --]
