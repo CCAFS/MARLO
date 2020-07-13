@@ -228,20 +228,94 @@ public class CrpDeliverablesAction extends BaseAction {
     return users;
   }
 
-  public void moveDeliverables() {
-    long idPhaseToMove = 0, idDeliverableToMove = 0;
-    if (idPhaseToMove != 0 && idDeliverableToMove != 0) {
-      Phase phaseToMove = phaseManager.getPhaseById(idPhaseToMove);
-      Deliverable deliverableToMove = deliverableManager.getDeliverableById(idDeliverableToMove);
+  public void moveDeliverablesPhase(long idPhaseToMove, long idDeliverableToMove) {
 
-      if (deliverableToMove != null) {
+    if (idPhaseToMove != 0 && idDeliverableToMove != 0) {
+      Deliverable deliverable = deliverableManager.getDeliverableById(idDeliverableToMove);
+      Phase deliverableActualPhase = null;
+      Phase phaseToMove = phaseManager.getPhaseById(idPhaseToMove);
+      List<Long> idsInfo = new ArrayList<>();
+
+      if (deliverable != null && deliverable.getPhase() != null && deliverable.getPhase().getId() != null) {
+        deliverableActualPhase = deliverable.getPhase();
+      }
+
+      if (deliverable != null && deliverable.getDeliverableInfo(deliverableActualPhase) != null) {
         List<DeliverableInfo> deliverableInfos =
           deliverableInfoManager.findAll().stream().filter(di -> di != null && di.getDeliverable() != null
-            && di.isActive() && di.getDeliverable().getId().equals(idDeliverableToMove)).collect(Collectors.toList());
+            && di.isActive() && di.getDeliverable().getId().equals(deliverable.getId())).collect(Collectors.toList());
+
         if (deliverableInfos != null && !deliverableInfos.isEmpty()) {
+
+
+          // Change the created phase and save information in deliverables table
+          if (deliverableInfoManager.getDeliverablesInfoByPhase(phaseToMove) != null) {
+            deliverable.setPhase(phaseToMove);
+            deliverableManager.saveDeliverable(deliverable);
+          } else {
+            // Create info in selected phase if no exist
+            DeliverableInfo infoCopy;
+          }
+
+          // Get infos of previous phases and desactivate record
+          for (DeliverableInfo info : deliverableInfos) {
+            if (info.getPhase() != null && info.getPhase().getId() != null
+              && info.getPhase().getId() < deliverableActualPhase.getId()) {
+              info.setActive(false);
+              deliverableInfoManager.saveDeliverableInfo(info);
+              // idsInfo.add(info.getId());
+            }
+          }
 
         }
       }
+
+    }
+
+  }
+
+  public void moveDeliverablesProject(long idProject, long idDeliverableToMove) {
+    long idPhaseToMove = 0;
+    if (idPhaseToMove != 0 && idDeliverableToMove != 0) {
+      Deliverable deliverable = deliverableManager.getDeliverableById(idDeliverableToMove);
+      Phase deliverableActualPhase = null;
+      Phase phaseToMove = phaseManager.getPhaseById(idPhaseToMove);
+      List<Long> idsInfo = new ArrayList<>();
+
+      if (deliverable != null && deliverable.getPhase() != null && deliverable.getPhase().getId() != null) {
+        deliverableActualPhase = deliverable.getPhase();
+      }
+
+      if (deliverable != null && deliverable.getDeliverableInfo(deliverableActualPhase) != null) {
+        List<DeliverableInfo> deliverableInfos =
+          deliverableInfoManager.findAll().stream().filter(di -> di != null && di.getDeliverable() != null
+            && di.isActive() && di.getDeliverable().getId().equals(deliverable.getId())).collect(Collectors.toList());
+
+        if (deliverableInfos != null && !deliverableInfos.isEmpty()) {
+
+
+          // Change the created phase and save information in deliverables table
+          if (deliverableInfoManager.getDeliverablesInfoByPhase(phaseToMove) != null) {
+            deliverable.setPhase(phaseToMove);
+            deliverableManager.saveDeliverable(deliverable);
+          } else {
+            // Create info in selected phase if no exist
+
+          }
+
+          // Get infos of previous phases and desactivate record
+          for (DeliverableInfo info : deliverableInfos) {
+            if (info.getPhase() != null && info.getPhase().getId() != null
+              && info.getPhase().getId() < deliverableActualPhase.getId()) {
+              info.setActive(false);
+              deliverableInfoManager.saveDeliverableInfo(info);
+              // idsInfo.add(info.getId());
+            }
+          }
+
+        }
+      }
+
     }
 
   }
