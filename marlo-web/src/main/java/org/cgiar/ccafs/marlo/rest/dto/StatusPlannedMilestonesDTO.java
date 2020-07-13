@@ -34,16 +34,20 @@ public class StatusPlannedMilestonesDTO {
   @ApiModelProperty(notes = "Milestone Status Evidence Justification", position = 3)
   private String evidence;
 
-
-  @ApiModelProperty(notes = "Milestone Status Evidence links", position = 3)
+  @ApiModelProperty(notes = "Milestone Status Evidence links", position = 4)
   private String evidenceLink;
 
-
   @ApiModelProperty(notes = "Milestone Cross Cutting Markers", position = 5)
-  private List<CrosscuttingMarkersDTO> crossCuttingMarkerList;
+  private List<CrosscuttingMarkersJustificationDTO> crossCuttingMarkerList;
+
+  @ApiModelProperty(notes = "Main reason for Milestone Status", position = 6)
+  public MilestoneReasonDTO reason;
+
+  @ApiModelProperty(notes = "If main reason = 7. Other, please state", position = 7)
+  public String otherReason;
 
 
-  public List<CrosscuttingMarkersDTO> getCrossCuttingMarkerList() {
+  public List<CrosscuttingMarkersJustificationDTO> getCrossCuttingMarkerList() {
     return crossCuttingMarkerList;
   }
 
@@ -51,45 +55,53 @@ public class StatusPlannedMilestonesDTO {
     return evidence;
   }
 
-
   public String getEvidenceLink() {
     return evidenceLink;
   }
-
 
   public MilestoneDTO getMilestone() {
     return milestone;
   }
 
+  public String getOtherReason() {
+    return otherReason;
+  }
+
+  public MilestoneReasonDTO getReason() {
+    return reason;
+  }
 
   public MilestoneStatusDTO getStatus() {
     return status;
   }
 
 
-  public void setCrossCuttingMarkerList(List<CrosscuttingMarkersDTO> crossCuttingMarkerList) {
+  public void setCrossCuttingMarkerList(List<CrosscuttingMarkersJustificationDTO> crossCuttingMarkerList) {
     this.crossCuttingMarkerList = crossCuttingMarkerList;
   }
-
 
   public void setEvidence(String evidence) {
     this.evidence = evidence;
   }
 
-
   public void setEvidenceLink(String evidenceLink) {
     this.evidenceLink = evidenceLink;
   }
-
 
   public void setMilestone(MilestoneDTO milestone) {
     this.milestone = milestone;
   }
 
+  public void setOtherReason(String otherJustification) {
+    this.otherReason = otherJustification;
+  }
+
+  public void setReason(MilestoneReasonDTO reason) {
+    this.reason = reason;
+  }
 
   public void setStatus(MilestoneStatusDTO status) {
     this.status = status;
   }
-
 
 }

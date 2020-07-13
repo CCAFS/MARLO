@@ -324,6 +324,15 @@
 			</result>
 		</action>
 
+    <action name="{crp}/impactCovid19Summary"
+      class="org.cgiar.ccafs.marlo.action.summaries.ImpactCovid19SummaryAction">
+      <interceptor-ref name="homeStack" />
+      <result name="success" type="stream">
+        <param name="inputName">inputStream</param>
+        <param name="contentType">${contentType}</param>
+        <param name="contentDisposition">filename="${fileName}"</param>
+      </result>
+    </action>
 
 		<action name="{crp}/highlights"
 			class="org.cgiar.ccafs.marlo.action.projects.ProjectHighListAction">
@@ -845,6 +854,13 @@
 				<param name="edit">true</param>
 				<param name="phaseID">${phaseID}</param>
 			</result>
+			<result name="cancel" type="redirectAction">
+				<param name="actionName">${crpSession}/innovation</param>
+				<param name="innovationID">${innovation.id}</param>
+				<param name="cancel">true</param>
+				<param name="edit">true</param>
+				<param name="phaseID">${phaseID}</param>
+			</result>
 			<result name="redirect" type="redirectAction">
 				<param name="actionName">${url}</param>
 				<param name="edit">true</param>
@@ -1102,6 +1118,25 @@
 			</result>
 		</action>
 
+    <action name="{crp}/impacts"
+      class="org.cgiar.ccafs.marlo.action.projects.ProjectImpactsAction">
+      <interceptor-ref
+        name="editProjectsStack" />
+      <result name="input">/WEB-INF/crp/views/projects/projectImpacts.ftl
+      </result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/impacts</param>
+        <param name="edit">true</param>
+        <param name="phaseID">${phaseID}</param>
+        <param name="projectID">${projectID}</param>
+      </result>
+      <result name="redirect" type="redirectAction">
+        <param name="actionName">${crpSession}/impacts</param>
+        <param name="edit">true</param>
+        <param name="phaseID">${phaseID}</param>
+        <param name="projectID">${projectID}</param>
+      </result>
+    </action>
 
 
 	</package>

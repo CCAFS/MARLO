@@ -47,6 +47,14 @@
       "formats": [ "Excel" ],
       "cycles": [ "Planning","Reporting" ]
     },
+    { "active": !centerGlobalUnit && action.hasSpecificities("crp_show_section_impact_covid19"),
+      "available": true,
+      "title": "summaries.board.report.impactCovid19Summary", 
+      "description": "summaries.board.report.impactCovid19Summary.description",
+      "namespace": "/projects",
+      "action": "${crpSession}/impactCovid19Summary",
+      "formats": [ "Excel" ]
+    },
     { "active": !centerGlobalUnit,
       "available": true,
       "title": "summaries.board.report.outcomeCaseStudies", 
@@ -373,7 +381,7 @@
   <div class="form-group" style="opacity:${report.available?string('1','0.5')}">
     [#-- Tags --]
     <div class="tags pull-right">
-      [#list report.cycles as tag ]<span class="label label-default type-${tag?lower_case}">${tag}</span>[/#list]
+      [#list report.cycles![] as tag ]<span class="label label-default type-${tag?lower_case}">${tag}</span>[/#list]
       [#list report.formats as icon ]
       <span class="label label-default type-${icon?lower_case}"><span class="fa fa-file-${icon?lower_case}-o ${icon?lower_case}Icon file"></span> ${icon}</span>
       [/#list] 
@@ -391,9 +399,9 @@
     [@s.form  target="_blank" action="${report.action}"  method="GET" namespace="${report.namespace}" cssClass=""]
       [#-- Parameters --]
       <div class="form-group row">
-        [#assign reportPhases = (action.getPhasesByCycles(report.cycles))![] ]
+        [#assign reportPhases = (action.getPhasesByCycles(report.cycles![]))![] ]
         [#-- Cycles (Planning/Reporting) --]
-        [#if reportPhases??]
+        [#if reportPhases?has_content]
          
           <div class="col-md-4">
             <label for="">Cycle:</label>
@@ -403,7 +411,8 @@
               [/#list]  
             </select>
           </div>
-         
+        [#else]
+          <input type="hidden" name="phaseID" value="${actualPhase.id}" />
         [/#if]
         
         [#-- Formats (PDF/Excel) --]

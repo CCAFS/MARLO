@@ -274,8 +274,8 @@ function addDisseminationEvents() {
       $('.other-url').css("display","none");
     }
   });
-  var crp = $('form').attr("name").split('_');
-  $('#'+crp[0]+'_deliverable_deliverable_deliverableInfo_deliverableType_id').on('change', function() {
+  var crp = $('form').attr("name");
+  $('#'+crp+'_deliverable_deliverableInfo_deliverableType_id').on('change', function() {
     var doiField = $('.metadataElement-doi').find('div.input ').children()[3];
 
     if(this.value == '63'){
@@ -550,9 +550,11 @@ function setMetadata(data) {
         $input.val(authorsNameArray.join('; '));
       }
       if(key == 'doi') {
-        var pos = value.indexOf("/", 8);
-        var formattedDoiUrl = value.substring(pos+1);
-        $input.val(formattedDoiUrl);
+        if(value.indexOf('doi.org') > -1){
+          var pos = value.indexOf("/", 8);
+          var formattedDoiUrl = value.substring(pos+1);
+          $input.val(formattedDoiUrl);
+        }
       }
     } else {
       $input.attr('readOnly', false);
@@ -827,8 +829,8 @@ function formatStateCountries(state) {
  *
  */
 function validateSubCategorySelector() {
-  var crp = $('form').attr("name").split('_');
-  var selector = $('#'+crp[0]+'_deliverable_deliverable_deliverableInfo_deliverableType_id');
+  var crp = $('form').attr("name");
+  var selector = $('#'+crp+'_deliverable_deliverableInfo_deliverableType_id');
   var doiField = $('.metadataElement-doi').find('div.input ').children()[3];
 
   if(selector.val() == '63'){

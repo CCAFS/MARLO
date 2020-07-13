@@ -126,6 +126,10 @@ public final class APConstants {
   public static final String CRP_PROJECT_PAGE = "crp_project_page";
   public static final String CRP_GENERIC_PROJECT = "crp_generic_project";
   public static final String CRP_GENERIC_PROJECT_VALUE = "crp_generic_project_value";
+  public static final String CRP_PROJECT_PAGE_YEAR = "project_website_year_value";
+  public static final String CRP_SHOW_SECTION_IMPACT_COVID19 = "crp_show_section_impact_covid19";
+  public static final String CRP_SHOW_SECTION_IMPACT_COVID19_RANGES_YEARS =
+    "crp_show_section_impact_covid19_ranges_years";
 
   public static final String IS_EXPECTED_DELIVERABLE_REPORT_All_YEARS_VISIBLE =
     "is_expected_deliverable_report_all_years_visible";
@@ -741,6 +745,9 @@ public final class APConstants {
   public static final long REP_IND_POLICY_INVESTIMENT_TYPES_LEGALINSTRUMENT = 2;
   public static final long REP_IND_POLICY_INVESTIMENT_TYPES_BUDGET = 3;
   public static final long REP_IND_POLICY_INVESTIMENT_TYPES_CURRICULUM = 4;
+  public static final long REP_IND_GEOGRAPHIC_SCOPE_NATIONAL = 4;
+  public static final long REP_IND_GEOGRAPHIC_SCOPE_MULTINATIONAL = 3;
+
 
   // Capdev Parameters
   public static final String CRP_CD_ROLE = "crp_cd_role";

@@ -303,7 +303,7 @@
           [#-- Complete Status--]
           <td class="text-center">
           [#-- Is Complete --]
-          [#assign isPolicyComplete = action.isPolicyComplete(item.id, actualPhase.id) /]
+          [#assign isPolicyComplete = action.isPolicyComplete(item.id, actualPhase.id)!false /]
            [#if isPolicyComplete]
               <span class="glyphicon glyphicon-ok-sign mf-icon check" title="Complete"></span> 
               [#else]

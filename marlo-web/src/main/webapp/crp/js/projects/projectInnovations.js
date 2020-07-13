@@ -51,9 +51,9 @@ function attachEvents() {
     var selected = $('input.isClearLead').is(":checked");
 
     if(selected == true) {
-      $('.lead-organization .requiredTag').slideUp();
+      $('.lead-organization').slideUp();
     } else {
-      $('.lead-organization .requiredTag').slideDown();
+      $('.lead-organization').slideDown();
     }
 
   })

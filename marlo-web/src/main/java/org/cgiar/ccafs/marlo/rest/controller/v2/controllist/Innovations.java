@@ -20,9 +20,11 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.Innovations.InnovationItem;
 import org.cgiar.ccafs.marlo.rest.dto.InnovationDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewInnovationDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectInnovationARDTO;
 import org.cgiar.ccafs.marlo.rest.errors.NotFoundException;
 import org.cgiar.ccafs.marlo.security.Permission;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -119,11 +121,19 @@ public class Innovations {
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIAREntity}/innovations", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
-  public List<InnovationDTO> findAllInnovationsByGlobalUnit(
+  public List<ProjectInnovationARDTO> findAllInnovationsByGlobalUnit(
     @ApiParam(value = "${Innovation.innovation.GET.all.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${Innovation.innovation.GET.all.param.year}", required = true) @RequestParam Integer year,
     @ApiParam(value = "${Innovation.innovation.GET.all.param.phase}", required = true) @RequestParam String phase) {
-    return this.innovationItem.findAllInnovationsByGlobalUnit(CGIAREntity, year, phase, this.getCurrentUser());
+    List<ProjectInnovationARDTO> innovationList = new ArrayList<ProjectInnovationARDTO>();
+    try {
+      innovationList =
+        this.innovationItem.findAllInnovationsByGlobalUnit(CGIAREntity, year, phase, this.getCurrentUser());
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    return innovationList;
   }
 
   @ApiOperation(tags = {"Table 4 - CRP Innovations"}, value = "${Innovation.innovation.GET.id.value}",

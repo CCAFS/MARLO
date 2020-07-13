@@ -94,6 +94,7 @@ import org.cgiar.ccafs.marlo.rest.dto.NewCrosscuttingMarkersDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewMilestonesDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectExpectedStudyDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewSrfSubIdoDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectExpectedStudiesARDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectExpectedStudyDTO;
 import org.cgiar.ccafs.marlo.rest.dto.QuantificationDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
@@ -559,6 +560,23 @@ public class ExpectedStudiesItem<T> {
                   new FieldErrorDTO("CreateExpectedStudy", "Countries", "A Country code can not be null nor empty."));
               }
             }
+            // verification for single or multiple countries
+            if (countriesList.size() == 1) {
+              geographicScopeList
+                .removeIf(g -> g.getId() != null && (g.getId() == APConstants.REP_IND_GEOGRAPHIC_SCOPE_MULTINATIONAL
+                  || g.getId() == APConstants.REP_IND_GEOGRAPHIC_SCOPE_NATIONAL));
+              // should not cause exception
+              geographicScopeList.add(repIndGeographicScopeManager
+                .getRepIndGeographicScopeById(APConstants.REP_IND_GEOGRAPHIC_SCOPE_NATIONAL));
+            } else if (countriesList.size() > 1) {
+              geographicScopeList
+                .removeIf(g -> g.getId() != null && (g.getId() == APConstants.REP_IND_GEOGRAPHIC_SCOPE_NATIONAL
+                  || g.getId() == APConstants.REP_IND_GEOGRAPHIC_SCOPE_MULTINATIONAL));
+              // should not cause exception
+              geographicScopeList.add(repIndGeographicScopeManager
+                .getRepIndGeographicScopeById(APConstants.REP_IND_GEOGRAPHIC_SCOPE_MULTINATIONAL));
+            }
+
           } /*
              * else {
              * fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Countries", "Please enter the Country(ies)."));
@@ -718,30 +736,27 @@ public class ExpectedStudiesItem<T> {
             for (NewMilestonesDTO milestones : newProjectExpectedStudy.getMilestonesCodeList()) {
               if (milestones != null && milestones.getMilestone() != null
                 && !milestones.getMilestone().trim().isEmpty()) {
-                id =
-                  this.tryParseLong(milestones.getMilestone().trim(), fieldErrors, "CreateExpectedStudy", "Milestone");
-                if (id != null) {
-                  CrpMilestone crpMilestone = crpMilestoneManager.getCrpMilestoneById(id);
-                  if (crpMilestone != null && crpMilestone.isActive()) {
-                    ProjectExpectedStudyMilestone obj = new ProjectExpectedStudyMilestone();
-                    obj.setCrpMilestone(crpMilestone);
-                    obj.setPrimary(milestones.getPrimary() != null && milestones.getPrimary());
-                    hasPrimary = hasPrimary + (obj.getPrimary() == true ? 1 : 0);
-                    milestoneList.add(obj);
-                  } else {
-                    fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Milestone",
-                      milestones.getMilestone() + " is an invalid Milestone identifier"));
+                CrpMilestone crpMilestone =
+                  crpMilestoneManager.getCrpMilestoneByPhase(milestones.getMilestone(), phase.getId());
+                if (crpMilestone != null && crpMilestone.isActive()) {
+                  ProjectExpectedStudyMilestone obj = new ProjectExpectedStudyMilestone();
+                  obj.setCrpMilestone(crpMilestone);
+                  obj.setPrimary(milestones.getPrimary() != null && milestones.getPrimary());
+                  if (obj.getPrimary()) {
+                    hasPrimary += 1;
                   }
+                  milestoneList.add(obj);
+                } else {
+                  fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Milestone",
+                    milestones.getMilestone() + " is an invalid Milestone identifier"));
                 }
+
               } else {
                 fieldErrors.add(
                   new FieldErrorDTO("CreateExpectedStudy", "Milestone", "A Milestone code can not be null nor empty."));
               }
             }
-            if (hasPrimary == 0) {
-              fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Milestone",
-                "There should be at least one milestone marked as primary"));
-            }
+
             if (hasPrimary > 1) {
               fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Milestone",
                 "There can not be more than one milestone marked as primary"));
@@ -865,7 +880,10 @@ public class ExpectedStudiesItem<T> {
               if (projectPolicyList.size() > 0) {
                 projectExpectedStudyInfo.setIsContribution(true);
               }
-
+              if (newProjectExpectedStudy.getMilestonesCodeList() != null
+                && newProjectExpectedStudy.getMilestonesCodeList().size() > 0) {
+                projectExpectedStudyInfo.setHasMilestones(true);
+              }
               if (srfSloIndicatorList.size() > 0) {
                 projectExpectedStudyInfo.setIsSrfTarget("targetsOptionYes");
               }
@@ -1165,6 +1183,60 @@ public class ExpectedStudiesItem<T> {
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
+  public List<ProjectExpectedStudiesARDTO> findAllExpectedStudyByGlobalUnit(String CGIARentityAcronym, Integer repoYear,
+    String repoPhase, User user) {
+
+    List<ProjectExpectedStudiesARDTO> projectExpectedStudyList = new ArrayList<ProjectExpectedStudiesARDTO>();
+    List<ProjectExpectedStudy> expectedStudyList = new ArrayList<ProjectExpectedStudy>();
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
+    if (globalUnitEntity == null) {
+      fieldErrors.add(new FieldErrorDTO("findExpectedStudy", "GlobalUnitEntity",
+        CGIARentityAcronym + " is not a valid CGIAR entity acronym"));
+    } else {
+      if (!globalUnitEntity.isActive()) {
+        fieldErrors.add(new FieldErrorDTO("findExpectedStudy", "GlobalUnitEntity",
+          "The Global Unit with acronym " + CGIARentityAcronym + " is not active."));
+      }
+
+    }
+    Phase phase =
+      this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
+        && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().orElse(null);
+    if (phase == null) {
+      fieldErrors
+        .add(new FieldErrorDTO("findExpectedStudy", "phase", repoPhase + ' ' + repoYear + " is an invalid phase"));
+    }
+    if (fieldErrors.isEmpty()) {
+      List<ProjectExpectedStudyInfo> projectExpectedStudyInfoList = phase.getProjectExpectedStudyInfos().stream()
+        .filter(c -> c.getStudyType() != null && c.getStudyType().getId() == 1 && c.getYear() == phase.getYear())
+        .collect(Collectors.toList());
+
+      for (ProjectExpectedStudyInfo projectExpectedStudyInfo : projectExpectedStudyInfoList) {
+        ProjectExpectedStudy projectExpectedStudy = projectExpectedStudyManager
+          .getProjectExpectedStudyById(projectExpectedStudyInfo.getProjectExpectedStudy().getId());
+        if (projectExpectedStudy.isActive()
+          && projectExpectedStudyManager.isStudyExcluded(projectExpectedStudy.getId(), phase.getId(), new Long(1))) {
+          projectExpectedStudy = this.getExpectedStudyInfo(projectExpectedStudy, phase);
+          expectedStudyList.add(projectExpectedStudy);
+        }
+      }
+    }
+    if (!fieldErrors.isEmpty()) {
+      fieldErrors.forEach(e -> System.out.println(e.getMessage()));
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
+    }
+
+    projectExpectedStudyList = expectedStudyList.stream()
+      .map(oicr -> this.projectExpectedStudyMapper.projectExpectedStudyToProjectExpectedStudyARDTO(oicr))
+      .collect(Collectors.toList());
+
+    return projectExpectedStudyList;
+  }
+
   public ResponseEntity<ProjectExpectedStudyDTO> findExpectedStudyById(Long id, String CGIARentityAcronym,
     Integer repoYear, String repoPhase, User user) {
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
@@ -1295,6 +1367,97 @@ public class ExpectedStudiesItem<T> {
     return Optional.ofNullable(projectExpectedStudy)
       .map(this.projectExpectedStudyMapper::projectExpectedStudyToProjectExpectedStudyDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
+
+  private ProjectExpectedStudy getExpectedStudyInfo(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
+    ProjectExpectedStudyInfo projectExpectedStudyInfo = projectExpectedStudy.getProjectExpectedStudyInfo(phase);
+    // Flagship
+    List<ProjectExpectedStudyFlagship> projectExpectedStudyFlagshipList =
+      projectExpectedStudy.getProjectExpectedStudyFlagships().stream()
+        .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+    projectExpectedStudy.setFlagships(projectExpectedStudyFlagshipList);
+    // SubIDOs
+    List<ProjectExpectedStudySubIdo> projectExpectedStudySubIdoList =
+      projectExpectedStudy.getProjectExpectedStudySubIdos().stream()
+        .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+    projectExpectedStudy.setSubIdos(projectExpectedStudySubIdoList);
+    if (projectExpectedStudyInfo.getIsSrfTarget() != null
+      && projectExpectedStudyInfo.getIsSrfTarget().equals("targetsOptionYes")) {
+      // SrfSlo
+      List<ProjectExpectedStudySrfTarget> projectExpectedStudySrfTargetList =
+        projectExpectedStudy.getProjectExpectedStudySrfTargets().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+      projectExpectedStudy.setSrfTargets(projectExpectedStudySrfTargetList);
+    } else {
+      List<ProjectExpectedStudySrfTarget> projectExpectedStudySrfTargetList =
+        new ArrayList<ProjectExpectedStudySrfTarget>();
+      projectExpectedStudy.setSrfTargets(projectExpectedStudySrfTargetList);
+    }
+
+    // GeographicScope
+    List<ProjectExpectedStudyGeographicScope> projectExpectedStudyGeographicScopeList =
+      projectExpectedStudy.getProjectExpectedStudyGeographicScopes().stream()
+        .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+    projectExpectedStudy.setGeographicScopes(projectExpectedStudyGeographicScopeList);
+    // Institutions
+    Comparator<ProjectExpectedStudyInstitution> compareByNameInstitution = (ProjectExpectedStudyInstitution o1,
+      ProjectExpectedStudyInstitution o2) -> o1.getInstitution().getName().compareTo(o2.getInstitution().getName());
+    List<ProjectExpectedStudyInstitution> projectExpectedStudyInstitutionList =
+      projectExpectedStudy.getProjectExpectedStudyInstitutions().stream()
+        .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+    Collections.sort(projectExpectedStudyInstitutionList, compareByNameInstitution);
+    projectExpectedStudy.setInstitutions(projectExpectedStudyInstitutionList);
+    // CRPs contribution
+    List<ProjectExpectedStudyCrp> projectExpectedStudyCrpList = projectExpectedStudy.getProjectExpectedStudyCrps()
+      .stream().filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+    projectExpectedStudy.setCrps(projectExpectedStudyCrpList);
+    // Regions
+    List<ProjectExpectedStudyRegion> projectExpectedStudyRegionList = projectExpectedStudyRegionManager
+      .findAll().stream().filter(c -> c.isActive()
+        && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
+      .collect(Collectors.toList());
+    projectExpectedStudy.setStudyRegions(projectExpectedStudyRegionList);
+    // Countries
+    List<ProjectExpectedStudyCountry> projectExpectedStudyCountryList = projectExpectedStudyCountryManager
+      .findAll().stream().filter(c -> c.isActive()
+        && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
+      .collect(Collectors.toList());
+    projectExpectedStudy.setCountries(projectExpectedStudyCountryList);
+    // Quantification
+    List<ProjectExpectedStudyQuantification> projectExpectedStudyQuantificationList =
+      projectExpectedStudyQuantificationManager
+        .findAll().stream().filter(c -> c.isActive()
+          && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
+        .collect(Collectors.toList());
+    projectExpectedStudy.setQuantifications(projectExpectedStudyQuantificationList);
+    // Links
+    List<ProjectExpectedStudyLink> projectExpectedStudyLinkList = projectExpectedStudy.getProjectExpectedStudyLinks()
+      .stream().filter(c -> c.isActive() && c.getPhase().equals(phase))
+      .sorted(Comparator.comparing(ProjectExpectedStudyLink::getLink)).collect(Collectors.toList());
+    projectExpectedStudy.setLinks(projectExpectedStudyLinkList);
+
+    // innovations
+    List<ProjectExpectedStudyInnovation> projectExpectedStudyInnovationList =
+      projectExpectedStudy.getProjectExpectedStudyInnovations().stream()
+        .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+    projectExpectedStudy.setInnovations(projectExpectedStudyInnovationList);
+    if (projectExpectedStudyInfo.getIsContribution() != null && projectExpectedStudyInfo.getIsContribution()) {
+      // Policies
+      List<ProjectExpectedStudyPolicy> projectExpectedStudyPolicyList =
+        projectExpectedStudy.getProjectExpectedStudyPolicies().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+      projectExpectedStudy.setPolicies(projectExpectedStudyPolicyList);
+    } else {
+      List<ProjectExpectedStudyPolicy> projectExpectedStudyPolicyList = new ArrayList<ProjectExpectedStudyPolicy>();
+      projectExpectedStudy.setPolicies(projectExpectedStudyPolicyList);
+    }
+
+    List<ProjectExpectedStudyMilestone> projectExpectedStudyMilestoneList = projectExpectedStudy
+      .getProjectExpectedStudyMilestones().stream().filter(c -> c != null
+        && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
+      .collect(Collectors.toList());
+    projectExpectedStudy.setMilestones(projectExpectedStudyMilestoneList);
+    return projectExpectedStudy;
   }
 
   public Long putExpectedStudyById(Long idExpectedStudy, NewProjectExpectedStudyDTO newProjectExpectedStudy,
@@ -1639,6 +1802,23 @@ public class ExpectedStudiesItem<T> {
                   .add(new FieldErrorDTO("putExpectedStudy", "Countries", "A Country code can not be null nor empty."));
               }
             }
+            // verification for single or multiple countries
+            if (countriesList.size() == 1) {
+              geographicScopeList
+                .removeIf(g -> g.getId() != null && (g.getId() == APConstants.REP_IND_GEOGRAPHIC_SCOPE_MULTINATIONAL
+                  || g.getId() == APConstants.REP_IND_GEOGRAPHIC_SCOPE_NATIONAL));
+              // should not cause exception
+              geographicScopeList.add(repIndGeographicScopeManager
+                .getRepIndGeographicScopeById(APConstants.REP_IND_GEOGRAPHIC_SCOPE_NATIONAL));
+            } else if (countriesList.size() > 1) {
+              geographicScopeList
+                .removeIf(g -> g.getId() != null && (g.getId() == APConstants.REP_IND_GEOGRAPHIC_SCOPE_NATIONAL
+                  || g.getId() == APConstants.REP_IND_GEOGRAPHIC_SCOPE_MULTINATIONAL));
+              // should not cause exception
+              geographicScopeList.add(repIndGeographicScopeManager
+                .getRepIndGeographicScopeById(APConstants.REP_IND_GEOGRAPHIC_SCOPE_MULTINATIONAL));
+            }
+
           } /*
              * else {
              * fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Countries", "Please enter the Country(ies)."));
@@ -1797,29 +1977,27 @@ public class ExpectedStudiesItem<T> {
             for (NewMilestonesDTO milestones : newProjectExpectedStudy.getMilestonesCodeList()) {
               if (milestones != null && milestones.getMilestone() != null
                 && !milestones.getMilestone().trim().isEmpty()) {
-                id = this.tryParseLong(milestones.getMilestone().trim(), fieldErrors, "putExpectedStudy", "Milestone");
-                if (id != null) {
-                  CrpMilestone crpMilestone = crpMilestoneManager.getCrpMilestoneById(id);
-                  if (crpMilestone != null && crpMilestone.isActive()) {
-                    ProjectExpectedStudyMilestone obj = new ProjectExpectedStudyMilestone();
-                    obj.setCrpMilestone(crpMilestone);
-                    obj.setPrimary(milestones.getPrimary() != null && milestones.getPrimary());
-                    hasPrimary = hasPrimary + (obj.getPrimary() == true ? 1 : 0);
-                    milestoneList.add(obj);
-                  } else {
-                    fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Milestone",
-                      milestones.getMilestone() + " is an invalid Milestone identifier"));
+                CrpMilestone crpMilestone =
+                  crpMilestoneManager.getCrpMilestoneByPhase(milestones.getMilestone(), phase.getId());
+                if (crpMilestone != null && crpMilestone.isActive()) {
+                  ProjectExpectedStudyMilestone obj = new ProjectExpectedStudyMilestone();
+                  obj.setCrpMilestone(crpMilestone);
+                  obj.setPrimary(milestones.getPrimary() != null && milestones.getPrimary());
+                  if (obj.getPrimary()) {
+                    hasPrimary += 1;
                   }
+                  milestoneList.add(obj);
+                } else {
+                  fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Milestone",
+                    milestones.getMilestone() + " is an invalid Milestone identifier"));
                 }
+
               } else {
                 fieldErrors.add(
                   new FieldErrorDTO("putExpectedStudy", "Milestone", "A Milestone code can not be null nor empty."));
               }
             }
-            if (hasPrimary == 0) {
-              fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Milestone",
-                "There should be at least one milestone marked as primary"));
-            }
+
             if (hasPrimary > 1) {
               fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Milestone",
                 "There can not be more than one milestone marked as primary"));
@@ -1947,6 +2125,10 @@ public class ExpectedStudiesItem<T> {
             }
             if (srfSloIndicatorList.size() > 0) {
               projectExpectedStudyInfo.setIsSrfTarget("targetsOptionYes");
+            }
+            if (newProjectExpectedStudy.getMilestonesCodeList() != null
+              && newProjectExpectedStudy.getMilestonesCodeList().size() > 0) {
+              projectExpectedStudyInfo.setHasMilestones(true);
             }
             if (projectExpectedStudyInfoManager.saveProjectExpectedStudyInfo(projectExpectedStudyInfo) != null) {
               // update flashsip/module

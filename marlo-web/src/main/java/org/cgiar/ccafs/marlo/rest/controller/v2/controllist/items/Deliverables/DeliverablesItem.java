@@ -189,7 +189,8 @@ public class DeliverablesItem<T> {
             metadataElements.stream().filter(me -> me.getEcondedName().equals(APConstants.METADATAELEMENTHANDLE))
               .collect(Collectors.toList()).get(0);
           deliverableMetadataElementHandle.setMetadataElement(metadataElementHandle);
-          deliverableMetadataElementHandle.setElementValue(deliverableDTO.getHandle());
+          deliverableMetadataElementHandle
+            .setElementValue(deliverableDTO.getHandle() == null ? "" : deliverableDTO.getHandle());
           deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementHandle);
 
           // deliverable metadataelement DOI
@@ -200,7 +201,7 @@ public class DeliverablesItem<T> {
             metadataElements.stream().filter(me -> me.getEcondedName().equals(APConstants.METADATAELEMENTDOI))
               .collect(Collectors.toList()).get(0);
           deliverableMetadataElementDoi.setMetadataElement(metadataElementDoi);
-          deliverableMetadataElementDoi.setElementValue(deliverableDTO.getDoi());
+          deliverableMetadataElementDoi.setElementValue(deliverableDTO.getDoi() == null ? "" : deliverableDTO.getDoi());
           deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementDoi);
 
           // deliverable metadataelement Title
@@ -211,7 +212,8 @@ public class DeliverablesItem<T> {
             metadataElements.stream().filter(me -> me.getEcondedName().equals(APConstants.METADATAELEMENTTITLE))
               .collect(Collectors.toList()).get(0);
           deliverableMetadataElementTitle.setMetadataElement(metadataElementTitle);
-          deliverableMetadataElementTitle.setElementValue(deliverableDTO.getTitle());
+          deliverableMetadataElementTitle
+            .setElementValue(deliverableDTO.getTitle() == null ? "" : deliverableDTO.getTitle());
           deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementTitle);
 
           // deliverable metadataelement Citation
@@ -230,11 +232,15 @@ public class DeliverablesItem<T> {
               authors = authors + "," + author.getLastName() + " " + author.getFirstName();
             }
           }
+          // if authors not been saved by list, citation can be udapte by authors single row field
+          if (authors.isEmpty() && deliverableDTO.getAuthors() != null
+            && !deliverableDTO.getAuthors().trim().isEmpty()) {
+            authors = deliverableDTO.getAuthors().trim();
+          }
 
-
-          deliverableMetadataElementCitation.setElementValue(authors + "," + deliverableDTO.getYear() + ","
-            + deliverableDTO.getTitle() + "," + deliverableDTO.getJournal() + "," + deliverableDTO.getVolume() + ","
-            + deliverableDTO.getIssue() + "," + deliverableDTO.getNpages());
+          deliverableMetadataElementCitation.setElementValue(authors + (authors.isEmpty() ? "" : ",")
+            + deliverableDTO.getYear() + "," + deliverableDTO.getTitle() + "," + deliverableDTO.getJournal() + ","
+            + deliverableDTO.getVolume() + "," + deliverableDTO.getIssue() + "," + deliverableDTO.getNpages());
           deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementCitation);
 
           // deliverable metadataelement Publication
@@ -734,7 +740,8 @@ public class DeliverablesItem<T> {
             metadataElements.get(APConstants.METADATAELEMENTHANDLE);
           deliverableMetadataElementHandle.setDeliverable(deliverable);
           deliverableMetadataElementHandle.setPhase(phase);
-          deliverableMetadataElementHandle.setElementValue(newPublicationDTO.getHandle());
+          deliverableMetadataElementHandle
+            .setElementValue(newPublicationDTO.getHandle() == null ? "" : newPublicationDTO.getHandle());
           deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementHandle);
 
           // deliverable metadataelement DOI
@@ -742,7 +749,8 @@ public class DeliverablesItem<T> {
             metadataElements.get(APConstants.METADATAELEMENTDOI);
           deliverableMetadataElementDoi.setDeliverable(deliverable);
           deliverableMetadataElementDoi.setPhase(phase);
-          deliverableMetadataElementDoi.setElementValue(newPublicationDTO.getDoi());
+          deliverableMetadataElementDoi
+            .setElementValue(newPublicationDTO.getDoi() == null ? "" : newPublicationDTO.getDoi());
           deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementDoi);
 
           // deliverable metadataelement Title
@@ -750,7 +758,8 @@ public class DeliverablesItem<T> {
             metadataElements.get(APConstants.METADATAELEMENTTITLE);
           deliverableMetadataElementTitle.setDeliverable(deliverable);
           deliverableMetadataElementTitle.setPhase(phase);
-          deliverableMetadataElementTitle.setElementValue(newPublicationDTO.getTitle());
+          deliverableMetadataElementTitle
+            .setElementValue(newPublicationDTO.getTitle() == null ? "" : newPublicationDTO.getTitle());
           deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementTitle);
 
           // deliverable metadataelement Citation
@@ -762,6 +771,19 @@ public class DeliverablesItem<T> {
           for (DeliverableUserDTO author : newPublicationDTO.getAuthorList()) {
             elementCitation.append(elementCitation.length() > 0 ? ',' : "").append(author.getLastName()).append(' ')
               .append(author.getFirstName());
+          }
+          // if authors not been saved by list, citation can be udapte by authors single row field
+          if (newPublicationDTO.getAuthorList() != null) {
+            if (newPublicationDTO.getAuthorList().isEmpty() && newPublicationDTO.getAuthors() != null
+              && !newPublicationDTO.getAuthors().trim().isEmpty()) {
+              elementCitation.append(elementCitation.length() > 0 ? ',' : "")
+                .append(newPublicationDTO.getAuthors().trim());
+            }
+          } else {
+            if (newPublicationDTO.getAuthors() != null && !newPublicationDTO.getAuthors().trim().isEmpty()) {
+              elementCitation.append(elementCitation.length() > 0 ? ',' : "")
+                .append(newPublicationDTO.getAuthors().trim());
+            }
           }
 
           deliverableMetadataElementCitation.setElementValue(elementCitation.append(',')
