@@ -1,0 +1,11 @@
+node_modules/
+coverage/
+docs
+typings/
+tmp
+.publish
+npm-debug.log*
+dist/powerbi.js.map
+*.js.map
+package-lock.json
+demo/package-lock.json
