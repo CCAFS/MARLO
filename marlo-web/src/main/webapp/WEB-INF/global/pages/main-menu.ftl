@@ -17,12 +17,17 @@
   [#assign canAcessBI = (action.canAccessSuperAdmin())!false ]
   [#assign canAcessCCAFS = (action.crpID == 1)!false ]
   [#assign canAcessWLE = (action.crpID == 4)!false ]
+  [#assign biModuleActive = false ]
 [#recover]
   [#assign canAcessPublications = false ]
   [#assign canAcessCrp = false ]
   [#assign canAcessCCAFS = false ]
   [#assign canAcessWLE = false ]
 [/#attempt]
+
+[#if action.hasSpecificities('crp_bi_module_active')]
+  [#assign biModuleActive = true ]
+[/#if]
 
 [#assign mainMenu= [
   [#-- HOME - Not Logged --]
@@ -65,7 +70,7 @@
   [#-- SUMMARIES - ALL --]
   { 'slug': 'summaries', 'name': 'menu.summaries',      'namespace': '/summaries',       'action': '${(crpSession)!}/summaries',    'visible': logged, 'active': true }
   [#-- BI Module --]
-  { 'slug': 'bi', 'name': 'menu.bi',      'namespace': '/bi',       'action': '${(crpSession)!}/bi',    'visible': logged && canAcessCCAFS || canAcessWLE, 'active': true }
+  { 'slug': 'bi', 'name': 'menu.bi',      'namespace': '/bi',       'action': '${(crpSession)!}/bi',    'visible': logged && biModuleActive, 'active': true }
 ]/]
 
 
