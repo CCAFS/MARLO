@@ -29,6 +29,9 @@ public class NewW1W2ExpenditureDTO {
   @ApiModelProperty(notes = "Expenditure Area", position = 2)
   private Long expenditureAreaID;
 
+  @ApiModelProperty(notes = "Phase POWB/AR", position = 3)
+  private PhaseDTO phase;
+
 
   public String getExampleExpenditure() {
     return exampleExpenditure;
@@ -40,6 +43,11 @@ public class NewW1W2ExpenditureDTO {
   }
 
 
+  public PhaseDTO getPhase() {
+    return phase;
+  }
+
+
   public void setExampleExpenditure(String exampleExpenditure) {
     this.exampleExpenditure = exampleExpenditure;
   }
@@ -48,5 +56,11 @@ public class NewW1W2ExpenditureDTO {
   public void setExpenditureAreaID(Long expenditureAreaID) {
     this.expenditureAreaID = expenditureAreaID;
   }
+
+
+  public void setPhase(PhaseDTO phase) {
+    this.phase = phase;
+  }
+
 
 }
