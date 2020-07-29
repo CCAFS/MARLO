@@ -142,7 +142,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
-import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
@@ -695,29 +694,30 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     Class<?> clazz;
     try {
       clazz = Class.forName(className);
-      if (clazz == UserRole.class) {
-
-        UserRole userRole = this.userRoleManager.getUserRoleById(id);
-        long cuId = Long.parseLong((String) this.getSession().get(APConstants.CRP_CU));
-        /**
-         * Optimize this to a SQL query that takes the userId and the
-         * LiasionInstitutionId as parameters
-         **/
-        List<LiaisonUser> liaisonUsers = this.liaisonUserManager.findAll().stream()
-          .filter(c -> c.getUser().getId().longValue() == userRole.getUser().getId().longValue()
-            && c.getLiaisonInstitution().getId().longValue() == cuId)
-          .collect(Collectors.toList());
-
-        for (LiaisonUser liaisonUser : liaisonUsers) {
-          if (!liaisonUser.getProjects().stream()
-            .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase()) && c.getStatus() != null
-              && (c.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                || c.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))
-            .collect(Collectors.toList()).isEmpty()) {
-            return false;
-          }
-        }
-      }
+      /*
+       * if (clazz == UserRole.class) {
+       * UserRole userRole = this.userRoleManager.getUserRoleById(id);
+       * long cuId = Long.parseLong((String) this.getSession().get(APConstants.CRP_CU));
+       * /**
+       * Optimize this to a SQL query that takes the userId and the
+       * LiasionInstitutionId as parameters
+       **/
+      /*
+       * List<LiaisonUser> liaisonUsers = this.liaisonUserManager.findAll().stream()
+       * .filter(c -> c.getUser().getId().longValue() == userRole.getUser().getId().longValue()
+       * && c.getLiaisonInstitution().getId().longValue() == cuId)
+       * .collect(Collectors.toList());
+       * for (LiaisonUser liaisonUser : liaisonUsers) {
+       * if (!liaisonUser.getProjects().stream()
+       * .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase()) && c.getStatus() != null
+       * && (c.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+       * || c.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))
+       * .collect(Collectors.toList()).isEmpty()) {
+       * return false;
+       * }
+       * }
+       * }
+       **/
 
       if (clazz == CrpProgram.class) {
         CrpProgram crpProgram = this.crpProgramManager.getCrpProgramById(id);
@@ -744,39 +744,36 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
       }
       if (clazz == CrpProgramLeader.class) {
-        CrpProgramLeader crpProgramLeader = this.crpProgramLeaderManager.getCrpProgramLeaderById(id);
-        for (LiaisonUser liaisonUser : crpProgramLeader.getUser().getLiasonsUsers().stream()
-          .filter(c -> c.getLiaisonInstitution().getCrpProgram() != null && c.getLiaisonInstitution().getCrpProgram()
-            .getId().longValue() == crpProgramLeader.getCrpProgram().getId().longValue())
-          .collect(Collectors.toList())) {
-
-          List<ProjectInfo> projects = liaisonUser.getProjects().stream()
-            .filter(c -> c.isActive() && c.getPhase().getId().equals(this.getActualPhase().getId()))
-            .collect(Collectors.toList());
-          boolean deleted = true;
-          if (projects.size() > 0) {
-
-            for (ProjectInfo projectInfo : projects) {
-              Project project = projectInfo.getProject();
-              if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram().getId()
-                .equals(crpProgramLeader.getCrpProgram().getId())) {
-                if (project.getProjecInfoPhase(this.getActualPhase()).getStatus() != null) {
-                  switch (ProjectStatusEnum
-                    .getValue(project.getProjecInfoPhase(this.getActualPhase()).getStatus().intValue())) {
-                    case Ongoing:
-                    case Extended:
-                      deleted = false;
-                      break;
-
-                  }
-                }
-              }
-
-            }
-            return deleted;
-          }
-
-        }
+        /*
+         * CrpProgramLeader crpProgramLeader = this.crpProgramLeaderManager.getCrpProgramLeaderById(id);
+         * for (LiaisonUser liaisonUser : crpProgramLeader.getUser().getLiasonsUsers().stream()
+         * .filter(c -> c.getLiaisonInstitution().getCrpProgram() != null && c.getLiaisonInstitution().getCrpProgram()
+         * .getId().longValue() == crpProgramLeader.getCrpProgram().getId().longValue())
+         * .collect(Collectors.toList())) {
+         * List<ProjectInfo> projects = liaisonUser.getProjects().stream()
+         * .filter(c -> c.isActive() && c.getPhase().getId().equals(this.getActualPhase().getId()))
+         * .collect(Collectors.toList());
+         * boolean deleted = true;
+         * if (projects.size() > 0) {
+         * for (ProjectInfo projectInfo : projects) {
+         * Project project = projectInfo.getProject();
+         * if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram().getId()
+         * .equals(crpProgramLeader.getCrpProgram().getId())) {
+         * if (project.getProjecInfoPhase(this.getActualPhase()).getStatus() != null) {
+         * switch (ProjectStatusEnum
+         * .getValue(project.getProjecInfoPhase(this.getActualPhase()).getStatus().intValue())) {
+         * case Ongoing:
+         * case Extended:
+         * deleted = false;
+         * break;
+         * }
+         * }
+         * }
+         * }
+         * return deleted;
+         * }
+         * }
+         */
 
       }
 
