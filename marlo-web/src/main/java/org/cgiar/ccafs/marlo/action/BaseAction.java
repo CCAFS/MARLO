@@ -5275,91 +5275,64 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       for (SectionStatus sectionStatus : sections) {
         if (sectionStatus.getCycle().equals(this.getCurrentCycle())
           && sectionStatus.getYear().intValue() == this.getCurrentCycleYear()) {
-          switch (ReportSynthesisSectionStatusEnum.value(sectionStatus.getSectionName().toUpperCase())) {
-            case CRP_PROGRESS:
-              secctions++;
-              if (sectionStatus.getMissingFields().length() > 0) {
-                return false;
+          // AR2019(?) section_names
+          ReportSynthesisSectionStatusEnum sectionStatusValue =
+            ReportSynthesisSectionStatusEnum.value(sectionStatus.getSectionName().toUpperCase());
+          if (sectionStatusValue != null) {
+            switch (sectionStatusValue) {
+              case CRP_PROGRESS:
+              case FLAGSHIP_PROGRESS:
+              case CROSS_CUTTING:
+              case VARIANCE:
+              case FUNDING_USE:
+              case EXTERNAL_PARTNERSHIP:
+              case CROSS_CGIAR:
+              case MELIA:
+              case EFFICIENCY:
+              case GOVERNANCE:
+              case RISKS:
+              case FINANCIAL_SUMMARY:
+              case INFLUENCE:
+              case CONTROL:
+                secctions++;
+                if (sectionStatus.getMissingFields().length() > 0) {
+                  return false;
+                }
+                break;
+            }
+          } else {
+            // may be section_names from AR2018
+            ReportSynthesis2018SectionStatusEnum sectionStatusValue2018 =
+              ReportSynthesis2018SectionStatusEnum.value(sectionStatus.getSectionName().toUpperCase());
+            if (sectionStatusValue2018 != null) {
+              switch (sectionStatusValue2018) {
+                case CRP_PROGRESS:
+                case FLAGSHIP_PROGRESS:
+                case POLICIES:
+                case OICR:
+                case INNOVATIONS:
+                case OUTOMESMILESTONES:
+                case PUBLICATIONS:
+                case CC_DIMENSIONS:
+                case GOVERNANCE:
+                case EXTERNAL_PARTNERSHIPS:
+                case INTELLECTUAL_ASSETS:
+                case MELIA:
+                case EFFICIENCY:
+                case RISKS:
+                case FUNDING_USE:
+                case FINANCIAL:
+                case NARRATIVE:
+                  secctions++;
+                  if (sectionStatus.getMissingFields().length() > 0) {
+                    return false;
+                  }
+                  break;
               }
-              break;
-            case FLAGSHIP_PROGRESS:
-              secctions++;
-              if (sectionStatus.getMissingFields().length() > 0) {
-                return false;
-              }
-              break;
-            case CROSS_CUTTING:
-              secctions++;
-              if (sectionStatus.getMissingFields().length() > 0) {
-                return false;
-              }
-              break;
-            case VARIANCE:
-              secctions++;
-              if (sectionStatus.getMissingFields().length() > 0) {
-                return false;
-              }
-              break;
-            case FUNDING_USE:
-              secctions++;
-              if (sectionStatus.getMissingFields().length() > 0) {
-                return false;
-              }
-              break;
-            case EXTERNAL_PARTNERSHIP:
-              secctions++;
-              if (sectionStatus.getMissingFields().length() > 0) {
-                return false;
-              }
-              break;
-            case CROSS_CGIAR:
-              secctions++;
-              if (sectionStatus.getMissingFields().length() > 0) {
-                return false;
-              }
-              break;
-            case MELIA:
-              secctions++;
-              if (sectionStatus.getMissingFields().length() > 0) {
-                return false;
-              }
-              break;
-            case EFFICIENCY:
-              secctions++;
-              if (sectionStatus.getMissingFields().length() > 0) {
-                return false;
-              }
-              break;
-            case GOVERNANCE:
-              secctions++;
-              if (sectionStatus.getMissingFields().length() > 0) {
-                return false;
-              }
-              break;
-            case RISKS:
-              secctions++;
-              if (sectionStatus.getMissingFields().length() > 0) {
-                return false;
-              }
-              break;
-            case FINANCIAL_SUMMARY:
-              secctions++;
-              if (sectionStatus.getMissingFields().length() > 0) {
-                return false;
-              }
-              break;
-            case INFLUENCE:
-              secctions++;
-              if (sectionStatus.getMissingFields().length() > 0) {
-                return false;
-              }
-              break;
-            case CONTROL:
-              secctions++;
-              if (sectionStatus.getMissingFields().length() > 0) {
-                return false;
-              }
-              break;
+            } else {
+              // no idea what section_name it could be
+              return false;
+            }
           }
         }
       }
