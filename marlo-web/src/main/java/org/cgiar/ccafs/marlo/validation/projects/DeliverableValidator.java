@@ -138,46 +138,47 @@ public class DeliverableValidator extends BaseValidator {
 
 
         // Deliverable Others
-        if (deliverable.getOtherPartnerships() != null) {
+        if (action.isAiccra() == false) {
+          if (deliverable.getOtherPartnerships() != null) {
 
-          for (int i = 0; i < deliverable.getOtherPartnerships().size(); i++) {
-            if (deliverable.getOtherPartnerships().get(i).getInstitution() == null
-              || deliverable.getOtherPartnerships().get(i).getInstitution().getId() == null) {
+            for (int i = 0; i < deliverable.getOtherPartnerships().size(); i++) {
+              if (deliverable.getOtherPartnerships().get(i).getInstitution() == null
+                || deliverable.getOtherPartnerships().get(i).getInstitution().getId() == null) {
 
-              action.addMessage("Other Partnership Institution");
-              action.getInvalidFields().put("input-deliverable.otherPartnerships[" + i + "].institution.id",
-                InvalidFieldsMessages.EMPTYFIELD);
+                action.addMessage("Other Partnership Institution");
+                action.getInvalidFields().put("input-deliverable.otherPartnerships[" + i + "].institution.id",
+                  InvalidFieldsMessages.EMPTYFIELD);
 
-            } else {
-              if (isManagingPartnerPersonRequerid) {
-                if (deliverable.getOtherPartnerships().get(i).getPartnershipPersons() == null) {
-                  action.addMessage("Other Partnership Persons");
-                  action.getInvalidFields().put("input-deliverable.otherPartnerships[" + i + "].partnershipPersons",
-                    InvalidFieldsMessages.EMPTYFIELD);
-                } else {
-                  boolean haveUser = false;
-                  for (int j = 0; j < deliverable.getOtherPartnerships().get(i).getPartnershipPersons().size(); j++) {
-                    if (deliverable.getOtherPartnerships().get(i).getPartnershipPersons().get(j).getUser() != null
-                      && deliverable.getOtherPartnerships().get(i).getPartnershipPersons().get(j).getUser()
-                        .getId() != null) {
-                      haveUser = true;
-                      break;
-                    }
-                  }
-                  if (!haveUser) {
+              } else {
+                if (isManagingPartnerPersonRequerid) {
+                  if (deliverable.getOtherPartnerships().get(i).getPartnershipPersons() == null) {
                     action.addMessage("Other Partnership Persons");
                     action.getInvalidFields().put("input-deliverable.otherPartnerships[" + i + "].partnershipPersons",
                       InvalidFieldsMessages.EMPTYFIELD);
+                  } else {
+                    boolean haveUser = false;
+                    for (int j = 0; j < deliverable.getOtherPartnerships().get(i).getPartnershipPersons().size(); j++) {
+                      if (deliverable.getOtherPartnerships().get(i).getPartnershipPersons().get(j).getUser() != null
+                        && deliverable.getOtherPartnerships().get(i).getPartnershipPersons().get(j).getUser()
+                          .getId() != null) {
+                        haveUser = true;
+                        break;
+                      }
+                    }
+                    if (!haveUser) {
+                      action.addMessage("Other Partnership Persons");
+                      action.getInvalidFields().put("input-deliverable.otherPartnerships[" + i + "].partnershipPersons",
+                        InvalidFieldsMessages.EMPTYFIELD);
+                    }
                   }
                 }
               }
             }
+
           }
-
         }
-
         // Deliverable responsible
-        if (deliverable.getResponsiblePartnership() == null) {
+        if (action.isAiccra() == false) {
           action.addMessage(action.getText("deliverable others"));
           action.getInvalidFields().put("list-deliverable.otherPartnerships",
             action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"deliverable others"}));
@@ -517,39 +518,77 @@ public class DeliverableValidator extends BaseValidator {
     List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers = cgiarCrossCuttingMarkerManager.findAll();
 
     // Deliverable Cross Cutting Markers
-    if (deliverable.getCrossCuttingMarkers() != null) {
-      int i = 0;
-      for (CgiarCrossCuttingMarker cgiarCrossCuttingMarker : cgiarCrossCuttingMarkers) {
-        List<DeliverableCrossCuttingMarker> deliverableCrossCuttingMarkers =
-          deliverable.getCrossCuttingMarkers().stream()
-            .filter(
-              cc -> cc.isActive() && cc.getCgiarCrossCuttingMarker().getId().equals(cgiarCrossCuttingMarker.getId()))
-            .collect(Collectors.toList());
-        if (deliverableCrossCuttingMarkers != null && !deliverableCrossCuttingMarkers.isEmpty()) {
-          DeliverableCrossCuttingMarker deliverableCrossCuttingMarker = deliverableCrossCuttingMarkers.get(0);
-          if (deliverableCrossCuttingMarker.getRepIndGenderYouthFocusLevel() == null
-            || deliverableCrossCuttingMarker.getRepIndGenderYouthFocusLevel().getId() == -1) {
+
+    // Deliverable Cross Cutting Markers for AICCRA
+    if (action.isAiccra() == false) {
+      cgiarCrossCuttingMarkers = cgiarCrossCuttingMarkers.stream()
+        .filter(d -> !d.getName().contains("CapDev") && !d.getName().contains("Climate")).collect(Collectors.toList());
+      // Id for AICCR
+      if (deliverable.getCrossCuttingMarkers() != null) {
+        int i = 0;
+        for (CgiarCrossCuttingMarker cgiarCrossCuttingMarker : cgiarCrossCuttingMarkers) {
+          List<DeliverableCrossCuttingMarker> deliverableCrossCuttingMarkers =
+            deliverable.getCrossCuttingMarkers().stream()
+              .filter(
+                cc -> cc.isActive() && cc.getCgiarCrossCuttingMarker().getId().equals(cgiarCrossCuttingMarker.getId()))
+              .collect(Collectors.toList());
+          if (deliverableCrossCuttingMarkers != null && !deliverableCrossCuttingMarkers.isEmpty()) {
+            DeliverableCrossCuttingMarker deliverableCrossCuttingMarker = deliverableCrossCuttingMarkers.get(0);
+            if ((deliverableCrossCuttingMarker.getRepIndGenderYouthFocusLevel() == null
+              || deliverableCrossCuttingMarker.getRepIndGenderYouthFocusLevel().getId() == -1)) {
+              action.addMessage(cgiarCrossCuttingMarker.getName());
+              action.getInvalidFields().put(
+                "input-deliverable.crossCuttingMarkers[" + i + "].repIndGenderYouthFocusLevel.id",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+          } else {
             action.addMessage(cgiarCrossCuttingMarker.getName());
             action.getInvalidFields().put(
               "input-deliverable.crossCuttingMarkers[" + i + "].repIndGenderYouthFocusLevel.id",
               InvalidFieldsMessages.EMPTYFIELD);
           }
-        } else {
+          i++;
+        }
+
+      }
+    } else {
+
+      // for all CRPs (Except AICCRA)
+      if (deliverable.getCrossCuttingMarkers() != null) {
+        int i = 0;
+        for (CgiarCrossCuttingMarker cgiarCrossCuttingMarker : cgiarCrossCuttingMarkers) {
+          List<DeliverableCrossCuttingMarker> deliverableCrossCuttingMarkers =
+            deliverable.getCrossCuttingMarkers().stream()
+              .filter(
+                cc -> cc.isActive() && cc.getCgiarCrossCuttingMarker().getId().equals(cgiarCrossCuttingMarker.getId()))
+              .collect(Collectors.toList());
+          if (deliverableCrossCuttingMarkers != null && !deliverableCrossCuttingMarkers.isEmpty()) {
+            DeliverableCrossCuttingMarker deliverableCrossCuttingMarker = deliverableCrossCuttingMarkers.get(0);
+            if (deliverableCrossCuttingMarker.getRepIndGenderYouthFocusLevel() == null
+              || deliverableCrossCuttingMarker.getRepIndGenderYouthFocusLevel().getId() == -1) {
+              action.addMessage(cgiarCrossCuttingMarker.getName());
+              action.getInvalidFields().put(
+                "input-deliverable.crossCuttingMarkers[" + i + "].repIndGenderYouthFocusLevel.id",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+          } else {
+            action.addMessage(cgiarCrossCuttingMarker.getName());
+            action.getInvalidFields().put(
+              "input-deliverable.crossCuttingMarkers[" + i + "].repIndGenderYouthFocusLevel.id",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+          i++;
+        }
+
+      } else {
+        int i = 0;
+        for (CgiarCrossCuttingMarker cgiarCrossCuttingMarker : cgiarCrossCuttingMarkers) {
           action.addMessage(cgiarCrossCuttingMarker.getName());
           action.getInvalidFields().put(
             "input-deliverable.crossCuttingMarkers[" + i + "].repIndGenderYouthFocusLevel.id",
             InvalidFieldsMessages.EMPTYFIELD);
+          i++;
         }
-        i++;
-      }
-
-    } else {
-      int i = 0;
-      for (CgiarCrossCuttingMarker cgiarCrossCuttingMarker : cgiarCrossCuttingMarkers) {
-        action.addMessage(cgiarCrossCuttingMarker.getName());
-        action.getInvalidFields().put("input-deliverable.crossCuttingMarkers[" + i + "].repIndGenderYouthFocusLevel.id",
-          InvalidFieldsMessages.EMPTYFIELD);
-        i++;
       }
     }
 

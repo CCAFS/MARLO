@@ -127,9 +127,13 @@ public class ValidateProjectSectionAction extends BaseAction {
         case ACTIVITIES:
           this.projectSectionValidator.validateProjectActivities(this, this.getProjectID());
           break;
+
         case EXPECTEDSTUDIES:
-          this.projectSectionValidator.validateProjectExpectedStudies(this, this.getProjectID());
-          break;
+          if (this.isAiccra() == false) {
+            this.projectSectionValidator.validateProjectExpectedStudies(this, this.getProjectID());
+            break;
+          }
+
         case POLICIES:
           this.projectSectionValidator.validatePolicy(this, this.getProjectID());
           break;
