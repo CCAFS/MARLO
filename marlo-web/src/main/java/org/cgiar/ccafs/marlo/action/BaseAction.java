@@ -4688,6 +4688,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.securityContext.hasRole("Admin");
   }
 
+  public boolean isAiccra() {
+    if (this.getCurrentCrp() != null && this.getCurrentCrp().getId() != null && this.getCurrentCrp().getId() == 45) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   /**
    * Function to validate the annual report version the front will show
    *

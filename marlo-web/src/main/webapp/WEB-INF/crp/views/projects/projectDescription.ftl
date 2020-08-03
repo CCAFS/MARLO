@@ -248,7 +248,15 @@
                 <label for="">[@customForm.text name="project.crossCuttingDimensions"  readText=!editable/] [@customForm.req required=editable/]</label>
                 <div class="row">
                   <div class="col-md-12">
+                    [#if aiccra]
                     [#assign crossCuttingMarkers = [
+                        { "id":"gender", "name": "crossCuttingGender" },
+                        { "id":"youth", "name": "crossCuttingYouth" },
+                        { "id":"na", "name": "crossCuttingNa" }
+                      ] 
+                    /]
+                    [#else]
+                        [#assign crossCuttingMarkers = [
                         { "id":"gender", "name": "crossCuttingGender" },
                         { "id":"youth", "name": "crossCuttingYouth" },
                         { "id":"capacity", "name": "crossCuttingCapacity" },
@@ -256,6 +264,7 @@
                         { "id":"na", "name": "crossCuttingNa" }
                       ] 
                     /]
+                    [/#if]
                     [#if editable]
                       [#list crossCuttingMarkers as marker]
                         <label class="checkbox-inline"><input type="checkbox" name="project.projectInfo.${marker.name}" id="${marker.id}" class="[#if marker.id != "na"]ccMarker[/#if]" value="true" [#if (project.projectInfo[marker.name])!false ]checked="checked"[/#if]>[@s.text name="crossCuttingMarker.${marker.id}" /]</label>
