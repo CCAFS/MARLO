@@ -120,7 +120,7 @@
     <div class="row">
       [#list (cgiarCrossCuttingMarkers)![] as marker]
         [#local customName = "deliverable.crossCuttingMarkers[${marker_index}]" /]
-        <div class="col-md-3">
+        [#if action.isAiccra() && marker.id > 2]<div class="col-md-3" style="display: none">[#else]<div class="col-md-3">[/#if]
           [#local markerElement = (action.getDeliverableCrossCuttingMarker(marker.id))!{} ]
           <input type="hidden"  name="${customName}.id" value="${(markerElement.id)!}"/>
           <input type="hidden"  name="${customName}.cgiarCrossCuttingMarker.id" value="${marker.id}"/>

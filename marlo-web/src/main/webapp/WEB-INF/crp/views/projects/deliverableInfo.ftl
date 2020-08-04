@@ -212,7 +212,8 @@
 
 
 
-[#-- Partners --] 
+[#-- Partners --]
+[#if !action.isAiccra()]
 <h3 class="headTitle">[@s.text name="Partners contributing to this deliverable" /]</h3>  
 <div id="deliverable-partnerships-new" class="form-group simpleBox">
   [#-- Partner who is responsible --]
@@ -247,3 +248,4 @@
     </div>
   [/#if]
 </div>
+[/#if]
