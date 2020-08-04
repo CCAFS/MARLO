@@ -538,7 +538,7 @@ function formatRepo(repo) {
   // Is PPA
   markup += "<small class='pull-right'>";
   if(repo.isPPA) {
-    markup += "<span class='label label-warning'>Managing / PPA Partner</span>"
+    markup += "<span class='label label-warning'>Managing Partner</span>"
   } else {
     markup += "<span class='label label-default'>Partner</span>";
   }
@@ -569,7 +569,7 @@ function notificationError(message) {
 
 /**
  * One to Many component
- *
+ * 
  * @description elementsListComponent function to the functioning of the customForm macro
  */
 function setElementsListComponent() {
@@ -635,18 +635,13 @@ jQuery.fn.setOneToManyComponent = function() {
 };
 
 /*
-//Function for Primary selector fields
-jQuery.fn.setPrimarySelectorFunction = function() {
-  var $parent = $(this).parents('.elementsListComponent');
-  var $select = $parent.find('ul.primary');
+ * //Function for Primary selector fields jQuery.fn.setPrimarySelectorFunction = function() { var $parent =
+ * $(this).parents('.elementsListComponent'); var $select = $parent.find('ul.primary'); $select.on('change',
+ * onSelectPrimary); // On click remove button //$parent.find('[class*="removeElementType-"]').on('click',
+ * onClickRemoveElementPrimary); }
+ */
 
-  $select.on('change', onSelectPrimary);
-
-  // On click remove button
-  //$parent.find('[class*="removeElementType-"]').on('click', onClickRemoveElementPrimary);
-}*/
-
-//Function for Primary radio
+// Function for Primary radio
 jQuery.fn.setPrimaryRadioFunction = function() {
 
   this.find("input.radio-input").each(function() {
@@ -673,7 +668,7 @@ function onSelectElement() {
   // Clone the new element
   var $element = $parent.find('.relationElement-template').clone(true);
   $element.removeClass('relationElement-template');
-  $element.attr('class',' '+$element.attr('class'));
+  $element.attr('class', ' ' + $element.attr('class'));
 
   // Remove template tag
   $element.find('input').each(function(i,e) {
@@ -716,15 +711,16 @@ function onSelectElement() {
     $(element).setNameIndexes(indexLevel, i);
   });
 
-  //Validate if is a primary radioButton group
-  if(className.indexOf("primary") >= 0){
-    if(($list.children().length < 3 && $list.children().first().is('label')) || $list.children().length < 2){
+  // Validate if is a primary radioButton group
+  if(className.indexOf("primary") >= 0) {
+    if(($list.children().length < 3 && $list.children().first().is('label')) || $list.children().length < 2) {
       $element.find('input.radio-input').attr('checked', true);
-    }else{
+    } else {
       $element.find('input.radio-input').attr('checked', false);
     }
 
-    $element.find('label.radio-label').attr('for', $element.find('label.radio-label').parents('.radioFlat').find('input').attr("id"));
+    $element.find('label.radio-label').attr('for',
+        $element.find('label.radio-label').parents('.radioFlat').find('input').attr("id"));
     $element.find('input.radio-input').on('change', onSelectElementPrimary);
   }
 }
@@ -753,20 +749,20 @@ function onClickRemoveElement() {
     ]);
 
     // Update indexes
-    $list.find('li.relationElement').each(function(i,element) {
-      var indexLevel = $(element).classParam('indexLevel');
-      $(element).setNameIndexes(indexLevel, i);
+    $list.find('li.relationElement').each(
+        function(i,element) {
+          var indexLevel = $(element).classParam('indexLevel');
+          $(element).setNameIndexes(indexLevel, i);
 
-      if(className.indexOf("primary") >= 0){
-        $(element).find('label.radio-label').attr('for', $(element).find('label.radio-label').parents('.radiot').find('input').attr("id"));
-        //$(element).find('input.radio-input').attr('checked', true);
-        /*
-        if ($list.children().length < 3){
-          $(element).find('input.radio-input').attr('checked', true);
-        }
-        */
-      }
-    });
+          if(className.indexOf("primary") >= 0) {
+            $(element).find('label.radio-label').attr('for',
+                $(element).find('label.radio-label').parents('.radiot').find('input').attr("id"));
+            // $(element).find('input.radio-input').attr('checked', true);
+            /*
+             * if ($list.children().length < 3){ $(element).find('input.radio-input').attr('checked', true); }
+             */
+          }
+        });
 
     // Enabled select component if needed
     if((maxLimit > 0) && (counted >= maxLimit)) {
@@ -781,47 +777,27 @@ function onSelectElementPrimary() {
   var $list = $parent.find('ul.list.primary');
 
   $list.find("input.radio-input").each(function() {
-    if($(this).attr("name") != $input.attr("name") ){
+    if($(this).attr("name") != $input.attr("name")) {
       $(this).attr("checked", false);
-    }else{
+    } else {
       $(this).attr("checked", true);
     }
   });
 }
 
 /*
-function onClickRemoveElementPrimary() {
-  var removeElementType = $(this).classParam('removeElementType');
-  var $parent = $(this).parent();
-  var $select = $(this).parents(".panel-body").find('select');
-  var $list = $(this).parents('.elementsListComponent').find('ul.list');
-  var counted = $list.find('li').length;
-  var maxLimit = $select.classParam('maxLimit');
-  var id = $parent.find(".elementRelationID").val();
-  var name = $parent.find(".elementName").text();
-  var $primaryDisplay = $(this).parents(".elementsListComponent").find('div.primarySelectorDisplayBox');
-  var $primaryRadioElement = $(this).parents('.elementsListComponent').find('ul.primaryRadio');
-
-  var $tempo = $primaryRadioElement.find(".radioFlat.selectPrimary.radioContentBox.ID-"+ id +"");
-  var $input = $tempo.find("input");
-
-  if($input.is(':checked')){
-    $tempo.remove();
-
-    if($primaryRadioElement.children().length > 0){
-      $primaryRadioElement.children(":first").find("input").attr('checked', true);
-    }
-  }else{
-    $tempo.remove();
-  }
-
-  //$tempo.remove();
-
-  if($primaryRadioElement.children().length < 1){
-    $primaryDisplay.css("display", "none");
-  }
-
-}*/
+ * function onClickRemoveElementPrimary() { var removeElementType = $(this).classParam('removeElementType'); var $parent =
+ * $(this).parent(); var $select = $(this).parents(".panel-body").find('select'); var $list =
+ * $(this).parents('.elementsListComponent').find('ul.list'); var counted = $list.find('li').length; var maxLimit =
+ * $select.classParam('maxLimit'); var id = $parent.find(".elementRelationID").val(); var name =
+ * $parent.find(".elementName").text(); var $primaryDisplay =
+ * $(this).parents(".elementsListComponent").find('div.primarySelectorDisplayBox'); var $primaryRadioElement =
+ * $(this).parents('.elementsListComponent').find('ul.primaryRadio'); var $tempo =
+ * $primaryRadioElement.find(".radioFlat.selectPrimary.radioContentBox.ID-"+ id +""); var $input = $tempo.find("input");
+ * if($input.is(':checked')){ $tempo.remove(); if($primaryRadioElement.children().length > 0){
+ * $primaryRadioElement.children(":first").find("input").attr('checked', true); } }else{ $tempo.remove(); }
+ * //$tempo.remove(); if($primaryRadioElement.children().length < 1){ $primaryDisplay.css("display", "none"); } }
+ */
 
 /**
  * Geographic Scope Component
@@ -830,7 +806,7 @@ function formatStateCountries(state) {
   if(!state.id) {
     return state.text;
   }
-  var flag = '<i class="flag-icon flag-icon-'+ state.element.value.toLowerCase() +'"></i> ';
+  var flag = '<i class="flag-icon flag-icon-' + state.element.value.toLowerCase() + '"></i> ';
   var $state;
   if(state.id != -1) {
     $state = $('<span>' + flag + state.text + '</span>');

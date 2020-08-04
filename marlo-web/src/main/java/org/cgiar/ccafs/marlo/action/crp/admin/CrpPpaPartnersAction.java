@@ -541,7 +541,7 @@ public class CrpPpaPartnersAction extends BaseAction {
         .filter(ppa -> ppa.isActive() && ppa.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
       loggedCrp.getCrpInstitutionsPartners()
         .sort((p1, p2) -> p1.getInstitution().getName().compareTo(p2.getInstitution().getName()));
-      // Fill Managing/PPA Partners with contact persons
+      // Fill Managing Partners with contact persons
       if (cpRole != null) {
         Set<CrpPpaPartner> crpPpaPartners = new HashSet<CrpPpaPartner>(0);
         for (CrpPpaPartner crpPpaPartner : loggedCrp.getCrpInstitutionsPartners()) {

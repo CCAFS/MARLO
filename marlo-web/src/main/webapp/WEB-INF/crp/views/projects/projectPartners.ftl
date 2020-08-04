@@ -285,7 +285,7 @@
       <div class="partnerTags pull-right">
         <span class="label label-success type-leader" style="display:${(isLeader?string('inline','none'))!'none'}">Leader</span>
         <span class="label label-default type-coordinator" style="display:${(isCoordinator?string('inline','none'))!'none'}">Coordinator</span>
-        <span class="index ${isPPA?string('ppa','')}">${isPPA?string('Managing / PPA Partner','Partner')} </span>
+        <span class="index ${isPPA?string('ppa','')}">${isPPA?string('Managing Partner','Partner')} </span>
       </div>
       
       [#-- Contacts --]

@@ -1,5 +1,5 @@
 [#ftl]
-[#assign title = "PPA Partners" /]
+[#assign title = "Managing Partners" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
