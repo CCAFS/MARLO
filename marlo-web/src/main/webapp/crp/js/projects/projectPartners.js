@@ -857,7 +857,7 @@ function addSelect2() {
 
 /**
  * PartnerObject
- *
+ * 
  * @param {DOM} Project partner
  */
 
@@ -940,7 +940,7 @@ function PartnerObject(partner) {
       return false;
     }
     if(allPPAInstitutions.indexOf(instID) != -1) {
-      $(partner).find("> .blockTitle .index").addClass('ppa').text('Managing / PPA Partner');
+      $(partner).find("> .blockTitle .index").addClass('ppa').text('Managing Partner');
       return true;
     } else {
       $(partner).find("> .blockTitle .index").removeClass('ppa').text('Partner');
@@ -1075,7 +1075,7 @@ function PartnerObject(partner) {
 
 /**
  * PartnerPersonObject
- *
+ * 
  * @param {DOM} Partner person
  */
 function PartnerPersonObject(partnerPerson) {
