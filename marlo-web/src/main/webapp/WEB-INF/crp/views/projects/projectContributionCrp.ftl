@@ -61,7 +61,7 @@
 
           <div class="grayBox">
             <div class="col-md-12">
-              <strong>${(projectOutcome.crpProgramOutcome.crpProgram.acronym)!} - Outcome ${(projectOutcome.crpProgramOutcome.year)!}</strong>: ${projectOutcome.crpProgramOutcome.description}
+              <strong>${(projectOutcome.crpProgramOutcome.crpProgram.acronym)!} - Performance Indicator ${(projectOutcome.crpProgramOutcome.year)!}</strong>: ${projectOutcome.crpProgramOutcome.description}
             </div>
             <div class="clearfix"></div>
             [#if showOutcomeValue]
@@ -164,10 +164,10 @@
           </div>
           
           [#-- Project Milestones and Communications contributions per year--]
-          <h4 class="headTitle"> [@s.text name="projectOutcome.contributionToMilestones" /]</h4>
+          <h4 class="headTitle" style=display:none> [@s.text name="projectOutcome.contributionToMilestones" /]</h4>
           
           [#-- List milestones  --]
-          <div class="milestonesYearBlock borderBox" listname="milestonesProject">
+          <div class="milestonesYearBlock borderBox" listname="milestonesProject" style=display:none>
             <div class="milestonesYearList">
               [#if milestonesProject?has_content]
                 [#list milestonesProject as milestone]
