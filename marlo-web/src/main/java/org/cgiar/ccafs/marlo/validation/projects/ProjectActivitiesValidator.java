@@ -75,7 +75,8 @@ public class ProjectActivitiesValidator extends BaseValidator {
 
         if (activity != null && activity.getActivityStatus() != null) {
           if (activity.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-            || (activity.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId()))) {
+            || (activity.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
+            || (activity.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId()))) {
             this.validateActivity(activity, i, "projectActivities", action);
           }
 
@@ -102,7 +103,7 @@ public class ProjectActivitiesValidator extends BaseValidator {
     List<String> params = new ArrayList<>();
     params.add(String.valueOf(activity.getId()));
 
-    if (!(this.isValidString(activity.getTitle()) && this.wordCount(activity.getTitle()) <= 15)) {
+    if (!(this.isValidString(activity.getTitle()) && this.wordCount(activity.getTitle()) <= 30)) {
       action.addMessage(action.getText("activity.title", params));
       action.getInvalidFields().put("input-project." + listName + "[" + index + "].title",
         InvalidFieldsMessages.EMPTYFIELD);
