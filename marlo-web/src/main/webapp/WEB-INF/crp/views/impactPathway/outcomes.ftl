@@ -195,7 +195,7 @@
     
     <div class="row form-group target-block">
       [#-- Target Year --]
-      <div class="col-md-4">[@customForm.input name="${outcomeCustomName}.year" value="${(outcome.year)!2022}" type="text" i18nkey="outcome.targetYear"  placeholder="outcome.inputTargetYear.placeholder" className="targetYear outcomeYear" required=true editable=editable /]</div>
+      <div class="col-md-4">[@customForm.input name="${outcomeCustomName}.year" value="${(outcome.year)!2023}" type="text" i18nkey="outcome.targetYear"  placeholder="outcome.inputTargetYear.placeholder" className="targetYear outcomeYear" required=true editable=editable /]</div>
       [#-- Target Unit --]
       [#if targetUnitList?has_content]
       <div class="col-md-4">
