@@ -6,7 +6,7 @@
       <tr class="header">
         <th colspan="5">General Information</th>
         [#if !reportingActive && !centerGlobalUnit]
-          <th colspan="3">[@s.text name="projectsList.projectBudget"] [@s.param]${(crpSession?upper_case)!}[/@s.param] [/@s.text] ${currentCycleYear}</th> 
+          <th colspan="1">[@s.text name="projectsList.projectBudget"] [@s.param]${(crpSession?upper_case)!}[/@s.param] [/@s.text] ${currentCycleYear}</th> 
         [/#if]
         <th colspan="3">Actions</th> 
       </tr>
@@ -28,8 +28,8 @@
         </th>
         [#if !reportingActive && !centerGlobalUnit]
           <th id="projectBudget">[@s.text name="projectsList.W1W2projectBudget" /]</th>
-          <th id="projectBudget">[@s.text name="projectsList.W3projectBudget" /]</th>
-          <th id="projectBudget">[@s.text name="projectsList.BILATERALprojectBudget" /]</th>
+          [#-- <th id="projectBudget">[@s.text name="projectsList.W3projectBudget" /]</th>
+          <th id="projectBudget">[@s.text name="projectsList.BILATERALprojectBudget" /]</th> --]
         [/#if]
         <th id="projectActionStatus">[@s.text name="projectsList.projectActionStatus" /]</th>
         <th id="projectDownload">[@s.text name="projectsList.download" /]</th>
@@ -118,7 +118,7 @@
           </td>
           [#if !reportingActive && !centerGlobalUnit]
           [#-- Budget W1/W2 --]
-          <td class="budget"> 
+          <td class=""> 
             [#if project.getCoreBudget(currentCycleYear,action.getActualPhase())?has_content]
                <nobr> US$ <span id="">${((project.coreBudget)!0)?string(",##0.00")}</span></nobr>
             [#else]
@@ -126,21 +126,21 @@
             [/#if]
           </td>
           [#-- Budget W3/ Bilateral --]
-          <td class="budget"> 
+          [#-- <td class="budget"> 
             [#if project.getW3Budget(currentCycleYear,action.getActualPhase())?has_content]
               <nobr>US$ <span id="">${((project.w3Budget)!0)?string(",##0.00")}</span></nobr> 
             [#else]
               [@s.text name="projectsList.none" /]
             [/#if]
-          </td>
+          </td> --]
           [#-- Budget Bilateral --]
-          <td class="budget"> 
+          [#-- <td class="budget"> 
             [#if project.getBilateralBudget(currentCycleYear,action.getActualPhase())?has_content]
               <nobr>US$ <span id="">${((project.bilateralBudget)!0)?string(",##0.00")}</span></nobr> 
             [#else]
               [@s.text name="projectsList.none" /]
             [/#if]
-          </td>
+          </td> --]
           [/#if]
           [#-- Project Action Status --]
           <td>
