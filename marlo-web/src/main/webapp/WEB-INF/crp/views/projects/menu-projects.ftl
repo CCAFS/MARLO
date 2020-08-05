@@ -29,7 +29,7 @@
       { 'slug': 'locations',  'name': 'projects.menu.locations',  'action': 'locations',  'active': true, "showCheck": isGlobalUnitProject  }
       ]
     },
-    { 'title': 'Outcomes', 'show': isCrpProject,
+    { 'title': 'Indicators', 'show': isCrpProject,
       'items': [
       { 'slug': 'contributionsCrpList',  'name': 'projects.menu.contributionsCrpList',  'action': 'contributionsCrpList',  'active': true, 'show':!phaseOne  && ((!project.projectInfo.administrative)!false) , "showCheck": isGlobalUnitProject},
       { 'slug': 'contributionsLP6',  'name': 'projects.menu.contributionLP6',  'action': 'contributionsLP6',  'active': true, 'show': ((action.getProjectLp6ContributionValue(project.id, actualPhase.id))!false) && action.hasSpecificities('crp_lp6_active') && reportingActive, "showCheck": isGlobalUnitProject},
