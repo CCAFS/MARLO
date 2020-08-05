@@ -120,15 +120,22 @@
     <div class="row">
       [#list (cgiarCrossCuttingMarkers)![] as marker]
         [#local customName = "deliverable.crossCuttingMarkers[${marker_index}]" /]
-        [#if action.isAiccra() && marker.id > 2]<div class="col-md-3" style="display: none">[#else]<div class="col-md-3">[/#if]
-          [#local markerElement = (action.getDeliverableCrossCuttingMarker(marker.id))!{} ]
+          [#local markerElement = (action.getDeliverableCrossCuttingMarker(marker.id))!{} ]          
+          [#if action.isAiccra() && marker.id > 2]<div class="col-md-4">
           <input type="hidden"  name="${customName}.id" value="${(markerElement.id)!}"/>
           <input type="hidden"  name="${customName}.cgiarCrossCuttingMarker.id" value="${marker.id}"/>
           [@customForm.select   name="${customName}.repIndGenderYouthFocusLevel.id" value="${(markerElement.repIndGenderYouthFocusLevel.id)!-1}" valueName="${(markerElement.repIndGenderYouthFocusLevel.powbName)!}" className="setSelect2" i18nkey="${marker.name}" listName="focusLevels" keyFieldName="id"  displayFieldName="powbName"  required=true editable=editable/]
-        </div>
-      [#else]
-        <p class="col-md-12">No cgiarCrossCuttingMarkers loaded</p>
-      [/#list]
+          </div>
+          [#elseif !(action.isAiccra())]
+          <div class="col-md-3">
+          <input type="hidden"  name="${customName}.id" value="${(markerElement.id)!}"/>
+          <input type="hidden"  name="${customName}.cgiarCrossCuttingMarker.id" value="${marker.id}"/>
+          [@customForm.select   name="${customName}.repIndGenderYouthFocusLevel.id" value="${(markerElement.repIndGenderYouthFocusLevel.id)!-1}" valueName="${(markerElement.repIndGenderYouthFocusLevel.powbName)!}" className="setSelect2" i18nkey="${marker.name}" listName="focusLevels" keyFieldName="id"  displayFieldName="powbName"  required=true editable=editable/]
+          </div>
+          [/#if]
+        [#else]
+          <p class="col-md-12">No cgiarCrossCuttingMarkers loaded</p>
+        [/#list]
     </div>
   </div>
 [/#macro]
