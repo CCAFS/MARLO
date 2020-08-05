@@ -58,7 +58,7 @@
             [/#list]
           [/#if]
           </div>
-          [#if editable && canEdit]
+          [#if editable && canEdit && action.canAccessSuperAdmin()]
             <div id="addPartnerBlock" class="addPerson text-right">
               <div class="button-blue  addActivity"><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="form.buttons.addActivity" /]</div>
             </div>
@@ -103,7 +103,7 @@
       <span>[@s.text name="project.activities.index" /] [#if element.id?? && element.id?number != -1]${(element.id)!}[/#if]</span>  
     </div>
     --]
-    [#if isActive && editable] [#--&& (isTemplate) --]
+    [#if isActive && editable && action.canAccessSuperAdmin()] [#--&& (isTemplate) --]
       <div class="removeLink">
         <div id="removeActivity" class="removeActivity removeElement removeLink" title="[@s.text name='projectActivities.removeActivity' /]"></div>
       </div>
