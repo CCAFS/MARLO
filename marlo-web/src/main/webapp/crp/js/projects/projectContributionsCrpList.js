@@ -29,7 +29,7 @@ $(document).ready(function() {
 
     if(projectOutcomeID == "-1") {
       var notyOptions = jQuery.extend({}, notyDefaultOptions);
-      notyOptions.text = 'You must select an outcome for adding.';
+      notyOptions.text = 'You must select an indicator for adding.';
       noty(notyOptions);
     } else {
       window.location.href = url;
