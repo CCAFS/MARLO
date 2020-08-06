@@ -2291,6 +2291,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           GlobalUnit crp = (GlobalUnit) this.session.get(APConstants.SESSION_CRP) != null
             ? (GlobalUnit) this.session.get(APConstants.SESSION_CRP) : null;
           this.crpID = crp.getId();
+
+          if (crp == null || crpID == null || crpID == 0) {
+            crp = crpManager.getGlobalUnitById(45);
+          }
         } catch (Exception e) {
           LOG.warn("There was a problem trying to find the user crp in the session.");
         }
