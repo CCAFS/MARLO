@@ -54,9 +54,14 @@ public class UnhandledExceptionAction extends BaseAction {
   public String execute() throws Exception {
     // Print the exception in the log
     LOG.error("There was an unexpected exception", exception);
-    // Send email only if we are in production mode.
-    if (config.isProduction() && !(exception instanceof ClientAbortException)) {
+
+    if (this.isAiccra()) {
       this.sendExceptionMessage();
+    } else {
+      // Send email only if we are in production mode.
+      if (config.isProduction() && !(exception instanceof ClientAbortException)) {
+        this.sendExceptionMessage();
+      }
     }
     return super.execute();
   }
