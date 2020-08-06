@@ -183,42 +183,43 @@ public class DeliverableValidator extends BaseValidator {
           action.getInvalidFields().put("list-deliverable.otherPartnerships",
             action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"deliverable others"}));
         } else {
+          if (deliverable.getResponsiblePartnership() != null) {
+            for (int i = 0; i < deliverable.getResponsiblePartnership().size(); i++) {
+              if (deliverable.getResponsiblePartnership().get(i).getInstitution() == null
+                || deliverable.getResponsiblePartnership().get(i).getInstitution().getId() == null) {
 
-          for (int i = 0; i < deliverable.getResponsiblePartnership().size(); i++) {
-            if (deliverable.getResponsiblePartnership().get(i).getInstitution() == null
-              || deliverable.getResponsiblePartnership().get(i).getInstitution().getId() == null) {
+                action.addMessage("Other Partnership Institution");
+                action.getInvalidFields().put("input-deliverable.otherPartnerships[" + i + "].institution.id",
+                  InvalidFieldsMessages.EMPTYFIELD);
 
-              action.addMessage("Other Partnership Institution");
-              action.getInvalidFields().put("input-deliverable.otherPartnerships[" + i + "].institution.id",
-                InvalidFieldsMessages.EMPTYFIELD);
-
-            } else {
-              if (isManagingPartnerPersonRequerid) {
-                if (deliverable.getResponsiblePartnership().get(i).getPartnershipPersons() == null) {
-                  action.addMessage("Other Partnership Persons");
-                  action.getInvalidFields().put("input-deliverable.otherPartnerships[" + i + "].partnershipPersons",
-                    InvalidFieldsMessages.EMPTYFIELD);
-                } else {
-                  boolean haveUser = false;
-                  for (int j = 0; j < deliverable.getResponsiblePartnership().get(i).getPartnershipPersons()
-                    .size(); j++) {
-                    if (deliverable.getResponsiblePartnership().get(i).getPartnershipPersons().get(j).getUser() != null
-                      && deliverable.getResponsiblePartnership().get(i).getPartnershipPersons().get(j).getUser()
-                        .getId() != null) {
-                      haveUser = true;
-                      break;
-                    }
-                  }
-                  if (!haveUser) {
+              } else {
+                if (isManagingPartnerPersonRequerid) {
+                  if (deliverable.getResponsiblePartnership().get(i).getPartnershipPersons() == null) {
                     action.addMessage("Other Partnership Persons");
                     action.getInvalidFields().put("input-deliverable.otherPartnerships[" + i + "].partnershipPersons",
                       InvalidFieldsMessages.EMPTYFIELD);
+                  } else {
+                    boolean haveUser = false;
+                    for (int j = 0; j < deliverable.getResponsiblePartnership().get(i).getPartnershipPersons()
+                      .size(); j++) {
+                      if (deliverable.getResponsiblePartnership().get(i).getPartnershipPersons().get(j)
+                        .getUser() != null
+                        && deliverable.getResponsiblePartnership().get(i).getPartnershipPersons().get(j).getUser()
+                          .getId() != null) {
+                        haveUser = true;
+                        break;
+                      }
+                    }
+                    if (!haveUser) {
+                      action.addMessage("Other Partnership Persons");
+                      action.getInvalidFields().put("input-deliverable.otherPartnerships[" + i + "].partnershipPersons",
+                        InvalidFieldsMessages.EMPTYFIELD);
+                    }
                   }
                 }
               }
             }
           }
-
         }
 
 
@@ -520,7 +521,7 @@ public class DeliverableValidator extends BaseValidator {
     // Deliverable Cross Cutting Markers
 
     // Deliverable Cross Cutting Markers for AICCRA
-    if (action.isAiccra() == false) {
+    if (action.isAiccra() == true) {
       cgiarCrossCuttingMarkers = cgiarCrossCuttingMarkers.stream()
         .filter(d -> !d.getName().contains("CapDev") && !d.getName().contains("Climate")).collect(Collectors.toList());
       // Id for AICCR
@@ -559,8 +560,8 @@ public class DeliverableValidator extends BaseValidator {
         for (CgiarCrossCuttingMarker cgiarCrossCuttingMarker : cgiarCrossCuttingMarkers) {
           List<DeliverableCrossCuttingMarker> deliverableCrossCuttingMarkers =
             deliverable.getCrossCuttingMarkers().stream()
-              .filter(
-                cc -> cc.isActive() && cc.getCgiarCrossCuttingMarker().getId().equals(cgiarCrossCuttingMarker.getId()))
+              .filter(cc -> cc.isActive() && cc.getCgiarCrossCuttingMarker() != null && cgiarCrossCuttingMarker != null
+                && cc.getCgiarCrossCuttingMarker().getId().equals(cgiarCrossCuttingMarker.getId()))
               .collect(Collectors.toList());
           if (deliverableCrossCuttingMarkers != null && !deliverableCrossCuttingMarkers.isEmpty()) {
             DeliverableCrossCuttingMarker deliverableCrossCuttingMarker = deliverableCrossCuttingMarkers.get(0);

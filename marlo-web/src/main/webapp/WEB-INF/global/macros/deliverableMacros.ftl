@@ -121,7 +121,7 @@
       [#list (cgiarCrossCuttingMarkers)![] as marker]
         [#local customName = "deliverable.crossCuttingMarkers[${marker_index}]" /]
           [#local markerElement = (action.getDeliverableCrossCuttingMarker(marker.id))!{} ]          
-          [#if action.isAiccra() && marker.id > 2]<div class="col-md-4">
+          [#if action.isAiccra() && marker.id < 3]<div class="col-md-4">
           <input type="hidden"  name="${customName}.id" value="${(markerElement.id)!}"/>
           <input type="hidden"  name="${customName}.cgiarCrossCuttingMarker.id" value="${marker.id}"/>
           [@customForm.select   name="${customName}.repIndGenderYouthFocusLevel.id" value="${(markerElement.repIndGenderYouthFocusLevel.id)!-1}" valueName="${(markerElement.repIndGenderYouthFocusLevel.powbName)!}" className="setSelect2" i18nkey="${marker.name}" listName="focusLevels" keyFieldName="id"  displayFieldName="powbName"  required=true editable=editable/]
