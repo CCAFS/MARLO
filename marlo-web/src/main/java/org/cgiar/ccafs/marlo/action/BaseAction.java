@@ -2299,7 +2299,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           LOG.warn("There was a problem trying to find the user crp in the session.");
         }
       } else {
-
+        if (this.crpID == null || this.crpID == 0) {
+          GlobalUnit crp = crpManager.getGlobalUnitById(45);
+          this.crpID = crp.getId();
+        }
         return this.crpID;
 
       }
