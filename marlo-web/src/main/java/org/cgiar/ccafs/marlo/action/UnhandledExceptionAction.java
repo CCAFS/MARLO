@@ -95,7 +95,11 @@ public class UnhandledExceptionAction extends BaseAction {
 
     GlobalUnit crp = this.getCurrentCrp();
 
-    subject = "Exception occurred in MARLO";
+    if (this.isAiccra()) {
+      subject = "Exception occurred in AICCRA";
+    } else {
+      subject = "Exception occurred in MARLO";
+    }
 
     message.append("The user " + this.getCurrentUser().getFirstName() + " " + this.getCurrentUser().getLastName() + " ("
       + this.getCurrentUser().getEmail() + ") ");
