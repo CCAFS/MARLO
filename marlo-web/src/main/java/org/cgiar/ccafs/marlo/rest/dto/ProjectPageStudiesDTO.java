@@ -26,13 +26,15 @@ public class ProjectPageStudiesDTO {
 
   private String title;
 
+  private Integer year;
+
+
   private String externalLink;
 
 
   public String getExternalLink() {
     return externalLink;
   }
-
 
   public Long getId() {
     return id;
@@ -41,6 +43,11 @@ public class ProjectPageStudiesDTO {
 
   public String getTitle() {
     return title;
+  }
+
+
+  public Integer getYear() {
+    return year;
   }
 
 
@@ -56,6 +63,11 @@ public class ProjectPageStudiesDTO {
 
   public void setTitle(String title) {
     this.title = title;
+  }
+
+
+  public void setYear(Integer year) {
+    this.year = year;
   }
 
 }
