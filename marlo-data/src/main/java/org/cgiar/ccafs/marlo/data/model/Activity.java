@@ -51,13 +51,18 @@ public class Activity extends MarloAuditableEntity implements java.io.Serializab
   private Date endDate;
   @Expose
   private Integer activityStatus;
+
+  private String statusName;
+
   @Expose
   private String activityProgress;
 
 
   private Set<DeliverableActivity> deliverableActivities = new HashSet<DeliverableActivity>(0);
 
+
   private List<DeliverableActivity> deliverables;
+
 
   public Activity() {
   }
@@ -106,11 +111,9 @@ public class Activity extends MarloAuditableEntity implements java.io.Serializab
     return description;
   }
 
-
   public Date getEndDate() {
     return endDate;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -118,6 +121,7 @@ public class Activity extends MarloAuditableEntity implements java.io.Serializab
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
+
 
   public Phase getPhase() {
     return phase;
@@ -128,7 +132,6 @@ public class Activity extends MarloAuditableEntity implements java.io.Serializab
     return project;
   }
 
-
   public ProjectPartnerPerson getProjectPartnerPerson() {
     return projectPartnerPerson;
   }
@@ -136,6 +139,11 @@ public class Activity extends MarloAuditableEntity implements java.io.Serializab
 
   public Date getStartDate() {
     return startDate;
+  }
+
+
+  public String getStatusName() {
+    return statusName;
   }
 
 
@@ -152,10 +160,10 @@ public class Activity extends MarloAuditableEntity implements java.io.Serializab
     return result;
   }
 
+
   public void setActivityProgress(String activityProgress) {
     this.activityProgress = activityProgress;
   }
-
 
   public void setActivityStatus(Integer activityStatus) {
     this.activityStatus = activityStatus;
@@ -166,10 +174,10 @@ public class Activity extends MarloAuditableEntity implements java.io.Serializab
     this.composeID = composeID;
   }
 
+
   public void setDeliverableActivities(Set<DeliverableActivity> deliverableActivities) {
     this.deliverableActivities = deliverableActivities;
   }
-
 
   public void setDeliverables(List<DeliverableActivity> deliverables) {
     this.deliverables = deliverables;
@@ -185,14 +193,15 @@ public class Activity extends MarloAuditableEntity implements java.io.Serializab
     this.endDate = endDate;
   }
 
+
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
 
-
   public void setProject(Project project) {
     this.project = project;
   }
+
 
   public void setProjectPartnerPerson(ProjectPartnerPerson projectPartnerPerson) {
     this.projectPartnerPerson = projectPartnerPerson;
@@ -200,6 +209,10 @@ public class Activity extends MarloAuditableEntity implements java.io.Serializab
 
   public void setStartDate(Date startDate) {
     this.startDate = startDate;
+  }
+
+  public void setStatusName(String statusName) {
+    this.statusName = statusName;
   }
 
   public void setTitle(String title) {
