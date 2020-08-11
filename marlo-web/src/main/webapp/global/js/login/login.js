@@ -221,7 +221,7 @@ function loadAvailableItems(email) {
               var crpCookie = getCrpCookie();
 
               // Select the first crp/center/platform available by default
-              $('.selection-bar-options ul #crp-' + data.crps[0].acronym).click();
+              $('.selection-bar-options ul #crp-' + data.crps[0].acronym + "_").click();
 
               // Do for each available crp
               $.each(data.crps, function(i) {
