@@ -162,11 +162,12 @@ public class DeliverableInfoMySQLDAO extends AbstractMarloDAO<DeliverableInfo, L
     StringBuilder query = new StringBuilder();
     query.append("SELECT di.id ");
     query.append("FROM ");
-    query.append("Deliverables_info AS di ");
+    query.append("deliverables_info AS di  ");
     query.append("INNER JOIN deliverable_types AS dt ON dt.id = di.type_id ");
     query.append("WHERE di.deliverable_id=" + deliverableID + " ");
-    query.append("AND di.id_phase=" + phase.getId().longValue() + " ");
+    query.append("AND di.id_phase=" + phase.getId().longValue() + "  ");
     query.append("AND dt.is_included_website=1 ");
+    // test
     List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
 
     if (rList != null) {
