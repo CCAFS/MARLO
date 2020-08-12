@@ -23,13 +23,13 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
 /**
- * @author Luis Fernando - CIAT/CCAFS
  * @author Diego Perez - CIAT/CCAFS
  */
 
 @Mapper(componentModel = "jsr330",
   uses = {ProjecInfoMapper.class, LocationMapper.class, DeliverablesMapper.class, ProjectPolicyMapper.class,
-    InnovationMapper.class, ProjectOutcomesMapper.class, ProjectPartnerMapper.class, ProjectExpectedStudyMapper.class})
+    InnovationMapper.class, ProjectOutcomesMapper.class, ProjectPartnerMapper.class, ProjectExpectedStudyMapper.class,
+    ActivitiesMapper.class})
 public interface ProjectPageMapper {
 
 
