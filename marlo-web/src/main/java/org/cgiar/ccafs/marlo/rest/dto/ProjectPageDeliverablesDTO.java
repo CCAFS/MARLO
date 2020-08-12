@@ -26,46 +26,49 @@ public class ProjectPageDeliverablesDTO {
   @ApiModelProperty(notes = "Publication ID", position = 1)
   private Long id;
 
-  @ApiModelProperty(notes = "Publication Title", position = 2)
+  @ApiModelProperty(notes = "Publication Subcategory", position = 2)
+  private String subcategory;
+
+  @ApiModelProperty(notes = "Publication Title", position = 3)
   private String title;
 
-  @ApiModelProperty(notes = "Publication Year", position = 3)
+  @ApiModelProperty(notes = "Publication Year", position = 4)
   private String year;
 
 
-  @ApiModelProperty(notes = "FAIR principles (Findable)", position = 4)
+  @ApiModelProperty(notes = "FAIR principles (Findable)", position = 5)
   private Boolean findable;
 
 
-  @ApiModelProperty(notes = "FAIR principles (Accesible)", position = 5)
+  @ApiModelProperty(notes = "FAIR principles (Accesible)", position = 6)
   private Boolean accesible;
 
-  @ApiModelProperty(notes = "FAIR principles (Findable)", position = 6)
+  @ApiModelProperty(notes = "FAIR principles (Findable)", position = 7)
   private Boolean interoperable;
 
-  @ApiModelProperty(notes = "FAIR principles (Findable)", position = 7)
+  @ApiModelProperty(notes = "FAIR principles (Findable)", position = 8)
   private Boolean reusable;
 
-  @ApiModelProperty(notes = "External Link", position = 8)
+  @ApiModelProperty(notes = "External Link", position = 9)
   private String externalLink;
 
   public Boolean getAccesible() {
     return accesible;
   }
 
+
   public String getExternalLink() {
     return externalLink;
   }
+
 
   public Boolean getFindable() {
     return findable;
   }
 
-
   public Long getId() {
     return id;
   }
-
 
   public Boolean getInteroperable() {
     return interoperable;
@@ -74,6 +77,11 @@ public class ProjectPageDeliverablesDTO {
 
   public Boolean getReusable() {
     return reusable;
+  }
+
+
+  public String getSubcategory() {
+    return subcategory;
   }
 
 
@@ -114,6 +122,11 @@ public class ProjectPageDeliverablesDTO {
 
   public void setReusable(Boolean reusable) {
     this.reusable = reusable;
+  }
+
+
+  public void setSubcategory(String subcategory) {
+    this.subcategory = subcategory;
   }
 
 
