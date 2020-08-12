@@ -17,50 +17,23 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.rest.dto;
+package org.cgiar.ccafs.marlo.rest.mappers;
 
-import io.swagger.annotations.ApiModelProperty;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaEvaluation;
+import org.cgiar.ccafs.marlo.rest.dto.RelevantEvaluationDTO;
 
-public class ProjectPageInnovationsDTO {
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
-  @ApiModelProperty(notes = "Innovation Title", position = 1)
-  private String title;
-
-  @ApiModelProperty(notes = "Innovation year", position = 2)
-  private int year;
-
-  @ApiModelProperty(notes = "Innovation External link", position = 3)
-  private String externalLink;
+@Mapper(componentModel = "jsr330", uses = {RelevantEvaluationActionMapper.class})
+public interface RelevantEvaluationMapper {
 
 
-  public String getExternalLink() {
-    return externalLink;
-  }
-
-
-  public String getTitle() {
-    return title;
-  }
-
-
-  public int getYear() {
-    return year;
-  }
-
-
-  public void setExternalLink(String externalLink) {
-    this.externalLink = externalLink;
-  }
-
-
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
-
-  public void setYear(int year) {
-    this.year = year;
-  }
-
+  @Mappings({@Mapping(source = "evidences", target = "evidenceLink"),
+    @Mapping(source = "managementResponse", target = "response"),
+    @Mapping(source = "meliaEvaluationActions", target = "actionList")})
+  public abstract RelevantEvaluationDTO reportSynthesisMeliaEvaluationToRelevantEvaluationDTO(
+    ReportSynthesisMeliaEvaluation reportSynthesisMeliaEvaluation);
 
 }

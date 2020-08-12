@@ -21,46 +21,44 @@ package org.cgiar.ccafs.marlo.rest.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class ProjectPageInnovationsDTO {
+public class W1W2ExpenditureDTO {
 
-  @ApiModelProperty(notes = "Innovation Title", position = 1)
-  private String title;
+  @ApiModelProperty(notes = "Expenditure example ID", position = 1)
+  private Long expenditureID;
 
-  @ApiModelProperty(notes = "Innovation year", position = 2)
-  private int year;
+  @ApiModelProperty(notes = "Expenditure example summary", position = 2)
+  private String exampleExpenditure;
 
-  @ApiModelProperty(notes = "Innovation External link", position = 3)
-  private String externalLink;
+  @ApiModelProperty(notes = "Expenditure Area", position = 3)
+  private DefaultFieldDTO expenditureArea;
 
 
-  public String getExternalLink() {
-    return externalLink;
+  public String getExampleExpenditure() {
+    return exampleExpenditure;
   }
 
 
-  public String getTitle() {
-    return title;
+  public DefaultFieldDTO getExpenditureArea() {
+    return expenditureArea;
   }
 
 
-  public int getYear() {
-    return year;
+  public Long getExpenditureID() {
+    return expenditureID;
   }
 
 
-  public void setExternalLink(String externalLink) {
-    this.externalLink = externalLink;
+  public void setExampleExpenditure(String exampleExpenditure) {
+    this.exampleExpenditure = exampleExpenditure;
   }
 
 
-  public void setTitle(String title) {
-    this.title = title;
+  public void setExpenditureArea(DefaultFieldDTO expenditureArea) {
+    this.expenditureArea = expenditureArea;
   }
 
 
-  public void setYear(int year) {
-    this.year = year;
+  public void setExpenditureID(Long expenditureID) {
+    this.expenditureID = expenditureID;
   }
-
-
 }

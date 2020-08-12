@@ -95,6 +95,12 @@ public class DeliverableInfoManagerImpl implements DeliverableInfoManager {
   }
 
   @Override
+  public boolean isDeliverableSubcategoryIncludedWebsite(long deliverableID, Phase phase) {
+
+    return deliverableInfoDAO.isDeliverableSubcategoryIncludedWebsite(deliverableID, phase);
+  }
+
+  @Override
   public DeliverableInfo saveDeliverableInfo(DeliverableInfo deliverableInfo) {
     DeliverableInfo resultDeliverableInfo = deliverableInfoDAO.save(deliverableInfo);
     boolean isPublication = deliverableInfo.getDeliverable().getIsPublication() != null
