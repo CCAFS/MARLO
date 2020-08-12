@@ -2336,9 +2336,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-  public Phase getCrpPhase(long crpID, int year, String phaseDescription) {
+  public Phase getCrpPhase(Long crpID, int year, String phaseDescription) {
     Phase phase = null;
-    if (crpID != 0 && year != 0 && phaseDescription != null && !phaseDescription.isEmpty()) {
+    if (crpID != null && crpID != 0 && year != 0 && phaseDescription != null && !phaseDescription.isEmpty()) {
 
       phase = phaseManager.findAll().stream()
         .filter(p -> p != null && p.getYear() == year && p.getCrp() != null && p.getCrp().getId() != null
