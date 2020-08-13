@@ -126,7 +126,7 @@ public class FundingSourceByInstitutionFinanceCodeAction extends BaseAction {
             }
 
             phaseID =
-              this.getCRPPhase(crpID, this.getActualPhase().getYear(), this.getActualPhase().getDescription()).getId();
+              this.getCrpPhase(crpID, this.getActualPhase().getYear(), this.getActualPhase().getDescription()).getId();
 
             if (crpID != null) {
               summary.setPhaseID(phaseID);
