@@ -220,8 +220,15 @@ function loadAvailableItems(email) {
             } else {
               var crpCookie = getCrpCookie();
 
-              // Select the first crp/center/platform available by default
-              $('.selection-bar-options ul #crp-' + data.crps[0].acronym + "_").click();
+              //console.log(data.crps[0].acronym);
+
+              if(data.crps[0].acronym == "CCAFS_") {
+                $('.selection-bar-options ul #crp-' + data.crps[0].acronym).click();
+              }
+              else {
+                // Select the first crp/center/platform available by default
+                $('.selection-bar-options ul #crp-' + data.crps[0].acronym + "_").click();
+              }
 
               // Do for each available crp
               $.each(data.crps, function(i) {
