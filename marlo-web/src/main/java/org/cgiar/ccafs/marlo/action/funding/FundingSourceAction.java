@@ -492,7 +492,7 @@ public class FundingSourceAction extends BaseAction {
                   projectBudgets.add(budget);
                 }
               }
-              crpPhase = this.getCRPPhase(budget.getFundingSource().getCrp().getId(), this.getActualPhase().getYear(),
+              crpPhase = this.getCrpPhase(budget.getFundingSource().getCrp().getId(), this.getActualPhase().getYear(),
                 this.getActualPhase().getDescription());
 
               if (crpPhase != null) {
