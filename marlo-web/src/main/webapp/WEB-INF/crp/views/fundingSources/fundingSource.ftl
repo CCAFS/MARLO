@@ -1,11 +1,7 @@
 [#ftl]
 [#assign title = "MARLO Funding Sources" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-${fundingSource.id}-phase-${(actualPhase.id)!}" /]
-<<<<<<< HEAD
-[#assign pageLibs = ["select2", "blueimp-file-upload", "datatables.net", "datatables.net-bs","flat-flags", "vue"] /]
-=======
-[#assign pageLibs = ["select2", "blueimp-file-upload", "datatables.net", "datatables.net-bs","flag-icon-css"] /]
->>>>>>> staging
+[#assign pageLibs = ["select2", "blueimp-file-upload", "datatables.net", "datatables.net-bs","flag-icon-css",  "vue"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/fieldsValidation.js",
   "${baseUrlMedia}/js/fundingSources/fundingSource.js?20190905",
@@ -484,7 +480,7 @@
       </div>
     </div>
   [/#if]
-  [#-- REGIONAL SELECT --]
+  [#-- REGIONAL SELECT 
   <div class="regionsBox form-group" style="display:${region?string('block','none')}">
     <div class="panel tertiary">
       <div class="panel-head">
@@ -546,9 +542,60 @@
             [/#if] 
           </div>
         </div>
+      </div>--}
+      
+      [#-- REGIONAL SELECT --]
+      <div class="regionsBox form-group row" style="display:${region?string('block','none')}">
+        <div class="panel tertiary col-md-12">
+         <div class="panel-head">
+           <label for=""> [@customForm.text name="projectCofunded.selectRegions" readText=!editable /]:[@customForm.req required=editable /]</label>
+           <br />
+           <small style="color: #337ab7;">([@s.text name="projectLocations.standardLocations" /])</small>
+         </div>
+         
+          <div id="regionList" class="panel-body" listname="fundingSource.fundingRegions">
+            <ul class="list">
+            [#if fundingSource.fundingRegions?has_content]
+              [#list fundingSource.fundingRegions as region]
+                  <li id="" class="region clearfix col-md-3">
+                  [#if editable ]
+                    <div class="removeRegion removeIcon" title="Remove region"></div>
+                  [/#if]
+                    <input class="id" type="hidden" name="fundingSource.fundingRegions[${region_index}].id" value="${region.id}" />
+                    <input class="rId" type="hidden" name="fundingSource.fundingRegions[${region_index}].locElement.id" value="${(region.locElement.id)!}" />
+                    <input class="regionScope" type="hidden" name="fundingSource.fundingRegions[${region_index}].scope" value="${(region.scope?c)!}" />
+                    <span class="name">${(region.locElement.name)!}</span>
+                    <div class="clearfix"></div>
+                  </li>
+              [/#list]
+              [#else]
+              <p class="emptyText"> [@s.text name="No regions added yet." /]</p> 
+            [/#if]
+            </ul>
+            [#if editable ]
+              <select name="" id="regionSelect" class="regionsSelect">
+                <option value="-1">Select an option...</option>
+                [#if scopeRegionLists?has_content]
+                  <optgroup label="${(loggedCrp.acronym?upper_case)!} regions">
+                  [#list scopeRegionLists as region]
+                  <option value="${(region.id)!}-${(region.scope?c)!}">${(region.name)!}</option>
+                  [/#list]
+                  </optgroup>
+                [/#if]
+                [#if regionLists?has_content]
+                <optgroup label="World Bank classifies regions">
+                  [#list regionLists as region]
+                  <option value="${(region.id)!}-${(region.locElementType.scope?c)!}">${(region.name)!}</option>
+                  [/#list]
+                  </optgroup>
+                [/#if]
+              </select>
+            [/#if] 
+          </div>
+        </div>
       </div>
       
-      [#-- SELECT COUNTRIES --]
+      [#-- SELECT COUNTRIES 
       <div class="form-group row">
         <div class="panel tertiary col-md-12">
          <div class="panel-head"><label for=""> [@customForm.text name="projectCofunded.listCountries" readText=!editable /]:</label></div>
@@ -575,7 +622,7 @@
         [/#if] 
       </div>
     </div>
-  </div>
+  </div>--]
   
   [#-- SELECT COUNTRIES --]
   <div class="form-group row">
