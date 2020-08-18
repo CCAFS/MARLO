@@ -749,7 +749,7 @@
   </div>
 [/#macro]
 
-[#macro listElementMacro element name type id="" index=-1 keyFieldName="id" displayFieldName="composedName" indexLevel=1 template=false hasPrimary=false isEditable=true onlyElementIDs=onlyElementIDs]
+[#macro listElementMacro element name type id="" index=-1 keyFieldName="id" displayFieldName="composedName" indexLevel=1 template=false hasPrimary=false isEditable=true onlyElementIDs=false]
   [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
   [#local composedID = "${type}" /]
   [#if id?has_content]
