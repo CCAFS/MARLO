@@ -53,6 +53,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -80,6 +81,27 @@ public class Institutions {
     this.countryOfficeRequestItem = countryOfficeRequestItem;
   }
 
+
+  @ApiOperation(value = "${Institutions.institution-requests.accept.value}", response = InstitutionRequestDTO.class)
+  @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/institutions/accept-institution-request", method = RequestMethod.POST,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<InstitutionRequestDTO> acceptPartnerRequest(
+    @ApiParam(value = "${Institutions.institution-requests.create.param.CGIAR}",
+      required = true) @PathVariable("CGIAREntity") String CGIAREntity,
+    @ApiParam(value = "${Institutions.institution-requests.code.param.requestId}",
+      required = true) @RequestParam Long code,
+    @ApiParam(value = "${Institutions.institution.code.param.accept}", required = true) @RequestParam Boolean accept,
+    @ApiParam(value = "${Institutions.institution.code.param.justification}",
+      required = false) @RequestParam String justification)
+    throws Exception {
+    ResponseEntity<InstitutionRequestDTO> response =
+      this.institutionItem.acceptPartnerRequest(code, accept, justification, CGIAREntity, this.getCurrentUser());
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("Institutions.institution-requests.code.404"));
+    }
+    return response;
+  }
 
   /**
    * Create a new Country Office Request *
