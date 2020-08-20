@@ -212,11 +212,13 @@ public class FundingSourceListAction extends BaseAction {
 
       if (partnertsIDList != null) {
         for (String partner : partnertsIDList) {
-          FundingSourceInstitution fundingSourceInstitution = new FundingSourceInstitution();;
-          fundingSourceInstitution.setInstitution(institutionManager.getInstitutionById(Integer.parseInt(partner)));
-          fundingSourceInstitution.setFundingSource(fundingSource);
-          fundingSourceInstitution.setPhase(this.getActualPhase());
-          fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
+          if (partner != null && !partner.isEmpty() && partner != "") {
+            FundingSourceInstitution fundingSourceInstitution = new FundingSourceInstitution();;
+            fundingSourceInstitution.setInstitution(institutionManager.getInstitutionById(Integer.parseInt(partner)));
+            fundingSourceInstitution.setFundingSource(fundingSource);
+            fundingSourceInstitution.setPhase(this.getActualPhase());
+            fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
+          }
         }
       }
       /*
