@@ -1,79 +1,79 @@
 .contributionContent {
-    border: 1px solid #d1d1d1;
-    padding: 10px 2em;
-    border-radius: 0px 4px 4px 4px;
-    margin-bottom: 25px;
-    border-top: none;
+  border: 1px solid #d1d1d1;
+  padding: 10px 2em;
+  border-radius: 0px 4px 4px 4px;
+  margin-bottom: 25px;
+  border-top: none;
 }
 
 .budget-tabs a {
-    background-color: #f5f5f5;
-    height: 35px;
+  background-color: #f5f5f5;
+  height: 35px;
 }
 
 .informationWrapper {
-    margin-bottom: 25px;
-}
-
-
-table {}
-
-table tr{
-    list-style: none;
-    padding-bottom: 9px;
-    border-bottom: 1px solid #e7e7e7;
-    font-size: 0.95em;
-}
-
-table tr a{
-   color: #444;
-}
-
-a {}
-
-thead th{
-    background: #f5f5f5;
-    color: #a9a8a8;
-}
-
-td {
-    vertical-align: middle !important;
-}
-
-span.icon-20 {
-    margin-top: 7px;
+  margin-bottom: 25px;
 }
 
 table {
-    border: 1px solid #e6e6e6;
-    font-size: 0.95em;
 }
 
+table tr {
+  list-style: none;
+  padding-bottom: 9px;
+  border-bottom: 1px solid #e7e7e7;
+  font-size: 0.95em;
+}
+
+table tr a {
+  color: #444;
+}
+
+a {
+}
+
+thead th {
+  background: #f5f5f5;
+  color: #a9a8a8;
+}
+
+td {
+  vertical-align: middle !important;
+}
+
+span.icon-20 {
+  margin-top: 7px;
+}
+
+table {
+  border: 1px solid #e6e6e6;
+  font-size: 0.95em;
+}
 
 /* Metadata */
-.url-field{
-  width: 59%;
-  float:left;
+.url-field {
+  /* width: 59%; */
+  /* float:left; */
 }
 
-.url-field button{
+.url-field button {
   height: 27px;
   line-height: 1.1em;
 }
 
-.buttons-field{
-  width: 40%;
-  float:right;
-  margin-top: 22px;
+.buttons-field {
+  /* width: 40%; */
+  /* float:right; */
+  margin-top: 10px;
   text-align: center;
 }
 
-.redInfo{
-  color:red;
+.redInfo {
+  color: red;
 }
 
-.blueInfo{
-	color:#2ECC71;
+.blueInfo {
+  color: #2ECC71;
 }
 
 .managingPartners {
@@ -87,7 +87,9 @@ table {
   margin-top: -14px;
 }
 
-#grantTotalAmount p{margin: 0;}
+#grantTotalAmount p {
+  margin: 0;
+}
 
 small.grayLabel {
   color: #888;
@@ -97,4 +99,12 @@ small.grayLabel {
 .button-disabled {
   opacity: 0.6;
   cursor: progress;
+}
+
+.financeChannel button{
+  min-width: 100px;
+}
+
+.financeChannel ul li{
+  font-size: 0.85em;
 }

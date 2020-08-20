@@ -75,5 +75,6 @@
   [#if libraryName="jquery-mousewheel"]<script src="${baseUrlCdn}/global/bower_components/jquery-mousewheel/jquery.mousewheel.js"></script>[/#if]
   [#if libraryName="malihu-custom-scrollbar-plugin"]<script src="${baseUrlCdn}/global/bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.js"></script>[/#if]
   [#if libraryName="cookieconsent"]<script src="${baseUrlCdn}/global/bower_components/cookieconsent/build/cookieconsent.min.js"></script>[/#if]
+  [#if libraryName="vue"]<script src="${baseUrlCdn}/global/bower_components/vue/dist/vue.min.js"></script>[/#if]
   [#-- endbower --]
 [/#macro]

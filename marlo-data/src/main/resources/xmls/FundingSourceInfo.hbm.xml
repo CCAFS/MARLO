@@ -50,11 +50,12 @@
 			<column name="type" />
 		</many-to-one>
 		<many-to-one name="partnerDivision"
-			class="org.cgiar.ccafs.marlo.data.model.PartnerDivision" fetch="select">
+			class="org.cgiar.ccafs.marlo.data.model.PartnerDivision"
+			fetch="select">
 			<column name="division_id" />
 		</many-to-one>
-		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
-			fetch="select">
+		<many-to-one name="modifiedBy"
+			class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
 			<column name="modified_by" />
 		</many-to-one>
 		<property name="modificationJustification" type="string">
@@ -67,8 +68,8 @@
 		<property name="w1w2" type="java.lang.Boolean">
 			<column name="w1w2" default="0" />
 		</property>
-		<many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase"
-			fetch="select">
+		<many-to-one name="phase"
+			class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
 			<column name="id_phase" />
 		</many-to-one>
 		<many-to-one name="fundingSource"
@@ -94,14 +95,20 @@
 			class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
 			<column name="file_research" />
 		</many-to-one>
-    <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select" update="false">
-      <column name="created_by" not-null="true" />
-    </many-to-one>
-    <property name="active" type="boolean">
-      <column name="is_active" not-null="true" />
-    </property>
-    <property name="activeSince" type="timestamp" update="false">
-      <column name="active_since" length="19" not-null="true" />
-    </property>
+		<many-to-one name="leadCenter"
+			class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
+			<column name="lead_center_id" />
+		</many-to-one>
+		<many-to-one name="createdBy"
+			class="org.cgiar.ccafs.marlo.data.model.User" fetch="select"
+			update="false">
+			<column name="created_by" not-null="true" />
+		</many-to-one>
+		<property name="active" type="boolean">
+			<column name="is_active" not-null="true" />
+		</property>
+		<property name="activeSince" type="timestamp" update="false">
+			<column name="active_since" length="19" not-null="true" />
+		</property>
 	</class>
 </hibernate-mapping>

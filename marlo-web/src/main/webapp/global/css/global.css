@@ -292,8 +292,14 @@ textarea.fieldError, input.fieldError, textarea.fieldError:focus, input.fieldErr
   color: #EE1D1D !important;
 }
  
-div.fieldError, label.fieldError {
-  border-color: #F44 !important; 
+div.fieldError, label.fieldError, small.fieldError {
+  border-color: #F44 !important;
+  color: #EE1D1D !important;
+  font-weight: 600 !important;
+}
+
+div.fieldError button{
+  border-color: #F44 !important;
   color: #EE1D1D !important;
   font-weight: 600 !important;
 }
@@ -358,7 +364,7 @@ label.readOnly {
   cursor: initial;
 }
 
-p.fieldError {
+p.fieldError, span.remainingAmount.fieldError  {
   color: #F52626 !important;
   font-weight: bold;
   margin-right: 4px;
@@ -678,7 +684,7 @@ ul#noty_bottomRight_layout_container {
 
 input:-webkit-autofill, textarea:-webkit-autofill, select:-webkit-autofill {
   background-color: #fff !important;
-  background-image: none !important;
+  /* background-image: none !important; */
   color: #ccc !important;
 }
 
@@ -890,6 +896,17 @@ img.icon {
   left: 0;
 }
 
+.loading-neutral {
+  width: 100%;
+  height: 100%;
+  background: url(../../global/images/loading-neutral.svg) #FFF no-repeat 50%;
+  position: absolute;
+  z-index: 99;
+  opacity: 0.5;
+  top: 0;
+  left: 0;
+}
+
 .syncedBlock {
   background: #fff;
   width: 100%;
@@ -910,7 +927,9 @@ img.icon {
 }
 
 input.input-loading {
-  background: url(../../global/images/loading_3.gif) #FFF no-repeat right;
+  background-image: url(../../global/images/loading_3.gif);
+  background-position: right;
+  background-repeat: no-repeat !important;
 }
 
 /* Horizontal sub menu */
@@ -6978,6 +6997,35 @@ i.authorVisibles {}
 
 #helpViewMoreLink {
   cursor: pointer;
+}
+
+button.btn.btn-primary {
+  border-radius: 2px;
+  background-color: #298bb1;
+  border: 0;
+  border-bottom: 2px solid;
+  border-color: #267d9e;
+}
+
+article#mainInformation {
+  min-height: 100px;
+}
+
+.trashIcon {
+  cursor: pointer;
+  display: inline-block;
+  height: 21px;
+  width: 21px;
+  background-image: url(../../global/images/trash.png);
+}
+
+.trashIcon.icon-disabled {
+  cursor:  auto;
+  opacity: 0.5 !important;
+}
+
+.icon-loading {
+  background-image: url(../../global/images/loading_3.gif) !important;
 }
 
 .text-bold {

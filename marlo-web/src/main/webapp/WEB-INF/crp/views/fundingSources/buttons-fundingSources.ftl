@@ -1,6 +1,7 @@
 [#ftl]
 
 [#-- fundingSource identifier --]
+<input class="" type="hidden" name="fundingSource.fundingSourceInfo.id" value="${fundingSource.fundingSourceInfo.id}" />
 <input name="fundingSourceID" type="hidden" value="${fundingSource.id}" />
 <input type="hidden"  name="className" value="${(fundingSource.class.name)!}"/>
 <input type="hidden"  name="id" value="${(fundingSource.id)!}"/>

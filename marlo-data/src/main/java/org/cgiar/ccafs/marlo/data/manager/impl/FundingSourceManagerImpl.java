@@ -94,6 +94,11 @@ public class FundingSourceManagerImpl implements FundingSourceManager {
   }
 
   @Override
+  public List<FundingSource> findFundingSourcesWithNullLeadCenter() {
+    return fundingSourceDAO.findFundingSourcesWithNullLeadCenter();
+  }
+
+  @Override
   public List<FundingSourceSummary> getClosedFundingSourceSummaries(GlobalUnit globalUnit, Phase phase) {
 
     Set<Integer> statusTypes = new HashSet<>();
@@ -193,6 +198,12 @@ public class FundingSourceManagerImpl implements FundingSourceManager {
   }
 
   @Override
+  public List<FundingSourceSearchSummary> searchFundingSourcesByInstitutionAndFinanceCode(Long institutionLeadID,
+    String financeCode) {
+    return fundingSourceDAO.searchFundingSourcesByInstitutionAndFinanceCode(institutionLeadID, financeCode);
+  }
+
+  @Override
   public List<FundingSource> searchFundingSourcesByLocElement(long projectId, long locElementId, int year, long crpID,
     long phaseID) {
     return fundingSourceDAO.searchFundingSourcesByLocElement(projectId, locElementId, year, crpID, phaseID);
@@ -204,5 +215,10 @@ public class FundingSourceManagerImpl implements FundingSourceManager {
     return fundingSourceDAO.searchFundingSourcesByLocElementType(projectId, locElementTypeId, year, crpID);
   }
 
-
+  @Override
+  public List<FundingSourceSearchSummary> searchFundingSourcesInSpecificCRPByfinancecode(String userInput, int year,
+    long crpID, long phaseID, String financeCode, Long institutionLeadID) {
+    return fundingSourceDAO.searchFundingSourcesInSpecificCRPByfinancecode(userInput, year, crpID, phaseID, financeCode,
+      institutionLeadID);
+  }
 }

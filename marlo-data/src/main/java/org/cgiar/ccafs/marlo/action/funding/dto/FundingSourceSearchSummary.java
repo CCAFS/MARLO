@@ -16,6 +16,8 @@
 package org.cgiar.ccafs.marlo.action.funding.dto;
 
 import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,6 +40,10 @@ public class FundingSourceSearchSummary {
   private String financeCode;
 
   private Boolean w1w2;
+
+  private BigInteger leadCenter;
+
+  private HashMap<String, List<FundingSourceSearchSummary>> crpListMap;
 
   /**
    * This needs to be determined by the securityContext in some cases where the specificity applies
@@ -72,13 +78,22 @@ public class FundingSourceSearchSummary {
   }
 
 
+  public HashMap<String, List<FundingSourceSearchSummary>> getCrpListMap() {
+    return crpListMap;
+  }
+
+
   public String getFinanceCode() {
     return financeCode;
   }
 
-
   public BigInteger getId() {
     return id;
+  }
+
+
+  public BigInteger getLeadCenter() {
+    return leadCenter;
   }
 
 
@@ -126,6 +141,9 @@ public class FundingSourceSearchSummary {
     this.canSelect = canSelect;
   }
 
+  public void setCrpListMap(HashMap<String, List<FundingSourceSearchSummary>> crpListMap) {
+    this.crpListMap = crpListMap;
+  }
 
   public void setFinanceCode(String financeCode) {
     this.financeCode = financeCode;
@@ -134,6 +152,11 @@ public class FundingSourceSearchSummary {
 
   public void setId(BigInteger id) {
     this.id = id;
+  }
+
+
+  public void setLeadCenter(BigInteger leadCenter) {
+    this.leadCenter = leadCenter;
   }
 
 
@@ -151,7 +174,6 @@ public class FundingSourceSearchSummary {
     this.typeId = typeId;
   }
 
-
   public void setUsedAmount(Double usedAmount) {
     if (usedAmount == null) {
       this.usedAmount = 0.0D;
@@ -160,10 +182,7 @@ public class FundingSourceSearchSummary {
     this.usedAmount = usedAmount;
   }
 
-
   public void setW1w2(Boolean w1w2) {
     this.w1w2 = w1w2;
   }
-
-
 }
