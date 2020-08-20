@@ -81,7 +81,7 @@ public final class APConstants {
 
 
   public static final String CRP_FS_W1W2_COFINANCING = "crp_fs_w1w2_cofinancing";
-
+  public static final String FINANCE_CODE = "financeCode";
   public static final String CRP_PL_ROLE = "crp_pl_rol";
   public static final String CRP_PLANNING_ACTIVE = "crp_planning_active";
   public static final String CRP_PLANNING_YEAR = "crp_planning_year";
@@ -155,6 +155,7 @@ public final class APConstants {
   public static final int DELIVERABLE_QUALITY_ANSWER_YES_BUT_NO = 1;
 
   public static final int BUDGET_TYPE = 1;
+  public static final String PROJECT_BUDGET_ID = "project_budget_id";
 
   public static final String DELIVERABLE_TYPE_ID = "deliverableTypeId";
   // Request variables
@@ -183,15 +184,20 @@ public final class APConstants {
   public static final String FUNDING_SOURCE_REQUEST_ID = "fundingSourceID";
   public static final String FUNDING_SOURCES_BUDGETS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.fundingSourceBudgets)";
+  public static final String INSTITUTION_LEAD = "institutionLead";
+  public static final String AGREEMENT_STATUS = "agreementStatus";
+  public static final String PARTNERS_ID = "partnerIDs";
 
   public static final String TEMP_CYCLE = "temp_cycle";
   public static final String TEMP_YEAR = "temp_year";
 
   public static final String FUNDING_SOURCES_INSTITUTIONS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.fundingSourceInstitutions)";
-
+  
   public static final String FUNDING_SOURCES_DIVISIONS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.fundingSourceDivisions)";
+
+  public static final String INSTITUTIONS_ID = "institutionsID";
 
   public static final String FUNDING_SOURCES_LOCATIONS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.fundingSourceLocations)";
@@ -557,6 +563,10 @@ public final class APConstants {
   public static final String WITH_PPA_PARAMETER = "withPPA";
 
   public static final String YEAR_REQUEST = "year";
+
+  public static final String AMOUNT_REQUEST = "amount";
+
+  public static final String GENDER_PERCENTAGE_REQUEST = "gender";
 
 
   /** cross cutting scores ****/

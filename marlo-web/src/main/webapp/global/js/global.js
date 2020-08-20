@@ -569,7 +569,7 @@ function notificationError(message) {
 
 /**
  * One to Many component
- *
+ * 
  * @description elementsListComponent function to the functioning of the customForm macro
  */
 function setElementsListComponent() {
@@ -577,8 +577,8 @@ function setElementsListComponent() {
   $('select[class*="elementType-"]').each(function(i,e) {
     $(this).setOneToManyComponent();
   });
-  $('ul[class*="primary"]').each(function(i,e) {
-    $(this).setPrimaryRadioFunction();
+  $('select[class*="primarySelectorField"]').each(function(i,e) {
+    $(this).setPrimarySelectorFunction();
   });
 }
 
@@ -634,24 +634,15 @@ jQuery.fn.setOneToManyComponent = function() {
   $parent.find('[class*="removeElementType-"]').on('click', onClickRemoveElement);
 };
 
-/*
 //Function for Primary selector fields
 jQuery.fn.setPrimarySelectorFunction = function() {
   var $parent = $(this).parents('.elementsListComponent');
-  var $select = $parent.find('ul.primary');
+  var $select = $parent.find('select');
 
-  $select.on('change', onSelectPrimary);
+  $select.on('change', onSelectElementPrimary);
 
   // On click remove button
-  //$parent.find('[class*="removeElementType-"]').on('click', onClickRemoveElementPrimary);
-}*/
-
-//Function for Primary radio
-jQuery.fn.setPrimaryRadioFunction = function() {
-
-  this.find("input.radio-input").each(function() {
-    $(this).on('change', onSelectElementPrimary);
-  });
+  $parent.find('[class*="removeElementType-"]').on('click', onClickRemoveElementPrimary);
 
 }
 
@@ -680,7 +671,6 @@ function onSelectElement() {
     e.name = (e.name).replace("_TEMPLATE_", "");
     e.id = (e.id).replace("_TEMPLATE_", "");
   });
-
   // Set attributes
   var id = $option.val();
   var name = $option.text();
@@ -733,14 +723,24 @@ function onClickRemoveElement() {
   var removeElementType = $(this).classParam('removeElementType');
   var $parent = $(this).parent();
   var $select = $(this).parents(".panel-body").find('select');
+  var $primaryRadioElement = $(this).parents('.elementsListComponent').find('ul.primaryRadio');
   var $list = $(this).parents('.elementsListComponent').find('ul.list');
   var counted = $list.find('li').length;
   var maxLimit = $select.classParam('maxLimit');
   var id = $parent.find(".elementRelationID").val();
   var name = $parent.find(".elementName").text();
-  var className = $list.attr('class');
+  var $primaryDisplay = $(this).parents(".elementsListComponent").find('div.primarySelectorDisplayBox');
+  var eventData = [
+      id, name
+  ];
 
-  $parent.slideUp(100, function() {
+  var eventRemove = jQuery.Event("beforeRemoveElement");
+  $select.trigger(eventRemove, eventData);
+  if(eventRemove.isDefaultPrevented()) {
+    return;
+  }
+
+  $parent.slideUp(300, function() {
     $parent.remove();
 
     // Enabled option in select component
@@ -776,20 +776,36 @@ function onClickRemoveElement() {
 }
 
 function onSelectElementPrimary() {
-  var $input = $(this);
+  var $select = $(this);
   var $parent = $(this).parents('.elementsListComponent');
-  var $list = $parent.find('ul.list.primary');
+  var $option = $select.find('option:selected');
+  var elementType = $select.classParam('elementType');
+  var maxLimit = $select.classParam('maxLimit');
+  var $list = $parent.find('ul.list');
+  var counted = $list.find('li').length;
+  var id = $option.val();
+  var name = $option.text();
 
-  $list.find("input.radio-input").each(function() {
-    if($(this).attr("name") != $input.attr("name") ){
-      $(this).attr("checked", false);
-    }else{
-      $(this).attr("checked", true);
-    }
-  });
+  var $primaryList = $parent.find('ul.primaryRadio');
+  var $primaryDisplay = $parent.find('div.primarySelectorDisplayBox');
+  var className = $primaryDisplay.attr('class');
+  var idenfitierClassName = className.split(' ');
+
+  $primaryDisplay.css("display","block");
+
+  var $contentDiv =$("<div class='radioFlat selectPrimary radioContentBox ID-"+ id +"'></div>");
+  var $radiobutton = $("<input id='primaryRadioButtonID"+ idenfitierClassName[1] +"-"+ id +"' class='radio-input assesmentLevels primaryRadioButton option-"+ id +"' type='radio' name='"+ idenfitierClassName[1] +"' value='"+ id +"'/>");
+  var $radioLabel = $("<label for='primaryRadioButtonID"+ idenfitierClassName[1] +"-"+ id +"' class='radio-label'>"+ name +"</label>");
+
+  if($primaryList.children().length < 1){
+    $radiobutton.attr('checked', true);
+  }
+
+  $radiobutton.appendTo($contentDiv);
+  $radioLabel.appendTo($contentDiv);
+  $contentDiv.appendTo($primaryList);
 }
 
-/*
 function onClickRemoveElementPrimary() {
   var removeElementType = $(this).classParam('removeElementType');
   var $parent = $(this).parent();
@@ -820,8 +836,7 @@ function onClickRemoveElementPrimary() {
   if($primaryRadioElement.children().length < 1){
     $primaryDisplay.css("display", "none");
   }
-
-}*/
+}
 
 /**
  * Geographic Scope Component

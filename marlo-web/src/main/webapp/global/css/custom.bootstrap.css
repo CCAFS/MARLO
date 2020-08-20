@@ -10,3 +10,26 @@ span.badge.globalUnitTag {
   border-radius: 5px;
   font-size: 0.95em;
 }
+
+.modal-content {
+  border-radius: 8px;
+  border: 1px solid #cecece;
+  box-shadow: 0px 0px 9px rgba(0,0,0,.3);
+}
+
+.modal-backdrop {
+  background-color: #ffffff;
+  opacity: .6 !important;
+}
+
+.modal-header {
+  font-family: 'Open Sans', 'Segoe UI', Helvetica, Verdana;
+}
+
+btn {
+  
+}
+
+.btn {
+  border-radius: 2px;
+}

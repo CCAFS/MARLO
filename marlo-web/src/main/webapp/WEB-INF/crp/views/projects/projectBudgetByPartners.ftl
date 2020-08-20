@@ -303,6 +303,7 @@
 [/#macro]
 
 
+
 [#macro fundingSourceRowMacro element name selectedYear index=-1  isTemplate=false]
   [#local customName = "${name}[${index}]" /]
   <tr id="projectW3bilateralFund-${isTemplate?string('template', index )}" class="projectW3bilateralFund  " style="display:${isTemplate?string('none','table-row')}">
@@ -494,14 +495,18 @@
             [#if (editable && isYearEditable(selectedYear) && action.canSearchFunding(element.institution.id) && action.canEditGender()) || isTemplate]
               [@customForm.input name="${customName}.genderPercentage" i18nkey="budget.genderPercentage" showTitle=false className="percentageInput cycle-planning type-${(element.fundingSource.fundingSourceInfo.budgetType.id)!'none'}" required=true   /]
             [#else]  
-            <div class="${customForm.changedField(customName+'.genderPercentage')}">
-              <div class="input"><p><span>${((element.genderPercentage)!0)}%</span></p></div>
-              <input type="hidden" name="${customName}.genderPercentage"  value="${(element.genderPercentage)!0}" />
-            </div>
+              <div class="${customForm.changedField(customName+'.genderPercentage')}">
+                <div class="input"><p><span>${((element.genderPercentage)!0)}%</span></p></div>
+                <input type="hidden" name="${customName}.genderPercentage"  value="${(element.genderPercentage)!0}" />
+              </div>
             [/#if]
           </div>
         [/#if]
       </div>
+    </div>
+    
+    <div class="form-group">
+      [@customForm.textArea name="${customName}.rationale"  value="${(element.rationale)!}" i18nkey="mapFunding.justification" help="mapFunding.justification.help" helpIcon=true className="" required=true editable=editable && (isYearEditable(selectedYear) || isTemplate) /]
     </div>
     
     <div class="">

@@ -56,6 +56,14 @@ public interface FundingSourceInfoManager {
    * @param fundingSourceInfoID is the fundingSourceInfo identifier.
    * @return a FundingSourceInfo object.
    */
+  public List<FundingSourceInfo> getFundingSourceInfoByFinanceCode(String financeCode);
+
+  /**
+   * This method gets a fundingSourceInfo object by a given fundingSourceInfo identifier.
+   * 
+   * @param fundingSourceInfoID is the fundingSourceInfo identifier.
+   * @return a FundingSourceInfo object.
+   */
   public FundingSourceInfo getFundingSourceInfoById(long fundingSourceInfoID);
 
   /**

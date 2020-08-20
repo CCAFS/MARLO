@@ -85,6 +85,8 @@ function syncFundingSource() {
   $('.financeCode').attr('readOnly', true);
   // Update Grant total amount triggering the currency inputs
   $('.currencyInput').trigger('keyup');
+  // Finance Channel
+  $('.financeChannel button').addClass('disabled');
   // Update Funding source last update
   var today = new Date();
   var dd = today.getDate();
@@ -151,6 +153,8 @@ function unSyncFundingSource() {
   $('.financeCode').attr('readOnly', false);
   // show Date labels
   $('.dateLabel').removeClass('disabled');
+  // Finance Channel
+  $('.financeChannel button').removeClass('disabled');
   // Hide Last update label
   $('.lastDaySync').hide();
   // Set datepicker
