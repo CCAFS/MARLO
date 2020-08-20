@@ -747,13 +747,14 @@ public class FundingSourceListAction extends BaseAction {
 
       // return string with the institutions in the apconstant variable separated with ','
       this.convertListToString(institutionsIDsList);
-    } else {
-      if (contactsPoint != null && usersContactPoint != null) {
-        // If the logged user is a contact point, its definen the default checked institutions
-        institutionFSFiltered = new ArrayList<>();
-        this.removeInstitutionsContactPointRole();
-      }
     }
+    // else {
+    if (contactsPoint != null && usersContactPoint != null) {
+      // If the logged user is a contact point, its definen the default checked institutions
+      institutionFSFiltered = new ArrayList<>();
+      this.removeInstitutionsContactPointRole();
+    }
+    // }
     this.setChecksToList();
   }
 
