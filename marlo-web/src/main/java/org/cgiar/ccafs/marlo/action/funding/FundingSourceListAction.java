@@ -734,27 +734,26 @@ public class FundingSourceListAction extends BaseAction {
     this.getCrpContactPoint();
     this.getFundingSourceInstitutionsList();
     // this.assignLeadCenter();
-    if (institutionsIDs != null && !institutionsIDs.isEmpty()) {
-      if (!institutionsIDs.equals("0")) {
+    if (institutionsIDs != null && !institutionsIDs.isEmpty() && !institutionsIDs.equals("0")) {
+      // if (!institutionsIDs.equals("0")) {
 
-        // Get each institution id captured from url string into an ArrayList
-        this.getInstitutionsIds();
+      // Get each institution id captured from url string into an ArrayList
+      this.getInstitutionsIds();
 
-        // Remove institutions not checked in frontend of 'myProjects' list, using ids in institutionsIDsList.
-        this.removeInstitutions();
-      }
+      // Remove institutions not checked in frontend of 'myProjects' list, using ids in institutionsIDsList.
+      this.removeInstitutions();
+      // }
       this.fillInstitutionsList();
 
       // return string with the institutions in the apconstant variable separated with ','
       this.convertListToString(institutionsIDsList);
+    } else {
+      if (contactsPoint != null && usersContactPoint != null) {
+        // If the logged user is a contact point, its definen the default checked institutions
+        institutionFSFiltered = new ArrayList<>();
+        this.removeInstitutionsContactPointRole();
+      }
     }
-    // else {
-    if (contactsPoint != null && usersContactPoint != null) {
-      // If the logged user is a contact point, its definen the default checked institutions
-      institutionFSFiltered = new ArrayList<>();
-      this.removeInstitutionsContactPointRole();
-    }
-    // }
     this.setChecksToList();
   }
 
