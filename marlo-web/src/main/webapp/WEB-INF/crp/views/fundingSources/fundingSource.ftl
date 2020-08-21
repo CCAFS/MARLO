@@ -291,7 +291,7 @@
 <div class="">
   [#-- Project title --]
   <div class="form-group metadataElement-description">
-    [@customForm.input name="fundingSource.fundingSourceInfo.title" i18nkey="projectCofunded.title" className="limitWords-40 metadataValue" required=true readOnly=isSynced editable=editable /] 
+    [@customForm.textArea name="fundingSource.fundingSourceInfo.title" i18nkey="projectCofunded.title" className="fundingSource-title limitWords-40 metadataValue" required=true readOnly=isSynced editable=editable /] 
   </div>
   [#-- Project summary --]
   <div class="form-group metadataElement-objectives">

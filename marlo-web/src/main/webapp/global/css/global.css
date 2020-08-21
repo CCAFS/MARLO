@@ -3524,6 +3524,10 @@ p.projectValidateButton-message {
   height: 44px;
 }
 
+.fundingSource-title {
+  height: 44px !important;
+}
+
 .coreProject_name {
   display: block;
   width: 90%;

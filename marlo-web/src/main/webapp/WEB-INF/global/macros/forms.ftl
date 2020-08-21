@@ -602,7 +602,7 @@
           [#list elementList as item][@listElementMacro name=name element=item type=elementType id=id index=item_index keyFieldName=keyFieldName displayFieldName=displayFieldName indexLevel=indexLevel hasPrimary=hasPrimary/][/#list]
         [/#if]
       </ul>
-      [#if editable]
+      [#if editable || forceEditable]
         <select name="" id="" class="setSelect2 maxLimit-${maxLimit} elementType-${composedID} indexLevel-${indexLevel}[#if (hasPrimary)!false] primarySelect[/#if]">
           <option value="-1">[@s.text name="form.select.placeholder" /]</option>
           [#list list as item]
