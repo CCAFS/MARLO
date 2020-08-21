@@ -85,6 +85,7 @@ public class FundingSourceListAction extends BaseAction {
   private FundingSourceManager fundingSourceManager;
 
   private List<Institution> filteredInstitutions;
+  private List<FundingSourceInstitution> ins;
   private List<FundingSourceInstitution> institutionFSFiltered;
   private Role cpRole;
   private FundingSourceInfoManager fundingSourceInfoManager;
@@ -116,6 +117,7 @@ public class FundingSourceListAction extends BaseAction {
   private String partnerIDs;
   private Long budgetTypeID;
   private boolean checkAllInstitutions;
+  private FundingSource fundingSourceTemp;
 
 
   @Inject
@@ -210,13 +212,31 @@ public class FundingSourceListAction extends BaseAction {
         }
       }
 
-      if (partnertsIDList != null) {
-        for (String partner : partnertsIDList) {
-          FundingSourceInstitution fundingSourceInstitution = new FundingSourceInstitution();;
-          fundingSourceInstitution.setInstitution(institutionManager.getInstitutionById(Integer.parseInt(partner)));
-          fundingSourceInstitution.setFundingSource(fundingSource);
-          fundingSourceInstitution.setPhase(this.getActualPhase());
-          fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
+      /*
+       * if (partnertsIDList != null) {
+       * for (String partner : partnertsIDList) {
+       * if (partner != null && !partner.isEmpty() && partner != "") {
+       * FundingSourceInstitution fundingSourceInstitution = new FundingSourceInstitution();;
+       * fundingSourceInstitution.setInstitution(institutionManager.getInstitutionById(Integer.parseInt(partner)));
+       * fundingSourceInstitution.setFundingSource(fundingSource);
+       * fundingSourceInstitution.setPhase(this.getActualPhase());
+       * fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
+       * }
+       * }
+       * }
+       */
+
+      if (fundingSourceTemp.getInstitutions() != null) {
+        for (FundingSourceInstitution partner : fundingSourceTemp.getInstitutions()) {
+          if (partner.getId() == null || partner.getId().longValue() == -1 && partner.getInstitution().getId() == null
+            || partner.getInstitution().getId().longValue() == -1) {
+            FundingSourceInstitution fundingSourceInstitution = new FundingSourceInstitution();
+            fundingSourceInstitution
+              .setInstitution(institutionManager.getInstitutionById(partner.getInstitution().getId()));
+            fundingSourceInstitution.setFundingSource(fundingSource);
+            fundingSourceInstitution.setPhase(this.getActualPhase());
+            fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
+          }
         }
       }
       /*
@@ -515,6 +535,15 @@ public class FundingSourceListAction extends BaseAction {
     }
   }
 
+  public FundingSource getFundingSourceTemp() {
+    return fundingSourceTemp;
+  }
+
+  public List<FundingSourceInstitution> getIns() {
+    return ins;
+  }
+
+
   public List<FundingSourceInstitution> getInstitutionFSFiltered() {
     return institutionFSFiltered;
   }
@@ -539,7 +568,6 @@ public class FundingSourceListAction extends BaseAction {
       institutionsIDsList.add(institutionsIDs);
     }
   }
-
 
   public String getInstitutionsIDsFilter() {
     return institutionsIDsFilter;
@@ -593,9 +621,11 @@ public class FundingSourceListAction extends BaseAction {
     return managingInstitutionsList;
   }
 
+
   public List<FundingSource> getMyProjects() {
     return myProjects;
   }
+
 
   public void getPartnertsIDs() {
     // Separate institutions partner Managing ids from institutions apConstans filters into arrayList
@@ -997,11 +1027,9 @@ public class FundingSourceListAction extends BaseAction {
     }
   }
 
-
   public void setClosedProjects(List<FundingSource> closedProjects) {
     this.closedProjects = closedProjects;
   }
-
 
   public void setFilteredInstitutions(List<Institution> filteredInstitutions) {
     this.filteredInstitutions = filteredInstitutions;
@@ -1011,14 +1039,23 @@ public class FundingSourceListAction extends BaseAction {
     this.fundingSourceID = projectID;
   }
 
+
   public void setFundingSourceInstitutions(List<FundingSourceInstitution> fundingSourceInstitutions) {
     this.fundingSourceInstitutions = fundingSourceInstitutions;
+  }
+
+  public void setFundingSourceTemp(FundingSource fundingSourceTemp) {
+    this.fundingSourceTemp = fundingSourceTemp;
+  }
+
+
+  public void setIns(List<FundingSourceInstitution> ins) {
+    this.ins = ins;
   }
 
   public void setInstitutionFSFiltered(List<FundingSourceInstitution> institutionFSFiltered) {
     this.institutionFSFiltered = institutionFSFiltered;
   }
-
 
   public void setInstitutionsIDsFilter(String institutionsIDsFilter) {
     this.institutionsIDsFilter = institutionsIDsFilter;
@@ -1029,7 +1066,6 @@ public class FundingSourceListAction extends BaseAction {
     this.justification = justification;
   }
 
-
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
@@ -1037,4 +1073,5 @@ public class FundingSourceListAction extends BaseAction {
   public void setMyProjects(List<FundingSource> myProjects) {
     this.myProjects = myProjects;
   }
+
 }
