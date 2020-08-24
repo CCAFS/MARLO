@@ -214,12 +214,11 @@ public class Institutions {
    * Find a institution request by CRP *
    * 
    * @param acronym of global unit
-   * @param id of institution request
-   * @return a InstitutionRequestDTO with institution request data item
+   * @return a InstitutionRequestDTO list with institution request data item
    */
   @ApiOperation(value = "${Institutions.institution-all-requests.code.value}", response = InstitutionRequestDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/{CGIAREntity}/institutions/institution-all-requests}", method = RequestMethod.GET,
+  @RequestMapping(value = "/{CGIAREntity}/institutions/institution-all-requests", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public List<InstitutionRequestDTO>
     findPartnerRequestByGlobalUnit(@ApiParam(value = "${Institutions.institution-requests.code.param.CGIAR}",
