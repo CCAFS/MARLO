@@ -40,6 +40,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -262,6 +263,33 @@ public class InstitutionItem<T> {
     List<InstitutionDTO> institutionDTOs = institutions.stream()
       .map(institution -> this.institutionMapper.institutionToInstitutionDTO(institution)).collect(Collectors.toList());
     return institutionDTOs;
+  }
+
+  public List<InstitutionRequestDTO> getParterRequestByGlobalUnit(String entityAcronym, User user) {
+    List<InstitutionRequestDTO> partnerRequestList = new ArrayList<InstitutionRequestDTO>();
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+    Set<CrpUser> lstUser = user.getCrpUsers();
+    // if the request was from an CRP which the user don't have authorization
+    if (!lstUser.stream().anyMatch(crp -> crp.getCrp().getAcronym().equalsIgnoreCase(entityAcronym))) {
+      fieldErrors.add(new FieldErrorDTO("PartnerRequestList", "GlobalUnitEntity", "CGIAR entity not autorized"));
+    }
+    List<PartnerRequest> requestList = new ArrayList<PartnerRequest>();
+    if (this.partnerRequestManager.findAll() != null) {
+      requestList = new ArrayList<>(this.partnerRequestManager.findAll().stream()
+        .filter(pr -> pr.isActive() && !pr.isOffice()
+          && pr.getCrp().getAcronym().toUpperCase().equals(entityAcronym.toUpperCase())
+          && pr.getPartnerRequest() != null)
+        .collect(Collectors.toList()));
+    }
+    if (!fieldErrors.isEmpty()) {
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
+    }
+    partnerRequestList = requestList.stream().map(this.institutionMapper::partnerRequestToInstitutionRequestDTO)
+      .collect(Collectors.toList());
+    return partnerRequestList;
   }
 
   /**
