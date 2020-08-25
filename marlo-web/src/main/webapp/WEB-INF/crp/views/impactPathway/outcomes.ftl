@@ -369,8 +369,7 @@
       [#-- Year --]
       <div class="col-md-4">
         [@customForm.select name="${milestoneCustomName}.year" value="${(milestone.year)!-1}"  i18nkey="outcome.milestone.inputTargetYear" listName="milestoneYears"  required=true  className=" targetYear milestoneYear" editable=editableMilestone /]
-        [#if !editableMilestone][#if (milestone.year != -1)!false ]${(milestone.year)!}[/#if][/#if]
-      </div>
+       </div>
       [#--  Status  --]
       <div class="col-md-4"> 
         [@customForm.select name="${milestoneCustomName}.milestonesStatus.id" forcedValue="${(milestone.milestonesStatus.name)!}" i18nkey="outcome.milestone.inputStatus" listName="generalStatuses" keyFieldName="id" displayFieldName="name" required=true  className="milestoneStatus" editable=editable /]
