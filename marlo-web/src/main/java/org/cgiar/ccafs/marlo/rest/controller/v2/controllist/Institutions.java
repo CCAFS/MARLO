@@ -84,14 +84,14 @@ public class Institutions {
 
   @ApiOperation(value = "${Institutions.institution-requests.accept.value}", response = InstitutionRequestDTO.class)
   @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
-  @RequestMapping(value = "/{CGIAREntity}/institutions/accept-institution-request", method = RequestMethod.POST,
+  @RequestMapping(value = "/{CGIAREntity}/institutions/accept-institution-request/{code}", method = RequestMethod.POST,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<InstitutionRequestDTO> acceptPartnerRequest(
     @ApiParam(value = "${Institutions.institution-requests.create.param.CGIAR}",
       required = true) @PathVariable("CGIAREntity") String CGIAREntity,
     @ApiParam(value = "${Institutions.institution-requests.code.param.requestId}",
-      required = true) @RequestParam Long code,
-    @ApiParam(value = "${Institutions.institution.code.param.accept}", required = true) @RequestParam Boolean accept,
+      required = true) @PathVariable(name = "code") Long code,
+    @ApiParam(value = "${Institutions.institution.code.param.accept}", required = true) @RequestParam boolean accept,
     @ApiParam(value = "${Institutions.institution.code.param.justification}",
       required = false) @RequestParam String justification)
     throws Exception {
