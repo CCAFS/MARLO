@@ -84,14 +84,14 @@ public class Institutions {
 
   @ApiOperation(value = "${Institutions.institution-requests.accept.value}", response = InstitutionRequestDTO.class)
   @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
-  @RequestMapping(value = "/{CGIAREntity}/institutions/accept-institution-request", method = RequestMethod.POST,
+  @RequestMapping(value = "/{CGIAREntity}/institutions/accept-institution-request/{code}", method = RequestMethod.POST,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<InstitutionRequestDTO> acceptPartnerRequest(
     @ApiParam(value = "${Institutions.institution-requests.create.param.CGIAR}",
       required = true) @PathVariable("CGIAREntity") String CGIAREntity,
     @ApiParam(value = "${Institutions.institution-requests.code.param.requestId}",
-      required = true) @RequestParam Long code,
-    @ApiParam(value = "${Institutions.institution.code.param.accept}", required = true) @RequestParam Boolean accept,
+      required = true) @PathVariable(name = "code") Long code,
+    @ApiParam(value = "${Institutions.institution.code.param.accept}", required = true) @RequestParam boolean accept,
     @ApiParam(value = "${Institutions.institution.code.param.justification}",
       required = false) @RequestParam String justification)
     throws Exception {
@@ -214,12 +214,11 @@ public class Institutions {
    * Find a institution request by CRP *
    * 
    * @param acronym of global unit
-   * @param id of institution request
-   * @return a InstitutionRequestDTO with institution request data item
+   * @return a InstitutionRequestDTO list with institution request data item
    */
   @ApiOperation(value = "${Institutions.institution-all-requests.code.value}", response = InstitutionRequestDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/{CGIAREntity}/institutions/institution-all-requests}", method = RequestMethod.GET,
+  @RequestMapping(value = "/{CGIAREntity}/institutions/institution-all-requests", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public List<InstitutionRequestDTO>
     findPartnerRequestByGlobalUnit(@ApiParam(value = "${Institutions.institution-requests.code.param.CGIAR}",
