@@ -147,6 +147,12 @@ public class ExpendituresItem<T> {
             expenditureExampleID = reportSynthesisFundingUseExpendituryArea.getId();
           }
         }
+        if (!fieldErrors.isEmpty()) {
+          throw new MARLOFieldValidationException("Field Validation errors", "",
+            fieldErrors.stream()
+              .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+              .collect(Collectors.toList()));
+        }
       }
     }
     return expenditureExampleID;
@@ -200,6 +206,12 @@ public class ExpendituresItem<T> {
           }
         }
       }
+    }
+    if (!fieldErrors.isEmpty()) {
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
     }
     return expenditureExampleID;
   }
@@ -319,6 +331,12 @@ public class ExpendituresItem<T> {
           }
         }
       }
+    }
+    if (!fieldErrors.isEmpty()) {
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
     }
     return expenditureExampleID;
   }
