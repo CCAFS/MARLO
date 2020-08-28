@@ -27,27 +27,27 @@ public class NewFinancialSummaryBudgetDTO {
   private long flagshipID;
 
   @ApiModelProperty(notes = "Planned Budget W1/W2 value")
-  private long plannedBudgetW1W2;
+  private double plannedBudgetW1W2;
 
   @ApiModelProperty(notes = "Planned Budget W3 and Biltareal value")
-  private long plannedBudgetW3Bilateral;
+  private double plannedBudgetW3Bilateral;
 
   @ApiModelProperty(notes = "Actual expenditure for W1/W2")
-  private long actualExpenditureW1W2;
+  private double actualExpenditureW1W2;
 
   @ApiModelProperty(notes = "Actual expenditure for W3 and Bilateral")
-  private long actualExpendituretW3Bilateral;
+  private double actualExpendituretW3Bilateral;
 
   @ApiModelProperty(notes = "Commments")
   private String comments;
 
 
-  public long getActualExpendituretW3Bilateral() {
+  public double getActualExpendituretW3Bilateral() {
     return actualExpendituretW3Bilateral;
   }
 
 
-  public long getActualExpenditureW1W2() {
+  public double getActualExpenditureW1W2() {
     return actualExpenditureW1W2;
   }
 
@@ -62,22 +62,22 @@ public class NewFinancialSummaryBudgetDTO {
   }
 
 
-  public long getPlannedBudgetW1W2() {
+  public double getPlannedBudgetW1W2() {
     return plannedBudgetW1W2;
   }
 
 
-  public long getPlannedBudgetW3Bilateral() {
+  public double getPlannedBudgetW3Bilateral() {
     return plannedBudgetW3Bilateral;
   }
 
 
-  public void setActualExpendituretW3Bilateral(long actualExpendituretW3Bilateral) {
+  public void setActualExpendituretW3Bilateral(double actualExpendituretW3Bilateral) {
     this.actualExpendituretW3Bilateral = actualExpendituretW3Bilateral;
   }
 
 
-  public void setActualExpenditureW1W2(long actualExpenditureW1W2) {
+  public void setActualExpenditureW1W2(double actualExpenditureW1W2) {
     this.actualExpenditureW1W2 = actualExpenditureW1W2;
   }
 
@@ -92,12 +92,12 @@ public class NewFinancialSummaryBudgetDTO {
   }
 
 
-  public void setPlannedBudgetW1W2(long plannedBudgetW1W2) {
+  public void setPlannedBudgetW1W2(double plannedBudgetW1W2) {
     this.plannedBudgetW1W2 = plannedBudgetW1W2;
   }
 
 
-  public void setPlannedBudgetW3Bilateral(long plannedBudgetW3Bilateral) {
+  public void setPlannedBudgetW3Bilateral(double plannedBudgetW3Bilateral) {
     this.plannedBudgetW3Bilateral = plannedBudgetW3Bilateral;
   }
 
