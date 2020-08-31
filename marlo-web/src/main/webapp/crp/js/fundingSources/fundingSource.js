@@ -162,7 +162,7 @@ function init() {
   $(".removeRegion").on("click", removeRegion);
 
   // Setting Currency Inputs
-  $('.currencyInput').currencyInput();
+ // $('.currencyInput').currencyInput();
 
   /* Select2 multiple for country and region select */
   $('.countriesSelect').select2({
@@ -440,7 +440,7 @@ function keyupBudgetYear() {
 
 /**
  * Event on Change the funding type (W1/W2, W3, Bilateral, CenterFunds)
- * 
+ *
  * @param {number} typeID - Funding budget type
  */
 function onChangeFundingType(typeID) {
@@ -467,7 +467,7 @@ function onChangeStatus() {
 
 /**
  * This function initialize the contact person auto complete
- * 
+ *
  * @returns
  */
 function addContactAutoComplete() {
@@ -622,7 +622,7 @@ function checkLeadPartnerItems(block) {
 
 /**
  * Add a new country to the Funding source locations
- * 
+ *
  * @param countryISO e.g CO
  * @param countryName e.g Colombia
  * @returns
@@ -778,7 +778,7 @@ function checkRegionList(block) {
 
 /**
  * Set the JQuery UI Datepicker plugin for start, end and extension dates
- * 
+ *
  * @param start
  * @param end
  * @param extensionDate
@@ -923,7 +923,7 @@ function settingDate(start,end,extensionDate) {
 
 /**
  * Check for budget conflicts, date cannot be changed as this funding source has at least one budget allocation
- * 
+ *
  * @param lowEnd
  * @param highEnd
  * @returns
@@ -1043,7 +1043,7 @@ function refreshYears() {
 
 /**
  * Get date in format
- * 
+ *
  * @param element
  * @returns
  */
@@ -1059,7 +1059,7 @@ function getDate(element) {
 
 /**
  * Get date in MM yy format
- * 
+ *
  * @param element - An input with a Date value
  * @returns String e.g. May 2017
  */
@@ -1100,7 +1100,7 @@ function addDataTable() {
 
 /**
  * Get from the back-end a list of institutions
- * 
+ *
  * @param budgetTypeID
  * @returns
  */
@@ -1249,7 +1249,7 @@ var mappingFundingToProjectModule =
         });
 
         // Setting Numeric Inputs
-        $modal.find('input.currencyInput, input.percentageInput').numericInput();
+        $modal.find('.currencyInput, input.percentageInput').numericInput();
 
         // Setting Currency Inputs
         $amountInput.currencyInput();
@@ -1336,7 +1336,7 @@ var mappingFundingToProjectModule =
 
                   $tr.hide(600, function() {
                     $tr.remove();
-                    var $inputAmount = $('#fundingYear-' + year).find('.currencyInput')
+                    var $inputAmount = $('#fundingYear-' + year).find('.currencyInput');
                     $inputAmount.trigger('keyup');
                   });
                 }
@@ -1354,18 +1354,18 @@ var mappingFundingToProjectModule =
       function retrivePopupValues() {
         vueApp.institutionID = $institutionSelect.val();
         vueApp.projectID = $projectSelect.val();
-        vueApp.amount = removeCurrencyFormat($amountInput.val());
+        vueApp.amount = $amountInput.val();
         // vueApp.gender = removePercentageFormat($genderInput.val());
         vueApp.rationale = $justificationInput.val();
-        vueApp.remainingBudget =
-            removeCurrencyFormat($('#fundingYear-' + vueApp.year + ' span.remainingAmount').text());
+         vueApp.remainingBudget =
+          $('#fundingYear-' + vueApp.year + ' span.remainingAmount').text();
       }
 
       function openModal(event) {
         var $button = $(event.relatedTarget);
         vueApp.year = $button.data('year');
 
-        retrivePopupValues();
+       // retrivePopupValues();
       }
 
       function closeModal(event) {
