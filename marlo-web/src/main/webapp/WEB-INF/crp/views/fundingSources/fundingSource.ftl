@@ -4,12 +4,12 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "datatables.net", "datatables.net-bs","flag-icon-css",  "vue"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/fieldsValidation.js",
-  "${baseUrlMedia}/js/fundingSources/fundingSource.js?20190905",
+  "${baseUrlMedia}/js/fundingSources/fundingSource.js?20200901",
   "${baseUrlMedia}/js/fundingSources/syncFundingSource.js?20190905",
   "${baseUrlCdn}/global/js/autoSave.js" 
   ]
 /]
-[#assign customCSS = ["${baseUrlMedia}/css/fundingSources/fundingSource.css?20190706"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/fundingSources/fundingSource.css?20200901"] /]
 [#assign currentSection = "fundingSources" /]
 [#assign breadCrumb = [
   {"label":"fundingSourcesList", "nameSpace":"/fundingSources", "action":""}
@@ -105,19 +105,18 @@
         <div class="step2" style="display:none">
           [#-- Project --]
           <div class="form-group">
-            [@customForm.select name="projectID" i18nkey="mapFunding.project" className=""  listName="" keyFieldName=""  displayFieldName="" required=true editable=editable /]
-          </div>
-        
-          <div class="form-group row">
-            <div class="col-md-6">
-              [@customForm.input name="amount" i18nkey="mapFunding.amount" className="currencyInput" required=true editable=editable /]
+            [@customForm.select name="projectID" i18nkey="mapFunding.project" className=""  listName="" keyFieldName=""  displayFieldName="" help="mapFunding.project.help" helpIcon=true required=true editable=editable /]
+           </div>
+           
+          <div class="form-group ">
+              [@customForm.textArea name="amount" i18nkey="mapFunding.amount" className="currencyInput" required=true editable=editable /]
               <small>Remaining budget: US$ {{ setCurrencyFormat(remainingBudget) }} </small>
-            </div>
           </div>
           
           <div class="form-group">
             [@customForm.textArea name="rationale" i18nkey="mapFunding.justification" help="mapFunding.justification.help" helpIcon=false className="" required=true editable=editable /]
           </div>
+          
         </div>
         
       
@@ -174,7 +173,7 @@
 <div class="row">
   <div class="col-md-6 managingPartners">
     <div class="form-group">
-      [@customForm.elementsListComponent name="fundingSource.institutions" elementType="institution" elementList=(fundingSource.institutions)![] label="fundingSource.leadPartner"  listName="institutions" keyFieldName="id" displayFieldName="composedName"/]
+      [@customForm.elementsListComponent name="fundingSource.institutions" elementType="institution" elementList=(fundingSource.institutions)![] label="fundingSource.leadPartner"  help="frundingSource.partners.help" helpIcon=true listName="institutions" keyFieldName="id" displayFieldName="composedName"/]
        
       [#assign ifpriDivision = false /]
       [#list (fundingSource.institutions)![] as item]
@@ -480,69 +479,6 @@
       </div>
     </div>
   [/#if]
-  [#-- REGIONAL SELECT 
-  <div class="regionsBox form-group" style="display:${region?string('block','none')}">
-    <div class="panel tertiary">
-      <div class="panel-head">
-        <label for=""> [@customForm.text name="projectCofunded.selectRegions" readText=!editable /]:[@customForm.req required=editable /]</label><br />
-        <small style="color: #337ab7;">([@s.text name="projectLocations.standardLocations" /])</small>
-      </div>
-      <div id="regionList" class="panel-body" listname="fundingSource.fundingRegions">
-        <ul class="list">
-        [#if fundingSource.fundingRegions?has_content]
-          [#list fundingSource.fundingRegions as region]
-            <li id="" class="region clearfix col-md-3">
-              [#if editable ]<div class="removeRegion removeIcon" title="Remove region"></div>[/#if]
-              <input class="id" type="hidden" name="fundingSource.fundingRegions[${region_index}].id" value="${region.id}" />
-              <input class="rId" type="hidden" name="fundingSource.fundingRegions[${region_index}].locElement.id" value="${(region.locElement.id)!}" />
-              <input class="regionScope" type="hidden" name="fundingSource.fundingRegions[${region_index}].scope" value="${(region.scope?c)!}" />
-              <span class="name">${(region.locElement.name)!}</span>
-              <div class="clearfix"></div>
-            </li>
-          [/#list]
-        [#else]
-          <p class="emptyText"> [@s.text name="No regions added yet." /]</p> 
-        [/#if]
-        </ul>
-        [#if editable ]
-          <select name="" id="regionSelect" class="regionsSelect">
-            <option value="-1">Select an option...</option>
-            [#if scopeRegionLists?has_content]
-              <optgroup label="${(loggedCrp.acronym?upper_case)!} regions">
-              [#list scopeRegionLists as region]
-              <option value="${(region.id)!}-${(region.scope?c)!}">${(region.name)!}</option>
-              [/#list]
-              </optgroup>
-            [/#if]
-<<<<<<< HEAD
-            [#if regionLists?has_content]
-            <optgroup label="World Bank classifies regions">
-              [#list regionLists as region]
-              <option value="${(region.id)!}-${(region.locElementType.scope?c)!}">${(region.name)!}</option>
-=======
-            </ul>
-            [#if editable ]
-              <select name="" id="regionSelect" class="regionsSelect">
-                <option value="-1">Select an option...</option>
-                [#if scopeRegionLists?has_content]
-                  <optgroup label="${(loggedCrp.acronym?upper_case)!} regions">
-                  [#list scopeRegionLists as region]
-                  <option value="${(region.id)!}-${(region.scope?c)!}">${(region.name)!}</option>
-                  [/#list]
-                  </optgroup>
-                [/#if]
-                [#if regionLists?has_content]
-                <optgroup label="World Bank classifies regions">
-                  [#list regionLists as region]
-                  <option value="${(region.id)!}-${(region.locElementType.scope?c)!}">${(region.name)!}</option>
-                  [/#list]
-                  </optgroup>
-                [/#if]
-              </select>
-            [/#if] 
-          </div>
-        </div>
-      </div>--}
       
       [#-- REGIONAL SELECT --]
       <div class="regionsBox form-group row" style="display:${region?string('block','none')}">
@@ -595,35 +531,6 @@
         </div>
       </div>
       
-      [#-- SELECT COUNTRIES 
-      <div class="form-group row">
-        <div class="panel tertiary col-md-12">
-         <div class="panel-head"><label for=""> [@customForm.text name="projectCofunded.listCountries" readText=!editable /]:</label></div>
-          <div id="countryList" class="panel-body" listname="fundingSource.fundingCountry"> 
-            <ul class="list">
-            [#if fundingSource.fundingCountry?has_content]
-              [#list fundingSource.fundingCountry as country]
-                  <li id="" class="country clearfix col-md-3">
-                  [#if editable ]
-                    <div class="removeCountry syncVisibles removeIcon" style="display:${isSynced?string('none', 'block')}" title="Remove country"></div>
-                  [/#if]
-                    <input class="id" type="hidden" name="fundingSource.fundingCountry[${country_index}].id" value="${(country.id)!-1}" />
-                    <input class="cId" type="hidden" name="fundingSource.fundingCountry[${country_index}].locElement.isoAlpha2" value="${(country.locElement.isoAlpha2)!}" />
-                    <input class="cPercentage" type="hidden" name="fundingSource.fundingCountry[${country_index}].percentage" value="${(country.percentage)!}" />
-                    
-                    <span class="name"><span> <i class="flag-icon flag-icon-${(country.locElement.isoAlpha2?lower_case)!}"></i> [@utils.wordCutter string=(country.locElement.name)!'' maxPos=15 /] </span></span>
-                    <div class="clearfix"></div>
-                  </li>
->>>>>>> staging
-              [/#list]
-              </optgroup>
-            [/#if]
-          </select>
-        [/#if] 
-      </div>
-    </div>
-  </div>--]
-  
   [#-- SELECT COUNTRIES --]
   <div class="form-group row">
     <div class="panel tertiary col-md-12">

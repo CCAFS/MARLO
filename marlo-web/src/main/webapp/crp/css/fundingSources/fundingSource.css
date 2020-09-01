@@ -108,3 +108,8 @@ small.grayLabel {
 .financeChannel ul li{
   font-size: 0.85em;
 }
+
+textArea.currencyInput {
+  min-height: 27px !important;
+  height: 27px !important;
+}
