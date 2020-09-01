@@ -4,12 +4,12 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "datatables.net", "datatables.net-bs","flag-icon-css",  "vue"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/fieldsValidation.js",
-  "${baseUrlMedia}/js/fundingSources/fundingSource.js?20190905",
+  "${baseUrlMedia}/js/fundingSources/fundingSource.js?20200901",
   "${baseUrlMedia}/js/fundingSources/syncFundingSource.js?20190905",
   "${baseUrlCdn}/global/js/autoSave.js" 
   ]
 /]
-[#assign customCSS = ["${baseUrlMedia}/css/fundingSources/fundingSource.css?20190706"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/fundingSources/fundingSource.css?20200901"] /]
 [#assign currentSection = "fundingSources" /]
 [#assign breadCrumb = [
   {"label":"fundingSourcesList", "nameSpace":"/fundingSources", "action":""}

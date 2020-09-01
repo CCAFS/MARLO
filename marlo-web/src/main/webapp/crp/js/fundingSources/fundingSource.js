@@ -1234,7 +1234,7 @@ var mappingFundingToProjectModule =
       var $modal = $('#mapFundingToProject');
       var $institutionSelect = $modal.find('select[name="institutionID"]');
       var $projectSelect = $modal.find('select[name="projectID"]');
-      var $amountInput = $modal.find('input.currencyInput');
+      var $amountInput = $modal.find('textArea.currencyInput');
       var $genderInput = $modal.find('input.percentageInput');
       var $justificationInput = $modal.find('textarea[name="rationale"]');
       var $saveButton = $modal.find('button.saveBudgetMapping');
