@@ -52,8 +52,10 @@
         </div>
         <div role="tabpanel" class="tab-pane" id="archived-tab">
           [#-- Finished/Archived  -  Funding Sources  --]
+          ..
           [@fundingSourcesList.selectedInstitutions institutions=filteredInstitutions/]
           <h3 class="headTitle text-center">[@s.text name="fundingSourcesList.archived"/] [@s.text name="fundingSourcesList.title"/]</h3>
+          <div class="archived-funding">[@s.text name="fundingSourcesList.archived.info"/]  </div>
           [@fundingSourcesList.archivedList projects=closedProjects canValidate=true canEdit=true namespace="/fundingSources" defaultAction="${(crpSession)!}/fundingSource" /]
         </div>
       </div>
