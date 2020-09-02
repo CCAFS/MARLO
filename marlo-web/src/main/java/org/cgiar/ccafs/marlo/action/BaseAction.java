@@ -2336,6 +2336,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+  public Phase getCrpPhase(Long crpID, int year, String phaseDescription) {
+    Phase phase = null;
+    if (crpID != null && crpID != 0 && year != 0 && phaseDescription != null && !phaseDescription.isEmpty()) {
+
+      phase = phaseManager.findAll().stream()
+        .filter(p -> p != null && p.getYear() == year && p.getCrp() != null && p.getCrp().getId() != null
+          && p.getCrp().getId() == crpID && p.getDescription() != null && p.getDescription().equals(phaseDescription))
+        .collect(Collectors.toList()).get(0);
+    }
+    return phase;
+  }
+
   /**
    * Get the crp that is currently save in the session, if the user access to the
    * platform whit a diferent url, get the current action to catch the crp
