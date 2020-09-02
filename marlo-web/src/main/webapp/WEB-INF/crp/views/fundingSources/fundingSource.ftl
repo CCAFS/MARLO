@@ -173,7 +173,7 @@
 <div class="row">
   <div class="col-md-6 managingPartners">
     <div class="form-group">
-      [@customForm.elementsListComponent name="fundingSource.institutions" elementType="institution" elementList=(fundingSource.institutions)![] label="fundingSource.leadPartner"  help="frundingSource.partners.help" helpIcon=true listName="institutions" keyFieldName="id" displayFieldName="composedName"/]
+      [@customForm.elementsListComponent name="fundingSource.institutions" elementType="institution" elementList=(fundingSource.institutions)![] label="fundingSource.leadPartner"  help="fundingSource.partners.help" helpIcon=true listName="institutions" keyFieldName="id" displayFieldName="composedName"/]
        
       [#assign ifpriDivision = false /]
       [#list (fundingSource.institutions)![] as item]
@@ -404,7 +404,7 @@
     [#-- Direct Donor --]
     <div class="form-group row">
       <div class="col-md-12 metadataElement-directDonorName">
-        <label for="">[@s.text name="projectCofunded.directDonor" /]:[@customForm.req required=editable /] </label>
+        <label for="">[@s.text name="projectCofunded.directDonor" /]:[@customForm.req required=editable /]  [@customForm.helpLabel name="fundingSource.directDonor.help" paramText="fundingSource.directDonor.help" showIcon=true editable=editable/]</label>
         <span class="description"><i>([@s.text name="projectCofunded.directDonor.helpText" /])</i></span>
           [#if editable]
             [@customForm.select name="fundingSource.fundingSourceInfo.directDonor.id" i18nkey="projectCofunded.directDonor" className="donor" showTitle=false listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" disabled=(isW1W2 && (!centerGlobalUnit)) editable=editable /]
