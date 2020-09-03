@@ -19,6 +19,7 @@
 
 package org.cgiar.ccafs.marlo.rest.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 
 public class ProjectPageDeliverablesDTO {
@@ -49,7 +50,9 @@ public class ProjectPageDeliverablesDTO {
   @ApiModelProperty(notes = "FAIR principles (Findable)", position = 8)
   private Boolean reusable;
 
+
   @ApiModelProperty(notes = "External Link", position = 9)
+  @JsonInclude(JsonInclude.Include.NON_NULL)
   private String externalLink;
 
   public Boolean getAccesible() {

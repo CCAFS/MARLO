@@ -136,3 +136,8 @@ td.institutionLead hr {
   width: 165px;
   text-align: right;
 }
+
+.archived-funding {
+  margin-bottom: 15px;
+  font-style: italic;
+}
