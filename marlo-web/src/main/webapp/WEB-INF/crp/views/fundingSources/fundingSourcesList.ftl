@@ -52,8 +52,10 @@
         </div>
         <div role="tabpanel" class="tab-pane" id="archived-tab">
           [#-- Finished/Archived  -  Funding Sources  --]
+          ..
           [@fundingSourcesList.selectedInstitutions institutions=filteredInstitutions/]
           <h3 class="headTitle text-center">[@s.text name="fundingSourcesList.archived"/] [@s.text name="fundingSourcesList.title"/]</h3>
+          <div class="archived-funding">[@s.text name="fundingSourcesList.archived.info"/]  </div>
           [@fundingSourcesList.archivedList projects=closedProjects canValidate=true canEdit=true namespace="/fundingSources" defaultAction="${(crpSession)!}/fundingSource" /]
         </div>
       </div>
@@ -85,7 +87,7 @@
               <div class="modal-body">
                 [#-- Partner(s) managing the funding source --]
                 <div class="form-group">
-                  [@customForm.elementsListComponent name="fundingSourceTemp.institutions" elementType="institution" elementList=(fundingSourceTemp.institutions)![] label="fundingSourcesList.add.institutions" listName="managingInstitutionsList" keyFieldName="id" displayFieldName="composedName" forceEditable=true /]
+                  [@customForm.elementsListComponent name="fundingSourceTemp.institutions" elementType="institution" elementList=(fundingSourceTemp.institutions)![] label="fundingSourcesList.add.institutions" listName="managingInstitutionsList" help="fundingSource.partners.help" helpIcon=true keyFieldName="id" displayFieldName="composedName" forceEditable=true /]
                 </div>
                 [#-- Agreement status --]
                 <div class="row form-group">
