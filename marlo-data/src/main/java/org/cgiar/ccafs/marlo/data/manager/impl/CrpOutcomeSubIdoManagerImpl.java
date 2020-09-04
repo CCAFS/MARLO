@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 
 import java.util.List;
 
@@ -67,6 +68,11 @@ public class CrpOutcomeSubIdoManagerImpl implements CrpOutcomeSubIdoManager {
   }
 
   @Override
+  public CrpOutcomeSubIdo getCrpOutcomeSubIdoByOutcomeComposedIdAndPhase(String outcomeComposedId, long phaseId) {
+    return crpOutcomeSubIdoDAO.getCrpOutcomeSubIdoByOutcomeComposedIdAndPhase(outcomeComposedId, phaseId);
+  }
+
+  @Override
   public CrpOutcomeSubIdo getCrpOutcomeSubIdoByOutcomeComposedIdPhaseAndSubIdo(String outcomeComposedId, long phaseId,
     long subIdoId) {
     return crpOutcomeSubIdoDAO.getCrpOutcomeSubIdoByOutcomeComposedIdPhaseAndSubIdo(outcomeComposedId, phaseId,
@@ -75,30 +81,25 @@ public class CrpOutcomeSubIdoManagerImpl implements CrpOutcomeSubIdoManager {
 
   @Override
   public void replicate(CrpOutcomeSubIdo originalCrpOutcomeSubIdo, Phase initialPhase) {
-    if (initialPhase != null && originalCrpOutcomeSubIdo != null && originalCrpOutcomeSubIdo != null
-      && originalCrpOutcomeSubIdo.getCrpProgramOutcome() != null
-      && originalCrpOutcomeSubIdo.getCrpProgramOutcome().getComposeID() != null
-      && originalCrpOutcomeSubIdo.getSrfSubIdo() != null && originalCrpOutcomeSubIdo.getSrfSubIdo().getId() != null) {
+    Phase current = initialPhase;
+    String outcomeComposedId = originalCrpOutcomeSubIdo.getCrpProgramOutcome().getComposeID();
+    SrfSubIdo subIdo = originalCrpOutcomeSubIdo.getSrfSubIdo();
 
-      Phase current = initialPhase;
-      String outcomeComposedId = originalCrpOutcomeSubIdo.getCrpProgramOutcome().getComposeID();
-      Long subIdoId = originalCrpOutcomeSubIdo.getSrfSubIdo().getId();
-
-      while (current != null && outcomeComposedId != null && subIdoId != null) {
-        CrpOutcomeSubIdo outcomeSubIdo =
-          this.getCrpOutcomeSubIdoByOutcomeComposedIdPhaseAndSubIdo(outcomeComposedId, current.getId(), subIdoId);
-        CrpProgramOutcome crpProgramOutcome = crpProgramOutcomeManager.getCrpProgramOutcome(outcomeComposedId, current);
-        if (outcomeSubIdo == null) {
-          outcomeSubIdo = new CrpOutcomeSubIdo();
-        }
-
-        outcomeSubIdo.copyFields(originalCrpOutcomeSubIdo);
-        outcomeSubIdo.setCrpProgramOutcome(crpProgramOutcome);
-
-        this.saveCrpOutcomeSubIdo(outcomeSubIdo);
-
-        current = current.getNext();
+    while (current != null) {
+      CrpOutcomeSubIdo outcomeSubIdo = subIdo != null
+        ? this.getCrpOutcomeSubIdoByOutcomeComposedIdPhaseAndSubIdo(outcomeComposedId, current.getId(), subIdo.getId())
+        : this.getCrpOutcomeSubIdoByOutcomeComposedIdAndPhase(outcomeComposedId, current.getId());
+      CrpProgramOutcome crpProgramOutcome = crpProgramOutcomeManager.getCrpProgramOutcome(outcomeComposedId, current);
+      if (outcomeSubIdo == null) {
+        outcomeSubIdo = new CrpOutcomeSubIdo();
       }
+
+      outcomeSubIdo.copyFields(originalCrpOutcomeSubIdo);
+      outcomeSubIdo.setCrpProgramOutcome(crpProgramOutcome);
+
+      this.saveCrpOutcomeSubIdo(outcomeSubIdo);
+
+      current = current.getNext();
     }
   }
 
