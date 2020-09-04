@@ -1356,6 +1356,11 @@ var mappingFundingToProjectModule =
         vueApp.projectID = $projectSelect.val();
         vueApp.amount = $amountInput.val();
         // vueApp.gender = removePercentageFormat($genderInput.val());
+        if($amountInput.hasClass('amountZero')) {
+          vueApp.amountZero = true;
+        } else {
+          vueApp.amountZero = false;
+         }
         vueApp.rationale = $justificationInput.val();
          vueApp.remainingBudget =
           $('#fundingYear-' + vueApp.year + ' span.remainingAmount').text();
@@ -1403,8 +1408,14 @@ var mappingFundingToProjectModule =
           missingFields += 1;
         }
         // Validate Amount
-        if(vueApp.amount <= 0) {
-          missingFields += 1;
+        if(vueApp.amountZero){
+          if(vueApp.amount < 0) {
+            missingFields += 1;
+          }
+        } else {
+          if(vueApp.amount <= 0) {
+            missingFields += 1;
+          }
         }
         // Validate justification
         if(!vueApp.rationale) {

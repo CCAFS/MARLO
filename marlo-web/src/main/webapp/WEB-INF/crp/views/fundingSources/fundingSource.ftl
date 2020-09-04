@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "datatables.net", "datatables.net-bs","flag-icon-css",  "vue"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/fieldsValidation.js",
-  "${baseUrlMedia}/js/fundingSources/fundingSource.js?20200901",
+  "${baseUrlMedia}/js/fundingSources/fundingSource.js?20200904",
   "${baseUrlMedia}/js/fundingSources/syncFundingSource.js?20190905",
   "${baseUrlCdn}/global/js/autoSave.js" 
   ]
@@ -108,8 +108,14 @@
             [@customForm.select name="projectID" i18nkey="mapFunding.project" className=""  listName="" keyFieldName=""  displayFieldName="" help="mapFunding.project.help" helpIcon=true required=true editable=editable /]
            </div>
            
+           [#if action.hasSpecificities('crp_project_budget_zero')]
+              [#assign amountZeroClass = "amountZero" /]
+              [#else]
+              [#assign amountZeroClass = "" /]
+            [/#if]
+           
           <div class="form-group ">
-              [@customForm.textArea name="amount" i18nkey="mapFunding.amount" className="currencyInput" required=true editable=editable /]
+              [@customForm.textArea name="amount" i18nkey="mapFunding.amount" className="currencyInput ${amountZeroClass}" required=true editable=editable /]
               <small>Remaining budget: US$ {{ setCurrencyFormat(remainingBudget) }} </small>
           </div>
           
