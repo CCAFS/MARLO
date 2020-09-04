@@ -216,17 +216,17 @@
 
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
-      <li role="presentation" class="active"><a href="#subIdos-tab-${index}" aria-controls="home" role="tab" data-toggle="tab">Sub-IDOs <span class="badge">${(outcome.subIdos?size)!'0'}</span></a></li>
+      <li role="presentation" class="active"><a href="#milestones-tab-${index}" aria-controls="messages" role="tab" data-toggle="tab">Milestones <span class="badge">${(outcome.milestones?size)!'0'}</span></a></li>
       [#if action.hasSpecificities('crp_baseline_indicators') && (selectedProgram.baseLine)!false]
       <li role="presentation"><a href="#baseline-tab-${index}" aria-controls="profile" role="tab" data-toggle="tab">Baseline Indicators <span class="badge">${(outcome.indicators?size)!'0'}</span></a></li>
       [/#if]
-      <li role="presentation"><a href="#milestones-tab-${index}" aria-controls="messages" role="tab" data-toggle="tab">Milestones <span class="badge">${(outcome.milestones?size)!'0'}</span></a></li>
-    </ul>
+      <li role="presentation" ><a href="#subIdos-tab-${index}" aria-controls="home" role="tab" data-toggle="tab">Sub-IDOs <span class="badge">${(outcome.subIdos?size)!'0'}</span></a></li>
+     </ul>
   
     <!-- Tab panes -->
     <div class="tab-content impactpathwayTabContent">
       [#-- Outcome Sub-IDOs List --]
-      <div role="tabpanel" class="tab-pane fade in active" id="subIdos-tab-${index}">
+      <div role="tabpanel" class="tab-pane fade " id="subIdos-tab-${index}">
         [#-- <h5 class="sectionSubTitle">[@s.text name="outcome.subIDOs.sectionTitle"/] <p class="contributioRem pull-right">Contribution <span class="value">0%</span></p></h5>--]
         <div class="subIdos-list" listname="${outcomeCustomName}.subIdos">
         [#if outcome.subIdos?has_content]
@@ -296,7 +296,7 @@
       [/#if]
       
       [#-- Outcome Milestones List --]
-      <div role="tabpanel" class="tab-pane fade" id="milestones-tab-${index}">
+      <div role="tabpanel" class="tab-pane fade in active" id="milestones-tab-${index}">
         [#--<h5 class="sectionSubTitle">[@s.text name="outcome.milestone.sectionTitle"/]</h5>--]
         <div class="milestones-list" listname="${outcomeCustomName}.milestones">
         [#if outcome.milestones?has_content]
