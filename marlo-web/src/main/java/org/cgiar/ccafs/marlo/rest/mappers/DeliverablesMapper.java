@@ -31,6 +31,7 @@ public abstract interface DeliverablesMapper {
     @Mapping(source = "isAccesible", target = "accesible"),
     @Mapping(source = "isInteroperable", target = "interoperable"),
     @Mapping(source = "isReusable", target = "reusable"),
+    @Mapping(source = "deliverableInfo.deliverableType.name", target = "subcategory"),
     @Mapping(source = "dissemination.disseminationUrl", target = "externalLink")})
   public abstract ProjectPageDeliverablesDTO deliverableToProjectPageDeliverablesDTO(Deliverable deliverable);
 

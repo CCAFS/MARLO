@@ -1130,8 +1130,10 @@ public class AnnualReportPOISummaryAction extends BaseSummariesAction implements
 
         String expenditureArea = "", commentsSpace = "";
         Double estimatedPercentajeFS = 0.0;
-        expenditureArea = reportSynthesisFundingUseExpendituryArea.getExpenditureArea().getExpenditureArea() != null
-          ? reportSynthesisFundingUseExpendituryArea.getExpenditureArea().getExpenditureArea() : "";
+        expenditureArea = reportSynthesisFundingUseExpendituryArea.getExpenditureArea() != null
+          ? (reportSynthesisFundingUseExpendituryArea.getExpenditureArea().getExpenditureArea() != null
+            ? reportSynthesisFundingUseExpendituryArea.getExpenditureArea().getExpenditureArea() : "")
+          : "";
         estimatedPercentajeFS = reportSynthesisFundingUseExpendituryArea.getW1w2Percentage() != null
           ? reportSynthesisFundingUseExpendituryArea.getW1w2Percentage() : 0;
         commentsSpace = reportSynthesisFundingUseExpendituryArea.getComments() != null
@@ -1478,7 +1480,8 @@ public class AnnualReportPOISummaryAction extends BaseSummariesAction implements
 
         if (reportSynthesisFinancialSummaryBudget.getW3Planned() != null) {
           w3Planned = reportSynthesisFinancialSummaryBudget.getW3Planned()
-            + reportSynthesisFinancialSummaryBudget.getBilateralPlanned();
+            + (reportSynthesisFinancialSummaryBudget.getBilateralPlanned() != null
+              ? reportSynthesisFinancialSummaryBudget.getBilateralPlanned() : 0d);
         }
 
         totalPlanned = w1w2Planned + w3Planned;
@@ -1488,7 +1491,8 @@ public class AnnualReportPOISummaryAction extends BaseSummariesAction implements
 
         if (reportSynthesisFinancialSummaryBudget.getW3Actual() != null) {
           w3Actual = reportSynthesisFinancialSummaryBudget.getW3Actual()
-            + reportSynthesisFinancialSummaryBudget.getBilateralActual();
+            + (reportSynthesisFinancialSummaryBudget.getBilateralActual() != null
+              ? reportSynthesisFinancialSummaryBudget.getBilateralActual() : 0d);
         }
 
         totalActual = w1w2Actual + w3Actual;

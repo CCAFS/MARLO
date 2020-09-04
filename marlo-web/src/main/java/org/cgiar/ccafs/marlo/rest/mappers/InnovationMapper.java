@@ -80,6 +80,7 @@ public interface InnovationMapper {
   public abstract InnovationDTO projectInnovationToInnovationDTO(ProjectInnovation projectInnovation);
 
   @Mappings({@Mapping(source = "projectInnovationInfo.title", target = "title"),
+    @Mapping(source = "projectInnovationInfo.year", target = "year"),
     @Mapping(source = "pdfLink", target = "externalLink")})
   public abstract ProjectPageInnovationsDTO
     projectInnovationToProjectPageInnovationsDTO(ProjectInnovation projectInnovation);

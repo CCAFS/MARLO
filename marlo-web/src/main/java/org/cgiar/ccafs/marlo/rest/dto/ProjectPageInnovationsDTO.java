@@ -26,7 +26,10 @@ public class ProjectPageInnovationsDTO {
   @ApiModelProperty(notes = "Innovation Title", position = 1)
   private String title;
 
-  @ApiModelProperty(notes = "Innovation External link", position = 2)
+  @ApiModelProperty(notes = "Innovation year", position = 2)
+  private int year;
+
+  @ApiModelProperty(notes = "Innovation External link", position = 3)
   private String externalLink;
 
 
@@ -40,6 +43,11 @@ public class ProjectPageInnovationsDTO {
   }
 
 
+  public int getYear() {
+    return year;
+  }
+
+
   public void setExternalLink(String externalLink) {
     this.externalLink = externalLink;
   }
@@ -47,6 +55,11 @@ public class ProjectPageInnovationsDTO {
 
   public void setTitle(String title) {
     this.title = title;
+  }
+
+
+  public void setYear(int year) {
+    this.year = year;
   }
 
 
