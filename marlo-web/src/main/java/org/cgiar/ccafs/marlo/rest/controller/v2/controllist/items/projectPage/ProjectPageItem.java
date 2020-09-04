@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.projectPage;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
@@ -80,18 +81,20 @@ public class ProjectPageItem<T> {
   private LocElementManager locElementManager;
   private ProjectPageMapper projectPageMapper;
   protected APConfig config;
+  private DeliverableInfoManager deliverableInfoManager;
 
 
   @Inject
   public ProjectPageItem(ProjectManager projectManager, PhaseManager phaseManager, GlobalUnitManager globalUnitManager,
     ProjectLocationManager projectLocationManager, LocElementManager locElementManager,
-    ProjectPageMapper projectPageMapper, APConfig config) {
+    DeliverableInfoManager deliverableInfoManager, ProjectPageMapper projectPageMapper, APConfig config) {
     this.projectManager = projectManager;
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.projectPageMapper = projectPageMapper;
     this.projectLocationManager = projectLocationManager;
     this.locElementManager = locElementManager;
+    this.deliverableInfoManager = deliverableInfoManager;
     this.config = config;
   }
 
@@ -221,10 +224,20 @@ public class ProjectPageItem<T> {
       }
 
       // activities ongoing or complete
-      List<Activity> activities = project.getActivities().stream()
+      List<Activity> activitiesData = project.getActivities().stream()
         .filter(a -> a.isActive() && a.getPhase().equals(phase)
           && (a.getActivityStatus().longValue() == 3 || a.getActivityStatus().longValue() == 2))
         .collect(Collectors.toList());
+
+      List<Activity> activities = new ArrayList<Activity>();
+      for (Activity activity : activitiesData) {
+        if (activity.getActivityStatus().longValue() == 3) {
+          activity.setStatusName("Completed");
+        } else {
+          activity.setStatusName("On Going");
+        }
+        activities.add(activity);
+      }
 
       // Deliverables complete
 
@@ -235,12 +248,19 @@ public class ProjectPageItem<T> {
         if (deliverableInfo != null && deliverableInfo.getStatus().longValue() == 3) {
           deliverable.setDeliverableInfo(deliverableInfo);
           DeliverableDissemination deliverableDissemination = deliverable.getDissemination(phase);
+          if (deliverableDissemination.getDisseminationUrl() == null) {
+            deliverableDissemination.setDisseminationUrl("Link Not Provided");
+          }
+
           deliverable.setDissemination(deliverableDissemination);
           deliverable.setIsFindable(this.isF(deliverable));
           deliverable.setIsAccesible(this.isA(deliverable));
           deliverable.setIsInteroperable(this.isI(deliverable));
           deliverable.setIsReusable(this.isR(deliverable));
-          deliverables.add(deliverable);
+          if (deliverableInfoManager.isDeliverableSubcategoryIncludedWebsite(deliverable.getId().longValue(), phase)) {
+            deliverables.add(deliverable);
+          }
+
         }
       }
 
@@ -261,6 +281,7 @@ public class ProjectPageItem<T> {
         .collect(Collectors.toList())) {
         ProjectInnovationInfo projectInnovationInfo = innovation.getProjectInnovationInfo(phase);
         if (projectInnovationInfo != null) {
+
           innovation.setProjectInnovationInfo(projectInnovationInfo);
           String pdflink = config.getClarisa_summaries_pdf() + "summaries/" + globalUnit.getAcronym()
             + "/projectInnovationSummary.do?innovationID=" + innovation.getId().longValue() + "&phaseID="
@@ -330,19 +351,24 @@ public class ProjectPageItem<T> {
         .filter(c -> c.isActive()).collect(Collectors.toList())) {
         ProjectExpectedStudyInfo projectExpectedStudyInfo = projectExpectedStudy.getProjectExpectedStudyInfo(phase);
         if (projectExpectedStudyInfo != null && projectExpectedStudyInfo.isActive()) {
-          if (projectExpectedStudyInfo.getStudyType() != null
-            && projectExpectedStudyInfo.getStudyType().getId().longValue() == 1) {
-            projectExpectedStudy.setProjectExpectedStudyInfo(projectExpectedStudyInfo);
-            if (projectExpectedStudyInfo.getIsPublic() != null && projectExpectedStudyInfo.getIsPublic()) {
-              String pdflink = config.getClarisa_summaries_pdf() + "projects/" + globalUnit.getAcronym()
-                + "/studySummary.do?studyID=" + projectExpectedStudy.getId().longValue() + "&cycle="
-                + phase.getDescription() + "&year=" + phase.getYear();
-              projectExpectedStudy.setPdfLink(pdflink);
-            } else {
-              projectExpectedStudy.setPdfLink("Link not provided");
+          // only view ongoing or completed
+          if (projectExpectedStudyInfo.getStatus().getId().longValue() == 3
+            || projectExpectedStudyInfo.getStatus().getId().longValue() == 2) {
+            if (projectExpectedStudyInfo.getStudyType() != null
+              && projectExpectedStudyInfo.getStudyType().getId().longValue() == 1) {
+              projectExpectedStudy.setProjectExpectedStudyInfo(projectExpectedStudyInfo);
+              if (projectExpectedStudyInfo.getIsPublic() != null && projectExpectedStudyInfo.getIsPublic()) {
+                String pdflink = config.getClarisa_summaries_pdf() + "projects/" + globalUnit.getAcronym()
+                  + "/studySummary.do?studyID=" + projectExpectedStudy.getId().longValue() + "&cycle="
+                  + phase.getDescription() + "&year=" + phase.getYear();
+                projectExpectedStudy.setPdfLink(pdflink);
+              } else {
+                projectExpectedStudy.setPdfLink("Link not provided");
+              }
+              outcomeImpactCaseReports.add(projectExpectedStudy);
             }
-            outcomeImpactCaseReports.add(projectExpectedStudy);
           }
+
         }
       }
 

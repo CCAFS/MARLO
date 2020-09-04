@@ -449,6 +449,8 @@
     <mapping resource="xmls/ProjectInnovationMilestones.hbm.xml" /> 
     <mapping resource="xmls/ProjectExpectedStudyMilestones.hbm.xml" /> 
     <mapping resource="xmls/ProjectInnovationSubIdos.hbm.xml" /> 
+    <mapping resource="xmls/BiReports.hbm.xml" />
+    <mapping resource="xmls/BiParameters.hbm.xml" />
     <mapping resource="xmls/QATokenAuth.hbm.xml" />
     <mapping resource="xmls/UrlSynthesisLogs.hbm.xml" /> 
     <mapping resource="xmls/ProjectImpacts.hbm.xml" />
