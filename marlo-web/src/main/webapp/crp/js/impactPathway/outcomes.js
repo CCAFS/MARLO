@@ -31,7 +31,7 @@ function attachEvents() {
       $targetValue.hide('slow');
     }
   });
-
+  $('.btn-expand').on('click', expandMilestone);
   // Add an Outcome
   $('.addOutcome').on('click', addOutcome);
   // Remove an Outcome
@@ -290,6 +290,21 @@ function removeMilestone() {
   });
 }
 
+function expandMilestone(){
+  let $milestone = $(this).parents('.milestone');
+  let $outcome = $(this).parents('.outcome');
+  let $selector="#"+$outcome[0].id+" #"+$milestone[0].id;
+  console.log($milestone[0].id);
+  console.log($outcome[0].id);
+  console.log($selector+" .to-minimize");
+  if ($($selector+" .to-minimize").hasClass("minimize")){
+    $($selector+" .to-minimize").removeClass("minimize");
+     $($selector+" .btn-expand").html("Minimize")
+  }else{
+    $($selector+" .to-minimize").addClass("minimize");
+     $($selector+" .btn-expand").html("Expand")
+  }
+}
 /**
  * SUB-IDOs Functions
  */
@@ -486,6 +501,7 @@ function updateAllIndexes() {
 
     // Update Milestones
     $(outcome).find('.milestone').each(function(i,milestone) {
+      $(milestone).attr('id', "milestone-"+(i+1));
       $(milestone).find('span.index').text(i + 1);
       $(milestone).setNameIndexes(2, i);
 
