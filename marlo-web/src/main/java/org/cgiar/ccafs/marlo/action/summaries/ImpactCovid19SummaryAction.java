@@ -86,8 +86,10 @@ public class ImpactCovid19SummaryAction extends BaseSummariesAction implements S
     masterReport.getParameterValues().put("i8nProjectLeader", this.getText("summaries.oaprojects.projectLeader"));
     masterReport.getParameterValues().put("i8nManagementLiasion",
       this.getText("summaries.oaprojects.managementLiasion"));
-    masterReport.getParameterValues().put("i8nAnswer2020Covid19", this.getText("summaries.impacts.answer2020Covid19"));
-    masterReport.getParameterValues().put("i8nAnswer2021Covid19", this.getText("summaries.impacts.answer2021Covid19"));
+    masterReport.getParameterValues().put("i8nAnswer2020Covid19",
+      this.getText("summaries.impacts.answer2020Covid19").concat(" " + this.getCurrentCycleYear()));
+    masterReport.getParameterValues().put("i8nAnswerLastYearCovid19",
+      this.getText("summaries.impacts.answer2020Covid19").concat(" " + (this.getCurrentCycleYear() - 1)));
     masterReport.getParameterValues().put("i8nProjectLeaderEmail",
       this.getText("summaries.impacts.projectLeaderEmail"));
     masterReport.getParameterValues().put("i8nManagementLiasionAcronym",
@@ -196,7 +198,7 @@ public class ImpactCovid19SummaryAction extends BaseSummariesAction implements S
   private TypedTableModel getImpactCovid19TableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"projectId", "title", "projectSummary", "projectLeader", "managementLiasion", "answer2020Covid19",
-        "answer2021Covid19", "projectUrl", "phaseId", "projectLeaderEmail", "managementLiasionAcronym",
+        "answerLastYearCovid19", "projectUrl", "phaseId", "projectLeaderEmail", "managementLiasionAcronym",
         "impactCategory"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, Long.class, String.class, String.class, String.class},
@@ -209,9 +211,11 @@ public class ImpactCovid19SummaryAction extends BaseSummariesAction implements S
 
       model.addRow(new Object[] {reportProjectImpactCovid19DTO.getProjectId(), reportProjectImpactCovid19DTO.getTitle(),
         reportProjectImpactCovid19DTO.getProjectSummary(), reportProjectImpactCovid19DTO.getProjectLeader(),
-        reportProjectImpactCovid19DTO.getManagementLiasion(), reportProjectImpactCovid19DTO.getAnswer().get(2020),
-        reportProjectImpactCovid19DTO.getAnswer().get(2021), reportProjectImpactCovid19DTO.getProjectUrl(),
-        reportProjectImpactCovid19DTO.getPhaseId(), reportProjectImpactCovid19DTO.getProjectLeaderEmail(),
+        reportProjectImpactCovid19DTO.getManagementLiasion(),
+        reportProjectImpactCovid19DTO.getAnswer().get(this.getCurrentCycleYear()),
+        reportProjectImpactCovid19DTO.getAnswer().get(this.getCurrentCycleYear() - 1),
+        reportProjectImpactCovid19DTO.getProjectUrl(), reportProjectImpactCovid19DTO.getPhaseId(),
+        reportProjectImpactCovid19DTO.getProjectLeaderEmail(),
         reportProjectImpactCovid19DTO.getManagementLiasionAcronym(),
         reportProjectImpactCovid19DTO.getImpactCategory()});
     }

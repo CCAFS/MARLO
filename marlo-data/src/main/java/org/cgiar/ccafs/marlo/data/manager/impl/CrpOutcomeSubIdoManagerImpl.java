@@ -75,24 +75,30 @@ public class CrpOutcomeSubIdoManagerImpl implements CrpOutcomeSubIdoManager {
 
   @Override
   public void replicate(CrpOutcomeSubIdo originalCrpOutcomeSubIdo, Phase initialPhase) {
-    Phase current = initialPhase;
-    String outcomeComposedId = originalCrpOutcomeSubIdo.getCrpProgramOutcome().getComposeID();
-    Long subIdoId = originalCrpOutcomeSubIdo.getSrfSubIdo().getId();
+    if (initialPhase != null && originalCrpOutcomeSubIdo != null && originalCrpOutcomeSubIdo != null
+      && originalCrpOutcomeSubIdo.getCrpProgramOutcome() != null
+      && originalCrpOutcomeSubIdo.getCrpProgramOutcome().getComposeID() != null
+      && originalCrpOutcomeSubIdo.getSrfSubIdo() != null && originalCrpOutcomeSubIdo.getSrfSubIdo().getId() != null) {
 
-    while (current != null) {
-      CrpOutcomeSubIdo outcomeSubIdo =
-        this.getCrpOutcomeSubIdoByOutcomeComposedIdPhaseAndSubIdo(outcomeComposedId, current.getId(), subIdoId);
-      CrpProgramOutcome crpProgramOutcome = crpProgramOutcomeManager.getCrpProgramOutcome(outcomeComposedId, current);
-      if (outcomeSubIdo == null) {
-        outcomeSubIdo = new CrpOutcomeSubIdo();
+      Phase current = initialPhase;
+      String outcomeComposedId = originalCrpOutcomeSubIdo.getCrpProgramOutcome().getComposeID();
+      Long subIdoId = originalCrpOutcomeSubIdo.getSrfSubIdo().getId();
+
+      while (current != null && outcomeComposedId != null && subIdoId != null) {
+        CrpOutcomeSubIdo outcomeSubIdo =
+          this.getCrpOutcomeSubIdoByOutcomeComposedIdPhaseAndSubIdo(outcomeComposedId, current.getId(), subIdoId);
+        CrpProgramOutcome crpProgramOutcome = crpProgramOutcomeManager.getCrpProgramOutcome(outcomeComposedId, current);
+        if (outcomeSubIdo == null) {
+          outcomeSubIdo = new CrpOutcomeSubIdo();
+        }
+
+        outcomeSubIdo.copyFields(originalCrpOutcomeSubIdo);
+        outcomeSubIdo.setCrpProgramOutcome(crpProgramOutcome);
+
+        this.saveCrpOutcomeSubIdo(outcomeSubIdo);
+
+        current = current.getNext();
       }
-
-      outcomeSubIdo.copyFields(originalCrpOutcomeSubIdo);
-      outcomeSubIdo.setCrpProgramOutcome(crpProgramOutcome);
-
-      this.saveCrpOutcomeSubIdo(outcomeSubIdo);
-
-      current = current.getNext();
     }
   }
 
