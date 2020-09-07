@@ -248,6 +248,7 @@ public class ProjectPageItem<T> {
         if (deliverableInfo != null && deliverableInfo.getStatus().longValue() == 3) {
           deliverable.setDeliverableInfo(deliverableInfo);
           DeliverableDissemination deliverableDissemination = deliverable.getDissemination(phase);
+          // deliverable external link not provided removed when this is null
           deliverable.setDissemination(deliverableDissemination);
           deliverable.setIsFindable(this.isF(deliverable));
           deliverable.setIsAccesible(this.isA(deliverable));
