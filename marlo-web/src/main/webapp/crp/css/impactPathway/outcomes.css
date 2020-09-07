@@ -1,3 +1,13 @@
+
+.minimize{
+  display: none;
+}
+.cont-btn-min{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .outcome {
   /* margin-bottom: 30px !important; */
   padding-top: 18px;

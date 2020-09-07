@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom"] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/impactPathway/programSubmit.js", 
-  "${baseUrlMedia}/js/impactPathway/outcomes.js?20191022", 
+  "${baseUrlMedia}/js/impactPathway/outcomes.js?20200907", 
   "${baseUrlCdn}/global/js/autoSave.js", 
   "${baseUrlCdn}/global/js/impactGraphic.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js" 
@@ -365,7 +365,7 @@
       [@customForm.textArea name="${milestoneCustomName}.title" i18nkey="outcome.milestone.statement" required=true className="milestone-statement limitWords-100" editable=editableMilestone /]
     </div>
     
-    <div class="form-group row"> 
+    <div class="form-group row to-minimize minimize"> 
       [#-- Year --]
       <div class="col-md-4">
         [@customForm.select name="${milestoneCustomName}.year" value="${(milestone.year)!-1}"  i18nkey="outcome.milestone.inputTargetYear" listName="milestoneYears"  required=true  className=" targetYear milestoneYear" editable=editableMilestone /]
@@ -381,7 +381,7 @@
       </div>
     </div>
     
-    <div class="row form-group target-block">
+    <div class="row form-group target-block to-minimize minimize">
       [#-- Target Unit --]
       [#if targetUnitList?has_content]
       <div class="col-md-4">
@@ -396,7 +396,7 @@
     </div>
     
     [#-- POWB 2019 REQUIREMENTS --]
-    <div class="form-group">
+    <div class="form-group to-minimize minimize">
       <div class="row">
         [#-- Indicate of the following --]
         <div class="col-md-5">
@@ -453,7 +453,9 @@
         <br />
       </div>
     </div>
-    
+          <div class="cont-btn-min"> 
+         <button   type="button" class="btn-expand btn btn-primary btn-link">Expand<i class="fas fa-expand-arrows-alt"></i></button>
+       </div>
   </div>
 [/#macro]
 
