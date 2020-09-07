@@ -453,7 +453,7 @@
         <br />
       </div>
     </div>
-          <div class="cont-btn-min"> 
+       <div class="cont-btn-min"> 
          <button   type="button" class="btn-expand btn btn-primary btn-link">Expand<i class="fas fa-expand-arrows-alt"></i></button>
        </div>
   </div>

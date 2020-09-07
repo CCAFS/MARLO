@@ -299,10 +299,10 @@ function expandMilestone(){
   console.log($selector+" .to-minimize");
   if ($($selector+" .to-minimize").hasClass("minimize")){
     $($selector+" .to-minimize").removeClass("minimize");
-    // $("#btn-milestone-"+milestone ).html("Minimize")
+     $($selector+" .btn-expand").html("Minimize")
   }else{
     $($selector+" .to-minimize").addClass("minimize");
-    // $("#btn-milestone-"+milestone ).html("Expand")
+     $($selector+" .btn-expand").html("Expand")
   }
 }
 /**
