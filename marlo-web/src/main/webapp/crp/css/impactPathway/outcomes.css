@@ -2,6 +2,9 @@
 .minimize{
   display: none;
 }
+.btn-expand{
+  font-weight: 900;
+}
 .cont-btn-min{
   width: 100%;
   display: flex;
