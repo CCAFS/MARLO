@@ -4,14 +4,14 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom"] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/impactPathway/programSubmit.js", 
-  "${baseUrlMedia}/js/impactPathway/outcomes.js?20200907", 
+  "${baseUrlMedia}/js/impactPathway/outcomes.js?20200908", 
   "${baseUrlCdn}/global/js/autoSave.js", 
   "${baseUrlCdn}/global/js/impactGraphic.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js" 
   ] 
 /]
 [#assign customCSS = [ 
-  "${baseUrlMedia}/css/impactPathway/outcomes.css",
+  "${baseUrlMedia}/css/impactPathway/outcomes.css?20200908",
   "${baseUrlCdn}/global/css/impactGraphic.css" 
   ] 
 /]
@@ -68,6 +68,9 @@
           
           [#if hasAvailableProgramID]
             <div class="outcomes-list" listname="outcomes">
+             <div class="cont-btn-min"> 
+              <button   type="button" class="btn-expand-all-outcomes btn btn-primary btn-link">Expand all outcomes<i class="fas fa-expand-arrows-alt"></i></button>
+             </div>
             [#if outcomes?has_content]
               [#list outcomes as outcome]
                 [@outcomeMacro outcome=outcome name="outcomes" index=outcome_index /]
