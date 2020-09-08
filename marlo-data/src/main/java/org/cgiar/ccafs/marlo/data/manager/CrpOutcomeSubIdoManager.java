@@ -60,6 +60,15 @@ public interface CrpOutcomeSubIdoManager {
   public CrpOutcomeSubIdo getCrpOutcomeSubIdoById(long crpOutcomeSubIdoID);
 
   /**
+   * This method finds a CrpOutcomeSubIdo in the given phase by an outcome composeId
+   * 
+   * @param composedId the composed id of the original outcome
+   * @param phaseId the id of the phase
+   * @return a CrpOutcomeSubIdo, null if not found.
+   */
+  public CrpOutcomeSubIdo getCrpOutcomeSubIdoByOutcomeComposedIdAndPhase(String outcomeComposedId, long phaseId);
+
+  /**
    * This method finds a CrpOutcomeSubIdo in the given phase by an outcome composeId and a Srf SubIdo ID
    * 
    * @param composedId the composed id of the original outcome
