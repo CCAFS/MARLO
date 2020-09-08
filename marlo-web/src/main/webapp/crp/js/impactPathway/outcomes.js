@@ -302,9 +302,6 @@ function expandMilestone(){
   let $milestone = $(this).parents('.milestone');
   let $outcome = $(this).parents('.outcome');
   let $selector="#"+$outcome[0].id+" #"+$milestone[0].id;
-  console.log($milestone[0].id);
-  console.log($outcome[0].id);
-  console.log($selector+" .to-minimize");
   if ($($selector+" .to-minimize").hasClass("minimize")){
     $($selector+" .to-minimize").removeClass("minimize");
      $($selector+" .btn-expand").html("Minimize")
@@ -317,7 +314,6 @@ function expandMilestone(){
 function expandOutcome(){
   let $outcome = $(this).parents('.outcome');
   let $selector="#"+$outcome[0].id;
-  console.log($selector+" .to-minimize");
   if ($($selector+" .to-minimize-outcome").hasClass("minimizeOutcome")){
     $($selector+" .to-minimize-outcome").removeClass("minimizeOutcome");
      $($selector+" .btn-expand-Outcome").html("Minimize Outcome")
@@ -329,8 +325,7 @@ function expandOutcome(){
 
 function expandAll(){
   let $outcome = $(this).parents('.outcome');
-  let $milestone = $(this).parents('.milestone');
-  console.log($outcome[0].id  );
+  // console.log($outcome[0].id  );
   
     $("#"+$outcome[0].id +" .milestones-list").find('.milestone').each(function(i,milestone) {
 
@@ -340,13 +335,13 @@ function expandAll(){
           $(milestone).removeClass("minimize");
 
       });
-      console.log("Minimize all");
+      // console.log("Minimize all");
       }else{
           $(milestone).find('.to-minimize').each(function(i,milestone) {
           $(milestone).addClass("minimize");
           });
 
-        console.log("Expand all");
+        // console.log("Expand all");
       }
     });
 
@@ -368,19 +363,19 @@ function expandAllOutcomes(){
     $(" .outcomes-list").find('.outcome').each(function(i,outcome) {
       if( expandAllOutcomesbol){
     
-          $(outcome).find('.to-minimize-outcome').each(function(i,milestone) {
-          $(milestone).removeClass("minimizeOutcome");
+          $(outcome).find('.to-minimize-outcome').each(function(i,btn) {
+          $(btn).removeClass("minimizeOutcome");
           
 
       });
-      console.log("minimizeOutcome all");
+      // console.log("minimizeOutcome all");
      
       }else{
-          $(outcome).find('.to-minimize-outcome').each(function(i,milestone) {
-          $(milestone).addClass("minimizeOutcome");
+          $(outcome).find('.to-minimize-outcome').each(function(i,btn) {
+          $(btn).addClass("minimizeOutcome");
           });
 
-        console.log("Expand all");
+        // console.log("Expand all");
        
       }
     });
