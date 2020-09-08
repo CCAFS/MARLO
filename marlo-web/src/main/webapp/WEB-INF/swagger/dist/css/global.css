@@ -41,3 +41,11 @@
 .swagger-ui .wrapper {
   width: 80% !important;
 }
+
+.information-container  {
+  display: none;
+}
+
+section.swagger-ui {
+  padding: 0px;
+}
