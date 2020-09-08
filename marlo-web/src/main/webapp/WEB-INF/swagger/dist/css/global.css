@@ -37,3 +37,7 @@
 .navbar-nav {
   flex-direction: row;
 }
+
+.swagger-ui .wrapper {
+  width: 80% !important;
+}
