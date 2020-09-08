@@ -360,7 +360,7 @@ public class ProjectPageItem<T> {
                   + phase.getDescription() + "&year=" + phase.getYear();
                 projectExpectedStudy.setPdfLink(pdflink);
               } else {
-                projectExpectedStudy.setPdfLink("Link not provided");
+                projectExpectedStudy.setPdfLink(null);
               }
               outcomeImpactCaseReports.add(projectExpectedStudy);
             }
