@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.institutions;
 
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
@@ -23,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.PartnerRequestManager;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
@@ -38,6 +40,8 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -68,6 +72,7 @@ public class InstitutionItem<T> {
   private Environment env;
   private final SendMailS sendMail;
   private InstitutionManager institutionManager;
+  private InstitutionLocationManager institutionLocationManager;
   private LocElementManager locElementManager;
   private InstitutionMapper institutionMapper;
   private PartnerRequestManager partnerRequestManager;
@@ -81,9 +86,10 @@ public class InstitutionItem<T> {
   @Inject
   public InstitutionItem(InstitutionTypeManager institutionTypeManager, InstitutionManager institutionManager,
     InstitutionMapper institutionMapper, LocElementManager locElementManager,
-    PartnerRequestManager partnerRequestManager, GlobalUnitManager globalUnitManager, SendMailS sendMail,
-    APConfig config) {
+    InstitutionLocationManager institutionLocationManager, PartnerRequestManager partnerRequestManager,
+    GlobalUnitManager globalUnitManager, SendMailS sendMail, APConfig config) {
     this.institutionTypeManager = institutionTypeManager;
+    this.institutionLocationManager = institutionLocationManager;
     this.institutionManager = institutionManager;
     this.institutionMapper = institutionMapper;
     this.locElementManager = locElementManager;
@@ -92,6 +98,81 @@ public class InstitutionItem<T> {
     this.sendMail = sendMail;
     this.config = config;
     // this.fieldErrors = new ArrayList<FieldErrorDTO>();
+  }
+
+  public ResponseEntity<InstitutionRequestDTO> acceptPartnerRequest(Long id, boolean accepted, String justification,
+    String entityAcronym, User user) {
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+    PartnerRequest partnerRequest = this.partnerRequestManager.getPartnerRequestById(id);
+    Set<CrpUser> lstUser = user.getCrpUsers();
+    // If not exists
+    if (partnerRequest != null && partnerRequest.getPartnerRequest() == null) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    // if the request was from an CRP which the user don't have authorization
+    if (!lstUser.stream().anyMatch(crp -> crp.getCrp().getAcronym().equalsIgnoreCase(entityAcronym))) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    // if the request was from an CRP diferent to the acronym
+    if (!entityAcronym.equalsIgnoreCase(partnerRequest.getCrp().getAcronym())) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    if (partnerRequest.getAcepted() == null) {
+      if (accepted) {
+        Institution institution = new Institution();
+        // Create institution
+        institution.setName(partnerRequest.getPartnerName());
+        institution.setAcronym(partnerRequest.getAcronym());
+        institution.setWebsiteLink(partnerRequest.getWebPage());
+
+        InstitutionType institutionType =
+          this.institutionTypeManager.getInstitutionTypeById(partnerRequest.getInstitutionType().getId());
+        institution.setInstitutionType(institutionType);
+        LocElement locElement = this.locElementManager.getLocElementById(partnerRequest.getLocElement().getId());
+        institution.setAdded(new Date());
+
+        this.institutionManager.saveInstitution(institution);
+        // Create institution location
+        InstitutionLocation institutionLocation = new InstitutionLocation();
+        institutionLocation.setInstitution(institution);
+        institutionLocation.setLocElement(locElement);
+        institutionLocation.setHeadquater(new Boolean(true));
+        this.institutionLocationManager.saveInstitutionLocation(institutionLocation);
+
+        partnerRequest.setAcepted(new Boolean(true));
+        partnerRequest.setAceptedDate(new Date());
+        partnerRequest.setActive(false);
+        partnerRequest.setInstitution(institution);
+        this.partnerRequestManager.savePartnerRequest(partnerRequest);
+        // inactive the parent partnerRequest
+        PartnerRequest partnerRequestParent =
+          this.partnerRequestManager.getPartnerRequestById(partnerRequest.getPartnerRequest().getId());
+        partnerRequestParent.setActive(false);
+        this.partnerRequestManager.savePartnerRequest(partnerRequestParent);
+        this.sendAcceptedNotficationEmail(partnerRequest, user);
+      } else {
+        partnerRequest.setAcepted(new Boolean(false));
+        partnerRequest.setRejectJustification(justification);
+        partnerRequest.setRejectedBy(user);
+        partnerRequest.setRejectedDate(new Date());
+        partnerRequest.setActive(false);
+        partnerRequest = this.partnerRequestManager.savePartnerRequest(partnerRequest);
+        // inactive the parent partnerRequest
+        PartnerRequest partnerRequestParent =
+          this.partnerRequestManager.getPartnerRequestById(partnerRequest.getPartnerRequest().getId());
+        partnerRequestParent.setActive(false);
+        this.partnerRequestManager.savePartnerRequest(partnerRequestParent);
+        this.sendRejectedNotficationEmail(partnerRequest, user, justification);
+      }
+    } else {
+      fieldErrors.add(new FieldErrorDTO("PartnerRequest", "Accepted", "This Request has already been processed"));
+    }
+    if (!fieldErrors.isEmpty()) {
+      throw new MARLOFieldValidationException("Field Validation errors", "", fieldErrors);
+    }
+
+    return Optional.ofNullable(partnerRequest).map(this.institutionMapper::partnerRequestToInstitutionRequestDTO)
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
   public ResponseEntity<InstitutionRequestDTO> createPartnerRequest(NewInstitutionDTO newInstitutionDTO,
@@ -184,6 +265,33 @@ public class InstitutionItem<T> {
     return institutionDTOs;
   }
 
+  public List<InstitutionRequestDTO> getParterRequestByGlobalUnit(String entityAcronym, User user) {
+    List<InstitutionRequestDTO> partnerRequestList = new ArrayList<InstitutionRequestDTO>();
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+    Set<CrpUser> lstUser = user.getCrpUsers();
+    // if the request was from an CRP which the user don't have authorization
+    if (!lstUser.stream().anyMatch(crp -> crp.getCrp().getAcronym().equalsIgnoreCase(entityAcronym))) {
+      fieldErrors.add(new FieldErrorDTO("PartnerRequestList", "GlobalUnitEntity", "CGIAR entity not autorized"));
+    }
+    List<PartnerRequest> requestList = new ArrayList<PartnerRequest>();
+    if (this.partnerRequestManager.findAll() != null) {
+      requestList = new ArrayList<>(this.partnerRequestManager.findAll().stream()
+        .filter(pr -> pr.isActive() && !pr.isOffice()
+          && pr.getCrp().getAcronym().toUpperCase().equals(entityAcronym.toUpperCase())
+          && pr.getPartnerRequest() != null)
+        .collect(Collectors.toList()));
+    }
+    if (!fieldErrors.isEmpty()) {
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
+    }
+    partnerRequestList = requestList.stream().map(this.institutionMapper::partnerRequestToInstitutionRequestDTO)
+      .collect(Collectors.toList());
+    return partnerRequestList;
+  }
+
   /**
    * Get a partner request by an id *
    * 
@@ -213,6 +321,41 @@ public class InstitutionItem<T> {
     MessageFormat message = new MessageFormat(value);
     return message.format(params);
 
+  }
+
+  private void sendAcceptedNotficationEmail(PartnerRequest partnerRequest, User user) {
+    String toEmail = "";
+
+    // CC Email: User who accepted the request
+    String ccEmail = user.getEmail();
+
+    // ToEmail: User who requested the partner or the mail received by CLARISA
+    if (partnerRequest.getExternalUserMail() != null) {
+      toEmail = partnerRequest.getExternalUserMail();
+      ccEmail = ccEmail + ", " + partnerRequest.getCreatedBy().getEmail();
+    } else {
+
+      toEmail = partnerRequest.getCreatedBy().getEmail();
+    }
+
+    // BBC: Our gmail notification email.
+    String bbcEmails = this.config.getEmailNotification();
+
+    // subject
+    String subject =
+      this.getText("marloRequestInstitution.accept.email.subject", new String[] {partnerRequest.getPartnerName()});
+
+    // Building the email message
+    StringBuilder message = new StringBuilder();
+    String userName = partnerRequest.getExternalUserName() == null ? partnerRequest.getCreatedBy().getFirstName()
+      : partnerRequest.getExternalUserName();
+    message.append(this.getText("email.dear", new String[] {userName}));
+    message
+      .append(this.getText("marloRequestInstitution.accept.email", new String[] {partnerRequest.getPartnerInfo()}));
+
+    message.append("This request was sent through CLARISA logged as " + user.getFirstName() + " " + user.getLastName()
+      + " (" + user.getEmail() + ")  </br>");
+    this.sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
   }
 
   private void sendPartnerRequestEmail(PartnerRequest partnerRequest, User user, String entityAcronym) {
@@ -277,6 +420,36 @@ public class InstitutionItem<T> {
     }
     this.messageSent = true;
 
+  }
+
+  private void sendRejectedNotficationEmail(PartnerRequest partnerRequest, User user, String justification) {
+    String toEmail = "";
+    // CC Email: User who rejected the request
+    String ccEmail = user.getEmail();
+
+    // ToEmail: User who requested the partner or the mail received by CLARISA
+    if (partnerRequest.getExternalUserMail() != null) {
+      toEmail = partnerRequest.getExternalUserMail();
+      ccEmail = ccEmail + ", " + partnerRequest.getCreatedBy().getEmail();
+    } else {
+      toEmail = partnerRequest.getCreatedBy().getEmail();
+    }
+    // BBC: Our gmail notification email.
+    String bbcEmails = this.config.getEmailNotification();
+    // subject
+    String subject =
+      this.getText("marloRequestInstitution.reject.email.subject", new String[] {partnerRequest.getPartnerName()});
+    // Building the email message
+    StringBuilder message = new StringBuilder();
+    String userName = partnerRequest.getExternalUserName() == null ? partnerRequest.getCreatedBy().getFirstName()
+      : partnerRequest.getExternalUserName();
+    message.append(this.getText("email.dear", new String[] {userName}));
+    message.append(this.getText("marloRequestInstitution.reject.email",
+      new String[] {partnerRequest.getPartnerInfo(), justification}));
+    message.append("This request was sent through CLARISA logged as " + user.getFirstName() + " " + user.getLastName()
+      + " (" + user.getEmail() + ")  </br>");
+
+    this.sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
   }
 
 }
