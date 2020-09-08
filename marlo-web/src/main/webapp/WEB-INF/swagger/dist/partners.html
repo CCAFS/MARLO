@@ -4,7 +4,13 @@
 <meta charset="UTF-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
 <title>CLARISA</title>
-  <link href="homepage/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat"
+  rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans"
+  rel="stylesheet">
+
+<!--  Vendor CSS Files -->
+  <link href="homepage/assets/libraries/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="homepage/assets/vendor/icofont/icofont.min.css" rel="stylesheet">
   <link href="homepage/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
   <link href="homepage/assets/vendor/animate.css/animate.min.css" rel="stylesheet">
@@ -13,22 +19,15 @@
   <link href="homepage/assets/vendor/aos/aos.css" rel="stylesheet">
   <link href="homepage/assets/css/style.css" rel="stylesheet">
   
-
+  <!-- Custom CSS-->
+  <link rel="stylesheet" href="homepage/assets/css/custom.css" />
+  
  
   
-  <link href="https://fonts.googleapis.com/css?family=Montserrat"
-  rel="stylesheet">
-<link href="https://fonts.googleapis.com/css?family=Open+Sans"
-  rel="stylesheet">
-  
-  <link href="homepage/assets/css/style.css" rel="stylesheet">
-  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
   <!-- Vendor JS Files -->
-  <script src="homepage/assets/vendor/jquery/jquery.min.js"></script>
-  <script src="homepage/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="homepage/assets/libraries/jquery/jquery-3.5.1.min.js"></script>
   <script src="homepage/assets/vendor/jquery.easing/jquery.easing.min.js"></script>
+  <script src="homepage/assets/libraries/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="homepage/assets/vendor/php-email-form/validate.js"></script>
   <script src="homepage/assets/vendor/jquery-sticky/jquery.sticky.js"></script>
   <script src="homepage/assets/vendor/venobox/venobox.min.js"></script>
@@ -38,60 +37,77 @@
   <script src="homepage/assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
   <script src="homepage/assets/vendor/aos/aos.js"></script>
 
-  <!-- Template Main JS File -->
+  <!-- Main JS File -->
   <script src="homepage/assets/js/main.js"></script>
   
-
-  <link rel="stylesheet" type="text/css" href="./css/api.css">
-  <link rel="stylesheet" type="text/css" href="./css/global.css">
+  <link rel="icon" type="image/png" href="./homepage/assets/img/favicon.ico" />
+  
   <link rel="stylesheet" type="text/css" href="./css/swagger-ui.css">
 
 </head>
 <body>
 <!-- ======= Top Bar ======= -->
-  <section id="topbar" class="d-none d-lg-block">
-    <div class="container clearfix">
-      <div class="contact-info float-left">
-        
-      </div>    
-    </div>
-  </section>
   <header id="header">
-    <div class="container">
-     <div class="logo float-left">
-        <h1 class="text-light"><a href="home.html"><span>CLARISA</span></a></h1>
-      </div>
-       <nav class="nav-menu float-right d-none d-lg-block">
-       <ul>
-          <li class="active"><a href="home.html">Home</a></li>
-          <li><a href="home.html#about">About CLARISA</a></li>
-          <li class="drop-down"><a href="home.html#services">Services</a>
-             <ul>
-                 <li><a href="api.html">API</a></li>
-                 <li><a href="partners.html">Partner Request</a></li>
-             </ul>
-          </li>
-          <li><a href="home.html#faq">FAQ</a></li>
-          <li><a href="home.html#team">Team</a></li>          
-          <li><a href="home.html#contact">Contact Us</a></li>
-        </ul>
-       </nav><!-- .nav-menu -->
-    </div>
-  </header><!-- End Header -->
+   <nav class="navbar navbar-expand-lg">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="home.html">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="home.html#about">About CLARISA</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Services
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="api.html">API</a>
+          <a class="dropdown-item" href="partners.html">Partner Request</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="home.html#faq">FAQ</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="home.html#team">Team</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="home.html#contact">Contact Us</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+  </header>
   
   
-  
-  
+    
    <main id="main">
        <div class="container">
          <div class="section-title">
                <h2>Partners</h2>
          </div>          
          <br />                    
+         
     </div>
-         <iframe src="http://clarisatest.ciat.cgiar.org/new-institution" width="100%" height="100%">
-         </iframe>         
+     <iframe src="http://clarisatest.ciat.cgiar.org" width="100%" height="800px">
+         </iframe>     
+            
    </main> <!-- End #main -->
    
 </body>
+<footer id="footer">
+      <div class="container">
+      <div class="copyright">
+        &copy; Copyright <strong><span>CGIAR</span></strong>. All Rights Reserved
+      </div>
+      <div class="credits">        
+        Designed by <a href="">Innovation & Business Development</a>
+      </div>
+    </div>
+</footer>
 </html>
