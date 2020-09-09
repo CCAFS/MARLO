@@ -12,3 +12,13 @@ h3 {
 a.nav-link {
   font-family: "Montserrat", sans-serif;
 }
+
+.helper {
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+}
+
+.video-box img {
+    vertical-align: middle;
+}
