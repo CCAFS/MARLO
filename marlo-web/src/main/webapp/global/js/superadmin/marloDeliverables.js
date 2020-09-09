@@ -15,6 +15,11 @@ function attachEvents() {
   $globalUnitSelect.on('change', updatePhases);
   $phasesSelect.on('change', updateDeliverables);
 
+  
+  // Expand alls Outcomes
+  $("#anotherPhase").on('click', changeValue);
+  $("#anotherProject").on('click', changeValue);
+
   $('#toggleSelectAll').on('change', function() {
     $deliverablesList.find('tr:visible').find('.deliverableCheck').prop("checked", this.checked);
     updateCheckedCount();
@@ -42,6 +47,22 @@ function attachEvents() {
     }
     updateCheckedCount();
   });
+}
+
+function changeValue(){
+  //  console.log($(this).val());
+
+   if($(this).val()=="anotherPhase"){
+    console.log("Mostrar phase");
+    $("#anotherProjectContent").hide();
+    $("#anotherPhaseContent").show();
+   }else{
+    console.log("Mostrar project");
+    $("#anotherPhaseContent").hide();
+    $("#anotherProjectContent").show();
+   }
+  //  console.log($("#anotherPhase").val(),$("#anotherProject").val());
+
 }
 
 function updateEntity() {

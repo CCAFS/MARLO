@@ -33,25 +33,64 @@
         
         
         <div class=" row borderBox">
+          <div class="row form-group">
         
+            <!--    
+                    <div class="col-md-4">
+                      [@customForm.select name="a" value="${(milestone.year)!-1}"  i18nkey="outcome.milestone.inputTargetYear" listName="milestoneYears"  required=true  className=" targetYear milestoneYear" editable=editableMilestone /]
+                    </div>
+                    -->
+        
+            <div class="col-md-12 " style="margin-bottom: 20px;">
+              [@customForm.select name="Deliverable" value="name" label="Phase" listName="phases" header=true multiple=false
+              required=true className="form-control" editable=editable || editStatus/]
+            </div>
         
            
-               <div class="row form-group">
-                <div class="col-md-12" style="margin-bottom: 10px;">
-                    [@customForm.select name="Deliverable" value="name" label="Phase" listName="phases" header=true  multiple=false required=true className="form-control" editable=editable || editStatus/]
-                 </div>
-                 <br>
-                  <div class="col-md-12" >
-                    [@customForm.radioFlat id="1" name="12" label="Move to another phase" value="true" checked=true cssClassLabel="radio-label-yes"/]
-                  </div>
-                  <div class="col-md-12" >
-                    [@customForm.radioFlat id="2" name="13" label="Move to another project" value="false" checked=false cssClass="editable-no" cssClassLabel="radio-label-no"/]
-                  </div>
+        
+            <div class="col-md-12 ma-bot">
+              [@customForm.radioFlat id="anotherPhase" name="MoveTo" label="Move to another phase" value="anotherPhase"
+              checked=false cssClassLabel="radio-label-yes"/]
+            </div>
+        
+            <div id="anotherPhaseContent" class="row col-md-12 ma-bot">
+        
+              <div class="col-md-6">
+                <label for="" class="title">
+                  Current phase:
+                </label>
+                <p >AR2019</p>
               </div>
-         
-
-              
-                                          
+        
+              <div class="col-md-6 ">
+                [@customForm.select name="Select phase" value="name" label="Phase" listName="phases" header=true multiple=false
+                required=true className="form-control" editable=editable || editStatus/]
+              </div>
+        
+            </div>
+        
+            <div class="col-md-12 ma-bot">
+              [@customForm.radioFlat id="anotherProject" name="MoveTo" label="Move to another project" value="anotherProject"
+              checked=false cssClass="editable-no" cssClassLabel="radio-label-no"/]
+            </div>
+        
+            <div id="anotherProjectContent" class="row col-md-12 ma-bot">
+        
+              <div class="col-md-6">
+                <label for="" class="title">
+                  Current project:
+                </label>
+                <!-- <h1>Current project:</h1> -->
+                <p >P250 - Bringing CSA practices to scale: assessing their contributions to narrow nutrient and yield gaps</p>
+              </div>
+        
+              <div class="col-md-6">
+                [@customForm.select name="Select project" value="name" label="Phase" listName="phases" header=true multiple=false
+                required=true className="form-control" editable=editable || editStatus/]
+              </div>
+        
+            </div>
+          </div>
         </div>
         
         
