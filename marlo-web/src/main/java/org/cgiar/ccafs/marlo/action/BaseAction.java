@@ -546,11 +546,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public void addMessage(String message) {
-    this.validationMessage.append("<p> - ");
-    this.validationMessage.append(message);
-    this.validationMessage.append("</p>");
+    if (!StringUtils.stripToEmpty(message).isEmpty()) {
+      this.validationMessage.append("<p> - ");
+      this.validationMessage.append(message);
+      this.validationMessage.append("</p>");
 
-    this.addMissingField(message);
+      this.addMissingField(message);
+    }
   }
 
   /**
@@ -559,10 +561,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @param field is the name of the field.
    */
   public void addMissingField(String field) {
-    if (this.missingFields.length() != 0) {
-      this.missingFields.append(";");
+    if (!StringUtils.stripToEmpty(field).isEmpty()) {
+      if (this.missingFields.length() != 0) {
+        this.missingFields.append(";");
+      }
+      this.missingFields.append(field);
     }
-    this.missingFields.append(field);
   }
 
   /**
