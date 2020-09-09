@@ -29,8 +29,33 @@
       <div class="col-md-9">
         [@s.form id="bulkReplicationForm" action=actionName enctype="multipart/form-data" ]
         
-        <h4 class="sectionTitle">[@s.text name="marloBulkReplication.title" /] </h4>
-        <div class="borderBox">
+        <h4 class="sectionTitle">[@s.text name="ManageDeliverables.title" /] </h4>
+        
+        
+        <div class=" row borderBox">
+        
+        
+           
+               <div class="row form-group">
+                <div class="col-md-12" style="margin-bottom: 10px;">
+                    [@customForm.select name="Deliverable" value="name" label="Phase" listName="phases" header=true  multiple=false required=true className="form-control" editable=editable || editStatus/]
+                 </div>
+                 <br>
+                  <div class="col-md-12" >
+                    [@customForm.radioFlat id="1" name="12" label="Move to another phase" value="true" checked=true cssClassLabel="radio-label-yes"/]
+                  </div>
+                  <div class="col-md-12" >
+                    [@customForm.radioFlat id="2" name="13" label="Move to another project" value="false" checked=false cssClass="editable-no" cssClassLabel="radio-label-no"/]
+                  </div>
+              </div>
+         
+
+              
+                                          
+        </div>
+        
+        
+   <!-- <div class="borderBox">
           <div class="loading" style="display:none"></div>
           <div class="row grayBox">
             [#--  Entity  --]
@@ -87,7 +112,7 @@
                   <span class="input-group-btn">
                     <button id="filterButton" class="btn btn-default" type="button">Filter</button>
                   </span>
-                </div><!-- /input-group -->
+                </div>
               </div>
               <div class="col-md-5">
                 <label for="toggleSelectAll" class="pull-right"><input type="checkbox" name="" id="toggleSelectAll" checked="checked"/> Select/Unselect All</label>
@@ -108,8 +133,7 @@
             </div>
           </div>
           
-          
-        </div>
+        </div> -->
         
         [#-- Section Buttons--]
         <div class="buttons">
