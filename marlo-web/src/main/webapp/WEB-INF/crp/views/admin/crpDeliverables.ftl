@@ -1,8 +1,8 @@
 [#ftl]
 [#assign title = "MARLO Deliverables" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = [] /]
-[#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/marloDeliverables.js?20181203" ] /]
+[#assign pageLibs = ["select2"] /]
+[#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/marloDeliverables.js?20200909" ] /]
 [#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css" ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "crpDeliverables" /]
@@ -63,7 +63,7 @@
               </div>
         
               <div class="col-md-6 ">
-                [@customForm.select name="Select phase" value="name" label="Phase" listName="phases" header=true multiple=false
+                [@customForm.select name="phase" value="name" label="Phase" listName="phases" header=true multiple=false
                 required=true className="form-control" editable=editable || editStatus/]
               </div>
         
