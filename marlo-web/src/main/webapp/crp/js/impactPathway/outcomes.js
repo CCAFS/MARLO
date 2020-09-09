@@ -1,6 +1,7 @@
 $(document).ready(init);
 var currentSubIdo;
 var saveObj;
+var expandAllOutcomesbol = true;
 
 function init() {
 
@@ -31,6 +32,13 @@ function attachEvents() {
       $targetValue.hide('slow');
     }
   });
+  // Expand alls Outcomes
+  $('.btn-expand-all-outcomes').on('click', expandAllOutcomes);
+  // Expand alls Milestones
+  $('.btn-expand-all').on('click', expandAll);
+  // Expand an outcome
+  $('.btn-expand-Outcome').on('click', expandOutcome);
+  // Expand a Milestone
   $('.btn-expand').on('click', expandMilestone);
   // Add an Outcome
   $('.addOutcome').on('click', addOutcome);
@@ -304,6 +312,89 @@ function expandMilestone(){
     $($selector+" .to-minimize").addClass("minimize");
      $($selector+" .btn-expand").html("Expand")
   }
+}
+
+function expandOutcome(){
+  let $outcome = $(this).parents('.outcome');
+  let $selector="#"+$outcome[0].id;
+  console.log($selector+" .to-minimize");
+  if ($($selector+" .to-minimize-outcome").hasClass("minimizeOutcome")){
+    $($selector+" .to-minimize-outcome").removeClass("minimizeOutcome");
+     $($selector+" .btn-expand-Outcome").html("Minimize Outcome")
+  }else{
+    $($selector+" .to-minimize-outcome").addClass("minimizeOutcome");
+     $($selector+" .btn-expand-Outcome").html("Expand Outcome")
+  }
+}
+
+function expandAll(){
+  let $outcome = $(this).parents('.outcome');
+  let $milestone = $(this).parents('.milestone');
+  console.log($outcome[0].id  );
+  
+    $("#"+$outcome[0].id +" .milestones-list").find('.milestone').each(function(i,milestone) {
+
+      if( $("#"+$outcome[0].id +" .btn-expand-all").text() == "Expand all"){
+    
+          $(milestone).find('.to-minimize').each(function(i,milestone) {
+          $(milestone).removeClass("minimize");
+
+      });
+      console.log("Minimize all");
+      }else{
+          $(milestone).find('.to-minimize').each(function(i,milestone) {
+          $(milestone).addClass("minimize");
+          });
+
+        console.log("Expand all");
+      }
+    });
+
+  if($("#"+$outcome[0].id +" .btn-expand-all").text() == "Expand all"){
+    $("#"+$outcome[0].id +" .btn-expand-all").html("Minimize all");
+    $("#"+$outcome[0].id +" .btn-expand").html("Minimize");
+  }else{
+    $("#"+$outcome[0].id +" .btn-expand").html("Expand");
+    $("#"+$outcome[0].id +" .btn-expand-all").html("Expand all");
+  }
+}
+
+
+
+function expandAllOutcomes(){
+
+ 
+  
+    $(" .outcomes-list").find('.outcome').each(function(i,outcome) {
+      if( expandAllOutcomesbol){
+    
+          $(outcome).find('.to-minimize-outcome').each(function(i,milestone) {
+          $(milestone).removeClass("minimizeOutcome");
+          
+
+      });
+      console.log("minimizeOutcome all");
+     
+      }else{
+          $(outcome).find('.to-minimize-outcome').each(function(i,milestone) {
+          $(milestone).addClass("minimizeOutcome");
+          });
+
+        console.log("Expand all");
+       
+      }
+    });
+
+  if(expandAllOutcomesbol){
+    $(".btn-expand-all-outcomes ").html("Minimize all outcomes");
+    $(".btn-expand-Outcome").html("Minimize Outcome");
+    expandAllOutcomesbol = false;
+  }else{
+    $(".btn-expand-all-outcomes ").html("Expand all outcomes");
+    $(".btn-expand-Outcome").html("Expand Outcome");
+    expandAllOutcomesbol = true;
+  }
+  
 }
 /**
  * SUB-IDOs Functions
