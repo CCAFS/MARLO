@@ -8,6 +8,8 @@ function init() {
   $deliverablesList = $('#deliverables-checkbox table tbody');
   // Events
   attachEvents();
+  /* Init Select2 plugin */
+  $('form select').select2();
 }
 
 function attachEvents() {
@@ -15,7 +17,7 @@ function attachEvents() {
   $globalUnitSelect.on('change', updatePhases);
   $phasesSelect.on('change', updateDeliverables);
 
-  
+
   // Expand alls Outcomes
   $("#anotherPhase").on('click', changeValue);
   $("#anotherProject").on('click', changeValue);
