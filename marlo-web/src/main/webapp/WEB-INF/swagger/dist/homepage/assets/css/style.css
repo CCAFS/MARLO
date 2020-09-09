@@ -1097,13 +1097,7 @@ section {
 
 .team .member {
   text-align: center;
-  margin-bottom: 80px;
   position: relative;
-}
-
-.team .member .pic {
-  border-radius: 4px;
-  overflow: hidden;
 }
 
 .team .member img {
@@ -1115,10 +1109,6 @@ section {
 }
 
 .team .member .member-info {
-  position: absolute;
-  bottom: -48px;
-  left: 20px;
-  right: 20px;
   background: linear-gradient(360deg, #5c768d 0%, rgba(92, 118, 141, 0.9) 35%, rgba(140, 167, 191, 0.8) 100%);
   padding: 15px 0;
   border-radius: 4px;
