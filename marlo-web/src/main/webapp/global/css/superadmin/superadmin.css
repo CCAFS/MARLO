@@ -171,3 +171,7 @@ table#marloEmailsTable {
 #anotherProjectContent,#anotherPhaseContent {
   display: none;
 }
+
+.selectList span.select2{
+width: 100% !important;
+}
