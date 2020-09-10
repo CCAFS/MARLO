@@ -25,6 +25,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration;
@@ -48,6 +49,12 @@ public class MarloSwaggerConfiguration extends WebMvcConfigurerAdapter {
 
   @Autowired
   private Environment env;
+
+  @Override
+  public void addCorsMappings(CorsRegistry registry) {
+    // TODO Auto-generated method stub
+    registry.addMapping("/**");
+  }
 
   // Config required for Swagger UI if not using Spring Boot.
   @Override
