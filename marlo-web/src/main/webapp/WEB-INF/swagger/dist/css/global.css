@@ -24,3 +24,16 @@
 section.swagger-ui {
   padding: 0px;
 }
+
+.chat-icon{
+  display: block;
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+  background-color:#3f8569;
+  position: fixed;
+  bottom: 1em;
+  left: 1em;
+  border: 0px;
+  cursor:pointer;
+}
