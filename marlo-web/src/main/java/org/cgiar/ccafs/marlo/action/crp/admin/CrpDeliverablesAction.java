@@ -107,6 +107,7 @@ public class CrpDeliverablesAction extends BaseAction {
   private long selectedPhaseID;
   private Phase phase;
   private Deliverable deliverable;
+  private List<Deliverable> deliverables;
 
 
   @Inject
@@ -185,20 +186,24 @@ public class CrpDeliverablesAction extends BaseAction {
   }
 
 
+  public List<Deliverable> getDeliverables() {
+    return deliverables;
+  }
+
+
   public String getEntityByPhaseList() {
     return entityByPhaseList;
   }
-
 
   @Override
   public List<Phase> getPhases() {
     return phases;
   }
 
-
   public long getSelectedPhaseID() {
     return selectedPhaseID;
   }
+
 
   /**
    * HJ 08/01/2019
@@ -330,6 +335,8 @@ public class CrpDeliverablesAction extends BaseAction {
     phases =
       phaseManager.findAll().stream().filter(c -> c.isActive() && c.getCrp() != null && this.getCurrentCrp() != null
         && c.getCrp().getId().equals(this.getCurrentCrp().getId())).collect(Collectors.toList());
+
+    deliverables = deliverableManager.findAll();
   }
 
   @Override
@@ -662,6 +669,10 @@ public class CrpDeliverablesAction extends BaseAction {
 
   public void setCrps(List<GlobalUnit> crps) {
     this.crps = crps;
+  }
+
+  public void setDeliverables(List<Deliverable> deliverables) {
+    this.deliverables = deliverables;
   }
 
   public void setEntityByPhaseList(String entityByPhaseList) {
