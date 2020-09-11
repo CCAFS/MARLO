@@ -42,7 +42,7 @@
              -->
         
             <div class="col-md-12 " style="margin-bottom: 20px;">
-              [@customForm.select name="Deliverable" value="name" label="Phase" listName="phases" header=true multiple=false
+              [@customForm.select name="Deliverable" value="name" label="Deliverable" listName="deliverables" header=true multiple=false
               required=true className="form-control" editable=editable || editStatus/]
             </div>
         
@@ -65,15 +65,15 @@
               <div class="col-md-6 ">
               <!--  [@customForm.select name="phase" value="name" label="Phase" listName="phases" header=true  multiple=false required=true className="form-control" editable=editable || editStatus/] -->
               
-             <label for="">Select phases:</label>
-             <div class="form-group">
-             <div class="selectList">   
-            <select name="phaseID" id="">
-              [#list phases as phase ]
-              <option value="${phase.id}" selected>${phase.name} - ${phase.year} </option>
-              [/#list]  
-            </select>
-               </div>
+               <label for="phaseID">Select phases:</label>
+               <div class="form-group">
+                <div class="selectList">   
+                  <select name="phaseID" id="phaseID">
+                    [#list phases as phase ]
+                      <option value="${phase.id}" selected>${phase.name} - ${phase.year} </option>
+                    [/#list]  
+                  </select>
+                </div>
                </div>
               </div>
         
