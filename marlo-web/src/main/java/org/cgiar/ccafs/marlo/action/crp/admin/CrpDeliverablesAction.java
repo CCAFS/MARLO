@@ -336,7 +336,7 @@ public class CrpDeliverablesAction extends BaseAction {
       phaseManager.findAll().stream().filter(c -> c.isActive() && c.getCrp() != null && this.getCurrentCrp() != null
         && c.getCrp().getId().equals(this.getCurrentCrp().getId())).collect(Collectors.toList());
 
-    deliverables = deliverableManager.findAll();
+    deliverables = deliverableManager.getDeliverablesByPhase(this.getActualPhase().getId());
   }
 
   @Override
