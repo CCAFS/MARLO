@@ -65,7 +65,7 @@
               <div class="col-md-6 ">
               <!--  [@customForm.select name="phase" value="name" label="Phase" listName="phases" header=true  multiple=false required=true className="form-control" editable=editable || editStatus/] -->
               
-             <label for="">phases:</label>
+             <label for="">Select phases:</label>
              <div class="form-group">
              <div class="selectList">   
             <select name="phaseID" id="">
@@ -96,7 +96,7 @@
         
               <div class="col-md-6">
                 [@customForm.select name="Select project" value="name" label="Phase" listName="phases" header=true multiple=false
-                required=true className="form-control" editable=editable || editStatus/]
+                required=false className="form-control" editable=editable || editStatus/]
               </div>
         
             </div>
