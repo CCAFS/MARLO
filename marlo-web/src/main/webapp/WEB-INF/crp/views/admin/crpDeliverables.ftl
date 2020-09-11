@@ -42,8 +42,19 @@
              -->
         
             <div class="col-md-12 " style="margin-bottom: 20px;">
-              [@customForm.select name="Deliverable" value="name" label="Deliverable" listName="deliverables" header=true multiple=false
-              required=true className="form-control" editable=editable || editStatus/]
+              <!-- [@customForm.select name="Deliverable" value="name" label="Deliverable" listName="deliverables" header=true multiple=false
+              required=true className="form-control" editable=editable || editStatus/] -->
+              <label for="deliverableID">Deliverable:</label>
+               <div class="form-group">
+                <div class="selectList">   
+                  <select name="deliverableID" id="deliverableID">
+                    [#list deliverables as deliverable ]
+                      <option value="${deliverable.id}" selected>D${deliverable.id}</option>
+                    [/#list]  
+                  </select>
+                </div>
+               </div>
+              </div>
             </div>
         
            
@@ -95,8 +106,19 @@
               </div>
         
               <div class="col-md-6">
-                [@customForm.select name="Select project" value="name" label="Phase" listName="phases" header=true multiple=false
-                required=false className="form-control" editable=editable || editStatus/]
+                <!-- [@customForm.select name="Select project" value="name" label="Project" listName="projects" header=true multiple=false
+                required=false className="form-control" editable=editable || editStatus/] -->
+                <label for="projectID">Select project:</label>
+                 <div class="form-group">
+                  <div class="selectList">   
+                    <select name="projectID" id="projectID">
+                      [#list projects as project ]
+                        <option value="${project.id}" selected>P${project.id}</option>
+                      [/#list]  
+                    </select>
+                  </div>
+                 </div>
+                
               </div>
         
             </div>

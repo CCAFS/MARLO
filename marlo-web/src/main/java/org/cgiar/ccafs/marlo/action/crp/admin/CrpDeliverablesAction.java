@@ -349,6 +349,14 @@ public class CrpDeliverablesAction extends BaseAction {
 
     String[] statuses = null;
     projects = projectManager.getActiveProjectsByPhase(this.getActualPhase(), 0, statuses);
+
+    if (projects != null && !projects.isEmpty()) {
+      for (Project project : projects) {
+        if (project != null && project.getId() != null) {
+          project = projectManager.getProjectById(project.getId());
+        }
+      }
+    }
   }
 
   @Override
