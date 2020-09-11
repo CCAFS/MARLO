@@ -34,6 +34,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableUserPartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableUserPartnershipPersonManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
@@ -52,6 +53,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnershipPerson;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -99,6 +101,7 @@ public class CrpDeliverablesAction extends BaseAction {
   private DeliverableGeographicRegionManager deliverableGeographicRegionManager;
   private DeliverableUserPartnershipPersonManager deliverableUserPartnershipPersonManager;
   private ProjectPartnerManager projectPartnerManager;
+  private ProjectManager projectManager;
 
   // Variables
   private String entityByPhaseList;
@@ -108,6 +111,7 @@ public class CrpDeliverablesAction extends BaseAction {
   private Phase phase;
   private Deliverable deliverable;
   private List<Deliverable> deliverables;
+  private List<Project> projects;
 
 
   @Inject
@@ -124,7 +128,7 @@ public class CrpDeliverablesAction extends BaseAction {
     DeliverableLocationManager deliverableLocationManager,
     DeliverableGeographicRegionManager deliverableGeographicRegionManager,
     DeliverableUserPartnershipPersonManager deliverableUserPartnershipPersonManager,
-    ProjectPartnerManager projectPartnerManager) {
+    ProjectPartnerManager projectPartnerManager, ProjectManager projectManager) {
     super(config);
     this.phaseManager = phaseManager;
     this.deliverableFundingSourceManager = deliverableFundingSourceManager;
@@ -144,6 +148,7 @@ public class CrpDeliverablesAction extends BaseAction {
     this.deliverableGeographicRegionManager = deliverableGeographicRegionManager;
     this.deliverableUserPartnershipPersonManager = deliverableUserPartnershipPersonManager;
     this.projectPartnerManager = projectPartnerManager;
+    this.projectManager = projectManager;
   }
 
 
@@ -200,10 +205,14 @@ public class CrpDeliverablesAction extends BaseAction {
     return phases;
   }
 
+  public List<Project> getProjects() {
+    return projects;
+  }
+
+
   public long getSelectedPhaseID() {
     return selectedPhaseID;
   }
-
 
   /**
    * HJ 08/01/2019
@@ -337,6 +346,9 @@ public class CrpDeliverablesAction extends BaseAction {
         && c.getCrp().getId().equals(this.getCurrentCrp().getId())).collect(Collectors.toList());
 
     deliverables = deliverableManager.getDeliverablesByPhase(this.getActualPhase().getId());
+
+    String[] statuses = null;
+    projects = projectManager.getActiveProjectsByPhase(this.getActualPhase(), 0, statuses);
   }
 
   @Override
@@ -683,9 +695,12 @@ public class CrpDeliverablesAction extends BaseAction {
     this.phases = phases;
   }
 
+  public void setProjects(List<Project> projects) {
+    this.projects = projects;
+  }
+
   public void setSelectedPhaseID(long selectedPhaseID) {
     this.selectedPhaseID = selectedPhaseID;
   }
-
 
 }
