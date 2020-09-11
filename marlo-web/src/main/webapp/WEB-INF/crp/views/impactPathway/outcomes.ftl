@@ -4,14 +4,14 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom"] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/impactPathway/programSubmit.js", 
-  "${baseUrlMedia}/js/impactPathway/outcomes.js?20191022", 
+  "${baseUrlMedia}/js/impactPathway/outcomes.js?20200909", 
   "${baseUrlCdn}/global/js/autoSave.js", 
   "${baseUrlCdn}/global/js/impactGraphic.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js" 
   ] 
 /]
 [#assign customCSS = [ 
-  "${baseUrlMedia}/css/impactPathway/outcomes.css",
+  "${baseUrlMedia}/css/impactPathway/outcomes.css?20200909",
   "${baseUrlCdn}/global/css/impactGraphic.css" 
   ] 
 /]
@@ -68,6 +68,9 @@
           
           [#if hasAvailableProgramID]
             <div class="outcomes-list" listname="outcomes">
+             <div class="cont-btn-min"> 
+              <button   type="button" class="btn-expand-all-outcomes btn btn-primary btn-link">Expand all outcomes<i class="fas fa-expand-arrows-alt"></i></button>
+             </div>
             [#if outcomes?has_content]
               [#list outcomes as outcome]
                 [@outcomeMacro outcome=outcome name="outcomes" index=outcome_index /]
@@ -182,6 +185,9 @@
     [/#if]
     
     <br />
+    <div class="cont-btn-min"> 
+     <button   type="button" class="btn-expand-Outcome btn btn-primary btn-link">Expand Outcome<i class="fas fa-expand-arrows-alt"></i></button>
+    </div>
     [#-- Outcome Statement --]
     <div class="form-group">
       [@customForm.textArea name="${outcomeCustomName}.description"  i18nkey="outcome.statement" required=true className="outcome-statement limitWords-100" editable=editable /]
@@ -193,7 +199,7 @@
     </div>
     [/#if]
     
-    <div class="row form-group target-block">
+    <div class="row form-group target-block minimizeOutcome to-minimize-outcome">
       [#-- Target Year --]
       <div class="col-md-4">[@customForm.input name="${outcomeCustomName}.year" value="${(outcome.year)!2022}" type="text" i18nkey="outcome.targetYear"  placeholder="outcome.inputTargetYear.placeholder" className="targetYear outcomeYear" required=true editable=editable /]</div>
       [#-- Target Unit --]
@@ -215,7 +221,7 @@
     </div>
 
     <!-- Nav tabs -->
-    <ul class="nav nav-tabs" role="tablist">
+    <ul class="nav nav-tabs minimizeOutcome to-minimize-outcome" role="tablist">
       <li role="presentation" class="active"><a href="#milestones-tab-${index}" aria-controls="messages" role="tab" data-toggle="tab">Milestones <span class="badge">${(outcome.milestones?size)!'0'}</span></a></li>
       [#if action.hasSpecificities('crp_baseline_indicators') && (selectedProgram.baseLine)!false]
       <li role="presentation"><a href="#baseline-tab-${index}" aria-controls="profile" role="tab" data-toggle="tab">Baseline Indicators <span class="badge">${(outcome.indicators?size)!'0'}</span></a></li>
@@ -224,9 +230,10 @@
      </ul>
   
     <!-- Tab panes -->
-    <div class="tab-content impactpathwayTabContent">
+    <div class="tab-content impactpathwayTabContent minimizeOutcome to-minimize-outcome">
       [#-- Outcome Sub-IDOs List --]
       <div role="tabpanel" class="tab-pane fade " id="subIdos-tab-${index}">
+      
         [#-- <h5 class="sectionSubTitle">[@s.text name="outcome.subIDOs.sectionTitle"/] <p class="contributioRem pull-right">Contribution <span class="value">0%</span></p></h5>--]
         <div class="subIdos-list" listname="${outcomeCustomName}.subIdos">
         [#if outcome.subIdos?has_content]
@@ -297,8 +304,12 @@
       
       [#-- Outcome Milestones List --]
       <div role="tabpanel" class="tab-pane fade in active" id="milestones-tab-${index}">
+      
         [#--<h5 class="sectionSubTitle">[@s.text name="outcome.milestone.sectionTitle"/]</h5>--]
         <div class="milestones-list" listname="${outcomeCustomName}.milestones">
+       <div class="cont-btn-min"> 
+         <button   type="button" class="btn-expand-all btn btn-primary btn-link">Expand all<i class="fas fa-expand-arrows-alt"></i></button>
+       </div>
         [#if outcome.milestones?has_content]
           [#list outcome.milestones as milestone]
             [@milestoneMacro milestone=milestone name="${outcomeCustomName}.milestones" index=milestone_index editable=editable canEditMilestone=action.canEditMileStone(milestone) /]
@@ -316,7 +327,7 @@
         [#if editable]<div class="form-group note"><small>[@s.text name = "outcomes.addNewTargetUnit" /]</small></div>[/#if]
       </div>
     </div>
-    
+
     <br />
     
   </div>
@@ -365,7 +376,7 @@
       [@customForm.textArea name="${milestoneCustomName}.title" i18nkey="outcome.milestone.statement" required=true className="milestone-statement limitWords-100" editable=editableMilestone /]
     </div>
     
-    <div class="form-group row"> 
+    <div class="form-group row to-minimize minimize"> 
       [#-- Year --]
       <div class="col-md-4">
         [@customForm.select name="${milestoneCustomName}.year" value="${(milestone.year)!-1}"  i18nkey="outcome.milestone.inputTargetYear" listName="milestoneYears"  required=true  className=" targetYear milestoneYear" editable=editableMilestone /]
@@ -381,7 +392,7 @@
       </div>
     </div>
     
-    <div class="row form-group target-block">
+    <div class="row form-group target-block to-minimize minimize">
       [#-- Target Unit --]
       [#if targetUnitList?has_content]
       <div class="col-md-4">
@@ -396,7 +407,7 @@
     </div>
     
     [#-- POWB 2019 REQUIREMENTS --]
-    <div class="form-group">
+    <div class="form-group to-minimize minimize">
       <div class="row">
         [#-- Indicate of the following --]
         <div class="col-md-5">
@@ -453,7 +464,9 @@
         <br />
       </div>
     </div>
-    
+       <div class="cont-btn-min"> 
+         <button   type="button" class="btn-expand btn btn-primary btn-link">Expand<i class="fas fa-expand-arrows-alt"></i></button>
+       </div>
   </div>
 [/#macro]
 

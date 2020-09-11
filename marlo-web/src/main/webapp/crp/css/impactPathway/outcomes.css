@@ -1,3 +1,29 @@
+
+.minimize, .minimizeOutcome{
+  display: none;
+}
+ .outcomes-list div .select .selectList span.select2.select2-container{
+  width: 100% !important;
+}
+.btn-expand-all, .btn-expand-all-outcomes{
+  font-weight: 900;
+  color: rgb(110, 110, 110);
+}
+.btn-expand{
+  font-weight: 900;
+}
+.btn-expand-Outcome{
+  position: absolute;
+  bottom: 0;
+  font-weight: 900;
+  color: #7FB06F;
+}
+.cont-btn-min{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .outcome {
   /* margin-bottom: 30px !important; */
   padding-top: 18px;
