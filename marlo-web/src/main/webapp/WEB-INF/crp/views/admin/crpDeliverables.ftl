@@ -36,10 +36,10 @@
           <div class="row form-group">
         
             <!--    
-                    <div class="col-md-4">
-                      [@customForm.select name="a" value="${(milestone.year)!-1}"  i18nkey="outcome.milestone.inputTargetYear" listName="milestoneYears"  required=true  className=" targetYear milestoneYear" editable=editableMilestone /]
-                    </div>
-                    -->
+            <div class="col-md-4">
+              [@customForm.select name="a" value="${(milestone.year)!-1}"  i18nkey="outcome.milestone.inputTargetYear" listName="milestoneYears"  required=true  className=" targetYear milestoneYear" editable=editableMilestone /]
+            </div>
+             -->
         
             <div class="col-md-12 " style="margin-bottom: 20px;">
               [@customForm.select name="Deliverable" value="name" label="Phase" listName="phases" header=true multiple=false
@@ -63,8 +63,18 @@
               </div>
         
               <div class="col-md-6 ">
-                [@customForm.select name="phase" value="name" label="Phase" listName="phases" header=true multiple=false
-                required=true className="form-control" editable=editable || editStatus/]
+              <!--  [@customForm.select name="phase" value="name" label="Phase" listName="phases" header=true  multiple=false required=true className="form-control" editable=editable || editStatus/] -->
+              
+             <label for="">phases:</label>
+             <div class="form-group">
+             <div class="selectList">   
+            <select name="phaseID" id="">
+              [#list phases as phase ]
+              <option value="${phase.id}" selected>${phase.name} - ${phase.year} </option>
+              [/#list]  
+            </select>
+               </div>
+               </div>
               </div>
         
             </div>
