@@ -55,11 +55,9 @@ function changeValue(){
   //  console.log($(this).val());
 
    if($(this).val()=="anotherPhase"){
-    console.log("Mostrar phase");
     $("#anotherProjectContent").hide();
     $("#anotherPhaseContent").show();
    }else{
-    console.log("Mostrar project");
     $("#anotherPhaseContent").hide();
     $("#anotherProjectContent").show();
    }
