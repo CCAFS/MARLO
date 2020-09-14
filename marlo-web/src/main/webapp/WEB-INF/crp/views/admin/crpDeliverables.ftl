@@ -49,7 +49,7 @@
                 <div class="selectList">   
                   <select name="deliverableID" id="deliverableID">
                     [#list deliverables as deliverable ]
-                      <option value="${deliverable.id}" selected>D${deliverable.id}</option>
+                      <option value="${(deliverable.id)!}" selected>D${(deliverable.id)!} - ${(deliverable.deliverableInfo.title)!}</option>
                     [/#list]  
                   </select>
                 </div>
