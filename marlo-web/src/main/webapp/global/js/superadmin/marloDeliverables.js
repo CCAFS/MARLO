@@ -53,8 +53,7 @@ function attachEvents() {
 
 function changeValue(){
   //  console.log($(this).val());
-
-   if($(this).val()=="anotherPhase"){
+   if($(this).val()=="project"){
     $("#anotherProjectContent").hide();
     $("#anotherPhaseContent").show();
    }else{
