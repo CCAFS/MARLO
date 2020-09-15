@@ -186,7 +186,10 @@ public class CrpDeliverablesAction extends BaseAction {
       phaseManager.findAll().stream().filter(c -> c.isActive() && c.getCrp() != null && this.getCurrentCrp() != null
         && c.getCrp().getId().equals(this.getCurrentCrp().getId())).collect(Collectors.toList());
 
-    deliverables = deliverableManager.getDeliverablesByPhase(this.getActualPhase().getId());
+    deliverables = deliverableManager.getDeliverablesByPhase(this.getActualPhase().getId()).stream()
+      .filter(d -> d != null && d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null
+        && d.getDeliverableInfo(this.getActualPhase()).isActive())
+      .collect(Collectors.toList());
 
     if (deliverables != null && !deliverables.isEmpty()) {
       for (Deliverable deliverable : deliverables) {
@@ -198,7 +201,10 @@ public class CrpDeliverablesAction extends BaseAction {
     }
 
     String[] statuses = null;
-    projects = projectManager.getActiveProjectsByPhase(this.getActualPhase(), 0, statuses);
+    projects = projectManager.getActiveProjectsByPhase(this.getActualPhase(), 0, statuses).stream()
+      .filter(p -> p != null && p.isActive() && p.getProjecInfoPhase(this.getActualPhase()) != null
+        && p.getProjecInfoPhase(this.getActualPhase()).isActive())
+      .collect(Collectors.toList());
 
     if (projects != null && !projects.isEmpty()) {
       for (Project project : projects) {
