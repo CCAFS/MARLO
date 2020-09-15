@@ -108,10 +108,14 @@ public class CrpDeliverablesAction extends BaseAction {
   private List<GlobalUnit> crps;
   private List<Phase> phases;
   private long selectedPhaseID;
+  private Long phaseID;
+  private Long deliverableID;
+  private Long projectID;
   private Phase phase;
   private Deliverable deliverable;
   private List<Deliverable> deliverables;
   private List<Project> projects;
+  private String moveToSelection;
 
 
   @Inject
@@ -170,6 +174,11 @@ public class CrpDeliverablesAction extends BaseAction {
     return crps;
   }
 
+  public Long getDeliverableID() {
+    return deliverableID;
+  }
+
+
   private DeliverableUserPartnership getDeliverablePartnershipResponsibleDB(Deliverable deliverableDB) {
     DeliverableUserPartnership partnershipResponsible = null;
     List<DeliverableUserPartnership> deliverablePartnerships = deliverableDB.getDeliverableUserPartnerships().stream()
@@ -195,9 +204,18 @@ public class CrpDeliverablesAction extends BaseAction {
     return deliverables;
   }
 
-
   public String getEntityByPhaseList() {
     return entityByPhaseList;
+  }
+
+  public String getMoveToSelection() {
+    return moveToSelection;
+  }
+
+
+  @Override
+  public Long getPhaseID() {
+    return phaseID;
   }
 
   @Override
@@ -205,10 +223,13 @@ public class CrpDeliverablesAction extends BaseAction {
     return phases;
   }
 
+  public Long getProjectID() {
+    return projectID;
+  }
+
   public List<Project> getProjects() {
     return projects;
   }
-
 
   public long getSelectedPhaseID() {
     return selectedPhaseID;
@@ -370,6 +391,33 @@ public class CrpDeliverablesAction extends BaseAction {
 
   @Override
   public String save() {
+    if (this.canAccessSuperAdmin()) {
+      if (deliverableID != null && deliverableID != 0) {
+        if (moveToSelection != null && !moveToSelection.isEmpty()) {
+
+          switch (moveToSelection) {
+            case "project":
+              if (projectID != null && projectID != 0) {
+                this.moveDeliverablesProject(projectID, deliverableID);
+              }
+              break;
+            case "phase":
+              if (phaseID != null && phaseID != 0) {
+                this.moveDeliverablesPhase(phaseID, deliverableID);
+              }
+              break;
+          }
+
+        }
+      }
+
+      return SUCCESS;
+    } else {
+      return NOT_AUTHORIZED;
+    }
+  }
+
+  public String saveTest() {
     if (this.canAccessSuperAdmin()) {
       if (entityByPhaseList != null && !entityByPhaseList.isEmpty()) {
         logger.debug("Start replication for phase: " + selectedPhaseID);
@@ -700,6 +748,10 @@ public class CrpDeliverablesAction extends BaseAction {
     this.crps = crps;
   }
 
+  public void setDeliverableID(Long deliverableID) {
+    this.deliverableID = deliverableID;
+  }
+
   public void setDeliverables(List<Deliverable> deliverables) {
     this.deliverables = deliverables;
   }
@@ -708,8 +760,21 @@ public class CrpDeliverablesAction extends BaseAction {
     this.entityByPhaseList = entityByPhaseList;
   }
 
+  public void setMoveToSelection(String moveToSelection) {
+    this.moveToSelection = moveToSelection;
+  }
+
+  @Override
+  public void setPhaseID(Long phaseID) {
+    this.phaseID = phaseID;
+  }
+
   public void setPhases(List<Phase> phases) {
     this.phases = phases;
+  }
+
+  public void setProjectID(Long projectID) {
+    this.projectID = projectID;
   }
 
   public void setProjects(List<Project> projects) {
