@@ -192,6 +192,7 @@ public class CrpDeliverablesAction extends BaseAction {
       for (Deliverable deliverable : deliverables) {
         if (deliverable != null && deliverable.getId() != null) {
           deliverable = deliverableManager.getDeliverableById(deliverable.getId());
+          deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(this.getActualPhase()));
         }
       }
     }
@@ -203,6 +204,7 @@ public class CrpDeliverablesAction extends BaseAction {
       for (Project project : projects) {
         if (project != null && project.getId() != null) {
           project = projectManager.getProjectById(project.getId());
+          project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
         }
       }
     }
