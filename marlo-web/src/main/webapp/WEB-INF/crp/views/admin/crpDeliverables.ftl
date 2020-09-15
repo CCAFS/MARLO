@@ -60,7 +60,7 @@
            
         
             <div class="col-md-12 ma-bot">
-              [@customForm.radioFlat id="anotherPhase" name="MoveTo" label="Move to another phase" value="anotherPhase"
+              [@customForm.radioFlat id="anotherPhase" name="moveToSelection" label="Move to another phase" value="phase"
               checked=false cssClassLabel="radio-label-yes"/]
             </div>
         
@@ -91,7 +91,7 @@
             </div>
         
             <div class="col-md-12 ma-bot">
-              [@customForm.radioFlat id="anotherProject" name="MoveTo" label="Move to another project" value="anotherProject"
+              [@customForm.radioFlat id="anotherProject" name="moveToSelection" label="Move to another project" value="project"
               checked=false cssClass="editable-no" cssClassLabel="radio-label-no"/]
             </div>
         
