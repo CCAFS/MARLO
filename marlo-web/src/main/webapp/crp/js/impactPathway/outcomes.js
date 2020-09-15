@@ -582,13 +582,14 @@ $uploadBlock.find('.removeIcon').on('click', function() {
 function updateAllIndexes() {
   // All Outcomes List
   $('.outcomes-list').find('.outcome').each(function(i,outcome) {
-    $(outcome).find('span.index').html(i + 1);
+    $(outcome).attr('id', "outcome-"+(i+1));
+    // $(outcome).find('span.index').html(i + 1);
     $(outcome).setNameIndexes(1, i);
 
     // Update Milestones
     $(outcome).find('.milestone').each(function(i,milestone) {
       $(milestone).attr('id', "milestone-"+(i+1));
-      $(milestone).find('span.index').text(i + 1);
+      // $(milestone).find('span.index').text(i + 1);
       $(milestone).setNameIndexes(2, i);
 
       // Update radios for Assesment Risk
