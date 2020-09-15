@@ -165,7 +165,8 @@
   [#assign outcomeCustomName= "${name}[${index}]" /]
   <div id="outcome-${isTemplate?string('template', index)}" class="outcome form-group borderBox" style="display:${isTemplate?string('none','block')}">
     <div class="leftHead">
-      <span class="index">${index+1}</span>
+      <!--<span class="index">${index+1}</span>-->
+      <span class="index"> ${(outcome.composeID)! "[New]"}</span>
       <span class="elementId">${(selectedProgram.acronym)!} - [@s.text name="outcome.index.title"/]</span>
     </div>
     [#-- Outcome ID Parameter --]
@@ -353,7 +354,8 @@
   
   <div id="milestone-${isTemplate?string('template', index)}" class="milestone simpleBox isNew-${isMilestoneNew?string}" style="display:${isTemplate?string('none','block')}">
     <div class="leftHead ${reqMilestonesFields?string('green', '')} sm">
-      <span class="index">${index+1}</span>
+      <!--<span class="index">${index+1}</span>-->
+      <span class="index">${(milestone.composeID)! "[New]"}</span>
       <span class="elementId">${(milestoneYear)!} [@s.text name="outcome.milestone.index.title"/]  [#if isMilestoneNew][New][/#if]</span>
     </div>
     
