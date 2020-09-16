@@ -18,11 +18,15 @@ package org.cgiar.ccafs.marlo.action.crp.admin;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableUserPartnershipManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableUserPartnershipPersonManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
+import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
+import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnershipPerson;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -49,6 +53,8 @@ public class CrpDeliverablesAction extends BaseAction {
   private PhaseManager phaseManager;
   private ProjectManager projectManager;
   private GlobalUnitManager globalUnitManager;
+  private DeliverableUserPartnershipManager deliverableUserPartnershipManager;
+  private DeliverableUserPartnershipPersonManager deliverableUserPartnerPersonshipManager;
 
 
   // Variables
@@ -66,13 +72,17 @@ public class CrpDeliverablesAction extends BaseAction {
 
   @Inject
   public CrpDeliverablesAction(APConfig config, PhaseManager phaseManager, DeliverableManager deliverableManager,
-    DeliverableInfoManager deliverableInfoManager, ProjectManager projectManager, GlobalUnitManager globalUnitManager) {
+    DeliverableInfoManager deliverableInfoManager, ProjectManager projectManager, GlobalUnitManager globalUnitManager,
+    DeliverableUserPartnershipManager deliverableUserPartnershipManager,
+    DeliverableUserPartnershipPersonManager deliverableUserPartnerPersonshipManager) {
     super(config);
     this.phaseManager = phaseManager;
     this.deliverableManager = deliverableManager;
     this.deliverableInfoManager = deliverableInfoManager;
     this.projectManager = projectManager;
     this.globalUnitManager = globalUnitManager;
+    this.deliverableUserPartnershipManager = deliverableUserPartnershipManager;
+    this.deliverableUserPartnerPersonshipManager = deliverableUserPartnerPersonshipManager;
   }
 
   public List<GlobalUnit> getCrps() {
@@ -169,6 +179,8 @@ public class CrpDeliverablesAction extends BaseAction {
           // If deliverable info doesnt exist in the phase, tis created
           if (deliverableInfoManager.getDeliverablesInfoByPhase(phase) == null) {
             deliverableInfoToMove.setPhase(phase);
+            deliverableInfoManager.saveDeliverableInfo(deliverableInfoToMove);
+
           }
           deliverableInfoToMove.setActive(true);
           deliverableInfoManager.saveDeliverableInfo(deliverableInfoToMove);
@@ -300,6 +312,23 @@ public class CrpDeliverablesAction extends BaseAction {
   }
 
   public void validateDeliverablePartners() {
+
+    // Get deliverables partners
+    List<DeliverableUserPartnership> deliverableUserPartnerships =
+      deliverableUserPartnershipManager.findByDeliverableID(deliverableID);
+
+    if (deliverableUserPartnerships != null && !deliverableUserPartnerships.isEmpty()) {
+      for (DeliverableUserPartnership userPartnerships : deliverableUserPartnerships) {
+        List<DeliverableUserPartnershipPerson> persons = userPartnerships.getDeliverableUserPartnershipPersons()
+          .stream().filter(dp -> dp.isActive()).collect(Collectors.toList());
+        if (persons != null && !persons.isEmpty()) {
+          // Compare with project partners
+        }
+      }
+
+    }
+
+    // Get project Partners
 
   }
 
