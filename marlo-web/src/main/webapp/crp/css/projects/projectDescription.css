@@ -6,3 +6,15 @@
 .icon-20 {
   height: 17px;
 }
+
+#projectDescription .panel #projectsList ul.list li.clusterActivity .listButton.remove{
+  position: absolute ;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-right: 15px;
+}
+
+#projectDescription .panel #projectsList ul.list li.clusterActivity{
+  padding: 5px 10px ;
+}
