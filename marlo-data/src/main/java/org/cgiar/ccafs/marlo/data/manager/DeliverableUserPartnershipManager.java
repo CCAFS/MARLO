@@ -57,6 +57,14 @@ public interface DeliverableUserPartnershipManager {
   public List<DeliverableUserPartnership> findAll();
 
   /**
+   * This method gets a deliverableUserPartnership list by a given delivearable identifier.
+   * 
+   * @param deliverableUserPartnershipID is the deliverableUserPartnership identifier.
+   * @return a DeliverableUserPartnership list.
+   */
+  List<DeliverableUserPartnership> findByDeliverableID(long deliverableID);
+
+  /**
    * This method gets a deliverableUserPartnership object by a given deliverableUserPartnership identifier.
    * 
    * @param deliverableUserPartnershipID is the deliverableUserPartnership identifier.
