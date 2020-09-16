@@ -27,7 +27,8 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class DeliverableUserPartnershipMySQLDAO extends AbstractMarloDAO<DeliverableUserPartnership, Long> implements DeliverableUserPartnershipDAO {
+public class DeliverableUserPartnershipMySQLDAO extends AbstractMarloDAO<DeliverableUserPartnership, Long>
+  implements DeliverableUserPartnershipDAO {
 
 
   @Inject
@@ -63,6 +64,18 @@ public class DeliverableUserPartnershipMySQLDAO extends AbstractMarloDAO<Deliver
     String query = "from " + DeliverableUserPartnership.class.getName() + " where is_active=1";
     List<DeliverableUserPartnership> list = super.findAll(query);
     if (list.size() > 0) {
+      return list;
+    }
+    return null;
+
+  }
+
+  @Override
+  public List<DeliverableUserPartnership> findByDeliverableID(long deliverableID) {
+    String query =
+      "from " + DeliverableUserPartnership.class.getName() + " where is_active=1 and deliverable_id = " + deliverableID;
+    List<DeliverableUserPartnership> list = super.findAll(query);
+    if (list.isEmpty()) {
       return list;
     }
     return null;
