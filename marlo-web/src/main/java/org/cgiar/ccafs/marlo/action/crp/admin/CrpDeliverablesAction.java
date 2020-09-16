@@ -172,15 +172,15 @@ public class CrpDeliverablesAction extends BaseAction {
           }
         }
 
-        // Create deliverab;e info in phases (when deliverable is moved to previuos phases)
+        // Create deliverable info in phases (when deliverable is moved to previous phases)
         List<Phase> phaseList =
-          phases.stream().filter(f -> f.getId() < phaseToMove.getId()).collect(Collectors.toList());
+          phases.stream().filter(f -> f.getId() < this.getActualPhase().getId() && f.getId() >= phaseToMove.getId())
+            .collect(Collectors.toList());
         for (Phase phase : phaseList) {
           // If deliverable info doesnt exist in the phase, tis created
           if (deliverableInfoManager.getDeliverablesInfoByPhase(phase) == null) {
             deliverableInfoToMove.setPhase(phase);
             deliverableInfoManager.saveDeliverableInfo(deliverableInfoToMove);
-
           }
           deliverableInfoToMove.setActive(true);
           deliverableInfoManager.saveDeliverableInfo(deliverableInfoToMove);
@@ -211,9 +211,10 @@ public class CrpDeliverablesAction extends BaseAction {
       .filter(c -> c.isMarlo() && c.isActive() && c.getAcronym().equals(this.getCurrentCrp().getAcronym()))
       .collect(Collectors.toList());
 
-    phases =
-      phaseManager.findAll().stream().filter(c -> c.isActive() && c.getCrp() != null && this.getCurrentCrp() != null
-        && c.getCrp().getId().equals(this.getCurrentCrp().getId())).collect(Collectors.toList());
+    phases = phaseManager.findAll().stream()
+      .filter(c -> c.isActive() && c.getCrp() != null && this.getCurrentCrp() != null
+        && c.getCrp().getId().equals(this.getCurrentCrp().getId()) && (c.getId() > this.getActualPhase().getId()))
+      .collect(Collectors.toList());
 
     deliverables = deliverableManager.getDeliverablesByPhase(this.getActualPhase().getId()).stream()
       .filter(d -> d != null && d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null
