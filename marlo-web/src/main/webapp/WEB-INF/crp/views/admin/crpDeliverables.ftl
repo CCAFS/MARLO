@@ -102,7 +102,7 @@
                   Current project:
                 </label>
                 <!-- <h1>Current project:</h1> -->
-                <p>P${(deliverable.project.id)!} - ${(deliverable.project.projectInfo.title)!}</p>
+                <div id="currentProject">P${(deliverables[0].project.id)!} - ${(deliverables[0].project.projectInfo.title)!}</div>
               </div>
         
               <div class="col-md-6">

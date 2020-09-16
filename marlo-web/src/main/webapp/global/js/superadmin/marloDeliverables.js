@@ -6,6 +6,7 @@ function init() {
   $globalUnitSelect = $('#globalUnitID');
   $phasesSelect = $('#phaseID');
   $deliverablesList = $('#deliverables-checkbox table tbody');
+  $deliverablesSelect = $('#deliverableID');
   // Events
   attachEvents();
   /* Init Select2 plugin */
@@ -17,7 +18,7 @@ function attachEvents() {
   $globalUnitSelect.on('change', updatePhases);
   $phasesSelect.on('change', updateDeliverables);
 
-
+  $deliverablesSelect.on('change', updateCurrentTexts);
   // Expand alls Outcomes
   $("#anotherPhase").on('click', changeValue);
   $("#anotherProject").on('click', changeValue);
@@ -49,6 +50,16 @@ function attachEvents() {
     }
     updateCheckedCount();
   });
+}
+
+function updateCurrentTexts(){
+  $("#currentProject").html("P${(deliverables[0].project.id)!} - ${(deliverables[0].project.projectInfo.title)!}"); 
+  // $("#currentProject").text("P${(deliverables["+$(this).prop('selectedIndex')+"].project.id)!} - ${(deliverables["+$(this).prop('selectedIndex')+"].project.projectInfo.title)!}");
+  
+  console.log($(this).prop('selectedIndex')) ;
+  console.log($(this).children("option:selected").val());
+  console.log("select deliverables");
+  console.log($(this));
 }
 
 function changeValue(){
