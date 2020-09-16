@@ -126,6 +126,9 @@ public class WebAppInitializer implements WebApplicationInitializer {
 
     }
     // End Check Spring Profile filters
+    FilterRegistration.Dynamic CORSFilter =
+      servletContext.addFilter("CORSFilter", new DelegatingFilterProxy("CORSFilter"));
+    CORSFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, ALL_REQUESTS);
 
 
   }
