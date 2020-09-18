@@ -114,7 +114,9 @@ public class FundingSourceByInstitutionFinanceCodeAction extends BaseAction {
         if (summary.getId() != null) {
           Long crpID = fundingSourceManager
             .getFundingSourceById(Long.parseLong(String.valueOf(summary.getId().intValue()))).getCrp().getId();
-          if (crpID != null) {
+          System.out.println(crpID);
+          // Remove CIAT (ID = 29) from the list
+          if (crpID != null && crpID != 29) {
             if (crpManager.getGlobalUnitById(crpID).getAcronym() != null) {
               crpName = crpManager.getGlobalUnitById(crpID).getAcronym();
             } else {
