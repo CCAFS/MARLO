@@ -338,7 +338,7 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
     q.append("INNER JOIN funding_sources fs ON fs.id = fsi.funding_source_id AND fs.is_active ");
 
 
-    q.append("INNER JOIN institutions i ON i.id = fsi.lead_center_id and i.institution_type_id <> 3 ");
+    q.append("INNER JOIN institutions i ON i.id = fsi.lead_center_id ");
 
 
     q.append("LEFT JOIN budget_types bt ON bt.id = fsi.type ");
