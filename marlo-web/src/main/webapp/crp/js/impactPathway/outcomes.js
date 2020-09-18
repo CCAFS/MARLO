@@ -17,6 +17,10 @@ function init() {
   /* Percentage Inputs */
   $('.outcomes-list input.contribution').percentageInput();
 
+  $(document).ready(function(){
+    $('[data-toggle="popover"]').popover();   
+});
+
 }
 
 function attachEvents() {
