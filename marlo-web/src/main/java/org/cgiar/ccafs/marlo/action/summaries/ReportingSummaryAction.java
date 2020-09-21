@@ -2734,9 +2734,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private TypedTableModel getDeliverablesTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"deliverable_id", "title", "deliv_type", "deliv_sub_type", "deliv_status", "deliv_year",
-        "key_output", "leader", "institution", "funding_sources", "cross_cutting", "deliv_new_year", "isExtended"},
+        "key_output", "leader", "institution", "funding_sources", "cross_cutting", "deliv_new_year", "isExtended",
+        "deliv_description"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, Boolean.class},
+        String.class, String.class, String.class, String.class, String.class, Boolean.class, String.class},
       0);
     if (!project.getDeliverables().isEmpty()) {
       for (Deliverable deliverable : project.getDeliverables().stream()
@@ -2769,6 +2770,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         String leader = null;
         String institution = null;
         String fundingSources = "";
+        String delivDescription = null;
+        if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDescription() != null) {
+          delivDescription = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDescription() != null;
+        }
         Boolean isExtended = false;
         if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType() != null) {
           delivSubType = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getName();
@@ -2896,9 +2901,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           keyOutput = null;
         }
 
-        model.addRow(new Object[] {deliverable.getId(),
-          deliverable.getDeliverableInfo(this.getSelectedPhase()).getTitle(), delivType, delivSubType, delivStatus,
-          delivYear, keyOutput, leader, institution, fundingSources, crossCutting, delivNewYear, isExtended});
+        model
+          .addRow(new Object[] {deliverable.getId(), deliverable.getDeliverableInfo(this.getSelectedPhase()).getTitle(),
+            delivType, delivSubType, delivStatus, delivYear, keyOutput, leader, institution, fundingSources,
+            crossCutting, delivNewYear, isExtended, delivDescription});
       }
     }
     return model;
