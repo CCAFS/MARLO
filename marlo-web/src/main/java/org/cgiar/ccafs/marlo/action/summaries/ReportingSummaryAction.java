@@ -2772,7 +2772,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         String fundingSources = "";
         String delivDescription = null;
         if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDescription() != null) {
-          delivDescription = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDescription() != null;
+          delivDescription = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDescription();
         }
         Boolean isExtended = false;
         if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType() != null) {
