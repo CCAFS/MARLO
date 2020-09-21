@@ -1948,7 +1948,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         "intellectualAssetPvpVarietyName", "intellectualAssetPvpStatus", "intellectualAssetPvpCountry",
         "intellectualAssetPvpApplicationNumber", "intellectualAssetPvpBreederCrop", "intellectualAssetDateFilling",
         "intellectualAssetDateRegistration", "intellectualAssetDateExpiry", "intellectualAssetAdditionalInformation",
-        "intellectualAssetLinkPublished", "intellectualAssetCommunication", "otherPartner"},
+        "intellectualAssetLinkPublished", "intellectualAssetCommunication", "otherPartner", "deliv_description"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
@@ -1960,7 +1960,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class},
+        String.class, String.class},
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
     if (!project.getDeliverables().isEmpty()) {
@@ -2005,7 +2005,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       deliverables.addAll(deliverablesHL);
       for (Deliverable deliverable : deliverables) {
         String delivType = null, delivSubType = null, delivYear = null, keyOutput = "", leader = null,
-          institution = null, fundingSources = "", deliv_description = null, otherPartner = "";;
+          institution = null, fundingSources = "", deliv_description = null, otherPartner = "";
+        String delivDescription = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDescription();
         String delivStatus =
           deliverable.getDeliverableInfo(this.getSelectedPhase()).getStatusName(this.getSelectedPhase());
         Boolean showFAIR = false, showPublication = false, showCompilance = false;
@@ -2688,6 +2689,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
             if (deliverableFlagship.getCrpProgram() != null) {
               flContrib += "<br> ● " + deliverableFlagship.getCrpProgram().getComposedName();
             }
+          }
+
+          if (delivDescription == null || delivDescription.isEmpty()) {
+            delivDescription = "<Not Defined>";
           }
 
           // Other partnert
