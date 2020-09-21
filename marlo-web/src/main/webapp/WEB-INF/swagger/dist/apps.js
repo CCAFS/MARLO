@@ -1,0 +1,1 @@
+document.getElementById('institutions').src = "wwww.google.com";
