@@ -1,7 +1,7 @@
 $(document).ready(init);
 var currentSubIdo;
 var saveObj;
-var expandAllOutcomesbol = true;
+var expandAllOutcomesbol = false;
 
 function init() {
 
@@ -16,6 +16,10 @@ function init() {
 
   /* Percentage Inputs */
   $('.outcomes-list input.contribution').percentageInput();
+
+  $(document).ready(function(){
+    $('[data-toggle="popover"]').popover();   
+});
 
 }
 
@@ -304,7 +308,7 @@ function expandMilestone(){
   let $selector="#"+$outcome[0].id+" #"+$milestone[0].id;
   if ($($selector+" .to-minimize").hasClass("minimize")){
     $($selector+" .to-minimize").removeClass("minimize");
-     $($selector+" .btn-expand").html("Minimize")
+     $($selector+" .btn-expand").html("Collapse")
   }else{
     $($selector+" .to-minimize").addClass("minimize");
      $($selector+" .btn-expand").html("Expand")
@@ -316,7 +320,7 @@ function expandOutcome(){
   let $selector="#"+$outcome[0].id;
   if ($($selector+" .to-minimize-outcome").hasClass("minimizeOutcome")){
     $($selector+" .to-minimize-outcome").removeClass("minimizeOutcome");
-     $($selector+" .btn-expand-Outcome").html("Minimize Outcome")
+     $($selector+" .btn-expand-Outcome").html("Collapse Outcome")
   }else{
     $($selector+" .to-minimize-outcome").addClass("minimizeOutcome");
      $($selector+" .btn-expand-Outcome").html("Expand Outcome")
@@ -346,8 +350,8 @@ function expandAll(){
     });
 
   if($("#"+$outcome[0].id +" .btn-expand-all").text() == "Expand all"){
-    $("#"+$outcome[0].id +" .btn-expand-all").html("Minimize all");
-    $("#"+$outcome[0].id +" .btn-expand").html("Minimize");
+    $("#"+$outcome[0].id +" .btn-expand-all").html("Collapse all");
+    $("#"+$outcome[0].id +" .btn-expand").html("Collapse");
   }else{
     $("#"+$outcome[0].id +" .btn-expand").html("Expand");
     $("#"+$outcome[0].id +" .btn-expand-all").html("Expand all");
@@ -381,12 +385,14 @@ function expandAllOutcomes(){
     });
 
   if(expandAllOutcomesbol){
-    $(".btn-expand-all-outcomes ").html("Minimize all outcomes");
-    $(".btn-expand-Outcome").html("Minimize Outcome");
+    $(".btn-expand-all-outcomes ").html("Collapse all outcomes");
+    $(".btn-expand-Outcome").html("Collapse Outcome");
+    console.log("collapse");
     expandAllOutcomesbol = false;
   }else{
     $(".btn-expand-all-outcomes ").html("Expand all outcomes");
     $(".btn-expand-Outcome").html("Expand Outcome");
+    console.log("Expand");
     expandAllOutcomesbol = true;
   }
   

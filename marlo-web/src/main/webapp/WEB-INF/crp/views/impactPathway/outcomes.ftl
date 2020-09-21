@@ -4,14 +4,14 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom"] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/impactPathway/programSubmit.js", 
-  "${baseUrlMedia}/js/impactPathway/outcomes.js?20200909", 
+  "${baseUrlMedia}/js/impactPathway/outcomes.js?20201709", 
   "${baseUrlCdn}/global/js/autoSave.js", 
   "${baseUrlCdn}/global/js/impactGraphic.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js" 
   ] 
 /]
 [#assign customCSS = [ 
-  "${baseUrlMedia}/css/impactPathway/outcomes.css?20200909",
+  "${baseUrlMedia}/css/impactPathway/outcomes.css?20201709",
   "${baseUrlCdn}/global/css/impactGraphic.css" 
   ] 
 /]
@@ -69,7 +69,7 @@
           [#if hasAvailableProgramID]
             <div class="outcomes-list" listname="outcomes">
              <div class="cont-btn-min"> 
-              <button   type="button" class="btn-expand-all-outcomes btn btn-primary btn-link">Expand all outcomes<i class="fas fa-expand-arrows-alt"></i></button>
+              <button   type="button" class="btn-expand-all-outcomes btn btn-link">Collapse all outcomes<i class="fas fa-expand-arrows-alt"></i></button>
              </div>
             [#if outcomes?has_content]
               [#list outcomes as outcome]
@@ -187,7 +187,7 @@
     
     <br />
     <div class="cont-btn-min"> 
-     <button   type="button" class="btn-expand-Outcome btn btn-primary btn-link">Expand Outcome<i class="fas fa-expand-arrows-alt"></i></button>
+     <button   type="button" class="btn-expand-Outcome btn btn-link">Collapse Outcome<i class="fas fa-expand-arrows-alt"></i></button>
     </div>
     [#-- Outcome Statement --]
     <div class="form-group">
@@ -200,7 +200,7 @@
     </div>
     [/#if]
     
-    <div class="row form-group target-block minimizeOutcome to-minimize-outcome">
+    <div class="row form-group target-block to-minimize-outcome">
       [#-- Target Year --]
       <div class="col-md-4">[@customForm.input name="${outcomeCustomName}.year" value="${(outcome.year)!2022}" type="text" i18nkey="outcome.targetYear"  placeholder="outcome.inputTargetYear.placeholder" className="targetYear outcomeYear" required=true editable=editable /]</div>
       [#-- Target Unit --]
@@ -222,7 +222,7 @@
     </div>
 
     <!-- Nav tabs -->
-    <ul class="nav nav-tabs minimizeOutcome to-minimize-outcome" role="tablist">
+    <ul class="nav nav-tabs to-minimize-outcome" role="tablist">
       <li role="presentation" class="active"><a href="#milestones-tab-${index}" aria-controls="messages" role="tab" data-toggle="tab">Milestones <span class="badge">${(outcome.milestones?size)!'0'}</span></a></li>
       [#if action.hasSpecificities('crp_baseline_indicators') && (selectedProgram.baseLine)!false]
       <li role="presentation"><a href="#baseline-tab-${index}" aria-controls="profile" role="tab" data-toggle="tab">Baseline Indicators <span class="badge">${(outcome.indicators?size)!'0'}</span></a></li>
@@ -231,7 +231,7 @@
      </ul>
   
     <!-- Tab panes -->
-    <div class="tab-content impactpathwayTabContent minimizeOutcome to-minimize-outcome">
+    <div class="tab-content impactpathwayTabContent  to-minimize-outcome">
       [#-- Outcome Sub-IDOs List --]
       <div role="tabpanel" class="tab-pane fade " id="subIdos-tab-${index}">
       
@@ -309,7 +309,7 @@
         [#--<h5 class="sectionSubTitle">[@s.text name="outcome.milestone.sectionTitle"/]</h5>--]
         <div class="milestones-list" listname="${outcomeCustomName}.milestones">
        <div class="cont-btn-min"> 
-         <button   type="button" class="btn-expand-all btn btn-primary btn-link">Expand all<i class="fas fa-expand-arrows-alt"></i></button>
+         <button   type="button" class="btn-expand-all btn btn-link">Collapse all<i class="fas fa-expand-arrows-alt"></i></button>
        </div>
         [#if outcome.milestones?has_content]
           [#list outcome.milestones as milestone]
@@ -378,7 +378,7 @@
       [@customForm.textArea name="${milestoneCustomName}.title" i18nkey="outcome.milestone.statement" required=true className="milestone-statement limitWords-100" editable=editableMilestone /]
     </div>
     
-    <div class="form-group row to-minimize minimize"> 
+    <div class="form-group row to-minimize"> 
       [#-- Year --]
       <div class="col-md-4">
         [@customForm.select name="${milestoneCustomName}.year" value="${(milestone.year)!-1}"  i18nkey="outcome.milestone.inputTargetYear" listName="milestoneYears"  required=true  className=" targetYear milestoneYear" editable=editableMilestone /]
@@ -394,7 +394,7 @@
       </div>
     </div>
     
-    <div class="row form-group target-block to-minimize minimize">
+    <div class="row form-group target-block to-minimize">
       [#-- Target Unit --]
       [#if targetUnitList?has_content]
       <div class="col-md-4">
@@ -409,7 +409,7 @@
     </div>
     
     [#-- POWB 2019 REQUIREMENTS --]
-    <div class="form-group to-minimize minimize">
+    <div class="form-group to-minimize">
       <div class="row">
         [#-- Indicate of the following --]
         <div class="col-md-5">
@@ -467,7 +467,7 @@
       </div>
     </div>
        <div class="cont-btn-min"> 
-         <button   type="button" class="btn-expand btn btn-primary btn-link">Expand<i class="fas fa-expand-arrows-alt"></i></button>
+         <button   type="button" class="btn-expand btn btn-link">Collapse<i class="fas fa-expand-arrows-alt"></i></button>
        </div>
   </div>
 [/#macro]
