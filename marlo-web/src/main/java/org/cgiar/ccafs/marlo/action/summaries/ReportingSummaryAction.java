@@ -2725,7 +2725,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           intellectualAssetPvpCountry, intellectualAssetPvpApplicationNumber, intellectualAssetPvpBreederCrop,
           intellectualAssetDateFilling, intellectualAssetDateRegistration, intellectualAssetDateExpiry,
           intellectualAssetAdditionalInformation, intellectualAssetLinkPublished, intellectualAssetCommunication,
-          otherPartner});
+          otherPartner, deliv_description});
       }
     }
     return model;
