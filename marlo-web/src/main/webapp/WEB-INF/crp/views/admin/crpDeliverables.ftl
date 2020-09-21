@@ -2,7 +2,7 @@
 [#assign title = "MARLO Deliverables" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/marloDeliverables.js?20200909" ] /]
+[#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/marloDeliverables.js?20201509" ] /]
 [#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css" ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "crpDeliverables" /]
@@ -49,7 +49,7 @@
                 <div class="selectList">   
                   <select name="deliverableID" id="deliverableID">
                     [#list deliverables as deliverable ]
-                      <option value="${(deliverable.id)!}" selected>D${(deliverable.id)!} - ${(deliverable.deliverableInfo.title)!}</option>
+                      <option value="${(deliverable.id)!}" selected>D${(deliverable.id)!} (P${(deliverable.project.id)!}) - ${(deliverable.deliverableInfo.title)!}</option>
                     [/#list]  
                   </select>
                 </div>
@@ -70,7 +70,7 @@
                 <label for="" class="title">
                   Current phase:
                 </label>
-                <p >AR2019</p>
+                <p >${(actualPhase.name)!} ${(actualPhase.year)!}</p>
               </div>
         
               <div class="col-md-6 ">
@@ -102,7 +102,7 @@
                   Current project:
                 </label>
                 <!-- <h1>Current project:</h1> -->
-                <p >P250 - Bringing CSA practices to scale: assessing their contributions to narrow nutrient and yield gaps</p>
+                <div id="currentProject">P${(deliverables[0].project.id)!} - ${(deliverables[0].project.projectInfo.title)!}</div>
               </div>
         
               <div class="col-md-6">
@@ -113,7 +113,7 @@
                   <div class="selectList">   
                     <select name="projectID" id="projectID">
                       [#list projects as project ]
-                        <option value="${project.id}" selected>P${project.id}</option>
+                        <option value="${project.id}" selected>P${project.id} - ${(project.projectInfo.title)!}</option>
                       [/#list]  
                     </select>
                   </div>

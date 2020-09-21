@@ -185,6 +185,12 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
   }
 
   @Override
+  public List<DeliverableUserPartnership> findByDeliverableID(long deliverableID) {
+    return deliverableUserPartnershipDAO.findByDeliverableID(deliverableID);
+  }
+
+
+  @Override
   public DeliverableUserPartnership getDeliverableUserPartnershipById(long deliverableUserPartnershipID) {
     return deliverableUserPartnershipDAO.find(deliverableUserPartnershipID);
   }

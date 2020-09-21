@@ -18,11 +18,15 @@ package org.cgiar.ccafs.marlo.action.crp.admin;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableUserPartnershipManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableUserPartnershipPersonManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
+import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
+import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnershipPerson;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -43,14 +47,15 @@ public class CrpDeliverablesAction extends BaseAction {
 
   private static final long serialVersionUID = 6392973543544674655L;
 
-  // private static Logger logger = LoggerFactory.getLogger(CrpDeliverablesAction.class);
-
   // Managers
   private DeliverableManager deliverableManager;
   private DeliverableInfoManager deliverableInfoManager;
   private PhaseManager phaseManager;
   private ProjectManager projectManager;
   private GlobalUnitManager globalUnitManager;
+  private DeliverableUserPartnershipManager deliverableUserPartnershipManager;
+  private DeliverableUserPartnershipPersonManager deliverableUserPartnerPersonshipManager;
+
 
   // Variables
   private String entityByPhaseList;
@@ -67,13 +72,17 @@ public class CrpDeliverablesAction extends BaseAction {
 
   @Inject
   public CrpDeliverablesAction(APConfig config, PhaseManager phaseManager, DeliverableManager deliverableManager,
-    DeliverableInfoManager deliverableInfoManager, ProjectManager projectManager, GlobalUnitManager globalUnitManager) {
+    DeliverableInfoManager deliverableInfoManager, ProjectManager projectManager, GlobalUnitManager globalUnitManager,
+    DeliverableUserPartnershipManager deliverableUserPartnershipManager,
+    DeliverableUserPartnershipPersonManager deliverableUserPartnerPersonshipManager) {
     super(config);
     this.phaseManager = phaseManager;
     this.deliverableManager = deliverableManager;
     this.deliverableInfoManager = deliverableInfoManager;
     this.projectManager = projectManager;
     this.globalUnitManager = globalUnitManager;
+    this.deliverableUserPartnershipManager = deliverableUserPartnershipManager;
+    this.deliverableUserPartnerPersonshipManager = deliverableUserPartnerPersonshipManager;
   }
 
   public List<GlobalUnit> getCrps() {
@@ -139,21 +148,42 @@ public class CrpDeliverablesAction extends BaseAction {
 
         DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(this.getActualPhase());
         DeliverableInfo deliverableInfoToMove = deliverableInfo;
-        // deliverableInfo.setActive(false);
-        // deliverableInfoManager.saveDeliverableInfo(deliverableInfo);
+
 
         if (deliverable.getDeliverableInfo(phaseToMove) == null) {
           deliverableInfoToMove.setPhase(phaseToMove);
           deliverableInfoManager.saveDeliverableInfo(deliverableInfoToMove);
         }
 
-        // Desactivate deliverables info with previous phases to 'phase to move'
         for (DeliverableInfo info : deliverableInfos) {
-          if (info.getPhase() != null && info.getPhase().getId() != null
-            && info.getPhase().getId() < phaseToMove.getId()) {
-            info.setActive(false);
-            deliverableInfoManager.saveDeliverableInfo(info);
+          if (info.getPhase() != null && info.getPhase().getId() != null) {
+
+            // Disable deliverables info with previous phases to 'phase to move'
+            if (info.getPhase().getId() < phaseToMove.getId()) {
+              info.setActive(false);
+              deliverableInfoManager.saveDeliverableInfo(info);
+            }
+
+            // Create deliverables info with next phases to 'phase to move'
+            if (info.getPhase().getId() > phaseToMove.getId()) {
+              info.setActive(true);
+              deliverableInfoManager.saveDeliverableInfo(info);
+            }
           }
+        }
+
+        // Create deliverable info in phases (when deliverable is moved to previous phases)
+        List<Phase> phaseList =
+          phases.stream().filter(f -> f.getId() < this.getActualPhase().getId() && f.getId() >= phaseToMove.getId())
+            .collect(Collectors.toList());
+        for (Phase phase : phaseList) {
+          // If deliverable info doesnt exist in the phase, tis created
+          if (deliverableInfoManager.getDeliverablesInfoByPhase(phase) == null) {
+            deliverableInfoToMove.setPhase(phase);
+            deliverableInfoManager.saveDeliverableInfo(deliverableInfoToMove);
+          }
+          deliverableInfoToMove.setActive(true);
+          deliverableInfoManager.saveDeliverableInfo(deliverableInfoToMove);
         }
 
       }
@@ -172,7 +202,6 @@ public class CrpDeliverablesAction extends BaseAction {
         deliverableManager.saveDeliverable(deliverable);
       }
     }
-
   }
 
   @Override
@@ -182,27 +211,36 @@ public class CrpDeliverablesAction extends BaseAction {
       .filter(c -> c.isMarlo() && c.isActive() && c.getAcronym().equals(this.getCurrentCrp().getAcronym()))
       .collect(Collectors.toList());
 
-    phases =
-      phaseManager.findAll().stream().filter(c -> c.isActive() && c.getCrp() != null && this.getCurrentCrp() != null
-        && c.getCrp().getId().equals(this.getCurrentCrp().getId())).collect(Collectors.toList());
+    phases = phaseManager.findAll().stream()
+      .filter(c -> c.isActive() && c.getCrp() != null && this.getCurrentCrp() != null
+        && c.getCrp().getId().equals(this.getCurrentCrp().getId()) && (c.getId() > this.getActualPhase().getId()))
+      .collect(Collectors.toList());
 
-    deliverables = deliverableManager.getDeliverablesByPhase(this.getActualPhase().getId());
+    deliverables = deliverableManager.getDeliverablesByPhase(this.getActualPhase().getId()).stream()
+      .filter(d -> d != null && d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null
+        && d.getDeliverableInfo(this.getActualPhase()).isActive())
+      .collect(Collectors.toList());
 
     if (deliverables != null && !deliverables.isEmpty()) {
       for (Deliverable deliverable : deliverables) {
         if (deliverable != null && deliverable.getId() != null) {
           deliverable = deliverableManager.getDeliverableById(deliverable.getId());
+          deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(this.getActualPhase()));
         }
       }
     }
 
     String[] statuses = null;
-    projects = projectManager.getActiveProjectsByPhase(this.getActualPhase(), 0, statuses);
+    projects = projectManager.getActiveProjectsByPhase(this.getActualPhase(), 0, statuses).stream()
+      .filter(p -> p != null && p.isActive() && p.getProjecInfoPhase(this.getActualPhase()) != null
+        && p.getProjecInfoPhase(this.getActualPhase()).isActive())
+      .collect(Collectors.toList());
 
     if (projects != null && !projects.isEmpty()) {
       for (Project project : projects) {
         if (project != null && project.getId() != null) {
           project = projectManager.getProjectById(project.getId());
+          project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
         }
       }
     }
@@ -211,22 +249,19 @@ public class CrpDeliverablesAction extends BaseAction {
   @Override
   public String save() {
     if (this.canAccessSuperAdmin()) {
-      if (deliverableID != null && deliverableID != 0) {
-        if (moveToSelection != null && !moveToSelection.isEmpty()) {
+      if (deliverableID != null && deliverableID != 0 && moveToSelection != null && !moveToSelection.isEmpty()) {
 
-          switch (moveToSelection) {
-            case "project":
-              if (projectID != null && projectID != 0) {
-                this.moveDeliverablesProject();
-              }
-              break;
-            case "phase":
-              if (phaseID != null && phaseID != 0) {
-                this.moveDeliverablesPhase();
-              }
-              break;
-          }
-
+        switch (moveToSelection) {
+          case "project":
+            if (projectID != null && projectID != 0) {
+              this.moveDeliverablesProject();
+            }
+            break;
+          case "phase":
+            if (phaseID != null && phaseID != 0) {
+              this.moveDeliverablesPhase();
+            }
+            break;
         }
       }
 
@@ -275,6 +310,27 @@ public class CrpDeliverablesAction extends BaseAction {
 
   public void setSelectedPhaseID(long selectedPhaseID) {
     this.selectedPhaseID = selectedPhaseID;
+  }
+
+  public void validateDeliverablePartners() {
+
+    // Get deliverables partners
+    List<DeliverableUserPartnership> deliverableUserPartnerships =
+      deliverableUserPartnershipManager.findByDeliverableID(deliverableID);
+
+    if (deliverableUserPartnerships != null && !deliverableUserPartnerships.isEmpty()) {
+      for (DeliverableUserPartnership userPartnerships : deliverableUserPartnerships) {
+        List<DeliverableUserPartnershipPerson> persons = userPartnerships.getDeliverableUserPartnershipPersons()
+          .stream().filter(dp -> dp.isActive()).collect(Collectors.toList());
+        if (persons != null && !persons.isEmpty()) {
+          // Compare with project partners
+        }
+      }
+
+    }
+
+    // Get project Partners
+
   }
 
 
