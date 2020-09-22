@@ -36,6 +36,19 @@ function attachEvents() {
       $targetValue.hide('slow');
     }
   });
+  //click event expand 
+  $('.blockTitle.closed').on('click', function() {
+    if($(this).hasClass('closed')) {
+      $('.blockContent').slideUp();
+      $('.blockTitle').removeClass('opened').addClass('closed');
+      $(this).removeClass('closed').addClass('opened');
+    } else {
+      $(this).removeClass('opened').addClass('closed');
+    }
+    $(this).next().slideToggle('slow', function() {
+      $(this).find('textarea').autoGrow();
+    });
+  });
   // Expand alls Outcomes
   $('.btn-expand-all-outcomes').on('click', expandAllOutcomes);
   // Expand alls Milestones
