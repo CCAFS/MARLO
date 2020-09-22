@@ -307,12 +307,35 @@ function addMilestone() {
 }
 
 function removeMilestone() {
+  // var $list = $(this).parents('.outcome').find('.milestones-list');
+  // var $item = $(this).parents('.milestone');
+  // $item.hide(function() {
+  //   $item.remove();
+  //   updateAllIndexes();
+  // });
+
+
+  console.log("remove milestone");
   var $list = $(this).parents('.outcome').find('.milestones-list');
-  var $item = $(this).parents('.milestone');
-  $item.hide(function() {
-    $item.remove();
-    updateAllIndexes();
+  // var $item = $(this).parents('.milestone');
+  var $item =  $(this).parents('.srfSlo').find(".milestone");
+  var $collapse = $(this).parents('.srfSlo');
+  //  $(this).parents('.srfSlo').find(".milestone").css({"color": "red", "border": "2px solid red"});
+  console.log($item);
+
+  $collapse.hide(function() {
+    $collapse.remove();
+    $item.hide(function() {
+      $item.remove();
+      updateAllIndexes();
+    });
+    // updateAllIndexes();
   });
+
+
+
+
+
 }
 
 function expandMilestone(){
