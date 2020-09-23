@@ -335,15 +335,15 @@ public class ClusterActivitiesAction extends BaseAction {
           }
         }
       }
-
-      if (buffer != null && fileName != null && contentType != null) {
-        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer, contentType, fileName, true);
-      } else {
-        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+      if (this.validateEmailNotification()) {
+        if (buffer != null && fileName != null && contentType != null) {
+          sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer, contentType, fileName, true);
+        } else {
+          sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+        }
       }
     }
   }
-
 
   /**
    * @param userAssigned is the user been assigned
@@ -502,6 +502,7 @@ public class ClusterActivitiesAction extends BaseAction {
 
     sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -751,7 +752,8 @@ public class ClusterActivitiesAction extends BaseAction {
       }
       selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
       for (CrpClusterOfActivity crpClusterOfActivity : selectedProgram.getCrpClusterOfActivities().stream()
-        .filter(c -> c.isActive() && c.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())) {
+        .filter(c -> c.isActive() && c.getPhase().getId().equals(this.getActualPhase().getId()))
+        .collect(Collectors.toList())) {
         if (!clusterofActivities.contains(crpClusterOfActivity)) {
           crpClusterOfActivityManager.deleteCrpClusterOfActivity(crpClusterOfActivity.getId());
         }
@@ -979,7 +981,6 @@ public class ClusterActivitiesAction extends BaseAction {
 
   }
 
-
   public void setClRol(long clRol) {
     this.clRol = clRol;
   }
@@ -1009,6 +1010,7 @@ public class ClusterActivitiesAction extends BaseAction {
     this.programs = programs;
   }
 
+
   public void setRoleCl(Role roleCl) {
     this.roleCl = roleCl;
   }
@@ -1026,6 +1028,14 @@ public class ClusterActivitiesAction extends BaseAction {
     if (save) {
       validator.validate(this, clusterofActivities, selectedProgram, true);
     }
+  }
+
+  private boolean validateEmailNotification() {
+    GlobalUnit globalUnit = loggedCrp;
+    Boolean crpNotification = globalUnit.getCustomParameters().stream()
+      .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_EMAIL_NOTIFICATIONS))
+      .allMatch(t -> (t.getValue() == null) ? true : t.getValue().equalsIgnoreCase("true"));
+    return crpNotification;
   }
 
 }
