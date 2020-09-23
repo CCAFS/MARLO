@@ -359,7 +359,7 @@
     [/#if]
     
     [#-- SLO Title --]
-    <div class="blockTitle closed">
+    <div class="blockTitle opened">
       <div class="leftHead ${reqMilestonesFields?string('green', '')} sm">
         <!--<span class="index">${index+1}</span>-->
         <span class="index">${(milestone.composeID)! "[New]"}</span>
@@ -367,10 +367,10 @@
       </div>
       <!-- <strong>SLO ${index+1}: </strong>  -->
      ${(milestone.title)!""}
-      <small>(Alerts: 5) </small>
+      <!-- <small>(Alerts: 5) </small> -->
     </div>
     
-    <div class="blockContent" style="display:none">
+    <div class="blockContent" style="display:block">
       <div id="milestone-${isTemplate?string('template', index)}" class="milestone borderBox-no-border isNew-${isMilestoneNew?string}" style="display:${isTemplate?string('none','block')}">
    
 
