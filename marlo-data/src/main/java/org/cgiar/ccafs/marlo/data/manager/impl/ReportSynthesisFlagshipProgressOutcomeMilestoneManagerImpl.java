@@ -28,10 +28,11 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestone;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author CCAFS
@@ -101,77 +102,41 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestoneManagerImpl
     reportSynthesisFlagshipProgressOutcomeMilestone =
       reportSynthesisFlagshipProgressOutcomeMilestoneDAO.save(reportSynthesisFlagshipProgressOutcomeMilestone);
 
-    // Update the Milestone Status
-    this.updateMilestoneStatus(reportSynthesisFlagshipProgressOutcomeMilestone.getCrpMilestone(),
-      reportSynthesisFlagshipProgressOutcomeMilestone.getMilestonesStatus());
+    // Update the Milestone Status and Extended Year (if applies)
+    this.updateMilestoneStatusAndExtendedYear(reportSynthesisFlagshipProgressOutcomeMilestone.getCrpMilestone(),
+      reportSynthesisFlagshipProgressOutcomeMilestone.getMilestonesStatus(),
+      reportSynthesisFlagshipProgressOutcomeMilestone.getExtendedYear());
 
     return reportSynthesisFlagshipProgressOutcomeMilestone;
   }
 
+
   /**
-   * @param crpProgramOutcome
-   * @param crpMilestone
-   * @param next
+   * Updates the milestone's status and extended year (if applies)
+   * 
+   * @param crpMilestone the milestone to be updated
+   * @param status the new status
+   * @param extendedYear the new extended year (if applies)
    */
-  private void updateMilestonePhase(CrpProgramOutcome crpProgramOutcome, CrpMilestone crpMilestone, Phase next) {
-    Phase phase = phaseManager.getPhaseById(next.getId());
-    List<CrpProgramOutcome> outcomes = phase.getOutcomes().stream()
-      .filter(c -> c.isActive() && c.getCrpProgram().getId().equals(crpProgramOutcome.getCrpProgram().getId())
-        && c.getComposeID().equals(crpProgramOutcome.getComposeID()))
-      .collect(Collectors.toList());
-
-    if (!outcomes.isEmpty()) {
-
-      CrpProgramOutcome outcomePhase = outcomes.get(0);
-
-      List<CrpMilestone> milestones = outcomePhase.getCrpMilestones().stream()
-        .filter(m -> m.isActive() && m.getComposeID().equals(crpMilestone.getComposeID())).collect(Collectors.toList());
-      if (!milestones.isEmpty()) {
-        CrpMilestone milestonePhase = milestones.get(0);
-
-        milestonePhase.setMilestonesStatus(crpMilestone.getMilestonesStatus());
-
-        if (crpMilestone != null && crpMilestone.getMilestonesStatus() != null
-          && crpMilestone.getMilestonesStatus().getId().equals(new Long(4))) {
-          milestonePhase.setYear(crpMilestone.getYear() + 1);
-        }
-
-        crpMilestoneManager.saveCrpMilestone(milestonePhase);
-
-        if (phase.getNext() != null) {
-          this.updateMilestonePhase(crpProgramOutcome, crpMilestone, phase.getNext());
-        }
-
-
-      }
-
+  private void updateMilestoneStatusAndExtendedYear(CrpMilestone crpMilestone, GeneralStatus status,
+    Integer extendedYear) {
+    CrpProgramOutcome crpProgramOutcome =
+      crpProgramOutcomeManager.getCrpProgramOutcomeById(crpMilestone.getCrpProgramOutcome().getId());
+    Phase phase = phaseManager.getPhaseById(crpProgramOutcome.getPhase().getId());
+    if (StringUtils.equalsIgnoreCase(phase.getDescription(), APConstants.REPORTING)) {
+      // in theory should always happen
+      phase = phase.getNext();
     }
-
-
-  }
-
-  /**
-   * @param crpMilestone
-   * @param status
-   */
-  private void updateMilestoneStatus(CrpMilestone crpMilestone, GeneralStatus status) {
 
     crpMilestone = crpMilestoneManager.getCrpMilestoneById(crpMilestone.getId());
     crpMilestone.setMilestonesStatus(status);
-    crpMilestone = crpMilestoneManager.saveCrpMilestone(crpMilestone);
-
-    CrpProgramOutcome crpProgramOutcome =
-      crpProgramOutcomeManager.getCrpProgramOutcomeById(crpMilestone.getCrpProgramOutcome().getId());
-
-    Phase phase = phaseManager.getPhaseById(crpProgramOutcome.getPhase().getId());
-
-    if (phase.getDescription().equals(APConstants.REPORTING)) {
-      if (phase.getNext() != null && phase.getNext().getNext() != null) {
-        this.updateMilestonePhase(crpProgramOutcome, crpMilestone, phase.getNext());
-      }
+    if (status != null && StringUtils.equalsIgnoreCase(status.getName(), "Extended")) {
+      crpMilestone.setExtendedYear(extendedYear);
     }
 
+    crpMilestone = crpMilestoneManager.saveCrpMilestone(crpMilestone);
+    if (phase.getNext() != null) {
+      crpMilestoneManager.replicate(crpMilestone, phase.getNext());
+    }
   }
-
-
 }
