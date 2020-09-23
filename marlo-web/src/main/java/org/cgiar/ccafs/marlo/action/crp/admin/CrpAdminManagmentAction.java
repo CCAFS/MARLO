@@ -744,7 +744,9 @@ public class CrpAdminManagmentAction extends BaseAction {
     pmuRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_PMU_ROLE));
     cuId = Long.parseLong((String) this.getSession().get(APConstants.CRP_CU));
     rolePmu = roleManager.getRoleById(pmuRol);
-    loggedCrp.setProgramManagmenTeam(new ArrayList<UserRole>(rolePmu.getUserRoles()));
+    if (rolePmu != null && rolePmu.getUserRoles() != null) {
+      loggedCrp.setProgramManagmenTeam(new ArrayList<UserRole>(rolePmu.getUserRoles()));
+    }
     String params[] = {loggedCrp.getAcronym()};
     fplRole = roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_FPL_ROLE)));
     fpmRole = roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_FPM_ROLE)));
@@ -772,7 +774,7 @@ public class CrpAdminManagmentAction extends BaseAction {
     parameters =
       loggedCrp.getCustomParameters().stream().filter(c -> c.getParameter().getKey().equals(APConstants.CRP_HAS_REGIONS)
         && c.isActive() && c.getCrp().getId().equals(loggedCrp.getId())).collect(Collectors.toList());
-    if (parameters.size() == 0) {
+    if (parameters.isEmpty()) {
       loggedCrp.setHasRegions(false);
     } else {
       boolean param = Boolean.parseBoolean(parameters.get(0).getValue());
