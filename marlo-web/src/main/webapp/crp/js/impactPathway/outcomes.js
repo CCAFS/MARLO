@@ -288,7 +288,7 @@ function removeOutcome() {
 
 function addMilestone() {
   var $list = $(this).parents('.outcome').find('.milestones-list');
-  var $item = $('#milestone-template').clone(true).removeAttr("id");
+  var $item = $('#srfSlo-template').clone(true).removeAttr("id");
 
   // Set Status as new
   $item.find('.milestoneStatus').val(1); // New
@@ -303,6 +303,8 @@ function addMilestone() {
   $list.append($item);
   updateAllIndexes();
   $item.show('slow');
+  // $item.removeClass()
+  $item.find(".milestone").css({"display":"block"});
   // Hide empty message
   $(this).parents('.outcome').find('.milestones-list p.message').hide();
 }
