@@ -198,6 +198,8 @@ public class LoginAction extends BaseAction {
             return SUCCESS;
           case 4:
             return SUCCESS;
+          case 5:
+            return SUCCESS;
           default:
             return INPUT;
         }
@@ -290,6 +292,9 @@ public class LoginAction extends BaseAction {
           return SUCCESS;
 
         case 4:
+          return SUCCESS;
+
+        case 5:
           return SUCCESS;
 
         default:
