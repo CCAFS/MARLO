@@ -18,12 +18,14 @@ package org.cgiar.ccafs.marlo.action.json.impactpathway;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.SubmissionManager;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterActivityLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -52,6 +54,8 @@ public class UnSubmitImpactpathwayAction extends BaseAction {
 
   private final CrpProgramManager crpProgramManager;
 
+  private final GlobalUnitManager globalUnitManager;
+
   private final SubmissionManager submissionManager;
   private final RoleManager roleManager;
 
@@ -64,12 +68,13 @@ public class UnSubmitImpactpathwayAction extends BaseAction {
 
   @Inject
   public UnSubmitImpactpathwayAction(APConfig config, SubmissionManager submissionManager, SendMailS sendMail,
-    CrpProgramManager crpProgramManager, RoleManager roleManager) {
+    CrpProgramManager crpProgramManager, RoleManager roleManager, GlobalUnitManager globalUnitManager) {
     super(config);
     this.submissionManager = submissionManager;
     this.sendMail = sendMail;
     this.crpProgramManager = crpProgramManager;
     this.roleManager = roleManager;
+    this.globalUnitManager = globalUnitManager;
   }
 
   @Override
@@ -209,12 +214,21 @@ public class UnSubmitImpactpathwayAction extends BaseAction {
     message.append(this.getText("email.support", new String[] {crpAdmins}));
     message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
-
-    sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(program.getCrp().getId());
+    if (this.validateEmailNotification(globalUnit)) {
+      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    }
   }
 
   public void setMessage(List<Map<String, Object>> message) {
     this.message = message;
+  }
+
+  private boolean validateEmailNotification(GlobalUnit globalUnit) {
+    Boolean crpNotification = globalUnit.getCustomParameters().stream()
+      .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_EMAIL_NOTIFICATIONS))
+      .allMatch(t -> (t.getValue() == null) ? true : t.getValue().equalsIgnoreCase("true"));
+    return crpNotification;
   }
 
 }

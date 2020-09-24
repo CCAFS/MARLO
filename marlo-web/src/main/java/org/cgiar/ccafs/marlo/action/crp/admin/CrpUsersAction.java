@@ -414,9 +414,11 @@ public class CrpUsersAction extends BaseAction {
     message.append(this.getText("email.support", new String[] {crpAdmins}));
     message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
-    sendMailS.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
-  }
+    if (this.validateEmailNotification(globalUnit)) {
+      sendMailS.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    }
 
+  }
 
   @Override
   public void prepare() throws Exception {
@@ -501,7 +503,6 @@ public class CrpUsersAction extends BaseAction {
     users.clear();
     users.addAll(userSet);
   }
-
 
   @Override
   public String save() {
@@ -787,15 +788,15 @@ public class CrpUsersAction extends BaseAction {
         }
       }
     }
+    if (this.validateEmailNotification(loggedCrp)) {
+      if (buffer != null && fileName != null && contentType != null) {
 
-    if (buffer != null && fileName != null && contentType != null) {
-
-      sendMailS.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer, contentType, fileName, true);
-    } else {
-      sendMailS.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+        sendMailS.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer, contentType, fileName, true);
+      } else {
+        sendMailS.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+      }
     }
   }
-
 
   public void setCGIARUser(boolean isCGIARUser) {
     this.isCGIARUser = isCGIARUser;
@@ -810,6 +811,7 @@ public class CrpUsersAction extends BaseAction {
   public void setRolesCrp(List<Role> rolesCrp) {
     this.rolesCrp = rolesCrp;
   }
+
 
   public void setUser(User user) {
     this.user = user;
@@ -826,5 +828,15 @@ public class CrpUsersAction extends BaseAction {
       validator.validate(this, user, selectedGlobalUnitAcronym, isCGIARUser, true);
     }
   }
+
+
+  private boolean validateEmailNotification(GlobalUnit globalUnit) {
+
+    Boolean crpNotification = globalUnit.getCustomParameters().stream()
+      .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_EMAIL_NOTIFICATIONS))
+      .allMatch(t -> (t.getValue() == null) ? true : t.getValue().equalsIgnoreCase("true"));
+    return crpNotification;
+  }
+
 
 }

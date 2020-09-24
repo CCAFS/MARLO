@@ -1,8 +1,93 @@
 
+
+.borderBox-no-padding{
+  border: 1px solid #D1D1D1;
+  /* padding: 9px 22px 9px 22px; */
+  margin: 2px 0px 5px 0;
+  border-radius: 4px;
+  position: relative;
+  transition: box-shadow 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  background: #fff;
+}
+
+.borderBox-no-border{
+  /* border: 1px solid #D1D1D1; */
+  padding: 9px 22px 9px 22px; 
+  margin: 2px 0px 40px 0;
+  border-radius: 4px;
+  position: relative;
+  transition: box-shadow 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  background: #fff;
+}
+
+/** SLOs **/
+.srfSlo .blockTitle, .crpParameters .blockTitle {
+  cursor: pointer;
+  padding-left: 20px;
+  background-repeat: no-repeat;
+  background-position: -4px;
+}
+
+.srfSlo .blockTitle{
+  padding-top: 20px;
+  padding-bottom: 10px;
+  margin-left: 10px;
+  margin-right: 20px;
+}
+
+.srfSlo .blockTitle.opened, .crpParameters .blockTitle.opened {
+  opacity: 0.5;
+  background-image: url(../../../global/images/arrow-up.png);
+}
+
+.srfSlo .blockTitle.closed, .crpParameters .blockTitle.closed {
+  background-image: url(../../../global/images/arrow-down.png);
+}
+
+.srfSlo .blockTitle small, .crpParameters .blockTitle small {
+  color: #389b98;
+}
+
+.srfSlo .blockContent, .crpParameters .blockContent {
+  /* padding: 0 15px 20px 15px; */
+}
+
+/** IDOs **/
+.srfIdo .blockTitle {
+  cursor: pointer;
+  padding-left: 20px;
+  background-repeat: no-repeat;
+  background-position: -4px;
+}
+
+.srfIdo .blockTitle.opened {
+  opacity: 0.5;
+  background-image: url(../../../global/images/arrow-up.png);
+}
+
+.srfIdo .blockTitle.closed {
+  background-image: url(../../../global/images/arrow-down.png);
+}
+
+.srfIdo .blockTitle small {
+  color: #389b98;
+}
+
+.srfIdo .blockContent {
+  padding: 0 15px 20px 15px;
+}
+
+/* OLD */
+.btn:focus {
+  outline: none !important;
+  color: unset;
+}
 .minimize, .minimizeOutcome{
   display: none;
 }
-
+ .outcomes-list div .select .selectList span.select2.select2-container{
+  width: 100% !important;
+}
 .btn-expand-all, .btn-expand-all-outcomes{
   font-weight: 900;
   color: rgb(110, 110, 110);

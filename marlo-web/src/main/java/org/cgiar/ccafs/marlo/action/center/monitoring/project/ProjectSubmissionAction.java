@@ -249,14 +249,13 @@ public class ProjectSubmissionAction extends BaseAction {
     // // Do nothing.
     // LOG.error("There was an error trying to get the URL to download the PDF file: " + e.getMessage());
     // }
-
-    if (buffer != null && fileName != null && contentType != null) {
-      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer.array(), contentType, fileName,
-        true);
-    } else {
+    GlobalUnit globalunit = loggedCenter;
+    Boolean crpNotification = globalunit.getCustomParameters().stream()
+      .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_EMAIL_NOTIFICATIONS))
+      .allMatch(t -> (t.getValue() == null) ? true : t.getValue().equalsIgnoreCase("true"));
+    if (crpNotification) {
       sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
     }
-
   }
 
   public void setLoggedCenter(GlobalUnit loggedCenter) {

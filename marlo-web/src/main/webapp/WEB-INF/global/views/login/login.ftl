@@ -59,7 +59,7 @@
         <div class="login-logos-container">
           <ul>
           [#attempt] 
-            [#assign centerList = action.getCrpCategoryList("4") /]
+            [#assign centerList = action.getCrpCategoryList("5") /]
           [#recover]
             [#assign centerList = [] /]
           [/#attempt]
