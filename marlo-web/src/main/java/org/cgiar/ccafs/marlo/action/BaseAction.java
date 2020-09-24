@@ -1737,28 +1737,16 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   /**
-   * Years for all phases, but show the year greater or equal to current phase
-   * year.
+   * Obtains the list of years greater than the current one.
    * 
    * @return String of years for a CRP/Platform/Center for all created phases
    */
   public ArrayList<String> getAllPhaseYearsGreater() {
-    this.years = new ArrayList<>();
-    Set<Integer> yearsSet = new HashSet<>();
     List<Phase> phases = this.getAllCreatedPhases();
-    if (phases != null && !phases.isEmpty()) {
-      for (Phase phase : phases) {
-        yearsSet.add(phase.getYear());
-      }
-      if (yearsSet != null && !yearsSet.isEmpty()) {
-        for (Integer yearInt : yearsSet) {
-          if (yearInt >= this.getCurrentCycleYear()) {
-            this.years.add(yearInt.toString());
-          }
-        }
-        java.util.Collections.sort(this.years);
-      }
-    }
+
+    this.years = phases != null ? phases.stream().map(p -> p.getYear()).filter(y -> y > this.getCurrentCycleYear())
+      .distinct().sorted().map(String::valueOf).collect(Collectors.toCollection(ArrayList::new)) : new ArrayList<>();
+
     return this.years;
   }
 

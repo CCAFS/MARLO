@@ -1948,7 +1948,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         "intellectualAssetPvpVarietyName", "intellectualAssetPvpStatus", "intellectualAssetPvpCountry",
         "intellectualAssetPvpApplicationNumber", "intellectualAssetPvpBreederCrop", "intellectualAssetDateFilling",
         "intellectualAssetDateRegistration", "intellectualAssetDateExpiry", "intellectualAssetAdditionalInformation",
-        "intellectualAssetLinkPublished", "intellectualAssetCommunication", "otherPartner"},
+        "intellectualAssetLinkPublished", "intellectualAssetCommunication", "otherPartner", "deliv_description"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
@@ -1960,7 +1960,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class},
+        String.class, String.class},
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
     if (!project.getDeliverables().isEmpty()) {
@@ -2008,6 +2008,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           institution = null, fundingSources = "", deliv_description = null, otherPartner = "";;
         String delivStatus =
           deliverable.getDeliverableInfo(this.getSelectedPhase()).getStatusName(this.getSelectedPhase());
+        String delivDescription = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDescription();
         Boolean showFAIR = false, showPublication = false, showCompilance = false;
 
         if (deliverable.getDeliverableInfo().getDescription() != null
@@ -2696,6 +2697,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
               && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_OTHER))
             .collect(Collectors.toList());
 
+          if (delivDescription == null || delivDescription.isEmpty()) {
+            delivDescription = "<Not Defined>";
+          }
+
           if (otherPartners != null) {
             for (DeliverableUserPartnership partner : otherPartners) {
               if (partner.getInstitution() != null) {
@@ -2720,7 +2725,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           intellectualAssetPvpCountry, intellectualAssetPvpApplicationNumber, intellectualAssetPvpBreederCrop,
           intellectualAssetDateFilling, intellectualAssetDateRegistration, intellectualAssetDateExpiry,
           intellectualAssetAdditionalInformation, intellectualAssetLinkPublished, intellectualAssetCommunication,
-          otherPartner});
+          otherPartner, delivDescription});
       }
     }
     return model;
@@ -2729,9 +2734,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private TypedTableModel getDeliverablesTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"deliverable_id", "title", "deliv_type", "deliv_sub_type", "deliv_status", "deliv_year",
-        "key_output", "leader", "institution", "funding_sources", "cross_cutting", "deliv_new_year", "isExtended"},
+        "key_output", "leader", "institution", "funding_sources", "cross_cutting", "deliv_new_year", "isExtended",
+        "deliv_description"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, Boolean.class},
+        String.class, String.class, String.class, String.class, String.class, Boolean.class, String.class},
       0);
     if (!project.getDeliverables().isEmpty()) {
       for (Deliverable deliverable : project.getDeliverables().stream()
@@ -2765,6 +2771,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         String institution = null;
         String fundingSources = "";
         Boolean isExtended = false;
+        String delivDescription = null;
         if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType() != null) {
           delivSubType = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getName();
           if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType()
@@ -2794,6 +2801,12 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           }
           keyOutput += deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrpClusterKeyOutput().getKeyOutput();
         }
+
+        if (deliverable.getDeliverableInfo(this.getSelectedPhase()) != null
+          && deliverable.getDeliverableInfo(this.getSelectedPhase()).getDescription() != null) {
+          delivDescription = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDescription();
+        }
+
         // Get partner responsible and institution
         List<DeliverableUserPartnership> deliverablePartnershipResponsibles =
           deliverable.getDeliverableUserPartnerships().stream()
@@ -2891,9 +2904,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           keyOutput = null;
         }
 
-        model.addRow(new Object[] {deliverable.getId(),
-          deliverable.getDeliverableInfo(this.getSelectedPhase()).getTitle(), delivType, delivSubType, delivStatus,
-          delivYear, keyOutput, leader, institution, fundingSources, crossCutting, delivNewYear, isExtended});
+        model
+          .addRow(new Object[] {deliverable.getId(), deliverable.getDeliverableInfo(this.getSelectedPhase()).getTitle(),
+            delivType, delivSubType, delivStatus, delivYear, keyOutput, leader, institution, fundingSources,
+            crossCutting, delivNewYear, isExtended, delivDescription});
       }
     }
     return model;
