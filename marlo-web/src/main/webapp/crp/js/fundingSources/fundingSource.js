@@ -162,7 +162,7 @@ function init() {
   $(".removeRegion").on("click", removeRegion);
 
   // Setting Currency Inputs
- // $('.currencyInput').currencyInput();
+  $('input.currencyInput').currencyInput();
 
   /* Select2 multiple for country and region select */
   $('.countriesSelect').select2({
@@ -1252,7 +1252,7 @@ var mappingFundingToProjectModule =
         $modal.find('.currencyInput, input.percentageInput').numericInput();
 
         // Setting Currency Inputs
-        $amountInput.currencyInput();
+        //$amountInput.currencyInput();
 
         // Setting Percentage Inputs
         $genderInput.percentageInput();
@@ -1354,7 +1354,7 @@ var mappingFundingToProjectModule =
       function retrivePopupValues() {
         vueApp.institutionID = $institutionSelect.val();
         vueApp.projectID = $projectSelect.val();
-        vueApp.amount = $amountInput.val();
+        vueApp.amount = removeCurrencyFormat($amountInput.val());
         // vueApp.gender = removePercentageFormat($genderInput.val());
         if($amountInput.hasClass('amountZero')) {
           vueApp.amountZero = true;
@@ -1363,14 +1363,14 @@ var mappingFundingToProjectModule =
          }
         vueApp.rationale = $justificationInput.val();
          vueApp.remainingBudget =
-          $('#fundingYear-' + vueApp.year + ' span.remainingAmount').text();
+          removeCurrencyFormat($('#fundingYear-' + vueApp.year + ' span.remainingAmount').text());
       }
 
       function openModal(event) {
         var $button = $(event.relatedTarget);
         vueApp.year = $button.data('year');
 
-       // retrivePopupValues();
+        retrivePopupValues();
       }
 
       function closeModal(event) {
