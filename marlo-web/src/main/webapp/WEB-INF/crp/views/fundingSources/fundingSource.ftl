@@ -283,7 +283,11 @@
         <strong>{{ item.name }}</strong> 
         <p v-for="fs in item.fundingSources">
           <span class="pull-right label label-info">{{ fs.type }}</span>
-          <small><strong> FS{{ fs.id }}</strong> - {{ fs.financeCode }} | {{ fs.name }}</small>
+          <a target="_blank" v-if="item.name=='${crpSession}'" v-bind:href="'${baseUrl}/fundingSources/${crpSession}/fundingSource.do?fundingSourceID='+ fs.id +'&edit=true&phaseID=${(actualPhase.id)!}'">
+           <small><strong> FS{{ fs.id }}</strong> - {{ fs.financeCode }} | {{ fs.name }}</small>
+          </a>
+          
+          <small v-else><strong> FS{{ fs.id }}</strong> - {{ fs.financeCode }} | {{ fs.name }}</small>
         </p>
       </div>
     </div>
