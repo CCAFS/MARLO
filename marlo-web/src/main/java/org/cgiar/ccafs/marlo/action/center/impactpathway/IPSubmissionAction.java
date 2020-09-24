@@ -98,11 +98,9 @@ public class IPSubmissionAction extends BaseAction {
       if (submissionService.findAll() != null) {
         CrpProgram program = programService.getCrpProgramById(crpProgramID);
 
-        List<CenterSubmission> submissions =
-          new ArrayList<>(program.getCenterSubmissions().stream()
-            .filter(
-              s -> s.getResearchCycle().equals(cycle) && s.getYear().intValue() == this.getActualPhase().getYear())
-            .collect(Collectors.toList()));
+        List<CenterSubmission> submissions = new ArrayList<>(program.getCenterSubmissions().stream()
+          .filter(s -> s.getResearchCycle().equals(cycle) && s.getYear().intValue() == this.getActualPhase().getYear())
+          .collect(Collectors.toList()));
 
         if (submissions != null && submissions.size() > 0) {
           this.setCenterSubmission(submissions.get(0));
@@ -272,12 +270,19 @@ public class IPSubmissionAction extends BaseAction {
       LOG.error("There was an error trying to get the URL to download the PDF file: " + e.getMessage());
     }
 
-    if (buffer != null && fileName != null && contentType != null) {
-      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer.array(), contentType, fileName,
-        true);
-    } else {
-      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    GlobalUnit globalUnit = loggedCenter;
+    Boolean crpNotification = globalUnit.getCustomParameters().stream()
+      .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_EMAIL_NOTIFICATIONS))
+      .allMatch(t -> (t.getValue() == null) ? true : t.getValue().equalsIgnoreCase("true"));
+    if (crpNotification) {
+      if (buffer != null && fileName != null && contentType != null) {
+        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer.array(), contentType, fileName,
+          true);
+      } else {
+        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+      }
     }
+
 
   }
 

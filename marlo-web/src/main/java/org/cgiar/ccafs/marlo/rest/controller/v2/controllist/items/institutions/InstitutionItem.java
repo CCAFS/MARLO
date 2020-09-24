@@ -15,6 +15,7 @@
 
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.institutions;
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
@@ -342,8 +343,8 @@ public class InstitutionItem<T> {
     String bbcEmails = this.config.getEmailNotification();
 
     // subject
-    String subject =
-      this.getText("marloRequestInstitution.accept.email.subject", new String[] {partnerRequest.getPartnerName()});
+    String subject = this.getText("marloRequestInstitution.clarisa.accept.email.subject",
+      new String[] {partnerRequest.getPartnerName()});
 
     // Building the email message
     StringBuilder message = new StringBuilder();
@@ -355,7 +356,14 @@ public class InstitutionItem<T> {
 
     message.append("This request was sent through CLARISA logged as " + user.getFirstName() + " " + user.getLastName()
       + " (" + user.getEmail() + ")  </br>");
-    this.sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+
+    GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(partnerRequest.getCrp().getId());
+    Boolean crpNotification = globalUnit.getCustomParameters().stream()
+      .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_EMAIL_NOTIFICATIONS))
+      .allMatch(t -> (t.getValue() == null) ? true : t.getValue().equalsIgnoreCase("true"));
+    if (crpNotification) {
+      this.sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    }
   }
 
   private void sendPartnerRequestEmail(PartnerRequest partnerRequest, User user, String entityAcronym) {
@@ -407,8 +415,14 @@ public class InstitutionItem<T> {
       + " (" + user.getEmail() + ")  </br>");
     message.append("</br>");
     try {
-      this.sendMail.send(this.config.getEmailNotification(), ccEmail, this.config.getEmailNotification(), subject,
-        message.toString(), null, null, null, true);
+      GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(partnerRequest.getCrp().getId());
+      Boolean crpNotification = globalUnit.getCustomParameters().stream()
+        .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_EMAIL_NOTIFICATIONS))
+        .allMatch(t -> (t.getValue() == null) ? true : t.getValue().equalsIgnoreCase("true"));
+      if (crpNotification) {
+        this.sendMail.send(this.config.getEmailNotification(), ccEmail, this.config.getEmailNotification(), subject,
+          message.toString(), null, null, null, true);
+      }
     } catch (Exception e) {
       LOG.error("unable to send mail", e);
       this.messageSent = false;
@@ -419,7 +433,6 @@ public class InstitutionItem<T> {
        */
     }
     this.messageSent = true;
-
   }
 
   private void sendRejectedNotficationEmail(PartnerRequest partnerRequest, User user, String justification) {
@@ -437,8 +450,8 @@ public class InstitutionItem<T> {
     // BBC: Our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
     // subject
-    String subject =
-      this.getText("marloRequestInstitution.reject.email.subject", new String[] {partnerRequest.getPartnerName()});
+    String subject = this.getText("marloRequestInstitution.clarisa.reject.email.subject",
+      new String[] {partnerRequest.getPartnerName()});
     // Building the email message
     StringBuilder message = new StringBuilder();
     String userName = partnerRequest.getExternalUserName() == null ? partnerRequest.getCreatedBy().getFirstName()
@@ -449,7 +462,13 @@ public class InstitutionItem<T> {
     message.append("This request was sent through CLARISA logged as " + user.getFirstName() + " " + user.getLastName()
       + " (" + user.getEmail() + ")  </br>");
 
-    this.sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(partnerRequest.getCrp().getId());
+    Boolean crpNotification = globalUnit.getCustomParameters().stream()
+      .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_EMAIL_NOTIFICATIONS))
+      .allMatch(t -> (t.getValue() == null) ? true : t.getValue().equalsIgnoreCase("true"));
+    if (crpNotification) {
+      this.sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    }
   }
 
 }

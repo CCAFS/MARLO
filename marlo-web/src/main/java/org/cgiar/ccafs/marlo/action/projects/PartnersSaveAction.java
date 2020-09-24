@@ -448,8 +448,10 @@ public class PartnersSaveAction extends BaseAction {
 
 
     try {
-      sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, message.toString(),
-        null, null, null, true);
+      if (this.validateEmailNotification()) {
+        sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, message.toString(),
+          null, null, null, true);
+      }
     } catch (Exception e) {
       LOG.error("unable to send mail", e);
       /**
@@ -555,6 +557,14 @@ public class PartnersSaveAction extends BaseAction {
       }
     }
     super.validate();
+  }
+
+  private boolean validateEmailNotification() {
+    GlobalUnit globalUnit = loggedCrp;
+    Boolean crpNotification = globalUnit.getCustomParameters().stream()
+      .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_EMAIL_NOTIFICATIONS))
+      .allMatch(t -> (t.getValue() == null) ? true : t.getValue().equalsIgnoreCase("true"));
+    return crpNotification;
   }
 
 
