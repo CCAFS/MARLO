@@ -795,6 +795,8 @@ public final class APConstants {
   // deliverables import clarisa value
   public static final long IMPORT_DELIVERABLE_VALUE = 63;
 
+  public static final String CRP_EMAIL_NOTIFICATIONS = "crp_enable_email_notification";
+
   public static String getFilterBy() {
     return FILTER_BY;
   }

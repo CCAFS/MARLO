@@ -692,11 +692,13 @@ public class ProjectPartnerAction extends BaseAction {
 
         // TODO Disable temporally CIAT MARLO send email.
         if (!this.isCenterGlobalUnit()) {
-          if (buffer != null && fileName != null && contentType != null) {
-            sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer, contentType, fileName,
-              true);
-          } else {
-            sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+          if (this.validateEmailNotification()) {
+            if (buffer != null && fileName != null && contentType != null) {
+              sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer, contentType, fileName,
+                true);
+            } else {
+              sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+            }
           }
         }
       }
@@ -967,7 +969,6 @@ public class ProjectPartnerAction extends BaseAction {
       sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
     }
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -1402,6 +1403,7 @@ public class ProjectPartnerAction extends BaseAction {
 
   }
 
+
   /**
    * Delete projectPartner if it is not in the list of partners sent back from the UI.
    * 
@@ -1537,7 +1539,6 @@ public class ProjectPartnerAction extends BaseAction {
       }
     }
   }
-
 
   @Override
   public String save() {
@@ -1719,6 +1720,7 @@ public class ProjectPartnerAction extends BaseAction {
     return NOT_AUTHORIZED;
 
   }
+
 
   /**
    * @param partner - the projectPartner edited in the UI
@@ -2058,7 +2060,6 @@ public class ProjectPartnerAction extends BaseAction {
     this.allPPAInstitutions = allPPAInstitutions;
   }
 
-
   public void setAllUsers(List<User> allUsers) {
     this.allUsers = allUsers;
   }
@@ -2078,6 +2079,7 @@ public class ProjectPartnerAction extends BaseAction {
     this.intitutionTypes = intitutionTypes;
   }
 
+
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
@@ -2086,10 +2088,10 @@ public class ProjectPartnerAction extends BaseAction {
     this.partnerPersonTypes = partnerPersonTypes;
   }
 
-
   public void setProject(Project project) {
     this.project = project;
   }
+
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
@@ -2098,7 +2100,6 @@ public class ProjectPartnerAction extends BaseAction {
   public void setProjectPPAPartners(List<ProjectPartner> projectPPAPartners) {
     this.projectPPAPartners = projectPPAPartners;
   }
-
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;
@@ -2321,6 +2322,15 @@ public class ProjectPartnerAction extends BaseAction {
 
       }
     }
+  }
+
+
+  private boolean validateEmailNotification() {
+    GlobalUnit globalUnit = loggedCrp;
+    Boolean crpNotification = globalUnit.getCustomParameters().stream()
+      .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_EMAIL_NOTIFICATIONS))
+      .allMatch(t -> (t.getValue() == null) ? true : t.getValue().equalsIgnoreCase("true"));
+    return crpNotification;
   }
 
 }

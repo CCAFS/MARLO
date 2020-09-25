@@ -2,12 +2,13 @@ $(document).ready(init);
 var currentSubIdo;
 var saveObj;
 var expandAllOutcomesbol = false;
+var expandAllMilesetonesbol = false;
 
 function init() {
 
   /* Declaring Events */
   attachEvents();
-
+ 
   /* Init Select2 plugin */
   $('.outcomes-list select').select2();
 
@@ -36,10 +37,23 @@ function attachEvents() {
       $targetValue.hide('slow');
     }
   });
+  //click event expand 
+  $('.blockTitle.opened').on('click', function() {
+    if($(this).hasClass('closed')) {
+      // $('.blockContent').slideUp();
+      // $('.blockTitle').removeClass('opened').addClass('closed');
+      $(this).removeClass('closed').addClass('opened');
+    } else {
+      $(this).removeClass('opened').addClass('closed');
+    }
+    $(this).next().slideToggle('slow', function() {
+      $(this).find('textarea').autoGrow();
+    });
+  });
   // Expand alls Outcomes
   $('.btn-expand-all-outcomes').on('click', expandAllOutcomes);
   // Expand alls Milestones
-  $('.btn-expand-all').on('click', expandAll);
+  $('.btn-expand-all').on('click', expandAllMilestones);
   // Expand an outcome
   $('.btn-expand-Outcome').on('click', expandOutcome);
   // Expand a Milestone
@@ -274,7 +288,7 @@ function removeOutcome() {
 
 function addMilestone() {
   var $list = $(this).parents('.outcome').find('.milestones-list');
-  var $item = $('#milestone-template').clone(true).removeAttr("id");
+  var $item = $('#srfSlo-template').clone(true).removeAttr("id");
 
   // Set Status as new
   $item.find('.milestoneStatus').val(1); // New
@@ -289,17 +303,42 @@ function addMilestone() {
   $list.append($item);
   updateAllIndexes();
   $item.show('slow');
+  // $item.removeClass()
+  $item.find(".milestone").css({"display":"block"});
   // Hide empty message
   $(this).parents('.outcome').find('.milestones-list p.message').hide();
 }
 
 function removeMilestone() {
+  // var $list = $(this).parents('.outcome').find('.milestones-list');
+  // var $item = $(this).parents('.milestone');
+  // $item.hide(function() {
+  //   $item.remove();
+  //   updateAllIndexes();
+  // });
+
+
+  console.log("remove milestone");
   var $list = $(this).parents('.outcome').find('.milestones-list');
-  var $item = $(this).parents('.milestone');
-  $item.hide(function() {
-    $item.remove();
-    updateAllIndexes();
+  // var $item = $(this).parents('.milestone');
+  var $item =  $(this).parents('.srfSlo').find(".milestone");
+  var $collapse = $(this).parents('.srfSlo');
+  //  $(this).parents('.srfSlo').find(".milestone").css({"color": "red", "border": "2px solid red"});
+  console.log($item);
+
+  $collapse.hide(function() {
+    $collapse.remove();
+    $item.hide(function() {
+      $item.remove();
+      updateAllIndexes();
+    });
+    // updateAllIndexes();
   });
+
+
+
+
+
 }
 
 function expandMilestone(){
@@ -357,7 +396,33 @@ function expandAll(){
     $("#"+$outcome[0].id +" .btn-expand-all").html("Expand all");
   }
 }
+function expandAllMilestones(){
+  let $outcome = $(this).parents('.outcome');
+  console.log($outcome);
+  // console.log($outcome[0].id  );
+  
+    $("#"+$outcome[0].id +" .milestones-list").find('.blockContent').each(function(i,milestone) {
+       if($("#"+$outcome[0].id +" .btn-expand-all").text() == "Expand all"){
+        $(milestone).slideDown();
+        $("#"+$outcome[0].id +" .milestones-list").find('.blockTitle').switchClass('closed','opened');
 
+       }else{
+        $(milestone).slideUp();
+        $("#"+$outcome[0].id +" .milestones-list").find('.blockTitle').switchClass('opened','closed');
+
+       }
+
+    });
+    expandAllMilesetonesbol = !expandAllMilesetonesbol;
+
+  if($("#"+$outcome[0].id +" .btn-expand-all").text() == "Expand all"){
+    $("#"+$outcome[0].id +" .btn-expand-all").html("Collapse all");
+    $("#"+$outcome[0].id +" .btn-expand").html("Collapse");
+  }else{
+    $("#"+$outcome[0].id +" .btn-expand").html("Expand");
+    $("#"+$outcome[0].id +" .btn-expand-all").html("Expand all");
+  }
+}
 
 
 function expandAllOutcomes(){

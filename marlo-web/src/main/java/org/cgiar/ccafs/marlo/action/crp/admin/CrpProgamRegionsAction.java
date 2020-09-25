@@ -395,11 +395,12 @@ public class CrpProgamRegionsAction extends BaseAction {
           }
         }
       }
-
-      if (buffer != null && fileName != null && contentType != null) {
-        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer, contentType, fileName, true);
-      } else {
-        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+      if (this.validateEmailNotification()) {
+        if (buffer != null && fileName != null && contentType != null) {
+          sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer, contentType, fileName, true);
+        } else {
+          sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+        }
       }
     }
   }
@@ -576,7 +577,6 @@ public class CrpProgamRegionsAction extends BaseAction {
     }
   }
 
-
   private void programManagerData() {
     for (CrpProgram crpProgram : regionsPrograms) {
       CrpProgram crpProgramPrev = crpProgramManager.getCrpProgramById(crpProgram.getId());
@@ -660,6 +660,7 @@ public class CrpProgamRegionsAction extends BaseAction {
       }
     }
   }
+
 
   @Override
   public String save() {
@@ -879,7 +880,6 @@ public class CrpProgamRegionsAction extends BaseAction {
 
   }
 
-
   private void saveSiteIntegration(LocElement locElement, CrpProgram crpProgram) {
     GlobalUnit crp = crpManager.getGlobalUnitById(loggedCrp.getId());
     List<CrpsSiteIntegration> siteIntegrations = crp.getCrpsSitesIntegrations().stream()
@@ -908,6 +908,7 @@ public class CrpProgamRegionsAction extends BaseAction {
       }
     }
   }
+
 
   private void saveSiteLeaderByProgramCountry(CrpProgramCountry crpProgramCountry, User user) {
 
@@ -1017,9 +1018,15 @@ public class CrpProgamRegionsAction extends BaseAction {
           index++;
         }
       }
-
-
       this.setInvalidFields(error);
     }
+  }
+
+  private boolean validateEmailNotification() {
+    GlobalUnit globalUnit = loggedCrp;
+    Boolean crpNotification = globalUnit.getCustomParameters().stream()
+      .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_EMAIL_NOTIFICATIONS))
+      .allMatch(t -> (t.getValue() == null) ? true : t.getValue().equalsIgnoreCase("true"));
+    return crpNotification;
   }
 }

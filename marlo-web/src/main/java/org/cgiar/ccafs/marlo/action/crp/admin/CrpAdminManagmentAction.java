@@ -291,10 +291,12 @@ public class CrpAdminManagmentAction extends BaseAction {
         }
       }
 
-      if (buffer != null && fileName != null && contentType != null) {
-        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer, contentType, fileName, true);
-      } else {
-        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+      if (this.validateEmailNotification()) {
+        if (buffer != null && fileName != null && contentType != null) {
+          sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer, contentType, fileName, true);
+        } else {
+          sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+        }
       }
     }
 
@@ -373,10 +375,12 @@ public class CrpAdminManagmentAction extends BaseAction {
     message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
 
-    if (role.equals(fplRole)) {
-      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
-    } else {
-      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    if (this.validateEmailNotification()) {
+      if (role.equals(fplRole)) {
+        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+      } else {
+        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+      }
     }
   }
 
@@ -471,11 +475,12 @@ public class CrpAdminManagmentAction extends BaseAction {
     message.append(this.getText("email.support", new String[] {crpAdmins}));
     message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
-
-    if (role.equals(fplRole)) {
-      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
-    } else {
-      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    if (this.validateEmailNotification()) {
+      if (role.equals(fplRole)) {
+        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+      } else {
+        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+      }
     }
   }
 
@@ -556,11 +561,12 @@ public class CrpAdminManagmentAction extends BaseAction {
 
     message.append(this.getText("email.support", new String[] {crpAdmins}));
     message.append(this.getText("email.bye"));
-
-    if (role.equals(fplRole)) {
-      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
-    } else {
-      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    if (this.validateEmailNotification()) {
+      if (role.equals(fplRole)) {
+        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+      } else {
+        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+      }
     }
   }
 
@@ -625,11 +631,12 @@ public class CrpAdminManagmentAction extends BaseAction {
       this.getText("programManagement.flagship.role"), crpProgram.getAcronym(), crpProgram.getName(), crp}));
     message.append(this.getText("email.support", new String[] {crpAdmins}));
     message.append(this.getText("email.bye"));
-
-    if (role.equals(fplRole)) {
-      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
-    } else {
-      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    if (this.validateEmailNotification()) {
+      if (role.equals(fplRole)) {
+        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+      } else {
+        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+      }
     }
   }
 
@@ -681,7 +688,9 @@ public class CrpAdminManagmentAction extends BaseAction {
     message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
 
-    sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    if (this.validateEmailNotification()) {
+      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    }
   }
 
   /**
@@ -729,8 +738,9 @@ public class CrpAdminManagmentAction extends BaseAction {
       this.getText("email.programManagement.unassigned", new String[] {this.getText("programManagement.role"), crp}));
     message.append(this.getText("email.support", new String[] {crpAdmins}));
     message.append(this.getText("email.bye"));
-
-    sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    if (this.validateEmailNotification()) {
+      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    }
   }
 
 
@@ -1288,5 +1298,13 @@ public class CrpAdminManagmentAction extends BaseAction {
 
       this.setInvalidFields(error);
     }
+  }
+
+  public boolean validateEmailNotification() {
+    GlobalUnit globalUnit = loggedCrp;
+    Boolean crpNotification = globalUnit.getCustomParameters().stream()
+      .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_EMAIL_NOTIFICATIONS))
+      .allMatch(t -> (t.getValue() == null) ? true : t.getValue().equalsIgnoreCase("true"));
+    return crpNotification;
   }
 }
