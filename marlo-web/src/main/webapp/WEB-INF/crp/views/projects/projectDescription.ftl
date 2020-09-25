@@ -17,6 +17,7 @@
 [#assign hideJustification = true /]
 [#assign isCrpProject = (action.isProjectCrpOrPlatform(project.id))!false ]
 [#assign isCenterProject = (action.isProjectCenter(project.id))!false ]
+[#assign isNewCenterTypeProject = (action.isNewCenterType(project.id))!false ]
 
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
@@ -135,12 +136,11 @@
                      
                     [#-- Contributions allowed to this flagship --]
                     [#list (programFlagships)![] as element]
-                      [#assign flagshipName][#if isCrpProject]${element.composedName}[#else]${element.centerComposedName}[/#if][/#assign]
+                      [#assign flagshipName][#if isCrpProject || isNewCenterTypeProject ]${element.composedName}[#else]${element.centerComposedName}[/#if][/#assign]
                       
                       [#assign outcomesContributions = (action.getContributionsOutcome(project.id, element.id))![] /]
                       [#assign clustersContributions = (action.getClusterOutcome(project.id, element.id))![] /]
                       [#assign totalContributions = outcomesContributions?size + clustersContributions?size ]
-                      
                       [#if (totalContributions != 0)] 
                         <p class="checkDisable"> 
                           ${flagshipName} [#if outcomesContributions?size > 0] [@outcomesRelationsPopup  element outcomesContributions clustersContributions /][/#if]
