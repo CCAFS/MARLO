@@ -430,7 +430,7 @@
             <div class="col-md-7">
               [#if globalUnitType != 3]
                 <div class="form-group listname="${milestoneCustomName}.powbIndAssesmentRisk.id">
-                  <label>[@s.text name="outcome.milestone.powbIndAssesmentRisk" /]:[@customForm.req required=editable && reqMilestonesFields  /]</label> <br />
+                  <label>[@s.text name="outcome.milestone.powbIndAssesmentRisk" /]:[@customForm.req required = true && editable = editable && reqMilestonesFields  /]</label> <br />
                   [#list (assessmentRisks)![] as assesment]
                     [@customForm.radioFlat id="${milestoneCustomName}-risk-${assesment.id}" name="${milestoneCustomName}.powbIndAssesmentRisk.id" label="${assesment.name}" value="${assesment.id}" checked=(milestone.powbIndAssesmentRisk.id == assesment.id)!false editable=editable cssClass="assesmentLevels" cssClassLabel=""/]
                   [/#list]

@@ -263,11 +263,12 @@ public class CrpSiteIntegrationAction extends BaseAction {
           }
         }
       }
-
-      if (buffer != null && fileName != null && contentType != null) {
-        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer, contentType, fileName, true);
-      } else {
-        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+      if (this.validateEmailNotification()) {
+        if (buffer != null && fileName != null && contentType != null) {
+          sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer, contentType, fileName, true);
+        } else {
+          sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+        }
       }
     }
   }
@@ -340,7 +341,6 @@ public class CrpSiteIntegrationAction extends BaseAction {
 
   }
 
-
   @Override
   public String save() {
 
@@ -365,6 +365,7 @@ public class CrpSiteIntegrationAction extends BaseAction {
     }
   }
 
+
   public void setCountriesList(List<LocElement> countriesList) {
     this.countriesList = countriesList;
   }
@@ -373,15 +374,14 @@ public class CrpSiteIntegrationAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
-
   public void setSlRole(Role slRole) {
     this.slRole = slRole;
   }
 
+
   public void setSlRoleid(Long slRoleid) {
     this.slRoleid = slRoleid;
   }
-
 
   private void siteIntegrationNewData() {
 
@@ -440,6 +440,7 @@ public class CrpSiteIntegrationAction extends BaseAction {
       }
     }
   }
+
 
   private void siteIntegrationPreviusData() {
     List<CrpsSiteIntegration> siteIntegrationPrew;
@@ -534,5 +535,13 @@ public class CrpSiteIntegrationAction extends BaseAction {
         }
       }
     }
+  }
+
+  private boolean validateEmailNotification() {
+    GlobalUnit globalUnit = loggedCrp;
+    Boolean crpNotification = globalUnit.getCustomParameters().stream()
+      .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_EMAIL_NOTIFICATIONS))
+      .allMatch(t -> (t.getValue() == null) ? true : t.getValue().equalsIgnoreCase("true"));
+    return crpNotification;
   }
 }
