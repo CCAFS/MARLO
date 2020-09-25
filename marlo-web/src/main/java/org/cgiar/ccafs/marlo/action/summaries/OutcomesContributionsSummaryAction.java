@@ -115,6 +115,8 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
       "Project " + this.getText("projectOutcome.expectedValue"));
     masterReport.getParameterValues().put("i8nTargetUnit", this.getText("outcome.targetUnit"));
     masterReport.getParameterValues().put("i8nOutcomeTargetValue", "Outcome " + this.getText("outcome.targetValue"));
+    masterReport.getParameterValues().put("i8nMilestoneTargetValue",
+      "Milestone " + this.getText("outcome.targetValue"));
     masterReport.getParameterValues().put("i8nNarrativeTarget",
       this.getText("projectOutcome.narrativeTarget.readText"));
     masterReport.getParameterValues().put("i8nMilestoneStatement",
@@ -283,8 +285,8 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
     TypedTableModel model = new TypedTableModel(
       new String[] {"project_id", "flagship", "projectSummary", "outcome", "project_url", "milestone", "expected_value",
         "expected_unit", "narrative_target", "title", "outcomeIndicator", "phaseID", "outcome_expected_value",
-        "achieved_value", "achieved_narrative", "startDate", "endDate", "outcomeTargetValue", "milestoneExpectedValue",
-        "achieved_value_string", "ppa", "institutionLeader"},
+        "achieved_value", "achieved_narrative", "startDate", "endDate", "milestoneTargetValue",
+        "milestoneExpectedValue", "achieved_value_string", "ppa", "institutionLeader"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, Long.class,
         String.class, String.class, String.class, String.class, Long.class, BigDecimal.class, Long.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class},
@@ -299,7 +301,7 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
 
       String projectId = "", title = "", flagship = "", outcome = "", projectUrl = "", milestone = "",
         expectedUnit = "", narrativeTarget = "", outcomeIndicator = null, achievedTarget = "", startDate = "",
-        endDate = "", projectSummary = "", outcomeTargetValue = "", milestoneExpectedValue = "",
+        endDate = "", projectSummary = "", milestoneTargetValue = "", milestoneExpectedValue = "",
         achievedValueString = "", ppa = "", institutionLeader = null;;;
       Double expectedValue = new Double(0);
       Long phaseID = null;
@@ -392,13 +394,13 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
         } else {
           if (projectMilestone.getExpectedValue() != null) {
             outcomeExpectedValue = projectMilestone.getCrpMilestone().getValue();
-            outcomeTargetValue = String.valueOf(projectMilestone.getCrpMilestone().getValue().toString());
+            milestoneTargetValue = String.valueOf(projectMilestone.getCrpMilestone().getValue().toString());
             expectedValue = projectMilestone.getExpectedValue();
             milestoneExpectedValue = projectMilestone.getExpectedValue().toString();
 
-            if (outcomeTargetValue.equals("-1") || outcomeTargetValue == null || outcomeTargetValue.isEmpty()
-              || outcomeTargetValue.length() == 0 || outcomeTargetValue.equals("")) {
-              outcomeTargetValue = "<Not Defined>";
+            if (milestoneTargetValue.equals("-1") || milestoneTargetValue == null || milestoneTargetValue.isEmpty()
+              || milestoneTargetValue.length() == 0 || milestoneTargetValue.equals("")) {
+              milestoneTargetValue = "<Not Defined>";
             }
 
             if (milestoneExpectedValue.equals("-1") || milestoneExpectedValue == null
@@ -407,7 +409,7 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
               milestoneExpectedValue = "<Not Defined>";
             }
           } else {
-            outcomeTargetValue = "<Not Defined>";
+            milestoneTargetValue = "<Not Defined>";
             milestoneExpectedValue = "<Not Defined>";
           }
 
@@ -430,7 +432,7 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
       } else {
         expectedUnit = "Not Applicable";
         expectedValue = -1.0;
-        outcomeTargetValue = "<Not Applicable>";
+        milestoneTargetValue = "<Not Applicable>";
         outcomeExpectedValue = new BigDecimal(-1);
         milestoneExpectedValue = "<Not Applicable>";
         achievedValueString = "<Not Applicable>";
@@ -454,10 +456,10 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
         achievedTarget = "<Not Defined>";
       }
 
-      model.addRow(
-        new Object[] {projectId, flagship, projectSummary, outcome, projectUrl, milestone, expectedValue, expectedUnit,
-          narrativeTarget, title, outcomeIndicator, phaseID, outcomeExpectedValue, achievedValue, achievedTarget,
-          startDate, endDate, outcomeTargetValue, milestoneExpectedValue, achievedValueString, ppa, institutionLeader});
+      model.addRow(new Object[] {projectId, flagship, projectSummary, outcome, projectUrl, milestone, expectedValue,
+        expectedUnit, narrativeTarget, title, outcomeIndicator, phaseID, outcomeExpectedValue, achievedValue,
+        achievedTarget, startDate, endDate, milestoneTargetValue, milestoneExpectedValue, achievedValueString, ppa,
+        institutionLeader});
     }
     return model;
   }
