@@ -341,6 +341,10 @@ public class GlobalUnit extends MarloAuditableEntity implements java.io.Serializ
     return marlo;
   }
 
+  public boolean isNewCenterType() {
+    return this.globalUnitType.getId().intValue() == 5;
+  }
+
   public void setAcronym(String acronym) {
     this.acronym = acronym;
   }
