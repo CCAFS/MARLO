@@ -144,8 +144,10 @@ public class RequestCountryOfficeAction extends BaseAction {
 
 
       try {
-        sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, message.toString(),
-          null, null, null, true);
+        if (this.validateEmailNotification()) {
+          sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, message.toString(),
+            null, null, null, true);
+        }
       } catch (Exception e) {
         messageSent = false;
       }
@@ -165,7 +167,6 @@ public class RequestCountryOfficeAction extends BaseAction {
     return SUCCESS;
 
   }
-
 
   public Map<String, Object> getSucess() {
     return sucess;
@@ -194,6 +195,15 @@ public class RequestCountryOfficeAction extends BaseAction {
 
   public void setSucess(Map<String, Object> sucess) {
     this.sucess = sucess;
+  }
+
+
+  private boolean validateEmailNotification() {
+    GlobalUnit globalUnit = loggedCrp;
+    Boolean crpNotification = globalUnit.getCustomParameters().stream()
+      .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_EMAIL_NOTIFICATIONS))
+      .allMatch(t -> (t.getValue() == null) ? true : t.getValue().equalsIgnoreCase("true"));
+    return crpNotification;
   }
 
 

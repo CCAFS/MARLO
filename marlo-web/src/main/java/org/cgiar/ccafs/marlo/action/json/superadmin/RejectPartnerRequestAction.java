@@ -17,7 +17,9 @@ package org.cgiar.ccafs.marlo.action.json.superadmin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PartnerRequestManager;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
@@ -50,6 +52,7 @@ public class RejectPartnerRequestAction extends BaseAction {
 
   // Managers
   private final PartnerRequestManager partnerRequestManager;
+  private final GlobalUnitManager globalUnitManager;
 
   // Variables
   private String requestID;
@@ -59,10 +62,12 @@ public class RejectPartnerRequestAction extends BaseAction {
   private boolean sendNotification;
 
   @Inject
-  public RejectPartnerRequestAction(APConfig config, PartnerRequestManager partnerRequestManager, SendMailS sendMail) {
+  public RejectPartnerRequestAction(APConfig config, PartnerRequestManager partnerRequestManager,
+    GlobalUnitManager globalUnitManager, SendMailS sendMail) {
     super(config);
     this.partnerRequestManager = partnerRequestManager;
     this.sendMail = sendMail;
+    this.globalUnitManager = globalUnitManager;
   }
 
   @Override
@@ -145,7 +150,10 @@ public class RejectPartnerRequestAction extends BaseAction {
       new String[] {partnerRequest.getPartnerInfo(), this.justification}));
     message.append(this.getText("email.support.noCrpAdmins"));
     message.append(this.getText("email.bye"));
-    this.sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(partnerRequest.getCrp().getId());
+    if (this.validateEmailNotification(globalUnit)) {
+      this.sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    }
   }
 
 
@@ -163,4 +171,10 @@ public class RejectPartnerRequestAction extends BaseAction {
     this.success = success;
   }
 
+  private boolean validateEmailNotification(GlobalUnit globalUnit) {
+    Boolean crpNotification = globalUnit.getCustomParameters().stream()
+      .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_EMAIL_NOTIFICATIONS))
+      .allMatch(t -> (t.getValue() == null) ? true : t.getValue().equalsIgnoreCase("true"));
+    return crpNotification;
+  }
 }

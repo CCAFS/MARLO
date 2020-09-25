@@ -34,6 +34,7 @@ function attachEvents() {
 }
 
 function addIdo() {
+  console.log("add ido");
   var $itemsList = $(this).parent().find('.slos-list');
   var $item = $("#srfSlo-template").clone(true).removeAttr("id");
   $item.find('.blockTitle').trigger('click');
@@ -44,6 +45,7 @@ function addIdo() {
 }
 
 function addIndicator() {
+  console.log("addIndicator");
   var $itemsList = $(this).parent().parent().find('.srfIndicators-list');
   var $item = $("#srfSloIndicator-template").clone(true).removeAttr("id");
 
@@ -54,6 +56,7 @@ function addIndicator() {
 }
 
 function addTargets() {
+  console.log("addTargets");
   var $itemsList = $(this).parent().parent().find('.targetsList');
   var $item = $("#targetIndicator-template").clone(true).removeAttr("id");
   $itemsList.append($item);
@@ -63,6 +66,7 @@ function addTargets() {
 }
 
 function addCrossCuttingIssue() {
+  console.log("addCrossCuttingIssue");
   var $itemsList = $(this).parent().find('.issues-list');
   var $item = $("#srfCCIssue-template").clone(true).removeAttr("id");
 
