@@ -15,6 +15,7 @@
 
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.institutions;
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
@@ -201,8 +202,11 @@ public class CountryOfficeRequestItem<T> {
       + " (" + user.getEmail() + ")  </br>");
     message.append("</br>");
     try {
-      this.sendMail.send(this.config.getEmailNotification(), ccEmail, this.config.getEmailNotification(), subject,
-        message.toString(), null, null, null, true);
+      GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(partnerRequest.getCrp().getId());
+      if (this.validateEmailNotification(globalUnit)) {
+        this.sendMail.send(this.config.getEmailNotification(), ccEmail, this.config.getEmailNotification(), subject,
+          message.toString(), null, null, null, true);
+      }
     } catch (Exception e) {
       LOG.error("unable to send mail", e);
       this.messageSent = false;
@@ -214,6 +218,13 @@ public class CountryOfficeRequestItem<T> {
     }
     this.messageSent = true;
 
+  }
+
+  private boolean validateEmailNotification(GlobalUnit globalUnit) {
+    Boolean crpNotification = globalUnit.getCustomParameters().stream()
+      .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_EMAIL_NOTIFICATIONS))
+      .allMatch(t -> (t.getValue() == null) ? true : t.getValue().equalsIgnoreCase("true"));
+    return crpNotification;
   }
 
 }
