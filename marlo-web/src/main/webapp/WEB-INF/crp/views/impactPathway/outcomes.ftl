@@ -338,12 +338,12 @@
 [#macro milestoneMacro milestone name index isTemplate=false editable=true canEditMilestone=true]
   [#local milestoneCustomName = "${name}[${index}]" /]
   [#local editableMilestone = editable && canEditMilestone]
-  [#local hasExtendedYear = (milestone.extendedYear?has_content) && (milestone.extendedYear != -1)]
+  [#local hasExtendedYear = (milestone.extendedYear?has_content) && (milestone.extendedYear != -1) && milestone.extendedYear != milestone.year]
   [#local showExtendedYear =  hasExtendedYear || ((milestone.milestonesStatus.id == 4)!false) ]
   [#local milestoneYear =  (milestone.year)!currentCycleYear ]
-  [#if hasExtendedYear]
+  [#--if hasExtendedYear
     [#local milestoneYear =  milestone.extendedYear ]
-  [/#if]
+  [/#if --]
   [#local reqMilestonesFields = (milestoneYear == actualPhase.year)!false /]
   
   [#local isMilestoneNew =  true ]
@@ -363,7 +363,7 @@
       <div class="leftHead ${reqMilestonesFields?string('green', '')} sm">
         <!--<span class="index">${index+1}</span>-->
         <span class="index">${(milestone.composeID)! "[New]"}</span>
-        <span class="elementId">${(milestoneYear)!} [@s.text name="outcome.milestone.index.title"/]  [#if isMilestoneNew][New][/#if]</span>
+        <span class="elementId">${(milestoneYear)!} [@s.text name="outcome.milestone.index.title"/][#if hasExtendedYear] [@s.text name="outcome.milestone.extended.text"/] ${milestone.extendedYear} [/#if][#if isMilestoneNew][New][/#if]</span>
       </div>
       <!-- <strong>SLO ${index+1}: </strong>  -->
      ${(milestone.title)!""}
@@ -430,7 +430,7 @@
             <div class="col-md-7">
               [#if globalUnitType != 3]
                 <div class="form-group listname="${milestoneCustomName}.powbIndAssesmentRisk.id">
-                  <label>[@s.text name="outcome.milestone.powbIndAssesmentRisk" /]:[@customForm.req required=editable && reqMilestonesFields  /]</label> <br />
+                  <label>[@s.text name="outcome.milestone.powbIndAssesmentRisk" /]:[@customForm.req required = true && editable = editable && reqMilestonesFields  /]</label> <br />
                   [#list (assessmentRisks)![] as assesment]
                     [@customForm.radioFlat id="${milestoneCustomName}-risk-${assesment.id}" name="${milestoneCustomName}.powbIndAssesmentRisk.id" label="${assesment.name}" value="${assesment.id}" checked=(milestone.powbIndAssesmentRisk.id == assesment.id)!false editable=editable cssClass="assesmentLevels" cssClassLabel=""/]
                   [/#list]

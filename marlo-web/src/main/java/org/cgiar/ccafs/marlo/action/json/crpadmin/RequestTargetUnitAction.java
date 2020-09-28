@@ -65,9 +65,10 @@ public class RequestTargetUnitAction extends BaseAction {
       new String[] {this.getCurrentUser().getComposedCompleteName(), this.getCurrentUser().getEmail(), targetUnitName});
 
     try {
-      sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, text, null, null, null,
-        true);
-
+      if (this.validateEmailNotification()) {
+        sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, text, null, null,
+          null, true);
+      }
       status.put("ok", true);
     } catch (Exception e) {
       status.put("ok", false);
@@ -94,13 +95,21 @@ public class RequestTargetUnitAction extends BaseAction {
     targetUnitName = StringUtils.trim(parameters.get(APConstants.TARGET_UNIT_NAME).getMultipleValues()[0]);
   }
 
-
   public void setStatus(Map<String, Object> status) {
     this.status = status;
   }
 
+
   public void setTargetUnitName(String targetUnitName) {
     this.targetUnitName = targetUnitName;
+  }
+
+  private boolean validateEmailNotification() {
+    GlobalUnit globalUnit = loggedCrp;
+    Boolean crpNotification = globalUnit.getCustomParameters().stream()
+      .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_EMAIL_NOTIFICATIONS))
+      .allMatch(t -> (t.getValue() == null) ? true : t.getValue().equalsIgnoreCase("true"));
+    return crpNotification;
   }
 
 }
