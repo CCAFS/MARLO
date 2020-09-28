@@ -53,7 +53,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Api(tags = "ProgressTowards")
+@Api(tags = "Table 1 - Progress towards SRF targets")
 public class ProgressTowards {
 
   private static final Logger LOG = LoggerFactory.getLogger(ProgressTowards.class);
