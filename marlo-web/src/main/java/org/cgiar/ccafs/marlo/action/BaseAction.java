@@ -4753,6 +4753,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
+
   /**
    * ************************ CENTER METHOD ********************* verify if the
    * cap-dev is complete
@@ -5879,6 +5880,24 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
     return true;
+  }
+
+  /**
+   * Check if the project was created in a new Center
+   *
+   * @param projectID
+   * @return
+   */
+  public boolean isNewCenterType(long projectID) {
+
+    GlobalUnitProject globalUnitProject = this.globalUnitProjectManager.findByProjectId(projectID);
+
+    if (globalUnitProject.getGlobalUnit().getGlobalUnitType().getId().intValue() == 5) {
+      return true;
+    }
+
+    return false;
+
   }
 
   public boolean isOtherUrl() {
