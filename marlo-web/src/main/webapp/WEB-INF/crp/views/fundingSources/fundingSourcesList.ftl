@@ -76,7 +76,7 @@
     [#-- Modal to add a Funding source --]
     <!-- Modal -->
     [#if action.canAddFunding() && (!crpClosed) && action.getActualPhase().editable]
-      <div class="modal fade" id="fundingSourceAddPopup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal fade" id="fundingSourceAddPopup" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
           [@s.form namespace="/fundingSources" action='${(crpSession)!}/addNewFundingSources'  method="GET" enctype="multipart/form-data" cssClass="addNewFundingSource"]
           <div  class="modal-content">
