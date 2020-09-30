@@ -20,13 +20,19 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.BudgetTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
+import org.cgiar.ccafs.marlo.data.manager.FundingSourceBudgetManager;
+import org.cgiar.ccafs.marlo.data.manager.FundingSourceDivisionManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.FundingSourceLocationsManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
+import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
+import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.PartnerDivisionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
@@ -34,13 +40,18 @@ import org.cgiar.ccafs.marlo.data.model.BudgetType;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
+import org.cgiar.ccafs.marlo.data.model.FundingSourceDivision;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInfo;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
+import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
 import org.cgiar.ccafs.marlo.data.model.FundingStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
+import org.cgiar.ccafs.marlo.data.model.LocElement;
+import org.cgiar.ccafs.marlo.data.model.LocElementType;
+import org.cgiar.ccafs.marlo.data.model.PartnerDivision;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
@@ -54,6 +65,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -89,6 +101,7 @@ public class FundingSourceListAction extends BaseAction {
   private List<FundingSourceInstitution> institutionFSFiltered;
   private Role cpRole;
   private FundingSourceInfoManager fundingSourceInfoManager;
+  private FundingSourceBudgetManager fundingSourceBudgetManager;
   private RoleManager roleManager;
   private FundingSourceInstitutionManager fundingSourceInstitutionManager;
   private GlobalUnitManager crpManager;
@@ -98,6 +111,11 @@ public class FundingSourceListAction extends BaseAction {
   private GlobalUnitManager globalUnitManager;
   private LiaisonInstitutionManager liaisonInstitutionManager;
   private BudgetTypeManager budgetTypeManager;
+  private FundingSourceDivisionManager fundingSourceDivisionManager;
+  private FundingSourceLocationsManager fundingSourceLocationsManager;
+  private PartnerDivisionManager partnerDivisionManager;
+  private LocElementManager locElementManager;
+  private LocElementTypeManager locElementTypeManager;
 
   private Map<String, String> budgetTypes;
   private List<FundingSource> closedProjects;
@@ -106,6 +124,7 @@ public class FundingSourceListAction extends BaseAction {
   private List<LiaisonUser> contactsPoint;
   private List<Long> usersContactPoint;
   private Map<String, String> agreementStatus;
+  private Map<String, String> agreementStatusModal;
   private UserRoleManager userRoleManager;
   private long fundingSourceID;
   private long fundingSourceInfoID;
@@ -126,7 +145,10 @@ public class FundingSourceListAction extends BaseAction {
     InstitutionManager institutionManager, LiaisonInstitutionManager liaisonInstitutionManager,
     FundingSourceInstitutionManager fundingSourceInstitutionManager, FundingSourceInfoManager fundingSourceInfoManager,
     RoleManager roleManager, UserRoleManager userRoleManager, CrpPpaPartnerManager crpPpaPartnerManager,
-    GlobalUnitManager globalUnitManager, BudgetTypeManager budgetTypeManager) {
+    GlobalUnitManager globalUnitManager, BudgetTypeManager budgetTypeManager,
+    FundingSourceBudgetManager fundingSourceBudgetManager, FundingSourceDivisionManager fundingSourceDivisionManager,
+    FundingSourceLocationsManager fundingSourceLocationsManager, PartnerDivisionManager partnerDivisionManager,
+    LocElementManager locElementManager, LocElementTypeManager locElementTypeManager) {
     super(config);
     this.fundingSourceManager = fundingSourceManager;
     this.crpManager = crpManager;
@@ -140,6 +162,12 @@ public class FundingSourceListAction extends BaseAction {
     this.globalUnitManager = globalUnitManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.budgetTypeManager = budgetTypeManager;
+    this.fundingSourceBudgetManager = fundingSourceBudgetManager;
+    this.fundingSourceDivisionManager = fundingSourceDivisionManager;
+    this.fundingSourceLocationsManager = fundingSourceLocationsManager;
+    this.partnerDivisionManager = partnerDivisionManager;
+    this.locElementManager = locElementManager;
+    this.locElementTypeManager = locElementTypeManager;
   }
 
 
@@ -313,7 +341,6 @@ public class FundingSourceListAction extends BaseAction {
     }
   }
 
-
   public boolean canAddFunding() {
     boolean permission = this.hasPermissionNoBase(
       this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym()))
@@ -327,6 +354,7 @@ public class FundingSourceListAction extends BaseAction {
     return permission && !this.isReportingActive();
   }
 
+
   public void convertListToString(List<String> list) {
     if (list != null && !list.isEmpty()) {
       for (String element : list) {
@@ -336,6 +364,176 @@ public class FundingSourceListAction extends BaseAction {
           institutionsIDsFilter += ", " + element;
         }
       }
+    }
+  }
+
+
+  /**
+   * Creates a copy of the selected funding source
+   */
+  public String copy() {
+    logger.debug("THE FUNDING SOURCE TO BE COPIED HAS AN ID OF F{}", this.getFundingSourceID());
+
+    FundingSource fundingSourceToBeCopied = fundingSourceManager.getFundingSourceById(fundingSourceID);
+    FundingSource fundingSourceCopy = new FundingSource();
+    fundingSourceCopy.setCreateDate(new Date());
+    fundingSourceCopy.setCrp(this.getCurrentCrp());
+
+    fundingSourceCopy = fundingSourceManager.saveFundingSource(fundingSourceCopy);
+    this.fundingSourceID = fundingSourceCopy.getId();
+
+    // funding sources info
+    FundingSourceInfo fundingSourceInfoToBeCopied = fundingSourceToBeCopied.getFundingSourceInfo(this.getActualPhase());
+    fundingSourceInfoToBeCopied =
+      fundingSourceInfoManager.getFundingSourceInfoById(fundingSourceInfoToBeCopied.getId());
+    FundingSourceInfo fundingSourceInfoCopy = new FundingSourceInfo();
+    fundingSourceInfoCopy.copyFields(fundingSourceInfoToBeCopied);
+
+    fundingSourceInfoCopy.setFinanceCode("");
+    fundingSourceInfoCopy.setFundingSource(fundingSourceCopy);
+    fundingSourceInfoCopy.setPhase(this.getActualPhase());
+    fundingSourceInfoCopy = fundingSourceInfoManager.saveFundingSourceInfo(fundingSourceInfoCopy);
+
+    Phase nextPhase = this.getActualPhase().getNext();
+    while (nextPhase != null) {
+      // replication
+      FundingSourceInfo replicated = new FundingSourceInfo();
+      replicated.copyFields(fundingSourceInfoCopy);
+      nextPhase = nextPhase.getNext();
+    }
+
+    // funding source budgets
+    if (fundingSourceToBeCopied.getFundingSourceBudgets() != null) {
+      Set<FundingSourceBudget> fsbs = fundingSourceToBeCopied.getFundingSourceBudgets();
+      // ???
+      fsbs.removeIf(Objects::isNull);
+      fsbs.removeIf(fsb -> !fsb.getPhase().equals(this.getActualPhase()));
+      for (FundingSourceBudget fsb : fsbs) {
+        FundingSourceBudget newFsb = new FundingSourceBudget();
+        FundingSourceBudget fundingSourceBudgetDB = fundingSourceBudgetManager.getFundingSourceBudgetById(fsb.getId());
+        newFsb.copyFields(fundingSourceBudgetDB);
+        newFsb.setFundingSource(fundingSourceCopy);
+        newFsb.setPhase(this.getActualPhase());
+        // replication on save
+        fundingSourceBudgetManager.saveFundingSourceBudget(newFsb);
+      }
+    }
+
+    // funding source divisions
+    if (fundingSourceToBeCopied.getFundingSourceDivisions() != null) {
+      Set<FundingSourceDivision> fsds = fundingSourceToBeCopied.getFundingSourceDivisions();
+      // ???
+      fsds.removeIf(Objects::isNull);
+      fsds.removeIf(fsd -> !fsd.getPhase().equals(this.getActualPhase()));
+      for (FundingSourceDivision fundingSourceDivision : fsds) {
+        if (fundingSourceDivision.getId() == null || fundingSourceDivision.getId().longValue() == -1) {
+          FundingSourceDivision fundingSourceDivisionSave = new FundingSourceDivision();
+          fundingSourceDivisionSave.setFundingSource(fundingSourceCopy);
+          fundingSourceDivisionSave.setPhase(this.getActualPhase());
+          PartnerDivision partnerDivision =
+            partnerDivisionManager.getPartnerDivisionById(fundingSourceDivision.getDivision().getId());
+          fundingSourceDivisionSave.setDivision(partnerDivision);
+          // replication on save
+          fundingSourceDivisionManager.saveFundingSourceDivision(fundingSourceDivisionSave);
+        }
+      }
+    }
+
+    // funding source location
+    if (fundingSourceToBeCopied.getFundingSourceLocations() != null) {
+      Set<FundingSourceLocation> fsls = fundingSourceToBeCopied.getFundingSourceLocations();
+      // ???
+      fsls.removeIf(Objects::isNull);
+      fsls.removeIf(fsl -> !fsl.getPhase().equals(this.getActualPhase()));
+      for (FundingSourceLocation fundingSourceLocation : fsls) {
+        FundingSourceLocation fundingSourceLocationSave = new FundingSourceLocation();
+        fundingSourceLocationSave.setFundingSource(fundingSourceCopy);
+        fundingSourceLocationSave.setPhase(this.getActualPhase());
+
+        if (fundingSourceLocation.getLocElement().getLocElementType() != null) {
+          LocElement locElement = locElementManager.getLocElementById(fundingSourceLocation.getLocElement().getId());
+          if (fundingSourceLocation.getLocElement().getLocElementType().getId().equals(1L)) {
+            // region
+            fundingSourceLocationSave.setPercentage(fundingSourceLocation.getPercentage());
+            if (!fundingSourceLocation.isScope()) {
+              fundingSourceLocationSave.setLocElement(locElement);
+            } else {
+              LocElementType elementType =
+                locElementTypeManager.getLocElementTypeById(fundingSourceLocation.getLocElement().getId());
+              fundingSourceLocationSave.setLocElementType(elementType);
+            }
+          } else if (fundingSourceLocation.getLocElement().getLocElementType().getId().equals(2L)) {
+            // country
+            fundingSourceLocationSave.setLocElement(locElement);
+          }
+        }
+
+        // fundingSourceLocationSave.setLocElement(fundingSourceLocation.getLocElement());
+        // replication on save
+        fundingSourceLocationsManager.saveFundingSourceLocations(fundingSourceLocationSave);
+      }
+    }
+
+    // funding source location (countries)
+    // if (fundingSourceToBeCopied.getFundingCountry() != null) {
+    // List<FundingSourceLocation> fscs = fundingSourceToBeCopied.getFundingCountry();
+    // for (FundingSourceLocation fundingSourceLocation : fscs) {
+    // FundingSourceLocation fundingSourceLocationSave = new FundingSourceLocation();
+    // fundingSourceLocationSave.setFundingSource(fundingSourceCopy);
+    // fundingSourceLocationSave.setPhase(this.getActualPhase());
+    // fundingSourceLocationSave.setLocElement(fundingSourceLocation.getLocElement());
+    // // replication on save
+    // fundingSourceLocationsManager.saveFundingSourceLocations(fundingSourceLocationSave);
+    // }
+    // }
+
+    // funding source location (regions)
+    // if (fundingSourceToBeCopied.getFundingRegions() != null) {
+    // List<FundingSourceLocation> fsrs = fundingSourceToBeCopied.getFundingRegions();
+    // for (FundingSourceLocation fundingSourceLocation : fsrs) {
+    // FundingSourceLocation fundingSourceLocationSave = new FundingSourceLocation();
+    // fundingSourceLocationSave.setFundingSource(fundingSourceCopy);
+    // fundingSourceLocationSave.setPhase(this.getActualPhase());
+    // fundingSourceLocationSave.setPercentage(fundingSourceLocation.getPercentage());
+    // if (!fundingSourceLocation.isScope()) {
+    // fundingSourceLocationSave.setLocElement(fundingSourceLocation.getLocElement());
+    // } else {
+    // fundingSourceLocationSave.setLocElementType(fundingSourceLocation.getLocElementType());
+    // }
+    //
+    // fundingSourceLocationsManager.saveFundingSourceLocations(fundingSourceLocationSave);
+    // }
+    // }
+
+    // funding source institutions
+    if (fundingSourceToBeCopied.getFundingSourceInstitutions() != null) {
+      Set<FundingSourceInstitution> fsis = fundingSourceToBeCopied.getFundingSourceInstitutions();
+      // ???
+      fsis.removeIf(Objects::isNull);
+      fsis.removeIf(fsi -> !fsi.getPhase().equals(this.getActualPhase()));
+      for (FundingSourceInstitution partner : fsis) {
+        if (partner.getId() != null && partner.getId().longValue() != -1 && partner.getInstitution().getId() != null
+          && partner.getInstitution().getId().longValue() != -1) {
+          FundingSourceInstitution newFsi = new FundingSourceInstitution();
+          newFsi.setInstitution(institutionManager.getInstitutionById(partner.getInstitution().getId()));
+          newFsi.setFundingSource(fundingSourceCopy);
+          newFsi.setPhase(this.getActualPhase());
+          // replication on save
+          fundingSourceInstitutionManager.saveFundingSourceInstitution(newFsi);
+        }
+      }
+    }
+
+    AuthorizationInfo info = ((APCustomRealm) this.securityContext.getRealm())
+      .getAuthorizationInfo(this.securityContext.getSubject().getPrincipals());
+
+    String params[] = {loggedCrp.getAcronym(), fundingSourceCopy.getId() + ""};
+    info.getStringPermissions().add(this.generatePermission(Permission.PROJECT_FUNDING_SOURCE_BASE_PERMISSION, params));
+
+    if (fundingSourceID > 0) {
+      return SUCCESS;
+    } else {
+      return ERROR;
     }
   }
 
@@ -383,7 +581,6 @@ public class FundingSourceListAction extends BaseAction {
     }
   }
 
-
   public void fillInstitutionsList() {
     // Fill the institutions list search each institution with the institutions id list
     filteredInstitutions = new ArrayList<>();
@@ -407,8 +604,13 @@ public class FundingSourceListAction extends BaseAction {
     }
   }
 
+
   public Map<String, String> getAgreementStatus() {
     return agreementStatus;
+  }
+
+  public Map<String, String> getAgreementStatusModal() {
+    return agreementStatusModal;
   }
 
   public Map<String, String> getBudgetTypes() {
@@ -621,7 +823,6 @@ public class FundingSourceListAction extends BaseAction {
     return managingInstitutionsList;
   }
 
-
   public List<FundingSource> getMyProjects() {
     return myProjects;
   }
@@ -760,6 +961,11 @@ public class FundingSourceListAction extends BaseAction {
           break;
       }
     }
+    // add new status list for new funding source modal
+    agreementStatusModal = new HashMap<>(agreementStatus);
+    agreementStatusModal.remove(FundingStatusEnum.Complete.getStatusId());
+    agreementStatusModal.remove(FundingStatusEnum.Extended.getStatusId());
+    agreementStatusModal.remove(FundingStatusEnum.Cancelled.getStatusId());
 
     this.getCrpContactPoint();
     this.getFundingSourceInstitutionsList();
@@ -994,6 +1200,11 @@ public class FundingSourceListAction extends BaseAction {
     if (institutionsIDsFilter != null) {
       institutionsIDsFilter = "";
     }
+  }
+
+
+  public void setAgreementStatusModal(Map<String, String> agreementStatusModal) {
+    this.agreementStatusModal = agreementStatusModal;
   }
 
 

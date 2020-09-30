@@ -95,7 +95,7 @@
                     [@customForm.select name="budgetTypeID" i18nkey="fundingSourcesList.add.budgetType" className="budgetType"  listName="budgetTypes" keyFieldName=""  displayFieldName="" required=true editable=true /]
                   </div>
                   <div class="col-md-6">
-                    [@customForm.select name="agreementStatus" i18nkey="fundingSourcesList.add.status" className="agreementStatus"  listName="agreementStatus" keyFieldName=""  displayFieldName="" required=true editable=true /]
+                    [@customForm.select name="agreementStatus" i18nkey="fundingSourcesList.add.status" className="agreementStatus"  listName="agreementStatusModal" keyFieldName=""  displayFieldName="" required=true editable=true /]
                   </div>
                 </div>
                 <hr />
