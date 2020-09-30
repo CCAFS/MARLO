@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.institutions;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
@@ -23,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PartnerRequestManager;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
+import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
@@ -79,6 +81,7 @@ public class InstitutionItem<T> {
   private PartnerRequestManager partnerRequestManager;
   private GlobalUnitManager globalUnitManager;
   private InstitutionTypeManager institutionTypeManager;
+  private CustomParameterManager customParameterManager;
   protected APConfig config;
 
   private boolean messageSent;
@@ -88,7 +91,8 @@ public class InstitutionItem<T> {
   public InstitutionItem(InstitutionTypeManager institutionTypeManager, InstitutionManager institutionManager,
     InstitutionMapper institutionMapper, LocElementManager locElementManager,
     InstitutionLocationManager institutionLocationManager, PartnerRequestManager partnerRequestManager,
-    GlobalUnitManager globalUnitManager, SendMailS sendMail, APConfig config) {
+    GlobalUnitManager globalUnitManager, CustomParameterManager customParameterManager, SendMailS sendMail,
+    APConfig config) {
     this.institutionTypeManager = institutionTypeManager;
     this.institutionLocationManager = institutionLocationManager;
     this.institutionManager = institutionManager;
@@ -96,6 +100,7 @@ public class InstitutionItem<T> {
     this.locElementManager = locElementManager;
     this.partnerRequestManager = partnerRequestManager;
     this.globalUnitManager = globalUnitManager;
+    this.customParameterManager = customParameterManager;
     this.sendMail = sendMail;
     this.config = config;
     // this.fieldErrors = new ArrayList<FieldErrorDTO>();
@@ -358,9 +363,9 @@ public class InstitutionItem<T> {
       + " (" + user.getEmail() + ")  </br>");
 
     GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(partnerRequest.getCrp().getId());
-    Boolean crpNotification = globalUnit.getCustomParameters().stream()
-      .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_EMAIL_NOTIFICATIONS))
-      .allMatch(t -> (t.getValue() == null) ? true : t.getValue().equalsIgnoreCase("true"));
+    CustomParameter parameter = customParameterManager
+      .getCustomParameterByParameterKeyAndGlobalUnitId(APConstants.CRP_EMAIL_NOTIFICATIONS, globalUnit.getId());
+    Boolean crpNotification = parameter == null ? true : parameter.getValue().equalsIgnoreCase("true");
     if (crpNotification) {
       this.sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
     }
@@ -416,9 +421,9 @@ public class InstitutionItem<T> {
     message.append("</br>");
     try {
       GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(partnerRequest.getCrp().getId());
-      Boolean crpNotification = globalUnit.getCustomParameters().stream()
-        .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_EMAIL_NOTIFICATIONS))
-        .allMatch(t -> (t.getValue() == null) ? true : t.getValue().equalsIgnoreCase("true"));
+      CustomParameter parameter = customParameterManager
+        .getCustomParameterByParameterKeyAndGlobalUnitId(APConstants.CRP_EMAIL_NOTIFICATIONS, globalUnit.getId());
+      Boolean crpNotification = parameter == null ? true : parameter.getValue().equalsIgnoreCase("true");
       if (crpNotification) {
         this.sendMail.send(this.config.getEmailNotification(), ccEmail, this.config.getEmailNotification(), subject,
           message.toString(), null, null, null, true);
@@ -463,9 +468,9 @@ public class InstitutionItem<T> {
       + " (" + user.getEmail() + ")  </br>");
 
     GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(partnerRequest.getCrp().getId());
-    Boolean crpNotification = globalUnit.getCustomParameters().stream()
-      .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_EMAIL_NOTIFICATIONS))
-      .allMatch(t -> (t.getValue() == null) ? true : t.getValue().equalsIgnoreCase("true"));
+    CustomParameter parameter = customParameterManager
+      .getCustomParameterByParameterKeyAndGlobalUnitId(APConstants.CRP_EMAIL_NOTIFICATIONS, globalUnit.getId());
+    Boolean crpNotification = parameter == null ? true : parameter.getValue().equalsIgnoreCase("true");
     if (crpNotification) {
       this.sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
     }
