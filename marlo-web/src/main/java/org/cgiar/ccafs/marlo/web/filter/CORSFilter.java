@@ -36,7 +36,7 @@ public class CORSFilter extends OncePerRequestFilter {
   protected void doFilterInternal(HttpServletRequest servletRequest, HttpServletResponse servletResponse,
     FilterChain filterChain) throws ServletException, IOException {
     HttpServletRequest request = servletRequest;
-    System.out.println("CORSFilter HTTP Request: " + request.getMethod());
+    // System.out.println("CORSFilter HTTP Request: " + request.getMethod());
 
     // Authorize (allow) all domains to consume the content
     servletResponse.addHeader("Access-Control-Allow-Origin", "*");
