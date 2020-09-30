@@ -155,7 +155,7 @@
                 <img src="${baseUrlCdn}/global/images/duplicate_enabled.png"/> 
               </a>
             [#else]
-              <img src="${baseUrlCdn}/global/images/duplicate_disabled.png" title="Cannot duplicated" />
+              <img src="${baseUrlCdn}/global/images/duplicate_disabled.png" title="[@s.text name="projectsList.cannotDuplicate" /]" />
             [/#if]
           </td>
         </tr>  
