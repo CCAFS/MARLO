@@ -48,7 +48,7 @@ public class FundingSourceInfo extends MarloAuditableEntity implements java.io.S
 
   @Expose
   private Institution originalDonor;
-  
+
   @Expose
   private Institution leadCenter;
 
@@ -94,6 +94,39 @@ public class FundingSourceInfo extends MarloAuditableEntity implements java.io.S
   public FundingSourceInfo() {
   }
 
+  public void copyFields(FundingSourceInfo other) {
+    this.setActive(other.isActive());
+    this.setActiveSince(other.getActiveSince());
+    this.setBudgetType(other.getBudgetType());
+    this.setContactPersonEmail(other.getContactPersonEmail());
+    this.setContactPersonName(other.getContactPersonName());
+    this.setCreatedBy(other.getCreatedBy());
+    this.setDescription(other.getDescription());
+    this.setDirectDonor(other.getDirectDonor());
+    this.setEndDate(other.getEndDate());
+    this.setExtensionDate(other.getExtensionDate());
+    this.setFile(other.getFile());
+    this.setFileResearch(other.getFileResearch());
+    this.setFinanceCode(other.getFinanceCode());
+    this.setFundingSource(other.getFundingSource());
+    this.setGlobal(other.isGlobal());
+    this.setGrantAmount(other.getGrantAmount());
+    this.setHasFileResearch(other.getHasFileResearch());
+    this.setLeadCenter(other.getLeadCenter());
+    this.setModificationJustification(other.getModificationJustification());
+    this.setModifiedBy(other.getModifiedBy());
+    this.setOriginalDonor(other.getOriginalDonor());
+    this.setPartnerDivision(other.getPartnerDivision());
+    this.setPhase(other.getPhase());
+    this.setStartDate(other.getStartDate());
+    this.setStatus(other.getStatus());
+    this.setSynced(other.getSynced());
+    this.setSyncedDate(other.getSyncedDate());
+    this.setTitle(other.getTitle());
+    this.setW1w2(other.getW1w2());
+  }
+
+
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -116,11 +149,9 @@ public class FundingSourceInfo extends MarloAuditableEntity implements java.io.S
     return true;
   }
 
-
   public BudgetType getBudgetType() {
     return budgetType;
   }
-
 
   public String getComposedName() {
     try {
@@ -161,16 +192,7 @@ public class FundingSourceInfo extends MarloAuditableEntity implements java.io.S
   public FileDB getFile() {
     return file;
   }
-  
-   
-  public Institution getLeadCenter() {
-    return leadCenter;
-  }
 
-  
-  public void setLeadCenter(Institution leadCenter) {
-    this.leadCenter = leadCenter;
-  }
 
   public FileDB getFileResearch() {
     return fileResearch;
@@ -192,6 +214,11 @@ public class FundingSourceInfo extends MarloAuditableEntity implements java.io.S
 
   public Boolean getHasFileResearch() {
     return hasFileResearch;
+  }
+
+
+  public Institution getLeadCenter() {
+    return leadCenter;
   }
 
   @Override
@@ -216,7 +243,6 @@ public class FundingSourceInfo extends MarloAuditableEntity implements java.io.S
     return partnerDivision;
   }
 
-
   public Phase getPhase() {
     return phase;
   }
@@ -225,6 +251,7 @@ public class FundingSourceInfo extends MarloAuditableEntity implements java.io.S
   public Date getStartDate() {
     return startDate;
   }
+
 
   public Integer getStatus() {
     return status;
@@ -240,10 +267,10 @@ public class FundingSourceInfo extends MarloAuditableEntity implements java.io.S
     return "";
   }
 
-
   public Boolean getSynced() {
     return synced;
   }
+
 
   public Date getSyncedDate() {
     return syncedDate;
@@ -265,7 +292,6 @@ public class FundingSourceInfo extends MarloAuditableEntity implements java.io.S
     return result;
   }
 
-
   @Override
   public boolean isActive() {
     return true;
@@ -275,6 +301,7 @@ public class FundingSourceInfo extends MarloAuditableEntity implements java.io.S
   public boolean isGlobal() {
     return global;
   }
+
 
   public void setBudgetType(BudgetType budgetType) {
     this.budgetType = budgetType;
@@ -291,7 +318,6 @@ public class FundingSourceInfo extends MarloAuditableEntity implements java.io.S
   public void setDescription(String description) {
     this.description = description;
   }
-
 
   public void setDirectDonor(Institution institution) {
     this.directDonor = institution;
@@ -311,6 +337,7 @@ public class FundingSourceInfo extends MarloAuditableEntity implements java.io.S
   public void setFile(FileDB file) {
     this.file = file;
   }
+
 
   public void setFileResearch(FileDB fileResearch) {
     this.fileResearch = fileResearch;
@@ -334,6 +361,10 @@ public class FundingSourceInfo extends MarloAuditableEntity implements java.io.S
 
   public void setHasFileResearch(Boolean hasFileResearch) {
     this.hasFileResearch = hasFileResearch;
+  }
+
+  public void setLeadCenter(Institution leadCenter) {
+    this.leadCenter = leadCenter;
   }
 
   public void setOriginalDonor(Institution originalDonor) {
