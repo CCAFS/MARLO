@@ -289,7 +289,7 @@ var fundingSourcePopupModule = (function() {
     }
 
     // Status
-    $financeCode.parent().find('span.requiredTag').hide();
+    /*$financeCode.parent().find('span.requiredTag').hide();
     if(statusValue <= 0) {
       app.missingFields += 1;
     } else {
@@ -300,7 +300,7 @@ var fundingSourcePopupModule = (function() {
           app.missingFields += 1;
         }
       }
-    }
+    }*/
 
     // Validate selection of budget type (Funding Window)
     if(budgetType <= 0) {
