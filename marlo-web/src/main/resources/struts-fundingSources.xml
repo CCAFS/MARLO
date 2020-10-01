@@ -53,6 +53,19 @@
 				<param name="fundingSourceID">${fundingSourceID}</param>
 			</result>
 		</action>
+		
+		<action name="{crp}/copyFundingSource" method="copy"
+			class="org.cgiar.ccafs.marlo.action.funding.FundingSourceListAction">
+			<interceptor-ref name="projectsStack" />
+			<result name="success" type="redirectAction">
+				<param name="actionName">${crpSession}/fundingSource</param>
+				<param name="fundingSourceID">${fundingSourceID}</param>
+				<param name="edit">true</param>
+				<param name="phaseID">${phaseID}</param>
+			</result>
+			<result name="error">/WEB-INF/crp/views/fundingSources/fundingSource.ftl
+			</result>
+		</action>
 
 
 	</package>

@@ -164,6 +164,8 @@ var fundingSourcePopupModule = (function() {
 
   var keyupTimer = null;
 
+  $($statusSelect.find('option[value="2"]')).prop('selected', true);
+
   $instPartnersSelect.on("addElement removeElement", function(event,id,name) {
     var $institutionLead = $('select.institutionLead');
     if(event.type == "addElement") {
@@ -195,7 +197,7 @@ var fundingSourcePopupModule = (function() {
   $('#fundingSourceAddPopup').on('hidden.bs.modal', function(e) {
     app.fundingSources = [];
     app.messages = [];
-    $statusSelect.val("-1").trigger('change.select2');
+    $statusSelect.val("2").trigger('change.select2');
     $institutionLeadSelect.val("-1").trigger('change.select2');
     $budgetTypeSelect.val("-1").trigger('change.select2');
     $financeCode.val("");

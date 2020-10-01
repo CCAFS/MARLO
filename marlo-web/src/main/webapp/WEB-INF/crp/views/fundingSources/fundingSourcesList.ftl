@@ -3,7 +3,7 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs", "malihu-custom-scrollbar-plugin", "select2", "vue"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/fundingSources/fundingSourcesList.js?20190905" 
+  "${baseUrlMedia}/js/fundingSources/fundingSourcesList.js?20200930" 
   ] 
 /]
 [#assign customCSS = [
@@ -76,7 +76,7 @@
     [#-- Modal to add a Funding source --]
     <!-- Modal -->
     [#if action.canAddFunding() && (!crpClosed) && action.getActualPhase().editable]
-      <div class="modal fade" id="fundingSourceAddPopup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal fade" id="fundingSourceAddPopup" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
           [@s.form namespace="/fundingSources" action='${(crpSession)!}/addNewFundingSources'  method="GET" enctype="multipart/form-data" cssClass="addNewFundingSource"]
           <div  class="modal-content">
@@ -95,7 +95,7 @@
                     [@customForm.select name="budgetTypeID" i18nkey="fundingSourcesList.add.budgetType" className="budgetType"  listName="budgetTypes" keyFieldName=""  displayFieldName="" required=true editable=true /]
                   </div>
                   <div class="col-md-6">
-                    [@customForm.select name="agreementStatus" i18nkey="fundingSourcesList.add.status" className="agreementStatus"  listName="agreementStatus" keyFieldName=""  displayFieldName="" required=true editable=true /]
+                    [@customForm.select name="agreementStatus" i18nkey="fundingSourcesList.add.status" className="agreementStatus"  listName="agreementStatusModal" keyFieldName=""  displayFieldName="" required=true editable=true /]
                   </div>
                 </div>
                 <hr />

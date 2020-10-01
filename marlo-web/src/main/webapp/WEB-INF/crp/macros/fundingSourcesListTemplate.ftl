@@ -5,7 +5,7 @@
     <thead>
       <tr class="header">
         <th colspan="8">Funding Source information</th>
-        <th colspan="2">Actions</th> 
+        <th colspan="3">Actions</th> 
       </tr>
       <tr class="subHeader">
         <th id="ids">[@s.text name="projectsList.projectids" /]</th>
@@ -19,6 +19,7 @@
         <th id="projectDonor" >[@s.text name="projectsList.originalDonor" /]</th>
         <th id="fieldCheck" ></th>
         <th id="projectDelete">[@s.text name="projectsList.delete" /]</th>
+        <th id="projectCopy">[@s.text name="projectsList.copy" /]</th>
       </tr>
     </thead>
     <tbody>
@@ -144,6 +145,17 @@
               </a>
             [#else]
               <img src="${baseUrlCdn}/global/images/trash_disable.png" title="[@s.text name="projectsList.cannotDelete" /]" />
+            [/#if]
+          </td>
+          
+          [#-- Create Copy--]
+          <td class="text-center">
+            [#if (action.canAddFunding() && !crpClosed) && action.getActualPhase().editable]
+              <a id="copyDeliverable-${project.id}" class="copyProject" href="[@s.url namespace=namespace action="${(crpSession)!}/copyFundingSource"][@s.param name='fundingSourceID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" title="">
+                <img src="${baseUrlCdn}/global/images/duplicate_enabled.png"/> 
+              </a>
+            [#else]
+              <img src="${baseUrlCdn}/global/images/duplicate_disabled.png" title="[@s.text name="projectsList.cannotDuplicate" /]" />
             [/#if]
           </td>
         </tr>  

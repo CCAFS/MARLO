@@ -86,7 +86,7 @@
 
 [#-- Modal to map Funding Source to a project --]
 [#if editable]
-<div class="modal fade" id="mapFundingToProject" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade" id="mapFundingToProject" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
