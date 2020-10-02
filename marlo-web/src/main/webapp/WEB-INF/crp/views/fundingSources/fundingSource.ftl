@@ -200,7 +200,7 @@
     <div class="form-group row">
       [#-- Funding Window --]
       <div class="col-md-6 metadataElement-fundingTypeId">
-        [@customForm.select name="fundingSource.fundingSourceInfo.budgetType.id" i18nkey="projectCofunded.type" className="type fundingType metadataValue" listName="budgetTypes" header=false required=true disabled=isSynced editable=editable && action.canEditType() /]
+        [@customForm.select name="fundingSource.fundingSourceInfo.budgetType.id" i18nkey="projectCofunded.type" className="type fundingType metadataValue" listName="budgetTypes" header=false required=true disabled=isSynced editable=editable /]
         [#if isSynced && editable && action.canEditType()]<input type="hidden" class="selectHiddenInput" name="fundingSource.fundingSourceInfo.budgetType.id" value="${(fundingSource.fundingSourceInfo.budgetType.id)!}" />[/#if]
         [#-- W1W2 Tag --]
         [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')]
