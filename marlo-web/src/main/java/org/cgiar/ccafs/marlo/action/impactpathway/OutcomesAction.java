@@ -60,6 +60,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.utils.HistoryComparator;
 import org.cgiar.ccafs.marlo.utils.HistoryDifference;
+import org.cgiar.ccafs.marlo.utils.MilestoneComparators;
 import org.cgiar.ccafs.marlo.validation.impactpathway.OutcomeValidator;
 
 import java.io.BufferedReader;
@@ -87,6 +88,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.ibm.icu.util.Calendar;
 import com.ibm.icu.util.GregorianCalendar;
+import org.apache.commons.collections4.comparators.ComparatorChain;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -356,10 +358,13 @@ public class OutcomesAction extends BaseAction {
   }
 
   public void loadInfo() {
+    Comparator<CrpMilestone> milestoneComparator = new ComparatorChain<>(new MilestoneComparators.YearComparator())
+      .thenComparing(new MilestoneComparators.ComposedIdComparator());
+
     for (CrpProgramOutcome crpProgramOutcome : outcomes) {
 
-      crpProgramOutcome.setMilestones(
-        crpProgramOutcome.getCrpMilestones().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+      crpProgramOutcome.setMilestones(crpProgramOutcome.getCrpMilestones().stream().filter(c -> c.isActive())
+        .sorted(milestoneComparator::compare).collect(Collectors.toList()));
 
       crpProgramOutcome.setIndicators(crpProgramOutcome.getCrpProgramOutcomeIndicators().stream()
         .filter(c -> c.isActive()).collect(Collectors.toList()));
