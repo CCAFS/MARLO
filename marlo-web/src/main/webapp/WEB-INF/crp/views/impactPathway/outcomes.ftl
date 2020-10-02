@@ -338,12 +338,12 @@
 [#macro milestoneMacro milestone name index isTemplate=false editable=true canEditMilestone=true]
   [#local milestoneCustomName = "${name}[${index}]" /]
   [#local editableMilestone = editable && canEditMilestone]
-  [#local hasExtendedYear = (milestone.extendedYear?has_content) && (milestone.extendedYear != -1)]
+  [#local hasExtendedYear = (milestone.extendedYear?has_content) && (milestone.extendedYear != -1) && milestone.extendedYear != milestone.year]
   [#local showExtendedYear =  hasExtendedYear || ((milestone.milestonesStatus.id == 4)!false) ]
   [#local milestoneYear =  (milestone.year)!currentCycleYear ]
-  [#if hasExtendedYear]
+  [#--if hasExtendedYear
     [#local milestoneYear =  milestone.extendedYear ]
-  [/#if]
+  [/#if --]
   [#local reqMilestonesFields = (milestoneYear == actualPhase.year)!false /]
   
   [#local isMilestoneNew =  true ]
@@ -363,7 +363,7 @@
       <div class="leftHead ${reqMilestonesFields?string('green', '')} sm">
         <!--<span class="index">${index+1}</span>-->
         <span class="index">${(milestone.composeID)! "[New]"}</span>
-        <span class="elementId">${(milestoneYear)!} [@s.text name="outcome.milestone.index.title"/]  [#if isMilestoneNew][New][/#if]</span>
+        <span class="elementId">${(milestoneYear)!} [@s.text name="outcome.milestone.index.title"/][#if hasExtendedYear] [@s.text name="outcome.milestone.extended.text"/] ${milestone.extendedYear} [/#if][#if isMilestoneNew][New][/#if]</span>
       </div>
       <!-- <strong>SLO ${index+1}: </strong>  -->
      ${(milestone.title)!""}
