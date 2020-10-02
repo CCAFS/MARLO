@@ -10,8 +10,9 @@
 [#assign currentSection = "bi" /] 
 
 [#assign breadCrumb = [
-  {"label":"${currentSection}",   "nameSpace":"",             "action":""}
-]/]
+    {"label":"${currentSection}",   "nameSpace":"",             "action":""}
+  ]
+/]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
@@ -55,17 +56,25 @@
        
         [#--  Reports Tabs --]
         <div class="reportsButtons col-md-2">
-          <span class="selectedReportBI"><p>[@s.text name="biDashboard.menu.title"/] <span class="glyphicon glyphicon-chevron-down"></span></p></span>
+          <span class="selectedReportBI">
+            <p class="menu-item-title">[@s.text name="biDashboard.menu.title"/] </p>
+            <span class="glyphicon reportsButtonsIcon glyphicon-chevron-right" style="color: #1da5ce"></span>
+          </span>
           <div class="menuList">
           [#list (biReports)![] as report]
-              <div id="BIreport-${report.id}" class="reportSection [#if report?index == 0]current[/#if]">
+              <div id="BIreport-${report.id}" report-title="${report.reportTitle}" class="reportSection [#if report?index == 0]current[/#if]">
                 <a index="${report?index+1}" class="BIreport-${report.id}" href="">[@s.text name=report.reportName /]</a>
               </div>
           [/#list]
           </div>
+          <span class="setFullScreen">
+            <p class="menu-item-title">Fullscreen</p>
+            <span class="glyphicon reportsButtonsIcon glyphicon-fullscreen" style="color: #1da5ce"></span>
+          </span>
         </div>
         
         [#--  Reports Content --]
+        [#--  <input type="hidden" id="reportTitle-${report.id}" name="reportTitle" value=${report.reportTitle} />  --]
         <div class="summariesContent col-md-10" style="min-height:550px;">
           <div class="">
             [#list (biReports)![] as report]

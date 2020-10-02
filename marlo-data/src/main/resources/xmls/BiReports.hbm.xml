@@ -11,6 +11,12 @@
         <property name="reportName" type="string">
             <column name="report_name" />
         </property>
+        <property name="reportTitle" type="string">
+            <column name="report_title" />
+        </property>
+        <property name="reportDescription" type="string">
+            <column name="report_description" />
+        </property>
         <property name="reportId" type="string">
             <column name="report_id" />
         </property>
