@@ -1,20 +1,23 @@
 $(document).ready(init);
 
 function init() {
-  //var idReport = $(".tab-pane.fade.active.in").attr('id');
-  //executePetition(idReport);
   addEvents();
 }
 
-function addEvents(){
-  $('.reportSection').each(function( index ) {
+function addEvents() {
+  $('.reportSection').each(function (index) {
     var idReport = $(this).children().first().attr('class');
     executePetition(idReport);
   });
   $('.reportSection a, .reportSection span').on('click', selectBIReport);
-  $('.selectedReportBI').on('click', function() {
-    $(this).next().slideToggle('slow');
+  $('.selectedReportBI').on('click', function () {
+    reportsMenuWidth();
   });
+
+  $('.setFullScreen').on('click', function () {
+    fullScreenDashboard();
+  });
+
 
   /*
   $('li[role="presentation"]').on("click", function() {
@@ -23,11 +26,28 @@ function addEvents(){
   });*/
 }
 
+// Toggle width of reports menu
+function reportsMenuWidth() {
+  $('.reportsButtons').toggleClass("col-md-2");
+  $('.reportsButtons').toggleClass("col-md-1");
+  $('.reportSection').fadeToggle("fast");
+}
+
+// Open dashboard in full screen
+function fullScreenDashboard() {
+  // Get a reference to the embedded report HTML element
+  var currentID = $("div[class$='current']").attr("id");
+  var embedContainer = $("#" + currentID + '-contentOptions').children().first()[0];
+  // Get a reference to the embedded report.
+  report = powerbi.get(embedContainer);
+  report.fullscreen();
+}
+
 //Request to BireportsTokenAction
-function executePetition( idReport ) {
-  var $inputsContainer = $('#'+idReport+'-contentOptions');
+function executePetition(idReport) {
+  var $inputsContainer = $('#' + idReport + '-contentOptions');
   var data = {
-      id: idReport.replace("BIreport-", "")
+    id: idReport.replace("BIreport-", "")
   }
 
   //Ajax request to back for PowerBi
@@ -36,15 +56,23 @@ function executePetition( idReport ) {
     'type': "GET",
     'data': data,
     'dataType': "json",
-    success: function(metadata) {
+    success: function (metadata) {
       var embedUrl = $inputsContainer.find('input[name=embedUrl]').val();
       var reportId = $inputsContainer.find('input[name=reportId]').val();
+      console.log(metadata.token, embedUrl, reportId, idReport);
+      setReportTitle();
       embedPBI(metadata.token, embedUrl, reportId, idReport);
     },
-    error: function(e) {
+    error: function (e) {
       console.log("error");
     }
   });
+}
+
+// Set the report title and description
+function setReportTitle() {
+  var reportTitle = $("div[class$='current']").attr("report-title");
+  $('.breadcrumb .active').text(reportTitle + '');
 }
 /*
 // Generate the embed token with the bearer generated (JS petition)
@@ -81,7 +109,6 @@ function generateToken(baseURL, data, bearerToken) {
     }
   });
 }*/
-
 // Embed Dashboard
 function embedPBI(embedToken, embededURL, dashboardId, contentId) {
   // Get models. models contains enums that can be used.
@@ -108,7 +135,7 @@ function embedPBI(embedToken, embededURL, dashboardId, contentId) {
 
   // Get a reference to the embedded dashboard HTML element
   //$embedContainer =
-  var $dashboardContainer = $("#"+contentId+'-contentOptions').children().first();
+  var $dashboardContainer = $("#" + contentId + '-contentOptions').children().first();
   var dashboard = powerbi.embed($dashboardContainer.get(0), config);
 
   // Dashboard.off removes a given event handler if it exists.
@@ -146,7 +173,7 @@ function filterAcronym(value) {
 
   // Get a reference to the embedded report HTML element
   var currentID = $("div[class$='current']").attr("id");
-  var embedContainer = $("#"+currentID+'-contentOptions').children().first()[0];
+  var embedContainer = $("#" + currentID + '-contentOptions').children().first()[0];
 
   // Get a reference to the embedded report.
   report = powerbi.get(embedContainer);
@@ -163,29 +190,29 @@ function filterAcronym(value) {
 }
 
 //Function to remove the filter panel
-function removeFilterPanel(contentId){
+function removeFilterPanel(contentId) {
   var newSettings = {
-      panes: {
-        filters: {
-          visible: false
-        }
+    panes: {
+      filters: {
+        visible: false
       }
+    }
   };
-//Get a reference to the embedded report HTML element
+  //Get a reference to the embedded report HTML element
   //var currentID = $("div[class$='current']").attr("id");
-  var embedContainer = $("#"+contentId+'-contentOptions').children().first()[0];
+  var embedContainer = $("#" + contentId + '-contentOptions').children().first()[0];
 
   // Get a reference to the embedded report.
   report = powerbi.get(embedContainer);
 
   // Remove the filters currently applied to the report.
   report.updateSettings(newSettings)
-      .then(function () {
-        console.log("Report filters were removed.");
-      })
-      .catch(function (errors) {
-        console.log(errors);
-      });
+    .then(function () {
+      console.log("Report filters were removed.");
+    })
+    .catch(function (errors) {
+      console.log(errors);
+    });
 }
 /*
 function removeFilters(){
@@ -205,29 +232,80 @@ function removeFilters(){
 }*/
 
 //Function to remove the navPanel
-function removeNavPanel (contentId) {
-//The new settings that you want to apply to the report.
-  const newSettings = {
-      panes: {
-        pageNavigation: {
-          visible: false
-        }
-      }
+function removeNavPanel(contentId) {
+
+  // Power bi models.
+  var models = window['powerbi-client'].models;
+
+  // Define page size as Widescreen.
+  var pageSize = {
+    type: models.PageSizeType.Widescreen
   };
 
+  // Define default visual layout: visible in 400x300.
+  var defaultLayout = {
+    width: 400,
+    height: 250,
+    displayState: {
+      mode: models.VisualContainerDisplayMode.Hidden
+    }
+  };
+
+  // Page layout: two visible visuals in fixed position.
+  var pageLayout = {
+    defaultLayout: defaultLayout,
+    visualsLayout: {
+      "VisualContainer1": {
+        x: 70,
+        y: 100,
+        displayState: {
+          mode: models.VisualContainerDisplayMode.Visible
+        }
+      },
+      "VisualContainer3": {
+        x: 540,
+        y: 100,
+        displayState: {
+          mode: models.VisualContainerDisplayMode.Visible
+        }
+      }
+    }
+  };
+
+  //The new settings that you want to apply to the report.
+  const newSettings = {
+    panes: {
+      pageNavigation: {
+        visible: false
+      }
+    },
+    // Define page size as custom size: 1000x580.
+    layoutType: models.LayoutType.Custom,
+    customLayout: {
+      pageSize: pageSize,
+      displayOption: models.DisplayOption.FitToPage,
+      pagesLayout: {}
+    }
+  };
+
+  newSettings.customLayout.pagesLayout[`#${contentId}-contentOptions`] = pageLayout
+
+
+
   // Get a reference to the embedded report HTML element
-  var embedContainer = $("#"+contentId+'-contentOptions').children().first()[0];
+  var embedContainer = $("#" + contentId + '-contentOptions').children().first()[0];
   // Get a reference to the embedded report.
   report = powerbi.get(embedContainer);
 
+  console.log(newSettings)
   // Update the settings by passing in the new settings you have configured.
   report.updateSettings(newSettings)
-      .then(function () {
-          console.log("Filter pane was removed.");
-      })
-      .catch(function (error) {
-        console.log(errors);
-      });
+    .then(function () {
+      console.log("Filter pane was removed.");
+    })
+    .catch(function (error) {
+      console.log(errors);
+    });
 }
 
 function selectBIReport(e) {
@@ -237,5 +315,6 @@ function selectBIReport(e) {
   $section.siblings().removeClass('current');
   $section.addClass('current');
   $content.siblings().hide();
+  setReportTitle();
   $content.fadeIn();
 }
