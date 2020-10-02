@@ -40,7 +40,17 @@ function fullScreenDashboard() {
   var embedContainer = $("#" + currentID + '-contentOptions').children().first()[0];
   // Get a reference to the embedded report.
   report = powerbi.get(embedContainer);
-  report.fullscreen();
+  const newSettings ={
+    
+  }
+  report.updateSettings(newSettings)
+  .then(function () {
+    report.fullscreen();
+    console.log("Filter pane was removed.");
+  })
+  .catch(function (error) {
+    console.log(errors);
+  });
 }
 
 //Request to BireportsTokenAction
