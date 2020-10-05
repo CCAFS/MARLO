@@ -307,7 +307,6 @@ function removeNavPanel(contentId) {
   // Get a reference to the embedded report.
   report = powerbi.get(embedContainer);
 
-  console.log(newSettings)
   // Update the settings by passing in the new settings you have configured.
   report.updateSettings(newSettings)
     .then(function () {
