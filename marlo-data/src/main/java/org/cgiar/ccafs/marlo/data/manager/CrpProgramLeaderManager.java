@@ -60,6 +60,8 @@ public interface CrpProgramLeaderManager {
    */
   public CrpProgramLeader getCrpProgramLeaderById(long crpProgramLeaderID);
 
+  public CrpProgramLeader getCrpProgramLeaderByProgram(long crpProgramID, long globalUnitID, long userID);
+
   /**
    * This method saves the information of the given crpProgramLeader
    * 

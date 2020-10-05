@@ -25,7 +25,7 @@
             <h3 class="headTitle">[@s.text name="summaries.qualityAssessment.title" /]</h3>
             <div id="" class="">
               <div>
-                <iframe width="100%"  height="1500px" src="https://qa.cgiar.org/crp?crp_id=${qATokenAuth.crpId}&token=${qATokenAuth.token}" frameborder="0"></iframe>
+                <iframe width="100%"  height="1500px" src="[#if !config.production]http://qatest.ciat.cgiar.org[#else]https://qa.cgiar.org[/#if]/crp?crp_id=${qATokenAuth.crpId}&token=${qATokenAuth.token}" frameborder="0"></iframe>
               </div>
             </div>  
       </div>

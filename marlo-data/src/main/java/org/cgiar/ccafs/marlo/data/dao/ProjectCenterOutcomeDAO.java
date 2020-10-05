@@ -54,6 +54,15 @@ public interface ProjectCenterOutcomeDAO {
    */
   public List<ProjectCenterOutcome> findAll();
 
+  /**
+   * This method gets a list of projectCenterOutcome that are active
+   * 
+   * @param PhaseID - phase identification
+   * @param ProjectID - project identification
+   * @param projectCenterOutcome identification.
+   * @return a list from ProjectCenterOutcome null if no exist records
+   */
+  public List<ProjectCenterOutcome> getProjectCenterOutcomeByPhase(Long phaseID, Long projectID, Long centerOutcomeID);
 
   /**
    * This method saves the information of the given projectCenterOutcome

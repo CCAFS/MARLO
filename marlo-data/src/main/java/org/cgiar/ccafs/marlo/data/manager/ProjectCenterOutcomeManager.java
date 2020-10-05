@@ -61,6 +61,16 @@ public interface ProjectCenterOutcomeManager {
   public ProjectCenterOutcome getProjectCenterOutcomeById(long projectCenterOutcomeID);
 
   /**
+   * This method gets a list of projectCenterOutcome information by
+   * 
+   * @param PhaseID - phase identification
+   * @param ProjectID - project identification
+   * @param projectCenterOutcome identification.
+   * @return list of ProjectCenterOutcome object references.
+   */
+  public List<ProjectCenterOutcome> getProjectCenterOutcomeByPhase(Long phaseID, Long ProjectID, Long centerOutcomeID);
+
+  /**
    * This method saves the information of the given projectCenterOutcome
    * 
    * @param projectCenterOutcome - is the projectCenterOutcome object with the new information to be added/updated.
@@ -69,6 +79,4 @@ public interface ProjectCenterOutcomeManager {
    *         or -1 is some error occurred.
    */
   public ProjectCenterOutcome saveProjectCenterOutcome(ProjectCenterOutcome projectCenterOutcome);
-
-
 }

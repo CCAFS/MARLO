@@ -26,3 +26,8 @@
   margin-top: 0;
   padding-top: 18px;
 }
+.staff-list{
+  max-height: 140px;
+  overflow: auto;
+  align-items: center;
+}

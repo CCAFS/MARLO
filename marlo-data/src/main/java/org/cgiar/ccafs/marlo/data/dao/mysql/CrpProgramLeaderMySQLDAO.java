@@ -19,10 +19,13 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.CrpProgramLeaderDAO;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 @Named
@@ -65,6 +68,28 @@ public class CrpProgramLeaderMySQLDAO extends AbstractMarloDAO<CrpProgramLeader,
       return list;
     }
     return null;
+
+  }
+
+  @Override
+  public CrpProgramLeader getCrpProgramLeaderByProgram(long crpProgramID, long globalUnitID, long userID) {
+    String query = "Select crp_program_leaders.id from crp_program_leaders "
+      + "INNER JOIN crp_programs ON crp_programs.id=crp_program_leaders.crp_program_id "
+      + "WHERE crp_program_leaders.is_active=1 and crp_program_leaders.crp_program_id=" + crpProgramID + " "
+      + "AND crp_programs.global_unit_id=" + globalUnitID + " " + "AND crp_program_leaders.user_id=" + userID;
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<CrpProgramLeader> crpProgramLeaders = new ArrayList<CrpProgramLeader>();
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        CrpProgramLeader crpProgramLeader = this.find(Long.parseLong(map.get("id").toString()));
+        crpProgramLeaders.add(crpProgramLeader);
+      }
+    }
+    if (crpProgramLeaders.size() > 0) {
+      return crpProgramLeaders.get(0);
+    } else {
+      return null;
+    }
 
   }
 

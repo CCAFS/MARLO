@@ -11,6 +11,7 @@
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectBudgetByPartners.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "budgetByPartners" /]
+[#assign isCrpProject = (action.isProjectCrpOrPlatform(project.id))!false ]
 
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
@@ -302,6 +303,7 @@
 [/#macro]
 
 
+
 [#macro fundingSourceRowMacro element name selectedYear index=-1  isTemplate=false]
   [#local customName = "${name}[${index}]" /]
   <tr id="projectW3bilateralFund-${isTemplate?string('template', index )}" class="projectW3bilateralFund  " style="display:${isTemplate?string('none','table-row')}">
@@ -430,12 +432,24 @@
       [/#if]
     </p> 
     
-    [#if !isTemplate]
-    <a href="[@s.url namespace="/fundingSources" action="${crpSession}/fundingSource"][@s.param name="fundingSourceID" value="${(element.fundingSource.id)!}" /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" class="" target="_BLANK"> 
+    [#if !isTemplate]       
+      [#if centerGlobalUnit]
+        [#if !isCrpProject]
+          <a href="[@s.url namespace="/fundingSources" action="${crpSession}/fundingSource"][@s.param name="fundingSourceID" value="${(element.fundingSource.id)!}" /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" class="" target="_BLANK">
+        [/#if]
+      [#else]
+        <a href="[@s.url namespace="/fundingSources" action="${crpSession}/fundingSource"][@s.param name="fundingSourceID" value="${(element.fundingSource.id)!}" /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" class="" target="_BLANK">
+      [/#if]      
     [/#if]
       <p class=""> <span class="title">${(element.fundingSource.fundingSourceInfo.title)!}</span> </p>
     [#if !isTemplate]
-    </a>
+      [#if centerGlobalUnit]
+        [#if !isCrpProject]
+         </a>
+        [/#if]     
+      [#else]
+        </a>
+      [/#if]     
     [/#if]
 
     <input type="hidden" class="id " name="${customName}.id" value="${(element.id)!}"/>
@@ -481,14 +495,18 @@
             [#if (editable && isYearEditable(selectedYear) && action.canSearchFunding(element.institution.id) && action.canEditGender()) || isTemplate]
               [@customForm.input name="${customName}.genderPercentage" i18nkey="budget.genderPercentage" showTitle=false className="percentageInput cycle-planning type-${(element.fundingSource.fundingSourceInfo.budgetType.id)!'none'}" required=true   /]
             [#else]  
-            <div class="${customForm.changedField(customName+'.genderPercentage')}">
-              <div class="input"><p><span>${((element.genderPercentage)!0)}%</span></p></div>
-              <input type="hidden" name="${customName}.genderPercentage"  value="${(element.genderPercentage)!0}" />
-            </div>
+              <div class="${customForm.changedField(customName+'.genderPercentage')}">
+                <div class="input"><p><span>${((element.genderPercentage)!0)}%</span></p></div>
+                <input type="hidden" name="${customName}.genderPercentage"  value="${(element.genderPercentage)!0}" />
+              </div>
             [/#if]
           </div>
         [/#if]
       </div>
+    </div>
+    
+    <div class="form-group">
+      [@customForm.textArea name="${customName}.rationale"  value="${(element.rationale)!}" i18nkey="mapFunding.justification" help="mapFunding.justification.help" helpIcon=true className="" required=true editable=editable && (isYearEditable(selectedYear) || isTemplate) /]
     </div>
     
     <div class="">
