@@ -97,6 +97,7 @@ public class ProjectCenterMappingAction extends BaseAction {
   private ProjectCenterOutcomeManager projectCenterOutcomeManager;
   private CenterOutcomeManager centerOutcomeManager;
   private List<CenterOutcome> centerOutcomes;
+  private boolean canMapPrograms;
 
   @Inject
   public ProjectCenterMappingAction(APConfig config, ProjectManager projectManager, CrpProgramManager programManager,
@@ -203,6 +204,11 @@ public class ProjectCenterMappingAction extends BaseAction {
     return transaction;
   }
 
+  public boolean isCanMapPrograms() {
+    return canMapPrograms;
+  }
+
+
   @Override
   public void prepare() throws Exception {
     // Get current CRP
@@ -211,6 +217,7 @@ public class ProjectCenterMappingAction extends BaseAction {
 
     Phase phase = this.getActualPhase();
     sharedPhaseID = phase.getId();
+    canMapPrograms = false;
 
     try {
       projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
@@ -433,6 +440,10 @@ public class ProjectCenterMappingAction extends BaseAction {
     }
 
     projectDB = projectManager.getProjectById(projectID);
+    // adjust crp programs leader to enable only modify centersoutcomes.
+    if (this.isRole("CRP-Admin") || this.isRole("SuperAdmin")) {
+      canMapPrograms = true;
+    }
 
     // The base permission is established for the current section
 
@@ -449,9 +460,10 @@ public class ProjectCenterMappingAction extends BaseAction {
     }
   }
 
+
   @Override
   public String save() {
-    if (this.hasPermission("canEdit")) {
+    if (this.hasPermission("canEdit") || this.hasCenterPermissions(projectID)) {
       Phase sharedPhase = phaseManager.getPhaseById(sharedPhaseID);
 
       // Load basic info project to be saved
@@ -648,6 +660,10 @@ public class ProjectCenterMappingAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
 
+  }
+
+  public void setCanMapPrograms(boolean canMapPrograms) {
+    this.canMapPrograms = canMapPrograms;
   }
 
   public void setCenterOutcomes(List<CenterOutcome> centerOutcomes) {

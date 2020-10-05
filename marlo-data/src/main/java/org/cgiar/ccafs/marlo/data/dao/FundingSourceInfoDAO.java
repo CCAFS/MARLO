@@ -55,6 +55,14 @@ public interface FundingSourceInfoDAO {
 
 
   /**
+   * This method gets a list of fundingSourceInfo that have the financeCode requested
+   * 
+   * @param financeCode - is the fundingSourceInfo parameter.
+   * @return a list from FundingSourceInfo null if no exist records.
+   */
+  public List<FundingSourceInfo> findByFinanceCode(String financeCode);
+
+  /**
    * This method saves the information of the given fundingSourceInfo
    * 
    * @param fundingSourceInfo - is the fundingSourceInfo object with the new information to be added/updated.

@@ -4,17 +4,30 @@
   <table class="projectsList" id="projects">
     <thead>
       <tr class="header">
+        [#if !centerGlobalUnit]
         <th colspan="5">General Information</th>
+        [#else]
+        <th colspan="7">General Information</th>
+        [/#if]
+        
         [#if !reportingActive && !centerGlobalUnit]
           <th colspan="3">[@s.text name="projectsList.projectBudget"] [@s.param]${(crpSession?upper_case)!}[/@s.param] [/@s.text] ${currentCycleYear}</th> 
         [/#if]
+        [#if !centerGlobalUnit]         
         <th colspan="3">Actions</th> 
+        [#else]
+        <th colspan="2">Actions</th> 
+        [/#if]
       </tr>
       <tr class="subHeader">
         <th id="ids">[@s.text name="projectsList.projectids" /]</th>
         <th id="projectTitles" >[@s.text name="projectsList.projectTitles" /]</th>
-        <th id="projectLeader" >[@s.text name="projectsList.projectLeader" /]</th>
-        <th id="projectType">[@s.text name="projectsList.projectLeaderPerson" /]
+        <th id="projectLeader" >[@s.text name="projectsList.projectLeader" /]</th>        
+        <th id="projectType">[@s.text name="projectsList.projectLeaderPerson" /]</th>  
+         [#if centerGlobalUnit]
+        <th id="centerStaff" >[@s.text name="projectsList.centerStaff" /]</th>
+        [/#if]
+        
         <th id="projectFlagships">
           [#if centerGlobalUnit]
             [@s.text name="projectsList.projectPrograms" /]
@@ -26,13 +39,19 @@
             [/#if]
           [/#if]
         </th>
+       
         [#if !reportingActive && !centerGlobalUnit]
           <th id="projectBudget">[@s.text name="projectsList.W1W2projectBudget" /]</th>
           <th id="projectBudget">[@s.text name="projectsList.W3projectBudget" /]</th>
           <th id="projectBudget">[@s.text name="projectsList.BILATERALprojectBudget" /]</th>
         [/#if]
         <th id="projectActionStatus">[@s.text name="projectsList.projectActionStatus" /]</th>
+          [#if centerGlobalUnit]
+            <th id="centermapping" >[@s.text name="projectsList.centerMapping" /]</th>
+          [/#if]
+        [#if !centerGlobalUnit]
         <th id="projectDownload">[@s.text name="projectsList.download" /]</th>
+        [/#if]
         <th id="projectDelete">[@s.text name="projectsList.delete" /]</th>
         [#if isPlanning]
           <th id="projectBudget">[@s.text name="planning.projects.completion" /]</th>
@@ -50,9 +69,10 @@
         [#-- ID --]
         <td class="text-center">
           <a href="${projectUrl}"> P${project.id}</a>
-          [#if centerGlobalUnit && isCrpProject ]
+          [#if centerGlobalUnit]
             <span class="badge globalUnitTag"> ${(project.projectInfo.phase.crp.acronym)!} </span>
           [/#if]
+          
         </td>
           [#-- Project Title --]
           <td class="left">
@@ -80,18 +100,34 @@
           [#else]
             [#assign pLeader =  (project.getLeader(action.getActualPhase()))! ]
             [#assign pLeaderPerson =  (project.getLeaderPersonDB(action.getActualPhase()))! ]
-          [/#if]
+          [/#if]         
           <td class=""> 
             [#if pLeader?has_content]${(pLeader.institution.acronym)!pLeader.institution.name}[#else][@s.text name="projectsList.title.none" /][/#if]
           </td>
           <td class=""> 
+          [#if centerGlobalUnit]
+            [#if pLeaderPerson?has_content] ${(pLeaderPerson.user.composedCompleteName)!}[#else][@s.text name="projectsList.title.none" /][/#if]
+          [#else]
             [#if pLeaderPerson?has_content] ${(pLeaderPerson.user.composedName)!}[#else][@s.text name="projectsList.title.none" /][/#if]
+          [/#if]   
+                        
           </td>
+            [#-- Center Staf --]
+          [#if centerGlobalUnit]
+          <td class=""> 
+            <div class="mCustomScrollbar staff-list" data-mcs-theme="dark">
+            [#assign centerStaffList =  (project.getLeadersCenter(project.projectInfo.phase,actualPhase.crp.institution.id))! ]
+            [#list (centerStaffList)![] as centerstaff]
+              ${(centerstaff.user.composedCompleteName)!}
+            [/#list]
+           </div>
+          </td>
+          [/#if]    
           [#-- Flagship / Regions / Programs --]
           <td>
             [#assign tagsNumber = 0 /]
             [#if project.projectInfo.administrative]
-              [#local li = (project.projectInfo.liaisonInstitution)!{} ]
+              [#local li = (project.projectInfo.liaisonInstitution)!{}]
               <span class="programTag" style="border-color:#444">
                 [#if ((li.crpProgram??)!false) && (li.crpProgram.crp.id == actualPhase.crp.id )]
                   ${(li.crpProgram.acronym)!(li.crpProgram.name)}
@@ -145,8 +181,11 @@
           [#-- Project Action Status --]
           <td>
             [#assign currentCycleYear= currentCycleYear /]
-            [#assign submission = action.isProjectSubmitted(project.id) /]
-            
+            [#if centerGlobalUnit]
+              [#assign submission = action.isSubmit(project.id,(currentCycleYear-1),"Reporting") /]
+            [#else]
+              [#assign submission = action.isProjectSubmitted(project.id) /]
+            [/#if]
             [#-- CRP Project --]
             [#if isCrpProject]
               [#if !project.projectInfo.isProjectEditLeader()]
@@ -156,8 +195,7 @@
                   [#if !reportingActive]<p title="Ready for project leader completion">Ready for PL</p>[/#if]
                 [#else]
                   <strong title="Submitted">Submitted</strong>
-                [/#if]
-                
+                [/#if]                
                 [#-- Status --]
                 [#if reportingActive]
                   <p>${(project.projectInfo.statusName)!}</p>
@@ -166,8 +204,24 @@
             [/#if]
             
           </td>
-          
+          [#if centerGlobalUnit]
+            <td>  
+              [#if isCrpProject]
+                [#assign centerMappingComplete = action.isCenterMappingComplete(project.id,project.projectInfo.phase) /]
+              [#else]
+                [#assign centerMappingComplete = action.isCompleteCenterProject(project.id) /]                
+              [/#if]
+              [#if centerMappingComplete!]
+              <span class="icon-20 icon-check" title="Complete"></span>            
+              [#else]
+              
+              <span class="icon-20 icon-uncheck" title="Not Completed" ></span>
+             
+              [/#if]
+            </td> 
+          [/#if]
           [#-- Summary PDF download --]
+          [#if !centerGlobalUnit]
           <td>        
             [#if action.getActualPhase().crp.id != 29]
               <a href="[@s.url namespace="/projects" action='${(crpSession)!}/reportingSummary'][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='cycle']${action.getCurrentCycle()}[/@s.param][@s.param name='year']${action.getCurrentCycleYear()}[/@s.param][/@s.url]" target="__BLANK">
@@ -175,6 +229,7 @@
               </a>          
             [/#if]
           </td>
+          [/#if]
           [#-- Delete Project--]
           <td>
             [#if canEdit && isProjectNew && action.deletePermission(project.id) && action.getActualPhase().editable && project.projectInfo.phase.id=action.getActualPhase().id]

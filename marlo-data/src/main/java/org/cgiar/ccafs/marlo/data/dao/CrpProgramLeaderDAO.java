@@ -55,6 +55,8 @@ public interface CrpProgramLeaderDAO {
   public List<CrpProgramLeader> findAll();
 
 
+  public CrpProgramLeader getCrpProgramLeaderByProgram(long crpProgramID, long globalUnitID, long userID);
+
   /**
    * This method saves the information of the given crpProgramLeader
    * 
