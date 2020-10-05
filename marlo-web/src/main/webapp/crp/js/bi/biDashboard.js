@@ -46,7 +46,7 @@ function fullScreenDashboard() {
   report.updateSettings(newSettings)
   .then(function () {
     report.fullscreen();
-    console.log("Filter pane was removed.");
+    console.log("full Screen Dashboard.");
   })
   .catch(function (error) {
     console.log(errors);
