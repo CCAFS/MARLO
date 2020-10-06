@@ -561,31 +561,6 @@ public class FundingSourceAction extends BaseAction {
     return userProjects;
   }
 
-
-  public boolean isDifferentBudgetType() {
-    // Compare if the previous budget type in DB is diferent to new interface selection of budget type
-
-    boolean isDiferentType = false;
-    if (fundingSource != null && fundingSource.getFundingSourceInfo() != null
-      && fundingSource.getFundingSourceInfo().getBudgetType() != null
-      && fundingSource.getFundingSourceInfo().getBudgetType().getId() != null) {
-
-      FundingSource fundingSourceDBTemp = fundingSourceManager.getFundingSourceById(fundingSourceID);
-
-      if (fundingSourceDBTemp != null && fundingSourceDBTemp.getFundingSourceInfo(this.getActualPhase()) != null
-        && fundingSourceDBTemp.getFundingSourceInfo(this.getActualPhase()).getBudgetType() != null
-        && fundingSourceDBTemp.getFundingSourceInfo(this.getActualPhase()).getBudgetType().getId() != null
-        && !fundingSourceDBTemp.getFundingSourceInfo(this.getActualPhase()).getBudgetType().getId()
-          .equals(fundingSource.getFundingSourceInfo().getBudgetType().getId())) {
-        isDiferentType = true;
-      } else {
-        isDiferentType = false;
-      }
-    }
-
-    return isDiferentType;
-  }
-
   public boolean isRegion() {
     return region;
   }
@@ -962,14 +937,16 @@ public class FundingSourceAction extends BaseAction {
       divisions = new ArrayList<>();
 
 
-      List<CrpPpaPartner> ppaPartners = crpPpaPartnerManager.findAll().stream()
-        .filter(c -> c.getCrp().getId().longValue() == loggedCrp.getId().longValue() && c.isActive()
-          && c.getPhase().equals(this.getActualPhase()))
-        .collect(Collectors.toList());
+      List<CrpPpaPartner> ppaPartners = crpPpaPartnerManager.findAll();
 
-      for (CrpPpaPartner crpPpaPartner : ppaPartners) {
-        institutions.add(crpPpaPartner.getInstitution());
+      if (ppaPartners != null && !ppaPartners.isEmpty()) {
+        ppaPartners = ppaPartners.stream().filter(c -> c.getCrp().getId().longValue() == loggedCrp.getId().longValue()
+          && c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+        for (CrpPpaPartner crpPpaPartner : ppaPartners) {
+          institutions.add(crpPpaPartner.getInstitution());
+        }
       }
+
       if (fundingSource.getFundingSourceInfo() != null) {
         if (fundingSource.getFundingSourceInfo().getBudgetType() != null) {
           // if the funding source is type center funds -- institutions are ppa
@@ -1309,22 +1286,24 @@ public class FundingSourceAction extends BaseAction {
       }
 
       // Check if the funding source type is different to the previous one in DB
-      if (this.isDifferentBudgetType()) {
-        List<ProjectBudget> projectBudgets = fundingSource.getProjectBudgets().stream()
+      List<ProjectBudget> projectBudgets = fundingSource.getProjectBudgetsList();
+      if (projectBudgets != null) {
+
+        projectBudgets = projectBudgets.stream()
           .filter(pb -> pb.isActive() && pb.getProject() != null && pb.getProject().isActive()
             && pb.getFundingSource() != null && pb.getFundingSource().getId().equals(this.fundingSource.getId())
-            && pb.getPhase() != null && pb.getPhase().getId() != null
-            && pb.getPhase().getId().equals(this.getActualPhase().getId()))
+            && pb.getPhase() != null && pb.getPhase().getId().equals(this.getActualPhase().getId())
+            && pb.getYear() == this.getActualPhase().getYear())
           .collect(Collectors.toList());
-        if (projectBudgets != null) {
-          ProjectBudget projectBudget;
-          BudgetType budgetType;
-          budgetType =
-            budgetTypeManager.getBudgetTypeById(fundingSource.getFundingSourceInfo().getBudgetType().getId());
-          projectBudget = projectBudgets.get(0);
-          projectBudget.setBudgetType(budgetType);
-          projectBudgetManager.saveProjectBudget(projectBudget);
-        }
+      }
+
+      if (projectBudgets != null && !projectBudgets.isEmpty() && projectBudgets.get(0) != null) {
+        ProjectBudget projectBudget;
+        BudgetType budgetType;
+        budgetType = budgetTypeManager.getBudgetTypeById(fundingSource.getFundingSourceInfo().getBudgetType().getId());
+        projectBudget = projectBudgets.get(0);
+        projectBudget.setBudgetType(budgetType);
+        projectBudgetManager.saveProjectBudget(projectBudget);
       }
 
 
