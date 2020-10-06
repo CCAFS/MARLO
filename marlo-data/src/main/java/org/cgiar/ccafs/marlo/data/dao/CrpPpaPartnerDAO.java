@@ -58,6 +58,15 @@ public interface CrpPpaPartnerDAO {
   public List<CrpPpaPartner> findAll();
 
   /**
+   * This method gets a crpPpaPartner list by a given parameters.
+   * 
+   * @param crpID is the crp identifier.
+   * @param phaseID is the phase identifier.
+   * @return a crpPpaPartner list.
+   */
+  public List<CrpPpaPartner> findByCrpAndPhase(long crpID, long phaseID);
+
+  /**
    * This method saves the information of the given crpPpaPartner
    * 
    * @param CrpPpaPartner - is the crpPpaPartner object with the new information to be added/updated.
