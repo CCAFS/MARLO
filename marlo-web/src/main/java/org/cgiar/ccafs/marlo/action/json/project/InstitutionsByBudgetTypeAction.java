@@ -69,15 +69,20 @@ public class InstitutionsByBudgetTypeAction extends BaseAction {
 
     List<Institution> institutionsPpa = new ArrayList<>();
 
-    List<CrpPpaPartner> ppaPartners =
-      crpPpaPartnerManager.findAll().stream().filter(c -> c.getCrp().getId().longValue() == this.getCrpID()
-        && c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
-    
-    //List<CrpPpaPartner> ppaPartners = crpPpaPartnerManager.findByCrpAndPhase(this.getCrpID(), this.getPhaseID());
+    List<CrpPpaPartner> ppaPartners = new ArrayList<>();
+    if (this.getCrpID() != null && this.getActualPhase() != null) {
+      ppaPartners = crpPpaPartnerManager.findAll();
+      if (ppaPartners != null && !ppaPartners.isEmpty()) {
+        ppaPartners.stream().filter(c -> c.getCrp().getId().longValue() == this.getCrpID() && c.isActive()
+          && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
 
 
-    for (CrpPpaPartner crpPpaPartner : ppaPartners) {
-      institutionsPpa.add(crpPpaPartner.getInstitution());
+        // List<CrpPpaPartner> ppaPartners = crpPpaPartnerManager.findByCrpAndPhase(this.getCrpID(), this.getPhaseID());
+
+        for (CrpPpaPartner crpPpaPartner : ppaPartners) {
+          institutionsPpa.add(crpPpaPartner.getInstitution());
+        }
+      }
     }
 
     institutions = new ArrayList<>();
