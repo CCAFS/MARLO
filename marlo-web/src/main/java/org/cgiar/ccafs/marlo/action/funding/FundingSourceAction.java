@@ -34,6 +34,7 @@ import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.PartnerDivisionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
@@ -121,6 +122,7 @@ public class FundingSourceAction extends BaseAction {
 
   private FundingSourceInstitutionManager fundingSourceInstitutionManager;
   private FundingSourceDivisionManager fundingSourceDivisionManager;
+  private ProjectBudgetManager projectBudgetManager;
 
   private ProjectManager projectManager;
   private FundingSourceManager fundingSourceManager;
@@ -171,7 +173,7 @@ public class FundingSourceAction extends BaseAction {
     PartnerDivisionManager partnerDivisionManager, FundingSourceInstitutionManager fundingSourceInstitutionManager,
     FundingSourceDivisionManager fundingSourceDivisionManager, LocElementManager locElementManager,
     FundingSourceLocationsManager fundingSourceLocationsManager, LocElementTypeManager locElementTypeManager,
-    FundingSourceInfoManager fundingSourceInfoManager,
+    FundingSourceInfoManager fundingSourceInfoManager, ProjectBudgetManager projectBudgetManager,
     /* TODO delete when fix the budget permissions */ RoleManager userRoleManager, ProjectManager projectManager) {
     super(config);
     this.crpManager = crpManager;
@@ -196,6 +198,7 @@ public class FundingSourceAction extends BaseAction {
     // TODO delete when fix the budget permissions
     this.userRoleManager = userRoleManager;
     this.fundingSourceInfoManager = fundingSourceInfoManager;
+    this.projectBudgetManager = projectBudgetManager;
   }
 
 
@@ -299,7 +302,6 @@ public class FundingSourceAction extends BaseAction {
 
   }
 
-
   public FundingSourceBudget getBudget(int year) {
 
     for (FundingSourceBudget fundingSourceBudget : fundingSource.getBudgets()) {
@@ -323,6 +325,7 @@ public class FundingSourceAction extends BaseAction {
     return this.getBudget(year);
 
   }
+
 
   public Map<String, String> getBudgetTypes() {
     return budgetTypes;
@@ -352,37 +355,37 @@ public class FundingSourceAction extends BaseAction {
     return fileFileName;
   }
 
-
   public Integer getFileID() {
     return fileID;
   }
+
 
   public FundingSource getFundingSource() {
     return fundingSource;
   }
 
-
   public String getFundingSourceFileURL() {
     return config.getDownloadURL() + "/" + this.getFundingSourceUrlPath().replace('\\', '/');
   }
+
 
   public long getFundingSourceID() {
     return fundingSourceID;
   }
 
-
   public List<Institution> getFundingSourceInstitutions() {
     return fundingSourceInstitutions;
   }
+
 
   public FundingSource getFundingSourceShow() {
     return fundingSourceShow;
   }
 
-
   public String getFundingSourceUrlPath() {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + "fundingSourceFiles" + File.separator;
   }
+
 
   public int getIndexBugets(int year) {
     int i = 0;
@@ -405,10 +408,10 @@ public class FundingSourceAction extends BaseAction {
 
   }
 
-
   public List<Institution> getInstitutions() {
     return institutions;
   }
+
 
   public List<Institution> getInstitutionsDonors() {
     return institutionsDonors;
@@ -528,7 +531,6 @@ public class FundingSourceAction extends BaseAction {
     }
   }
 
-
   public List<LocElement> getRegionLists() {
     return regionLists;
   }
@@ -557,6 +559,31 @@ public class FundingSourceAction extends BaseAction {
 
   public List<Project> getUserProjects() {
     return userProjects;
+  }
+
+
+  public boolean isDifferentBudgetType() {
+    // Compare if the previous budget type in DB is diferent to new interface selection of budget type
+
+    boolean isDiferentType = false;
+    if (fundingSource != null && fundingSource.getFundingSourceInfo() != null
+      && fundingSource.getFundingSourceInfo().getBudgetType() != null
+      && fundingSource.getFundingSourceInfo().getBudgetType().getId() != null) {
+
+      FundingSource fundingSourceDBTemp = fundingSourceManager.getFundingSourceById(fundingSourceID);
+
+      if (fundingSourceDBTemp != null && fundingSourceDBTemp.getFundingSourceInfo(this.getActualPhase()) != null
+        && fundingSourceDBTemp.getFundingSourceInfo(this.getActualPhase()).getBudgetType() != null
+        && fundingSourceDBTemp.getFundingSourceInfo(this.getActualPhase()).getBudgetType().getId() != null
+        && !fundingSourceDBTemp.getFundingSourceInfo(this.getActualPhase()).getBudgetType().getId()
+          .equals(fundingSource.getFundingSourceInfo().getBudgetType().getId())) {
+        isDiferentType = true;
+      } else {
+        isDiferentType = false;
+      }
+    }
+
+    return isDiferentType;
   }
 
   public boolean isRegion() {
@@ -1278,6 +1305,25 @@ public class FundingSourceAction extends BaseAction {
               divisionsEdited = true;
             }
           }
+        }
+      }
+
+      // Check if the funding source type is different to the previous one in DB
+      if (this.isDifferentBudgetType()) {
+        List<ProjectBudget> projectBudgets = fundingSource.getProjectBudgets().stream()
+          .filter(pb -> pb.isActive() && pb.getProject() != null && pb.getProject().isActive()
+            && pb.getFundingSource() != null && pb.getFundingSource().getId().equals(this.fundingSource.getId())
+            && pb.getPhase() != null && pb.getPhase().getId() != null
+            && pb.getPhase().getId().equals(this.getActualPhase().getId()))
+          .collect(Collectors.toList());
+        if (projectBudgets != null) {
+          ProjectBudget projectBudget;
+          BudgetType budgetType;
+          budgetType =
+            budgetTypeManager.getBudgetTypeById(fundingSource.getFundingSourceInfo().getBudgetType().getId());
+          projectBudget = projectBudgets.get(0);
+          projectBudget.setBudgetType(budgetType);
+          projectBudgetManager.saveProjectBudget(projectBudget);
         }
       }
 
