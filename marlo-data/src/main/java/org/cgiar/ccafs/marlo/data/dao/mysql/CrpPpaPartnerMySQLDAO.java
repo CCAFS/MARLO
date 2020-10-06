@@ -69,7 +69,8 @@ public class CrpPpaPartnerMySQLDAO extends AbstractMarloDAO<CrpPpaPartner, Long>
     if (list != null && !list.isEmpty()) {
       return list;
     } else {
-      return list = new ArrayList<>();
+      list = new ArrayList<>();
+      return list;
     }
   }
 
