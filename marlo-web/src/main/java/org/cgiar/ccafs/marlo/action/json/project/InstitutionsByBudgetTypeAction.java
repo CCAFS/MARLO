@@ -72,6 +72,9 @@ public class InstitutionsByBudgetTypeAction extends BaseAction {
     List<CrpPpaPartner> ppaPartners =
       crpPpaPartnerManager.findAll().stream().filter(c -> c.getCrp().getId().longValue() == this.getCrpID()
         && c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+    
+    //List<CrpPpaPartner> ppaPartners = crpPpaPartnerManager.findByCrpAndPhase(this.getCrpID(), this.getPhaseID());
+
 
     for (CrpPpaPartner crpPpaPartner : ppaPartners) {
       institutionsPpa.add(crpPpaPartner.getInstitution());
