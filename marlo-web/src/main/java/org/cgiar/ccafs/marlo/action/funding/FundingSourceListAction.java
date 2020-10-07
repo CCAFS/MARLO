@@ -945,10 +945,14 @@ public class FundingSourceListAction extends BaseAction {
 
     // Load Managing Institutions List
     managingInstitutionsList = new ArrayList<>();
-    List<CrpPpaPartner> ppaPartners = crpPpaPartnerManager.findAll();
+    List<CrpPpaPartner> ppaPartners = crpPpaPartnerManager.findAll().stream()
+      .filter(p -> p != null && p.getPhase() != null && p.getPhase().getId().equals(this.getActualPhase().getId()))
+      .collect(Collectors.toList());
     if (ppaPartners != null && !ppaPartners.isEmpty()) {
-      ppaPartners.stream().filter(c -> c != null && c.getCrp().getId().longValue() == loggedCrp.getId().longValue()
-        && c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+      ppaPartners.stream().distinct()
+        .filter(c -> c != null && c.getCrp().getId().longValue() == loggedCrp.getId().longValue() && c.isActive()
+          && c.getPhase().equals(this.getActualPhase()))
+        .collect(Collectors.toList());
 
 
       for (CrpPpaPartner crpPpaPartner : ppaPartners) {
