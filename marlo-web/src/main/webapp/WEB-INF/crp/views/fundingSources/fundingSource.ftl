@@ -4,12 +4,12 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "datatables.net", "datatables.net-bs","flag-icon-css",  "vue"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/fieldsValidation.js",
-  "${baseUrlMedia}/js/fundingSources/fundingSource.js?20201001",
+  "${baseUrlMedia}/js/fundingSources/fundingSource.js?20201007",
   "${baseUrlMedia}/js/fundingSources/syncFundingSource.js?20190905",
   "${baseUrlCdn}/global/js/autoSave.js" 
   ]
 /]
-[#assign customCSS = ["${baseUrlMedia}/css/fundingSources/fundingSource.css?20200901"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/fundingSources/fundingSource.css?20201007"] /]
 [#assign currentSection = "fundingSources" /]
 [#assign breadCrumb = [
   {"label":"fundingSourcesList", "nameSpace":"/fundingSources", "action":""}
@@ -52,12 +52,19 @@
     
     <div class="showOnLoading">
       [#-- General Information --]
-      <h4 class="headTitle">General information</h4>
-      [#if (action.canAddFunding() && !crpClosed) && action.getActualPhase().editable]
-        <a id="copyDeliverable-${fundingSource.id}" class="copy" href="[@s.url namespace=namespace action="${(crpSession)!}/copy"][@s.param name='fundingSourceID']${fundingSource.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" title="">
-          <img src="${baseUrlCdn}/global/images/duplicate_enabled.png"/> 
-        </a>
-      [/#if]
+      <div class="row">
+        <div class="col-md-8">
+          <h4 class="headTitle">General information</h4>
+         </div>
+         <div class="col-md-4">
+         [#if (action.canAddFunding() && !crpClosed) && action.getActualPhase().editable]
+            <a id="copyDeliverable-${fundingSource.id}" class="btn btn-default btn-xs duplicate-button" href="[@s.url namespace=namespace action="${(crpSession)!}/copy"][@s.param name='fundingSourceID']${fundingSource.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" title="">
+              Copy Funding Source <img src="${baseUrlCdn}/global/images/duplicate_enabled.png" height="15px"/> 
+            </a>
+          [/#if]
+         </div>
+       </div>
+      
       <div class="borderBox">
         [#-- Loading --]
         <div class="loading syncBlock" style="display:none"></div>
