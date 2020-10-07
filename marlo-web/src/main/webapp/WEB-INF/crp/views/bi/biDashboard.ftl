@@ -2,18 +2,18 @@
 [#assign title = "MARLO BI" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["powerbi-client"] /]
-[#assign customJS = ["${baseUrlMedia}/js/bi/biDashboard.js", "${baseUrlCdn}/global/bower_components/powerbi-client/dist/powerbi.min.js" ] /]
+[#assign customJS = ["${baseUrlMedia}/js/bi/biDashboard.js?20200710_1648", "${baseUrlCdn}/global/bower_components/powerbi-client/dist/powerbi.min.js" ] /]
 [#assign customCSS = [
   "${baseUrl}/crp/css/bi/biDashboard.css"
   ] 
 /]
 [#assign currentSection = "bi" /] 
-
+ [#--
 [#assign breadCrumb = [
     {"label":"${currentSection}",   "nameSpace":"",             "action":""}
   ]
 /]
-
+--]
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
@@ -53,33 +53,40 @@
          </div>
   
        --]
-       
-        [#--  Reports Tabs --]
-        <div class="reportsButtons col-md-2">
-          <span class="selectedReportBI">
+        [#--  Reports header  --]
+       <div class="headTitle-row-container">
+        <span class="selectedReportBI col-md-2">
+        <div class="col-md-8 button-bg">
             <p class="menu-item-title">[@s.text name="biDashboard.menu.title"/] </p>
-            <span class="glyphicon reportsButtonsIcon glyphicon-chevron-right" style="color: #1da5ce"></span>
-          </span>
+            <span class="glyphicon reportsButtonsIcon glyphicon-chevron-up" style="color: #1da5ce"></span>
+        </div>
+        </span>
+        <h3 class="headTitle text-center col-md-8">
+        </h3>
+        <span class="setFullScreen col-md-1 button-bg">
+            <p class="menu-item-title">Fullscreen</p>
+            <span class="glyphicon reportsButtonsIcon glyphicon-fullscreen" style="color: #1da5ce"></span>
+        </span>
+       </div>
+        [#--  Reports header  --]
+
+        [#--  Reports Tabs --]
+        <div id="repportsMenu" class="reportsButtons col-md-2">
           <div class="menuList">
           [#list (biReports)![] as report]
-              <div id="BIreport-${report.id}" report-title="${report.reportTitle}" class="reportSection [#if report?index == 0]current[/#if]">
+              <div id="BIreport-${report.id}" report-title="${report.reportTitle}" class="button-bg col-md-8 col-md-offset-2 reportSection [#if report?index == 0]current[/#if]">
                 <a index="${report?index+1}" class="BIreport-${report.id}" href="">[@s.text name=report.reportName /]</a>
               </div>
           [/#list]
           </div>
-          <span class="setFullScreen">
-            <p class="menu-item-title">Fullscreen</p>
-            <span class="glyphicon reportsButtonsIcon glyphicon-fullscreen" style="color: #1da5ce"></span>
-          </span>
         </div>
         
         [#--  Reports Content --]
-        [#--  <input type="hidden" id="reportTitle-${report.id}" name="reportTitle" value=${report.reportTitle} />  --]
-        <div class="summariesContent col-md-10" style="min-height:550px;">
+        <div class="summariesContent col-md-12" style="min-height:550px;">
           <div class="">
             [#list (biReports)![] as report]
                 <div id="BIreport-${report.id}-contentOptions" class="" style="display:[#if report?index !=0]none[/#if];">
-                  <div id="dashboardContainer-${report.id}" style="height: 720px;"></div>
+                  <div id="dashboardContainer-${report.id}" class="dashboardContainer-${report.id}"></div>
                   <input type="hidden" id="reportName-${report.id}" name="reportName" value=${report.reportName} />
                   <input type="hidden" id="embeUrl-${report.id}" name="embedUrl" value=${report.embedUrl} /> 
                   <input type="hidden" id="reportID-${report.id}" name="reportId" value=${report.reportId} />
