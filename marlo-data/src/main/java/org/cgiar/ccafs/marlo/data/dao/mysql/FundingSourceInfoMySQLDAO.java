@@ -70,6 +70,17 @@ public class FundingSourceInfoMySQLDAO extends AbstractMarloDAO<FundingSourceInf
   }
 
   @Override
+  public List<FundingSourceInfo> findByFinanceCode(String financeCode) {
+    String query = "from " + FundingSourceInfo.class.getName() + " where " + "financeCode = '" + financeCode + "'";
+    List<FundingSourceInfo> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
+
+  }
+
+  @Override
   public FundingSourceInfo save(FundingSourceInfo fundingSourceInfo) {
     if (fundingSourceInfo.getId() == null) {
       fundingSourceInfo = super.saveEntity(fundingSourceInfo);
