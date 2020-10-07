@@ -52,7 +52,12 @@
     
     <div class="showOnLoading">
       [#-- General Information --]
-      <h4 class="headTitle">General information</h4> 
+      <h4 class="headTitle">General information</h4>
+      [#if (action.canAddFunding() && !crpClosed) && action.getActualPhase().editable]
+        <a id="copyDeliverable-${fundingSource.id}" class="copy" href="[@s.url namespace=namespace action="${(crpSession)!}/copy"][@s.param name='fundingSourceID']${fundingSource.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" title="">
+          <img src="${baseUrlCdn}/global/images/duplicate_enabled.png"/> 
+        </a>
+      [/#if]
       <div class="borderBox">
         [#-- Loading --]
         <div class="loading syncBlock" style="display:none"></div>
