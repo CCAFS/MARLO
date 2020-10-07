@@ -59,7 +59,7 @@
          <div class="col-md-4">
          [#if (action.canAddFunding() && !crpClosed) && action.getActualPhase().editable]
             <a id="copyDeliverable-${fundingSource.id}" class="btn btn-default btn-xs duplicate-button" href="[@s.url namespace=namespace action="${(crpSession)!}/copy"][@s.param name='fundingSourceID']${fundingSource.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" title="">
-              Copy Funding Source <img src="${baseUrlCdn}/global/images/duplicate_enabled.png" height="15px"/> 
+              Duplicate Funding Source <img src="${baseUrlCdn}/global/images/duplicate_enabled.png" height="15px"/> 
             </a>
           [/#if]
          </div>
