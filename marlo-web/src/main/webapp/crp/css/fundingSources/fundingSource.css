@@ -113,3 +113,8 @@ textArea.currencyInput {
   min-height: 27px !important;
   height: 27px !important;
 }
+
+.duplicate-button {
+  float:right;
+  margin-top: 5px;
+}

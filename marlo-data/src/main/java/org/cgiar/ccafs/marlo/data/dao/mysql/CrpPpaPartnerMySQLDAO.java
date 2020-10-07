@@ -64,12 +64,14 @@ public class CrpPpaPartnerMySQLDAO extends AbstractMarloDAO<CrpPpaPartner, Long>
   @Override
   public List<CrpPpaPartner> findAll() {
     String query = "from " + CrpPpaPartner.class.getName() + " where is_active=1";
-    List<CrpPpaPartner> list = new ArrayList<>();
+    List<CrpPpaPartner> list;
     list = super.findAll(query);
-    if (list.size() > 0) {
+    if (list != null && !list.isEmpty()) {
+      return list;
+    } else {
+      list = new ArrayList<>();
       return list;
     }
-    return list;
   }
 
   @Override
