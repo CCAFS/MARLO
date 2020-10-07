@@ -592,7 +592,10 @@ public class FundingSourceAction extends BaseAction {
     region = false;
 
     // Regions List
-    regionLists = new ArrayList<>(locElementManager.findAll().stream()
+    List<LocElement> locElement = new ArrayList<>();
+    locElement = locElementManager.findAll();
+
+    regionLists = new ArrayList<>(locElement.stream()
       .filter(le -> le.isActive() && le.getLocElementType() != null && le.getLocElementType().getId() == 1)
       .collect(Collectors.toList()));
     Collections.sort(regionLists, (r1, r2) -> r1.getName().compareTo(r2.getName()));
@@ -603,7 +606,7 @@ public class FundingSourceAction extends BaseAction {
       .collect(Collectors.toList()));
 
     // Country List
-    countryLists = new ArrayList<>(locElementManager.findAll().stream()
+    countryLists = new ArrayList<>(locElement.stream()
       .filter(le -> le.isActive() && le.getLocElementType() != null && le.getLocElementType().getId() == 2)
       .collect(Collectors.toList()));
     Collections.sort(countryLists, (c1, c2) -> c1.getName().compareTo(c2.getName()));
@@ -946,6 +949,8 @@ public class FundingSourceAction extends BaseAction {
           institutions.add(crpPpaPartner.getInstitution());
         }
       }
+      List<Institution> allInstitutions = null;
+      allInstitutions = institutionManager.findAll();
 
       if (fundingSource.getFundingSourceInfo() != null) {
         if (fundingSource.getFundingSourceInfo().getBudgetType() != null) {
@@ -953,9 +958,9 @@ public class FundingSourceAction extends BaseAction {
           if (fundingSource.getFundingSourceInfo().getBudgetType() != null
             && fundingSource.getFundingSourceInfo().getBudgetType().getId() != null
             && fundingSource.getFundingSourceInfo().getBudgetType().getId().longValue() == 4) {
-            List<Institution> allInstitutions = null;
+
             institutionsDonors = new ArrayList<>();
-            allInstitutions = institutionManager.findAll();
+
             for (Institution institutionObject : allInstitutions) {
               // validate if the institutions is PPA
               // if (this.isPPA(institutionObject)) {
@@ -969,14 +974,13 @@ public class FundingSourceAction extends BaseAction {
             if (fundingSource.getFundingSourceInfo().getBudgetType() != null
               && fundingSource.getFundingSourceInfo().getBudgetType().getId() != null
               && fundingSource.getFundingSourceInfo().getBudgetType().getId().longValue() == 1) {
-              institutionsDonors = institutionManager.findAll().stream()
-                .filter(i -> i.isActive() && i.getInstitutionType().getId().intValue() == 3)
-                .collect(Collectors.toList());
+              institutionsDonors =
+                allInstitutions.stream().filter(i -> i.isActive() && i.getInstitutionType().getId().intValue() == 3)
+                  .collect(Collectors.toList());
             } else {
 
               // if the funding source is type bilateral -- institutions are not cgiar center
-              institutionsDonors =
-                institutionManager.findAll().stream().filter(i -> i.isActive()).collect(Collectors.toList());
+              institutionsDonors = allInstitutions.stream().filter(i -> i.isActive()).collect(Collectors.toList());
               // institutionsDonors.removeAll(institutions);
             }
 
@@ -984,8 +988,7 @@ public class FundingSourceAction extends BaseAction {
         } else {
           // if the funding source don't hava a selected type -- institutions are not cgiar center
 
-          institutionsDonors =
-            institutionManager.findAll().stream().filter(i -> i.isActive()).collect(Collectors.toList());
+          institutionsDonors = allInstitutions.stream().filter(i -> i.isActive()).collect(Collectors.toList());
         }
 
         institutions.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
