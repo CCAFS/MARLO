@@ -1,0 +1,174 @@
+.infoTitle{
+    padding: 50px 0px;
+    text-align: center;
+    color: white;
+    font-size: 30px;
+    background-color: rgb(43, 43, 43);
+}
+.leftBar{
+    background-color: blanchedalmond;
+    height: 100vh;
+    width: 350px;
+    display: inline-block;
+}
+
+.righBody{
+    
+    display: inline-block;
+    width: calc(100% - 350px);
+    margin-left: 350px;
+    padding: 80px;
+    height: 100%;
+  
+}
+
+.section h1.title{
+    text-align: center;
+   
+        font-size: 40px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        padding-bottom: 0;
+        color: #5c768d;
+    
+}
+pre code {
+    background-color: #1f1f1f;
+    /* border: 1px solid #999; */
+    display: block;
+    /* padding: 20px; */
+    border-radius: 0px 0px 10px 10px;
+    position: relative;
+  
+}
+.infoCode{
+    padding: 10px;
+    border-radius: 10px 10px 0px 0px;
+    /* position: relative;
+    top: 12px; */
+    background-color: #615f5f;
+    width: 100%;
+    /* height: 50px; */
+    color: white;
+}
+
+
+.infoCode p{
+   margin: 0;
+}
+code { 
+    font-family: monospace;
+  }
+
+h2{
+   text-align: center;
+        font-size: 32px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        padding-bottom: 0;
+        color: #5c768d;
+   
+}
+
+.row.noSpace{
+    margin: 0 !important;
+}
+
+.leftBarFixed{
+   position: fixed;
+   background-color: #f5f9fc;
+   /* right: 0; */
+    height: 100vh;
+    width: 350px;
+    box-shadow: 0px 0px 16px rgba(0, 0, 0, 0.205);
+    transition: all .3s ease-in-out;
+}
+
+
+.bshadow{
+    box-shadow: 0px 0 16px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    height: 500px;
+    margin-top: 50px;
+    padding: 50px 0px;
+}
+
+
+
+
+.btn-primary.focus, button:focus {
+    outline: none !important;
+}
+
+
+.collapsible {
+    box-shadow: 0px 0 16px rgba(0, 0, 0, 0.1);
+    background-color: rgb(255, 255, 255);
+    color: rgb(37, 37, 37);
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 15px;
+  }
+  
+  .active, .collapsible:hover {
+    background-color: rgb(231, 231, 231);
+  }
+  
+  .content {
+    padding: 0 18px;
+    display: none;
+    overflow: hidden;
+    background-color: #f1f1f1;
+  }
+
+  .content p {
+      font-size: 12px;
+      margin-left: 10px;
+      font-weight: bold;
+  }
+
+  .content p span {
+    font-size: 15px;
+
+}
+
+
+
+  .getColor{
+    color: #3baf26;
+}
+
+.postColor{
+    color: #45a7f8;
+}
+
+
+
+.varibaleColor{
+    color: #c27e00;
+}
+
+.section{
+    padding-top: 50px;
+    width: 100%;
+    /* height: 1000px; */
+}html {
+    scroll-behavior: smooth;
+  }
+  
+
+  .blueCode{
+      color: #4fc3e2;
+  }
+
+  .WhiteCode{
+    color: white;
+}
+
+.yellowCode{
+    color: rgb(255, 230, 0);
+}
