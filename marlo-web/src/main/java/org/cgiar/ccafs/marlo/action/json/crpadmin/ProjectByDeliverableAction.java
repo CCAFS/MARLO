@@ -66,10 +66,13 @@ public class ProjectByDeliverableAction extends BaseAction {
 
       projectMap = new HashMap<>();
       projectMap.put("id", project.getId());
-      if (phase != null) {
+      if (phase != null && project.getProjecInfoPhase(phase) != null) {
         projectMap.put("title", project.getProjecInfoPhase(phase).getTitle());
       }
-      projects.add(projectMap);
+
+      if (projectMap != null && !projectMap.isEmpty()) {
+        projects.add(projectMap);
+      }
     }
 
     return SUCCESS;
