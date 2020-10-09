@@ -5,12 +5,14 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,15 +41,17 @@ public class ProjectByDeliverableAction extends BaseAction {
   private DeliverableManager deliverableManager;
   private ProjectManager projectManager;
   private PhaseManager phaseManager;
+  private ProjectInfoManager projectInfoManager;
 
 
   @Inject
   public ProjectByDeliverableAction(APConfig config, DeliverableManager deliverableManager,
-    ProjectManager projectManager, PhaseManager phaseManager) {
+    ProjectManager projectManager, PhaseManager phaseManager, ProjectInfoManager projectInfoManager) {
     super(config);
     this.deliverableManager = deliverableManager;
     this.projectManager = projectManager;
     this.phaseManager = phaseManager;
+    this.projectInfoManager = projectInfoManager;
   }
 
 
@@ -59,23 +63,23 @@ public class ProjectByDeliverableAction extends BaseAction {
 
     if (deliverable != null && deliverable.getProject() != null && deliverable.getProject().getId() != null) {
       Map<String, Object> projectMap;
+      projects = new ArrayList<>();
       Project project = projectManager.getProjectById(deliverable.getProject().getId());
-      if (deliverablePhase != 0) {
-        phase = phaseManager.getPhaseById(deliverablePhase);
-      }
+      phase = phaseManager.getPhaseById(deliverablePhase);
 
-      projectMap = new HashMap<>();
-      projectMap.put("id", project.getId());
-      if (phase != null && project.getProjecInfoPhase(phase) != null) {
-        projectMap.put("title", project.getProjecInfoPhase(phase).getTitle());
-      }
-
-      if (projectMap != null && !projectMap.isEmpty()) {
+      if (deliverablePhase != 0 && project != null && phase != null) {
+        projectMap = new HashMap<>();
+        projectMap.put("id", project.getId());
+        project.setProjectInfo(projectInfoManager.getProjectInfoByProjectPhase(project.getId(), phase.getId()));
+        if (project.getProjectInfo() != null) {
+          projectMap.put("title", project.getProjecInfoPhase(phase).getTitle());
+        }
         projects.add(projectMap);
       }
     }
 
     return SUCCESS;
+
   }
 
   public long getDeliverablePhase() {
