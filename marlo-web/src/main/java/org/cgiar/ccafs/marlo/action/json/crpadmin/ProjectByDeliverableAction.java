@@ -65,9 +65,9 @@ public class ProjectByDeliverableAction extends BaseAction {
       Map<String, Object> projectMap;
       projects = new ArrayList<>();
       Project project = projectManager.getProjectById(deliverable.getProject().getId());
-      phase = phaseManager.getPhaseById(deliverablePhase);
+      phase = this.getActualPhase();
 
-      if (deliverablePhase != 0 && project != null && phase != null) {
+      if (phase != null && project != null && phase != null) {
         projectMap = new HashMap<>();
         projectMap.put("id", project.getId());
         project.setProjectInfo(projectInfoManager.getProjectInfoByProjectPhase(project.getId(), phase.getId()));
@@ -95,7 +95,6 @@ public class ProjectByDeliverableAction extends BaseAction {
     Map<String, Parameter> parameters = this.getParameters();
     selectedDelivearbleID =
       Long.parseLong(StringUtils.trim(parameters.get(APConstants.DELIVERABLE_ID).getMultipleValues()[0]));
-    deliverablePhase = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0]));
   }
 
   public void setDeliverablePhase(long deliverablePhase) {
