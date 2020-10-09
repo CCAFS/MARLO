@@ -34,13 +34,11 @@ public class ProjectByDeliverableAction extends BaseAction {
 
   // Parameters
   private List<Map<String, Object>> projects;
-  private long selectedDelivearbleID;
-  private long deliverablePhase;
+  private long selectedDeliverableID;
 
   // Managers
   private DeliverableManager deliverableManager;
   private ProjectManager projectManager;
-  private PhaseManager phaseManager;
   private ProjectInfoManager projectInfoManager;
 
 
@@ -50,7 +48,6 @@ public class ProjectByDeliverableAction extends BaseAction {
     super(config);
     this.deliverableManager = deliverableManager;
     this.projectManager = projectManager;
-    this.phaseManager = phaseManager;
     this.projectInfoManager = projectInfoManager;
   }
 
@@ -58,7 +55,7 @@ public class ProjectByDeliverableAction extends BaseAction {
   @Override
   public String execute() throws Exception {
 
-    Deliverable deliverable = deliverableManager.getDeliverableById(selectedDelivearbleID);
+    Deliverable deliverable = deliverableManager.getDeliverableById(selectedDeliverableID);
     Phase phase = null;
 
     if (deliverable != null && deliverable.getProject() != null && deliverable.getProject().getId() != null) {
@@ -67,9 +64,10 @@ public class ProjectByDeliverableAction extends BaseAction {
       Project project = projectManager.getProjectById(deliverable.getProject().getId());
       phase = this.getActualPhase();
 
-      if (phase != null && project != null && phase != null) {
+      if (phase != null && project != null) {
         projectMap = new HashMap<>();
-        projectMap.put("id", project.getId());
+        projectMap.put("phaseID", phase.getId());
+        projectMap.put("projectID", project.getId());
         project.setProjectInfo(projectInfoManager.getProjectInfoByProjectPhase(project.getId(), phase.getId()));
         if (project.getProjectInfo() != null) {
           projectMap.put("title", project.getProjecInfoPhase(phase).getTitle());
@@ -82,10 +80,6 @@ public class ProjectByDeliverableAction extends BaseAction {
 
   }
 
-  public long getDeliverablePhase() {
-    return deliverablePhase;
-  }
-
   public List<Map<String, Object>> getProjects() {
     return projects;
   }
@@ -93,12 +87,8 @@ public class ProjectByDeliverableAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
     Map<String, Parameter> parameters = this.getParameters();
-    selectedDelivearbleID =
+    selectedDeliverableID =
       Long.parseLong(StringUtils.trim(parameters.get(APConstants.DELIVERABLE_ID).getMultipleValues()[0]));
-  }
-
-  public void setDeliverablePhase(long deliverablePhase) {
-    this.deliverablePhase = deliverablePhase;
   }
 
   public void setProjects(List<Map<String, Object>> projects) {
