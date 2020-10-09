@@ -226,13 +226,14 @@ public class ExpendituresItem<T> {
       fieldErrors.add(new FieldErrorDTO("createExpenditure", "GlobalUnitEntity",
         entityAcronym + " is an invalid CGIAR entity acronym"));
     }
-    Phase phase =
-      this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(entityAcronym)
-        && c.getYear() == year && c.getName().equalsIgnoreCase(stringPhase)).findFirst().orElse(null);
+    Phase phase = this.phaseManager.findAll().stream()
+      .filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(entityAcronym)
+        && c.getYear() >= APConstants.CLARISA_AVALIABLE_INFO_YEAR && c.getYear() == year
+        && c.getName().equalsIgnoreCase(stringPhase))
+      .findFirst().orElse(null);
 
     if (phase == null) {
-      fieldErrors.add(new FieldErrorDTO("createExpenditure", "phase",
-        new NewProjectPolicyDTO().getPhase().getYear() + " is an invalid year"));
+      fieldErrors.add(new FieldErrorDTO("createExpenditure", "phase", year + " is an invalid year"));
     }
     // validate errors
     if (fieldErrors.isEmpty()) {

@@ -18,7 +18,9 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.CrpPpaPartnerDAO;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -62,11 +64,37 @@ public class CrpPpaPartnerMySQLDAO extends AbstractMarloDAO<CrpPpaPartner, Long>
   @Override
   public List<CrpPpaPartner> findAll() {
     String query = "from " + CrpPpaPartner.class.getName() + " where is_active=1";
-    List<CrpPpaPartner> list = super.findAll(query);
-    if (list.size() > 0) {
+    List<CrpPpaPartner> list;
+    list = super.findAll(query);
+    if (list != null && !list.isEmpty()) {
+      return list;
+    } else {
+      list = new ArrayList<>();
       return list;
     }
-    return null;
+  }
+
+  @Override
+  public List<CrpPpaPartner> findByCrpAndPhase(long crpID, long phaseID) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT id FROM crp_ppa_partners");
+    query.append("WHERE crp_ppa_partners.id_phase = ");
+    query.append(phaseID);
+    query.append("AND crp_ppa_partners.global_unit_id = ");
+    query.append(crpID);
+    query.append("AND crp_ppa_partners.is_active = 1");
+
+    List<Map<String, Object>> list = super.findCustomQuery(query.toString());
+
+    List<CrpPpaPartner> crpPpaPartners = new ArrayList<>();
+
+    if (list != null && !list.isEmpty()) {
+      for (Map<String, Object> map : list) {
+        CrpPpaPartner crpPpaPartner = this.find(Long.parseLong(map.get("id").toString()));
+        crpPpaPartners.add(crpPpaPartner);
+      }
+    }
+    return crpPpaPartners;
   }
 
   @Override

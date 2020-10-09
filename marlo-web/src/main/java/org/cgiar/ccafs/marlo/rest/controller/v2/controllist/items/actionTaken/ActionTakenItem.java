@@ -226,13 +226,14 @@ public class ActionTakenItem<T> {
       fieldErrors.add(new FieldErrorDTO("updateActionTaken", "GlobalUnitEntity",
         entityAcronym + " is an invalid CGIAR entity acronym"));
     }
-    Phase phase =
-      this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(entityAcronym)
-        && c.getYear() == year && c.getName().equalsIgnoreCase(stringPhase)).findFirst().get();
+    Phase phase = this.phaseManager.findAll().stream()
+      .filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(entityAcronym)
+        && c.getYear() >= APConstants.CLARISA_AVALIABLE_INFO_YEAR && c.getYear() == year
+        && c.getName().equalsIgnoreCase(stringPhase))
+      .findFirst().orElse(null);
 
     if (phase == null) {
-      fieldErrors.add(new FieldErrorDTO("updateActionTaken", "phase",
-        new NewProjectPolicyDTO().getPhase().getYear() + " is an invalid year"));
+      fieldErrors.add(new FieldErrorDTO("updateActionTaken", "phase", year + " is an invalid year"));
     }
     if (fieldErrors.isEmpty()) {
       LiaisonInstitution liaisonInstitution =

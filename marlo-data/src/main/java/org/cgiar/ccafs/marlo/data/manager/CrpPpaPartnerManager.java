@@ -51,6 +51,15 @@ public interface CrpPpaPartnerManager {
    */
   public List<CrpPpaPartner> findAll();
 
+  /**
+   * This method gets a crpPpaPartner object by a given crpParameter identifier.
+   * 
+   * @param phaseId is the phase identifier.
+   * @param crpId is the crp identifier.
+   * @return a CrpPpaPartner list.
+   */
+  public List<CrpPpaPartner> findByCrpAndPhase(long crpID, long phaseID);
+
 
   /**
    * This method gets a crpPpaPartner object by a given crpParameter identifier.
