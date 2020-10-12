@@ -797,6 +797,8 @@ public final class APConstants {
 
   public static final String CRP_EMAIL_NOTIFICATIONS = "crp_enable_email_notification";
 
+  public static final int CLARISA_AVALIABLE_INFO_YEAR = 2018;
+
   public static String getFilterBy() {
     return FILTER_BY;
   }
