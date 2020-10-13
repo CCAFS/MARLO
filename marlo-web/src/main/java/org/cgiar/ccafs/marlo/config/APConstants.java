@@ -48,6 +48,7 @@ public final class APConstants {
   public static final String CRP_CLOSED = "crp_closed";
   public static final String CRP_CLUSTER_ACTIVITY_ID = "clusterActivityID";
   public static final String CRP_CU = "crp_cu";
+  public static final String CRP_COVID_REQUIRED = "crp_covid_required";
 
   public static final String CRP_CUSTOM_FILE = "crp_custom_file";
   public static final String CRP_CUSTOM_GENDER = "crp_custom_gender";
