@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ProjectImpacts;
@@ -58,6 +59,7 @@ public class ProjectImpactsValidator extends BaseValidator {
 
   public void validate(BaseAction action, ProjectImpacts projectImpacts, boolean saving) {
     action.setInvalidFields(new HashMap<>());
+
     if (!saving) {
       Path path = this.getAutoSaveFilePath(projectImpacts, action.getCrpID(), action);
 
@@ -66,7 +68,9 @@ public class ProjectImpactsValidator extends BaseValidator {
       }
     }
 
-    this.validateImpacts(action, projectImpacts);
+    if (action.hasSpecificities(APConstants.CRP_COVID_REQUIRED)) {
+      this.validateImpacts(action, projectImpacts);
+    }
 
     if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));
@@ -77,7 +81,6 @@ public class ProjectImpactsValidator extends BaseValidator {
 
     this.saveMissingFields(projectImpacts, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
       action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.IMPACTS.getStatus(), action);
-
   }
 
   private void validateImpacts(BaseAction action, ProjectImpacts projectImpacts) {
