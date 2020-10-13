@@ -105,6 +105,7 @@
         <a href="#section1-item1" > <button type="button" class="subCollapsible">CGIAR entities <span class="getColor">GET</span></button></a>
         <a href="#section1-item2" > <button type="button" class="subCollapsible">CGIAR entities Types <span class="getColor">GET</span></button></a>
         <a href="#section1-item3" > <button type="button" class="subCollapsible">Official list of Countries <span class="getColor">GET</span></button></a>
+        <a href="#section1-item4" > <button type="button" class="subCollapsible">Official list of Regions <span class="getColor">GET</span></button></a>
       </div>
       <a href="#section2" class="collap"> <button type="button" class="collapsible" href="#section2">Institutions</button></a>
       <div class="content">
@@ -128,7 +129,7 @@
             <div class="row">
               <div class="col-12">
                 <h2>Summary</h2>
-                <p>The Services below correspond to general control lists that will be useful to unify and standardize codes across all CGIAR applications.</p>
+                <p>The list of REST-API services below contains some of the most important general control lists identified by the Management Information Systems during the Annual Reporting process and that can also be used to standardize and provide interoperability across any other CGIAR platforms.</p>
                 <h2 class="title">Methods</h2>
                 <!-- METHOD 1 -->
                 <div class="bshadow" data-aos="fade-up" id="section1-item1">
@@ -138,7 +139,7 @@
                   </div>
                   <div class="parameters">
                     <h3>Functionality</h3>
-                    <div>Official list of CGIAR Centers, CGIAR Research Programs (CRPs) and CGIAR Platforms (PTFs). </div>
+                    <div>This list contains the official list of CGIAR Centers, CGIAR Research Programs (CRPs), and CGIAR Platforms (PTFs). It also contains the list of Entities that are no longer active now.</div>
                     <h3>Parameters</h3>
                     <table style="width: 70%">
                       <thead>
@@ -230,7 +231,7 @@
                   </div>
                   <div class="parameters">
                     <h3>Functionality</h3>
-                    <div>View all CGIAR entities Types</div>
+                    <div>This list contains the types of entities we have currently in the CGIAR. So far, we have the CGIAR Research Programs, platforms, and Centers. </div>
                     <h3>Parameters</h3>
                     <div>No parameters</div>
                   </div>
@@ -257,7 +258,7 @@
                             <p>State code: <span class="redCode2">400</span></p>
                           </div>
                           <pre><code>
-                              <span class="redCode">Bad Request</span>
+<span class="redCode">Bad Request</span>
                             </code></pre>
                         </div>
                       </div>
@@ -267,7 +268,7 @@
                             <p>State code: <span class="redCode2">401</span></p>
                           </div>
                           <pre><code>
-                            <span class="redCode">Unauthorized</span>
+<span class="redCode">Unauthorized</span>
                           </code></pre>
                         </div>
                       </div>
@@ -277,7 +278,7 @@
                             <p>State code: <span class="redCode2">403</span></p>
                           </div>
                           <pre><code>
-                            <span class="redCode">Forbidden</span>
+<span class="redCode">Forbidden</span>
                           </code></pre>
                         </div>
                       </div>
@@ -287,7 +288,7 @@
                             <p>State code: <span class="redCode2">404</span></p>
                           </div>
                           <pre><code>
-                            <span class="redCode">Not Found</span>
+<span class="redCode">Not Found</span>
                           </code></pre>
                         </div>
                       </div>
@@ -302,7 +303,7 @@
                   </div>
                   <div class="parameters">
                     <h3>Functionality</h3>
-                    <div>This is the official list of countries according to the iso 3166 standard. The response for each country includes: the name, the alpha 2 code and the region of the UN49 standard to which it belongs.
+                    <div>This list contains all the countries and is following the <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank">ISO-3166 standard</a>. The data includes the country names in English, alpha-2 code, and the associated Region according to the <a href="https://unstats.un.org/unsd/methodology/m49/" target="_blank" >UN49 standard</a>.
                     </div>
                     <h3>Parameters</h3>
                     <div>No parameters</div>
@@ -339,7 +340,7 @@
                             <p>State code: <span class="redCode2">400</span></p>
                           </div>
                           <pre><code>
-                              <span class="redCode">Bad Request</span>
+<span class="redCode">Bad Request</span>
                             </code></pre>
                         </div>
                       </div>
@@ -349,7 +350,7 @@
                             <p>State code: <span class="redCode2">401</span></p>
                           </div>
                           <pre><code>
-                            <span class="redCode">Unauthorized</span>
+<span class="redCode">Unauthorized</span>
                           </code></pre>
                         </div>
                       </div>
@@ -359,7 +360,7 @@
                             <p>State code: <span class="redCode2">403</span></p>
                           </div>
                           <pre><code>
-                            <span class="redCode">Forbidden</span>
+<span class="redCode">Forbidden</span>
                           </code></pre>
                         </div>
                       </div>
@@ -369,7 +370,85 @@
                             <p>State code: <span class="redCode2">404</span></p>
                           </div>
                           <pre><code>
-                            <span class="redCode">Not Found</span>
+<span class="redCode">Not Found</span>
+                          </code></pre>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- METHOD 4 -->
+                <div class="bshadow" data-aos="fade-up" id="section1-item4">
+                  <div class="getColorbackground contEndpoint">
+                    <button type="button" class="btn getColorbackground">GET</button> <span
+                      class="endpointTitle">/un-regions</span>
+                  </div>
+                  <div class="parameters">
+                    <h3>Functionality</h3>
+                    <div>Although there are several standards for the list of regions, we decided to adopt the <a href="https://unstats.un.org/unsd/methodology/m49/" target="_blank" >UN49 standard</a>.
+                    </div>
+                    <h3>Parameters</h3>
+                    <div>No parameters</div>
+                  </div>
+                  <div class="container-c">
+                    <div class="row">
+                      <div class="col-12">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="greenCode">200</span>: <span class="blueCode">OK</span> </p>
+                          </div>
+                          <pre><code>
+<span class="yellowCode">[</span>
+  <span class="yellowCode">{</span>
+    <span class="blueCode">"um49Code"</span><span class="WhiteCode"> : 0,</span>
+    <span class="blueCode">"name"</span><span class="WhiteCode"> : "string",</span>
+    <span class="blueCode">"parentRegion"</span><span class="yellowCode"> : {</span>
+      <span class="blueCode">"um49Code"</span><span class="WhiteCode"> : 0,</span>
+      <span class="blueCode">"name"</span><span class="WhiteCode"> : "string"</span>
+    <span class="yellowCode">}</span> 
+  <span class="yellowCode">}</span>
+<span class="yellowCode">]</span>
+                            </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">400</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Bad Request</span>
+                            </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">401</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Unauthorized</span>
+                          </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">403</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Forbidden</span>
+                          </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">404</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Not Found</span>
                           </code></pre>
                         </div>
                       </div>
@@ -414,7 +493,7 @@
                   </div>
                   <div class="parameters">
                     <h3>Functionality</h3>
-                    <div>View a list of all institutions</div>
+                    <div>This is a worldwide list of institutions that have been related to CGIAR activities as funders, leaders, partners, and/or contributors. This list reflects the information consolidated by some of the CGIAR Management Information Systems and external sources (i.e. MARLO and MEL). </div>
                     <h3>Parameters</h3>
                     <div>No parameters</div>
                   </div>
@@ -464,7 +543,7 @@
                             <p>State code: <span class="redCode2">400</span></p>
                           </div>
                           <pre><code>
-                              <span class="redCode">Bad Request</span>
+<span class="redCode">Bad Request</span>
                             </code></pre>
                         </div>
                       </div>
@@ -474,7 +553,7 @@
                             <p>State code: <span class="redCode2">401</span></p>
                           </div>
                           <pre><code>
-                            <span class="redCode">Unauthorized</span>
+<span class="redCode">Unauthorized</span>
                           </code></pre>
                         </div>
                       </div>
@@ -484,7 +563,7 @@
                             <p>State code: <span class="redCode2">403</span></p>
                           </div>
                           <pre><code>
-                            <span class="redCode">Forbidden</span>
+<span class="redCode">Forbidden</span>
                           </code></pre>
                         </div>
                       </div>
@@ -494,7 +573,7 @@
                             <p>State code: <span class="redCode2">404</span></p>
                           </div>
                           <pre><code>
-                            <span class="redCode">Not Found</span>
+<span class="redCode">Not Found</span>
                           </code></pre>
                         </div>
                       </div>
