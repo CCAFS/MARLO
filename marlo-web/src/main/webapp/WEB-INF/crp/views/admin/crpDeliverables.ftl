@@ -2,7 +2,7 @@
 [#assign title = "MARLO Deliverables" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/marloDeliverables.js?20201509" ] /]
+[#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/marloDeliverables.js?20201410" ] /]
 [#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css" ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "crpDeliverables" /]
@@ -49,7 +49,7 @@
                 <div class="selectList">   
                   <select name="deliverableID" id="deliverableID">
                     [#list deliverables as deliverable ]
-                      <option value="${(deliverable.id)!}" selected>D${(deliverable.id)!} (P${(deliverable.project.id)!}) - ${(deliverable.deliverableInfo.title)!}</option>
+                      <option value="${(deliverable.id)!}">D${(deliverable.id)!} (P${(deliverable.project.id)!}) - ${(deliverable.deliverableInfo.title)!}</option>
                     [/#list]  
                   </select>
                 </div>
@@ -58,12 +58,13 @@
             </div>
         
            
-        
+            [#if action.canAccessSuperAdmin()]
+          
             <div class="col-md-12 ma-bot">
               [@customForm.radioFlat id="anotherPhase" name="moveToSelection" label="Move to another phase" value="phase"
               checked=false cssClassLabel="radio-label-yes"/]
             </div>
-        
+            [/#if]
             <div id="anotherPhaseContent" class="row col-md-12 ma-bot">
         
               <div class="col-md-6">
@@ -81,7 +82,7 @@
                 <div class="selectList">   
                   <select name="phaseID" id="phaseID">
                     [#list phases as phase ]
-                      <option value="${phase.id}" selected>${phase.name} - ${phase.year} </option>
+                      <option value="${phase.id}" >${phase.name} - ${phase.year} </option>
                     [/#list]  
                   </select>
                 </div>
@@ -101,8 +102,7 @@
                 <label for="" class="title">
                   Current project:
                 </label>
-                <!-- <h1>Current project:</h1> -->
-                <div id="currentProject">P${(deliverables[0].project.id)!} - ${(deliverables[0].project.projectInfo.title)!}</div>
+                <p id="currentProject">P${(deliverables[0].project.id)!} - ${(deliverables[0].project.projectInfo.title)!}</p>
               </div>
         
               <div class="col-md-6">
@@ -113,7 +113,7 @@
                   <div class="selectList">   
                     <select name="projectID" id="projectID">
                       [#list projects as project ]
-                        <option value="${project.id}" selected>P${project.id} - ${(project.projectInfo.title)!}</option>
+                        <option value="${project.id}" >P${project.id} - ${(project.projectInfo.title)!}</option>
                       [/#list]  
                     </select>
                   </div>
