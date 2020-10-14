@@ -77,8 +77,9 @@ function executePetition(idReport) {
 // Set the report title and description
 function setReportTitle() {
   var reportTitle = $("div[class$='current']").attr("report-title");
-  $('.breadcrumb .active').text(reportTitle + '');
-  $('.headTitle.text-left').text(reportTitle + '');
+  console.log(reportTitle + '')
+  // $('.breadcrumb .active').text(reportTitle + '');
+  $('.headTitle.text-center').text(reportTitle + '');
 }
 
 // Embed Dashboard
@@ -197,7 +198,7 @@ function removeNavPanel(contentId) {
   const newSettings = {
     panes: {
       pageNavigation: {
-        visible: false
+        visible: true
       }
     },
     layoutType: models.LayoutType.Custom,
@@ -230,8 +231,6 @@ function removeNavPanel(contentId) {
   var reportId = contentId.split('BIreport-')[1];
   report.getPages().then(function (pages) {
     pages[0].hasLayout(models.LayoutType.MobilePortrait).then(function (hasLayout) {
-      console.log(pages[0], pages[0].defaultSize.height, reportId)
-      // `${environment['config'].apiUrl}/users/authenticate`
       $("#dashboardContainer-" + reportId).css("height", (pages[0].defaultSize.height + 100) + 'px');
     })
   });
