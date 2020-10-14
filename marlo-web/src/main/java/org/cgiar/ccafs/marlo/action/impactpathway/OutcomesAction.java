@@ -1037,7 +1037,8 @@ public class OutcomesAction extends BaseAction {
         } else {
           // what if somehow the incoming subIdo has an id BUT it does not exist in the DB? Edge case, but still...
           outcomeSubIdo = crpOutcomeSubIdoManager.getCrpOutcomeSubIdoById(incomingOutcomeSubIdo.getId());
-          if (!outcomeSubIdo.getSrfSubIdo().equals(incomingOutcomeSubIdo.getSrfSubIdo())) {
+          if (outcomeSubIdo.getSrfSubIdo() == null
+            || !outcomeSubIdo.getSrfSubIdo().equals(incomingOutcomeSubIdo.getSrfSubIdo())) {
             // srf sub ido was updated, deactivate every outcome sub ido from this phase
             crpOutcomeSubIdoManager.deleteCrpOutcomeSubIdo(outcomeSubIdo.getId());
             outcomeSubIdo = crpOutcomeSubIdoManager.getCrpOutcomeSubIdoById(outcomeSubIdo.getId());

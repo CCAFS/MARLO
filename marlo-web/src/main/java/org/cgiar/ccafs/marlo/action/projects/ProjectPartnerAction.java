@@ -148,8 +148,10 @@ public class ProjectPartnerAction extends BaseAction {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
     int bytesRead;
-    while ((bytesRead = stream.read(buffer)) != -1) {
-      baos.write(buffer, 0, bytesRead);
+    if (buffer != null) {
+      while ((bytesRead = stream.read(buffer)) != -1) {
+        baos.write(buffer, 0, bytesRead);
+      }
     }
     return baos.toByteArray();
   }

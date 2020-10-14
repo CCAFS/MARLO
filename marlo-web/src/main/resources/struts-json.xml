@@ -603,6 +603,14 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		<action name="getProjectByDeliverable"
+      class="org.cgiar.ccafs.marlo.action.json.crpadmin.ProjectByDeliverableAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
 
 		<action name="getActivitiesByPhase"
 			class="org.cgiar.ccafs.marlo.action.json.superadmin.bulkreplication.ActivitiesByPhaseAction">
