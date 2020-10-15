@@ -223,7 +223,95 @@ public class FinancialSummaryItem<T> {
       if (liaisonInstitution == null) {
         fieldErrors.add(new FieldErrorDTO("updateExpenditure", "LiaisonInstitution", "invalid liaison institution"));
       } else {
+        ReportSynthesis reportSynthesis =
+          reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
+        if (reportSynthesis == null) {
+          fieldErrors.add(new FieldErrorDTO("updateExpenditure", "ReportSynthesis", "There is not Sysnthesis report"));
+        } else {
+          ReportSynthesisFinancialSummary reportSynthesisFinancialSummary =
+            reportSynthesisFinancialSummaryManager.getReportSynthesisFinancialSummaryById(reportSynthesis.getId());
+          if (reportSynthesisFinancialSummary == null) {
+            fieldErrors
+              .add(new FieldErrorDTO("updateExpenditure", "ReportSynthesis", "There is not Financial Summary"));
+          } else {
+            // modify financial summary
+            reportSynthesisFinancialSummary.setModifiedBy(user);
+            reportSynthesisFinancialSummary.setNarrative(financialSummary.getNarrative());
+            reportSynthesisFinancialSummary = reportSynthesisFinancialSummaryManager
+              .saveReportSynthesisFinancialSummary(reportSynthesisFinancialSummary);
+            id = reportSynthesisFinancialSummary.getId();
+            List<ReportSynthesisFinancialSummaryBudget> summaryBudgetList =
+              new ArrayList<ReportSynthesisFinancialSummaryBudget>();
+            for (NewFinancialSummaryBudgetDTO budgets : financialSummary.getFlagshipSummaryBudgets()) {
+              CrpProgram flagship = crpProgramManager.getCrpProgramBySmoCode("" + budgets.getFlagshipID());
+              if (flagship != null && flagship.getProgramType() == 1) {
+                LiaisonInstitution liaisonInstitutionFlagship =
+                  liaisonInstitutionManager.findByAcronymAndCrp(flagship.getAcronym(), globalUnitEntity.getId());
+                boolean found = false;
+                for (ReportSynthesisFinancialSummaryBudget financialSummaryBudget : reportSynthesisFinancialSummary
+                  .getReportSynthesisFinancialSummaryBudgets().stream().filter(c -> c.isActive())
+                  .collect(Collectors.toList())) {
+                  if (financialSummaryBudget.getLiaisonInstitution().getId()
+                    .equals(liaisonInstitutionFlagship.getId())) {
+                    found = true;
+                    ReportSynthesisFinancialSummaryBudget financialSummaryBudgetUpdate = financialSummaryBudget;
+                    financialSummaryBudgetUpdate.setModifiedBy(user);
+                    financialSummaryBudgetUpdate.setW3Actual(budgets.getPlannedBudgetW3Bilateral());
+                    financialSummaryBudgetUpdate.setW3Planned(budgets.getPlannedBudgetW3Bilateral());
+                    financialSummaryBudgetUpdate.setW1Actual(budgets.getActualExpenditureW1W2());
+                    financialSummaryBudgetUpdate.setW1Planned(budgets.getPlannedBudgetW1W2());
+                    financialSummaryBudgetUpdate.setComments(budgets.getComments());
+                    summaryBudgetList.add(financialSummaryBudgetUpdate);
+                  }
+                }
+                if (!found) {
+                  ReportSynthesisFinancialSummaryBudget flagshipSummaryBudget =
+                    new ReportSynthesisFinancialSummaryBudget();
+                  flagshipSummaryBudget.setLiaisonInstitution(liaisonInstitutionFlagship);
+                  flagshipSummaryBudget.setReportSynthesisFinancialSummary(reportSynthesisFinancialSummary);
+                  flagshipSummaryBudget.setCreatedBy(user);
+                  flagshipSummaryBudget.setW3Actual(budgets.getPlannedBudgetW3Bilateral());
+                  flagshipSummaryBudget.setW3Planned(budgets.getPlannedBudgetW3Bilateral());
+                  flagshipSummaryBudget.setW1Actual(budgets.getActualExpenditureW1W2());
+                  flagshipSummaryBudget.setW1Planned(budgets.getPlannedBudgetW1W2());
+                  flagshipSummaryBudget.setComments(budgets.getComments());
+                  summaryBudgetList.add(flagshipSummaryBudget);
+                }
+              }
+              // update or create new flagship budgets
+              for (ReportSynthesisFinancialSummaryBudget financialSumaryBudgets : summaryBudgetList) {
+                reportSynthesisFinancialSummaryBudgetManager
+                  .saveReportSynthesisFinancialSummaryBudget(financialSumaryBudgets);
+              }
 
+            }
+            // delete flagship budgets
+            List<ReportSynthesisFinancialSummaryBudget> financialSumaryBudgetsToRemove =
+              new ArrayList<ReportSynthesisFinancialSummaryBudget>();
+            for (ReportSynthesisFinancialSummaryBudget financialSumaryBudgets : reportSynthesisFinancialSummary
+              .getReportSynthesisFinancialSummaryBudgets().stream()
+              .filter(c -> c.getLiaisonInstitution() != null && c.isActive()).collect(Collectors.toList())) {
+              boolean found = false;
+              for (NewFinancialSummaryBudgetDTO budgets : financialSummary.getFlagshipSummaryBudgets()) {
+                CrpProgram flagship = crpProgramManager.getCrpProgramBySmoCode("" + budgets.getFlagshipID());
+                if (financialSumaryBudgets.getLiaisonInstitution() != null
+                  && financialSumaryBudgets.getLiaisonInstitution().getCrpProgram().getId().equals(flagship.getId())) {
+                  found = true;
+
+                }
+              }
+              if (!found) {
+                financialSumaryBudgetsToRemove.add(financialSumaryBudgets);
+              }
+            }
+            for (ReportSynthesisFinancialSummaryBudget removeFLBudget : financialSumaryBudgetsToRemove) {
+              reportSynthesisFinancialSummaryBudgetManager
+                .deleteReportSynthesisFinancialSummaryBudget(removeFLBudget.getId());
+            }
+
+            // update or delete other financial budget
+          }
+        }
       }
     }
 
