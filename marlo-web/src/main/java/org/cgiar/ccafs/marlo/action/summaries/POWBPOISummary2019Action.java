@@ -588,7 +588,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
             for (CrpOutcomeSubIdo subIdo : outcome.getSubIdos()) {
               if (subIdo != null && subIdo.getSrfSubIdo() != null) {
                 String primary = "";
-                if (subIdo.getPrimary() == true) {
+                if (subIdo.getPrimary() != null && subIdo.getPrimary()) {
                   primary = " {primary} ";
                 }
                 if (subIDO.isEmpty()) {
