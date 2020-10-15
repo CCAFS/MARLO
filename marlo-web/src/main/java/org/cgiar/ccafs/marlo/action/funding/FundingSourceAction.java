@@ -1451,7 +1451,8 @@ public class FundingSourceAction extends BaseAction {
           .collect(Collectors.toList());
       }
 
-      if (projectBudgets != null && !projectBudgets.isEmpty() && projectBudgets.get(0) != null) {
+      if (projectBudgets != null && !projectBudgets.isEmpty() && projectBudgets.get(0) != null
+        && fundingSource.getFundingSourceInfo().getBudgetType() != null) {
         ProjectBudget projectBudget;
         BudgetType budgetType;
         budgetType = budgetTypeManager.getBudgetTypeById(fundingSource.getFundingSourceInfo().getBudgetType().getId());
