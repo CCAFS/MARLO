@@ -2262,31 +2262,6 @@ h3.contentSubTitle {
   font-weight: lighter;
 }
 
-.headTitle-row-container {
-  display: flex;
-  justify-content: space-around;
-  margin-bottom: 1em;
-}
-
-.headTitle-row-container .header-menu {
-  width: 5%;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-}
-
-.headTitle-row-container .header-menu .menu-item-title {
-  margin: 0;
-}
-
-.reportsButtons {
-  position: absolute;
-  z-index: 99;
-}
-#repportsMenu {
-  display: none;
-}
-
 .button-bg p {
   margin-bottom: 0;
 }

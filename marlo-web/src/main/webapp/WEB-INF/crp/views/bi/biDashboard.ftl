@@ -74,7 +74,7 @@
         <div id="repportsMenu" class="reportsButtons col-md-2">
           <div class="menuList">
           [#list (biReports)![] as report]
-              <div id="BIreport-${report.id}" report-title="${report.reportTitle}" class="button-bg col-md-8 col-md-offset-2 reportSection [#if report?index == 0]current[/#if]">
+              <div id="BIreport-${report.id}" report-title="${report.reportTitle}" class="button-bg col-md-8 col-md-offset-1 reportSection [#if report?index == 0]current[/#if]">
                 <a index="${report?index+1}" class="BIreport-${report.id}" href="">[@s.text name=report.reportName /]</a>
               </div>
           [/#list]
