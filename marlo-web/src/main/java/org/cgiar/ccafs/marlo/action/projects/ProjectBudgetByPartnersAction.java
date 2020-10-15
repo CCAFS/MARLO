@@ -667,7 +667,12 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
-        project = (Project) autoSaveReader.readFromJson(jReader);
+        if (jReader != null) {
+          project = (Project) autoSaveReader.readFromJson(jReader);
+        } else {
+          LOG.error("null jReader in autoSaveReader");
+        }
+
         Project projectDb = projectManager.getProjectById(project.getId());
         project.setProjectInfo(projectDb.getProjecInfoPhase(this.getActualPhase()));
         project.getProjectInfo()
@@ -864,7 +869,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   }
 
   public void saveBudget(ProjectBudget projectBudget, Project projectDB) {
-
     /**
      * If the entity is new we can save it as is.
      */
@@ -890,6 +894,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     projectBudgetDB.setGenderValue(projectBudget.getGenderValue());
     projectBudgetDB.setInstitution(projectBudget.getInstitution());
     projectBudgetDB.setYear(projectBudget.getYear());
+    projectBudgetDB.setRationale(projectBudget.getRationale());
 
     projectBudgetManager.saveProjectBudget(projectBudgetDB);
 
