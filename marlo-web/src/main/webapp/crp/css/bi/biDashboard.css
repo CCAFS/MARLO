@@ -92,3 +92,29 @@ ul.nav li a {
 .containerBI {
   width: 98vw;
 }
+
+
+.headTitle-row-container {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 1em;
+}
+
+.headTitle-row-container .header-menu {
+  width: 5%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.headTitle-row-container .header-menu .menu-item-title {
+  margin: 0;
+}
+
+.reportsButtons {
+  position: absolute;
+  z-index: 99;
+}
+#repportsMenu {
+  display: none;
+}
