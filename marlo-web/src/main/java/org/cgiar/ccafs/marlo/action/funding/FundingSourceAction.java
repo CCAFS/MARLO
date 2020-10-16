@@ -1271,7 +1271,7 @@ public class FundingSourceAction extends BaseAction {
       if (fundingSource.getFundingSourceInfo().getLeadCenter() != null
         && fundingSource.getFundingSourceInfo().getLeadCenter().getId() != null
         && fundingSource.getFundingSourceInfo().getLeadCenter().getId().longValue() != -1) {
-        fundingSourceInfoDB.setOriginalDonor(fundingSource.getFundingSourceInfo().getLeadCenter());
+        fundingSourceInfoDB.setLeadCenter(fundingSource.getFundingSourceInfo().getLeadCenter());
       } else {
         fundingSourceInfoDB.setLeadCenter(null);
       }
