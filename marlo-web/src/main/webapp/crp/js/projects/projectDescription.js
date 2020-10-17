@@ -21,6 +21,8 @@ $(document).ready(function() {
       defaultMaxDateValue: $("#maxDateValue").val()
   });
 
+  $('.previousID').integerInput();
+
   setDisabledCheckedBoxes();
 
   addSelect2();
