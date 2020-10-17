@@ -65,6 +65,15 @@
           
           <h3 class="headTitle">[@s.text name="projectDescription.title" /]</h3>  
           <div id="projectDescription" class="borderBox">
+          
+            [#-- Project Previous Id --]
+            [#if action.hasSpecificities('previous_project_id_field_active') ]
+            <div class="form-group row">
+              <div class="col-md-2">
+                [@customForm.input name="project.projectInfo.previousProjectId" i18nkey="project.previousId" required=false className="previousID" editable=editable && action.hasPermission("title") /]
+              </div>              
+            </div>
+            [/#if]
             
             [#-- Project Title --]
             <div class="form-group">
