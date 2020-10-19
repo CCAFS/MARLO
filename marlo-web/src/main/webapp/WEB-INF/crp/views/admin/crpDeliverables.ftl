@@ -125,93 +125,49 @@
           </div>
         </div>
         
+
+     
+
+
         
-   <!-- <div class="borderBox">
-          <div class="loading" style="display:none"></div>
-          <div class="row grayBox">
-            [#--  Entity  --]
-            <div class="col-md-4">
-              <div class="form-group">
-                [#assign entitiesList = [
-                  { "actionName": "deliverablesReplication",
-                    "i18nkey": "marloBulkReplication.deliverablesReplication",
-                    "service": "getDeliverablesByPhase"
-                  }
-                ] /]
-                <label for="entityID">Entity:</label>
-                <select name="selectedEntityID" id="entityID" class="form-control">
-                  [#list entitiesList as entity ]
-                    <option value="${entity.service}" class="action-${entity.actionName}" [#if actionName == entity.actionName]selected[/#if]>[@s.text name=entity.i18nkey /]</option>
-                  [/#list]
-                </select>
+        <div class="modal fade" id="modalConfirm" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" style="font-size: 20px; font-weight: 700;">Warning</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
               </div>
-            </div>
-            [#-- Global Unit --]
-            <div class="col-md-4">
-              <div class="form-group">
-                <label for="globalUnitID">Global Unit:</label>
-                <select name="selectedGlobalUnitID" id="globalUnitID" class="form-control">
-                  <option value="-1">Select an option...</option>
-                  [#list (crps)![] as globalUnit]<option value="${globalUnit.id}">${globalUnit.acronym}</option>[/#list]
-                </select>
+              <div class="modal-body">
+                <p style="font-size: 17px; font-weight: 500;">
+                  Are you sure you want to perform this action?.</p>
               </div>
-            </div>
-            [#-- PHASE --]
-            <div class="col-md-4">
-              <div class="form-group">
-                <label for="phaseID">Phase:</label>
-                <select name="selectedPhaseID" id="phaseID" class="form-control">
-                  <option value="">Select an option...</option>
-                </select>
-              </div>
-            </div>
-            
-            [#-- PHASE2 --]
-            <div class="col-md-4">
-              <div class="form-group">
-                  [@customForm.select name="phase" value="name" label="Phase" listName="phases" header=true  multiple=false required=true className="form-control" editable=editable || editStatus/]
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                [@s.submit type="button" name="save" cssClass="button-save"]<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Confirm[/@s.submit]                
               </div>
             </div>
           </div>
-          <hr />
-          <div class="form-group">
-            [#-- Filter --]
-            <div class="controls-block row form-group" style="">
-              <div class="col-md-7">
-                <div class="input-group">
-                  <input type="text" id="filterText" class="form-control" placeholder="Filter by IDs...">
-                  <span class="input-group-btn">
-                    <button id="filterButton" class="btn btn-default" type="button">Filter</button>
-                  </span>
-                </div>
-              </div>
-              <div class="col-md-5">
-                <label for="toggleSelectAll" class="pull-right"><input type="checkbox" name="" id="toggleSelectAll" checked="checked"/> Select/Unselect All</label>
-              </div>
-            </div>
-            <small><i> Items Checked: <span class="count">0</span></i></small>
-            <div id="deliverables-checkbox">
-              <table class="table table-hover">
-                <thead>
-                  <tr>
-                    <th class="entityName">[@s.text name="marloBulkReplication.${actionName}" /]</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  [#-- Filled by Javascript --]
-                </tbody>
-              </table>
-            </div>
-          </div>
-          
-        </div> -->
+        </div>
         
         [#-- Section Buttons--]
+
+
         <div class="buttons">
+          <div class="buttons-content">
+           <button type="button" class="button-save" data-toggle="modal" data-target="#modalConfirm">
+            <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>Save
+          </button>          
+         </div>
+        </div>
+        
+
+        <!-- <div class="buttons">
           <div class="buttons-content">
             [@s.submit type="button" name="save" cssClass="button-save"]<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> [@s.text name="form.buttons.save" /][/@s.submit]
           </div>
-        </div>
+        </div> -->
         
         [/@s.form]
       	
