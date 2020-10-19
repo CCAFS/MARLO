@@ -2,7 +2,7 @@
 [#assign title = "MARLO Deliverables" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/marloDeliverables.js?20201410" ] /]
+[#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/marloDeliverables.js?20201910" ] /]
 [#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css" ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "crpDeliverables" /]

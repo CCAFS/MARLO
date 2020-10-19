@@ -79,33 +79,6 @@ function getproject(Id){
     }
 });
 
-
-
-
-console.log(baseURL);
-
-
-$.ajax({
-  url: baseURL + '/api/institutions',
-  type: "GET",
-  beforeSend: function() {
-    // console.log("before");
-  },
-  success: function(r) {
-  // console.log("succes");
-  console.log(r);
-  },
-  error: function(e) {
-  },
-  complete: function() {
-    // console.log("complete");
-  }
-});
-
-
-
-
-
 }
 
 
