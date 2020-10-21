@@ -101,6 +101,9 @@
         <property name="activitiesCSV" type="java.lang.Boolean">
             <column name="activities_csv" />
         </property>
+        <property name="previousProjectId" type="java.lang.Long">
+            <column name="previous_project_id" />
+        </property>
         <many-to-one name="activitiesCSVFile"
         class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
             <column name="activities_csv_file" not-null="false" />
