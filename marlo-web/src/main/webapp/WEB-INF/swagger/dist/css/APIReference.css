@@ -196,7 +196,26 @@ button.getColorbackground {
     color: #fff;
     background-color: #28a745;
     border-color: #28a745;
+    cursor: default !important;
   
+  }
+
+  button.getColorbackground:hover {
+    color: #fff;
+    cursor: default !important;
+  }
+
+  button.getColorbackgroundExample {
+    color: #fff;
+    background-color: #28a745;
+    border-color: #28a745;
+  
+  }
+
+  button.getColorbackgroundExample:hover {
+    color: #fff;
+    background-color: #2fc051;
+    border-color: #2fc252;
   }
 
   
@@ -253,7 +272,7 @@ button.postColorbackground {
 }
 
 .container-c {
-  padding: 100px;
+  padding: 20px 100px 100px 100px;
 }
 
 .endpointTitle {
@@ -265,4 +284,12 @@ button.postColorbackground {
 .param-1:hover + .param-A1 + .param-1 {
   scale: 10px;
   color: #615f5f;
+}
+
+tbody#list-print td{
+  font-size: 13px;
+}
+
+.nomar{
+  margin: 0px;
 }
