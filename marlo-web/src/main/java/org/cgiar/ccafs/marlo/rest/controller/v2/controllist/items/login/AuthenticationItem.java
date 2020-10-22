@@ -20,6 +20,7 @@
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.login;
 
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.UserAutenticationDTO;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -44,12 +45,14 @@ public class AuthenticationItem<T> {
   private static final Logger LOG = LoggerFactory.getLogger(AuthenticationItem.class);
 
   private UserManager userManager;
+  private UserRoleManager userRoleManager;
   private final APConfig config;
 
   @Inject
-  public AuthenticationItem(UserManager userManager, APConfig config) {
+  public AuthenticationItem(UserManager userManager, UserRoleManager userRoleManager, APConfig config) {
     super();
     this.userManager = userManager;
+    this.userRoleManager = userRoleManager;
     this.config = config;
   }
 
@@ -66,41 +69,41 @@ public class AuthenticationItem<T> {
       userAutenticationDTO.setFirst_name(userlogged.getFirstName());
       userAutenticationDTO.setLast_name(userlogged.getLastName());
       userAutenticationDTO.setId(userlogged.getId());
-      if (userlogged.getPassword().equals(md5Pass)) {
+      if (!userlogged.isCgiarUser() && userlogged.getPassword().equals(md5Pass)) {
         userAutenticationDTO.setAuthenticated(true);
       } else {
         userAutenticationDTO.setAuthenticated(false);
-        // try LDPA authentication
-        try {
-          ADConexion con = null;
-          LDAPService service = new LDAPService();
-          if (config.isProduction()) {
-            service.setInternalConnection(false);
-          } else {
-            service.setInternalConnection(true);
-          }
-          con = service.authenticateUser(email, password);
-
-          if (con != null) {
-            if (con.getLogin() != null) {
-              userAutenticationDTO.setAuthenticated(true);
-              // looged.replace(APConstants.LOGIN_STATUS, true);
-              // looged.put(APConstants.LOGIN_MESSAGE, con.getAuthenticationMessage());
+        if (userlogged.isCgiarUser()) {
+          // try LDPA authentication
+          try {
+            ADConexion con = null;
+            LDAPService service = new LDAPService();
+            if (config.isProduction()) {
+              service.setInternalConnection(false);
             } else {
-              // looged.put(APConstants.LOGIN_MESSAGE, con.getAuthenticationMessage());
-              LOG.error("Authentication error  {}", con.getAuthenticationMessage());
+              service.setInternalConnection(true);
             }
-            con.closeContext();
-          } else {
-            // looged.put(APConstants.LOGIN_MESSAGE, APConstants.ERROR_LOGON_FAILURE);
+            con = service.authenticateUser(email, password);
 
+            if (con != null) {
+              if (con.getLogin() != null) {
+                userAutenticationDTO.setAuthenticated(true);
+                // looged.replace(APConstants.LOGIN_STATUS, true);
+                // looged.put(APConstants.LOGIN_MESSAGE, con.getAuthenticationMessage());
+              } else {
+                // looged.put(APConstants.LOGIN_MESSAGE, con.getAuthenticationMessage());
+                LOG.error("Authentication error  {}", con.getAuthenticationMessage());
+              }
+              con.closeContext();
+            } else {
+              // looged.put(APConstants.LOGIN_MESSAGE, APConstants.ERROR_LOGON_FAILURE);
+            }
+          } catch (Exception e) {
+            LOG.error("Exception raised trying to log in the user '{}' against the active directory. ", email,
+              e.getMessage());
           }
-        } catch (Exception e) {
-          // if (!looged.containsKey(APConstants.LOGIN_MESSAGE)) {
-          // looged.put(APConstants.LOGIN_MESSAGE, APConstants.ERROR_LDAP_CONNECTION);
-          // }
-          LOG.error("Exception raised trying to log in the user '{}' against the active directory. ", email,
-            e.getMessage());
+        } else {
+
         }
       }
     }
