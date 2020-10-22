@@ -293,3 +293,7 @@ tbody#list-print td{
 .nomar{
   margin: 0px;
 }
+
+.modal-footer{
+  position: relative;
+}

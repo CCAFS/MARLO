@@ -1,6 +1,4 @@
 
-
-
 function truncate(str){
   let n=25;
   return (str.length > n) ? str.substr(0, n-1) + '...' : str;
@@ -14,15 +12,63 @@ if(bool=="true"){
 }
 }
 
+function hideFilter(){
+  if ( document.getElementById("institutions_length")) {
+  document.getElementById("institutions_length").style.display = "none";
+  document.getElementById("institutions_filter").style.display = "none";
+  document.getElementById("institutions_info").style.display = "none";
+  document.getElementById("institutions_paginate").style.display = "none";
+  
+  
+}
+  
+}
+
+function showFilter(){
+  if ( document.getElementById("institutions_length")) {
+    document.getElementById("institutions_length").style.display = "unset";
+    document.getElementById("institutions_filter").style.display = "unset";
+    document.getElementById("institutions_info").style.display = "unset";
+    document.getElementById("institutions_paginate").style.display = "unset";
+    $('#example').dataTable( {
+      "pageLength": 50
+    } );
+  }
+
+}
 
 // console.log(truncate("http://web.maga.gob.gt/",24));
 // console.log(truncate("http://kathmandu.im/ministry-of-agriculture-and-cooperative/",24));
 
+// function destroyTable(){
+//   table = undefined;
+// }
+function updateDataTable(id){
+  console.log("segunddo");
 
+    $( ".dataTable" ).attr("id",id)
+    
+    $('#'+id).DataTable( );
 
+ 
+
+}
 function cleanModal(){
+
   $("#list-print-columns-name").html("");
   $("#list-print").html("");
+  document.querySelector(".modal-body").style.display = "none";
+  document.querySelector(".modal-body").style.display = "unset";
+  console.log("clean");
+  
+  // if(table){
+  //   table
+  //   .rows()
+  //   .remove()
+  //   .draw();
+  // }
+
+  
 }
 
   function cgiar_entities(){
@@ -31,6 +77,7 @@ function cleanModal(){
       url: config.endpoint+ '/cgiar-entities',
       type: "GET",
       beforeSend: function() {
+        hideFilter();
         cleanModal();
       },
       success: function(data) {
@@ -55,6 +102,7 @@ function cleanModal(){
             '</tr>'
             )
         });
+        // updateDataTable("cgiar_entities");
         // end print Data
         //********************************************** */
       },
@@ -70,6 +118,7 @@ function cleanModal(){
       url: config.endpoint+ '/cgiar-entity-types',
       type: "GET",
       beforeSend: function() {
+        hideFilter();
         cleanModal();
       },
       success: function(data) {
@@ -77,14 +126,16 @@ function cleanModal(){
         //print data
         console.log(data);
         let nameColumns = ['Code','Name']
-
+    
         $.each(nameColumns, function(index,name) {
+          console.log("primero1");
           $('#list-print-columns-name').append(
             '<th >'+name+'</th>'
             )
         });
     
         $.each(data, function(index,item) {
+          console.log("primero2");
           $('#list-print').append(
             '<tr>'+
             '<td >'+item['code']+'</td>'+
@@ -92,6 +143,8 @@ function cleanModal(){
             '</tr>'
             )
         });
+        
+        // updateDataTable("cgiar_entity_types");
         // end print Data
         //********************************************** */
       },
@@ -107,6 +160,7 @@ function cleanModal(){
       url: config.endpoint+ '/countries',
       type: "GET",
       beforeSend: function() {
+        hideFilter();
         cleanModal();
       },
       success: function(data) {
@@ -131,6 +185,7 @@ function cleanModal(){
             '</tr>'
             )
         });
+        // updateDataTable("countries");
         // end print Data
         //********************************************** */
       },
@@ -145,6 +200,7 @@ function cleanModal(){
       url: config.endpoint+ '/un-regions',
       type: "GET",
       beforeSend: function() {
+        hideFilter();
         cleanModal();
       },
       success: function(data) {
@@ -166,6 +222,7 @@ function cleanModal(){
             '</tr>'
             )
         });
+        // updateDataTable("un_regions");
         // end print Data
         //********************************************** */
       },
@@ -180,6 +237,7 @@ function cleanModal(){
       url: config.endpoint+ '/institutions',
       type: "GET",
       beforeSend: function() {
+        showFilter();
         cleanModal();
       },
       success: function(data) {
@@ -213,6 +271,7 @@ function cleanModal(){
             '</tr>'
             )
         });
+        updateDataTable("institutions");
         // end print Data
         //********************************************** */
       },

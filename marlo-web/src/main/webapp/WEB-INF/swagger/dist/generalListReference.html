@@ -46,6 +46,7 @@
   <link rel="stylesheet" href="homepage/assets/css/custom.css" />
   <link rel="stylesheet" href="css/global.css" />
   <link rel="stylesheet" href="css/APIReference.css" />
+  <link rel="stylesheet" href="css/dataTable/dataTable.min.css">
 
 </head>
 
@@ -629,7 +630,7 @@
       <div class="modal-body" >
         
 
-        <table class="table">
+        <table class="table dataTable" >
           <thead class="thead-dark">
             <tr id="list-print-columns-name">
             </tr>
@@ -637,15 +638,12 @@
           <tbody id="list-print">
 
           </tbody>
+
         </table>
 
-
-
-
-
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      <div  class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
         <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
       </div>
     </div>
@@ -688,6 +686,7 @@
 
 
 </script>
-
+<script src="css/dataTable/jquery.dataTables.min.js"></script>
+<script src="css/dataTable/dataTables.bootstrap4.min.js"></script>
 
 </html>
