@@ -46,6 +46,7 @@
   <link rel="stylesheet" href="homepage/assets/css/custom.css" />
   <link rel="stylesheet" href="css/global.css" />
   <link rel="stylesheet" href="css/APIReference.css" />
+  <link rel="stylesheet" href="css/dataTable/dataTable.min.css">
 
 </head>
 
@@ -160,6 +161,10 @@
                   </div>
                   <div class="container-c">
                     <div class="row">
+                      <div class="col-12" style="margin-bottom: 20px;">
+                        <button onclick="cgiar_entities()" type="button"  data-toggle="modal" data-target="#exampleRequestModal" class="btn getColorbackgroundExample btn-lg btn-block">Example</button>
+                      </div>
+
                       <div class="col-12">
                         <div class="fragCode">
                           <div class="infoCode">
@@ -237,6 +242,9 @@
                   </div>
                   <div class="container-c">
                     <div class="row">
+                      <div class="col-12" style="margin-bottom: 20px;">
+                        <button onclick="cgiar_entity_types()" type="button"  data-toggle="modal" data-target="#exampleRequestModal" class="btn getColorbackgroundExample btn-lg btn-block">Example</button>
+                      </div>
                       <div class="col-12">
                         <div class="fragCode">
                           <div class="infoCode">
@@ -310,6 +318,9 @@
                   </div>
                   <div class="container-c">
                     <div class="row">
+                      <div class="col-12" style="margin-bottom: 20px;">
+                        <button onclick="countries()" type="button"  data-toggle="modal" data-target="#exampleRequestModal" class="btn getColorbackgroundExample btn-lg btn-block">Example</button>
+                      </div>
                       <div class="col-12">
                         <div class="fragCode">
                           <div class="infoCode">
@@ -393,6 +404,9 @@
                   </div>
                   <div class="container-c">
                     <div class="row">
+                      <div class="col-12" style="margin-bottom: 20px;">
+                        <button onclick="un_regions()" type="button"  data-toggle="modal" data-target="#exampleRequestModal" class="btn getColorbackgroundExample btn-lg btn-block">Example</button>
+                      </div>
                       <div class="col-12">
                         <div class="fragCode">
                           <div class="infoCode">
@@ -499,6 +513,9 @@
                   </div>
                   <div class="container-c">
                     <div class="row">
+                      <div class="col-12" style="margin-bottom: 20px;">
+                        <button onclick="institutions()" type="button"  data-toggle="modal" data-target="#exampleRequestModal" class="btn getColorbackgroundExample btn-lg btn-block">Example</button>
+                      </div>
                       <div class="col-12">
                         <div class="fragCode">
                           <div class="infoCode">
@@ -596,12 +613,57 @@
     </div>
   </main>
 
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleRequestModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-xl">
+    <div class="modal-content">
+      <!-- <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div> -->
+      <div class="modal-body" >
+        
+
+        <table class="table dataTable" >
+          <thead class="thead-dark">
+            <tr id="list-print-columns-name">
+            </tr>
+          </thead>
+          <tbody id="list-print">
+
+          </tbody>
+
+        </table>
+
+      </div>
+      <div  class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
+        <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
 </body>
 <!-- 
 <p>This is a paragraph.</p>
 
 <button>Toggle slideUp() and slideDown()</button> -->
-
+<script src="conf/endpoint.conf.js"></script>
+<script src="js/request.js"></script>
 <script>
   var coll = document.getElementsByClassName("collap");
   var i;
@@ -624,6 +686,7 @@
 
 
 </script>
-
+<script src="css/dataTable/jquery.dataTables.min.js"></script>
+<script src="css/dataTable/dataTables.bootstrap4.min.js"></script>
 
 </html>
