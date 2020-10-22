@@ -136,7 +136,7 @@ public class FundingSourceByInstitutionFinanceCodeAction extends BaseAction {
           }
         }
 
-        if (summary.getTypeId().intValue() == 1) {
+        if (summary != null && summary.getTypeId() != null && summary.getTypeId().intValue() == 1) {
           String permission =
             this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym());
 

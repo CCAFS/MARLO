@@ -124,6 +124,7 @@ public final class APConstants {
   public static final String CRP_SHOW_SECTION_IMPACT_COVID19 = "crp_show_section_impact_covid19";
   public static final String CRP_SHOW_SECTION_IMPACT_COVID19_RANGES_YEARS =
     "crp_show_section_impact_covid19_ranges_years";
+  public static final String PREVIOUS_PROJECT_ID_ACTIVE = "previous_project_id_field_active";
 
   public static final String IS_EXPECTED_DELIVERABLE_REPORT_All_YEARS_VISIBLE =
     "is_expected_deliverable_report_all_years_visible";
@@ -715,9 +716,9 @@ public final class APConstants {
   public static final String CRP_CAP_DEV_ACTIVE = "crp_capdev_active";
 
   // Marlo PDF Manual Name
-  public static final String MARLO_PDF_MANUAL_NAME = "Introduction_To_MARLO_v2.7.pdf";
+  public static final String MARLO_PDF_MANUAL_NAME = "Introduction_To_MARLO_v2.8.pdf";
 
-  // GeoiIp maps database
+  // GeoiIp maps database8
   public static final String DATABASE_COUNTRY_FILENAME = "GeoLite2-Country.mmdb";
   public static final String DATABASE_CITY_FILENAME = "GeoLite2-City.mmdb";
 
