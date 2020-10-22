@@ -532,7 +532,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
           }
         }
-        // load scope info
+        // load scope infoen
         if (project.getScopes() != null) {
           for (ProjectScope projectScope : project.getScopes()) {
             projectScope
@@ -1152,12 +1152,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
       project.getProjectInfo().setModifiedBy(this.getCurrentUser());
 
-      /*
-       * Validate Previous Project Id field information
-       */
-      if (project.getProjectInfo().getPreviousProjectId() != null) {
-        projectInfoManagerManager.saveProjectInfo(project.getProjectInfo());
-      }
+      projectInfoManagerManager.saveProjectInfo(project.getProjectInfo());
 
       Path path = this.getAutoSaveFilePath();
       // if is auto-save, load relations to generate auditlog correctly
