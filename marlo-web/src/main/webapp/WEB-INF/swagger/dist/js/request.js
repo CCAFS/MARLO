@@ -168,7 +168,7 @@ function countries() {
 						'<tr>' + '<td >' + item['code'] + '</td>' + '<td>'
 								+ item['isoAlpha2'] + '</td>' + '<td>'
 								+ item['name'] + '</td>' + '<td>'
-								+ '<strong>UM49Code:</strong> '
+								+ '<strong>UN49Code:</strong> '
 								+ item['regionDTO'].um49Code
 								+ ' - <strong>Name:</strong> '
 								+ item['regionDTO'].name + '</td>' + '</tr>')
