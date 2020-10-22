@@ -667,7 +667,12 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
-        project = (Project) autoSaveReader.readFromJson(jReader);
+        if (jReader != null) {
+          project = (Project) autoSaveReader.readFromJson(jReader);
+        } else {
+          LOG.error("null jReader in autoSaveReader");
+        }
+
         Project projectDb = projectManager.getProjectById(project.getId());
         project.setProjectInfo(projectDb.getProjecInfoPhase(this.getActualPhase()));
         project.getProjectInfo()
