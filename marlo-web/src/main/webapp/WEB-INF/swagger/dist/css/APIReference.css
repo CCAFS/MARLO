@@ -297,3 +297,7 @@ tbody#list-print td{
 .modal-footer{
   position: relative;
 }
+
+#spinner{
+  margin: 100px 0px;
+}
