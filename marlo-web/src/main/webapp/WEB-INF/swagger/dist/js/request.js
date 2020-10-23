@@ -11,6 +11,14 @@ function converYesOrNot(bool) {
 	}
 }
 
+function validateNull(data) {
+	if (data == null) {
+		return ''
+	} else {
+		return data
+	}
+}
+
 function hideFilter() {
 	if (document.getElementById("institutions_length")) {
 		document.getElementById("institutions_length").style.display = "none";
@@ -243,7 +251,7 @@ function institutions() {
 										$('#list-print')
 												.append(
 														'<tr>' + '<td >'
-																+ item['acronym']
+																+ validateNull(item['acronym'])
 																+ '</td>'
 																+ '<td>'
 																+ item['code']
