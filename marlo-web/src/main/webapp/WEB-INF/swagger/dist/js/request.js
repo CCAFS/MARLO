@@ -23,10 +23,10 @@ function manageSpinner(bool) {
 	console.log("hide spinner");
 	if (bool) {
 		document.getElementById('spinner').style.display = "block";
-	}else{
+	} else {
 		document.getElementById('spinner').style.display = "none";
 	}
-	
+
 }
 
 function hideFilter() {
@@ -53,12 +53,6 @@ function showFilter() {
 
 }
 
-// console.log(truncate("http://web.maga.gob.gt/",24));
-// console.log(truncate("http://kathmandu.im/ministry-of-agriculture-and-cooperative/",24));
-
-// function destroyTable(){
-// table = undefined;
-// }
 function updateDataTable(id) {
 	console.log("segunddo");
 
@@ -67,65 +61,57 @@ function updateDataTable(id) {
 	$('#' + id).DataTable();
 
 }
-function cleanModal() {
 
+function cleanModal() {
 	$("#list-print-columns-name").html("");
 	$("#list-print").html("");
 	document.querySelector(".modal-body").style.display = "none";
 	document.querySelector(".modal-body").style.display = "unset";
 	console.log("clean");
-
-	// if(table){
-	// table
-	// .rows()
-	// .remove()
-	// .draw();
-	// }
-
 }
 
 function cgiar_entities() {
 
 	$.ajax({
-			url: config.endpoint + '/cgiar-entities',
-			type: "GET",
-			beforeSend: function () {
-				manageSpinner(true);
-				hideFilter();
-				cleanModal();
-			},
-			success: function (data) {
-				manageSpinner(false);
-				// ********************************************* */
-				// print data
-				// console.log(data);
-				let nameColumns = ['Code', 'Name', 'Acronym',
-					'CGIAR Entity Type']
+		url: config.endpoint + '/cgiar-entities',
+		type: "GET",
+		beforeSend: function () {
+			manageSpinner(true);
+			hideFilter();
+			cleanModal();
+		},
+		success: function (data) {
+			manageSpinner(false);
+			// ********************************************* */
+			// print data
+			// console.log(data);
+			let nameColumns = ['Code', 'Name', 'Acronym',
+				'CGIAR Entity Type']
 
-				$.each(nameColumns, function (index, name) {
-					$('#list-print-columns-name').append(
-						'<th >' + name + '</th>')
-				});
+			$.each(nameColumns, function (index, name) {
+				$('#list-print-columns-name').append(
+					'<th >' + name + '</th>')
+			});
 
-				$.each(data, function (index, item) {
-					$('#list-print').append(
-						'<tr>' + '<td >' + item['code'] + '</td>'
-						+ '<td>' + item['name'] + '</td>'
-						+ '<td>' + item['acronym'] + '</td>'
-						+ '<td>' + '<strong>Code:</strong> '
-						+ item['cgiarEntityTypeDTO'].code
-						+ ' - <strong>Name:</strong> '
-						+ item['cgiarEntityTypeDTO'].name
-						+ '</td>' + '</tr>')
-				});
-				// updateDataTable("cgiar_entities");
-				// end print Data
-				// ********************************************** */
-			},
-			error: function (e) {
-				console.log(e);
-			}
-		});
+			$.each(data, function (index, item) {
+				$('#list-print').append(
+					'<tr>' + '<td >' + item['code'] + '</td>'
+					+ '<td>' + item['name'] + '</td>'
+					+ '<td>' + item['acronym'] + '</td>'
+					+ '<td>' + '<strong>Code:</strong> '
+					+ item['cgiarEntityTypeDTO'].code
+					+ ' - <strong>Name:</strong> '
+					+ item['cgiarEntityTypeDTO'].name
+					+ '</td>' + '</tr>')
+			});
+			// updateDataTable("cgiar_entities");
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
 }
 
 function cgiar_entity_types() {
@@ -254,9 +240,10 @@ function institutions() {
 			success: function (data) {
 				// ********************************************* */
 				// print data
+				testInstitution(data);
 				showFilter();
 				manageSpinner(false);
-				// console.log(data);
+				console.log(data);
 				let nameColumns = ['Acronym', 'Code', 'Office Location',
 					'Name', 'Website']
 
@@ -277,26 +264,30 @@ function institutions() {
 									+ '<td>'
 									+ item['code']
 									+ '</td>'
-									+
+									//Office Location
+									+ '<td>'
+									// + '<p class="nomar"><strong>Code:</strong> '
+									// + item['countryOfficeDTO']['0'].code
+									// + '</p>'
+									// + '<p class="nomar"><strong>isHeadquarter:</strong> '
+									// + converYesOrNot(item['countryOfficeDTO']['0'].isHeadquarter)
+									// + '</p>'
+									// + '<p class="nomar"><strong>isoAlpha2:</strong> '
+									// + item['countryOfficeDTO']['0'].isoAlpha2
+									// + '</p>'
+									// + '<p class="nomar"><strong>name:</strong> '
+									// + item['countryOfficeDTO']['0'].name
+									// + '</p>'
+									+ '<p class="nomar"><strong>Headquarter: </strong> '
+									+ getHeadquarter(item['countryOfficeDTO'])
+									+ '</p>'
+									// + '<p class="nomar"><strong>Other office locations:</strong> '
+									+ get_other_office_locations(item['countryOfficeDTO'])
+									// + '</p>'
 
-									'<td>'
-
-									+ '<p class="nomar"><strong>Code:</strong> '
-									+ item['countryOfficeDTO']['0'].code
-									+ '</p>'
-									+ '<p class="nomar"><strong>isHeadquarter:</strong> '
-									+ converYesOrNot(item['countryOfficeDTO']['0'].isHeadquarter)
-									+ '</p>'
-									+ '<p class="nomar"><strong>isoAlpha2:</strong> '
-									+ item['countryOfficeDTO']['0'].isoAlpha2
-									+ '</p>'
-									+ '<p class="nomar"><strong>name:</strong> '
-									+ item['countryOfficeDTO']['0'].name
-									+ '</p>'
 									+ '</td>'
-									+
-
-									'<td>'
+									+ '<td>'
+									// END Office Location
 									+ item['name']
 									+ '</td>'
 									+ `<td  data-toggle="tooltip" data-placement="top" title="${item['websiteLink']}"><a href="${item['websiteLink']}" target="_blank">website link</a></td>`
@@ -310,4 +301,41 @@ function institutions() {
 				console.log(e);
 			}
 		});
+}
+
+function getHeadquarter(countryOfficeDTO) {
+	let resultado = "";
+	$.each(countryOfficeDTO, function (index, item) {
+		if (item.isHeadquarter == "true") {
+			resultado = `<span data-toggle="tooltip" data-placement="top" class="pointer" title="${item.name}">${item.isoAlpha2}</span>`;
+		}
+	});
+	return resultado;
+}
+
+function get_other_office_locations(countryOfficeDTO) {
+	let resultado = '<p class="nomar"><strong>Other office locations:</strong>';
+	$.each(countryOfficeDTO, function (index, item) {
+		if (item.isHeadquarter == "false") {
+			if (resultado == "") {
+				resultado += `<span data-toggle="tooltip" data-placement="top" class="pointer" title="${item.name}">${item.isoAlpha2}</span>`;
+			} else {
+				resultado += `, <span data-toggle="tooltip" data-placement="top" class="pointer"  title="${item.name}">${item.isoAlpha2}</span>`;
+			}
+		}
+	});
+	resultado += '</p>';
+	if (resultado == '<p class="nomar"><strong>Other office locations:</strong></p>') {
+		resultado = ""
+	}
+	return resultado;
+}
+
+function testInstitution(params) {
+	$.each(params, function (index, item) {
+		if (item.countryOfficeDTO.length > 1) {
+			console.log("test this: " + item.code + " - size: " + item.countryOfficeDTO.length);
+		}
+
+	});
 }
