@@ -19,6 +19,16 @@ function validateNull(data) {
 	}
 }
 
+function manageSpinner(bool) {
+	console.log("hide spinner");
+	if (bool) {
+		document.getElementById('spinner').style.display = "block";
+	}else{
+		document.getElementById('spinner').style.display = "none";
+	}
+	
+}
+
 function hideFilter() {
 	if (document.getElementById("institutions_length")) {
 		document.getElementById("institutions_length").style.display = "none";
@@ -37,7 +47,7 @@ function showFilter() {
 		document.getElementById("institutions_info").style.display = "unset";
 		document.getElementById("institutions_paginate").style.display = "unset";
 		$('#example').dataTable({
-			"pageLength" : 50
+			"pageLength": 50
 		});
 	}
 
@@ -76,78 +86,81 @@ function cleanModal() {
 
 function cgiar_entities() {
 
-	$
-			.ajax({
-				url : config.endpoint + '/cgiar-entities',
-				type : "GET",
-				beforeSend : function() {
-					hideFilter();
-					cleanModal();
-				},
-				success : function(data) {
-					// ********************************************* */
-					// print data
-					// console.log(data);
-					let nameColumns = [ 'Code', 'Name', 'Acronym',
-							'CGIAR Entity Type' ]
+	$.ajax({
+			url: config.endpoint + '/cgiar-entities',
+			type: "GET",
+			beforeSend: function () {
+				manageSpinner(true);
+				hideFilter();
+				cleanModal();
+			},
+			success: function (data) {
+				manageSpinner(false);
+				// ********************************************* */
+				// print data
+				// console.log(data);
+				let nameColumns = ['Code', 'Name', 'Acronym',
+					'CGIAR Entity Type']
 
-					$.each(nameColumns, function(index, name) {
-						$('#list-print-columns-name').append(
-								'<th >' + name + '</th>')
-					});
+				$.each(nameColumns, function (index, name) {
+					$('#list-print-columns-name').append(
+						'<th >' + name + '</th>')
+				});
 
-					$.each(data, function(index, item) {
-						$('#list-print').append(
-								'<tr>' + '<td >' + item['code'] + '</td>'
-										+ '<td>' + item['name'] + '</td>'
-										+ '<td>' + item['acronym'] + '</td>'
-										+ '<td>' + '<strong>Code:</strong> '
-										+ item['cgiarEntityTypeDTO'].code
-										+ ' - <strong>Name:</strong> '
-										+ item['cgiarEntityTypeDTO'].name
-										+ '</td>' + '</tr>')
-					});
-					// updateDataTable("cgiar_entities");
-					// end print Data
-					// ********************************************** */
-				},
-				error : function(e) {
-					console.log(e);
-				}
-			});
+				$.each(data, function (index, item) {
+					$('#list-print').append(
+						'<tr>' + '<td >' + item['code'] + '</td>'
+						+ '<td>' + item['name'] + '</td>'
+						+ '<td>' + item['acronym'] + '</td>'
+						+ '<td>' + '<strong>Code:</strong> '
+						+ item['cgiarEntityTypeDTO'].code
+						+ ' - <strong>Name:</strong> '
+						+ item['cgiarEntityTypeDTO'].name
+						+ '</td>' + '</tr>')
+				});
+				// updateDataTable("cgiar_entities");
+				// end print Data
+				// ********************************************** */
+			},
+			error: function (e) {
+				console.log(e);
+			}
+		});
 }
 
 function cgiar_entity_types() {
 	$.ajax({
-		url : config.endpoint + '/cgiar-entity-types',
-		type : "GET",
-		beforeSend : function() {
+		url: config.endpoint + '/cgiar-entity-types',
+		type: "GET",
+		beforeSend: function () {
 			hideFilter();
 			cleanModal();
+			manageSpinner(true);
 		},
-		success : function(data) {
+		success: function (data) {
 			// ********************************************* */
 			// print data
+			manageSpinner(false);
 			console.log(data);
-			let nameColumns = [ 'Code', 'Name' ]
+			let nameColumns = ['Code', 'Name']
 
-			$.each(nameColumns, function(index, name) {
+			$.each(nameColumns, function (index, name) {
 				console.log("primero1");
 				$('#list-print-columns-name').append('<th >' + name + '</th>')
 			});
 
-			$.each(data, function(index, item) {
+			$.each(data, function (index, item) {
 				console.log("primero2");
 				$('#list-print').append(
-						'<tr>' + '<td >' + item['code'] + '</td>' + '<td>'
-								+ item['name'] + '</td>' + '</tr>')
+					'<tr>' + '<td >' + item['code'] + '</td>' + '<td>'
+					+ item['name'] + '</td>' + '</tr>')
 			});
 
 			// updateDataTable("cgiar_entity_types");
 			// end print Data
 			// ********************************************** */
 		},
-		error : function(e) {
+		error: function (e) {
 			console.log(e);
 		}
 	});
@@ -155,37 +168,39 @@ function cgiar_entity_types() {
 
 function countries() {
 	$.ajax({
-		url : config.endpoint + '/countries',
-		type : "GET",
-		beforeSend : function() {
+		url: config.endpoint + '/countries',
+		type: "GET",
+		beforeSend: function () {
 			hideFilter();
 			cleanModal();
+			manageSpinner(true);
 		},
-		success : function(data) {
+		success: function (data) {
 			// ********************************************* */
 			// print data
+			manageSpinner(false);
 			console.log(data);
-			let nameColumns = [ 'Code', 'ISO Alpha2', 'Name', 'Region' ]
+			let nameColumns = ['Code', 'ISO Alpha2', 'Name', 'Region']
 
-			$.each(nameColumns, function(index, name) {
+			$.each(nameColumns, function (index, name) {
 				$('#list-print-columns-name').append('<th >' + name + '</th>')
 			});
 
-			$.each(data, function(index, item) {
+			$.each(data, function (index, item) {
 				$('#list-print').append(
-						'<tr>' + '<td >' + item['code'] + '</td>' + '<td>'
-								+ item['isoAlpha2'] + '</td>' + '<td>'
-								+ item['name'] + '</td>' + '<td>'
-								+ '<strong>UN49Code:</strong> '
-								+ item['regionDTO'].um49Code
-								+ ' - <strong>Name:</strong> '
-								+ item['regionDTO'].name + '</td>' + '</tr>')
+					'<tr>' + '<td >' + item['code'] + '</td>' + '<td>'
+					+ item['isoAlpha2'] + '</td>' + '<td>'
+					+ item['name'] + '</td>' + '<td>'
+					+ '<strong>UN49Code:</strong> '
+					+ item['regionDTO'].um49Code
+					+ ' - <strong>Name:</strong> '
+					+ item['regionDTO'].name + '</td>' + '</tr>')
 			});
 			// updateDataTable("countries");
 			// end print Data
 			// ********************************************** */
 		},
-		error : function(e) {
+		error: function (e) {
 			console.log(e);
 		}
 	});
@@ -193,31 +208,33 @@ function countries() {
 
 function un_regions() {
 	$.ajax({
-		url : config.endpoint + '/un-regions',
-		type : "GET",
-		beforeSend : function() {
+		url: config.endpoint + '/un-regions',
+		type: "GET",
+		beforeSend: function () {
 			hideFilter();
 			cleanModal();
+			manageSpinner(true);
 		},
-		success : function(data) {
+		success: function (data) {
 			// ********************************************* */
 			// print data
-			let nameColumns = [ 'UN49Code', 'Name' ]
+			manageSpinner(false);
+			let nameColumns = ['UN49Code', 'Name']
 
-			$.each(nameColumns, function(index, name) {
+			$.each(nameColumns, function (index, name) {
 				$('#list-print-columns-name').append('<th >' + name + '</th>')
 			});
 
-			$.each(data, function(index, item) {
+			$.each(data, function (index, item) {
 				$('#list-print').append(
-						'<tr>' + '<td >' + item['um49Code'] + '</td>' + '<td>'
-								+ item['name'] + '</td>' + '</tr>')
+					'<tr>' + '<td >' + item['um49Code'] + '</td>' + '<td>'
+					+ item['name'] + '</td>' + '</tr>')
 			});
 			// updateDataTable("un_regions");
 			// end print Data
 			// ********************************************** */
 		},
-		error : function(e) {
+		error: function (e) {
 			console.log(e);
 		}
 	});
@@ -225,68 +242,72 @@ function un_regions() {
 
 function institutions() {
 	$
-			.ajax({
-				url : config.endpoint + '/institutions',
-				type : "GET",
-				beforeSend : function() {
-					showFilter();
-					cleanModal();
-				},
-				success : function(data) {
-					// ********************************************* */
-					// print data
-					console.log(data);
-					let nameColumns = [ 'Acronym', 'Code', 'Office Location',
-							'Name', 'Website' ]
+		.ajax({
+			url: config.endpoint + '/institutions',
+			type: "GET",
+			beforeSend: function () {
+				hideFilter();
 
-					$.each(nameColumns, function(index, name) {
-						$('#list-print-columns-name').append(
-								'<th >' + name + '</th>')
-					});
+				cleanModal();
+				manageSpinner(true);
+			},
+			success: function (data) {
+				// ********************************************* */
+				// print data
+				showFilter();
+				manageSpinner(false);
+				// console.log(data);
+				let nameColumns = ['Acronym', 'Code', 'Office Location',
+					'Name', 'Website']
 
-					$
-							.each(
-									data,
-									function(index, item) {
-										$('#list-print')
-												.append(
-														'<tr>' + '<td >'
-																+ validateNull(item['acronym'])
-																+ '</td>'
-																+ '<td>'
-																+ item['code']
-																+ '</td>'
-																+
+				$.each(nameColumns, function (index, name) {
+					$('#list-print-columns-name').append(
+						'<th >' + name + '</th>')
+				});
 
-																'<td>'
+				$
+					.each(
+						data,
+						function (index, item) {
+							$('#list-print')
+								.append(
+									'<tr>' + '<td >'
+									+ validateNull(item['acronym'])
+									+ '</td>'
+									+ '<td>'
+									+ item['code']
+									+ '</td>'
+									+
 
-																+ '<p class="nomar"><strong>Code:</strong> '
-																+ item['countryOfficeDTO']['0'].code
-																+ '</p>'
-																+ '<p class="nomar"><strong>isHeadquarter:</strong> '
-																+ converYesOrNot(item['countryOfficeDTO']['0'].isHeadquarter)
-																+ '</p>'
-																+ '<p class="nomar"><strong>isoAlpha2:</strong> '
-																+ item['countryOfficeDTO']['0'].isoAlpha2
-																+ '</p>'
-																+ '<p class="nomar"><strong>name:</strong> '
-																+ item['countryOfficeDTO']['0'].name
-																+ '</p>'
-																+ '</td>'
-																+
+									'<td>'
 
-																'<td>'
-																+ item['name']
-																+ '</td>'
-																+ `<td  data-toggle="tooltip" data-placement="top" title="${item['websiteLink']}"><a href="${item['websiteLink']}" target="_blank">website link</a></td>`
-																+ '</tr>')
-									});
-					updateDataTable("institutions");
-					// end print Data
-					// ********************************************** */
-				},
-				error : function(e) {
-					console.log(e);
-				}
-			});
+									+ '<p class="nomar"><strong>Code:</strong> '
+									+ item['countryOfficeDTO']['0'].code
+									+ '</p>'
+									+ '<p class="nomar"><strong>isHeadquarter:</strong> '
+									+ converYesOrNot(item['countryOfficeDTO']['0'].isHeadquarter)
+									+ '</p>'
+									+ '<p class="nomar"><strong>isoAlpha2:</strong> '
+									+ item['countryOfficeDTO']['0'].isoAlpha2
+									+ '</p>'
+									+ '<p class="nomar"><strong>name:</strong> '
+									+ item['countryOfficeDTO']['0'].name
+									+ '</p>'
+									+ '</td>'
+									+
+
+									'<td>'
+									+ item['name']
+									+ '</td>'
+									+ `<td  data-toggle="tooltip" data-placement="top" title="${item['websiteLink']}"><a href="${item['websiteLink']}" target="_blank">website link</a></td>`
+									+ '</tr>')
+						});
+				updateDataTable("institutions");
+				// end print Data
+				// ********************************************** */
+			},
+			error: function (e) {
+				console.log(e);
+			}
+		});
 }
