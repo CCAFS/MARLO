@@ -110,10 +110,12 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
       } else {
         boolean hasCPRole = false;
         List<UserRole> roles = userRoleManager.getUserRolesByUserId(user.getId());
-
-        for (UserRole rol : roles) {
-          if (rol.getRole() != null && rol.getRole().getAcronym() != null && rol.getRole().getAcronym().equals("CP")) {
-            hasCPRole = true;
+        if (roles != null) {
+          for (UserRole rol : roles) {
+            if (rol.getRole() != null && rol.getRole().getAcronym() != null
+              && rol.getRole().getAcronym().equals("CP")) {
+              hasCPRole = true;
+            }
           }
         }
         // List<FundingSource> fundingSources = fundingSourceManager.getFundingSource(user.getId(), crp.getAcronym());
