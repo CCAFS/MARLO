@@ -119,13 +119,8 @@ public class ExpectedStudies {
     @ApiParam(value = "${ExpectedStudies.OICR.GET.all.param.year}", required = true) @RequestParam Integer year,
     @ApiParam(value = "${ExpectedStudies.OICR.GET.all.param.phase}", required = true) @RequestParam String phase) {
     List<ProjectExpectedStudiesARDTO> studiesList = new ArrayList<ProjectExpectedStudiesARDTO>();
-    try {
-      studiesList =
-        this.expectedStudiesItem.findAllExpectedStudyByGlobalUnit(CGIAREntity, year, phase, this.getCurrentUser());
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-
+    studiesList =
+      this.expectedStudiesItem.findAllExpectedStudyByGlobalUnit(CGIAREntity, year, phase, this.getCurrentUser());
     return studiesList;
   }
 

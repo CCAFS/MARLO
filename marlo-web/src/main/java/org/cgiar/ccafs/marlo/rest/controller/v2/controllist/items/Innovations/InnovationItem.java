@@ -614,13 +614,14 @@ public class InnovationItem<T> {
       fieldErrors.add(new FieldErrorDTO("allInnovation", "GlobalUnitEntity",
         CGIARentityAcronym + " is an invalid CGIAR entity acronym"));
     }
-    Phase phase =
-      this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
-        && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().get();
+    Phase phase = this.phaseManager.findAll().stream()
+      .filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
+        && c.getYear() >= APConstants.CLARISA_AVALIABLE_INFO_YEAR && c.getYear() == repoYear
+        && c.getName().equalsIgnoreCase(repoPhase))
+      .findFirst().orElse(null);
 
     if (phase == null) {
-      fieldErrors.add(new FieldErrorDTO("allInnovation", "phase",
-        new NewInnovationDTO().getPhase().getYear() + " is an invalid year"));
+      fieldErrors.add(new FieldErrorDTO("allInnovation", "phase", repoYear + " is an invalid year"));
     }
 
 
@@ -682,9 +683,11 @@ public class InnovationItem<T> {
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
     ProjectInnovation innovation = this.projectInnovationManager.getProjectInnovationById(id);
-    Phase phase =
-      this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
-        && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().get();
+    Phase phase = this.phaseManager.findAll().stream()
+      .filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
+        && c.getYear() >= APConstants.CLARISA_AVALIABLE_INFO_YEAR && c.getYear() == repoYear
+        && c.getName().equalsIgnoreCase(repoPhase))
+      .findFirst().orElse(null);
 
     Set<CrpUser> lstUser = user.getCrpUsers();
 
@@ -698,51 +701,52 @@ public class InnovationItem<T> {
     }
     if (phase == null) {
       fieldErrors.add(new FieldErrorDTO("findInnovation", "phase", repoYear + " is an invalid year"));
-    }
-
-    if (innovation == null || innovation.getProjectInnovationInfo(phase) == null) {
-      fieldErrors.add(new FieldErrorDTO("findInnovation", "InnovationId", id + " is an invalid id of an innovation"));
+    } else {
+      if (innovation == null || innovation.getProjectInnovationInfo(phase) == null) {
+        fieldErrors.add(new FieldErrorDTO("findInnovation", "InnovationId", id + " is an invalid id of an innovation"));
+      }
     }
 
 
     // innovation.setAllbyPhase(phase);
-    if (innovation.getProjectInnovationInfo(phase) != null) {
-      if (innovation.getProjectInnovationInfo().getInnovationNumber() == null) {
-        innovation.getProjectInnovationInfo().setInnovationNumber(new Long(0));
-      }
-      innovation.setCountries(
-        this.projectInnovationCountryManager.getInnovationCountrybyPhase(innovation.getId(), phase.getId()));
-      innovation.setRegions(innovation.getProjectInnovationRegions().stream()
-        .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-      innovation.setGeographicScopes(innovation.getProjectInnovationGeographicScopes().stream()
-        .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-      innovation.setContributingOrganizations(innovation.getProjectInnovationContributingOrganization().stream()
-        .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-      innovation.setCrps(innovation.getProjectInnovationCrps().stream()
-        .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-      innovation.setOrganizations(innovation.getProjectInnovationOrganizations().stream()
-        .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-      innovation.setMilestones(innovation.getProjectInnovationMilestones().stream()
-        .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-      innovation.setSubIdos(innovation.getProjectInnovationSubIdos().stream()
-        .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-      List<ProjectExpectedStudyInnovation> projectExpectedStudyInnovationList =
-        new ArrayList<ProjectExpectedStudyInnovation>();
-      for (ProjectExpectedStudyInnovation projectExpectedStudyInnovation : innovation
-        .getProjectExpectedStudyInnovations().stream()
-        .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())) {
-        ProjectExpectedStudy projectExpectedStudy = projectExpectedStudyManager
-          .getProjectExpectedStudyById(projectExpectedStudyInnovation.getProjectExpectedStudy().getId());
-        ProjectExpectedStudyInfo info = projectExpectedStudy.getProjectExpectedStudyInfo(phase);
+    if (fieldErrors.isEmpty()) {
+      if (innovation.getProjectInnovationInfo(phase) != null) {
+        if (innovation.getProjectInnovationInfo().getInnovationNumber() == null) {
+          innovation.getProjectInnovationInfo().setInnovationNumber(new Long(0));
+        }
+        innovation.setCountries(
+          this.projectInnovationCountryManager.getInnovationCountrybyPhase(innovation.getId(), phase.getId()));
+        innovation.setRegions(innovation.getProjectInnovationRegions().stream()
+          .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+        innovation.setGeographicScopes(innovation.getProjectInnovationGeographicScopes().stream()
+          .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+        innovation.setContributingOrganizations(innovation.getProjectInnovationContributingOrganization().stream()
+          .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+        innovation.setCrps(innovation.getProjectInnovationCrps().stream()
+          .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+        innovation.setOrganizations(innovation.getProjectInnovationOrganizations().stream()
+          .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+        innovation.setMilestones(innovation.getProjectInnovationMilestones().stream()
+          .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+        innovation.setSubIdos(innovation.getProjectInnovationSubIdos().stream()
+          .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+        List<ProjectExpectedStudyInnovation> projectExpectedStudyInnovationList =
+          new ArrayList<ProjectExpectedStudyInnovation>();
+        for (ProjectExpectedStudyInnovation projectExpectedStudyInnovation : innovation
+          .getProjectExpectedStudyInnovations().stream()
+          .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())) {
+          ProjectExpectedStudy projectExpectedStudy = projectExpectedStudyManager
+            .getProjectExpectedStudyById(projectExpectedStudyInnovation.getProjectExpectedStudy().getId());
+          ProjectExpectedStudyInfo info = projectExpectedStudy.getProjectExpectedStudyInfo(phase);
 
-        projectExpectedStudy.setProjectExpectedStudyInfo(info);
-        projectExpectedStudyInnovation.setProjectExpectedStudy(projectExpectedStudy);
+          projectExpectedStudy.setProjectExpectedStudyInfo(info);
+          projectExpectedStudyInnovation.setProjectExpectedStudy(projectExpectedStudy);
 
-        projectExpectedStudyInnovationList.add(projectExpectedStudyInnovation);
+          projectExpectedStudyInnovationList.add(projectExpectedStudyInnovation);
+        }
+        innovation.setStudies(projectExpectedStudyInnovationList);
       }
-      innovation.setStudies(projectExpectedStudyInnovationList);
     }
-
     // Validate all fields
     if (!fieldErrors.isEmpty()) {
       throw new MARLOFieldValidationException("Field Validation errors", "",
