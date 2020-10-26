@@ -10,12 +10,14 @@ function addEvents() {
     executePetition(idReport);
   });
   $('.reportSection a, .reportSection span').on('click', selectBIReport);
-  $('.selectedReportBI').on('click', function () {
-    reportsMenuToggle();
-  });
-  $('.selectedReportBI').hover(function () {
+  // $('.selectedReportBIContainer').on('click', function () {
+  //   reportsMenuToggle();
+  // });
+  $('.selectedReportBIContainer').hover(function () {
     $('#repportsMenu').slideDown("fast");
     $('.reportsButtonsIcon').addClass("glyphicon-chevron-down");
+  }, function () {
+    reportsMenuToggle();
   });
 
   $('.setFullScreen').on('click', function () {
@@ -81,7 +83,6 @@ function executePetition(idReport) {
 // Set the report title and description
 function setReportTitle() {
   var reportTitle = $("div[class$='current']").attr("report-title");
-  console.log(reportTitle + '')
   $('.headTitle.text-left').text(reportTitle + '');
 }
 
