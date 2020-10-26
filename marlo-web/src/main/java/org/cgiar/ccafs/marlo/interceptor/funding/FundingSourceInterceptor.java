@@ -21,15 +21,18 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -50,13 +53,15 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
   private PhaseManager phaseManager;
   private final GlobalUnitManager crpManager;
   private final FundingSourceManager fundingSourceManager;
+  private final UserRoleManager userRoleManager;
 
   @Inject
   public FundingSourceInterceptor(GlobalUnitManager crpManager, FundingSourceManager fundingSourceManager,
-    PhaseManager phaseManager) {
+    PhaseManager phaseManager, UserRoleManager userRoleManager) {
     this.crpManager = crpManager;
     this.fundingSourceManager = fundingSourceManager;
     this.phaseManager = phaseManager;
+    this.userRoleManager = userRoleManager;
   }
 
   @Override
@@ -103,9 +108,20 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
       if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
         canEdit = true;
       } else {
+        boolean hasCPRole = false;
+        List<UserRole> roles = userRoleManager.getUserRolesByUserId(user.getId());
+        if (roles != null) {
+          for (UserRole rol : roles) {
+            if (rol.getRole() != null && rol.getRole().getAcronym() != null
+              && rol.getRole().getAcronym().equals("CP")) {
+              hasCPRole = true;
+            }
+          }
+        }
         // List<FundingSource> fundingSources = fundingSourceManager.getFundingSource(user.getId(), crp.getAcronym());
-        if ((baseAction
-          .hasPermission(baseAction.generatePermission(Permission.PROJECT_FUNDING_SOURCE_BASE_PERMISSION, params))
+        if ((hasCPRole
+          || baseAction
+            .hasPermission(baseAction.generatePermission(Permission.PROJECT_FUNDING_SOURCE_BASE_PERMISSION, params))
           || baseAction
             .hasPermission(baseAction.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, params))
           || baseAction
