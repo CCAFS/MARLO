@@ -46,11 +46,51 @@
   <link rel="stylesheet" href="homepage/assets/css/custom.css" />
   <link rel="stylesheet" href="css/global.css" />
   <link rel="stylesheet" href="css/APIReference.css" />
-  <link rel="stylesheet" href="css/dataTable/dataTable.min.css">
-
+  <!-- <link rel="stylesheet" href="css/dataTable/dataTable.min.css"> -->
+  <!-- dataTables -->
+  <link rel="stylesheet" type="text/css" href="DataTables/DataTables-1.10.22/css/dataTables.bootstrap4.min.css"/>
+  <link rel="stylesheet" type="text/css" href="DataTables/Buttons-1.6.5/css/buttons.bootstrap4.min.css"/>
+  <script src="https://kit.fontawesome.com/557519e2f1.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
+
+<!-- <div class="mas" style="width: 100%; height: 1000px;">
+
+  <table id="tblToExport" cellspacing="0" cellpadding="0">
+    <tr>
+        <th>Customer Id</th>
+        <th>Name</th>
+        <th>Country</th>
+    </tr>
+    <tr>
+        <td>1</td>
+        <td>Benjamin Hammond</td>
+        <td>United States</td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>Vikas Lalwani</td>
+        <td>India</td>
+    </tr>
+    <tr>
+        <td>3</td>
+        <td>Martin Mathews</td>
+        <td>France</td>
+    </tr>
+    <tr>
+        <td>4</td>
+        <td>Geoffry Schidner</td>
+        <td>Canada</td>
+    </tr>
+</table>
+<br />
+
+
+</div> -->
+
+
+
   <!-- ======= Top Bar ======= -->
   <header id="header">
     <nav class="navbar navbar-expand-lg">
@@ -644,7 +684,7 @@
   
         </div>
 
-        <table class="table dataTable" >
+        <table class="table dataTable" id="tblToExport" >
           <thead class="thead-dark">
             <tr id="list-print-columns-name">
             </tr>
@@ -657,6 +697,7 @@
 
       </div>
       <div  class="modal-footer">
+        <button id="btnExport" onclick="exportToExcel()" type="button" class="btn btn-success">Export to Excel</button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
         <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
       </div>
@@ -700,7 +741,24 @@
 
 
 </script>
-<script src="css/dataTable/jquery.dataTables.min.js"></script>
-<script src="css/dataTable/dataTables.bootstrap4.min.js"></script>
+<!-- <script src="css/dataTable/jquery.dataTables.min.js"></script> -->
+<!-- <script src="css/dataTable/dataTables.bootstrap4.min.js"></script> -->
+<script type="text/javascript" src="js/tableExport.min.js"></script>
+<script>
+  function exportToExcel(){
+    $('#tblToExport').tableExport({type:'excel'});
 
+  }
+  </script>
+
+     <!-- dataTables -->
+  <script type="text/javascript" src="DataTables/JSZip-2.5.0/jszip.min.js"></script>
+  <script type="text/javascript" src="DataTables/pdfmake-0.1.36/pdfmake.min.js"></script>
+  <script type="text/javascript" src="DataTables/pdfmake-0.1.36/vfs_fonts.js"></script>
+  <script type="text/javascript" src="DataTables/DataTables-1.10.22/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" src="DataTables/DataTables-1.10.22/js/dataTables.bootstrap4.min.js"></script>
+  <script type="text/javascript" src="DataTables/Buttons-1.6.5/js/dataTables.buttons.min.js"></script>
+  <script type="text/javascript" src="DataTables/Buttons-1.6.5/js/buttons.bootstrap4.min.js"></script>
+  <script type="text/javascript" src="DataTables/Buttons-1.6.5/js/buttons.html5.min.js"></script>
+  <script type="text/javascript" src="DataTables/Buttons-1.6.5/js/buttons.print.min.js"></script>
 </html>

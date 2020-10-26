@@ -28,27 +28,30 @@ function manageSpinner(bool) {
 	}
 
 }
-
+function displayHideOurUnset(classs,display){
+	document.querySelector(classs).style.display = display;
+	return document.querySelector(classs);
+}
 function hideFilter() {
-	if (document.getElementById("institutions_length")) {
-		document.getElementById("institutions_length").style.display = "none";
-		document.getElementById("institutions_filter").style.display = "none";
-		document.getElementById("institutions_info").style.display = "none";
-		document.getElementById("institutions_paginate").style.display = "none";
-
+	document.getElementById("btnExport").style.display = "unset";
+	if (document.querySelector(".dt-buttons")) {
+		displayHideOurUnset(".dt-buttons","none");
+		displayHideOurUnset(".dataTables_filter","none");
+		displayHideOurUnset(".dataTables_info","none");
+		displayHideOurUnset(".dataTables_length","none");
+		displayHideOurUnset(".dataTables_paginate","none");
 	}
 
 }
 
 function showFilter() {
-	if (document.getElementById("institutions_length")) {
-		document.getElementById("institutions_length").style.display = "unset";
-		document.getElementById("institutions_filter").style.display = "unset";
-		document.getElementById("institutions_info").style.display = "unset";
-		document.getElementById("institutions_paginate").style.display = "unset";
-		$('#example').dataTable({
-			"pageLength": 50
-		});
+	document.getElementById("btnExport").style.display = "none";
+	if (document.querySelector(".dt-buttons")) {
+		displayHideOurUnset(".dt-buttons","unset");
+		displayHideOurUnset(".dataTables_filter","unset");
+		displayHideOurUnset(".dataTables_info","unset");
+		displayHideOurUnset(".dataTables_length","unset");
+		displayHideOurUnset(".dataTables_paginate","unset");
 	}
 
 }
@@ -56,9 +59,27 @@ function showFilter() {
 function updateDataTable(id) {
 	console.log("segunddo");
 
-	$(".dataTable").attr("id", id)
+if (!document.querySelector(".dt-buttons")) {
+	$("#tblToExport").DataTable({        
+        responsive: "true",
+        dom: 'Bfrtilp',       
+        buttons:[ 
+			{
+				extend:    'excelHtml5',
+				text:      '<i class="fas fa-file-excel"></i> ',
+				titleAttr: 'Exportar a Excel',
+				className: 'btn btn-success'
+			},
+			{
+				extend:    'pdfHtml5',
+				text:      '<i class="fas fa-file-pdf"></i> ',
+				titleAttr: 'Exportar a PDF',
+				className: 'btn btn-danger'
+			}
+		]	        
+    });     
+}
 
-	$('#' + id).DataTable();
 
 }
 
@@ -244,7 +265,7 @@ function institutions() {
 				showFilter();
 				manageSpinner(false);
 				console.log(data);
-				let nameColumns = ['Acronym', 'Code', 'Office Location',
+				let nameColumns = ['Code','Acronym', 'Office Location',
 					'Name', 'Website']
 
 				$.each(nameColumns, function (index, name) {
@@ -258,12 +279,14 @@ function institutions() {
 						function (index, item) {
 							$('#list-print')
 								.append(
-									'<tr>' + '<td >'
-									+ validateNull(item['acronym'])
-									+ '</td>'
+									'<tr>'
 									+ '<td>'
 									+ item['code']
 									+ '</td>'
+									+ '<td >'
+									+ validateNull(item['acronym'])
+									+ '</td>'
+
 									//Office Location
 									+ '<td>'
 									// + '<p class="nomar"><strong>Code:</strong> '
