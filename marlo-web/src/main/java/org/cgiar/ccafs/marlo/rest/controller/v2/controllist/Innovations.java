@@ -126,12 +126,10 @@ public class Innovations {
     @ApiParam(value = "${Innovation.innovation.GET.all.param.year}", required = true) @RequestParam Integer year,
     @ApiParam(value = "${Innovation.innovation.GET.all.param.phase}", required = true) @RequestParam String phase) {
     List<ProjectInnovationARDTO> innovationList = new ArrayList<ProjectInnovationARDTO>();
-    try {
-      innovationList =
-        this.innovationItem.findAllInnovationsByGlobalUnit(CGIAREntity, year, phase, this.getCurrentUser());
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+
+    innovationList =
+      this.innovationItem.findAllInnovationsByGlobalUnit(CGIAREntity, year, phase, this.getCurrentUser());
+
 
     return innovationList;
   }

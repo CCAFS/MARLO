@@ -111,10 +111,30 @@ ul.nav li a {
   margin: 0;
 }
 
+.headTitle.text-left{
+  margin: auto 0;
+}
+
 .reportsButtons {
   position: absolute;
   z-index: 99;
 }
 #repportsMenu {
   display: none;
+}
+
+
+
+#repportsMenu.subMenu {
+  z-index: 10;
+  display: block;
+  width: 100%;
+  background: #444444;
+  position: absolute;
+  /* top: 31px; */
+  left: 0;
+  padding: 0 0 3px 0px;
+  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
+  opacity: 0.98;
+  border-radius: 0px 0px 3px 3px;
 }

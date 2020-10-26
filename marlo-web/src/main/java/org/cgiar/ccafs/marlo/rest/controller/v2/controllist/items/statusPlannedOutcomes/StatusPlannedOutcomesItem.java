@@ -19,6 +19,7 @@
 
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.statusPlannedOutcomes;
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
@@ -327,7 +328,8 @@ public class StatusPlannedOutcomesItem<T> {
     String strippedRepoPhase = StringUtils.stripToNull(repoPhase);
     Phase phase = this.phaseManager.findAll().stream()
       .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), strippedEntityAcronym)
-        && p.getYear() == repoYear && StringUtils.equalsIgnoreCase(p.getName(), strippedRepoPhase) && p.isActive())
+        && p.getYear() >= APConstants.CLARISA_AVALIABLE_INFO_YEAR && p.getYear() == repoYear
+        && StringUtils.equalsIgnoreCase(p.getName(), strippedRepoPhase) && p.isActive())
       .findFirst().orElse(null);
     if (phase == null) {
       fieldErrors.add(new FieldErrorDTO("findStatusPlannedOutcomeById", "phase",

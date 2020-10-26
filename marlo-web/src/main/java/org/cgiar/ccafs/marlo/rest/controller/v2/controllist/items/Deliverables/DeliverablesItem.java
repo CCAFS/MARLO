@@ -406,7 +406,8 @@ public class DeliverablesItem<T> {
     String strippedRepoPhase = StringUtils.stripToNull(repoPhase);
     Phase phase = this.phaseManager.findAll().stream()
       .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), strippedEntityAcronym)
-        && p.getYear() == repoYear && StringUtils.equalsIgnoreCase(p.getName(), strippedRepoPhase))
+        && p.getYear() >= APConstants.CLARISA_AVALIABLE_INFO_YEAR && p.getYear() == repoYear
+        && StringUtils.equalsIgnoreCase(p.getName(), strippedRepoPhase))
       .findFirst().orElse(null);
     if (phase == null) {
       fieldErrors
@@ -464,9 +465,11 @@ public class DeliverablesItem<T> {
         entityAcronym + " is an invalid CGIAR entity acronym"));
     }
 
-    Phase phase =
-      this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(entityAcronym)
-        && c.getYear() == repoyear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().get();
+    Phase phase = this.phaseManager.findAll().stream()
+      .filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(entityAcronym)
+        && c.getYear() >= APConstants.CLARISA_AVALIABLE_INFO_YEAR && c.getYear() == repoyear
+        && c.getName().equalsIgnoreCase(repoPhase))
+      .findFirst().orElse(null);
     if (phase == null) {
       fieldErrors.add(new FieldErrorDTO("createDeliverable", "phase", repoyear + " is an invalid year"));
     }
@@ -521,7 +524,9 @@ public class DeliverablesItem<T> {
                     deliverableMetadataElement -> deliverableMetadataElement.getPhase().getId().equals(phase.getId()))
                   .collect(Collectors.toList());
               for (DeliverableMetadataElement deliverableMetadataElement : deliverableMetadataElementList) {
-                if (!deliverableMetadataElement.getElementValue().trim().isEmpty()) {
+
+                if (deliverableMetadataElement.getElementValue() != null
+                  && !deliverableMetadataElement.getElementValue().trim().isEmpty()) {
                   if (publication.getTitle() == null) {
                     if (deliverableMetadataElement.getMetadataElement().getEcondedName()
                       .equals(APConstants.METADATAELEMENTTITLE)) {
@@ -574,6 +579,7 @@ public class DeliverablesItem<T> {
 
 
       } catch (Exception e) {
+        e.printStackTrace();
         fieldErrors.add(new FieldErrorDTO("createDeliverable", "Deliverable", "ERROR Creating info"));
         throw new MARLOFieldValidationException("Field Validation errors", "",
           fieldErrors.stream()

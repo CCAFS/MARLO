@@ -53,13 +53,39 @@ function attachEvents() {
 }
 
 function updateCurrentTexts(){
-  $("#currentProject").html("P${(deliverables[0].project.id)!} - ${(deliverables[0].project.projectInfo.title)!}"); 
-  // $("#currentProject").text("P${(deliverables["+$(this).prop('selectedIndex')+"].project.id)!} - ${(deliverables["+$(this).prop('selectedIndex')+"].project.projectInfo.title)!}");
-  
-  console.log($(this).prop('selectedIndex')) ;
-  console.log($(this).children("option:selected").val());
-  console.log("select deliverables");
-  console.log($(this));
+  getproject(parseInt($( "#deliverableID" ).val()));
+}
+function getproject(Id){
+
+  $.ajax({
+    url: baseURL + '/getProjectByDeliverable.do',
+    data: {
+      deliverableId: Id
+        // phaseID: phaseID,
+        // financeCode: financeCode,
+        // institutionLead: leadPartnerID
+    },
+    beforeSend: function() {
+      // console.log("before");
+    },
+    success: function(r) {
+    // console.log("succes");
+    setCurrentProject(r);
+    },
+    error: function(e) {
+    },
+    complete: function() {
+      // console.log("complete");
+    }
+});
+
+}
+
+
+function setCurrentProject(project){
+  auxProject = project.projects[0];
+  // console.log(auxProject);
+  $("#currentProject").html("P"+auxProject.projectID+ " - " + auxProject.title); 
 }
 
 function changeValue(){
