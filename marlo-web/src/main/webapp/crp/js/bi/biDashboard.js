@@ -13,6 +13,10 @@ function addEvents() {
   $('.selectedReportBI').on('click', function () {
     reportsMenuToggle();
   });
+  $('.selectedReportBI').hover(function () {
+    $('#repportsMenu').slideDown("fast");
+    $('.reportsButtonsIcon').addClass("glyphicon-chevron-down");
+  });
 
   $('.setFullScreen').on('click', function () {
     fullScreenDashboard();
@@ -78,8 +82,7 @@ function executePetition(idReport) {
 function setReportTitle() {
   var reportTitle = $("div[class$='current']").attr("report-title");
   console.log(reportTitle + '')
-  // $('.breadcrumb .active').text(reportTitle + '');
-  $('.headTitle.text-center').text(reportTitle + '');
+  $('.headTitle.text-left').text(reportTitle + '');
 }
 
 // Embed Dashboard

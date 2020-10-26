@@ -55,22 +55,22 @@
        --]
         [#--  Reports header  --]
        <div class="headTitle-row-container">
-        <span class="selectedReportBI col-md-2">
-        <div class="col-md-8 button-bg">
+        <span class="selectedReportBI col-md-1">
+        <div class="col-md-12 btn button-bg">
             <p class="menu-item-title">[@s.text name="biDashboard.menu.title"/] </p>
             <span class="glyphicon reportsButtonsIcon glyphicon-chevron-up" style="color: #1da5ce"></span>
         </div>
         </span>
-        <h3 class="headTitle text-center col-md-8">
+        <h3 class="headTitle text-left col-md-8">
         </h3>
-        <span class="setFullScreen col-md-1 button-bg">
+        <span class="setFullScreen col-md-1 btn button-bg">
             <p class="menu-item-title">Fullscreen</p>
             <span class="glyphicon reportsButtonsIcon glyphicon-fullscreen" style="color: #1da5ce"></span>
         </span>
        </div>
         [#--  Reports header  --]
 
-        [#--  Reports Tabs --]
+        [#--  Reports Tabs --] 
         <div id="repportsMenu" class="reportsButtons col-md-2">
           <div class="menuList">
           [#list (biReports)![] as report]
@@ -80,6 +80,7 @@
           [/#list]
           </div>
         </div>
+
         
         [#--  Reports Content --]
         <div class="summariesContent col-md-12" style="min-height:550px;">

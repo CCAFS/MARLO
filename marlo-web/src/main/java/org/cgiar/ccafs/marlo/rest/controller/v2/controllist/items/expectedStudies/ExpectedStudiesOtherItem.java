@@ -58,7 +58,6 @@ import org.cgiar.ccafs.marlo.data.model.StudyType;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.MeliaARDTO;
 import org.cgiar.ccafs.marlo.rest.dto.MeliaDTO;
-import org.cgiar.ccafs.marlo.rest.dto.NewInnovationDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectExpectedStudiesOtherDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewSrfSubIdoDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
@@ -632,13 +631,14 @@ public class ExpectedStudiesOtherItem<T> {
       fieldErrors.add(
         new FieldErrorDTO("allMelia", "GlobalUnitEntity", CGIARentityAcronym + " is an invalid CGIAR entity acronym"));
     }
-    Phase phase =
-      this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
-        && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().get();
+    Phase phase = this.phaseManager.findAll().stream()
+      .filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
+        && c.getYear() >= APConstants.CLARISA_AVALIABLE_INFO_YEAR && c.getYear() == repoYear
+        && c.getName().equalsIgnoreCase(repoPhase))
+      .findFirst().orElse(null);
 
     if (phase == null) {
-      fieldErrors.add(
-        new FieldErrorDTO("allMelia", "phase", new NewInnovationDTO().getPhase().getYear() + " is an invalid year"));
+      fieldErrors.add(new FieldErrorDTO("allMelia", "phase", repoYear + " is an invalid year"));
     }
     if (!fieldErrors.isEmpty()) {
       throw new MARLOFieldValidationException("Field Validation errors", "",
@@ -697,9 +697,11 @@ public class ExpectedStudiesOtherItem<T> {
           "The Global Unit with acronym " + CGIARentityAcronym + " is not active."));
       }
     }
-    Phase phase =
-      this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
-        && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().orElse(null);
+    Phase phase = this.phaseManager.findAll().stream()
+      .filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
+        && c.getYear() >= APConstants.CLARISA_AVALIABLE_INFO_YEAR && c.getYear() == repoYear
+        && c.getName().equalsIgnoreCase(repoPhase))
+      .findFirst().orElse(null);
     if (phase == null) {
       fieldErrors
         .add(new FieldErrorDTO("findExpectedStudyOther", "phase", repoPhase + ' ' + repoYear + " is an invalid phase"));

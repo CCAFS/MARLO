@@ -268,20 +268,24 @@ public class AutoSaveReader {
       .registerTypeAdapter(BigDecimal.class, new BigDecimalTypeAdapter())
       .registerTypeAdapter(Date.class, new DateTypeAdapter()).registerTypeAdapter(String.class, new StringTypeAdapter())
       .create();
-    HashMap<String, Object> jsonNew = this.convertJSONFormat(gson.toJson(jobj));
+    if (jobj != null) {
+      HashMap<String, Object> jsonNew = this.convertJSONFormat(gson.toJson(jobj));
 
-    jobj = gson.fromJson(gson.toJson(jsonNew), JsonObject.class);
+      jobj = gson.fromJson(gson.toJson(jsonNew), JsonObject.class);
 
-    String className = jobj.get("className").getAsString();
-    jobj.remove("className");
+      String className = jobj.get("className").getAsString();
+      jobj.remove("className");
 
-    try {
-      Object obj = gson.fromJson(jobj, Class.forName(className));
-      return obj;
-    } catch (Exception e) {
-      e.printStackTrace();
-      LOG.error(e.getLocalizedMessage());
+      try {
+        Object obj = gson.fromJson(jobj, Class.forName(className));
+        return obj;
+      } catch (Exception e) {
+        e.printStackTrace();
+        LOG.error(e.getLocalizedMessage());
 
+      }
+    } else {
+      LOG.error("null jobj in readFromJson");
     }
     return null;
 
