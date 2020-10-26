@@ -54,7 +54,7 @@ ul.nav li a {
   margin: 0 1em 4px;
 }
 
-.reportsButtonsIconLG{
+.reportsButtonsIconLG {
   font-size: 30px;
   margin: 5px;
 }
@@ -93,7 +93,6 @@ ul.nav li a {
   width: 98vw;
 }
 
-
 .headTitle-row-container {
   display: flex;
   justify-content: space-around;
@@ -111,30 +110,30 @@ ul.nav li a {
   margin: 0;
 }
 
-.headTitle.text-left{
+.headTitle.text-left {
   margin: auto 0;
 }
 
 .reportsButtons {
   position: absolute;
   z-index: 99;
+  width: 83%;
 }
 #repportsMenu {
   display: none;
 }
 
-
-
-#repportsMenu.subMenu {
-  z-index: 10;
-  display: block;
-  width: 100%;
-  background: #444444;
-  position: absolute;
-  /* top: 31px; */
-  left: 0;
-  padding: 0 0 3px 0px;
-  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
-  opacity: 0.98;
-  border-radius: 0px 0px 3px 3px;
+.setFullScreen,
+.selectedReportBI {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  box-shadow: 1px 1px 1px rgba(0,0,0,0.1);
+}
+.setFullScreen p,
+.selectedReportBI p {
+  margin: 0;
+  font-size: 16px;
 }
