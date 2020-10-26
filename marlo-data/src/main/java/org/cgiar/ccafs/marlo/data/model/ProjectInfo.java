@@ -77,6 +77,8 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
   private Boolean activitiesCSV;
   @Expose
   private FileDB activitiesCSVFile;
+  @Expose
+  private Long previousProjectId;
 
   public ProjectInfo() {
   }
@@ -243,6 +245,10 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
 
   public Date getPresetDate() {
     return presetDate;
+  }
+
+  public Long getPreviousProjectId() {
+    return previousProjectId;
   }
 
   public Project getProject() {
@@ -432,6 +438,10 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     this.presetDate = presetDate;
   }
 
+  public void setPreviousProjectId(Long previousProjectId) {
+    this.previousProjectId = previousProjectId;
+  }
+
   public void setProject(Project project) {
     this.project = project;
   }
@@ -495,6 +505,7 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     this.setScale(update.getScale());
     this.setStartDate(update.getStartDate());
     this.setStatus(update.getStatus());
+    this.setPreviousProjectId(update.getPreviousProjectId());
     this.setStatusJustification(update.getStatusJustification());
     this.setSummary(update.getSummary());
     this.setTitle(update.getTitle());

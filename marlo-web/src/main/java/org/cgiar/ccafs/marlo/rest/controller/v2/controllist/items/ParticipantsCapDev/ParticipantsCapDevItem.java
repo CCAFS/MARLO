@@ -43,6 +43,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -224,25 +225,34 @@ public class ParticipantsCapDevItem<T> {
       fieldErrors.add(new FieldErrorDTO("findParticipantsCapDevById", "GlobalUnitEntity",
         cGIAREntity + " is an invalid CGIAR entity acronym"));
     }
-
+    Phase phasedata = this.phaseManager.findAll().stream()
+      .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), cGIAREntity)
+        && p.getYear() >= APConstants.CLARISA_AVALIABLE_INFO_YEAR && p.getYear() == year
+        && StringUtils.equalsIgnoreCase(p.getName(), phase))
+      .findFirst().orElse(null);
+    if (phasedata == null) {
+      fieldErrors.add(new FieldErrorDTO("findDeliverableById", "phase", phase + ' ' + year + " is an invalid phase"));
+    }
     ReportSynthesisCrossCuttingDimension reportSynthesisCrossCuttingDimension =
       reportSynthesisCrossCuttingDimensionManager.getReportSynthesisCrossCuttingDimensionById(id);
-
-    if (reportSynthesisCrossCuttingDimension == null) {
-      fieldErrors.add(new FieldErrorDTO("findParticipantsCapDevById", "ParticipantsCapDev",
-        id + " is an invalid Report Synthesis Cross Cutting Dimension code"));
-    } else {
-      if (reportSynthesisCrossCuttingDimension.getReportSynthesis() == null) {
+    if (fieldErrors.isEmpty()) {
+      if (reportSynthesisCrossCuttingDimension == null) {
         fieldErrors.add(new FieldErrorDTO("findParticipantsCapDevById", "ParticipantsCapDev",
-          id + " not exists code in Report Synthesis"));
+          id + " is an invalid Report Synthesis Cross Cutting Dimension code"));
       } else {
-        if (!(reportSynthesisCrossCuttingDimension.getReportSynthesis().getPhase().getName().equalsIgnoreCase(phase)
-          && reportSynthesisCrossCuttingDimension.getReportSynthesis().getPhase().getYear() == year)) {
+        if (reportSynthesisCrossCuttingDimension.getReportSynthesis() == null) {
           fieldErrors.add(new FieldErrorDTO("findParticipantsCapDevById", "ParticipantsCapDev",
-            year + " / " + phase + " is an invalid year or name phase"));
+            id + " not exists code in Report Synthesis"));
+        } else {
+          if (!(reportSynthesisCrossCuttingDimension.getReportSynthesis().getPhase().getName().equalsIgnoreCase(phase)
+            && reportSynthesisCrossCuttingDimension.getReportSynthesis().getPhase().getYear() == year)) {
+            fieldErrors.add(new FieldErrorDTO("findParticipantsCapDevById", "ParticipantsCapDev",
+              year + " / " + phase + " is an invalid year or name phase"));
+          }
         }
       }
     }
+
 
     // Validate all fields
     if (!fieldErrors.isEmpty()) {

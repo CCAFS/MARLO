@@ -65,6 +65,7 @@
           
           <h3 class="headTitle">[@s.text name="projectDescription.title" /]</h3>  
           <div id="projectDescription" class="borderBox">
+          
             
             [#-- Project Title --]
             <div class="form-group">
@@ -76,7 +77,12 @@
               [#-- Project Program Creator --]
               <div class="col-md-6">
                 [@customForm.select name="project.projectInfo.liaisonInstitution.id" className="liaisonInstitutionSelect" i18nkey="project.liaisonInstitution"  disabled=!editable  listName="liaisonInstitutions" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable && action.hasPermission("managementLiaison") /]
-              </div>             
+              </div>       
+              [#if action.hasSpecificities('previous_project_id_field_active') ]
+                <div class="col-md-3">
+                  [@customForm.input name="project.projectInfo.previousProjectId" i18nkey="project.previousId" required=false className="previousID" editable=editable && action.hasPermission("title") /]
+                </div>   
+              [/#if]          
             </div>
             [/#if]
             [#if isCenterProject ]
@@ -85,6 +91,11 @@
               <div class="col-md-6 researchProgram ">
                 [@customForm.select name="project.projectInfo.liaisonInstitution.id" listName="liaisonInstitutions" paramText="${currentCrp.acronym}" keyFieldName="id" displayFieldName="composedName" i18nkey="project.researchProgram" className="liaisonInstitutionSelect" help="project.researchProgram.help" required=true editable=editable /]
               </div>
+              [#if action.hasSpecificities('previous_project_id_field_active') ]
+                <div class="col-md-3">
+                  [@customForm.input name="project.projectInfo.previousProjectId" i18nkey="project.previousId" required=false className="previousID" editable=editable && action.hasPermission("title") /]
+                </div>   
+              [/#if]    
             </div>
             [/#if]
             <div class="form-group row">  
