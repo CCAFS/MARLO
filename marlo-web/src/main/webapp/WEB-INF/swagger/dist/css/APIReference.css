@@ -74,6 +74,10 @@ h3 {
   font-weight: 600;
   margin-bottom: 20px;
   padding-bottom: 0;
+  color: #4b4a4a;
+}
+
+.leftBarFixed h3 {
   color: #c9c9c9;
 }
 
