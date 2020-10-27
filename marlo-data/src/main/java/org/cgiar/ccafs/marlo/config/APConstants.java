@@ -158,7 +158,7 @@ public final class APConstants {
   public static final String ELEMENT_TYPE_ID = "parentId";
   public static final int ELEMENT_TYPE_OUTCOME2019 = 3;
 
-  // end year
+  // TODO remove this variable and create an specificity for each CRP/Platform
   public static Integer END_YEAR = 2022;
   public static final String ERROR_ACCOUNT_DISABLED = "ERROR_ACCOUNT_DISABLED";
   public static final String ERROR_ACCOUNT_EXPIRED = "ERROR_ACCOUNT_EXPIRED";
