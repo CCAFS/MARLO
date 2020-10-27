@@ -101,6 +101,10 @@ public class OutcomesAction extends BaseAction {
   private static final long serialVersionUID = -793652591843623397L;
 
 
+  // FIXME remove this variable. create an specificity for each crp/platform
+  private static final Integer END_YEAR = 2030;
+
+
   private AuditLogManager auditLogManager;
 
 
@@ -109,9 +113,9 @@ public class OutcomesAction extends BaseAction {
 
   private HistoryComparator historyComparator;
 
-
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
+
 
   private CrpProgramOutcomeIndicatorManager crpProgramOutcomeIndicatorManager;
 
@@ -127,30 +131,28 @@ public class OutcomesAction extends BaseAction {
 
   private FileDBManager fileDBManager;
 
-
   private CrpProgramManager crpProgramManager;
 
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
 
+
   private GeneralStatusManager generalStatusManager;
 
-
   private HashMap<Long, String> idoList;
+
 
   private GlobalUnit loggedCrp;
 
 
   private List<Integer> milestoneYears;
-
-
   private List<CrpProgramOutcome> outcomes;
   private List<CrpProgram> programs;
-  private CrpProgram selectedProgram;
 
+  private CrpProgram selectedProgram;
   private SrfIdoManager srfIdoManager;
   private List<SrfIdo> srfIdos;
-  private SrfSubIdoManager srfSubIdoManager;
 
+  private SrfSubIdoManager srfSubIdoManager;
   private SrfTargetUnitManager srfTargetUnitManager;
   private HashMap<Long, String> targetUnitList;
   private String transaction;
@@ -165,8 +167,8 @@ public class OutcomesAction extends BaseAction {
   private PowbIndMilestoneRiskManager powbIndMilestoneRiskManager;
   private List<PowbIndFollowingMilestone> followingMilestones;
   private PowbIndFollowingMilestoneManager powbIndFollowingMilestoneManager;
-  private List<GeneralStatus> generalStatuses;
 
+  private List<GeneralStatus> generalStatuses;
 
   @Inject
   public OutcomesAction(APConfig config, SrfTargetUnitManager srfTargetUnitManager, SrfIdoManager srfIdoManager,
@@ -337,7 +339,7 @@ public class OutcomesAction extends BaseAction {
     Calendar calendarStart = new GregorianCalendar(2017, 0, 10, 01, 10, 30);
 
     Calendar calendarEnd = Calendar.getInstance();
-    calendarEnd.set(Calendar.YEAR, APConstants.END_YEAR);
+    calendarEnd.set(Calendar.YEAR, END_YEAR);
 
     while (calendarStart.get(Calendar.YEAR) <= calendarEnd.get(Calendar.YEAR)) {
 
@@ -811,6 +813,9 @@ public class OutcomesAction extends BaseAction {
       programOutcomeIncoming.setCrpProgram(this.getSelectedProgram());
       crpProgramOutcome.copyFields(programOutcomeIncoming);
 
+      //crpProgramOutcome.setModifiedBy(this.getCurrentUser());
+      //crpProgramOutcome.setActiveSince(new Date(Calendar.getInstance().getTimeInMillis()));
+
       crpProgramOutcome = crpProgramOutcomeManager.saveCrpProgramOutcome(crpProgramOutcome);
 
       String composedId = StringUtils.stripToNull(crpProgramOutcome.getComposeID());
@@ -980,6 +985,10 @@ public class OutcomesAction extends BaseAction {
 
 
         milestone.copyFields(incomingMilestone);
+
+        //milestone.setActiveSince(new Date(Calendar.getInstance().getTimeInMillis()));
+        //milestone.setModifiedBy(this.getCurrentUser());
+
         milestone.setPhaseCreated(this.getActualPhase());
         milestone.setCrpProgramOutcome(programOutcomeOld);
         milestone = crpMilestoneManager.saveCrpMilestone(milestone);
@@ -1037,7 +1046,8 @@ public class OutcomesAction extends BaseAction {
         } else {
           // what if somehow the incoming subIdo has an id BUT it does not exist in the DB? Edge case, but still...
           outcomeSubIdo = crpOutcomeSubIdoManager.getCrpOutcomeSubIdoById(incomingOutcomeSubIdo.getId());
-          if (!outcomeSubIdo.getSrfSubIdo().equals(incomingOutcomeSubIdo.getSrfSubIdo())) {
+          if (outcomeSubIdo.getSrfSubIdo() == null
+            || !outcomeSubIdo.getSrfSubIdo().equals(incomingOutcomeSubIdo.getSrfSubIdo())) {
             // srf sub ido was updated, deactivate every outcome sub ido from this phase
             crpOutcomeSubIdoManager.deleteCrpOutcomeSubIdo(outcomeSubIdo.getId());
             outcomeSubIdo = crpOutcomeSubIdoManager.getCrpOutcomeSubIdoById(outcomeSubIdo.getId());

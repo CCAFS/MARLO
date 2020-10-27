@@ -180,7 +180,7 @@ public class ProjectPageItem<T> {
 
     //
 
-    Phase phase = phaseManager.findCycle("Reporting", projectPageYear, false, globalUnit.getId().longValue());
+    Phase phase = phaseManager.findCycle("Planning", projectPageYear, true, globalUnit.getId().longValue());
     if (phase != null) {
       // Get the Project Info
       project.getProjecInfoPhase(phase);

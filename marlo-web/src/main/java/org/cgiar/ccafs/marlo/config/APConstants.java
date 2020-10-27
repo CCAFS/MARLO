@@ -48,6 +48,7 @@ public final class APConstants {
   public static final String CRP_CLOSED = "crp_closed";
   public static final String CRP_CLUSTER_ACTIVITY_ID = "clusterActivityID";
   public static final String CRP_CU = "crp_cu";
+  public static final String CRP_COVID_REQUIRED = "crp_covid_required";
 
   public static final String CRP_CUSTOM_FILE = "crp_custom_file";
   public static final String CRP_CUSTOM_GENDER = "crp_custom_gender";
@@ -130,6 +131,7 @@ public final class APConstants {
   public static final String CRP_SHOW_SECTION_IMPACT_COVID19 = "crp_show_section_impact_covid19";
   public static final String CRP_SHOW_SECTION_IMPACT_COVID19_RANGES_YEARS =
     "crp_show_section_impact_covid19_ranges_years";
+  public static final String PREVIOUS_PROJECT_ID_ACTIVE = "previous_project_id_field_active";
   public static final String CRP_BI_MODULE_ACTIVE = "crp_bi_module_active";
 
   public static final String IS_EXPECTED_DELIVERABLE_REPORT_All_YEARS_VISIBLE =
@@ -165,7 +167,7 @@ public final class APConstants {
   public static final String ELEMENT_TYPE_ID = "parentId";
   public static final int ELEMENT_TYPE_OUTCOME2019 = 3;
 
-  // end year
+  // TODO remove this variable and create an specificity for each CRP/Platform
   public static Integer END_YEAR = 2022;
   public static final String ERROR_ACCOUNT_DISABLED = "ERROR_ACCOUNT_DISABLED";
   public static final String ERROR_ACCOUNT_EXPIRED = "ERROR_ACCOUNT_EXPIRED";
@@ -193,7 +195,7 @@ public final class APConstants {
 
   public static final String FUNDING_SOURCES_INSTITUTIONS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.fundingSourceInstitutions)";
-  
+
   public static final String FUNDING_SOURCES_DIVISIONS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.fundingSourceDivisions)";
 
@@ -768,7 +770,7 @@ public final class APConstants {
   public static final String CRP_CAP_DEV_ACTIVE = "crp_capdev_active";
 
   // Marlo PDF Manual Name
-  public static final String MARLO_PDF_MANUAL_NAME = "Introduction_To_MARLO_V2.6.pdf";
+  public static final String MARLO_PDF_MANUAL_NAME = "Introduction_To_MARLO_V2.8.pdf";
 
   // GeoiIp maps database
   public static final String DATABASE_COUNTRY_FILENAME = "GeoLite2-Country.mmdb";
@@ -796,6 +798,8 @@ public final class APConstants {
   public static final long IMPORT_DELIVERABLE_VALUE = 63;
 
   public static final String CRP_EMAIL_NOTIFICATIONS = "crp_enable_email_notification";
+
+  public static final int CLARISA_AVALIABLE_INFO_YEAR = 2018;
 
   public static String getFilterBy() {
     return FILTER_BY;

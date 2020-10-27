@@ -1200,9 +1200,11 @@ public class ExpectedStudiesItem<T> {
       }
 
     }
-    Phase phase =
-      this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
-        && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().orElse(null);
+    Phase phase = this.phaseManager.findAll().stream()
+      .filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
+        && c.getYear() >= APConstants.CLARISA_AVALIABLE_INFO_YEAR && c.getYear() == repoYear
+        && c.getName().equalsIgnoreCase(repoPhase))
+      .findFirst().orElse(null);
     if (phase == null) {
       fieldErrors
         .add(new FieldErrorDTO("findExpectedStudy", "phase", repoPhase + ' ' + repoYear + " is an invalid phase"));
@@ -1253,9 +1255,11 @@ public class ExpectedStudiesItem<T> {
 
     }
 
-    Phase phase =
-      this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
-        && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().orElse(null);
+    Phase phase = this.phaseManager.findAll().stream()
+      .filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
+        && c.getYear() >= APConstants.CLARISA_AVALIABLE_INFO_YEAR && c.getYear() == repoYear
+        && c.getName().equalsIgnoreCase(repoPhase))
+      .findFirst().orElse(null);
     if (phase == null) {
       fieldErrors
         .add(new FieldErrorDTO("findExpectedStudy", "phase", repoPhase + ' ' + repoYear + " is an invalid phase"));
