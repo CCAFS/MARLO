@@ -4,7 +4,6 @@
 [#assign pageLibs = ["select2", "dropzone", "blueimp-file-upload"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectBudgetByPartners.js?20190403",
-  "${baseUrlCdn}/global/js/autoSave.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js"
   ] 
 /]
@@ -277,7 +276,7 @@
         [#-- Funding sources --]
         <div class="projectW3bilateralFund-list simpleBox project-fs-expandible-true" style="display:${expandedProjectFundingSource?string('block', 'none')}">
           [#list projectFundingSources as budget ] 
-            [#local indexBudgetfundingSource=action.getIndexBudget(element.institution.id,selectedYear,budget.fundingSource.fundingSourceInfo.budgetType.id,budget.fundingSource.id) ]
+            [#local indexBudgetfundingSource=(action.getIndexBudget(element.institution.id,selectedYear,budget.fundingSource.fundingSourceInfo.budgetType.id,budget.fundingSource.id))!"" ]
             [@projectFundingBudget element=budget name="project.budgets" selectedYear=selectedYear  index=indexBudgetfundingSource /]
           [#else]
             [#if editable && isYearEditable(selectedYear) && action.canSearchFunding(element.institution.id)]

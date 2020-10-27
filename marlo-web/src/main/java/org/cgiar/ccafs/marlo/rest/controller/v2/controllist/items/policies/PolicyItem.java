@@ -584,12 +584,13 @@ public class PolicyItem<T> {
         CGIARentityAcronym + " is an invalid CGIAR entity acronym"));
     }
 
-    Phase phase =
-      this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
-        && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().get();
+    Phase phase = this.phaseManager.findAll().stream()
+      .filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
+        && c.getYear() >= APConstants.CLARISA_AVALIABLE_INFO_YEAR && c.getYear() == repoYear
+        && c.getName().equalsIgnoreCase(repoPhase))
+      .findFirst().orElse(null);
     if (phase == null) {
-      fieldErrors.add(new FieldErrorDTO("createPolicy", "phase",
-        new NewProjectPolicyDTO().getPhase().getYear() + " is an invalid year"));
+      fieldErrors.add(new FieldErrorDTO("createPolicy", "phase", repoYear + " is an invalid year"));
     }
 
     if (!fieldErrors.isEmpty()) {
@@ -626,9 +627,11 @@ public class PolicyItem<T> {
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
     ProjectPolicy projectPolicy = projectPolicyManager.getProjectPolicyById(id.longValue());
 
-    Phase phase =
-      this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
-        && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().get();
+    Phase phase = this.phaseManager.findAll().stream()
+      .filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
+        && c.getYear() >= APConstants.CLARISA_AVALIABLE_INFO_YEAR && c.getYear() == repoYear
+        && c.getName().equalsIgnoreCase(repoPhase))
+      .findFirst().orElse(null);
 
     Set<CrpUser> lstUser = user.getCrpUsers();
 
@@ -643,10 +646,11 @@ public class PolicyItem<T> {
 
     if (phase == null) {
       fieldErrors.add(new FieldErrorDTO("findPolicy", "phase", repoYear + " is an invalid year"));
-    }
+    } else {
 
-    if (projectPolicy == null || projectPolicy.getProjectPolicyInfo(phase) == null) {
-      fieldErrors.add(new FieldErrorDTO("findPolicy", "InnovationId", id + " is an invalid id of an policy"));
+      if (projectPolicy == null || projectPolicy.getProjectPolicyInfo(phase) == null) {
+        fieldErrors.add(new FieldErrorDTO("findPolicy", "InnovationId", id + " is an invalid id of an policy"));
+      }
     }
 
     if (projectPolicy.getProjectPolicyInfo() != null) {

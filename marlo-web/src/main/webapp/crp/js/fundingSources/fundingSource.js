@@ -1139,8 +1139,9 @@ function getInstitutionsBudgetByType(budgetTypeID) {
         // Trigger donors selects
         $donorSelectLists.trigger("change.select2");
         // Stop Loader
-        $('.loading.contentBlok').fadeOut(800);
-      }
+        $('.loading').fadeOut(800);
+      },
+      timeout: 3000
   });
 }
 

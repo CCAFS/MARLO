@@ -54,7 +54,7 @@ ul.nav li a {
   margin: 0 1em 4px;
 }
 
-.reportsButtonsIconLG{
+.reportsButtonsIconLG {
   font-size: 30px;
   margin: 5px;
 }
@@ -62,10 +62,11 @@ ul.nav li a {
 .reportSection {
   padding: 3px 11px;
   border: 1px solid #d2d2d2;
-  margin-bottom: 5px;
   border-radius: 3px;
   position: relative;
   text-align: center;
+  margin-bottom: 2px;
+  background-color: white;
   /* text-align: center; */
 }
 
@@ -90,4 +91,49 @@ ul.nav li a {
 
 .containerBI {
   width: 98vw;
+}
+
+.headTitle-row-container {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 1em;
+}
+
+.headTitle-row-container .header-menu {
+  width: 5%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.headTitle-row-container .header-menu .menu-item-title {
+  margin: 0;
+}
+
+.headTitle.text-left {
+  margin: auto 0;
+}
+
+.reportsButtons {
+  position: absolute;
+  z-index: 99;
+  width: 83%;
+}
+#repportsMenu {
+  display: none;
+}
+
+.setFullScreen,
+.selectedReportBI {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  box-shadow: 1px 1px 1px rgba(0,0,0,0.1);
+}
+.setFullScreen p,
+.selectedReportBI p {
+  margin: 0;
+  font-size: 16px;
 }
