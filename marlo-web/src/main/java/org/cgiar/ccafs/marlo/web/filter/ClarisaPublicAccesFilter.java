@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.web.filter;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.IOException;
@@ -31,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -64,7 +66,8 @@ public class ClarisaPublicAccesFilter extends OncePerRequestFilter {
 
     String indexString = split[0];
 
-    if (StringUtils.isNotEmpty(indexString) && (indexString.equals("index.html") || indexString.equals("api.html"))) {
+    if (StringUtils.isNotEmpty(indexString)
+      && (indexString.equals("index.html") || indexString.equals("api.html") || indexString.equals("home.html"))) {
 
       Subject subject = SecurityUtils.getSubject();
 
@@ -73,8 +76,11 @@ public class ClarisaPublicAccesFilter extends OncePerRequestFilter {
         String user = this.config.getClarisaUser();
         String password = this.config.getClarisaPassword();
 
-        userManager.login(user, password);
-
+        User userobj = userManager.login(user, password);
+        if (userobj != null) {
+          UsernamePasswordToken token = new UsernamePasswordToken(user, password);
+          subject.login(token);
+        }
         Session session = subject.getSession();
 
         session.setAttribute(APConstants.CLARISA_PUBLIC, true);
