@@ -300,3 +300,10 @@ tbody#list-print td {
 .pointer {
   cursor: pointer;
 }
+
+.URLendpoint {
+   color: white;
+   background-color: #1f1f1f;
+   font-family: monospace;
+   width: 500px
+}

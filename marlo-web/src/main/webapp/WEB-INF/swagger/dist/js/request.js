@@ -51,13 +51,15 @@ function updateDataTable(id) {
 				extend: 'excelHtml5',
 				text: '<i class="fas fa-file-excel"></i> ',
 				titleAttr: 'Exportar a Excel',
-				className: 'btn btn-success'
+				className: 'btn btn-success',
+				title: id
 			},
 			{
 				extend: 'pdfHtml5',
 				text: '<i class="fas fa-file-pdf"></i> ',
 				titleAttr: 'Exportar a PDF',
-				className: 'btn btn-danger'
+				className: 'btn btn-danger',
+				title: id
 			}
 		]
 	});
@@ -101,8 +103,8 @@ function cgiar_entities() {
 				'CGIAR Entity Type']
 
 			// $.each(nameColumns, function (index, name) {
-			// 	$('#list-print-columns-name').append(
-			// 		'<th >' + name + '</th>')
+			// $('#list-print-columns-name').append(
+			// '<th >' + name + '</th>')
 			// });
 
 			$.each(data, function (index, item) {
@@ -145,8 +147,8 @@ function cgiar_entity_types() {
 			let nameColumns = ['Code', 'Name']
 
 			// $.each(nameColumns, function (index, name) {
-			// 	console.log("primero1");
-			// 	$('#list-print-columns-name').append('<th >' + name + '</th>')
+			// console.log("primero1");
+			// $('#list-print-columns-name').append('<th >' + name + '</th>')
 			// });
 
 			$.each(data, function (index, item) {
@@ -186,7 +188,7 @@ function countries() {
 			let nameColumns = ['Code', 'ISO Alpha2', 'Name', 'Region']
 
 			// $.each(nameColumns, function (index, name) {
-			// 	$('#list-print-columns-name').append('<th >' + name + '</th>')
+			// $('#list-print-columns-name').append('<th >' + name + '</th>')
 			// });
 
 			$.each(data, function (index, item) {
@@ -226,7 +228,7 @@ function un_regions() {
 			let nameColumns = ['UN49Code', 'Name']
 
 			// $.each(nameColumns, function (index, name) {
-			// 	$('#list-print-columns-name').append('<th >' + name + '</th>')
+			// $('#list-print-columns-name').append('<th >' + name + '</th>')
 			// });
 
 			$.each(data, function (index, item) {
@@ -267,8 +269,8 @@ function institutions() {
 					'Name', 'Website']
 
 				// $.each(nameColumns, function (index, name) {
-				// 	$('#list-print-columns-name').append(
-				// 		'<th >' + name + '</th>')
+				// $('#list-print-columns-name').append(
+				// '<th >' + name + '</th>')
 				// });
 
 				$
@@ -285,24 +287,32 @@ function institutions() {
 									+ validateNull(item['acronym'])
 									+ '</td>'
 
-									//Office Location
+									// Office Location
 									+ '<td>'
-									// + '<p class="nomar"><strong>Code:</strong> '
+									// + '<p
+									// class="nomar"><strong>Code:</strong> '
 									// + item['countryOfficeDTO']['0'].code
 									// + '</p>'
-									// + '<p class="nomar"><strong>isHeadquarter:</strong> '
-									// + converYesOrNot(item['countryOfficeDTO']['0'].isHeadquarter)
+									// + '<p
+									// class="nomar"><strong>isHeadquarter:</strong>
+									// '
+									// +
+									// converYesOrNot(item['countryOfficeDTO']['0'].isHeadquarter)
 									// + '</p>'
-									// + '<p class="nomar"><strong>isoAlpha2:</strong> '
+									// + '<p
+									// class="nomar"><strong>isoAlpha2:</strong>
+									// '
 									// + item['countryOfficeDTO']['0'].isoAlpha2
 									// + '</p>'
-									// + '<p class="nomar"><strong>name:</strong> '
+									// + '<p
+									// class="nomar"><strong>name:</strong> '
 									// + item['countryOfficeDTO']['0'].name
 									// + '</p>'
 									+ '<p class="nomar"><strong>Headquarter: </strong> '
 									+ getHeadquarter(item['countryOfficeDTO'])
 									+ '</p>'
-									// + '<p class="nomar"><strong>Other office locations:</strong> '
+									// + '<p class="nomar"><strong>Other office
+									// locations:</strong> '
 									+ get_other_office_locations(item['countryOfficeDTO'])
 									// + '</p>'
 
