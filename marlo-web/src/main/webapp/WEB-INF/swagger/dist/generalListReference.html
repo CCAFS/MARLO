@@ -56,41 +56,6 @@
 
 <body>
 
-<!-- <div class="mas" style="width: 100%; height: 1000px;">
-
-  <table id="tblToExport" cellspacing="0" cellpadding="0">
-    <tr>
-        <th>Customer Id</th>
-        <th>Name</th>
-        <th>Country</th>
-    </tr>
-    <tr>
-        <td>1</td>
-        <td>Benjamin Hammond</td>
-        <td>United States</td>
-    </tr>
-    <tr>
-        <td>2</td>
-        <td>Vikas Lalwani</td>
-        <td>India</td>
-    </tr>
-    <tr>
-        <td>3</td>
-        <td>Martin Mathews</td>
-        <td>France</td>
-    </tr>
-    <tr>
-        <td>4</td>
-        <td>Geoffry Schidner</td>
-        <td>Canada</td>
-    </tr>
-</table>
-<br />
-
-
-</div> -->
-
-
 
   <!-- ======= Top Bar ======= -->
   <header id="header">
@@ -196,13 +161,25 @@
                             <span>integer($int64)</span></td>
                           <td><span>CGIAR entity type Code</span></td>
                         </tr>
-                        <tr></tr>
+                        <tr>
+                          <td colspan="2"></td> 
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                            <div>
+	                            <p><span><Strong>Request URL: </Strong></span></p>
+	                            <div class="URLendpoint">
+		                            <div class="fragCode">
+		                              <p><span class="endpoint"></span>/cgiar-entities</p>
+		                            </div>
+	                            </div>                            
+                            </div>
+                            </td>                           
+                        </tr>
                       </tbody>
                     </table>
                   </div>
-                  <div>
-                      <p><span>Request URL: </span></p>
-                  </div>
+                 
                   <div class="container-c">
                     <div class="row">
                       <div class="col-12" style="margin-bottom: 20px;">
@@ -283,11 +260,32 @@
                     <div>This list contains the types of entities we have currently in the CGIAR. So far, we have the CGIAR Research Programs, platforms, and Centers. </div>
                     <h3>Parameters</h3>
                     <div>No parameters</div>
+                    <table style="width: 70%">
+										  <thead>
+										    <tr>
+										      <th></th>     
+										    </tr>
+										  </thead>
+										  <tbody>
+										    <tr>
+										      <td colspan="2">
+										        <div>
+										          <p><span><Strong>Request URL: </Strong></span></p>
+										          <div class="URLendpoint">
+										            <div class="fragCode">
+										              <p><span class="endpoint"></span>/cgiar-entity-types</p>
+										            </div>
+										          </div>
+										        </div>
+										      </td>
+										    </tr>
+										  </tbody>
+										</table>
                   </div>
                   <div class="container-c">
                     <div class="row">
                       <div class="col-12" style="margin-bottom: 20px;">
-                        <button onclick="cgiar_entity_types()" type="button"  data-toggle="modal" data-target="#exampleRequestModal2" class="btn getColorbackgroundExample btn-lg btn-block">Example</button>
+                        <button onclick="cgiar_entity_types()" type="button"  data-toggle="modal" data-target="#exampleRequestModal2" class="btn getColorbackgroundExample btn-lg btn-block">Display control list</button>
                       </div>
                       <div class="col-12">
                         <div class="fragCode">
@@ -359,6 +357,27 @@
                     </div>
                     <h3>Parameters</h3>
                     <div>No parameters</div>
+                    <table style="width: 70%">
+									  <thead>
+									    <tr>
+									      <th></th>     
+									    </tr>
+									  </thead>
+									  <tbody>        
+									    <tr>
+									      <td colspan="2">
+									        <div>
+									          <p><span><Strong>Request URL: </Strong></span></p>
+									          <div class="URLendpoint">
+									            <div class="fragCode">
+									              <p><span class="endpoint"></span>/countries</p>
+									            </div>
+									          </div>
+									        </div>
+									      </td>
+									    </tr>
+									  </tbody>
+									</table>
                   </div>
                   <div class="container-c">
                     <div class="row">
@@ -445,7 +464,28 @@
                     </div>
                     <h3>Parameters</h3>
                     <div>No parameters</div>
-                  </div>
+                    <table style="width: 70%">
+										  <thead>
+										    <tr>
+										      <th></th>     
+										    </tr>
+										  </thead>
+										  <tbody>        
+										    <tr>
+										      <td colspan="2">
+										        <div>
+										          <p><span><Strong>Request URL: </Strong></span></p>
+										          <div class="URLendpoint">
+										            <div class="fragCode">
+										              <p><span class="endpoint"></span>/un-regions</p>
+										            </div>
+										          </div>
+										        </div>
+										      </td>
+										    </tr>
+										  </tbody>
+										</table>
+                  </div>                   
                   <div class="container-c">
                     <div class="row">
                       <div class="col-12" style="margin-bottom: 20px;">
@@ -554,6 +594,27 @@
                     <div>This is a worldwide list of institutions that have been related to CGIAR activities as funders, leaders, partners, and/or contributors. This list reflects the information consolidated by some of the CGIAR Management Information Systems and external sources (i.e. MARLO and MEL). </div>
                     <h3>Parameters</h3>
                     <div>No parameters</div>
+                    <table style="width: 70%">
+										  <thead>
+										    <tr>
+										      <th></th>     
+										    </tr>
+										  </thead>
+										  <tbody>        
+										    <tr>
+										      <td colspan="2">
+										        <div>
+										          <p><span><Strong>Request URL: </Strong></span></p>
+										          <div class="URLendpoint">
+										            <div class="fragCode">
+										              <p><span class="endpoint"></span>/institutions</p>
+										            </div>
+										          </div>
+										        </div>
+										      </td>
+										    </tr>
+										  </tbody>
+										</table>
                   </div>
                   <div class="container-c">
                     <div class="row">
@@ -672,8 +733,6 @@
         </button>
       </div> -->
       <div class="modal-body" >
-
-
         <table class="table dataTable" id="cgiar_entities" >
           <thead class="thead-dark">
             <tr >
@@ -765,15 +824,6 @@
         </button>
       </div> -->
       <div class="modal-body" >
-        
-
-
-
-
-
-
-
-
         <table class="table dataTable" id="countries" >
           <thead class="thead-dark">
             <tr >
@@ -820,13 +870,6 @@
         </button>
       </div> -->
       <div class="modal-body" >
-
-
-
-
-
-
-
         <table class="table dataTable" id="un_regions" >
           <thead class="thead-dark">
             <tr >
@@ -873,10 +916,6 @@
         </button>
       </div> -->
       <div class="modal-body" >
-
-
-
-
         <table class="table dataTable" id="institutions" >
           <thead class="thead-dark">
             <tr id="#list-print-columns-name">
@@ -914,6 +953,8 @@
   </div>
 </div>
 
+
+
 </body>
 <!-- 
 <p>This is a paragraph.</p>
@@ -938,7 +979,7 @@
     });
   }
 
-
+  $('.endpoint').html(config.endpoint);
 
 
 
