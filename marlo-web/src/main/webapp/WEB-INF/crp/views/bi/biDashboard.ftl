@@ -37,7 +37,8 @@
 
         <div class='selectedReportBIContainer col-md-1'>
           <span class="selectedReportBI btn button-bg">
-              <p class="menu-item-title">[@s.text name="biDashboard.menu.title"/] </p>
+              [#--  <p class="menu-item-title">[@s.text name="biDashboard.menu.title"/] </p>  --]
+              <p class="menu-item-title">Dashboards</p>
             <span class="glyphicon reportsButtonsIcon glyphicon-chevron-up" style="color: #1da5ce"></span>
           </span>
           [#--  Reports Tabs --] 
