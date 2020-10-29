@@ -46,11 +46,17 @@
   <link rel="stylesheet" href="homepage/assets/css/custom.css" />
   <link rel="stylesheet" href="css/global.css" />
   <link rel="stylesheet" href="css/APIReference.css" />
-  <link rel="stylesheet" href="css/dataTable/dataTable.min.css">
-
+  <!-- <link rel="stylesheet" href="css/dataTable/dataTable.min.css"> -->
+  <!-- dataTables -->
+  <link rel="stylesheet" type="text/css" href="DataTables/DataTables-1.10.22/css/dataTables.bootstrap4.min.css"/>
+  <link rel="stylesheet" type="text/css" href="DataTables/Buttons-1.6.5/css/buttons.bootstrap4.min.css"/>
+  <script src="https://kit.fontawesome.com/557519e2f1.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="css/tablesHide.css">
 </head>
 
 <body>
+
+
   <!-- ======= Top Bar ======= -->
   <header id="header">
     <nav class="navbar navbar-expand-lg">
@@ -155,14 +161,29 @@
                             <span>integer($int64)</span></td>
                           <td><span>CGIAR entity type Code</span></td>
                         </tr>
-                        <tr></tr>
+                        <tr>
+                          <td colspan="2"></td> 
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                            <div>
+	                            <p><span><Strong>Request URL: </Strong></span></p>
+	                            <div class="URLendpoint">
+		                            <div class="fragCode">
+		                              <p><span class="endpoint"></span>/cgiar-entities</p>
+		                            </div>
+	                            </div>                            
+                            </div>
+                            </td>                           
+                        </tr>
                       </tbody>
                     </table>
                   </div>
+                 
                   <div class="container-c">
                     <div class="row">
                       <div class="col-12" style="margin-bottom: 20px;">
-                        <button onclick="cgiar_entities()" type="button"  data-toggle="modal" data-target="#exampleRequestModal" class="btn getColorbackgroundExample btn-lg btn-block">Example</button>
+                        <button onclick="cgiar_entities()" type="button"  data-toggle="modal" data-target="#exampleRequestModal1" class="btn getColorbackgroundExample btn-lg btn-block">Display control list</button>
                       </div>
 
                       <div class="col-12">
@@ -239,11 +260,32 @@
                     <div>This list contains the types of entities we have currently in the CGIAR. So far, we have the CGIAR Research Programs, platforms, and Centers. </div>
                     <h3>Parameters</h3>
                     <div>No parameters</div>
+                    <table style="width: 70%">
+										  <thead>
+										    <tr>
+										      <th></th>     
+										    </tr>
+										  </thead>
+										  <tbody>
+										    <tr>
+										      <td colspan="2">
+										        <div>
+										          <p><span><Strong>Request URL: </Strong></span></p>
+										          <div class="URLendpoint">
+										            <div class="fragCode">
+										              <p><span class="endpoint"></span>/cgiar-entity-types</p>
+										            </div>
+										          </div>
+										        </div>
+										      </td>
+										    </tr>
+										  </tbody>
+										</table>
                   </div>
                   <div class="container-c">
                     <div class="row">
                       <div class="col-12" style="margin-bottom: 20px;">
-                        <button onclick="cgiar_entity_types()" type="button"  data-toggle="modal" data-target="#exampleRequestModal" class="btn getColorbackgroundExample btn-lg btn-block">Example</button>
+                        <button onclick="cgiar_entity_types()" type="button"  data-toggle="modal" data-target="#exampleRequestModal2" class="btn getColorbackgroundExample btn-lg btn-block">Display control list</button>
                       </div>
                       <div class="col-12">
                         <div class="fragCode">
@@ -315,11 +357,32 @@
                     </div>
                     <h3>Parameters</h3>
                     <div>No parameters</div>
+                    <table style="width: 70%">
+									  <thead>
+									    <tr>
+									      <th></th>     
+									    </tr>
+									  </thead>
+									  <tbody>        
+									    <tr>
+									      <td colspan="2">
+									        <div>
+									          <p><span><Strong>Request URL: </Strong></span></p>
+									          <div class="URLendpoint">
+									            <div class="fragCode">
+									              <p><span class="endpoint"></span>/countries</p>
+									            </div>
+									          </div>
+									        </div>
+									      </td>
+									    </tr>
+									  </tbody>
+									</table>
                   </div>
                   <div class="container-c">
                     <div class="row">
                       <div class="col-12" style="margin-bottom: 20px;">
-                        <button onclick="countries()" type="button"  data-toggle="modal" data-target="#exampleRequestModal" class="btn getColorbackgroundExample btn-lg btn-block">Example</button>
+                        <button onclick="countries()" type="button"  data-toggle="modal" data-target="#exampleRequestModal3" class="btn getColorbackgroundExample btn-lg btn-block">Display control list</button>
                       </div>
                       <div class="col-12">
                         <div class="fragCode">
@@ -401,11 +464,32 @@
                     </div>
                     <h3>Parameters</h3>
                     <div>No parameters</div>
-                  </div>
+                    <table style="width: 70%">
+										  <thead>
+										    <tr>
+										      <th></th>     
+										    </tr>
+										  </thead>
+										  <tbody>        
+										    <tr>
+										      <td colspan="2">
+										        <div>
+										          <p><span><Strong>Request URL: </Strong></span></p>
+										          <div class="URLendpoint">
+										            <div class="fragCode">
+										              <p><span class="endpoint"></span>/un-regions</p>
+										            </div>
+										          </div>
+										        </div>
+										      </td>
+										    </tr>
+										  </tbody>
+										</table>
+                  </div>                   
                   <div class="container-c">
                     <div class="row">
                       <div class="col-12" style="margin-bottom: 20px;">
-                        <button onclick="un_regions()" type="button"  data-toggle="modal" data-target="#exampleRequestModal" class="btn getColorbackgroundExample btn-lg btn-block">Example</button>
+                        <button onclick="un_regions()" type="button"  data-toggle="modal" data-target="#exampleRequestModal4" class="btn getColorbackgroundExample btn-lg btn-block">Display control list</button>
                       </div>
                       <div class="col-12">
                         <div class="fragCode">
@@ -510,11 +594,32 @@
                     <div>This is a worldwide list of institutions that have been related to CGIAR activities as funders, leaders, partners, and/or contributors. This list reflects the information consolidated by some of the CGIAR Management Information Systems and external sources (i.e. MARLO and MEL). </div>
                     <h3>Parameters</h3>
                     <div>No parameters</div>
+                    <table style="width: 70%">
+										  <thead>
+										    <tr>
+										      <th></th>     
+										    </tr>
+										  </thead>
+										  <tbody>        
+										    <tr>
+										      <td colspan="2">
+										        <div>
+										          <p><span><Strong>Request URL: </Strong></span></p>
+										          <div class="URLendpoint">
+										            <div class="fragCode">
+										              <p><span class="endpoint"></span>/institutions</p>
+										            </div>
+										          </div>
+										        </div>
+										      </td>
+										    </tr>
+										  </tbody>
+										</table>
                   </div>
                   <div class="container-c">
                     <div class="row">
                       <div class="col-12" style="margin-bottom: 20px;">
-                        <button onclick="institutions()" type="button"  data-toggle="modal" data-target="#exampleRequestModal" class="btn getColorbackgroundExample btn-lg btn-block">Example</button>
+                        <button onclick="institutions()" type="button"  data-toggle="modal" data-target="#exampleRequestModal5" class="btn getColorbackgroundExample btn-lg btn-block">Display control list</button>
                       </div>
                       <div class="col-12">
                         <div class="fragCode">
@@ -618,7 +723,7 @@
 
 
 <!-- Modal -->
-<div class="modal fade" id="exampleRequestModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="exampleRequestModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable modal-xl">
     <div class="modal-content">
       <!-- <div class="modal-header">
@@ -628,18 +733,76 @@
         </button>
       </div> -->
       <div class="modal-body" >
-        
-
-        <table class="table dataTable" >
+        <table class="table dataTable" id="cgiar_entities" >
           <thead class="thead-dark">
-            <tr id="list-print-columns-name">
+            <tr >
+              <td>Code</td>
+              <td>Name</td>
+              <td>Acronym</td>
+              <td>CGIAR Entity Type</td>
             </tr>
           </thead>
-          <tbody id="list-print">
-
+          <tbody id="list-print-cgiar_entities">
           </tbody>
-
         </table>
+
+        <div class="text-center">
+          <div class="spinner-general " id="spinner_cgiar_entities">
+            <div class="spinner-border   text-success" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+            <h4 style="margin-top: 15px;">Loading...</h4>
+          </div>
+        </div>
+      </div>
+      <div  class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
+        <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="exampleRequestModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-xl">
+    <div class="modal-content">
+      <!-- <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div> -->
+      <div class="modal-body" >
+
+
+
+
+
+        <table class="table dataTable" id="cgiar_entity_types" >
+          <thead class="thead-dark">
+            <tr >
+              <td>Code</td>
+              <td>Name</td>
+            </tr>
+          </thead>
+          <tbody id="list-print-cgiar_entity_types">
+          </tbody>
+        </table>
+
+
+
+        <div class="text-center">
+          <div class="spinner-general " id="spinner_cgiar_entity_types">
+            <div class="spinner-border   text-success" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+            <h4 style="margin-top: 15px;">Loading...</h4>
+          </div>
+        </div>
+
+
+
+
 
       </div>
       <div  class="modal-footer">
@@ -651,9 +814,144 @@
 </div>
 
 
+<div class="modal fade" id="exampleRequestModal3" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-xl">
+    <div class="modal-content">
+      <!-- <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div> -->
+      <div class="modal-body" >
+        <table class="table dataTable" id="countries" >
+          <thead class="thead-dark">
+            <tr >
+              <td>Code</td>
+              <td>ISO Alpha2</td>
+              <td>Name</td>
+              <td>Region</td>
+            </tr>
+          </thead>
+          <tbody id="list-print-countries">
+          </tbody>
+        </table>
+
+        <div class="text-center">
+        <div class="spinner-general " id="spinner_countries">
+          <div class="spinner-border   text-success" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+          <h4 style="margin-top: 15px;">Loading...</h4>
+        </div>
+      </div>
 
 
 
+
+
+
+      </div>
+      <div  class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
+        <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="exampleRequestModal4" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-xl">
+    <div class="modal-content">
+      <!-- <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div> -->
+      <div class="modal-body" >
+        <table class="table dataTable" id="un_regions" >
+          <thead class="thead-dark">
+            <tr >
+              <td>UN49Code</td>
+              <td>Name</td>
+            </tr>
+          </thead>
+          <tbody id="list-print-un_regions">
+          </tbody>
+        </table>
+
+ 
+
+        <div class="text-center">
+          <div class="spinner-general " id="spinner_un_regions">
+            <div class="spinner-border   text-success" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+            <h4 style="margin-top: 15px;">Loading...</h4>
+          </div>
+        </div>
+
+
+
+
+
+      </div>
+      <div  class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
+        <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="exampleRequestModal5" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-xl">
+    <div class="modal-content">
+      <!-- <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div> -->
+      <div class="modal-body" >
+        <table class="table dataTable" id="institutions" >
+          <thead class="thead-dark">
+            <tr id="#list-print-columns-name">
+              <td>Code</td>
+              <td>Acronym</td>
+              <td>Office Location</td>
+              <td>Name</td>
+              <td>Website</td>
+            </tr>
+          </thead>
+          <tbody id="list-print-institutions">
+
+          </tbody>
+        </table>
+
+
+        <div class="text-center">
+          <div class="spinner-general" id="spinner_institutions">
+            <div class="spinner-border   text-success" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+            <h4 style="margin-top: 15px;">Loading...</h4>
+          </div>
+        </div>
+
+
+
+
+      </div>
+      <div  class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
+        <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+      </div>
+    </div>
+  </div>
+</div>
 
 
 
@@ -681,12 +979,29 @@
     });
   }
 
-
+  $('.endpoint').html(config.endpoint);
 
 
 
 </script>
-<script src="css/dataTable/jquery.dataTables.min.js"></script>
-<script src="css/dataTable/dataTables.bootstrap4.min.js"></script>
+<!-- <script src="css/dataTable/jquery.dataTables.min.js"></script> -->
+<!-- <script src="css/dataTable/dataTables.bootstrap4.min.js"></script> -->
+<script type="text/javascript" src="js/tableExport.min.js"></script>
+<script>
+  function exportToExcel(){
+    $('#tblToExport').tableExport({type:'excel'});
 
+  }
+  </script>
+
+     <!-- dataTables -->
+  <script type="text/javascript" src="DataTables/JSZip-2.5.0/jszip.min.js"></script>
+  <script type="text/javascript" src="DataTables/pdfmake-0.1.36/pdfmake.min.js"></script>
+  <script type="text/javascript" src="DataTables/pdfmake-0.1.36/vfs_fonts.js"></script>
+  <script type="text/javascript" src="DataTables/DataTables-1.10.22/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" src="DataTables/DataTables-1.10.22/js/dataTables.bootstrap4.min.js"></script>
+  <script type="text/javascript" src="DataTables/Buttons-1.6.5/js/dataTables.buttons.min.js"></script>
+  <script type="text/javascript" src="DataTables/Buttons-1.6.5/js/buttons.bootstrap4.min.js"></script>
+  <script type="text/javascript" src="DataTables/Buttons-1.6.5/js/buttons.html5.min.js"></script>
+  <script type="text/javascript" src="DataTables/Buttons-1.6.5/js/buttons.print.min.js"></script>
 </html>

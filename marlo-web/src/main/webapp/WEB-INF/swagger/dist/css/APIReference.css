@@ -19,8 +19,9 @@
   padding: 80px;
   height: 100%;
 }
-.fragCode{
-    box-shadow: 0px 0px 16px rgba(0, 0, 0, 0.459);border-radius: 10px;
+.fragCode {
+  box-shadow: 0px 0px 16px rgba(0, 0, 0, 0.459);
+  border-radius: 10px;
 }
 .section h1.title {
   text-align: center;
@@ -40,7 +41,6 @@ pre code {
   position: relative;
 
   padding-left: 20px;
-  
 }
 .infoCode {
   padding: 10px;
@@ -77,6 +77,10 @@ h3 {
   color: #4b4a4a;
 }
 
+.leftBarFixed h3 {
+  color: #c9c9c9;
+}
+
 .row.noSpace {
   margin: 0 !important;
 }
@@ -85,6 +89,7 @@ h3 {
   position: fixed;
   background-color: #f5f9fc;
   /* right: 0; */
+  top: 0;
   height: 100vh;
   width: 350px;
   box-shadow: 0px 0px 16px rgba(0, 0, 0, 0.205);
@@ -118,10 +123,10 @@ button:focus {
   font-size: 15px;
 }
 
-.subCollapsible{
+.subCollapsible {
   margin: 5px 0px;
   border-radius: 10px;
- 
+
   color: rgb(37, 37, 37);
   cursor: pointer;
   padding: 18px;
@@ -131,16 +136,13 @@ button:focus {
   outline: none;
   font-size: 15px;
   background-color: rgb(255, 255, 255);
-  transition: all .3s ease;
+  transition: all 0.3s ease;
   border: 1px solid rgb(224, 224, 224);
 }
 
 .subCollapsible:hover {
   box-shadow: 0px 0 16px rgba(0, 0, 0, 0.171);
 }
-
-
-
 
 .active,
 .collapsible:hover {
@@ -186,59 +188,52 @@ html {
   scroll-behavior: smooth;
 }
 
-.contEndpoint{
-    padding: 10px;
-    border-radius: 10px 10px 0px 0px;
-    
+.contEndpoint {
+  padding: 10px;
+  border-radius: 10px 10px 0px 0px;
 }
 
 button.getColorbackground {
-    color: #fff;
-    background-color: #28a745;
-    border-color: #28a745;
-    cursor: default !important;
-  
-  }
+  color: #fff;
+  background-color: #28a745;
+  border-color: #28a745;
+  cursor: default !important;
+}
 
-  button.getColorbackground:hover {
-    color: #fff;
-    cursor: default !important;
-  }
+button.getColorbackground:hover {
+  color: #fff;
+  cursor: default !important;
+}
 
-  button.getColorbackgroundExample {
-    color: #fff;
-    background-color: #28a745;
-    border-color: #28a745;
-  
-  }
+button.getColorbackgroundExample {
+  color: #fff;
+  background-color: #28a745;
+  border-color: #28a745;
+}
 
-  button.getColorbackgroundExample:hover {
-    color: #fff;
-    background-color: #2fc051;
-    border-color: #2fc252;
-  }
+button.getColorbackgroundExample:hover {
+  color: #fff;
+  background-color: #2fc051;
+  border-color: #2fc252;
+}
 
-  
 button.postColorbackground {
-    color: #fff;
-    background-color: #17a2b8;
-    border-color: #17a2b8;
-  
-  }
+  color: #fff;
+  background-color: #17a2b8;
+  border-color: #17a2b8;
+}
 
 .getColorbackground {
   background-color: rgb(171, 233, 147);
-
 }
 
 .postColorbackground {
-    background-color: rgb(147, 206, 233);
-
-  }
+  background-color: rgb(147, 206, 233);
+}
 .parameters {
   padding: 50px;
   background-color: #f5f9fc;
-/* box-shadow: 0px 0px 16px rgba(0, 0, 0, 0.205); */
+  /* box-shadow: 0px 0px 16px rgba(0, 0, 0, 0.205); */
 }
 
 .blueCode {
@@ -246,8 +241,8 @@ button.postColorbackground {
   font-weight: bold;
 }
 .purpleCode {
-    color: rgb(209, 152, 255);
-  }
+  color: rgb(209, 152, 255);
+}
 .WhiteCode {
   color: white;
 }
@@ -286,14 +281,29 @@ button.postColorbackground {
   color: #615f5f;
 }
 
-tbody#list-print td{
+tbody#list-print td {
   font-size: 13px;
 }
 
-.nomar{
+.nomar {
   margin: 0px;
 }
 
-.modal-footer{
+.modal-footer {
   position: relative;
+}
+
+#spinner {
+  margin: 100px 0px;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.URLendpoint {
+   color: white;
+   background-color: #1f1f1f;
+   font-family: monospace;
+   width: 500px
 }
