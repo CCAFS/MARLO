@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.FundingSourceInfo;
 import org.cgiar.ccafs.marlo.data.model.FundingStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -167,6 +168,15 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
         canEdit = false;
         baseAction.setCanEditPhase(false);
       }
+
+      FundingSourceInfo info = fundingSource.getFundingSourceInfo(this.phase);
+      if (info != null && info.getBudgetType() != null && info.getBudgetType().getId() == 1) {
+        if (!baseAction
+          .hasPermission(baseAction.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, params))) {
+          canEdit = false;
+        }
+      }
+
       if (parameters.get(APConstants.EDITABLE_REQUEST).isDefined()) {
         // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
         String stringEditable = parameters.get(APConstants.EDITABLE_REQUEST).getMultipleValues()[0];

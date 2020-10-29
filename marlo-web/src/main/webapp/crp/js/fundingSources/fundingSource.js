@@ -306,9 +306,9 @@ function init() {
   });
 
   // showOnLoading
-  $('.showOnLoading').fadeIn();
-  $('.hideOnLoading').fadeOut();
-
+  // $('.showOnLoading').fadeIn();
+  // $('.hideOnLoading').fadeOut();
+  $('.loadingBlock').hide().next().fadeIn(1000);
 }
 
 function setPartnerLead(e) {
