@@ -9,7 +9,7 @@
 
 [#assign breadCrumb = [
   {"label":"admin", "nameSpace":"", "action":"adminManagement"},
-  {"label":"crpDeliverables", "nameSpace":"", "action":""}
+  {"label":"deliverables", "nameSpace":"", "action":""}
 ]/]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]

@@ -45,7 +45,7 @@
   <article class="" id="mainInformation">
   [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
   
-  <div class="loading-neutral hideOnLoading"></div>
+  <div class="loading-neutral hideOnLoading" style="display: none;"></div>
   <div class="col-md-offset-1 col-md-10">
     [#-- Messages --]
     [#include "/WEB-INF/crp/views/fundingSources/messages-fundingSource.ftl" /]
@@ -596,8 +596,8 @@
 
     <input type="hidden" class="metadataValue" name="fundingSource.fundingSourceInfo.grantAmount" value="${(fundingSource.fundingSourceInfo.grantAmount)!0}" />
   </div>
-  
-  <div class="contributionWrapper budgetByYears">
+  <div class="loadingBlock"></div>
+  <div class="contributionWrapper budgetByYears" style="display: none;">
     [#assign projectBudgetsList = (fundingSource.projectBudgetsList)![] /]
     [#assign projectBudgetsListOtherCrps = (fundingSourceShow.projectBudgetsList)![] /]
     
@@ -609,6 +609,7 @@
     </ul>
     [#-- Years Content --]
     <div class="tab-content contributionContent">
+      
       [#list fundingSourceYears as year]
         <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="fundingYear-${year}">
         
@@ -621,7 +622,8 @@
         [/#attempt]
         
         <h5 class="sectionSubTitle">Budget Amount</h5>
-        <div class="budgetsYear">
+       
+        <div class="budgetsYear" >
           <div class="col-md-4">
             <input type="hidden" name="fundingSource.budgets[${budgetIndex}].year" value="${year}"/>
             <input type="hidden" name="fundingSource.budgets[${budgetIndex}].id" value="${(budget.id)!}"/>
@@ -643,6 +645,7 @@
 
         [#-- Projects that this funding source is assigned to --]
         <h5 class="sectionSubTitle">[@s.text name="fundingSource.projectsAssigned" /]:</h5>
+        
         <table class="table tableProjectBudgets-${year}">
           <thead>
            <tr>
