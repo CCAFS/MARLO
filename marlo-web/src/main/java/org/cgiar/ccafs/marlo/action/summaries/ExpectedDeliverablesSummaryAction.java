@@ -1131,7 +1131,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
          * Geographic Scope
          */
         String geographicScope = "", region = "", country = "";
-
+        boolean hasGeographicRegion = false;
         // Geographic Scope
         try {
 
@@ -1174,13 +1174,18 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             geographicScope = null;
           }
 
+          if (geographicScope != null && !geographicScope.isEmpty() && geographicScope.contains("Regional")) {
+            hasGeographicRegion = true;
+          }
+
         } catch (Exception e) {
 
         }
 
+
         if (deliverable.getCountries() == null && deliverable.getDeliverableRegions() == null) {
-          region = "&lt;Not Applicable&gt;";;
-          country = "&lt;Not Applicable&gt;";;
+          region = "<Not Applicable>";
+          country = "<Not Applicable>";
         } else {
           // Regional
           if (deliverable.getDeliverableRegions() != null) {
@@ -1193,7 +1198,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
               region = String.join(", ", regionsSet);
             }
           } else {
-            region = "&lt;Not Defined&gt;";
+            region = "<Not Defined>";
           }
           // Country
           if (deliverable.getCountries() != null && !deliverable.getCountries().isEmpty()) {
@@ -1207,8 +1212,12 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             }
           } else {
 
-            country = "&lt;Not Defined&gt;";
+            country = "<Not Defined>";
           }
+        }
+
+        if (!hasGeographicRegion) {
+          region = "<Not Applicable>";
         }
 
         if (ppaResponsible != null && !ppaResponsible.isEmpty() && divisions != null && !divisions.isEmpty()) {
