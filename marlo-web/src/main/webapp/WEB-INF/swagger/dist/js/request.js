@@ -265,14 +265,8 @@ function institutions() {
 				// showFilter();
 				manageSpinner(false,"institutions");
 				console.log(data);
-				let nameColumns = ['Code', 'Acronym', 'Office Location',
+				let nameColumns = ['Code', 'Acronym','Institution Type', 'Office Location',
 					'Name', 'Website']
-
-				// $.each(nameColumns, function (index, name) {
-				// $('#list-print-columns-name').append(
-				// '<th >' + name + '</th>')
-				// });
-
 				$
 					.each(
 						data,
@@ -286,7 +280,10 @@ function institutions() {
 									+ '<td >'
 									+ validateNull(item['acronym'])
 									+ '</td>'
-
+									// Institution type
+									+ '<td>'
+									+  item['institutionType'].name
+									+ '</td>'
 									// Office Location
 									+ '<td>'
 									// + '<p
@@ -315,12 +312,11 @@ function institutions() {
 									// locations:</strong> '
 									+ get_other_office_locations(item['countryOfficeDTO'])
 									// + '</p>'
-
-									+ '</td>'
+									+ '</td>'									
 									+ '<td>'
 									// END Office Location
 									+ item['name']
-									+ '</td>'
+									+ '</td>'									
 									+ `<td  data-toggle="tooltip" data-placement="top" title="${item['websiteLink']}"><a href="${item['websiteLink']}" target="_blank">website link</a></td>`
 									+ '</tr>')
 						});
