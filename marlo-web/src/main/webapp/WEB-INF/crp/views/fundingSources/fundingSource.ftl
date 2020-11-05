@@ -5,7 +5,7 @@
 [#assign customJS = [
   "${baseUrlCdn}/global/js/fieldsValidation.js",
   "${baseUrlMedia}/js/fundingSources/fundingSource.js?20201030",
-  "${baseUrlMedia}/js/fundingSources/syncFundingSource.js?20190905",
+  "${baseUrlMedia}/js/fundingSources/syncFundingSource.js?20201105",
   "${baseUrlCdn}/global/js/autoSave.js" 
   ]
 /]
@@ -182,7 +182,7 @@
 
 <span class="hidden cgiarConsortium">${action.getCGIARInstitution()}</span>
 
-
+<input style="display:none" id="actualPhaseValue" type="hidden" name="actualPhase" value="${action.getActualPhase().year}" />
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
