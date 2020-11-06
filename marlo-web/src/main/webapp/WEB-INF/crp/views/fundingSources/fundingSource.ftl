@@ -57,7 +57,7 @@
           <h4 class="headTitle">General information</h4>
          </div>
          <div class="col-md-4">
-         [#if (action.canAddFunding() && !crpClosed) && action.getActualPhase().editable]
+         [#if (action.canDuplicateFunding() && !crpClosed) && action.getActualPhase().editable]
             <a id="copyDeliverable-${fundingSource.id}" class="btn btn-default btn-xs duplicate-button" href="[@s.url namespace=namespace action="${(crpSession)!}/copy"][@s.param name='fundingSourceID']${fundingSource.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" title="">
               Duplicate Funding Source <img src="${baseUrlCdn}/global/images/duplicate_enabled.png" height="15px"/> 
             </a>
