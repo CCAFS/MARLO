@@ -1004,6 +1004,24 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   /**
+   * Make the validation for CRP Admin, PMU or Finance Manager role
+   * to determinate if a Funding source can be duplicated.
+   *
+   * @return boolean with true o false permission to duplicate FS.
+   */
+  public boolean canDuplicateFunding() {
+    boolean canDuplicate = false;
+    String roles = this.getRoles();
+    if (roles != null && !roles.isEmpty() && (roles.contains("CRP-Admin") || roles.contains("PMU")
+      || roles.contains("FM") || roles.contains("SuperAdmin"))) {
+      canDuplicate = true;
+    } else {
+      canDuplicate = false;
+    }
+    return canDuplicate;
+  }
+
+  /**
    * Verify the permissions to edit any project budget execution in the project
    */
   public boolean canEditAnyProjectExecution(long projectID) {

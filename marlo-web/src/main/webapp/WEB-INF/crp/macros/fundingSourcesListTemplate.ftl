@@ -150,7 +150,7 @@
           
           [#-- Create Copy--]
           <td class="text-center">
-            [#if (action.canAddFunding() && !crpClosed) && action.getActualPhase().editable]
+            [#if (action.canDuplicateFunding() && !crpClosed) && action.getActualPhase().editable]
               <a id="copyDeliverable-${project.id}" class="copyProject" href="[@s.url namespace=namespace action="${(crpSession)!}/copyFundingSource"][@s.param name='fundingSourceID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" title="">
                 <img src="${baseUrlCdn}/global/images/duplicate_enabled.png"/> 
               </a>
