@@ -344,7 +344,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
           new POIField(this.getText("financialPlan2019.tableE.plannedBudget",
             new String[] {String.valueOf(this.getSelectedYear())}), ParagraphAlignment.CENTER, bold, blackColor),
           new POIField("", ParagraphAlignment.CENTER, false), new POIField("", ParagraphAlignment.CENTER, false),
-          new POIField("", ParagraphAlignment.CENTER, false), new POIField("", ParagraphAlignment.CENTER, false),
+          new POIField("", ParagraphAlignment.CENTER, false),
           new POIField(this.getText("financialPlan2019.tableE.comments"), ParagraphAlignment.LEFT, bold, blackColor)};
 
       POIField[] sHeader2 = {new POIField(" ", ParagraphAlignment.CENTER, bold, blackColor),
