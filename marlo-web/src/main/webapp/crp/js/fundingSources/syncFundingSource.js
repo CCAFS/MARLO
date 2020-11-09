@@ -230,12 +230,15 @@ function getOCSMetadata() {
             agreement.agreementStatus = 2; 
           } else if(agreement.contractStatus == "S") {
             agreement.agreementStatus = 2; 
+          }else if(agreement.contractStatus == "E") {
+            agreement.agreementStatus = 4; 
           }
-           
+            
 
           // Set Funding Source Agreement Status
           if(agreement.extensionDate){
-            agreement.agreementStatus = EXTENDED_STATUS;
+            // agreement.agreementStatus = EXTENDED_STATUS;
+            // agreement.agreementStatus = ((parseInt(agreement.extensionDate.split("-")[0])) < parseInt($("#actualPhaseValue").val())) ? 3 : EXTENDED_STATUS;
             $('.extensionDateBlock').show();
             $('.endDateBlock .dateLabel').addClass('disabled');
           } else {
