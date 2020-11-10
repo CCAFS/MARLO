@@ -1127,6 +1127,7 @@ function getInstitutionsBudgetByType(budgetTypeID) {
               e.id, e.name
           ]);
         });
+        console.log("Set donorSelectLists");
         // Append new list of institutions
         $donorSelectLists.addArrayOptions(arrayKeyValues);
         // Set CGIAR Consortium Office if applicable to the direct donor
