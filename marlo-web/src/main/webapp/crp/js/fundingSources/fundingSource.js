@@ -1127,11 +1127,6 @@ function getInstitutionsBudgetByType(budgetTypeID) {
               e.id, e.name
           ]);
         });
-      },
-      error: function(e) {
-        console.log(e);
-      },
-      complete: function() {
         // Append new list of institutions
         $donorSelectLists.addArrayOptions(arrayKeyValues);
         // Set CGIAR Consortium Office if applicable to the direct donor
@@ -1140,6 +1135,12 @@ function getInstitutionsBudgetByType(budgetTypeID) {
         $donorSelectLists.trigger("change.select2");
         // Stop Loader
         $('.loading').fadeOut(800);
+      },
+      error: function(e) {
+        console.log(e);
+      },
+      complete: function() {
+
       },
       timeout: 3000
   });
