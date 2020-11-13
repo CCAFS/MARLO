@@ -5,7 +5,7 @@
 [#assign customJS = [ 
   "${baseUrlMedia}/js/impactPathway/programSubmit.js", 
   "${baseUrlMedia}/js/impactPathway/outcomes.js?20201709", 
-  "${baseUrlCdn}/global/js/autoSave.js", 
+  [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
   "${baseUrlCdn}/global/js/impactGraphic.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js" 
   ] 
