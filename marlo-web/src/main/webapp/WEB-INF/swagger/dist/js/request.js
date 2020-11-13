@@ -261,7 +261,7 @@ function institutions() {
 			success: function (data) {
 				// ********************************************* */
 				// print data
-				testInstitution(data);
+				// testInstitution(data);
 				// showFilter();
 				manageSpinner(false,"institutions");
 				console.log(data);
@@ -305,6 +305,7 @@ function institutions() {
 									// class="nomar"><strong>name:</strong> '
 									// + item['countryOfficeDTO']['0'].name
 									// + '</p>'
+									
 									+ '<p class="nomar"><strong>Headquarter: </strong> '
 									+ getHeadquarter(item['countryOfficeDTO'])
 									+ '</p>'
@@ -317,7 +318,7 @@ function institutions() {
 									// END Office Location
 									+ item['name']
 									+ '</td>'									
-									+ `<td  data-toggle="tooltip" data-placement="top" title="${item['websiteLink']}"><a href="${item['websiteLink']}" target="_blank">website link</a></td>`
+									+ `<td class="link-Web"  data-toggle="tooltip" data-placement="top" title="${item['websiteLink']}"><a  href="${item['websiteLink']}" target="_blank">${item['websiteLink']}</a></td>`
 									+ '</tr>')
 						});
 				updateDataTable("institutions");
