@@ -308,10 +308,11 @@
       
         [#--<h5 class="sectionSubTitle">[@s.text name="outcome.milestone.sectionTitle"/]</h5>--]
         <div class="milestones-list" listname="${outcomeCustomName}.milestones">
-       <div class="cont-btn-min"> 
-         <button   type="button" class="btn-expand-all btn btn-link">Collapse all<i class="fas fa-expand-arrows-alt"></i></button>
-       </div>
+        
         [#if outcome.milestones?has_content]
+           <div class="cont-btn-min"> 
+             <button   type="button" class="btn-expand-all btn btn-link">Collapse all<i class="fas fa-expand-arrows-alt"></i></button>
+           </div>
           [#list outcome.milestones as milestone]
             [@milestoneMacro milestone=milestone name="${outcomeCustomName}.milestones" index=milestone_index editable=editable canEditMilestone=action.canEditMileStone(milestone) /]
           [/#list]
