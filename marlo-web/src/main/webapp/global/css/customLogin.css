@@ -1,4 +1,16 @@
 /************* LOGIN *****************/
+.user-password{
+  width: 91% !important;
+}
+.icon-show-password {
+  position: absolute !important;
+  top: unset;
+  bottom: 0;
+  right: 0;
+  margin: 0px 10px 7px 0px;
+  cursor: pointer;
+  z-index: 1000;
+}
 .loginForm {
   padding-top: 2em;
   width: 100%;
