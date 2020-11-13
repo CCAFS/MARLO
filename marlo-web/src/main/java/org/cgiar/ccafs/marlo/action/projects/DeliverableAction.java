@@ -2073,6 +2073,8 @@ public class DeliverableAction extends BaseAction {
                 deliverableUserPartnershipManager.saveDeliverableUserPartnership(deliverableUserPartnershipSave);
 
               this.saveDeliverableUserPartnershipsPersons(deliverableUserPartnership, deliverableUserPartnershipSave);
+            } else {
+              deliverableUserPartnershipManager.deleteDeliverableUserPartnership(deliverableUserPartnership.getId());
             }
           }
 
@@ -2164,6 +2166,8 @@ public class DeliverableAction extends BaseAction {
                 deliverableUserPartnershipManager.saveDeliverableUserPartnership(deliverableUserPartnershipSave);
 
               this.saveDeliverableUserPartnershipsPersons(deliverableUserPartnership, deliverableUserPartnershipSave);
+            } else {
+              deliverableUserPartnershipManager.deleteDeliverableUserPartnership(deliverableUserPartnership.getId());
             }
           }
 
