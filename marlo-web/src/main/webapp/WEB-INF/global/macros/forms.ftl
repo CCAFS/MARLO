@@ -184,11 +184,7 @@
               [#if !(key?has_content)]
                 ${requiredText}   [@s.text name="form.values.fieldEmpty" /]
               [#else]
-                
-               [#if key!="-1"]
-                  ${key}  
-               [/#if]
-
+                ${key}
               [/#if]
             [/#if]
           [#else]
