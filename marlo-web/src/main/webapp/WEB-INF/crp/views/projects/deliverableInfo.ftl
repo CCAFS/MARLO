@@ -213,11 +213,11 @@
 
 
 [#-- Partners --]
-[#if !action.isAiccra()]
+[#--if !action.isAiccra() --]
 <h3 class="headTitle">[@s.text name="Partners contributing to this deliverable" /]</h3>  
 <div id="deliverable-partnerships-new" class="form-group simpleBox">
   [#-- Partner who is responsible --]
-  <label for="">[@customForm.text name="project.deliverable.indicateResponsablePartner" readText=!editable/]:[@customForm.req required=editable /]</label>
+  <label for="">[@customForm.text name="project.deliverable.indicateResponsablePartner" readText=!editable/]:[@customForm.req required=!editable /]</label>
   <div>
     [@deliverableMacros.deliverablePartnerMacro element=(deliverable.responsiblePartnership[0])!{} name="deliverable.responsiblePartnership" index=0 defaultType=1 /]
   </div>
@@ -248,4 +248,4 @@
     </div>
   [/#if]
 </div>
-[/#if]
+[#-- /if --]
