@@ -60,6 +60,7 @@
           <div class="col-sm-12">
             [#-- Password input --]
             <div class="login-input-container hidden" id="login-password" >
+              <span class="glyphicon glyphicon-eye-close icon-show-password"></span>
               <input id="user.password" class="login-input user-password form-control" type="password" name="user.password" tabindex=0 required/>
               <label for="user.password">[@s.text name="login.password"/]</label>
             </div>
