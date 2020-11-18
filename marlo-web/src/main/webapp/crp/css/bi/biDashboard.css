@@ -76,8 +76,9 @@ ul.nav li a {
 
 .reportSection a {
   text-decoration: none;
-  color: #b3b2b2;
-  font-size: 1.2em;
+  /* color: #b3b2b2; */
+  color: black;
+  font-size: 14px;
 }
 
 .reportSection.current {
