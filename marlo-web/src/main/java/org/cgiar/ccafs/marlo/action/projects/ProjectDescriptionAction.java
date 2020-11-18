@@ -934,10 +934,9 @@ public class ProjectDescriptionAction extends BaseAction {
 
 
       // no liaison institution selected
-      if (project.getProjectInfo().getLiaisonInstitution() != null) {
-        if (project.getProjectInfo().getLiaisonInstitution().getId() == -1) {
-          project.getProjectInfo().setLiaisonInstitution(null);
-        }
+      if (project.getProjectInfo().getLiaisonInstitution() != null
+        && project.getProjectInfo().getLiaisonInstitution().getId() == -1) {
+        project.getProjectInfo().setLiaisonInstitution(null);
       }
 
       // Saving the flaghsips
@@ -965,7 +964,8 @@ public class ProjectDescriptionAction extends BaseAction {
             projectFocus.setPhase(this.getActualPhase());
             if (projectDB.getProjectFocuses().stream()
               .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == program.getId().longValue()
-                && c.getPhase().equals(this.getActualPhase()))
+                && this.getActualPhase() != null && c.getPhase() != null
+                && c.getPhase().getId().equals(this.getActualPhase().getId()))
               .collect(Collectors.toList()).isEmpty()) {
               projectFocus.setPhase(this.getActualPhase());
               projectFocusManager.saveProjectFocus(projectFocus);

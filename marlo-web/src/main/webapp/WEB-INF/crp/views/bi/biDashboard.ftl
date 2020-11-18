@@ -35,18 +35,17 @@
         [#--  Reports header  --]
        <div class="headTitle-row-container">
 
-        <div class='selectedReportBIContainer col-md-1'>
-          <span class="selectedReportBI btn button-bg">
+        <div class='selectedReportBIContainer col-md-2'>
+          <span class="selectedReportBI col-md btn button-bg" style="max-width:200px">
               [#--  <p class="menu-item-title">[@s.text name="biDashboard.menu.title"/] </p>  --]
               <p class="menu-item-title">Dashboards</p>
             <span class="glyphicon reportsButtonsIcon glyphicon-chevron-up" style="color: #1da5ce"></span>
           </span>
           [#--  Reports Tabs --] 
           <div id="repportsMenu" class="reportsButtons">
-            <div class="menuList">
+            <div class="menuList col-md-12" style="padding:0">
             [#list (biReports)![] as report]
                 <div id="BIreport-${report.id}" report-title="${report.reportTitle}" class="button-bg reportSection [#if report?index == 0]current[/#if]">
-                [#--  <div id="BIreport-${report.id}" report-title="${report.reportTitle}" class="button-bg col-md-8 col-md-offset-1 reportSection [#if report?index == 0]current[/#if]">  --]
                   <a index="${report?index+1}" class="BIreport-${report.id}" href="">[@s.text name=report.reportName /]</a>
                 </div>
             [/#list]

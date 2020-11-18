@@ -57,6 +57,21 @@ function init() {
     $(this).addClass('active');
   });
 
+  //show password
+  $('.icon-show-password').click(function () {
+    var inputPass = document.getElementById("user.password");
+    var icon = document.querySelector(".icon-show-password");
+    if (inputPass.type === "password") {
+      inputPass.type = "text";
+      icon.classList.remove("glyphicon-eye-close");
+      icon.classList.add("glyphicon-eye-open");
+    } else {
+      inputPass.type = "password";
+      icon.classList.remove("glyphicon-eye-open");
+      icon.classList.add("glyphicon-eye-close");
+    }
+  });
+
   // Next Button
   $("input#login_next").on('click', function(e) {
     e.preventDefault();
