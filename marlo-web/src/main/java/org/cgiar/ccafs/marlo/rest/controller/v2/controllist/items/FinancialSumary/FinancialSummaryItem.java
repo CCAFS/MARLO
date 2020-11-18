@@ -297,19 +297,82 @@ public class FinancialSummaryItem<T> {
                 if (financialSumaryBudgets.getLiaisonInstitution() != null
                   && financialSumaryBudgets.getLiaisonInstitution().getCrpProgram().getId().equals(flagship.getId())) {
                   found = true;
-
                 }
               }
               if (!found) {
                 financialSumaryBudgetsToRemove.add(financialSumaryBudgets);
               }
             }
+
+            // update or delete other financial budget
+            if (financialSummary.getStrategicCompetitiveResearchGrant() != null) {
+              for (ReportSynthesisFinancialSummaryBudget financialSummaryBudget : reportSynthesisFinancialSummary
+                .getReportSynthesisFinancialSummaryBudgets().stream().filter(c -> c.isActive())
+                .collect(Collectors.toList())) {
+                if (financialSummaryBudget.getExpenditureArea() != null
+                  && financialSummaryBudget.getExpenditureArea().getId() == 1) {
+                  financialSummaryBudget.setModifiedBy(user);
+                  financialSummaryBudget
+                    .setW3Actual(financialSummary.getStrategicCompetitiveResearchGrant().getPlannedBudgetW3Bilateral());
+                  financialSummaryBudget.setW3Planned(
+                    financialSummary.getStrategicCompetitiveResearchGrant().getPlannedBudgetW3Bilateral());
+                  financialSummaryBudget
+                    .setW1Actual(financialSummary.getStrategicCompetitiveResearchGrant().getActualExpenditureW1W2());
+                  financialSummaryBudget
+                    .setW1Planned(financialSummary.getStrategicCompetitiveResearchGrant().getPlannedBudgetW1W2());
+                  financialSummaryBudget
+                    .setComments(financialSummary.getStrategicCompetitiveResearchGrant().getComments());
+                  financialSummaryBudget = reportSynthesisFinancialSummaryBudgetManager
+                    .saveReportSynthesisFinancialSummaryBudget(financialSummaryBudget);
+                }
+              }
+            } else {
+              // check if exists a financial budget
+              for (ReportSynthesisFinancialSummaryBudget financialSummaryBudget : reportSynthesisFinancialSummary
+                .getReportSynthesisFinancialSummaryBudgets().stream().filter(c -> c.isActive())
+                .collect(Collectors.toList())) {
+                if (financialSummaryBudget.getExpenditureArea() != null
+                  && financialSummaryBudget.getExpenditureArea().getId() == 1) {
+                  financialSumaryBudgetsToRemove.add(financialSummaryBudget);
+                }
+              }
+            }
+
+            if (financialSummary.getCrpManagementSupportCost() != null) {
+              for (ReportSynthesisFinancialSummaryBudget financialSummaryBudget : reportSynthesisFinancialSummary
+                .getReportSynthesisFinancialSummaryBudgets().stream().filter(c -> c.isActive())
+                .collect(Collectors.toList())) {
+                if (financialSummaryBudget.getExpenditureArea() != null
+                  && financialSummaryBudget.getExpenditureArea().getId() == 2) {
+                  financialSummaryBudget.setModifiedBy(user);
+                  financialSummaryBudget
+                    .setW3Actual(financialSummary.getCrpManagementSupportCost().getPlannedBudgetW3Bilateral());
+                  financialSummaryBudget
+                    .setW3Planned(financialSummary.getCrpManagementSupportCost().getPlannedBudgetW3Bilateral());
+                  financialSummaryBudget
+                    .setW1Actual(financialSummary.getCrpManagementSupportCost().getActualExpenditureW1W2());
+                  financialSummaryBudget
+                    .setW1Planned(financialSummary.getCrpManagementSupportCost().getPlannedBudgetW1W2());
+                  financialSummaryBudget.setComments(financialSummary.getCrpManagementSupportCost().getComments());
+                  financialSummaryBudget = reportSynthesisFinancialSummaryBudgetManager
+                    .saveReportSynthesisFinancialSummaryBudget(financialSummaryBudget);
+                }
+              }
+            } else {
+              // check if exists a financial budget
+              for (ReportSynthesisFinancialSummaryBudget financialSummaryBudget : reportSynthesisFinancialSummary
+                .getReportSynthesisFinancialSummaryBudgets().stream().filter(c -> c.isActive())
+                .collect(Collectors.toList())) {
+                if (financialSummaryBudget.getExpenditureArea() != null
+                  && financialSummaryBudget.getExpenditureArea().getId() == 2) {
+                  financialSumaryBudgetsToRemove.add(financialSummaryBudget);
+                }
+              }
+            }
             for (ReportSynthesisFinancialSummaryBudget removeFLBudget : financialSumaryBudgetsToRemove) {
               reportSynthesisFinancialSummaryBudgetManager
                 .deleteReportSynthesisFinancialSummaryBudget(removeFLBudget.getId());
             }
-
-            // update or delete other financial budget
           }
         }
       }
