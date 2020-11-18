@@ -249,6 +249,6 @@ function selectBIReport(e) {
   $section.addClass('current');
   $content.siblings().hide();
   setReportTitle();
-  reportsMenuToggle() <
-    $content.fadeIn();
+  reportsMenuToggle()
+  $content.fadeIn();
 }
