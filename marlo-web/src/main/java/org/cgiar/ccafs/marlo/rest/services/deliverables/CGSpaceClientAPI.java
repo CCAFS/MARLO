@@ -147,6 +147,15 @@ public class CGSpaceClientAPI extends MetadataClientApi {
   public String parseLink(String link) {
     String linkRest = "";
 
+    // the url is encoded?
+    if (link.contains("%")) {
+      // decode
+      try {
+        link = java.net.URLDecoder.decode(link, java.nio.charset.StandardCharsets.UTF_8.name());
+      } catch (java.io.UnsupportedEncodingException e) {
+        /* not going to happen - value came from JDK's own StandardCharsets */}
+    }
+
     // if the link contains http://hdl.handle.net/ we remove it from the link
     if (link.contains(HANDLE_URL)) {
       this.setId(link.replace(HANDLE_URL, ""));
@@ -159,6 +168,8 @@ public class CGSpaceClientAPI extends MetadataClientApi {
     if (link.contains(CGSPACE_URL)) {
       this.setId(link.replace(CGSPACE_URL, ""));
     }
+
+    LOG.debug("The given link is {} and the extracted id is {}", link, this.getId());
 
     if (this.getId() != null) {
       String handleUrl = CGSPACE_HANDLE.replace("{0}", this.getId());
