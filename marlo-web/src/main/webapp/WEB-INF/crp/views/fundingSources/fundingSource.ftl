@@ -4,8 +4,8 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "datatables.net", "datatables.net-bs","flag-icon-css",  "vue"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/fieldsValidation.js",
-  "${baseUrlMedia}/js/fundingSources/fundingSource.js?20201007",
-  "${baseUrlMedia}/js/fundingSources/syncFundingSource.js?20190905",
+  "${baseUrlMedia}/js/fundingSources/fundingSource.js?20201110",
+  "${baseUrlMedia}/js/fundingSources/syncFundingSource.js?20201105",
   "${baseUrlCdn}/global/js/autoSave.js" 
   ]
 /]
@@ -45,7 +45,7 @@
   <article class="" id="mainInformation">
   [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
   
-  <div class="loading-neutral hideOnLoading"></div>
+  <div class="loading-neutral hideOnLoading" style="display: none;"></div>
   <div class="col-md-offset-1 col-md-10">
     [#-- Messages --]
     [#include "/WEB-INF/crp/views/fundingSources/messages-fundingSource.ftl" /]
@@ -57,7 +57,7 @@
           <h4 class="headTitle">General information</h4>
          </div>
          <div class="col-md-4">
-         [#if (action.canAddFunding() && !crpClosed) && action.getActualPhase().editable]
+         [#if (action.canDuplicateFunding() && !crpClosed) && action.getActualPhase().editable]
             <a id="copyDeliverable-${fundingSource.id}" class="btn btn-default btn-xs duplicate-button" href="[@s.url namespace=namespace action="${(crpSession)!}/copy"][@s.param name='fundingSourceID']${fundingSource.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" title="">
               Duplicate Funding Source <img src="${baseUrlCdn}/global/images/duplicate_enabled.png" height="15px"/> 
             </a>
@@ -182,7 +182,7 @@
 
 <span class="hidden cgiarConsortium">${action.getCGIARInstitution()}</span>
 
-
+<input style="display:none" id="actualPhaseValue" type="hidden" name="actualPhase" value="${action.getActualPhase().year}" />
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
@@ -596,8 +596,8 @@
 
     <input type="hidden" class="metadataValue" name="fundingSource.fundingSourceInfo.grantAmount" value="${(fundingSource.fundingSourceInfo.grantAmount)!0}" />
   </div>
-  
-  <div class="contributionWrapper budgetByYears">
+  <div class="loadingBlock"></div>
+  <div class="contributionWrapper budgetByYears" style="display: none;">
     [#assign projectBudgetsList = (fundingSource.projectBudgetsList)![] /]
     [#assign projectBudgetsListOtherCrps = (fundingSourceShow.projectBudgetsList)![] /]
     
@@ -609,6 +609,7 @@
     </ul>
     [#-- Years Content --]
     <div class="tab-content contributionContent">
+      
       [#list fundingSourceYears as year]
         <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="fundingYear-${year}">
         
@@ -621,7 +622,8 @@
         [/#attempt]
         
         <h5 class="sectionSubTitle">Budget Amount</h5>
-        <div class="budgetsYear">
+       
+        <div class="budgetsYear" >
           <div class="col-md-4">
             <input type="hidden" name="fundingSource.budgets[${budgetIndex}].year" value="${year}"/>
             <input type="hidden" name="fundingSource.budgets[${budgetIndex}].id" value="${(budget.id)!}"/>
@@ -643,6 +645,7 @@
 
         [#-- Projects that this funding source is assigned to --]
         <h5 class="sectionSubTitle">[@s.text name="fundingSource.projectsAssigned" /]:</h5>
+        
         <table class="table tableProjectBudgets-${year}">
           <thead>
            <tr>

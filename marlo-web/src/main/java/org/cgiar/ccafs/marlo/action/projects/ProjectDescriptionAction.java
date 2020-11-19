@@ -529,7 +529,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
           }
         }
-        // load scope info
+        // load scope infoen
         if (project.getScopes() != null) {
           for (ProjectScope projectScope : project.getScopes()) {
             projectScope
@@ -704,25 +704,32 @@ public class ProjectDescriptionAction extends BaseAction {
           && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
         .collect(Collectors.toList()));
     } else {
-    	if (this.hasSpecificities(APConstants.CRP_PPA_ENABLE_PROJECT_DESCRIPTION)) {
-    		 liaisonInstitutions
-    	        .addAll(loggedCrp.getLiaisonInstitutions().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-    	      liaisonInstitutions.addAll(
-    	        liaisonInstitutionManager.findAll().stream().filter(c -> c.getCrp() == null).collect(Collectors.toList()));
-    	}else {
-    		 liaisonInstitutions
-    	        .addAll(loggedCrp.getLiaisonInstitutions().stream().filter(c -> c.isActive() && c.getInstitution()== null).collect(Collectors.toList()));
-    	  	  if(project.getProjectInfo() != null && 
-    	  			  project.getProjectInfo().getLiaisonInstitution()!= null && 
-    	  			  project.getProjectInfo().getLiaisonInstitution().getInstitution()!= null && 
-    	  			  loggedCrp.getLiaisonInstitutions() != null &&
-    	  			  loggedCrp.getLiaisonInstitutions().stream().filter(c -> c.isActive() && c.getInstitution() != null && c.getInstitution().getId().equals(project.getProjectInfo().getLiaisonInstitution().getInstitution().getId())).collect(Collectors.toList()) != null) {
-    			liaisonInstitutions.add(loggedCrp.getLiaisonInstitutions().stream().filter(c -> c.isActive() && c.getInstitution() != null && c.getInstitution().getId().equals(project.getProjectInfo().getLiaisonInstitution().getInstitution().getId())).collect(Collectors.toList()).get(0));
-    	}
-     
-	  }
-      //liaisonInstitutions.addAll(
-      //  liaisonInstitutionManager.findAll().stream().filter(c -> c.getCrp() == null).collect(Collectors.toList()));
+      if (this.hasSpecificities(APConstants.CRP_PPA_ENABLE_PROJECT_DESCRIPTION)) {
+        liaisonInstitutions
+          .addAll(loggedCrp.getLiaisonInstitutions().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        liaisonInstitutions.addAll(
+          liaisonInstitutionManager.findAll().stream().filter(c -> c.getCrp() == null).collect(Collectors.toList()));
+      } else {
+        liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
+          .filter(c -> c.isActive() && c.getInstitution() == null).collect(Collectors.toList()));
+        if (project.getProjectInfo() != null && project.getProjectInfo().getLiaisonInstitution() != null
+          && project.getProjectInfo().getLiaisonInstitution().getInstitution() != null
+          && loggedCrp.getLiaisonInstitutions() != null
+          && loggedCrp.getLiaisonInstitutions().stream()
+            .filter(c -> c.isActive() && c.getInstitution() != null
+              && c.getInstitution().getId()
+                .equals(project.getProjectInfo().getLiaisonInstitution().getInstitution().getId()))
+            .collect(Collectors.toList()) != null) {
+          liaisonInstitutions.add(loggedCrp.getLiaisonInstitutions().stream()
+            .filter(c -> c.isActive() && c.getInstitution() != null
+              && c.getInstitution().getId()
+                .equals(project.getProjectInfo().getLiaisonInstitution().getInstitution().getId()))
+            .collect(Collectors.toList()).get(0));
+        }
+
+      }
+      // liaisonInstitutions.addAll(
+      // liaisonInstitutionManager.findAll().stream().filter(c -> c.getCrp() == null).collect(Collectors.toList()));
     }
     // load the liasons intitutions for the crp
 
@@ -845,10 +852,10 @@ public class ProjectDescriptionAction extends BaseAction {
         project.getProjectInfo().setCrossCuttingNa(false);
       }
       if (project.getProjectInfo().getCrossCuttingGender() == null) {
-          project.getProjectInfo().setCrossCuttingGender(false);
+        project.getProjectInfo().setCrossCuttingGender(false);
       }
       if (project.getProjectInfo().getCrossCuttingYouth() == null) {
-          project.getProjectInfo().setCrossCuttingYouth(false);
+        project.getProjectInfo().setCrossCuttingYouth(false);
       }
 
       if (this.isReportingActive()) {
@@ -872,10 +879,9 @@ public class ProjectDescriptionAction extends BaseAction {
 
 
       // no liaison institution selected
-      if (project.getProjectInfo().getLiaisonInstitution() != null) {
-        if (project.getProjectInfo().getLiaisonInstitution().getId() == -1) {
-          project.getProjectInfo().setLiaisonInstitution(null);
-        }
+      if (project.getProjectInfo().getLiaisonInstitution() != null
+        && project.getProjectInfo().getLiaisonInstitution().getId() == -1) {
+        project.getProjectInfo().setLiaisonInstitution(null);
       }
 
       // Saving the flaghsips
@@ -903,7 +909,8 @@ public class ProjectDescriptionAction extends BaseAction {
             projectFocus.setPhase(this.getActualPhase());
             if (projectDB.getProjectFocuses().stream()
               .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == program.getId().longValue()
-                && c.getPhase().equals(this.getActualPhase()))
+                && this.getActualPhase() != null && c.getPhase() != null
+                && c.getPhase().getId().equals(this.getActualPhase().getId()))
               .collect(Collectors.toList()).isEmpty()) {
               projectFocus.setPhase(this.getActualPhase());
               projectFocusManager.saveProjectFocus(projectFocus);
@@ -1084,6 +1091,7 @@ public class ProjectDescriptionAction extends BaseAction {
       project.getProjectInfo().setModificationJustification(this.getJustification());
 
       project.getProjectInfo().setModifiedBy(this.getCurrentUser());
+
       projectInfoManagerManager.saveProjectInfo(project.getProjectInfo());
 
       Path path = this.getAutoSaveFilePath();

@@ -242,6 +242,25 @@ public class FundingSourceAction extends BaseAction {
     return SUCCESS;
   }
 
+  /**
+   * Make the validation for CRP Admin, PMU or Finance Manager role
+   * to determinate if a Funding source can be duplicated.
+   *
+   * @return boolean with true o false permission to duplicate FS.
+   */
+  @Override
+  public boolean canDuplicateFunding() {
+    boolean canDuplicate = false;
+    String roles = this.getRoles();
+    if (roles != null && !roles.isEmpty() && (roles.contains("CRP-Admin") || roles.contains("PMU")
+      || roles.contains("FM") || roles.contains("SuperAdmin"))) {
+      canDuplicate = true;
+    } else {
+      canDuplicate = false;
+    }
+    return canDuplicate;
+  }
+
   public boolean canEditFundingSourceBudget() {
 
     try {
@@ -305,6 +324,7 @@ public class FundingSourceAction extends BaseAction {
 
     return false;
   }
+
 
   public String copy() {
     LOG.debug("THE FUNDING SOURCE TO BE COPIED HAS AN ID OF F{}", this.getFundingSourceID());
@@ -440,7 +460,6 @@ public class FundingSourceAction extends BaseAction {
     }
   }
 
-
   private Path getAutoSaveFilePath() {
 
     String composedClassName = fundingSource.getClass().getSimpleName();
@@ -498,46 +517,46 @@ public class FundingSourceAction extends BaseAction {
     return file;
   }
 
+
   public String getFileContentType() {
     return fileContentType;
   }
-
 
   public String getFileFileName() {
     return fileFileName;
   }
 
+
   public Integer getFileID() {
     return fileID;
   }
-
 
   public FundingSource getFundingSource() {
     return fundingSource;
   }
 
+
   public String getFundingSourceFileURL() {
     return config.getDownloadURL() + "/" + this.getFundingSourceUrlPath().replace('\\', '/');
   }
-
 
   public long getFundingSourceID() {
     return fundingSourceID;
   }
 
+
   public List<Institution> getFundingSourceInstitutions() {
     return fundingSourceInstitutions;
   }
-
 
   public FundingSource getFundingSourceShow() {
     return fundingSourceShow;
   }
 
+
   public String getFundingSourceUrlPath() {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + "fundingSourceFiles" + File.separator;
   }
-
 
   public int getIndexBugets(int year) {
     int i = 0;
@@ -1271,7 +1290,7 @@ public class FundingSourceAction extends BaseAction {
       if (fundingSource.getFundingSourceInfo().getLeadCenter() != null
         && fundingSource.getFundingSourceInfo().getLeadCenter().getId() != null
         && fundingSource.getFundingSourceInfo().getLeadCenter().getId().longValue() != -1) {
-        fundingSourceInfoDB.setOriginalDonor(fundingSource.getFundingSourceInfo().getLeadCenter());
+        fundingSourceInfoDB.setLeadCenter(fundingSource.getFundingSourceInfo().getLeadCenter());
       } else {
         fundingSourceInfoDB.setLeadCenter(null);
       }
@@ -1451,7 +1470,8 @@ public class FundingSourceAction extends BaseAction {
           .collect(Collectors.toList());
       }
 
-      if (projectBudgets != null && !projectBudgets.isEmpty() && projectBudgets.get(0) != null) {
+      if (projectBudgets != null && !projectBudgets.isEmpty() && projectBudgets.get(0) != null
+        && fundingSource.getFundingSourceInfo().getBudgetType() != null) {
         ProjectBudget projectBudget;
         BudgetType budgetType;
         budgetType = budgetTypeManager.getBudgetTypeById(fundingSource.getFundingSourceInfo().getBudgetType().getId());

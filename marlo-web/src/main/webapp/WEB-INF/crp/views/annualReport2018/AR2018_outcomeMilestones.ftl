@@ -309,7 +309,8 @@
   [#local customName = "${name}[${index}]" /]
   <div id="powbOutcome-${isTemplate?string('template', index)}" class="powbOutcome borderBox" style="display:${isTemplate?string('none','block')}">
     [#-- Index --]
-    <div class="leftHead sm"><span class="index">${index+1}</span></div>
+    [#--  <div class="leftHead sm"><span class="index">${index+1}</span></div> --]
+    <div class="leftHead sm"><span class="index">${(element.composeID)!}</span></div>
     [#-- Title --]
     <div class="form-group grayBox"><strong>${(liaisonInstitution.crpProgram.acronym)!liaisonInstitution.acronym} Outcome: </strong> ${(element.description)!}</div>
     [#-- Narrative on progress --]
@@ -348,7 +349,8 @@
   [#local customName = "${name}[${index}]" /]
   <div id="powbMilestone-${isTemplate?string('template', index)}" class="synthesisMilestone simpleBox" style="display:${isTemplate?string('none','block')}">
     [#-- Index --]
-    <div class="leftHead gray sm"><span class="index">${index+1}</span></div>
+    [#-- <div class="leftHead gray sm"><span class="index">${index+1}</span></div> --]
+    <div class="leftHead gray sm"><span class="index">${(element.composeID)!}</span></div>
     [#-- Hidden inputs --]
     <input type="hidden" name="${customName}.id" value="${(annualReportElement.id)!}" >
     <input type="hidden" name="${customName}.crpMilestone.id" value="${(element.id)!}" >
