@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import java.util.Map;
 
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
@@ -69,6 +70,11 @@ public class MetadataByLink extends BaseAction {
     // the class and write the methods and add it here in the factory
     MetadataClientApi metadataClientApi = MetadataApiFactory.getMetadataClientApi(page);
     String handleUrl = metadataClientApi.parseLink(link);
+
+    if (StringUtils.stripToEmpty(handleUrl).isEmpty()) {
+      return NOT_FOUND;
+    }
+
     metadata = metadataClientApi.getMetadata(handleUrl);
     return SUCCESS;
   }
