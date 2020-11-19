@@ -214,7 +214,8 @@
                   <td class="text-center">
                     [#local milestoneName = "powbSynthesis.milestones[${milestoneIndex}]" ]
                     <input type="hidden" name="${milestoneName}.id" value="${m.id}"/>
-                    [@customForm.checkmark id="m-${(m.id)!''}" name="${milestoneName}.isPowb" checked=(m.isPowb)!false editable=editable centered=true/] 
+                    [@customForm.checkmark id="m-${(m.id)!''}" name="${milestoneName}.isPowb" checked=true editable=editable centered=true/] 
+                    [#-- checked=(m.isPowb)!false --]
                     [#local milestoneIndex = milestoneIndex + 1 ]
                   </td>
                 [/#if]
