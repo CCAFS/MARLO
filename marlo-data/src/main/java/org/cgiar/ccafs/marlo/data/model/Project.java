@@ -1207,13 +1207,15 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
   }
 
 
-  public boolean isCenterProject() {
-    ProjectInfo projectInfo = this.getProjectInfo();
-    if (projectInfo != null) {
-      return projectInfo.getPhase().getCrp().isCenterType();
-    }
-    return false;
-  }
+  /*
+   * public boolean isCenterProject() {
+   * ProjectInfo projectInfo = this.getProjectInfo();
+   * if (projectInfo != null) {
+   * return projectInfo.getPhase().getCrp().isCenterType();
+   * }
+   * return false;
+   * }
+   */
 
 
   public boolean isCrpProject() {
