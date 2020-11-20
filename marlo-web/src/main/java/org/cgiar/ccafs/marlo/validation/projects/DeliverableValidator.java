@@ -143,7 +143,7 @@ public class DeliverableValidator extends BaseValidator {
           action.getInvalidFields().put("list-deliverable.otherPartnerships",
             action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"deliverable others"}));
         } else {
-          if (deliverable.getOtherPartnerships() != null) {
+          if (deliverable.getOtherPartnerships() != null && !deliverable.getOtherPartnerships().isEmpty()) {
 
             for (int i = 0; i < deliverable.getOtherPartnerships().size(); i++) {
               if (deliverable.getOtherPartnerships().get(i).getInstitution() == null
@@ -183,7 +183,12 @@ public class DeliverableValidator extends BaseValidator {
               }
             }
 
-          }
+          } /*
+             * else {
+             * action.addMessage("Other Responsible Partnership Institutions");
+             * action.getInvalidFields().put("input-deliverable.otherPartnerships", InvalidFieldsMessages.EMPTYFIELD);
+             * }
+             */
         }
         // Deliverable responsible
         if (action.isAiccra() == false) {
@@ -191,7 +196,7 @@ public class DeliverableValidator extends BaseValidator {
           action.getInvalidFields().put("list-deliverable.responsiblePartnership",
             action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"deliverable responsible"}));
         } else {
-          if (deliverable.getResponsiblePartnership() != null) {
+          if (deliverable.getResponsiblePartnership() != null && !deliverable.getResponsiblePartnership().isEmpty()) {
             for (int i = 0; i < deliverable.getResponsiblePartnership().size(); i++) {
               /*
                * if (deliverable.getResponsiblePartnership().get(i).getInstitution() == null
@@ -222,15 +227,22 @@ public class DeliverableValidator extends BaseValidator {
                     }
                   }
                   if (!haveUser) {
-                    action.addMessage("Other Partnership Persons");
+                    action.addMessage("Responsible Partnership Persons");
                     action.getInvalidFields().put(
-                      "input-deliverable.responsiblePartnership[" + i + "].partnershipPersons",
+                      "input-deliverable.responsiblePartnership[" + i + "].responsiblePartnership",
                       InvalidFieldsMessages.EMPTYFIELD);
                   }
                 }
-                // }
+
+              } else {
+                action.addMessage("Responsible Partnership Institution");
+                action.getInvalidFields().put("input-deliverable.responsiblePartnership[" + i + "].institution.id",
+                  InvalidFieldsMessages.EMPTYFIELD);
               }
             }
+          } else {
+            action.addMessage("Responsible Partnership Institutions");
+            action.getInvalidFields().put("input-deliverable.responsiblePartnership", InvalidFieldsMessages.EMPTYFIELD);
           }
         }
 
