@@ -1513,17 +1513,21 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           .collect(Collectors.toList());
         if (deliverableActivityList != null && !deliverableActivityList.isEmpty()) {
           for (DeliverableActivity deliverableActivity : deliverableActivityList) {
-            String deliverableTitle = "";
-            if (deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getTitle() != null) {
-              deliverableTitle =
-                deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getTitle();
-            } else {
-              deliverableTitle = "&lt;Not Defined&gt;";
-            }
-            if (deliverables.isEmpty()) {
-              deliverables = "● D" + deliverableActivity.getDeliverable().getId() + ": " + deliverableTitle;
-            } else {
-              deliverables += "<br>● D" + deliverableActivity.getDeliverable().getId() + ": " + deliverableTitle;
+            if (deliverableActivity.getDeliverable().isActive()) {
+              String deliverableTitle = "";
+              if (deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()) != null
+                && deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase())
+                  .getTitle() != null) {
+                deliverableTitle =
+                  deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getTitle();
+              } else {
+                deliverableTitle = "&lt;Not Defined&gt;";
+              }
+              if (deliverables.isEmpty()) {
+                deliverables = "● D" + deliverableActivity.getDeliverable().getId() + ": " + deliverableTitle;
+              } else {
+                deliverables += "<br>● D" + deliverableActivity.getDeliverable().getId() + ": " + deliverableTitle;
+              }
             }
           }
         }
