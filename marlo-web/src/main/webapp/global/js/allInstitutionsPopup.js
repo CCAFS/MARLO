@@ -26,7 +26,16 @@ $(document).ready(function() {
                   flags += '<i title="' + flag + '" class="flag-icon flag-icon-' + $.trim(flag.toLowerCase()) + '"></i>';
                 });
                 // console.log(full.webPage);
-                let link = `<a style="margin: 20px;" href="${full.webPage || "" }" target="_blank" data-toggle="tooltip" data-placement="top" title="${full.webPage || "" }">Web page</a>`;
+                let link = "";
+                if (full.webPage != undefined) {
+                  link = `<a style="margin: 20px;" href="${full.webPage || "" }" target="_blank" data-toggle="tooltip" data-placement="top" title="${full.webPage || "" }">Web page</a>`;
+                }else{
+                  link = ""
+                }
+                // if(full.webPage == undefined){
+                //   console.log("Nullooooooooooooooooooooooooooooooooooooooooooo");
+                //   console.log(full.name);
+                // }
                 // console.log(full.webpage);
                 return data + " <br/>  " + flags +link;
               }
