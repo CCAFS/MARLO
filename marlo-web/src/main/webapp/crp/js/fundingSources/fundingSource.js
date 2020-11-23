@@ -1134,14 +1134,16 @@ function getInstitutionsBudgetByType(budgetTypeID) {
         changeDonorByFundingType(budgetTypeID, $(".donor:eq(0)"));
         // Trigger donors selects
         $donorSelectLists.trigger("change.select2");
-        // Stop Loader
-        $('.loading').fadeOut(800);
+     
       },
       error: function(e) {
         console.log(e);
+        // Stop Loader
+        $('.loading').fadeOut(800);
       },
       complete: function() {
-
+        // Stop Loader
+        $('.loading').fadeOut(800);
       },
       timeout: 3000
   });
