@@ -23,31 +23,20 @@ import java.util.List;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class NewFinancialSummaryDTO {
+public class FinancialSumaryDTO {
 
+  @ApiModelProperty(notes = "Financial Sumary ID", position = 1)
+  private Long id;
 
-  @ApiModelProperty(notes = "Financial summary narrative")
+  @ApiModelProperty(notes = "Financial summary narrative", position = 3)
   private String narrative;
 
-  @ApiModelProperty(notes = "Flagship budget List")
+  @ApiModelProperty(notes = "Flagship budget List", position = 4)
   private List<NewFinancialSummaryBudgetDTO> flagshipSummaryBudgets;
 
-  @ApiModelProperty(notes = "Strategic competitive research grant")
-  private NewFinancialSummaryBudgetDTO strategicCompetitiveResearchGrant;
 
-
-  @ApiModelProperty(notes = "CRP Management and Support Cost")
-  private NewFinancialSummaryBudgetDTO crpManagementSupportCost;
-
-
-  @ApiModelProperty(notes = "Phase identifier")
-  private PhaseDTO phase;
-
-
-  public NewFinancialSummaryBudgetDTO getCrpManagementSupportCost() {
-    return crpManagementSupportCost;
-  }
-
+  @ApiModelProperty(notes = "Reporting year", position = 2)
+  private int year;
 
   public List<NewFinancialSummaryBudgetDTO> getFlagshipSummaryBudgets() {
     return flagshipSummaryBudgets;
@@ -59,21 +48,6 @@ public class NewFinancialSummaryDTO {
   }
 
 
-  public PhaseDTO getPhase() {
-    return phase;
-  }
-
-
-  public NewFinancialSummaryBudgetDTO getStrategicCompetitiveResearchGrant() {
-    return strategicCompetitiveResearchGrant;
-  }
-
-
-  public void setCrpManagementSupportCost(NewFinancialSummaryBudgetDTO crpManagementSupportCost) {
-    this.crpManagementSupportCost = crpManagementSupportCost;
-  }
-
-
   public void setFlagshipSummaryBudgets(List<NewFinancialSummaryBudgetDTO> flagshipSummaryBudgets) {
     this.flagshipSummaryBudgets = flagshipSummaryBudgets;
   }
@@ -81,16 +55,6 @@ public class NewFinancialSummaryDTO {
 
   public void setNarrative(String narrative) {
     this.narrative = narrative;
-  }
-
-
-  public void setPhase(PhaseDTO phase) {
-    this.phase = phase;
-  }
-
-
-  public void setStrategicCompetitiveResearchGrant(NewFinancialSummaryBudgetDTO strategicCompetitiveResearchGrant) {
-    this.strategicCompetitiveResearchGrant = strategicCompetitiveResearchGrant;
   }
 
 }
