@@ -26,11 +26,11 @@ $(document).ready(function() {
                   flags += '<i title="' + flag + '" class="flag-icon flag-icon-' + $.trim(flag.toLowerCase()) + '"></i>';
                 });
                 // console.log(full.webPage);
-                let link = "";
+                var link = "";
                 if (full.webPage != undefined) {
                   link = "<a style='margin: 20px;' href='"+full.webPage+"' target='_blank' data-toggle='tooltip' data-placement='top' title='"+full.webPage+"'>Web page</a>";
                 }else{
-                  link = ""
+                  link = "";
                 }
                 // if(full.webPage == undefined){
                 //   console.log("Nullooooooooooooooooooooooooooooooooooooooooooo");
