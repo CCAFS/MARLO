@@ -28,7 +28,7 @@ $(document).ready(function() {
                 // console.log(full.webPage);
                 let link = "";
                 if (full.webPage != undefined) {
-                  link = `<a style="margin: 20px;" href="${full.webPage || "" }" target="_blank" data-toggle="tooltip" data-placement="top" title="${full.webPage || "" }">Web page</a>`;
+                  link = "<a style='margin: 20px;' href='"+full.webPage+"' target='_blank' data-toggle='tooltip' data-placement='top' title='"+full.webPage+"'>Web page</a>";
                 }else{
                   link = ""
                 }
