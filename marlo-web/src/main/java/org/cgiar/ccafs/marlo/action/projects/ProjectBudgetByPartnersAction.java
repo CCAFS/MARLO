@@ -507,7 +507,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
       for (ProjectBudget projectBudget : project.getBudgets()) {
         if (projectBudget != null) {
-          if (projectBudget.getBudgetType() != null) {
+          if (projectBudget.getBudgetType() != null && projectBudget.getBudgetType().getId() != null) {
             if (year == projectBudget.getYear() && type == projectBudget.getBudgetType().getId().longValue()) {
               if (projectBudget.getAmount() != null) {
                 total = total + projectBudget.getAmount();
@@ -517,7 +517,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
         }
       }
     }
-
 
     return total;
   }

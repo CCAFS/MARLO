@@ -38,9 +38,6 @@ function fullScreenDashboard() {
   var currentID = $("div[class$='current']").attr("id");
   var embedContainer = $("#" + currentID + '-contentOptions').children().first()[0];
 
-  var models = window['powerbi-client'].models;
-
-
   // Get a reference to the embedded report.
   report = powerbi.get(embedContainer);
   report.updateSettings({})
