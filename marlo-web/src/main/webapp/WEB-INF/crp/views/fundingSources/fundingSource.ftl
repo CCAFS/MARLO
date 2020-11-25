@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "datatables.net", "datatables.net-bs","flag-icon-css",  "vue"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/fieldsValidation.js",
-  "${baseUrlMedia}/js/fundingSources/fundingSource.js?20201110",
+  "${baseUrlMedia}/js/fundingSources/fundingSource.js?20201123",
   "${baseUrlMedia}/js/fundingSources/syncFundingSource.js?20201105",
   "${baseUrlCdn}/global/js/autoSave.js" 
   ]
