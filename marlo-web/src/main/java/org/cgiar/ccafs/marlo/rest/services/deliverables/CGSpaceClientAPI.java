@@ -145,6 +145,7 @@ public class CGSpaceClientAPI extends MetadataClientApi {
    */
   @Override
   public String parseLink(String link) {
+    String linkRest = "";
 
     // if the link contains http://hdl.handle.net/ we remove it from the link
     if (link.contains(HANDLE_URL)) {
@@ -159,11 +160,18 @@ public class CGSpaceClientAPI extends MetadataClientApi {
       this.setId(link.replace(CGSPACE_URL, ""));
     }
 
-    String handleUrl = CGSPACE_HANDLE.replace("{0}", this.getId());
-    RestConnectionUtil connection = new RestConnectionUtil();
-    Element elementHandle = connection.getXmlRestClient(handleUrl);
-    this.setId(elementHandle.element("id").getStringValue());
-    String linkRest = (REST_URL.replace("{0}", this.getId()));
+    if (this.getId() != null) {
+      String handleUrl = CGSPACE_HANDLE.replace("{0}", this.getId());
+      RestConnectionUtil connection = new RestConnectionUtil();
+      Element elementHandle = connection.getXmlRestClient(handleUrl);
+      if (elementHandle != null && elementHandle.element("UUID") != null) {
+        this.setId(elementHandle.element("UUID").getStringValue());
+        if (this.getId() != null) {
+          linkRest = (REST_URL.replace("{0}", this.getId()));
+        }
+      }
+    }
+
     return linkRest;
   }
 }
