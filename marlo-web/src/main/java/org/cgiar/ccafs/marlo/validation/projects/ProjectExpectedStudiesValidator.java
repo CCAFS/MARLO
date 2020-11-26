@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyQuantification;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
@@ -136,6 +137,20 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
       action.addMissingField("study.stratgicResultsLink.subIDOs");
       action.getInvalidFields().put("list-expectedStudy.subIdos",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
+    } else {
+      // Validate primary sub-IDO
+      int count = 0;
+      for (ProjectExpectedStudySubIdo studySubIdo : projectExpectedStudy.getSubIdos()) {
+        if (studySubIdo.getPrimary() != null && studySubIdo.getPrimary() == true) {
+          count++;
+        }
+      }
+      if (count == 0) {
+        action.addMessage(action.getText("subIdos"));
+        action.addMissingField("study.stratgicResultsLink.subIDOs");
+        action.getInvalidFields().put("list-expectedStudy.subIdos",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
+      }
     }
 
     // validate Milestones
