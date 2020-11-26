@@ -602,20 +602,19 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           && this.expectedStudy.getGeographicScopes().size() > 0) {
           for (ProjectExpectedStudyGeographicScope projectExpectedStudyGeographicScope : this.expectedStudy
             .getGeographicScopes()) {
-            projectExpectedStudyGeographicScope.setRepIndGeographicScope(this.geographicScopeManager
-              .getRepIndGeographicScopeById(projectExpectedStudyGeographicScope.getRepIndGeographicScope().getId()));
-
             if (projectExpectedStudyGeographicScope.getRepIndGeographicScope() != null) {
+
+              projectExpectedStudyGeographicScope.setRepIndGeographicScope(this.geographicScopeManager
+                .getRepIndGeographicScopeById(projectExpectedStudyGeographicScope.getRepIndGeographicScope().getId()));
+
               if (projectExpectedStudyGeographicScope.getRepIndGeographicScope().getId() == 2) {
                 haveRegions = true;
               }
-
               if (projectExpectedStudyGeographicScope.getRepIndGeographicScope().getId() != 1
                 && projectExpectedStudyGeographicScope.getRepIndGeographicScope().getId() != 2) {
                 haveCountries = true;
               }
             }
-
           }
         }
 

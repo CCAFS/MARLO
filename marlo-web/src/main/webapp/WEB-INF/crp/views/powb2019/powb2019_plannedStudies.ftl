@@ -95,7 +95,7 @@
             [#-- Status --]
             <td>
               [#if study.projectExpectedStudyInfo.status?has_content]
-                <nobr>${(study.projectExpectedStudyInfo.statusName)!''}</nobr>
+               ${(study.projectExpectedStudyInfo.statusName)!''}
               [#else]
                 <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
               [/#if]
@@ -115,8 +115,8 @@
             </td>
             [#-- Geographic scope --]
             <td class="text-center">
-            [#if study.projectExpectedStudyInfo.repIndGeographicScope?has_content]
-              <nobr>${study.projectExpectedStudyInfo.repIndGeographicScope.name}</nobr>
+            [#if study.geographicScopeString?has_content]
+              ${study.geographicScopeString}
             [#else]
               <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
             [/#if]
