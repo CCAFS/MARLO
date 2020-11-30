@@ -259,9 +259,9 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
 
     if (this.getStatus() != null
       && (this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))) {
-      if (this.getYear() == this.getPhase().getYear()) {
-        return true;
-      }
+      // if (this.getYear() == this.getPhase().getYear()) {
+      return true;
+      // }
     }
 
     return false;
