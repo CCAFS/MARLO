@@ -1349,8 +1349,12 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         this.getText("summaries.annualReport2018.table3Title1", new String[] {String.valueOf(this.getSelectedYear())}),
         ParagraphAlignment.LEFT, false, true),
       new POIField(this.getText("summaries.annualReport2018.table3Title2a"), ParagraphAlignment.LEFT, false),
-      new POIField(this.getText("summaries.annualReport2018.table3Title2"), ParagraphAlignment.LEFT, false),
-      new POIField(this.getText("summaries.annualReport2018.table3Title3"), ParagraphAlignment.LEFT, false)};
+      new POIField(this.getText("summaries.annualReport2018.table3Title2"), ParagraphAlignment.LEFT,
+        false)/*
+               * ,
+               * //REMOVED FOR AR 2020
+               * new POIField(this.getText("summaries.annualReport2018.table3Title3"), ParagraphAlignment.LEFT, false)
+               */};
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
 
@@ -1371,10 +1375,13 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           && projectExpectStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getName() != null) {
           maturity = projectExpectStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getName();
         }
-        if (projectExpectStudy.getProjectExpectedStudyInfo().getEvidenceTag() != null
-          && projectExpectStudy.getProjectExpectedStudyInfo().getEvidenceTag().getName() != null) {
-          indicator = projectExpectStudy.getProjectExpectedStudyInfo().getEvidenceTag().getName();
-        }
+        // REMOVED FOR AR 2020
+        /*
+         * if (projectExpectStudy.getProjectExpectedStudyInfo().getEvidenceTag() != null
+         * && projectExpectStudy.getProjectExpectedStudyInfo().getEvidenceTag().getName() != null) {
+         * indicator = projectExpectStudy.getProjectExpectedStudyInfo().getEvidenceTag().getName();
+         * }
+         */
         if (projectExpectStudy.getProjectExpectedStudyInfo().getIsPublic() != null
           && projectExpectStudy.getProjectExpectedStudyInfo().getIsPublic() == true) {
           linkOICR = this.getBaseUrl() + "/projects/" + this.getCrpSession() + "/studySummary.do?studyID="
@@ -1388,9 +1395,12 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         + this.getSelectedPhase().getYear();
 
       POIField[] sData = {new POIField(title, ParagraphAlignment.LEFT, false),
-        new POIField("Link", ParagraphAlignment.CENTER, false, "000000", url),
-        new POIField(maturity, ParagraphAlignment.CENTER, false),
-        new POIField(indicator, ParagraphAlignment.LEFT, false)};
+        new POIField("Link", ParagraphAlignment.CENTER, false, "000000", url), new POIField(maturity,
+          ParagraphAlignment.CENTER, false)/*
+                                            * ,
+                                            * //REMOVED FOR AR 2020
+                                            * new POIField(indicator, ParagraphAlignment.LEFT, false)
+                                            */};
       data = Arrays.asList(sData);
       datas.add(data);
     }

@@ -464,13 +464,16 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
           }
         }
 
+        // REMOVED FOR AR 2020
         // Validate Evidence Tag
-        if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getEvidenceTag() == null) {
-          action.addMessage(action.getText("Evidence Tag"));
-          action.addMissingField("study.evidenceTag");
-          action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.evidenceTag.id",
-            InvalidFieldsMessages.EMPTYFIELD);
-        }
+        /*
+         * if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getEvidenceTag() == null) {
+         * action.addMessage(action.getText("Evidence Tag"));
+         * action.addMissingField("study.evidenceTag");
+         * action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.evidenceTag.id",
+         * InvalidFieldsMessages.EMPTYFIELD);
+         * }
+         */
 
       } else {
         // Validate Srf Targets Selection

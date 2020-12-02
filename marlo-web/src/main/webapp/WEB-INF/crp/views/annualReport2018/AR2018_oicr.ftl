@@ -104,7 +104,8 @@
         <tr>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.outcomeTitle" /] </th>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.maturityLevel" /] </th>
-          <th class="text-center"> [@s.text name="${customLabel}.${name}.status" /] </th>
+          [#-- Removed for AR 2020 --]
+          [#--<th class="text-center"> [@s.text name="${customLabel}.${name}.status" /] </th>--]
           [#if expanded]
           <th> [@s.text name="${customLabel}.${name}.srfTargets" /] </th>
           <th> [@s.text name="${customLabel}.${name}.subIdos" /] </th>
@@ -155,7 +156,8 @@
                 <a href="${url}" target="_blank" class="pull-right">[@s.text name="${customLabel}.${name}.linkToOicr" /] <span class="glyphicon glyphicon-new-window"></span></a>
               </td>
               <td>[@utils.tableText value=(item.projectExpectedStudyInfo.repIndStageStudy.name)!"" /]</td>
-              <td class="text-center">[@utils.tableText value=(item.projectExpectedStudyInfo.evidenceTag.name)!"" /]</td>
+              [#-- Removed for AR 2020 --]
+              [#--<td class="text-center">[@utils.tableText value=(item.projectExpectedStudyInfo.evidenceTag.name)!"" /]</td>--]
              [#if expanded]
               <td>[@utils.tableList list=(item.srfTargets)![] displayFieldName="srfSloIndicator.title" /]</td>
               <td>[@utils.tableList list=(item.subIdos)![] displayFieldName="srfSubIdo.description" /]</td>
