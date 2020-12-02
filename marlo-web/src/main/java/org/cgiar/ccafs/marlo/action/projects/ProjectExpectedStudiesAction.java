@@ -553,12 +553,15 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             .getGeneralStatusById(this.expectedStudy.getProjectExpectedStudyInfo().getStatus().getId()));
         }
 
+        // REMOVED FOR AR 2020
         // Load evidence Tags
-        if (this.expectedStudy.getProjectExpectedStudyInfo().getEvidenceTag() != null
-          && this.expectedStudy.getProjectExpectedStudyInfo().getEvidenceTag().getId() != null) {
-          this.expectedStudy.getProjectExpectedStudyInfo().setEvidenceTag(this.evidenceTagManager
-            .getEvidenceTagById(this.expectedStudy.getProjectExpectedStudyInfo().getEvidenceTag().getId()));
-        }
+        /*
+         * if (this.expectedStudy.getProjectExpectedStudyInfo().getEvidenceTag() != null
+         * && this.expectedStudy.getProjectExpectedStudyInfo().getEvidenceTag().getId() != null) {
+         * this.expectedStudy.getProjectExpectedStudyInfo().setEvidenceTag(this.evidenceTagManager
+         * .getEvidenceTagById(this.expectedStudy.getProjectExpectedStudyInfo().getEvidenceTag().getId()));
+         * }
+         */
 
         // Load new Expected Year
         if (this.expectedStudy.getProjectExpectedStudyInfo().getStatus() != null
@@ -1442,13 +1445,15 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
       }
 
-      if (this.expectedStudy.getProjectExpectedStudyInfo().getEvidenceTag() != null) {
-        if (this.expectedStudy.getProjectExpectedStudyInfo().getEvidenceTag().getId() == -1) {
-          this.expectedStudy.getProjectExpectedStudyInfo().setEvidenceTag(null);
-        }
-      }
-      // End
-
+      // REMOVED FOR AR 2020
+      /*
+       * if (this.expectedStudy.getProjectExpectedStudyInfo().getEvidenceTag() != null) {
+       * if (this.expectedStudy.getProjectExpectedStudyInfo().getEvidenceTag().getId() == -1) {
+       * this.expectedStudy.getProjectExpectedStudyInfo().setEvidenceTag(null);
+       * }
+       * }
+       * // End
+       */
       this.projectExpectedStudyInfoManager
         .saveProjectExpectedStudyInfo(this.expectedStudy.getProjectExpectedStudyInfo());
       this.expectedStudy.getProjectExpectedStudyInfos().add(this.expectedStudy.getProjectExpectedStudyInfo());

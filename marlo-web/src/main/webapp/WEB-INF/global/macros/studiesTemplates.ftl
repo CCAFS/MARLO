@@ -42,10 +42,10 @@
           </div>
         </div>
       </div>
-      
-      [#if isOutcomeCaseStudy]
+      [#-- REMOVED FOR AR 2020 --]
+      [#--]if isOutcomeCaseStudy]
         <hr />
-        [#-- Tags --]
+        [#-- Tags]
         <div class="form-group">
           <label for="">[@s.text name="study.tags" /]:[@customForm.req required=editable /]</label>
           [#local tagValue = (element.projectExpectedStudyInfo.evidenceTag.id)!-1 ]
@@ -53,7 +53,7 @@
             <br /> [@customForm.radioFlat id="tag-${tag_index}" name="${customName}.projectExpectedStudyInfo.evidenceTag.id" label="${tag.name}" value="${tag.id}" checked=(tagValue == tag.id) cssClass="radioType-tags" cssClassLabel="font-normal" editable=editable /] 
           [/#list]
         </div>
-      [/#if]
+      [/#if] --]
     </div>
     <div class="borderBox">
       [#-- 1. Title (up to 25 words) --]
