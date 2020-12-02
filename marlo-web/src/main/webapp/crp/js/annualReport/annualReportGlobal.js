@@ -90,14 +90,18 @@ $(document).ready(function() {
 
 
 
-  
+  setStatusByBack();
 
   $('.checkboxDiTeArClick').on('click',setCheckboxValueTohide);
 
 
 
 });
-
+function setStatusByBack(){
+  $(".sloTargetsList").find('.sloTarget').each(function(i,field) {
+   console.log($(field).find('.checkboxDiTeArClick').val());
+});
+}
 
 function setCheckboxValueTohide(){
   // console.log("init value: "+$(this).val());
