@@ -42,6 +42,52 @@
           </div>
         </div>
       </div>
+
+      [#-- Evidences table with types and their descriptions --]
+      <div class="form-group evidenceTypeMessage">
+        <div id="dialog" title="Evidence types" style="display: none">
+          <table id="evidenceTypes" style="height:700px; width:950px;">
+            <th> [@s.text name="study.dialogMessage.part1" /] </th>
+            <th> [@s.text name="study.dialogMessage.part2" /] </th>
+            <th> [@s.text name="study.dialogMessage.part3" /] / [@s.text name="study.dialogMessage.part4" /] </th>
+            [#if studyTypes?has_content]
+              [#list studyTypes as st]
+                <tr>
+                  [#--if st_index == 0]
+                  <th rowspan="${action.getDeliverablesSubTypes(mt.id).size()}" class="text-center"> ${mt.name} </th>
+                  [/#if--]
+                  <td> 
+                    ${st.name} 
+                  </td>
+                  [#if (st.description?has_content)!false]
+                    <td>
+                      ${st.description}
+                    </td>
+                  [/#if]
+                  <td>
+                  [#if (st.keyIdentifier?has_content)!false]
+                    <i><u>How to identify?</u></i> {st.keyIdentifier}
+                  [/#if]
+                  [#if (st.forNarrative?has_content)!false]
+                    <i><u>For:</u></i> {st.forNarrative}
+                  [/#if]
+                  [#if (st.example?has_content)!false]
+                    <br /> (<i><small>${st.example}</small></i>)
+                  [/#if]
+                  </td>
+                </tr>
+              [/#list]
+            [/#if]  
+          </table>
+        </div> <!-- End dialog-->
+
+        <div class="note left">
+          <div id="popup" class="helpMessage3">
+            <p><a id="opener" onclick="document.getElementById('dialog').style.display = 'block'"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="study.generalInformation.studyType" /]</a></p>
+          </div>
+        </div>
+        <div class="clearfix"></div>
+      </div>
       [#-- REMOVED FOR AR 2020 --]
       [#--]if isOutcomeCaseStudy]
         <hr />
