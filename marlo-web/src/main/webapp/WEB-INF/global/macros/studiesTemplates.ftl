@@ -59,11 +59,13 @@
                   <td> 
                     ${st.name} 
                   </td>
+                  <td>
                   [#if (st.description?has_content)!false]
-                    <td>
-                      ${st.description}
-                    </td>
+                    ${st.description}
+                  [#else]
+                    <i>([@s.text name="study.dialogMessage.notProvided" /])</i>
                   [/#if]
+                  </td>
                   <td>
                   [#if (st.keyIdentifier?has_content)!false]
                     <i><u>How to identify?</u></i> {st.keyIdentifier}
@@ -113,20 +115,26 @@
             <td>
               ${st.name}
             </td>
+            <td>
             [#if (st.description?has_content)!false]
-            <td>
               ${st.description}
-            </td>
+            [#else]
+              <i>([@s.text name="study.dialogMessage.notProvided" /])</i>
             [/#if]
+            </td>
             <td>
-              [#if (st.keyIdentifier?has_content)!false]
-              <i><u>How to identify?</u></i> ${st.keyIdentifier}
-              [/#if]
-              [#if (st.forNarrative?has_content)!false]
-              <i><u>For:</u></i> ${st.forNarrative}
-              [/#if]
-              [#if (st.example?has_content)!false]
-              <br /> (<i><small>${st.example}</small></i>)
+              [#if (((st.keyIdentifier?has_content)!false) || ((st.forNarrative?has_content)!false) || ((st.example?has_content)!false))]
+                [#if (st.keyIdentifier?has_content)!false]
+                  <i><u>How to identify?</u></i> ${st.keyIdentifier}
+                [/#if]
+                [#if (st.forNarrative?has_content)!false]
+                  <br><i><u>For:</u></i> ${st.forNarrative}
+                [/#if]
+                [#if (st.example?has_content)!false]
+                  <br /> (<i><small>Example: ${st.example}</small></i>)
+                [/#if]
+              [#else]
+                <i>([@s.text name="study.dialogMessage.notProvided" /])</i>
               [/#if]
             </td>
           </tr>
