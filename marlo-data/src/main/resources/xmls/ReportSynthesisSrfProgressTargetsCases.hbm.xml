@@ -27,7 +27,7 @@
 		</many-to-one>
 		<property generated="never" lazy="false" name="briefSummary"
 			optimistic-lock="true" type="string" unique="false">
-			<column length="65535" name="biref_summary" />
+			<column length="65535" name="brief_summary" />
 		</property>
 		<property generated="never" lazy="false"
 			name="additionalContribution" optimistic-lock="true" type="string"
