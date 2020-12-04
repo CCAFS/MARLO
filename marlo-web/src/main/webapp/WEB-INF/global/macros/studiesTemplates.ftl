@@ -80,10 +80,72 @@
             [/#if]  
           </table>
         </div> <!-- End dialog-->
+        
+        
+        
+          
+  <div class="modal fade" id="evidenceModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable " style=" width:80%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <!-- <h5 class="modal-title" id="exampleModalLabel">Modal title</h5> -->
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+        <table id="evidenceTypes" class="table ">
+          <thead style="background-color: #0b7ba6; font-weight: 500; color: white;">
+            <tr>
+              <th> [@s.text name="study.dialogMessage.part1" /]</th>
+              <th> [@s.text name="study.dialogMessage.part2" /] </th>
+              <th> [@s.text name="study.dialogMessage.part3" /] / [@s.text name="study.dialogMessage.part4" /] </th>
+            </tr>
+          </thead>
+
+          [#if studyTypes?has_content]
+          [#list studyTypes as st]
+          <tr>
+            [#--if st_index == 0]
+            <th rowspan="${action.getDeliverablesSubTypes(mt.id).size()}" class="text-center"> ${mt.name} </th>
+            [/#if--]
+            <td>
+              ${st.name}
+            </td>
+            [#if (st.description?has_content)!false]
+            <td>
+              ${st.description}
+            </td>
+            [/#if]
+            <td>
+              [#if (st.keyIdentifier?has_content)!false]
+              <i><u>How to identify?</u></i> ${st.keyIdentifier}
+              [/#if]
+              [#if (st.forNarrative?has_content)!false]
+              <i><u>For:</u></i> ${st.forNarrative}
+              [/#if]
+              [#if (st.example?has_content)!false]
+              <br /> (<i><small>${st.example}</small></i>)
+              [/#if]
+            </td>
+          </tr>
+          [/#list]
+          [/#if]
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+        
+        
 
         <div class="note left">
           <div id="popup" class="helpMessage3">
-            <p><a id="opener" onclick="document.getElementById('dialog').style.display = 'block'"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="study.generalInformation.studyType" /]</a></p>
+            <p><a style="cursor: pointer;" data-toggle="modal" data-target="#evidenceModal" > <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="study.generalInformation.studyType" /]</a></p>
           </div>
         </div>
         <div class="clearfix"></div>
