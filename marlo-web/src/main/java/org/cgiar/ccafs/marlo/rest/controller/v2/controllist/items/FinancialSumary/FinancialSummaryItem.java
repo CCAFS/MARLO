@@ -37,6 +37,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummary;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummaryBudget;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.rest.dto.FinancialSumaryDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewFinancialSummaryBudgetDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewFinancialSummaryDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectPolicyDTO;
@@ -195,6 +196,53 @@ public class FinancialSummaryItem<T> {
           .collect(Collectors.toList()));
     }
     return id;
+  }
+
+  public List<FinancialSumaryDTO> findFinancialSumaryList(String entityAcronym, int year, String phasestr,
+    String flagshipID, User user) {
+    List<FinancialSumaryDTO> financialSumaryList = new ArrayList<FinancialSumaryDTO>();
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
+    if (globalUnitEntity == null) {
+      fieldErrors.add(new FieldErrorDTO("findFinancialSummary", "GlobalUnitEntity",
+        entityAcronym + " is an invalid CGIAR entity acronym"));
+    }
+    Phase phase =
+      this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(entityAcronym)
+        && c.getYear() == year && c.getName().equalsIgnoreCase(phasestr)).findFirst().get();
+
+    if (phase == null) {
+      fieldErrors.add(new FieldErrorDTO("findFinancialSummary", "phase",
+        new NewProjectPolicyDTO().getPhase().getYear() + " is an invalid year"));
+    }
+    // validate errors
+    if (fieldErrors.isEmpty()) {
+      LiaisonInstitution liaisonInstitution =
+        this.liaisonInstitutionManager.findByAcronymAndCrp(APConstants.CLARISA_ACRONYM_PMU, globalUnitEntity.getId());
+      if (liaisonInstitution == null) {
+        fieldErrors.add(new FieldErrorDTO("findFinancialSummary", "LiaisonInstitution", "invalid liaison institution"));
+      } else {
+        ReportSynthesis reportSynthesis =
+          reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
+        if (reportSynthesis == null) {
+          fieldErrors
+            .add(new FieldErrorDTO("findFinancialSummary", "ReportSynthesis", "There is not Sysnthesis report"));
+        } else {
+          ReportSynthesisFinancialSummary reportSynthesisFinancialSummary =
+            reportSynthesisFinancialSummaryManager.getReportSynthesisFinancialSummaryById(reportSynthesis.getId());
+          if (reportSynthesisFinancialSummary == null) {
+            fieldErrors
+              .add(new FieldErrorDTO("findFinancialSummary", "ReportSynthesis", "There is not Financial Summary"));
+          } else {
+            reportSynthesisFinancialSummary
+              .setBudgets(reportSynthesisFinancialSummary.getReportSynthesisFinancialSummaryBudgets().stream()
+                .filter(c -> c.isActive()).collect(Collectors.toList()));
+          }
+        }
+      }
+
+    }
+    return financialSumaryList;
   }
 
   public Long updateFinancialSummary(long idFinancialSummary, NewFinancialSummaryDTO financialSummary,
