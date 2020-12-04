@@ -7,7 +7,7 @@
 [#assign customJS = [ 
   "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js"
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js" ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20190621"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20201202"] /]
 
 [#assign breadCrumb = [
   {"label":"${currentSection}",   "nameSpace":"",             "action":""},
@@ -22,7 +22,7 @@
 
 [#assign customName= "reportSynthesis.reportSynthesisSrfProgress" /]
 [#assign customLabel= "annualReport2018.${currentStage}" /]
-
+[#assign arrayCheckBV=["true","false","true","false","true","false","true","false","true","false"] /]
 [#-- Helptext --]
 [@utilities.helpBox name="${customLabel}.help" /]
     
@@ -114,7 +114,7 @@
   [#local customClass = "sloTarget" /]
   [#local sloTargetContribution = action.getTargetsInfo(element.id)!{} ]
   [#local otherContributions = action.getTargetsFlagshipInfo(element.id)![] ]
-  
+
   <div id="${customClass}-${isTemplate?string('template', index)}" class="simpleBox ${customClass}" style="display:${isTemplate?string('none', 'block')}">
     [#-- Hidden Inputs --]
     <input type="hidden" name="${customName}.id" value="${(sloTargetContribution.id)!}" />
@@ -124,7 +124,11 @@
       <div class="pull-right">
         [@macrosAR.evidencesPopup element=(element)!{} list=(action.getEvidenceInfo(element.id))![]  /]
       </div> 
-      <strong>SLO Target 2022</strong> <br />${(element.narrative)!}
+      <strong class="checkboxDiTeAr">SLO Target 2022 ${(arrayCheckBV[index])!}</strong>
+      <div class="checkboxDiTeAr">
+       [@customForm.checkbox name="checkboxDiTeAr-${isTemplate?string('template', index)}" value="${(arrayCheckBV[index])!}" checked=false i18nkey="No new evidence" className="checkboxDiTeArClick" required=false editable=editable /]
+      </div>
+       <br />${(element.narrative)!}
     </div>
     [#-- Brief summary of new evidence of CGIAR contribution to relevant targets for this CRP (with citation) --]
     <div class="form-group">
