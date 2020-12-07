@@ -87,7 +87,7 @@
         
           
   <div class="modal fade" id="evidenceModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable " style=" width:80%">
+  <div class="modal-dialog modal-dialog-scrollable" style=" width:80%" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <!-- <h5 class="modal-title" id="exampleModalLabel">Modal title</h5> -->
@@ -101,7 +101,7 @@
           <thead style="background-color: #0b7ba6; font-weight: 500; color: white;">
             <tr>
               <th> [@s.text name="study.dialogMessage.part1" /]</th>
-              <th> [@s.text name="study.dialogMessage.part2" /] </th>
+              <th > [@s.text name="study.dialogMessage.part2" /] </th>
               <th> [@s.text name="study.dialogMessage.part3" /] / [@s.text name="study.dialogMessage.part4" /] </th>
             </tr>
           </thead>
@@ -112,10 +112,10 @@
             [#--if st_index == 0]
             <th rowspan="${action.getDeliverablesSubTypes(mt.id).size()}" class="text-center"> ${mt.name} </th>
             [/#if--]
-            <td>
+            <td  >
               ${st.name}
             </td>
-            <td>
+            <td style="max-width: 90vw !important;">
             [#if (st.description?has_content)!false]
               ${st.description}
             [#else]
