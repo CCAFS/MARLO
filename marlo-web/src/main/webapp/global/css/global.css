@@ -3,7 +3,9 @@
 .mce-widget.mce-tooltip {
   display: none !important;
 }
-
+#evidenceTypes th,#evidenceTypes td{
+font-size: 1.2em !important;
+}
 table {
   width: 100%;
 }
