@@ -198,17 +198,18 @@
         <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.maturity" /]</th>
         <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.subIDOs" /]</th>
         [#if expanded]
-        <th class="text-center" colspan="4">[@s.text name="${customLabel}.table2.crossCutting" /]</th>
-        [#--  <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.type" /]</th>--]
-        <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.whose" /]</th>
-        <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.geoScope" /]</th>
-        <th class="text-center" rowspan="${rows}">Evidence(s)</th>
+          <th class="text-center" colspan="4">[@s.text name="${customLabel}.table2.crossCutting" /]</th>
+          [#--  <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.type" /]</th>--]
+          <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.whose" /]</th>
+          <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.geoScope" /]</th>
+          <th class="text-center" rowspan="${rows}">Evidence(s)</th>
         [/#if]
         [#if !expanded]
-        [#-- Complete Status    --]
-        <th class="col-md-1 text-center no-sort" rowspan="${rows}">[@s.text name="${customLabel}.table2.missingFields" /]</th>
-     
-        <th class="col-md-1 text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.includeAR" /]</th>
+          [#-- Complete Status    --]
+          <th class="col-md-1 text-center no-sort" rowspan="${rows}">[@s.text name="${customLabel}.table2.missingFields" /]</th>
+          [#if PMU]
+            <th class="col-md-1 text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.includeAR" /]</th>
+          [/#if]
         [/#if]        
       </tr>
       [#if expanded]
@@ -231,12 +232,12 @@
             [#if item.project??]<br /> <small>(From Project P${item.project.id})</small> [/#if]
             
             [#if PMU]
-            <br />
-            <div class="form-group">
+              <br />
+              <div class="form-group">
               [#list (item.selectedFlahsgips)![] as liason]
                 <span class="programTag" style="border-color:${(liason.crpProgram.color)!'#444'}" title="${(liason.composedName)!}">${(liason.acronym)!}</span>
               [/#list]
-            </div>
+              </div>
             [/#if]
             [#if !expanded] [@oicrPopup element=item /] [/#if]
             <a href="${url}" target="_blank" class="pull-right mt-1">[@s.text name="${customLabel}.table2.linkToPolicy" /] <span class="glyphicon glyphicon-new-window"></span></a>
@@ -300,21 +301,23 @@
           [/#if]
           
           [#if !expanded]
-          [#-- Complete Status--]
-          <td class="text-center">
-          [#-- Is Complete --]
-          [#assign isPolicyComplete = action.isPolicyComplete(item.id, actualPhase.id)!false /]
-           [#if isPolicyComplete]
-              <span class="glyphicon glyphicon-ok-sign mf-icon check" title="Complete"></span> 
+            [#-- Complete Status--]
+            <td class="text-center">
+              [#-- Is Complete --]
+              [#assign isPolicyComplete = action.isPolicyComplete(item.id, actualPhase.id)!false /]
+              [#if isPolicyComplete]
+                <span class="glyphicon glyphicon-ok-sign mf-icon check" title="Complete"></span> 
               [#else]
                 <span class="glyphicon glyphicon-exclamation-sign mf-icon" title="Incomplete"></span> 
-            [/#if]   
-          </td>
-          <td class="text-center">
-            [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.policiesIds?seq_contains(item.id))!true) /]
-            <div class="hidden">${isChecked?string}</div>
-            [@customForm.checkmark id="policy-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.policiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
-          </td>
+              [/#if]   
+            </td>
+            [#if PMU]
+              <td class="text-center">
+                [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.policiesIds?seq_contains(item.id))!true) /]
+                <div class="hidden">${isChecked?string}</div>
+                [@customForm.checkmark id="policy-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.policiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
+              </td>
+            [/#if]
           [/#if]
         </tr>
       [/#list]

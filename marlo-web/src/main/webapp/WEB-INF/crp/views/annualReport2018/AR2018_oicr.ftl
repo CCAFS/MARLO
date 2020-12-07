@@ -113,7 +113,9 @@
           [/#if]
           [#if !expanded]
             <th class="col-md-1 text-center no-sort">[@s.text name="${customLabel}.${name}.missingFields" /]</th>
-            <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
+            [#if PMU]
+              <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
+            [/#if]
           [/#if]
         </tr>
       </thead>
@@ -173,7 +175,7 @@
               [/#if] 
              [/#if]  
               </td>
-             [#if !expanded]
+             [#if !expanded && PMU]
               <td class="text-center">
                 [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.studiesIds?seq_contains(item.id))!true) /]
                 [@customForm.checkmark id="study-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.studiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/] 

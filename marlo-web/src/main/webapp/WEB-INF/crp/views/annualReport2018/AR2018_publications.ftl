@@ -243,7 +243,9 @@
           [/#if]
           [#if allowPopups]
             <th class="col-md-1 text-center">[@s.text name="${customLabel}.${name}.missingFields" /]</th>
-            <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
+            [#if PMU]
+              <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
+            [/#if]
           [/#if]
         </tr>
       </thead>
@@ -346,11 +348,13 @@
                       <span class="glyphicon glyphicon-exclamation-sign mf-icon" title="Incomplete"></span> 
                   [/#if]   
                 </td>
-                [#-- Check --]
-                <td class="text-center">
-                  [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.deliverablesIds?seq_contains(item.id))!true) /]
-                  [@customForm.checkmark id="deliverable-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.deliverablesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
-                </td>
+                [#if PMU]
+                  [#-- Check --]
+                  <td class="text-center">
+                    [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.deliverablesIds?seq_contains(item.id))!true) /]
+                    [@customForm.checkmark id="deliverable-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.deliverablesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
+                  </td>
+                [/#if]
               [/#if]
             </tr>
           [/#list]

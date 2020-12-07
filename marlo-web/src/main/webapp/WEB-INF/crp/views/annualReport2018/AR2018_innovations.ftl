@@ -182,7 +182,9 @@
           [/#if]
           [#if !expanded]
             <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.missingFields" /] </th>
-            <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
+            [#if PMU]
+              <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
+            [/#if]
           [/#if]
         </tr>
       </thead>
@@ -267,17 +269,19 @@
             [/#if]
             [#if !expanded]
               <td class="text-center">
-              [#assign isInnovationComplete = action.isInnovationComplete(item.id, actualPhase.id)!false /]
-              [#if  isInnovationComplete]
-                <span class="glyphicon glyphicon-ok-sign mf-icon check" title="Complete"></span> 
+                [#assign isInnovationComplete = action.isInnovationComplete(item.id, actualPhase.id)!false /]
+                [#if  isInnovationComplete]
+                  <span class="glyphicon glyphicon-ok-sign mf-icon check" title="Complete"></span> 
                 [#else]
                   <span class="glyphicon glyphicon-exclamation-sign mf-icon" title="Incomplete"></span> 
-              [/#if]   
+                [/#if]
               </td>
-              <td class="text-center">
-              [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.innovationsIds?seq_contains(item.id))!true) /]
-              [@customForm.checkmark id="innovation-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.innovationsValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/] 
-            </td>
+              [#if PMU]
+                <td class="text-center">
+                  [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.innovationsIds?seq_contains(item.id))!true) /]
+                  [@customForm.checkmark id="innovation-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.innovationsValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/] 
+                </td>
+              [/#if]
             [/#if]
           </tr>
           [/#list]
