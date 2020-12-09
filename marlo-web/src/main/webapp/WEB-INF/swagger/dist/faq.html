@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>CLARISA</title>
+  <link href="https://fonts.googleapis.com/css?family=Montserrat"
+  rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans"
+  rel="stylesheet">
+
+<!--  Vendor CSS Files -->
+  <link href="homepage/assets/libraries/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="homepage/assets/vendor/icofont/icofont.min.css" rel="stylesheet">
+  <link href="homepage/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="homepage/assets/vendor/animate.css/animate.min.css" rel="stylesheet">
+  <link href="homepage/assets/vendor/venobox/venobox.css" rel="stylesheet">
+  <link href="homepage/assets/vendor/owl.carousel/assets/owl.carousel.min.css" rel="stylesheet">
+  <link href="homepage/assets/vendor/aos/aos.css" rel="stylesheet">
+  <link href="homepage/assets/css/style.css" rel="stylesheet">
+  
+  <!-- Custom CSS-->
+  <link rel="stylesheet" href="homepage/assets/css/custom.css" />
+  <link rel="stylesheet" href="homepage/assets/css/partners.css" />
+  
+ 
+  
+  <!-- Vendor JS Files -->
+  <script src="homepage/assets/libraries/jquery/jquery-3.5.1.min.js"></script>
+  <script src="homepage/assets/vendor/jquery.easing/jquery.easing.min.js"></script>
+  <script src="homepage/assets/libraries/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="homepage/assets/vendor/php-email-form/validate.js"></script>
+  <script src="homepage/assets/vendor/jquery-sticky/jquery.sticky.js"></script>
+  <script src="homepage/assets/vendor/venobox/venobox.min.js"></script>
+  <script src="homepage/assets/vendor/waypoints/jquery.waypoints.min.js"></script>
+  <script src="homepage/assets/vendor/counterup/counterup.min.js"></script>
+  <script src="homepage/assets/vendor/owl.carousel/owl.carousel.min.js"></script>
+  <script src="homepage/assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+  <script src="homepage/assets/vendor/aos/aos.js"></script>
+
+  <!-- Main JS File -->
+  <script src="homepage/assets/js/main.js"></script>
+  
+  <script type="text/javascript" src="homepage/assets/js/partners-tawkto.js"></script>
+  
+  <link rel="icon" type="image/png" href="./homepage/assets/img/favicon.ico" />
+  
+  <link rel="stylesheet" type="text/css" href="./css/global.css?20200910">
+    
+<style>
+.body {
+  margin: 0;
+  font-family: "Lato", sans-serif;
+}
+
+.sidebar {
+  margin: 0;
+  padding: 0;
+  width: 200px;
+  background-color: #f1f1f1;
+  position: fixed;
+  height: 100%;
+  overflow: auto;
+}
+
+.sidebar a {
+  display: block;
+  color: black;
+  padding: 16px;
+  text-decoration: none;
+}
+ 
+.sidebar a.active {
+  background-color: #3f8569;
+  color: white;
+}
+
+.sidebar a:hover:not(.active) {
+  background-color: #3f8569;
+  color: white;
+}
+
+div.content {
+  margin-left: 200px;
+  padding: 1px 16px;
+  height:inherit !important;
+}
+
+@media screen and (max-width: 700px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+  }
+  .sidebar a {float: left;}
+  div.content {margin-left: 0;}
+}
+
+@media screen and (max-width: 400px) {
+  .sidebar a {
+    text-align: center;
+    float: none;
+  }
+}
+
+/* Style the buttons that are used to open and close the accordion panel */
+.accordion {
+  background-color: #eee;
+  color: #444;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  text-align: left;
+  border: none;
+  outline: none;
+  transition: 0.4s;
+}
+
+.accordion:after {
+  content: '\02795'; /* Unicode character for "plus" sign (+) */
+  font-size: 13px;
+  color: #777;
+  float: right;
+  margin-left: 5px;
+}
+
+.active:after {
+  content: "\2796"; /* Unicode character for "minus" sign (-) */
+}
+
+/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+.active, .accordion:hover {
+  background-color: #ccc;
+}
+
+/* Style the accordion panel. Note: hidden by default */
+.panel {
+  padding: 0 18px;
+  background-color: white;
+  display: none;
+  overflow: hidden;
+}
+
+</style>
+</head>
+<body>
+<!-- ======= Navbar ======= -->
+  <header id="header">
+   <nav class="navbar navbar-expand-lg">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="home.html">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="home.html#about">About CLARISA</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Services
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="api.html">Annual Report API Reference</a>
+          <a class="dropdown-item" href="generalListReference.html">General API Reference</a>
+          <a class="dropdown-item" href="partners.html">Institutions Management</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="faq.html">FAQ</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="home.html#partners">Lead Partners</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="home.html#contact">Contact Us</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+  </header>
+  
+  
+    
+   <main id="main">
+		<div class="sidebar">
+		  <a href="#access">Access</a>
+		  <a href="#technology">Technology</a>
+		  <a href="#data">Data</a>
+		</div>
+       <div class="content">
+			<div id="access" class="section-title"><h2>Access</h2></div>
+			<button class="accordion">How do I access the API?</button>
+			<div class="panel">
+			  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quae quidem blanditiis delectus corporis, possimus officia sint sequi ex tenetur id impedit est pariatur iure animi non a ratione reiciendis nihil sed consequatur atque repellendus fugit perspiciatis rerum et. Dolorum consequuntur fugit deleniti, soluta fuga nobis. Ducimus blanditiis velit sit iste delectus obcaecati debitis omnis, assumenda accusamus cumque perferendis eos aut quidem! Aut, totam rerum, cupiditate quae aperiam voluptas rem inventore quas, ex maxime culpa nam soluta labore at amet nihil laborum? Explicabo numquam, sit fugit, voluptatem autem atque quis quam voluptate fugiat earum rem hic, reprehenderit quaerat tempore at. Aperiam.</p>
+			</div>
+			
+			<button class="accordion">Where is the API documentation?</button>
+			<div class="panel">
+			  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quasi cupiditate et laudantium esse adipisci consequatur modi possimus accusantium vero atque excepturi nobis in doloremque repudiandae soluta non minus dolore voluptatem enim reiciendis officia voluptates, fuga ullam? Voluptas reiciendis cumque molestiae unde numquam similique quas doloremque non, perferendis doloribus necessitatibus itaque dolorem quam officia atque perspiciatis dolore laudantium dolor voluptatem eligendi? Aliquam nulla unde voluptatum molestiae, eos fugit ullam, consequuntur, saepe voluptas quaerat deleniti. Repellendus magni sint temporibus, accusantium rem commodi?</p>
+			</div>
+			
+			<button class="accordion">How do I get credentials to access the API?</button>
+			<div class="panel">
+			  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Blanditiis provident officiis, reprehenderit numquam. Praesentium veritatis eos tenetur magni debitis inventore fugit, magnam, reiciendis, saepe obcaecati ex vero quaerat distinctio velit.</p>
+			</div>
+
+			<div id="technology" class="section-title"><h2>Technology</h2></div>
+			<button class="accordion">Is there an alternative technology eg SOAP/XML to access the data?</button>
+			<div class="panel">
+			  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Impedit quidem delectus rerum eligendi mollitia, repudiandae quae beatae. Et repellat quam atque corrupti iusto architecto impedit explicabo repudiandae qui similique aut iure ipsum quis inventore nulla error aliquid alias quia dolorem dolore, odio excepturi veniam odit veritatis. Quo iure magnam, et cum. Laudantium, eaque non? Tempore nihil corporis cumque dolor ipsum accusamus sapiente aliquid quis ea assumenda deserunt praesentium voluptatibus, accusantium a mollitia necessitatibus nostrum voluptatem numquam modi ab, sint rem.</p>
+			</div>
+			
+			<button class="accordion">Are there connectors for some common analytical/visualisation tools such as QlikView/PowerBI/Tableu/Sisense and the likes?</button>
+			<div class="panel">
+			  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nisi tempore, placeat quisquam rerum! Eligendi fugit dolorum tenetur modi fuga nisi rerum, autem officiis quaerat quos. Magni quia, quo quibusdam odio. Error magni aperiam amet architecto adipisci aspernatur! Officia, quaerat magni architecto nostrum magnam fuga nihil, ipsum laboriosam similique voluptatibus facilis nobis? Eius non asperiores, nesciunt suscipit veniam blanditiis veritatis provident possimus iusto voluptas, eveniet architecto quidem quos molestias, aperiam eum reprehenderit dolores ad deserunt eos amet. Vero molestiae commodi unde dolor dicta maxime alias, velit, nesciunt cum dolorem, ipsam soluta sint suscipit maiores mollitia assumenda ducimus aperiam neque enim! Quas culpa dolorum ipsam? Ipsum voluptatibus numquam natus? Eligendi explicabo eos, perferendis voluptatibus hic sed ipsam rerum maiores officia! Beatae, molestias!</p>
+			</div>
+			
+			<div id="data" class="section-title"><h2>Data</h2></div>
+			<button class="accordion">How often is the data updated?</button>
+			<div class="panel">
+			  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Perferendis earum autem consectetur labore eius tenetur esse, in temporibus sequi cum voluptatem vitae repellat nostrum odio perspiciatis dolores recusandae necessitatibus, unde, deserunt voluptas possimus veniam magni soluta deleniti! Architecto, quidem, totam. Fugit minus odit unde ea cupiditate ab aperiam sed dolore facere nihil laboriosam dolorum repellat deleniti aliquam fugiat laudantium delectus sint iure odio, necessitatibus rem quisquam! Ipsum praesentium quam nisi sint, impedit sapiente facilis laudantium mollitia quae fugiat similique. Dolor maiores aliquid incidunt commodi doloremque rem! Quaerat, debitis voluptatem vero qui enim, sunt reiciendis tempore inventore maxime quasi fugiat accusamus beatae modi voluptates iste officia esse soluta tempora labore quisquam fuga, cum. Sint nemo iste nulla accusamus quam qui quos, vero, minus id. Eius mollitia consequatur fugit nam consequuntur nesciunt illo id quis reprehenderit obcaecati voluptates corrupti, minus! Possimus, perspiciatis!</p>
+			</div>
+			
+			<button class="accordion">How do I upload my data onto this API?</button>
+			<div class="panel">
+			  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Blanditiis provident officiis, reprehenderit numquam. Praesentium veritatis eos tenetur magni debitis inventore fugit, magnam, reiciendis, saepe obcaecati ex vero quaerat distinctio velit.</p>
+			</div>
+			
+			<button class="accordion">Can I be notified whenever there is an update of data?</button>
+			<div class="panel">
+			  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsum at aspernatur iure facere ab a corporis mollitia molestiae quod omnis minima, est labore quidem nobis accusantium ad totam sunt doloremque laudantium impedit similique iste quasi cum! Libero fugit at praesentium vero. Maiores non consequuntur rerum, nemo a qui repellat quibusdam architecto voluptatem? Sequi, possimus, cupiditate autem soluta ipsa rerum officiis cum libero delectus explicabo facilis, odit ullam aperiam reprehenderit! Vero ad non harum veritatis tempore beatae possimus, ex odio quo.</p>
+			</div>
+			
+			<button class="accordion">Does historical data ever get modified?</button>
+			<div class="panel">
+			  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Impedit quidem delectus rerum eligendi mollitia, repudiandae quae beatae. Et repellat quam atque corrupti iusto architecto impedit explicabo repudiandae qui similique aut iure ipsum quis inventore nulla error aliquid alias quia dolorem dolore, odio excepturi veniam odit veritatis. Quo iure magnam, et cum. Laudantium, eaque non? Tempore nihil corporis cumque dolor ipsum accusamus sapiente aliquid quis ea assumenda deserunt praesentium voluptatibus, accusantium a mollitia necessitatibus nostrum voluptatem numquam modi ab, sint rem.</p>
+			</div>
+       </div>
+	
+	<a href="#0" class="cd-faq__close-panel text-replace">Close</a>
+  
+  <div class="cd-faq__overlay" aria-hidden="true"></div>
+	
+    
+             
+   </main> <!-- End #main -->
+   <div class="chat-icon" onClick="javascript:void(Tawk_API.toggle())"><img src="./images/chat-icon.png" width="100%" draggable="false"></div>  
+   
+   
+</body>
+<script src="./apps.js"></script>
+<script >
+var acc = document.getElementsByClassName("accordion");
+var i;
+
+for (i = 0; i < acc.length; i++) {
+  acc[i].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var panel = this.nextElementSibling;
+    if (panel.style.display === "block") {
+      panel.style.display = "none";
+    } else {
+      panel.style.display = "block";
+    }
+  });
+}
+</script>
+<footer id="footer">
+      <div class="container">
+      <div class="copyright">
+        &copy; Copyright <strong><span> Mamba</span></strong>. All Rights Reserved
+        <br>
+        &copy; Copyright <strong><span> 2013-2020 Alliance of Bioversity and The International Center for Tropical Agriculture (CIAT)</span></strong>. All Rights Reserved
+      </div>
+      <div class="credits">        
+        Template designed by <a href="https://bootstrapmade.com/">Bootstrapmade</a>
+        <br> CLARISA was developed by <a href="mailto:MARLOSupport@cgiar.org">Innovation &amp; Business Development</a>
+      </div>
+    </div>
+</footer>
+</html>
