@@ -1307,7 +1307,9 @@ public class FundingSourceAction extends BaseAction {
       fundingSourceInfoDB.setFinanceCode(fundingSource.getFundingSourceInfo().getFinanceCode().toUpperCase());
       fundingSourceInfoDB.setContactPersonEmail(fundingSource.getFundingSourceInfo().getContactPersonEmail());
       fundingSourceInfoDB.setContactPersonName(fundingSource.getFundingSourceInfo().getContactPersonName());
-      fundingSourceInfoDB.setBudgetType(fundingSource.getFundingSourceInfo().getBudgetType());
+      if (fundingSource.getFundingSourceInfo().getBudgetType() != null) {
+        fundingSourceInfoDB.setBudgetType(fundingSource.getFundingSourceInfo().getBudgetType());
+      }
       fundingSourceInfoDB.setSynced(fundingSource.getFundingSourceInfo().getSynced());
       fundingSourceInfoDB.setSyncedDate(fundingSource.getFundingSourceInfo().getSyncedDate());
       fundingSourceInfoDB.setExtensionDate(fundingSource.getFundingSourceInfo().getExtensionDate());
