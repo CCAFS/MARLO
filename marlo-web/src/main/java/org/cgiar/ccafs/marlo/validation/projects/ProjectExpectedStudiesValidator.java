@@ -246,6 +246,18 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
             InvalidFieldsMessages.EMPTYFIELD);
         }
 
+        if ((projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
+          .getCommissioningStudy() != null
+          && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getCommissioningStudy()
+            .isEmpty())
+          || (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
+            .getCommissioningStudy() == null)) {
+          action.addMessage(action.getText("Commissioning Study"));
+          action.addMissingField("study.commissioningStudy.readText");
+          action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.commissioningStudy",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
       }
 
 
