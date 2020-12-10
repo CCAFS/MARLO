@@ -141,10 +141,11 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
       // Validate primary sub-IDO
       int count = 0;
       for (ProjectExpectedStudySubIdo studySubIdo : projectExpectedStudy.getSubIdos()) {
-        if (studySubIdo.getPrimary() != null && studySubIdo.getPrimary() == true) {
+        if ((studySubIdo.getPrimary() != null && studySubIdo.getPrimary()) || studySubIdo.getPrimary() == null) {
           count++;
         }
       }
+
       if (count == 0) {
         action.addMessage(action.getText("subIdos"));
         action.addMissingField("study.stratgicResultsLink.subIDOs");
@@ -257,7 +258,6 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
           action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.commissioningStudy",
             InvalidFieldsMessages.EMPTYFIELD);
         }
-
       }
 
 
