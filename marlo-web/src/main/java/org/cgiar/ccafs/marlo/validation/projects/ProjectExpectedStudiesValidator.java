@@ -235,7 +235,19 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
               action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"targets"}));
           }
         }
+        // Validate Commissioning Study
+        if (!this.isValidString(
+          projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getCommissioningStudy())
+          && this.wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
+            .getCommissioningStudy()) <= 20) {
+          action.addMessage(action.getText("Commissioning Study"));
+          action.addMissingField("study.commissioningStudy.readText");
+          action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.commissioningStudy",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
       }
+
 
     } else {
 
