@@ -238,6 +238,7 @@
           [/#if]
           <th class="text-center"> [@s.text name="${customLabel}.${name}.openAccess" /] </th>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.isi" /] </th>
+          <th class="text-center"> [@s.text name="Type" /] </th>
           [#if !allowPopups]
             <th class="text-center col-md-1"> [@s.text name="${customLabel}.${name}.identifier" /] </th>
           [/#if]
@@ -315,6 +316,8 @@
               <td class="text-center">
                 <img src="${baseUrlCdn}/global/images/checked-${(item.publication.isiPublication?string)!'false'}.png" alt="" />
               </td>
+              [#-- Publication type --]
+              <td class="urlify">[@utils.tableText value=(item.deliverableInfo.deliverableType.name)!"" /]</td>
               [#if !allowPopups]
                 [#-- DOI or Handle --]
                 <td class="text-center">
@@ -380,6 +383,7 @@
           <th class="text-center"> [@s.text name="${customLabel}.${name}.page" /] </th>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.openAccess" /] </th>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.isi" /] </th>
+          <th class="text-center"> [@s.text name="${customLabel}.${name}.deliverableType" /] </th>
           <th class="text-center col-md-1"> [@s.text name="${customLabel}.${name}.identifier" /] </th>
           <th class="col-md-1 text-center"> Included in AR </th>
           
