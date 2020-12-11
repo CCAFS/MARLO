@@ -30,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrpProgressStudyManager
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrpProgressTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisSrfProgressManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisSrfProgressTargetCasesManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisSrfProgressTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorTargetManager;
@@ -105,6 +106,7 @@ public class SrfProgressAction extends BaseAction {
   private SrfProgressValidator validator;
 
   private ReportSynthesisSrfProgressTargetManager reportSynthesisSrfProgressTargetManager;
+  private ReportSynthesisSrfProgressTargetCasesManager reportSynthesisSrfProgressTargetCasesManager;
 
 
   private SrfSloIndicatorTargetManager srfSloIndicatorTargetManager;
@@ -153,6 +155,7 @@ public class SrfProgressAction extends BaseAction {
     ReportSynthesisCrpProgressTargetManager reportSynthesisCrpProgressTargetManager,
     SrfSloIndicatorTargetManager srfSloIndicatorTargetManager, PhaseManager phaseManager,
     ReportSynthesisSrfProgressTargetManager reportSynthesisSrfProgressTargetManager,
+    ReportSynthesisSrfProgressTargetCasesManager reportSynthesisSrfProgressTargetCasesManager,
     ReportSynthesisSrfProgressManager reportSynthesisSrfProgressManager, SectionStatusManager sectionStatusManager) {
     super(config);
     this.crpManager = crpManager;
@@ -170,6 +173,7 @@ public class SrfProgressAction extends BaseAction {
     this.projectManager = projectManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.sectionStatusManager = sectionStatusManager;
+    this.reportSynthesisSrfProgressTargetCasesManager = reportSynthesisSrfProgressTargetCasesManager;
   }
 
 
@@ -337,6 +341,8 @@ public class SrfProgressAction extends BaseAction {
     for (LiaisonInstitution liaisonInstitution : liaisonInstitutionsFg) {
       target = reportSynthesisSrfProgressTargetManager.getSrfProgressTargetInfo(liaisonInstitution,
         this.getActualPhase().getId(), targetID);
+      // target = reportSynthesisSrfProgressTargetManager.getSrfProgressTargetInfo(liaisonInstitution,
+      // this.getActualPhase().getId(), targetID);
       targets.add(target);
     }
     return targets;

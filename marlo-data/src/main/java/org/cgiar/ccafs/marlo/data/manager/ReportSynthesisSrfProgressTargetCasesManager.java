@@ -14,6 +14,7 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTargetCases;
 
 import java.util.List;
@@ -53,22 +54,30 @@ public interface ReportSynthesisSrfProgressTargetCasesManager {
 
 
   /**
-   * This method gets a reportSynthesisSrfProgressTargetCases object by a given reportSynthesisSrfProgressTargetCases identifier.
+   * This method gets a reportSynthesisSrfProgressTargetCases object by a given reportSynthesisSrfProgressTargetCases
+   * identifier.
    * 
    * @param reportSynthesisSrfProgressTargetCasesID is the reportSynthesisSrfProgressTargetCases identifier.
    * @return a ReportSynthesisSrfProgressTargetCases object.
    */
-  public ReportSynthesisSrfProgressTargetCases getReportSynthesisSrfProgressTargetCasesById(long reportSynthesisSrfProgressTargetCasesID);
+  public ReportSynthesisSrfProgressTargetCases
+    getReportSynthesisSrfProgressTargetCasesById(long reportSynthesisSrfProgressTargetCasesID);
+
+  public ReportSynthesisSrfProgressTargetCases getSrfProgressTargetInfo(LiaisonInstitution institutions, long phaseID,
+    long targetID);
 
   /**
    * This method saves the information of the given reportSynthesisSrfProgressTargetCases
    * 
-   * @param reportSynthesisSrfProgressTargetCases - is the reportSynthesisSrfProgressTargetCases object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the reportSynthesisSrfProgressTargetCases was
+   * @param reportSynthesisSrfProgressTargetCases - is the reportSynthesisSrfProgressTargetCases object with the new
+   *        information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         reportSynthesisSrfProgressTargetCases was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ReportSynthesisSrfProgressTargetCases saveReportSynthesisSrfProgressTargetCases(ReportSynthesisSrfProgressTargetCases reportSynthesisSrfProgressTargetCases);
+  public ReportSynthesisSrfProgressTargetCases saveReportSynthesisSrfProgressTargetCases(
+    ReportSynthesisSrfProgressTargetCases reportSynthesisSrfProgressTargetCases);
 
 
 }
