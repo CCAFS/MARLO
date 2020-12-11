@@ -16,7 +16,12 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.data.dao.ReportSynthesisSrfProgressTargetCasesDAO;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisSrfProgressTargetCasesManager;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTargetCases;
 
 import java.util.List;
@@ -30,28 +35,32 @@ import javax.inject.Named;
 @Named
 public class ReportSynthesisSrfProgressTargetCasesManagerImpl implements ReportSynthesisSrfProgressTargetCasesManager {
 
-
-  private ReportSynthesisSrfProgressTargetCasesDAO reportSynthesisSrfProgressTargetCasesDAO;
   // Managers
-
+  private ReportSynthesisSrfProgressTargetCasesDAO reportSynthesisSrfProgressTargetCasesDAO;
+  private PhaseManager phaseManager;
+  private ReportSynthesisManager reportSynthesisManager;
 
   @Inject
-  public ReportSynthesisSrfProgressTargetCasesManagerImpl(ReportSynthesisSrfProgressTargetCasesDAO reportSynthesisSrfProgressTargetCasesDAO) {
+  public ReportSynthesisSrfProgressTargetCasesManagerImpl(
+    ReportSynthesisSrfProgressTargetCasesDAO reportSynthesisSrfProgressTargetCasesDAO, PhaseManager phaseManager,
+    ReportSynthesisManager reportSynthesisManager) {
     this.reportSynthesisSrfProgressTargetCasesDAO = reportSynthesisSrfProgressTargetCasesDAO;
-
-
+    this.phaseManager = phaseManager;
+    this.reportSynthesisManager = reportSynthesisManager;
   }
 
   @Override
   public void deleteReportSynthesisSrfProgressTargetCases(long reportSynthesisSrfProgressTargetCasesId) {
 
-    reportSynthesisSrfProgressTargetCasesDAO.deleteReportSynthesisSrfProgressTargetCases(reportSynthesisSrfProgressTargetCasesId);
+    reportSynthesisSrfProgressTargetCasesDAO
+      .deleteReportSynthesisSrfProgressTargetCases(reportSynthesisSrfProgressTargetCasesId);
   }
 
   @Override
   public boolean existReportSynthesisSrfProgressTargetCases(long reportSynthesisSrfProgressTargetCasesID) {
 
-    return reportSynthesisSrfProgressTargetCasesDAO.existReportSynthesisSrfProgressTargetCases(reportSynthesisSrfProgressTargetCasesID);
+    return reportSynthesisSrfProgressTargetCasesDAO
+      .existReportSynthesisSrfProgressTargetCases(reportSynthesisSrfProgressTargetCasesID);
   }
 
   @Override
@@ -62,16 +71,45 @@ public class ReportSynthesisSrfProgressTargetCasesManagerImpl implements ReportS
   }
 
   @Override
-  public ReportSynthesisSrfProgressTargetCases getReportSynthesisSrfProgressTargetCasesById(long reportSynthesisSrfProgressTargetCasesID) {
+  public ReportSynthesisSrfProgressTargetCases
+    getReportSynthesisSrfProgressTargetCasesById(long reportSynthesisSrfProgressTargetCasesID) {
 
     return reportSynthesisSrfProgressTargetCasesDAO.find(reportSynthesisSrfProgressTargetCasesID);
   }
 
   @Override
-  public ReportSynthesisSrfProgressTargetCases saveReportSynthesisSrfProgressTargetCases(ReportSynthesisSrfProgressTargetCases reportSynthesisSrfProgressTargetCases) {
+  public ReportSynthesisSrfProgressTargetCases getSrfProgressTargetInfo(LiaisonInstitution institutions, long phaseID,
+    long targetID) {
+
+    ReportSynthesisSrfProgressTargetCases reportSynthesisSrfProgressTargetCases =
+      new ReportSynthesisSrfProgressTargetCases();
+
+    ReportSynthesisSrfProgress crpProgress = new ReportSynthesisSrfProgress();
+    ReportSynthesis reportSynthesisFP = reportSynthesisManager.findSynthesis(phaseID, institutions.getId());
+
+    if (reportSynthesisFP != null) {
+      if (reportSynthesisFP.getReportSynthesisSrfProgress() != null) {
+        crpProgress = reportSynthesisFP.getReportSynthesisSrfProgress();
+        // reportSynthesisSrfProgressTargetCases =
+        // this.getReportSynthesisSrfProgressId(reportSynthesisFP.getId(), targetID);
+      }
+    } else {
+      ReportSynthesis synthesis = new ReportSynthesis();
+      synthesis.setPhase(phaseManager.getPhaseById(phaseID));
+      synthesis.setLiaisonInstitution(institutions);
+      crpProgress.setReportSynthesis(synthesis);
+      reportSynthesisSrfProgressTargetCases.setReportSynthesisSrfProgress(crpProgress);
+    }
+
+    return reportSynthesisSrfProgressTargetCases;
+
+  }
+
+  @Override
+  public ReportSynthesisSrfProgressTargetCases saveReportSynthesisSrfProgressTargetCases(
+    ReportSynthesisSrfProgressTargetCases reportSynthesisSrfProgressTargetCases) {
 
     return reportSynthesisSrfProgressTargetCasesDAO.save(reportSynthesisSrfProgressTargetCases);
   }
-
 
 }

@@ -566,7 +566,7 @@ public class PublicationsAction extends BaseAction {
       liaisonInstitutionID = reportSynthesisDB.getLiaisonInstitution().getId();
       liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
 
-      deliverables = deliverableManager.getPublicationsList(liaisonInstitution, actualPhase);
+      deliverables = deliverableManager.getDeliverablesList(liaisonInstitution, actualPhase);
 
       Path path = this.getAutoSaveFilePath();
       // Verify if there is a Draft file
