@@ -229,8 +229,9 @@
           [#if !allowPopups]
             <th class="text-center"> [@s.text name="${customLabel}.${name}.author" /](s) </th>
             <th class="text-center"> [@s.text name="${customLabel}.${name}.date" /] </th>
+            <th class="text-center"> [@s.text name="${customLabel}.${name}.journal" /] </th>
           [/#if]
-          <th class="text-center"> [@s.text name="${customLabel}.${name}.journal" /] </th>
+          <th class="text-center col-md-1"> [@s.text name="${customLabel}.${name}.identifier" /] </th>
           [#if !allowPopups]
             <th class="text-center"> [@s.text name="${customLabel}.${name}.volume" /] </th>
             <th class="text-center"> [@s.text name="${customLabel}.${name}.issue" /] </th>
@@ -238,9 +239,6 @@
           [/#if]
           <th class="text-center"> [@s.text name="${customLabel}.${name}.openAccess" /] </th>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.isi" /] </th>
-          [#if !allowPopups]
-            <th class="text-center col-md-1"> [@s.text name="${customLabel}.${name}.identifier" /] </th>
-          [/#if]
           [#if allowPopups]
             <th class="col-md-1 text-center">[@s.text name="${customLabel}.${name}.missingFields" /]</th>
             [#if PMU]
@@ -296,9 +294,31 @@
               </td>
               [#-- Date of Publication --]
               <td>[@utils.tableText value=(item.getMetadataValue(17))!"" /]</td>
-              [/#if]
               [#-- Journal Article --]
               <td class="urlify">[@utils.tableText value=(item.publication.journal)!"" /]</td>
+              [/#if]
+              [#-- DOI or Handle --]
+              <td class="text-center">
+                [#if item.getMetadataValue(36)?has_content]
+                  [#local doi = item.getMetadataValue(36) /]
+                  [#-- TODO add www.doi.org/ to DOI identifiers. NOTE: validations will be needed. There are not just DOIs saved there and there are some
+                  DOIs that has not been cleaned (being stripped of the www.doi.org/ part) yet. --]
+                [#elseif item.dissemination.articleUrl?has_content]
+                  [#local doi = item.dissemination.articleUrl /]
+                [#else]
+                  [#local doi = "" /]
+                [/#if]
+                
+                [#if doi?has_content && doi?contains("http") && !(doi?contains(";"))]
+                  <a target="_blank" href="${doi}"><span class="glyphicon glyphicon-link"></span></a>
+                [#else]
+                  [#if !(doi?has_content) ]
+                    <span class="glyphicon glyphicon-link" title="Not defined"></span>
+                  [#else]
+                    <span class="glyphicon glyphicon-link" title="${doi}"></span>
+                  [/#if]
+                [/#if]              
+              </td>
               [#if !allowPopups]
                 [#-- Volume --]
                 <td class="text-center urlify"  style="width: 50px !important;">[@utils.tableText value=(item.publication.volume)!"" /]</td>
@@ -315,29 +335,6 @@
               <td class="text-center">
                 <img src="${baseUrlCdn}/global/images/checked-${(item.publication.isiPublication?string)!'false'}.png" alt="" />
               </td>
-              [#if !allowPopups]
-                [#-- DOI or Handle --]
-                <td class="text-center">
-                [#if item.getMetadataValue(36)?has_content]
-                  [#local doi = item.getMetadataValue(36) /]
-                [#elseif item.dissemination.articleUrl?has_content]
-                  [#local doi = item.dissemination.articleUrl /]
-                [#else]
-                  [#local doi = "" /]
-                [/#if]
-                
-                [#if doi?has_content && doi?contains("http") && !(doi?contains(";"))]
-                <a target="_blank" href="${doi}"><span class="glyphicon glyphicon-link"></span></a>
-                [#else]
-                  [#if !(doi?has_content) ]
-                   <span class="glyphicon glyphicon-link" title="Not defined"></span>
-                  [#else]
-                   <span class="glyphicon glyphicon-link" title="${doi}"></span>
-                  [/#if]
-                [/#if]              
-                
-                </td>
-              [/#if]
               [#if allowPopups]
                 [#-- Complete Status--]
                 <td class="text-center">
