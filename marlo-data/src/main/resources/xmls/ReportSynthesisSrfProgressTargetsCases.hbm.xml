@@ -34,6 +34,9 @@
 			unique="false">
 			<column length="65535" name="additional_contribution" />
 		</property>
+		<property name="isContributing" type="boolean">
+      <column name="is_contributing" not-null="true" />
+    </property>
 		<property name="active" type="boolean">
       <column name="is_active" not-null="true" />
     </property>
