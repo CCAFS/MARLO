@@ -119,6 +119,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.utils.doi.DOIService;
 import org.cgiar.ccafs.marlo.validation.projects.DeliverableValidator;
 
 import java.io.BufferedReader;
@@ -2500,12 +2501,20 @@ public class DeliverableAction extends BaseAction {
         if (deliverableMetadataElement != null && deliverableMetadataElement.getMetadataElement() != null) {
           deliverableMetadataElement.setDeliverable(deliverable);
           deliverableMetadataElement.setPhase(this.getActualPhase());
+          if (deliverableMetadataElement.getMetadataElement().getId() != null
+            && 36L == deliverableMetadataElement.getMetadataElement().getId()) {
+            String cleanDoi = DOIService.tryGetDoiName(deliverableMetadataElement.getElementValue());
+            if (deliverableMetadataElement.getElementValue() != null
+              && !deliverableMetadataElement.getElementValue().isEmpty() && !cleanDoi.isEmpty()) {
+              deliverableMetadataElement.setElementValue(cleanDoi);
+              deliverableMetadataElement.setHide(true);
+            }
+          }
           deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElement);
         }
       }
     }
   }
-
 
   private void saveParticipant() {
     if (deliverable.getDeliverableParticipant() != null
