@@ -29,6 +29,9 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
   private String additionalContribution;
 
 
+  @Expose
+  private Boolean isContributing;
+
   public ReportSynthesisSrfProgressTargetCases() {
   }
 
@@ -40,6 +43,11 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
 
   public String getBriefSummary() {
     return briefSummary;
+  }
+
+
+  public Boolean getIsContributing() {
+    return isContributing;
   }
 
 
@@ -55,7 +63,6 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
     return reportSynthesisSrfProgress;
   }
 
-
   public SrfSloIndicatorTarget getSrfSloIndicatorTarget() {
     return srfSloIndicatorTarget;
   }
@@ -66,6 +73,10 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
 
   public void setBriefSummary(String briefSummary) {
     this.briefSummary = briefSummary;
+  }
+
+  public void setIsContributing(Boolean isContributing) {
+    this.isContributing = isContributing;
   }
 
   public void setReportSynthesisSrfProgress(ReportSynthesisSrfProgress reportSynthesisSrfProgress) {
