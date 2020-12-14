@@ -26,7 +26,7 @@ $(document).ready(function() {
 
     $progressTableViewMore = $('.viewMoreSyntesisTable-block table');
     tableDataProgressTableViewmore = $progressTableViewMore.DataTable({
-        "paging": false,
+        "paging": true,
         "searching": false,
         "info": true,
         aoColumnDefs: [
