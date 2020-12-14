@@ -130,6 +130,7 @@
       </div>
        <br />${(element.narrative)!}
     </div>
+  <div class="slo-contribution-section">
     [#-- Brief summary of new evidence of CGIAR contribution to relevant targets for this CRP (with citation) --]
     <div class="form-group">
       [@customForm.textArea name="${customName}.birefSummary" value="${(sloTargetContribution.birefSummary?html)!}" i18nkey="${customLabel}.summaryEvidence" className="limitWords-150" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable allowTextEditor=true /]
@@ -146,6 +147,8 @@
         [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableSloTargetBriefSummary" list=otherContributions columns=["additionalContribution"] crpProgramField="reportSynthesisSrfProgress.reportSynthesis.liaisonInstitution.crpProgram" showTitle=false showHeader=false showEmptyRows=false /]
       [/#if]
     </div>
+  </div>
+
     
   </div>
 [/#macro]
