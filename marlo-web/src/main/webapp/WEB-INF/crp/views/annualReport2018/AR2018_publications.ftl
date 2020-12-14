@@ -310,7 +310,8 @@
                   [#local doi = "" /]
                 [/#if]
                 
-                [#if doi?has_content && doi?contains("http") && !(doi?contains(";"))]
+                [#--if doi?has_content && doi?contains("http") && !(doi?contains(";"))]
+                  [#--<a target="_blank" href="${doi}"><span class="glyphicon glyphicon-link"></span></a>
                   <a target="_blank" href="${doi}"><span class="glyphicon glyphicon-link"></span></a>
                 [#else]
                   [#if !(doi?has_content) ]
@@ -318,7 +319,16 @@
                   [#else]
                     <span class="glyphicon glyphicon-link" title="${doi}"></span>
                   [/#if]
-                [/#if]              
+                [/#if--]
+                [#if doi?has_content && doi?contains("http") && !(doi?contains(";"))]
+                  <a target="_blank" href="${doi}">${doi}</span></a>
+                [#else]
+                  [#if !(doi?has_content) ]
+                    [@utils.tableText value="Not defined" /]
+                  [#else]
+                    [@utils.tableText value=doi /]
+                  [/#if]
+                [/#if]
               </td>
               [#if !allowPopups]
                 [#-- Volume --]
