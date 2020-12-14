@@ -20,13 +20,33 @@
 package org.cgiar.ccafs.marlo.rest.mappers;
 
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummaryBudget;
-import org.cgiar.ccafs.marlo.rest.dto.NewFinancialSummaryBudgetDTO;
+import org.cgiar.ccafs.marlo.rest.dto.FinancialSummaryBudgetAreaDTO;
+import org.cgiar.ccafs.marlo.rest.dto.FinancialSummaryBudgetDTO;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "jsr330", uses = GlobalUnitMapper.class)
 public interface FinancialSummaryBudgetMapper {
 
-  public abstract NewFinancialSummaryBudgetDTO reportSynthesisFinancialSummaryBudgetToNewFinancialSummaryBudgetDTO(
+  @Mappings({@Mapping(source = "expenditureArea.id", target = "expenditureAreaID"),
+    @Mapping(source = "expenditureArea.expenditureArea", target = "expenditureAreaName"),
+    @Mapping(source = "w1Planned", target = "plannedBudgetW1W2"),
+    @Mapping(source = "bilateralPlanned", target = "plannedBudgetW3Bilateral"),
+    @Mapping(source = "w1Actual", target = "actualExpenditureW1W2"),
+    @Mapping(source = "bilateralActual", target = "actualExpendituretW3Bilateral")})
+  public abstract FinancialSummaryBudgetAreaDTO reportSynthesisFinancialSummaryBudgetToFinancialSummaryBudgetAreaDTO(
     ReportSynthesisFinancialSummaryBudget financialSumaryBudget);
+
+  @Mappings({@Mapping(source = "liaisonInstitution.crpProgram.smoCode", target = "flagshipID"),
+    @Mapping(source = "liaisonInstitution.crpProgram.name", target = "flagshipName"),
+    @Mapping(source = "w1Planned", target = "plannedBudgetW1W2"),
+    @Mapping(source = "bilateralPlanned", target = "plannedBudgetW3Bilateral"),
+    @Mapping(source = "w1Actual", target = "actualExpenditureW1W2"),
+    @Mapping(source = "bilateralActual", target = "actualExpendituretW3Bilateral")})
+  public abstract FinancialSummaryBudgetDTO reportSynthesisFinancialSummaryBudgetToFinancialSummaryBudgetDTO(
+    ReportSynthesisFinancialSummaryBudget financialSumaryBudget);
+
+
 }

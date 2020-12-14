@@ -38,20 +38,25 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummary;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummaryBudget;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.FinancialSumaryDTO;
+import org.cgiar.ccafs.marlo.rest.dto.FinancialSummaryBudgetDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewFinancialSummaryBudgetDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewFinancialSummaryDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectPolicyDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
 import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
+import org.cgiar.ccafs.marlo.rest.mappers.FinancialSummaryBudgetMapper;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.inject.Named;
 
 import com.opensymphony.xwork2.inject.Inject;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @Named
 public class FinancialSummaryItem<T> {
@@ -64,13 +69,15 @@ public class FinancialSummaryItem<T> {
   private ReportSynthesisFinancialSummaryBudgetManager reportSynthesisFinancialSummaryBudgetManager;
   private CrpProgramManager crpProgramManager;
   private PowbExpenditureAreasManager powbExpenditureAreasManager;
+  private FinancialSummaryBudgetMapper financialSummaryBudgetMapper;
 
   @Inject
   public FinancialSummaryItem(PhaseManager phaseManager, GlobalUnitManager globalUnitManager,
     LiaisonInstitutionManager liaisonInstitutionManager, ReportSynthesisManager reportSynthesisManager,
     ReportSynthesisFinancialSummaryManager reportSynthesisFinancialSummaryManager,
     ReportSynthesisFinancialSummaryBudgetManager reportSynthesisFinancialSummaryBudgetManager,
-    CrpProgramManager crpProgramManager, PowbExpenditureAreasManager powbExpenditureAreasManager) {
+    CrpProgramManager crpProgramManager, PowbExpenditureAreasManager powbExpenditureAreasManager,
+    FinancialSummaryBudgetMapper financialSummaryBudgetMapper) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -79,6 +86,7 @@ public class FinancialSummaryItem<T> {
     this.crpProgramManager = crpProgramManager;
     this.reportSynthesisFinancialSummaryBudgetManager = reportSynthesisFinancialSummaryBudgetManager;
     this.powbExpenditureAreasManager = powbExpenditureAreasManager;
+    this.financialSummaryBudgetMapper = financialSummaryBudgetMapper;
   }
 
   public Long createFinancialSummary(NewFinancialSummaryDTO financialSummary, String entityAcronym, User user) {
@@ -198,9 +206,10 @@ public class FinancialSummaryItem<T> {
     return id;
   }
 
-  public List<FinancialSumaryDTO> findFinancialSumaryList(String entityAcronym, int year, String phasestr,
-    String flagshipID, User user) {
-    List<FinancialSumaryDTO> financialSumaryList = new ArrayList<FinancialSumaryDTO>();
+  public ResponseEntity<FinancialSumaryDTO> findFinancialSumaryList(String entityAcronym, int year, String phasestr,
+    User user) {
+    FinancialSumaryDTO financialSumary = null;
+
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
     if (globalUnitEntity == null) {
@@ -228,21 +237,49 @@ public class FinancialSummaryItem<T> {
           fieldErrors
             .add(new FieldErrorDTO("findFinancialSummary", "ReportSynthesis", "There is not Sysnthesis report"));
         } else {
+
           ReportSynthesisFinancialSummary reportSynthesisFinancialSummary =
             reportSynthesisFinancialSummaryManager.getReportSynthesisFinancialSummaryById(reportSynthesis.getId());
           if (reportSynthesisFinancialSummary == null) {
             fieldErrors
               .add(new FieldErrorDTO("findFinancialSummary", "ReportSynthesis", "There is not Financial Summary"));
           } else {
-            reportSynthesisFinancialSummary
-              .setBudgets(reportSynthesisFinancialSummary.getReportSynthesisFinancialSummaryBudgets().stream()
-                .filter(c -> c.isActive()).collect(Collectors.toList()));
+            financialSumary = new FinancialSumaryDTO();
+            financialSumary.setNarrative(reportSynthesisFinancialSummary.getNarrative());
+            financialSumary.setId(reportSynthesisFinancialSummary.getId());
+            financialSumary.setYear(phase.getYear());
+            List<FinancialSummaryBudgetDTO> summaryBudgets = new ArrayList<FinancialSummaryBudgetDTO>();
+            for (ReportSynthesisFinancialSummaryBudget budgets : reportSynthesisFinancialSummary
+              .getReportSynthesisFinancialSummaryBudgets().stream().filter(c -> c.isActive())
+              .collect(Collectors.toList())) {
+              if (budgets.getLiaisonInstitution() != null) {
+                summaryBudgets.add(Optional.ofNullable(budgets)
+                  .map(
+                    this.financialSummaryBudgetMapper::reportSynthesisFinancialSummaryBudgetToFinancialSummaryBudgetDTO)
+                  .orElse(null));
+              }
+
+              if (budgets.getExpenditureArea() != null && budgets.getExpenditureArea().getId() == 1) {
+                financialSumary.setStrategicCompetitiveResearchGrant(Optional.ofNullable(budgets).map(
+                  this.financialSummaryBudgetMapper::reportSynthesisFinancialSummaryBudgetToFinancialSummaryBudgetAreaDTO)
+                  .orElse(null));
+
+              }
+              if (budgets.getExpenditureArea() != null && budgets.getExpenditureArea().getId() == 2) {
+                financialSumary.setCrpManagementSupportCost(Optional.ofNullable(budgets).map(
+                  this.financialSummaryBudgetMapper::reportSynthesisFinancialSummaryBudgetToFinancialSummaryBudgetAreaDTO)
+                  .orElse(null));
+              }
+            }
+
+            financialSumary.setFlagshipSummaryBudgets(summaryBudgets);
           }
         }
       }
 
     }
-    return financialSumaryList;
+    return Optional.ofNullable(financialSumary).map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+      .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
   public Long updateFinancialSummary(long idFinancialSummary, NewFinancialSummaryDTO financialSummary,

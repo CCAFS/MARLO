@@ -32,14 +32,31 @@ public class FinancialSumaryDTO {
   private String narrative;
 
   @ApiModelProperty(notes = "Flagship budget List", position = 4)
-  private List<NewFinancialSummaryBudgetDTO> flagshipSummaryBudgets;
+  private List<FinancialSummaryBudgetDTO> flagshipSummaryBudgets;
+
+  @ApiModelProperty(notes = "Strategic competitive research grant", position = 5)
+  private FinancialSummaryBudgetAreaDTO strategicCompetitiveResearchGrant;
 
 
-  @ApiModelProperty(notes = "Reporting year", position = 2)
+  @ApiModelProperty(notes = "CRP Management and Support Cost", position = 6)
+  private FinancialSummaryBudgetAreaDTO crpManagementSupportCost;
+
+
+  @ApiModelProperty(notes = "Reporting year", position = 7)
   private int year;
 
-  public List<NewFinancialSummaryBudgetDTO> getFlagshipSummaryBudgets() {
+  public FinancialSummaryBudgetAreaDTO getCrpManagementSupportCost() {
+    return crpManagementSupportCost;
+  }
+
+
+  public List<FinancialSummaryBudgetDTO> getFlagshipSummaryBudgets() {
     return flagshipSummaryBudgets;
+  }
+
+
+  public Long getId() {
+    return id;
   }
 
 
@@ -48,13 +65,44 @@ public class FinancialSumaryDTO {
   }
 
 
-  public void setFlagshipSummaryBudgets(List<NewFinancialSummaryBudgetDTO> flagshipSummaryBudgets) {
+  public FinancialSummaryBudgetAreaDTO getStrategicCompetitiveResearchGrant() {
+    return strategicCompetitiveResearchGrant;
+  }
+
+
+  public int getYear() {
+    return year;
+  }
+
+
+  public void setCrpManagementSupportCost(FinancialSummaryBudgetAreaDTO crpManagementSupportCost) {
+    this.crpManagementSupportCost = crpManagementSupportCost;
+  }
+
+
+  public void setFlagshipSummaryBudgets(List<FinancialSummaryBudgetDTO> flagshipSummaryBudgets) {
     this.flagshipSummaryBudgets = flagshipSummaryBudgets;
+  }
+
+
+  public void setId(Long id) {
+    this.id = id;
   }
 
 
   public void setNarrative(String narrative) {
     this.narrative = narrative;
   }
+
+
+  public void setStrategicCompetitiveResearchGrant(FinancialSummaryBudgetAreaDTO strategicCompetitiveResearchGrant) {
+    this.strategicCompetitiveResearchGrant = strategicCompetitiveResearchGrant;
+  }
+
+
+  public void setYear(int year) {
+    this.year = year;
+  }
+
 
 }
