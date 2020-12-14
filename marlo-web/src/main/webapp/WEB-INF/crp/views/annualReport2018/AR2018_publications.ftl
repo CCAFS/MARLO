@@ -10,7 +10,7 @@
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20200310",
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js"
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20201211"
   ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20200430"] /]
 
@@ -229,8 +229,9 @@
           [#if !allowPopups]
             <th class="text-center"> [@s.text name="${customLabel}.${name}.author" /](s) </th>
             <th class="text-center"> [@s.text name="${customLabel}.${name}.date" /] </th>
+            <th class="text-center"> [@s.text name="${customLabel}.${name}.journal" /] </th>
           [/#if]
-          <th class="text-center"> [@s.text name="${customLabel}.${name}.journal" /] </th>
+          <th class="text-center col-md-1"> [@s.text name="${customLabel}.${name}.identifier" /] </th>
           [#if !allowPopups]
             <th class="text-center"> [@s.text name="${customLabel}.${name}.volume" /] </th>
             <th class="text-center"> [@s.text name="${customLabel}.${name}.issue" /] </th>
@@ -238,12 +239,12 @@
           [/#if]
           <th class="text-center"> [@s.text name="${customLabel}.${name}.openAccess" /] </th>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.isi" /] </th>
-          [#if !allowPopups]
-            <th class="text-center col-md-1"> [@s.text name="${customLabel}.${name}.identifier" /] </th>
-          [/#if]
+          <th class="text-center"> [@s.text name="Type" /] </th>
           [#if allowPopups]
             <th class="col-md-1 text-center">[@s.text name="${customLabel}.${name}.missingFields" /]</th>
-            <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
+            [#if PMU]
+              <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
+            [/#if]
           [/#if]
         </tr>
       </thead>
@@ -294,9 +295,41 @@
               </td>
               [#-- Date of Publication --]
               <td>[@utils.tableText value=(item.getMetadataValue(17))!"" /]</td>
-              [/#if]
               [#-- Journal Article --]
               <td class="urlify">[@utils.tableText value=(item.publication.journal)!"" /]</td>
+              [/#if]
+              [#-- DOI or Handle --]
+              <td class="text-center">
+                [#if item.getMetadataValue(36)?has_content]
+                  [#local doi = item.getMetadataValue(36) /]
+                  [#-- TODO add www.doi.org/ to DOI identifiers. NOTE: validations will be needed. There are not just DOIs saved there and there are some
+                  DOIs that has not been cleaned (being stripped of the www.doi.org/ part) yet. --]
+                [#elseif item.dissemination.articleUrl?has_content]
+                  [#local doi = item.dissemination.articleUrl /]
+                [#else]
+                  [#local doi = "" /]
+                [/#if]
+                
+                [#--if doi?has_content && doi?contains("http") && !(doi?contains(";"))]
+                  [#--<a target="_blank" href="${doi}"><span class="glyphicon glyphicon-link"></span></a>
+                  <a target="_blank" href="${doi}"><span class="glyphicon glyphicon-link"></span></a>
+                [#else]
+                  [#if !(doi?has_content) ]
+                    <span class="glyphicon glyphicon-link" title="Not defined"></span>
+                  [#else]
+                    <span class="glyphicon glyphicon-link" title="${doi}"></span>
+                  [/#if]
+                [/#if--]
+                [#if doi?has_content && doi?contains("http") && !(doi?contains(";"))]
+                  <a target="_blank" href="${doi}">${doi}</span></a>
+                [#else]
+                  [#if !(doi?has_content) ]
+                    [@utils.tableText value="Not defined" /]
+                  [#else]
+                    [@utils.tableText value=doi /]
+                  [/#if]
+                [/#if]
+              </td>
               [#if !allowPopups]
                 [#-- Volume --]
                 <td class="text-center urlify"  style="width: 50px !important;">[@utils.tableText value=(item.publication.volume)!"" /]</td>
@@ -313,29 +346,8 @@
               <td class="text-center">
                 <img src="${baseUrlCdn}/global/images/checked-${(item.publication.isiPublication?string)!'false'}.png" alt="" />
               </td>
-              [#if !allowPopups]
-                [#-- DOI or Handle --]
-                <td class="text-center">
-                [#if item.getMetadataValue(36)?has_content]
-                  [#local doi = item.getMetadataValue(36) /]
-                [#elseif item.dissemination.articleUrl?has_content]
-                  [#local doi = item.dissemination.articleUrl /]
-                [#else]
-                  [#local doi = "" /]
-                [/#if]
-                
-                [#if doi?has_content && doi?contains("http") && !(doi?contains(";"))]
-                <a target="_blank" href="${doi}"><span class="glyphicon glyphicon-link"></span></a>
-                [#else]
-                  [#if !(doi?has_content) ]
-                   <span class="glyphicon glyphicon-link" title="Not defined"></span>
-                  [#else]
-                   <span class="glyphicon glyphicon-link" title="${doi}"></span>
-                  [/#if]
-                [/#if]              
-                
-                </td>
-              [/#if]
+              [#-- Publication type --]
+              <td class="urlify">[@utils.tableText value=(item.deliverableInfo.deliverableType.name)!"" /]</td>
               [#if allowPopups]
                 [#-- Complete Status--]
                 <td class="text-center">
@@ -346,11 +358,13 @@
                       <span class="glyphicon glyphicon-exclamation-sign mf-icon" title="Incomplete"></span> 
                   [/#if]   
                 </td>
-                [#-- Check --]
-                <td class="text-center">
-                  [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.deliverablesIds?seq_contains(item.id))!true) /]
-                  [@customForm.checkmark id="deliverable-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.deliverablesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
-                </td>
+                [#if PMU]
+                  [#-- Check --]
+                  <td class="text-center">
+                    [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.deliverablesIds?seq_contains(item.id))!true) /]
+                    [@customForm.checkmark id="deliverable-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.deliverablesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
+                  </td>
+                [/#if]
               [/#if]
             </tr>
           [/#list]
@@ -376,6 +390,7 @@
           <th class="text-center"> [@s.text name="${customLabel}.${name}.page" /] </th>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.openAccess" /] </th>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.isi" /] </th>
+          <th class="text-center"> [@s.text name="${customLabel}.${name}.deliverableType" /] </th>
           <th class="text-center col-md-1"> [@s.text name="${customLabel}.${name}.identifier" /] </th>
           <th class="col-md-1 text-center"> Included in AR </th>
           

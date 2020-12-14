@@ -202,30 +202,37 @@ function createGoogleBarChart(chartID,options) {
   createGoogleChart(chartID, "Bar", options);
 }
 
-function createGoogleChart(chartID,type,options) {
-  if(!googleChartsLoaded) {
-    google.charts.load('current', {
-      packages: [
-          'corechart', 'bar'
-      ]
+function createGoogleChart(chartID, type, options) {
+  if (!googleChartsLoaded) {
+    google.charts.load("current", {
+      packages: ["corechart", "bar"],
     });
     googleChartsLoaded = true;
   }
 
   var $chart = $(chartID);
-  if($chart.exists()) {
-    google.charts.setOnLoadCallback(function() {
-      $chart.addClass('loaded');
-      var data = new google.visualization.arrayToDataTable(getChartDataArray($chart));
-      if(data.hg.length === 0) {
-        $chart.append('<p  class="text-center"> ' + options.title + ' <br>  No data </p>');
+  if ($chart.exists()) {
+    google.charts.setOnLoadCallback(function () {
+      $chart.addClass("loaded");
+      var data = new google.visualization.arrayToDataTable(
+        getChartDataArray($chart)
+      );
+      console.log(data);
+      if (!data) {
+        $chart.append(
+          '<p  class="text-center"> ' + options.title + " <br>  No data </p>"
+        );
       } else {
-        if(type == "Bar") {
+        if (type == "Bar") {
           var view = new google.visualization.DataView(data);
-          var chart = new google.visualization.BarChart(document.getElementById($chart[0].id));
+          var chart = new google.visualization.BarChart(
+            document.getElementById($chart[0].id)
+          );
           chart.draw(view, google.charts.Bar.convertOptions(options));
-        } else if(type == "Pie") {
-          var chart = new google.visualization.PieChart(document.getElementById($chart[0].id));
+        } else if (type == "Pie") {
+          var chart = new google.visualization.PieChart(
+            document.getElementById($chart[0].id)
+          );
           chart.draw(data, options);
         }
       }
