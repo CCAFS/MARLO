@@ -231,7 +231,7 @@
             <th class="text-center"> [@s.text name="${customLabel}.${name}.date" /] </th>
             <th class="text-center"> [@s.text name="${customLabel}.${name}.journal" /] </th>
           [/#if]
-          <th class="text-center col-md-1"> [@s.text name="${customLabel}.${name}.identifier" /] </th>
+          <th class="text-center" > [@s.text name="${customLabel}.${name}.identifier" /] </th>
           [#if !allowPopups]
             <th class="text-center"> [@s.text name="${customLabel}.${name}.volume" /] </th>
             <th class="text-center"> [@s.text name="${customLabel}.${name}.issue" /] </th>
@@ -299,7 +299,7 @@
               <td class="urlify">[@utils.tableText value=(item.publication.journal)!"" /]</td>
               [/#if]
               [#-- DOI or Handle --]
-              <td class="text-center">
+              <td class="text-center " style="max-width: 250px;">
                 [#if item.getMetadataValue(36)?has_content]
                   [#local doi = item.getMetadataValue(36) /]
                   [#-- TODO add www.doi.org/ to DOI identifiers. NOTE: validations will be needed. There are not just DOIs saved there and there are some
