@@ -98,6 +98,8 @@
             [/#if]
             
           </div>
+        
+          [@sloContribution cssClass="slo-contribution-section-hidea slo-contribution-template" name="" indexSlo=index index=evidence/]
           [#-- Section Buttons & hidden inputs--]
           [#include "/WEB-INF/crp/views/annualReport2018/buttons-AR2018.ftl" /]
         [/@s.form] 
@@ -106,7 +108,7 @@
     
   [/#if] 
 </section>
-[@sloContribution cssClass="slo-contribution-section-hidea slo-contribution-template" name="" indexSlo=index index=evidence/]
+
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
 
