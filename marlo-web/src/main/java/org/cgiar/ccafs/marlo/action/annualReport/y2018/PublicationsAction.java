@@ -94,6 +94,7 @@ public class PublicationsAction extends BaseAction {
   private GlobalUnit loggedCrp;
   private List<LiaisonInstitution> liaisonInstitutions;
   private List<Deliverable> deliverables;
+  private List<Deliverable> deliverablesNotPublications;
   private List<String> emptyFields;
   private Phase actualPhase;
   private Integer totalOpenAccess = 0;
@@ -238,10 +239,14 @@ public class PublicationsAction extends BaseAction {
   }
 
 
+  public List<Deliverable> getDeliverablesNotPublications() {
+    return deliverablesNotPublications;
+  }
+
+
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
-
 
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
@@ -254,7 +259,6 @@ public class PublicationsAction extends BaseAction {
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
-
 
   public String getPublicationMissingFields(long id) {
     String missingFieldsText = "";
@@ -310,10 +314,10 @@ public class PublicationsAction extends BaseAction {
     return totalOpenAccess;
   }
 
+
   public String getTransaction() {
     return transaction;
   }
-
 
   public boolean isFlagship() {
     boolean isFP = false;
@@ -328,6 +332,7 @@ public class PublicationsAction extends BaseAction {
     }
     return isFP;
   }
+
 
   @Override
   public boolean isPMU() {
@@ -463,7 +468,6 @@ public class PublicationsAction extends BaseAction {
     }
   }
 
-
   @Override
   public String next() {
     String result = this.save();
@@ -566,7 +570,7 @@ public class PublicationsAction extends BaseAction {
       liaisonInstitutionID = reportSynthesisDB.getLiaisonInstitution().getId();
       liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
 
-      deliverables = deliverableManager.getDeliverablesList(liaisonInstitution, actualPhase);
+      deliverables = deliverableManager.getPublicationsList(liaisonInstitution, actualPhase);
 
       Path path = this.getAutoSaveFilePath();
       // Verify if there is a Draft file
@@ -710,6 +714,7 @@ public class PublicationsAction extends BaseAction {
 
   }
 
+
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -761,9 +766,13 @@ public class PublicationsAction extends BaseAction {
     }
   }
 
-
   public void setDeliverables(List<Deliverable> deliverables) {
     this.deliverables = deliverables;
+  }
+
+
+  public void setDeliverablesNotPublications(List<Deliverable> deliverablesNotPublications) {
+    this.deliverablesNotPublications = deliverablesNotPublications;
   }
 
 
