@@ -26,21 +26,21 @@ import io.swagger.annotations.ApiModelProperty;
 public class NewFinancialSummaryDTO {
 
 
-  @ApiModelProperty(notes = "Financial summary narrative")
+  @ApiModelProperty(notes = "Financial summary narrative", position = 2)
   private String narrative;
 
-  @ApiModelProperty(notes = "Flagship budget List")
+  @ApiModelProperty(notes = "Flagship budget List", position = 3)
   private List<NewFinancialSummaryBudgetDTO> flagshipSummaryBudgets;
 
-  @ApiModelProperty(notes = "Strategic competitive research grant")
+  @ApiModelProperty(notes = "Strategic competitive research grant", position = 4)
   private NewFinancialSummaryBudgetDTO strategicCompetitiveResearchGrant;
 
 
-  @ApiModelProperty(notes = "CRP Management and Support Cost")
+  @ApiModelProperty(notes = "CRP Management and Support Cost", position = 5)
   private NewFinancialSummaryBudgetDTO crpManagementSupportCost;
 
 
-  @ApiModelProperty(notes = "Phase identifier")
+  @ApiModelProperty(notes = "Phase identifier", position = 1)
   private PhaseDTO phase;
 
 

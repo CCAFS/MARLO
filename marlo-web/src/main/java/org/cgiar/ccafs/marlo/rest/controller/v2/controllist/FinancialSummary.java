@@ -65,14 +65,14 @@ public class FinancialSummary {
     this.userManager = userManager;
   }
 
-  @ApiOperation(tags = {"Table 13 - CRP Financial Report"}, value = "${Expenditure.Example.POST.value}",
+  @ApiOperation(tags = {"Table 13 - CRP Financial Report"}, value = "${FinancialSummary.Example.POST.value}",
     response = FinancialSumaryDTO.class)
   @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIAREntity}/FinancialSummary", method = RequestMethod.POST,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Long> createFinancialSummary(
-    @ApiParam(value = "${Expenditure.Example.POST.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
-    @ApiParam(value = "${Expenditure.Example.POST.param.expenditureExample}",
+    @ApiParam(value = "${FinancialSummary.Example.POST.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${FinancialSummary.Example.POST.param.financialmodel}",
       required = true) @Valid @RequestBody NewFinancialSummaryDTO newFinancialSummaryDTO) {
     Long financialSummaryId =
       financialSummaryItem.createFinancialSummary(newFinancialSummaryDTO, CGIAREntity, this.getCurrentUser());
@@ -83,15 +83,15 @@ public class FinancialSummary {
     return response;
   }
 
-  @ApiOperation(tags = {"Table 13 - CRP Financial Report"}, value = "${Expenditure.Example.GET.value}",
+  @ApiOperation(tags = {"Table 13 - CRP Financial Report"}, value = "${FinancialSummary.Example.GET.value}",
     response = FinancialSumaryDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/{CGIAREntity}/FinancialSumamary/{id}", method = RequestMethod.GET,
+  @RequestMapping(value = "/{CGIAREntity}/FinancialSumamary", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<FinancialSumaryDTO> findFinancialSummaryById(
-    @ApiParam(value = "${Expenditure.Example.GET.id.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
-    @ApiParam(value = "${Expenditure.Example.GET.id.param.year}", required = true) @RequestParam Integer year,
-    @ApiParam(value = "${Expenditure.Example.GET.id.param.phase}", required = true) @RequestParam String phase) {
+    @ApiParam(value = "${FinancialSummary.Example.GET.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${FinancialSummary.Example.GET.year.value}", required = true) @RequestParam Integer year,
+    @ApiParam(value = "${FinancialSummary.Example.GET.phase.value}", required = true) @RequestParam String phase) {
 
     ResponseEntity<FinancialSumaryDTO> response = null;
     try {
