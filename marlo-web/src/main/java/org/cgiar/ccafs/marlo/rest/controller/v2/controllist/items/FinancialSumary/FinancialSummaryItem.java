@@ -136,7 +136,8 @@ public class FinancialSummaryItem<T> {
             new ArrayList<ReportSynthesisFinancialSummaryBudget>();
           for (NewFinancialSummaryBudgetDTO budgets : financialSummary.getFlagshipSummaryBudgets()) {
             CrpProgram flagship = crpProgramManager.getCrpProgramBySmoCode("" + budgets.getFlagshipID());
-            if (flagship != null && flagship.getProgramType() == 1) {
+            if (flagship != null && flagship.getProgramType() == 1
+              && flagship.getCrp().getAcronym().equals(entityAcronym)) {
               LiaisonInstitution liaisonInstitutionFlagship =
                 liaisonInstitutionManager.findByAcronymAndCrp(flagship.getAcronym(), globalUnitEntity.getId());
               ReportSynthesisFinancialSummaryBudget flagshipSummaryBudget = new ReportSynthesisFinancialSummaryBudget();
@@ -282,8 +283,7 @@ public class FinancialSummaryItem<T> {
       .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
-  public Long updateFinancialSummary(long idFinancialSummary, NewFinancialSummaryDTO financialSummary,
-    String entityAcronym, User user) {
+  public Long updateFinancialSummary(NewFinancialSummaryDTO financialSummary, String entityAcronym, User user) {
     Long id = null;
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
@@ -329,15 +329,16 @@ public class FinancialSummaryItem<T> {
               new ArrayList<ReportSynthesisFinancialSummaryBudget>();
             for (NewFinancialSummaryBudgetDTO budgets : financialSummary.getFlagshipSummaryBudgets()) {
               CrpProgram flagship = crpProgramManager.getCrpProgramBySmoCode("" + budgets.getFlagshipID());
-              if (flagship != null && flagship.getProgramType() == 1) {
+              if (flagship != null && flagship.getProgramType() == 1
+                && flagship.getCrp().getAcronym().equals(entityAcronym)) {
                 LiaisonInstitution liaisonInstitutionFlagship =
                   liaisonInstitutionManager.findByAcronymAndCrp(flagship.getAcronym(), globalUnitEntity.getId());
                 boolean found = false;
                 for (ReportSynthesisFinancialSummaryBudget financialSummaryBudget : reportSynthesisFinancialSummary
                   .getReportSynthesisFinancialSummaryBudgets().stream().filter(c -> c.isActive())
                   .collect(Collectors.toList())) {
-                  if (financialSummaryBudget.getLiaisonInstitution().getId()
-                    .equals(liaisonInstitutionFlagship.getId())) {
+                  if (financialSummaryBudget.getLiaisonInstitution() != null && financialSummaryBudget
+                    .getLiaisonInstitution().getId().equals(liaisonInstitutionFlagship.getId())) {
                     found = true;
                     ReportSynthesisFinancialSummaryBudget financialSummaryBudgetUpdate = financialSummaryBudget;
                     financialSummaryBudgetUpdate.setModifiedBy(user);
@@ -377,11 +378,14 @@ public class FinancialSummaryItem<T> {
               .getReportSynthesisFinancialSummaryBudgets().stream()
               .filter(c -> c.getLiaisonInstitution() != null && c.isActive()).collect(Collectors.toList())) {
               boolean found = false;
+
               for (NewFinancialSummaryBudgetDTO budgets : financialSummary.getFlagshipSummaryBudgets()) {
                 CrpProgram flagship = crpProgramManager.getCrpProgramBySmoCode("" + budgets.getFlagshipID());
-                if (financialSumaryBudgets.getLiaisonInstitution() != null
-                  && financialSumaryBudgets.getLiaisonInstitution().getCrpProgram().getId().equals(flagship.getId())) {
-                  found = true;
+                if (flagship.getCrp().getAcronym().equals(entityAcronym)) {
+                  if (financialSumaryBudgets.getLiaisonInstitution() != null && financialSumaryBudgets
+                    .getLiaisonInstitution().getCrpProgram().getId().equals(flagship.getId())) {
+                    found = true;
+                  }
                 }
               }
               if (!found) {
