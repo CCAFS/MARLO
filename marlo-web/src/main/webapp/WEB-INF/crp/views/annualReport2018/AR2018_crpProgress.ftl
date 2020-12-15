@@ -123,11 +123,14 @@
   [#local otherContributions = action.getTargetsFlagshipInfo(element.id)![] ]
 
   <div id="${customClass}-${isTemplate?string('template', index)}" class="simpleBox ${customClass}" style="display:${isTemplate?string('none', 'block')}">
+
+    
     [#-- Hidden Inputs --]
     <input type="hidden" name="${customName}.id" value="${(sloTargetContribution.id)!}" />
     <input type="hidden" name="${customName}.srfSloIndicatorTarget.id" class="indicatorTargetID" value="${(element.id)!}" />    
     [#-- SLO Target --]
     <div class="form-group grayBox name"> 
+      
       <div class="pull-right">
         [@macrosAR.evidencesPopup element=(element)!{} list=(action.getEvidenceInfo(element.id))![]  /]
       </div> 
@@ -166,7 +169,12 @@
 
 
 [#macro sloContribution cssClass="" name="" indexSlo=0 index=0]
-<div class="slo-contribution-section ${cssClass}" style="margin-top: 10px;">
+<div class="slo-contribution-section ${cssClass}" style="margin-top: 10px; padding-top: 20px;">
+  <div class="leftHead  sm">
+    <!--<span class="index">12</span>-->
+    <span class="index">5-87-48</span>
+    <span class="elementId">lorem</span>
+  </div>
   [#-- Brief summary of new evidence of CGIAR contribution to relevant targets for this CRP (with citation) --]
   <div class="form-group">
     [@customForm.textArea name="${customName}.birefSummary-${indexSlo}-${index}" value="${(sloTargetContribution.birefSummary?html)!}" i18nkey="${customLabel}.summaryEvidence" className="limitWords-150" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable allowTextEditor=true /]
