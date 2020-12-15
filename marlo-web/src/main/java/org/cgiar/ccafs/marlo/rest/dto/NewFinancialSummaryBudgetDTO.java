@@ -23,22 +23,22 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class NewFinancialSummaryBudgetDTO {
 
-  @ApiModelProperty(notes = "Flagship program identifier")
+  @ApiModelProperty(notes = "Flagship program SMO identifier", position = 1)
   private long flagshipID;
 
-  @ApiModelProperty(notes = "Planned Budget W1/W2 value")
+  @ApiModelProperty(notes = "Planned Budget W1/W2 value", position = 2)
   private double plannedBudgetW1W2;
 
-  @ApiModelProperty(notes = "Planned Budget W3 and Biltareal value")
+  @ApiModelProperty(notes = "Planned Budget W3 and Biltareal value", position = 4)
   private double plannedBudgetW3Bilateral;
 
-  @ApiModelProperty(notes = "Actual expenditure for W1/W2")
+  @ApiModelProperty(notes = "Actual expenditure for W1/W2", position = 3)
   private double actualExpenditureW1W2;
 
-  @ApiModelProperty(notes = "Actual expenditure for W3 and Bilateral")
+  @ApiModelProperty(notes = "Actual expenditure for W3 and Bilateral", position = 5)
   private double actualExpendituretW3Bilateral;
 
-  @ApiModelProperty(notes = "Commments")
+  @ApiModelProperty(notes = "Commments", position = 6)
   private String comments;
 
 
