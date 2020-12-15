@@ -1995,14 +1995,16 @@ public class DeliverableAction extends BaseAction {
         deliverableLocationManager.getDeliverableLocationbyPhase(deliverable.getId(), this.getActualPhase().getId());
       List<DeliverableLocation> countriesSave = new ArrayList<>();
       for (String countryIds : deliverable.getCountriesIds()) {
-        DeliverableLocation deliverableLocation = new DeliverableLocation();
-        deliverableLocation.setLocElement(locElementManager.getLocElementByISOCode(countryIds));
-        deliverableLocation.setDeliverable(deliverable);
-        deliverableLocation.setPhase(this.getActualPhase());
-        countriesSave.add(deliverableLocation);
-        if (!countries.contains(deliverableLocation)) {
-          deliverableLocationManager.saveDeliverableLocation(deliverableLocation);
-          deliverableManagedState.getDeliverableLocations().add(deliverableLocation);
+        if (countryIds != null && !countryIds.isEmpty()) {
+          DeliverableLocation deliverableLocation = new DeliverableLocation();
+          deliverableLocation.setLocElement(locElementManager.getLocElementByISOCode(countryIds));
+          deliverableLocation.setDeliverable(deliverable);
+          deliverableLocation.setPhase(this.getActualPhase());
+          countriesSave.add(deliverableLocation);
+          if (!countries.contains(deliverableLocation)) {
+            deliverableLocationManager.saveDeliverableLocation(deliverableLocation);
+            deliverableManagedState.getDeliverableLocations().add(deliverableLocation);
+          }
         }
       }
 
@@ -2226,22 +2228,23 @@ public class DeliverableAction extends BaseAction {
     // Save form Information
     if (deliverable.getDeliverableRegions() != null) {
       for (DeliverableGeographicRegion deliverableRegion : deliverable.getDeliverableRegions()) {
-        if (deliverableRegion.getId() == null && deliverableRegion.getLocElement() != null) {
-          DeliverableGeographicRegion deliverableRegionSave = new DeliverableGeographicRegion();
-          deliverableRegionSave.setDeliverable(deliverable);
-          deliverableRegionSave.setPhase(phase);
+        if (deliverableRegion != null) {
+          if (deliverableRegion.getId() == null && deliverableRegion.getLocElement() != null) {
+            DeliverableGeographicRegion deliverableRegionSave = new DeliverableGeographicRegion();
+            deliverableRegionSave.setDeliverable(deliverable);
+            deliverableRegionSave.setPhase(phase);
 
-          LocElement locElement = locElementManager.getLocElementById(deliverableRegion.getLocElement().getId());
+            LocElement locElement = locElementManager.getLocElementById(deliverableRegion.getLocElement().getId());
 
-          deliverableRegionSave.setLocElement(locElement);
+            deliverableRegionSave.setLocElement(locElement);
 
-          deliverableGeographicRegionManager.saveDeliverableGeographicRegion(deliverableRegionSave);
-          // This is to add regions to generate correct auditlog.
-          deliverableManagedState.getDeliverableGeographicRegions().add(deliverableRegionSave);
+            deliverableGeographicRegionManager.saveDeliverableGeographicRegion(deliverableRegionSave);
+            // This is to add regions to generate correct auditlog.
+            deliverableManagedState.getDeliverableGeographicRegions().add(deliverableRegionSave);
+          }
         }
       }
     }
-
   }
 
   private void saveDeliverableUserPartnershipsPersons(DeliverableUserPartnership deliverableUserPartnership,
@@ -2471,19 +2474,21 @@ public class DeliverableAction extends BaseAction {
     // Save form Information
     if (this.deliverable.getGeographicScopes() != null) {
       for (DeliverableGeographicScope deliverableScope : this.deliverable.getGeographicScopes()) {
-        if (deliverableScope.getId() == null) {
-          DeliverableGeographicScope deliverableScopeSave = new DeliverableGeographicScope();
-          deliverableScopeSave.setDeliverable(deliverable);
-          deliverableScopeSave.setPhase(phase);
+        if (deliverableScope != null) {
+          if (deliverableScope.getId() == null) {
+            DeliverableGeographicScope deliverableScopeSave = new DeliverableGeographicScope();
+            deliverableScopeSave.setDeliverable(deliverable);
+            deliverableScopeSave.setPhase(phase);
 
-          RepIndGeographicScope repIndGeographicScope = repIndGeographicScopeManager
-            .getRepIndGeographicScopeById(deliverableScope.getRepIndGeographicScope().getId());
+            RepIndGeographicScope repIndGeographicScope = repIndGeographicScopeManager
+              .getRepIndGeographicScopeById(deliverableScope.getRepIndGeographicScope().getId());
 
-          deliverableScopeSave.setRepIndGeographicScope(repIndGeographicScope);
+            deliverableScopeSave.setRepIndGeographicScope(repIndGeographicScope);
 
-          deliverableGeographicScopeManager.saveDeliverableGeographicScope(deliverableScopeSave);
-          // This is to add innovationCrpSave to generate correct auditlog.
-          this.deliverable.getDeliverableGeographicScopes().add(deliverableScopeSave);
+            deliverableGeographicScopeManager.saveDeliverableGeographicScope(deliverableScopeSave);
+            // This is to add innovationCrpSave to generate correct auditlog.
+            this.deliverable.getDeliverableGeographicScopes().add(deliverableScopeSave);
+          }
         }
       }
     }

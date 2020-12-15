@@ -1037,7 +1037,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         // First page - table of contents
         // poiSummary.textLineBreak(document, 2);
         poiSummary.textHeadPrincipalTitle(document.createParagraph(),
-          this.getText("summaries.powb2019.mainTitlePlatform2" + " " + this.getCurrentCycleYear()));
+          this.getText("summaries.powb2019.mainTitlePlatform2") + " " + this.getCurrentCycleYear());
         poiSummary.textLineBreak(document, 4);
 
         // document.createTOC();
@@ -1309,7 +1309,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         poiSummary.textHeadPrincipalTitlefirtsPageCRP(document.createParagraph(),
           this.getText("summaries.powb2019.mainTitle"));
         poiSummary.textHeadPrincipalTitlefirtsPageCRP(document.createParagraph(),
-          this.getText("summaries.powb2019.subTitle2" + " " + this.getCurrentCycleYear()));
+          this.getText("summaries.powb2019.subTitle2") + " " + this.getCurrentCycleYear());
         poiSummary.textLineBreak(document, 11);
         // poiSummary.addLineSeparator(document.createParagraph());
         document.createParagraph().setPageBreak(true);
