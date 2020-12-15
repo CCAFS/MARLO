@@ -27,12 +27,13 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "jsr330",
-  uses = {CrpProgramMapper.class, OutcomeMapper.class, StatusPlannedMilestonesMapper.class})
+  uses = {CrpProgramMapper.class, OutcomeMapper.class, StatusPlannedMilestonesMapper.class, SrfSubIdoMapper.class})
 public interface StatusPlannedOutcomesMapper {
 
   @Mappings({@Mapping(source = "crpProgramOutcome", target = "outcome"),
     @Mapping(source = "crpProgramOutcome.crpProgram", target = "crpProgram"),
     @Mapping(source = "crpProgramOutcome.phase", target = "phase"), @Mapping(source = "summary", target = "summary"),
+    @Mapping(source = "crpProgramOutcome.subIdos", target = "subIdos"),
     @Mapping(source = "milestones", target = "milestones")})
   public abstract StatusPlannedOutcomesDTO reportSynthesisFlagshipProgressOutcomeToStatusPlannedOutcomesDTO(
     ReportSynthesisFlagshipProgressOutcome reportSynthesisFlagshipProgressOutcome);

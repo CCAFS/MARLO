@@ -34,11 +34,15 @@ public class StatusPlannedOutcomesDTO {
   @ApiModelProperty(notes = "Outcome Sumary", position = 3)
   private String summary;
 
-  @ApiModelProperty(notes = "Milestones Status", position = 4)
+  @ApiModelProperty(notes = "Outcome SubIDO", position = 4)
+  private List<DefaultFieldPrimaryDTO> subIdos;
+
+
+  @ApiModelProperty(notes = "Milestones Status", position = 5)
   private List<StatusPlannedMilestonesDTO> milestones;
 
 
-  @ApiModelProperty(notes = "Phase year/section", position = 5)
+  @ApiModelProperty(notes = "Phase year/section", position = 6)
   private PhaseDTO phase;
 
 
@@ -59,6 +63,11 @@ public class StatusPlannedOutcomesDTO {
 
   public PhaseDTO getPhase() {
     return phase;
+  }
+
+
+  public List<DefaultFieldPrimaryDTO> getSubIdos() {
+    return subIdos;
   }
 
 
@@ -84,6 +93,11 @@ public class StatusPlannedOutcomesDTO {
 
   public void setPhase(PhaseDTO phase) {
     this.phase = phase;
+  }
+
+
+  public void setSubIdos(List<DefaultFieldPrimaryDTO> subIdos) {
+    this.subIdos = subIdos;
   }
 
 
