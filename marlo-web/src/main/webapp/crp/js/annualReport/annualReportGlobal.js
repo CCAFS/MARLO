@@ -85,7 +85,83 @@ $(document).ready(function() {
     }));
   });
 
+  // checkbox disables field
+  console.log("init press");
+  setStatusByBack();
+  $('.checkboxDiTeArClick').on('click',setCheckboxValueTohide);
+
 });
+function setStatusByBack() {
+  $(".sloTargetsList")
+    .find(".sloTarget")
+    .each(function (i, field) {
+      // console.log($(field).find(".checkboxDiTeArClick").val());
+
+      let checkbox = $(field).find(".checkboxDiTeArClick");
+
+      // console.log("init value: "+$(this).val());
+      if ($(checkbox).val() == "true") {
+        $(checkbox).val("false");
+        // console.log("now is: "+$(this).val());
+      } else {
+        $(checkbox).val("true");
+        // console.log("now is: "+$(this).val());
+      }
+      if ($(checkbox).val() == "true") {
+        $(checkbox).parents(".sloTarget").addClass("disabled");
+        let $currrentSlo = $(checkbox).parents(".sloTarget");
+        $($currrentSlo)
+          .find(".trumbowyg-box")
+          .each(function (i, field) {
+            $(field).find(".trumbowyg-button-pane").hide();
+            $(field).find(".trumbowyg-editor").attr("contenteditable", "false");
+          });
+      } else {
+        $(this).parents(".sloTarget").removeClass("disabled");
+        let $currrentSlo = $(checkbox).parents(".sloTarget");
+        $($currrentSlo)
+          .find(".trumbowyg-box")
+          .each(function (i, field) {
+            $(field).find(".trumbowyg-button-pane").show();
+            $(field).find(".trumbowyg-editor").attr("contenteditable", "true");
+          });
+      }
+      // $('.editor').trumbowyg('disable');
+    });
+}
+
+function setCheckboxValueTohide() {
+  // console.log("init value: "+$(this).val());
+  if ($(this).val() == "true") {
+    $(this).val("false");
+    // console.log("now is: "+$(this).val());
+  } else {
+    $(this).val("true");
+    // console.log("now is: "+$(this).val());
+  }
+
+  if ($(this).val() == "true") {
+    $(this).parents(".sloTarget").addClass("disabled");
+    let $currrentSlo = $(this).parents(".sloTarget");
+    $($currrentSlo)
+      .find(".trumbowyg-box")
+      .each(function (i, field) {
+        $(field).find(".trumbowyg-button-pane").hide();
+        $(field).find(".trumbowyg-editor").attr("contenteditable", "false");
+      });
+  } else {
+    $(this).parents(".sloTarget").removeClass("disabled");
+    let $currrentSlo = $(this).parents(".sloTarget");
+    $($currrentSlo)
+      .find(".trumbowyg-box")
+      .each(function (i, field) {
+        $(field).find(".trumbowyg-button-pane").show();
+        $(field).find(".trumbowyg-editor").attr("contenteditable", "true");
+      });
+  }
+  // $('.editor').trumbowyg('disable');
+}
+
 
 function loadTab() {
   var ls = JSON.parse((window.localStorage.getItem(pageName)));
