@@ -501,3 +501,7 @@ div#chart13 {
   margin-top: 16px;
   text-align-last: right;
 }
+
+.slo-contribution-section-hide{
+  display: none;
+}

@@ -89,6 +89,7 @@ $(document).ready(function() {
   console.log("init press");
   setStatusByBack();
   $('.checkboxDiTeArClick').on('click',setCheckboxValueTohide);
+  $('.btn-addEvidence').on('click',addEvidence);
 
 });
 function setStatusByBack() {
@@ -238,5 +239,46 @@ function createGoogleChart(chartID, type, options) {
       }
       console.log(type + ": " + chartID, options.title);
     });
+  }
+}
+
+
+function addEvidence() {
+console.log('addEvidence');
+  // $(this).parents(".simpleBox").find(".evidenceList").hide();;
+
+  var $list =  $(this).parents(".simpleBox").find(".evidenceList");
+  var $item = $('.slo-contribution-template').clone(true).removeAttr("id");
+  $($item).removeClass('slo-contribution-template');
+  // $item.find('select').select2({
+  // width: '100%'
+  // });
+  $list.append($item);
+  // updateAllIndexes();
+  $item.show('slow');
+  $list=null;
+  $item=null;
+}
+
+function getListHtml(){
+
+  if ($(this).val() == "true") {
+    $(this).parents(".sloTarget").addClass("disabled");
+    let $currrentSlo = $(this).parents(".sloTarget");
+    $($currrentSlo)
+      .find(".trumbowyg-box")
+      .each(function (i, field) {
+        $(field).find(".trumbowyg-button-pane").hide();
+        $(field).find(".trumbowyg-editor").attr("contenteditable", "false");
+      });
+  } else {
+    $(this).parents(".sloTarget").removeClass("disabled");
+    let $currrentSlo = $(this).parents(".sloTarget");
+    $($currrentSlo)
+      .find(".trumbowyg-box")
+      .each(function (i, field) {
+        $(field).find(".trumbowyg-button-pane").show();
+        $(field).find(".trumbowyg-editor").attr("contenteditable", "true");
+      });
   }
 }

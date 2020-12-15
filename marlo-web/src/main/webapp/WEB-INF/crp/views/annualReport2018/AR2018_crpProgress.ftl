@@ -106,6 +106,7 @@
     
   [/#if] 
 </section>
+[@sloContribution cssClass="slo-contribution-section-hidea slo-contribution-template" name="" indexSlo=index index=evidence/]
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
 
@@ -134,11 +135,14 @@
       </div>
        <br />${(element.narrative)!}
     </div>
-    [#list arrayEvidence as evidence]
-    [@sloContribution name="" indexSlo=index index=evidence/]
-  [/#list]
+    <div class="evidenceList">
+      [#list arrayEvidence as evidence]
+       [@sloContribution name="" indexSlo=index index=evidence/]
+      [/#list]
+    </div>
 
-  <div class="addOutcome bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add evidence</div>
+
+  <div class="btn-addEvidence bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add evidence</div>
     
     
     
@@ -159,8 +163,8 @@
 [/#macro]
 
 
-[#macro sloContribution name="" indexSlo=0 index=0]
-<div class="slo-contribution-section" style="margin-top: 10px;">
+[#macro sloContribution cssClass="" name="" indexSlo=0 index=0]
+<div class="slo-contribution-section ${cssClass}" style="margin-top: 10px;">
   [#-- Brief summary of new evidence of CGIAR contribution to relevant targets for this CRP (with citation) --]
   <div class="form-group">
     [@customForm.textArea name="${customName}.birefSummary-${indexSlo}-${index}" value="${(sloTargetContribution.birefSummary?html)!}" i18nkey="${customLabel}.summaryEvidence" className="limitWords-150" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable allowTextEditor=true /]
@@ -179,3 +183,5 @@
   </div>
 </div>
 [/#macro]
+
+
