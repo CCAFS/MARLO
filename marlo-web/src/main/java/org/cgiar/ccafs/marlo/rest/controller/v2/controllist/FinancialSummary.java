@@ -113,4 +113,29 @@ public class FinancialSummary {
     return user;
   }
 
+  @ApiOperation(tags = {"Table 13 - CRP Financial Report"}, value = "${FinancialSummary.Example.PUT.value}",
+    response = FinancialSumaryDTO.class)
+  @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/FinancialSummary/{id}", method = RequestMethod.PUT,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Long> updateFinancialSummary(
+    @ApiParam(value = "${FinancialSummary.Example.PUT.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${FinancialSummary.Example.PUT.param.financialmodel}",
+      required = true) @Valid @RequestBody NewFinancialSummaryDTO newFinancialSummaryDTO)
+    throws Exception {
+    Long financialSummaryId = null;
+    try {
+      financialSummaryId =
+        financialSummaryItem.updateFinancialSummary(newFinancialSummaryDTO, CGIAREntity, this.getCurrentUser());
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    ResponseEntity<Long> response = new ResponseEntity<Long>(financialSummaryId, HttpStatus.OK);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("FinancialSummary.Example.GET.id.404"));
+    }
+    return response;
+  }
+
 }
