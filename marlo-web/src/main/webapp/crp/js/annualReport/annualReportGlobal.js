@@ -90,6 +90,7 @@ $(document).ready(function() {
   setStatusByBack();
   $('.checkboxDiTeArClick').on('click',setCheckboxValueTohide);
   $('.btn-addEvidence').on('click',addEvidence);
+  $('.btn-removeEvidence').on('click',removeEvidence);
 
 });
 function setStatusByBack() {
@@ -259,4 +260,8 @@ console.log('addEvidence');
   $list=null;
   $item=null;
 }
+
+function removeEvidence(){
+  console.log('Delete Evidence');
+} 
 
