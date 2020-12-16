@@ -10,7 +10,7 @@
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20200310",
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20201211"
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20201214"
   ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20200430"] /]
 
@@ -231,7 +231,7 @@
             <th class="text-center"> [@s.text name="${customLabel}.${name}.date" /] </th>
             <th class="text-center"> [@s.text name="${customLabel}.${name}.journal" /] </th>
           [/#if]
-          <th class="text-center col-md-1"> [@s.text name="${customLabel}.${name}.identifier" /] </th>
+          <th class="text-center" > [@s.text name="${customLabel}.${name}.identifier" /] </th>
           [#if !allowPopups]
             <th class="text-center"> [@s.text name="${customLabel}.${name}.volume" /] </th>
             <th class="text-center"> [@s.text name="${customLabel}.${name}.issue" /] </th>
@@ -239,7 +239,6 @@
           [/#if]
           <th class="text-center"> [@s.text name="${customLabel}.${name}.openAccess" /] </th>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.isi" /] </th>
-          <th class="text-center"> [@s.text name="Type" /] </th>
           [#if allowPopups]
             <th class="col-md-1 text-center">[@s.text name="${customLabel}.${name}.missingFields" /]</th>
             [#if PMU]
@@ -299,7 +298,7 @@
               <td class="urlify">[@utils.tableText value=(item.publication.journal)!"" /]</td>
               [/#if]
               [#-- DOI or Handle --]
-              <td class="text-center">
+              <td class="text-center " style="max-width: 250px;">
                 [#if item.getMetadataValue(36)?has_content]
                   [#local doi = item.getMetadataValue(36) /]
                   [#-- TODO add www.doi.org/ to DOI identifiers. NOTE: validations will be needed. There are not just DOIs saved there and there are some
@@ -346,8 +345,6 @@
               <td class="text-center">
                 <img src="${baseUrlCdn}/global/images/checked-${(item.publication.isiPublication?string)!'false'}.png" alt="" />
               </td>
-              [#-- Publication type --]
-              <td class="urlify">[@utils.tableText value=(item.deliverableInfo.deliverableType.name)!"" /]</td>
               [#if allowPopups]
                 [#-- Complete Status--]
                 <td class="text-center">
@@ -390,7 +387,6 @@
           <th class="text-center"> [@s.text name="${customLabel}.${name}.page" /] </th>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.openAccess" /] </th>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.isi" /] </th>
-          <th class="text-center"> [@s.text name="${customLabel}.${name}.deliverableType" /] </th>
           <th class="text-center col-md-1"> [@s.text name="${customLabel}.${name}.identifier" /] </th>
           <th class="col-md-1 text-center"> Included in AR </th>
           

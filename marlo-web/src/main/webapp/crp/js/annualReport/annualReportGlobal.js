@@ -26,8 +26,8 @@ $(document).ready(function() {
 
     $progressTableViewMore = $('.viewMoreSyntesisTable-block table');
     tableDataProgressTableViewmore = $progressTableViewMore.DataTable({
-        "paging": false,
-        "searching": false,
+        "paging": true,
+        "searching": true,
         "info": true,
         aoColumnDefs: [
           {
@@ -87,8 +87,11 @@ $(document).ready(function() {
 
   // checkbox disables field
   console.log("init press");
-  setStatusByBack();
+  
   $('.checkboxDiTeArClick').on('click',setCheckboxValueTohide);
+  $('.btn-addEvidence').on('click',addEvidence);
+  $('.btn-removeEvidence').on('click',removeEvidence);
+  setStatusByBack();
 
 });
 function setStatusByBack() {
@@ -98,8 +101,10 @@ function setStatusByBack() {
       // console.log($(field).find(".checkboxDiTeArClick").val());
 
       let checkbox = $(field).find(".checkboxDiTeArClick");
+      console.log($(checkbox).val());
 
-      // console.log("init value: "+$(this).val());
+
+
       if ($(checkbox).val() == "true") {
         $(checkbox).val("false");
         // console.log("now is: "+$(this).val());
@@ -107,26 +112,13 @@ function setStatusByBack() {
         $(checkbox).val("true");
         // console.log("now is: "+$(this).val());
       }
-      if ($(checkbox).val() == "true") {
-        $(checkbox).parents(".sloTarget").addClass("disabled");
-        let $currrentSlo = $(checkbox).parents(".sloTarget");
-        $($currrentSlo)
-          .find(".trumbowyg-box")
-          .each(function (i, field) {
-            $(field).find(".trumbowyg-button-pane").hide();
-            $(field).find(".trumbowyg-editor").attr("contenteditable", "false");
-          });
+    
+      if ($(checkbox).val() == "false") {
+        $(checkbox).parents(".a-slo").find(".disabled-box").show();
       } else {
-        $(this).parents(".sloTarget").removeClass("disabled");
-        let $currrentSlo = $(checkbox).parents(".sloTarget");
-        $($currrentSlo)
-          .find(".trumbowyg-box")
-          .each(function (i, field) {
-            $(field).find(".trumbowyg-button-pane").show();
-            $(field).find(".trumbowyg-editor").attr("contenteditable", "true");
-          });
+        $(checkbox).parents(".a-slo").find(".disabled-box").hide();
       }
-      // $('.editor').trumbowyg('disable');
+
     });
 }
 
@@ -140,26 +132,12 @@ function setCheckboxValueTohide() {
     // console.log("now is: "+$(this).val());
   }
 
-  if ($(this).val() == "true") {
-    $(this).parents(".sloTarget").addClass("disabled");
-    let $currrentSlo = $(this).parents(".sloTarget");
-    $($currrentSlo)
-      .find(".trumbowyg-box")
-      .each(function (i, field) {
-        $(field).find(".trumbowyg-button-pane").hide();
-        $(field).find(".trumbowyg-editor").attr("contenteditable", "false");
-      });
+  if ($(this).val() == "false") {
+    $(this).parents(".a-slo").find(".disabled-box").show();
   } else {
-    $(this).parents(".sloTarget").removeClass("disabled");
-    let $currrentSlo = $(this).parents(".sloTarget");
-    $($currrentSlo)
-      .find(".trumbowyg-box")
-      .each(function (i, field) {
-        $(field).find(".trumbowyg-button-pane").show();
-        $(field).find(".trumbowyg-editor").attr("contenteditable", "true");
-      });
+    $(this).parents(".a-slo").find(".disabled-box").hide();
   }
-  // $('.editor').trumbowyg('disable');
+
 }
 
 
@@ -240,3 +218,30 @@ function createGoogleChart(chartID, type, options) {
     });
   }
 }
+
+
+function addEvidence() {
+console.log('addEvidence');
+  // $(this).parents(".simpleBox").find(".evidenceList").hide();;
+
+  var $list =  $(this).parents(".simpleBox").find(".evidenceList");
+  var $item = $('.slo-contribution-template').clone(true).removeAttr("id");
+  $($item).removeClass('slo-contribution-template');
+  // $item.find('select').select2({
+  // width: '100%'
+  // });
+  $list.append($item);
+  // updateAllIndexes();
+  $item.show('slow');
+  $list=null;
+  $item=null;
+}
+
+function removeEvidence(){
+  console.log('Remove Evidence');
+  var $item =  $(this).parents('.slo-contribution-section');
+    $item.hide(function() {
+      $item.remove();
+    });
+} 
+
