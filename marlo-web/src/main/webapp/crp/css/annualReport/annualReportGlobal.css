@@ -505,3 +505,17 @@ div#chart13 {
 .slo-contribution-section-hide{
   display: none;
 }
+
+.to-disabled-box{
+  position: relative;
+}
+
+.disabled-box{
+  display: none;
+  position: absolute;
+  background-color: #ffffff67;
+  filter: blur(100%);
+  width: 100%;
+  height: 100%;
+  z-index: 998;
+}
