@@ -1037,7 +1037,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         // First page - table of contents
         // poiSummary.textLineBreak(document, 2);
         poiSummary.textHeadPrincipalTitle(document.createParagraph(),
-          this.getText("summaries.powb2019.mainTitlePlatform2" + " " + this.getCurrentCycleYear()));
+          this.getText("summaries.powb2019.mainTitlePlatform2") + " " + this.getCurrentCycleYear());
         poiSummary.textLineBreak(document, 4);
 
         // document.createTOC();
