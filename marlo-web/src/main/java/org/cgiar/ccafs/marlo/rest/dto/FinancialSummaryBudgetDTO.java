@@ -21,31 +21,36 @@ package org.cgiar.ccafs.marlo.rest.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class NewFinancialSummaryBudgetDTO {
+public class FinancialSummaryBudgetDTO {
 
-  @ApiModelProperty(notes = "Flagship program SMO identifier", position = 1)
+
+  @ApiModelProperty(notes = "Flagship program identifier")
   private long flagshipID;
 
-  @ApiModelProperty(notes = "Planned Budget W1/W2 value", position = 2)
+  @ApiModelProperty(notes = "Flagship program name")
+  private String flagshipName;
+
+
+  @ApiModelProperty(notes = "Planned Budget W1/W2 value")
   private double plannedBudgetW1W2;
 
-  @ApiModelProperty(notes = "Planned Budget W3 and Biltareal value", position = 4)
+
+  @ApiModelProperty(notes = "Planned Budget W3 and Biltareal value")
   private double plannedBudgetW3Bilateral;
 
-  @ApiModelProperty(notes = "Actual expenditure for W1/W2", position = 3)
+
+  @ApiModelProperty(notes = "Actual expenditure for W1/W2")
   private double actualExpenditureW1W2;
 
-  @ApiModelProperty(notes = "Actual expenditure for W3 and Bilateral", position = 5)
+  @ApiModelProperty(notes = "Actual expenditure for W3 and Bilateral")
   private double actualExpendituretW3Bilateral;
 
-  @ApiModelProperty(notes = "Commments", position = 6)
+  @ApiModelProperty(notes = "Commments")
   private String comments;
-
 
   public double getActualExpendituretW3Bilateral() {
     return actualExpendituretW3Bilateral;
   }
-
 
   public double getActualExpenditureW1W2() {
     return actualExpenditureW1W2;
@@ -59,6 +64,11 @@ public class NewFinancialSummaryBudgetDTO {
 
   public long getFlagshipID() {
     return flagshipID;
+  }
+
+
+  public String getFlagshipName() {
+    return flagshipName;
   }
 
 
@@ -89,6 +99,11 @@ public class NewFinancialSummaryBudgetDTO {
 
   public void setFlagshipID(long flagshipID) {
     this.flagshipID = flagshipID;
+  }
+
+
+  public void setFlagshipName(String flagshipName) {
+    this.flagshipName = flagshipName;
   }
 
 
