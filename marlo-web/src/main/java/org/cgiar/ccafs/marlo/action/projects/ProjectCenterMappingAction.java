@@ -463,7 +463,7 @@ public class ProjectCenterMappingAction extends BaseAction {
 
   @Override
   public String save() {
-    if (this.hasPermission("canEdit") || this.hasCenterPermissions(projectID)) {
+    if (this.hasPermission("canEdit")) {
       Phase sharedPhase = phaseManager.getPhaseById(sharedPhaseID);
 
       // Load basic info project to be saved
