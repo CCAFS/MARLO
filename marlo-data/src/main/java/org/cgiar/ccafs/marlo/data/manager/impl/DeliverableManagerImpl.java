@@ -193,14 +193,14 @@ public class DeliverableManagerImpl implements DeliverableManager {
       }
 
       // Fill Supplementary Deliverables
-      List<DeliverableProgram> deliverablePrograms =
-        liaisonInstitution.getCrpProgram().getDeliverablePrograms().stream()
-          .filter(dp -> dp.isActive() && dp.getPhase().equals(phaseDB) && dp.getDeliverable() != null
-            && dp.getDeliverable().isActive() && dp.getDeliverable().getDeliverableInfo(phaseDB) != null
-            && dp.getDeliverable().getDeliverableInfo().isRequiredToComplete()
-            && dp.getDeliverable().getDeliverableInfo().getDeliverableType() != null
-            && d.getDeliverableInfo().getDeliverableType().getId() != 63)
-          .collect(Collectors.toList());
+      List<DeliverableProgram> deliverablePrograms = liaisonInstitution.getCrpProgram().getDeliverablePrograms()
+        .stream()
+        .filter(dp -> dp.isActive() && dp.getPhase().equals(phaseDB) && dp.getDeliverable() != null
+          && dp.getDeliverable().isActive() && dp.getDeliverable().getDeliverableInfo(phaseDB) != null
+          && dp.getDeliverable().getDeliverableInfo().isRequiredToComplete()
+          && dp.getDeliverable().getDeliverableInfo().getDeliverableType() != null
+          && dp.getDeliverable().getDeliverableInfo().getDeliverableType().getId() != 63)
+        .collect(Collectors.toList());
 
       if (deliverablePrograms != null && !deliverablePrograms.isEmpty()) {
         for (DeliverableProgram deliverableProgram : deliverablePrograms) {
