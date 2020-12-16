@@ -122,7 +122,7 @@
   [#local sloTargetContribution = action.getTargetsInfo(element.id)!{} ]
   [#local otherContributions = action.getTargetsFlagshipInfo(element.id)![] ]
 
-  <div id="${customClass}-${isTemplate?string('template', index)}" class="simpleBox ${customClass}" style="display:${isTemplate?string('none', 'block')}">
+  <div id="${customClass}-${isTemplate?string('template', index)}" class="simpleBox a-slo ${customClass}" style="display:${isTemplate?string('none', 'block')}">
 
     
     [#-- Hidden Inputs --]
@@ -140,12 +140,14 @@
       </div>
        <br />${(element.narrative)!}
     </div>
+    <div class="to-disabled-box">
+      <div class="disabled-box"></div>
     <div class="evidenceList">
       [#list arrayEvidence as evidence]
        [@sloContribution name="" indexSlo=index index=evidence/]
       [/#list]
     </div>
-
+  </div>
 
   <div class="btn-addEvidence bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add evidence</div>
     
