@@ -176,9 +176,10 @@ public class DeliverableManagerImpl implements DeliverableManager {
 
         for (ProjectFocus focus : projectFocus) {
           Project project = projectManager.getProjectById(focus.getProject().getId());
-          List<Deliverable> plannedDeliverables = new ArrayList<>(project
-            .getDeliverables().stream().filter(d -> d.isActive() && d.getDeliverableInfo(phaseDB) != null
-              && d.getDeliverableInfo().isCompleted() && d.getDeliverableInfo().getDeliverableType() != null)
+          List<Deliverable> plannedDeliverables = new ArrayList<>(project.getDeliverables().stream()
+            .filter(d -> d.isActive() && d.getDeliverableInfo(phaseDB) != null && d.getDeliverableInfo().isCompleted()
+              && d.getDeliverableInfo().getDeliverableType() != null
+              && d.getDeliverableInfo().getDeliverableType().getId() == 63)
             .collect(Collectors.toList()));
           for (Deliverable deliverable : plannedDeliverables) {
             deliverable.getDeliverableInfo(phaseDB);
@@ -197,7 +198,8 @@ public class DeliverableManagerImpl implements DeliverableManager {
           .filter(dp -> dp.isActive() && dp.getPhase().equals(phaseDB) && dp.getDeliverable() != null
             && dp.getDeliverable().isActive() && dp.getDeliverable().getDeliverableInfo(phaseDB) != null
             && dp.getDeliverable().getDeliverableInfo().isRequiredToComplete()
-            && dp.getDeliverable().getDeliverableInfo().getDeliverableType() != null)
+            && dp.getDeliverable().getDeliverableInfo().getDeliverableType() != null
+            && d.getDeliverableInfo().getDeliverableType().getId() != 63)
           .collect(Collectors.toList());
 
       if (deliverablePrograms != null && !deliverablePrograms.isEmpty()) {
