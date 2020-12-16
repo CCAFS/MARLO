@@ -262,6 +262,10 @@ console.log('addEvidence');
 }
 
 function removeEvidence(){
-  console.log('Delete Evidence');
+  console.log('Remove Evidence');
+  var $item =  $(this).parents('.slo-contribution-section');
+    $item.hide(function() {
+      $item.remove();
+    });
 } 
 
