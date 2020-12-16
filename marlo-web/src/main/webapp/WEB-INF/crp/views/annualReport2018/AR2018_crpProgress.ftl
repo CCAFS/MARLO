@@ -99,7 +99,7 @@
             
           </div>
         
-          [@sloContribution cssClass="slo-contribution-section-hidea slo-contribution-template" name="" indexSlo=index index=evidence/]
+          [@sloContribution cssClass="slo-contribution-section-hide slo-contribution-template" name="" indexSlo=-1 index=-1/]
           [#-- Section Buttons & hidden inputs--]
           [#include "/WEB-INF/crp/views/annualReport2018/buttons-AR2018.ftl" /]
         [/@s.form] 
@@ -175,6 +175,9 @@
     <span class="index">5-87-48</span>
     <span class="elementId">lorem</span>
   </div>
+
+  <div class="btn-removeEvidence removeElement sm" title="Remove Evidence"></div>
+
   [#-- Brief summary of new evidence of CGIAR contribution to relevant targets for this CRP (with citation) --]
   <div class="form-group">
     [@customForm.textArea name="${customName}.birefSummary-${indexSlo}-${index}" value="${(sloTargetContribution.birefSummary?html)!}" i18nkey="${customLabel}.summaryEvidence" className="limitWords-150" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable allowTextEditor=true /]
