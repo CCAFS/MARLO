@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.utils.MD5Convert;
 
 import org.cgiar.ciat.auth.ADConexion;
 import org.cgiar.ciat.auth.LDAPService;
+import org.cgiar.ciat.auth.LDAPUser;
 
 import java.util.Optional;
 
@@ -77,13 +78,15 @@ public class AuthenticationItem<T> {
           // try LDPA authentication
           try {
             ADConexion con = null;
-            LDAPService service = new LDAPService();
+            LDAPService service = null;
+            LDAPUser ldapUser = null;
             if (config.isProduction()) {
-              service.setInternalConnection(false);
+              service = new LDAPService(false);
             } else {
-              service.setInternalConnection(true);
+              service = new LDAPService(true);
             }
-            con = service.authenticateUser(email, password);
+            ldapUser = service.searchUserByEmail(userEmail);
+            con = service.authenticateUser(ldapUser.getLogin(), password);
 
             if (con != null) {
               if (con.getLogin() != null) {
