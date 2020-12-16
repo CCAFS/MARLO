@@ -115,6 +115,14 @@ public class FlagshipProgress2018Validator extends BaseValidator {
       LiaisonInstitution liaisonInstitution =
         liaisonInstitutionManager.getLiaisonInstitutionById(reportSynthesis.getLiaisonInstitution().getId());
 
+      // Validate Relevance to covid field - for Flagships and PMU
+      if (!(this.isValidString(reportSynthesis.getReportSynthesisFlagshipProgress().getOverallProgress()))
+        && reportSynthesis.getReportSynthesisFlagshipProgress().getOverallProgress().length() > 300) {
+        action.addMissingField(action.getText("annualReport2018.flagshipProgress.relevanceCovid"));
+        action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.relevanceCovid",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+
       // Validate flagship fields
       if (this.isFlagship(liaisonInstitution)) {
         /*
@@ -267,6 +275,15 @@ public class FlagshipProgress2018Validator extends BaseValidator {
 
       LiaisonInstitution liaisonInstitution =
         liaisonInstitutionManager.getLiaisonInstitutionById(reportSynthesis.getLiaisonInstitution().getId());
+
+
+      // Validate Relevance to covid field - for Flagships and PMU
+      if (!(this.isValidString(reportSynthesis.getReportSynthesisFlagshipProgress().getOverallProgress()))
+        && reportSynthesis.getReportSynthesisFlagshipProgress().getOverallProgress().length() > 300) {
+        action.addMissingField(action.getText("annualReport2018.flagshipProgress.relevanceCovid"));
+        action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.relevanceCovid",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
 
       // Validate flagship fields
       if (this.isFlagship(liaisonInstitution)) {
