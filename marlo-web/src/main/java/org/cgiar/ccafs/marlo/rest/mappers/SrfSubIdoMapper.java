@@ -15,7 +15,9 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
+import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
+import org.cgiar.ccafs.marlo.rest.dto.DefaultFieldPrimaryDTO;
 import org.cgiar.ccafs.marlo.rest.dto.SrfSubIdoDTO;
 
 import org.mapstruct.Mapper;
@@ -41,6 +43,11 @@ public interface SrfSubIdoMapper {
   // public abstract CrpOutcomeSubIdo srfSubIdoDTOToCrpOutcomeSubIdo(SrfSubIdoDTO srfSubIdoDTO);
 
   public abstract SrfSubIdo srfSubIdoDTOToSrfSubIdo(SrfSubIdoDTO srfSubIdoDTO);
+
+  @Mappings({@Mapping(source = "crpOutcomeSubIdo.srfSubIdo.smoCode", target = "id"),
+    @Mapping(source = "crpOutcomeSubIdo.srfSubIdo.description", target = "name"),
+    @Mapping(source = "crpOutcomeSubIdo.primary", target = "primary")})
+  public abstract DefaultFieldPrimaryDTO srfSubIdoToSrfSubIdoDTO(CrpOutcomeSubIdo crpOutcomeSubIdo);
 
   @Mappings({@Mapping(source = "srfSubIdo.smoCode", target = "code"),
     @Mapping(source = "srfSubIdo.srfIdo.smoCode", target = "srfIdoDTO.code")})
