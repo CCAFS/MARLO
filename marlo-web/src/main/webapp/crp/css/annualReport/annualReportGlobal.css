@@ -1,3 +1,8 @@
+
+.checkboxDiTeAr{
+  display: inline-block !important;
+}
+
 svg > g > g:last-child {
   pointer-events: none
 }

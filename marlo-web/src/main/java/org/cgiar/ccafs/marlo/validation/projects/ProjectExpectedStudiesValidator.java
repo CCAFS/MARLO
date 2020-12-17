@@ -141,10 +141,11 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
       // Validate primary sub-IDO
       int count = 0;
       for (ProjectExpectedStudySubIdo studySubIdo : projectExpectedStudy.getSubIdos()) {
-        if (studySubIdo.getPrimary() != null && studySubIdo.getPrimary() == true) {
+        if ((studySubIdo.getPrimary() != null && studySubIdo.getPrimary()) || studySubIdo.getPrimary() == null) {
           count++;
         }
       }
+
       if (count == 0) {
         action.addMessage(action.getText("subIdos"));
         action.addMissingField("study.stratgicResultsLink.subIDOs");
@@ -235,7 +236,30 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
               action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"targets"}));
           }
         }
+        // Validate Commissioning Study
+        if (!this.isValidString(
+          projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getCommissioningStudy())
+          && this.wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
+            .getCommissioningStudy()) <= 20) {
+          action.addMessage(action.getText("Commissioning Study"));
+          action.addMissingField("study.commissioningStudy.readText");
+          action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.commissioningStudy",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+        if ((projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
+          .getCommissioningStudy() != null
+          && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getCommissioningStudy()
+            .isEmpty())
+          || (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
+            .getCommissioningStudy() == null)) {
+          action.addMessage(action.getText("Commissioning Study"));
+          action.addMissingField("study.commissioningStudy.readText");
+          action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.commissioningStudy",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
       }
+
 
     } else {
 
