@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyQuantification;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
@@ -136,6 +137,21 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
       action.addMissingField("study.stratgicResultsLink.subIDOs");
       action.getInvalidFields().put("list-expectedStudy.subIdos",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
+    } else {
+      // Validate primary sub-IDO
+      int count = 0;
+      for (ProjectExpectedStudySubIdo studySubIdo : projectExpectedStudy.getSubIdos()) {
+        if ((studySubIdo.getPrimary() != null && studySubIdo.getPrimary()) || studySubIdo.getPrimary() == null) {
+          count++;
+        }
+      }
+
+      if (count == 0) {
+        action.addMessage(action.getText("subIdos"));
+        action.addMissingField("study.stratgicResultsLink.subIDOs");
+        action.getInvalidFields().put("list-expectedStudy.subIdos",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
+      }
     }
 
     // validate Milestones
@@ -220,7 +236,30 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
               action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"targets"}));
           }
         }
+        // Validate Commissioning Study
+        if (!this.isValidString(
+          projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getCommissioningStudy())
+          && this.wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
+            .getCommissioningStudy()) <= 20) {
+          action.addMessage(action.getText("Commissioning Study"));
+          action.addMissingField("study.commissioningStudy.readText");
+          action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.commissioningStudy",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+        if ((projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
+          .getCommissioningStudy() != null
+          && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getCommissioningStudy()
+            .isEmpty())
+          || (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
+            .getCommissioningStudy() == null)) {
+          action.addMessage(action.getText("Commissioning Study"));
+          action.addMissingField("study.commissioningStudy.readText");
+          action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.commissioningStudy",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
       }
+
 
     } else {
 

@@ -164,8 +164,12 @@ public class CGSpaceClientAPI extends MetadataClientApi {
       String handleUrl = CGSPACE_HANDLE.replace("{0}", this.getId());
       RestConnectionUtil connection = new RestConnectionUtil();
       Element elementHandle = connection.getXmlRestClient(handleUrl);
-      this.setId(elementHandle.element("id").getStringValue());
-      linkRest = (REST_URL.replace("{0}", this.getId()));
+      if (elementHandle != null && elementHandle.element("UUID") != null) {
+        this.setId(elementHandle.element("UUID").getStringValue());
+        if (this.getId() != null) {
+          linkRest = (REST_URL.replace("{0}", this.getId()));
+        }
+      }
     }
 
     return linkRest;
