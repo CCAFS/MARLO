@@ -27,7 +27,14 @@ public class ReportSynthesisSrfProgress extends MarloAuditableEntity implements 
     new HashSet<ReportSynthesisSrfProgressTarget>(0);
 
 
+  private Set<ReportSynthesisSrfProgressTargetCases> reportSynthesisSrfProgressTargetsCases =
+    new HashSet<ReportSynthesisSrfProgressTargetCases>(0);
+
+
   private List<ReportSynthesisSrfProgressTarget> sloTargets;
+
+
+  private List<ReportSynthesisSrfProgressTargetCases> sloTargetsCases;
 
 
   public ReportSynthesisSrfProgress() {
@@ -56,13 +63,13 @@ public class ReportSynthesisSrfProgress extends MarloAuditableEntity implements 
     return true;
   }
 
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
-
 
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
@@ -74,8 +81,17 @@ public class ReportSynthesisSrfProgress extends MarloAuditableEntity implements 
   }
 
 
+  public Set<ReportSynthesisSrfProgressTargetCases> getReportSynthesisSrfProgressTargetsCases() {
+    return reportSynthesisSrfProgressTargetsCases;
+  }
+
   public List<ReportSynthesisSrfProgressTarget> getSloTargets() {
     return sloTargets;
+  }
+
+
+  public List<ReportSynthesisSrfProgressTargetCases> getSloTargetsCases() {
+    return sloTargetsCases;
   }
 
 
@@ -104,8 +120,19 @@ public class ReportSynthesisSrfProgress extends MarloAuditableEntity implements 
   }
 
 
+  public void setReportSynthesisSrfProgressTargetsCases(
+    Set<ReportSynthesisSrfProgressTargetCases> reportSynthesisSrfProgressTargetsCases) {
+    this.reportSynthesisSrfProgressTargetsCases = reportSynthesisSrfProgressTargetsCases;
+  }
+
+
   public void setSloTargets(List<ReportSynthesisSrfProgressTarget> sloTargets) {
     this.sloTargets = sloTargets;
+  }
+
+
+  public void setSloTargetsCases(List<ReportSynthesisSrfProgressTargetCases> sloTargetsCases) {
+    this.sloTargetsCases = sloTargetsCases;
   }
 
 
