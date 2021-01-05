@@ -53,6 +53,9 @@ public interface ReportSynthesisSrfProgressTargetCasesManager {
   public List<ReportSynthesisSrfProgressTargetCases> findAll();
 
 
+  public List<ReportSynthesisSrfProgressTargetCases> getReportSynthesisSrfProgressId(long synthesisID,
+    long srfTargetID);
+
   /**
    * This method gets a reportSynthesisSrfProgressTargetCases object by a given reportSynthesisSrfProgressTargetCases
    * identifier.
@@ -65,6 +68,7 @@ public interface ReportSynthesisSrfProgressTargetCasesManager {
 
   public ReportSynthesisSrfProgressTargetCases getSrfProgressTargetInfo(LiaisonInstitution institutions, long phaseID,
     long targetID);
+
 
   /**
    * This method saves the information of the given reportSynthesisSrfProgressTargetCases

@@ -71,6 +71,12 @@ public class ReportSynthesisSrfProgressTargetCasesManagerImpl implements ReportS
   }
 
   @Override
+  public List<ReportSynthesisSrfProgressTargetCases> getReportSynthesisSrfProgressId(long synthesisID,
+    long srfTargetID) {
+    return reportSynthesisSrfProgressTargetCasesDAO.getReportSynthesisSrfProgressId(synthesisID, srfTargetID);
+  }
+
+  @Override
   public ReportSynthesisSrfProgressTargetCases
     getReportSynthesisSrfProgressTargetCasesById(long reportSynthesisSrfProgressTargetCasesID) {
 
