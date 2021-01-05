@@ -94,8 +94,15 @@
                 [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableflagshipSynthesis" list=flagshipsReportSynthesisFlagshipProgress columns=["progressByFlagships", "detailedAnnex"] showTitle=false allInOne=true /]
               </div>
             [/#if]
-            
-            
+           
+            <div class="form-group">
+             </br>
+              [#-- 1.2.2b Relevance to Covid-19 --]
+              [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+              [@customForm.textArea name="${customName}.relevanceCovid" i18nkey="${customLabel}.relevanceCovid" help="${customLabel}.relevanceCovid.help" className="limitWords-300" helpIcon=false required=true editable=editable allowTextEditor=false /]
+             </br>
+            </div>
+
             [#-- 1.2.3 Variance from Planned Program for this year --]
             <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="${customLabel}.variance" /]</h4>
             [@customForm.helpLabel name="${customLabel}.variance.help" showIcon=false editable=editable/]

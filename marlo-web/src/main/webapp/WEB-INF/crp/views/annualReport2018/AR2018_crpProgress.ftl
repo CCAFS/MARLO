@@ -7,7 +7,7 @@
 [#assign customJS = [ 
   "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js"
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js" ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20201202"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20201217"] /]
 
 [#assign breadCrumb = [
   {"label":"${currentSection}",   "nameSpace":"",             "action":""},
@@ -134,11 +134,14 @@
       <div class="pull-right">
         [@macrosAR.evidencesPopup element=(element)!{} list=(action.getEvidenceInfo(element.id))![]  /]
       </div> 
-      <strong class="checkboxDiTeAr">[${(index)!}] - SLO Target 2022</strong>
-      <div class="checkboxDiTeAr">
-       [@customForm.checkbox name="checkboxDiTeAr-${isTemplate?string('template', index)}" value="${(arrayCheckBV[index])!}" checked=false i18nkey="No new evidence" className="checkboxDiTeArClick" required=false editable=editable /]
-      </div>
-       <br />${(element.narrative)!}
+      <strong >SLO Target 2022</strong>
+       <br />${(element.narrative)!} <br>
+       <div class="checkboxDiTeAr">
+         <div class="contentCheckBox">
+          [@customForm.checkbox name="checkboxDiTeAr-${isTemplate?string('template', index)}" value="${(arrayCheckBV[index])!}" checked=(arrayCheckBV[index]?boolean) i18nkey="No new evidence" className="checkboxDiTeArClick" required=false editable=editable /]
+
+         </div>
+       </div>
     </div>
     <div class="to-disabled-box">
       <div class="disabled-box"></div>

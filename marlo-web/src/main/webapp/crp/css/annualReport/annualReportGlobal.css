@@ -1,6 +1,19 @@
 
 .checkboxDiTeAr{
-  display: inline-block !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+}
+
+.contentCheckBox{
+  color: white;
+  font-weight: 1000;
+  background-color: #b0b99d;
+  border-radius: 5px;
+  padding: 0px 10px;
+  margin-bottom: 5px;
+  margin-top: 5px;
 }
 
 svg > g > g:last-child {
