@@ -455,5 +455,9 @@
     <mapping resource="xmls/UrlSynthesisLogs.hbm.xml" /> 
     <mapping resource="xmls/ProjectImpacts.hbm.xml" />
     <mapping resource="xmls/ProjectImpactsCategories.hbm.xml" />
+    <mapping resource="xmls/ActionAreas.hbm.xml" />
+    <mapping resource="xmls/ImpactAreas.hbm.xml" />
+    
+    
   </session-factory>
 </hibernate-configuration>
