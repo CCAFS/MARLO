@@ -108,7 +108,8 @@
             </div> 
             
             [#-- Request partner adition --]
-            [#if editable && project.projectInfo.isProjectEditLeader()]
+            [#if editable]
+            [#--if editable && project.projectInfo.isProjectEditLeader()--]
             <p id="addPartnerText" class="helpMessage">
               [@s.text name="projectPartners.addPartnerMessage.first" /]
               <a class="popup" href="[@s.url action='${crpSession}/partnerSave'][@s.param name='projectID']${project.id?c}[/@s.param][/@s.url]">
