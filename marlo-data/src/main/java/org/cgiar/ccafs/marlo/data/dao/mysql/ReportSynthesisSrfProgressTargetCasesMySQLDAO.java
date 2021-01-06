@@ -79,10 +79,11 @@ public class ReportSynthesisSrfProgressTargetCasesMySQLDAO extends
     long srfTargetID) {
     StringBuilder query = new StringBuilder();
     query.append("SELECT id as targetId FROM report_synthesis_srf_progress_targets_cases");
-    query.append("WHERE report_synthesis_srf_progress_id = ");
+    query.append(" WHERE report_synthesis_srf_progress_id = ");
     query.append(synthesisID);
     query.append(" AND srf_slo_indicator_targets_id = ");
     query.append(srfTargetID);
+
     List<Map<String, Object>> list = super.findCustomQuery(query.toString());
 
     List<ReportSynthesisSrfProgressTargetCases> reportSynthesisSrfProgressTargetsCases =
