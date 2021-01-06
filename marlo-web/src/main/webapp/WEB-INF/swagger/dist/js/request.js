@@ -211,6 +211,78 @@ function countries() {
 	});
 }
 
+function action_areas() {
+	$.ajax({
+		url: config.endpoint + '/action-areas',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"action_areas");
+			destroyTable("action_areas");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"action_areas");
+			console.log(data);
+			let nameColumns = ['Code', 'Name','Description']			
+
+			$.each(data, function (index, item) {				
+				$('#list-print-action_areas').append(
+					'<tr>' + '<td >' + item['id'] + '</td>' + '<td>'
+					+ item['name'] + '</td>'+ '<td>'
+					+ item['description'] + '</td>' + '</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("action_areas");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
+function impact_areas() {
+	$.ajax({
+		url: config.endpoint + '/impact-areas',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"impact_areas");
+			destroyTable("impact_areas");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"impact_areas");
+			console.log(data);
+			let nameColumns = ['Code', 'Name','Description']			
+
+			$.each(data, function (index, item) {				
+				$('#list-print-impact_areas').append(
+					'<tr>' + '<td >' + item['id'] + '</td>' + '<td>'
+					+ item['name'] + '</td>'+ '<td>'
+					+ item['description'] + '</td>' + '</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("impact_areas");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
 function un_regions() {
 	$.ajax({
 		url: config.endpoint + '/un-regions',
