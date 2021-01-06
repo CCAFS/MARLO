@@ -147,7 +147,7 @@
       <div class="disabled-box"></div>
     <div class="evidenceList">
       [#list arrayEvidence as evidence]
-       [@sloContribution name="" indexSlo=index index=evidence/]
+       [@sloContribution name="" ccname=customName indexSlo=index index=evidence/]
       [/#list]
     </div>
   </div>
@@ -173,7 +173,7 @@
 [/#macro]
 
 
-[#macro sloContribution cssClass="" name="" indexSlo=0 index=0]
+[#macro sloContribution ccname="" cssClass="" name="" indexSlo=0 index=0]
 <div class="slo-contribution-section ${cssClass}" style="margin-top: 10px; padding-top: 20px;">
   <div class="leftHead  sm">
     <!--<span class="index">12</span>-->
@@ -185,7 +185,7 @@
 
   [#-- Brief summary of new evidence of CGIAR contribution to relevant targets for this CRP (with citation) --]
   <div class="form-group">
-    [@customForm.textArea name="${customName}.briefSummary" value="${(sloTargetContribution.briefSummary?html)!}" i18nkey="${customLabel}.summaryEvidence" className="limitWords-150" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable allowTextEditor=true /]
+    [@customForm.textArea name="${ccname}.contribution[${index}].briefSummary" value="${(sloTargetContribution.briefSummary?html)!}" i18nkey="${customLabel}.summaryEvidence" className="limitWords-150" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable allowTextEditor=true /]
     [#-- FP Synthesis table --]
     [#if PMU]
       [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableSloTargetBriefSummary" list=otherContributions columns=["briefSummary"] crpProgramField="reportSynthesisSrfProgress.reportSynthesis.liaisonInstitution.crpProgram" showTitle=false showHeader=false showEmptyRows=false /]
@@ -193,7 +193,7 @@
   </div>
   [#-- Expected additional contribution before end of 2022 (if not already fully covered). --]
   <div class="form-group">
-    [@customForm.textArea name="${customName}.additionalContribution" value="${(sloTargetContribution.additionalContribution?html)!}" i18nkey="${customLabel}.additionalContribution" className="limitWords-100" help="${customLabel}.additionalContribution.help" helpIcon=false required=false editable=editable allowTextEditor=true /]
+    [@customForm.textArea name="${ccname}.contribution[${index}].additionalContribution" value="${(sloTargetContribution.additionalContribution?html)!}" i18nkey="${customLabel}.additionalContribution" className="limitWords-100" help="${customLabel}.additionalContribution.help" helpIcon=false required=false editable=editable allowTextEditor=true /]
     [#-- FP Synthesis table --]
     [#if PMU]
       [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableSloTargetBriefSummary" list=otherContributions columns=["additionalContribution"] crpProgramField="reportSynthesisSrfProgress.reportSynthesis.liaisonInstitution.crpProgram" showTitle=false showHeader=false showEmptyRows=false /]
