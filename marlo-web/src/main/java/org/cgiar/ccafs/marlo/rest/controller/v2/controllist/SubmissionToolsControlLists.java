@@ -20,9 +20,11 @@
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools.ActionAreasItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools.ImpactAreasIndicatorsItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools.ImpactAreasItem;
 import org.cgiar.ccafs.marlo.rest.dto.ActionAreasDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ImpactAreasDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ImpactAreasIndicatorsDTO;
 import org.cgiar.ccafs.marlo.rest.errors.NotFoundException;
 import org.cgiar.ccafs.marlo.security.Permission;
 
@@ -45,18 +47,21 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 
 @Configuration
 @PropertySource("classpath:clarisa.properties")
 @RestController
 @Api(tags = "Submission Tools Control Lists")
+@ApiIgnore
 @Named
 public class SubmissionToolsControlLists {
 
 
   private ActionAreasItem<SubmissionToolsControlLists> actionAreasItem;
   private ImpactAreasItem<SubmissionToolsControlLists> impactAreasItem;
+  private ImpactAreasIndicatorsItem<SubmissionToolsControlLists> impactAreasIndicatorsItem;
 
 
   @Autowired
@@ -64,10 +69,12 @@ public class SubmissionToolsControlLists {
 
 
   public SubmissionToolsControlLists(ActionAreasItem<SubmissionToolsControlLists> actionAreasItem,
-    ImpactAreasItem<SubmissionToolsControlLists> impactAreasItem) {
+    ImpactAreasItem<SubmissionToolsControlLists> impactAreasItem,
+    ImpactAreasIndicatorsItem<SubmissionToolsControlLists> impactAreasIndicatorsItem) {
     super();
     this.actionAreasItem = actionAreasItem;
     this.impactAreasItem = impactAreasItem;
+    this.impactAreasIndicatorsItem = impactAreasIndicatorsItem;
   }
 
   @ApiOperation(tags = {"Submission Tools Control Lists"},
@@ -103,6 +110,25 @@ public class SubmissionToolsControlLists {
   }
 
   @ApiOperation(tags = {"Submission Tools Control Lists"},
+    value = "${SubmissionToolsControlLists.impact-areas-indicator.code.value}",
+    response = ImpactAreasIndicatorsDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/impact-areas-indicator/{code}", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<ImpactAreasIndicatorsDTO> findImpactAreaIndicatorById(
+    @ApiParam(value = "${SubmissionToolsControlLists.impact-areas-indicator.code.param.code}",
+      required = true) @PathVariable Long code) {
+
+    ResponseEntity<ImpactAreasIndicatorsDTO> response =
+      this.impactAreasIndicatorsItem.findImpactAreaIndicatorById(code);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404",
+        this.env.getProperty("SubmissionToolsControlLists.impact-areas-indicator.code.404"));
+    }
+    return response;
+  }
+
+  @ApiOperation(tags = {"Submission Tools Control Lists"},
     value = "${SubmissionToolsControlLists.action-areas.all.value}", response = ActionAreasDTO.class,
     responseContainer = "List")
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
@@ -118,6 +144,16 @@ public class SubmissionToolsControlLists {
   @RequestMapping(value = "/impact-areas", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public List<ImpactAreasDTO> getAllImpactAreas() {
     return this.impactAreasItem.getAllActionAreas();
+  }
+
+  @ApiOperation(tags = {"Submission Tools Control Lists"},
+    value = "${SubmissionToolsControlLists.impact-areas-indicators.all.value}",
+    response = ImpactAreasIndicatorsDTO.class, responseContainer = "List")
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/impact-areas-indicators", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<ImpactAreasIndicatorsDTO> getAllImpactAreasIndicators() {
+    return this.impactAreasIndicatorsItem.getAllImpactAreasIndicators();
   }
 
 
