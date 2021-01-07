@@ -39,6 +39,9 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
   private Set<ProgressTargetCaseGeographicScope> progressTargetCaseGeographicScopes =
     new HashSet<ProgressTargetCaseGeographicScope>(0);
   private List<ProgressTargetCaseGeographicScope> geographicScopes;
+  private Set<ProgressTargetCaseGeographicRegion> progressTargetCaseGeographicRegions =
+    new HashSet<ProgressTargetCaseGeographicRegion>(0);
+  private List<ProgressTargetCaseGeographicRegion> geographicRegions;
 
   public ReportSynthesisSrfProgressTargetCases() {
   }
@@ -54,6 +57,11 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
   }
 
 
+  public List<ProgressTargetCaseGeographicRegion> getGeographicRegions() {
+    return geographicRegions;
+  }
+
+
   public List<ProgressTargetCaseGeographicScope> getGeographicScopes() {
     return geographicScopes;
   }
@@ -63,12 +71,16 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
     return isContributing;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
+  }
+
+
+  public Set<ProgressTargetCaseGeographicRegion> getProgressTargetCaseGeographicRegions() {
+    return progressTargetCaseGeographicRegions;
   }
 
   public Set<ProgressTargetCaseGeographicScope> getProgressTargetCaseGeographicScopes() {
@@ -91,12 +103,21 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
     this.briefSummary = briefSummary;
   }
 
+  public void setGeographicRegions(List<ProgressTargetCaseGeographicRegion> geographicRegions) {
+    this.geographicRegions = geographicRegions;
+  }
+
   public void setGeographicScopes(List<ProgressTargetCaseGeographicScope> geographicScopes) {
     this.geographicScopes = geographicScopes;
   }
 
   public void setIsContributing(Boolean isContributing) {
     this.isContributing = isContributing;
+  }
+
+  public void setProgressTargetCaseGeographicRegions(
+    Set<ProgressTargetCaseGeographicRegion> progressTargetCaseGeographicRegions) {
+    this.progressTargetCaseGeographicRegions = progressTargetCaseGeographicRegions;
   }
 
   public void
