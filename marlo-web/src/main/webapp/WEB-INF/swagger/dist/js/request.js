@@ -283,6 +283,43 @@ setTimeout(() => {
 	});
 }
 
+function impact_areas_indicators() {
+	$.ajax({
+		url: config.endpoint + '/impact-areas-indicators',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"impact_areas_indicators");
+			destroyTable("impact_areas_indicators");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"impact_areas_indicators");
+			console.log(data);
+			let nameColumns = ['Code', 'Name','Description']			
+
+			$.each(data, function (index, item) {				
+				$('#list-print-impact_areas_indicators').append(
+					'<tr>' + '<td >' + item['indicatorId'] + '</td>' + '<td>'
+					+ item['indicatorStatement'] + '</td>'+ '<td>'
+					+ item['impactAreaId'] + '</td>' +'<td>'
+					+ item['impactAreaName'] + '</td>' + '</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("impact_areas_indicators");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
 function un_regions() {
 	$.ajax({
 		url: config.endpoint + '/un-regions',

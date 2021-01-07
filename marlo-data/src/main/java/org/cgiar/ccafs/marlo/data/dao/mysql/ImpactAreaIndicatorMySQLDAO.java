@@ -17,53 +17,40 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.rest.dto;
+package org.cgiar.ccafs.marlo.data.dao.mysql;
 
-import javax.validation.constraints.NotNull;
+import org.cgiar.ccafs.marlo.data.dao.ImpactAreaIndicatorDAO;
+import org.cgiar.ccafs.marlo.data.model.ImpactAreaIndicator;
 
-import io.swagger.annotations.ApiModelProperty;
+import java.util.List;
 
-public class ImpactAreasDTO {
+import javax.inject.Inject;
+import javax.inject.Named;
 
-  @ApiModelProperty(notes = "Action area ID", position = 1)
-  @NotNull
-  private Long id;
+import org.hibernate.SessionFactory;
 
+@Named
+public class ImpactAreaIndicatorMySQLDAO extends AbstractMarloDAO<ImpactAreaIndicator, Long>
+  implements ImpactAreaIndicatorDAO {
 
-  @ApiModelProperty(notes = "Action area name", position = 2)
-  private String name;
-
-
-  @ApiModelProperty(notes = "Action area description", position = 3)
-  private String description;
-
-
-  public String getDescription() {
-    return description;
+  @Inject
+  public ImpactAreaIndicatorMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
-
-  public Long getId() {
-    return id;
+  @Override
+  public List<ImpactAreaIndicator> findAll() {
+    String query = "from " + ImpactAreaIndicator.class.getName();
+    List<ImpactAreaIndicator> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
   }
 
-
-  public String getName() {
-    return name;
+  @Override
+  public ImpactAreaIndicator getImpactAreaIndicatorById(long id) {
+    return super.find(ImpactAreaIndicator.class, id);
   }
 
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-
-  public void setName(String name) {
-    this.name = name;
-  }
 }

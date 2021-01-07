@@ -17,53 +17,16 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.rest.dto;
+package org.cgiar.ccafs.marlo.data.manager;
 
-import javax.validation.constraints.NotNull;
+import org.cgiar.ccafs.marlo.data.model.ImpactAreaIndicator;
 
-import io.swagger.annotations.ApiModelProperty;
+import java.util.List;
 
-public class ImpactAreasDTO {
+public interface ImpactAreaIndicatorManager {
 
-  @ApiModelProperty(notes = "Action area ID", position = 1)
-  @NotNull
-  private Long id;
+  public List<ImpactAreaIndicator> findAll();
 
+  public ImpactAreaIndicator getImpactAreaIndicatorById(long id);
 
-  @ApiModelProperty(notes = "Action area name", position = 2)
-  private String name;
-
-
-  @ApiModelProperty(notes = "Action area description", position = 3)
-  private String description;
-
-
-  public String getDescription() {
-    return description;
-  }
-
-
-  public Long getId() {
-    return id;
-  }
-
-
-  public String getName() {
-    return name;
-  }
-
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-
-  public void setName(String name) {
-    this.name = name;
-  }
 }

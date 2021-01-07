@@ -28,6 +28,18 @@ public class ImpactArea extends MarloAuditableEntity implements java.io.Serializ
   private String name;
   private String description;
 
+  public ImpactArea() {
+    super();
+  }
+
+
+  public ImpactArea(String name, String description) {
+    super();
+    this.name = name;
+    this.description = description;
+  }
+
+
   public String getDescription() {
     return description;
   }

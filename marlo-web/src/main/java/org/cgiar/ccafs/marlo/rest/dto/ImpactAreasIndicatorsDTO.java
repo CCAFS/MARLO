@@ -23,47 +23,58 @@ import javax.validation.constraints.NotNull;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class ImpactAreasDTO {
+public class ImpactAreasIndicatorsDTO {
 
-  @ApiModelProperty(notes = "Action area ID", position = 1)
+
+  @ApiModelProperty(notes = "Impact Area Indicator ID", position = 1)
   @NotNull
-  private Long id;
+  public long indicatorId;
 
 
-  @ApiModelProperty(notes = "Action area name", position = 2)
-  private String name;
+  @ApiModelProperty(notes = "Indicator Statement", position = 2)
+  public String indicatorStatement;
 
 
-  @ApiModelProperty(notes = "Action area description", position = 3)
-  private String description;
+  @ApiModelProperty(notes = "Impact Area ID", position = 3)
+  public long impactAreaId;
 
 
-  public String getDescription() {
-    return description;
+  @ApiModelProperty(notes = "Impact Area Name", position = 4)
+  public String impactAreaName;
+
+
+  public long getImpactAreaId() {
+    return impactAreaId;
   }
 
 
-  public Long getId() {
-    return id;
+  public String getImpactAreaName() {
+    return impactAreaName;
   }
 
 
-  public String getName() {
-    return name;
+  public long getIndicatorId() {
+    return indicatorId;
   }
 
 
-  public void setDescription(String description) {
-    this.description = description;
+  public String getIndicatorStatement() {
+    return indicatorStatement;
   }
 
-
-  public void setId(Long id) {
-    this.id = id;
+  public void setImpactAreaId(long impactAreaId) {
+    this.impactAreaId = impactAreaId;
   }
 
+  public void setImpactAreaName(String impactAreaName) {
+    this.impactAreaName = impactAreaName;
+  }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setIndicatorId(long indicatorId) {
+    this.indicatorId = indicatorId;
+  }
+
+  public void setIndicatorStatement(String indicatorStatement) {
+    this.indicatorStatement = indicatorStatement;
   }
 }

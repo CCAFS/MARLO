@@ -17,53 +17,46 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.rest.dto;
+package org.cgiar.ccafs.marlo.data.model;
 
-import javax.validation.constraints.NotNull;
-
-import io.swagger.annotations.ApiModelProperty;
-
-public class ImpactAreasDTO {
-
-  @ApiModelProperty(notes = "Action area ID", position = 1)
-  @NotNull
-  private Long id;
+public class ImpactAreaIndicator extends MarloAuditableEntity implements java.io.Serializable {
 
 
-  @ApiModelProperty(notes = "Action area name", position = 2)
-  private String name;
+  private static final long serialVersionUID = 4099172748348781498L;
 
 
-  @ApiModelProperty(notes = "Action area description", position = 3)
-  private String description;
+  private String indicatorStatement;
+  private ImpactArea impactArea;
 
-
-  public String getDescription() {
-    return description;
+  public ImpactAreaIndicator() {
+    super();
   }
 
 
-  public Long getId() {
-    return id;
+  public ImpactAreaIndicator(String indicatorStatement, ImpactArea impactArea) {
+    super();
+    this.indicatorStatement = indicatorStatement;
+    this.impactArea = impactArea;
   }
 
 
-  public String getName() {
-    return name;
+  public ImpactArea getImpactArea() {
+    return impactArea;
   }
 
 
-  public void setDescription(String description) {
-    this.description = description;
+  public String getIndicatorStatement() {
+    return indicatorStatement;
   }
 
 
-  public void setId(Long id) {
-    this.id = id;
+  public void setImpactArea(ImpactArea impactArea) {
+    this.impactArea = impactArea;
   }
 
 
-  public void setName(String name) {
-    this.name = name;
+  public void setIndicatorStatement(String indicatorStatement) {
+    this.indicatorStatement = indicatorStatement;
   }
+
 }
