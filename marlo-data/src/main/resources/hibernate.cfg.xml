@@ -460,6 +460,7 @@
     <mapping resource="xmls/ProjectImpacts.hbm.xml" />
     <mapping resource="xmls/ProjectImpactsCategories.hbm.xml" />
     <mapping resource="xmls/ProgressTargetCaseGeographicScopes.hbm.xml" />
+    <mapping resource="xmls/ProgressTargetCaseGeographicRegions.hbm.xml" />
     
   </session-factory>
 </hibernate-configuration>
