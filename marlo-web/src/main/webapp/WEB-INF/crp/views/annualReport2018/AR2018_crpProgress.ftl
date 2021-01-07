@@ -152,7 +152,7 @@
     </div>
   </div>
 
-  <div class="btn-addEvidence bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add evidence</div>
+  <div class="btn-addEvidence bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add contribution</div>
     
     
     
