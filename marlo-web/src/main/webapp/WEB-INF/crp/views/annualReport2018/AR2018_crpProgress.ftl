@@ -19,7 +19,7 @@
 [#import "/WEB-INF/crp/views/annualReport2018/macros-AR2018.ftl" as macrosAR /]
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
-
+[#import "/WEB-INF/global/macros/ARMacros.ftl" as arMacros /]
 [#assign customName= "reportSynthesis.reportSynthesisSrfProgress" /]
 [#assign customLabel= "annualReport2018.${currentStage}" /]
 
@@ -182,7 +182,8 @@
   </div>
 
   <div class="btn-removeEvidence removeElement sm" title="Remove Evidence"></div>
-
+ [@arMacros.deliverableGeographicScope name="${ccname}.contribution[${index}]"  /]
+<hr>
   [#-- Brief summary of new evidence of CGIAR contribution to relevant targets for this CRP (with citation) --]
   <div class="form-group">
     [@customForm.textArea name="${ccname}.contribution[${index}].briefSummary" value="${(sloTargetContribution.briefSummary?html)!}" i18nkey="${customLabel}.summaryEvidence" className="limitWords-150" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable allowTextEditor=true /]
