@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hibernate-mapping>
+<class name="org.cgiar.ccafs.marlo.data.model.SDGIndicators" table="sdg_indicators"
+    optimistic-lock="none">
+      <id name="id" type="java.lang.Long">
+      <column name="id" />
+      <generator class="identity" />
+    </id>
+    <property name="UNSDIndicatorCode" type="string">
+      <column name="unsd_indicator_codes" length="45" not-null="true" />
+    </property>
+    <property name="indicatorCode" type="string">
+      <column name="sdg_indicator_codes" length="45" not-null="true" />
+    </property>
+    <property name="indicator" type="string">
+      <column name="sdg_indicator" length="400" not-null="true" />
+    </property>
+    <many-to-one name="sdgTarget" class="org.cgiar.ccafs.marlo.data.model.SDG"
+      fetch="select">
+      <column name="sdg_id" not-null="true" />
+    </many-to-one>
+  </class>
+</hibernate-mapping>

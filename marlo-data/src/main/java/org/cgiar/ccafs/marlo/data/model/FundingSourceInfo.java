@@ -437,6 +437,7 @@ public class FundingSourceInfo extends MarloAuditableEntity implements java.io.S
     this.setFinanceCode(fundingSourceInfoUpdate.getFinanceCode());
     this.setGlobal(fundingSourceInfoUpdate.isGlobal());
     this.setDirectDonor(fundingSourceInfoUpdate.getDirectDonor());
+    this.setLeadCenter(fundingSourceInfoUpdate.getLeadCenter());
     this.setPartnerDivision(fundingSourceInfoUpdate.getPartnerDivision());
     this.setW1w2(fundingSourceInfoUpdate.getW1w2());
     this.setFileResearch(fundingSourceInfoUpdate.getFileResearch());

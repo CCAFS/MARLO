@@ -211,6 +211,115 @@ function countries() {
 	});
 }
 
+function action_areas() {
+	$.ajax({
+		url: config.endpoint + '/action-areas',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"action_areas");
+			destroyTable("action_areas");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"action_areas");
+			console.log(data);
+			let nameColumns = ['Code', 'Name','Description']			
+
+			$.each(data, function (index, item) {				
+				$('#list-print-action_areas').append(
+					'<tr>' + '<td >' + item['id'] + '</td>' + '<td>'
+					+ item['name'] + '</td>'+ '<td>'
+					+ item['description'] + '</td>' + '</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("action_areas");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
+function impact_areas() {
+	$.ajax({
+		url: config.endpoint + '/impact-areas',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"impact_areas");
+			destroyTable("impact_areas");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"impact_areas");
+			console.log(data);
+			let nameColumns = ['Code', 'Name','Description']			
+
+			$.each(data, function (index, item) {				
+				$('#list-print-impact_areas').append(
+					'<tr>' + '<td >' + item['id'] + '</td>' + '<td>'
+					+ item['name'] + '</td>'+ '<td>'
+					+ item['description'] + '</td>' + '</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("impact_areas");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
+function impact_areas_indicators() {
+	$.ajax({
+		url: config.endpoint + '/impact-areas-indicators',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"impact_areas_indicators");
+			destroyTable("impact_areas_indicators");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"impact_areas_indicators");
+			console.log(data);
+			let nameColumns = ['Code', 'Name','Description']			
+
+			$.each(data, function (index, item) {				
+				$('#list-print-impact_areas_indicators').append(
+					'<tr>' + '<td >' + item['indicatorId'] + '</td>' + '<td>'
+					+ item['indicatorStatement'] + '</td>'+ '<td>'
+					+ item['impactAreaId'] + '</td>' +'<td>'
+					+ item['impactAreaName'] + '</td>' + '</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("impact_areas_indicators");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
 function un_regions() {
 	$.ajax({
 		url: config.endpoint + '/un-regions',
@@ -261,7 +370,7 @@ function institutions() {
 			success: function (data) {
 				// ********************************************* */
 				// print data
-				testInstitution(data);
+				// testInstitution(data);
 				// showFilter();
 				manageSpinner(false,"institutions");
 				console.log(data);
@@ -305,6 +414,7 @@ function institutions() {
 									// class="nomar"><strong>name:</strong> '
 									// + item['countryOfficeDTO']['0'].name
 									// + '</p>'
+									
 									+ '<p class="nomar"><strong>Headquarter: </strong> '
 									+ getHeadquarter(item['countryOfficeDTO'])
 									+ '</p>'
@@ -317,7 +427,7 @@ function institutions() {
 									// END Office Location
 									+ item['name']
 									+ '</td>'									
-									+ `<td  data-toggle="tooltip" data-placement="top" title="${item['websiteLink']}"><a href="${item['websiteLink']}" target="_blank">website link</a></td>`
+									+ `<td class="link-Web"  data-toggle="tooltip" data-placement="top" title="${item['websiteLink']}"><a  href="${item['websiteLink']}" target="_blank">${item['websiteLink']}</a></td>`
 									+ '</tr>')
 						});
 				updateDataTable("institutions");
