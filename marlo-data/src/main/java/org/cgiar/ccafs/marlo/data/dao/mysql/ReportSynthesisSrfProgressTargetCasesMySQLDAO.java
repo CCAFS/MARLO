@@ -19,7 +19,9 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.ReportSynthesisSrfProgressTargetCasesDAO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTargetCases;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -27,7 +29,8 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class ReportSynthesisSrfProgressTargetCasesMySQLDAO extends AbstractMarloDAO<ReportSynthesisSrfProgressTargetCases, Long> implements ReportSynthesisSrfProgressTargetCasesDAO {
+public class ReportSynthesisSrfProgressTargetCasesMySQLDAO extends
+  AbstractMarloDAO<ReportSynthesisSrfProgressTargetCases, Long> implements ReportSynthesisSrfProgressTargetCasesDAO {
 
 
   @Inject
@@ -37,14 +40,16 @@ public class ReportSynthesisSrfProgressTargetCasesMySQLDAO extends AbstractMarlo
 
   @Override
   public void deleteReportSynthesisSrfProgressTargetCases(long reportSynthesisSrfProgressTargetCasesId) {
-    ReportSynthesisSrfProgressTargetCases reportSynthesisSrfProgressTargetCases = this.find(reportSynthesisSrfProgressTargetCasesId);
+    ReportSynthesisSrfProgressTargetCases reportSynthesisSrfProgressTargetCases =
+      this.find(reportSynthesisSrfProgressTargetCasesId);
     reportSynthesisSrfProgressTargetCases.setActive(false);
     this.update(reportSynthesisSrfProgressTargetCases);
   }
 
   @Override
   public boolean existReportSynthesisSrfProgressTargetCases(long reportSynthesisSrfProgressTargetCasesID) {
-    ReportSynthesisSrfProgressTargetCases reportSynthesisSrfProgressTargetCases = this.find(reportSynthesisSrfProgressTargetCasesID);
+    ReportSynthesisSrfProgressTargetCases reportSynthesisSrfProgressTargetCases =
+      this.find(reportSynthesisSrfProgressTargetCasesID);
     if (reportSynthesisSrfProgressTargetCases == null) {
       return false;
     }
@@ -70,7 +75,36 @@ public class ReportSynthesisSrfProgressTargetCasesMySQLDAO extends AbstractMarlo
   }
 
   @Override
-  public ReportSynthesisSrfProgressTargetCases save(ReportSynthesisSrfProgressTargetCases reportSynthesisSrfProgressTargetCases) {
+  public List<ReportSynthesisSrfProgressTargetCases> getReportSynthesisSrfProgressId(long synthesisID,
+    long srfTargetID) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT id as targetId FROM report_synthesis_srf_progress_targets_cases");
+    query.append(" WHERE report_synthesis_srf_progress_id = ");
+    query.append(synthesisID);
+    query.append(" AND srf_slo_indicator_targets_id = ");
+    query.append(srfTargetID);
+
+    List<Map<String, Object>> list = super.findCustomQuery(query.toString());
+
+    List<ReportSynthesisSrfProgressTargetCases> reportSynthesisSrfProgressTargetsCases =
+      new ArrayList<ReportSynthesisSrfProgressTargetCases>();
+    for (Map<String, Object> map : list) {
+      String targetId = map.get("targetId").toString();
+      long longTargetId = Long.parseLong(targetId);
+      ReportSynthesisSrfProgressTargetCases reportSynthesisSrfProgressTargetCases = this.find(longTargetId);
+      reportSynthesisSrfProgressTargetsCases.add(reportSynthesisSrfProgressTargetCases);
+    }
+    if (reportSynthesisSrfProgressTargetsCases.size() > 0) {
+      return reportSynthesisSrfProgressTargetsCases;
+    } else {
+      return null;
+    }
+
+  }
+
+  @Override
+  public ReportSynthesisSrfProgressTargetCases
+    save(ReportSynthesisSrfProgressTargetCases reportSynthesisSrfProgressTargetCases) {
     if (reportSynthesisSrfProgressTargetCases.getId() == null) {
       super.saveEntity(reportSynthesisSrfProgressTargetCases);
     } else {

@@ -40,7 +40,8 @@ public interface ReportSynthesisSrfProgressTargetCasesDAO {
   public boolean existReportSynthesisSrfProgressTargetCases(long reportSynthesisSrfProgressTargetCasesID);
 
   /**
-   * This method gets a reportSynthesisSrfProgressTargetCases object by a given reportSynthesisSrfProgressTargetCases identifier.
+   * This method gets a reportSynthesisSrfProgressTargetCases object by a given reportSynthesisSrfProgressTargetCases
+   * identifier.
    * 
    * @param reportSynthesisSrfProgressTargetCasesID is the reportSynthesisSrfProgressTargetCases identifier.
    * @return a ReportSynthesisSrfProgressTargetCases object.
@@ -54,14 +55,20 @@ public interface ReportSynthesisSrfProgressTargetCasesDAO {
    */
   public List<ReportSynthesisSrfProgressTargetCases> findAll();
 
+  public List<ReportSynthesisSrfProgressTargetCases> getReportSynthesisSrfProgressId(long synthesisID,
+    long srfTargetID);
+
 
   /**
    * This method saves the information of the given reportSynthesisSrfProgressTargetCases
    * 
-   * @param reportSynthesisSrfProgressTargetCases - is the reportSynthesisSrfProgressTargetCases object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the reportSynthesisSrfProgressTargetCases was
+   * @param reportSynthesisSrfProgressTargetCases - is the reportSynthesisSrfProgressTargetCases object with the new
+   *        information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         reportSynthesisSrfProgressTargetCases was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ReportSynthesisSrfProgressTargetCases save(ReportSynthesisSrfProgressTargetCases reportSynthesisSrfProgressTargetCases);
+  public ReportSynthesisSrfProgressTargetCases
+    save(ReportSynthesisSrfProgressTargetCases reportSynthesisSrfProgressTargetCases);
 }

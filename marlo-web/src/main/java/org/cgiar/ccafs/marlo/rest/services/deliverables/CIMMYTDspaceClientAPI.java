@@ -26,6 +26,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
@@ -51,8 +53,11 @@ public class CIMMYTDspaceClientAPI extends MetadataClientApi {
 
   private final String Dataverse_OAI_PMH_HANDLE =
     "http://repository.cimmyt.org/oai/request?verb=GetRecord&identifier=oai:repository.cimmyt.org:{0}&metadataPrefix=oai_dc";
-  private final String CYMMYT_DSPACE_URL = "http://repository.cimmyt.org/xmlui/handle/";
-  private final String CYMMYT_DSPACE_HTTPS_URL = "https://repository.cimmyt.org/xmlui/handle/";
+
+  private final String CYMMYT_DSPACE_URL_REGEX =
+    "((http?|https)://)?((W|w){3}.)?(repository.cimmyt.org/)(xmlui/)?(handle/)";
+  private final Pattern CYMMYT_DSPACE_URL_PATTERN = Pattern.compile(CYMMYT_DSPACE_URL_REGEX);
+
   private RestConnectionUtil xmlReaderConnectionUtil;
 
   private Map<String, String> coverterAtrributes;
@@ -216,13 +221,12 @@ public class CIMMYTDspaceClientAPI extends MetadataClientApi {
    */
   @Override
   public String parseLink(String link) {
-    // if the link contains http://repository.cimmyt.org/xmlui/handle/ we remove it from the link
-    if (link.contains(CYMMYT_DSPACE_URL)) {
-      this.setId(link.replace(CYMMYT_DSPACE_URL, ""));
+    Matcher matcher = CYMMYT_DSPACE_URL_PATTERN.matcher(link);
+    // if the link contains the pattern, we remove the matched region from the link
+    if (matcher.lookingAt()) {
+      this.setId(link.replace(matcher.group(0), ""));
     }
-    if (link.contains(CYMMYT_DSPACE_HTTPS_URL)) {
-      this.setId(link.replace(CYMMYT_DSPACE_HTTPS_URL, ""));
-    }
+
     String linkRest = (Dataverse_OAI_PMH_HANDLE.replace("{0}", this.getId()));
     return linkRest;
   }

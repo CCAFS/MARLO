@@ -50,6 +50,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpProgressTarget;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTarget;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTargetCases;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget;
 import org.cgiar.ccafs.marlo.data.model.StudiesStatusPlanningEnum;
@@ -325,6 +326,64 @@ public class SrfProgressAction extends BaseAction {
    * @param markerID
    * @return
    */
+  public List<ReportSynthesisSrfProgressTargetCases> getTargetsCasesFlagshipInfo(long targetID) {
+
+    List<ReportSynthesisSrfProgressTargetCases> targets = new ArrayList<ReportSynthesisSrfProgressTargetCases>();
+
+    ReportSynthesisSrfProgressTargetCases target = new ReportSynthesisSrfProgressTargetCases();
+
+    // Get the list of liaison institutions Flagships and PMU.
+    List<LiaisonInstitution> liaisonInstitutionsFg = loggedCrp.getLiaisonInstitutions().stream()
+      .filter(c -> c.getCrpProgram() != null && c.isActive()
+        && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toList());
+    liaisonInstitutionsFg.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
+
+    for (LiaisonInstitution liaisonInstitution : liaisonInstitutionsFg) {
+      target = reportSynthesisSrfProgressTargetCasesManager.getSrfProgressTargetInfo(liaisonInstitution,
+        this.getActualPhase().getId(), targetID);
+      // target = reportSynthesisSrfProgressTargetManager.getSrfProgressTargetInfo(liaisonInstitution,
+      // this.getActualPhase().getId(), targetID);
+      targets.add(target);
+    }
+    return targets;
+  }
+
+  /**
+   * Get the information for the Slo targets cases in the form
+   * 
+   * @param markerID
+   * @return
+   */
+  public List<ReportSynthesisSrfProgressTargetCases> getTargetsCasesInfo(long targetID) {
+    List<ReportSynthesisSrfProgressTargetCases> targets = new ArrayList<>();
+    if (this.isDraft()) {
+      // Cgiar Cross Cutting Markers Autosave
+      if (reportSynthesis.getReportSynthesisSrfProgress().getSloTargetsCases() != null) {
+        for (ReportSynthesisSrfProgressTargetCases reportSynthesisSrfProgressTargetsCases : reportSynthesis
+          .getReportSynthesisSrfProgress().getSloTargetsCases()) {
+          if (reportSynthesisSrfProgressTargetsCases.getSrfSloIndicatorTarget().getId().equals(targetID)) {
+            targets.add(reportSynthesisSrfProgressTargetsCases);
+          }
+        }
+      }
+    } else {
+      targets = reportSynthesisSrfProgressTargetCasesManager.getReportSynthesisSrfProgressId(synthesisID, targetID);
+    }
+    if (targets != null) {
+      return targets;
+    } else {
+      return null;
+    }
+  }
+
+
+  /**
+   * Get the information list for the Flagships Slo Targets Information in the form
+   *
+   * @param markerID
+   * @return
+   */
   public List<ReportSynthesisSrfProgressTarget> getTargetsFlagshipInfo(long targetID) {
 
     List<ReportSynthesisSrfProgressTarget> targets = new ArrayList<ReportSynthesisSrfProgressTarget>();
@@ -347,7 +406,6 @@ public class SrfProgressAction extends BaseAction {
     }
     return targets;
   }
-
 
   /**
    * Get the information for the Slo targets in the form
@@ -547,7 +605,12 @@ public class SrfProgressAction extends BaseAction {
               .getReportSynthesisSrfProgressTargets().stream().filter(t -> t.isActive()).collect(Collectors.toList())));
         }
 
-
+        // Srf Targets cases List
+        if (reportSynthesis.getReportSynthesisSrfProgress().getReportSynthesisSrfProgressTargetsCases() != null) {
+          reportSynthesis.getReportSynthesisSrfProgress().setSloTargetsCases(
+            new ArrayList<>(reportSynthesis.getReportSynthesisSrfProgress().getReportSynthesisSrfProgressTargetsCases()
+              .stream().filter(t -> t.isActive()).collect(Collectors.toList())));
+        }
       }
     }
 
@@ -598,8 +661,8 @@ public class SrfProgressAction extends BaseAction {
       ReportSynthesisSrfProgress srfProgressDB =
         reportSynthesisManager.getReportSynthesisById(synthesisID).getReportSynthesisSrfProgress();
 
-      this.saveSrfTargets(srfProgressDB);
-
+      // this.saveSrfTargets(srfProgressDB);
+      this.saveSrfTargetsCases(srfProgressDB);
 
       srfProgressDB.setSummary(reportSynthesis.getReportSynthesisSrfProgress().getSummary());
 
@@ -690,14 +753,18 @@ public class SrfProgressAction extends BaseAction {
           ReportSynthesisSrfProgressTarget srfTargetPrev =
             reportSynthesisSrfProgressTargetManager.getReportSynthesisSrfProgressTargetById(srfTarget.getId());
 
-          if (!srfTargetPrev.getBirefSummary().equals(srfTarget.getBirefSummary())) {
-            hasChanges = true;
-            srfTargetPrev.setBirefSummary(srfTarget.getBirefSummary());
-          }
+          if (srfTargetPrev != null) {
+            if (srfTargetPrev.getBirefSummary() != null
+              && !srfTargetPrev.getBirefSummary().equals(srfTarget.getBirefSummary())) {
+              hasChanges = true;
+              srfTargetPrev.setBirefSummary(srfTarget.getBirefSummary());
+            }
 
-          if (!srfTargetPrev.getAdditionalContribution().equals(srfTarget.getAdditionalContribution())) {
-            hasChanges = true;
-            srfTargetPrev.setAdditionalContribution(srfTarget.getAdditionalContribution());
+            if (srfTargetPrev.getAdditionalContribution() != null
+              && !srfTargetPrev.getAdditionalContribution().equals(srfTarget.getAdditionalContribution())) {
+              hasChanges = true;
+              srfTargetPrev.setAdditionalContribution(srfTarget.getAdditionalContribution());
+            }
           }
 
           if (hasChanges) {
@@ -711,6 +778,61 @@ public class SrfProgressAction extends BaseAction {
 
   }
 
+  /**
+   * Save Crp Progress Srf Targets Cases Information
+   * 
+   * @param crpProgressDB
+   */
+  public void saveSrfTargetsCases(ReportSynthesisSrfProgress srfProgressDB) {
+    // Save form Information
+    if (reportSynthesis.getReportSynthesisSrfProgress().getSloTargets() != null) {
+      for (ReportSynthesisSrfProgressTargetCases srfTarget : reportSynthesis.getReportSynthesisSrfProgress()
+        .getSloTargetsCases()) {
+        if (srfTarget.getId() == null) {
+          ReportSynthesisSrfProgressTargetCases srfTargetSave = new ReportSynthesisSrfProgressTargetCases();
+
+          srfTargetSave.setReportSynthesisSrfProgress(srfProgressDB);
+
+          SrfSloIndicatorTarget sloIndicator =
+            srfSloIndicatorTargetManager.getSrfSloIndicatorTargetById(srfTarget.getSrfSloIndicatorTarget().getId());
+
+          srfTargetSave.setBriefSummary(srfTarget.getBriefSummary());
+          srfTargetSave.setAdditionalContribution(srfTarget.getAdditionalContribution());
+
+          srfTargetSave.setSrfSloIndicatorTarget(sloIndicator);
+          srfTargetSave.setActive(true);
+
+          reportSynthesisSrfProgressTargetCasesManager.saveReportSynthesisSrfProgressTargetCases(srfTargetSave);
+        } else {
+
+          boolean hasChanges = false;
+          ReportSynthesisSrfProgressTargetCases srfTargetPrev = reportSynthesisSrfProgressTargetCasesManager
+            .getReportSynthesisSrfProgressTargetCasesById(srfTarget.getId());
+
+          if (srfTargetPrev != null) {
+            if (srfTargetPrev.getBriefSummary() != null
+              && !srfTargetPrev.getBriefSummary().equals(srfTarget.getBriefSummary())) {
+              hasChanges = true;
+              srfTargetPrev.setBriefSummary(srfTarget.getBriefSummary());
+            }
+
+            if (srfTargetPrev.getAdditionalContribution() != null
+              && !srfTargetPrev.getAdditionalContribution().equals(srfTarget.getAdditionalContribution())) {
+              hasChanges = true;
+              srfTargetPrev.setAdditionalContribution(srfTarget.getAdditionalContribution());
+            }
+          }
+
+          if (hasChanges) {
+            srfTargetPrev.setActive(true);
+            reportSynthesisSrfProgressTargetCasesManager.saveReportSynthesisSrfProgressTargetCases(srfTargetPrev);
+          }
+        }
+      }
+    }
+
+
+  }
 
   public void setFlagshipSrfProgress(List<ReportSynthesisSrfProgress> flagshipSrfProgress) {
     this.flagshipSrfProgress = flagshipSrfProgress;
