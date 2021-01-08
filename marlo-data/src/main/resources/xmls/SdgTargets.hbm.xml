@@ -2,19 +2,19 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
-<class name="org.cgiar.ccafs.marlo.data.model.SDGTargets" table="sdg_targets"
+<class name="org.cgiar.ccafs.marlo.data.model.SdgTargets" table="sdg_targets"
     optimistic-lock="none">
       <id name="id" type="java.lang.Long">
       <column name="id" />
-      <generator class="identity" />
+     <generator class="assigned" />
     </id>
     <property name="target_code" type="string">
-      <column name="sdg_target_code" length="5" not-null="true" />
+      <column name="sdg_target_code" not-null="true" />
     </property>
     <property name="target" type="string">
-      <column name="sdg_target" length="50" not-null="true" />
+      <column name="sdg_target"  not-null="true" />
     </property>
-    <many-to-one name="sdg" class="org.cgiar.ccafs.marlo.data.model.SDGIndicators"
+    <many-to-one name="sdg" class="org.cgiar.ccafs.marlo.data.model.Sdg"
       fetch="select">
       <column name="sdg_target_id" not-null="true" />
     </many-to-one>

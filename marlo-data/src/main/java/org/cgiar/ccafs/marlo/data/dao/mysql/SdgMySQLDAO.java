@@ -17,57 +17,39 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.data.model;
+package org.cgiar.ccafs.marlo.data.dao.mysql;
 
+import org.cgiar.ccafs.marlo.data.dao.SdgDAO;
+import org.cgiar.ccafs.marlo.data.model.Sdg;
 
-public class SDGTargets extends MarloBaseEntity implements java.io.Serializable {
+import java.util.List;
 
-  private static final long serialVersionUID = 6128814462106164029L;
-  private String target_code;
-  private String target;
-  private SDG sdg;
+import javax.inject.Inject;
+import javax.inject.Named;
 
-  public SDGTargets() {
-    super();
+import org.hibernate.SessionFactory;
+
+@Named
+public class SdgMySQLDAO extends AbstractMarloDAO<Sdg, Long> implements SdgDAO {
+
+  @Inject
+  public SdgMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
-
-  public SDGTargets(String target_code, String target, SDG sdg) {
-    super();
-
-    this.target_code = target_code;
-    this.target = target;
-    this.sdg = sdg;
+  @Override
+  public List<Sdg> findAll() {
+    String query = "from " + Sdg.class.getName();
+    List<Sdg> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
   }
 
-
-  public SDG getSdg() {
-    return sdg;
-  }
-
-
-  public String getTarget() {
-    return target;
-  }
-
-
-  public String getTarget_code() {
-    return target_code;
-  }
-
-
-  public void setSdg(SDG sdg) {
-    this.sdg = sdg;
-  }
-
-
-  public void setTarget(String target) {
-    this.target = target;
-  }
-
-
-  public void setTarget_code(String target_code) {
-    this.target_code = target_code;
+  @Override
+  public Sdg getSDGById(Long id) {
+    return super.find(Sdg.class, id);
   }
 
 
