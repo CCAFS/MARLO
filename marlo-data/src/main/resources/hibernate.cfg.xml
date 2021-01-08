@@ -457,7 +457,7 @@
     <mapping resource="xmls/ProjectImpactsCategories.hbm.xml" />
     <mapping resource="xmls/ActionAreas.hbm.xml" />
     <mapping resource="xmls/ImpactAreas.hbm.xml" />
-    <mapping resource="xmls/ImpactAreasIndicators.hbm.xml" />
+    <mapping resource="xmls/ImpactAreasIndicators.hbm.xml" /> 
     
     
   </session-factory>
