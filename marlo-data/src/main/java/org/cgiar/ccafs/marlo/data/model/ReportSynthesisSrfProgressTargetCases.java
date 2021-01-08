@@ -4,6 +4,10 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import com.google.gson.annotations.Expose;
 
 /**
@@ -32,6 +36,13 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
   @Expose
   private Boolean isContributing;
 
+  private Set<ProgressTargetCaseGeographicScope> progressTargetCaseGeographicScopes =
+    new HashSet<ProgressTargetCaseGeographicScope>(0);
+  private List<ProgressTargetCaseGeographicScope> geographicScopes;
+  private Set<ProgressTargetCaseGeographicRegion> progressTargetCaseGeographicRegions =
+    new HashSet<ProgressTargetCaseGeographicRegion>(0);
+  private List<ProgressTargetCaseGeographicRegion> geographicRegions;
+
   public ReportSynthesisSrfProgressTargetCases() {
   }
 
@@ -46,10 +57,19 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
   }
 
 
+  public List<ProgressTargetCaseGeographicRegion> getGeographicRegions() {
+    return geographicRegions;
+  }
+
+
+  public List<ProgressTargetCaseGeographicScope> getGeographicScopes() {
+    return geographicScopes;
+  }
+
+
   public Boolean getIsContributing() {
     return isContributing;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -58,6 +78,14 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
     return sb.toString();
   }
 
+
+  public Set<ProgressTargetCaseGeographicRegion> getProgressTargetCaseGeographicRegions() {
+    return progressTargetCaseGeographicRegions;
+  }
+
+  public Set<ProgressTargetCaseGeographicScope> getProgressTargetCaseGeographicScopes() {
+    return progressTargetCaseGeographicScopes;
+  }
 
   public ReportSynthesisSrfProgress getReportSynthesisSrfProgress() {
     return reportSynthesisSrfProgress;
@@ -75,8 +103,26 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
     this.briefSummary = briefSummary;
   }
 
+  public void setGeographicRegions(List<ProgressTargetCaseGeographicRegion> geographicRegions) {
+    this.geographicRegions = geographicRegions;
+  }
+
+  public void setGeographicScopes(List<ProgressTargetCaseGeographicScope> geographicScopes) {
+    this.geographicScopes = geographicScopes;
+  }
+
   public void setIsContributing(Boolean isContributing) {
     this.isContributing = isContributing;
+  }
+
+  public void setProgressTargetCaseGeographicRegions(
+    Set<ProgressTargetCaseGeographicRegion> progressTargetCaseGeographicRegions) {
+    this.progressTargetCaseGeographicRegions = progressTargetCaseGeographicRegions;
+  }
+
+  public void
+    setProgressTargetCaseGeographicScopes(Set<ProgressTargetCaseGeographicScope> progressTargetCaseGeographicScopes) {
+    this.progressTargetCaseGeographicScopes = progressTargetCaseGeographicScopes;
   }
 
   public void setReportSynthesisSrfProgress(ReportSynthesisSrfProgress reportSynthesisSrfProgress) {

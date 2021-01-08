@@ -29,6 +29,7 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -108,6 +109,20 @@ public class CGSpaceClientAPI extends MetadataClientApi {
             countries += value.getStringValue();
           } else {
             countries += ", " + value.getStringValue();
+          }
+        }
+        if (keyValue.equals("format.extent")) {
+          jo.put("pages", value.getStringValue());
+        }
+        if (keyValue.equals("edition")) {
+          String valueString = value.getStringValue();
+          // format is supposed to be volume(issue)
+          if (StringUtils.containsAny(valueString, '(', ')')) {
+            String issue = StringUtils.substringBetween(valueString, "(", ")");
+            jo.put("issue", issue);
+            jo.put("volume", StringUtils.substringBefore(valueString, "("));
+          } else {
+            jo.put("volume", valueString);
           }
         }
 
