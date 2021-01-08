@@ -20,23 +20,27 @@
 package org.cgiar.ccafs.marlo.data.model;
 
 
-public class SDGIndicators extends MarloBaseEntity implements java.io.Serializable {
+public class SdgIndicators implements java.io.Serializable {
 
 
   private static final long serialVersionUID = -7251588611670769992L;
+
+  private Long id;
   private String UNSDIndicatorCode;
   private String indicatorCode;
   private String indicator;
 
-  private SDGTargets sdgTarget;
+  private SdgTargets sdgTarget;
 
-  public SDGIndicators() {
+  public SdgIndicators() {
     super();
   }
 
 
-  public SDGIndicators(String uNSDIndicatorCode, String indicatorCode, String indicator, SDGTargets sdgTarget) {
+  public SdgIndicators(Long id, String uNSDIndicatorCode, String indicatorCode, String indicator,
+    SdgTargets sdgTarget) {
     super();
+    this.id = id;
     UNSDIndicatorCode = uNSDIndicatorCode;
     this.indicatorCode = indicatorCode;
     this.indicator = indicator;
@@ -44,20 +48,30 @@ public class SDGIndicators extends MarloBaseEntity implements java.io.Serializab
   }
 
 
+  public Long getId() {
+    return id;
+  }
+
+
   public String getIndicator() {
     return indicator;
   }
+
 
   public String getIndicatorCode() {
     return indicatorCode;
   }
 
-  public SDGTargets getSdgTarget() {
+  public SdgTargets getSdgTarget() {
     return sdgTarget;
   }
 
   public String getUNSDIndicatorCode() {
     return UNSDIndicatorCode;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
   }
 
   public void setIndicator(String indicator) {
@@ -68,7 +82,7 @@ public class SDGIndicators extends MarloBaseEntity implements java.io.Serializab
     this.indicatorCode = indicatorCode;
   }
 
-  public void setSdgTarget(SDGTargets sdgTarget) {
+  public void setSdgTarget(SdgTargets sdgTarget) {
     this.sdgTarget = sdgTarget;
   }
 

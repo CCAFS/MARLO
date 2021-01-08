@@ -20,24 +20,27 @@
 package org.cgiar.ccafs.marlo.data.model;
 
 
-public class SDG extends MarloBaseEntity implements java.io.Serializable {
+public class Sdg implements java.io.Serializable {
 
 
   private static final long serialVersionUID = -1544587780872590887L;
+  private Long id;
   private String smoCode;
   private String shortName;
   private String fullName;
   private String description;
 
-  public SDG() {
+  public Sdg() {
     super();
   }
 
-  public SDG(String smoCode, String shortName, String fullName, String description) {
+
+  public Sdg(Long id, String smoCode, String shortName, String fullName, String description) {
     super();
+    this.id = id;
+    this.smoCode = smoCode;
     this.shortName = shortName;
     this.fullName = fullName;
-    this.smoCode = smoCode;
     this.description = description;
   }
 
@@ -52,9 +55,15 @@ public class SDG extends MarloBaseEntity implements java.io.Serializable {
   }
 
 
+  public Long getId() {
+    return id;
+  }
+
+
   public String getShortName() {
     return shortName;
   }
+
 
   public String getSmoCode() {
     return smoCode;
@@ -66,6 +75,10 @@ public class SDG extends MarloBaseEntity implements java.io.Serializable {
 
   public void setFullName(String fullName) {
     this.fullName = fullName;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
   }
 
 

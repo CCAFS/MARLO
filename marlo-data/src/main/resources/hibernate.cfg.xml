@@ -457,8 +457,9 @@
     <mapping resource="xmls/ProjectImpactsCategories.hbm.xml" />
     <mapping resource="xmls/ActionAreas.hbm.xml" />
     <mapping resource="xmls/ImpactAreas.hbm.xml" />
-    <mapping resource="xmls/ImpactAreasIndicators.hbm.xml" /> 
-    
-    
+    <mapping resource="xmls/ImpactAreasIndicators.hbm.xml" />
+    <mapping resource="xmls/Sdg.hbm.xml" />   
+    <mapping resource="xmls/SdgTargets.hbm.xml" />
+    <mapping resource="xmls/SdgIndicators.hbm.xml" />
   </session-factory>
 </hibernate-configuration>
