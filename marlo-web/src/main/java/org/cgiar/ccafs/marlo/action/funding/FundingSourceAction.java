@@ -1419,13 +1419,12 @@ public class FundingSourceAction extends BaseAction {
             /**
              * Looks like there are no fields to update.
              */
-            // FundingSourceInstitution fundingSourceInstitutionDB =
-            // fundingSourceInstitutionManager.getFundingSourceInstitutionById(fundingSourceInstitution.getId());
-            // fundingSourceInstitutionDB.setFundingSource(fundingSourceDB);
-            // fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitutionDB);
-
+            FundingSourceInstitution fundingSourceInstitutionDB =
+              fundingSourceInstitutionManager.getFundingSourceInstitutionById(fundingSourceInstitution.getId());
+            fundingSourceInstitutionDB.setFundingSource(fundingSourceDB);
+            fundingSourceInstitutionDB.setPhase(this.getActualPhase());
+            fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitutionDB);
           }
-
         }
       }
 
