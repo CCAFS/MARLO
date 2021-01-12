@@ -16,7 +16,7 @@
     </property>
     <many-to-one name="sdg" class="org.cgiar.ccafs.marlo.data.model.Sdg"
       fetch="select">
-      <column name="sdg_target_id" not-null="true" />
+      <column name="sdg_id"  not-null="true" />
     </many-to-one>
   </class>
 </hibernate-mapping>
