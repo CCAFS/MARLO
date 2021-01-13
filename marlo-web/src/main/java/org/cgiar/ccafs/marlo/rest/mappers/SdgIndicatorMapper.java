@@ -23,10 +23,14 @@ import org.cgiar.ccafs.marlo.data.model.SdgIndicators;
 import org.cgiar.ccafs.marlo.rest.dto.SDGIndicatorDTO;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "jsr330", uses = SdgTargetMapper.class)
 public interface SdgIndicatorMapper {
 
+  @Mappings({@Mapping(source = "UNSDIndicatorCode", target = "unsdIndicatorCode"),
+    @Mapping(source = "indicator", target = "indicatorName")})
   public abstract SDGIndicatorDTO sdgIndicatorToSDGIndicatorDTO(SdgIndicators sdgIndicator);
 
 }
