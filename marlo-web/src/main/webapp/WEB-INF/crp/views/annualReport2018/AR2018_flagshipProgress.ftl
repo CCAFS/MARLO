@@ -112,34 +112,34 @@
               <div class="form-group evidenceTypeMessage">
                 <div id="dialog" title="Evidence types" style="display: none">
                   <table id="evidenceTypes" style="height:700px; width:950px;">
-                    <th> [@s.text name="study.dialogMessage.part1" /] </th>
-                    <th> [@s.text name="study.dialogMessage.part2" /] </th>
-                    <th> [@s.text name="study.dialogMessage.part3" /] / [@s.text name="study.dialogMessage.part4" /] </th>
-                    [#if studyTypes?has_content]
-                      [#list studyTypes as st]
+                    <th> [@s.text name="study.ARdialogMessage.part1" /] </th>
+                    <th> [@s.text name="study.ARdialogMessage.part2" /] </th>
+                    <th> [@s.text name="study.ARdialogMessage.part3" /] </th>
+                    <th>  [@s.text name="study.ARdialogMessage.part4"/] </th>
+                    [#if covidAnalysisStudies?has_content]
+                      [#list covidAnalysisStudies as st]
                         <tr>
                           [#--if st_index == 0]
                           <th rowspan="${action.getDeliverablesSubTypes(mt.id).size()}" class="text-center"> ${mt.name} </th>
                           [/#if--]
                           <td> 
-                            ${st.name} 
+                            ${st.projectExpectedStudyInfo.title} 
                           </td>
                           <td>
-                          [#if (st.description?has_content)!false]
-                            ${st.description}
+                          [#if (st.projectExpectedStudyInfo.studyType.name?has_content)!false]
+                            ${st.projectExpectedStudyInfo.studyType.name}
                           [#else]
                             <i>([@s.text name="study.dialogMessage.notProvided" /])</i>
                           [/#if]
                           </td>
                           <td>
-                          [#if (st.keyIdentifier?has_content)!false]
-                            <i><u>How to identify?</u></i> {st.keyIdentifier}
+                          [#if (st.projectExpectedStudyInfo.status.name?has_content)!false]
+                             ${st.projectExpectedStudyInfo.status.name}
                           [/#if]
-                          [#if (st.forNarrative?has_content)!false]
-                            <i><u>For:</u></i> {st.forNarrative}
-                          [/#if]
-                          [#if (st.example?has_content)!false]
-                            <br /> (<i><small>${st.example}</small></i>)
+                          </td>
+                          <td>
+                          [#if (st.projectExpectedStudyInfo.status.name?has_content)!false]
+                            
                           [/#if]
                           </td>
                         </tr>
@@ -162,42 +162,42 @@
                         <table id="evidenceTypes" class="table ">
                           <thead style="background-color: #0b7ba6; font-weight: 500; color: white;">
                             <tr>
-                              <th> [@s.text name="study.dialogMessage.part1" /]</th>
-                              <th > [@s.text name="study.dialogMessage.part2" /] </th>
-                              <th> [@s.text name="study.dialogMessage.part3" /] / [@s.text name="study.dialogMessage.part4" /] </th>
+                              <th> [@s.text name="study.ARdialogMessage.part1" /]</th>
+                              <th > [@s.text name="study.ARdialogMessage.part2"/]</th>
+                              <th> [@s.text name="study.ARdialogMessage.part3" /]</th>
+                              <th> [@s.text name="study.ARdialogMessage.part4" /]</th>
                             </tr>
                           </thead>
                 
-                          [#if studyTypes?has_content]
-                          [#list studyTypes as st]
+                          [#if covidAnalysisStudies?has_content]
+                          [#list covidAnalysisStudies as st]
                           <tr>
                             [#--if st_index == 0]
                             <th rowspan="${action.getDeliverablesSubTypes(mt.id).size()}" class="text-center"> ${mt.name} </th>
                             [/#if--]
                             <td  >
-                              ${st.name}
+                              ${st.projectExpectedStudyInfo.title}
                             </td>
                             <td style="max-width: 90vw !important;">
-                            [#if (st.description?has_content)!false]
-                              ${st.description}
+                            [#if (st.projectExpectedStudyInfo.studyType.name?has_content)!false]
+                              ${st.projectExpectedStudyInfo.studyType.name}
                             [#else]
                               <i>([@s.text name="study.dialogMessage.notProvided" /])</i>
                             [/#if]
                             </td>
                             <td>
-                              [#if (((st.keyIdentifier?has_content)!false) || ((st.forNarrative?has_content)!false) || ((st.example?has_content)!false))]
-                                [#if (st.keyIdentifier?has_content)!false]
-                                  <i><u>How to identify?</u></i> ${st.keyIdentifier}
-                                [/#if]
-                                [#if (st.forNarrative?has_content)!false]
-                                  <br><i><u>For:</u></i> ${st.forNarrative}
-                                [/#if]
-                                [#if (st.example?has_content)!false]
-                                  <br /> (<i><small>Example: ${st.example}</small></i>)
-                                [/#if]
+                              [#if (st.projectExpectedStudyInfo.status.name?has_content)!false]
+                                ${st.projectExpectedStudyInfo.status.name}
                               [#else]
-                                <i>([@s.text name="study.dialogMessage.notProvided" /])</i>
-                              [/#if]
+                               <i>([@s.text name="study.dialogMessage.notProvided" /])</i>
+                              [/#if]                                              
+                            </td>
+                            <td>
+                              [#if (st.projectExpectedStudyInfo.status.name?has_content)!false]
+                                
+                              [#else]
+                               <i>([@s.text name="study.dialogMessage.notProvided" /])</i>
+                              [/#if]                                              
                             </td>
                           </tr>
                           [/#list]
