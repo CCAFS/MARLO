@@ -410,7 +410,7 @@ public class FlagshipProgressAction extends BaseAction {
       .collect(Collectors.toList()));
 
     // Covid Analysis Studies
-    covidAnalysisStudies = projectExpectedStudyManager.getStudiesByPhase(this.getActualPhase()).stream()
+    covidAnalysisStudies = projectExpectedStudyManager.findAll().stream()
       .filter(s -> s.getProjectExpectedStudyInfo(this.getActualPhase()) != null
         && s.getProjectExpectedStudyInfo(this.getActualPhase()).getHasCovidAnalysis() != null
         && s.getProjectExpectedStudyInfo(this.getActualPhase()).getHasCovidAnalysis())
