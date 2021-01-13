@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
@@ -31,6 +32,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
@@ -74,6 +76,7 @@ public class FlagshipProgressAction extends BaseAction {
   private FlagshipProgress2018Validator validator;
   private ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager;
   private SectionStatusManager sectionStatusManager;
+  private ProjectExpectedStudyManager projectExpectedStudyManager;
 
   // variables
   private String transaction;
@@ -86,6 +89,7 @@ public class FlagshipProgressAction extends BaseAction {
   private List<ReportSynthesisFlagshipProgress> flagshipsReportSynthesisFlagshipProgress;
   private boolean hasFlagshipProgress;
   private List<String> listOfFlagships;
+  private List<ProjectExpectedStudy> covidAnalysisStudies;
 
 
   @Inject
@@ -94,7 +98,7 @@ public class FlagshipProgressAction extends BaseAction {
     AuditLogManager auditLogManager, UserManager userManager, CrpProgramManager crpProgramManager,
     FlagshipProgress2018Validator validator,
     ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
-    SectionStatusManager sectionStatusManager) {
+    SectionStatusManager sectionStatusManager, ProjectExpectedStudyManager projectExpectedStudyManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -105,6 +109,7 @@ public class FlagshipProgressAction extends BaseAction {
     this.validator = validator;
     this.reportSynthesisFlagshipProgressManager = reportSynthesisFlagshipProgressManager;
     this.sectionStatusManager = sectionStatusManager;
+    this.projectExpectedStudyManager = projectExpectedStudyManager;
   }
 
 
@@ -126,9 +131,14 @@ public class FlagshipProgressAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+  public List<ProjectExpectedStudy> getCovidAnalysisStudies() {
+    return covidAnalysisStudies;
+  }
+
   public List<ReportSynthesisFlagshipProgress> getFlagshipsReportSynthesisFlagshipProgress() {
     return flagshipsReportSynthesisFlagshipProgress;
   }
+
 
   public void getFlagshipsWithMissingFields() {
     String flagshipsIncomplete = "";
@@ -165,7 +175,6 @@ public class FlagshipProgressAction extends BaseAction {
 
   }
 
-
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
@@ -174,10 +183,10 @@ public class FlagshipProgressAction extends BaseAction {
     return liaisonInstitutionID;
   }
 
+
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
-
 
   public List<String> getListOfFlagships() {
     return listOfFlagships;
@@ -195,10 +204,10 @@ public class FlagshipProgressAction extends BaseAction {
     return synthesisID;
   }
 
+
   public String getTransaction() {
     return transaction;
   }
-
 
   public boolean isFlagship() {
     boolean isFP = false;
@@ -239,6 +248,7 @@ public class FlagshipProgressAction extends BaseAction {
       return result;
     }
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -399,6 +409,12 @@ public class FlagshipProgressAction extends BaseAction {
       .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym() != null && c.getAcronym().equals("PMU"))
       .collect(Collectors.toList()));
 
+    // Covid Analysis Studies
+    covidAnalysisStudies = projectExpectedStudyManager.getStudiesByPhase(this.getActualPhase()).stream()
+      .filter(s -> s.getProjectExpectedStudyInfo(this.getActualPhase()) != null
+        && s.getProjectExpectedStudyInfo(this.getActualPhase()).getHasCovidAnalysis() != null
+        && s.getProjectExpectedStudyInfo(this.getActualPhase()).getHasCovidAnalysis())
+      .collect(Collectors.toList());
 
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), reportSynthesis.getId() + ""};
@@ -471,11 +487,15 @@ public class FlagshipProgressAction extends BaseAction {
     }
   }
 
+  public void setCovidAnalysisStudies(List<ProjectExpectedStudy> covidAnalysisStudies) {
+    this.covidAnalysisStudies = covidAnalysisStudies;
+  }
 
   public void setFlagshipsReportSynthesisFlagshipProgress(
     List<ReportSynthesisFlagshipProgress> flagshipsReportSynthesisFlagshipProgress) {
     this.flagshipsReportSynthesisFlagshipProgress = flagshipsReportSynthesisFlagshipProgress;
   }
+
 
   public void setHasFlagshipProgress(boolean hasFlagshipProgress) {
     this.hasFlagshipProgress = hasFlagshipProgress;
@@ -485,24 +505,23 @@ public class FlagshipProgressAction extends BaseAction {
     this.liaisonInstitution = liaisonInstitution;
   }
 
-
   public void setLiaisonInstitutionID(Long liaisonInstitutionID) {
     this.liaisonInstitutionID = liaisonInstitutionID;
   }
+
 
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
   }
 
+
   public void setListOfFlagships(List<String> listOfFlagships) {
     this.listOfFlagships = listOfFlagships;
   }
 
-
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
-
 
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
     this.reportSynthesis = reportSynthesis;
