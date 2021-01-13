@@ -124,6 +124,9 @@
         <a href="#section3-item1" > <button type="button" class="subCollapsible">Action Areas <span class="getColor">GET</span></button></a>
         <a href="#section3-item2" > <button type="button" class="subCollapsible">Impact Areas <span class="getColor">GET</span></button></a>
         <a href="#section3-item3" > <button type="button" class="subCollapsible">Impact Areas Indicators <span class="getColor">GET</span></button></a>
+        <a href="#section3-item4" > <button type="button" class="subCollapsible">Sustainable Development Goals  <span class="getColor">GET</span></button></a>
+        <a href="#section3-item5" > <button type="button" class="subCollapsible">SDG Targets <span class="getColor">GET</span></button></a>
+        <a href="#section3-item6" > <button type="button" class="subCollapsible">SDG Indicators<span class="getColor">GET</span></button></a>
       </div>
       <a href="#section4"> <button type="button" class="collapsible" href="#section4">Institutions
           management</button></a>
@@ -1039,6 +1042,329 @@
             </div>
           </div>
         </div>
+        <!-- Method 3.4 -->
+        <div class="bshadow" data-aos="fade-up">
+          <div class="container">
+            <div class="row">
+              <div class="col-12">
+                <h2 class="title">methods</h2>
+                <div class="bshadow" data-aos="fade-up" id="section3-item4">
+                  <div class="getColorbackground contEndpoint">
+                    <button type="button" class="btn getColorbackground">GET</button> <span
+                      class="endpointTitle">/allSDG</span>
+                  </div>
+                  <div class="parameters">
+                  <h3>Functionality</h3>
+                    <div>Test funtionality</div>
+                    <h3>Parameters</h3>
+                    <div>No parameters</div>
+                    <table style="width: 70%">
+                      <thead>
+                        <tr>
+                          <th></th>     
+                        </tr>
+                      </thead>
+                      <tbody>        
+                        <tr>
+                          <td colspan="2">
+                            <div>
+                              <p><span><Strong>Request URL: </Strong></span></p>
+                              <div class="URLendpoint">
+                                <div class="fragCode">
+                                  <p><span class="endpoint"></span>/allSDG</p>
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="container-c">
+                    <div class="row">
+                      <div class="col-12" style="margin-bottom: 20px;">
+                        <button onclick="sdg()" type="button"  data-toggle="modal" data-target="#exampleRequestModal9" class="btn getColorbackgroundExample btn-lg btn-block">Display control list</button>
+                      </div>
+                      <div class="col-12">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="greenCode">200</span>: <span class="blueCode">OK</span> </p>
+                          </div>
+                          <pre><code>
+<span class="yellowCode">[</span>
+  <span class="yellowCode">{</span>
+    <span class="blueCode">"SMO code"</span><span class="WhiteCode"> : "long",</span>
+    <span class="blueCode">"Short Name"</span><span class="WhiteCode"> : "String",</span>
+    <span class="blueCode">"Full Name"</span><span class="WhiteCode"> : "String"</span>   
+  <span class="yellowCode">}</span>
+<span class="yellowCode">]</span>
+                          </code></pre> 
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">400</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Bad Request</span>
+                            </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">401</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Unauthorized</span>
+                          </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">403</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Forbidden</span>
+                          </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">404</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Not Found</span>
+                          </code></pre>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Method 3.5 -->
+        <div class="bshadow" data-aos="fade-up">
+          <div class="container">
+            <div class="row">
+              <div class="col-12">
+                <h2 class="title">methods</h2>
+                <div class="bshadow" data-aos="fade-up" id="section3-item5">
+                  <div class="getColorbackground contEndpoint">
+                    <button type="button" class="btn getColorbackground">GET</button> <span
+                      class="endpointTitle">/allSDGTargets</span>
+                  </div>
+                  <div class="parameters">
+                  <h3>Functionality</h3>
+                    <div>Test funtionality</div>
+                    <h3>Parameters</h3>
+                    <div>No parameters</div>
+                    <table style="width: 70%">
+                      <thead>
+                        <tr>
+                          <th></th>     
+                        </tr>
+                      </thead>
+                      <tbody>        
+                        <tr>
+                          <td colspan="2">
+                            <div>
+                              <p><span><Strong>Request URL: </Strong></span></p>
+                              <div class="URLendpoint">
+                                <div class="fragCode">
+                                  <p><span class="endpoint"></span>/allSDGTargets</p>
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="container-c">
+                    <div class="row">
+                      <div class="col-12" style="margin-bottom: 20px;">
+                        <button onclick="sdgtarget()" type="button"  data-toggle="modal" data-target="#exampleRequestModal10" class="btn getColorbackgroundExample btn-lg btn-block">Display control list</button>
+                      </div>
+                      <div class="col-12">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="greenCode">200</span>: <span class="blueCode">OK</span> </p>
+                          </div>
+                          <pre><code>
+<span class="yellowCode">[</span>
+  <span class="yellowCode">{</span>
+    <span class="blueCode">"ID"</span><span class="WhiteCode"> : "long",</span>
+    <span class="blueCode">"SDG Target Code"</span><span class="WhiteCode"> : "String",</span>
+    <span class="blueCode">"SDG Target"</span><span class="WhiteCode"> : "String",</span>   
+    <span class="blueCode">"SDG code"</span><span class="WhiteCode"> : "String",</span>
+    <span class="blueCode">"SDG Name"</span><span class="WhiteCode"> : "String"</span>
+  <span class="yellowCode">}</span>
+<span class="yellowCode">]</span>
+                          </code></pre> 
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">400</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Bad Request</span>
+                            </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">401</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Unauthorized</span>
+                          </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">403</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Forbidden</span>
+                          </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">404</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Not Found</span>
+                          </code></pre>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Method 3.6 -->
+        <div class="bshadow" data-aos="fade-up">
+          <div class="container">
+            <div class="row">
+              <div class="col-12">
+                <h2 class="title">methods</h2>
+                <div class="bshadow" data-aos="fade-up" id="section3-item6">
+                  <div class="getColorbackground contEndpoint">
+                    <button type="button" class="btn getColorbackground">GET</button> <span
+                      class="endpointTitle">/allSDGIndicators</span>
+                  </div>
+                  <div class="parameters">
+                  <h3>Functionality</h3>
+                    <div>Test funtionality</div>
+                    <h3>Parameters</h3>
+                    <div>No parameters</div>
+                    <table style="width: 70%">
+                      <thead>
+                        <tr>
+                          <th></th>     
+                        </tr>
+                      </thead>
+                      <tbody>        
+                        <tr>
+                          <td colspan="2">
+                            <div>
+                              <p><span><Strong>Request URL: </Strong></span></p>
+                              <div class="URLendpoint">
+                                <div class="fragCode">
+                                  <p><span class="endpoint"></span>/allSDGIndicators</p>
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="container-c">
+                    <div class="row">
+                      <div class="col-12" style="margin-bottom: 20px;">
+                        <button onclick="sdgIndicators()" type="button"  data-toggle="modal" data-target="#exampleRequestModal11" class="btn getColorbackgroundExample btn-lg btn-block">Display control list</button>
+                      </div>
+                      <div class="col-12">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="greenCode">200</span>: <span class="blueCode">OK</span> </p>
+                          </div>
+                          <pre><code>
+<span class="yellowCode">[</span>
+  <span class="yellowCode">{</span>
+    <span class="blueCode">"ID"</span><span class="WhiteCode"> : "long",</span>
+    <span class="blueCode">"UNSD Indicator Code"</span><span class="WhiteCode"> : "String",</span>
+    <span class="blueCode">"SDG Indicator Code"</span><span class="WhiteCode"> : "String,"</span>   
+    <span class="blueCode">"SDG Indicator Name"</span><span class="WhiteCode"> : "String,"</span>
+    <span class="blueCode">"SDG Target Code"</span><span class="WhiteCode"> : "String,"</span>
+    <span class="blueCode">"SDG Target"</span><span class="WhiteCode"> : "String"</span>
+  <span class="yellowCode">}</span>
+<span class="yellowCode">]</span>
+                          </code></pre> 
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">400</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Bad Request</span>
+                            </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">401</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Unauthorized</span>
+                          </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">403</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Forbidden</span>
+                          </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">404</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Not Found</span>
+                          </code></pre>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="section" id="section4">
         <h1 class="title" data-aos="fade-up">Institutions Management</h1>
@@ -1385,6 +1711,106 @@
   </div>
 </div>
 
+<div class="modal fade" id="exampleRequestModal9" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-xl">
+    <div class="modal-content">      
+      <div class="modal-body" >
+        <table class="table dataTable" id="sdgs" >
+          <thead class="thead-dark">
+            <tr id="#list-print-columns-name">
+              <td>SMO Code</td>
+              <td>Short Name</td>
+              <td>Full Name</td>              
+            </tr>
+          </thead>
+          <tbody id="list-print-sdgs">
+          </tbody>
+        </table>
+        <div class="text-center">
+          <div class="spinner-general" id="spinner_sdgs">
+            <div class="spinner-border   text-success" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+            <h4 style="margin-top: 15px;">Loading...</h4>
+          </div>
+        </div>
+      </div>
+      <div  class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
+        <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="exampleRequestModal10" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-xl">
+    <div class="modal-content">      
+      <div class="modal-body" >
+        <table class="table dataTable" id="sdgTargets" >
+          <thead class="thead-dark">
+            <tr id="#list-print-columns-name">
+              <td>ID</td>
+              <td>SDG Target Code</td>
+              <td>SDG Target</td>
+              <td>SDG Code</td>
+              <td>SDG Name</td>              
+            </tr>
+          </thead>
+          <tbody id="list-print-sdgTargets">
+          </tbody>
+        </table>
+        <div class="text-center">
+          <div class="spinner-general" id="spinner_sdgTargets">
+            <div class="spinner-border   text-success" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+            <h4 style="margin-top: 15px;">Loading...</h4>
+          </div>
+        </div>
+      </div>
+      <div  class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
+        <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="exampleRequestModal11" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-xl">
+    <div class="modal-content">      
+      <div class="modal-body" >
+        <table class="table dataTable" id="sdgIndicators" >
+          <thead class="thead-dark">
+            <tr id="#list-print-columns-name">
+              <td>ID</td>
+              <td>UNSD Indicator Code</td>
+              <td>SDG Indicator Code</td>
+              <td>SDG Indicator Name</td>
+              <td>SDG Target Code</td>
+              <td>SDG Target Name</td>              
+            </tr>
+          </thead>
+          <tbody id="list-print-sdgIndicators">
+          </tbody>
+        </table>
+        <div class="text-center">
+          <div class="spinner-general" id="spinner_sdgIndicators">
+            <div class="spinner-border   text-success" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+            <h4 style="margin-top: 15px;">Loading...</h4>
+          </div>
+        </div>
+      </div>
+      <div  class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
+        <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 <!-- 
 <p>This is a paragraph.</p>
