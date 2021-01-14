@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
@@ -28,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndInnovationTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
@@ -86,9 +88,11 @@ public class InnovationsAction extends BaseAction {
   private ProjectManager projectManager;
   private ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager;
   private ReportSynthesisFlagshipProgressInnovationManager reportSynthesisFlagshipProgressInnovationManager;
+  private ReportSynthesisFlagshipProgressStudyManager reportSynthesisFlagshipProgressStudyManager;
   private RepIndStageInnovationManager repIndStageInnovationManager;
   private RepIndInnovationTypeManager repIndInnovationTypeManager;
   private SectionStatusManager sectionStatusManager;
+  private ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager;
 
 
   // Variables
@@ -115,7 +119,9 @@ public class InnovationsAction extends BaseAction {
     ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
     ReportSynthesisFlagshipProgressInnovationManager reportSynthesisFlagshipProgressInnovationManager,
     RepIndStageInnovationManager repIndStageInnovationManager, RepIndInnovationTypeManager repIndInnovationTypeManager,
-    SectionStatusManager sectionStatusManager) {
+    SectionStatusManager sectionStatusManager,
+    ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager,
+    ReportSynthesisFlagshipProgressStudyManager reportSynthesisFlagshipProgressStudyManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -132,8 +138,47 @@ public class InnovationsAction extends BaseAction {
     this.repIndStageInnovationManager = repIndStageInnovationManager;
     this.repIndInnovationTypeManager = repIndInnovationTypeManager;
     this.sectionStatusManager = sectionStatusManager;
+    this.projectExpectedStudyInnovationManager = projectExpectedStudyInnovationManager;
+    this.reportSynthesisFlagshipProgressStudyManager = reportSynthesisFlagshipProgressStudyManager;
   }
 
+
+  /**
+   * @return true if the innovation has a OICR on the AR document or if the innovation has no OICR
+   */
+  public boolean canBeAddedToAR(long innovationId, long phaseId) {
+    boolean editable = false;
+
+    if (innovationId > 0) {
+      List<Long> projectExpectedStudiesInnovationIds = projectExpectedStudyInnovationManager.findAll().stream()
+        .filter(pesi -> pesi != null && pesi.getId() != null && pesi.getPhase() != null
+          && pesi.getPhase().getId() != null && pesi.getPhase().getId().longValue() == phaseId
+          && pesi.getProjectInnovation() != null && pesi.getProjectInnovation().getId() != null
+          && pesi.getProjectInnovation().getId().longValue() == innovationId && pesi.getProjectExpectedStudy() != null
+          && pesi.getProjectExpectedStudy().getId() != null)
+        .map(pesi -> pesi.getProjectExpectedStudy().getId()).collect(Collectors.toList());
+
+      // does not have any expected studies linked, no problem.
+      if (projectExpectedStudiesInnovationIds.isEmpty()) {
+        editable = true;
+        return editable;
+      }
+
+      List<Long> expectedStudiesExcludedFromAR = reportSynthesisFlagshipProgressStudyManager.findAll().stream()
+        .filter(s -> s != null && s.isActive() && s.getReportSynthesisFlagshipProgress() != null
+          && s.getReportSynthesisFlagshipProgress().getId() != null
+          && s.getReportSynthesisFlagshipProgress().getId().equals(synthesisID) && s.getProjectExpectedStudy() != null
+          && s.getProjectExpectedStudy().getId() != null
+          && projectExpectedStudiesInnovationIds.contains(s.getProjectExpectedStudy().getId()))
+        .map(s -> s.getProjectExpectedStudy().getId()).collect(Collectors.toList());
+
+      // if all the expected studies linked to the innovation are excluded from the AR Document, the innovation should
+      // NOT be allowed to be included on the AR Document.
+      editable = projectExpectedStudiesInnovationIds.size() != expectedStudiesExcludedFromAR.size();
+    }
+
+    return editable;
+  }
 
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
@@ -242,6 +287,7 @@ public class InnovationsAction extends BaseAction {
     return innovationsByTypeDTO;
   }
 
+
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
@@ -286,7 +332,6 @@ public class InnovationsAction extends BaseAction {
     return transaction;
   }
 
-
   public boolean isFlagship() {
     boolean isFP = false;
     if (liaisonInstitution != null) {
@@ -300,6 +345,7 @@ public class InnovationsAction extends BaseAction {
     }
     return isFP;
   }
+
 
   /**
    * This method get the status of an specific Innovation depending of the
@@ -338,7 +384,6 @@ public class InnovationsAction extends BaseAction {
 
   }
 
-
   @Override
   public String next() {
     String result = this.save();
@@ -348,6 +393,7 @@ public class InnovationsAction extends BaseAction {
       return result;
     }
   }
+
 
   @Override
   public void prepare() throws Exception {
