@@ -19,6 +19,8 @@
 
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.progressTowards;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
@@ -26,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisSrfProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisSrfProgressTargetManager;
+import org.cgiar.ccafs.marlo.data.manager.RestApiAuditlogManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorManager;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -34,6 +37,7 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTarget;
+import org.cgiar.ccafs.marlo.data.model.RestApiAuditlog;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicator;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -46,9 +50,12 @@ import org.cgiar.ccafs.marlo.rest.mappers.SrfProgressTowardsTargetMapper;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -71,13 +78,16 @@ public class ProgressTowardsItem<T> {
   private SrfSloIndicatorManager srfSloIndicatorManager;
 
   private SrfProgressTowardsTargetMapper srfProgressTowardsTargetMapper;
+  
+  private RestApiAuditlogManager restApiAuditlogManager;
 
   @Inject
   public ProgressTowardsItem(GlobalUnitManager globalUnitManager, PhaseManager phaseManager,
     ReportSynthesisSrfProgressTargetManager reportSynthesisSrfProgressTargetManager,
     ReportSynthesisManager reportSynthesisManager, LiaisonInstitutionManager liaisonInstitutionManager,
     /* CrpProgramManager crpProgramManager, */ReportSynthesisSrfProgressManager reportSynthesisSrfProgressManager,
-    SrfProgressTowardsTargetMapper srfProgressTowardsTargetMapper, SrfSloIndicatorManager srfSloIndicatorManager) {
+    SrfProgressTowardsTargetMapper srfProgressTowardsTargetMapper, SrfSloIndicatorManager srfSloIndicatorManager,
+    RestApiAuditlogManager restApiAuditlogManager) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.reportSynthesisSrfProgressTargetManager = reportSynthesisSrfProgressTargetManager;
@@ -88,6 +98,8 @@ public class ProgressTowardsItem<T> {
     this.srfSloIndicatorManager = srfSloIndicatorManager;
 
     this.srfProgressTowardsTargetMapper = srfProgressTowardsTargetMapper;
+    
+    this.restApiAuditlogManager = restApiAuditlogManager;
   }
 
   public Long createProgressTowards(NewSrfProgressTowardsTargetDTO newSrfProgressTowardsTargetDTO,
@@ -298,6 +310,19 @@ public class ProgressTowardsItem<T> {
           .collect(Collectors.toList()));
     }
 
+    if (srfProgressTargetId != null) {
+        ObjectMapper mapper = new ObjectMapper();
+        String originalJson = "";
+        try {
+            originalJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(newSrfProgressTowardsTargetDTO);
+            RestApiAuditlog restApiAuditLog = new RestApiAuditlog("createProgressTowards", "Created " + srfProgressTargetId, new Date(), globalUnitEntity.getId(), globalUnitEntity.getName(), originalJson, user.getId(), null, "", phase.getId());
+            restApiAuditlogManager.logApiCall(restApiAuditLog);
+        } catch (JsonProcessingException ex) {
+            Logger.getLogger(ProgressTowardsItem.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+    
     return srfProgressTargetId;
   }
 
