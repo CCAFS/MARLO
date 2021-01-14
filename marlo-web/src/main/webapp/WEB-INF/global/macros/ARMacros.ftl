@@ -17,10 +17,12 @@
           [@customForm.elementsListComponent name="${name}.geographicScopes" elementType="repIndGeographicScope" elementList="" label="deliverable.geographicScope" listName="repIndGeographicScopes" keyFieldName="id" displayFieldName="name" required=true /]
         </div>
       </div>
+      [#--  style="display:${(isRegional)?string('block','none')}"  --]
       <div class="form-group regionalBlock" >
         [#-- Regional scope --]
         [@customForm.elementsListComponent name="${name}.Regions" elementType="locElement" elementList="" label="deliverable.region"  listName="repIndRegions" keyFieldName="id" displayFieldName="composedName" required=false /]
       </div>
+      [#--  style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}"  --]
       <div class="form-group nationalBlock" >
         [#-- Multinational, National and Subnational scope --]
         [@customForm.select name="${name}.countriesIds" label="" i18nkey="" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="deliverable.countriesIds" multiple=true required=true className="countriesSelect" disabled=!editable/]

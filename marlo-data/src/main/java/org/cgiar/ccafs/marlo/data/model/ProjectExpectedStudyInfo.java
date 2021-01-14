@@ -152,6 +152,9 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   @Expose
   private Boolean hasMilestones;
 
+  @Expose
+  private Boolean hasCovidAnalysis;
+
   public ProjectExpectedStudyInfo() {
   }
 
@@ -241,6 +244,11 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   }
 
 
+  public Boolean getHasCovidAnalysis() {
+    return hasCovidAnalysis;
+  }
+
+
   public Boolean getHasMilestones() {
     return hasMilestones;
   }
@@ -260,7 +268,6 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return isSrfTarget;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -271,6 +278,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   public String getMELIAPublications() {
     return MELIAPublications;
   }
+
 
   @Override
   public String getModificationJustification() {
@@ -290,7 +298,6 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return otherCrossCuttingDimensions;
   }
 
-
   public String getOtherCrossCuttingSelection() {
     return otherCrossCuttingSelection;
   }
@@ -302,6 +309,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   public FileDB getOutcomeFile() {
     return outcomeFile;
   }
+
 
   public String getOutcomeImpactStatement() {
     return outcomeImpactStatement;
@@ -322,10 +330,10 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return policyAmount;
   }
 
-
   public ProjectExpectedStudy getProjectExpectedStudy() {
     return projectExpectedStudy;
   }
+
 
   public String getQuantification() {
     return quantification;
@@ -361,7 +369,6 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return repIndRegion;
   }
 
-
   public RepIndStageProcess getRepIndStageProcess() {
     return repIndStageProcess;
   }
@@ -369,6 +376,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   public RepIndStageStudy getRepIndStageStudy() {
     return repIndStageStudy;
   }
+
 
   public String getScopeComments() {
     return scopeComments;
@@ -433,10 +441,10 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.climateChangeLevel = climateChangeLevel;
   }
 
-
   public void setCommissioningStudy(String commissioningStudy) {
     this.commissioningStudy = commissioningStudy;
   }
+
 
   public void setComunicationsMaterial(String comunicationsMaterial) {
     this.comunicationsMaterial = comunicationsMaterial;
@@ -446,7 +454,6 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   public void setContacts(String contacts) {
     this.contacts = contacts;
   }
-
 
   public void setDescribeCapdev(String describeCapdev) {
     this.describeCapdev = describeCapdev;
@@ -476,6 +483,10 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.genderLevel = genderLevel;
   }
 
+  public void setHasCovidAnalysis(Boolean hasCovidAnalysis) {
+    this.hasCovidAnalysis = hasCovidAnalysis;
+  }
+
   public void setHasMilestones(Boolean hasMilestones) {
     this.hasMilestones = hasMilestones;
   }
@@ -492,6 +503,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.isSrfTarget = isSrfTarget;
   }
 
+
   public void setMELIAPublications(String mELIAPublications) {
     MELIAPublications = mELIAPublications;
   }
@@ -506,6 +518,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.otherCrossCuttingDimensions = otherCrossCuttingDimensions;
   }
 
+
   public void setOtherCrossCuttingSelection(String otherCrossCuttingSelection) {
     this.otherCrossCuttingSelection = otherCrossCuttingSelection;
   }
@@ -515,11 +528,9 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.otherStudyType = otherStudyType;
   }
 
-
   public void setOutcomeFile(FileDB outcomeFile) {
     this.outcomeFile = outcomeFile;
   }
-
 
   public void setOutcomeImpactStatement(String outcomeImpactStatement) {
     this.outcomeImpactStatement = outcomeImpactStatement;
@@ -541,6 +552,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.projectExpectedStudy = projectExpectedStudy;
   }
 
+
   public void setQuantification(String quantification) {
     this.quantification = quantification;
   }
@@ -548,7 +560,6 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   public void setReferencesFile(FileDB referencesFile) {
     this.referencesFile = referencesFile;
   }
-
 
   public void setReferencesText(String referencesText) {
     this.referencesText = referencesText;
@@ -578,9 +589,11 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.repIndStageStudy = repIndStageStudy;
   }
 
+
   public void setScopeComments(String scopeComments) {
     this.scopeComments = scopeComments;
   }
+
 
   public void setStatus(GeneralStatus status) {
     this.status = status;
@@ -591,11 +604,9 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.studyType = studyType;
   }
 
-
   public void setTitle(String title) {
     this.title = title;
   }
-
 
   public void setTopLevelComments(String topLevelComments) {
     this.topLevelComments = topLevelComments;
@@ -664,6 +675,8 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.setClimateChangeLevel(projectExpectedStudyInfoUpdate.getClimateChangeLevel());
     this.setDescribeClimateChange(projectExpectedStudyInfoUpdate.getDescribeClimateChange());
     this.setOtherStudyType(projectExpectedStudyInfoUpdate.getOtherStudyType());
+    this.setHasCovidAnalysis(projectExpectedStudyInfoUpdate.getHasCovidAnalysis());
+    this.setHasMilestones(projectExpectedStudyInfoUpdate.getHasMilestones());
   }
 
 }
