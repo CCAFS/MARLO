@@ -7,7 +7,7 @@
 [#assign customJS = [ 
   "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js"
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js" ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20201217"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210114"] /]
 
 [#assign breadCrumb = [
   {"label":"${currentSection}",   "nameSpace":"",             "action":""},
