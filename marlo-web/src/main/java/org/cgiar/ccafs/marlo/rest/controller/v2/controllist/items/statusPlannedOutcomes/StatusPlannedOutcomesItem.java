@@ -30,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressOutcomeMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
+import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
@@ -378,6 +379,11 @@ public class StatusPlannedOutcomesItem<T> {
             .getOutcomeId(reportSynthesisFlagshipProgress.getId(), crpProgramOutcome.getId());
           // validate Synthesis FlagshipProgress Outcome
           if (reportSynthesisFlagshipProgressOutcome != null) {
+            // setting subIDOS
+            List<CrpOutcomeSubIdo> subIdos = crpProgramOutcome.getCrpOutcomeSubIdos().stream()
+              .filter(c -> c.isActive() && c.getCrpProgramOutcome().getPhase().getId().equals(phase.getId()))
+              .collect(Collectors.toList());
+            reportSynthesisFlagshipProgressOutcome.getCrpProgramOutcome().setSubIdos(subIdos);
             // setting milestones empty list
             List<ReportSynthesisFlagshipProgressOutcomeMilestone> reportSynthesisFlagshipProgressOutcomeMilestoneList =
               new ArrayList<ReportSynthesisFlagshipProgressOutcomeMilestone>();
