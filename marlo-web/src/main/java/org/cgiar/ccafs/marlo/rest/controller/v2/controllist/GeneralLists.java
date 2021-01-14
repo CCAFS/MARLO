@@ -40,7 +40,10 @@ import javax.inject.Named;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import java.util.Date;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,7 +89,6 @@ public class GeneralLists {
     this.flagshipProgramItem = flagshipProgramItem;
     this.generalAcronymItem = generalAcronymItem;
   }
-
 
   /**
    * find Acronyms by acronym *
@@ -202,6 +204,8 @@ public class GeneralLists {
     ResponseEntity<CGIAREntityDTO> response = this.globalUnitItem.findGlobalUnitByCGIRARId(code);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("GeneralLists.cgiar-entities.code.404"));
+    } else {
+        
     }
     return response;
   }
@@ -333,6 +337,7 @@ public class GeneralLists {
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("GeneralLists.cgiar-entities.all.404"));
     }
+    
     return response;
   }
 

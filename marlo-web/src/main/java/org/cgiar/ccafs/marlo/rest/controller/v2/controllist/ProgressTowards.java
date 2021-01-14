@@ -82,7 +82,7 @@ public class ProgressTowards {
       required = true) @Valid @RequestBody NewSrfProgressTowardsTargetDTO newSrfProgressTowardsTargetDTO) {
 
     Long progressTowardsId = this.progressTowardsItem.createProgressTowards(newSrfProgressTowardsTargetDTO, CGIAREntity,
-      this.getCurrentUser());
+              this.getCurrentUser());
 
     ResponseEntity<Long> response = new ResponseEntity<Long>(progressTowardsId, HttpStatus.OK);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
@@ -91,7 +91,7 @@ public class ProgressTowards {
 
     return response;
   }
-
+  
   @ApiOperation(tags = {"Table 1 - Progress towards SRF targets"},
     value = "${ProgressTowards.progresstowardsSRF.DELETE.id.value}", response = SrfProgressTowardsTargetDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
