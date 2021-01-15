@@ -56,6 +56,10 @@
                   { "actionName": "projectsPartnersReplication",
                     "i18nkey": "marloBulkReplication.projectsPartner",
                     "service": "getProjectsByPhase"
+                  },
+                  { "actionName": "fundingSourcesReplication",
+                    "i18nkey": "marloBulkReplication.fundingSource",
+                    "service": "getFundingSourcesByPhase"
                   }
                 ] /]
                 <label for="entityID">Entity:</label>

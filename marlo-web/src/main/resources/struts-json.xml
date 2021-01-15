@@ -595,6 +595,14 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		<action name="getFundingSourcesByPhase"
+      class="org.cgiar.ccafs.marlo.action.json.superadmin.bulkreplication.FundingSourceByPhaseAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
 
 		<action name="getProjectsByPhase"
 			class="org.cgiar.ccafs.marlo.action.json.superadmin.bulkreplication.ProjectsByPhaseAction">
