@@ -58,7 +58,7 @@
                     "service": "getProjectsByPhase"
                   },
                   { "actionName": "fundingSourcesReplication",
-                    "i18nkey": "marloBulkReplication.fundingSource",
+                    "i18nkey": "Funding Sources",
                     "service": "getFundingSourcesByPhase"
                   }
                 ] /]
