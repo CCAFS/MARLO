@@ -183,6 +183,24 @@
       [/#if] --]
     </div>
     <div class="borderBox">
+      [#-- 0. Link to PDF version of this study: AR 2020 and onwards -> ALL OICRs are ALWAYS public--]
+      [#if isOutcomeCaseStudy]
+        <div class="form-group">
+          <div class="optionPublicComponent form-group" style="display:block">         
+            <br />
+            <div class="input-group">
+              <span class="input-group-btn">
+                <button class="btn btn-default btn-sm copyButton" type="button"> <span class="glyphicon glyphicon-link"></span> Copy URL </button>
+              </span>
+              [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(element.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
+              [@customForm.input name="${customName}.projectExpectedStudyInfo.link" i18nkey="study.link" className="form-control input-sm urlInput" value="${summaryPDF}" editable=editable readOnly=true/]
+              <!--input type="text" class="form-control input-sm urlInput" value="${summaryPDF}" readonly-->
+            </div>
+            <div class="message text-center" style="display:none">Copied!</div>
+          </div>
+        </div>
+      [/#if]
+
       [#-- 1. Title (up to 25 words) --]
       <div class="form-group">
         [@customForm.input name="${customName}.projectExpectedStudyInfo.title" i18nkey="study.title" help="study.title.help" className="limitWords-25" helpIcon=!isOutcomeCaseStudy required=true editable=editable /]
@@ -617,30 +635,31 @@
       
     </div>
     
-    [#-- Private Option --]
-    [#if isOutcomeCaseStudy]
-    <h3 class="headTitle">[@s.text name="study.confidentialTitle" /]</h3>
-    <div class="borderBox">
-      <label for="">[@s.text name="study.public" ][@s.param]${(element.projectExpectedStudyInfo.studyType.name)!}[/@][/@] 
-        [@customForm.helpLabel name="study.public.help" showIcon=false paramText="${(element.projectExpectedStudyInfo.studyType.name)!}" editable=editable/]
-      </label> <br />
-      [#local isPublic = (element.projectExpectedStudyInfo.isPublic)!true /]
-      [@customForm.radioFlat id="optionPublic-yes"  name="${customName}.projectExpectedStudyInfo.isPublic" i18nkey="Yes"  value="true"  checked=isPublic  cssClass="radioType-optionPublic" cssClassLabel="font-normal radio-label-yes" editable=editable /] 
-      [@customForm.radioFlat id="optionPublic-no"   name="${customName}.projectExpectedStudyInfo.isPublic" i18nkey="No"   value="false" checked=!isPublic cssClass="radioType-optionPublic" cssClassLabel="font-normal radio-label-no"  editable=editable /] 
-      
-      <div class="optionPublicComponent form-group" style="display:${isPublic?string('block', 'none')}">         
-        <br />
-        <div class="input-group">
-          <span class="input-group-btn">
-            <button class="btn btn-default btn-sm copyButton" type="button"> <span class="glyphicon glyphicon-link"></span> Copy URL </button>
-          </span>
-          [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(element.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
-          <input type="text" class="form-control input-sm urlInput" value="${summaryPDF}" readonly>
+    [#-- Private Option: FOR AR 2020 and onwards -> ALL OICRs are ALWAYS public --]
+    [#--if isOutcomeCaseStudy]
+      <h3 class="headTitle">[@s.text name="study.confidentialTitle" /]</h3>
+      <div class="borderBox">
+        <label for="">[@s.text name="study.public" ][@s.param]${(element.projectExpectedStudyInfo.studyType.name)!}[/@][/@] 
+          [@customForm.helpLabel name="study.public.help" showIcon=false paramText="${(element.projectExpectedStudyInfo.studyType.name)!}" editable=editable/]
+        </label> <br />
+        [#local isPublic = (element.projectExpectedStudyInfo.isPublic)!true /]
+        [#local isPublic = true /]
+        [@customForm.radioFlat id="optionPublic-yes"  name="${customName}.projectExpectedStudyInfo.isPublic" i18nkey="Yes"  value="true"  checked=isPublic  cssClass="radioType-optionPublic" cssClassLabel="font-normal radio-label-yes" editable=editable /] 
+        [@customForm.radioFlat id="optionPublic-no"   name="${customName}.projectExpectedStudyInfo.isPublic" i18nkey="No"   value="false" checked=!isPublic cssClass="radioType-optionPublic" cssClassLabel="font-normal radio-label-no"  editable=editable /] 
+        
+        <div class="optionPublicComponent form-group" style="display:${isPublic?string('block', 'none')}">         
+          <br />
+          <div class="input-group">
+            <span class="input-group-btn">
+              <button class="btn btn-default btn-sm copyButton" type="button"> <span class="glyphicon glyphicon-link"></span> Copy URL </button>
+            </span>
+            [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(element.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
+            <input type="text" class="form-control input-sm urlInput" value="${summaryPDF}" readonly>
+          </div>
+          <div class="message text-center" style="display:none">Copied!</div>
         </div>
-        <div class="message text-center" style="display:none">Copied!</div>
       </div>
-    </div>
-    [/#if]
+    [/#if--]
     
     [#-- Projects shared --]
     [#if fromProject]
