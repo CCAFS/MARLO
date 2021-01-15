@@ -190,57 +190,67 @@ public class FundingSourcesReplicationAction extends BaseAction {
             relationsName.add(APConstants.FUNDING_SOURCES_DIVISIONS_RELATION);
 
             // Save Funding Source Budget
-            List<FundingSourceBudget> fundingSourceBudgets = fundingSource.getBudgets().stream()
-              .filter(b -> b.isActive() && b.getPhase() != null && b.getPhase().getId().equals(phase.getId()))
-              .collect(Collectors.toList());
+            if (fundingSource.getBudgets() != null) {
+              List<FundingSourceBudget> fundingSourceBudgets = fundingSource.getBudgets().stream()
+                .filter(b -> b.isActive() && b.getPhase() != null && b.getPhase().getId().equals(phase.getId()))
+                .collect(Collectors.toList());
 
-            if (fundingSourceBudgets != null && !fundingSourceBudgets.isEmpty()) {
-              for (FundingSourceBudget fundingSourceBudget : fundingSourceBudgets) {
-                fundingSourceBudgetManager.saveFundingSourceBudget(fundingSourceBudget);
+
+              if (fundingSourceBudgets != null && !fundingSourceBudgets.isEmpty()) {
+                for (FundingSourceBudget fundingSourceBudget : fundingSourceBudgets) {
+                  fundingSourceBudgetManager.saveFundingSourceBudget(fundingSourceBudget);
+                }
               }
             }
 
             // Save Funding Source Institution
-            List<FundingSourceInstitution> fundingSourceInstitutions = fundingSource.getInstitutions().stream()
-              .filter(b -> b.getPhase() != null && b.getPhase().getId().equals(phase.getId()))
-              .collect(Collectors.toList());
+            if (fundingSource.getInstitutions() != null) {
+              List<FundingSourceInstitution> fundingSourceInstitutions = fundingSource.getInstitutions().stream()
+                .filter(b -> b.getPhase() != null && b.getPhase().getId().equals(phase.getId()))
+                .collect(Collectors.toList());
 
-            if (fundingSourceInstitutions != null && !fundingSourceInstitutions.isEmpty()) {
-              for (FundingSourceInstitution fundingSourceInstitution : fundingSourceInstitutions) {
-                fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
+              if (fundingSourceInstitutions != null && !fundingSourceInstitutions.isEmpty()) {
+                for (FundingSourceInstitution fundingSourceInstitution : fundingSourceInstitutions) {
+                  fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
+                }
               }
             }
-
             // Save Funding Source Divisions
-            List<FundingSourceDivision> fundingSourceDivisions = fundingSource.getDivisions().stream()
-              .filter(b -> b.getPhase() != null && b.getPhase().getId().equals(phase.getId()))
-              .collect(Collectors.toList());
+            if (fundingSource.getDivisions() != null) {
+              List<FundingSourceDivision> fundingSourceDivisions = fundingSource.getDivisions().stream()
+                .filter(b -> b.getPhase() != null && b.getPhase().getId().equals(phase.getId()))
+                .collect(Collectors.toList());
 
-            if (fundingSourceDivisions != null && !fundingSourceDivisions.isEmpty()) {
-              for (FundingSourceDivision fundingSourceDivision : fundingSourceDivisions) {
-                fundingSourceDivisionManager.saveFundingSourceDivision(fundingSourceDivision);
+              if (fundingSourceDivisions != null && !fundingSourceDivisions.isEmpty()) {
+                for (FundingSourceDivision fundingSourceDivision : fundingSourceDivisions) {
+                  fundingSourceDivisionManager.saveFundingSourceDivision(fundingSourceDivision);
+                }
               }
             }
 
             // Save Project Budget
-            List<ProjectBudget> projectBudgets = fundingSource.getProjectBudgetsList().stream()
-              .filter(b -> b.isActive() && b.getPhase() != null && b.getPhase().getId().equals(phase.getId()))
-              .collect(Collectors.toList());
+            if (fundingSource.getProjectBudgetsList() != null) {
+              List<ProjectBudget> projectBudgets = fundingSource.getProjectBudgetsList().stream()
+                .filter(b -> b.isActive() && b.getPhase() != null && b.getPhase().getId().equals(phase.getId()))
+                .collect(Collectors.toList());
 
-            if (projectBudgets != null && !projectBudgets.isEmpty()) {
-              for (ProjectBudget projectBudget : projectBudgets) {
-                projectBudgetManager.saveProjectBudget(projectBudget);
+              if (projectBudgets != null && !projectBudgets.isEmpty()) {
+                for (ProjectBudget projectBudget : projectBudgets) {
+                  projectBudgetManager.saveProjectBudget(projectBudget);
+                }
               }
             }
 
-
             // Save Funding Source Locations
-            List<FundingSourceLocation> fundingSourceLocations = fundingSource.getFundingSourceLocations().stream()
-              .filter(fl -> fl.isActive() && fl.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+            if (fundingSource.getFundingSourceLocations() != null) {
+              List<FundingSourceLocation> fundingSourceLocations = fundingSource.getFundingSourceLocations().stream()
+                .filter(fl -> fl.isActive() && fl.getPhase().equals(this.getActualPhase()))
+                .collect(Collectors.toList());
 
-            if (fundingSourceLocations != null && !fundingSourceLocations.isEmpty()) {
-              for (FundingSourceLocation FundingSourceLocation : fundingSourceLocations) {
-                fundingSourceLocationsManager.saveFundingSourceLocations(FundingSourceLocation);
+              if (fundingSourceLocations != null && !fundingSourceLocations.isEmpty()) {
+                for (FundingSourceLocation FundingSourceLocation : fundingSourceLocations) {
+                  fundingSourceLocationsManager.saveFundingSourceLocations(FundingSourceLocation);
+                }
               }
             }
 
