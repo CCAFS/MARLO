@@ -178,6 +178,7 @@ public class FundingSourcesReplicationAction extends BaseAction {
         for (String id : entityByPhaseList.trim().split(",")) {
           logger.debug("Replicating Funding source: " + id);
 
+
           fundingSource = fundingSourceManager.getFundingSourceById(new Long(id.trim()));
           if (fundingSource.getFundingSourceInfo(phase) != null) {
 
@@ -190,11 +191,10 @@ public class FundingSourcesReplicationAction extends BaseAction {
             relationsName.add(APConstants.FUNDING_SOURCES_DIVISIONS_RELATION);
 
             // Save Funding Source Budget
+            fundingSource.setBudgets(fundingSource.getFundingSourceBudgets().stream()
+              .filter(pb -> pb.isActive() && pb.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
             if (fundingSource.getBudgets() != null) {
-              List<FundingSourceBudget> fundingSourceBudgets = fundingSource.getBudgets().stream()
-                .filter(b -> b.isActive() && b.getPhase() != null && b.getPhase().getId().equals(phase.getId()))
-                .collect(Collectors.toList());
-
+              List<FundingSourceBudget> fundingSourceBudgets = fundingSource.getBudgets();
 
               if (fundingSourceBudgets != null && !fundingSourceBudgets.isEmpty()) {
                 for (FundingSourceBudget fundingSourceBudget : fundingSourceBudgets) {
@@ -204,10 +204,11 @@ public class FundingSourcesReplicationAction extends BaseAction {
             }
 
             // Save Funding Source Institution
+            fundingSource.setInstitutions(new ArrayList<>(fundingSource.getFundingSourceInstitutions().stream()
+              .filter(pb -> pb.isActive() && pb.getPhase() != null && pb.getPhase().equals(this.getActualPhase()))
+              .collect(Collectors.toList())));
             if (fundingSource.getInstitutions() != null) {
-              List<FundingSourceInstitution> fundingSourceInstitutions = fundingSource.getInstitutions().stream()
-                .filter(b -> b.getPhase() != null && b.getPhase().getId().equals(phase.getId()))
-                .collect(Collectors.toList());
+              List<FundingSourceInstitution> fundingSourceInstitutions = fundingSource.getInstitutions();
 
               if (fundingSourceInstitutions != null && !fundingSourceInstitutions.isEmpty()) {
                 for (FundingSourceInstitution fundingSourceInstitution : fundingSourceInstitutions) {
@@ -215,11 +216,12 @@ public class FundingSourcesReplicationAction extends BaseAction {
                 }
               }
             }
+
             // Save Funding Source Divisions
+            fundingSource.setDivisions(new ArrayList<>(fundingSource.getFundingSourceDivisions().stream()
+              .filter(pb -> pb.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
             if (fundingSource.getDivisions() != null) {
-              List<FundingSourceDivision> fundingSourceDivisions = fundingSource.getDivisions().stream()
-                .filter(b -> b.getPhase() != null && b.getPhase().getId().equals(phase.getId()))
-                .collect(Collectors.toList());
+              List<FundingSourceDivision> fundingSourceDivisions = fundingSource.getDivisions();
 
               if (fundingSourceDivisions != null && !fundingSourceDivisions.isEmpty()) {
                 for (FundingSourceDivision fundingSourceDivision : fundingSourceDivisions) {
@@ -229,10 +231,13 @@ public class FundingSourcesReplicationAction extends BaseAction {
             }
 
             // Save Project Budget
+            fundingSource.setProjectBudgetsList(fundingSource.getProjectBudgets().stream()
+              .filter(pb -> pb.isActive() && pb.getProject().isActive() && pb.getPhase() != null
+                && pb.getPhase().equals(this.getActualPhase())
+                && pb.getProject().getProjecInfoPhase(this.getActualPhase()) != null)
+              .collect(Collectors.toList()));
             if (fundingSource.getProjectBudgetsList() != null) {
-              List<ProjectBudget> projectBudgets = fundingSource.getProjectBudgetsList().stream()
-                .filter(b -> b.isActive() && b.getPhase() != null && b.getPhase().getId().equals(phase.getId()))
-                .collect(Collectors.toList());
+              List<ProjectBudget> projectBudgets = fundingSource.getProjectBudgetsList();
 
               if (projectBudgets != null && !projectBudgets.isEmpty()) {
                 for (ProjectBudget projectBudget : projectBudgets) {
@@ -242,10 +247,10 @@ public class FundingSourcesReplicationAction extends BaseAction {
             }
 
             // Save Funding Source Locations
+            fundingSource.setFundingCountry(fundingSource.getFundingSourceLocations().stream()
+              .filter(fl -> fl.isActive() && fl.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
             if (fundingSource.getFundingSourceLocations() != null) {
-              List<FundingSourceLocation> fundingSourceLocations = fundingSource.getFundingSourceLocations().stream()
-                .filter(fl -> fl.isActive() && fl.getPhase().equals(this.getActualPhase()))
-                .collect(Collectors.toList());
+              List<FundingSourceLocation> fundingSourceLocations = fundingSource.getFundingCountry();
 
               if (fundingSourceLocations != null && !fundingSourceLocations.isEmpty()) {
                 for (FundingSourceLocation FundingSourceLocation : fundingSourceLocations) {
