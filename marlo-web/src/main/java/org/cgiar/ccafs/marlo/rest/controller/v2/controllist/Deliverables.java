@@ -19,8 +19,10 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.Deliverables.DeliverablesItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.Deliverables.DeliverablesWOSItem;
 import org.cgiar.ccafs.marlo.rest.dto.NewPublicationDTO;
 import org.cgiar.ccafs.marlo.rest.dto.PublicationDTO;
+import org.cgiar.ccafs.marlo.rest.dto.PublicationsWOSDTO;
 import org.cgiar.ccafs.marlo.rest.errors.NotFoundException;
 import org.cgiar.ccafs.marlo.security.Permission;
 
@@ -58,6 +60,7 @@ public class Deliverables {
   private Environment env;
 
   private DeliverablesItem<PublicationDTO> publicationItem;
+  public DeliverablesWOSItem<PublicationsWOSDTO> publicationWOSItem;
   private final UserManager userManager;
 
   /**
@@ -68,9 +71,11 @@ public class Deliverables {
    * @return a DeliverablenDTO with the deliverable created
    */
   @Inject
-  public Deliverables(DeliverablesItem<PublicationDTO> publicationItem, UserManager userManager) {
+  public Deliverables(DeliverablesItem<PublicationDTO> publicationItem,
+    DeliverablesWOSItem<PublicationsWOSDTO> publicationWOSItem, UserManager userManager) {
     super();
     this.publicationItem = publicationItem;
+    this.publicationWOSItem = publicationWOSItem;
     this.userManager = userManager;
   }
 
@@ -175,6 +180,19 @@ public class Deliverables {
       throw new NotFoundException("404", this.env.getProperty("Deliverables.deliverable.PUT.id.404"));
     }
 
+    return response;
+  }
+
+  @ApiOperation(tags = {"Utils"}, value = "${Deliverables.deliverableWOS.GET.id.value}",
+    response = PublicationsWOSDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/publicationsWOS", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<PublicationsWOSDTO> validateDeliverableWOS(
+    @ApiParam(value = "${Deliverables.deliverable.GET.id.param.id}", required = true) @RequestParam String url) {
+    ResponseEntity<PublicationsWOSDTO> response = this.publicationWOSItem.validateDeliverable(url);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("Deliverables.deliverableWOS.GET.id.404"));
+    }
     return response;
   }
 

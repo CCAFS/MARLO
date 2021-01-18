@@ -22,9 +22,13 @@ package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools.ActionAreasItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools.ImpactAreasIndicatorsItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools.ImpactAreasItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools.SdgItem;
 import org.cgiar.ccafs.marlo.rest.dto.ActionAreasDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ImpactAreasDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ImpactAreasIndicatorsDTO;
+import org.cgiar.ccafs.marlo.rest.dto.SDGIndicatorDTO;
+import org.cgiar.ccafs.marlo.rest.dto.SDGTargetDTO;
+import org.cgiar.ccafs.marlo.rest.dto.SDGsDTO;
 import org.cgiar.ccafs.marlo.rest.errors.NotFoundException;
 import org.cgiar.ccafs.marlo.security.Permission;
 
@@ -62,6 +66,7 @@ public class SubmissionToolsControlLists {
   private ActionAreasItem<SubmissionToolsControlLists> actionAreasItem;
   private ImpactAreasItem<SubmissionToolsControlLists> impactAreasItem;
   private ImpactAreasIndicatorsItem<SubmissionToolsControlLists> impactAreasIndicatorsItem;
+  private SdgItem<SubmissionToolsControlLists> sdgItem;
 
 
   @Autowired
@@ -70,11 +75,13 @@ public class SubmissionToolsControlLists {
 
   public SubmissionToolsControlLists(ActionAreasItem<SubmissionToolsControlLists> actionAreasItem,
     ImpactAreasItem<SubmissionToolsControlLists> impactAreasItem,
-    ImpactAreasIndicatorsItem<SubmissionToolsControlLists> impactAreasIndicatorsItem) {
+    ImpactAreasIndicatorsItem<SubmissionToolsControlLists> impactAreasIndicatorsItem,
+    SdgItem<SubmissionToolsControlLists> sdgItem) {
     super();
     this.actionAreasItem = actionAreasItem;
     this.impactAreasItem = impactAreasItem;
     this.impactAreasIndicatorsItem = impactAreasIndicatorsItem;
+    this.sdgItem = sdgItem;
   }
 
   @ApiOperation(tags = {"Submission Tools Control Lists"},
@@ -154,6 +161,31 @@ public class SubmissionToolsControlLists {
     produces = MediaType.APPLICATION_JSON_VALUE)
   public List<ImpactAreasIndicatorsDTO> getAllImpactAreasIndicators() {
     return this.impactAreasIndicatorsItem.getAllImpactAreasIndicators();
+  }
+
+  @ApiOperation(tags = {"Submission Tools Control Lists"}, value = "${SubmissionToolsControlLists.sdg.all.value}",
+    response = SDGsDTO.class, responseContainer = "List")
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/allSDG", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<SDGsDTO> getAllSDG() {
+    return this.sdgItem.getAllSDGs();
+  }
+
+  @ApiOperation(tags = {"Submission Tools Control Lists"},
+    value = "${SubmissionToolsControlLists.sdgIndicator.all.value}", response = SDGIndicatorDTO.class,
+    responseContainer = "List")
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/allSDGIndicators", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<SDGIndicatorDTO> getAllSDGIndicators() {
+    return this.sdgItem.getAllSDGIndicators();
+  }
+
+  @ApiOperation(tags = {"Submission Tools Control Lists"}, value = "${SubmissionToolsControlLists.sdgTarget.all.value}",
+    response = SDGTargetDTO.class, responseContainer = "List")
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/allSDGTargets", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<SDGTargetDTO> getAllSDGTargets() {
+    return this.sdgItem.getAllSDGTargets();
   }
 
 
