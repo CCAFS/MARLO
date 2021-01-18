@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
-<class name="org.cgiar.ccafs.marlo.data.model.SDGIndicators" table="sdg_indicators"
+<class name="org.cgiar.ccafs.marlo.data.model.SdgIndicators" table="sdg_indicators"
     optimistic-lock="none">
       <id name="id" type="java.lang.Long">
       <column name="id" />
-      <generator class="identity" />
+      <generator class="assigned" />
     </id>
     <property name="UNSDIndicatorCode" type="string">
       <column name="unsd_indicator_codes" length="45" not-null="true" />
@@ -15,9 +17,9 @@
     <property name="indicator" type="string">
       <column name="sdg_indicator" length="400" not-null="true" />
     </property>
-    <many-to-one name="sdgTarget" class="org.cgiar.ccafs.marlo.data.model.SDG"
+    <many-to-one name="sdgTarget" class="org.cgiar.ccafs.marlo.data.model.SdgTargets"
       fetch="select">
-      <column name="sdg_id" not-null="true" />
+      <column name="sdg_target_id" not-null="true" />
     </many-to-one>
   </class>
 </hibernate-mapping>
