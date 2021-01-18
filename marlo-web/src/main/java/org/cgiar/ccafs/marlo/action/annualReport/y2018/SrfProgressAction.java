@@ -21,10 +21,12 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrpProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrpProgressStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrpProgressTargetManager;
@@ -39,6 +41,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
+import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -46,6 +49,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyFlagship;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpProgressTarget;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgress;
@@ -119,6 +123,8 @@ public class SrfProgressAction extends BaseAction {
 
   private ProjectFocusManager projectFocusManager;
   private ProjectExpectedStudyManager projectExpectedStudyManager;
+  private RepIndGeographicScopeManager repIndGeographicScopeManager;
+  private LocElementManager locElementManager;
 
   // Variables
   private String transaction;
@@ -143,7 +149,9 @@ public class SrfProgressAction extends BaseAction {
 
   private List<ProjectExpectedStudy> studiesList;
   private List<String> listOfFlagships;
-
+  private List<RepIndGeographicScope> repIndGeographicScopes;
+  private List<LocElement> repIndRegions;
+  private List<LocElement> countries;
 
   @Inject
   public SrfProgressAction(APConfig config, GlobalUnitManager crpManager,
@@ -157,7 +165,8 @@ public class SrfProgressAction extends BaseAction {
     SrfSloIndicatorTargetManager srfSloIndicatorTargetManager, PhaseManager phaseManager,
     ReportSynthesisSrfProgressTargetManager reportSynthesisSrfProgressTargetManager,
     ReportSynthesisSrfProgressTargetCasesManager reportSynthesisSrfProgressTargetCasesManager,
-    ReportSynthesisSrfProgressManager reportSynthesisSrfProgressManager, SectionStatusManager sectionStatusManager) {
+    ReportSynthesisSrfProgressManager reportSynthesisSrfProgressManager, SectionStatusManager sectionStatusManager,
+    RepIndGeographicScopeManager repIndGeographicScopeManager, LocElementManager locElementManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -175,6 +184,8 @@ public class SrfProgressAction extends BaseAction {
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.sectionStatusManager = sectionStatusManager;
     this.reportSynthesisSrfProgressTargetCasesManager = reportSynthesisSrfProgressTargetCasesManager;
+    this.repIndGeographicScopeManager = repIndGeographicScopeManager;
+    this.locElementManager = locElementManager;
   }
 
 
@@ -217,6 +228,10 @@ public class SrfProgressAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+  public List<LocElement> getCountries() {
+    return countries;
+  }
+
   /**
    * Get the information of evidences according to srf target
    *
@@ -250,10 +265,10 @@ public class SrfProgressAction extends BaseAction {
     return studiesInfo;
   }
 
+
   public List<ReportSynthesisSrfProgress> getFlagshipSrfProgress() {
     return flagshipSrfProgress;
   }
-
 
   public void getFlagshipsWithMissingFields() {
     listOfFlagships = new ArrayList<>();
@@ -277,10 +292,10 @@ public class SrfProgressAction extends BaseAction {
     }
   }
 
+
   public List<ReportSynthesisCrpProgressTarget> getFpSynthesisTable() {
     return fpSynthesisTable;
   }
-
 
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
@@ -298,10 +313,18 @@ public class SrfProgressAction extends BaseAction {
     return listOfFlagships;
   }
 
+
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
+  public List<RepIndGeographicScope> getRepIndGeographicScopes() {
+    return repIndGeographicScopes;
+  }
+
+  public List<LocElement> getRepIndRegions() {
+    return repIndRegions;
+  }
 
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
@@ -318,7 +341,6 @@ public class SrfProgressAction extends BaseAction {
   public Long getSynthesisID() {
     return synthesisID;
   }
-
 
   /**
    * Get the information list for the Flagships Slo Targets Information in the form
@@ -376,7 +398,6 @@ public class SrfProgressAction extends BaseAction {
       return null;
     }
   }
-
 
   /**
    * Get the information list for the Flagships Slo Targets Information in the form
@@ -439,6 +460,7 @@ public class SrfProgressAction extends BaseAction {
     return transaction;
   }
 
+
   public boolean isFlagship() {
     boolean isFP = false;
     if (liaisonInstitution != null) {
@@ -465,7 +487,6 @@ public class SrfProgressAction extends BaseAction {
 
   }
 
-
   @Override
   public String next() {
     String result = this.save();
@@ -475,7 +496,6 @@ public class SrfProgressAction extends BaseAction {
       return result;
     }
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -596,6 +616,15 @@ public class SrfProgressAction extends BaseAction {
           // save the changes
           reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
         }
+
+        // Geographic scope
+        this.setRepIndGeographicScopes(repIndGeographicScopeManager.findAll().stream()
+          .sorted((g1, g2) -> g1.getName().compareTo(g2.getName())).collect(Collectors.toList()));
+        repIndRegions = locElementManager.findAll().stream()
+          .filter(c -> c.getLocElementType().getId().intValue() == 1 && c.isActive() && c.getIsoNumeric() != null)
+          .collect(Collectors.toList());
+        this.setCountries(locElementManager.findAll().stream()
+          .filter(c -> c.isActive() && c.getLocElementType().getId() == 2).collect(Collectors.toList()));
 
 
         // Srf Targets List
@@ -778,6 +807,7 @@ public class SrfProgressAction extends BaseAction {
 
   }
 
+
   /**
    * Save Crp Progress Srf Targets Cases Information
    * 
@@ -834,6 +864,11 @@ public class SrfProgressAction extends BaseAction {
 
   }
 
+  public void setCountries(List<LocElement> countries) {
+    this.countries = countries;
+  }
+
+
   public void setFlagshipSrfProgress(List<ReportSynthesisSrfProgress> flagshipSrfProgress) {
     this.flagshipSrfProgress = flagshipSrfProgress;
   }
@@ -842,19 +877,19 @@ public class SrfProgressAction extends BaseAction {
     this.fpSynthesisTable = fpSynthesisTable;
   }
 
-
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
-
 
   public void setLiaisonInstitutionID(Long liaisonInstitutionID) {
     this.liaisonInstitutionID = liaisonInstitutionID;
   }
 
+
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
   }
+
 
   public void setListOfFlagships(List<String> listOfFlagships) {
     this.listOfFlagships = listOfFlagships;
@@ -862,6 +897,14 @@ public class SrfProgressAction extends BaseAction {
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+  public void setRepIndGeographicScopes(List<RepIndGeographicScope> repIndGeographicScopes) {
+    this.repIndGeographicScopes = repIndGeographicScopes;
+  }
+
+  public void setRepIndRegions(List<LocElement> repIndRegions) {
+    this.repIndRegions = repIndRegions;
   }
 
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
