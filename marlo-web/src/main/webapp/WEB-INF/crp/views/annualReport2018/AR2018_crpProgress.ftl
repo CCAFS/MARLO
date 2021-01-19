@@ -182,7 +182,7 @@
   </div>
 
   <div class="btn-removeEvidence removeElement sm" title="Remove Evidence"></div>
- [@arMacros.deliverableGeographicScope name="${ccname}.contribution[${index}]"  /]
+  [@arMacros.deliverableGeographicScope name="${ccname}.contribution[${index}]"  /]
 <hr>
   [#-- Brief summary of new evidence of CGIAR contribution to relevant targets for this CRP (with citation) --]
   <div class="form-group">

@@ -4,7 +4,7 @@
 <!-- Generated May 5, 2017 11:44:22 AM by Hibernate Tools 4.3.1.Final -->
 <hibernate-mapping>
 	<class name="org.cgiar.ccafs.marlo.data.model.ProgressTargetCaseGeographicScope"
-		table="progress_target_case_geographic_scopes" optimistic-lock="none">
+		table="progress_target_case_geographic_scope" optimistic-lock="none">
 		<id name="id" type="java.lang.Long">
 			<column name="id" />
 			<generator class="identity" />
