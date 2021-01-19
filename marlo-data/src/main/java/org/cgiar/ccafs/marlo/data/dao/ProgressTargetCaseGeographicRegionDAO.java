@@ -40,7 +40,8 @@ public interface ProgressTargetCaseGeographicRegionDAO {
   public boolean existProgressTargetCaseGeographicRegion(long progressTargetCaseGeographicRegionID);
 
   /**
-   * This method gets a progressTargetCaseGeographicRegion object by a given progressTargetCaseGeographicRegion identifier.
+   * This method gets a progressTargetCaseGeographicRegion object by a given progressTargetCaseGeographicRegion
+   * identifier.
    * 
    * @param progressTargetCaseGeographicRegionID is the progressTargetCaseGeographicRegion identifier.
    * @return a ProgressTargetCaseGeographicRegion object.
@@ -54,12 +55,15 @@ public interface ProgressTargetCaseGeographicRegionDAO {
    */
   public List<ProgressTargetCaseGeographicRegion> findAll();
 
+  public List<ProgressTargetCaseGeographicRegion> findGeographicRegionByTargetCase(long targetCaseID);
 
   /**
    * This method saves the information of the given progressTargetCaseGeographicRegion
    * 
-   * @param progressTargetCaseGeographicRegion - is the progressTargetCaseGeographicRegion object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the progressTargetCaseGeographicRegion was
+   * @param progressTargetCaseGeographicRegion - is the progressTargetCaseGeographicRegion object with the new
+   *        information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         progressTargetCaseGeographicRegion was
    *         updated
    *         or -1 is some error occurred.
    */

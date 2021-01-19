@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.ProgressTargetCaseGeographicRegionDAO;
 import org.cgiar.ccafs.marlo.data.model.ProgressTargetCaseGeographicRegion;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -69,6 +70,17 @@ public class ProgressTargetCaseGeographicRegionMySQLDAO
     }
     return null;
 
+  }
+
+  @Override
+  public List<ProgressTargetCaseGeographicRegion> findGeographicRegionByTargetCase(long targetCaseID) {
+    String query =
+      "from " + ProgressTargetCaseGeographicRegion.class.getName() + " where progress_target_case_id = " + targetCaseID;
+    List<ProgressTargetCaseGeographicRegion> list = super.findAll(query);
+    if (!list.isEmpty()) {
+      return list;
+    }
+    return Collections.emptyList();
   }
 
   @Override

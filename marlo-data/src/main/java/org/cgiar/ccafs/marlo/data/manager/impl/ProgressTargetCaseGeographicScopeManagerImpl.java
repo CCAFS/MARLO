@@ -36,7 +36,8 @@ public class ProgressTargetCaseGeographicScopeManagerImpl implements ProgressTar
 
 
   @Inject
-  public ProgressTargetCaseGeographicScopeManagerImpl(ProgressTargetCaseGeographicScopeDAO progressTargetCaseGeographicScopeDAO) {
+  public ProgressTargetCaseGeographicScopeManagerImpl(
+    ProgressTargetCaseGeographicScopeDAO progressTargetCaseGeographicScopeDAO) {
     this.progressTargetCaseGeographicScopeDAO = progressTargetCaseGeographicScopeDAO;
 
 
@@ -51,7 +52,8 @@ public class ProgressTargetCaseGeographicScopeManagerImpl implements ProgressTar
   @Override
   public boolean existProgressTargetCaseGeographicScope(long progressTargetCaseGeographicScopeID) {
 
-    return progressTargetCaseGeographicScopeDAO.existProgressTargetCaseGeographicScope(progressTargetCaseGeographicScopeID);
+    return progressTargetCaseGeographicScopeDAO
+      .existProgressTargetCaseGeographicScope(progressTargetCaseGeographicScopeID);
   }
 
   @Override
@@ -62,13 +64,21 @@ public class ProgressTargetCaseGeographicScopeManagerImpl implements ProgressTar
   }
 
   @Override
-  public ProgressTargetCaseGeographicScope getProgressTargetCaseGeographicScopeById(long progressTargetCaseGeographicScopeID) {
+  public List<ProgressTargetCaseGeographicScope> findGeographicScopeByTargetCase(long targetCaseID) {
+    return progressTargetCaseGeographicScopeDAO.findGeographicScopeByTargetCase(targetCaseID);
+  }
+
+
+  @Override
+  public ProgressTargetCaseGeographicScope
+    getProgressTargetCaseGeographicScopeById(long progressTargetCaseGeographicScopeID) {
 
     return progressTargetCaseGeographicScopeDAO.find(progressTargetCaseGeographicScopeID);
   }
 
   @Override
-  public ProgressTargetCaseGeographicScope saveProgressTargetCaseGeographicScope(ProgressTargetCaseGeographicScope progressTargetCaseGeographicScope) {
+  public ProgressTargetCaseGeographicScope
+    saveProgressTargetCaseGeographicScope(ProgressTargetCaseGeographicScope progressTargetCaseGeographicScope) {
 
     return progressTargetCaseGeographicScopeDAO.save(progressTargetCaseGeographicScope);
   }

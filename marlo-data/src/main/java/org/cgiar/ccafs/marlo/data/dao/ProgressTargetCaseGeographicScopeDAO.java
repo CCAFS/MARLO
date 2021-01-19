@@ -40,7 +40,8 @@ public interface ProgressTargetCaseGeographicScopeDAO {
   public boolean existProgressTargetCaseGeographicScope(long progressTargetCaseGeographicScopeID);
 
   /**
-   * This method gets a progressTargetCaseGeographicScope object by a given progressTargetCaseGeographicScope identifier.
+   * This method gets a progressTargetCaseGeographicScope object by a given progressTargetCaseGeographicScope
+   * identifier.
    * 
    * @param progressTargetCaseGeographicScopeID is the progressTargetCaseGeographicScope identifier.
    * @return a ProgressTargetCaseGeographicScope object.
@@ -54,12 +55,16 @@ public interface ProgressTargetCaseGeographicScopeDAO {
    */
   public List<ProgressTargetCaseGeographicScope> findAll();
 
+  public List<ProgressTargetCaseGeographicScope> findGeographicScopeByTargetCase(long targetCaseID);
+
 
   /**
    * This method saves the information of the given progressTargetCaseGeographicScope
    * 
-   * @param progressTargetCaseGeographicScope - is the progressTargetCaseGeographicScope object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the progressTargetCaseGeographicScope was
+   * @param progressTargetCaseGeographicScope - is the progressTargetCaseGeographicScope object with the new information
+   *        to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         progressTargetCaseGeographicScope was
    *         updated
    *         or -1 is some error occurred.
    */
