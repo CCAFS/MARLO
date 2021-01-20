@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressInnovationManager;
@@ -86,15 +87,16 @@ public class StudiesOICRAction extends BaseAction {
   private CrpProgramManager crpProgramManager;
   private UserManager userManager;
   private StudiesOICR2018Validator validator;
-  private ProjectExpectedStudyManager projectExpectedStudyManager;
   private ProjectPolicyManager projectPolicyManager;
   private ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager;
   private ReportSynthesisFlagshipProgressStudyManager reportSynthesisFlagshipProgressStudyManager;
   private ReportSynthesisFlagshipProgressInnovationManager reportSynthesisFlagshipProgressInnovationManager;
   private ReportSynthesisFlagshipProgressPolicyManager reportSynthesisFlagshipProgressPolicyManager;
   private SectionStatusManager sectionStatusManager;
-  private ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager;
   private ProjectInnovationManager projectInnovationManager;
+  private ProjectExpectedStudyManager projectExpectedStudyManager;
+  private ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager;
+  private ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager;
 
   // Variables
   private String transaction;
@@ -120,7 +122,8 @@ public class StudiesOICRAction extends BaseAction {
     ProjectPolicyManager projectPolicyManager, ProjectInnovationManager projectInnovationManager,
     SectionStatusManager sectionStatusManager,
     ReportSynthesisFlagshipProgressInnovationManager reportSynthesisFlagshipProgressInnovationManager,
-    ReportSynthesisFlagshipProgressPolicyManager reportSynthesisFlagshipProgressPolicyManager) {
+    ReportSynthesisFlagshipProgressPolicyManager reportSynthesisFlagshipProgressPolicyManager,
+    ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -138,6 +141,7 @@ public class StudiesOICRAction extends BaseAction {
     this.reportSynthesisFlagshipProgressInnovationManager = reportSynthesisFlagshipProgressInnovationManager;
     this.reportSynthesisFlagshipProgressPolicyManager = reportSynthesisFlagshipProgressPolicyManager;
     this.projectPolicyManager = projectPolicyManager;
+    this.projectExpectedStudyPolicyManager = projectExpectedStudyPolicyManager;
   }
 
 
@@ -258,6 +262,8 @@ public class StudiesOICRAction extends BaseAction {
         if (!flagshipProgressStudies.contains(flagshipProgressStudyNew)) {
           flagshipProgressStudyNew = reportSynthesisFlagshipProgressStudyManager
             .saveReportSynthesisFlagshipProgressStudy(flagshipProgressStudyNew);
+          this.updateLinkedInnovations(projectExpectedStudy.getId(), reportSynthesisFlagshipProgressDB);
+          this.updateLinkedPolicies(projectExpectedStudy.getId(), reportSynthesisFlagshipProgressDB);
         }
 
       }
@@ -281,12 +287,13 @@ public class StudiesOICRAction extends BaseAction {
         if (!reportSynthesisFlagshipProgressStudies.contains(flagshipProgressPlannedStudyNew)) {
           flagshipProgressPlannedStudyNew = reportSynthesisFlagshipProgressStudyManager
             .saveReportSynthesisFlagshipProgressStudy(flagshipProgressPlannedStudyNew);
+          this.updateLinkedInnovations(projectExpectedStudy.getId(), reportSynthesisFlagshipProgressDB);
+          this.updateLinkedPolicies(projectExpectedStudy.getId(), reportSynthesisFlagshipProgressDB);
         }
       }
     }
 
   }
-
 
   private Path getAutoSaveFilePath() {
     String composedClassName = reportSynthesis.getClass().getSimpleName();
@@ -295,7 +302,6 @@ public class StudiesOICRAction extends BaseAction {
       + actualPhase.getYear() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
-
 
   public void getFlagshipsWithMissingFields() {
     SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
@@ -342,23 +348,24 @@ public class StudiesOICRAction extends BaseAction {
     return projectInnovationList;
   }
 
+
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
+
 
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
   }
 
-
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
 
-
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
+
 
   public List<ProjectPolicy> getPolicies(long studyID, long phaseID) {
     List<ProjectPolicy> policyList = new ArrayList<>();
@@ -390,23 +397,24 @@ public class StudiesOICRAction extends BaseAction {
     return policyList;
   }
 
+
   public List<ProjectExpectedStudy> getProjectExpectedStudies() {
     return projectExpectedStudies;
   }
-
 
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
   }
 
-
   public Long getSynthesisID() {
     return synthesisID;
   }
 
+
   public String getTransaction() {
     return transaction;
   }
+
 
   public boolean isFlagship() {
     boolean isFP = false;
@@ -421,7 +429,6 @@ public class StudiesOICRAction extends BaseAction {
     }
     return isFP;
   }
-
 
   public boolean isInnovationIncludedInReport(long innovationID, long phaseID) {
     // boolean included = false;
@@ -457,6 +464,7 @@ public class StudiesOICRAction extends BaseAction {
     return isFP;
 
   }
+
 
   public boolean isPolicyIncludedInReport(long policyID, long phaseID) {
     // boolean included = false;
@@ -729,7 +737,6 @@ public class StudiesOICRAction extends BaseAction {
     }
   }
 
-
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
@@ -752,17 +759,127 @@ public class StudiesOICRAction extends BaseAction {
     this.projectExpectedStudies = projectExpectedStudies;
   }
 
-
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
     this.reportSynthesis = reportSynthesis;
   }
+
 
   public void setSynthesisID(Long synthesisID) {
     this.synthesisID = synthesisID;
   }
 
+
   public void setTransaction(String transaction) {
     this.transaction = transaction;
+  }
+
+  private void updateLinkedInnovations(long studyId, ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress) {
+    List<ProjectInnovation> linkedInnovations = projectExpectedStudyInnovationManager.findAll().stream()
+      .filter(pesi -> pesi != null && pesi.getId() != null && pesi.getPhase() != null && pesi.getPhase().getId() != null
+        && pesi.getPhase().getId().equals(this.getPhaseID()) && pesi.getProjectExpectedStudy() != null
+        && pesi.getProjectExpectedStudy().getId() != null && pesi.getProjectExpectedStudy().getId() == studyId
+        && pesi.getProjectInnovation() != null && pesi.getProjectInnovation().getId() != null)
+      .map(pesi -> pesi.getProjectInnovation()).collect(Collectors.toList());
+
+    List<ReportSynthesisFlagshipProgressInnovation> phaseFlagshipInnovations =
+      reportSynthesisFlagshipProgressInnovationManager.findAll().stream()
+        .filter(fpi -> fpi != null && fpi.getId() != null && fpi.getProjectInnovation() != null
+          && fpi.getProjectInnovation().getId() != null && fpi.getReportSynthesisFlagshipProgress() != null
+          && fpi.getReportSynthesisFlagshipProgress().getId() != null
+          && fpi.getReportSynthesisFlagshipProgress().getId().equals(synthesisID))
+        .collect(Collectors.toList());
+
+    for (ProjectInnovation innovation : linkedInnovations) {
+      List<Long> projectExpectedStudiesInnovationIds = projectExpectedStudyInnovationManager.findAll().stream()
+        .filter(pesi -> pesi != null && pesi.getId() != null && pesi.getPhase() != null
+          && pesi.getPhase().getId() != null && pesi.getPhase().getId().longValue() == this.getPhaseID()
+          && pesi.getProjectInnovation() != null && pesi.getProjectInnovation().getId() != null
+          && pesi.getProjectInnovation().getId().longValue() == innovation.getId()
+          && pesi.getProjectExpectedStudy() != null && pesi.getProjectExpectedStudy().getId() != null)
+        .map(pesi -> pesi.getProjectExpectedStudy().getId()).collect(Collectors.toList());
+
+      List<Boolean> flagshipProgressStudiesActiveStatus = reportSynthesisFlagshipProgressStudyManager.findAll().stream()
+        .filter(fps -> fps != null && fps.getId() != null && fps.getReportSynthesisFlagshipProgress() != null
+          && fps.getReportSynthesisFlagshipProgress().getId() != null
+          && fps.getReportSynthesisFlagshipProgress().getId().equals(synthesisID)
+          && fps.getProjectExpectedStudy() != null && fps.getProjectExpectedStudy().getId() != null
+          && projectExpectedStudiesInnovationIds.contains(fps.getProjectExpectedStudy().getId()))
+        .map(fps -> fps.isActive()).collect(Collectors.toList());
+
+      if (flagshipProgressStudiesActiveStatus.size() == projectExpectedStudiesInnovationIds.size()
+        // all the studies are excluded from the AR report (isActive = true/1)
+        && flagshipProgressStudiesActiveStatus.stream().reduce(true, Boolean::logicalAnd)) {
+        ReportSynthesisFlagshipProgressInnovation flagshipInnovation =
+          phaseFlagshipInnovations.stream().filter(fpi -> fpi.getProjectInnovation().getId().equals(innovation.getId()))
+            .sorted((fpiOne, fpiTwo) -> Long.compare(fpiOne.getId(), fpiTwo.getId())).findFirst().orElse(null);
+        if (flagshipInnovation == null) {
+          // not found, we have to create one
+          flagshipInnovation = new ReportSynthesisFlagshipProgressInnovation();
+          flagshipInnovation.setProjectInnovation(innovation);
+          flagshipInnovation.setReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgress);
+        }
+
+        // the study was excluded from the AR report, we need to exclude ALL the innovations linked to it too
+        flagshipInnovation.setActive(true);
+        reportSynthesisFlagshipProgressInnovationManager
+          .saveReportSynthesisFlagshipProgressInnovation(flagshipInnovation);
+      }
+    }
+
+  }
+
+  private void updateLinkedPolicies(long studyId, ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress) {
+    List<ProjectPolicy> linkedPolicies = projectExpectedStudyPolicyManager.findAll().stream()
+      .filter(pesp -> pesp != null && pesp.getId() != null && pesp.getPhase() != null && pesp.getPhase().getId() != null
+        && pesp.getPhase().getId().equals(this.getPhaseID()) && pesp.getProjectExpectedStudy() != null
+        && pesp.getProjectExpectedStudy().getId() != null && pesp.getProjectExpectedStudy().getId() == studyId
+        && pesp.getProjectPolicy() != null && pesp.getProjectPolicy().getId() != null)
+      .map(pesp -> pesp.getProjectPolicy()).collect(Collectors.toList());
+
+    List<ReportSynthesisFlagshipProgressPolicy> phaseFlagshipPolicies =
+      reportSynthesisFlagshipProgressPolicyManager.findAll().stream()
+        .filter(fpp -> fpp != null && fpp.getId() != null && fpp.getProjectPolicy() != null
+          && fpp.getProjectPolicy().getId() != null && fpp.getReportSynthesisFlagshipProgress() != null
+          && fpp.getReportSynthesisFlagshipProgress().getId() != null
+          && fpp.getReportSynthesisFlagshipProgress().getId().equals(synthesisID))
+        .collect(Collectors.toList());
+
+    for (ProjectPolicy policy : linkedPolicies) {
+      List<Long> projectExpectedStudiesPolicyIds =
+        projectExpectedStudyPolicyManager.findAll().stream()
+          .filter(pesp -> pesp != null && pesp.getId() != null && pesp.getPhase() != null
+            && pesp.getPhase().getId() != null && pesp.getPhase().getId().longValue() == this.getPhaseID()
+            && pesp.getProjectPolicy() != null && pesp.getProjectPolicy().getId() != null
+            && pesp.getProjectPolicy().getId().longValue() == policy.getId() && pesp.getProjectExpectedStudy() != null
+            && pesp.getProjectExpectedStudy().getId() != null)
+          .map(pesp -> pesp.getProjectExpectedStudy().getId()).collect(Collectors.toList());
+
+      List<Boolean> flagshipProgressStudiesActiveStatus = reportSynthesisFlagshipProgressStudyManager.findAll().stream()
+        .filter(fpp -> fpp != null && fpp.getId() != null && fpp.getReportSynthesisFlagshipProgress() != null
+          && fpp.getReportSynthesisFlagshipProgress().getId() != null
+          && fpp.getReportSynthesisFlagshipProgress().getId().equals(synthesisID)
+          && fpp.getProjectExpectedStudy() != null && fpp.getProjectExpectedStudy().getId() != null
+          && projectExpectedStudiesPolicyIds.contains(fpp.getProjectExpectedStudy().getId()))
+        .map(fpp -> fpp.isActive()).collect(Collectors.toList());
+
+      if (flagshipProgressStudiesActiveStatus.size() == projectExpectedStudiesPolicyIds.size()
+        // all the studies are excluded from the AR report (isActive = true/1)
+        && flagshipProgressStudiesActiveStatus.stream().reduce(true, Boolean::logicalAnd)) {
+        ReportSynthesisFlagshipProgressPolicy flagshipPolicy =
+          phaseFlagshipPolicies.stream().filter(fpp -> fpp.getProjectPolicy().getId().equals(policy.getId()))
+            .sorted((fppOne, fppTwo) -> Long.compare(fppOne.getId(), fppTwo.getId())).findFirst().orElse(null);
+        if (flagshipPolicy == null) {
+          // not found, we have to create one
+          flagshipPolicy = new ReportSynthesisFlagshipProgressPolicy();
+          flagshipPolicy.setProjectPolicy(policy);
+          flagshipPolicy.setReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgress);
+        }
+
+        // the study was excluded from the AR report, we need to exclude ALL the policies linked to it too
+        flagshipPolicy.setActive(true);
+        reportSynthesisFlagshipProgressPolicyManager.saveReportSynthesisFlagshipProgressPolicy(flagshipPolicy);
+      }
+    }
   }
 
   @Override

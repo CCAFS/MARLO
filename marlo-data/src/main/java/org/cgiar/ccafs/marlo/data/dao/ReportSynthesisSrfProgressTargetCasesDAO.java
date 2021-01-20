@@ -58,6 +58,9 @@ public interface ReportSynthesisSrfProgressTargetCasesDAO {
   public List<ReportSynthesisSrfProgressTargetCases> getReportSynthesisSrfProgressId(long synthesisID,
     long srfTargetID);
 
+  public List<ReportSynthesisSrfProgressTargetCases>
+    getReportSynthesisSrfProgressTargetCaseBySrfProgress(long srfProgressId);
+
 
   /**
    * This method saves the information of the given reportSynthesisSrfProgressTargetCases

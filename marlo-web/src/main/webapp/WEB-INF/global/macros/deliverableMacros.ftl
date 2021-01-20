@@ -374,6 +374,19 @@
       </div>
     </div>
     <div class="clearfix"></div>
+    <div class="form-group row ifIsReadOnly" style="margin-top: 10px;">
+      <div class="col-md-6" >
+        [@customForm.input name="handle-bridge" required=require value="" className="metadataValue "  type="text" i18nkey="Handle" help="" readOnly=mElementHide editable=editable/]
+
+        
+      </div>
+  
+      <div class="col-md-6 conditionalRequire">
+        [@customForm.input name="doi-bridge" required=require value="" className="metadataValue "  type="text" i18nkey="DOI" help="nada2" readOnly=mElementHide editable=editable/]
+
+      </div>
+    </div>
+  </div>
   </div>
   <div id="metadata-output"></div>
 [/#macro]
@@ -411,7 +424,7 @@
   <div class="form-group"> 
     [@metadataField title="citation" encodedName="dc.identifier.citation" type="textArea" require=false/]
   </div>
-  <div class="form-group row">
+  <div class="form-group row ifIsReadOnly" style="display: none;">
     <div class="col-md-6">
       [@metadataField title="handle" encodedName="marlo.handle" type="input" require=false/]
     </div>
