@@ -76,7 +76,7 @@ public class StatusPlannedOutcomes {
   @ApiOperation(tags = {"Table 5 - Status of Planned Outcomes and Milestones"},
     value = "${StatusPlannedOutcomes.milestones.POST.value}", response = StatusPlannedOutcomesDTO.class)
   @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
-  @RequestMapping(value = "/{CGIAREntity}/statusMilestones", method = RequestMethod.POST,
+  @RequestMapping(value = "/{CGIAREntity}/newstatusMilestones", method = RequestMethod.POST,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Long> createStatusPlannedMilestone(
     @ApiParam(value = "${StatusPlannedOutcomes.milestones.POST.param.CGIAR}",
@@ -173,7 +173,7 @@ public class StatusPlannedOutcomes {
   }
 
   @ApiOperation(tags = {"Table 5 - Status of Planned Outcomes and Milestones"},
-    value = "${StatusPlannedOutcomes.milestones.PUT.value}", response = StatusPlannedOutcomesDTO.class)
+    value = "${StatusPlannedOutcomes.milestones.PUT.value}", response = Long.class)
   @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIAREntity}/statusMilestones", method = RequestMethod.PUT,
     produces = MediaType.APPLICATION_JSON_VALUE)
@@ -185,7 +185,6 @@ public class StatusPlannedOutcomes {
     Long reportSythesisProgressOutcomesID = this.statusPlannedMilestonesItem
       .updateStatusPlannedMilestone(newStatusPlanneMilestoneDTO, CGIAREntity, this.getCurrentUser());
 
-
     ResponseEntity<Long> response = new ResponseEntity<Long>(reportSythesisProgressOutcomesID, HttpStatus.OK);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("StatusPlannedOutcomes.milestones.PUT.id.404"));
@@ -194,7 +193,7 @@ public class StatusPlannedOutcomes {
   }
 
   @ApiOperation(tags = {"Table 5 - Status of Planned Outcomes and Milestones"},
-    value = "${StatusPlannedOutcomes.outcomes.PUT.value}", response = StatusPlannedOutcomesDTO.class)
+    value = "${StatusPlannedOutcomes.outcomes.PUT.value}", response = Long.class)
   @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIAREntity}/statusOutcomes", method = RequestMethod.PUT,
     produces = MediaType.APPLICATION_JSON_VALUE)
@@ -205,6 +204,7 @@ public class StatusPlannedOutcomes {
       required = true) @Valid @RequestBody NewStatusPlannedOutcomeDTO newStatusPlannedOutcomeDTO) {
     Long reportSythesisProgressOutcomesID = this.statusPlannedOutcomesItem
       .updateStatusPlannedOutcome(newStatusPlannedOutcomeDTO, CGIAREntity, this.getCurrentUser());
+
 
     ResponseEntity<Long> response = new ResponseEntity<Long>(reportSythesisProgressOutcomesID, HttpStatus.OK);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
