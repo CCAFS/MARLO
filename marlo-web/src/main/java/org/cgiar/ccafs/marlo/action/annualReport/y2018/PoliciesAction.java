@@ -21,12 +21,14 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndOrganizationTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndPolicyInvestimentTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageProcessManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressPolicyManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
@@ -84,6 +86,8 @@ public class PoliciesAction extends BaseAction {
   private ProjectPolicyManager projectPolicyManager;
   private ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager;
   private ReportSynthesisFlagshipProgressPolicyManager reportSynthesisFlagshipProgressPolicyManager;
+  private ReportSynthesisFlagshipProgressStudyManager reportSynthesisFlagshipProgressStudyManager;
+  private ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager;
   private RepIndOrganizationTypeManager repIndOrganizationTypeManager;
   private RepIndStageProcessManager repIndStageProcessManager;
   private RepIndPolicyInvestimentTypeManager repIndInvestimentTypeManager;
@@ -113,7 +117,9 @@ public class PoliciesAction extends BaseAction {
     ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
     ReportSynthesisFlagshipProgressPolicyManager reportSynthesisFlagshipProgressPolicyManager,
     RepIndOrganizationTypeManager repIndOrganizationTypeManager, RepIndStageProcessManager repIndStageProcessManager,
-    RepIndPolicyInvestimentTypeManager repIndInvestimentTypeManager, SectionStatusManager sectionStatusManager) {
+    RepIndPolicyInvestimentTypeManager repIndInvestimentTypeManager, SectionStatusManager sectionStatusManager,
+    ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager,
+    ReportSynthesisFlagshipProgressStudyManager reportSynthesisFlagshipProgressStudyManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -129,8 +135,46 @@ public class PoliciesAction extends BaseAction {
     this.repIndStageProcessManager = repIndStageProcessManager;
     this.repIndInvestimentTypeManager = repIndInvestimentTypeManager;
     this.sectionStatusManager = sectionStatusManager;
+    this.projectExpectedStudyPolicyManager = projectExpectedStudyPolicyManager;
+    this.reportSynthesisFlagshipProgressStudyManager = reportSynthesisFlagshipProgressStudyManager;
   }
 
+  /**
+   * @return true if the policy has a OICR on the AR document or if the policy has no OICR
+   */
+  public boolean canBeAddedToAR(long policyId, long phaseId) {
+    boolean editable = false;
+
+    if (policyId > 0) {
+      List<Long> projectExpectedStudiesPolicyIds = projectExpectedStudyPolicyManager.findAll().stream()
+        .filter(
+          pesp -> pesp != null && pesp.getId() != null && pesp.getPhase() != null && pesp.getPhase().getId() != null
+            && pesp.getPhase().getId().longValue() == phaseId && pesp.getProjectPolicy() != null
+            && pesp.getProjectPolicy().getId() != null && pesp.getProjectPolicy().getId().longValue() == policyId
+            && pesp.getProjectExpectedStudy() != null && pesp.getProjectExpectedStudy().getId() != null)
+        .map(pesp -> pesp.getProjectExpectedStudy().getId()).collect(Collectors.toList());
+
+      // does not have any expected studies linked, no problem.
+      if (projectExpectedStudiesPolicyIds.isEmpty()) {
+        editable = true;
+        return editable;
+      }
+
+      List<Long> expectedStudiesExcludedFromAR = reportSynthesisFlagshipProgressStudyManager.findAll().stream()
+        .filter(s -> s != null && s.isActive() && s.getReportSynthesisFlagshipProgress() != null
+          && s.getReportSynthesisFlagshipProgress().getId() != null
+          && s.getReportSynthesisFlagshipProgress().getId().equals(synthesisID) && s.getProjectExpectedStudy() != null
+          && s.getProjectExpectedStudy().getId() != null
+          && projectExpectedStudiesPolicyIds.contains(s.getProjectExpectedStudy().getId()))
+        .map(s -> s.getProjectExpectedStudy().getId()).collect(Collectors.toList());
+
+      // if all the expected studies linked to the policy are excluded from the AR Document, the policy should
+      // NOT be allowed to be included on the AR Document.
+      editable = projectExpectedStudiesPolicyIds.size() != expectedStudiesExcludedFromAR.size();
+    }
+
+    return editable;
+  }
 
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()

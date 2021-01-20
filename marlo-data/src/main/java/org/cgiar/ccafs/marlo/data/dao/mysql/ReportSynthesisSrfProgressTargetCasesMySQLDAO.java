@@ -103,6 +103,34 @@ public class ReportSynthesisSrfProgressTargetCasesMySQLDAO extends
   }
 
   @Override
+  public List<ReportSynthesisSrfProgressTargetCases>
+    getReportSynthesisSrfProgressTargetCaseBySrfProgress(long srfProgressId) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT id as targetId FROM report_synthesis_srf_progress_targets_cases");
+    query.append(" WHERE report_synthesis_srf_progress_id = ");
+    query.append(srfProgressId + " and is_active = 1");
+
+    List<Map<String, Object>> list = super.findCustomQuery(query.toString());
+
+    List<ReportSynthesisSrfProgressTargetCases> reportSynthesisSrfProgressTargetsCases =
+      new ArrayList<ReportSynthesisSrfProgressTargetCases>();
+    for (Map<String, Object> map : list) {
+      if (map != null && map.get("targetId") != null) {
+        String targetId = map.get("targetId").toString();
+        long longTargetId = Long.parseLong(targetId);
+        ReportSynthesisSrfProgressTargetCases reportSynthesisSrfProgressTargetCases = this.find(longTargetId);
+        reportSynthesisSrfProgressTargetsCases.add(reportSynthesisSrfProgressTargetCases);
+      }
+    }
+
+    if (!reportSynthesisSrfProgressTargetsCases.isEmpty()) {
+      return reportSynthesisSrfProgressTargetsCases;
+    } else {
+      return null;
+    }
+  }
+
+  @Override
   public ReportSynthesisSrfProgressTargetCases
     save(ReportSynthesisSrfProgressTargetCases reportSynthesisSrfProgressTargetCases) {
     if (reportSynthesisSrfProgressTargetCases.getId() == null) {

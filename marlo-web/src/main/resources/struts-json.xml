@@ -555,6 +555,14 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		<action name="metadataByWOS"
+			class="org.cgiar.ccafs.marlo.action.json.project.DeliverableMetadataByWOS">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
 
 		<action name="targetUnitRequest"
 			class="org.cgiar.ccafs.marlo.action.json.crpadmin.RequestTargetUnitAction">

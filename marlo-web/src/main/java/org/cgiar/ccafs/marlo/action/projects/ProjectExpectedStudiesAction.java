@@ -1459,6 +1459,12 @@ public class ProjectExpectedStudiesAction extends BaseAction {
        * }
        * // End
        */
+      // FOR AR 2020 and onwards: the OICRs will ALWAYS be public
+
+      if (this.expectedStudy.getProjectExpectedStudyInfo().getIsPublic() == null) {
+        this.expectedStudy.getProjectExpectedStudyInfo().setIsPublic(true);
+      }
+
       this.projectExpectedStudyInfoManager
         .saveProjectExpectedStudyInfo(this.expectedStudy.getProjectExpectedStudyInfo());
       this.expectedStudy.getProjectExpectedStudyInfos().add(this.expectedStudy.getProjectExpectedStudyInfo());

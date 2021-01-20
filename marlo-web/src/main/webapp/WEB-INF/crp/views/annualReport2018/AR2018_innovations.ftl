@@ -268,6 +268,7 @@
               </td>
             [/#if]
             [#if !expanded]
+              [#-- 11. Innovation Completion--]
               <td class="text-center">
                 [#assign isInnovationComplete = action.isInnovationComplete(item.id, actualPhase.id)!false /]
                 [#if  isInnovationComplete]
@@ -276,10 +277,14 @@
                   <span class="glyphicon glyphicon-exclamation-sign mf-icon" title="Incomplete"></span> 
                 [/#if]
               </td>
+              [#-- 12. Included in AR? --]
               [#if PMU]
                 <td class="text-center">
                   [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.innovationsIds?seq_contains(item.id))!true) /]
-                  [@customForm.checkmark id="innovation-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.innovationsValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/] 
+                  [#local canBeAddedToAR = ((action.canBeAddedToAR(item.id, actualPhase.id))!false)]
+                  <div data-toggle="tooltip" [#if !canBeAddedToAR]title="[@s.text name="annualReport2018.innovations.table4.cannotBeAddedToAR" /]"[/#if]>
+                    [@customForm.checkmark id="innovation-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.innovationsValue" value="${(item.id)!''}" checked=isChecked editable=(editable&&canBeAddedToAR) centered=true/]
+                  </div>
                 </td>
               [/#if]
             [/#if]

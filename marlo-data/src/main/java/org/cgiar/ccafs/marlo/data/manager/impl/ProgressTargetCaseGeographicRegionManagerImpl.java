@@ -36,7 +36,8 @@ public class ProgressTargetCaseGeographicRegionManagerImpl implements ProgressTa
 
 
   @Inject
-  public ProgressTargetCaseGeographicRegionManagerImpl(ProgressTargetCaseGeographicRegionDAO progressTargetCaseGeographicRegionDAO) {
+  public ProgressTargetCaseGeographicRegionManagerImpl(
+    ProgressTargetCaseGeographicRegionDAO progressTargetCaseGeographicRegionDAO) {
     this.progressTargetCaseGeographicRegionDAO = progressTargetCaseGeographicRegionDAO;
 
 
@@ -45,13 +46,15 @@ public class ProgressTargetCaseGeographicRegionManagerImpl implements ProgressTa
   @Override
   public void deleteProgressTargetCaseGeographicRegion(long progressTargetCaseGeographicRegionId) {
 
-    progressTargetCaseGeographicRegionDAO.deleteProgressTargetCaseGeographicRegion(progressTargetCaseGeographicRegionId);
+    progressTargetCaseGeographicRegionDAO
+      .deleteProgressTargetCaseGeographicRegion(progressTargetCaseGeographicRegionId);
   }
 
   @Override
   public boolean existProgressTargetCaseGeographicRegion(long progressTargetCaseGeographicRegionID) {
 
-    return progressTargetCaseGeographicRegionDAO.existProgressTargetCaseGeographicRegion(progressTargetCaseGeographicRegionID);
+    return progressTargetCaseGeographicRegionDAO
+      .existProgressTargetCaseGeographicRegion(progressTargetCaseGeographicRegionID);
   }
 
   @Override
@@ -62,13 +65,20 @@ public class ProgressTargetCaseGeographicRegionManagerImpl implements ProgressTa
   }
 
   @Override
-  public ProgressTargetCaseGeographicRegion getProgressTargetCaseGeographicRegionById(long progressTargetCaseGeographicRegionID) {
+  public List<ProgressTargetCaseGeographicRegion> findGeographicRegionByTargetCase(long targetCaseID) {
+    return progressTargetCaseGeographicRegionDAO.findGeographicRegionByTargetCase(targetCaseID);
+  }
+
+  @Override
+  public ProgressTargetCaseGeographicRegion
+    getProgressTargetCaseGeographicRegionById(long progressTargetCaseGeographicRegionID) {
 
     return progressTargetCaseGeographicRegionDAO.find(progressTargetCaseGeographicRegionID);
   }
 
   @Override
-  public ProgressTargetCaseGeographicRegion saveProgressTargetCaseGeographicRegion(ProgressTargetCaseGeographicRegion progressTargetCaseGeographicRegion) {
+  public ProgressTargetCaseGeographicRegion
+    saveProgressTargetCaseGeographicRegion(ProgressTargetCaseGeographicRegion progressTargetCaseGeographicRegion) {
 
     return progressTargetCaseGeographicRegionDAO.save(progressTargetCaseGeographicRegion);
   }

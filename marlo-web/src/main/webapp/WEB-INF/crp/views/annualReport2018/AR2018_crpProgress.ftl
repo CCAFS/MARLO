@@ -7,7 +7,7 @@
 [#assign customJS = [ 
   "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js"
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js" ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20201217"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210114"] /]
 
 [#assign breadCrumb = [
   {"label":"${currentSection}",   "nameSpace":"",             "action":""},
@@ -182,7 +182,7 @@
   </div>
 
   <div class="btn-removeEvidence removeElement sm" title="Remove Evidence"></div>
- [@arMacros.deliverableGeographicScope name="${ccname}.contribution[${index}]"  /]
+  [@arMacros.deliverableGeographicScope name="${ccname}.contribution[${index}]"  /]
 <hr>
   [#-- Brief summary of new evidence of CGIAR contribution to relevant targets for this CRP (with citation) --]
   <div class="form-group">
