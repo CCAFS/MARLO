@@ -1,4 +1,4 @@
-/*****************************************************************
+/** ***************************************************************
  * This file is part of Managing Agricultural Research for Learning &
  * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
@@ -11,11 +11,11 @@
  * GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
- *****************************************************************/
-
+ * ***************************************************************
+ */
 /**
  * @author Diego Perez - CIAT/CCAFS
- **/
+ * */
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
@@ -57,128 +57,123 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "Table 2 - CRP Policies")
 public class Policies {
 
-  private static final Logger LOG = LoggerFactory.getLogger(Policies.class);
-  @Autowired
-  private Environment env;
-  private final UserManager userManager;
-  private PolicyItem<ProjectPolicyDTO> policyItem;
+    private static final Logger LOG = LoggerFactory.getLogger(Policies.class);
+    @Autowired
+    private Environment env;
+    private final UserManager userManager;
+    private PolicyItem<ProjectPolicyDTO> policyItem;
 
-
-  @Inject
-  public Policies(PolicyItem<ProjectPolicyDTO> policyItem, UserManager userManager) {
-    this.userManager = userManager;
-    this.policyItem = policyItem;
-  }
-
-  @ApiOperation(tags = {"Table 2 - CRP Policies"}, value = "${Policy.policies.POST.value}",
-    response = ProjectPolicyDTO.class)
-  @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
-  @RequestMapping(value = "/{CGIAREntity}/policies", method = RequestMethod.POST,
-    produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Long> createPolicy(
-    @ApiParam(value = "${Policy.policies.POST.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
-    @ApiParam(value = "${Policy.policies.POST.param.policy}",
-      required = true) @Valid @RequestBody NewProjectPolicyDTO newProjectPolicyDTO) {
-    Long policyId = null;
-    try {
-      policyId = this.policyItem.createPolicy(newProjectPolicyDTO, CGIAREntity, this.getCurrentUser());
-    } catch (Exception e) {
-      e.printStackTrace();
+    @Inject
+    public Policies(PolicyItem<ProjectPolicyDTO> policyItem, UserManager userManager) {
+        this.userManager = userManager;
+        this.policyItem = policyItem;
     }
 
+    @ApiOperation(tags = {"Table 2 - CRP Policies"}, value = "${Policy.policies.POST.value}",
+            response = ProjectPolicyDTO.class)
+    @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
+    @RequestMapping(value = "/{CGIAREntity}/policies", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Long> createPolicy(
+            @ApiParam(value = "${Policy.policies.POST.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
+            @ApiParam(value = "${Policy.policies.POST.param.policy}",
+                    required = true) @Valid @RequestBody NewProjectPolicyDTO newProjectPolicyDTO) {
+        Long policyId = null;
+        try {
+            policyId = this.policyItem.createPolicy(newProjectPolicyDTO, CGIAREntity, this.getCurrentUser());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-    ResponseEntity<Long> response = new ResponseEntity<Long>(policyId, HttpStatus.OK);
-    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-      throw new NotFoundException("404", this.env.getProperty("Policy.policies.GET.id.404"));
-    }
-    return response;
-  }
-
-  @ApiOperation(tags = {"Table 2 - CRP Policies"}, value = "${Policy.policies.DELETE.id.value}",
-    response = ProjectPolicyDTO.class)
-  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/{CGIAREntity}/policies/{id}", method = RequestMethod.DELETE,
-    produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<ProjectPolicyDTO> deletePolicyById(
-    @ApiParam(value = "${Policy.policies.DELETE.id.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
-    @ApiParam(value = "${Policy.policies.DELETE.id.param.id}", required = true) @PathVariable Long id,
-    @ApiParam(value = "${Policy.policies.DELETE.id.param.year}", required = true) @RequestParam Integer year,
-    @ApiParam(value = "${Policy.policies.DELETE.id.param.phase}", required = true) @RequestParam String phase) {
-
-    ResponseEntity<ProjectPolicyDTO> response = null;
-
-    response = this.policyItem.deletePolicyById(id, CGIAREntity, year, phase, this.getCurrentUser());
-
-    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-      throw new NotFoundException("404", this.env.getProperty("Policy.policies.DELETE.id.404"));
-    }
-    return response;
-  }
-
-  @ApiOperation(tags = {"Table 2 - CRP Policies"}, value = "${Policy.policies.GET.all.value}",
-    response = ProjectPolicyDTO.class)
-  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/{CGIAREntity}/policies", method = RequestMethod.GET,
-    produces = MediaType.APPLICATION_JSON_VALUE)
-  public List<ProjectPolicyARDTO> findAllPoliciesByGlobalUnit(
-    @ApiParam(value = "${Policy.policies.GET.all.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
-    @ApiParam(value = "${Policy.policies.GET.all.param.year}", required = true) @RequestParam Integer year,
-    @ApiParam(value = "${Policy.policies.GET.all.param.phase}", required = true) @RequestParam String phase) {
-
-    List<ProjectPolicyARDTO> policyList = new ArrayList<ProjectPolicyARDTO>();
-
-
-    policyList = this.policyItem.findAllPoliciesByGlobalUnit(CGIAREntity, year, phase, this.getCurrentUser());
-
-    return policyList;
-  }
-
-  @ApiOperation(tags = {"Table 2 - CRP Policies"}, value = "${Policy.policies.GET.id.value}",
-    response = ProjectPolicyDTO.class)
-  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/{CGIAREntity}/policies/{id}", method = RequestMethod.GET,
-    produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<ProjectPolicyDTO> findPolicyById(
-    @ApiParam(value = "${Policy.policies.GET.id.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
-    @ApiParam(value = "${Policy.policies.GET.id.param.id}", required = true) @PathVariable Long id,
-    @ApiParam(value = "${Policy.policies.GET.id.param.year}", required = true) @RequestParam Integer year,
-    @ApiParam(value = "${Policy.policies.GET.id.param.phase}", required = true) @RequestParam String phase) {
-
-
-    ResponseEntity<ProjectPolicyDTO> response = null;
-
-    response = this.policyItem.findPolicyById(id, CGIAREntity, year, phase, this.getCurrentUser());
-    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-      throw new NotFoundException("404", this.env.getProperty("Policy.policies.GET.id.404"));
+        ResponseEntity<Long> response = new ResponseEntity<Long>(policyId, HttpStatus.OK);
+        if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+            throw new NotFoundException("404", this.env.getProperty("Policy.policies.GET.id.404"));
+        }
+        return response;
     }
 
+    @ApiOperation(tags = {"Table 2 - CRP Policies"}, value = "${Policy.policies.DELETE.id.value}",
+            response = ProjectPolicyDTO.class)
+    @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+    @RequestMapping(value = "/{CGIAREntity}/policies/{id}", method = RequestMethod.DELETE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ProjectPolicyDTO> deletePolicyById(
+            @ApiParam(value = "${Policy.policies.DELETE.id.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
+            @ApiParam(value = "${Policy.policies.DELETE.id.param.id}", required = true) @PathVariable Long id,
+            @ApiParam(value = "${Policy.policies.DELETE.id.param.year}", required = true) @RequestParam Integer year,
+            @ApiParam(value = "${Policy.policies.DELETE.id.param.phase}", required = true) @RequestParam String phase) {
 
-    return response;
-  }
+        ResponseEntity<ProjectPolicyDTO> response = null;
 
-  private User getCurrentUser() {
-    Subject subject = SecurityUtils.getSubject();
-    Long principal = (Long) subject.getPrincipal();
-    User user = this.userManager.getUser(principal);
-    return user;
-  }
+        response = this.policyItem.deletePolicyById(id, CGIAREntity, year, phase, this.getCurrentUser());
 
-  @ApiOperation(tags = {"Table 2 - CRP Policies"}, value = "${Policy.policies.PUT.value}",
-    response = ProjectPolicyDTO.class)
-  @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
-  @RequestMapping(value = "/{CGIAREntity}/policies/{id}", method = RequestMethod.PUT,
-    produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Long> putPolicy(
-    @ApiParam(value = "${Policy.policies.PUT.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
-    @ApiParam(value = "${Policy.policies.PUT.param.id}", required = true) @PathVariable Long id,
-    @ApiParam(value = "${Policy.policies.PUT.param.policy}",
-      required = true) @Valid @RequestBody NewProjectPolicyDTO newPolicyDTO) {
-    Long policyID = this.policyItem.putPolicyById(id, newPolicyDTO, CGIAREntity, this.getCurrentUser());
-    ResponseEntity<Long> response = new ResponseEntity<Long>(policyID, HttpStatus.OK);
-    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-      throw new NotFoundException("404", this.env.getProperty("Policy.policies.GET.id.404"));
+        if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+            throw new NotFoundException("404", this.env.getProperty("Policy.policies.DELETE.id.404"));
+        }
+        return response;
     }
-    return response;
-  }
+
+    @ApiOperation(tags = {"Table 2 - CRP Policies"}, value = "${Policy.policies.GET.all.value}",
+            response = ProjectPolicyDTO.class)
+    @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+    @RequestMapping(value = "/{CGIAREntity}/policies", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<ProjectPolicyARDTO> findAllPoliciesByGlobalUnit(
+            @ApiParam(value = "${Policy.policies.GET.all.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
+            @ApiParam(value = "${Policy.policies.GET.all.param.year}", required = true) @RequestParam Integer year,
+            @ApiParam(value = "${Policy.policies.GET.all.param.phase}", required = true) @RequestParam String phase) {
+
+        List<ProjectPolicyARDTO> policyList = new ArrayList<ProjectPolicyARDTO>();
+
+        policyList = this.policyItem.findAllPoliciesByGlobalUnit(CGIAREntity, year, phase, this.getCurrentUser());
+
+        return policyList;
+    }
+
+    @ApiOperation(tags = {"Table 2 - CRP Policies"}, value = "${Policy.policies.GET.id.value}",
+            response = ProjectPolicyDTO.class)
+    @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+    @RequestMapping(value = "/{CGIAREntity}/policies/{id}", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ProjectPolicyDTO> findPolicyById(
+            @ApiParam(value = "${Policy.policies.GET.id.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
+            @ApiParam(value = "${Policy.policies.GET.id.param.id}", required = true) @PathVariable Long id,
+            @ApiParam(value = "${Policy.policies.GET.id.param.year}", required = true) @RequestParam Integer year,
+            @ApiParam(value = "${Policy.policies.GET.id.param.phase}", required = true) @RequestParam String phase) {
+
+        ResponseEntity<ProjectPolicyDTO> response = null;
+
+        response = this.policyItem.findPolicyById(id, CGIAREntity, year, phase, this.getCurrentUser());
+        if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+            throw new NotFoundException("404", this.env.getProperty("Policy.policies.GET.id.404"));
+        }
+
+        return response;
+    }
+
+    private User getCurrentUser() {
+        Subject subject = SecurityUtils.getSubject();
+        Long principal = (Long) subject.getPrincipal();
+        User user = this.userManager.getUser(principal);
+        return user;
+    }
+
+    @ApiOperation(tags = {"Table 2 - CRP Policies"}, value = "${Policy.policies.PUT.value}",
+            response = ProjectPolicyDTO.class)
+    @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
+    @RequestMapping(value = "/{CGIAREntity}/policies/{id}", method = RequestMethod.PUT,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Long> putPolicy(
+            @ApiParam(value = "${Policy.policies.PUT.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
+            @ApiParam(value = "${Policy.policies.PUT.param.id}", required = true) @PathVariable Long id,
+            @ApiParam(value = "${Policy.policies.PUT.param.policy}",
+                    required = true) @Valid @RequestBody NewProjectPolicyDTO newPolicyDTO) {
+        Long policyID = this.policyItem.putPolicyById(id, newPolicyDTO, CGIAREntity, this.getCurrentUser());
+        ResponseEntity<Long> response = new ResponseEntity<Long>(policyID, HttpStatus.OK);
+        if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+            throw new NotFoundException("404", this.env.getProperty("Policy.policies.GET.id.404"));
+        }
+        return response;
+    }
 
 }
