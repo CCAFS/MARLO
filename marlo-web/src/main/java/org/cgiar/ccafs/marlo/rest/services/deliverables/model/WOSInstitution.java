@@ -26,10 +26,17 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class WOSInstitution implements Serializable {
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 2633617960096822831L;
+
   @SerializedName("clarisa_id")
   private Long clarisaId;
   private String fullName;
-
+  private String country;
+  @SerializedName("full_address")
+  private String fullAddress;
 
   public WOSInstitution() {
   }
@@ -38,12 +45,28 @@ public class WOSInstitution implements Serializable {
     return clarisaId;
   }
 
+  public String getCountry() {
+    return country;
+  }
+
+  public String getFullAddress() {
+    return fullAddress;
+  }
+
   public String getFullName() {
     return fullName;
   }
 
   public void setClarisaId(Long clarisaId) {
     this.clarisaId = clarisaId;
+  }
+
+  public void setCountry(String country) {
+    this.country = country;
+  }
+
+  public void setFullAddress(String fullAddress) {
+    this.fullAddress = fullAddress;
   }
 
   public void setFullName(String fullName) {
