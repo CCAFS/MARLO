@@ -390,6 +390,12 @@ public class DeliverableManagerImpl implements DeliverableManager {
   }
 
   @Override
+  public Boolean isDeliverableExcluded(Long deliverableId, Long phaseId) {
+
+    return deliverableDAO.isDeliverableExcluded(deliverableId, phaseId);
+  }
+
+  @Override
   public Deliverable saveDeliverable(Deliverable deliverable) {
 
     return deliverableDAO.save(deliverable);
