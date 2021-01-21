@@ -264,6 +264,22 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
   }
 
   @Override
+  public Boolean isDeliverableExcluded(Long deliverableId, Long phaseId) {
+    StringBuilder query = new StringBuilder();
+    query.append("select is_deliverable_excluded(" + deliverableId.longValue() + "," + phaseId.longValue()
+      + ") as isDeliverableExcluded");
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        if (Long.parseLong(map.get("isDeliverableExcluded").toString()) == 0) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  @Override
   public Deliverable save(Deliverable deliverable) {
     if (deliverable.getId() == null) {
       super.saveEntity(deliverable);
