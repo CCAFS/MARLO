@@ -227,12 +227,14 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
             projectPartner.getSelectedLocations().add(projectPartnerLocation.getInstitutionLocation());
           }
           projectPartner.setPartnerContributors(contributors);
-          projectPartner.setPartnerPersons(
-            projectPartner.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+          projectPartner.setPartnerPersons(projectPartner.getProjectPartnerPersons().stream()
+            .filter(c -> c != null && c.isActive()).collect(Collectors.toList()));
           projectPartnerManager.copyPartner(projectPartner, phase);
         }
-        List<ProjectLocation> projectLocations = projectInfo.getProject().getProjectLocations().stream()
-          .filter(c -> c.isActive() && c.getPhase().equals(projectInfo.getPhase())).collect(Collectors.toList());
+        List<ProjectLocation> projectLocations = projectInfo
+          .getProject().getProjectLocations().stream().filter(c -> c != null && c.isActive() && c.getPhase() != null
+            && projectInfo.getPhase() != null && c.getPhase().equals(projectInfo.getPhase()))
+          .collect(Collectors.toList());
         for (ProjectLocation projectLocation : projectLocations) {
           projectLocationManager.copyProjectLocation(projectLocation, phase);
         }
