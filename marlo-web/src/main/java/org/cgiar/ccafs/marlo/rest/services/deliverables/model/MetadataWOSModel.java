@@ -38,7 +38,10 @@ public class MetadataWOSModel implements Serializable {
   private Long publicationYear;
 
   @SerializedName("is_oa")
-  private Boolean isOA;
+  private Boolean isOpenAccess;
+
+  @SerializedName("oa_link")
+  private String openAcessLink;
 
   @SerializedName("is_isi")
   private Boolean isISI;
@@ -68,8 +71,8 @@ public class MetadataWOSModel implements Serializable {
     return isISI;
   }
 
-  public Boolean getIsOA() {
-    return isOA;
+  public Boolean getIsOpenAccess() {
+    return isOpenAccess;
   }
 
   public String getIssue() {
@@ -78,6 +81,10 @@ public class MetadataWOSModel implements Serializable {
 
   public String getJournalName() {
     return journalName;
+  }
+
+  public String getOpenAcessLink() {
+    return openAcessLink;
   }
 
   public String getPages() {
@@ -116,8 +123,8 @@ public class MetadataWOSModel implements Serializable {
     this.isISI = isISI;
   }
 
-  public void setIsOA(Boolean isOA) {
-    this.isOA = isOA;
+  public void setIsOpenAccess(Boolean isOA) {
+    this.isOpenAccess = isOA;
   }
 
   public void setIssue(String issue) {
@@ -126,6 +133,10 @@ public class MetadataWOSModel implements Serializable {
 
   public void setJournalName(String journalName) {
     this.journalName = journalName;
+  }
+
+  public void setOpenAcessLink(String openAcessLink) {
+    this.openAcessLink = openAcessLink;
   }
 
   public void setPages(String pages) {
