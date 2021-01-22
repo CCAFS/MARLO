@@ -188,10 +188,10 @@ public class Deliverables {
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/publicationsWOS", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<PublicationsWOSDTO> validateDeliverableWOS(
-    @ApiParam(value = "${Deliverables.deliverable.GET.id.param.id}", required = true) @RequestParam String url) {
+    @ApiParam(value = "${Deliverables.WOS.GET.id.param.id}", required = true) @RequestParam String url) {
     ResponseEntity<PublicationsWOSDTO> response = this.publicationWOSItem.validateDeliverable(url);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-      throw new NotFoundException("404", this.env.getProperty("Deliverables.deliverableWOS.GET.id.404"));
+      throw new NotFoundException("404", this.env.getProperty("Deliverables.WOS.GET.id.404"));
     }
     return response;
   }

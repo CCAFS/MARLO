@@ -20,69 +20,29 @@
 package org.cgiar.ccafs.marlo.rest.dto;
 
 
-public class InstitutionsWOSDTO {
+public class AuthorsWOSDTO {
 
-  private Long clarisa_id;
+  private String full_name;
 
 
-  private String fullName;
-
-  private String full_address;
-
-  private String country;
-
-  public InstitutionsWOSDTO() {
+  public AuthorsWOSDTO() {
     super();
   }
 
 
-  public InstitutionsWOSDTO(Long clarisa_id, String fullName, String full_address, String country) {
+  public AuthorsWOSDTO(String full_name) {
     super();
-    this.clarisa_id = clarisa_id;
-    this.fullName = fullName;
-    this.full_address = full_address;
-    this.country = country;
+    this.full_name = full_name;
   }
 
 
-  public Long getClarisa_id() {
-    return clarisa_id;
+  public String getFull_name() {
+    return full_name;
   }
 
 
-  public String getCountry() {
-    return country;
+  public void setFull_name(String full_name) {
+    this.full_name = full_name;
   }
-
-
-  public String getFull_address() {
-    return full_address;
-  }
-
-
-  public String getFullName() {
-    return fullName;
-  }
-
-
-  public void setClarisa_id(Long clarisa_id) {
-    this.clarisa_id = clarisa_id;
-  }
-
-
-  public void setCountry(String country) {
-    this.country = country;
-  }
-
-
-  public void setFull_address(String full_address) {
-    this.full_address = full_address;
-  }
-
-
-  public void setFullName(String fullName) {
-    this.fullName = fullName;
-  }
-
 
 }
