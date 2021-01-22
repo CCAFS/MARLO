@@ -17,36 +17,38 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.rest.dto;
+package org.cgiar.ccafs.marlo.rest.services.deliverables.model;
+
+import java.io.Serializable;
+
+public class PublicationInstitutionWOS implements Serializable {
 
 
-public class InstitutionsWOSDTO {
+  private static final long serialVersionUID = 96213478420328868L;
+
 
   private Long clarisa_id;
 
-
-  private String fullName;
-
-  private String full_address;
+  private String name;
 
   private String country;
 
-  public InstitutionsWOSDTO() {
-    super();
-  }
+  private String full_address;
 
+  private Long confidant;
 
-  public InstitutionsWOSDTO(Long clarisa_id, String fullName, String full_address, String country) {
+  public PublicationInstitutionWOS() {
     super();
-    this.clarisa_id = clarisa_id;
-    this.fullName = fullName;
-    this.full_address = full_address;
-    this.country = country;
   }
 
 
   public Long getClarisa_id() {
     return clarisa_id;
+  }
+
+
+  public Long getConfidant() {
+    return confidant;
   }
 
 
@@ -60,13 +62,18 @@ public class InstitutionsWOSDTO {
   }
 
 
-  public String getFullName() {
-    return fullName;
+  public String getName() {
+    return name;
   }
 
 
   public void setClarisa_id(Long clarisa_id) {
     this.clarisa_id = clarisa_id;
+  }
+
+
+  public void setConfidant(Long confidant) {
+    this.confidant = confidant;
   }
 
 
@@ -80,8 +87,8 @@ public class InstitutionsWOSDTO {
   }
 
 
-  public void setFullName(String fullName) {
-    this.fullName = fullName;
+  public void setName(String name) {
+    this.name = name;
   }
 
 

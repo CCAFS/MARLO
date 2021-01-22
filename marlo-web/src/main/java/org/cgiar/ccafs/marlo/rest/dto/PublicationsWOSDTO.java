@@ -27,11 +27,15 @@ public class PublicationsWOSDTO {
 
   private String title;
 
+  private String doi;
+
   private String publicationType;
 
   private int publicationYear;
 
   private boolean is_oa;
+
+  private String oa_link;
 
   private boolean is_isi;
 
@@ -39,27 +43,30 @@ public class PublicationsWOSDTO {
 
   private String volume;
 
-  private String issue;
-
   private String pages;
 
-  private List<String> authors;
+  private List<AuthorsWOSDTO> authors;
 
   private List<InstitutionsWOSDTO> organizations;
 
 
-  public List<String> getAuthors() {
+  public List<AuthorsWOSDTO> getAuthors() {
     return authors;
   }
 
 
-  public String getIssue() {
-    return issue;
+  public String getDoi() {
+    return doi;
   }
 
 
   public String getJournalName() {
     return journalName;
+  }
+
+
+  public String getOa_link() {
+    return oa_link;
   }
 
 
@@ -108,8 +115,13 @@ public class PublicationsWOSDTO {
   }
 
 
-  public void setAuthors(List<String> authors) {
+  public void setAuthors(List<AuthorsWOSDTO> authors) {
     this.authors = authors;
+  }
+
+
+  public void setDoi(String doi) {
+    this.doi = doi;
   }
 
 
@@ -123,13 +135,13 @@ public class PublicationsWOSDTO {
   }
 
 
-  public void setIssue(String issue) {
-    this.issue = issue;
+  public void setJournalName(String journalName) {
+    this.journalName = journalName;
   }
 
 
-  public void setJournalName(String journalName) {
-    this.journalName = journalName;
+  public void setOa_link(String oa_link) {
+    this.oa_link = oa_link;
   }
 
 
