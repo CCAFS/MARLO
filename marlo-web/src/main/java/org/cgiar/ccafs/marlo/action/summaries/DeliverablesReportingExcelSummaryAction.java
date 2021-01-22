@@ -284,6 +284,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
       this.getText("project.deliverable.v.qualityCheck"));
     masterReport.getParameterValues().put("i8nNewDeliverable",
       this.getText("summaries.board.report.expectedDeliverables.isNewDeliverable"));
+    masterReport.getParameterValues().put("i8nArticleURL",
+      this.getText("summaries.board.report.expectedDeliverables.articleURL"));
 
     return masterReport;
   }
@@ -400,7 +402,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         "deliv_license_modifications", "volume", "issue", "pages", "journal", "journal_indicators", "acknowledge",
         "fl_contrib", "project_ID", "project_title", "flagships", "regions", "others_responsibles", "newExceptedFlag",
         "phaseID", "gender", "youth", "cap", "geographicScope", "region", "country", "status", "isComplete",
-        "individual", "ppaResponsible", "managingResponsible", "climate", "justification", "description"},
+        "individual", "ppaResponsible", "managingResponsible", "climate", "justification", "description", "articleURL"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, Integer.class, String.class,
         String.class, String.class, String.class, Integer.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
@@ -409,7 +411,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, Long.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class},
+        String.class, String.class, String.class},
       0);
     if (!deliverableManager.findAll().isEmpty()) {
       List<Deliverable> deliverables = new ArrayList<>();
@@ -762,6 +764,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         String disseminated = "No";
         String restrictedAccess = null;
         Boolean showDelivLicenseModifications = false;
+        String articleURL = "";
 
         if (deliverable.getDeliverableDisseminations().stream()
           .filter(ds -> ds.isActive() && ds.getPhase() != null && ds.getPhase().equals(this.getSelectedPhase()))
@@ -779,6 +782,20 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
             isDisseminated = true;
             disseminated = "Yes";
           }
+
+          // Article URL
+          if (deliverable.getDeliverableInfo(this.getSelectedPhase()) != null
+            && deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType() != null
+            && deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getId() == 63) {
+            if (deliverableDissemination.getArticleUrl() != null) {
+              articleURL = deliverableDissemination.getArticleUrl();
+            } else {
+              articleURL = "<Not Defined>";
+            }
+          } else {
+            articleURL = "<Not Applicable>";
+          }
+
           if (isDisseminated) {
             if (deliverableDissemination.getDisseminationChannel() != null
               && !deliverableDissemination.getDisseminationChannel().isEmpty()) {
@@ -854,6 +871,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
               }
             }
           }
+        } else {
+          articleURL = "<Not applicable>";
         }
 
         if (delivLicense != null && delivLicense.isEmpty()) {
@@ -1752,6 +1771,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         if (managingResponsible.isEmpty()) {
           managingResponsible = null;
         }
+
         String shared = null;
         if (managingResponsibleList != null) {
           if (managingResponsibleList.size() == 0) {
@@ -1778,7 +1798,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           disseminated, restrictedAccess, delivLicenseModifications, volume, issue, pages, journal, journalIndicator,
           acknowledge, flContrib, projectID, projectTitle, flagships, regions, othersResponsibles, newExceptedFlag,
           phaseID, gender, youth, cap, geographicScope, region, country, status, isComplete, individual, ppaResponsible,
-          managingResponsible, climate, justification, description});
+          managingResponsible, climate, justification, description, articleURL});
       }
     }
     return model;
@@ -1792,13 +1812,13 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         "citationMetadata", "HandleMetadata", "DOIMetadata", "creator_authors", "F", "A", "I", "R",
         "deliv_license_modifications", "volume", "issue", "pages", "journal", "journal_indicators", "acknowledge",
         "fl_contrib", "flagships", "regions", "added_by", "phaseID", "gender", "youth", "cap", "keyOutput", "outcomes",
-        "geographicScope", "region", "country", "fundingSources"},
+        "geographicScope", "region", "country", "fundingSources", "articleURL"},
       new Class[] {Long.class, String.class, String.class, Integer.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, Long.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class},
       0);
 
 
@@ -1821,7 +1841,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           creatorAuthors = "", F = null, A = null, I = null, R = null, restrictedAccess = null,
           delivLicenseModifications = null, volume = null, issue = null, pages = null, journal = null,
           journalIndicators = "", acknowledge = null, flContrib = "", flagships = null, regions = null, addedBy = null,
-          keyOutput = "", outcomes = "";
+          keyOutput = "", outcomes = "", articleURL = "";
         String fundingSources = "";
         publicationId = deliverable.getId();
         title = deliverable.getDeliverableInfo().getTitle();
@@ -1915,6 +1935,21 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
             .filter(ds -> ds.isActive() && ds.getPhase() != null && ds.getPhase().equals(this.getSelectedPhase()))
             .collect(Collectors.toList()).get(0);
 
+
+          // Article URL
+          if (deliverable.getDeliverableInfo(this.getSelectedPhase()) != null
+            && deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType() != null
+            && deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getId() == 63) {
+            if (deliverableDissemination.getArticleUrl() != null) {
+              articleURL = deliverableDissemination.getArticleUrl();
+            } else {
+              articleURL = "<Not Defined>";
+            }
+          } else {
+            articleURL = "<Not Applicable>";
+          }
+
+
           if (deliverableDissemination.getAlreadyDisseminated() != null
             && deliverableDissemination.getAlreadyDisseminated() == true) {
             isDisseminated = true;
@@ -1986,6 +2021,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
               }
             }
           }
+        } else {
+          articleURL = "<Not Applicable>";
         }
 
         for (DeliverableMetadataElement deliverableMetadataElement : deliverable.getDeliverableMetadataElements()
@@ -2467,7 +2504,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           descriptionMetadata, dateMetadata, languageMetadata, countryMetadata, keywordsMetadata, citationMetadata,
           HandleMetadata, DOIMetadata, creatorAuthors, F, A, I, R, delivLicenseModifications, volume, issue, pages,
           journal, journalIndicators, acknowledge, flContrib, flagships, regions, addedBy, phaseID, gender, youth, cap,
-          keyOutput, outcomes, geographicScope, region, country, fundingSources});
+          keyOutput, outcomes, geographicScope, region, country, fundingSources, articleURL});
       }
     }
     return model;

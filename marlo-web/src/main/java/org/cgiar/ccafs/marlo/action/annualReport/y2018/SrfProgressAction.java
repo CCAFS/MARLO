@@ -677,10 +677,10 @@ public class SrfProgressAction extends BaseAction {
                   progressTargetCaseGeographicScopeManager.findGeographicScopeByTargetCase(targetCase.getId());
 
                 if (targetCaseDB != null) {
-                  if (targetCaseGeographicScope != null || !targetCaseGeographicScope.isEmpty()) {
+                  if (targetCaseGeographicScope != null) {
                     targetCaseDB.setGeographicScopes(targetCaseGeographicScope);
                   }
-                  if (targetCaseGeographicRegions != null || !targetCaseGeographicRegions.isEmpty()) {
+                  if (targetCaseGeographicRegions != null) {
                     targetCaseDB.setGeographicRegions(targetCaseGeographicRegions);
                   }
                 }
@@ -891,6 +891,7 @@ public class SrfProgressAction extends BaseAction {
           srfTargetSave.setActive(true);
 
           reportSynthesisSrfProgressTargetCasesManager.saveReportSynthesisSrfProgressTargetCases(srfTargetSave);
+
         } else {
 
           boolean hasChanges = false;
