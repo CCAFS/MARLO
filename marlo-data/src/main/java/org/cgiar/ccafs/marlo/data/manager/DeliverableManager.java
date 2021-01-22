@@ -117,6 +117,8 @@ public interface DeliverableManager {
    */
   public List<Deliverable> getPublicationsList(LiaisonInstitution liaisonInstitution, Phase phase);
 
+  public Boolean isDeliverableExcluded(Long deliverableId, Long phaseId);
+
   /**
    * This method saves the information of the given deliverable
    * 
