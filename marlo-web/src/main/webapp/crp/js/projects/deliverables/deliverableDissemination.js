@@ -66,7 +66,12 @@ function updateReadOnly() {
 
   $('#doi-bridge').parents('.input').find('img').attr("title", $('.metadataElement-doi').find('img').prop("title"));
 
+  let channel = $(".disseminationChannel").val();
+  console.log(channel);
 
+  // found-dissemination
+  $('#output-dissemination').empty().append("Found metadata successfully in " + channel)
+  $('#output-wos').empty().append("Found metadata successfully in Web of Sciences");;
 }
 
 function addDisseminationEvents() {

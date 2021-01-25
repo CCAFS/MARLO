@@ -4242,7 +4242,7 @@ span.indicatorsFound {
   background-color: #5b80c3;
 }
 
-#metadata-output {
+#metadata-output, .metadata-output-persistent {
   color: #777;
   padding: 7px 4px;
   font-style: italic;
