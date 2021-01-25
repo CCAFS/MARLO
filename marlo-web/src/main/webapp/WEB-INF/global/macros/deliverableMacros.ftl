@@ -414,55 +414,55 @@
                 <tbody>
                   <tr>
                     <th scope="row">URL</th>
-                    <td>Mark</td>
+                    <td>Not Available</td>
                   </tr>
                   <tr>
                     <th scope="row">Title</th>
-                    <td> Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nesciunt et eveniet error tempora. Laudantium, blanditiis rerum fugit molestiae praesentium atque! </td>
+                    <td>Not Available</td>
                   </tr>
                   <tr>
                     <th scope="row">Publication type</th>
-                    <td>Larry</td>
+                    <td>Not Available</td>
                   </tr>
                   <tr>
                     <th scope="row">Publication Year</th>
-                    <td>nnnn</td>
+                    <td>Not Available</td>
                   </tr>
                   <tr>
                     <th scope="row">Is Open Access</th>
-                    <td>nnnn</td>
+                    <td>Not Available</td>
                   </tr>
                   <tr>
                     <th scope="row">Open access link</th>
-                    <td>nnnn</td>
+                    <td>Not Available</td>
                   </tr>
                   <tr>
                     <th scope="row">Is ISI</th>
-                    <td>nnnn</td>
+                    <td>Not Available</td>
                   </tr>
                   <tr>
                     <th scope="row">Journal name</th>
-                    <td>nnnn</td>
+                    <td>Not Available</td>
                   </tr>
                   <tr>
                     <th scope="row">Volume</th>
-                    <td>nnnn</td>
+                    <td>Not Available</td>
                   </tr>
                   <tr>
                     <th scope="row">Issue</th>
-                    <td>nnnn</td>
+                    <td>Not Available</td>
                   </tr>
                   <tr>
                     <th scope="row">Pages</th>
-                    <td>nnnn</td>
+                    <td>Not Available</td>
                   </tr>
                   <tr>
                     <th scope="row">Authors</th>
-                    <td>nnnn</td>
+                    <td>Not Available</td>
                   </tr>
                   <tr>
                     <th scope="row">Institutions</th>
-                    <td>nnnn</td>
+                    <td>Not Available</td>
                   </tr>
                 </tbody>
               </table>
