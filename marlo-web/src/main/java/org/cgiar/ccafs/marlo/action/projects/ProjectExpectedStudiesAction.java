@@ -623,8 +623,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           // Expected Study Geographic Regions List Autosave
           if (this.expectedStudy.getStudyRegions() != null) {
             for (ProjectExpectedStudyRegion projectExpectedStudyRegion : this.expectedStudy.getStudyRegions()) {
-              projectExpectedStudyRegion.setLocElement(
-                this.locElementManager.getLocElementById(projectExpectedStudyRegion.getLocElement().getId()));
+              if (projectExpectedStudyRegion != null && projectExpectedStudyRegion.getLocElement() != null
+                && projectExpectedStudyRegion.getLocElement().getId() != null) {
+                projectExpectedStudyRegion.setLocElement(
+                  this.locElementManager.getLocElementById(projectExpectedStudyRegion.getLocElement().getId()));
+              }
             }
           }
         }
@@ -647,40 +650,55 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         if (this.expectedStudy.getSubIdos() != null && !this.expectedStudy.getSubIdos().isEmpty()
           && this.expectedStudy.getSubIdos().size() > 0) {
           for (ProjectExpectedStudySubIdo projectExpectedStudySubIdo : this.expectedStudy.getSubIdos()) {
-            projectExpectedStudySubIdo
-              .setSrfSubIdo(this.srfSubIdoManager.getSrfSubIdoById(projectExpectedStudySubIdo.getSrfSubIdo().getId()));
+            if (projectExpectedStudySubIdo != null && projectExpectedStudySubIdo.getSrfSubIdo() != null
+              && projectExpectedStudySubIdo.getSrfSubIdo().getId() != null) {
+              projectExpectedStudySubIdo.setSrfSubIdo(
+                this.srfSubIdoManager.getSrfSubIdoById(projectExpectedStudySubIdo.getSrfSubIdo().getId()));
+            }
           }
         }
 
         // Expected Study Flagship List Autosave
         if (this.expectedStudy.getFlagships() != null && !this.expectedStudy.getFlagships().isEmpty()) {
           for (ProjectExpectedStudyFlagship projectExpectedStudyFlagship : this.expectedStudy.getFlagships()) {
-            projectExpectedStudyFlagship.setCrpProgram(
-              this.crpProgramManager.getCrpProgramById(projectExpectedStudyFlagship.getCrpProgram().getId()));
+            if (projectExpectedStudyFlagship != null && projectExpectedStudyFlagship.getCrpProgram() != null
+              && projectExpectedStudyFlagship.getCrpProgram().getId() != null) {
+              projectExpectedStudyFlagship.setCrpProgram(
+                this.crpProgramManager.getCrpProgramById(projectExpectedStudyFlagship.getCrpProgram().getId()));
+            }
           }
         }
 
         // Expected Study Regions (Flagships) List Autosave
         if (this.expectedStudy.getRegions() != null && !this.expectedStudy.getRegions().isEmpty()) {
           for (ProjectExpectedStudyFlagship projectExpectedStudyFlagship : this.expectedStudy.getRegions()) {
-            projectExpectedStudyFlagship.setCrpProgram(
-              this.crpProgramManager.getCrpProgramById(projectExpectedStudyFlagship.getCrpProgram().getId()));
+            if (projectExpectedStudyFlagship != null && projectExpectedStudyFlagship.getCrpProgram() != null
+              && projectExpectedStudyFlagship.getCrpProgram().getId() != null) {
+              projectExpectedStudyFlagship.setCrpProgram(
+                this.crpProgramManager.getCrpProgramById(projectExpectedStudyFlagship.getCrpProgram().getId()));
+            }
           }
         }
 
         // Expected Study Crp List Autosave
         if (this.expectedStudy.getCrps() != null && !this.expectedStudy.getCrps().isEmpty()) {
           for (ProjectExpectedStudyCrp projectExpectedStudyCrp : this.expectedStudy.getCrps()) {
-            projectExpectedStudyCrp
-              .setGlobalUnit(this.crpManager.getGlobalUnitById(projectExpectedStudyCrp.getGlobalUnit().getId()));
+            if (projectExpectedStudyCrp != null && projectExpectedStudyCrp.getGlobalUnit() != null
+              && projectExpectedStudyCrp.getGlobalUnit().getId() != null) {
+              projectExpectedStudyCrp
+                .setGlobalUnit(this.crpManager.getGlobalUnitById(projectExpectedStudyCrp.getGlobalUnit().getId()));
+            }
           }
         }
 
         // Expected Study Center List Autosave
         if (this.expectedStudy.getCenters() != null && !this.expectedStudy.getCenters().isEmpty()) {
           for (ProjectExpectedStudyCenter projectExpectedStudyCenter : this.expectedStudy.getCenters()) {
-            projectExpectedStudyCenter.setInstitution(
-              this.institutionManager.getInstitutionById(projectExpectedStudyCenter.getInstitution().getId()));
+            if (projectExpectedStudyCenter != null && projectExpectedStudyCenter.getInstitution() != null
+              && projectExpectedStudyCenter.getInstitution().getId() != null) {
+              projectExpectedStudyCenter.setInstitution(
+                this.institutionManager.getInstitutionById(projectExpectedStudyCenter.getInstitution().getId()));
+            }
           }
         }
 
@@ -688,48 +706,66 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
         if (this.expectedStudy.getMilestones() != null) {
           for (ProjectExpectedStudyMilestone projectExpectedStudyMilestone : this.expectedStudy.getMilestones()) {
-            projectExpectedStudyMilestone.setCrpMilestone(
-              (milestoneManager.getCrpMilestoneById(projectExpectedStudyMilestone.getCrpMilestone().getId())));
+            if (projectExpectedStudyMilestone != null && projectExpectedStudyMilestone.getCrpMilestone() != null
+              && projectExpectedStudyMilestone.getCrpMilestone().getId() != null) {
+              projectExpectedStudyMilestone.setCrpMilestone(
+                (milestoneManager.getCrpMilestoneById(projectExpectedStudyMilestone.getCrpMilestone().getId())));
+            }
           }
         }
 
         // Expected Study Institutions List Autosave
         if (this.expectedStudy.getInstitutions() != null) {
           for (ProjectExpectedStudyInstitution projectExpectedStudyInstitution : this.expectedStudy.getInstitutions()) {
-            projectExpectedStudyInstitution.setInstitution(
-              this.institutionManager.getInstitutionById(projectExpectedStudyInstitution.getInstitution().getId()));
+            if (projectExpectedStudyInstitution != null && projectExpectedStudyInstitution.getInstitution() != null
+              && projectExpectedStudyInstitution.getInstitution().getId() != null) {
+              projectExpectedStudyInstitution.setInstitution(
+                this.institutionManager.getInstitutionById(projectExpectedStudyInstitution.getInstitution().getId()));
+            }
           }
         }
 
         // Expected Study Srf Target List Autosave
         if (this.expectedStudy.getSrfTargets() != null) {
           for (ProjectExpectedStudySrfTarget projectExpectedStudySrfTarget : this.expectedStudy.getSrfTargets()) {
-            projectExpectedStudySrfTarget.setSrfSloIndicator(this.srfSloIndicatorManager
-              .getSrfSloIndicatorById(projectExpectedStudySrfTarget.getSrfSloIndicator().getId()));
+            if (projectExpectedStudySrfTarget != null && projectExpectedStudySrfTarget.getSrfSloIndicator() != null
+              && projectExpectedStudySrfTarget.getSrfSloIndicator().getId() != null) {
+              projectExpectedStudySrfTarget.setSrfSloIndicator(this.srfSloIndicatorManager
+                .getSrfSloIndicatorById(projectExpectedStudySrfTarget.getSrfSloIndicator().getId()));
+            }
           }
         }
 
         // Expected Study Projects List Autosave
         if (this.expectedStudy.getProjects() != null) {
           for (ExpectedStudyProject expectedStudyProject : this.expectedStudy.getProjects()) {
-            expectedStudyProject
-              .setProject(this.projectManager.getProjectById(expectedStudyProject.getProject().getId()));
+            if (expectedStudyProject != null && expectedStudyProject.getProject() != null
+              && expectedStudyProject.getProject().getId() != null) {
+              expectedStudyProject
+                .setProject(this.projectManager.getProjectById(expectedStudyProject.getProject().getId()));
+            }
           }
         }
 
         // Expected Study Innovations List Autosave
         if (this.expectedStudy.getInnovations() != null) {
           for (ProjectExpectedStudyInnovation projectExpectedStudyInnovation : this.expectedStudy.getInnovations()) {
-            projectExpectedStudyInnovation.setProjectInnovation(this.projectInnovationManager
-              .getProjectInnovationById(projectExpectedStudyInnovation.getProjectInnovation().getId()));
+            if (projectExpectedStudyInnovation != null && projectExpectedStudyInnovation.getProjectInnovation() != null
+              && projectExpectedStudyInnovation.getProjectInnovation().getId() != null) {
+              projectExpectedStudyInnovation.setProjectInnovation(this.projectInnovationManager
+                .getProjectInnovationById(projectExpectedStudyInnovation.getProjectInnovation().getId()));
+            }
           }
         }
 
         // Expected Study Policies List Autosave
         if (this.expectedStudy.getPolicies() != null) {
           for (ProjectExpectedStudyPolicy projectExpectedStudyPolicy : this.expectedStudy.getPolicies()) {
-            projectExpectedStudyPolicy.setProjectPolicy(
-              this.projectPolicyManager.getProjectPolicyById(projectExpectedStudyPolicy.getProjectPolicy().getId()));
+            if (projectExpectedStudyPolicy != null && projectExpectedStudyPolicy.getProjectPolicy() != null
+              && projectExpectedStudyPolicy.getProjectPolicy().getId() != null) {
+              projectExpectedStudyPolicy.setProjectPolicy(
+                this.projectPolicyManager.getProjectPolicyById(projectExpectedStudyPolicy.getProjectPolicy().getId()));
+            }
           }
         }
 
