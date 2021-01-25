@@ -295,34 +295,42 @@ public class ProjectInnovationValidator extends BaseValidator {
     }
 
     // Validate lead organization
-    if (clearLead == null || clearLead == false) {
-      if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getLeadOrganization() != null) {
-        if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getLeadOrganization()
-          .getId() == null
-          || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getLeadOrganization()
-            .getId() == -1) {
-          if (struts) {
-            action.addMessage(action.getText("projectInnovations.leadOrganization"));
-            action.addMissingField("projectInnovations.leadOrganization");
-            action.getInvalidFields().put("input-innovation.projectInnovationInfo.leadOrganization.id",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
+    // NOTE -> FOR SOME REASON "CLEAR LEAD" MEANS "NOT A CLEAR LEAD", SO WE HAVE TO REVERSE THE CONDITIONAL
+    if (clearLead == null || /* NO */clearLead == false) {
+      if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getLeadOrganization() == null
+        || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getLeadOrganization()
+          .getId() == -1) {
+        if (struts) {
+          action.addMessage(action.getText("projectInnovations.leadOrganization"));
+          action.addMissingField("projectInnovations.leadOrganization");
+          action.getInvalidFields().put("input-innovation.projectInnovationInfo.leadOrganization.id",
+            InvalidFieldsMessages.EMPTYFIELD);
         }
-      } else {
-        action.addMessage(action.getText("projectInnovations.leadOrganization"));
-        action.addMissingField("projectInnovations.leadOrganization");
-        action.getInvalidFields().put("input-innovation.projectInnovationInfo.leadOrganization.id",
-          InvalidFieldsMessages.EMPTYFIELD);
       }
     }
 
     // Validate contributing organizations
-    if (projectInnovation.getContributingOrganizations() == null) {
-      if (struts) {
-        action.addMessage(action.getText(action.getText("projectInnovations.contributingOrganizations")));
-        action.addMissingField("projectInnovations.contributingOrganizations");
-        action.getInvalidFields().put("input-innovation.contributingOrganizations",
-          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Contributing organizations"}));
+    // NOTE -> FOR SOME REASON "CLEAR LEAD" MEANS "NOT A CLEAR LEAD", SO WE HAVE TO REVERSE THE CONDITIONAL
+    if (clearLead != null && /* NO */clearLead == true) {
+      if (projectInnovation.getContributingOrganizations() == null
+        || projectInnovation.getContributingOrganizations().size() < 2
+        || projectInnovation.getContributingOrganizations().size() > 5) {
+        if (struts) {
+          action.addMessage(action.getText(action.getText("projectInnovations.contributingOrganizations")));
+          action.addMissingField("projectInnovations.contributingOrganizations");
+          action.getInvalidFields().put("input-innovation.contributingOrganizations",
+            action.getText(InvalidFieldsMessages.WRONGVALUE, new String[] {"Contributing organizations"}));
+        }
+      }
+    } else {
+      if (projectInnovation.getContributingOrganizations() != null
+        && projectInnovation.getContributingOrganizations().size() > 5) {
+        if (struts) {
+          action.addMessage(action.getText(action.getText("projectInnovations.contributingOrganizations")));
+          action.addMissingField("projectInnovations.contributingOrganizations");
+          action.getInvalidFields().put("input-innovation.contributingOrganizations",
+            action.getText(InvalidFieldsMessages.WRONGVALUE, new String[] {"Contributing organizations"}));
+        }
       }
     }
 
