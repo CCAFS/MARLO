@@ -31,6 +31,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker;
+import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicRegion;
@@ -203,6 +204,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     masterReport.getParameterValues().put("i8nRegion", this.getText("deliverable.region"));
     masterReport.getParameterValues().put("i8nNewDeliverable",
       this.getText("summaries.board.report.expectedDeliverables.isNewDeliverable"));
+    masterReport.getParameterValues().put("i8nArticleURL",
+      this.getText("summaries.board.report.expectedDeliverables.articleURL"));
 
     return masterReport;
   }
@@ -295,13 +298,13 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         "keyOutput", "delivStatus", "delivNewYear", "projectID", "projectTitle", "projectClusterActivities",
         "flagships", "regions", "individual", "partnersResponsible", "shared", "openFS", "fsWindows", "outcomes",
         "projectLeadPartner", "managingResponsible", "phaseID", "finishedFS", "gender", "youth", "cap", "climate",
-        "deliverableDescription", "geographicScope", "region", "country", "newDeliverable", "divisions",
-        "hasDivisions"},
+        "deliverableDescription", "geographicScope", "region", "country", "newDeliverable", "divisions", "hasDivisions",
+        "articleURL"},
       new Class[] {Long.class, String.class, Integer.class, String.class, String.class, String.class, String.class,
         String.class, Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, Long.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, Boolean.class},
+        String.class, String.class, Boolean.class, String.class},
       0);
     Boolean activePPAFilter = ppa != null && !ppa.isEmpty() && !ppa.equals("All") && !ppa.equals("-1");
     Boolean addDeliverableRow = true;
@@ -628,6 +631,34 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         individual = null;
       }
       String managingResponsible = "";
+      String articleURL = "";
+
+      if (deliverable.getDeliverableDisseminations().stream()
+        .filter(ds -> ds.isActive() && ds.getPhase() != null && ds.getPhase().equals(this.getSelectedPhase()))
+        .collect(Collectors.toList()).size() > 0
+        && deliverable.getDeliverableDisseminations().stream()
+          .filter(ds -> ds.isActive() && ds.getPhase() != null && ds.getPhase().equals(this.getSelectedPhase()))
+          .collect(Collectors.toList()).get(0) != null) {
+        // Get deliverable dissemination
+        DeliverableDissemination deliverableDissemination = deliverable.getDeliverableDisseminations().stream()
+          .filter(ds -> ds.isActive() && ds.getPhase() != null && ds.getPhase().equals(this.getSelectedPhase()))
+          .collect(Collectors.toList()).get(0);
+
+        // Article URL
+        if (deliverable.getDeliverableInfo(this.getSelectedPhase()) != null
+          && deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType() != null
+          && deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getId() == 63) {
+          if (deliverableDissemination.getArticleUrl() != null) {
+            articleURL = deliverableDissemination.getArticleUrl();
+          } else {
+            articleURL = "<Not Defined>";
+          }
+        } else {
+          articleURL = "<Not Applicable>";
+        }
+      } else {
+        articleURL = "<Not Applicable>";
+      }
 
       LinkedHashSet<Institution> managingResponsibleList = new LinkedHashSet<>();
       List<String> listPpa = new ArrayList<>();
@@ -1280,7 +1311,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           keyOutput, delivStatus, delivNewYear, projectID, projectTitle, projectClusterActivities, flagships, regions,
           individual, ppaResponsible, shared, openFS, fsWindows, outcomes, projectLeadPartner, managingResponsible,
           phaseID, finishedFS, gender, youth, cap, climate, deliverableDescription, geographicScope, region, country,
-          newDeliverable, divisions, hasDivisions});
+          newDeliverable, divisions, hasDivisions, articleURL});
 
         if (deliverablePerYearList.containsKey(completionYear)) {
           Set<Deliverable> deliverableSet = deliverablePerYearList.get(completionYear);
