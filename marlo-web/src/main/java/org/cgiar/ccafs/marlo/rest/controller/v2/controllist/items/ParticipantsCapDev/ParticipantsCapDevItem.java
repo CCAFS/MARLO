@@ -1,4 +1,4 @@
-/*****************************************************************
+/** ***************************************************************
  * This file is part of Managing Agricultural Research for Learning &
  * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
@@ -11,10 +11,13 @@
  * GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
- *****************************************************************/
-
+ * ***************************************************************
+ */
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.ParticipantsCapDev;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import static com.mchange.v2.c3p0.impl.C3P0Defaults.user;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
@@ -36,332 +39,381 @@ import org.cgiar.ccafs.marlo.rest.mappers.ReportSynthesisCrossCuttingDimensionMa
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang.StringUtils;
+import org.cgiar.ccafs.marlo.data.manager.RestApiAuditlogManager;
+import org.cgiar.ccafs.marlo.data.model.RestApiAuditlog;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 @Named
 public class ParticipantsCapDevItem<T> {
 
-  // Managers and mappers
-  private GlobalUnitManager globalUnitManager;
-  private PhaseManager phaseManager;
-  private LiaisonInstitutionManager liaisonInstitutionManager;
-  private ReportSynthesisManager reportSynthesisManager;
-  private ReportSynthesisCrossCuttingDimensionManager reportSynthesisCrossCuttingDimensionManager;
-  private ReportSynthesisCrossCuttingDimensionMapper reportSynthesisCrossCuttingDimensionMapper;
+    // Managers and mappers
+    private GlobalUnitManager globalUnitManager;
+    private PhaseManager phaseManager;
+    private LiaisonInstitutionManager liaisonInstitutionManager;
+    private ReportSynthesisManager reportSynthesisManager;
+    private ReportSynthesisCrossCuttingDimensionManager reportSynthesisCrossCuttingDimensionManager;
+    private ReportSynthesisCrossCuttingDimensionMapper reportSynthesisCrossCuttingDimensionMapper;
+    private RestApiAuditlogManager restApiAuditlogManager;
 
-  // Variables
-  // private List<FieldErrorDTO> fieldErrors;
-  // private ParticipantsCapDev participantsCapDev;
-  // private long innovationID;
-
-  @Inject
-  public ParticipantsCapDevItem(GlobalUnitManager globalUnitManager, PhaseManager phaseManager,
-    LiaisonInstitutionManager liaisonInstitutionManager, ReportSynthesisManager reportSynthesisManager,
-    ReportSynthesisCrossCuttingDimensionManager reportSynthesisCrossCuttingDimensionManager,
-    ReportSynthesisCrossCuttingDimensionMapper reportSynthesisCrossCuttingDimensionMapper) {
-    this.globalUnitManager = globalUnitManager;
-    this.phaseManager = phaseManager;
-    this.liaisonInstitutionManager = liaisonInstitutionManager;
-    this.reportSynthesisManager = reportSynthesisManager;
-    this.reportSynthesisCrossCuttingDimensionManager = reportSynthesisCrossCuttingDimensionManager;
-    this.reportSynthesisCrossCuttingDimensionMapper = reportSynthesisCrossCuttingDimensionMapper;
-  }
-
-  /**
-   * Create a new ParticipantsCapDev
-   * 
-   * @param newParticipantsCapDevDTO all Participants CapDev data
-   * @param CGIAR entity acronym who is requesting
-   * @param year of reporting
-   * @param Logged user on system
-   * @return innovation id created
-   */
-  public Long createParticipantsCapDev(NewParticipantsCapDevDTO newParticipantsCapDevDTO, String entityAcronym,
-    User user) {
-
-    // TODO: Add the save to history
-    // TODO: Include all data validations
-    // TODO: return an ParticipantsCapDevDTO
-    Long reportSynCrossCutDimId = null;
-    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
-
-    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
-
-    if (globalUnitEntity == null) {
-      fieldErrors.add(new FieldErrorDTO("createParticipantsCapDev", "GlobalUnitEntity",
-        entityAcronym + " is an invalid CGIAR entity acronym"));
+    // Variables
+    // private List<FieldErrorDTO> fieldErrors;
+    // private ParticipantsCapDev participantsCapDev;
+    // private long innovationID;
+    @Inject
+    public ParticipantsCapDevItem(GlobalUnitManager globalUnitManager, PhaseManager phaseManager,
+            LiaisonInstitutionManager liaisonInstitutionManager, ReportSynthesisManager reportSynthesisManager,
+            ReportSynthesisCrossCuttingDimensionManager reportSynthesisCrossCuttingDimensionManager,
+            ReportSynthesisCrossCuttingDimensionMapper reportSynthesisCrossCuttingDimensionMapper,
+            RestApiAuditlogManager restApiAuditlogManager) {
+        this.globalUnitManager = globalUnitManager;
+        this.phaseManager = phaseManager;
+        this.liaisonInstitutionManager = liaisonInstitutionManager;
+        this.reportSynthesisManager = reportSynthesisManager;
+        this.reportSynthesisCrossCuttingDimensionManager = reportSynthesisCrossCuttingDimensionManager;
+        this.reportSynthesisCrossCuttingDimensionMapper = reportSynthesisCrossCuttingDimensionMapper;
+        this.restApiAuditlogManager = restApiAuditlogManager;
     }
 
-    Phase phase = this.phaseManager.findAll().stream()
-      .filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(entityAcronym)
-        && c.getYear() == newParticipantsCapDevDTO.getPhase().getYear()
-        && c.getName().equalsIgnoreCase(newParticipantsCapDevDTO.getPhase().getName()))
-      .findFirst().orElse(null);
+    /**
+     * Create a new ParticipantsCapDev
+     *
+     * @param newParticipantsCapDevDTO all Participants CapDev data
+     * @param CGIAR entity acronym who is requesting
+     * @param year of reporting
+     * @param Logged user on system
+     * @return innovation id created
+     */
+    public Long createParticipantsCapDev(NewParticipantsCapDevDTO newParticipantsCapDevDTO, String entityAcronym,
+            User user) {
 
-    if (this.valuesMinorsToZero(newParticipantsCapDevDTO)) {
-      fieldErrors.add(new FieldErrorDTO("createParticipantsCapDev", "ParticipantsCapDevDTO",
-        "One or more of the values are minors to zero"));
-    } else {
+        // TODO: Add the save to history
+        // TODO: Include all data validations
+        // TODO: return an ParticipantsCapDevDTO
+        Long reportSynCrossCutDimId = null;
+        List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
 
-      if (phase == null) {
-        fieldErrors
-          .add(new FieldErrorDTO("createParticipantsCapDev", "phase", newParticipantsCapDevDTO.getPhase().getYear()
-            + " / " + newParticipantsCapDevDTO.getPhase().getName() + " is an invalid year or name phase"));
-      } else {
+        GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
 
-        LiaisonInstitution liaisonInstitution =
-          this.liaisonInstitutionManager.findByAcronymAndCrp(APConstants.CLARISA_ACRONYM_PMU, globalUnitEntity.getId());
+        if (globalUnitEntity == null) {
+            fieldErrors.add(new FieldErrorDTO("createParticipantsCapDev", "GlobalUnitEntity",
+                    entityAcronym + " is an invalid CGIAR entity acronym"));
+        }
 
-        if (liaisonInstitution == null) {
-          fieldErrors
-            .add(new FieldErrorDTO("createParticipantsCapDev", "LiaisonInstitution", "invalid liaison institution"));
+        Phase phase = this.phaseManager.findAll().stream()
+                .filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(entityAcronym)
+                && c.getYear() == newParticipantsCapDevDTO.getPhase().getYear()
+                && c.getName().equalsIgnoreCase(newParticipantsCapDevDTO.getPhase().getName()))
+                .findFirst().orElse(null);
+
+        if (this.valuesMinorsToZero(newParticipantsCapDevDTO)) {
+            fieldErrors.add(new FieldErrorDTO("createParticipantsCapDev", "ParticipantsCapDevDTO",
+                    "One or more of the values are minors to zero"));
         } else {
 
-          ReportSynthesis reportSynthesis =
-            reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
+            if (phase == null) {
+                fieldErrors
+                        .add(new FieldErrorDTO("createParticipantsCapDev", "phase", newParticipantsCapDevDTO.getPhase().getYear()
+                                + " / " + newParticipantsCapDevDTO.getPhase().getName() + " is an invalid year or name phase"));
+            } else {
 
-          ReportSynthesisCrossCuttingDimension reportSynthesisCrossCuttingDimension = null;
+                LiaisonInstitution liaisonInstitution
+                        = this.liaisonInstitutionManager.findByAcronymAndCrp(APConstants.CLARISA_ACRONYM_PMU, globalUnitEntity.getId());
 
-          if (reportSynthesis == null) {
-            reportSynthesis = new ReportSynthesis();
-            reportSynthesis.setPhase(phase);
-            reportSynthesis.setLiaisonInstitution(liaisonInstitution);
-            reportSynthesis = this.reportSynthesisManager.saveReportSynthesis(reportSynthesis);
-          } else {
-            reportSynthesisCrossCuttingDimension = reportSynthesisCrossCuttingDimensionManager
-              .getReportSynthesisCrossCuttingDimensionById(reportSynthesis.getId());
-          }
+                if (liaisonInstitution == null) {
+                    fieldErrors
+                            .add(new FieldErrorDTO("createParticipantsCapDev", "LiaisonInstitution", "invalid liaison institution"));
+                } else {
 
-          if (reportSynthesisCrossCuttingDimension == null && reportSynthesis != null) {
-            reportSynthesisCrossCuttingDimension = new ReportSynthesisCrossCuttingDimension();
-            reportSynthesisCrossCuttingDimension
-              .setTraineesLongTermFemale(new Double(newParticipantsCapDevDTO.getTraineesLongTermFemale()));
-            reportSynthesisCrossCuttingDimension
-              .setTraineesLongTermMale(new Double(newParticipantsCapDevDTO.getTraineesLongTermMale()));
-            reportSynthesisCrossCuttingDimension
-              .setTraineesShortTermFemale(new Double(newParticipantsCapDevDTO.getTraineesShortTermFemale()));
-            reportSynthesisCrossCuttingDimension
-              .setTraineesShortTermMale(new Double(newParticipantsCapDevDTO.getTraineesShortTermMale()));
-            reportSynthesisCrossCuttingDimension
-              .setTraineesPhdFemale(new Double(newParticipantsCapDevDTO.getTraineesPhdFemale()));
-            reportSynthesisCrossCuttingDimension
-              .setTraineesPhdMale(new Double(newParticipantsCapDevDTO.getTraineesPhdMale()));
-            reportSynthesisCrossCuttingDimension.setReportSynthesis(reportSynthesis);
+                    ReportSynthesis reportSynthesis
+                            = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
 
-            reportSynthesisCrossCuttingDimension = this.reportSynthesisCrossCuttingDimensionManager
-              .saveReportSynthesisCrossCuttingDimension(reportSynthesisCrossCuttingDimension);
+                    ReportSynthesisCrossCuttingDimension reportSynthesisCrossCuttingDimension = null;
 
-            reportSynCrossCutDimId = reportSynthesisCrossCuttingDimension.getId();
-          } else {
-            fieldErrors.add(new FieldErrorDTO("createParticipantsCapDev", "ReportSynthesisCrossCuttingDimension",
-              "Report Synthesis Cross Cutting Dimension already exits"));
-          }
+                    if (reportSynthesis == null) {
+                        reportSynthesis = new ReportSynthesis();
+                        reportSynthesis.setPhase(phase);
+                        reportSynthesis.setLiaisonInstitution(liaisonInstitution);
+                        reportSynthesis = this.reportSynthesisManager.saveReportSynthesis(reportSynthesis);
+                    } else {
+                        reportSynthesisCrossCuttingDimension = reportSynthesisCrossCuttingDimensionManager
+                                .getReportSynthesisCrossCuttingDimensionById(reportSynthesis.getId());
+                    }
+
+                    if (reportSynthesisCrossCuttingDimension == null && reportSynthesis != null) {
+                        reportSynthesisCrossCuttingDimension = new ReportSynthesisCrossCuttingDimension();
+                        reportSynthesisCrossCuttingDimension
+                                .setTraineesLongTermFemale(new Double(newParticipantsCapDevDTO.getTraineesLongTermFemale()));
+                        reportSynthesisCrossCuttingDimension
+                                .setTraineesLongTermMale(new Double(newParticipantsCapDevDTO.getTraineesLongTermMale()));
+                        reportSynthesisCrossCuttingDimension
+                                .setTraineesShortTermFemale(new Double(newParticipantsCapDevDTO.getTraineesShortTermFemale()));
+                        reportSynthesisCrossCuttingDimension
+                                .setTraineesShortTermMale(new Double(newParticipantsCapDevDTO.getTraineesShortTermMale()));
+                        reportSynthesisCrossCuttingDimension
+                                .setTraineesPhdFemale(new Double(newParticipantsCapDevDTO.getTraineesPhdFemale()));
+                        reportSynthesisCrossCuttingDimension
+                                .setTraineesPhdMale(new Double(newParticipantsCapDevDTO.getTraineesPhdMale()));
+                        reportSynthesisCrossCuttingDimension.setReportSynthesis(reportSynthesis);
+
+                        reportSynthesisCrossCuttingDimension = this.reportSynthesisCrossCuttingDimensionManager
+                                .saveReportSynthesisCrossCuttingDimension(reportSynthesisCrossCuttingDimension);
+
+                        reportSynCrossCutDimId = reportSynthesisCrossCuttingDimension.getId();
+
+                        // Log Action
+                        try {
+                            ObjectMapper mapper = new ObjectMapper();
+                            String originalJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(newParticipantsCapDevDTO);
+                            RestApiAuditlog restApiAuditLog = new RestApiAuditlog("createParticipantsCapDev", "Created CGIAR Entity Acronym " + entityAcronym + " ID " + reportSynCrossCutDimId, new Date(), reportSynCrossCutDimId, "class org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingDimension",
+                                    originalJson, user.getId(), null, "", phase.getId());
+                            restApiAuditlogManager.logApiCall(restApiAuditLog);
+                        } catch (JsonProcessingException ex) {
+                            Logger.getLogger(ParticipantsCapDevItem.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    } else {
+                        fieldErrors.add(new FieldErrorDTO("createParticipantsCapDev", "ReportSynthesisCrossCuttingDimension",
+                                "Report Synthesis Cross Cutting Dimension already exits"));
+                    }
+                }
+            }
         }
-      }
+        // Validate all fields
+        if (!fieldErrors.isEmpty()) {
+            throw new MARLOFieldValidationException("Field Validation errors", "",
+                    fieldErrors.stream()
+                            .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+                            .collect(Collectors.toList()));
+        }
+
+        return reportSynCrossCutDimId;
     }
-    // Validate all fields
-    if (!fieldErrors.isEmpty()) {
-      throw new MARLOFieldValidationException("Field Validation errors", "",
-        fieldErrors.stream()
-          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
-          .collect(Collectors.toList()));
+
+    /**
+     * Delete an ParticipantsCapDev by Id, phase and year
+     *
+     * @param id
+     * @param cGIAREntity
+     * @param year
+     * @param phase
+     * @param currentUser
+     * @return a ParticipantsCapDevDTO with the ParticipantsCapDev Item
+     */
+    public ResponseEntity<ParticipantsCapDevDTO> deleteParticipantsCapDevById(Long id, String cGIAREntity, Integer year,
+            String phase, User currentUser) {
+
+        PhaseDTO phaseDTO = new PhaseDTO();
+        phaseDTO.setName(phase);
+        phaseDTO.setYear(year);
+
+        NewParticipantsCapDevDTO newParticipantsCapDevDTO = new NewParticipantsCapDevDTO();
+        newParticipantsCapDevDTO.setPhase(phaseDTO);
+        newParticipantsCapDevDTO.setTraineesLongTermFemale(new Long(0));
+        newParticipantsCapDevDTO.setTraineesLongTermMale(new Long(0));
+        newParticipantsCapDevDTO.setTraineesShortTermFemale(new Long(0));
+        newParticipantsCapDevDTO.setTraineesShortTermMale(new Long(0));
+        newParticipantsCapDevDTO.setTraineesPhdFemale(new Long(0));
+        newParticipantsCapDevDTO.setTraineesPhdMale(new Long(0));
+
+        // Log Action
+        String strippedRepoPhase = StringUtils.stripToNull(phase);
+        Phase thisPhase = this.phaseManager.findAll().stream()
+                .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), cGIAREntity)
+                && p.getYear() >= APConstants.CLARISA_AVALIABLE_INFO_YEAR && p.getYear() == year
+                && StringUtils.equalsIgnoreCase(p.getName(), strippedRepoPhase) && p.isActive())
+                .findFirst().orElse(null);
+
+        RestApiAuditlog restApiAuditLog = new RestApiAuditlog("deleteParticipantsCapDev", "Deleted CGIAR Entity Acronym " + cGIAREntity + " ID " + id + " Year:" + year + " Phase: " + phase, new Date(), id, "class org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingDimension",
+                "N/A", currentUser.getId(), null, "", thisPhase.getId());
+        restApiAuditlogManager.logApiCall(restApiAuditLog);
+        
+        return this.saveParticipantsCapDev(id, cGIAREntity, newParticipantsCapDevDTO);
     }
 
-    return reportSynCrossCutDimId;
-  }
+    /**
+     * Find an ParticipantsCapDev by Id, phase and year
+     *
+     * @param id
+     * @param cGIAREntity
+     * @param year
+     * @param phase
+     * @param currentUser
+     * @return a ParticipantsCapDevDTO with the ParticipantsCapDev Item
+     */
+    public ResponseEntity<ParticipantsCapDevDTO> findParticipantsCapDevById(Long id, String cGIAREntity, Integer year,
+            String phase, User currentUser) {
 
-  /**
-   * Delete an ParticipantsCapDev by Id, phase and year
-   * 
-   * @param id
-   * @param year
-   * @param phase
-   * @return a ParticipantsCapDevDTO with the ParticipantsCapDev Item
-   */
-  public ResponseEntity<ParticipantsCapDevDTO> deleteParticipantsCapDevById(Long id, String cGIAREntity, Integer year,
-    String phase, User currentUser) {
+        List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
 
-    PhaseDTO phaseDTO = new PhaseDTO();
-    phaseDTO.setName(phase);
-    phaseDTO.setYear(year);
+        GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(cGIAREntity);
 
-    NewParticipantsCapDevDTO newParticipantsCapDevDTO = new NewParticipantsCapDevDTO();
-    newParticipantsCapDevDTO.setPhase(phaseDTO);
-    newParticipantsCapDevDTO.setTraineesLongTermFemale(new Long(0));
-    newParticipantsCapDevDTO.setTraineesLongTermMale(new Long(0));
-    newParticipantsCapDevDTO.setTraineesShortTermFemale(new Long(0));
-    newParticipantsCapDevDTO.setTraineesShortTermMale(new Long(0));
-    newParticipantsCapDevDTO.setTraineesPhdFemale(new Long(0));
-    newParticipantsCapDevDTO.setTraineesPhdMale(new Long(0));
+        if (globalUnitEntity == null) {
+            fieldErrors.add(new FieldErrorDTO("findParticipantsCapDevById", "GlobalUnitEntity",
+                    cGIAREntity + " is an invalid CGIAR entity acronym"));
+        }
+        Phase phasedata = this.phaseManager.findAll().stream()
+                .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), cGIAREntity)
+                && p.getYear() >= APConstants.CLARISA_AVALIABLE_INFO_YEAR && p.getYear() == year
+                && StringUtils.equalsIgnoreCase(p.getName(), phase))
+                .findFirst().orElse(null);
+        if (phasedata == null) {
+            fieldErrors.add(new FieldErrorDTO("findDeliverableById", "phase", phase + ' ' + year + " is an invalid phase"));
+        }
+        ReportSynthesisCrossCuttingDimension reportSynthesisCrossCuttingDimension
+                = reportSynthesisCrossCuttingDimensionManager.getReportSynthesisCrossCuttingDimensionById(id);
+        if (fieldErrors.isEmpty()) {
+            if (reportSynthesisCrossCuttingDimension == null) {
+                fieldErrors.add(new FieldErrorDTO("findParticipantsCapDevById", "ParticipantsCapDev",
+                        id + " is an invalid Report Synthesis Cross Cutting Dimension code"));
+            } else {
+                if (reportSynthesisCrossCuttingDimension.getReportSynthesis() == null) {
+                    fieldErrors.add(new FieldErrorDTO("findParticipantsCapDevById", "ParticipantsCapDev",
+                            id + " not exists code in Report Synthesis"));
+                } else {
+                    if (!(reportSynthesisCrossCuttingDimension.getReportSynthesis().getPhase().getName().equalsIgnoreCase(phase)
+                            && reportSynthesisCrossCuttingDimension.getReportSynthesis().getPhase().getYear() == year)) {
+                        fieldErrors.add(new FieldErrorDTO("findParticipantsCapDevById", "ParticipantsCapDev",
+                                year + " / " + phase + " is an invalid year or name phase"));
+                    }
+                }
+            }
+        }
 
-    return this.saveParticipantsCapDev(id, cGIAREntity, newParticipantsCapDevDTO);
-  }
+        // Validate all fields
+        if (!fieldErrors.isEmpty()) {
+            throw new MARLOFieldValidationException("Field Validation errors", "",
+                    fieldErrors.stream()
+                            .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+                            .collect(Collectors.toList()));
+        }
 
-  /**
-   * Find an ParticipantsCapDev by Id, phase and year
-   * 
-   * @param id
-   * @param year
-   * @param phase
-   * @return a ParticipantsCapDevDTO with the ParticipantsCapDev Item
-   */
-  public ResponseEntity<ParticipantsCapDevDTO> findParticipantsCapDevById(Long id, String cGIAREntity, Integer year,
-    String phase, User currentUser) {
+        // Log Action
+        RestApiAuditlog restApiAuditLog = new RestApiAuditlog("findParticipantsCapDevById", "Searched CGIAR Entity Acronym " + cGIAREntity + " Year:" + year + " Phase: " + phase, new Date(), 0L, "class org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingDimension",
+                "N/A", currentUser.getId(), null, "", reportSynthesisCrossCuttingDimension.getReportSynthesis().getPhase().getId());
+        restApiAuditlogManager.logApiCall(restApiAuditLog);
 
-    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+        return Optional.ofNullable(reportSynthesisCrossCuttingDimension)
+                .map(this.reportSynthesisCrossCuttingDimensionMapper::reportSynthesisCrossCuttingDimensionToParticipantsCapDevDTO)
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
 
-    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(cGIAREntity);
-
-    if (globalUnitEntity == null) {
-      fieldErrors.add(new FieldErrorDTO("findParticipantsCapDevById", "GlobalUnitEntity",
-        cGIAREntity + " is an invalid CGIAR entity acronym"));
     }
-    Phase phasedata = this.phaseManager.findAll().stream()
-      .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), cGIAREntity)
-        && p.getYear() >= APConstants.CLARISA_AVALIABLE_INFO_YEAR && p.getYear() == year
-        && StringUtils.equalsIgnoreCase(p.getName(), phase))
-      .findFirst().orElse(null);
-    if (phasedata == null) {
-      fieldErrors.add(new FieldErrorDTO("findDeliverableById", "phase", phase + ' ' + year + " is an invalid phase"));
+
+    /**
+     * Update an ParticipantsCapDev by Id, newParticipantsCapDevDTO
+     *
+     * @param id
+     * @param newParticipantsCapDevDTO
+     * @return a ParticipantsCapDevDTO with the ParticipantsCapDev Item
+     */
+    public Long putParticipantsCapDevById(Long id, NewParticipantsCapDevDTO newParticipantsCapDevDTO, String cGIAREntity,
+            User currentUser) {
+        // Log Action
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String originalJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(newParticipantsCapDevDTO);
+            RestApiAuditlog restApiAuditLog = new RestApiAuditlog("updateProgressTowards", "Updated CGIAR Entity Acronym " + cGIAREntity + " ID " + id, new Date(), id, "class org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingDimension",
+                    originalJson, currentUser.getId(), null, "", null);
+            restApiAuditlogManager.logApiCall(restApiAuditLog);
+        } catch (JsonProcessingException ex) {
+            Logger.getLogger(ParticipantsCapDevItem.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return this.saveParticipantsCapDev(id, cGIAREntity, newParticipantsCapDevDTO).getBody().getId();
     }
-    ReportSynthesisCrossCuttingDimension reportSynthesisCrossCuttingDimension =
-      reportSynthesisCrossCuttingDimensionManager.getReportSynthesisCrossCuttingDimensionById(id);
-    if (fieldErrors.isEmpty()) {
-      if (reportSynthesisCrossCuttingDimension == null) {
-        fieldErrors.add(new FieldErrorDTO("findParticipantsCapDevById", "ParticipantsCapDev",
-          id + " is an invalid Report Synthesis Cross Cutting Dimension code"));
-      } else {
-        if (reportSynthesisCrossCuttingDimension.getReportSynthesis() == null) {
-          fieldErrors.add(new FieldErrorDTO("findParticipantsCapDevById", "ParticipantsCapDev",
-            id + " not exists code in Report Synthesis"));
+
+    protected ResponseEntity<ParticipantsCapDevDTO> saveParticipantsCapDev(Long id, String cGIAREntity,
+            NewParticipantsCapDevDTO newParticipantsCapDevDTO) {
+
+        Integer year = newParticipantsCapDevDTO.getPhase().getYear();
+        String phase = newParticipantsCapDevDTO.getPhase().getName();
+
+        List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+
+        GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(cGIAREntity);
+
+        if (globalUnitEntity == null) {
+            fieldErrors.add(new FieldErrorDTO("saveParticipantsCapDev", "GlobalUnitEntity",
+                    cGIAREntity + " is an invalid CGIAR entity acronym"));
+        }
+
+        ReportSynthesisCrossCuttingDimension reportSynthesisCrossCuttingDimension = null;
+
+        if (this.valuesMinorsToZero(newParticipantsCapDevDTO)) {
+            fieldErrors.add(new FieldErrorDTO("createParticipantsCapDev", "ParticipantsCapDevDTO",
+                    "One or more of the values are minors to zero"));
         } else {
-          if (!(reportSynthesisCrossCuttingDimension.getReportSynthesis().getPhase().getName().equalsIgnoreCase(phase)
-            && reportSynthesisCrossCuttingDimension.getReportSynthesis().getPhase().getYear() == year)) {
-            fieldErrors.add(new FieldErrorDTO("findParticipantsCapDevById", "ParticipantsCapDev",
-              year + " / " + phase + " is an invalid year or name phase"));
-          }
+
+            reportSynthesisCrossCuttingDimension
+                    = reportSynthesisCrossCuttingDimensionManager.getReportSynthesisCrossCuttingDimensionById(id);
+
+            if (reportSynthesisCrossCuttingDimension == null) {
+                fieldErrors.add(new FieldErrorDTO("saveParticipantsCapDev", "ParticipantsCapDev",
+                        id + " is an invalid Report Synthesis Cross Cutting Dimension code"));
+            } else {
+                if (reportSynthesisCrossCuttingDimension.getReportSynthesis() == null) {
+                    fieldErrors.add(new FieldErrorDTO("saveParticipantsCapDev", "ParticipantsCapDev",
+                            id + " not exists code in Report Synthesis"));
+                } else {
+                    if (fieldErrors.isEmpty()
+                            && reportSynthesisCrossCuttingDimension.getReportSynthesis().getPhase().getName().equalsIgnoreCase(phase)
+                            && reportSynthesisCrossCuttingDimension.getReportSynthesis().getPhase().getYear() == year) {
+
+                        reportSynthesisCrossCuttingDimension
+                                .setTraineesShortTermFemale(newParticipantsCapDevDTO.getTraineesShortTermFemale().doubleValue());
+                        reportSynthesisCrossCuttingDimension
+                                .setTraineesShortTermMale(newParticipantsCapDevDTO.getTraineesShortTermMale().doubleValue());
+                        reportSynthesisCrossCuttingDimension
+                                .setTraineesLongTermFemale(newParticipantsCapDevDTO.getTraineesLongTermFemale().doubleValue());
+                        reportSynthesisCrossCuttingDimension
+                                .setTraineesLongTermMale(newParticipantsCapDevDTO.getTraineesLongTermMale().doubleValue());
+                        reportSynthesisCrossCuttingDimension
+                                .setTraineesPhdFemale(newParticipantsCapDevDTO.getTraineesPhdFemale().doubleValue());
+                        reportSynthesisCrossCuttingDimension
+                                .setTraineesPhdMale(newParticipantsCapDevDTO.getTraineesPhdMale().doubleValue());
+
+                        this.reportSynthesisCrossCuttingDimensionManager
+                                .saveReportSynthesisCrossCuttingDimension(reportSynthesisCrossCuttingDimension);
+
+                    } else {
+                        fieldErrors.add(new FieldErrorDTO("saveParticipantsCapDev", "ParticipantsCapDev",
+                                year + " / " + phase + " is an invalid year or name phase"));
+                    }
+                }
+            }
         }
-      }
-    }
-
-
-    // Validate all fields
-    if (!fieldErrors.isEmpty()) {
-      throw new MARLOFieldValidationException("Field Validation errors", "",
-        fieldErrors.stream()
-          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
-          .collect(Collectors.toList()));
-    }
-
-    return Optional.ofNullable(reportSynthesisCrossCuttingDimension)
-      .map(this.reportSynthesisCrossCuttingDimensionMapper::reportSynthesisCrossCuttingDimensionToParticipantsCapDevDTO)
-      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-
-  }
-
-  /**
-   * Update an ParticipantsCapDev by Id, newParticipantsCapDevDTO
-   * 
-   * @param id
-   * @param newParticipantsCapDevDTO
-   * @return a ParticipantsCapDevDTO with the ParticipantsCapDev Item
-   */
-  public Long putParticipantsCapDevById(Long id, NewParticipantsCapDevDTO newParticipantsCapDevDTO, String cGIAREntity,
-    User currentUser) {
-    return this.saveParticipantsCapDev(id, cGIAREntity, newParticipantsCapDevDTO).getBody().getId();
-  }
-
-  protected ResponseEntity<ParticipantsCapDevDTO> saveParticipantsCapDev(Long id, String cGIAREntity,
-    NewParticipantsCapDevDTO newParticipantsCapDevDTO) {
-
-    Integer year = newParticipantsCapDevDTO.getPhase().getYear();
-    String phase = newParticipantsCapDevDTO.getPhase().getName();
-
-    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
-
-    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(cGIAREntity);
-
-    if (globalUnitEntity == null) {
-      fieldErrors.add(new FieldErrorDTO("saveParticipantsCapDev", "GlobalUnitEntity",
-        cGIAREntity + " is an invalid CGIAR entity acronym"));
-    }
-
-    ReportSynthesisCrossCuttingDimension reportSynthesisCrossCuttingDimension = null;
-
-    if (this.valuesMinorsToZero(newParticipantsCapDevDTO)) {
-      fieldErrors.add(new FieldErrorDTO("createParticipantsCapDev", "ParticipantsCapDevDTO",
-        "One or more of the values are minors to zero"));
-    } else {
-
-      reportSynthesisCrossCuttingDimension =
-        reportSynthesisCrossCuttingDimensionManager.getReportSynthesisCrossCuttingDimensionById(id);
-
-      if (reportSynthesisCrossCuttingDimension == null) {
-        fieldErrors.add(new FieldErrorDTO("saveParticipantsCapDev", "ParticipantsCapDev",
-          id + " is an invalid Report Synthesis Cross Cutting Dimension code"));
-      } else {
-        if (reportSynthesisCrossCuttingDimension.getReportSynthesis() == null) {
-          fieldErrors.add(new FieldErrorDTO("saveParticipantsCapDev", "ParticipantsCapDev",
-            id + " not exists code in Report Synthesis"));
-        } else {
-          if (fieldErrors.isEmpty()
-            && reportSynthesisCrossCuttingDimension.getReportSynthesis().getPhase().getName().equalsIgnoreCase(phase)
-            && reportSynthesisCrossCuttingDimension.getReportSynthesis().getPhase().getYear() == year) {
-
-            reportSynthesisCrossCuttingDimension
-              .setTraineesShortTermFemale(newParticipantsCapDevDTO.getTraineesShortTermFemale().doubleValue());
-            reportSynthesisCrossCuttingDimension
-              .setTraineesShortTermMale(newParticipantsCapDevDTO.getTraineesShortTermMale().doubleValue());
-            reportSynthesisCrossCuttingDimension
-              .setTraineesLongTermFemale(newParticipantsCapDevDTO.getTraineesLongTermFemale().doubleValue());
-            reportSynthesisCrossCuttingDimension
-              .setTraineesLongTermMale(newParticipantsCapDevDTO.getTraineesLongTermMale().doubleValue());
-            reportSynthesisCrossCuttingDimension
-              .setTraineesPhdFemale(newParticipantsCapDevDTO.getTraineesPhdFemale().doubleValue());
-            reportSynthesisCrossCuttingDimension
-              .setTraineesPhdMale(newParticipantsCapDevDTO.getTraineesPhdMale().doubleValue());
-
-            this.reportSynthesisCrossCuttingDimensionManager
-              .saveReportSynthesisCrossCuttingDimension(reportSynthesisCrossCuttingDimension);
-          } else {
-            fieldErrors.add(new FieldErrorDTO("saveParticipantsCapDev", "ParticipantsCapDev",
-              year + " / " + phase + " is an invalid year or name phase"));
-          }
+        // Validate all fields
+        if (!fieldErrors.isEmpty()) {
+            throw new MARLOFieldValidationException("Field Validation errors", "",
+                    fieldErrors.stream()
+                            .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+                            .collect(Collectors.toList()));
         }
-      }
-    }
-    // Validate all fields
-    if (!fieldErrors.isEmpty()) {
-      throw new MARLOFieldValidationException("Field Validation errors", "",
-        fieldErrors.stream()
-          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
-          .collect(Collectors.toList()));
+
+        return Optional.ofNullable(reportSynthesisCrossCuttingDimension)
+                .map(this.reportSynthesisCrossCuttingDimensionMapper::reportSynthesisCrossCuttingDimensionToParticipantsCapDevDTO)
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+
     }
 
-    return Optional.ofNullable(reportSynthesisCrossCuttingDimension)
-      .map(this.reportSynthesisCrossCuttingDimensionMapper::reportSynthesisCrossCuttingDimensionToParticipantsCapDevDTO)
-      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-
-  }
-
-  private Boolean valuesMinorsToZero(NewParticipantsCapDevDTO newParticipantsCapDevDTO) {
-    if (newParticipantsCapDevDTO.getTraineesLongTermFemale() < 0
-      || newParticipantsCapDevDTO.getTraineesLongTermMale() < 0
-      || newParticipantsCapDevDTO.getTraineesShortTermFemale() < 0
-      || newParticipantsCapDevDTO.getTraineesShortTermMale() < 0 || newParticipantsCapDevDTO.getTraineesPhdFemale() < 0
-      || newParticipantsCapDevDTO.getTraineesPhdMale() < 0) {
-      return true;
+    private Boolean valuesMinorsToZero(NewParticipantsCapDevDTO newParticipantsCapDevDTO) {
+        if (newParticipantsCapDevDTO.getTraineesLongTermFemale() < 0
+                || newParticipantsCapDevDTO.getTraineesLongTermMale() < 0
+                || newParticipantsCapDevDTO.getTraineesShortTermFemale() < 0
+                || newParticipantsCapDevDTO.getTraineesShortTermMale() < 0 || newParticipantsCapDevDTO.getTraineesPhdFemale() < 0
+                || newParticipantsCapDevDTO.getTraineesPhdMale() < 0) {
+            return true;
+        }
+        return false;
     }
-    return false;
-  }
 
 }
