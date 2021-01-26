@@ -1979,6 +1979,16 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           this.projectExpectedStudyPolicyManager.deleteProjectExpectedStudyPolicy(studyPolicy.getId());
         }
       }
+
+
+      // Delete prev studies policies if the question is not
+      if (expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()) != null
+        && expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getIsContribution() != null
+        && expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getIsContribution() == false) {
+        for (ProjectExpectedStudyPolicy studyPolicy : policyPrev) {
+          this.projectExpectedStudyPolicyManager.deleteProjectExpectedStudyPolicy(studyPolicy.getId());
+        }
+      }
     }
 
     // Save form Information
@@ -2185,6 +2195,17 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       for (ProjectExpectedStudySrfTarget studytarget : targetPrev) {
         if (this.expectedStudy.getSrfTargets() == null || !this.expectedStudy.getSrfTargets().contains(studytarget)) {
           this.projectExpectedStudySrfTargetManager.deleteProjectExpectedStudySrfTarget(studytarget.getId());
+        }
+      }
+
+      // Delete previous srf targets if the answer of the question is not
+      if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()) != null
+        && projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getIsSrfTarget() != null
+        && projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getIsSrfTarget()
+          .equals("targetsOptionNo")) {
+        for (ProjectExpectedStudySrfTarget studytarget : targetPrev) {
+          this.projectExpectedStudySrfTargetManager.deleteProjectExpectedStudySrfTarget(studytarget.getId());
+
         }
       }
     }
