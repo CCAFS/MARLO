@@ -455,5 +455,9 @@
     <mapping resource="xmls/UrlSynthesisLogs.hbm.xml" /> 
     <mapping resource="xmls/ProjectImpacts.hbm.xml" />
     <mapping resource="xmls/ProjectImpactsCategories.hbm.xml" />
+    <mapping resource="xmls/DeliverableAffiliationsNotMapped.hbm.xml" />
+    <mapping resource="xmls/ExternalSourceAuthor.hbm.xml" />
+    <mapping resource="xmls/DeliverableMetadataExternalSources.hbm.xml" />
+    <mapping resource="xmls/DeliverableAffiliations.hbm.xml" />
   </session-factory>
 </hibernate-configuration>
