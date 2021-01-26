@@ -35,6 +35,11 @@ public class DeliverableAffiliation extends MarloAuditableEntity implements java
   @Expose
   private Phase phase;
 
+  private Integer institutionMatchConfidence;
+
+  private String institutionNameWebOfScience;
+
+  private DeliverableMetadataExternalSources deliverableMetadataExternalSources;
 
   public DeliverableAffiliation() {
   }
@@ -62,13 +67,24 @@ public class DeliverableAffiliation extends MarloAuditableEntity implements java
     return true;
   }
 
-
   public Deliverable getDeliverable() {
     return deliverable;
   }
 
+  public DeliverableMetadataExternalSources getDeliverableMetadataExternalSources() {
+    return deliverableMetadataExternalSources;
+  }
+
   public Institution getInstitution() {
     return institution;
+  }
+
+  public Integer getInstitutionMatchConfidence() {
+    return institutionMatchConfidence;
+  }
+
+  public String getInstitutionNameWebOfScience() {
+    return institutionNameWebOfScience;
   }
 
   @Override
@@ -77,6 +93,7 @@ public class DeliverableAffiliation extends MarloAuditableEntity implements java
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
+
 
   public Phase getPhase() {
     return phase;
@@ -94,8 +111,21 @@ public class DeliverableAffiliation extends MarloAuditableEntity implements java
     this.deliverable = deliverable;
   }
 
+  public void
+    setDeliverableMetadataExternalSources(DeliverableMetadataExternalSources deliverableMetadataExternalSources) {
+    this.deliverableMetadataExternalSources = deliverableMetadataExternalSources;
+  }
+
   public void setInstitution(Institution institution) {
     this.institution = institution;
+  }
+
+  public void setInstitutionMatchConfidence(Integer institutionMatchConfidence) {
+    this.institutionMatchConfidence = institutionMatchConfidence;
+  }
+
+  public void setInstitutionNameWebOfScience(String institutionNameWebOfScience) {
+    this.institutionNameWebOfScience = institutionNameWebOfScience;
   }
 
   public void setPhase(Phase phase) {
