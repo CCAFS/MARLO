@@ -384,6 +384,7 @@ public class ProgressTowardsItem<T> {
                                 reportSynthesisSrfProgressTargetManager
                                         .deleteReportSynthesisSrfProgressTarget(srfProgressTarget.getId());
                                 
+                                // Log Action
                                 RestApiAuditlog restApiAuditLog = new RestApiAuditlog("deleteProgressTowards", "Deleted CGIAR Entity Acronym " + CGIARentityAcronym + " ID " + id + " Year:" + repoYear + " Phase: " + repoPhase, new Date(), srfProgressTarget.getId(), "class org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTarget",
                                         "N/A", user.getId(), null, "", phase.getId());
                                 restApiAuditlogManager.logApiCall(restApiAuditLog);

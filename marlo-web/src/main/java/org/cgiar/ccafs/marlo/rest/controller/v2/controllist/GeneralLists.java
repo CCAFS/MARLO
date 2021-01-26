@@ -99,7 +99,6 @@ public class GeneralLists {
     this.userManager = userManager;
   }
 
-
   private User getCurrentUser() {
     Subject subject = SecurityUtils.getSubject();
     Long principal = (Long) subject.getPrincipal();
@@ -153,7 +152,7 @@ public class GeneralLists {
       throw new NotFoundException("404", this.env.getProperty("GeneralLists.countries.code.404"));
     } else {
         // Log Action
-        RestApiAuditlog restApiAuditLog = new RestApiAuditlog("General List countries", "LIST countries, code: " + code, new Date(), response.getBody().getCode(), "class org.cgiar.ccafs.marlo.data.model.LocElement", "N/A", this.getCurrentUser().getId(), null, "", null);
+        RestApiAuditlog restApiAuditLog = new RestApiAuditlog("General List countries", "LIST countries, Code: " + code, new Date(), response.getBody().getCode(), "class org.cgiar.ccafs.marlo.data.model.LocElement", "N/A", this.getCurrentUser().getId(), null, "", null);
         restApiAuditlogManager.logApiCall(restApiAuditLog);
     }
     return response;
