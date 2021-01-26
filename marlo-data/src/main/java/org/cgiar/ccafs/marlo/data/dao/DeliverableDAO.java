@@ -81,6 +81,8 @@ public interface DeliverableDAO {
 
   public List<Deliverable> getPublicationsByPhase(long phase);
 
+  public Boolean isDeliverableExcluded(Long deliverableId, Long phaseId);
+
   /**
    * This method saves the information of the given deliverable
    * 
