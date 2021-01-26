@@ -29,6 +29,7 @@ public class DeliverableAffiliationsNotMapped extends MarloBaseEntity {
   private static final long serialVersionUID = 3062384310343326529L;
 
   private DeliverableMetadataExternalSources deliverableMetadataExternalSources;
+  private Institution possibleInstitution;
 
   private String name;
   private String country;
@@ -50,6 +51,7 @@ public class DeliverableAffiliationsNotMapped extends MarloBaseEntity {
     return country;
   }
 
+
   public DeliverableMetadataExternalSources getDeliverableMetadataExternalSources() {
     return deliverableMetadataExternalSources;
   }
@@ -64,6 +66,10 @@ public class DeliverableAffiliationsNotMapped extends MarloBaseEntity {
 
   public String getName() {
     return name;
+  }
+
+  public Institution getPossibleInstitution() {
+    return possibleInstitution;
   }
 
   public void setCountry(String country) {
@@ -85,6 +91,10 @@ public class DeliverableAffiliationsNotMapped extends MarloBaseEntity {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public void setPossibleInstitution(Institution possibleInstitution) {
+    this.possibleInstitution = possibleInstitution;
   }
 
   @Override
