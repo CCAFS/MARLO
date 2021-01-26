@@ -31,6 +31,9 @@ public class InstitutionsWOSDTO {
 
   private String country;
 
+  private Long confidant;
+
+
   public InstitutionsWOSDTO() {
     super();
   }
@@ -47,6 +50,11 @@ public class InstitutionsWOSDTO {
 
   public Long getClarisa_id() {
     return clarisa_id;
+  }
+
+
+  public Long getConfidant() {
+    return confidant;
   }
 
 
@@ -67,6 +75,11 @@ public class InstitutionsWOSDTO {
 
   public void setClarisa_id(Long clarisa_id) {
     this.clarisa_id = clarisa_id;
+  }
+
+
+  public void setConfidant(Long confidant) {
+    this.confidant = confidant;
   }
 
 
