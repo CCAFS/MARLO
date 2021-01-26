@@ -26,11 +26,11 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
-@Mapper(componentModel = "jsr330", uses = PublicationAuthorWOSMapper.class)
+@Mapper(componentModel = "jsr330", uses = {PublicationAuthorWOSMapper.class, PublicationInstitutionWOSMapper.class})
 public interface PublicationWOSMapper {
 
   @Mappings({@Mapping(source = "publication_type", target = "publicationType"),
     @Mapping(source = "authors", target = "authors"), @Mapping(source = "publication_year", target = "publicationYear"),
-    @Mapping(source = "journal_name", target = "journalName")})
+    @Mapping(source = "journal_name", target = "journalName"), @Mapping(source = "start_end_pages", target = "pages")})
   public abstract PublicationsWOSDTO publicationWOSToPublicationWOSDTO(PublicationWOS publicationWOS);
 }
