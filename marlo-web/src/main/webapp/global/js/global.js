@@ -725,6 +725,7 @@ function onClickRemoveElement() {
   var $select = $(this).parents(".panel-body").find('select');
   var $primaryRadioElement = $(this).parents('.elementsListComponent').find('ul.primaryRadio');
   var $list = $(this).parents('.elementsListComponent').find('ul.list');
+  var className = $list.attr('class');
   var counted = $list.find('li').length;
   var maxLimit = $select.classParam('maxLimit');
   var id = $parent.find(".elementRelationID").val();
