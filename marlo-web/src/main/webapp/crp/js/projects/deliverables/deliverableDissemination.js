@@ -1,10 +1,11 @@
+
 $(document).ready(init);
 $(document).ready(function () {
   validateSubCategorySelector();
 });
 
 function init() {
-
+  
   updateReadOnly();
   $('.disseminationChannel').change(function () {
     updateReadOnly();
@@ -34,13 +35,108 @@ function init() {
   });
 
   addDisseminationEvents();
+  if ($('.deliverableDisseminationUrl ').prop('readonly')) {
+    getWOSInfo('10.1016/j.jclepro.2020.122854');
+  }
+  
+}
+
+function getWOSInfo(link){
+
+  $.ajax({
+    url: baseURL + '/metadataByWOS.do',
+    data: {
+      wosLink: link
+        // phaseID: phaseID,
+        // financeCode: financeCode,
+        // institutionLead: leadPartnerID
+    },
+    beforeSend: function() {
+      // console.log("before");
+    },
+    success: function(data) {
+    console.log("succes");
+    console.log(data);
+    updateWOSFields(data.response);
+    $('#output-wos').html('Found metadata successfully in Web of Sciences.')
+    },
+    error: function(e) {
+      console.log(e);
+      console.log("no se pudo");
+      $('#output-wos').html('The peer-reviewed publication was not found in Web of Science.')
+    },
+    complete: function() {
+      // console.log("complete"); 
+      $('#output-wos').show();   
+    }
+});
+
+}
+
+function updateWOSFields(data){
+  let {
+    url,
+    title,
+    publicationType,
+    publicationYear,
+    isOpenAccess,
+
+    isISI,
+    journalName,
+    volume,
+    issue,
+    pages,
+    authors,
+    institutions
+    
+  } = data ;
+  $('#WOS-URL').val(url);
+  $('#WOS-Title').val(title);
+  $('#WOS-Publication_type').val(publicationType);
+  $('#WOS-Publication_Year').val(publicationYear);
+  $('#WOS-Is_Open_Access').val(isOpenAccess);
+  $('#WOS-Open_access_link').val('Some info');
+  $('#WOS-Is_ISI').val(isISI);
+  $('#WOS-Journal_name').val(journalName);
+  $('#WOS-Volume').val(volume);
+  $('#WOS-Issue').val(issue);
+  $('#WOS-Pages').val(pages);
+  $('#WOS-Authors').val(authors);
+  $('#WOS-Institutions').val(institutions);
+
+  $('#td-WOS-URL').append(url);
+  $('#td-WOS-Title').append(title);
+  $('#td-WOS-Publication_type').append(publicationType);
+  $('#td-WOS-Publication_Year').append(publicationYear);
+  $('#td-WOS-Is_Open_Access').append(isOpenAccess);
+  $('#td-WOS-Open_access_link').append('Some info');
+  $('#td-WOS-Is_ISI').append(''+isISI);
+  $('#td-WOS-Journal_name').append(journalName);
+  $('#td-WOS-Volume').append(volume);
+  $('#td-WOS-Issue').append(issue);
+  $('#td-WOS-Pages').append(pages);
+  $('#td-WOS-Authors').append(authors);
+  $('#td-WOS-Institutions').append(institutions);
+
+  
 }
 
 function updateReadOnly() {
+  let channel = $(".disseminationChannel").val();
   if ($('.deliverableDisseminationUrl ').prop('readonly')) {
+    $('#output-dissemination').empty().append("Found metadata successfully in " + channel)
+    $('#output-dissemination').show();  
+    $('#WOSModalBtn').show();  
+    if ($('.deliverableDisseminationUrl ').prop('readonly')) {
+      getWOSInfo('10.1016/j.jclepro.2020.122854');
+    }
   } else {
-
+    $('#output-dissemination').hide();  
+    
     if ($('.disseminationChannel').val() != 'other') {
+      $('#output-wos').hide();  
+      $('#WOSModalBtn').hide();  
+      
       $(".ifIsReadOnly .metadataElement-handle .input input").prop('readonly', true);
       $(".ifIsReadOnly .metadataElement-doi .input input").prop('readonly', true);
     } else {
@@ -65,13 +161,6 @@ function updateReadOnly() {
   $('#doi-bridge').val($('.metadataElement-doi .input input').val())
 
   $('#doi-bridge').parents('.input').find('img').attr("title", $('.metadataElement-doi').find('img').prop("title"));
-
-  let channel = $(".disseminationChannel").val();
-  console.log(channel);
-
-  // found-dissemination
-  $('#output-dissemination').empty().append("Found metadata successfully in " + channel)
-  $('#output-wos').empty().append("Found metadata successfully in Web of Sciences");;
 }
 
 function addDisseminationEvents() {
@@ -815,18 +904,18 @@ function getMetadata(channel, url) {
     'dataType': "json",
     beforeSend: function () {
       $(".deliverableDisseminationUrl").addClass('input-loading');
-      $('#metadata-output').html("Searching ... " + data.metadataID);
+      $('#output-dissemination').html("Searching ... " + data.metadataID);
     },
     success: function (metadata) {
       metadata = metadata.metadata;
       if (jQuery.isEmptyObject(metadata)) {
-        $('#metadata-output').html("Metadata empty");
+        $('#output-dissemination').html("Metadata empty");
       } else {
         // Setting Metadata
         setMetadata(metadata);
 
         // Show a message indicating the medatada harves was successfully
-        $('#metadata-output').empty().append("Found metadata successfully in " + channel);
+        $('#output-dissemination').empty().append("Found metadata successfully in " + channel);
       }
     },
     complete: function () {
@@ -834,7 +923,7 @@ function getMetadata(channel, url) {
     },
     error: function () {
       console.log("error");
-      $('#metadata-output').empty().append("Invalid URL for searching metadata");
+      $('#output-dissemination').empty().append("Invalid URL for searching metadata");
     }
   });
 }
