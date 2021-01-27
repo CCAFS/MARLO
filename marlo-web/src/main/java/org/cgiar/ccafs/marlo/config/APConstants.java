@@ -794,6 +794,8 @@ public final class APConstants {
   public static final String METADATAELEMENTAUTHORS = "marlo.authors";
   public static final String MESSAGE_MODIFICATION_JUSTIFICATION = "Created by CLARISA ";
 
+  public static final String WOS_LINK = "wosLink";
+
   // deliverables import clarisa value
   public static final long IMPORT_DELIVERABLE_VALUE = 63;
 

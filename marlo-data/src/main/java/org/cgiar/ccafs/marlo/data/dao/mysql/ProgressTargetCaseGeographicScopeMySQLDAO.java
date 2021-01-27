@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.ProgressTargetCaseGeographicScopeDAO;
 import org.cgiar.ccafs.marlo.data.model.ProgressTargetCaseGeographicScope;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -69,6 +70,17 @@ public class ProgressTargetCaseGeographicScopeMySQLDAO extends AbstractMarloDAO<
     }
     return null;
 
+  }
+
+  @Override
+  public List<ProgressTargetCaseGeographicScope> findGeographicScopeByTargetCase(long targetCaseID) {
+    String query =
+      "from " + ProgressTargetCaseGeographicScope.class.getName() + " where progress_target_case_id = " + targetCaseID;
+    List<ProgressTargetCaseGeographicScope> list = super.findAll(query);
+    if (!list.isEmpty()) {
+      return list;
+    }
+    return Collections.emptyList();
   }
 
   @Override

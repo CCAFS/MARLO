@@ -493,6 +493,8 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     this.setCrossCuttingCapacity(update.getCrossCuttingCapacity());
     this.setCrossCuttingClimate(update.getCrossCuttingClimate());
     this.setCrossCuttingNa(update.getCrossCuttingNa());
+    this.setCrossCuttingGender(update.getCrossCuttingGender());
+    this.setCrossCuttingYouth(update.getCrossCuttingYouth());
     this.setDimension(update.getDimension());
     this.setEndDate(update.getEndDate());
     this.setLeaderResponsabilities(update.getLeaderResponsabilities());

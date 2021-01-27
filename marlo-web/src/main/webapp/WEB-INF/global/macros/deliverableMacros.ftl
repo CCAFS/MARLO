@@ -374,8 +374,110 @@
       </div>
     </div>
     <div class="clearfix"></div>
+
+    <div class="form-group row ifIsReadOnly" style="margin-top: 10px;">
+      <div class="col-md-6" >
+        [@customForm.input name="handle-bridge" required=require value="" className="metadataValue "  type="text" i18nkey="Handle" help="" readOnly=mElementHide editable=editable/]
+      </div>
+      <div class="col-md-6 conditionalRequire">
+        [@customForm.input name="doi-bridge" required=require value="" className="metadataValue "  type="text" i18nkey="DOI" help="nada2" readOnly=mElementHide editable=editable/]
+      </div>
+    </div>
+
+    <div class="note left">
+      <div  class="helpMessage4">
+        <p><a style="cursor: pointer;" data-toggle="modal" data-target="#WOSModal" > <span class="glyphicon glyphicon-info-sign"></span> Click here to get the metadata information received from Web of Science
+        </a></p>
+      </div>
+    </div>
+
+  </div>
+
   </div>
   <div id="metadata-output"></div>
+  <div class="metadata-output-persistent" id="output-dissemination"></div>
+  <div class="metadata-output-persistent" id="output-wos"></div>
+
+
+      <!-- Modal WOS -->
+      <div class="modal fade" id="WOSModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog " style=" width:80%">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel" style="font-weight: 600; font-size: 1.5em; text-align: center;">WOS metadata information</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              
+              <table class="table">
+
+                <tbody>
+                  <tr>
+                    <th scope="row">URL</th>
+                    <td>Not Available</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Title</th>
+                    <td>Not Available</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Publication type</th>
+                    <td>Not Available</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Publication Year</th>
+                    <td>Not Available</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Is Open Access</th>
+                    <td>Not Available</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Open access link</th>
+                    <td>Not Available</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Is ISI</th>
+                    <td>Not Available</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Journal name</th>
+                    <td>Not Available</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Volume</th>
+                    <td>Not Available</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Issue</th>
+                    <td>Not Available</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Pages</th>
+                    <td>Not Available</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Authors</th>
+                    <td>Not Available</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Institutions</th>
+                    <td>Not Available</td>
+                  </tr>
+                </tbody>
+              </table>
+
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
 [/#macro]
 
 [#macro channelExampleMacro name="" url="" ]
@@ -411,7 +513,7 @@
   <div class="form-group"> 
     [@metadataField title="citation" encodedName="dc.identifier.citation" type="textArea" require=false/]
   </div>
-  <div class="form-group row">
+  <div class="form-group row ifIsReadOnly" style="display: none;">
     <div class="col-md-6">
       [@metadataField title="handle" encodedName="marlo.handle" type="input" require=false/]
     </div>

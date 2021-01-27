@@ -478,15 +478,18 @@ public class DeliverablesItem<T> {
       try {
         List<Publication> fullPublicationsList = new ArrayList<Publication>();
 
-        List<Deliverable> deliverableList = deliverableManager.getPublicationsByPhase(phase.getId());
+        List<Deliverable> deliverableList = deliverableManager.getDeliverablesByParameters(phase, true, false, false);
         for (Deliverable deliverable : deliverableList) {
           // if there is no project associated to the deliverable it means it is a prp
-          if (deliverable.getProject() == null) {
-            Publication publication = new Publication();
-            publication.setId(deliverable.getId());
-            DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(phase);
-            // getting deliverable Info
-            if (deliverableInfo != null) {
+          // if (deliverable.getProject() == null) {
+          Publication publication = new Publication();
+          publication.setId(deliverable.getId());
+          DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(phase);
+          // getting deliverable Info
+          if (deliverableInfo != null) {
+            if (deliverableInfo.getYear() != -1
+              && (deliverableInfo.getYear() == repoyear || (deliverableInfo.getNewExpectedYear() != null
+                ? deliverableInfo.getNewExpectedYear().intValue() : -1) == repoyear)) {
               publication.setVolume(deliverableInfo.getTitle());
               publication.setYear(deliverableInfo.getYear());
               publication.setPhase(phase);
@@ -504,7 +507,8 @@ public class DeliverablesItem<T> {
                 }
               }
               publication.setIsOpenAccess(
-                deliverable.getDissemination() != null ? (deliverable.getDissemination().getIsOpenAccess()) : false);
+                deliverable.getDissemination() != null ? (deliverable.getDissemination().getIsOpenAccess() != null
+                  ? deliverable.getDissemination().getIsOpenAccess() : false) : false);
               // getting deliverablepublicationMetadata
               Deliverable d = deliverableManager.getDeliverableById(deliverable.getId());
 
@@ -559,9 +563,12 @@ public class DeliverablesItem<T> {
                 newdeliverableUserList.add(deliverableUser);
               }
               publication.setAuthorlist(newdeliverableUserList);
-              fullPublicationsList.add(publication);
+              if (deliverableManager.isDeliverableExcluded(deliverable.getId(), phase.getId())) {
+                fullPublicationsList.add(publication);
+              }
             }
           }
+
         }
         if (fullPublicationsList.size() > 0) {
 

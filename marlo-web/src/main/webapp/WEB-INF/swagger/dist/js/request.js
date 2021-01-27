@@ -129,6 +129,120 @@ function cgiar_entities() {
 	});
 }
 
+function sdg(){
+	$.ajax({
+		url: config.endpoint + '/allSDG',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"sdgs");
+			destroyTable("sdgs");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"sdgs");
+			console.log(data);
+			let nameColumns = ['SMO code', 'Short Name','Full Name']
+
+			$.each(data, function (index, item) {
+				
+				$('#list-print-sdgs').append(
+					'<tr>' + '<td >' + item['smoCode'] + '</td>' + '<td>'
+					+ item['shortName'] + '</td>' + '<td>'
+					+ item['fullName'] + '</td>' + '</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("sdgs");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
+function sdgtarget(){
+	$.ajax({
+		url: config.endpoint + '/allSDGTargets',
+		type: "GET",
+		beforeSend: function () {
+			cleanModal();
+			manageSpinner(true,"sdgTargets");
+			destroyTable("sdgTargets");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"sdgTargets");
+			console.log(data);
+			let nameColumns = ['ID', 'SDG Target Code','SDG Target','SDG Code', 'SDG Name']
+
+			$.each(data, function (index, item) {
+				
+				$('#list-print-sdgTargets').append(
+					'<tr>' + '<td >' + item['id'] + '</td>' + '<td>'
+					+ item['sdgTargetCode'] + '</td>' + '<td>'
+					+ item['sdgTarget'] + '</td>' + '<td>'
+					+ item['sdg'].smoCode + '</td>' +'<td>'
+					+ item['sdg'].shortName + '</td>' +'</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("sdgTargets");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
+function sdgIndicators(){
+	$.ajax({
+		url: config.endpoint + '/allSDGIndicators',
+		type: "GET",
+		beforeSend: function () {
+			cleanModal();
+			manageSpinner(true,"sdgIndicators");
+			destroyTable("sdgIndicators");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"sdgIndicators");
+			console.log(data);
+			let nameColumns = ['ID', 'UNSD Indicator Code','SDG Indicator Code SDG Indicator Name','SDG Target Code', 'SDG Target Name']
+
+			$.each(data, function (index, item) {
+				
+				$('#list-print-sdgIndicators').append(
+					'<tr>' + '<td >' + item['id'] + '</td>' + '<td>'
+					+ item['unsdIndicatorCode'] + '</td>' + '<td>'
+					+ item['indicatorCode'] + '</td>' + '<td>'
+					+ item['indicatorName'] + '</td>' + '<td>'
+					+ item['sdgTarget'].sdgTargetCode + '</td>' +'<td>'
+					+ item['sdgTarget'].sdgTarget + '</td>' +'</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("sdgIndicators");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
 function cgiar_entity_types() {
 	$.ajax({
 		url: config.endpoint + '/cgiar-entity-types',
@@ -394,27 +508,7 @@ function institutions() {
 									+  item['institutionType'].name
 									+ '</td>'
 									// Office Location
-									+ '<td>'
-									// + '<p
-									// class="nomar"><strong>Code:</strong> '
-									// + item['countryOfficeDTO']['0'].code
-									// + '</p>'
-									// + '<p
-									// class="nomar"><strong>isHeadquarter:</strong>
-									// '
-									// +
-									// converYesOrNot(item['countryOfficeDTO']['0'].isHeadquarter)
-									// + '</p>'
-									// + '<p
-									// class="nomar"><strong>isoAlpha2:</strong>
-									// '
-									// + item['countryOfficeDTO']['0'].isoAlpha2
-									// + '</p>'
-									// + '<p
-									// class="nomar"><strong>name:</strong> '
-									// + item['countryOfficeDTO']['0'].name
-									// + '</p>'
-									
+									+ '<td>'									
 									+ '<p class="nomar"><strong>Headquarter: </strong> '
 									+ getHeadquarter(item['countryOfficeDTO'])
 									+ '</p>'
