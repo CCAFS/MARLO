@@ -358,6 +358,7 @@
       </div>
       <div class="buttons-field">
         [#if editable]
+        <div class="checkButton" id="WOSSyncBtn" style="text-align: center ;display:none;">WOS sync</div>
           [#local showSync = (channelsArray?seq_contains(deliverable.dissemination.disseminationChannel))!false ]
           <div id="fillMetadata" style="display:${showSync?string('block','none')};">
             <input type="hidden" name="deliverable.dissemination.synced" value="${isSynced?string}" />
@@ -372,6 +373,7 @@
           </div>
         [/#if]
       </div>
+      
     </div>
     <div class="clearfix"></div>
 
