@@ -56,6 +56,10 @@ public class CIMMYTDspaceClientAPI extends MetadataClientApi {
 
   private final String CYMMYT_DSPACE_URL_REGEX =
     "((http?|https)://)?((W|w){3}.)?(repository.cimmyt.org/)(xmlui/)?(handle/)";
+  // taken from <link>https://stackoverflow.com/questions/27910/finding-a-doi-in-a-document-or-page</link>
+  private final String REGEX_DOI = "\\b(10[.][0-9]{4,}(?:[.][0-9]+)*/(?:(?![\"&\\'])\\S)+)\\b";
+
+  private final Pattern PATTERN_DOI = Pattern.compile(REGEX_DOI);
   private final Pattern CYMMYT_DSPACE_URL_PATTERN = Pattern.compile(CYMMYT_DSPACE_URL_REGEX);
 
   private RestConnectionUtil xmlReaderConnectionUtil;
@@ -179,9 +183,21 @@ public class CIMMYTDspaceClientAPI extends MetadataClientApi {
                 String rightsValue = rightsElement.getStringValue();
                 jo.put(rightsElement.getName(), rightsValue);
               }
-              // get handle
-              if (this.getId() != null) {
-                jo.put("handle", this.getId());
+              // get handle and doi
+              if (oai_dc.elements("identifier") != null && !oai_dc.elements("identifier").isEmpty()) {
+                List<Element> identifiers = oai_dc.elements("identifier");
+                for (Element identifier : identifiers) {
+                  String identifierString = identifier.getStringValue();
+                  Matcher doiMatcher = PATTERN_DOI.matcher(identifierString);
+                  if (doiMatcher.lookingAt()) {
+                    // a doi was found. save it.
+                    jo.put("doi", doiMatcher.group());
+                  } else {
+                    // we do not know what this is. we will just assume is a handle and move on
+                    jo.put("handle", identifierString);
+                  }
+                }
+                // jo.put("handle", this.getId());
               }
               // get language
               if (oai_dc.element("language") != null) {
