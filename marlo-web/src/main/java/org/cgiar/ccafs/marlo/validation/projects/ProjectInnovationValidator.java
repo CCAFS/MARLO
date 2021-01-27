@@ -333,8 +333,8 @@ public class ProjectInnovationValidator extends BaseValidator {
         if (struts) {
           action.addMessage(action.getText(action.getText("projectInnovations.contributingOrganizations")));
           action.addMissingField("innovation.contributingOrganizations");
-          action.getInvalidFields().put("input-innovation.contributingOrganizations",
-            action.getText(InvalidFieldsMessages.WRONGVALUE, new String[] {"Contributing organizations"}));
+          action.getInvalidFields().put("list-innovation.contributingOrganizations",
+            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Contributing organizations"}));
         }
       }
     } else {
@@ -343,8 +343,8 @@ public class ProjectInnovationValidator extends BaseValidator {
         if (struts) {
           action.addMessage(action.getText(action.getText("innovation.contributingOrganizations")));
           action.addMissingField("innovation.contributingOrganizations");
-          action.getInvalidFields().put("input-innovation.contributingOrganizations",
-            action.getText(InvalidFieldsMessages.WRONGVALUE, new String[] {"Contributing organizations"}));
+          action.getInvalidFields().put("list-innovation.contributingOrganizations",
+            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Contributing organizations"}));
         }
       }
     }
@@ -364,7 +364,7 @@ public class ProjectInnovationValidator extends BaseValidator {
     if (projectInnovation.getCenters() == null || projectInnovation.getCenters().isEmpty()) {
       action.addMessage(action.getText("projectInnovations.contributingCenters"));
       action.addMissingField("innovation.centers");
-      action.getInvalidFields().put("input-innovation.centers",
+      action.getInvalidFields().put("list-innovation.centers",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"centers"}));
     }
 
