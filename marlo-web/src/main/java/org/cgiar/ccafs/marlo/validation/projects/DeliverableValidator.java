@@ -753,9 +753,13 @@ public class DeliverableValidator extends BaseValidator {
               String cleanDoi = DOIService.tryGetDoiName(deliverableMetadataElement.getElementValue());
               if (cleanDoi.isEmpty()) {
                 action.addMessage(action.getText("metadata.doi"));
-                action.getInvalidFields().put("input-deliverable.deliverableInfo.metadataElements[8].elementValue",
+                action.getInvalidFields().put("input-deliverable.deliverableInfo.metadataElements[8].doi",
                   InvalidFieldsMessages.EMPTYFIELD);
               }
+            } else {
+              action.addMessage(action.getText("metadata.doi"));
+              action.getInvalidFields().put("input-deliverable.deliverableInfo.metadataElements[8].doi",
+                InvalidFieldsMessages.EMPTYFIELD);
             }
           }
         }

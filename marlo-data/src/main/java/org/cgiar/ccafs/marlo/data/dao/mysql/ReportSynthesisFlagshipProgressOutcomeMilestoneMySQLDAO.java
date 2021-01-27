@@ -44,8 +44,9 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestoneMySQLDAO
     deleteReportSynthesisFlagshipProgressOutcomeMilestone(long reportSynthesisFlagshipProgressOutcomeMilestoneId) {
     ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone =
       this.find(reportSynthesisFlagshipProgressOutcomeMilestoneId);
-    reportSynthesisFlagshipProgressOutcomeMilestone.setActive(false);
-    this.update(reportSynthesisFlagshipProgressOutcomeMilestone);
+    // reportSynthesisFlagshipProgressOutcomeMilestone.setActive(false);
+    // this.update(reportSynthesisFlagshipProgressOutcomeMilestone);
+    this.delete(reportSynthesisFlagshipProgressOutcomeMilestone);
   }
 
   @Override

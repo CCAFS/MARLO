@@ -2517,7 +2517,7 @@ h3.contentSubTitle {
   width: 18px;
 }
 
-.helpMessage3 p {
+.helpMessage3 p , .helpMessage4 p{
   padding: 1px;
   margin-bottom: 0px;
 }
@@ -4242,7 +4242,7 @@ span.indicatorsFound {
   background-color: #5b80c3;
 }
 
-#metadata-output {
+#metadata-output, .metadata-output-persistent {
   color: #777;
   padding: 7px 4px;
   font-style: italic;
