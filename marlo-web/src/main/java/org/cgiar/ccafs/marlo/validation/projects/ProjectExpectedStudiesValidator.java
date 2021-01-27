@@ -186,6 +186,14 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
       }
     }
 
+    // Validate Centers
+    if (projectExpectedStudy.getCenters() == null || projectExpectedStudy.getCenters().isEmpty()) {
+      action.addMessage(action.getText("expectedStudy.contributingCenters"));
+      action.addMissingField("expectedStudy.centers");
+      action.getInvalidFields().put("list-expectedStudy.centers",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"centers"}));
+    }
+
 
     // Validate Geographic Scope
     boolean haveRegions = false;
