@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
@@ -125,6 +126,20 @@ public class ProjectInnovationValidator extends BaseValidator {
       action.addMissingField("innovation.subIdos");
       action.getInvalidFields().put("list-innovation.subIdos",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
+    } else {
+      // Validate primary Sub-IDOS
+      int count = 0;
+      for (ProjectInnovationSubIdo subido : projectInnovation.getSubIdos()) {
+        if (subido.getPrimary() != null && subido.getPrimary() == true) {
+          count++;
+        }
+      }
+      if (count == 0) {
+        action.addMessage(action.getText("subIdos"));
+        action.addMissingField("innovation.subIdos");
+        action.getInvalidFields().put("list-innovation.subIdos",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
+      }
     }
 
     // Validate Stage of Innovation
@@ -317,7 +332,7 @@ public class ProjectInnovationValidator extends BaseValidator {
         || projectInnovation.getContributingOrganizations().size() > 5) {
         if (struts) {
           action.addMessage(action.getText(action.getText("projectInnovations.contributingOrganizations")));
-          action.addMissingField("projectInnovations.contributingOrganizations");
+          action.addMissingField("innovation.contributingOrganizations");
           action.getInvalidFields().put("input-innovation.contributingOrganizations",
             action.getText(InvalidFieldsMessages.WRONGVALUE, new String[] {"Contributing organizations"}));
         }
@@ -326,8 +341,8 @@ public class ProjectInnovationValidator extends BaseValidator {
       if (projectInnovation.getContributingOrganizations() != null
         && projectInnovation.getContributingOrganizations().size() > 5) {
         if (struts) {
-          action.addMessage(action.getText(action.getText("projectInnovations.contributingOrganizations")));
-          action.addMissingField("projectInnovations.contributingOrganizations");
+          action.addMessage(action.getText(action.getText("innovation.contributingOrganizations")));
+          action.addMissingField("innovation.contributingOrganizations");
           action.getInvalidFields().put("input-innovation.contributingOrganizations",
             action.getText(InvalidFieldsMessages.WRONGVALUE, new String[] {"Contributing organizations"}));
         }
@@ -348,7 +363,7 @@ public class ProjectInnovationValidator extends BaseValidator {
     // Validate Innovation Centers
     if (projectInnovation.getCenters() == null || projectInnovation.getCenters().isEmpty()) {
       action.addMessage(action.getText("projectInnovations.contributingCenters"));
-      action.addMissingField("projectInnovations.contributingCenters");
+      action.addMissingField("innovation.centers");
       action.getInvalidFields().put("input-innovation.centers",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"centers"}));
     }
