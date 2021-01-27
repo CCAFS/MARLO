@@ -358,6 +358,7 @@
       </div>
       <div class="buttons-field">
         [#if editable]
+        <div class="checkButton" id="WOSSyncBtn" style="text-align: center ;display:none;">WOS sync</div>
           [#local showSync = (channelsArray?seq_contains(deliverable.dissemination.disseminationChannel))!false ]
           <div id="fillMetadata" style="display:${showSync?string('block','none')};">
             <input type="hidden" name="deliverable.dissemination.synced" value="${isSynced?string}" />
@@ -372,11 +373,12 @@
           </div>
         [/#if]
       </div>
+      
     </div>
     <div class="clearfix"></div>
 
     <div class="form-group row ifIsReadOnly" style="margin-top: 10px;">
-      <div class="col-md-6" >
+      <div class="col-md-6" style="padding-top: 7px;">
         [@customForm.input name="handle-bridge" required=require value="" className="metadataValue "  type="text" i18nkey="Handle" help="" readOnly=mElementHide editable=editable/]
       </div>
       <div class="col-md-6 conditionalRequire">
@@ -384,7 +386,7 @@
       </div>
     </div>
 
-    <div class="note left">
+    <div class="note left" id="WOSModalBtn" style="display: none;">
       <div  class="helpMessage4">
         <p><a style="cursor: pointer;" data-toggle="modal" data-target="#WOSModal" > <span class="glyphicon glyphicon-info-sign"></span> Click here to get the metadata information received from Web of Science
         </a></p>
@@ -395,8 +397,8 @@
 
   </div>
   <div id="metadata-output"></div>
-  <div class="metadata-output-persistent" id="output-dissemination"></div>
-  <div class="metadata-output-persistent" id="output-wos"></div>
+  <div class="metadata-output-persistent" id="output-dissemination" style="display: none;"></div>
+  <div class="metadata-output-persistent" id="output-wos" style="display: none;"></div>
 
 
       <!-- Modal WOS -->
@@ -416,65 +418,83 @@
                 <tbody>
                   <tr>
                     <th scope="row">URL</th>
-                    <td>Not Available</td>
+                    <td id="td-WOS-URL" ></td>
                   </tr>
                   <tr>
                     <th scope="row">Title</th>
-                    <td>Not Available</td>
+                    <td id="td-WOS-Title" ></td>
                   </tr>
                   <tr>
-                    <th scope="row">Publication type</th>
-                    <td>Not Available</td>
+                    <th  scope="row">Publication type</th>
+                    <td id="td-WOS-Publication_type"></td>
                   </tr>
                   <tr>
                     <th scope="row">Publication Year</th>
-                    <td>Not Available</td>
+                    <td id="td-WOS-Publication_Year" ></td>
                   </tr>
                   <tr>
                     <th scope="row">Is Open Access</th>
-                    <td>Not Available</td>
+                    <td id="td-WOS-Is_Open_Access" ></td>
                   </tr>
                   <tr>
                     <th scope="row">Open access link</th>
-                    <td>Not Available</td>
+                    <td  id="td-WOS-Open_access_link" ></td>
                   </tr>
                   <tr>
-                    <th scope="row">Is ISI</th>
-                    <td>Not Available</td>
+                    <th  scope="row">Is ISI</th>
+                    <td id="td-WOS-Is_ISI"></td>
                   </tr>
                   <tr>
-                    <th scope="row">Journal name</th>
-                    <td>Not Available</td>
+                    <th  scope="row">Journal name</th>
+                    <td id="td-WOS-Journal_name"></td>
                   </tr>
                   <tr>
                     <th scope="row">Volume</th>
-                    <td>Not Available</td>
+                    <td id="td-WOS-Volume" ></td>
                   </tr>
                   <tr>
-                    <th scope="row">Issue</th>
-                    <td>Not Available</td>
+                    <th  scope="row">Issue</th>
+                    <td id="td-WOS-Issue"></td>
                   </tr>
                   <tr>
-                    <th scope="row">Pages</th>
-                    <td>Not Available</td>
+                    <th  scope="row">Pages</th>
+                    <td id="td-WOS-Pages"></td>
                   </tr>
                   <tr>
-                    <th scope="row">Authors</th>
-                    <td>Not Available</td>
+                    <th  scope="row">Authors</th>
+                    <td id="td-WOS-Authors"></td>
                   </tr>
                   <tr>
-                    <th scope="row">Institutions</th>
-                    <td>Not Available</td>
+                    <th  scope="row">Institutions</th>
+                    <td id="td-WOS-Institutions"></td>
                   </tr>
                 </tbody>
               </table>
+              <div class="WOS-fields" style="display:none">
+                [@customForm.input name="WOS-URL" required=require value="" className="metadataValue "  type="text" i18nkey="URL" help="nada2" readOnly=true editable=editable/]
+                [@customForm.input name="WOS-Title" required=require value="" className="metadataValue "  type="text" i18nkey="Title" help="nada2" readOnly=true editable=editable/]
+                [@customForm.input name="WOS-Publication_type" required=require value="" className="metadataValue "  type="text" i18nkey="Publication type" help="nada2" readOnly=true editable=editable/]
+                [@customForm.input name="WOS-Publication_Year" required=require value="" className="metadataValue "  type="text" i18nkey="Publication Year" help="nada2" readOnly=true editable=editable/]
+                [@customForm.input name="WOS-Is_Open_Access" required=require value="" className="metadataValue "  type="text" i18nkey="Is Open Access" help="nada2" readOnly=true editable=editable/]
+                [@customForm.input name="WOS-Open_access_link" required=require value="" className="metadataValue "  type="text" i18nkey="Open access link" help="nada2" readOnly=true editable=editable/]
+                [@customForm.input name="WOS-Is_ISI" required=require value="" className="metadataValue "  type="text" i18nkey="Is ISI" help="nada2" readOnly=true editable=editable/]
+                [@customForm.input name="WOS-Journal_name" required=require value="" className="metadataValue "  type="text" i18nkey="Journal name" help="nada2" readOnly=true editable=editable/]
+                [@customForm.input name="WOS-Volume" required=require value="" className="metadataValue "  type="text" i18nkey="Volume" help="nada2" readOnly=true editable=editable/]
+                [@customForm.input name="WOS-Issue" required=require value="" className="metadataValue "  type="text" i18nkey="Issue" help="nada2" readOnly=true editable=editable/]
+                [@customForm.input name="WOS-Pages" required=require value="" className="metadataValue "  type="text" i18nkey="Pages" help="nada2" readOnly=true editable=editable/]
+                [@customForm.input name="WOS-Authors" required=require value="" className="metadataValue "  type="text" i18nkey="Authors" help="nada2" readOnly=true editable=editable/]
+                [@customForm.input name="WOS-Institutions" required=require value="" className="metadataValue "  type="text" i18nkey="Institutions" help="nada2" readOnly=true editable=editable/]
 
+              </div>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
           </div>
         </div>
+
+
+
       </div>
 
 
