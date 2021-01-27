@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Created Jan 26, 2021 10:17:29 PM by German Martinez -->
+<hibernate-mapping>
+	<class name="org.cgiar.ccafs.marlo.data.model.ExternalSourceAuthor" table="external_source_author" 
+		optimistic-lock="none">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		
+		<many-to-one name="deliverableMetadataExternalSources"
+			class="org.cgiar.ccafs.marlo.data.model.DeliverableMetadataExternalSources" fetch="select">
+			<column name="deliverable_metadata_external_sources_id" />
+		</many-to-one>
+		
+		<property name="fullName" type="string">
+			<column name="full_name" sql-type="TEXT" />
+		</property>	
+	</class>
+</hibernate-mapping>
