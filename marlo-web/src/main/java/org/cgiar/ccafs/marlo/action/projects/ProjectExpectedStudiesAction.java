@@ -2198,8 +2198,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       // Delete previous srf targets if the answer of the question is not
       if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()) != null
         && projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getIsSrfTarget() != null
-        && projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getIsSrfTarget()
-          .equals("targetsOptionNo")) {
+        && (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getIsSrfTarget()
+          .equals("targetsOptionNo")
+          || projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getIsSrfTarget()
+            .equals("targetsOptionTooEarlyToSay"))) {
         for (ProjectExpectedStudySrfTarget studytarget : targetPrev) {
           this.projectExpectedStudySrfTargetManager.deleteProjectExpectedStudySrfTarget(studytarget.getId());
 
