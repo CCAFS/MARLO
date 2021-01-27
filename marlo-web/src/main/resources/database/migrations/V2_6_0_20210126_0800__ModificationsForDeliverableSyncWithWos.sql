@@ -47,6 +47,6 @@ create table deliverable_affiliations_not_mapped(
 
     primary key (id),
 
-    constraint danm_ibfk_1 foreign key (deliverable_metadata_external_sources_id) references deliverable_metadata_external_sources (id)
+    constraint danm_ibfk_1 foreign key (deliverable_metadata_external_sources_id) references deliverable_metadata_external_sources (id),
     constraint danm_ibfk_2 foreign key (institution_id) references institutions (id)
 );
