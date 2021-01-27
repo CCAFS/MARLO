@@ -305,9 +305,9 @@ public class ProjectContributionToLP6Action extends BaseAction {
         /*
          * Get the actual projectLp6Contribution
          */
-        project.setProjectLp6Contribution(project.getProjectLp6Contributions().stream()
-          .filter(c -> c.isActive() && c.getPhase().getId() == this.getActualPhase().getId())
-          .collect(Collectors.toList()).get(0));
+        ProjectLp6Contribution lp6Contribution = project.getProjectLp6Contributions().stream()
+          .filter(c -> c.isActive() && c.getPhase().getId() == this.getActualPhase().getId()).findFirst().orElse(null);
+        project.setProjectLp6Contribution(lp6Contribution);
 
         if (project.getProjectLp6Contribution() != null) {
           // Get selected deliverables
