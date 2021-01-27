@@ -119,6 +119,17 @@ public class StatusPlannedMilestonesItem<T> {
     this.repIndMilestoneReasonManager = repIndMilestoneReasonManager;
   }
 
+  private int countWords(String string) {
+    int wordCount = 0;
+    string = StringUtils.stripToEmpty(string);
+    if (!string.isEmpty()) {
+      String[] words = StringUtils.split(string);
+      wordCount = words.length;
+    }
+
+    return wordCount;
+  }
+
   public Long createStatusPlannedMilestone(NewStatusPlannedMilestoneDTO newStatusPlannedMilestoneDTO,
     String CGIARentityAcronym, User user) {
     Long plannedMilestoneStatusID = null;
@@ -243,6 +254,11 @@ public class StatusPlannedMilestonesItem<T> {
         // TODO remember to take into account the "otherReason" field in the future validator for this (if
         // repIndMilestoneReason = 7 Other)
       }
+    }
+    // limit words validation
+    if (this.countWords(newStatusPlannedMilestoneDTO.getEvidence()) > 200) {
+      fieldErrors.add(new FieldErrorDTO("createStatusPlannedMilestone", "Evidence",
+        "Evidence field excedes the maximum number of words (200 words)"));
     }
 
     if (fieldErrors.isEmpty()) {
@@ -661,6 +677,12 @@ public class StatusPlannedMilestonesItem<T> {
             new FieldErrorDTO("updateStatusPlannedMilestone", "Reason", "is an invalid Milestone reason identifier"));
         }
       }
+    }
+
+    // limit words validation
+    if (this.countWords(newStatusPlannedMilestoneDTO.getEvidence()) > 200) {
+      fieldErrors.add(new FieldErrorDTO("createStatusPlannedMilestone", "Evidence",
+        "Evidence field excedes the maximum number of words (200 words)"));
     }
 
     if (fieldErrors.isEmpty()) {
