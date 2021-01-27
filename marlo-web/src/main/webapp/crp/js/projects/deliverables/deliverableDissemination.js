@@ -58,6 +58,7 @@ function getWOSInfo(link){
     console.log("succes");
     console.log(data);
     updateWOSFields(data.response);
+    $('#WOSModalBtn').show();  
     $('#output-wos').html('Found metadata successfully in Web of Sciences.')
     },
     error: function(e) {
@@ -139,7 +140,10 @@ function updateReadOnly() {
       
       $(".ifIsReadOnly .metadataElement-handle .input input").prop('readonly', true);
       $(".ifIsReadOnly .metadataElement-doi .input input").prop('readonly', true);
+      $('#WOSSyncBtn').hide(); 
     } else {
+      $('#WOSSyncBtn').show(); 
+      
       $(".ifIsReadOnly .metadataElement-handle .input input").prop('readonly', false);
       $(".ifIsReadOnly .metadataElement-doi .input input").prop('readonly', false);
     }
@@ -164,6 +168,11 @@ function updateReadOnly() {
 }
 
 function addDisseminationEvents() {
+
+    // 
+    $("#WOSSyncBtn").on("click", function () {
+      getWOSInfo('10.1016/j.jclepro.2020.122854');
+    });
 
   // Update indexTab input
   $("a[data-toggle='tab']").on('shown.bs.tab', function (e) {
