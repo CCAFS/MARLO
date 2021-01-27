@@ -36,8 +36,10 @@ public class ProjectExpectedStudyInfoDTO {
   @ApiModelProperty(notes = "Expected study status", position = 4)
   private Long status;
 
-  @ApiModelProperty(notes = "Expected study tag code", position = 5)
-  private TagDTO tag;
+  /*
+   * @ApiModelProperty(notes = "Expected study tag code", position = 5)
+   * private TagDTO tag;
+   */
 
   @ApiModelProperty(notes = "Maturity of change reported code", position = 6)
   private MaturityOfChangeDTO maturityOfChange;
@@ -154,9 +156,11 @@ public class ProjectExpectedStudyInfoDTO {
     return studyType;
   }
 
-  public TagDTO getTag() {
-    return tag;
-  }
+  /*
+   * public TagDTO getTag() {
+   * return tag;
+   * }
+   */
 
   public String getTitle() {
     return title;
@@ -239,9 +243,11 @@ public class ProjectExpectedStudyInfoDTO {
     this.studyType = studyType;
   }
 
-  public void setTag(TagDTO tag) {
-    this.tag = tag;
-  }
+  /*
+   * public void setTag(TagDTO tag) {
+   * this.tag = tag;
+   * }
+   */
 
   public void setTitle(String title) {
     this.title = title;
