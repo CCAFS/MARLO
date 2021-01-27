@@ -464,6 +464,10 @@
     <mapping resource="xmls/ImpactAreasIndicators.hbm.xml" /> 
     <mapping resource="xmls/ProgressTargetCaseGeographicScopes.hbm.xml" />
     <mapping resource="xmls/ProgressTargetCaseGeographicRegions.hbm.xml" />	  
+    <mapping resource="xmls/DeliverableAffiliationsNotMapped.hbm.xml" />
+    <mapping resource="xmls/ExternalSourceAuthor.hbm.xml" />
+    <mapping resource="xmls/DeliverableMetadataExternalSources.hbm.xml" />
+    <mapping resource="xmls/DeliverableAffiliations.hbm.xml" />
     <mapping resource="xmls/Sdg.hbm.xml" />   
     <mapping resource="xmls/SdgTargets.hbm.xml" />
     <mapping resource="xmls/SdgIndicators.hbm.xml" />

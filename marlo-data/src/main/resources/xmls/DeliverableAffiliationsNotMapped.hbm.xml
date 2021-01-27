@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Created Jan 26, 2021 10:20:57 PM by German Martinez -->
+<hibernate-mapping>
+	<class name="org.cgiar.ccafs.marlo.data.model.DeliverableAffiliationsNotMapped" table="deliverable_affiliations_not_mapped" 
+		optimistic-lock="none">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+	
+	<many-to-one name="deliverableMetadataExternalSources"
+			class="org.cgiar.ccafs.marlo.data.model.DeliverableMetadataExternalSources" fetch="select">
+		<column name="deliverable_metadata_external_sources_id" />
+	</many-to-one>
+	<many-to-one name="possibleInstitution"
+			class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
+		<column name="institution_id" />
+	</many-to-one>
+	
+	<property name="name" type="string">
+			<column name="name" sql-type="TEXT" />
+		</property>
+		<property name="country" type="string">
+			<column name="country" sql-type="TEXT" />
+		</property>
+		<property name="fullAddress" type="string">
+			<column name="full_address" sql-type="TEXT" />
+		</property>
+		<property name="institutionMatchConfidence" type="java.lang.Integer">
+			<column name="institution_match_confidence" />
+		</property>
+	</class>
+</hibernate-mapping>

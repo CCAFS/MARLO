@@ -22,7 +22,6 @@ import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.EvidenceTagManager;
 import org.cgiar.ccafs.marlo.data.manager.ExpectedStudyProjectManager;
-import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.GeneralStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
@@ -149,7 +148,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private InstitutionManager institutionManager;
   private LocElementManager locElementManager;
   private StudyTypeManager studyTypeManager;
-  private FileDBManager fileDBManager;
   private RepIndGeographicScopeManager geographicScopeManager;
   private RepIndRegionManager repIndRegionManager;
   private RepIndOrganizationTypeManager organizationTypeManager;
@@ -231,7 +229,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     ExpectedStudyProjectManager expectedStudyProjectManager,
     ProjectExpectedStudiesValidator projectExpectedStudiesValidator, PhaseManager phaseManager,
     CrpProgramManager crpProgramManager, InstitutionManager institutionManager, LocElementManager locElementManager,
-    StudyTypeManager studyTypeManager, FileDBManager fileDBManager, RepIndGeographicScopeManager geographicScopeManager,
+    StudyTypeManager studyTypeManager, RepIndGeographicScopeManager geographicScopeManager,
     RepIndRegionManager repIndRegionManager, RepIndOrganizationTypeManager organizationTypeManager,
     RepIndGenderYouthFocusLevelManager focusLevelManager, RepIndPolicyInvestimentTypeManager investimentTypeManager,
     RepIndStageProcessManager stageProcessManager, RepIndStageStudyManager stageStudyManager,
@@ -266,7 +264,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.institutionManager = institutionManager;
     this.locElementManager = locElementManager;
     this.studyTypeManager = studyTypeManager;
-    this.fileDBManager = fileDBManager;
     this.geographicScopeManager = geographicScopeManager;
     this.repIndRegionManager = repIndRegionManager;
     this.organizationTypeManager = organizationTypeManager;
