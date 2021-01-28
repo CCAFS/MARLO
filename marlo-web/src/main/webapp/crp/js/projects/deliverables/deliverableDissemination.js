@@ -36,42 +36,48 @@ function init() {
 
   addDisseminationEvents();
   // if ($('.deliverableDisseminationUrl ').prop('readonly')) {
-  //   getWOSInfo('10.1016/j.jclepro.2020.122854');
+  //   getWOSInfo();
   // }
   
 }
 
-function getWOSInfo(link){
-
-  $.ajax({
-    url: baseURL + '/metadataByWOS.do',
-    data: {
-      wosLink: link
-        // phaseID: phaseID,
-        // financeCode: financeCode,
-        // institutionLead: leadPartnerID
-    },
-    beforeSend: function() {
-      // console.log("before");
-    },
-    success: function(data) {
-    console.log("succes");
-    console.log(data.response);
-    updateWOSFields(data.response);
-    $('#WOSModalBtn').show();  
-    $('#output-wos').html('Found metadata successfully in Web of Science.')
-    },
-    error: function(e) {
-      console.log(e);
-      console.log("no se pudo");
-      $('#output-wos').html('The peer-reviewed publication was not found in Web of Science.')
-    },
-    complete: function() {
-      // console.log("complete"); 
-      $('#output-wos').show();   
-    }
+function getWOSInfo(){
+setTimeout(() => {
+  console.log("get wos info");
+  link = $('#doi-bridge').val();
+  console.log("link value: "+link);
+ // '10.1016/j.jclepro.2020.122854'
+  // link = '10.1016/j.agee.2016.12.042';
+ $.ajax({
+   url: baseURL + '/metadataByWOS.do',
+   data: {
+     wosLink: link
+       // phaseID: phaseID,
+       // financeCode: financeCode,
+       // institutionLead: leadPartnerID
+   },
+   beforeSend: function() {
+     // console.log("before");
+   },
+   success: function(data) {
+   console.log("succes");
+   console.log(data.response);
+   updateWOSFields(data.response);
+   $('#WOSModalBtn').show();  
+   $('#output-wos').html('Found metadata successfully in Web of Science.')
+   },
+   error: function(e) {
+     console.log(e);
+     console.log("no se pudo");
+     $('#output-wos').html('The peer-reviewed publication was not found in Web of Science.')
+   },
+   complete: function() {
+     // console.log("complete"); 
+     $('#output-wos').show();   
+   }
 });
 
+}, 5000);
 }
 function nullDataPipe(data){
   if (data) {
@@ -142,7 +148,7 @@ function updateReadOnly() {
     $('#output-dissemination').show();  
     $('#WOSModalBtn').show();  
     if ($('.deliverableDisseminationUrl ').prop('readonly')) {
-      getWOSInfo('10.1016/j.jclepro.2020.122854');
+      getWOSInfo();
     }
   } else {
     $('#output-dissemination').hide();  
@@ -184,7 +190,7 @@ function addDisseminationEvents() {
 
     // 
     $("#WOSSyncBtn").on("click", function () {
-      getWOSInfo('10.1016/j.jclepro.2020.122854');
+      getWOSInfo();
     });
 
   // Update indexTab input
@@ -919,6 +925,7 @@ function getMetadata(channel, url) {
 
   // get data from url
   // Ajax to service
+  console.log("metadata link");
   $.ajax({
     'url': baseURL + '/metadataByLink.do',
     'type': "GET",
