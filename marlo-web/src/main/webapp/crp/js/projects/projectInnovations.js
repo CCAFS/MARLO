@@ -14,10 +14,13 @@ $(document).ready(function() {
 
   // Attach Events
   attachEvents();
-
+  AddRequired();
 });
 
 function attachEvents() {
+
+    // 
+    $('#isClearLeadToAddRequired').on('click', AddRequired);
 
   // Check the stage of innovation
   $('select.stageInnovationSelect').on('change', function() {
@@ -62,7 +65,14 @@ function attachEvents() {
   $('input[class*="radioType-"]').on('change', onChangeRadioButton);
 
 }
-
+function AddRequired(){
+  console.log($('#isClearLeadToAddRequired').is(":checked"));
+  if ($('#isClearLeadToAddRequired').is(":checked")) {
+    $('.top-five-contributing').find('.requiredTag').show();
+  }else{
+    $('.top-five-contributing').find('.requiredTag').hide();
+  }
+}
 function addSelect2() {
   $('form select').select2({
       width: '100%',
