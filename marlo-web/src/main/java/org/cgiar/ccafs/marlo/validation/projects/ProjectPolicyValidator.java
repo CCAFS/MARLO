@@ -153,19 +153,27 @@ public class ProjectPolicyValidator extends BaseValidator {
      * }
      */
 
-    // Validate Narrative
-    /*
-     * if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndStageProcess() != null
-     * && projectPolicy.getProjectPolicyInfo().getRepIndStageProcess().getId() == 3) {
-     * if (!(this
-     * .wordCount(projectPolicy.getProjectPolicyInfo(action.getActualPhase()).getNarrativeEvidence()) <= 200)) {
-     * action.addMessage(action.getText("Narrative of Evidence"));
-     * action.addMissingField("policy.narrative");
-     * action.getInvalidFields().put("input-policy.projectPolicyInfo.narrativeEvidence",
-     * InvalidFieldsMessages.EMPTYFIELD);
-     * }
-     * }
-     */
+    // Validate Evidences or narrative evidences when level 1 is selected
+
+    if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndStageProcess() != null
+      && projectPolicy.getProjectPolicyInfo().getRepIndStageProcess().getId() == 3) {
+
+      // Validate Evidences
+      if (!(this.isValidString(projectPolicy.getProjectPolicyInfo(action.getActualPhase()).getNarrativeEvidence()))) {
+        action.addMessage(action.getText("Narrative of Evidence"));
+        action.addMissingField("policy.narrative");
+        action.getInvalidFields().put("input-policy.projectPolicyInfo.narrativeEvidence",
+          InvalidFieldsMessages.EMPTYFIELD);
+      } else {
+        if (projectPolicy.getEvidences() == null || projectPolicy.getEvidences().isEmpty()) {
+          action.addMessage(action.getText("Evidences List"));
+          action.addMissingField("policy.evidence");
+          action.getInvalidFields().put("list-policy.evidences",
+            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"expectedStudyList"}));
+        }
+      }
+    }
+
     // Validate Maturity Process
     if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndStageProcess() != null)
 
