@@ -168,7 +168,7 @@
     [#local isResearchMaturity = ((element.projectPolicyInfo.repIndStageProcess.id == 3))!false]
     [#-- Narrative --] 
     <div class="form-group block-researchMaturity" style="display:${isResearchMaturity?string('block', 'none')}">
-      [@customForm.textArea name="${customName}.projectPolicyInfo.narrativeEvidence"  i18nkey="policy.narrative"  placeholder="" className="limitWords-200" help="policy.narrative.helpText" helpIcon=false required=false editable=editable /]
+      [@customForm.textArea name="${customName}.projectPolicyInfo.narrativeEvidence"  i18nkey="policy.narrative"  placeholder="" className="limitWords-200" help="policy.evidenceNarrative.help" required=false editable=editable /]
     <br>
     </div>
           
