@@ -46,6 +46,24 @@ $(document).ready(function() {
   // View More link button
   $('#helpViewMoreLink').on("click", expandViewMoreLink);
 
+  // View More link button
+  $('.in-radio-list').on("click", function (){
+    $list = $(this).parents('.list');
+    $($list ).find(".radio-input").each(function(i,e) {
+      // console.log(e.value);
+      $(e).val('false');
+      $(e).removeAttr('checked')
+        // var option =
+        //     $("#regionSelect").find(
+        //         "option[value='" + $(e).find("input.rId").val() + "-" + $(e).find("input.regionScope").val() + "']");
+        // option.prop('disabled', true);
+      });
+
+      $(this).parents('.radioFlat').find('.radio-input').val('true');
+
+      $(this).parents('.radioFlat').find('.radio-input').attr('checked');
+  });
+
   $(".removeHelp").on("click", function() {
     $(this).parent().parent().fadeOut(function() {
       console.log(this);
@@ -705,7 +723,7 @@ function onSelectElement() {
     var indexLevel = $(element).classParam('indexLevel');
     $(element).setNameIndexes(indexLevel, i);
   });
-
+  $element.find('label.radio-label').attr('for', $element.find('label.radio-label').parents('.radioFlat').find('input').attr("id"));
   //Validate if is a primary radioButton group
   if(className.indexOf("primary") >= 0){
     if(($list.children().length < 3 && $list.children().first().is('label')) || $list.children().length < 2){
@@ -720,6 +738,7 @@ function onSelectElement() {
 }
 
 function onClickRemoveElement() {
+  console.log("remove element");
   var removeElementType = $(this).classParam('removeElementType');
   var $parent = $(this).parent();
   var $select = $(this).parents(".panel-body").find('select');
@@ -757,9 +776,11 @@ function onClickRemoveElement() {
     $list.find('li.relationElement').each(function(i,element) {
       var indexLevel = $(element).classParam('indexLevel');
       $(element).setNameIndexes(indexLevel, i);
-
+      $(element).find('label.radio-label').attr('for', $(element).find('label.radio-label').parents('.radioFlat').find('input').attr("id"));
+ 
       if(className.indexOf("primary") >= 0){
-        $(element).find('label.radio-label').attr('for', $(element).find('label.radio-label').parents('.radiot').find('input').attr("id"));
+        $(element).find('label.radio-label').attr('for', $(element).find('label.radio-label').parents('.radioFlat').find('input').attr("id"));
+        
         //$(element).find('input.radio-input').attr('checked', true);
         /*
         if ($list.children().length < 3){
