@@ -187,7 +187,10 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
     }
 
     // Validate Centers
-    if (projectExpectedStudy.getCenters() == null || projectExpectedStudy.getCenters().isEmpty()) {
+    if (projectExpectedStudy.getProjectExpectedStudyInfo() != null
+      && projectExpectedStudy.getProjectExpectedStudyInfo().getStudyType() != null
+      && projectExpectedStudy.getProjectExpectedStudyInfo().getStudyType().getId() == 1
+      && (projectExpectedStudy.getCenters() == null || projectExpectedStudy.getCenters().isEmpty())) {
       action.addMessage(action.getText("expectedStudy.contributingCenters"));
       action.addMissingField("expectedStudy.centers");
       action.getInvalidFields().put("list-expectedStudy.centers",
