@@ -778,7 +778,7 @@
           <div class="form-group row primary-list">
           <div class="col-md-1 primary-radio">
           [#if editable]
-            [@radioFlat id="${customName}.primary" name="${customName}.primary" value="true" cssClassLabel="radio-label-yes" editable=editable checked=(primaryValue)!false /]
+            [@radioFlat id="${customName}.primary" name="${customName}.primary" value="true" cssClassLabel="radio-label-yes in-radio-list" editable=editable checked=(primaryValue)!false/]
             [#else]
               [#if primaryValue==true]
                 <span class="primary-element glyphicon glyphicon-ok-sign"></span>
