@@ -378,7 +378,7 @@
     <div class="clearfix"></div>
 
     <div class="form-group row ifIsReadOnly" style="margin-top: 10px;">
-      <div class="col-md-6" style="padding-top: 7px;">
+      <div class="col-md-6" >
         [@customForm.input name="handle-bridge" required=require value="" className="metadataValue "  type="text" i18nkey="Handle" help="" readOnly=mElementHide editable=editable/]
       </div>
       <div class="col-md-6 conditionalRequire">
@@ -449,6 +449,10 @@
                     <td id="td-WOS-Journal_name"></td>
                   </tr>
                   <tr>
+                    <th  scope="row">DOI</th>
+                    <td id="td-WOS-DOI"></td>
+                  </tr>
+                  <tr>
                     <th scope="row">Volume</th>
                     <td id="td-WOS-Volume" ></td>
                   </tr>
@@ -479,6 +483,7 @@
                 [@customForm.input name="WOS-Open_access_link" required=require value="" className="metadataValue "  type="text" i18nkey="Open access link" help="nada2" readOnly=true editable=editable/]
                 [@customForm.input name="WOS-Is_ISI" required=require value="" className="metadataValue "  type="text" i18nkey="Is ISI" help="nada2" readOnly=true editable=editable/]
                 [@customForm.input name="WOS-Journal_name" required=require value="" className="metadataValue "  type="text" i18nkey="Journal name" help="nada2" readOnly=true editable=editable/]
+                [@customForm.input name="WOS-DOI" required=require value="" className="metadataValue "  type="text" i18nkey="DOI" help="nada2" readOnly=true editable=editable/]
                 [@customForm.input name="WOS-Volume" required=require value="" className="metadataValue "  type="text" i18nkey="Volume" help="nada2" readOnly=true editable=editable/]
                 [@customForm.input name="WOS-Issue" required=require value="" className="metadataValue "  type="text" i18nkey="Issue" help="nada2" readOnly=true editable=editable/]
                 [@customForm.input name="WOS-Pages" required=require value="" className="metadataValue "  type="text" i18nkey="Pages" help="nada2" readOnly=true editable=editable/]
