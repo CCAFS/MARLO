@@ -35,44 +35,92 @@ function init() {
   });
 
   addDisseminationEvents();
-  if ($('.deliverableDisseminationUrl ').prop('readonly')) {
-    getWOSInfo('10.1016/j.jclepro.2020.122854');
-  }
+  // if ($('.deliverableDisseminationUrl ').prop('readonly')) {
+  //   getWOSInfo();
+  // }
   
 }
 
-function getWOSInfo(link){
-
-  $.ajax({
-    url: baseURL + '/metadataByWOS.do',
-    data: {
-      wosLink: link
-        // phaseID: phaseID,
-        // financeCode: financeCode,
-        // institutionLead: leadPartnerID
-    },
-    beforeSend: function() {
-      // console.log("before");
-    },
-    success: function(data) {
-    console.log("succes");
-    console.log(data);
-    updateWOSFields(data.response);
-    $('#WOSModalBtn').show();  
-    $('#output-wos').html('Found metadata successfully in Web of Sciences.')
-    },
-    error: function(e) {
-      console.log(e);
-      console.log("no se pudo");
-      $('#output-wos').html('The peer-reviewed publication was not found in Web of Science.')
-    },
-    complete: function() {
-      // console.log("complete"); 
-      $('#output-wos').show();   
-    }
+function getWOSInfo(){
+setTimeout(() => {
+  console.log("get wos info");
+  link = $('#doi-bridge').val();
+  console.log("link value: "+link);
+ // '10.1016/j.jclepro.2020.122854'
+  // link = '10.1016/j.agee.2016.12.042';
+ $.ajax({
+   url: baseURL + '/metadataByWOS.do',
+   data: {
+     wosLink: link
+       // phaseID: phaseID,
+       // financeCode: financeCode,
+       // institutionLead: leadPartnerID
+   },
+   beforeSend: function() {
+     // console.log("before");
+   },
+   success: function(data) {
+   console.log("succes");
+   console.log(data.response);
+   updateWOSFields(data.response);
+   $('#WOSModalBtn').show();  
+   $('#output-wos').html('Found metadata successfully in Web of Science.')
+   },
+   error: function(e) {
+     console.log(e);
+     console.log("no se pudo");
+     $('#output-wos').html('The peer-reviewed publication was not found in Web of Science.')
+   },
+   complete: function() {
+     // console.log("complete"); 
+     $('#output-wos').show();   
+   }
 });
 
+}, 2000);
 }
+function nullDataPipe(data){
+  if (data) {
+    return data;    
+  }else{
+    return 'Not Available';
+  }
+}
+
+function JsonAuthorsToOrder(data){
+  if (data != 'Not Available') {
+    let auxData='';
+    console.log(data);
+    data.forEach(element => {
+     console.log(element.fullName);
+     auxData +='<p>'+element.fullName+'</p></hr>';
+   });
+    return auxData;
+  }else{
+    return data;
+  }
+}
+
+function JsoninstitutionsToOrder(data){
+  if (data != 'Not Available') {
+    let auxData='';
+    let name='';
+    console.log(data);
+    data.forEach(element => {
+     console.log(element.fullName);
+     if (parseInt(element.clarisaMatchConfidence) <= 75) {
+      name=element.clarisaId;
+     }else{
+      name=element.fullName;
+     }
+     auxData +='<p>'+name+'</p></hr>';
+   });
+    return auxData;
+  }else{
+    return data;
+  }
+}
+
 
 function updateWOSFields(data){
   let {
@@ -81,9 +129,10 @@ function updateWOSFields(data){
     publicationType,
     publicationYear,
     isOpenAccess,
-
+    openAcessLink,
     isISI,
     journalName,
+    doi,
     volume,
     issue,
     pages,
@@ -91,33 +140,42 @@ function updateWOSFields(data){
     institutions
     
   } = data ;
+  // const dataNames = ['URL', 'Title', 'Publication_type','Publication_Year','Is_Open_Access','Open_access_link','Is_ISI','Journal_name','Volume','Issue','Pages','Authors','Institutions'];
+  // dataNames.forEach(element =>{
+  //    console.log(element);
+  //    $('#td-WOS-URL').append(url);
+  //   });
+     
+
   $('#WOS-URL').val(url);
   $('#WOS-Title').val(title);
   $('#WOS-Publication_type').val(publicationType);
   $('#WOS-Publication_Year').val(publicationYear);
   $('#WOS-Is_Open_Access').val(isOpenAccess);
-  $('#WOS-Open_access_link').val('Some info');
+  $('#WOS-Open_access_link').val(openAcessLink);
   $('#WOS-Is_ISI').val(isISI);
   $('#WOS-Journal_name').val(journalName);
+  $('#WOS-DOI').val(doi);
   $('#WOS-Volume').val(volume);
   $('#WOS-Issue').val(issue);
   $('#WOS-Pages').val(pages);
   $('#WOS-Authors').val(authors);
   $('#WOS-Institutions').val(institutions);
 
-  $('#td-WOS-URL').append(url);
-  $('#td-WOS-Title').append(title);
-  $('#td-WOS-Publication_type').append(publicationType);
-  $('#td-WOS-Publication_Year').append(publicationYear);
-  $('#td-WOS-Is_Open_Access').append(isOpenAccess);
-  $('#td-WOS-Open_access_link').append('Some info');
-  $('#td-WOS-Is_ISI').append(''+isISI);
-  $('#td-WOS-Journal_name').append(journalName);
-  $('#td-WOS-Volume').append(volume);
-  $('#td-WOS-Issue').append(issue);
-  $('#td-WOS-Pages').append(pages);
-  $('#td-WOS-Authors').append(authors);
-  $('#td-WOS-Institutions').append(institutions);
+  $('#td-WOS-URL').html(nullDataPipe(url));
+  $('#td-WOS-Title').html(nullDataPipe(title));
+  $('#td-WOS-Publication_type').html(nullDataPipe(publicationType));
+  $('#td-WOS-Publication_Year').html(nullDataPipe(publicationYear));
+  $('#td-WOS-Is_Open_Access').html(nullDataPipe(isOpenAccess));
+  $('#td-WOS-Open_access_link').html(nullDataPipe(openAcessLink));
+  $('#td-WOS-Is_ISI').html(nullDataPipe(isISI));
+  $('#td-WOS-Journal_name').html(nullDataPipe(journalName));
+  $('#td-WOS-DOI').html(nullDataPipe(doi));
+  $('#td-WOS-Volume').html(nullDataPipe(volume));
+  $('#td-WOS-Issue').html(nullDataPipe(issue));
+  $('#td-WOS-Pages').html(nullDataPipe(pages));
+  $('#td-WOS-Authors').html(JsonAuthorsToOrder(nullDataPipe(authors)));
+  $('#td-WOS-Institutions').html(JsoninstitutionsToOrder(nullDataPipe(institutions)));
 
   
 }
@@ -129,7 +187,7 @@ function updateReadOnly() {
     $('#output-dissemination').show();  
     $('#WOSModalBtn').show();  
     if ($('.deliverableDisseminationUrl ').prop('readonly')) {
-      getWOSInfo('10.1016/j.jclepro.2020.122854');
+      getWOSInfo();
     }
   } else {
     $('#output-dissemination').hide();  
@@ -171,7 +229,7 @@ function addDisseminationEvents() {
 
     // 
     $("#WOSSyncBtn").on("click", function () {
-      getWOSInfo('10.1016/j.jclepro.2020.122854');
+      getWOSInfo();
     });
 
   // Update indexTab input
@@ -906,6 +964,7 @@ function getMetadata(channel, url) {
 
   // get data from url
   // Ajax to service
+  console.log("metadata link");
   $.ajax({
     'url': baseURL + '/metadataByLink.do',
     'type': "GET",
