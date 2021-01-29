@@ -19,6 +19,28 @@
 			<column name="phase_id" />
 		</many-to-one>
 		
+		<!--set name="deliverableAffiliations" table="deliverable_affiliations" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="deliverable_metadata_external_sources_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableMetadataExternalSources" />
+		</set>
+		<set name="deliverableAffiliationsNotMapped" table="deliverable_affiliations_not_mapped" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="deliverable_metadata_external_sources_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableMetadataExternalSources" />
+		</set>
+		<set name="externalSourceAuthors" table="external_source_author" inverse="false"
+			lazy="true" fetch="select">
+			<key>
+				<column name="deliverable_metadata_external_sources_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableMetadataExternalSources" />
+		</set-->
+		
 		<property name="source" type="string">
 			<column name="source" sql-type="TEXT" />
 		</property>

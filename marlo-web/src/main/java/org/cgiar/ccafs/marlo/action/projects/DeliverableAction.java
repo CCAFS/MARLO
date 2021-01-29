@@ -21,6 +21,8 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CgiarCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableAffiliationManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableAffiliationsNotMappedManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableDataSharingFileManager;
@@ -34,6 +36,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableIntellectualAssetManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableMetadataElementManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableMetadataExternalSourcesManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableParticipantManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverablePartnerTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverablePublicationMetadataManager;
@@ -43,6 +46,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableUserManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableUserPartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableUserPartnershipPersonManager;
+import org.cgiar.ccafs.marlo.data.manager.ExternalSourceAuthorManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
@@ -69,6 +73,8 @@ import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableAffiliation;
+import org.cgiar.ccafs.marlo.data.model.DeliverableAffiliationsNotMapped;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
@@ -81,6 +87,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableLocation;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
+import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataExternalSources;
 import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnerType;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityAnswer;
@@ -89,6 +96,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnershipPerson;
+import org.cgiar.ccafs.marlo.data.model.ExternalSourceAuthor;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.GenderType;
@@ -161,10 +169,11 @@ public class DeliverableAction extends BaseAction {
 
   private static final long serialVersionUID = -4474372683580321612L;
 
-
   private static final long[] EMPTY_ARRAY = {};
 
+  // Logger
   private final Logger logger = LoggerFactory.getLogger(DeliverableAction.class);
+
   // Managers
   private AuditLogManager auditLogManager;
   private GlobalUnitManager crpManager;
@@ -211,9 +220,13 @@ public class DeliverableAction extends BaseAction {
   private DeliverableUserPartnershipManager deliverableUserPartnershipManager;
   private DeliverablePartnerTypeManager deliverablePartnerTypeManager;
   private DeliverableUserPartnershipPersonManager deliverableUserPartnershipPersonManager;
-
   private UserManager userManager;
-  // Parameters
+  private DeliverableMetadataExternalSourcesManager deliverableMetadataExternalSourcesManager;
+  private DeliverableAffiliationManager deliverableAffiliationManager;
+  private DeliverableAffiliationsNotMappedManager deliverableAffiliationsNotMappedManager;
+  private ExternalSourceAuthorManager externalSourceAuthorManager;
+
+  // Variables
   private List<DeliverableQualityAnswer> answers;
   private List<RepositoryChannel> repositoryChannels;
   private ArrayList<GlobalUnit> crps;
@@ -251,6 +264,10 @@ public class DeliverableAction extends BaseAction {
   private DeliverableGeographicRegionManager deliverableGeographicRegionManager;
   private List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers;
 
+  private DeliverableMetadataExternalSources deliverableMetadataExternalSources;
+  private List<DeliverableAffiliation> deliverableAffiliations;
+  private List<DeliverableAffiliationsNotMapped> deliverableAffiliationsNotMapped;
+  private List<ExternalSourceAuthor> externalSourceAuthor;
 
   private List<RepIndGenderYouthFocusLevel> focusLevels;
   // HJ 08/01/2019 new fileds Deliverable Partnerships
@@ -289,7 +306,11 @@ public class DeliverableAction extends BaseAction {
     DeliverableGeographicScopeManager deliverableGeographicScopeManager,
     DeliverableUserPartnershipManager deliverableUserPartnershipManager,
     DeliverablePartnerTypeManager deliverablePartnerTypeManager, UserManager userManager,
-    DeliverableUserPartnershipPersonManager deliverableUserPartnershipPersonManager) {
+    DeliverableUserPartnershipPersonManager deliverableUserPartnershipPersonManager,
+    DeliverableMetadataExternalSourcesManager deliverableMetadataExternalSourcesManager,
+    DeliverableAffiliationManager deliverableAffiliationManager,
+    DeliverableAffiliationsNotMappedManager deliverableAffiliationsNotMappedManager,
+    ExternalSourceAuthorManager externalSourceAuthorManager) {
     super(config);
     this.deliverableManager = deliverableManager;
     this.deliverableTypeManager = deliverableTypeManager;
@@ -339,8 +360,11 @@ public class DeliverableAction extends BaseAction {
     this.deliverablePartnerTypeManager = deliverablePartnerTypeManager;
     this.userManager = userManager;
     this.deliverableUserPartnershipPersonManager = deliverableUserPartnershipPersonManager;
+    this.deliverableMetadataExternalSourcesManager = deliverableMetadataExternalSourcesManager;
+    this.deliverableAffiliationManager = deliverableAffiliationManager;
+    this.deliverableAffiliationsNotMappedManager = deliverableAffiliationsNotMappedManager;
+    this.externalSourceAuthorManager = externalSourceAuthorManager;
   }
-
 
   @Override
   public String cancel() {
@@ -1550,6 +1574,43 @@ public class DeliverableAction extends BaseAction {
 
         this.setRepIndTrainingTerms(repIndTrainingTermManager.findAll().stream()
           .sorted((t1, t2) -> t1.getId().compareTo(t2.getId())).collect(Collectors.toList()));
+
+        // Deliverable WOS synchronization
+        this.deliverableMetadataExternalSources = this.deliverableMetadataExternalSourcesManager
+          .findByPhaseAndDeliverable(this.getActualPhase(), this.deliverable);
+        if (this.deliverableMetadataExternalSources == null) {
+          this.deliverableMetadataExternalSources = new DeliverableMetadataExternalSources();
+          this.deliverableMetadataExternalSources.setPhase(this.getActualPhase());
+          this.deliverableMetadataExternalSources.setDeliverable(this.deliverable);
+
+          this.deliverableMetadataExternalSources = this.deliverableMetadataExternalSourcesManager
+            .saveDeliverableMetadataExternalSources(this.deliverableMetadataExternalSources);
+
+          this.deliverableMetadataExternalSources.setDeliverableAffiliations(new HashSet<>());
+          this.deliverableMetadataExternalSources.setDeliverableAffiliationsNotMapped(new HashSet<>());
+          this.deliverableMetadataExternalSources.setExternalSourceAuthors(new HashSet<>());
+        } else {
+          this.deliverableAffiliations = this.deliverableAffiliationManager.findAll().stream()
+            .filter(da -> da != null && da.getId() != null && da.getPhase() != null && da.getDeliverable() != null
+              && da.getPhase().equals(this.getActualPhase()) && da.getDeliverable().getId() != null
+              && da.getDeliverable().getId().longValue() == this.deliverableID)
+            .collect(Collectors.toList());
+
+          this.deliverableAffiliationsNotMapped = this.deliverableAffiliationsNotMappedManager.findAll().stream()
+            .filter(danm -> danm != null && danm.getId() != null && danm.getDeliverableMetadataExternalSources() != null
+              && danm.getDeliverableMetadataExternalSources().getId() != null
+              && danm.getDeliverableMetadataExternalSources().getId()
+                .equals(this.deliverableMetadataExternalSources.getId()))
+            .collect(Collectors.toList());
+
+          this.externalSourceAuthor = this.externalSourceAuthorManager.findAll().stream().filter(esa -> esa != null
+            && esa.getId() != null && esa.getDeliverableMetadataExternalSources() != null
+            && esa.getDeliverableMetadataExternalSources().getId() != null && esa
+              .getDeliverableMetadataExternalSources().getId().equals(this.deliverableMetadataExternalSources.getId()))
+            .collect(Collectors.toList());
+        }
+
+
       }
 
       if (this.isHttpPost()) {
@@ -1630,6 +1691,30 @@ public class DeliverableAction extends BaseAction {
 
         if (deliverable.getCrossCuttingMarkers() != null) {
           deliverable.getCrossCuttingMarkers().clear();
+        }
+
+        if (this.deliverableMetadataExternalSources.getDeliverableAffiliations() != null) {
+          this.deliverableMetadataExternalSources.getDeliverableAffiliations().clear();
+        }
+
+        if (this.deliverableMetadataExternalSources.getDeliverableAffiliationsNotMapped() != null) {
+          this.deliverableMetadataExternalSources.getDeliverableAffiliationsNotMapped().clear();
+        }
+
+        if (this.deliverableMetadataExternalSources.getExternalSourceAuthors() != null) {
+          this.deliverableMetadataExternalSources.getExternalSourceAuthors().clear();
+        }
+
+        if (this.deliverableAffiliations != null) {
+          this.deliverableAffiliations.clear();
+        }
+
+        if (this.deliverableAffiliationsNotMapped != null) {
+          this.deliverableAffiliationsNotMapped.clear();
+        }
+
+        if (this.externalSourceAuthor != null) {
+          this.externalSourceAuthor.clear();
         }
       }
 
@@ -1726,6 +1811,14 @@ public class DeliverableAction extends BaseAction {
         this.saveUsers();
 
         this.saveParticipant();
+
+        // Deliverable WOS
+        this.saveAffiliations();
+        this.saveAffiliationsNotMapped();
+        this.saveExternalSourceAuthors();
+
+        this.deliverableMetadataExternalSourcesManager
+          .saveDeliverableMetadataExternalSources(this.deliverableMetadataExternalSources);
       }
 
       /*
@@ -1816,6 +1909,93 @@ public class DeliverableAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
 
+  }
+
+  private void saveAffiliations() {
+    // Phase nextPhase = this.getActualPhase().getNext();
+    if (this.deliverableAffiliations != null) {
+      List<DeliverableAffiliation> dbAffiliations = this.deliverableAffiliationManager.findAll().stream()
+        .filter(da -> da != null && da.getId() != null && da.getPhase() != null && da.getDeliverable() != null
+          && da.getPhase().equals(this.getActualPhase()) && da.getDeliverable().getId() != null
+          && da.getDeliverable().getId().longValue() == this.deliverableID)
+        .collect(Collectors.toList());
+
+      for (DeliverableAffiliation dbDeliverableAffiliation : dbAffiliations) {
+        if (!this.deliverableAffiliations.contains(dbDeliverableAffiliation)) {
+          this.deliverableAffiliationManager.deleteDeliverableAffiliation(dbDeliverableAffiliation.getId());
+          // TODO: replication pending
+        }
+      }
+
+      // save
+      for (DeliverableAffiliation incomingAffiliation : this.deliverableAffiliations) {
+        DeliverableAffiliation newDeliverableAffiliation = null;
+        if (incomingAffiliation.getId() == null) {
+          newDeliverableAffiliation = new DeliverableAffiliation();
+          newDeliverableAffiliation.setPhase(this.getActualPhase());
+          newDeliverableAffiliation.setDeliverable(this.deliverable);
+        } else {
+          newDeliverableAffiliation =
+            this.deliverableAffiliationManager.getDeliverableAffiliationById(incomingAffiliation.getId());
+          /*
+           * if(newDeliverableAffiliation == null) { // implement find by deliverable and phase
+           * newDeliverableAffiliation = this.deliverableAffiliationManager.
+           * }
+           */
+        }
+
+        newDeliverableAffiliation.setInstitution(incomingAffiliation.getInstitution());
+        newDeliverableAffiliation.setDeliverable(incomingAffiliation.getDeliverable());
+        newDeliverableAffiliation.copyFields(incomingAffiliation);
+
+        this.deliverableAffiliationManager.saveDeliverableAffiliation(newDeliverableAffiliation);
+        // replication pending
+      }
+    }
+  }
+
+  private void saveAffiliationsNotMapped() {
+    // Phase nextPhase = this.getActualPhase().getNext();
+    if (this.deliverableAffiliationsNotMapped != null) {
+      List<DeliverableAffiliationsNotMapped> dbAffiliationsNotMapped =
+        this.deliverableAffiliationsNotMappedManager.findAll().stream()
+          .filter(danm -> danm != null && danm.getId() != null && danm.getDeliverableMetadataExternalSources() != null
+            && danm.getDeliverableMetadataExternalSources().getId() != null && danm
+              .getDeliverableMetadataExternalSources().getId().equals(this.deliverableMetadataExternalSources.getId()))
+          .collect(Collectors.toList());
+
+      for (DeliverableAffiliationsNotMapped dbDeliverableAffiliationsNotMapped : dbAffiliationsNotMapped) {
+        if (!this.deliverableAffiliationsNotMapped.contains(dbDeliverableAffiliationsNotMapped)) {
+          this.deliverableAffiliationsNotMappedManager
+            .deleteDeliverableAffiliationsNotMapped(dbDeliverableAffiliationsNotMapped.getId());
+          // TODO: replication pending
+        }
+      }
+
+      // save
+      for (DeliverableAffiliationsNotMapped incomingNotMappedAffiliation : this.deliverableAffiliationsNotMapped) {
+        DeliverableAffiliationsNotMapped newDeliverableAffiliationsNotMapped = null;
+        if (incomingNotMappedAffiliation.getId() == null) {
+          newDeliverableAffiliationsNotMapped = new DeliverableAffiliationsNotMapped();
+        } else {
+          newDeliverableAffiliationsNotMapped = this.deliverableAffiliationsNotMappedManager
+            .getDeliverableAffiliationsNotMappedById(incomingNotMappedAffiliation.getId());
+          /*
+           * if(newDeliverableAffiliation == null) { // implement find by deliverable and phase
+           * newDeliverableAffiliation = this.deliverableAffiliationManager.
+           * }
+           */
+        }
+
+        newDeliverableAffiliationsNotMapped
+          .setDeliverableMetadataExternalSources(this.deliverableMetadataExternalSources);
+        newDeliverableAffiliationsNotMapped.copyFields(incomingNotMappedAffiliation);
+
+        this.deliverableAffiliationsNotMappedManager
+          .saveDeliverableAffiliationsNotMapped(newDeliverableAffiliationsNotMapped);
+        // replication pending
+      }
+    }
   }
 
   /**
@@ -2021,7 +2201,6 @@ public class DeliverableAction extends BaseAction {
 
   }
 
-
   /**
    * 08/01 save Deliverable Partnership Other
    * 
@@ -2203,6 +2382,7 @@ public class DeliverableAction extends BaseAction {
     }
 
   }
+
 
   public void saveDeliverableRegions(Deliverable deliverable, Phase phase, Deliverable deliverableManagedState) {
 
@@ -2445,6 +2625,47 @@ public class DeliverableAction extends BaseAction {
       dissemination.setPhase(this.getActualPhase());
       deliverableDisseminationManager.saveDeliverableDissemination(dissemination);
 
+    }
+  }
+
+  private void saveExternalSourceAuthors() {
+    // Phase nextPhase = this.getActualPhase().getNext();
+    if (this.externalSourceAuthor != null) {
+      List<ExternalSourceAuthor> dbExternalSourceAuthors =
+        this.externalSourceAuthorManager.findAll().stream()
+          .filter(esa -> esa != null && esa.getId() != null && esa.getDeliverableMetadataExternalSources() != null
+            && esa.getDeliverableMetadataExternalSources().getId() != null && esa
+              .getDeliverableMetadataExternalSources().getId().equals(this.deliverableMetadataExternalSources.getId()))
+          .collect(Collectors.toList());
+
+      for (ExternalSourceAuthor dbExternalSourceAuthor : dbExternalSourceAuthors) {
+        if (!this.externalSourceAuthor.contains(dbExternalSourceAuthor)) {
+          this.deliverableAffiliationManager.deleteDeliverableAffiliation(dbExternalSourceAuthor.getId());
+          // TODO: replication pending
+        }
+      }
+
+      // save
+      for (ExternalSourceAuthor incomingSourceAuthor : this.externalSourceAuthor) {
+        ExternalSourceAuthor newExternalSourceAuthor = null;
+        if (incomingSourceAuthor.getId() == null) {
+          newExternalSourceAuthor = new ExternalSourceAuthor();
+        } else {
+          newExternalSourceAuthor =
+            this.externalSourceAuthorManager.getExternalSourceAuthorById(incomingSourceAuthor.getId());
+          /*
+           * if(newDeliverableAffiliation == null) { // implement find by deliverable and phase
+           * newDeliverableAffiliation = this.deliverableAffiliationManager.
+           * }
+           */
+        }
+
+        newExternalSourceAuthor.setDeliverableMetadataExternalSources(this.deliverableMetadataExternalSources);
+        newExternalSourceAuthor.copyFields(incomingSourceAuthor);
+
+        this.externalSourceAuthorManager.saveExternalSourceAuthor(newExternalSourceAuthor);
+        // replication pending
+      }
     }
   }
 
