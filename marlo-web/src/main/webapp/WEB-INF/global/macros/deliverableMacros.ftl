@@ -421,6 +421,10 @@
                     <td id="td-WOS-URL" ></td>
                   </tr>
                   <tr>
+                    <th  scope="row">DOI</th>
+                    <td id="td-WOS-DOI"></td>
+                  </tr>
+                  <tr>
                     <th scope="row">Title</th>
                     <td id="td-WOS-Title" ></td>
                   </tr>
@@ -449,10 +453,6 @@
                     <td id="td-WOS-Journal_name"></td>
                   </tr>
                   <tr>
-                    <th  scope="row">DOI</th>
-                    <td id="td-WOS-DOI"></td>
-                  </tr>
-                  <tr>
                     <th scope="row">Volume</th>
                     <td id="td-WOS-Volume" ></td>
                   </tr>
@@ -474,21 +474,21 @@
                   </tr>
                 </tbody>
               </table>
-              <div class="WOS-fields" style="display:none">
-                [@customForm.input name="WOS-URL" required=require value="" className="metadataValue "  type="text" i18nkey="URL" help="nada2" readOnly=true editable=editable/]
-                [@customForm.input name="WOS-Title" required=require value="" className="metadataValue "  type="text" i18nkey="Title" help="nada2" readOnly=true editable=editable/]
-                [@customForm.input name="WOS-Publication_type" required=require value="" className="metadataValue "  type="text" i18nkey="Publication type" help="nada2" readOnly=true editable=editable/]
-                [@customForm.input name="WOS-Publication_Year" required=require value="" className="metadataValue "  type="text" i18nkey="Publication Year" help="nada2" readOnly=true editable=editable/]
-                [@customForm.input name="WOS-Is_Open_Access" required=require value="" className="metadataValue "  type="text" i18nkey="Is Open Access" help="nada2" readOnly=true editable=editable/]
-                [@customForm.input name="WOS-Open_access_link" required=require value="" className="metadataValue "  type="text" i18nkey="Open access link" help="nada2" readOnly=true editable=editable/]
-                [@customForm.input name="WOS-Is_ISI" required=require value="" className="metadataValue "  type="text" i18nkey="Is ISI" help="nada2" readOnly=true editable=editable/]
-                [@customForm.input name="WOS-Journal_name" required=require value="" className="metadataValue "  type="text" i18nkey="Journal name" help="nada2" readOnly=true editable=editable/]
-                [@customForm.input name="WOS-DOI" required=require value="" className="metadataValue "  type="text" i18nkey="DOI" help="nada2" readOnly=true editable=editable/]
-                [@customForm.input name="WOS-Volume" required=require value="" className="metadataValue "  type="text" i18nkey="Volume" help="nada2" readOnly=true editable=editable/]
-                [@customForm.input name="WOS-Issue" required=require value="" className="metadataValue "  type="text" i18nkey="Issue" help="nada2" readOnly=true editable=editable/]
-                [@customForm.input name="WOS-Pages" required=require value="" className="metadataValue "  type="text" i18nkey="Pages" help="nada2" readOnly=true editable=editable/]
-                [@customForm.input name="WOS-Authors" required=require value="" className="metadataValue "  type="text" i18nkey="Authors" help="nada2" readOnly=true editable=editable/]
-                [@customForm.input name="WOS-Institutions" required=require value="" className="metadataValue "  type="text" i18nkey="Institutions" help="nada2" readOnly=true editable=editable/]
+              <div class="WOS-fields" style="display:block">
+                [@customForm.input name="deliverableMetadataExternalSources.url" required=require value="" className="WOS-URL"  type="text" i18nkey="URL" help="nada2" readOnly=true editable=editable/]
+                [@customForm.input name="deliverableMetadataExternalSources.doi" required=require value="" className="WOS-DOI"  type="text" i18nkey="DOI" help="nada2" readOnly=true editable=editable/]
+                [@customForm.input name="deliverableMetadataExternalSources.title" required=require value="" className="WOS-Title "  type="text" i18nkey="Title" help="nada2" readOnly=true editable=editable/]
+                [@customForm.input name="deliverableMetadataExternalSources.publicationType" required=require value="" className="WOS-Publication_type "  type="text" i18nkey="Publication type" help="nada2" readOnly=true editable=editable/]
+                [@customForm.input name="deliverableMetadataExternalSources.publicationYear" required=require value="" className="WOS-Publication_Year "  type="text" i18nkey="Publication Year" help="nada2" readOnly=true editable=editable/]
+                [@customForm.input name="deliverableMetadataExternalSources.openAccessStatus" required=require value="" className="WOS-Is_Open_Access "  type="text" i18nkey="Is Open Access" help="nada2" readOnly=true editable=editable/]
+                [@customForm.input name="deliverableMetadataExternalSources.openAccessLink" required=require value="" className="Open_access_link "  type="text" i18nkey="Open access link" help="nada2" readOnly=true editable=editable/]
+                [@customForm.input name="deliverableMetadataExternalSources.isiStatus" required=require value="" className="Is_ISI "  type="text" i18nkey="Is ISI" help="nada2" readOnly=true editable=editable/]
+                [@customForm.input name="deliverableMetadataExternalSources.journalName" required=require value="" className="Journal_name "  type="text" i18nkey="Journal name" help="nada2" readOnly=true editable=editable/]
+                [@customForm.input name="deliverableMetadataExternalSources.volume" required=require value="" className="WOS-Volume "  type="text" i18nkey="Volume" help="nada2" readOnly=true editable=editable/]
+                [@customForm.input name="deliverableMetadataExternalSources.WOS-Issue" required=require value="" className="WOS-Issue' "  type="text" i18nkey="Issue" help="nada2" readOnly=true editable=editable/]
+                [@customForm.input name="deliverableMetadataExternalSources.pages" required=require value="" className="WOS-Pages "  type="text" i18nkey="Pages" help="nada2" readOnly=true editable=editable/]
+                [@customForm.input name="deliverableMetadataExternalSources.externalSourceAuthor" required=require value="" className="WOS-Authors "  type="text" i18nkey="Authors" help="nada2" readOnly=true editable=editable/]
+                [@customForm.input name="deliverableMetadataExternalSources.deliverableAffiliations" required=require value="" className="WOS-Institutions "  type="text" i18nkey="Institutions" help="nada2" readOnly=true editable=editable/]
 
               </div>
             </div>
