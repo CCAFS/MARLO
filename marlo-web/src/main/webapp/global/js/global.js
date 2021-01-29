@@ -46,6 +46,14 @@ $(document).ready(function() {
   // View More link button
   $('#helpViewMoreLink').on("click", expandViewMoreLink);
 
+  $('.primarySelect').on("change", function(){
+    $($(this).parents('.panel-body')).find(".radio-input").each(function(i,e) {
+    if ($(this).parents('.panel-body').find('.list').find('li').size() == 1) {
+      $(e).attr('checked',true);
+    }
+    });
+  });
+
   // View More link button
   $('.in-radio-list').on("click", function (){
     $list = $(this).parents('.list');

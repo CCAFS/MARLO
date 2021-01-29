@@ -77,7 +77,7 @@ setTimeout(() => {
    }
 });
 
-}, 5000);
+}, 2000);
 }
 function nullDataPipe(data){
   if (data) {
@@ -86,6 +86,42 @@ function nullDataPipe(data){
     return 'Not Available';
   }
 }
+
+function JsonAuthorsToOrder(data){
+  if (data != 'Not Available') {
+    let auxData='';
+    console.log(data);
+    data.forEach(element => {
+     console.log(element.fullName);
+     auxData +='<p>'+element.fullName+'</p></hr>';
+   });
+    return auxData;
+  }else{
+    return data;
+  }
+}
+
+function JsoninstitutionsToOrder(data){
+  if (data != 'Not Available') {
+    let auxData='';
+    let name='';
+    console.log(data);
+    data.forEach(element => {
+     console.log(element.fullName);
+     if (parseInt(element.clarisaMatchConfidence) <= 75) {
+      name=element.clarisaId;
+     }else{
+      name=element.fullName;
+     }
+     auxData +='<p>'+name+'</p></hr>';
+   });
+    return auxData;
+  }else{
+    return data;
+  }
+}
+
+
 function updateWOSFields(data){
   let {
     url,
@@ -93,9 +129,10 @@ function updateWOSFields(data){
     publicationType,
     publicationYear,
     isOpenAccess,
-
+    openAcessLink,
     isISI,
     journalName,
+    doi,
     volume,
     issue,
     pages,
@@ -115,9 +152,10 @@ function updateWOSFields(data){
   $('#WOS-Publication_type').val(publicationType);
   $('#WOS-Publication_Year').val(publicationYear);
   $('#WOS-Is_Open_Access').val(isOpenAccess);
-  $('#WOS-Open_access_link').val('Some info');
+  $('#WOS-Open_access_link').val(openAcessLink);
   $('#WOS-Is_ISI').val(isISI);
   $('#WOS-Journal_name').val(journalName);
+  $('#WOS-DOI').val(doi);
   $('#WOS-Volume').val(volume);
   $('#WOS-Issue').val(issue);
   $('#WOS-Pages').val(pages);
@@ -129,14 +167,15 @@ function updateWOSFields(data){
   $('#td-WOS-Publication_type').html(nullDataPipe(publicationType));
   $('#td-WOS-Publication_Year').html(nullDataPipe(publicationYear));
   $('#td-WOS-Is_Open_Access').html(nullDataPipe(isOpenAccess));
-  $('#td-WOS-Open_access_link').html('Some info');
+  $('#td-WOS-Open_access_link').html(nullDataPipe(openAcessLink));
   $('#td-WOS-Is_ISI').html(nullDataPipe(isISI));
   $('#td-WOS-Journal_name').html(nullDataPipe(journalName));
+  $('#td-WOS-DOI').html(nullDataPipe(doi));
   $('#td-WOS-Volume').html(nullDataPipe(volume));
   $('#td-WOS-Issue').html(nullDataPipe(issue));
   $('#td-WOS-Pages').html(nullDataPipe(pages));
-  $('#td-WOS-Authors').html(nullDataPipe(authors));
-  $('#td-WOS-Institutions').html(nullDataPipe(institutions));
+  $('#td-WOS-Authors').html(JsonAuthorsToOrder(nullDataPipe(authors)));
+  $('#td-WOS-Institutions').html(JsoninstitutionsToOrder(nullDataPipe(institutions)));
 
   
 }
