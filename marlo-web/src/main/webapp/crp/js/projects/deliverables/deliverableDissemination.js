@@ -167,7 +167,7 @@ function updateWOSFields(data){
   $('#td-WOS-Publication_type').html(nullDataPipe(publicationType));
   $('#td-WOS-Publication_Year').html(nullDataPipe(publicationYear));
   $('#td-WOS-Is_Open_Access').html(nullDataPipe(isOpenAccess));
-  $('#td-WOS-Open_access_link').html(openAcessLink);
+  $('#td-WOS-Open_access_link').html(nullDataPipe(openAcessLink));
   $('#td-WOS-Is_ISI').html(nullDataPipe(isISI));
   $('#td-WOS-Journal_name').html(nullDataPipe(journalName));
   $('#td-WOS-DOI').html(nullDataPipe(doi));
