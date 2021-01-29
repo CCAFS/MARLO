@@ -44,6 +44,11 @@ public class DeliverableAffiliation extends MarloAuditableEntity implements java
   public DeliverableAffiliation() {
   }
 
+  public void copyFields(DeliverableAffiliation other) {
+    this.setInstitutionMatchConfidence(other.getInstitutionMatchConfidence());
+    this.setInstitutionNameWebOfScience(other.getInstitutionNameWebOfScience());
+    this.setPhase(other.getPhase());
+  }
 
   @Override
   public boolean equals(Object obj) {
@@ -87,13 +92,13 @@ public class DeliverableAffiliation extends MarloAuditableEntity implements java
     return institutionNameWebOfScience;
   }
 
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
-
 
   public Phase getPhase() {
     return phase;
@@ -127,6 +132,7 @@ public class DeliverableAffiliation extends MarloAuditableEntity implements java
   public void setInstitutionNameWebOfScience(String institutionNameWebOfScience) {
     this.institutionNameWebOfScience = institutionNameWebOfScience;
   }
+
 
   public void setPhase(Phase phase) {
     this.phase = phase;
