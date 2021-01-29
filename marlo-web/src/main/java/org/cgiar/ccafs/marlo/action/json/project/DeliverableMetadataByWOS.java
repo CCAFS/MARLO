@@ -30,6 +30,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonParser;
@@ -98,7 +99,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
     JsonElement response = this.readWOSDataFromClarisa(this.link);
 
-    this.jsonStringResponse = StringUtils.stripToNull(new Gson().toJson(response));
+    this.jsonStringResponse = StringUtils.stripToNull(new GsonBuilder().serializeNulls().create().toJson(response));
   }
 
   private JsonElement readWOSDataFromClarisa(final String url) throws IOException {
