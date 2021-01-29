@@ -1925,11 +1925,13 @@ public class DeliverableAction extends BaseAction {
   private void saveAffiliations() {
     // Phase nextPhase = this.getActualPhase().getNext();
     if (this.deliverableAffiliations != null) {
-      List<DeliverableAffiliation> dbAffiliations = this.deliverableAffiliationManager.findAll().stream()
-        .filter(da -> da != null && da.getId() != null && da.getPhase() != null && da.getDeliverable() != null
-          && da.getPhase().equals(this.getActualPhase()) && da.getDeliverable().getId() != null
-          && da.getDeliverable().getId().longValue() == this.deliverableID)
-        .collect(Collectors.toList());
+      List<DeliverableAffiliation> dbAffiliations = this.deliverableAffiliationManager.findAll() != null
+        ? this.deliverableAffiliationManager.findAll().stream()
+          .filter(da -> da != null && da.getId() != null && da.getPhase() != null && da.getDeliverable() != null
+            && da.getPhase().equals(this.getActualPhase()) && da.getDeliverable().getId() != null
+            && da.getDeliverable().getId().longValue() == this.deliverableID)
+          .collect(Collectors.toList())
+        : Collections.emptyList();
 
       for (DeliverableAffiliation dbDeliverableAffiliation : dbAffiliations) {
         if (!this.deliverableAffiliations.contains(dbDeliverableAffiliation)) {
@@ -1969,11 +1971,14 @@ public class DeliverableAction extends BaseAction {
     // Phase nextPhase = this.getActualPhase().getNext();
     if (this.deliverableAffiliationsNotMapped != null) {
       List<DeliverableAffiliationsNotMapped> dbAffiliationsNotMapped =
-        this.deliverableAffiliationsNotMappedManager.findAll().stream()
-          .filter(danm -> danm != null && danm.getId() != null && danm.getDeliverableMetadataExternalSources() != null
-            && danm.getDeliverableMetadataExternalSources().getId() != null && danm
-              .getDeliverableMetadataExternalSources().getId().equals(this.deliverableMetadataExternalSources.getId()))
-          .collect(Collectors.toList());
+        this.deliverableAffiliationsNotMappedManager.findAll() != null
+          ? this.deliverableAffiliationsNotMappedManager.findAll().stream()
+            .filter(danm -> danm != null && danm.getId() != null && danm.getDeliverableMetadataExternalSources() != null
+              && danm.getDeliverableMetadataExternalSources().getId() != null
+              && danm.getDeliverableMetadataExternalSources().getId()
+                .equals(this.deliverableMetadataExternalSources.getId()))
+            .collect(Collectors.toList())
+          : Collections.emptyList();
 
       for (DeliverableAffiliationsNotMapped dbDeliverableAffiliationsNotMapped : dbAffiliationsNotMapped) {
         if (!this.deliverableAffiliationsNotMapped.contains(dbDeliverableAffiliationsNotMapped)) {
@@ -2642,12 +2647,14 @@ public class DeliverableAction extends BaseAction {
   private void saveExternalSourceAuthors() {
     // Phase nextPhase = this.getActualPhase().getNext();
     if (this.externalSourceAuthor != null) {
-      List<ExternalSourceAuthor> dbExternalSourceAuthors =
-        this.externalSourceAuthorManager.findAll().stream()
+      List<ExternalSourceAuthor> dbExternalSourceAuthors = this.externalSourceAuthorManager.findAll() != null
+        ? this.externalSourceAuthorManager.findAll().stream()
           .filter(esa -> esa != null && esa.getId() != null && esa.getDeliverableMetadataExternalSources() != null
-            && esa.getDeliverableMetadataExternalSources().getId() != null && esa
-              .getDeliverableMetadataExternalSources().getId().equals(this.deliverableMetadataExternalSources.getId()))
-          .collect(Collectors.toList());
+            && esa.getDeliverableMetadataExternalSources().getId() != null
+            && esa.getDeliverableMetadataExternalSources().getId()
+              .equals(this.deliverableMetadataExternalSources.getId()))
+          .collect(Collectors.toList())
+        : Collections.emptyList();
 
       for (ExternalSourceAuthor dbExternalSourceAuthor : dbExternalSourceAuthors) {
         if (!this.externalSourceAuthor.contains(dbExternalSourceAuthor)) {
