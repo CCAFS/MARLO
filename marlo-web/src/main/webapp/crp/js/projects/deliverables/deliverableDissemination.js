@@ -93,9 +93,10 @@ function updateWOSFields(data){
     publicationType,
     publicationYear,
     isOpenAccess,
-
+    openAcessLink,
     isISI,
     journalName,
+    doi,
     volume,
     issue,
     pages,
@@ -115,9 +116,10 @@ function updateWOSFields(data){
   $('#WOS-Publication_type').val(publicationType);
   $('#WOS-Publication_Year').val(publicationYear);
   $('#WOS-Is_Open_Access').val(isOpenAccess);
-  $('#WOS-Open_access_link').val('Some info');
+  $('#WOS-Open_access_link').val(openAcessLink);
   $('#WOS-Is_ISI').val(isISI);
   $('#WOS-Journal_name').val(journalName);
+  $('#WOS-DOI').val(doi);
   $('#WOS-Volume').val(volume);
   $('#WOS-Issue').val(issue);
   $('#WOS-Pages').val(pages);
@@ -129,9 +131,10 @@ function updateWOSFields(data){
   $('#td-WOS-Publication_type').html(nullDataPipe(publicationType));
   $('#td-WOS-Publication_Year').html(nullDataPipe(publicationYear));
   $('#td-WOS-Is_Open_Access').html(nullDataPipe(isOpenAccess));
-  $('#td-WOS-Open_access_link').html('Some info');
+  $('#td-WOS-Open_access_link').html(openAcessLink);
   $('#td-WOS-Is_ISI').html(nullDataPipe(isISI));
   $('#td-WOS-Journal_name').html(nullDataPipe(journalName));
+  $('#td-WOS-DOI').html(nullDataPipe(doi));
   $('#td-WOS-Volume').html(nullDataPipe(volume));
   $('#td-WOS-Issue').html(nullDataPipe(issue));
   $('#td-WOS-Pages').html(nullDataPipe(pages));
