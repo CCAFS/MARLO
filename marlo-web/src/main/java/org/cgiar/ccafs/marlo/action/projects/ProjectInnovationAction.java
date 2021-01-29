@@ -1716,11 +1716,10 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
 
-      // Delete innovations organizations when stage is diferent to 4
+      // Delete innovations organizations when stage is different to 4
       if (projectInnovation.getProjectInnovationInfo(this.getActualPhase()) != null
         && projectInnovation.getProjectInnovationInfo(this.getActualPhase()).getRepIndStageInnovation() != null
-        && projectInnovation.getProjectInnovationInfo(this.getActualPhase()).getRepIndStageInnovation().getId()
-          .intValue() != 4) {
+        && projectInnovation.getProjectInnovationInfo(this.getActualPhase()).getRepIndStageInnovation().getId() != 4) {
         for (ProjectInnovationOrganization innovationOrganization : organizationPrev) {
           projectInnovationOrganizationManager.deleteProjectInnovationOrganization(innovationOrganization.getId());
         }
