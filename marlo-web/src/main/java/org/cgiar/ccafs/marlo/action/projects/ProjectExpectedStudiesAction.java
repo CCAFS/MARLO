@@ -958,6 +958,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.stageProcesses = this.stageProcessManager.findAll();
       this.stageStudies = this.stageStudyManager.findAll();
       this.studyTypes = this.studyTypeManager.findAll();
+      if (this.expectedStudy.getProjectExpectedStudyInfo() != null
+        && this.expectedStudy.getProjectExpectedStudyInfo().getId() != null
+        && this.expectedStudy.getProjectExpectedStudyInfo().getId().longValue() != 1) {
+        this.studyTypes.removeIf(st -> st.getId() == 1);
+      }
       this.subIdos = this.srfSubIdoManager.findAll();
       this.targets = this.srfSloIndicatorManager.findAll();
 
