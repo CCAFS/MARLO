@@ -395,7 +395,7 @@
 
   </div>
 
-  </div>
+
   <div id="metadata-output"></div>
   <div class="metadata-output-persistent" id="output-dissemination" style="display: none;"></div>
   <div class="metadata-output-persistent" id="output-wos" style="display: none;"></div>
