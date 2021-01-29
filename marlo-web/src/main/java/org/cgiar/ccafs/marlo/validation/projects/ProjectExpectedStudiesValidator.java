@@ -123,7 +123,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
 
     // Validate Title
     if ((!this.isValidString(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getTitle()))
-      && this
+      || this
         .wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getTitle()) > 25) {
       action.addMessage(action.getText("Title"));
       action.addMissingField("study.title");
@@ -311,7 +311,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
         // Validate Outcome/Impact Statement
         if ((!this.isValidString(
           projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getOutcomeImpactStatement()))
-          && this.wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
+          || this.wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
             .getOutcomeImpactStatement()) > 80) {
           action.addMessage(action.getText("Outcome/Impact Statement"));
           action.addMissingField("study.outcomeStatement");
@@ -322,7 +322,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
         // Validate Comunications Material
         if ((!this.isValidString(
           projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getComunicationsMaterial()))
-          && this.wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
+          || this.wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
             .getComunicationsMaterial()) > 400) {
           action.addMessage(action.getText("Outcome story for communications"));
           action.addMissingField("study.comunicationsMaterial");
@@ -401,10 +401,10 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
         }
 
         // Validate Elaboration Outcomes
-        if (!this.isValidString(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
-          .getElaborationOutcomeImpactStatement())
-          && this.wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
-            .getElaborationOutcomeImpactStatement()) <= 400) {
+        if ((!this.isValidString(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
+          .getElaborationOutcomeImpactStatement()))
+          || this.wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
+            .getElaborationOutcomeImpactStatement()) > 400) {
           action.addMessage(action.getText("Elaboration Outcome"));
           action.addMissingField("study.elaborationStatement");
           action.getInvalidFields().put(
