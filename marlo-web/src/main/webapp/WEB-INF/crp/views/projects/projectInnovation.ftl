@@ -118,7 +118,7 @@
           </div>--]
           
           [#-- Specify next user organizational type (Only if stage 4) --]
-          <div class="form-group stageFourBlock" style="display:${isStageFour?string('block','none')}">
+          <div class="form-group stageFourBlock-true" style="display:${isStageFour?string('block','none')}">
             [@customForm.elementsListComponent name="innovation.organizations" elementType="repIndOrganizationType" elementList=innovation.organizations label="projectInnovations.nextUserOrganizationalType"  listName="organizationTypeList" keyFieldName="id" displayFieldName="name"/]
           </div>
 
