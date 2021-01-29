@@ -1715,6 +1715,16 @@ public class ProjectInnovationAction extends BaseAction {
           projectInnovationOrganizationManager.deleteProjectInnovationOrganization(innovationOrganization.getId());
         }
       }
+
+      // Delete innovations organizations when stage is diferent to 4
+      if (projectInnovation.getProjectInnovationInfo(this.getActualPhase()) != null
+        && projectInnovation.getProjectInnovationInfo(this.getActualPhase()).getRepIndStageInnovation() != null
+        && projectInnovation.getProjectInnovationInfo(this.getActualPhase()).getRepIndStageInnovation().getId()
+          .intValue() != 4) {
+        for (ProjectInnovationOrganization innovationOrganization : organizationPrev) {
+          projectInnovationOrganizationManager.deleteProjectInnovationOrganization(innovationOrganization.getId());
+        }
+      }
     }
 
     // Save form Information
