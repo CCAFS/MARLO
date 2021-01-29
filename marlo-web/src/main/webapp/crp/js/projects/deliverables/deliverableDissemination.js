@@ -147,22 +147,23 @@ function updateWOSFields(data){
   //   });
      
 
-  $('#WOS-URL').val(url);
-  $('#WOS-Title').val(title);
-  $('#WOS-Publication_type').val(publicationType);
-  $('#WOS-Publication_Year').val(publicationYear);
-  $('#WOS-Is_Open_Access').val(isOpenAccess);
-  $('#WOS-Open_access_link').val(openAcessLink);
-  $('#WOS-Is_ISI').val(isISI);
-  $('#WOS-Journal_name').val(journalName);
-  $('#WOS-DOI').val(doi);
-  $('#WOS-Volume').val(volume);
-  $('#WOS-Issue').val(issue);
-  $('#WOS-Pages').val(pages);
-  $('#WOS-Authors').val(authors);
-  $('#WOS-Institutions').val(institutions);
+  $('.WOS-URL').val(url);
+  $('.WOS-DOI').val(doi);
+  $('.WOS-Title').val(title);
+  $('.WOS-Publication_type').val(publicationType);
+  $('.WOS-Publication_Year').val(publicationYear);
+  $('.WOS-Is_Open_Access').val(isOpenAccess);
+  $('.WOS-Open_access_link').val(openAcessLink);
+  $('.WOS-Is_ISI').val(isISI);
+  $('.WOS-Journal_name').val(journalName);
+  $('.WOS-Volume').val(volume);
+  $('.WOS-Issue').val(issue);
+  $('.WOS-Pages').val(pages);
+  $('.WOS-Authors').val(authors);
+  $('.WOS-Institutions').val(institutions);
 
   $('#td-WOS-URL').html(nullDataPipe(url));
+  $('#td-WOS-DOI').html(nullDataPipe(doi));
   $('#td-WOS-Title').html(nullDataPipe(title));
   $('#td-WOS-Publication_type').html(nullDataPipe(publicationType));
   $('#td-WOS-Publication_Year').html(nullDataPipe(publicationYear));
@@ -170,7 +171,6 @@ function updateWOSFields(data){
   $('#td-WOS-Open_access_link').html(nullDataPipe(openAcessLink));
   $('#td-WOS-Is_ISI').html(nullDataPipe(isISI));
   $('#td-WOS-Journal_name').html(nullDataPipe(journalName));
-  $('#td-WOS-DOI').html(nullDataPipe(doi));
   $('#td-WOS-Volume').html(nullDataPipe(volume));
   $('#td-WOS-Issue').html(nullDataPipe(issue));
   $('#td-WOS-Pages').html(nullDataPipe(pages));
@@ -187,7 +187,7 @@ function updateReadOnly() {
     $('#output-dissemination').show();  
     $('#WOSModalBtn').show();  
     if ($('.deliverableDisseminationUrl ').prop('readonly')) {
-      getWOSInfo();
+      // getWOSInfo();
     }
   } else {
     $('#output-dissemination').hide();  
