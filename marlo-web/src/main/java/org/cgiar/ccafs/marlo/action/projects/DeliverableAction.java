@@ -1587,27 +1587,38 @@ public class DeliverableAction extends BaseAction {
             .saveDeliverableMetadataExternalSources(this.deliverableMetadataExternalSources);
 
           this.deliverableMetadataExternalSources.setDeliverableAffiliations(new HashSet<>());
+          this.deliverableAffiliations = new ArrayList<>();
           this.deliverableMetadataExternalSources.setDeliverableAffiliationsNotMapped(new HashSet<>());
+          this.deliverableAffiliationsNotMapped = new ArrayList<>();
           this.deliverableMetadataExternalSources.setExternalSourceAuthors(new HashSet<>());
+          this.externalSourceAuthor = new ArrayList<>();
         } else {
-          this.deliverableAffiliations = this.deliverableAffiliationManager.findAll().stream()
-            .filter(da -> da != null && da.getId() != null && da.getPhase() != null && da.getDeliverable() != null
-              && da.getPhase().equals(this.getActualPhase()) && da.getDeliverable().getId() != null
-              && da.getDeliverable().getId().longValue() == this.deliverableID)
-            .collect(Collectors.toList());
+          this.deliverableAffiliations = this.deliverableAffiliationManager.findAll() != null
+            ? this.deliverableAffiliationManager.findAll().stream()
+              .filter(da -> da != null && da.getId() != null && da.getPhase() != null && da.getDeliverable() != null
+                && da.getPhase().equals(this.getActualPhase()) && da.getDeliverable().getId() != null
+                && da.getDeliverable().getId().longValue() == this.deliverableID)
+              .collect(Collectors.toList())
+            : new ArrayList<>();
 
-          this.deliverableAffiliationsNotMapped = this.deliverableAffiliationsNotMappedManager.findAll().stream()
-            .filter(danm -> danm != null && danm.getId() != null && danm.getDeliverableMetadataExternalSources() != null
-              && danm.getDeliverableMetadataExternalSources().getId() != null
-              && danm.getDeliverableMetadataExternalSources().getId()
-                .equals(this.deliverableMetadataExternalSources.getId()))
-            .collect(Collectors.toList());
+          this.deliverableAffiliationsNotMapped = this.deliverableAffiliationsNotMappedManager.findAll() != null
+            ? this.deliverableAffiliationsNotMappedManager.findAll().stream()
+              .filter(
+                danm -> danm != null && danm.getId() != null && danm.getDeliverableMetadataExternalSources() != null
+                  && danm.getDeliverableMetadataExternalSources().getId() != null
+                  && danm.getDeliverableMetadataExternalSources().getId()
+                    .equals(this.deliverableMetadataExternalSources.getId()))
+              .collect(Collectors.toList())
+            : new ArrayList<>();
 
-          this.externalSourceAuthor = this.externalSourceAuthorManager.findAll().stream().filter(esa -> esa != null
-            && esa.getId() != null && esa.getDeliverableMetadataExternalSources() != null
-            && esa.getDeliverableMetadataExternalSources().getId() != null && esa
-              .getDeliverableMetadataExternalSources().getId().equals(this.deliverableMetadataExternalSources.getId()))
-            .collect(Collectors.toList());
+          this.externalSourceAuthor = this.externalSourceAuthorManager.findAll() != null
+            ? this.externalSourceAuthorManager.findAll().stream()
+              .filter(esa -> esa != null && esa.getId() != null && esa.getDeliverableMetadataExternalSources() != null
+                && esa.getDeliverableMetadataExternalSources().getId() != null
+                && esa.getDeliverableMetadataExternalSources().getId()
+                  .equals(this.deliverableMetadataExternalSources.getId()))
+              .collect(Collectors.toList())
+            : new ArrayList<>();
         }
 
 
