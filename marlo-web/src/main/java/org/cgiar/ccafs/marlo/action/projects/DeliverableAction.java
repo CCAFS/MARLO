@@ -536,6 +536,15 @@ public class DeliverableAction extends BaseAction {
     return deliverable;
   }
 
+  public List<DeliverableAffiliation> getDeliverableAffiliations() {
+    return deliverableAffiliations;
+  }
+
+
+  public List<DeliverableAffiliationsNotMapped> getDeliverableAffiliationsNotMapped() {
+    return deliverableAffiliationsNotMapped;
+  }
+
   /**
    * Get the information for the Cross Cutting marker in the form
    * 
@@ -569,6 +578,11 @@ public class DeliverableAction extends BaseAction {
     return deliverableID;
   }
 
+
+  public DeliverableMetadataExternalSources getDeliverableMetadataExternalSources() {
+    return deliverableMetadataExternalSources;
+  }
+
   public List<Map<String, Object>> getDeliverablesSubTypes(long deliverableTypeID) {
     List<Map<String, Object>> subTypes = new ArrayList<>();
     Map<String, Object> keyOutput;
@@ -596,7 +610,6 @@ public class DeliverableAction extends BaseAction {
     return deliverableSubTypes;
   }
 
-
   public List<DeliverableType> getDeliverableTypeParent() {
     return deliverableTypeParent;
   }
@@ -605,14 +618,18 @@ public class DeliverableAction extends BaseAction {
     return config.getDownloadURL() + "/" + this.getDeliverableUrlPath(fileType).replace('\\', '/');
   }
 
-
   public String getDeliverableUrlPath(String fileType) {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + deliverable.getId() + File.separator
       + "deliverable" + File.separator + fileType + File.separator;
   }
 
+
   public List<PartnerDivision> getDivisions() {
     return divisions;
+  }
+
+  public List<ExternalSourceAuthor> getExternalSourceAuthor() {
+    return externalSourceAuthor;
   }
 
   public List<RepIndGenderYouthFocusLevel> getFocusLevels() {
@@ -627,6 +644,7 @@ public class DeliverableAction extends BaseAction {
   public List<GenderType> getGenderLevels() {
     return genderLevels;
   }
+
 
   public int getIndexTab() {
     return indexTab;
@@ -645,7 +663,6 @@ public class DeliverableAction extends BaseAction {
     return partnerInstitutions;
   }
 
-
   public List<ProjectPartnerPerson> getPartnerPersons() {
     return partnerPersons;
   }
@@ -653,6 +670,7 @@ public class DeliverableAction extends BaseAction {
   public List<ProjectPartner> getPartners() {
     return partners;
   }
+
 
   /**
    * @return an array of integers.
@@ -676,10 +694,10 @@ public class DeliverableAction extends BaseAction {
     return EMPTY_ARRAY;
   }
 
-
   public ArrayList<CrpProgram> getPrograms() {
     return programs;
   }
+
 
   public Project getProject() {
     return project;
@@ -689,19 +707,19 @@ public class DeliverableAction extends BaseAction {
     return projectID;
   }
 
-
   public List<ProjectOutcome> getProjectOutcome() {
     return projectOutcome;
   }
+
 
   public List<ProjectFocus> getProjectPrograms() {
     return projectPrograms;
   }
 
-
   public List<RepIndFillingType> getRepIndFillingTypes() {
     return repIndFillingTypes;
   }
+
 
   public List<RepIndGeographicScope> getRepIndGeographicScopes() {
     return repIndGeographicScopes;
@@ -716,6 +734,7 @@ public class DeliverableAction extends BaseAction {
     return repIndRegions;
   }
 
+
   public List<RepIndTrainingTerm> getRepIndTrainingTerms() {
     return repIndTrainingTerms;
   }
@@ -725,6 +744,7 @@ public class DeliverableAction extends BaseAction {
     return repIndTypeActivities;
   }
 
+
   public List<RepIndTypeParticipant> getRepIndTypeParticipants() {
     return repIndTypeParticipants;
   }
@@ -733,7 +753,6 @@ public class DeliverableAction extends BaseAction {
   public List<RepositoryChannel> getRepositoryChannels() {
     return repositoryChannels;
   }
-
 
   public List<User> getResponsibleUsers() {
     return responsibleUsers;
@@ -748,7 +767,6 @@ public class DeliverableAction extends BaseAction {
   public Map<String, String> getStatuses() {
     return statuses;
   }
-
 
   public String getTransaction() {
     return transaction;
@@ -783,7 +801,6 @@ public class DeliverableAction extends BaseAction {
     return users;
   }
 
-
   @Override
   public boolean isPPA(Institution institution) {
     if (institution == null) {
@@ -804,7 +821,6 @@ public class DeliverableAction extends BaseAction {
 
     return false;
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -1576,23 +1592,10 @@ public class DeliverableAction extends BaseAction {
           .sorted((t1, t2) -> t1.getId().compareTo(t2.getId())).collect(Collectors.toList()));
 
         // Deliverable WOS synchronization
-        this.deliverableMetadataExternalSources = this.deliverableMetadataExternalSourcesManager
-          .findByPhaseAndDeliverable(this.getActualPhase(), this.deliverable);
-        if (this.deliverableMetadataExternalSources == null) {
-          this.deliverableMetadataExternalSources = new DeliverableMetadataExternalSources();
-          this.deliverableMetadataExternalSources.setPhase(this.getActualPhase());
-          this.deliverableMetadataExternalSources.setDeliverable(this.deliverable);
-
-          this.deliverableMetadataExternalSources = this.deliverableMetadataExternalSourcesManager
-            .saveDeliverableMetadataExternalSources(this.deliverableMetadataExternalSources);
-
-          this.deliverableMetadataExternalSources.setDeliverableAffiliations(new HashSet<>());
-          this.deliverableAffiliations = new ArrayList<>();
-          this.deliverableMetadataExternalSources.setDeliverableAffiliationsNotMapped(new HashSet<>());
-          this.deliverableAffiliationsNotMapped = new ArrayList<>();
-          this.deliverableMetadataExternalSources.setExternalSourceAuthors(new HashSet<>());
-          this.externalSourceAuthor = new ArrayList<>();
-        } else {
+        DeliverableMetadataExternalSources current = this.deliverable.getExternalSource(this.getActualPhase());
+        if (current != null && current.getId() != null) {
+          this.deliverable.setExternalSource(
+            this.deliverableMetadataExternalSourcesManager.getDeliverableMetadataExternalSourcesById(current.getId()));
           this.deliverableAffiliations = this.deliverableAffiliationManager.findAll() != null
             ? this.deliverableAffiliationManager.findAll().stream()
               .filter(da -> da != null && da.getId() != null && da.getPhase() != null && da.getDeliverable() != null
@@ -1600,26 +1603,77 @@ public class DeliverableAction extends BaseAction {
                 && da.getDeliverable().getId().longValue() == this.deliverableID)
               .collect(Collectors.toList())
             : new ArrayList<>();
-
           this.deliverableAffiliationsNotMapped = this.deliverableAffiliationsNotMappedManager.findAll() != null
             ? this.deliverableAffiliationsNotMappedManager.findAll().stream()
               .filter(
                 danm -> danm != null && danm.getId() != null && danm.getDeliverableMetadataExternalSources() != null
                   && danm.getDeliverableMetadataExternalSources().getId() != null
-                  && danm.getDeliverableMetadataExternalSources().getId()
-                    .equals(this.deliverableMetadataExternalSources.getId()))
+                  && danm.getDeliverableMetadataExternalSources().getId().equals(current.getId()))
               .collect(Collectors.toList())
             : new ArrayList<>();
-
-          this.externalSourceAuthor = this.externalSourceAuthorManager.findAll() != null
-            ? this.externalSourceAuthorManager.findAll().stream()
+          this.externalSourceAuthor =
+            this.externalSourceAuthorManager.findAll() != null ? this.externalSourceAuthorManager.findAll().stream()
               .filter(esa -> esa != null && esa.getId() != null && esa.getDeliverableMetadataExternalSources() != null
                 && esa.getDeliverableMetadataExternalSources().getId() != null
-                && esa.getDeliverableMetadataExternalSources().getId()
-                  .equals(this.deliverableMetadataExternalSources.getId()))
-              .collect(Collectors.toList())
-            : new ArrayList<>();
+                && esa.getDeliverableMetadataExternalSources().getId().equals(current.getId()))
+              .collect(Collectors.toList()) : new ArrayList<>();
+        } else {
+          this.deliverableMetadataExternalSources = new DeliverableMetadataExternalSources();
+          this.deliverableMetadataExternalSources.setPhase(this.getActualPhase());
+          this.deliverableMetadataExternalSources.setDeliverable(this.deliverable);
+          this.deliverableMetadataExternalSources = this.deliverableMetadataExternalSourcesManager
+            .saveDeliverableMetadataExternalSources(this.deliverableMetadataExternalSources);
+          this.deliverable.setExternalSource(this.deliverableMetadataExternalSources);
+          this.deliverableMetadataExternalSources.setDeliverableAffiliations(new HashSet<>());
+          this.deliverableAffiliations = new ArrayList<>();
+          this.deliverableMetadataExternalSources.setDeliverableAffiliationsNotMapped(new HashSet<>());
+          this.deliverableAffiliationsNotMapped = new ArrayList<>();
+          this.deliverableMetadataExternalSources.setExternalSourceAuthors(new HashSet<>());
+          this.externalSourceAuthor = new ArrayList<>();
         }
+
+        /*
+         * this.deliverableMetadataExternalSources = this.deliverableMetadataExternalSourcesManager
+         * .findByPhaseAndDeliverable(this.getActualPhase(), this.deliverable);
+         * if (this.deliverableMetadataExternalSources == null) {
+         * this.deliverableMetadataExternalSources = new DeliverableMetadataExternalSources();
+         * this.deliverableMetadataExternalSources.setPhase(this.getActualPhase());
+         * this.deliverableMetadataExternalSources.setDeliverable(this.deliverable);
+         * this.deliverableMetadataExternalSources = this.deliverableMetadataExternalSourcesManager
+         * .saveDeliverableMetadataExternalSources(this.deliverableMetadataExternalSources);
+         * this.deliverableMetadataExternalSources.setDeliverableAffiliations(new HashSet<>());
+         * this.deliverableAffiliations = new ArrayList<>();
+         * this.deliverableMetadataExternalSources.setDeliverableAffiliationsNotMapped(new HashSet<>());
+         * this.deliverableAffiliationsNotMapped = new ArrayList<>();
+         * this.deliverableMetadataExternalSources.setExternalSourceAuthors(new HashSet<>());
+         * this.externalSourceAuthor = new ArrayList<>();
+         * } else {
+         * this.deliverableAffiliations = this.deliverableAffiliationManager.findAll() != null
+         * ? this.deliverableAffiliationManager.findAll().stream()
+         * .filter(da -> da != null && da.getId() != null && da.getPhase() != null && da.getDeliverable() != null
+         * && da.getPhase().equals(this.getActualPhase()) && da.getDeliverable().getId() != null
+         * && da.getDeliverable().getId().longValue() == this.deliverableID)
+         * .collect(Collectors.toList())
+         * : new ArrayList<>();
+         * this.deliverableAffiliationsNotMapped = this.deliverableAffiliationsNotMappedManager.findAll() != null
+         * ? this.deliverableAffiliationsNotMappedManager.findAll().stream()
+         * .filter(
+         * danm -> danm != null && danm.getId() != null && danm.getDeliverableMetadataExternalSources() != null
+         * && danm.getDeliverableMetadataExternalSources().getId() != null
+         * && danm.getDeliverableMetadataExternalSources().getId()
+         * .equals(this.deliverableMetadataExternalSources.getId()))
+         * .collect(Collectors.toList())
+         * : new ArrayList<>();
+         * this.externalSourceAuthor = this.externalSourceAuthorManager.findAll() != null
+         * ? this.externalSourceAuthorManager.findAll().stream()
+         * .filter(esa -> esa != null && esa.getId() != null && esa.getDeliverableMetadataExternalSources() != null
+         * && esa.getDeliverableMetadataExternalSources().getId() != null
+         * && esa.getDeliverableMetadataExternalSources().getId()
+         * .equals(this.deliverableMetadataExternalSources.getId()))
+         * .collect(Collectors.toList())
+         * : new ArrayList<>();
+         * }
+         */
 
 
       }
@@ -1704,15 +1758,15 @@ public class DeliverableAction extends BaseAction {
           deliverable.getCrossCuttingMarkers().clear();
         }
 
-        if (this.deliverableMetadataExternalSources.getDeliverableAffiliations() != null) {
+        if (this.deliverable.getExternalSource().getDeliverableAffiliations() != null) {
           this.deliverableMetadataExternalSources.getDeliverableAffiliations().clear();
         }
 
-        if (this.deliverableMetadataExternalSources.getDeliverableAffiliationsNotMapped() != null) {
+        if (this.deliverable.getExternalSource().getDeliverableAffiliationsNotMapped() != null) {
           this.deliverableMetadataExternalSources.getDeliverableAffiliationsNotMapped().clear();
         }
 
-        if (this.deliverableMetadataExternalSources.getExternalSourceAuthors() != null) {
+        if (this.deliverable.getExternalSource().getExternalSourceAuthors() != null) {
           this.deliverableMetadataExternalSources.getExternalSourceAuthors().clear();
         }
 
@@ -1738,7 +1792,6 @@ public class DeliverableAction extends BaseAction {
     }
 
   }
-
 
   @Override
   public String save() {
@@ -1829,7 +1882,7 @@ public class DeliverableAction extends BaseAction {
         this.saveExternalSourceAuthors();
 
         this.deliverableMetadataExternalSourcesManager
-          .saveDeliverableMetadataExternalSources(this.deliverableMetadataExternalSources);
+          .saveDeliverableMetadataExternalSources(this.deliverable.getExternalSource());
       }
 
       /*
@@ -1934,7 +1987,7 @@ public class DeliverableAction extends BaseAction {
         : Collections.emptyList();
 
       for (DeliverableAffiliation dbDeliverableAffiliation : dbAffiliations) {
-        if (!this.deliverableAffiliations.contains(dbDeliverableAffiliation)) {
+        if (dbDeliverableAffiliation != null && !this.deliverableAffiliations.contains(dbDeliverableAffiliation)) {
           this.deliverableAffiliationManager.deleteDeliverableAffiliation(dbDeliverableAffiliation.getId());
           // TODO: replication pending
         }
@@ -1976,12 +2029,13 @@ public class DeliverableAction extends BaseAction {
             .filter(danm -> danm != null && danm.getId() != null && danm.getDeliverableMetadataExternalSources() != null
               && danm.getDeliverableMetadataExternalSources().getId() != null
               && danm.getDeliverableMetadataExternalSources().getId()
-                .equals(this.deliverableMetadataExternalSources.getId()))
+                .equals(this.deliverable.getExternalSource().getId()))
             .collect(Collectors.toList())
           : Collections.emptyList();
 
       for (DeliverableAffiliationsNotMapped dbDeliverableAffiliationsNotMapped : dbAffiliationsNotMapped) {
-        if (!this.deliverableAffiliationsNotMapped.contains(dbDeliverableAffiliationsNotMapped)) {
+        if (dbDeliverableAffiliationsNotMapped != null
+          && !this.deliverableAffiliationsNotMapped.contains(dbDeliverableAffiliationsNotMapped)) {
           this.deliverableAffiliationsNotMappedManager
             .deleteDeliverableAffiliationsNotMapped(dbDeliverableAffiliationsNotMapped.getId());
           // TODO: replication pending
@@ -2308,7 +2362,6 @@ public class DeliverableAction extends BaseAction {
 
   }
 
-
   /**
    * 08/01 save Deliverable Partnership Responsible
    * 
@@ -2398,7 +2451,6 @@ public class DeliverableAction extends BaseAction {
     }
 
   }
-
 
   public void saveDeliverableRegions(Deliverable deliverable, Phase phase, Deliverable deliverableManagedState) {
 
@@ -2644,21 +2696,23 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+
   private void saveExternalSourceAuthors() {
     // Phase nextPhase = this.getActualPhase().getNext();
     if (this.externalSourceAuthor != null) {
-      List<ExternalSourceAuthor> dbExternalSourceAuthors = this.externalSourceAuthorManager.findAll() != null
-        ? this.externalSourceAuthorManager.findAll().stream()
-          .filter(esa -> esa != null && esa.getId() != null && esa.getDeliverableMetadataExternalSources() != null
-            && esa.getDeliverableMetadataExternalSources().getId() != null
-            && esa.getDeliverableMetadataExternalSources().getId()
-              .equals(this.deliverableMetadataExternalSources.getId()))
-          .collect(Collectors.toList())
-        : Collections.emptyList();
+      List<ExternalSourceAuthor> dbExternalSourceAuthors =
+        this.externalSourceAuthorManager.findAll() != null
+          ? this.externalSourceAuthorManager.findAll().stream()
+            .filter(esa -> esa != null && esa.getId() != null && esa.getDeliverableMetadataExternalSources() != null
+              && esa.getDeliverableMetadataExternalSources().getId() != null
+              && esa.getDeliverableMetadataExternalSources().getId()
+                .equals(this.deliverable.getExternalSource().getId()))
+            .collect(Collectors.toList())
+          : Collections.emptyList();
 
       for (ExternalSourceAuthor dbExternalSourceAuthor : dbExternalSourceAuthors) {
-        if (!this.externalSourceAuthor.contains(dbExternalSourceAuthor)) {
-          this.deliverableAffiliationManager.deleteDeliverableAffiliation(dbExternalSourceAuthor.getId());
+        if (dbExternalSourceAuthor != null && !this.externalSourceAuthor.contains(dbExternalSourceAuthor)) {
+          this.externalSourceAuthorManager.deleteExternalSourceAuthor(dbExternalSourceAuthor.getId());
           // TODO: replication pending
         }
       }
@@ -2860,6 +2914,7 @@ public class DeliverableAction extends BaseAction {
     // No need to call save as hibernate will detect the changes and auto flush.
   }
 
+
   public void savePublicationMetadata() {
     if (deliverable.getPublication() != null) {
       deliverable.getPublication().setDeliverable(deliverable);
@@ -2871,7 +2926,6 @@ public class DeliverableAction extends BaseAction {
 
     }
   }
-
 
   public void saveQualityCheck() {
     DeliverableQualityCheck qualityCheck;
@@ -3032,7 +3086,6 @@ public class DeliverableAction extends BaseAction {
     this.answers = answers;
   }
 
-
   public void setCgiarCrossCuttingMarkers(List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers) {
     this.cgiarCrossCuttingMarkers = cgiarCrossCuttingMarkers;
   }
@@ -3041,7 +3094,6 @@ public class DeliverableAction extends BaseAction {
   public void setCountries(List<LocElement> countries) {
     this.countries = countries;
   }
-
 
   public void setCrps(ArrayList<GlobalUnit> crps) {
     this.crps = crps;
@@ -3052,21 +3104,42 @@ public class DeliverableAction extends BaseAction {
   }
 
 
+  public void setDeliverableAffiliations(List<DeliverableAffiliation> deliverableAffiliations) {
+    this.deliverableAffiliations = deliverableAffiliations;
+  }
+
+
+  public void
+    setDeliverableAffiliationsNotMapped(List<DeliverableAffiliationsNotMapped> deliverableAffiliationsNotMapped) {
+    this.deliverableAffiliationsNotMapped = deliverableAffiliationsNotMapped;
+  }
+
+
   public void setDeliverableID(long deliverableID) {
     this.deliverableID = deliverableID;
   }
+
+  public void
+    setDeliverableMetadataExternalSources(DeliverableMetadataExternalSources deliverableMetadataExternalSources) {
+    this.deliverableMetadataExternalSources = deliverableMetadataExternalSources;
+  }
+
 
   public void setDeliverableSubTypes(List<DeliverableType> deliverableSubTypes) {
     this.deliverableSubTypes = deliverableSubTypes;
   }
 
-
   public void setDeliverableTypeParent(List<DeliverableType> deliverableTypeParent) {
     this.deliverableTypeParent = deliverableTypeParent;
   }
 
+
   public void setDivisions(List<PartnerDivision> divisions) {
     this.divisions = divisions;
+  }
+
+  public void setExternalSourceAuthor(List<ExternalSourceAuthor> externalSourceAuthor) {
+    this.externalSourceAuthor = externalSourceAuthor;
   }
 
   public void setFocusLevels(List<RepIndGenderYouthFocusLevel> focusLevels) {
