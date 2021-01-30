@@ -125,6 +125,7 @@ function JsoninstitutionsToOrder(data){
 function updateWOSFields(data){
   let {
     url,
+    doi,
     title,
     publicationType,
     publicationYear,
@@ -132,9 +133,8 @@ function updateWOSFields(data){
     openAcessLink,
     isISI,
     journalName,
-    doi,
     volume,
-    issue,
+    // issue,
     pages,
     authors,
     institutions
@@ -157,7 +157,7 @@ function updateWOSFields(data){
   $('.WOS-Is_ISI').val(isISI);
   $('.WOS-Journal_name').val(journalName);
   $('.WOS-Volume').val(volume);
-  $('.WOS-Issue').val(issue);
+  // $('.WOS-Issue').val(issue);
   $('.WOS-Pages').val(pages);
   $('.WOS-Authors').val(authors);
   $('.WOS-Institutions').val(institutions);
@@ -172,7 +172,7 @@ function updateWOSFields(data){
   $('#td-WOS-Is_ISI').html(nullDataPipe(isISI));
   $('#td-WOS-Journal_name').html(nullDataPipe(journalName));
   $('#td-WOS-Volume').html(nullDataPipe(volume));
-  $('#td-WOS-Issue').html(nullDataPipe(issue));
+  // $('#td-WOS-Issue').html(nullDataPipe(issue));
   $('#td-WOS-Pages').html(nullDataPipe(pages));
   $('#td-WOS-Authors').html(JsonAuthorsToOrder(nullDataPipe(authors)));
   $('#td-WOS-Institutions').html(JsoninstitutionsToOrder(nullDataPipe(institutions)));

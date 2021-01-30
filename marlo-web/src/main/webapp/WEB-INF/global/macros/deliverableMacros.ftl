@@ -470,10 +470,6 @@
                     <td id="td-WOS-Volume" ></td>
                   </tr>
                   <tr>
-                    <th  scope="row">Issue</th>
-                    <td id="td-WOS-Issue"></td>
-                  </tr>
-                  <tr>
                     <th  scope="row">Pages</th>
                     <td id="td-WOS-Pages"></td>
                   </tr>
@@ -498,7 +494,6 @@
                 [@customForm.input name="deliverableMetadataExternalSources.isiStatus" required=require value="" className="Is_ISI "  type="text" i18nkey="Is ISI" help="nada2" readOnly=true editable=editable/]
                 [@customForm.input name="deliverableMetadataExternalSources.journalName" required=require value="" className="Journal_name "  type="text" i18nkey="Journal name" help="nada2" readOnly=true editable=editable/]
                 [@customForm.input name="deliverableMetadataExternalSources.volume" required=require value="" className="WOS-Volume "  type="text" i18nkey="Volume" help="nada2" readOnly=true editable=editable/]
-                [@customForm.input name="deliverableMetadataExternalSources.WOS-Issue" required=require value="" className="WOS-Issue' "  type="text" i18nkey="Issue" help="nada2" readOnly=true editable=editable/]
                 [@customForm.input name="deliverableMetadataExternalSources.pages" required=require value="" className="WOS-Pages "  type="text" i18nkey="Pages" help="nada2" readOnly=true editable=editable/]
                 [@customForm.input name="deliverableMetadataExternalSources.externalSourceAuthor" required=require value="" className="WOS-Authors "  type="text" i18nkey="Authors" help="nada2" readOnly=true editable=editable/]
                 [@customForm.input name="deliverableMetadataExternalSources.deliverableAffiliations" required=require value="" className="WOS-Institutions "  type="text" i18nkey="Institutions" help="nada2" readOnly=true editable=editable/]
