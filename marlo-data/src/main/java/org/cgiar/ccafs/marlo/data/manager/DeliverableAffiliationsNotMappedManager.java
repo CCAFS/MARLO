@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.model.DeliverableAffiliationsNotMapped;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -59,6 +60,14 @@ public interface DeliverableAffiliationsNotMappedManager {
    */
   public DeliverableAffiliationsNotMapped
     getDeliverableAffiliationsNotMappedById(long deliverableAffiliationsNotMappedID);
+
+  /**
+   * Replicates a deliverableAffiliationsNotMapped, starting from the given phase
+   * 
+   * @param originalDeliverableAffiliationsNotMapped DeliverableAffiliationsNotMapped to be replicated
+   * @param initialPhase initial replication phase
+   */
+  public void replicate(DeliverableAffiliationsNotMapped originalDeliverableAffiliationsNotMapped, Phase initialPhase);
 
   /**
    * This method saves the information of the given deliverableAffiliationsNotMapped

@@ -17,6 +17,8 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.Date;
+
 import com.google.gson.annotations.Expose;
 
 /**
@@ -28,18 +30,15 @@ public class DeliverableAffiliation extends MarloAuditableEntity implements java
 
   @Expose
   private Institution institution;
-
   @Expose
   private Deliverable deliverable;
-
   @Expose
   private Phase phase;
-
   private Integer institutionMatchConfidence;
-
   private String institutionNameWebOfScience;
 
   private DeliverableMetadataExternalSources deliverableMetadataExternalSources;
+  private Date createDate;
 
   public DeliverableAffiliation() {
   }
@@ -48,6 +47,9 @@ public class DeliverableAffiliation extends MarloAuditableEntity implements java
     this.setInstitutionMatchConfidence(other.getInstitutionMatchConfidence());
     this.setInstitutionNameWebOfScience(other.getInstitutionNameWebOfScience());
     this.setPhase(other.getPhase());
+    this.setActive(other.isActive());
+    this.setCreatedBy(other.getCreatedBy());
+    this.setCreateDate(other.getCreateDate());
   }
 
   @Override
@@ -72,6 +74,10 @@ public class DeliverableAffiliation extends MarloAuditableEntity implements java
     return true;
   }
 
+  public Date getCreateDate() {
+    return createDate;
+  }
+
   public Deliverable getDeliverable() {
     return deliverable;
   }
@@ -92,13 +98,13 @@ public class DeliverableAffiliation extends MarloAuditableEntity implements java
     return institutionNameWebOfScience;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
+
 
   public Phase getPhase() {
     return phase;
@@ -110,6 +116,10 @@ public class DeliverableAffiliation extends MarloAuditableEntity implements java
     int result = 1;
     result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
     return result;
+  }
+
+  public void setCreateDate(Date createDate) {
+    this.createDate = createDate;
   }
 
   public void setDeliverable(Deliverable deliverable) {
