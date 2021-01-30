@@ -399,6 +399,28 @@
       </div>
    </div>
 
+<div class="loading-WOS-container" style="position: relative; ">
+  <p style="position: absolute; top: 10px; font-weight: 500; color: rgb(16, 122, 192); font-size: 1.3em;">Synchronizing  with WOS</p>
+  <svg class="loading-WOS" width="110px"  height="110px"  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" style="background: none;"><g transform="translate(20 50)">
+    <circle cx="0" cy="0" r="5" fill="#93dbe9" transform="scale(0.629707 0.629707)">
+      <animateTransform attributeName="transform" type="scale" begin="-0.3375s" calcMode="spline" keySplines="0.3 0 0.7 1;0.3 0 0.7 1" values="0;1;0" keyTimes="0;0.5;1" dur="1.2s" repeatCount="indefinite"></animateTransform>
+    </circle>
+    </g><g transform="translate(40 50)">
+    <circle cx="0" cy="0" r="5" fill="#689cc5" transform="scale(0.921425 0.921425)">
+      <animateTransform attributeName="transform" type="scale" begin="-0.225s" calcMode="spline" keySplines="0.3 0 0.7 1;0.3 0 0.7 1" values="0;1;0" keyTimes="0;0.5;1" dur="1.2s" repeatCount="indefinite"></animateTransform>
+    </circle>
+    </g><g transform="translate(60 50)">
+    <circle cx="0" cy="0" r="5" fill="#5e6fa3" transform="scale(0.974999 0.974999)">
+      <animateTransform attributeName="transform" type="scale" begin="-0.1125s" calcMode="spline" keySplines="0.3 0 0.7 1;0.3 0 0.7 1" values="0;1;0" keyTimes="0;0.5;1" dur="1.2s" repeatCount="indefinite"></animateTransform>
+    </circle>
+    </g><g transform="translate(80 50)">
+    <circle cx="0" cy="0" r="5" fill="#3b4368" transform="scale(0.725877 0.725877)">
+      <animateTransform attributeName="transform" type="scale" begin="0s" calcMode="spline" keySplines="0.3 0 0.7 1;0.3 0 0.7 1" values="0;1;0" keyTimes="0;0.5;1" dur="1.2s" repeatCount="indefinite"></animateTransform>
+    </circle>
+    </g></svg>
+    
+</div>
+
     <div class="note left" id="WOSModalBtn" style="display: none;">
       <div  class="helpMessage4">
         <p><a style="cursor: pointer;" data-toggle="modal" data-target="#WOSModal" > <span class="glyphicon glyphicon-info-sign"></span> Click here to get the metadata information received from Web of Science

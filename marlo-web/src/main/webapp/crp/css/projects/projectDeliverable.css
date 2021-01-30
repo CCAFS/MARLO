@@ -10,7 +10,11 @@
   cursor: pointer;
   opacity: 0.7;
 }
-
+.loading-WOS-container{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .fair .achieved {
   background-color: #8ea786;
   color: white;
