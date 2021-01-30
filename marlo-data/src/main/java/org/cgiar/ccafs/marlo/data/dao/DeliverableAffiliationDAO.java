@@ -16,7 +16,9 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableAffiliation;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -56,10 +58,19 @@ public interface DeliverableAffiliationDAO {
 
 
   /**
+   * This method gets a list of deliverableAffiliation by a given phase, deliverable
+   * 
+   * @param metadataElement
+   * @return a list of DeliverableAffiliation.
+   */
+  public List<DeliverableAffiliation> findByPhaseAndDeliverable(Phase phase, Deliverable deliverable);
+
+  /**
    * This method saves the information of the given deliverableAffiliation
    * 
    * @param deliverableAffiliation - is the deliverableAffiliation object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the deliverableAffiliation was
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the deliverableAffiliation
+   *         was
    *         updated
    *         or -1 is some error occurred.
    */

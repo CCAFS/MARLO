@@ -36,7 +36,7 @@ public class MetadataWOSModel implements Serializable {
   private String title;
   private String doi;
   private String publicationType;
-  private Long publicationYear;
+  private Integer publicationYear;
 
   @SerializedName("is_oa")
   private Boolean isOpenAccess;
@@ -94,7 +94,7 @@ public class MetadataWOSModel implements Serializable {
     return publicationType;
   }
 
-  public Long getPublicationYear() {
+  public Integer getPublicationYear() {
     return publicationYear;
   }
 
@@ -146,7 +146,7 @@ public class MetadataWOSModel implements Serializable {
     this.publicationType = publicationTitle;
   }
 
-  public void setPublicationYear(Long publicationYear) {
+  public void setPublicationYear(Integer publicationYear) {
     this.publicationYear = publicationYear;
   }
 

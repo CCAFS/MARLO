@@ -18,18 +18,31 @@
 			class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
 		<column name="institution_id" />
 	</many-to-one>
+	<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
+		fetch="select" update="false">
+		<column name="created_by" not-null="true" />
+	</many-to-one>
 	
 	<property name="name" type="string">
-			<column name="name" sql-type="TEXT" />
-		</property>
-		<property name="country" type="string">
-			<column name="country" sql-type="TEXT" />
-		</property>
-		<property name="fullAddress" type="string">
-			<column name="full_address" sql-type="TEXT" />
-		</property>
-		<property name="institutionMatchConfidence" type="java.lang.Integer">
-			<column name="institution_match_confidence" />
-		</property>
+		<column name="name" sql-type="TEXT" />
+	</property>
+	<property name="country" type="string">
+		<column name="country" sql-type="TEXT" />
+	</property>
+	<property name="fullAddress" type="string">
+		<column name="full_address" sql-type="TEXT" />
+	</property>
+	<property name="institutionMatchConfidence" type="java.lang.Integer">
+		<column name="institution_match_confidence" />
+	</property>
+	<property name="active" type="boolean">
+		<column name="is_active" not-null="true" />
+	</property>
+	<property name="activeSince" type="timestamp" update="false" >
+		<column name="active_since" length="19" not-null="true" />
+	</property>
+	<property name="createDate" type="timestamp">
+		<column name="create_date" length="19" not-null="true" />
+	</property>
 	</class>
 </hibernate-mapping>

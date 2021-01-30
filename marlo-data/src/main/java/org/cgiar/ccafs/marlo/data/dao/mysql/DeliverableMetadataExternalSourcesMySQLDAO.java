@@ -45,6 +45,7 @@ public class DeliverableMetadataExternalSourcesMySQLDAO
   public void deleteDeliverableMetadataExternalSources(long deliverableMetadataExternalSourceId) {
     DeliverableMetadataExternalSources deliverableMetadataExternalSource =
       this.find(deliverableMetadataExternalSourceId);
+    deliverableMetadataExternalSource.setActive(false);
     this.save(deliverableMetadataExternalSource);
   }
 

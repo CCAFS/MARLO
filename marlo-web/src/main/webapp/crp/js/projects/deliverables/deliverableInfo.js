@@ -374,10 +374,15 @@ function justificationByStatus(statusId) {
         console.log("else");
         if(statusId==4) {
           showNewExpectedComponent(true);
-          $('.expectedDisabled').hide();
+          $('.expectedDisabled').hide("slow");
         } else if(statusId==3){
-          showNewExpectedComponent(true);
-          $('.expectedDisabled').show();
+          
+          if (($('.yearNewExpected').val() != '-1') && ($('.yearNewExpected').val() != $('.yearExpected').val())) {  
+            showNewExpectedComponent(true);
+          } else {
+            showNewExpectedComponent(false);
+          }
+          $('.expectedDisabled').show("slow");
         } else {
           showNewExpectedComponent(false);
         }

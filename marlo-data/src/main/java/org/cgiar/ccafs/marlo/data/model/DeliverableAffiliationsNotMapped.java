@@ -15,13 +15,17 @@
 
 package org.cgiar.ccafs.marlo.data.model;
 
+import org.cgiar.ccafs.marlo.data.IAuditLog;
+
+import java.util.Date;
+
 import com.google.common.base.MoreObjects;
 
 /**************
  * @author German C. Martinez - CIAT/CCAFS
  **************/
 
-public class DeliverableAffiliationsNotMapped extends MarloBaseEntity {
+public class DeliverableAffiliationsNotMapped extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
 
   /**
    * 
@@ -35,16 +39,20 @@ public class DeliverableAffiliationsNotMapped extends MarloBaseEntity {
   private String country;
   private String fullAddress;
   private Integer institutionMatchConfidence;
+  private Date createDate;
 
   public DeliverableAffiliationsNotMapped() {
   }
 
   public void copyFields(DeliverableAffiliationsNotMapped other) {
-    other.setCountry(this.getCountry());
-    other.setDeliverableMetadataExternalSources(this.getDeliverableMetadataExternalSources());
-    other.setFullAddress(this.getFullAddress());
-    other.setInstitutionMatchConfidence(this.getInstitutionMatchConfidence());
-    other.setName(this.getName());
+    this.setCountry(other.getCountry());
+    this.setDeliverableMetadataExternalSources(other.getDeliverableMetadataExternalSources());
+    this.setFullAddress(other.getFullAddress());
+    this.setInstitutionMatchConfidence(other.getInstitutionMatchConfidence());
+    this.setName(other.getName());
+    this.setActive(other.isActive());
+    this.setCreatedBy(other.getCreatedBy());
+    this.setCreateDate(other.getCreateDate());
   }
 
   @Override
@@ -69,10 +77,14 @@ public class DeliverableAffiliationsNotMapped extends MarloBaseEntity {
     return true;
   }
 
-
   public String getCountry() {
     return country;
   }
+
+  public Date getCreateDate() {
+    return createDate;
+  }
+
 
   public DeliverableMetadataExternalSources getDeliverableMetadataExternalSources() {
     return deliverableMetadataExternalSources;
@@ -84,6 +96,13 @@ public class DeliverableAffiliationsNotMapped extends MarloBaseEntity {
 
   public Integer getInstitutionMatchConfidence() {
     return institutionMatchConfidence;
+  }
+
+  @Override
+  public String getLogDeatil() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("Id : ").append(this.getId());
+    return sb.toString();
   }
 
   public String getName() {
@@ -104,6 +123,10 @@ public class DeliverableAffiliationsNotMapped extends MarloBaseEntity {
 
   public void setCountry(String country) {
     this.country = country;
+  }
+
+  public void setCreateDate(Date createDate) {
+    this.createDate = createDate;
   }
 
   public void

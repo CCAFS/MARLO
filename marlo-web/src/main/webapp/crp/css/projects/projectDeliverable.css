@@ -10,7 +10,14 @@
   cursor: pointer;
   opacity: 0.7;
 }
-
+body .handle-bridge .requiredTag{
+  color: #0b7aa600;
+}
+.loading-WOS-container{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .fair .achieved {
   background-color: #8ea786;
   color: white;
