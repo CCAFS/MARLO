@@ -487,7 +487,7 @@
                   </tr>
                 </tbody>
               </table>
-              <div class="WOS-fields" style="display:block">
+              <div class="WOS-fields" style="display:none">
                 [@customForm.input name="deliverableMetadataExternalSources.url" required=require value="" className="WOS-URL"  type="text" i18nkey="URL" help="nada2" readOnly=true editable=editable/]
                 [@customForm.input name="deliverableMetadataExternalSources.doi" required=require value="" className="WOS-DOI"  type="text" i18nkey="DOI" help="nada2" readOnly=true editable=editable/]
                 [@customForm.input name="deliverableMetadataExternalSources.title" required=require value="" className="WOS-Title "  type="text" i18nkey="Title" help="nada2" readOnly=true editable=editable/]
