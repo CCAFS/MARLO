@@ -96,7 +96,7 @@ public class DeliverableMetadataExternalSourcesManagerImpl implements Deliverabl
         deliverableMetadataExternalSource = new DeliverableMetadataExternalSources();
       }
 
-      deliverableMetadataExternalSource.copyFields(deliverableMetadataExternalSource);
+      deliverableMetadataExternalSource.copyFields(originalDeliverableMetadataExternalSource);
       deliverableMetadataExternalSource.setPhase(current);
       deliverableMetadataExternalSource.setDeliverable(deliverable);
 

@@ -18,6 +18,10 @@
 			class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
 			<column name="phase_id" />
 		</many-to-one>
+		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select" update="false">
+			<column name="created_by" not-null="true" />
+		</many-to-one>
 		
 		<!--set name="deliverableAffiliations" table="deliverable_affiliations" inverse="true"
 			lazy="true" fetch="select">
@@ -76,6 +80,15 @@
 		</property>
 		<property name="pages" type="string">
 			<column name="pages" sql-type="TEXT" />
+		</property>
+		<property name="active" type="boolean">
+			<column name="is_active" not-null="true" />
+		</property>
+		<property name="activeSince" type="timestamp" update="false" >
+			<column name="active_since" length="19" not-null="true" />
+		</property>
+		<property name="createDate" type="timestamp">
+			<column name="create_date" length="19" not-null="true" />
 		</property>
 	</class>
 </hibernate-mapping>
