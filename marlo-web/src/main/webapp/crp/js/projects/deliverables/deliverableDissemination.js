@@ -5,11 +5,9 @@ $(document).ready(function () {
 });
 
 function init() {
-  
+  $('.loading-WOS-container').hide("slow");
   updateReadOnly();
-  $('.disseminationChannel').change(function () {
-    updateReadOnly();
-  })
+  $('.disseminationChannel').change(updateReadOnly)
   $('#handle-bridge').change(function () {
     $('.metadataElement-handle .input input').val($(this).val())
   })
@@ -58,26 +56,34 @@ setTimeout(() => {
    },
    beforeSend: function() {
      // console.log("before");
+     $('.loading-WOS-container').show('slow');
+     $('#WOSModalBtn').hide("slow");  
+     $('#output-wos').hide("slow");  
+     
    },
    success: function(data) {
+     console.log(data);
    console.log("succes");
    console.log(data.response);
    updateWOSFields(data.response);
-   $('#WOSModalBtn').show();  
+   $('#WOSModalBtn').show('slow');  
    $('#output-wos').html('Found metadata successfully in Web of Science.')
    },
    error: function(e) {
+    $('#WOSModalBtn').hide("slow");  
      console.log(e);
      console.log("no se pudo");
      $('#output-wos').html('The peer-reviewed publication was not found in Web of Science.')
    },
    complete: function() {
      // console.log("complete"); 
-     $('#output-wos').show();   
+     $('#output-wos').show('slow');   
+     $('#output-wos').show('slow');  
+     $('.loading-WOS-container').hide("slow");
    }
 });
 
-}, 2000);
+}, 1500);
 }
 function nullDataPipe(data){
   if (data) {
@@ -121,7 +127,9 @@ function JsoninstitutionsToOrder(data){
   }
 }
 
-
+function loadingAnimation(){
+  $('.loading-WOS').hide;
+}
 function updateWOSFields(data){
   let {
     url,
@@ -181,26 +189,28 @@ function updateWOSFields(data){
 }
 
 function updateReadOnly() {
+  console.log("update only");
+  $('#WOSModalBtn').hide("slow"); 
   let channel = $(".disseminationChannel").val();
   if ($('.deliverableDisseminationUrl ').prop('readonly')) {
     $('#output-dissemination').empty().append("Found metadata successfully in " + channel)
     $('#output-dissemination').show();  
-    $('#WOSModalBtn').show();  
+    // $('#WOSModalBtn').show();  
     if ($('.deliverableDisseminationUrl ').prop('readonly')) {
       getWOSInfo();
     }
   } else {
-    $('#output-dissemination').hide();  
+    $('#output-dissemination').hide("slow");  
     
     if ($('.disseminationChannel').val() != 'other') {
-      $('#output-wos').hide();  
-      $('#WOSModalBtn').hide();  
+      $('#output-wos').hide("slow");  
+      $('#WOSModalBtn').hide("slow");  
       
       $(".ifIsReadOnly .metadataElement-handle .input input").prop('readonly', true);
       $(".ifIsReadOnly .metadataElement-doi .input input").prop('readonly', true);
-      $('#WOSSyncBtn').hide(); 
+      $('#WOSSyncBtn').hide("slow"); 
     } else {
-      $('#WOSSyncBtn').show(); 
+      $('#WOSSyncBtn').show('slow'); 
       
       $(".ifIsReadOnly .metadataElement-handle .input input").prop('readonly', false);
       $(".ifIsReadOnly .metadataElement-doi .input input").prop('readonly', false);
