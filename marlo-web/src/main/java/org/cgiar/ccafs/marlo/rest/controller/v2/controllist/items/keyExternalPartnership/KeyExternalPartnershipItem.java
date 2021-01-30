@@ -843,7 +843,7 @@ public class KeyExternalPartnershipItem<T> {
                         try {
                             ObjectMapper mapper = new ObjectMapper();
                             String originalJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(newKeyExternalPartnershipDTO);
-                            RestApiAuditlog restApiAuditLog = new RestApiAuditlog("updateExternalPartnership", "Updated " + idKeyExternalPartnershipDB, new Date(), idKeyExternalPartnershipDB, "class org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnershipExternal",
+                            RestApiAuditlog restApiAuditLog = new RestApiAuditlog("updateKeyExternalPartnership", "Updated " + idKeyExternalPartnershipDB, new Date(), idKeyExternalPartnershipDB, "class org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnershipExternal",
                                     originalJson, user.getId(), null, "", phase.getId());
                             restApiAuditlogManager.logApiCall(restApiAuditLog);
                         } catch (JsonProcessingException ex) {
