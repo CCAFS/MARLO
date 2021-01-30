@@ -41,6 +41,7 @@ public class ExternalSourceAuthorMySQLDAO extends AbstractMarloDAO<ExternalSourc
   @Override
   public void deleteExternalSourceAuthor(long externalSourceAuthorId) {
     ExternalSourceAuthor externalSourceAuthor = this.find(externalSourceAuthorId);
+    externalSourceAuthor.setActive(false);
     this.save(externalSourceAuthor);
   }
 

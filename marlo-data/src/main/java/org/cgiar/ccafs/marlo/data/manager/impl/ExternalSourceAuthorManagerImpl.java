@@ -16,9 +16,11 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.ExternalSourceAuthorDAO;
-import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableMetadataExternalSourcesManager;
 import org.cgiar.ccafs.marlo.data.manager.ExternalSourceAuthorManager;
+import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataExternalSources;
 import org.cgiar.ccafs.marlo.data.model.ExternalSourceAuthor;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -41,13 +43,13 @@ public class ExternalSourceAuthorManagerImpl implements ExternalSourceAuthorMana
   private ExternalSourceAuthorDAO externalSourceAuthorDAO;
 
   // Managers
-  private DeliverableManager deliverableManager;
+  private DeliverableMetadataExternalSourcesManager deliverableMetadataExternalSourcesManager;
 
   @Inject
   public ExternalSourceAuthorManagerImpl(ExternalSourceAuthorDAO externalSourceAuthorDAO,
-    DeliverableManager deliverableManager) {
+    DeliverableMetadataExternalSourcesManager deliverableMetadataExternalSourcesManager) {
     this.externalSourceAuthorDAO = externalSourceAuthorDAO;
-    this.deliverableManager = deliverableManager;
+    this.deliverableMetadataExternalSourcesManager = deliverableMetadataExternalSourcesManager;
   }
 
   @Override
@@ -68,6 +70,23 @@ public class ExternalSourceAuthorManagerImpl implements ExternalSourceAuthorMana
   @Override
   public ExternalSourceAuthor getExternalSourceAuthorById(long externalSourceAuthorID) {
     return externalSourceAuthorDAO.find(externalSourceAuthorID);
+  }
+
+  @Override
+  public void replicate(ExternalSourceAuthor originalExternalSourceAuthor, Phase initialPhase) {
+    Phase current = initialPhase;
+
+    while (current != null) {
+      DeliverableMetadataExternalSources externalSource =
+        this.deliverableMetadataExternalSourcesManager.getDeliverableMetadataExternalSourcesById(
+          originalExternalSourceAuthor.getDeliverableMetadataExternalSources().getId());
+
+      ExternalSourceAuthor externalSourceAuthor = new ExternalSourceAuthor();
+      externalSourceAuthor.copyFields(originalExternalSourceAuthor);
+      externalSourceAuthor.setDeliverableMetadataExternalSources(externalSource);
+      // LOG.debug(current.toString());
+      current = current.getNext();
+    }
   }
 
   @Override

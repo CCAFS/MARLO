@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.model.ExternalSourceAuthor;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -58,6 +59,14 @@ public interface ExternalSourceAuthorManager {
    * @return a ExternalSourceAuthor object.
    */
   public ExternalSourceAuthor getExternalSourceAuthorById(long externalSourceAuthorID);
+
+  /**
+   * Replicates a externalSourceAuthor, starting from the given phase
+   * 
+   * @param originalExternalSourceAuthor ExternalSourceAuthor to be replicated
+   * @param initialPhase initial replication phase
+   */
+  public void replicate(ExternalSourceAuthor originalExternalSourceAuthor, Phase initialPhase);
 
   /**
    * This method saves the information of the given externalSourceAuthor
