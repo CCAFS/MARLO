@@ -322,7 +322,7 @@ public class ParticipantsCapDevItem<T> {
         try {
             ObjectMapper mapper = new ObjectMapper();
             String originalJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(newParticipantsCapDevDTO);
-            RestApiAuditlog restApiAuditLog = new RestApiAuditlog("updateProgressTowards", "Updated CGIAR Entity Acronym " + cGIAREntity + " ID " + id, new Date(), id, "class org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingDimension",
+            RestApiAuditlog restApiAuditLog = new RestApiAuditlog("updateParticipantsCapDev", "Updated CGIAR Entity Acronym " + cGIAREntity + " ID " + id, new Date(), id, "class org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingDimension",
                     originalJson, currentUser.getId(), null, "", null);
             restApiAuditlogManager.logApiCall(restApiAuditLog);
         } catch (JsonProcessingException ex) {
