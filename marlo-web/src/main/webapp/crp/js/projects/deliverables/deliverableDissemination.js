@@ -187,7 +187,7 @@ function updateReadOnly() {
     $('#output-dissemination').show();  
     $('#WOSModalBtn').show();  
     if ($('.deliverableDisseminationUrl ').prop('readonly')) {
-      // getWOSInfo();
+      getWOSInfo();
     }
   } else {
     $('#output-dissemination').hide();  

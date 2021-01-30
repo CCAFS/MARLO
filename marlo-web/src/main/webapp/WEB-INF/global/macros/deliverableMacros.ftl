@@ -385,6 +385,19 @@
         [@customForm.input name="doi-bridge" required=require value="" className="metadataValue "  type="text" i18nkey="DOI" help="nada2" readOnly=mElementHide editable=editable/]
       </div>
     </div>
+    [#assign isOtherUrl = (deliverable.dissemination.hasDOI)!false /]
+    <div class="form-group row " style="margin-top:5px; display:block">
+      [#-- Alternative url Check --]
+      <div class="col-md-6 isOtherUrl">
+        <br />
+        [@customForm.checkmark id="" name="deliverable.dissemination.hasDOI" i18nkey="project.deliverable.hasDOI" help="" paramText="" value="true" helpIcon=true disabled=false editable=editable checked=(deliverable.dissemination.hasDOI)!false cssClass="isOtherUrl" cssClassLabel=""  /]
+      </div>
+      
+      [#-- Alternative url TextField --]
+      <div class="col-md-6 other-url" style="display:${(isOtherUrl)?string('block','none')}">
+        [@customForm.input name="deliverable.dissemination.articleUrl" type="text" i18nkey="project.deliverable.articleURL"  placeholder="" required=true editable=editable /]
+      </div>
+   </div>
 
     <div class="note left" id="WOSModalBtn" style="display: none;">
       <div  class="helpMessage4">
@@ -549,18 +562,7 @@
     </div>
   </div>
   
-   <div class="form-group row isOtherUrlContentBox" style="margin-top:5px; display:none">
-      [#-- Alternative url Check --]
-      <div class="col-md-6 isOtherUrl">
-        <br />
-        [@customForm.checkmark id="" name="deliverable.dissemination.hasDOI" i18nkey="project.deliverable.hasDOI" help="" paramText="" value="true" helpIcon=true disabled=false editable=editable checked=(deliverable.dissemination.hasDOI)!false cssClass="isOtherUrl" cssClassLabel=""  /]
-      </div>
 
-      [#-- Alternative url TextField --]
-      <div class="col-md-6 other-url" style="display:${(isOtherUrl)?string('block','none')}">
-        [@customForm.input name="deliverable.dissemination.articleUrl" type="text" i18nkey="project.deliverable.articleURL"  placeholder="" required=true editable=editable /]
-      </div>
-   </div>
    
   <hr />
    
