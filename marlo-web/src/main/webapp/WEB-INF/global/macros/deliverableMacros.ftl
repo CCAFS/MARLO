@@ -378,7 +378,7 @@
     <div class="clearfix"></div>
 
     <div class="form-group row ifIsReadOnly" style="margin-top: 10px;">
-      <div class="col-md-6" >
+      <div class="col-md-6 conditionalRequire handle-bridge">
         [@customForm.input name="handle-bridge" required=require value="" className="metadataValue "  type="text" i18nkey="Handle" help="" readOnly=mElementHide editable=editable/]
       </div>
       <div class="col-md-6 conditionalRequire">
