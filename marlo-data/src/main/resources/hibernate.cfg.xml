@@ -397,6 +397,10 @@
     <mapping
       resource="xmls/ReportSynthesisSrfProgressTargets.hbm.xml" />
     <mapping
+      resource="xmls/ReportSynthesisSrfProgressTargetsCases.hbm.xml" />
+    <mapping
+      resource="xmls/ReportSynthesisSrfProgressTargetsCasesLinks.hbm.xml" />
+    <mapping
       resource="xmls/ReportSynthesisIntellectualAssets.hbm.xml" />
     <mapping resource="xmls/MarloMessages.hbm.xml" />
     <mapping
@@ -455,5 +459,11 @@
     <mapping resource="xmls/UrlSynthesisLogs.hbm.xml" /> 
     <mapping resource="xmls/ProjectImpacts.hbm.xml" />
     <mapping resource="xmls/ProjectImpactsCategories.hbm.xml" />
+    <mapping resource="xmls/ProgressTargetCaseGeographicScopes.hbm.xml" />
+    <mapping resource="xmls/ProgressTargetCaseGeographicRegions.hbm.xml" />
+    <mapping resource="xmls/DeliverableAffiliationsNotMapped.hbm.xml" />
+    <mapping resource="xmls/ExternalSourceAuthor.hbm.xml" />
+    <mapping resource="xmls/DeliverableMetadataExternalSources.hbm.xml" />
+    <mapping resource="xmls/DeliverableAffiliations.hbm.xml" />
   </session-factory>
 </hibernate-configuration>

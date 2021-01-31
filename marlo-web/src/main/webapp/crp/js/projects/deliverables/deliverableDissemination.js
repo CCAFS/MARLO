@@ -1,43 +1,264 @@
+
 $(document).ready(init);
-$( document ).ready(function() {
+$(document).ready(function () {
   validateSubCategorySelector();
 });
 
 function init() {
-
+  $('.loading-WOS-container').hide("slow");
+  updateReadOnly();
+  $('.disseminationChannel').change(updateReadOnly)
+  $('#handle-bridge').change(function () {
+    $('.metadataElement-handle .input input').val($(this).val())
+  })
+  $('#doi-bridge').change(function () {
+    $('.metadataElement-doi .input input').val($(this).val())
+  })
   // Setting ID to Date-picker input
   $(".dateMetadata").attr("id", "deliverableMetadataDate");
   $(".restrictionDate").attr("id", "restrictionDate");
 
   // Set Date-picker widget
   $("#deliverableMetadataDate, #restrictionDate").datepicker({
-      dateFormat: "yy-mm-dd",
-      minDate: '2012-01-01',
-      maxDate: '2030-12-31',
-      changeMonth: true,
-      numberOfMonths: 1,
-      changeYear: true,
-      onChangeMonthYear: function(year,month,inst) {
-        var selectedDate = new Date(inst.selectedYear, inst.selectedMonth, 1)
-        $(this).datepicker('setDate', selectedDate);
-      }
+    dateFormat: "yy-mm-dd",
+    minDate: '2012-01-01',
+    maxDate: '2030-12-31',
+    changeMonth: true,
+    numberOfMonths: 1,
+    changeYear: true,
+    onChangeMonthYear: function (year, month, inst) {
+      var selectedDate = new Date(inst.selectedYear, inst.selectedMonth, 1)
+      $(this).datepicker('setDate', selectedDate);
+    }
   });
 
   addDisseminationEvents();
+  // if ($('.deliverableDisseminationUrl ').prop('readonly')) {
+  //   getWOSInfo();
+  // }
+  
+}
+
+function getWOSInfo(){
+setTimeout(() => {
+
+  const queryString = window.location.search;
+  console.log(queryString);
+  const urlParams = new URLSearchParams(queryString);
+  const product = urlParams.get('deliverableID')
+ console.log(product);
+
+  link = $('#doi-bridge').val();
+  console.log("link value: "+link);
+ // '10.1016/j.jclepro.2020.122854'
+  // link = '10.1016/j.agee.2016.12.042';
+ $.ajax({
+   url: baseURL + '/metadataByWOS.do',
+   data: {
+     wosLink: link,
+     deliverableID: product
+       // phaseID: phaseID,
+       // financeCode: financeCode,
+       // institutionLead: leadPartnerID
+   },
+   beforeSend: function() {
+     // console.log("before");
+     $('.loading-WOS-container').show('slow');
+     $('#WOSModalBtn').hide("slow");  
+     $('#output-wos').hide("slow");  
+     
+   },
+   success: function(data) {
+     console.log(data);
+   console.log("succes");
+   console.log(data.response);
+   updateWOSFields(data.response);
+   $('#WOSModalBtn').show('slow');  
+   $('#output-wos').html('Found metadata successfully in Web of Science.')
+   },
+   error: function(e) {
+    $('#WOSModalBtn').hide("slow");  
+     console.log(e);
+     console.log("no se pudo");
+     $('#output-wos').html('The peer-reviewed publication was not found in Web of Science.')
+   },
+   complete: function() {
+     // console.log("complete"); 
+     $('#output-wos').show('slow');   
+     $('#output-wos').show('slow');  
+     $('.loading-WOS-container').hide("slow");
+   }
+});
+
+}, 1500);
+}
+function nullDataPipe(data){
+  if (data) {
+    return data;    
+  }else{
+    return 'Not Available';
+  }
+}
+
+function JsonAuthorsToOrder(data){
+  if (data != 'Not Available') {
+    let auxData='';
+    console.log(data);
+    data.forEach(element => {
+     console.log(element.fullName);
+     auxData +='<p>'+element.fullName+'</p></hr>';
+   });
+    return auxData;
+  }else{
+    return data;
+  }
+}
+
+function JsoninstitutionsToOrder(data){
+  if (data != 'Not Available') {
+    let auxData='';
+    let name='';
+    console.log(data);
+    data.forEach(element => {
+     console.log(element.fullName);
+     if (parseInt(element.clarisaMatchConfidence) <= 75) {
+      name=element.clarisaId;
+     }else{
+      name=element.fullName;
+     }
+     auxData +='<p>'+name+'</p></hr>';
+   });
+    return auxData;
+  }else{
+    return data;
+  }
+}
+
+function loadingAnimation(){
+  $('.loading-WOS').hide;
+}
+function updateWOSFields(data){
+  let {
+    url,
+    doi,
+    title,
+    publicationType,
+    publicationYear,
+    isOpenAccess,
+    openAcessLink,
+    isISI,
+    journalName,
+    volume,
+    // issue,
+    pages,
+    authors,
+    institutions
+    
+  } = data ;
+  // const dataNames = ['URL', 'Title', 'Publication_type','Publication_Year','Is_Open_Access','Open_access_link','Is_ISI','Journal_name','Volume','Issue','Pages','Authors','Institutions'];
+  // dataNames.forEach(element =>{
+  //    console.log(element);
+  //    $('#td-WOS-URL').append(url);
+  //   });
+     
+
+  $('.WOS-URL').val(url);
+  $('.WOS-DOI').val(doi);
+  $('.WOS-Title').val(title);
+  $('.WOS-Publication_type').val(publicationType);
+  $('.WOS-Publication_Year').val(publicationYear);
+  $('.WOS-Is_Open_Access').val(isOpenAccess);
+  $('.WOS-Open_access_link').val(openAcessLink);
+  $('.WOS-Is_ISI').val(isISI);
+  $('.WOS-Journal_name').val(journalName);
+  $('.WOS-Volume').val(volume);
+  // $('.WOS-Issue').val(issue);
+  $('.WOS-Pages').val(pages);
+  $('.WOS-Authors').val(authors);
+  $('.WOS-Institutions').val(institutions);
+
+  $('#td-WOS-URL').html(nullDataPipe(url));
+  $('#td-WOS-DOI').html(nullDataPipe(doi));
+  $('#td-WOS-Title').html(nullDataPipe(title));
+  $('#td-WOS-Publication_type').html(nullDataPipe(publicationType));
+  $('#td-WOS-Publication_Year').html(nullDataPipe(publicationYear));
+  $('#td-WOS-Is_Open_Access').html(nullDataPipe(isOpenAccess));
+  $('#td-WOS-Open_access_link').html(nullDataPipe(openAcessLink));
+  $('#td-WOS-Is_ISI').html(nullDataPipe(isISI));
+  $('#td-WOS-Journal_name').html(nullDataPipe(journalName));
+  $('#td-WOS-Volume').html(nullDataPipe(volume));
+  // $('#td-WOS-Issue').html(nullDataPipe(issue));
+  $('#td-WOS-Pages').html(nullDataPipe(pages));
+  $('#td-WOS-Authors').html(JsonAuthorsToOrder(nullDataPipe(authors)));
+  $('#td-WOS-Institutions').html(JsoninstitutionsToOrder(nullDataPipe(institutions)));
+
+  
+}
+
+function updateReadOnly() {
+  console.log("update only");
+  $('#WOSModalBtn').hide("slow"); 
+  let channel = $(".disseminationChannel").val();
+  if ($('.deliverableDisseminationUrl ').prop('readonly')) {
+    $('#output-dissemination').empty().append("Found metadata successfully in " + channel)
+    $('#output-dissemination').show();  
+    // $('#WOSModalBtn').show();  
+    if ($('.deliverableDisseminationUrl ').prop('readonly')) {
+      getWOSInfo();
+    }
+  } else {
+    $('#output-dissemination').hide("slow");  
+    
+    if ($('.disseminationChannel').val() != 'other') {
+      $('#output-wos').hide("slow");  
+      $('#WOSModalBtn').hide("slow");  
+      
+      $(".ifIsReadOnly .metadataElement-handle .input input").prop('readonly', true);
+      $(".ifIsReadOnly .metadataElement-doi .input input").prop('readonly', true);
+      $('#WOSSyncBtn').hide("slow"); 
+    } else {
+      $('#WOSSyncBtn').show('slow'); 
+      
+      $(".ifIsReadOnly .metadataElement-handle .input input").prop('readonly', false);
+      $(".ifIsReadOnly .metadataElement-doi .input input").prop('readonly', false);
+    }
+
+  }
+
+  if ($('.metadataElement-handle .input input').prop('readonly')) {
+    $("#handle-bridge").prop('readonly', true);
+  } else {
+    $("#handle-bridge").prop('readonly', false);
+  }
+
+  if ($('.metadataElement-doi .input input').prop('readonly')) {
+    $("#doi-bridge").prop('readonly', true);
+  } else {
+    $("#doi-bridge").prop('readonly', false);
+  }
+  $('#handle-bridge').val($('.metadataElement-handle .input input').val())
+  $('#doi-bridge').val($('.metadataElement-doi .input input').val())
+
+  $('#doi-bridge').parents('.input').find('img').attr("title", $('.metadataElement-doi').find('img').prop("title"));
 }
 
 function addDisseminationEvents() {
 
+    // 
+    $("#WOSSyncBtn").on("click", function () {
+      getWOSInfo();
+    });
+
   // Update indexTab input
-  $("a[data-toggle='tab']").on('shown.bs.tab', function(e) {
+  $("a[data-toggle='tab']").on('shown.bs.tab', function (e) {
     $("#indexTab").val($(this).attr("index"));
-    $(".radio-block").each(function(i,e) {
+    $(".radio-block").each(function (i, e) {
       showHiddenTags(e);
     });
   });
 
   // YES/NO Event for deliverables
-  $(".button-label").on("click", function() {
+  $(".button-label").on("click", function () {
     var valueSelected = $(this).hasClass('yes-button-label');
     var type = $(this).parent().parent().classParam('type');
     var inverted = $(this).parent().parent().classParam('inverted') === "true";
@@ -47,10 +268,10 @@ function addDisseminationEvents() {
     $(this).parent().find("label").removeClass("radio-checked");
     $(this).addClass("radio-checked");
     // Show block if exist
-    if(inverted) {
+    if (inverted) {
       valueSelected = !valueSelected;
     }
-    if(valueSelected) {
+    if (valueSelected) {
       $('.block-' + type).slideDown();
     } else {
       $('.block-' + type).slideUp();
@@ -60,10 +281,10 @@ function addDisseminationEvents() {
   });
 
   // Is this deliverable already disseminated
-  $(".type-findable .button-label").on("click", function() {
+  $(".type-findable .button-label").on("click", function () {
     var valueSelected = $(this).hasClass('yes-button-label');
 
-    if(!valueSelected) {
+    if (!valueSelected) {
       $(".dataSharing").show("slow");
       $(".block-notFindable").slideDown();
       unSyncDeliverable();
@@ -75,8 +296,8 @@ function addDisseminationEvents() {
     }
   });
 
-  $('input.radioType-confidential').on("click", function() {
-    if(this.value == "true") {
+  $('input.radioType-confidential').on("click", function () {
+    if (this.value == "true") {
       $(".confidentialBlock-true").slideDown();
       $(".confidentialBlock-false").slideUp();
     } else {
@@ -103,7 +324,7 @@ function addDisseminationEvents() {
   $("input[name='deliverable.dissemination.type']").on("change", openAccessRestriction);
 
   // Type a dissemination channel url
-  $('input.deliverableDisseminationUrl, input.otherLicense').on("change", function() {
+  $('input.deliverableDisseminationUrl, input.otherLicense').on("change", function () {
     checkFAIRCompliant();
   })
 
@@ -112,8 +333,8 @@ function addDisseminationEvents() {
   $(".doiMetadata").on("change keyup", checkDoiUrl);
 
   // Other license type
-  $('.licenseOptions input[type="radio"].licenceOption').on("change", function() {
-    if($(this).val() == "OTHER") {
+  $('.licenseOptions input[type="radio"].licenceOption').on("change", function () {
+    if ($(this).val() == "OTHER") {
       $(".licence-modifications").show("slow");
     } else {
       $(".licence-modifications").hide("slow");
@@ -122,19 +343,19 @@ function addDisseminationEvents() {
   });
 
   // Add many flagships
-  $(".flaghsipSelect").on("change", function() {
+  $(".flaghsipSelect").on("change", function () {
     var CRPProgram = $(this).find("option:selected");
-    if(CRPProgram.val() != "" && CRPProgram.val() != "-1") {
-      if($(".flagshipList").find(".flagships input.idCRPProgram[value='" + CRPProgram.val() + "']").exists()) {
+    if (CRPProgram.val() != "" && CRPProgram.val() != "-1") {
+      if ($(".flagshipList").find(".flagships input.idCRPProgram[value='" + CRPProgram.val() + "']").exists()) {
       } else {
         addFlagship(CRPProgram.val(), CRPProgram.text());
       }
     }
   });
-  $(".crpSelect").on("change", function() {
+  $(".crpSelect").on("change", function () {
     var globalUnit = $(this).find("option:selected");
-    if(globalUnit.val() != "" && globalUnit.val() != "-1") {
-      if(!($(".flagshipList").find(".flagships input.idGlobalUnit[value='" + globalUnit.val() + "']").exists())) {
+    if (globalUnit.val() != "" && globalUnit.val() != "-1") {
+      if (!($(".flagshipList").find(".flagships input.idGlobalUnit[value='" + globalUnit.val() + "']").exists())) {
         addCrp(globalUnit.val(), globalUnit.text());
       }
     }
@@ -144,69 +365,69 @@ function addDisseminationEvents() {
   $(".removeFlagship ").on("click", removeFlagship);
 
   // Edit an Author
-  if(editable) {
+  if (editable) {
     // EVENT FIRST NAME
-    $('.lastName').on("click", function() {
+    $('.lastName').on("click", function () {
       var spantext = $(this).text();
       $(this).empty().html('<input type="text" value="' + spantext + '">').find('input').focus();
-    }).on("focusout", function(e) {
+    }).on("focusout", function (e) {
       var $author = $(this).parents(".author");
       var defaultText = "LastName";
       var text = $('input', this).val() || defaultText;
-      if(text != defaultText) {
+      if (text != defaultText) {
         $author.find(".lastNameInput").val(text);
       } else {
         $author.find(".lastNameInput").val("");
       }
       $(this).html(text);
-    }).on('keypress', function(e) {
-      if(e.which == 13 || e.keyCode === 13) {
+    }).on('keypress', function (e) {
+      if (e.which == 13 || e.keyCode === 13) {
         e.preventDefault();
       }
     });
     // EVENT FIRST NAME
-    $('.firstName').on("click", function() {
+    $('.firstName').on("click", function () {
       var spantext = $(this).text();
       $(this).empty().html('<input type="text" value="' + spantext + '">').find('input').focus();
-    }).on("focusout", function(e) {
+    }).on("focusout", function (e) {
       var $author = $(this).parents(".author");
       var defaultText = "FirstName";
       var text = $('input', this).val() || defaultText;
-      if(text != defaultText) {
+      if (text != defaultText) {
         $author.find(".firstNameInput").val(text);
       } else {
         $author.find(".firstNameInput").val("");
       }
       $(this).html(text);
-    }).on('keypress', function(e) {
-      if(e.which == 13 || e.keyCode === 13) {
+    }).on('keypress', function (e) {
+      if (e.which == 13 || e.keyCode === 13) {
         e.preventDefault();
       }
     });
     // EVENT ORCID
-    $('.orcidId').on("click", function() {
+    $('.orcidId').on("click", function () {
       var spantext = $(this).text();
       $(this).empty().html('<input type="text" value="' + spantext + '">').find('input').focus();
-    }).on("focusout", function(e) {
+    }).on("focusout", function (e) {
       var $author = $(this).parents(".author");
       var defaultText = "No ORCID";
       var text = $('input', this).val() || defaultText;
-      if(text != defaultText) {
+      if (text != defaultText) {
         $author.find(".orcidIdInput").val(text);
       } else {
         $author.find(".orcidIdInput").val("");
       }
       $(this).html(text);
-    }).on('keypress', function(e) {
-      if(e.which == 13 || e.keyCode === 13) {
+    }).on('keypress', function (e) {
+      if (e.which == 13 || e.keyCode === 13) {
         e.preventDefault();
       }
     });
   }
 
   //
-  $('input.iaType').on('change', function() {
-    if(this.value == 1) {
+  $('input.iaType').on('change', function () {
+    if (this.value == 1) {
       // Patent
       $('.block-patent').slideDown();
       $('.block-pvp').slideUp();
@@ -218,32 +439,32 @@ function addDisseminationEvents() {
   });
 
   $('.block-intellectualAsset .datePicker').pickadate({
-      format: "mmm d, yyyy",
-      formatSubmit: "yyyy-mm-dd",
-      hiddenName: true,
-      selectYears: true,
-      selectMonths: true
+    format: "mmm d, yyyy",
+    formatSubmit: "yyyy-mm-dd",
+    hiddenName: true,
+    selectYears: true,
+    selectMonths: true
   });
 
   // Does this deliverable involve Participants and Trainees?
-  $('#estimateFemales').on('change', function() {
+  $('#estimateFemales').on('change', function () {
     $('#dontKnowFemale').prop('checked', false);
     $(this).parents('.femaleNumbers').find('input[type="text"]').prop('disabled', false);
   });
-  $('#dontKnowFemale').on('change', function() {
+  $('#dontKnowFemale').on('change', function () {
     $('#estimateFemales').prop('checked', false);
     $(this).parents('.femaleNumbers').find('input[type="text"]').prop('disabled', $(this).is(':checked'));
   });
 
-  $('.trainingType').on('change', function() {
+  $('.trainingType').on('change', function () {
     var id = this.value;
-    if(id == 1) {
+    if (id == 1) {
       $('.block-academicDegree').show();
     } else {
       $('.block-academicDegree').hide();
     }
 
-    if((id == 1) || (id == 3) || (id == 2) || (id == 4)) {
+    if ((id == 1) || (id == 3) || (id == 2) || (id == 4)) {
       $('.block-periodTime').show();
     } else {
       $('.block-periodTime').hide();
@@ -255,73 +476,73 @@ function addDisseminationEvents() {
 
   // Set countries flag
   $('.nationalBlock').find("select").select2({
-      maximumSelectionLength: 0,
-      placeholder: "Select a country(ies)",
-      templateResult: formatStateCountries,
-      templateSelection: formatStateCountries,
-      width: '100%'
+    maximumSelectionLength: 0,
+    placeholder: "Select a country(ies)",
+    templateResult: formatStateCountries,
+    templateSelection: formatStateCountries,
+    width: '100%'
   });
 
-//Display Other Url option for DOI
-  $('input.isOtherUrl').on('change', function() {
+  //Display Other Url option for DOI
+  $('input.isOtherUrl').on('change', function () {
     var selected = $('input.isOtherUrl').is(":checked");
 
-    if(selected == true) {
+    if (selected == true) {
       $('.conditionalRequire .requiredTag').slideUp();
-      $('.other-url').css("display","block");
+      $('.other-url').css("display", "block");
     } else {
       $('.conditionalRequire .requiredTag').slideDown();
-      $('.other-url').css("display","none");
+      $('.other-url').css("display", "none");
     }
   });
   var crp = $('form').attr("name");
-  $('#'+crp+'_deliverable_deliverableInfo_deliverableType_id').on('change', function() {
+  $('#' + crp + '_deliverable_deliverableInfo_deliverableType_id').on('change', function () {
     var doiField = $('.metadataElement-doi').find('div.input ').children()[3];
 
-    if(this.value == '63'){
-      $('.acknowledge'+crp[0]+' .requiredTag').slideDown();
+    if (this.value == '63') {
+      $('.acknowledge' + crp[0] + ' .requiredTag').slideDown();
       $('.metadataElement-volume .requiredTag').slideDown();
       $('.metadataElement-issue .requiredTag').slideDown();
       $('.metadataElement-pages .requiredTag').slideDown();
       $('.isIsiJournal .requiredTag').slideDown();
-      if(doiField.value ==''){
-        displayExtraFieldUrl(true,true);
-      }else{
-          displayExtraFieldUrl(false,true);
+      if (doiField.value == '') {
+        displayExtraFieldUrl(true, true);
+      } else {
+        displayExtraFieldUrl(false, true);
       }
-    }else{
-      $('.acknowledge'+crp[0]+' .requiredTag').slideUp();
+    } else {
+      $('.acknowledge' + crp[0] + ' .requiredTag').slideUp();
       $('.metadataElement-volume .requiredTag').slideUp();
       $('.metadataElement-issue .requiredTag').slideUp();
       $('.metadataElement-pages .requiredTag').slideUp();
       $('.isIsiJournal .requiredTag').slideUp();
-      displayExtraFieldUrl(false,false);
+      displayExtraFieldUrl(false, false);
     }
   });
 
 }
 
-function displayExtraFieldUrl(display,showRequiredTag){
-  if(display){
+function displayExtraFieldUrl(display, showRequiredTag) {
+  if (display) {
     //$('.conditionalRequire .requiredTag').slideDown();
-    $('.isOtherUrlContentBox').css("display","block");
-  }else{
-    $('.isOtherUrlContentBox').css("display","none");
+    $('.isOtherUrlContentBox').css("display", "block");
+  } else {
+    $('.isOtherUrlContentBox').css("display", "none");
     //$('.conditionalRequire .requiredTag').slideUp();
     //console.log($('.conditionalRequire .requiredTag'));
   }
 
-  if(showRequiredTag){
+  if (showRequiredTag) {
     $('.conditionalRequire .requiredTag').slideDown();
     // $('.isOtherUrlContentBox').css("display","block");
-  }else{
+  } else {
     //$('.isOtherUrlContentBox').css("display","none");
     $('.conditionalRequire .requiredTag').slideUp();
     //console.log($('.conditionalRequire .requiredTag'));
   }
 }
 
-function addFlagship(idCRPProgram,text) {
+function addFlagship(idCRPProgram, text) {
   var $list = $('.flagshipList');
   var $item = $('#flagship-template').clone(true).removeAttr("id");
   var tooltip = text.length > 60 ? text.substr(0, 60) + ' ... ' : text;
@@ -335,7 +556,7 @@ function addFlagship(idCRPProgram,text) {
   updateFlagship();
 }
 
-function addCrp(idGlobalUnit,text) {
+function addCrp(idGlobalUnit, text) {
   var $list = $('.flagshipList');
   var $item = $('#flagship-template').clone(true).removeAttr("id");
   var tooltip = text.length > 60 ? text.substr(0, 60) + ' ... ' : text;
@@ -352,7 +573,7 @@ function addCrp(idGlobalUnit,text) {
 function removeFlagship() {
   var $list = $(this).parents('.flagshipList');
   var $item = $(this).parents('.flagships');
-  $item.hide(function() {
+  $item.hide(function () {
     $item.remove();
     checkNextFlagshipItems($list);
     updateFlagship();
@@ -360,7 +581,7 @@ function removeFlagship() {
 }
 
 function updateFlagship() {
-  $(".flagshipList").find('.flagships').each(function(i,e) {
+  $(".flagshipList").find('.flagships').each(function (i, e) {
     // Set activity indexes
     $(e).setNameIndexes(1, i);
   });
@@ -368,7 +589,7 @@ function updateFlagship() {
 
 function checkNextFlagshipItems(block) {
   var items = $(block).find('.flagships ').length;
-  if(items == 0) {
+  if (items == 0) {
     $(block).parent().find('p.emptyText').fadeIn();
   } else {
     $(block).parent().find('p.emptyText').fadeOut();
@@ -379,8 +600,8 @@ function checkHandleUrl() {
   var input = $(this);
   $(input).removeClass("fieldError");
   var inputData = $.trim(input.val());
-  if(inputData != "") {
-    if(inputData.indexOf("handle") == -1) {
+  if (inputData != "") {
+    if (inputData.indexOf("handle") == -1) {
       $(input).addClass("fieldError");
     } else {
       $(input).removeClass("fieldError");
@@ -392,8 +613,8 @@ function checkDoiUrl() {
   var input = $(this);
   $(input).removeClass("fieldError");
   var inputData = $.trim(input.val());
-  if(inputData != "") {
-    if(inputData.indexOf("doi") == -1) {
+  if (inputData != "") {
+    if (inputData.indexOf("doi") == -1) {
       $(input).addClass("fieldError");
     } else {
       $(input).removeClass("fieldError");
@@ -402,11 +623,11 @@ function checkDoiUrl() {
 }
 
 function openAccessRestriction() {
-  if($(this).val() == "restrictedUseAgreement") {
+  if ($(this).val() == "restrictedUseAgreement") {
     $(".restrictionDate-block").find("label").text("Restricted access until:*");
     $("#restrictionDate").attr("name", "deliverable.dissemination.restrictedAccessUntil");
     $(".restrictionDate-block").show("slow");
-  } else if($(this).val() == "effectiveDateRestriction") {
+  } else if ($(this).val() == "effectiveDateRestriction") {
     $(".restrictionDate-block").find("label").text("Restricted embargoed date:*");
     $("#restrictionDate").attr("name", "deliverable.dissemination.restrictedEmbargoed");
     $(".restrictionDate-block").show("slow");
@@ -423,13 +644,13 @@ function changeDisseminationChannel() {
   $(".exampleUrl-block").hide();
 
   // Find the list in deliverablesMacros.ftl
-  var channelsList = jQuery.map($('ul#channelsList li'), function(e) {
+  var channelsList = jQuery.map($('ul#channelsList li'), function (e) {
     return $(e).find('span.id').text();
   });
 
-  if(channel != "-1") {
+  if (channel != "-1") {
     $('#disseminationUrl').slideDown("slow");
-    if(channelsList.indexOf(channel) != -1) {
+    if (channelsList.indexOf(channel) != -1) {
       $("#fillMetadata").slideDown("slow");
       $(".exampleUrl-block.channel-" + channel).slideDown("slow");
     } else {
@@ -447,14 +668,14 @@ function addAuthorElement() {
   var orcidId = $(".oId").val();
 
   // Check if inputs are filled out
-  if(firstName && lastName) {
+  if (firstName && lastName) {
     $(".lName, .fName, .oId").removeClass("fieldError");
 
     // Add a new author
     addAuthor({
-        lastName: lastName,
-        firstName: firstName,
-        orcidId: orcidId
+      lastName: lastName,
+      firstName: firstName,
+      orcidId: orcidId
     });
 
     // Clean add inputs
@@ -478,7 +699,7 @@ function addAuthor(author) {
   $item.find(".firstNameInput").val(author.firstName);
 
   // ORCID
-  if(author.orcidId) {
+  if (author.orcidId) {
     author.orcidId = (author.orcidId).replace(/^https?\:\/\//i, "");
     $item.find(".orcidId strong").html(author.orcidId);
     $item.find(".orcidIdInput").val(author.orcidId);
@@ -494,7 +715,7 @@ function addAuthor(author) {
 function removeAuthor() {
   var $list = $(this).parents('.authorsList');
   var $item = $(this).parents('.author');
-  $item.hide(function() {
+  $item.hide(function () {
     $item.remove();
     checkNextAuthorItems($list);
     updateAuthor();
@@ -502,7 +723,7 @@ function removeAuthor() {
 }
 
 function updateAuthor() {
-  $(".authorsList").find('.author').each(function(i,e) {
+  $(".authorsList").find('.author').each(function (i, e) {
     // Set indexes
     $(e).setNameIndexes(1, i);
   });
@@ -510,7 +731,7 @@ function updateAuthor() {
 
 function checkNextAuthorItems(block) {
   var items = $(block).find('.author ').length;
-  if(items == 0) {
+  if (items == 0) {
     $(block).parent().find('p.emptyText').fadeIn();
   } else {
     $(block).parent().find('p.emptyText').fadeOut();
@@ -526,7 +747,7 @@ function checkNextAuthorItems(block) {
 function setMetadata(data) {
   console.log(data);
   // Text area & Inputs fields
-  $.each(data, function(key,value) {
+  $.each(data, function (key, value) {
     var $parent = $('.metadataElement-' + key);
     var lockInput = !($parent.hasClass('no-lock'));
     var $input = $parent.find(".metadataValue");
@@ -534,25 +755,25 @@ function setMetadata(data) {
     var $hide = $parent.find('.hide');
 
 
-    if(value) {
+    if (value) {
       $input.val(value);
       $text.text(value).parent().show();
       $parent.find('textarea').autoGrow();
-      if(lockInput) {
+      if (lockInput) {
         $input.attr('readOnly', true);
       }
       $hide.val("true");
 
-      if(key == 'authors') {
-        var authorsNameArray = jQuery.map(value, function(a,i) {
+      if (key == 'authors') {
+        var authorsNameArray = jQuery.map(value, function (a, i) {
           return a.lastName + ", " + a.firstName;
         });
         $input.val(authorsNameArray.join('; '));
       }
-      if(key == 'doi') {
-        if(value.indexOf('doi.org') > -1){
+      if (key == 'doi') {
+        if (value.indexOf('doi.org') > -1) {
           var pos = value.indexOf("/", 8);
-          var formattedDoiUrl = value.substring(pos+1);
+          var formattedDoiUrl = value.substring(pos + 1);
           $input.val(formattedDoiUrl);
         }
       }
@@ -563,12 +784,12 @@ function setMetadata(data) {
   });
 
   // Set Authors
-  if(typeof (data.authors) != 'undefined') {
-    if(data.authors.length > 0) {
+  if (typeof (data.authors) != 'undefined') {
+    if (data.authors.length > 0) {
       // Clear Authors
       $('.authorsList').empty();
       // Add Authors from data source
-      $.each(data.authors, function(i,author) {
+      $.each(data.authors, function (i, author) {
         addAuthor(author);
       });
       // Hide authors
@@ -597,30 +818,31 @@ function setMetadata(data) {
 
   var doiField = $('.metadataElement-doi').find('div.input ').children()[3];
   var selector = $('select[name="deliverable.deliverableInfo.deliverableType.id"]');
-  if(selector.val() == '63' && (doiField.value =='')){
-    displayExtraFieldUrl(true,true);
-  }else{
-    if(selector.val() == '63'){
-      displayExtraFieldUrl(false,true);
+  if (selector.val() == '63' && (doiField.value == '')) {
+    displayExtraFieldUrl(true, true);
+  } else {
+    if (selector.val() == '63') {
+      displayExtraFieldUrl(false, true);
     }
   }
+
 }
 
 function setOpenAccess(openAccess) {
   var $input = $(".type-accessible ").parent();
   $(".type-accessible ").parent().find("label").removeClass("radio-checked");
 
-  if(openAccess === "true") {
+  if (openAccess === "true") {
     $input.find('input.yesInput').prop("checked", true);
     $(".block-accessible").hide("slow");
     $(".type-accessible .yes-button-label ").addClass("radio-checked");
   }
-  if(openAccess === "false") {
+  if (openAccess === "false") {
     $input.find('input.noInput').prop("checked", true);
     $(".block-accessible").show("slow");
     $(".type-accessible .no-button-label ").addClass("radio-checked");
   }
-  if(openAccess === "") {
+  if (openAccess === "") {
     $input.find('input.yesInput').prop("checked", true);
     $(".block-accessible").hide("slow");
   }
@@ -629,13 +851,13 @@ function setOpenAccess(openAccess) {
 }
 
 function setISI(isi) {
-  if(isi === "true") {
+  if (isi === "true") {
     $('input#optionISI-yes').prop('checked', true);
   }
-  if(isi === "false") {
+  if (isi === "false") {
     $('input#optionISI-no').prop('checked', true);
   }
-  if(isi === "") {
+  if (isi === "") {
     $('input#optionISI-yes').prop('checked', false);
     $('input#optionISI-no').prop('checked', false);
   }
@@ -644,7 +866,7 @@ function setISI(isi) {
 
 function setLicense(license) {
   var $input = $(".type-license ").parent();
-  if(license) {
+  if (license) {
     $input.find('input.yesInput').prop("checked", true);
     $(".type-license ").parent().find("label").removeClass("radio-checked");
     $(".block-license").show("slow");
@@ -676,6 +898,7 @@ function syncDeliverable() {
   $('#fillMetadata input:hidden').val(true);
   // Dissemination URL
   $('.deliverableDisseminationUrl').attr('readOnly', true);
+  updateReadOnly();
   // Check Fair
   checkFAIRCompliant();
   // Update component
@@ -687,7 +910,7 @@ function syncDeliverable() {
  */
 function unSyncDeliverable() {
   // Show metadata
-  $('.metadataElement').each(function(i,e) {
+  $('.metadataElement').each(function (i, e) {
     var $parent = $(e);
     var $input = $parent.find('.metadataValue');
     var $text = $parent.find(".metadataText");
@@ -700,8 +923,8 @@ function unSyncDeliverable() {
 
   var doiField = $('.metadataElement-doi').find('div.input ').children()[3];
   var selector = $('select[name="deliverable.deliverableInfo.deliverableType.id"]');
-  if(selector.val() == '63' && (doiField.value =='')){
-    displayExtraFieldUrl(true,true);
+  if (selector.val() == '63' && (doiField.value == '')) {
+    displayExtraFieldUrl(true, true);
   }
 
   // Show authors
@@ -722,6 +945,7 @@ function unSyncDeliverable() {
   checkFAIRCompliant();
   // Update component
   $(document).trigger('updateComponent');
+  updateReadOnly();
 }
 
 /**
@@ -732,7 +956,7 @@ function syncMetadata() {
   var url = $.trim($(".deliverableDisseminationUrl").val());
 
   // Validate URL
-  if(url == "") {
+  if (url == "") {
     return;
   }
 
@@ -748,43 +972,44 @@ function syncMetadata() {
  * @param {string} url - Repositori URL (e.g. https://cgspace.cgiar.org/handle/10568/79435)
  * @returns the ajax return a metadata object
  */
-function getMetadata(channel,url) {
+function getMetadata(channel, url) {
   var data = {
-      pageID: channel,
-      metadataID: url,
-      phaseID: phaseID
+    pageID: channel,
+    metadataID: url,
+    phaseID: phaseID
   }
 
   // get data from url
   // Ajax to service
+  console.log("metadata link");
   $.ajax({
-      'url': baseURL + '/metadataByLink.do',
-      'type': "GET",
-      'data': data,
-      'dataType': "json",
-      beforeSend: function() {
-        $(".deliverableDisseminationUrl").addClass('input-loading');
-        $('#metadata-output').html("Searching ... " + data.metadataID);
-      },
-      success: function(metadata) {
-        metadata = metadata.metadata;
-        if(jQuery.isEmptyObject(metadata)) {
-          $('#metadata-output').html("Metadata empty");
-        } else {
-          // Setting Metadata
-          setMetadata(metadata);
+    'url': baseURL + '/metadataByLink.do',
+    'type': "GET",
+    'data': data,
+    'dataType': "json",
+    beforeSend: function () {
+      $(".deliverableDisseminationUrl").addClass('input-loading');
+      $('#output-dissemination').html("Searching ... " + data.metadataID);
+    },
+    success: function (metadata) {
+      metadata = metadata.metadata;
+      if (jQuery.isEmptyObject(metadata)) {
+        $('#output-dissemination').html("Metadata empty");
+      } else {
+        // Setting Metadata
+        setMetadata(metadata);
 
-          // Show a message indicating the medatada harves was successfully
-          $('#metadata-output').empty().append("Found metadata successfully in " + channel);
-        }
-      },
-      complete: function() {
-        $(".deliverableDisseminationUrl").removeClass('input-loading');
-      },
-      error: function() {
-        console.log("error");
-        $('#metadata-output').empty().append("Invalid URL for searching metadata");
+        // Show a message indicating the medatada harves was successfully
+        $('#output-dissemination').empty().append("Found metadata successfully in " + channel);
       }
+    },
+    complete: function () {
+      $(".deliverableDisseminationUrl").removeClass('input-loading');
+    },
+    error: function () {
+      console.log("error");
+      $('#output-dissemination').empty().append("Invalid URL for searching metadata");
+    }
   });
 }
 
@@ -795,9 +1020,9 @@ function getMetadata(channel,url) {
  * @param {string} firstName
  * @returns {boolean} True if is duplicated.
  */
-function validateAuthors(lastName,firstName) {
-  if($(".authorsList").find('.author input.lastNameInput[value="' + lastName + '"]').exists()
-      || $(".authorsList").find(".author input.firstNameInput[value='" + firstName + "']").exists()) {
+function validateAuthors(lastName, firstName) {
+  if ($(".authorsList").find('.author input.lastNameInput[value="' + lastName + '"]').exists()
+    || $(".authorsList").find(".author input.firstNameInput[value='" + firstName + "']").exists()) {
     return true;
   } else {
     return false;
@@ -811,12 +1036,12 @@ function validateAuthors(lastName,firstName) {
  * @returns
  */
 function formatStateCountries(state) {
-  if(!state.id) {
+  if (!state.id) {
     return state.text;
   }
   var flag = '<i class="flag-icon flag-icon-' + state.element.value.toLowerCase() + '"></i> ';
   var $state;
-  if(state.id != -1) {
+  if (state.id != -1) {
     $state = $('<span>' + flag + state.text + '</span>');
   } else {
     $state = $('<span>' + state.text + '</span>');
@@ -830,26 +1055,26 @@ function formatStateCountries(state) {
  */
 function validateSubCategorySelector() {
   var crp = $('form').attr("name");
-  var selector = $('#'+crp+'_deliverable_deliverableInfo_deliverableType_id');
+  var selector = $('#' + crp + '_deliverable_deliverableInfo_deliverableType_id');
   var doiField = $('.metadataElement-doi').find('div.input ').children()[3];
 
-  if(selector.val() == '63'){
-    $('.acknowledge'+crp[0]+' .requiredTag').slideDown();
+  if (selector.val() == '63') {
+    $('.acknowledge' + crp[0] + ' .requiredTag').slideDown();
     $('.metadataElement-volume .requiredTag').slideDown();
     $('.metadataElement-issue .requiredTag').slideDown();
     $('.metadataElement-pages .requiredTag').slideDown();
     $('.isIsiJournal .requiredTag').slideDown();
-    if(doiField.value ==''){
-      displayExtraFieldUrl(true,true);
-    }else{
-        displayExtraFieldUrl(false,true);
+    if (doiField.value == '') {
+      displayExtraFieldUrl(true, true);
+    } else {
+      displayExtraFieldUrl(false, true);
     }
-  }else{
-    $('.acknowledge'+crp[0]+' .requiredTag').slideUp();
+  } else {
+    $('.acknowledge' + crp[0] + ' .requiredTag').slideUp();
     $('.metadataElement-volume .requiredTag').slideUp();
     $('.metadataElement-issue .requiredTag').slideUp();
     $('.metadataElement-pages .requiredTag').slideUp();
     $('.isIsiJournal .requiredTag').slideUp();
-    displayExtraFieldUrl(false,false);
+    displayExtraFieldUrl(false, false);
   }
 };

@@ -150,7 +150,6 @@
 			</result>
 		</action>
 
-
 		<action name="institutionsByTypeAndCountry"
 			class="org.cgiar.ccafs.marlo.action.json.global.InstitutionsByFilterAction">
 			<result type="json">
@@ -555,6 +554,22 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		<action name="metadataByWOS"
+			class="org.cgiar.ccafs.marlo.action.json.project.DeliverableMetadataByWOS">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+		
+		<action name="institutionById"
+      class="org.cgiar.ccafs.marlo.action.json.project.InstitutionById">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
 
 		<action name="targetUnitRequest"
 			class="org.cgiar.ccafs.marlo.action.json.crpadmin.RequestTargetUnitAction">

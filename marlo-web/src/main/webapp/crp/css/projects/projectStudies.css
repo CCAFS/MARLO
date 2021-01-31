@@ -1,6 +1,11 @@
 #projectOutcomesList {
 }
 
+.copyButton{
+  position: relative;
+  top: 11px;
+}
+
 #projectHighlights tr {
   list-style: none;
   padding-bottom: 9px;
