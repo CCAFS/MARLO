@@ -1660,17 +1660,18 @@ public class DeliverableAction extends BaseAction {
         if (deliverable.getCrossCuttingMarkers() != null) {
           deliverable.getCrossCuttingMarkers().clear();
         }
+        if (this.deliverable.getExternalSource() != null) {
+          if (this.deliverable.getExternalSource().getDeliverableAffiliations() != null) {
+            this.deliverableMetadataExternalSources.getDeliverableAffiliations().clear();
+          }
 
-        if (this.deliverable.getExternalSource().getDeliverableAffiliations() != null) {
-          this.deliverableMetadataExternalSources.getDeliverableAffiliations().clear();
-        }
+          if (this.deliverable.getExternalSource().getDeliverableAffiliationsNotMapped() != null) {
+            this.deliverableMetadataExternalSources.getDeliverableAffiliationsNotMapped().clear();
+          }
 
-        if (this.deliverable.getExternalSource().getDeliverableAffiliationsNotMapped() != null) {
-          this.deliverableMetadataExternalSources.getDeliverableAffiliationsNotMapped().clear();
-        }
-
-        if (this.deliverable.getExternalSource().getExternalSourceAuthors() != null) {
-          this.deliverableMetadataExternalSources.getExternalSourceAuthors().clear();
+          if (this.deliverable.getExternalSource().getExternalSourceAuthors() != null) {
+            this.deliverableMetadataExternalSources.getExternalSourceAuthors().clear();
+          }
         }
 
         if (this.deliverableAffiliations != null) {
