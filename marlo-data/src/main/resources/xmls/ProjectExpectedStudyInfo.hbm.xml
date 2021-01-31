@@ -161,5 +161,8 @@
     <property name="hasMilestones" type="boolean">
         <column name="has_milestones" not-null="true" />
     </property>
+    <property name="hasCovidAnalysis" type="boolean">
+        <column name="has_covid_analysis" not-null="true" />
+    </property>
 	</class>
 </hibernate-mapping>

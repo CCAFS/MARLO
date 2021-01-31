@@ -58,11 +58,11 @@
     ]
   },
   [#-- SYNTHESIS REPORTING - CRP --]
-  { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/${reportingDefaultNamespace}',       'action': '${(crpSession)!}/${reportingDefaultAction}',    'visible': logged && reportingActive && !centerGlobalUnit && !upKeepActive, 'active': true,    
+  { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/${reportingDefaultNamespace}',       'action': '${(crpSession)!}/${reportingDefaultAction}','development':true,     'visible': logged && reportingActive && !centerGlobalUnit && !upKeepActive, 'active': (action.canAccessSuperAdmin())!false,    
     'subItems' : [
-      { 'slug': 'annualReport', 'name': 'menu.synthesis.annualReport', 'namespace': '/${reportingDefaultNamespace}',  'action': '${(crpSession)!}/${reportingDefaultAction}',  'visible': logged, 'active': true },
+      { 'slug': 'annualReport', 'name': 'menu.synthesis.annualReport', 'namespace': '/${reportingDefaultNamespace}',  'action': '${(crpSession)!}/${reportingDefaultAction}',  'visible': logged, 'active': (action.canAccessSuperAdmin())!false },
       [#-- { 'slug': 'projectsEvaluation', 'name': 'menu.synthesis.projectsEvaluation', 'namespace': '/synthesis',  'action': '${(crpSession)!}/projectsEvaluation',  'visible': logged, 'active': false, "development": true }--]
-      { 'slug': 'qualityAssessment', 'name': 'menu.synthesis.qualityAssessment', 'namespace': '/qa',  'action': '${(crpSession)!}/qa',  'visible': logged, 'active': true }
+      { 'slug': 'qualityAssessment', 'name': 'menu.synthesis.qualityAssessment', 'namespace': '/qa',  'action': '${(crpSession)!}/qa',  'visible': logged, 'active': (action.canAccessSuperAdmin())!false }
     ]
   },
   [#-- Cap Dev - CENTER --]

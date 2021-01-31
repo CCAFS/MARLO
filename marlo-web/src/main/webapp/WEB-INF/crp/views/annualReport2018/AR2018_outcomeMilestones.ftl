@@ -319,7 +319,7 @@
       [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]      
       <input type="hidden" name="${customName}.id" value="${(annualReportElement.id)!}"/>
       <input type="hidden" name="${customName}.crpProgramOutcome.id" value="${(element.id)!}"/>
-      [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.outcome.progressNarrative" help="${customLabel}.outcome.progressNarrative.help" className="limitWords-200" helpIcon=false required=true editable=editable allowTextEditor=true /]
+      [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.outcome.progressNarrative" help="${customLabel}.outcome.progressNarrative.help" className="limitWords-100" helpIcon=false required=true editable=editable allowTextEditor=true /]
     </div>
     [#-- Sub-IDOs List --]
     [#if element.subIdos?has_content]
