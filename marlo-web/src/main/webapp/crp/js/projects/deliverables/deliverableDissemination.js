@@ -41,7 +41,13 @@ function init() {
 
 function getWOSInfo(){
 setTimeout(() => {
-  console.log("get wos info");
+
+  const queryString = window.location.search;
+  console.log(queryString);
+  const urlParams = new URLSearchParams(queryString);
+  const product = urlParams.get('deliverableID')
+ console.log(product);
+
   link = $('#doi-bridge').val();
   console.log("link value: "+link);
  // '10.1016/j.jclepro.2020.122854'
@@ -49,7 +55,8 @@ setTimeout(() => {
  $.ajax({
    url: baseURL + '/metadataByWOS.do',
    data: {
-     wosLink: link
+     wosLink: link,
+     deliverableID: product
        // phaseID: phaseID,
        // financeCode: financeCode,
        // institutionLead: leadPartnerID
