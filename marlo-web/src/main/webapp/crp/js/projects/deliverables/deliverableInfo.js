@@ -1,8 +1,18 @@
 var $statuses, $statusDescription;
 
 $(document).ready(init);
+// function checkDOI() { 
+//   var result = /^10.\d{4,9}[-._;()/:A-Z0-9]+$/i.test($(this).val());
+//   console.log($(this).val(),': '+result);
+//   // console.log(result);
+//   if ( result) {
+//     $(this).css("border", "unset");
+//   } else {
+//     $(this).css("border", "red solid 1px");
+//   }
+// }
 
-function init() {
+function init() { 
 
   $statuses = $('select.status');
   isDeliverableNew = $statuses.classParam('isNew') == "true";
@@ -24,6 +34,12 @@ function init() {
   });
 
   validateDeliverableStatus();
+  
+
+  // $('#doi-bridge').keypress(checkDOI);
+  // $('#doi-bridge').change(checkDOI);
+  // document.getElementById("doi-bridge").addEventListener("paste", checkDOI);
+  // $('#doi-bridge').addEventListener("paste",checkDOI);
 
   // justificationByStatus($statuses.val());
   // validateCurrentDate();
