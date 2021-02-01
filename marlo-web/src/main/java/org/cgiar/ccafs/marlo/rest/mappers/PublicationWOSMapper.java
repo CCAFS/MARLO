@@ -31,6 +31,12 @@ public interface PublicationWOSMapper {
 
   @Mappings({@Mapping(source = "publication_type", target = "publicationType"),
     @Mapping(source = "authors", target = "authors"), @Mapping(source = "publication_year", target = "publicationYear"),
-    @Mapping(source = "journal_name", target = "journalName"), @Mapping(source = "start_end_pages", target = "pages")})
+    @Mapping(source = "journal_name", target = "journalName"), @Mapping(source = "start_end_pages", target = "pages"),
+    @Mapping(
+      expression = "java(publicationWOS.getIs_isi() == null ? false : publicationWOS.getIs_isi().equals(\"yes\") ? true:false)",
+      target = "is_isi"),
+    @Mapping(
+      expression = "java(publicationWOS.getIs_oa() == null ? false : publicationWOS.getIs_oa().equals(\"yes\") ? true:false)",
+      target = "is_oa")})
   public abstract PublicationsWOSDTO publicationWOSToPublicationWOSDTO(PublicationWOS publicationWOS);
 }
