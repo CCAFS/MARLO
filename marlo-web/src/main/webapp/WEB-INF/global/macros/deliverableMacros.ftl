@@ -381,10 +381,14 @@
       <div class="col-md-6 conditionalRequire handle-bridge">
         [@customForm.input name="handle-bridge" required=require value="" className="metadataValue "  type="text" i18nkey="Handle" help="" readOnly=mElementHide editable=editable/]
       </div>
-      <div class="col-md-6 conditionalRequire">
+      <div class="col-md-6 conditionalRequire" style="position: relative;">
         [@customForm.input name="doi-bridge" required=require value="" className="metadataValue "  type="text" i18nkey="DOI" help="nada2" readOnly=mElementHide editable=editable/]
+        <p class="invalidDOI" style="position: absolute; bottom: 0 + 15px; color: rgb(207, 40, 40); font-weight: 600; font-size: 0.8em; display: none;">Invalid DOI identifier</p>
+        <p class="validDOI" style="position: absolute; bottom: 0 + 15px; color: rgb(50, 206, 45); font-weight: 600; font-size: 0.8em; display: none;">Valid DOI identifier</p>
       </div>
     </div>
+    <br>
+    <hr>
     [#assign isOtherUrl = (deliverable.dissemination.hasDOI)!false /]
     <div class="form-group row " style="margin-top:5px; display:block">
       [#-- Alternative url Check --]
