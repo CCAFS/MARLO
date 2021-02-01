@@ -26,6 +26,10 @@
 			class="org.cgiar.ccafs.marlo.data.model.DeliverableMetadataExternalSources" fetch="select">
 			<column name="deliverable_metadata_external_sources_id" />
 		</many-to-one>
+		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select" update="false">
+			<column name="created_by" not-null="true" />
+		</many-to-one>
 
 		<property name="institutionMatchConfidence" type="java.lang.Integer">
 			<column name="institution_match_confidence" />
@@ -33,6 +37,14 @@
 		<property name="institutionNameWebOfScience" type="string">
 			<column name="institution_name_web_of_science" sql-type="TEXT" />
 		</property>
-		
+		<property name="active" type="boolean">
+			<column name="is_active" not-null="true" />
+		</property>
+		<property name="activeSince" type="timestamp" update="false" >
+			<column name="active_since" length="19" not-null="true" />
+		</property>
+		<property name="createDate" type="timestamp">
+			<column name="create_date" length="19" not-null="true" />
+		</property>
 	</class>
 </hibernate-mapping>

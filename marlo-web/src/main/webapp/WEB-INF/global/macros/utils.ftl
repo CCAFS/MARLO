@@ -29,7 +29,11 @@
   <div class="container helpText viewMore-block">
     <div class="helpMessage infoText">
       <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
+      [#if text?starts_with("<ul>") || text?starts_with("<ol>")]
+        <div class="col-md-10"> ${text} </div>
+      [#else]
         <p class="col-md-10"> ${text} </p>
+      [/#if]
     </div> 
     <div style="display:none" class="viewMore closed"></div>
   </div>

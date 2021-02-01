@@ -224,6 +224,14 @@ public class ProjectOutcomeListAction extends BaseAction {
           .collect(Collectors.toList());
         if (projectLp6Contributions != null && !projectLp6Contributions.isEmpty()) {
           this.setProjectLp6Contribution(projectLp6Contributions.get(0));
+        } else {
+          if (contributionValue) {
+            ProjectLp6Contribution newContribution = new ProjectLp6Contribution();
+            newContribution.setProject(project);
+            newContribution.setPhase(this.getActualPhase());
+            newContribution.setContribution(contributionValue);
+            projectLp6ContributionManager.saveProjectLp6Contribution(newContribution);
+          }
         }
       }
     }

@@ -17,13 +17,16 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.DeliverableAffiliationDAO;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableAffiliation;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -40,7 +43,7 @@ public class DeliverableAffiliationMySQLDAO extends AbstractMarloDAO<Deliverable
   public void deleteDeliverableAffiliation(long deliverableAffiliationId) {
     DeliverableAffiliation deliverableAffiliation = this.find(deliverableAffiliationId);
     deliverableAffiliation.setActive(false);
-    this.update(deliverableAffiliation);
+    this.delete(deliverableAffiliation);
   }
 
   @Override
@@ -68,6 +71,19 @@ public class DeliverableAffiliationMySQLDAO extends AbstractMarloDAO<Deliverable
     }
     return null;
 
+  }
+
+  @Override
+  public List<DeliverableAffiliation> findByPhaseAndDeliverable(Phase phase, Deliverable deliverable) {
+    String query = "select distinct da from DeliverableAffiliation da where phase.id = :phaseId "
+      + "and deliverable.id= :deliverableId";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("phaseId", phase.getId());
+    createQuery.setParameter("deliverableId", deliverable.getId());
+
+    List<DeliverableAffiliation> list = super.findAll(createQuery);
+
+    return list;
   }
 
   @Override

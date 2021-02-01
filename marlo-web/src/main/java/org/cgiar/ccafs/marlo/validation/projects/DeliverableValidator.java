@@ -38,6 +38,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.RepIndTypeActivity;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
+import org.cgiar.ccafs.marlo.utils.doi.DOIService;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
@@ -251,7 +252,7 @@ public class DeliverableValidator extends BaseValidator {
 
           // Deliverable Meta-data Elements
           if (deliverable.getMetadataElements() != null) {
-            // this.validateMetadata(deliverable.getMetadataElements());
+            this.validateMetadata(deliverable.getMetadataElements(), action);
           } else {
             action.addMessage(action.getText("project.deliverable.v.metadata"));
             action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.isOpenAccess",
@@ -730,28 +731,47 @@ public class DeliverableValidator extends BaseValidator {
 
   public void validateMetadata(List<DeliverableMetadataElement> elements, BaseAction action) {
 
-    boolean description = false;
+    // boolean description = false;
 
 
     for (DeliverableMetadataElement deliverableMetadataElement : elements) {
       if (deliverableMetadataElement != null) {
         if (deliverableMetadataElement.getMetadataElement().getId() != null) {
-          if (8L == deliverableMetadataElement.getMetadataElement().getId().longValue()) {
-            if ((this.isValidString(deliverableMetadataElement.getElementValue())
-              && this.wordCount(deliverableMetadataElement.getElementValue()) <= 100)) {
-              description = true;
+          /*
+           * if (8L == deliverableMetadataElement.getMetadataElement().getId().longValue()) {
+           * if ((this.isValidString(deliverableMetadataElement.getElementValue())
+           * && this.wordCount(deliverableMetadataElement.getElementValue()) <= 100)) {
+           * description = description || true;
+           * }
+           * // break;
+           * }
+           */
+          if (deliverableMetadataElement.getMetadataElement().getId() != null
+            && 36L == deliverableMetadataElement.getMetadataElement().getId()) {
+            if (deliverableMetadataElement.getElementValue() != null
+              && !deliverableMetadataElement.getElementValue().isEmpty()) {
+              String cleanDoi = DOIService.tryGetDoiName(deliverableMetadataElement.getElementValue());
+              if (cleanDoi.isEmpty()) {
+                action.addMessage(action.getText("metadata.doi"));
+                action.getInvalidFields().put("input-deliverable.deliverableInfo.metadataElements[8].doi",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              }
+            } else {
+              action.addMessage(action.getText("metadata.doi"));
+              action.getInvalidFields().put("input-deliverable.deliverableInfo.metadataElements[8].doi",
+                InvalidFieldsMessages.EMPTYFIELD);
             }
-            break;
-
           }
         }
       }
     }
-    if (!description) {
-      action.addMessage(action.getText("project.deliverable.metadata.v.description"));
-      action.getInvalidFields().put("input-deliverable.deliverableInfo.metadataElements[7].elementValue",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
+    /*
+     * if (!description) {
+     * action.addMessage(action.getText("project.deliverable.metadata.v.description"));
+     * action.getInvalidFields().put("input-deliverable.deliverableInfo.metadataElements[7].elementValue",
+     * InvalidFieldsMessages.EMPTYFIELD);
+     * }
+     */
 
 
   }

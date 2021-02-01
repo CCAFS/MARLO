@@ -15,13 +15,17 @@
 
 package org.cgiar.ccafs.marlo.data.model;
 
+import org.cgiar.ccafs.marlo.data.IAuditLog;
+
+import java.util.Date;
+
 import com.google.common.base.MoreObjects;
 
 /**************
  * @author German C. Martinez - CIAT/CCAFS
  **************/
 
-public class ExternalSourceAuthor extends MarloBaseEntity {
+public class ExternalSourceAuthor extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
 
   /**
    * 
@@ -30,14 +34,43 @@ public class ExternalSourceAuthor extends MarloBaseEntity {
 
   private DeliverableMetadataExternalSources deliverableMetadataExternalSources;
   private String fullName;
-
+  private Date createDate;
 
   public ExternalSourceAuthor() {
   }
 
   public void copyFields(ExternalSourceAuthor other) {
-    other.setDeliverableMetadataExternalSources(this.getDeliverableMetadataExternalSources());
-    other.setFullName(this.getFullName());
+    this.setDeliverableMetadataExternalSources(other.getDeliverableMetadataExternalSources());
+    this.setFullName(other.getFullName());
+    this.setActive(other.isActive());
+    this.setCreatedBy(other.getCreatedBy());
+    this.setCreateDate(other.getCreateDate());
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    ExternalSourceAuthor other = (ExternalSourceAuthor) obj;
+    if (this.getId() == null) {
+      if (other.getId() != null) {
+        return false;
+      }
+    } else if (!this.getId().equals(other.getId())) {
+      return false;
+    }
+    return true;
+  }
+
+  public Date getCreateDate() {
+    return createDate;
   }
 
   public DeliverableMetadataExternalSources getDeliverableMetadataExternalSources() {
@@ -46,6 +79,25 @@ public class ExternalSourceAuthor extends MarloBaseEntity {
 
   public String getFullName() {
     return fullName;
+  }
+
+  @Override
+  public String getLogDeatil() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("Id : ").append(this.getId());
+    return sb.toString();
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
+    return result;
+  }
+
+  public void setCreateDate(Date createDate) {
+    this.createDate = createDate;
   }
 
   public void

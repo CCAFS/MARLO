@@ -41,6 +41,7 @@ public class DeliverableAffiliationsNotMappedMySQLDAO extends AbstractMarloDAO<D
   @Override
   public void deleteDeliverableAffiliationsNotMapped(long deliverableAffiliationsNotMappedId) {
     DeliverableAffiliationsNotMapped deliverableAffiliationsNotMapped = this.find(deliverableAffiliationsNotMappedId);
+    deliverableAffiliationsNotMapped.setActive(false);
     this.save(deliverableAffiliationsNotMapped);
   }
 

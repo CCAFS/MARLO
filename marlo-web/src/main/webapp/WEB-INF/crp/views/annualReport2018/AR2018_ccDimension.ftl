@@ -197,6 +197,14 @@
                             </tr>
                           </tbody>
                         </table>
+                        <br>
+                        <table>
+                          <tr>
+                             <td> [@s.text name="${customLabel}.table7.evidenceLink" /]
+                              </td>
+                              <td> [@customForm.input name="${customName}.evidenceLink" i18nkey="" showTitle=false required=false editable=editable /] </td>
+                          </tr>
+                        </table>
                       </div>
                     </div>
                     

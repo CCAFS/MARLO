@@ -17,6 +17,8 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.Date;
+
 import com.google.gson.annotations.Expose;
 
 /**
@@ -28,22 +30,27 @@ public class DeliverableAffiliation extends MarloAuditableEntity implements java
 
   @Expose
   private Institution institution;
-
   @Expose
   private Deliverable deliverable;
-
   @Expose
   private Phase phase;
-
   private Integer institutionMatchConfidence;
-
   private String institutionNameWebOfScience;
 
   private DeliverableMetadataExternalSources deliverableMetadataExternalSources;
+  private Date createDate;
 
   public DeliverableAffiliation() {
   }
 
+  public void copyFields(DeliverableAffiliation other) {
+    this.setInstitutionMatchConfidence(other.getInstitutionMatchConfidence());
+    this.setInstitutionNameWebOfScience(other.getInstitutionNameWebOfScience());
+    this.setPhase(other.getPhase());
+    this.setActive(other.isActive());
+    this.setCreatedBy(other.getCreatedBy());
+    this.setCreateDate(other.getCreateDate());
+  }
 
   @Override
   public boolean equals(Object obj) {
@@ -65,6 +72,10 @@ public class DeliverableAffiliation extends MarloAuditableEntity implements java
       return false;
     }
     return true;
+  }
+
+  public Date getCreateDate() {
+    return createDate;
   }
 
   public Deliverable getDeliverable() {
@@ -107,6 +118,10 @@ public class DeliverableAffiliation extends MarloAuditableEntity implements java
     return result;
   }
 
+  public void setCreateDate(Date createDate) {
+    this.createDate = createDate;
+  }
+
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
   }
@@ -127,6 +142,7 @@ public class DeliverableAffiliation extends MarloAuditableEntity implements java
   public void setInstitutionNameWebOfScience(String institutionNameWebOfScience) {
     this.institutionNameWebOfScience = institutionNameWebOfScience;
   }
+
 
   public void setPhase(Phase phase) {
     this.phase = phase;

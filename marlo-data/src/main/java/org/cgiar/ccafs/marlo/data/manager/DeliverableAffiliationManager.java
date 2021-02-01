@@ -14,7 +14,9 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableAffiliation;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -53,6 +55,14 @@ public interface DeliverableAffiliationManager {
 
 
   /**
+   * This method gets a list of deliverableAffiliation by a given phase, deliverable
+   * 
+   * @param metadataElement
+   * @return a list of DeliverableAffiliation.
+   */
+  public List<DeliverableAffiliation> findByPhaseAndDeliverable(Phase phase, Deliverable deliverable);
+
+  /**
    * This method gets a deliverableAffiliation object by a given deliverableAffiliation identifier.
    * 
    * @param deliverableAffiliationID is the deliverableAffiliation identifier.
@@ -61,14 +71,22 @@ public interface DeliverableAffiliationManager {
   public DeliverableAffiliation getDeliverableAffiliationById(long deliverableAffiliationID);
 
   /**
+   * Replicates a affiliation, starting from the given phase
+   * 
+   * @param originalDeliverableAffiliation affiliation to be replicated
+   * @param initialPhase initial replication phase
+   */
+  public void replicate(DeliverableAffiliation originalDeliverableAffiliation, Phase initialPhase);
+
+  /**
    * This method saves the information of the given deliverableAffiliation
    * 
    * @param deliverableAffiliation - is the deliverableAffiliation object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the deliverableAffiliation was
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the deliverableAffiliation
+   *         was
    *         updated
    *         or -1 is some error occurred.
    */
   public DeliverableAffiliation saveDeliverableAffiliation(DeliverableAffiliation deliverableAffiliation);
-
 
 }
