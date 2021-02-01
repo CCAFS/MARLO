@@ -3,7 +3,9 @@
 .mce-widget.mce-tooltip {
   display: none !important;
 }
-
+#evidenceTypes th,#evidenceTypes td{
+font-size: 1.2em !important;
+}
 table {
   width: 100%;
 }
@@ -2515,7 +2517,7 @@ h3.contentSubTitle {
   width: 18px;
 }
 
-.helpMessage3 p {
+.helpMessage3 p , .helpMessage4 p{
   padding: 1px;
   margin-bottom: 0px;
 }
@@ -4240,7 +4242,7 @@ span.indicatorsFound {
   background-color: #5b80c3;
 }
 
-#metadata-output {
+#metadata-output, .metadata-output-persistent {
   color: #777;
   padding: 7px 4px;
   font-style: italic;
@@ -7088,4 +7090,14 @@ li.currentSection#bi::before{
   font-size: 5px;
   padding: 0.3em 2.5em 0.3em 2.5em;
   border-radius: 0em 0em 0.3em 0.3em;
+}
+
+.slo-contribution-section{
+  border: 1px solid #D1D1D1;
+  padding: 9px 22px 9px 22px;
+  margin: 2px 0px 5px 0;
+  border-radius: 4px;
+  position: relative;
+  transition: box-shadow 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  background: #fff;
 }

@@ -51,6 +51,9 @@
         <property name="detailedAnnex" type="string">
             <column name="detailed_annex" sql-type="TEXT" />
         </property>
+        <property name="relevanceCovid" type="string">
+            <column name="relevance_covid" sql-type="TEXT" />
+        </property>
         <property name="expandedResearchAreas" type="string">
             <column name="expanded_research_areas" sql-type="TEXT" />
         </property>

@@ -299,18 +299,18 @@ public class OutcomeMilestonesValidator extends BaseValidator {
     }
 
     // Validate Milestone Evidence
-    /*
-     * if (milestone.getEvidence() != null && !milestone.getEvidence().isEmpty()) {
-     * if (this.wordCount(this.removeHtmlTags(milestone.getEvidence())) <= 200) {
-     * action.addMessage(action.getText("Evidence"));
-     * action.addMissingField("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
-     * + "].milestones[" + j + "].evidence");
-     * action.getInvalidFields().put(
-     * "input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i + "].milestones[" + j + "].evidence",
-     * InvalidFieldsMessages.EMPTYFIELD);
-     * }
-     * }
-     */
+
+    if (milestone.getEvidence() != null && !milestone.getEvidence().isEmpty()) {
+      if (this.wordCount(this.removeHtmlTags(milestone.getEvidence())) > 200) {
+        action.addMessage(action.getText("Evidence"));
+        action.addMissingField("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
+          + "].milestones[" + j + "].evidence");
+        action.getInvalidFields().put(
+          "input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i + "].milestones[" + j + "].evidence",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+    }
+
     // Validate Cross Cutting
     if (milestone.getMarkers() == null || milestone.getMarkers().isEmpty()) {
       action.addMessage(action.getText("crossCuttingMarkers"));
@@ -327,7 +327,7 @@ public class OutcomeMilestonesValidator extends BaseValidator {
   private void validateOutcomes(BaseAction action, ReportSynthesisFlagshipProgressOutcome outcome, int i) {
     // Validate Summary
     if (!(this.isValidString(outcome.getSummary())
-      && this.wordCount(this.removeHtmlTags(outcome.getSummary())) <= 200)) {
+      && this.wordCount(this.removeHtmlTags(outcome.getSummary())) <= 100)) {
       action.addMessage(action.getText("Title"));
       action.addMissingField("projectPolicy.title");
       action.getInvalidFields().put(

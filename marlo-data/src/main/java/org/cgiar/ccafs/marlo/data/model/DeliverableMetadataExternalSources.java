@@ -15,13 +15,19 @@
 
 package org.cgiar.ccafs.marlo.data.model;
 
+import org.cgiar.ccafs.marlo.data.IAuditLog;
+
+import java.util.Date;
+import java.util.Set;
+
 import com.google.common.base.MoreObjects;
 
 /**************
  * @author German C. Martinez - CIAT/CCAFS
  **************/
 
-public class DeliverableMetadataExternalSources extends MarloBaseEntity {
+public class DeliverableMetadataExternalSources extends MarloAuditableEntity
+  implements java.io.Serializable, IAuditLog {
 
   /**
    * 
@@ -42,50 +48,104 @@ public class DeliverableMetadataExternalSources extends MarloBaseEntity {
   private String journalName;
   private String volume;
   private String pages;
+  private Date createDate;
+
+  private Set<DeliverableAffiliation> deliverableAffiliations;
+  private Set<DeliverableAffiliationsNotMapped> deliverableAffiliationsNotMapped;
+  private Set<ExternalSourceAuthor> externalSourceAuthors;
 
   public DeliverableMetadataExternalSources() {
 
   }
 
   public void copyFields(DeliverableMetadataExternalSources other) {
-    other.setDeliverable(this.getDeliverable());
-    other.setDoi(this.getDoi());
-    other.setIsiStatus(this.getIsiStatus());
-    other.setOpenAccessStatus(this.getOpenAccessStatus());
-    other.setOpenAccessLink(this.getOpenAccessLink());
-    other.setJournalName(this.getJournalName());
-    other.setPages(this.getPages());
-    other.setPhase(this.getPhase());
-    other.setPublicationType(this.getPublicationType());
-    other.setPublicationYear(this.getPublicationYear());
-    other.setSource(this.getSource());
-    other.setTitle(this.getTitle());
-    other.setUrl(this.getUrl());
-    other.setVolume(this.getVolume());
+    this.setDeliverable(other.getDeliverable());
+    this.setDoi(other.getDoi());
+    this.setIsiStatus(other.getIsiStatus());
+    this.setOpenAccessStatus(other.getOpenAccessStatus());
+    this.setOpenAccessLink(other.getOpenAccessLink());
+    this.setJournalName(other.getJournalName());
+    this.setPages(other.getPages());
+    this.setPhase(other.getPhase());
+    this.setPublicationType(other.getPublicationType());
+    this.setPublicationYear(other.getPublicationYear());
+    this.setSource(other.getSource());
+    this.setTitle(other.getTitle());
+    this.setUrl(other.getUrl());
+    this.setVolume(other.getVolume());
+    this.setActive(other.isActive());
+    this.setCreatedBy(other.getCreatedBy());
+    this.setCreateDate(other.getCreateDate());
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    DeliverableMetadataExternalSources other = (DeliverableMetadataExternalSources) obj;
+    if (this.getId() == null) {
+      if (other.getId() != null) {
+        return false;
+      }
+    } else if (!this.getId().equals(other.getId())) {
+      return false;
+    }
+    return true;
+  }
+
+
+  public Date getCreateDate() {
+    return createDate;
   }
 
   public Deliverable getDeliverable() {
     return deliverable;
   }
 
+  public Set<DeliverableAffiliation> getDeliverableAffiliations() {
+    return deliverableAffiliations;
+  }
+
+  public Set<DeliverableAffiliationsNotMapped> getDeliverableAffiliationsNotMapped() {
+    return deliverableAffiliationsNotMapped;
+  }
+
   public String getDoi() {
     return doi;
+  }
+
+  public Set<ExternalSourceAuthor> getExternalSourceAuthors() {
+    return externalSourceAuthors;
   }
 
   public String getIsiStatus() {
     return isiStatus;
   }
 
-  public String getOpenAccessStatus() {
-    return openAccessStatus;
-  }
-
   public String getJournalName() {
     return journalName;
   }
 
+  @Override
+  public String getLogDeatil() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("Id : ").append(this.getId());
+    return sb.toString();
+  }
+
   public String getOpenAccessLink() {
     return openAccessLink;
+  }
+
+  public String getOpenAccessStatus() {
+    return openAccessStatus;
   }
 
   public String getPages() {
@@ -120,20 +180,41 @@ public class DeliverableMetadataExternalSources extends MarloBaseEntity {
     return volume;
   }
 
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
+    return result;
+  }
+
+  public void setCreateDate(Date createDate) {
+    this.createDate = createDate;
+  }
+
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
+  }
+
+  public void setDeliverableAffiliations(Set<DeliverableAffiliation> deliverableAffiliations) {
+    this.deliverableAffiliations = deliverableAffiliations;
+  }
+
+  public void
+    setDeliverableAffiliationsNotMapped(Set<DeliverableAffiliationsNotMapped> deliverableAffiliationsNotMapped) {
+    this.deliverableAffiliationsNotMapped = deliverableAffiliationsNotMapped;
   }
 
   public void setDoi(String doi) {
     this.doi = doi;
   }
 
-  public void setIsiStatus(String isISI) {
-    this.isiStatus = isISI;
+  public void setExternalSourceAuthors(Set<ExternalSourceAuthor> externalSourceAuthors) {
+    this.externalSourceAuthors = externalSourceAuthors;
   }
 
-  public void setOpenAccessStatus(String isOpenAccess) {
-    this.openAccessStatus = isOpenAccess;
+  public void setIsiStatus(String isISI) {
+    this.isiStatus = isISI;
   }
 
   public void setJournalName(String journalName) {
@@ -142,6 +223,10 @@ public class DeliverableMetadataExternalSources extends MarloBaseEntity {
 
   public void setOpenAccessLink(String openAccessLink) {
     this.openAccessLink = openAccessLink;
+  }
+
+  public void setOpenAccessStatus(String isOpenAccess) {
+    this.openAccessStatus = isOpenAccess;
   }
 
   public void setPages(String pages) {
@@ -175,7 +260,6 @@ public class DeliverableMetadataExternalSources extends MarloBaseEntity {
   public void setVolume(String volume) {
     this.volume = volume;
   }
-
 
   @Override
   public String toString() {

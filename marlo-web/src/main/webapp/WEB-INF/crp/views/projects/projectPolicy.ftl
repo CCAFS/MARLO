@@ -168,7 +168,7 @@
     [#local isResearchMaturity = ((element.projectPolicyInfo.repIndStageProcess.id == 3))!false]
     [#-- Narrative --] 
     <div class="form-group block-researchMaturity" style="display:${isResearchMaturity?string('block', 'none')}">
-      [@customForm.textArea name="${customName}.projectPolicyInfo.narrativeEvidence"  i18nkey="policy.narrative"  placeholder="" className="limitWords-200" help="policy.narrative.helpText" helpIcon=false required=false editable=editable /]
+      [@customForm.textArea name="${customName}.projectPolicyInfo.narrativeEvidence"  i18nkey="policy.narrative"  placeholder="" className="limitWords-200" help="policy.evidenceNarrative.help" required=false editable=editable /]
     <br>
     </div>
           
@@ -255,7 +255,7 @@
         <div class="row">
           [#-- Geographic Scope --]
           <div class="col-md-6">
-            [@customForm.elementsListComponent name="${customName}.geographicScopes" elementType="repIndGeographicScope" elementList=element.geographicScopes maxLimit=1 label="policy.geographicScope" help="policy.geographicScope.help" listName="geographicScopes" keyFieldName="id" displayFieldName="name" required=true /]
+            [@customForm.elementsListComponent name="${customName}.geographicScopes" elementType="repIndGeographicScope" elementList=element.geographicScopes label="policy.geographicScope" help="policy.geographicScope.help" listName="geographicScopes" keyFieldName="id" displayFieldName="name" required=true /]
           </div>
         </div>
         [#-- Regional scope --]

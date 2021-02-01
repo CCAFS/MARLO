@@ -271,11 +271,13 @@ public class DataverseClientApi extends MetadataClientApi {
                                           authorIdentifierSchemeJsonObject.getString(value);
                                         if (authorIdentifierScheme != null && !authorIdentifierScheme.isEmpty()
                                           && authorIdentifierScheme.equals(ORCID)) {
-                                          JSONObject authorIdentifierJsonObject =
-                                            (JSONObject) authorJsonObject.get(authorIdentifier);
-                                          String authorIdentifier = authorIdentifierJsonObject.getString(value);
-                                          if (authorIdentifier != null && !authorIdentifier.isEmpty()) {
-                                            author.setOrcidId(authorIdentifier);
+                                          if (authorJsonObject.has(authorIdentifier)) {
+                                            JSONObject authorIdentifierJsonObject =
+                                              (JSONObject) authorJsonObject.get(authorIdentifier);
+                                            String authorIdentifier = authorIdentifierJsonObject.getString(value);
+                                            if (authorIdentifier != null && !authorIdentifier.isEmpty()) {
+                                              author.setOrcidId(authorIdentifier);
+                                            }
                                           }
                                         }
 

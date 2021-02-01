@@ -15,13 +15,17 @@
 
 package org.cgiar.ccafs.marlo.data.model;
 
+import org.cgiar.ccafs.marlo.data.IAuditLog;
+
+import java.util.Date;
+
 import com.google.common.base.MoreObjects;
 
 /**************
  * @author German C. Martinez - CIAT/CCAFS
  **************/
 
-public class DeliverableAffiliationsNotMapped extends MarloBaseEntity {
+public class DeliverableAffiliationsNotMapped extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
 
   /**
    * 
@@ -35,20 +39,50 @@ public class DeliverableAffiliationsNotMapped extends MarloBaseEntity {
   private String country;
   private String fullAddress;
   private Integer institutionMatchConfidence;
+  private Date createDate;
 
   public DeliverableAffiliationsNotMapped() {
   }
 
   public void copyFields(DeliverableAffiliationsNotMapped other) {
-    other.setCountry(this.getCountry());
-    other.setDeliverableMetadataExternalSources(this.getDeliverableMetadataExternalSources());
-    other.setFullAddress(this.getFullAddress());
-    other.setInstitutionMatchConfidence(this.getInstitutionMatchConfidence());
-    other.setName(this.getName());
+    this.setCountry(other.getCountry());
+    this.setDeliverableMetadataExternalSources(other.getDeliverableMetadataExternalSources());
+    this.setFullAddress(other.getFullAddress());
+    this.setInstitutionMatchConfidence(other.getInstitutionMatchConfidence());
+    this.setName(other.getName());
+    this.setActive(other.isActive());
+    this.setCreatedBy(other.getCreatedBy());
+    this.setCreateDate(other.getCreateDate());
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    DeliverableAffiliationsNotMapped other = (DeliverableAffiliationsNotMapped) obj;
+    if (this.getId() == null) {
+      if (other.getId() != null) {
+        return false;
+      }
+    } else if (!this.getId().equals(other.getId())) {
+      return false;
+    }
+    return true;
   }
 
   public String getCountry() {
     return country;
+  }
+
+  public Date getCreateDate() {
+    return createDate;
   }
 
 
@@ -64,6 +98,13 @@ public class DeliverableAffiliationsNotMapped extends MarloBaseEntity {
     return institutionMatchConfidence;
   }
 
+  @Override
+  public String getLogDeatil() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("Id : ").append(this.getId());
+    return sb.toString();
+  }
+
   public String getName() {
     return name;
   }
@@ -72,8 +113,20 @@ public class DeliverableAffiliationsNotMapped extends MarloBaseEntity {
     return possibleInstitution;
   }
 
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
+    return result;
+  }
+
   public void setCountry(String country) {
     this.country = country;
+  }
+
+  public void setCreateDate(Date createDate) {
+    this.createDate = createDate;
   }
 
   public void

@@ -17,7 +17,12 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.DeliverableAffiliationsNotMappedDAO;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableAffiliationsNotMappedManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableMetadataExternalSourcesManager;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.model.DeliverableAffiliationsNotMapped;
+import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataExternalSources;
+import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -40,10 +45,18 @@ public class DeliverableAffiliationsNotMappedManagerImpl implements DeliverableA
   // DAO
   private DeliverableAffiliationsNotMappedDAO deliverableAffiliationsNotMappedDAO;
 
+  // Manager
+  private DeliverableMetadataExternalSourcesManager deliverableMetadataExternalSourcesManager;
+  private InstitutionManager institutionManager;
+
   @Inject
   public DeliverableAffiliationsNotMappedManagerImpl(
-    DeliverableAffiliationsNotMappedDAO deliverableAffiliationsNotMappedDAO) {
+    DeliverableAffiliationsNotMappedDAO deliverableAffiliationsNotMappedDAO,
+    DeliverableMetadataExternalSourcesManager deliverableMetadataExternalSourcesManager,
+    InstitutionManager institutionManager) {
     this.deliverableAffiliationsNotMappedDAO = deliverableAffiliationsNotMappedDAO;
+    this.deliverableMetadataExternalSourcesManager = deliverableMetadataExternalSourcesManager;
+    this.institutionManager = institutionManager;
   }
 
   @Override
@@ -66,6 +79,44 @@ public class DeliverableAffiliationsNotMappedManagerImpl implements DeliverableA
   public DeliverableAffiliationsNotMapped
     getDeliverableAffiliationsNotMappedById(long deliverableAffiliationsNotMappedID) {
     return deliverableAffiliationsNotMappedDAO.find(deliverableAffiliationsNotMappedID);
+  }
+
+  @Override
+  public void replicate(DeliverableAffiliationsNotMapped originalDeliverableAffiliationsNotMapped, Phase initialPhase) {
+    Phase current = initialPhase;
+    Institution institution = this.institutionManager
+      .getInstitutionById(originalDeliverableAffiliationsNotMapped.getPossibleInstitution().getId());
+
+    while (current != null) {
+      DeliverableAffiliationsNotMapped deliverableAffiliationNotMapped = null;
+      DeliverableMetadataExternalSources externalSources =
+        this.deliverableMetadataExternalSourcesManager.findByPhaseAndDeliverable(current,
+          originalDeliverableAffiliationsNotMapped.getDeliverableMetadataExternalSources().getDeliverable());
+
+      if (originalDeliverableAffiliationsNotMapped.getDeliverableMetadataExternalSources() != null
+        && originalDeliverableAffiliationsNotMapped.getDeliverableMetadataExternalSources().getId() != null) {
+        deliverableAffiliationNotMapped = this.findAll().stream()
+          .filter(dmes -> dmes != null && dmes.getId() != null && dmes.getDeliverableMetadataExternalSources() != null
+            && dmes.getDeliverableMetadataExternalSources().getId() != null
+            && dmes.getDeliverableMetadataExternalSources().getId().equals(externalSources.getId())
+            && dmes.getPossibleInstitution() != null && dmes.getPossibleInstitution().getId() != null
+            && dmes.getPossibleInstitution().getId()
+              .equals(originalDeliverableAffiliationsNotMapped.getPossibleInstitution().getId()))
+          .findFirst().orElse(null);
+        if (deliverableAffiliationNotMapped == null) {
+          deliverableAffiliationNotMapped = new DeliverableAffiliationsNotMapped();
+        }
+      }
+
+      deliverableAffiliationNotMapped.copyFields(originalDeliverableAffiliationsNotMapped);
+      deliverableAffiliationNotMapped.setDeliverableMetadataExternalSources(externalSources);
+      deliverableAffiliationNotMapped.setPossibleInstitution(institution);
+
+      deliverableAffiliationNotMapped = this.deliverableAffiliationsNotMappedDAO.save(deliverableAffiliationNotMapped);
+
+      // LOG.debug(current.toString());
+      current = current.getNext();
+    }
   }
 
   @Override
