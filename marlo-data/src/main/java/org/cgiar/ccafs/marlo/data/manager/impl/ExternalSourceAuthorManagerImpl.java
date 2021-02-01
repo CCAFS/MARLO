@@ -16,8 +16,10 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.ExternalSourceAuthorDAO;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableMetadataExternalSourcesManager;
 import org.cgiar.ccafs.marlo.data.manager.ExternalSourceAuthorManager;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataExternalSources;
 import org.cgiar.ccafs.marlo.data.model.ExternalSourceAuthor;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -44,12 +46,15 @@ public class ExternalSourceAuthorManagerImpl implements ExternalSourceAuthorMana
 
   // Managers
   private DeliverableMetadataExternalSourcesManager deliverableMetadataExternalSourcesManager;
+  private DeliverableManager deliverableManager;
 
   @Inject
   public ExternalSourceAuthorManagerImpl(ExternalSourceAuthorDAO externalSourceAuthorDAO,
-    DeliverableMetadataExternalSourcesManager deliverableMetadataExternalSourcesManager) {
+    DeliverableMetadataExternalSourcesManager deliverableMetadataExternalSourcesManager,
+    DeliverableManager deliverableManager) {
     this.externalSourceAuthorDAO = externalSourceAuthorDAO;
     this.deliverableMetadataExternalSourcesManager = deliverableMetadataExternalSourcesManager;
+    this.deliverableManager = deliverableManager;
   }
 
   @Override
@@ -75,11 +80,14 @@ public class ExternalSourceAuthorManagerImpl implements ExternalSourceAuthorMana
   @Override
   public void replicate(ExternalSourceAuthor originalExternalSourceAuthor, Phase initialPhase) {
     Phase current = initialPhase;
+    Deliverable deliverable = originalExternalSourceAuthor.getDeliverableMetadataExternalSources().getDeliverable();
+    if (deliverable != null) {
+      deliverable = this.deliverableManager.getDeliverableById(deliverable.getId());
+    }
 
     while (current != null) {
       DeliverableMetadataExternalSources externalSource =
-        this.deliverableMetadataExternalSourcesManager.getDeliverableMetadataExternalSourcesById(
-          originalExternalSourceAuthor.getDeliverableMetadataExternalSources().getId());
+        this.deliverableMetadataExternalSourcesManager.findByPhaseAndDeliverable(initialPhase, deliverable);
 
       ExternalSourceAuthor externalSourceAuthor = new ExternalSourceAuthor();
       externalSourceAuthor.copyFields(originalExternalSourceAuthor);
