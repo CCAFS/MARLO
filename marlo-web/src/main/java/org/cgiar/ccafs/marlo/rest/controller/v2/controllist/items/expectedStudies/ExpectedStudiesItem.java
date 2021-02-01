@@ -58,7 +58,6 @@ import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
-import org.cgiar.ccafs.marlo.data.model.EvidenceTag;
 import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
@@ -401,21 +400,23 @@ public class ExpectedStudiesItem<T> {
         }
 
 
-        EvidenceTag evidenceTag = null;
-        if (newProjectExpectedStudy.getProjectExpectedStudyInfo().getTag() != null) {
-          evidenceTag =
-            evidenceTagManager.getEvidenceTagById(newProjectExpectedStudy.getProjectExpectedStudyInfo().getTag());
-          if (evidenceTag != null) {
-            projectExpectedStudyInfo.setEvidenceTag(evidenceTag);
-          } else {
-            fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Evidence Tag",
-              newProjectExpectedStudy.getProjectExpectedStudyInfo().getMaturityOfChange()
-                + " is an invalid Evidence Tag code"));
-          }
-        } else {
-          fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "EvidenceTag",
-            "evidence tag identifier can not be null nor empty"));
-        }
+        /*
+         * EvidenceTag evidenceTag = null;
+         * if (newProjectExpectedStudy.getProjectExpectedStudyInfo().getTag() != null) {
+         * evidenceTag =
+         * evidenceTagManager.getEvidenceTagById(newProjectExpectedStudy.getProjectExpectedStudyInfo().getTag());
+         * if (evidenceTag != null) {
+         * projectExpectedStudyInfo.setEvidenceTag(evidenceTag);
+         * } else {
+         * fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "Evidence Tag",
+         * newProjectExpectedStudy.getProjectExpectedStudyInfo().getMaturityOfChange()
+         * + " is an invalid Evidence Tag code"));
+         * }
+         * } else {
+         * fieldErrors.add(new FieldErrorDTO("CreateExpectedStudy", "EvidenceTag",
+         * "evidence tag identifier can not be null nor empty"));
+         * }
+         */
 
         RepIndStageStudy repIndStageStudy = null;
         if (newProjectExpectedStudy.getProjectExpectedStudyInfo().getMaturityOfChange() != null) {
@@ -1647,21 +1648,23 @@ public class ExpectedStudiesItem<T> {
             newProjectExpectedStudy.getProjectExpectedStudyInfo().getStatus() + " is an invalid status code"));
         }
 
-        EvidenceTag evidenceTag = null;
-        if (newProjectExpectedStudy.getProjectExpectedStudyInfo().getTag() != null) {
-          evidenceTag =
-            evidenceTagManager.getEvidenceTagById(newProjectExpectedStudy.getProjectExpectedStudyInfo().getTag());
-          if (evidenceTag != null) {
-            projectExpectedStudyInfo.setEvidenceTag(evidenceTag);
-          } else {
-            fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Evidence Tag",
-              newProjectExpectedStudy.getProjectExpectedStudyInfo().getMaturityOfChange()
-                + " is an invalid Evidence Tag code"));
-          }
-        } else {
-          fieldErrors.add(
-            new FieldErrorDTO("putExpectedStudy", "EvidenceTag", "evidence tag identifier can not be null nor empty"));
-        }
+        /*
+         * EvidenceTag evidenceTag = null;
+         * if (newProjectExpectedStudy.getProjectExpectedStudyInfo().getTag() != null) {
+         * evidenceTag =
+         * evidenceTagManager.getEvidenceTagById(newProjectExpectedStudy.getProjectExpectedStudyInfo().getTag());
+         * if (evidenceTag != null) {
+         * projectExpectedStudyInfo.setEvidenceTag(evidenceTag);
+         * } else {
+         * fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Evidence Tag",
+         * newProjectExpectedStudy.getProjectExpectedStudyInfo().getMaturityOfChange()
+         * + " is an invalid Evidence Tag code"));
+         * }
+         * } else {
+         * fieldErrors.add(
+         * new FieldErrorDTO("putExpectedStudy", "EvidenceTag", "evidence tag identifier can not be null nor empty"));
+         * }
+         */
 
         RepIndStageStudy repIndStageStudy = null;
         if (newProjectExpectedStudy.getProjectExpectedStudyInfo().getMaturityOfChange() != null) {
