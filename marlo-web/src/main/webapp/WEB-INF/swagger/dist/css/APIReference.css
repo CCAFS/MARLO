@@ -1,3 +1,11 @@
+.link-Web{
+  white-space: nowrap; 
+  width: 200px; 
+  overflow: hidden;
+  text-overflow: ellipsis; 
+  /* border: 1px solid #000000; */
+  max-width: 200px;
+}
 .infoTitle {
   padding: 50px 0px;
   text-align: center;

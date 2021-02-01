@@ -119,6 +119,17 @@ public class StatusPlannedMilestonesItem<T> {
     this.repIndMilestoneReasonManager = repIndMilestoneReasonManager;
   }
 
+  private int countWords(String string) {
+    int wordCount = 0;
+    string = StringUtils.stripToEmpty(string);
+    if (!string.isEmpty()) {
+      String[] words = StringUtils.split(string);
+      wordCount = words.length;
+    }
+
+    return wordCount;
+  }
+
   public Long createStatusPlannedMilestone(NewStatusPlannedMilestoneDTO newStatusPlannedMilestoneDTO,
     String CGIARentityAcronym, User user) {
     Long plannedMilestoneStatusID = null;
@@ -244,6 +255,11 @@ public class StatusPlannedMilestonesItem<T> {
         // repIndMilestoneReason = 7 Other)
       }
     }
+    // limit words validation
+    if (this.countWords(newStatusPlannedMilestoneDTO.getEvidence()) > 200) {
+      fieldErrors.add(new FieldErrorDTO("createStatusPlannedMilestone", "Evidence",
+        "Evidence field excedes the maximum number of words (200 words)"));
+    }
 
     if (fieldErrors.isEmpty()) {
       LiaisonInstitution liaisonInstitution =
@@ -283,9 +299,9 @@ public class StatusPlannedMilestonesItem<T> {
         reportSynthesisFlagshipProgressOutcomeMilestoneList = new ArrayList<>();
       } else {
         long milestoneCode = crpMilestone.getId();
-        reportSynthesisFlagshipProgressOutcomeMilestoneList =
-          reportSynthesisFlagshipProgressOutcome.getReportSynthesisFlagshipProgressOutcomeMilestones().stream()
-            .filter(c -> c.getCrpMilestone().getId().equals(milestoneCode)).collect(Collectors.toList());
+        reportSynthesisFlagshipProgressOutcomeMilestoneList = reportSynthesisFlagshipProgressOutcome
+          .getReportSynthesisFlagshipProgressOutcomeMilestones().stream()
+          .filter(c -> c.isActive() && c.getCrpMilestone().getId().equals(milestoneCode)).collect(Collectors.toList());
       }
 
       ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone = null;
@@ -491,21 +507,29 @@ public class StatusPlannedMilestonesItem<T> {
             long milestoneCode = crpMilestone.getId();
             List<ReportSynthesisFlagshipProgressOutcomeMilestone> reportSynthesisFlagshipProgressOutcomeMilestoneList =
               reportSynthesisFlagshipProgressOutcome.getReportSynthesisFlagshipProgressOutcomeMilestones().stream()
-                .filter(c -> c.getCrpMilestone().getId().equals(milestoneCode)).collect(Collectors.toList());
+                .filter(c -> c.isActive() && c.getCrpMilestone().getId().equals(milestoneCode))
+                .collect(Collectors.toList());
             if (reportSynthesisFlagshipProgressOutcomeMilestoneList != null
               && reportSynthesisFlagshipProgressOutcomeMilestoneList.size() > 0) {
               ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone =
                 reportSynthesisFlagshipProgressOutcomeMilestoneList.get(0);
+              List<ReportSynthesisFlagshipProgressCrossCuttingMarker> crosscutingMarkers =
+                new ArrayList<ReportSynthesisFlagshipProgressCrossCuttingMarker>();
               for (ReportSynthesisFlagshipProgressCrossCuttingMarker reportSynthesisFlagshipProgressCrossCuttingMarker : reportSynthesisFlagshipProgressOutcomeMilestone
                 .getReportSynthesisFlagshipProgressCrossCuttingMarkers().stream().collect(Collectors.toList())) {
+                crosscutingMarkers.add(reportSynthesisFlagshipProgressCrossCuttingMarker);
+
+              }
+
+              for (ReportSynthesisFlagshipProgressCrossCuttingMarker reportSynthesisFlagshipProgressCrossCuttingMarker : crosscutingMarkers) {
                 reportSynthesisFlagshipProgressCrossCuttingMarkerManager
                   .deleteReportSynthesisFlagshipProgressCrossCuttingMarker(
                     reportSynthesisFlagshipProgressCrossCuttingMarker.getId());
               }
+
               plannedMilestoneStatusID = reportSynthesisFlagshipProgressOutcomeMilestone.getId();
               reportSynthesisFlagshipProgressOutcomeMilestoneManager
-                .deleteReportSynthesisFlagshipProgressOutcomeMilestone(
-                  reportSynthesisFlagshipProgressOutcomeMilestone.getId());
+                .deleteReportSynthesisFlagshipProgressOutcomeMilestone(plannedMilestoneStatusID);
             } else {
               fieldErrors
                 .add(new FieldErrorDTO("deleteStatusPlannedOutcome", "Milestone", "There is no milestone status"));
@@ -655,6 +679,12 @@ public class StatusPlannedMilestonesItem<T> {
       }
     }
 
+    // limit words validation
+    if (this.countWords(newStatusPlannedMilestoneDTO.getEvidence()) > 200) {
+      fieldErrors.add(new FieldErrorDTO("createStatusPlannedMilestone", "Evidence",
+        "Evidence field excedes the maximum number of words (200 words)"));
+    }
+
     if (fieldErrors.isEmpty()) {
       LiaisonInstitution liaisonInstitution =
         liaisonInstitutionManager.findByAcronymAndCrp(crpProgram.getAcronym(), globalUnitEntity.getId());
@@ -669,7 +699,8 @@ public class StatusPlannedMilestonesItem<T> {
             long milestoneCode = crpMilestone.getId();
             List<ReportSynthesisFlagshipProgressOutcomeMilestone> reportSynthesisFlagshipProgressOutcomeMilestoneList =
               reportSynthesisFlagshipProgressOutcome.getReportSynthesisFlagshipProgressOutcomeMilestones().stream()
-                .filter(c -> c.getCrpMilestone().getId().equals(milestoneCode)).collect(Collectors.toList());
+                .filter(c -> c.isActive() && c.getCrpMilestone().getId().equals(milestoneCode))
+                .collect(Collectors.toList());
             if (reportSynthesisFlagshipProgressOutcomeMilestoneList != null
               && reportSynthesisFlagshipProgressOutcomeMilestoneList.size() > 0) {
               ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone =
