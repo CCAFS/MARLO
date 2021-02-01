@@ -129,6 +129,120 @@ function cgiar_entities() {
 	});
 }
 
+function sdg(){
+	$.ajax({
+		url: config.endpoint + '/allSDG',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"sdgs");
+			destroyTable("sdgs");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"sdgs");
+			console.log(data);
+			let nameColumns = ['SMO code', 'Short Name','Full Name']
+
+			$.each(data, function (index, item) {
+				
+				$('#list-print-sdgs').append(
+					'<tr>' + '<td >' + item['smoCode'] + '</td>' + '<td>'
+					+ item['shortName'] + '</td>' + '<td>'
+					+ item['fullName'] + '</td>' + '</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("sdgs");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
+function sdgtarget(){
+	$.ajax({
+		url: config.endpoint + '/allSDGTargets',
+		type: "GET",
+		beforeSend: function () {
+			cleanModal();
+			manageSpinner(true,"sdgTargets");
+			destroyTable("sdgTargets");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"sdgTargets");
+			console.log(data);
+			let nameColumns = ['ID', 'SDG Target Code','SDG Target','SDG Code', 'SDG Name']
+
+			$.each(data, function (index, item) {
+				
+				$('#list-print-sdgTargets').append(
+					'<tr>' + '<td >' + item['id'] + '</td>' + '<td>'
+					+ item['sdgTargetCode'] + '</td>' + '<td>'
+					+ item['sdgTarget'] + '</td>' + '<td>'
+					+ item['sdg'].smoCode + '</td>' +'<td>'
+					+ item['sdg'].shortName + '</td>' +'</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("sdgTargets");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
+function sdgIndicators(){
+	$.ajax({
+		url: config.endpoint + '/allSDGIndicators',
+		type: "GET",
+		beforeSend: function () {
+			cleanModal();
+			manageSpinner(true,"sdgIndicators");
+			destroyTable("sdgIndicators");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"sdgIndicators");
+			console.log(data);
+			let nameColumns = ['ID', 'UNSD Indicator Code','SDG Indicator Code SDG Indicator Name','SDG Target Code', 'SDG Target Name']
+
+			$.each(data, function (index, item) {
+				
+				$('#list-print-sdgIndicators').append(
+					'<tr>' + '<td >' + item['id'] + '</td>' + '<td>'
+					+ item['unsdIndicatorCode'] + '</td>' + '<td>'
+					+ item['indicatorCode'] + '</td>' + '<td>'
+					+ item['indicatorName'] + '</td>' + '<td>'
+					+ item['sdgTarget'].sdgTargetCode + '</td>' +'<td>'
+					+ item['sdgTarget'].sdgTarget + '</td>' +'</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("sdgIndicators");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
 function cgiar_entity_types() {
 	$.ajax({
 		url: config.endpoint + '/cgiar-entity-types',
@@ -211,6 +325,115 @@ function countries() {
 	});
 }
 
+function action_areas() {
+	$.ajax({
+		url: config.endpoint + '/action-areas',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"action_areas");
+			destroyTable("action_areas");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"action_areas");
+			console.log(data);
+			let nameColumns = ['Code', 'Name','Description']			
+
+			$.each(data, function (index, item) {				
+				$('#list-print-action_areas').append(
+					'<tr>' + '<td >' + item['id'] + '</td>' + '<td>'
+					+ item['name'] + '</td>'+ '<td>'
+					+ item['description'] + '</td>' + '</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("action_areas");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
+function impact_areas() {
+	$.ajax({
+		url: config.endpoint + '/impact-areas',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"impact_areas");
+			destroyTable("impact_areas");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"impact_areas");
+			console.log(data);
+			let nameColumns = ['Code', 'Name','Description']			
+
+			$.each(data, function (index, item) {				
+				$('#list-print-impact_areas').append(
+					'<tr>' + '<td >' + item['id'] + '</td>' + '<td>'
+					+ item['name'] + '</td>'+ '<td>'
+					+ item['description'] + '</td>' + '</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("impact_areas");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
+function impact_areas_indicators() {
+	$.ajax({
+		url: config.endpoint + '/impact-areas-indicators',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"impact_areas_indicators");
+			destroyTable("impact_areas_indicators");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"impact_areas_indicators");
+			console.log(data);
+			let nameColumns = ['Code', 'Name','Description']			
+
+			$.each(data, function (index, item) {				
+				$('#list-print-impact_areas_indicators').append(
+					'<tr>' + '<td >' + item['indicatorId'] + '</td>' + '<td>'
+					+ item['indicatorStatement'] + '</td>'+ '<td>'
+					+ item['impactAreaId'] + '</td>' +'<td>'
+					+ item['impactAreaName'] + '</td>' + '</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("impact_areas_indicators");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
 function un_regions() {
 	$.ajax({
 		url: config.endpoint + '/un-regions',
@@ -261,7 +484,7 @@ function institutions() {
 			success: function (data) {
 				// ********************************************* */
 				// print data
-				testInstitution(data);
+				// testInstitution(data);
 				// showFilter();
 				manageSpinner(false,"institutions");
 				console.log(data);
@@ -285,26 +508,7 @@ function institutions() {
 									+  item['institutionType'].name
 									+ '</td>'
 									// Office Location
-									+ '<td>'
-									// + '<p
-									// class="nomar"><strong>Code:</strong> '
-									// + item['countryOfficeDTO']['0'].code
-									// + '</p>'
-									// + '<p
-									// class="nomar"><strong>isHeadquarter:</strong>
-									// '
-									// +
-									// converYesOrNot(item['countryOfficeDTO']['0'].isHeadquarter)
-									// + '</p>'
-									// + '<p
-									// class="nomar"><strong>isoAlpha2:</strong>
-									// '
-									// + item['countryOfficeDTO']['0'].isoAlpha2
-									// + '</p>'
-									// + '<p
-									// class="nomar"><strong>name:</strong> '
-									// + item['countryOfficeDTO']['0'].name
-									// + '</p>'
+									+ '<td>'									
 									+ '<p class="nomar"><strong>Headquarter: </strong> '
 									+ getHeadquarter(item['countryOfficeDTO'])
 									+ '</p>'
@@ -317,7 +521,7 @@ function institutions() {
 									// END Office Location
 									+ item['name']
 									+ '</td>'									
-									+ `<td  data-toggle="tooltip" data-placement="top" title="${item['websiteLink']}"><a href="${item['websiteLink']}" target="_blank">website link</a></td>`
+									+ `<td class="link-Web"  data-toggle="tooltip" data-placement="top" title="${item['websiteLink']}"><a  href="${item['websiteLink']}" target="_blank">${item['websiteLink']}</a></td>`
 									+ '</tr>')
 						});
 				updateDataTable("institutions");
