@@ -401,7 +401,6 @@
     <mapping
       resource="xmls/ReportSynthesisSrfProgressTargetsCasesLinks.hbm.xml" />
     <mapping
-    <mapping
       resource="xmls/ReportSynthesisIntellectualAssets.hbm.xml" />
     <mapping resource="xmls/MarloMessages.hbm.xml" />
     <mapping
