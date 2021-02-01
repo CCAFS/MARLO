@@ -252,7 +252,17 @@ public class DeliverableValidator extends BaseValidator {
 
           // Deliverable Meta-data Elements
           if (deliverable.getMetadataElements() != null) {
-            this.validateMetadata(deliverable.getMetadataElements(), action);
+            boolean isPRP = false;
+            // type 63 = Peer-reviewed publication (PRP). doi should only be mandatory for PRPs
+            if (action.getActualPhase() != null && deliverable.getDeliverableInfo(action.getActualPhase()) != null
+              && deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType() != null
+              && deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId() != null
+              && deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId()
+                .longValue() == 63L) {
+              isPRP = true;
+            }
+
+            this.validateMetadata(deliverable.getMetadataElements(), action, isPRP);
           } else {
             action.addMessage(action.getText("project.deliverable.v.metadata"));
             action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.isOpenAccess",
@@ -729,7 +739,7 @@ public class DeliverableValidator extends BaseValidator {
      */
   }
 
-  public void validateMetadata(List<DeliverableMetadataElement> elements, BaseAction action) {
+  public void validateMetadata(List<DeliverableMetadataElement> elements, BaseAction action, boolean isPRP) {
 
     // boolean description = false;
 
@@ -746,7 +756,8 @@ public class DeliverableValidator extends BaseValidator {
            * // break;
            * }
            */
-          if (deliverableMetadataElement.getMetadataElement().getId() != null
+          // DOI validation only mandatory for PRPs
+          if (isPRP && deliverableMetadataElement.getMetadataElement().getId() != null
             && 36L == deliverableMetadataElement.getMetadataElement().getId()) {
             if (deliverableMetadataElement.getElementValue() != null
               && !deliverableMetadataElement.getElementValue().isEmpty()) {
