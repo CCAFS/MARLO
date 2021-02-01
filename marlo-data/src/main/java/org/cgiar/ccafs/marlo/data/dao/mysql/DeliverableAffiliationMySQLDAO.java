@@ -43,7 +43,7 @@ public class DeliverableAffiliationMySQLDAO extends AbstractMarloDAO<Deliverable
   public void deleteDeliverableAffiliation(long deliverableAffiliationId) {
     DeliverableAffiliation deliverableAffiliation = this.find(deliverableAffiliationId);
     deliverableAffiliation.setActive(false);
-    this.delete(deliverableAffiliation);
+    this.save(deliverableAffiliation);
   }
 
   @Override
