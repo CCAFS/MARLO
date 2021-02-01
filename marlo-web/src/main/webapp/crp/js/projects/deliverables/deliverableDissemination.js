@@ -48,52 +48,81 @@ setTimeout(() => {
   const product = urlParams.get('deliverableID')
  console.log(product);
 
+
+  let makeRequest = true;
+
   link = $('#doi-bridge').val();
-  console.log("link value: "+link);
+  console.log("doi value: "+link);
+  if (!link) {
+    console.log("no doi value");
+    link = $('#handle-bridge').val();
+    console.log("handle value: "+link);
+  } 
+  if (!link) {
+    console.log("no handle value");
+    link = $('.deliverableDisseminationUrl ').val();
+    console.log("dissemination url value: "+link);
+  }
+  if (!link) {
+    console.log("no dissemination url value");
+    makeRequest = false;
+  }
+  
+  console.log("make a request?: "+makeRequest);
+  
  // '10.1016/j.jclepro.2020.122854'
   // link = '10.1016/j.agee.2016.12.042';
- $.ajax({
-   url: baseURL + '/metadataByWOS.do',
-   data: {
-     wosLink: link,
-     deliverableID: product
-       // phaseID: phaseID,
-       // financeCode: financeCode,
-       // institutionLead: leadPartnerID
-   },
-   beforeSend: function() {
-     // console.log("before");
-     $('.loading-WOS-container').show('slow');
+ if (makeRequest) {
+   console.log("link: "+link);
+  $.ajax({
+    url: baseURL + '/metadataByWOS.do',
+    data: {
+      wosLink: link,
+      deliverableID: product
+        // phaseID: phaseID,
+        // financeCode: financeCode,
+        // institutionLead: leadPartnerID
+    },
+    beforeSend: function() {
+      // console.log("before");
+      $('.loading-WOS-container').show('slow');
+      $('#WOSModalBtn').hide("slow");  
+      $('#output-wos').hide("slow");  
+      
+    },
+    success: function(data) {
+      console.log(data);
+    console.log("succes");
+    console.log(data.response);
+    updateWOSFields(data.response);
+    $('#WOSModalBtn').show('slow');  
+    $('#output-wos').html('Found metadata successfully in Web of Science.')
+    },
+    error: function(e) {
      $('#WOSModalBtn').hide("slow");  
-     $('#output-wos').hide("slow");  
-     
-   },
-   success: function(data) {
-     console.log(data);
-   console.log("succes");
-   console.log(data.response);
-   updateWOSFields(data.response);
-   $('#WOSModalBtn').show('slow');  
-   $('#output-wos').html('Found metadata successfully in Web of Science.')
-   },
-   error: function(e) {
-    $('#WOSModalBtn').hide("slow");  
-     console.log(e);
-     console.log("no se pudo");
-     $('#output-wos').html('The peer-reviewed publication was not found in Web of Science.')
-   },
-   complete: function() {
-     // console.log("complete"); 
-     $('#output-wos').show('slow');   
-     $('#output-wos').show('slow');  
-     $('.loading-WOS-container').hide("slow");
-   }
-});
+      console.log(e);
+      console.log("Problem with the request");
+      $('#output-wos').html('The peer-reviewed publication was not found in Web of Science.')
+    },
+    complete: function() {
+      // console.log("complete"); 
+      $('#output-wos').show('slow');   
+      $('#output-wos').show('slow');  
+      $('.loading-WOS-container').hide("slow");
+    }
+ });
+ }
 
 }, 1500);
 }
 function nullDataPipe(data){
-  if (data) {
+  if (data === false) {
+    return 'No'
+  }else if (data === false) {
+    return 'Yes'
+  }else if (data === 0) {
+    return 'No'
+  }else if (data != undefined) {
     return data;    
   }else{
     return 'Not Available';
