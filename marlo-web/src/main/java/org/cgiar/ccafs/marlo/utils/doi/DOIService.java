@@ -49,7 +49,7 @@ public class DOIService {
    */
   public final static Pattern SHORT_DOI_PATTERN = Pattern.compile("^\\d{2}\\/\\w{3,5}$", Pattern.MULTILINE);
   // taken from <link>https://stackoverflow.com/questions/27910/finding-a-doi-in-a-document-or-page</link>
-  private static final Pattern REGEXP_PLAINDOI =
+  public static final Pattern REGEXP_PLAINDOI =
     Pattern.compile("\\b(10[.][0-9]{4,}(?:[.][0-9]+)*/(?:(?![\"&\\'])\\S)+)\\b");
 
   private static JsonElement getDoiElement(final String doi) throws IOException {
