@@ -34,6 +34,7 @@ import org.cgiar.ccafs.marlo.rest.services.deliverables.model.MetadataWOSModel;
 import org.cgiar.ccafs.marlo.rest.services.deliverables.model.WOSAuthor;
 import org.cgiar.ccafs.marlo.rest.services.deliverables.model.WOSInstitution;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.doi.DOIService;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -132,17 +133,19 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
     // If there are parameters, take its values
     try {
-      this.link = StringUtils.trim(parameters.get(APConstants.WOS_LINK).getMultipleValues()[0]);
-      this.deliverableId = Long
-        .valueOf(StringUtils.trim(parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID).getMultipleValues()[0]));
+      this.link = StringUtils.stripToEmpty(parameters.get(APConstants.WOS_LINK).getMultipleValues()[0]);
+      this.deliverableId = Long.valueOf(
+        StringUtils.stripToEmpty(parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID).getMultipleValues()[0]));
     } catch (Exception e) {
       this.link = null;
       this.deliverableId = 0L;
     }
 
-    JsonElement response = this.readWOSDataFromClarisa(this.link);
+    if (!this.link.isEmpty() && DOIService.REGEXP_PLAINDOI.matcher(this.link).lookingAt()) {
+      JsonElement response = this.readWOSDataFromClarisa(this.link);
 
-    this.jsonStringResponse = StringUtils.stripToNull(new GsonBuilder().serializeNulls().create().toJson(response));
+      this.jsonStringResponse = StringUtils.stripToNull(new GsonBuilder().serializeNulls().create().toJson(response));
+    }
   }
 
   private JsonElement readWOSDataFromClarisa(final String url) throws IOException {
