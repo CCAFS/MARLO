@@ -269,6 +269,8 @@ function updateReadOnly() {
   $('#doi-bridge').val($('.metadataElement-doi .input input').val())
 
   $('#doi-bridge').parents('.input').find('img').attr("title", $('.metadataElement-doi').find('img').prop("title"));
+  //function of the deliverableinfo.js
+  checkDOI();
 }
 
 function addDisseminationEvents() {
