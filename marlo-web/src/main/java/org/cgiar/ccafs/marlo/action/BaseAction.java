@@ -5630,7 +5630,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           return false;
         }
 
-        if (sectionStatus.getMissingFields().length() != 0) {
+        if (sectionStatus.getMissingFields() == null || sectionStatus.getMissingFields().length() != 0) {
           return false;
         }
       } else {
