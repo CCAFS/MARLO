@@ -1,16 +1,21 @@
 var $statuses, $statusDescription;
 
 $(document).ready(init);
-// function checkDOI() { 
-//   var result = /^10.\d{4,9}[-._;()/:A-Z0-9]+$/i.test($(this).val());
-//   console.log($(this).val(),': '+result);
-//   // console.log(result);
-//   if ( result) {
-//     $(this).css("border", "unset");
-//   } else {
-//     $(this).css("border", "red solid 1px");
-//   }
-// }
+function checkDOI() { 
+  setTimeout(() => {
+    var result = /^10.\d{4,9}[-._;()/:A-Z0-9]+$/i.test($('#doi-bridge').val());
+    if ( result) {
+      $('#doi-bridge').css("border", "1px solid #ccc");
+      $('.invalidDOI').hide('slow');
+      $('.validDOI').show('slow');
+    } else {
+      $('#doi-bridge').css("border", "red solid 1px");
+      $('.invalidDOI').show('slow');
+      $('.validDOI').hide('slow');
+    }
+  }, 50);
+
+}
 
 function init() { 
 
@@ -36,9 +41,12 @@ function init() {
   validateDeliverableStatus();
   
 
-  // $('#doi-bridge').keypress(checkDOI);
-  // $('#doi-bridge').change(checkDOI);
-  // document.getElementById("doi-bridge").addEventListener("paste", checkDOI);
+  $('#doi-bridge').keydown(checkDOI);
+  $('#doi-bridge').change(checkDOI);
+  $('#doi-bridge').bind("paste",checkDOI);
+  document.getElementById("doi-bridge").addEventListener("paste", checkDOI);
+
+ 
   // $('#doi-bridge').addEventListener("paste",checkDOI);
 
   // justificationByStatus($statuses.val());
