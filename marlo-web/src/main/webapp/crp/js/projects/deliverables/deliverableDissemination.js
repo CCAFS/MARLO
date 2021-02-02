@@ -191,20 +191,7 @@ function updateWOSFields(data){
   //   });
      
 
-  $('.WOS-URL').val(url);
-  $('.WOS-DOI').val(doi);
-  $('.WOS-Title').val(title);
-  $('.WOS-Publication_type').val(publicationType);
-  $('.WOS-Publication_Year').val(publicationYear);
-  $('.WOS-Is_Open_Access').val(isOpenAccess);
-  $('.WOS-Open_access_link').val(openAcessLink);
-  $('.WOS-Is_ISI').val(isISI);
-  $('.WOS-Journal_name').val(journalName);
-  $('.WOS-Volume').val(volume);
-  // $('.WOS-Issue').val(issue);
-  $('.WOS-Pages').val(pages);
-  $('.WOS-Authors').val(authors);
-  $('.WOS-Institutions').val(institutions);
+
 
   $('#td-WOS-URL').html(nullDataPipe(url));
   $('#td-WOS-DOI').html(nullDataPipe(doi));
