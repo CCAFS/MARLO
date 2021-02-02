@@ -69,8 +69,6 @@ import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
-import org.cgiar.ccafs.marlo.data.model.DeliverableAffiliation;
-import org.cgiar.ccafs.marlo.data.model.DeliverableAffiliationsNotMapped;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
@@ -83,7 +81,6 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableLocation;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
-import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataExternalSources;
 import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnerType;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityAnswer;
@@ -92,7 +89,6 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnershipPerson;
-import org.cgiar.ccafs.marlo.data.model.ExternalSourceAuthor;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.GenderType;
@@ -255,11 +251,6 @@ public class DeliverableAction extends BaseAction {
   private Map<String, String> statuses;
   private DeliverableGeographicRegionManager deliverableGeographicRegionManager;
   private List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers;
-
-  private DeliverableMetadataExternalSources deliverableMetadataExternalSources;
-  private List<DeliverableAffiliation> deliverableAffiliations;
-  private List<DeliverableAffiliationsNotMapped> deliverableAffiliationsNotMapped;
-  private List<ExternalSourceAuthor> externalSourceAuthor;
 
   private List<RepIndGenderYouthFocusLevel> focusLevels;
   // HJ 08/01/2019 new fileds Deliverable Partnerships
@@ -524,16 +515,6 @@ public class DeliverableAction extends BaseAction {
     return deliverable;
   }
 
-
-  public List<DeliverableAffiliation> getDeliverableAffiliations() {
-    return deliverableAffiliations;
-  }
-
-  public List<DeliverableAffiliationsNotMapped> getDeliverableAffiliationsNotMapped() {
-    return deliverableAffiliationsNotMapped;
-  }
-
-
   /**
    * Get the information for the Cross Cutting marker in the form
    * 
@@ -565,12 +546,6 @@ public class DeliverableAction extends BaseAction {
   public long getDeliverableID() {
     return deliverableID;
   }
-
-
-  public DeliverableMetadataExternalSources getDeliverableMetadataExternalSources() {
-    return deliverableMetadataExternalSources;
-  }
-
 
   public List<Map<String, Object>> getDeliverablesSubTypes(long deliverableTypeID) {
     List<Map<String, Object>> subTypes = new ArrayList<>();
@@ -614,11 +589,6 @@ public class DeliverableAction extends BaseAction {
 
   public List<PartnerDivision> getDivisions() {
     return divisions;
-  }
-
-
-  public List<ExternalSourceAuthor> getExternalSourceAuthor() {
-    return externalSourceAuthor;
   }
 
   public List<RepIndGenderYouthFocusLevel> getFocusLevels() {
@@ -690,7 +660,6 @@ public class DeliverableAction extends BaseAction {
   public Project getProject() {
     return project;
   }
-
 
   public long getProjectID() {
     return projectID;
@@ -1660,31 +1629,7 @@ public class DeliverableAction extends BaseAction {
         if (deliverable.getCrossCuttingMarkers() != null) {
           deliverable.getCrossCuttingMarkers().clear();
         }
-        if (this.deliverable.getExternalSource() != null) {
-          if (this.deliverable.getExternalSource().getDeliverableAffiliations() != null) {
-            this.deliverableMetadataExternalSources.getDeliverableAffiliations().clear();
-          }
 
-          if (this.deliverable.getExternalSource().getDeliverableAffiliationsNotMapped() != null) {
-            this.deliverableMetadataExternalSources.getDeliverableAffiliationsNotMapped().clear();
-          }
-
-          if (this.deliverable.getExternalSource().getExternalSourceAuthors() != null) {
-            this.deliverableMetadataExternalSources.getExternalSourceAuthors().clear();
-          }
-        }
-
-        if (this.deliverableAffiliations != null) {
-          this.deliverableAffiliations.clear();
-        }
-
-        if (this.deliverableAffiliationsNotMapped != null) {
-          this.deliverableAffiliationsNotMapped.clear();
-        }
-
-        if (this.externalSourceAuthor != null) {
-          this.externalSourceAuthor.clear();
-        }
       }
 
       try {
@@ -2866,27 +2811,9 @@ public class DeliverableAction extends BaseAction {
     this.deliverable = deliverable;
   }
 
-
-  public void setDeliverableAffiliations(List<DeliverableAffiliation> deliverableAffiliations) {
-    this.deliverableAffiliations = deliverableAffiliations;
-  }
-
-
-  public void
-    setDeliverableAffiliationsNotMapped(List<DeliverableAffiliationsNotMapped> deliverableAffiliationsNotMapped) {
-    this.deliverableAffiliationsNotMapped = deliverableAffiliationsNotMapped;
-  }
-
-
   public void setDeliverableID(long deliverableID) {
     this.deliverableID = deliverableID;
   }
-
-  public void
-    setDeliverableMetadataExternalSources(DeliverableMetadataExternalSources deliverableMetadataExternalSources) {
-    this.deliverableMetadataExternalSources = deliverableMetadataExternalSources;
-  }
-
 
   public void setDeliverableSubTypes(List<DeliverableType> deliverableSubTypes) {
     this.deliverableSubTypes = deliverableSubTypes;
@@ -2899,10 +2826,6 @@ public class DeliverableAction extends BaseAction {
 
   public void setDivisions(List<PartnerDivision> divisions) {
     this.divisions = divisions;
-  }
-
-  public void setExternalSourceAuthor(List<ExternalSourceAuthor> externalSourceAuthor) {
-    this.externalSourceAuthor = externalSourceAuthor;
   }
 
   public void setFocusLevels(List<RepIndGenderYouthFocusLevel> focusLevels) {
@@ -3180,7 +3103,6 @@ public class DeliverableAction extends BaseAction {
           .deleteProjectLp6ContributionDeliverable(projectLp6ContributionDeliverable.getId());
       }
     }
-
   }
 
   @Override
