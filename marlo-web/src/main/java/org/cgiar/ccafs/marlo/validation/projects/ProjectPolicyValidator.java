@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyGeographicScope;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicySubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
@@ -235,6 +236,20 @@ public class ProjectPolicyValidator extends BaseValidator {
       action.addMissingField("policy.subIdos");
       action.getInvalidFields().put("list-policy.subIdos",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
+    } else {
+      // Validate primary selection
+      int count = 0;
+      for (ProjectPolicySubIdo subido : projectPolicy.getSubIdos()) {
+        if (subido.getPrimary() != null && subido.getPrimary() == true) {
+          count++;
+        }
+      }
+      if (count == 0) {
+        action.addMessage(action.getText("subIdos"));
+        action.addMissingField("policy.subIdos");
+        action.getInvalidFields().put("list-policy.subIdos",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
+      }
     }
 
     // Validate Milestones
