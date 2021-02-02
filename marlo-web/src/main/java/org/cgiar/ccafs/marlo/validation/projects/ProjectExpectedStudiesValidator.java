@@ -195,11 +195,11 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
             }
           }
 
-          if (count == 0) {
-            action.addMessage(action.getText("subIdos"));
-            action.addMissingField("study.stratgicResultsLink.subIDOs");
-            action.getInvalidFields().put("list-expectedStudy.subIdos",
-              action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
+          if (count != 1) {
+            action.addMessage(action.getText("milestones"));
+            action.addMissingField("expectedStudy.milestones");
+            action.getInvalidFields().put("list-expectedStudy.milestones",
+              action.getText(InvalidFieldsMessages.WRONGVALUE, new String[] {"milestones"}));
           }
         }
       }
