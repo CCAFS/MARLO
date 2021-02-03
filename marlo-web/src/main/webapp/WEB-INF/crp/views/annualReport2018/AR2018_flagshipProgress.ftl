@@ -195,8 +195,12 @@
                               [/#if]                                              
                             </td>
                             <td>
-                              [#if (st.projectExpectedStudyInfo.status.name?has_content)!false]
-                                
+                              [#if (st.projectExpectedStudyFlagships?has_content)!false]                               
+                                 [#list st.projectExpectedStudyFlagships as fp]                                                                                                        
+                                       [#if (fp.crpProgram?has_content)!false]
+                                        ${fp.crpProgram.acronym}
+                                       [/#if]                                            
+                                 [/#list]                                                                  
                               [#else]
                                <i>([@s.text name="study.dialogMessage.notProvided" /])</i>
                               [/#if]                                              
