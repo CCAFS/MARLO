@@ -175,7 +175,9 @@
                             [#--if st_index == 0]
                             <th rowspan="${action.getDeliverablesSubTypes(mt.id).size()}" class="text-center"> ${mt.name} </th>
                             [/#if--]
-                            <td  >
+                            <td>
+                             (P${st.project.id})
+                              ${st.id} -
                               ${st.projectExpectedStudyInfo.title}
                             </td>
                             <td style="max-width: 90vw !important;">
