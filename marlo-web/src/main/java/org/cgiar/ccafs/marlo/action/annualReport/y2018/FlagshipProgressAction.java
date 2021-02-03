@@ -416,6 +416,15 @@ public class FlagshipProgressAction extends BaseAction {
         && s.getProjectExpectedStudyInfo(this.getActualPhase()).getHasCovidAnalysis())
       .collect(Collectors.toList());
 
+    for (ProjectExpectedStudy study : covidAnalysisStudies) {
+      if (study.getProjectExpectedStudyFlagships() != null) {
+        study.setFlagships(new ArrayList<>(study.getProjectExpectedStudyFlagships().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())
+            && o.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+          .collect(Collectors.toList())));
+      }
+    }
+
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), reportSynthesis.getId() + ""};
     this.setBasePermission(this.getText(Permission.REPORT_SYNTHESIS_FLAGSHIP_PROGRESS_BASE_PERMISSION, params));
