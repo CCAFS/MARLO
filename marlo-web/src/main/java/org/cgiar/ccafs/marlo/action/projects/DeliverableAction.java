@@ -2431,6 +2431,8 @@ public class DeliverableAction extends BaseAction {
 
       if (deliverable.getDissemination().getHasDOI() != null && deliverable.getDissemination().getHasDOI() == true) {
         dissemination.setHasDOI(true);
+      } else {
+        dissemination.setHasDOI(false);
       }
 
       if (deliverable.getDissemination().getArticleUrl() != null

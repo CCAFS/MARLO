@@ -793,14 +793,18 @@ public class DeliverableValidator extends BaseValidator {
         && deliverablePublicationMetadata.getId().intValue() != -1) {
 
         if (action.hasDeliverableRule(deliverableInfo, APConstants.DELIVERABLE_RULE_JORNAL_ARTICLES)) {
-          // Validation of Volume or Issue or Pages
-          if (!this.isValidString(deliverablePublicationMetadata.getVolume())
-            && !this.isValidString(deliverablePublicationMetadata.getIssue())
-            && !this.isValidString(deliverablePublicationMetadata.getPages())) {
+          // Validation Volume, Issue and Pages
+          if (!this.isValidString(deliverablePublicationMetadata.getVolume())) {
             action.addMessage(action.getText("project.deliverable.publication.v.volume"));
             action.getInvalidFields().put("input-deliverable.publication.volume", InvalidFieldsMessages.EMPTYFIELD);
+          }
+
+          if (!this.isValidString(deliverablePublicationMetadata.getIssue())) {
             action.addMessage(action.getText("project.deliverable.publication.v.issue"));
             action.getInvalidFields().put("input-deliverable.publication.issue", InvalidFieldsMessages.EMPTYFIELD);
+          }
+
+          if (!this.isValidString(deliverablePublicationMetadata.getPages())) {
             action.addMessage(action.getText("project.deliverable.publication.v.pages"));
             action.getInvalidFields().put("input-deliverable.publication.pages", InvalidFieldsMessages.EMPTYFIELD);
           }
