@@ -216,6 +216,8 @@ function updateReadOnly() {
   $('#WOSModalBtn').hide("slow"); 
   let channel = $(".disseminationChannel").val();
   if ($('.deliverableDisseminationUrl ').prop('readonly')) {
+    $('.isOtherUrlTohide').show("slow"); 
+    console.log("solo lectura");
     $('#output-dissemination').empty().append("Found metadata successfully in " + channel)
     $('#output-dissemination').show();  
     // $('#WOSModalBtn').show();  
@@ -223,20 +225,24 @@ function updateReadOnly() {
       getWOSInfo();
     }
   } else {
+    console.log("editable");
+   
     $('#output-dissemination').hide("slow");  
     
     if ($('.disseminationChannel').val() != 'other') {
       $('#output-wos').hide("slow");  
       $('#WOSModalBtn').hide("slow");  
-      
       $(".ifIsReadOnly .metadataElement-handle .input input").prop('readonly', true);
       $(".ifIsReadOnly .metadataElement-doi .input input").prop('readonly', true);
       $('#WOSSyncBtn').hide("slow"); 
+      $('.isOtherUrlTohide').hide("slow"); 
+      hideOrShowCheckBoxIsOtherUrl(false);
     } else {
       $('#WOSSyncBtn').show('slow'); 
-      
       $(".ifIsReadOnly .metadataElement-handle .input input").prop('readonly', false);
       $(".ifIsReadOnly .metadataElement-doi .input input").prop('readonly', false);
+      // $('.isOtherUrlTohide').show("slow"); 
+      hideOrShowCheckBoxIsOtherUrl(true);
     }
 
   }
@@ -258,6 +264,7 @@ function updateReadOnly() {
   $('#doi-bridge').parents('.input').find('img').attr("title", $('.metadataElement-doi').find('img').prop("title"));
   //function of the deliverableinfo.js
   checkDOI();
+  activeByNoDOIProvidedCheckbox();
 }
 
 function addDisseminationEvents() {
