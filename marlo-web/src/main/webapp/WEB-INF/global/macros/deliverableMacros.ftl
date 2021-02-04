@@ -392,11 +392,13 @@
     [#assign isOtherUrl = (deliverable.dissemination.hasDOI)!false /]
     <div class="form-group row " style="margin-top:5px; display:block">
       [#-- Alternative url Check --]
-      <div class="col-md-6 isOtherUrl">
+      <div class="col-md-12" style="display: none;">
+        [@customForm.input name="deliverable.dissemination.hasDOI" type="text" i18nkey="aux checkbox" className="isOtherUrlFiel"  placeholder="" required=false editable=editable /]
+       </div>
+      <div class="col-md-6 isOtherUrl isOtherUrlTohide">
         <br />
-        [@customForm.checkmark id="" name="deliverable.dissemination.hasDOI" i18nkey="project.deliverable.hasDOI" help="" paramText="" value="true" helpIcon=true disabled=false editable=editable checked=(deliverable.dissemination.hasDOI)!false cssClass="isOtherUrl" cssClassLabel=""  /]
+        [@customForm.checkmark id="" name="" i18nkey="project.deliverable.hasDOI" help="" paramText="" value="true" helpIcon=true disabled=false editable=editable checked=(deliverable.dissemination.hasDOI)!false cssClass="isOtherUrl" cssClassLabel=""  /]
       </div>
-      
       [#-- Alternative url TextField --]
       <div class="col-md-6 other-url" style="display:${(isOtherUrl)?string('block','none')}">
         [@customForm.input name="deliverable.dissemination.articleUrl" type="text" i18nkey="project.deliverable.articleURL"  placeholder="" required=true editable=editable /]
