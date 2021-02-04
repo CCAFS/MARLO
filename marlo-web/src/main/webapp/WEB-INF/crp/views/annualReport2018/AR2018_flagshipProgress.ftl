@@ -195,8 +195,8 @@
                               [/#if]                                              
                             </td>
                             <td>
-                              [#if (st.projectExpectedStudyFlagships?has_content)!false]                               
-                                 [#list st.projectExpectedStudyFlagships as fp]                                                                                                        
+                              [#if (st.flagships?has_content)!false]                               
+                                 [#list st.flagships as fp]                                                                                                        
                                        [#if (fp.crpProgram?has_content)!false]
                                         ${fp.crpProgram.acronym}
                                        [/#if]                                            
