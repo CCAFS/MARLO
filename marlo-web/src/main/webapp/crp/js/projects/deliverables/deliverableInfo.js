@@ -74,7 +74,10 @@ function init() {
   $('#doi-bridge').keydown(checkDOI);
   $('#doi-bridge').change(checkDOI);
   $('#doi-bridge').bind("paste",checkDOI);
-  document.getElementById("doi-bridge").addEventListener("paste", checkDOI);
+  if ($('#doi-bridge')[0]) {
+    document.getElementById("doi-bridge").addEventListener("paste", checkDOI);
+  }
+  
 
   $('input.isOtherUrl').on("click", activeByNoDOIProvidedCheckbox);
 
