@@ -28,7 +28,7 @@ function checkDOI() {
       }
     }
 
-    var result = /^10.\d{4,9}[-._;()/:A-Z0-9]+$/i.test($('#doi-bridge').val());
+    var result = /10.\d{4,9}[-._;()/:A-Z0-9]+$/i.test($('#doi-bridge').val());
    
       if ( result  ) {
         $('#doi-bridge').css("border", "1px solid #ccc");
