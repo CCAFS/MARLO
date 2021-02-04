@@ -175,7 +175,9 @@
                             [#--if st_index == 0]
                             <th rowspan="${action.getDeliverablesSubTypes(mt.id).size()}" class="text-center"> ${mt.name} </th>
                             [/#if--]
-                            <td  >
+                            <td>
+                             (P${st.project.id})
+                              ${st.id} -
                               ${st.projectExpectedStudyInfo.title}
                             </td>
                             <td style="max-width: 90vw !important;">
@@ -193,8 +195,12 @@
                               [/#if]                                              
                             </td>
                             <td>
-                              [#if (st.projectExpectedStudyInfo.status.name?has_content)!false]
-                                
+                              [#if (st.flagships?has_content)!false]                               
+                                 [#list st.flagships as fp]                                                                                                        
+                                       [#if (fp.crpProgram?has_content)!false]
+                                        ${fp.crpProgram.acronym}
+                                       [/#if]                                            
+                                 [/#list]                                                                  
                               [#else]
                                <i>([@s.text name="study.dialogMessage.notProvided" /])</i>
                               [/#if]                                              
