@@ -34,8 +34,8 @@ public abstract class StatusPlannedMilestonesMapper {
 
   @AfterMapping
   protected void removeOtherReasonIfOther(@MappingTarget StatusPlannedMilestonesDTO statusPlannedMilestonesDTO) {
-    if (statusPlannedMilestonesDTO.getReason() == null
-      || (statusPlannedMilestonesDTO.getReason() != null && statusPlannedMilestonesDTO.getReason().getId() != 7)) {
+    if (statusPlannedMilestonesDTO.getReason() == null || (statusPlannedMilestonesDTO.getReason() != null
+      && statusPlannedMilestonesDTO.getReason().getId().longValue() != 7)) {
       statusPlannedMilestonesDTO.setOtherReason(null);
     }
   }
