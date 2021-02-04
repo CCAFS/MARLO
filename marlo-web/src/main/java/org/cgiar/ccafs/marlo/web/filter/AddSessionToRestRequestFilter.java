@@ -227,9 +227,9 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
       && !globalUnitAcronym.equals("swagger-ui.html") && !globalUnitAcronym.equals("webjars")
       && !globalUnitAcronym.equals("swagger-resources") && !globalUnitAcronym.equals("configuration")
       && !globalUnitAcronym.equals("index.html") && !globalUnitAcronym.equals("home.html")
-      && !globalUnitAcronym.equals("api.html") && !globalUnitAcronym.contains(".js")
-      && !globalUnitAcronym.contains(".css") && !globalUnitAcronym.contains(".jpg")
-      && !globalUnitAcronym.contains(".png")) {
+      && !globalUnitAcronym.equals("api.html") && !globalUnitAcronym.equals("generalListReference.html")
+      && !globalUnitAcronym.contains(".js") && !globalUnitAcronym.contains(".css")
+      && !globalUnitAcronym.contains(".jpg") && !globalUnitAcronym.contains(".png")) {
       this.addCrpToSession(globalUnitAcronym);
       this.addMonitoringInfo(serviceType, restApiString, request, response);
     }

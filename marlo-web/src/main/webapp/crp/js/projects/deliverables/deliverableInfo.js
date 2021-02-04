@@ -28,19 +28,26 @@ function checkDOI() {
       }
     }
 
-    var result = /^10.\d{4,9}[-._;()/:A-Z0-9]+$/i.test($('#doi-bridge').val());
+    var result = /10.\d{4,9}[-._;()/:A-Z0-9]+$/i.test($('#doi-bridge').val());
    
-      if ( result ) {
+      if ( result  ) {
         $('#doi-bridge').css("border", "1px solid #ccc");
         $('.invalidDOI').hide('slow');
         $('.validDOI').show('slow');
-      } else {
+      }
+      if(!result && $('#doi-bridge').val())
+      {
         $('#doi-bridge').css("border", "red solid 1px");
         $('.invalidDOI').show('slow');
         $('.validDOI').hide('slow');
         
       }
-    
+      if ( !$('#doi-bridge').val()  ) {
+        $('#doi-bridge').css("border", "1px solid #ccc");
+        $('.invalidDOI').hide('slow');
+        $('.validDOI').hide('slow');
+      
+      }
 
   }, 50);
 
