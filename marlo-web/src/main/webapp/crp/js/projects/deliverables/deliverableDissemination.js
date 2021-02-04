@@ -36,7 +36,11 @@ function init() {
   // if ($('.deliverableDisseminationUrl ').prop('readonly')) {
   //   getWOSInfo();
   // }
-  
+  if ($('.isOtherUrlFiel').val() == 'true') {
+    $('.conditionalRequire ').find('.requiredTag').hide('slow');
+  }else{
+    $('.conditionalRequire ').find('.requiredTag').show('slow');
+  }
 }
 
 function getWOSInfo(){
@@ -557,14 +561,16 @@ function displayExtraFieldUrl(display, showRequiredTag) {
     //console.log($('.conditionalRequire .requiredTag'));
   }
 
-  if (showRequiredTag) {
-    $('.conditionalRequire .requiredTag').slideDown();
-    // $('.isOtherUrlContentBox').css("display","block");
-  } else {
-    //$('.isOtherUrlContentBox').css("display","none");
-    $('.conditionalRequire .requiredTag').slideUp();
-    //console.log($('.conditionalRequire .requiredTag'));
-  }
+  // if (showRequiredTag) {
+  //   $('.conditionalRequire .requiredTag').slideDown();
+  //   console.log("slidedown");
+  //   // $('.isOtherUrlContentBox').css("display","block");
+  // } else {
+  //   //$('.isOtherUrlContentBox').css("display","none");
+  //   $('.conditionalRequire .requiredTag').slideUp();
+  //   //console.log($('.conditionalRequire .requiredTag'));
+  //   console.log("slideUp");
+  // }
 }
 
 function addFlagship(idCRPProgram, text) {

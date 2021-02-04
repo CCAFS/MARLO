@@ -13,18 +13,12 @@ function hideOrShowCheckBoxIsOtherUrl(value){
 }
 function checkDOI() { 
   setTimeout(() => {
-    // activeByNoDOIProvidedCheckbox();
-    // console.log("DOI; value "+$('#doi-bridge').val());
     if ($('.deliverableDisseminationUrl ').prop('readonly') || $('.disseminationChannel').val() == 'other' ) {
       if ($('#doi-bridge').val()) {
-        console.log("*** hideOrShowCheckBoxIsOtherUrl(false) ***");
         $('.isOtherUrlTohide').hide('slow');
-  
-        hideOrShowCheckBoxIsOtherUrl(false);
-        
+        hideOrShowCheckBoxIsOtherUrl(false);      
       }else{
         hideOrShowCheckBoxIsOtherUrl(true);
-        console.log("*** hideOrShowCheckBoxIsOtherUrl(true) ***");
       }
     }
 
@@ -83,10 +77,6 @@ function init() {
   document.getElementById("doi-bridge").addEventListener("paste", checkDOI);
 
   $('input.isOtherUrl').on("click", activeByNoDOIProvidedCheckbox);
-
-
- 
-  // $('#doi-bridge').addEventListener("paste",checkDOI);
 
   // justificationByStatus($statuses.val());
   // validateCurrentDate();
@@ -234,12 +224,14 @@ function activeByNoDOIProvidedCheckbox(){
     // console.log($(this).val());
     if ($('input.isOtherUrl').is(":checked")) {
       console.log("checked");
+      $('.doi-bridge').find('.requiredTag').hide(); 
       // $('.computerLicense input').prop("checked", true);
       // $(this).val(true)
       // $("#doi-bridge").prop('readonly', true);
       $('.isOtherUrlFiel').val(true);
     }else{
       console.log("No checked");
+      $('.doi-bridge').find('.requiredTag').hide(); 
       // $('.computerLicense input').prop("checked", false);
       // $(this).val(false)
       $('.isOtherUrlFiel').val(false);
