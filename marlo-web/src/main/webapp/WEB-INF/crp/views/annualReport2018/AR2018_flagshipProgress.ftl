@@ -94,8 +94,141 @@
                 [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableflagshipSynthesis" list=flagshipsReportSynthesisFlagshipProgress columns=["progressByFlagships", "detailedAnnex"] showTitle=false allInOne=true /]
               </div>
             [/#if]
+           
+            <div class="form-group">
+             </br>
+              [#-- 1.2.2b Relevance to Covid-19 --]
+              [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+              [@customForm.textArea name="${customName}.relevanceCovid" i18nkey="${customLabel}.relevanceCovid" help="${customLabel}.relevanceCovid.help" className="limitWords-300" helpIcon=false required=true editable=editable allowTextEditor=false /]
+             </br>
+            </div>
             
             
+            
+            
+            [#-- test --]
+            
+            [#-- Evidences table with types and their descriptions --]
+              <div class="form-group evidenceTypeMessage">
+                <div id="dialog" title="Evidence types" style="display: none">
+                  <table id="evidenceTypes" style="height:700px; width:950px;">
+                    <th> [@s.text name="study.ARdialogMessage.part1" /] </th>
+                    <th> [@s.text name="study.ARdialogMessage.part2" /] </th>
+                    <th> [@s.text name="study.ARdialogMessage.part3" /] </th>
+                    <th>  [@s.text name="study.ARdialogMessage.part4"/] </th>
+                    [#if covidAnalysisStudies?has_content]
+                      [#list covidAnalysisStudies as st]
+                        <tr>
+                          [#--if st_index == 0]
+                          <th rowspan="${action.getDeliverablesSubTypes(mt.id).size()}" class="text-center"> ${mt.name} </th>
+                          [/#if--]
+                          <td> 
+                            ${st.projectExpectedStudyInfo.title} 
+                          </td>
+                          <td>
+                          [#if (st.projectExpectedStudyInfo.studyType.name?has_content)!false]
+                            ${st.projectExpectedStudyInfo.studyType.name}
+                          [#else]
+                            <i>([@s.text name="study.dialogMessage.notProvided" /])</i>
+                          [/#if]
+                          </td>
+                          <td>
+                          [#if (st.projectExpectedStudyInfo.status.name?has_content)!false]
+                             ${st.projectExpectedStudyInfo.status.name}
+                          [/#if]
+                          </td>
+                          <td>
+                          [#if (st.projectExpectedStudyInfo.status.name?has_content)!false]
+                            
+                          [/#if]
+                          </td>
+                        </tr>
+                      [/#list]
+                    [/#if]  
+                  </table>
+                </div> <!-- End dialog-->
+                      
+                  <div class="modal fade" id="evidenceModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-scrollable" style=" width:80%" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <!-- <h5 class="modal-title" id="exampleModalLabel">Modal title</h5> -->
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        
+                        <table id="evidenceTypes" class="table ">
+                          <thead style="background-color: #0b7ba6; font-weight: 500; color: white;">
+                            <tr>
+                              <th> [@s.text name="study.ARdialogMessage.part1" /]</th>
+                              <th > [@s.text name="study.ARdialogMessage.part2"/]</th>
+                              <th> [@s.text name="study.ARdialogMessage.part3" /]</th>
+                              <th> [@s.text name="study.ARdialogMessage.part4" /]</th>
+                            </tr>
+                          </thead>
+                
+                          [#if covidAnalysisStudies?has_content]
+                          [#list covidAnalysisStudies as st]
+                          <tr>
+                            [#--if st_index == 0]
+                            <th rowspan="${action.getDeliverablesSubTypes(mt.id).size()}" class="text-center"> ${mt.name} </th>
+                            [/#if--]
+                            <td>
+                             (P${st.project.id})
+                              ${st.id} -
+                              ${st.projectExpectedStudyInfo.title}
+                            </td>
+                            <td style="max-width: 90vw !important;">
+                            [#if (st.projectExpectedStudyInfo.studyType.name?has_content)!false]
+                              ${st.projectExpectedStudyInfo.studyType.name}
+                            [#else]
+                              <i>([@s.text name="study.dialogMessage.notProvided" /])</i>
+                            [/#if]
+                            </td>
+                            <td>
+                              [#if (st.projectExpectedStudyInfo.status.name?has_content)!false]
+                                ${st.projectExpectedStudyInfo.status.name}
+                              [#else]
+                               <i>([@s.text name="study.dialogMessage.notProvided" /])</i>
+                              [/#if]                                              
+                            </td>
+                            <td>
+                              [#if (st.flagships?has_content)!false]                               
+                                 [#list st.flagships as fp]                                                                                                        
+                                       [#if (fp.crpProgram?has_content)!false]
+                                        ${fp.crpProgram.acronym}
+                                       [/#if]                                            
+                                 [/#list]                                                                  
+                              [#else]
+                               <i>([@s.text name="study.dialogMessage.notProvided" /])</i>
+                              [/#if]                                              
+                            </td>
+                          </tr>
+                          [/#list]
+                          [/#if]
+                        </table>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                       
+                <div class="note left">
+                  <div id="popup" class="helpMessage3">
+                    <p><a style="cursor: pointer;" data-toggle="modal" data-target="#evidenceModal" > <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="annualReport2018.flagshipProgress.covidAnalysis" /]</a></p>
+                  </div>
+                </div>
+                <div class="clearfix"></div>
+              </div>
+        
+            </div>
+            [#-- end test --]
+            
+
             [#-- 1.2.3 Variance from Planned Program for this year --]
             <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="${customLabel}.variance" /]</h4>
             [@customForm.helpLabel name="${customLabel}.variance.help" showIcon=false editable=editable/]

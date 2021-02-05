@@ -182,7 +182,9 @@
           [/#if]
           [#if !expanded]
             <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.missingFields" /] </th>
-            <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
+            [#if PMU]
+              <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
+            [/#if]
           [/#if]
         </tr>
       </thead>
@@ -266,18 +268,25 @@
               </td>
             [/#if]
             [#if !expanded]
+              [#-- 11. Innovation Completion--]
               <td class="text-center">
-              [#assign isInnovationComplete = action.isInnovationComplete(item.id, actualPhase.id)!false /]
-              [#if  isInnovationComplete]
-                <span class="glyphicon glyphicon-ok-sign mf-icon check" title="Complete"></span> 
+                [#assign isInnovationComplete = action.isInnovationComplete(item.id, actualPhase.id)!false /]
+                [#if  isInnovationComplete]
+                  <span class="glyphicon glyphicon-ok-sign mf-icon check" title="Complete"></span> 
                 [#else]
                   <span class="glyphicon glyphicon-exclamation-sign mf-icon" title="Incomplete"></span> 
-              [/#if]   
+                [/#if]
               </td>
-              <td class="text-center">
-              [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.innovationsIds?seq_contains(item.id))!true) /]
-              [@customForm.checkmark id="innovation-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.innovationsValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/] 
-            </td>
+              [#-- 12. Included in AR? --]
+              [#if PMU]
+                <td class="text-center">
+                  [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.innovationsIds?seq_contains(item.id))!true) /]
+                  [#local canBeAddedToAR = ((action.canBeAddedToAR(item.id, actualPhase.id))!false)]
+                  <div data-toggle="tooltip" [#if !canBeAddedToAR]title="[@s.text name="annualReport2018.innovations.table4.cannotBeAddedToAR" /]"[/#if]>
+                    [@customForm.checkmark id="innovation-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.innovationsValue" value="${(item.id)!''}" checked=isChecked editable=(editable&&canBeAddedToAR) centered=true/]
+                  </div>
+                </td>
+              [/#if]
             [/#if]
           </tr>
           [/#list]

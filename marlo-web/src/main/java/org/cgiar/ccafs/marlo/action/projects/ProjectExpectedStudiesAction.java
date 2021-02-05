@@ -22,7 +22,6 @@ import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.EvidenceTagManager;
 import org.cgiar.ccafs.marlo.data.manager.ExpectedStudyProjectManager;
-import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.GeneralStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
@@ -149,7 +148,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private InstitutionManager institutionManager;
   private LocElementManager locElementManager;
   private StudyTypeManager studyTypeManager;
-  private FileDBManager fileDBManager;
   private RepIndGeographicScopeManager geographicScopeManager;
   private RepIndRegionManager repIndRegionManager;
   private RepIndOrganizationTypeManager organizationTypeManager;
@@ -231,7 +229,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     ExpectedStudyProjectManager expectedStudyProjectManager,
     ProjectExpectedStudiesValidator projectExpectedStudiesValidator, PhaseManager phaseManager,
     CrpProgramManager crpProgramManager, InstitutionManager institutionManager, LocElementManager locElementManager,
-    StudyTypeManager studyTypeManager, FileDBManager fileDBManager, RepIndGeographicScopeManager geographicScopeManager,
+    StudyTypeManager studyTypeManager, RepIndGeographicScopeManager geographicScopeManager,
     RepIndRegionManager repIndRegionManager, RepIndOrganizationTypeManager organizationTypeManager,
     RepIndGenderYouthFocusLevelManager focusLevelManager, RepIndPolicyInvestimentTypeManager investimentTypeManager,
     RepIndStageProcessManager stageProcessManager, RepIndStageStudyManager stageStudyManager,
@@ -266,7 +264,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.institutionManager = institutionManager;
     this.locElementManager = locElementManager;
     this.studyTypeManager = studyTypeManager;
-    this.fileDBManager = fileDBManager;
     this.geographicScopeManager = geographicScopeManager;
     this.repIndRegionManager = repIndRegionManager;
     this.organizationTypeManager = organizationTypeManager;
@@ -553,12 +550,15 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             .getGeneralStatusById(this.expectedStudy.getProjectExpectedStudyInfo().getStatus().getId()));
         }
 
+        // REMOVED FOR AR 2020
         // Load evidence Tags
-        if (this.expectedStudy.getProjectExpectedStudyInfo().getEvidenceTag() != null
-          && this.expectedStudy.getProjectExpectedStudyInfo().getEvidenceTag().getId() != null) {
-          this.expectedStudy.getProjectExpectedStudyInfo().setEvidenceTag(this.evidenceTagManager
-            .getEvidenceTagById(this.expectedStudy.getProjectExpectedStudyInfo().getEvidenceTag().getId()));
-        }
+        /*
+         * if (this.expectedStudy.getProjectExpectedStudyInfo().getEvidenceTag() != null
+         * && this.expectedStudy.getProjectExpectedStudyInfo().getEvidenceTag().getId() != null) {
+         * this.expectedStudy.getProjectExpectedStudyInfo().setEvidenceTag(this.evidenceTagManager
+         * .getEvidenceTagById(this.expectedStudy.getProjectExpectedStudyInfo().getEvidenceTag().getId()));
+         * }
+         */
 
         // Load new Expected Year
         if (this.expectedStudy.getProjectExpectedStudyInfo().getStatus() != null
@@ -958,6 +958,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.stageProcesses = this.stageProcessManager.findAll();
       this.stageStudies = this.stageStudyManager.findAll();
       this.studyTypes = this.studyTypeManager.findAll();
+      if (this.expectedStudy.getProjectExpectedStudyInfo() != null
+        && this.expectedStudy.getProjectExpectedStudyInfo().getId() != null
+        && this.expectedStudy.getProjectExpectedStudyInfo().getId().longValue() != 1) {
+        this.studyTypes.removeIf(st -> st.getId() == 1);
+      }
       this.subIdos = this.srfSubIdoManager.findAll();
       this.targets = this.srfSloIndicatorManager.findAll();
 
@@ -1397,6 +1402,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           .setReferencesFile(this.expectedStudy.getProjectExpectedStudyInfo().getReferencesFile());
       }
 
+      // Save COVID Analysis
+      if (this.expectedStudy.getProjectExpectedStudyInfo().getHasCovidAnalysis() == null) {
+        this.expectedStudy.getProjectExpectedStudyInfo().setHasCovidAnalysis(false);
+      }
+
       // Setup new expected year
       if (this.expectedStudy.getProjectExpectedStudyInfo().getStatus() != null
         && this.expectedStudy.getProjectExpectedStudyInfo().getStatus().getId() != null
@@ -1478,12 +1488,20 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
       }
 
-      if (this.expectedStudy.getProjectExpectedStudyInfo().getEvidenceTag() != null) {
-        if (this.expectedStudy.getProjectExpectedStudyInfo().getEvidenceTag().getId() == -1) {
-          this.expectedStudy.getProjectExpectedStudyInfo().setEvidenceTag(null);
-        }
+      // REMOVED FOR AR 2020
+      /*
+       * if (this.expectedStudy.getProjectExpectedStudyInfo().getEvidenceTag() != null) {
+       * if (this.expectedStudy.getProjectExpectedStudyInfo().getEvidenceTag().getId() == -1) {
+       * this.expectedStudy.getProjectExpectedStudyInfo().setEvidenceTag(null);
+       * }
+       * }
+       * // End
+       */
+      // FOR AR 2020 and onwards: the OICRs will ALWAYS be public
+
+      if (this.expectedStudy.getProjectExpectedStudyInfo().getIsPublic() == null) {
+        this.expectedStudy.getProjectExpectedStudyInfo().setIsPublic(true);
       }
-      // End
 
       this.projectExpectedStudyInfoManager
         .saveProjectExpectedStudyInfo(this.expectedStudy.getProjectExpectedStudyInfo());
@@ -1963,6 +1981,16 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           this.projectExpectedStudyPolicyManager.deleteProjectExpectedStudyPolicy(studyPolicy.getId());
         }
       }
+
+
+      // Delete prev studies policies if the question is not
+      if (expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()) != null
+        && expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getIsContribution() != null
+        && expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getIsContribution() == false) {
+        for (ProjectExpectedStudyPolicy studyPolicy : policyPrev) {
+          this.projectExpectedStudyPolicyManager.deleteProjectExpectedStudyPolicy(studyPolicy.getId());
+        }
+      }
     }
 
     // Save form Information
@@ -2169,6 +2197,19 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       for (ProjectExpectedStudySrfTarget studytarget : targetPrev) {
         if (this.expectedStudy.getSrfTargets() == null || !this.expectedStudy.getSrfTargets().contains(studytarget)) {
           this.projectExpectedStudySrfTargetManager.deleteProjectExpectedStudySrfTarget(studytarget.getId());
+        }
+      }
+
+      // Delete previous srf targets if the answer of the question is not
+      if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()) != null
+        && projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getIsSrfTarget() != null
+        && (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getIsSrfTarget()
+          .equals("targetsOptionNo")
+          || projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getIsSrfTarget()
+            .equals("targetsOptionTooEarlyToSay"))) {
+        for (ProjectExpectedStudySrfTarget studytarget : targetPrev) {
+          this.projectExpectedStudySrfTargetManager.deleteProjectExpectedStudySrfTarget(studytarget.getId());
+
         }
       }
     }

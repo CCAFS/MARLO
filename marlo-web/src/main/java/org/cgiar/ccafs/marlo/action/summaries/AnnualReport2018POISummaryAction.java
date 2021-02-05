@@ -1349,8 +1349,12 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         this.getText("summaries.annualReport2018.table3Title1", new String[] {String.valueOf(this.getSelectedYear())}),
         ParagraphAlignment.LEFT, false, true),
       new POIField(this.getText("summaries.annualReport2018.table3Title2a"), ParagraphAlignment.LEFT, false),
-      new POIField(this.getText("summaries.annualReport2018.table3Title2"), ParagraphAlignment.LEFT, false),
-      new POIField(this.getText("summaries.annualReport2018.table3Title3"), ParagraphAlignment.LEFT, false)};
+      new POIField(this.getText("summaries.annualReport2018.table3Title2"), ParagraphAlignment.LEFT,
+        false)/*
+               * ,
+               * //REMOVED FOR AR 2020
+               * new POIField(this.getText("summaries.annualReport2018.table3Title3"), ParagraphAlignment.LEFT, false)
+               */};
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
 
@@ -1371,10 +1375,13 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           && projectExpectStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getName() != null) {
           maturity = projectExpectStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getName();
         }
-        if (projectExpectStudy.getProjectExpectedStudyInfo().getEvidenceTag() != null
-          && projectExpectStudy.getProjectExpectedStudyInfo().getEvidenceTag().getName() != null) {
-          indicator = projectExpectStudy.getProjectExpectedStudyInfo().getEvidenceTag().getName();
-        }
+        // REMOVED FOR AR 2020
+        /*
+         * if (projectExpectStudy.getProjectExpectedStudyInfo().getEvidenceTag() != null
+         * && projectExpectStudy.getProjectExpectedStudyInfo().getEvidenceTag().getName() != null) {
+         * indicator = projectExpectStudy.getProjectExpectedStudyInfo().getEvidenceTag().getName();
+         * }
+         */
         if (projectExpectStudy.getProjectExpectedStudyInfo().getIsPublic() != null
           && projectExpectStudy.getProjectExpectedStudyInfo().getIsPublic() == true) {
           linkOICR = this.getBaseUrl() + "/projects/" + this.getCrpSession() + "/studySummary.do?studyID="
@@ -1388,9 +1395,12 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         + this.getSelectedPhase().getYear();
 
       POIField[] sData = {new POIField(title, ParagraphAlignment.LEFT, false),
-        new POIField("Link", ParagraphAlignment.CENTER, false, "000000", url),
-        new POIField(maturity, ParagraphAlignment.CENTER, false),
-        new POIField(indicator, ParagraphAlignment.LEFT, false)};
+        new POIField("Link", ParagraphAlignment.CENTER, false, "000000", url), new POIField(maturity,
+          ParagraphAlignment.CENTER, false)/*
+                                            * ,
+                                            * //REMOVED FOR AR 2020
+                                            * new POIField(indicator, ParagraphAlignment.LEFT, false)
+                                            */};
       data = Arrays.asList(sData);
       datas.add(data);
     }
@@ -1784,19 +1794,21 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
     String trainees = "";
-    int female = 0, male = 0;
+    String female = "0", male = "0";
 
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 4; i++) {
       switch (i) {
         case 0:
           trainees = this.getText("summaries.annualReport2018.table7.field1");
           if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisCrossCuttingDimension() != null) {
             if (reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getTraineesShortTermFemale() != null) {
               female =
-                reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getTraineesShortTermFemale().intValue();
+                reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getTraineesShortTermFemale().intValue()
+                  + "";
             }
             if (reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getTraineesShortTermMale() != null) {
-              male = reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getTraineesShortTermMale().intValue();
+              male =
+                reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getTraineesShortTermMale().intValue() + "";
             }
           }
           break;
@@ -1805,10 +1817,12 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisCrossCuttingDimension() != null) {
             if (reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getTraineesLongTermFemale() != null) {
               female =
-                reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getTraineesLongTermFemale().intValue();
+                reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getTraineesLongTermFemale().intValue()
+                  + "";
             }
             if (reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getTraineesLongTermMale() != null) {
-              male = reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getTraineesLongTermMale().intValue();
+              male =
+                reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getTraineesLongTermMale().intValue() + "";
             }
           }
           break;
@@ -1816,13 +1830,22 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           trainees = this.getText("summaries.annualReport2018.table7.field3");
           if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisCrossCuttingDimension() != null) {
             if (reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getPhdFemale() != null) {
-              female = reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getPhdFemale().intValue();
+              female = reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getPhdFemale().intValue() + "";
             }
             if (reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getPhdMale() != null) {
-              male = reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getPhdMale().intValue();
+              male = reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getPhdMale().intValue() + "";
             }
           }
           break;
+        case 3:
+          trainees = this.getText("annualReport2018.ccDimensions.table7.evidenceLink");
+          male = "";
+          female = "";
+          if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisCrossCuttingDimension() != null
+            && reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getEvidenceLink() != null) {
+            male = reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getEvidenceLink();
+
+          }
       }
 
       POIField[] sData = {new POIField(trainees, ParagraphAlignment.LEFT, false),
@@ -2149,7 +2172,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         // Cover
         poiSummary.textLineBreak(document, 6);
         poiSummary.textHeadCoverTitleAR2018(document.createParagraph(),
-          this.getText("summaries.annualReportCRP2019.mainTitle"));
+          this.getSelectedYear() + " " + this.getText("summaries.annualReportCRP.mainTitle"));
         document.createParagraph().setPageBreak(true);
 
         // Table of contents
