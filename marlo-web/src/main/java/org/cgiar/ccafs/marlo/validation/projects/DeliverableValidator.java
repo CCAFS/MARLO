@@ -70,6 +70,8 @@ public class DeliverableValidator extends BaseValidator {
   private CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager;
   private RepIndTypeActivityManager repIndTypeActivityManager;
 
+  Boolean doesNotHaveDOI;
+
   @Inject
   public DeliverableValidator(GlobalUnitManager crpManager, ProjectManager projectManager,
     ProjectPartnerPersonManager projectPartnerPersonManager,
@@ -240,10 +242,19 @@ public class DeliverableValidator extends BaseValidator {
         }
 
         if (action.hasSpecificities(APConstants.CRP_HAS_DISEMINATION)) {
+          boolean isPRP = false;
+          // type 63 = Peer-reviewed publication (PRP). doi should only be mandatory for PRPs
+          if (action.getActualPhase() != null && deliverable.getDeliverableInfo(action.getActualPhase()) != null
+            && deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType() != null
+            && deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId() != null
+            && deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId()
+              .longValue() == 63L) {
+            isPRP = true;
+          }
 
           // Deliverable Dissemination
           if (deliverable.getDissemination() != null) {
-            this.validateDissemination(deliverable.getDissemination(), saving, action);
+            this.validateDissemination(deliverable.getDissemination(), saving, action, isPRP);
           } else {
             action.addMessage(action.getText("project.deliverable.dissemination.v.dissemination"));
             action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.isOpenAccess",
@@ -252,16 +263,6 @@ public class DeliverableValidator extends BaseValidator {
 
           // Deliverable Meta-data Elements
           if (deliverable.getMetadataElements() != null) {
-            boolean isPRP = false;
-            // type 63 = Peer-reviewed publication (PRP). doi should only be mandatory for PRPs
-            if (action.getActualPhase() != null && deliverable.getDeliverableInfo(action.getActualPhase()) != null
-              && deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType() != null
-              && deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId() != null
-              && deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId()
-                .longValue() == 63L) {
-              isPRP = true;
-            }
-
             this.validateMetadata(deliverable.getMetadataElements(), action, isPRP);
           } else {
             action.addMessage(action.getText("project.deliverable.v.metadata"));
@@ -624,7 +625,8 @@ public class DeliverableValidator extends BaseValidator {
   }
 
 
-  public void validateDissemination(DeliverableDissemination dissemination, boolean saving, BaseAction action) {
+  public void validateDissemination(DeliverableDissemination dissemination, boolean saving, BaseAction action,
+    boolean isPRP) {
     /*
      * if (dissemination.getIsOpenAccess() != null) {
      * if (!dissemination.getIsOpenAccess().booleanValue()) {
@@ -667,6 +669,17 @@ public class DeliverableValidator extends BaseValidator {
      */
 
     if (dissemination.getAlreadyDisseminated() != null) {
+      this.doesNotHaveDOI = dissemination.getHasDOI();
+      if (isPRP) {
+        if (this.doesNotHaveDOI != null && this.doesNotHaveDOI.booleanValue() == true) {
+          if (!this.isValidString(dissemination.getArticleUrl())) {
+            action.addMessage(action.getText("deliverable.dissemination.articleUrl"));
+            action.getInvalidFields().put("input-deliverable.dissemination.articleUrl",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        }
+      }
+
       if (dissemination.getAlreadyDisseminated().booleanValue()) {
         if (dissemination.getDisseminationChannel() != null) {
           if (dissemination.getDisseminationChannel().equals("-1")) {
@@ -757,18 +770,22 @@ public class DeliverableValidator extends BaseValidator {
            * }
            */
           // DOI validation only mandatory for PRPs
-          if (isPRP && deliverableMetadataElement.getMetadataElement().getId() != null
-            && 36L == deliverableMetadataElement.getMetadataElement().getId()) {
-            if (deliverableMetadataElement.getElementValue() != null
-              && !deliverableMetadataElement.getElementValue().isEmpty()) {
-              String cleanDoi = DOIService.tryGetDoiName(deliverableMetadataElement.getElementValue());
-              if (cleanDoi.isEmpty()) {
-                action.addMessage(action.getText("metadata.doi"));
-                action.getInvalidFields().put("doi-bridge", InvalidFieldsMessages.EMPTYFIELD);
+          if (isPRP) {
+            if (this.doesNotHaveDOI == null || this.doesNotHaveDOI.booleanValue() == false) {
+              if (deliverableMetadataElement.getMetadataElement().getId() != null
+                && 36L == deliverableMetadataElement.getMetadataElement().getId()) {
+                if (deliverableMetadataElement.getElementValue() != null
+                  && !deliverableMetadataElement.getElementValue().isEmpty()) {
+                  String cleanDoi = DOIService.tryGetDoiName(deliverableMetadataElement.getElementValue());
+                  if (cleanDoi.isEmpty()) {
+                    action.addMessage(action.getText("metadata.doi"));
+                    action.getInvalidFields().put("doi-bridge", InvalidFieldsMessages.WRONGVALUE);
+                  }
+                } else {
+                  action.addMessage(action.getText("metadata.doi"));
+                  action.getInvalidFields().put("doi-bridge", InvalidFieldsMessages.EMPTYFIELD);
+                }
               }
-            } else {
-              action.addMessage(action.getText("metadata.doi"));
-              action.getInvalidFields().put("doi-bridge", InvalidFieldsMessages.EMPTYFIELD);
             }
           }
         }
@@ -781,8 +798,6 @@ public class DeliverableValidator extends BaseValidator {
      * InvalidFieldsMessages.EMPTYFIELD);
      * }
      */
-
-
   }
 
 

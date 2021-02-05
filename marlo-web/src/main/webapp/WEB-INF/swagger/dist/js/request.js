@@ -570,3 +570,39 @@ function testInstitution(params) {
 
 	});
 }
+
+function acronyms() {
+	$.ajax({
+		url: config.endpoint + '/acronyms',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"acronyms");
+			destroyTable("acronyms");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"acronyms");
+			console.log(data);
+			let nameColumns = ['Code', 'Acronym','Description']			
+
+			$.each(data, function (index, item) {				
+				$('#list-print-acronyms').append(
+					'<tr>' + '<td >' + item['code'] + '</td>' + '<td>'
+					+ item['acronym'] + '</td>'+ '<td>'
+					+ item['description'] + '</td>' + '</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("acronyms");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
