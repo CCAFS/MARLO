@@ -130,6 +130,16 @@ public class APConfig {
   @Value("${clarisa.summariesPDF}")
   private String CLARISA_SUMMARIES_PDF;
 
+  // Clarisa WOS service link
+  @Value("${clarisa.wos.link}")
+  private String CLARISA_WOS_LINK;
+
+  // Clarisa user for WOS synchronization
+  @Value("${clarisa.wos.user}")
+  private String CLARISA_WOS_USER;
+  @Value("${clarisa.wos.password}")
+  private String CLARISA_WOS_PASSWORD;
+
   public APConfig() {
   }
 
@@ -254,6 +264,45 @@ public class APConfig {
     }
 
     return CLARISA_PUBLIC_USER;
+  }
+
+  /**
+   * Get the Clarisa WOS service link
+   *
+   * @return a string with the WOS link
+   */
+  public String getClarisaWOSLink() {
+    if (CLARISA_WOS_LINK == null) {
+      LOG.error("there is not a Clarisa WOS service link configured.");
+      return null;
+    }
+    return CLARISA_WOS_LINK;
+  }
+
+  /**
+   * Get the Clarisa WOS password
+   *
+   * @return a string with the Clarisa WOS password
+   */
+  public String getClarisaWOSPassword() {
+    if (CLARISA_WOS_PASSWORD == null) {
+      LOG.error("there is not a Clarisa WOS password configured.");
+      return null;
+    }
+    return CLARISA_WOS_PASSWORD;
+  }
+
+  /**
+   * Get the Clarisa WOS user
+   *
+   * @return a string with the Clarisa WOS user
+   */
+  public String getClarisaWOSUser() {
+    if (CLARISA_WOS_USER == null) {
+      LOG.error("there is not a Clarisa WOS user configured.");
+      return null;
+    }
+    return CLARISA_WOS_USER;
   }
 
   /**

@@ -34,7 +34,6 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressOutcomeMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
-import org.cgiar.ccafs.marlo.data.manager.RestApiAuditlogManager;
 import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
@@ -51,7 +50,6 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcome;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestone;
-import org.cgiar.ccafs.marlo.data.model.RestApiAuditlog;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.NewCrosscuttingMarkersSynthesisDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewStatusPlannedMilestoneDTO;
@@ -61,18 +59,13 @@ import org.cgiar.ccafs.marlo.rest.mappers.StatusPlannedOutcomesMapper;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang.StringUtils;
 
 @Named
@@ -93,7 +86,6 @@ public class StatusPlannedMilestonesItem<T> {
   private CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager;
   private RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager;
   private RepIndMilestoneReasonManager repIndMilestoneReasonManager;
-  private RestApiAuditlogManager restApiAuditlogManager;
 
   @Inject
   public StatusPlannedMilestonesItem(GlobalUnitManager globalUnitManager, PhaseManager phaseManager,
@@ -106,8 +98,8 @@ public class StatusPlannedMilestonesItem<T> {
     LiaisonInstitutionManager liaisonInstitutionManager, GeneralStatusManager generalStatusManager,
     CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager,
     RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager,
-    RepIndMilestoneReasonManager repIndMilestoneReasonManager, StatusPlannedOutcomesMapper statusPlannedOutcomesMapper,
-    RestApiAuditlogManager restApiAuditlogManager) {
+    RepIndMilestoneReasonManager repIndMilestoneReasonManager,
+    StatusPlannedOutcomesMapper statusPlannedOutcomesMapper) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.crpProgramManager = crpProgramManager;
@@ -125,7 +117,17 @@ public class StatusPlannedMilestonesItem<T> {
     this.reportSynthesisFlagshipProgressCrossCuttingMarkerManager =
       reportSynthesisFlagshipProgressCrossCuttingMarkerManager;
     this.repIndMilestoneReasonManager = repIndMilestoneReasonManager;
-    this.restApiAuditlogManager = restApiAuditlogManager;
+  }
+
+  private int countWords(String string) {
+    int wordCount = 0;
+    string = StringUtils.stripToEmpty(string);
+    if (!string.isEmpty()) {
+      String[] words = StringUtils.split(string);
+      wordCount = words.length;
+    }
+
+    return wordCount;
   }
 
   public Long createStatusPlannedMilestone(NewStatusPlannedMilestoneDTO newStatusPlannedMilestoneDTO,
@@ -253,6 +255,11 @@ public class StatusPlannedMilestonesItem<T> {
         // repIndMilestoneReason = 7 Other)
       }
     }
+    // limit words validation
+    if (this.countWords(newStatusPlannedMilestoneDTO.getEvidence()) > 200) {
+      fieldErrors.add(new FieldErrorDTO("createStatusPlannedMilestone", "Evidence",
+        "Evidence field excedes the maximum number of words (200 words)"));
+    }
 
     if (fieldErrors.isEmpty()) {
       LiaisonInstitution liaisonInstitution =
@@ -292,9 +299,9 @@ public class StatusPlannedMilestonesItem<T> {
         reportSynthesisFlagshipProgressOutcomeMilestoneList = new ArrayList<>();
       } else {
         long milestoneCode = crpMilestone.getId();
-        reportSynthesisFlagshipProgressOutcomeMilestoneList =
-          reportSynthesisFlagshipProgressOutcome.getReportSynthesisFlagshipProgressOutcomeMilestones().stream()
-            .filter(c -> c.getCrpMilestone().getId().equals(milestoneCode)).collect(Collectors.toList());
+        reportSynthesisFlagshipProgressOutcomeMilestoneList = reportSynthesisFlagshipProgressOutcome
+          .getReportSynthesisFlagshipProgressOutcomeMilestones().stream()
+          .filter(c -> c.isActive() && c.getCrpMilestone().getId().equals(milestoneCode)).collect(Collectors.toList());
       }
 
       ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone = null;
@@ -314,7 +321,7 @@ public class StatusPlannedMilestonesItem<T> {
         reportSynthesisFlagshipProgressOutcomeMilestone.setEvidenceLink(newStatusPlannedMilestoneDTO.getLinkEvidence());
         if (status.getId().longValue() == 4 || status.getId().longValue() == 5 || status.getId().longValue() == 6) {
           reportSynthesisFlagshipProgressOutcomeMilestone.setReason(repIndMilestoneReason);
-          if (repIndMilestoneReason != null && repIndMilestoneReason.getId() == 7) {
+          if (repIndMilestoneReason != null && repIndMilestoneReason.getId().longValue() == 7) {
             reportSynthesisFlagshipProgressOutcomeMilestone
               .setOtherReason(newStatusPlannedMilestoneDTO.getOtherReason());
           }
@@ -368,21 +375,6 @@ public class StatusPlannedMilestonesItem<T> {
               .setReportSynthesisFlagshipProgressOutcomeMilestone(reportSynthesisFlagshipProgressOutcomeMilestone);
             reportSynthesisFlagshipProgressCrossCuttingMarkerManager
               .saveReportSynthesisFlagshipProgressCrossCuttingMarker(reportSynthesisFlagshipProgressCrossCuttingMarker);
-          }
-
-          // Log Action
-          try {
-            ObjectMapper mapper = new ObjectMapper();
-            String originalJson =
-              mapper.writerWithDefaultPrettyPrinter().writeValueAsString(newStatusPlannedMilestoneDTO);
-            RestApiAuditlog restApiAuditLog = new RestApiAuditlog("createStatusPlannedMilestone",
-              "Created CGIAR Entity Acronym " + CGIARentityAcronym + " ID " + plannedMilestoneStatusID, new Date(),
-              plannedMilestoneStatusID,
-              "class org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestone", originalJson,
-              user.getId(), null, "", phase.getId());
-            restApiAuditlogManager.logApiCall(restApiAuditLog);
-          } catch (JsonProcessingException ex) {
-            Logger.getLogger(StatusPlannedMilestonesItem.class.getName()).log(Level.SEVERE, null, ex);
           }
         }
       } else {
@@ -515,29 +507,29 @@ public class StatusPlannedMilestonesItem<T> {
             long milestoneCode = crpMilestone.getId();
             List<ReportSynthesisFlagshipProgressOutcomeMilestone> reportSynthesisFlagshipProgressOutcomeMilestoneList =
               reportSynthesisFlagshipProgressOutcome.getReportSynthesisFlagshipProgressOutcomeMilestones().stream()
-                .filter(c -> c.getCrpMilestone().getId().equals(milestoneCode)).collect(Collectors.toList());
+                .filter(c -> c.isActive() && c.getCrpMilestone().getId().equals(milestoneCode))
+                .collect(Collectors.toList());
             if (reportSynthesisFlagshipProgressOutcomeMilestoneList != null
               && reportSynthesisFlagshipProgressOutcomeMilestoneList.size() > 0) {
               ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone =
                 reportSynthesisFlagshipProgressOutcomeMilestoneList.get(0);
+              List<ReportSynthesisFlagshipProgressCrossCuttingMarker> crosscutingMarkers =
+                new ArrayList<ReportSynthesisFlagshipProgressCrossCuttingMarker>();
               for (ReportSynthesisFlagshipProgressCrossCuttingMarker reportSynthesisFlagshipProgressCrossCuttingMarker : reportSynthesisFlagshipProgressOutcomeMilestone
                 .getReportSynthesisFlagshipProgressCrossCuttingMarkers().stream().collect(Collectors.toList())) {
+                crosscutingMarkers.add(reportSynthesisFlagshipProgressCrossCuttingMarker);
+
+              }
+
+              for (ReportSynthesisFlagshipProgressCrossCuttingMarker reportSynthesisFlagshipProgressCrossCuttingMarker : crosscutingMarkers) {
                 reportSynthesisFlagshipProgressCrossCuttingMarkerManager
                   .deleteReportSynthesisFlagshipProgressCrossCuttingMarker(
                     reportSynthesisFlagshipProgressCrossCuttingMarker.getId());
               }
+
               plannedMilestoneStatusID = reportSynthesisFlagshipProgressOutcomeMilestone.getId();
               reportSynthesisFlagshipProgressOutcomeMilestoneManager
-                .deleteReportSynthesisFlagshipProgressOutcomeMilestone(
-                  reportSynthesisFlagshipProgressOutcomeMilestone.getId());
-              // Log Action
-              RestApiAuditlog restApiAuditLog = new RestApiAuditlog("deleteStatusPlannedOutcome",
-                "Deleted CGIAR Entity Acronym " + CGIARentityAcronym + " milestone " + milestone + " Year:" + repoYear
-                  + " Phase: " + repoPhase,
-                new Date(), plannedMilestoneStatusID,
-                "class org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestone", "N/A",
-                user.getId(), null, "", phase.getId());
-              restApiAuditlogManager.logApiCall(restApiAuditLog);
+                .deleteReportSynthesisFlagshipProgressOutcomeMilestone(plannedMilestoneStatusID);
             } else {
               fieldErrors
                 .add(new FieldErrorDTO("deleteStatusPlannedOutcome", "Milestone", "There is no milestone status"));
@@ -687,6 +679,12 @@ public class StatusPlannedMilestonesItem<T> {
       }
     }
 
+    // limit words validation
+    if (this.countWords(newStatusPlannedMilestoneDTO.getEvidence()) > 200) {
+      fieldErrors.add(new FieldErrorDTO("createStatusPlannedMilestone", "Evidence",
+        "Evidence field excedes the maximum number of words (200 words)"));
+    }
+
     if (fieldErrors.isEmpty()) {
       LiaisonInstitution liaisonInstitution =
         liaisonInstitutionManager.findByAcronymAndCrp(crpProgram.getAcronym(), globalUnitEntity.getId());
@@ -701,7 +699,8 @@ public class StatusPlannedMilestonesItem<T> {
             long milestoneCode = crpMilestone.getId();
             List<ReportSynthesisFlagshipProgressOutcomeMilestone> reportSynthesisFlagshipProgressOutcomeMilestoneList =
               reportSynthesisFlagshipProgressOutcome.getReportSynthesisFlagshipProgressOutcomeMilestones().stream()
-                .filter(c -> c.getCrpMilestone().getId().equals(milestoneCode)).collect(Collectors.toList());
+                .filter(c -> c.isActive() && c.getCrpMilestone().getId().equals(milestoneCode))
+                .collect(Collectors.toList());
             if (reportSynthesisFlagshipProgressOutcomeMilestoneList != null
               && reportSynthesisFlagshipProgressOutcomeMilestoneList.size() > 0) {
               ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone =
@@ -788,21 +787,6 @@ public class StatusPlannedMilestonesItem<T> {
                     .saveReportSynthesisFlagshipProgressCrossCuttingMarker(
                       reportSynthesisFlagshipProgressCrossCuttingMarker);
                 }
-              }
-
-              // Log Action
-              try {
-                ObjectMapper mapper = new ObjectMapper();
-                String originalJson =
-                  mapper.writerWithDefaultPrettyPrinter().writeValueAsString(newStatusPlannedMilestoneDTO);
-                RestApiAuditlog restApiAuditLog = new RestApiAuditlog("updateStatusPlannedMilestone",
-                  "Updated " + reportSynthesisFlagshipProgressOutcomeMilestone.getId(), new Date(),
-                  reportSynthesisFlagshipProgressOutcomeMilestone.getId(),
-                  "class org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestone",
-                  originalJson, user.getId(), null, "", phase.getId());
-                restApiAuditlogManager.logApiCall(restApiAuditLog);
-              } catch (JsonProcessingException ex) {
-                Logger.getLogger(StatusPlannedMilestonesItem.class.getName()).log(Level.SEVERE, null, ex);
               }
             }
           } else {

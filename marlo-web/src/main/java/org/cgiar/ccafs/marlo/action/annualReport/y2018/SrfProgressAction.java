@@ -21,15 +21,20 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProgressTargetCaseGeographicRegionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProgressTargetCaseGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrpProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrpProgressStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrpProgressTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisSrfProgressManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisSrfProgressTargetCasesManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisSrfProgressTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorTargetManager;
@@ -38,17 +43,22 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
+import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
+import org.cgiar.ccafs.marlo.data.model.ProgressTargetCaseGeographicRegion;
+import org.cgiar.ccafs.marlo.data.model.ProgressTargetCaseGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyFlagship;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpProgressTarget;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTarget;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTargetCases;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget;
 import org.cgiar.ccafs.marlo.data.model.StudiesStatusPlanningEnum;
@@ -105,6 +115,7 @@ public class SrfProgressAction extends BaseAction {
   private SrfProgressValidator validator;
 
   private ReportSynthesisSrfProgressTargetManager reportSynthesisSrfProgressTargetManager;
+  private ReportSynthesisSrfProgressTargetCasesManager reportSynthesisSrfProgressTargetCasesManager;
 
 
   private SrfSloIndicatorTargetManager srfSloIndicatorTargetManager;
@@ -116,6 +127,11 @@ public class SrfProgressAction extends BaseAction {
 
   private ProjectFocusManager projectFocusManager;
   private ProjectExpectedStudyManager projectExpectedStudyManager;
+  private RepIndGeographicScopeManager repIndGeographicScopeManager;
+  private LocElementManager locElementManager;
+  private ProgressTargetCaseGeographicRegionManager progressTargetCaseGeographicRegionManager;
+  private ProgressTargetCaseGeographicScopeManager progressTargetCaseGeographicScopeManager;
+
 
   // Variables
   private String transaction;
@@ -140,7 +156,9 @@ public class SrfProgressAction extends BaseAction {
 
   private List<ProjectExpectedStudy> studiesList;
   private List<String> listOfFlagships;
-
+  private List<RepIndGeographicScope> repIndGeographicScopes;
+  private List<LocElement> repIndRegions;
+  private List<LocElement> countries;
 
   @Inject
   public SrfProgressAction(APConfig config, GlobalUnitManager crpManager,
@@ -153,7 +171,11 @@ public class SrfProgressAction extends BaseAction {
     ReportSynthesisCrpProgressTargetManager reportSynthesisCrpProgressTargetManager,
     SrfSloIndicatorTargetManager srfSloIndicatorTargetManager, PhaseManager phaseManager,
     ReportSynthesisSrfProgressTargetManager reportSynthesisSrfProgressTargetManager,
-    ReportSynthesisSrfProgressManager reportSynthesisSrfProgressManager, SectionStatusManager sectionStatusManager) {
+    ReportSynthesisSrfProgressTargetCasesManager reportSynthesisSrfProgressTargetCasesManager,
+    ReportSynthesisSrfProgressManager reportSynthesisSrfProgressManager, SectionStatusManager sectionStatusManager,
+    RepIndGeographicScopeManager repIndGeographicScopeManager, LocElementManager locElementManager,
+    ProgressTargetCaseGeographicRegionManager progressTargetCaseGeographicRegionManager,
+    ProgressTargetCaseGeographicScopeManager progressTargetCaseGeographicScopeManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -170,6 +192,11 @@ public class SrfProgressAction extends BaseAction {
     this.projectManager = projectManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.sectionStatusManager = sectionStatusManager;
+    this.reportSynthesisSrfProgressTargetCasesManager = reportSynthesisSrfProgressTargetCasesManager;
+    this.repIndGeographicScopeManager = repIndGeographicScopeManager;
+    this.locElementManager = locElementManager;
+    this.progressTargetCaseGeographicRegionManager = progressTargetCaseGeographicRegionManager;
+    this.progressTargetCaseGeographicScopeManager = progressTargetCaseGeographicScopeManager;
   }
 
 
@@ -212,6 +239,10 @@ public class SrfProgressAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+  public List<LocElement> getCountries() {
+    return countries;
+  }
+
   /**
    * Get the information of evidences according to srf target
    *
@@ -245,10 +276,10 @@ public class SrfProgressAction extends BaseAction {
     return studiesInfo;
   }
 
+
   public List<ReportSynthesisSrfProgress> getFlagshipSrfProgress() {
     return flagshipSrfProgress;
   }
-
 
   public void getFlagshipsWithMissingFields() {
     listOfFlagships = new ArrayList<>();
@@ -272,10 +303,10 @@ public class SrfProgressAction extends BaseAction {
     }
   }
 
+
   public List<ReportSynthesisCrpProgressTarget> getFpSynthesisTable() {
     return fpSynthesisTable;
   }
-
 
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
@@ -293,10 +324,18 @@ public class SrfProgressAction extends BaseAction {
     return listOfFlagships;
   }
 
+
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
+  public List<RepIndGeographicScope> getRepIndGeographicScopes() {
+    return repIndGeographicScopes;
+  }
+
+  public List<LocElement> getRepIndRegions() {
+    return repIndRegions;
+  }
 
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
@@ -314,6 +353,62 @@ public class SrfProgressAction extends BaseAction {
     return synthesisID;
   }
 
+  /**
+   * Get the information list for the Flagships Slo Targets Information in the form
+   *
+   * @param markerID
+   * @return
+   */
+  public List<ReportSynthesisSrfProgressTargetCases> getTargetsCasesFlagshipInfo(long targetID) {
+
+    List<ReportSynthesisSrfProgressTargetCases> targets = new ArrayList<ReportSynthesisSrfProgressTargetCases>();
+
+    ReportSynthesisSrfProgressTargetCases target = new ReportSynthesisSrfProgressTargetCases();
+
+    // Get the list of liaison institutions Flagships and PMU.
+    List<LiaisonInstitution> liaisonInstitutionsFg = loggedCrp.getLiaisonInstitutions().stream()
+      .filter(c -> c.getCrpProgram() != null && c.isActive()
+        && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toList());
+    liaisonInstitutionsFg.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
+
+    for (LiaisonInstitution liaisonInstitution : liaisonInstitutionsFg) {
+      target = reportSynthesisSrfProgressTargetCasesManager.getSrfProgressTargetInfo(liaisonInstitution,
+        this.getActualPhase().getId(), targetID);
+      // target = reportSynthesisSrfProgressTargetManager.getSrfProgressTargetInfo(liaisonInstitution,
+      // this.getActualPhase().getId(), targetID);
+      targets.add(target);
+    }
+    return targets;
+  }
+
+  /**
+   * Get the information for the Slo targets cases in the form
+   * 
+   * @param markerID
+   * @return
+   */
+  public List<ReportSynthesisSrfProgressTargetCases> getTargetsCasesInfo(long targetID) {
+    List<ReportSynthesisSrfProgressTargetCases> targets = new ArrayList<>();
+    if (this.isDraft()) {
+      // Cgiar Cross Cutting Markers Autosave
+      if (reportSynthesis.getReportSynthesisSrfProgress().getSloTargetsCases() != null) {
+        for (ReportSynthesisSrfProgressTargetCases reportSynthesisSrfProgressTargetsCases : reportSynthesis
+          .getReportSynthesisSrfProgress().getSloTargetsCases()) {
+          if (reportSynthesisSrfProgressTargetsCases.getSrfSloIndicatorTarget().getId().equals(targetID)) {
+            targets.add(reportSynthesisSrfProgressTargetsCases);
+          }
+        }
+      }
+    } else {
+      targets = reportSynthesisSrfProgressTargetCasesManager.getReportSynthesisSrfProgressId(synthesisID, targetID);
+    }
+    if (targets != null) {
+      return targets;
+    } else {
+      return null;
+    }
+  }
 
   /**
    * Get the information list for the Flagships Slo Targets Information in the form
@@ -337,11 +432,12 @@ public class SrfProgressAction extends BaseAction {
     for (LiaisonInstitution liaisonInstitution : liaisonInstitutionsFg) {
       target = reportSynthesisSrfProgressTargetManager.getSrfProgressTargetInfo(liaisonInstitution,
         this.getActualPhase().getId(), targetID);
+      // target = reportSynthesisSrfProgressTargetManager.getSrfProgressTargetInfo(liaisonInstitution,
+      // this.getActualPhase().getId(), targetID);
       targets.add(target);
     }
     return targets;
   }
-
 
   /**
    * Get the information for the Slo targets in the form
@@ -375,6 +471,7 @@ public class SrfProgressAction extends BaseAction {
     return transaction;
   }
 
+
   public boolean isFlagship() {
     boolean isFP = false;
     if (liaisonInstitution != null) {
@@ -401,7 +498,6 @@ public class SrfProgressAction extends BaseAction {
 
   }
 
-
   @Override
   public String next() {
     String result = this.save();
@@ -411,7 +507,6 @@ public class SrfProgressAction extends BaseAction {
       return result;
     }
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -533,12 +628,73 @@ public class SrfProgressAction extends BaseAction {
           reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
         }
 
+        // Geographic scope
+        this.setRepIndGeographicScopes(repIndGeographicScopeManager.findAll().stream()
+          .sorted((g1, g2) -> g1.getName().compareTo(g2.getName())).collect(Collectors.toList()));
+        repIndRegions = locElementManager.findAll().stream()
+          .filter(c -> c.getLocElementType().getId().intValue() == 1 && c.isActive() && c.getIsoNumeric() != null)
+          .collect(Collectors.toList());
+        this.setCountries(locElementManager.findAll().stream()
+          .filter(c -> c.isActive() && c.getLocElementType().getId() == 2).collect(Collectors.toList()));
+
 
         // Srf Targets List
         if (reportSynthesis.getReportSynthesisSrfProgress().getReportSynthesisSrfProgressTargets() != null) {
           reportSynthesis.getReportSynthesisSrfProgress()
             .setSloTargets(new ArrayList<>(reportSynthesis.getReportSynthesisSrfProgress()
               .getReportSynthesisSrfProgressTargets().stream().filter(t -> t.isActive()).collect(Collectors.toList())));
+        }
+
+        // Srf Targets cases List
+        if (reportSynthesis.getReportSynthesisSrfProgress() != null
+          && reportSynthesis.getReportSynthesisSrfProgress().getId() != null) {
+
+          /*
+           * Check the target cases received from the manager and get the object(reportSynthesisSrfProgressTargetCases)
+           * search by ID
+           * Then add the object to the list and finally assigns the list to ReportSynthesisSrfProgress
+           */
+          if (reportSynthesisSrfProgressTargetCasesManager.getReportSynthesisSrfProgressTargetCaseBySrfProgress(
+            reportSynthesis.getReportSynthesisSrfProgress().getId()) != null) {
+
+            List<ReportSynthesisSrfProgressTargetCases> targetCasesDB = new ArrayList<>();
+            targetCasesDB =
+              reportSynthesisSrfProgressTargetCasesManager.getReportSynthesisSrfProgressTargetCaseBySrfProgress(
+                reportSynthesis.getReportSynthesisSrfProgress().getId());
+            List<ReportSynthesisSrfProgressTargetCases> targetCasesSave = new ArrayList<>();
+
+            for (ReportSynthesisSrfProgressTargetCases targetCase : targetCasesDB) {
+              if (targetCase.getId() != null) {
+                ReportSynthesisSrfProgressTargetCases targetCaseDB = reportSynthesisSrfProgressTargetCasesManager
+                  .getReportSynthesisSrfProgressTargetCasesById(targetCase.getId());
+
+                // Target case geographic scope
+                List<ProgressTargetCaseGeographicRegion> targetCaseGeographicRegions;
+                targetCaseGeographicRegions =
+                  progressTargetCaseGeographicRegionManager.findGeographicRegionByTargetCase(targetCase.getId());
+                List<ProgressTargetCaseGeographicScope> targetCaseGeographicScope;
+                targetCaseGeographicScope =
+                  progressTargetCaseGeographicScopeManager.findGeographicScopeByTargetCase(targetCase.getId());
+
+                if (targetCaseDB != null) {
+                  if (targetCaseGeographicScope != null) {
+                    targetCaseDB.setGeographicScopes(targetCaseGeographicScope);
+                  }
+                  if (targetCaseGeographicRegions != null) {
+                    targetCaseDB.setGeographicRegions(targetCaseGeographicRegions);
+                  }
+                }
+
+                if (targetCaseDB != null) {
+                  targetCasesSave.add(targetCaseDB);
+                }
+              }
+
+              if (targetCasesSave != null) {
+                reportSynthesis.getReportSynthesisSrfProgress().setSloTargetsCases(targetCasesSave);
+              }
+            }
+          }
         }
 
 
@@ -592,8 +748,8 @@ public class SrfProgressAction extends BaseAction {
       ReportSynthesisSrfProgress srfProgressDB =
         reportSynthesisManager.getReportSynthesisById(synthesisID).getReportSynthesisSrfProgress();
 
-      this.saveSrfTargets(srfProgressDB);
-
+      // this.saveSrfTargets(srfProgressDB);
+      this.saveSrfTargetsCases(srfProgressDB);
 
       srfProgressDB.setSummary(reportSynthesis.getReportSynthesisSrfProgress().getSummary());
 
@@ -684,14 +840,18 @@ public class SrfProgressAction extends BaseAction {
           ReportSynthesisSrfProgressTarget srfTargetPrev =
             reportSynthesisSrfProgressTargetManager.getReportSynthesisSrfProgressTargetById(srfTarget.getId());
 
-          if (!srfTargetPrev.getBirefSummary().equals(srfTarget.getBirefSummary())) {
-            hasChanges = true;
-            srfTargetPrev.setBirefSummary(srfTarget.getBirefSummary());
-          }
+          if (srfTargetPrev != null) {
+            if (srfTargetPrev.getBirefSummary() != null
+              && !srfTargetPrev.getBirefSummary().equals(srfTarget.getBirefSummary())) {
+              hasChanges = true;
+              srfTargetPrev.setBirefSummary(srfTarget.getBirefSummary());
+            }
 
-          if (!srfTargetPrev.getAdditionalContribution().equals(srfTarget.getAdditionalContribution())) {
-            hasChanges = true;
-            srfTargetPrev.setAdditionalContribution(srfTarget.getAdditionalContribution());
+            if (srfTargetPrev.getAdditionalContribution() != null
+              && !srfTargetPrev.getAdditionalContribution().equals(srfTarget.getAdditionalContribution())) {
+              hasChanges = true;
+              srfTargetPrev.setAdditionalContribution(srfTarget.getAdditionalContribution());
+            }
           }
 
           if (hasChanges) {
@@ -706,6 +866,68 @@ public class SrfProgressAction extends BaseAction {
   }
 
 
+  /**
+   * Save Crp Progress Srf Targets Cases Information
+   * 
+   * @param crpProgressDB
+   */
+  public void saveSrfTargetsCases(ReportSynthesisSrfProgress srfProgressDB) {
+    // Save form Information
+    if (reportSynthesis.getReportSynthesisSrfProgress().getSloTargets() != null) {
+      for (ReportSynthesisSrfProgressTargetCases srfTarget : reportSynthesis.getReportSynthesisSrfProgress()
+        .getSloTargetsCases()) {
+        if (srfTarget.getId() == null) {
+          ReportSynthesisSrfProgressTargetCases srfTargetSave = new ReportSynthesisSrfProgressTargetCases();
+
+          srfTargetSave.setReportSynthesisSrfProgress(srfProgressDB);
+
+          SrfSloIndicatorTarget sloIndicator =
+            srfSloIndicatorTargetManager.getSrfSloIndicatorTargetById(srfTarget.getSrfSloIndicatorTarget().getId());
+
+          srfTargetSave.setBriefSummary(srfTarget.getBriefSummary());
+          srfTargetSave.setAdditionalContribution(srfTarget.getAdditionalContribution());
+
+          srfTargetSave.setSrfSloIndicatorTarget(sloIndicator);
+          srfTargetSave.setActive(true);
+
+          reportSynthesisSrfProgressTargetCasesManager.saveReportSynthesisSrfProgressTargetCases(srfTargetSave);
+
+        } else {
+
+          boolean hasChanges = false;
+          ReportSynthesisSrfProgressTargetCases srfTargetPrev = reportSynthesisSrfProgressTargetCasesManager
+            .getReportSynthesisSrfProgressTargetCasesById(srfTarget.getId());
+
+          if (srfTargetPrev != null) {
+            if (srfTargetPrev.getBriefSummary() != null
+              && !srfTargetPrev.getBriefSummary().equals(srfTarget.getBriefSummary())) {
+              hasChanges = true;
+              srfTargetPrev.setBriefSummary(srfTarget.getBriefSummary());
+            }
+
+            if (srfTargetPrev.getAdditionalContribution() != null
+              && !srfTargetPrev.getAdditionalContribution().equals(srfTarget.getAdditionalContribution())) {
+              hasChanges = true;
+              srfTargetPrev.setAdditionalContribution(srfTarget.getAdditionalContribution());
+            }
+          }
+
+          if (hasChanges) {
+            srfTargetPrev.setActive(true);
+            reportSynthesisSrfProgressTargetCasesManager.saveReportSynthesisSrfProgressTargetCases(srfTargetPrev);
+          }
+        }
+      }
+    }
+
+
+  }
+
+  public void setCountries(List<LocElement> countries) {
+    this.countries = countries;
+  }
+
+
   public void setFlagshipSrfProgress(List<ReportSynthesisSrfProgress> flagshipSrfProgress) {
     this.flagshipSrfProgress = flagshipSrfProgress;
   }
@@ -714,19 +936,19 @@ public class SrfProgressAction extends BaseAction {
     this.fpSynthesisTable = fpSynthesisTable;
   }
 
-
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
-
 
   public void setLiaisonInstitutionID(Long liaisonInstitutionID) {
     this.liaisonInstitutionID = liaisonInstitutionID;
   }
 
+
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
   }
+
 
   public void setListOfFlagships(List<String> listOfFlagships) {
     this.listOfFlagships = listOfFlagships;
@@ -734,6 +956,14 @@ public class SrfProgressAction extends BaseAction {
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+  public void setRepIndGeographicScopes(List<RepIndGeographicScope> repIndGeographicScopes) {
+    this.repIndGeographicScopes = repIndGeographicScopes;
+  }
+
+  public void setRepIndRegions(List<LocElement> repIndRegions) {
+    this.repIndRegions = repIndRegions;
   }
 
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {

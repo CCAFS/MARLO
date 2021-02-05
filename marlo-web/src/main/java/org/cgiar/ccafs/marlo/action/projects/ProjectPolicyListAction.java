@@ -21,9 +21,11 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicyGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyInfo;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -49,6 +51,7 @@ public class ProjectPolicyListAction extends BaseAction {
   private ProjectPolicyInfoManager projectPolicyInfoManager;
   private SectionStatusManager sectionStatusManager;
   private ProjectManager projectManager;
+  private RepIndGeographicScopeManager repIndGeographicScopeManager;
 
   // Variables
   // Model for the back-end
@@ -58,19 +61,20 @@ public class ProjectPolicyListAction extends BaseAction {
   private long policyID;
   private List<Integer> allYears;
   private List<ProjectPolicy> projectOldPolicies;
-
   private String justification;
 
 
   @Inject
   public ProjectPolicyListAction(APConfig config, ProjectPolicyManager projectPolicyManager,
     ProjectPolicyInfoManager projectPolicyInfoManager, SectionStatusManager sectionStatusManager,
-    ProjectManager projectManager, ProjectInnovationCrpManager projectInnovationCrpManager) {
+    ProjectManager projectManager, ProjectInnovationCrpManager projectInnovationCrpManager,
+    RepIndGeographicScopeManager repIndGeographicScopeManager) {
     super(config);
     this.projectPolicyManager = projectPolicyManager;
     this.projectPolicyInfoManager = projectPolicyInfoManager;
     this.sectionStatusManager = sectionStatusManager;
     this.projectManager = projectManager;
+    this.repIndGeographicScopeManager = repIndGeographicScopeManager;
   }
 
   @Override
@@ -160,11 +164,26 @@ public class ProjectPolicyListAction extends BaseAction {
             .filter(o -> o.isActive() && o.getPhase().getId() == this.getActualPhase().getId())
             .collect(Collectors.toList())));
         }
+
+        // SubIdos List
+        if (projectPolicy.getProjectPolicySubIdos() != null) {
+          projectPolicy.setSubIdos(new ArrayList<>(projectPolicy.getProjectPolicySubIdos().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getActualPhase().getId()))
+            .collect(Collectors.toList())));
+        }
+
         // Geographic Scope List
         if (projectPolicy.getProjectPolicyGeographicScopes() != null) {
           projectPolicy.setGeographicScopes(new ArrayList<>(projectPolicy.getProjectPolicyGeographicScopes().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId() == this.getActualPhase().getId())
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getActualPhase().getId()))
             .collect(Collectors.toList())));
+        }
+
+        if (projectPolicy.getGeographicScopes() != null) {
+          for (ProjectPolicyGeographicScope projectPolicyGeographicScope : projectPolicy.getGeographicScopes()) {
+            projectPolicyGeographicScope.setRepIndGeographicScope(repIndGeographicScopeManager
+              .getRepIndGeographicScopeById(projectPolicyGeographicScope.getRepIndGeographicScope().getId()));
+          }
         }
         if (projectPolicy.getProjectPolicyInfo(this.getActualPhase()).isPrevious()) {
           projectOldPolicies.add(projectPolicy);
