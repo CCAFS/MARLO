@@ -321,7 +321,7 @@ public class StatusPlannedMilestonesItem<T> {
         reportSynthesisFlagshipProgressOutcomeMilestone.setEvidenceLink(newStatusPlannedMilestoneDTO.getLinkEvidence());
         if (status.getId().longValue() == 4 || status.getId().longValue() == 5 || status.getId().longValue() == 6) {
           reportSynthesisFlagshipProgressOutcomeMilestone.setReason(repIndMilestoneReason);
-          if (repIndMilestoneReason != null && repIndMilestoneReason.getId() == 7) {
+          if (repIndMilestoneReason != null && repIndMilestoneReason.getId().longValue() == 7) {
             reportSynthesisFlagshipProgressOutcomeMilestone
               .setOtherReason(newStatusPlannedMilestoneDTO.getOtherReason());
           }
