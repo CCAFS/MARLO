@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 8 Jan 2021, 07:21:08 by Hibernate Tools 4.0.0 -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.RestApiAuditlog" table="rest_api_auditlog" catalog="marlo">
+        <id name="id" type="long">
+            <column name="id" />
+            <generator class="assigned" />
+        </id>
+        <property name="action" type="string">
+            <column name="action" length="128" not-null="true" />
+        </property>
+        <property name="detail" type="string">
+            <column name="detail" length="65535" not-null="true" />
+        </property>
+        <property name="createdDate" type="timestamp">
+            <column name="created_date" length="19" not-null="true" />
+        </property>
+        <property name="entityId" type="long">
+            <column name="entity_id" not-null="true" />
+        </property>
+        <property name="entityName" type="string">
+            <column name="entity_name" length="512" not-null="true" />
+        </property>
+        <property name="entityJson" type="string">
+            <column name="entity_json" length="65535" not-null="true" />
+        </property>
+        <property name="userId" type="long">
+            <column name="user_id" not-null="true" />
+        </property>
+        <property name="main" type="java.lang.Long">
+            <column name="main" />
+        </property>
+        <property name="modificationJustification" type="string">
+            <column name="modification_justification" length="65535" />
+        </property>
+        <property name="phase" type="java.lang.Long">
+            <column name="phase" />
+        </property>
+    </class>
+</hibernate-mapping>

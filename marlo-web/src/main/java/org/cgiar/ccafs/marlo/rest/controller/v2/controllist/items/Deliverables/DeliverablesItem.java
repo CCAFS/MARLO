@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableUserManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.MetadataElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.RestApiAuditlogManager;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
@@ -38,6 +39,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.MetadataElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Publication;
+import org.cgiar.ccafs.marlo.data.model.RestApiAuditlog;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.DeliverableUserDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewPublicationDTO;
@@ -56,11 +58,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ibm.icu.util.Calendar;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.http.HttpStatus;
@@ -79,6 +84,7 @@ public class DeliverablesItem<T> {
   private DeliverableDisseminationManager deliverableDisseminationManager;
   private DeliverableMetadataElementManager deliverableMetadataElementManager;
   private DeliverableUserManager deliverableUserManager;
+  private RestApiAuditlogManager restApiAuditlogManager;
 
 
   private DeliverablesMapper deliverablesMapper;
@@ -91,7 +97,7 @@ public class DeliverablesItem<T> {
     DeliverablePublicationMetadataManager deliverablePubMetadataManager,
     DeliverableMetadataElementManager deliverableMetadataElementManager, DeliverableUserManager deliverableUserManager,
     DeliverableDisseminationManager deliverableDisseminationManager, DeliverablesMapper deliverablesMapper,
-    PublicationsMapper publicationsMapper) {
+    PublicationsMapper publicationsMapper, RestApiAuditlogManager restApiAuditlogManager) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.metadataElementManager = metadataElementManager;
@@ -102,6 +108,7 @@ public class DeliverablesItem<T> {
     this.deliverableMetadataElementManager = deliverableMetadataElementManager;
     this.deliverableUserManager = deliverableUserManager;
     this.deliverableDisseminationManager = deliverableDisseminationManager;
+    this.restApiAuditlogManager = restApiAuditlogManager;
     this.deliverablesMapper = deliverablesMapper;
     this.publicationsMapper = publicationsMapper;
   }
@@ -276,6 +283,19 @@ public class DeliverablesItem<T> {
           deliverableUser.setPhase(phase);
           deliverableUserManager.saveDeliverableUser(deliverableUser);
         }
+
+        // Log Action
+        try {
+          ObjectMapper mapper = new ObjectMapper();
+          String originalJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(deliverableDTO);
+          RestApiAuditlog restApiAuditLog = new RestApiAuditlog("createDeliverable",
+            "Created CGIAR Entity Acronym " + entityAcronym + " ID " + deliverable.getId(), new Date(),
+            deliverable.getId(), "class org.cgiar.ccafs.marlo.data.model.Deliverable", originalJson, user.getId(), null,
+            "", phase.getId());
+          restApiAuditlogManager.logApiCall(restApiAuditLog);
+        } catch (Throwable ex) {
+          Logger.getLogger(DeliverablesItem.class.getName()).log(Level.SEVERE, null, ex);
+        }
       } else {
         fieldErrors.add(new FieldErrorDTO("createDeliverable", "phase", "Error while creating a publication "));
         throw new MARLOFieldValidationException("Field Validation errors", "",
@@ -348,6 +368,13 @@ public class DeliverablesItem<T> {
               List<DeliverableMetadataElement> phaseMetadata = deliverable.getMetadataElements(phase);
               Map<String, DeliverableMetadataElement> metadataElements = this.getMetadataElements(phaseMetadata);
               publication = this.publicationsMapper.deliverableToPublication(deliverable, phase, metadataElements);
+              // Log Action
+              RestApiAuditlog restApiAuditLog = new RestApiAuditlog("deleteDeliverableById",
+                "Deleted CGIAR Entity Acronym " + CGIARentityAcronym + " ID " + id + " Year:" + repoYear + " Phase: "
+                  + repoPhase,
+                new Date(), id, "class org.cgiar.ccafs.marlo.data.model.Deliverable", "N/A", user.getId(), null, "",
+                phase.getId());
+              restApiAuditlogManager.logApiCall(restApiAuditLog);
             }
           } else {
             fieldErrors.add(new FieldErrorDTO("deleteDeliverableById", "DeliverableEntity",
@@ -450,7 +477,13 @@ public class DeliverablesItem<T> {
           .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
           .collect(Collectors.toList()));
     }
-
+    // Log Action
+    RestApiAuditlog restApiAuditLog = new RestApiAuditlog("findDeliverableById",
+      "Search deliverable by ID" + CGIARentityAcronym + " ID " + idDeliverable + " Year:" + repoYear + " Phase: "
+        + repoPhase,
+      new Date(), idDeliverable, "class org.cgiar.ccafs.marlo.data.model.Deliverable", "N/A", user.getId(), null, "",
+      phase.getId());
+    restApiAuditlogManager.logApiCall(restApiAuditLog);
     return Optional.ofNullable(publication).map(this.publicationsMapper::publicationToPublicationDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
@@ -602,6 +635,12 @@ public class DeliverablesItem<T> {
             .collect(Collectors.toList()));
       }
     }
+
+    // Log Action
+    RestApiAuditlog restApiAuditLog = new RestApiAuditlog("findAllDeliverables",
+      "Search All deliverables Year:" + repoyear + " Phase: " + repoPhase, new Date(), 0L,
+      "class org.cgiar.ccafs.marlo.data.model.Deliverable", "N/A", user.getId(), null, "", phase.getId());
+    restApiAuditlogManager.logApiCall(restApiAuditLog);
     return deliverablesListDTO;
   }
 
@@ -854,6 +893,18 @@ public class DeliverablesItem<T> {
           if (found) {
             deliverableUserManager.deleteDeliverableUser(authorsList.getId());
           }
+        }
+
+        // Log Action
+        try {
+          ObjectMapper mapper = new ObjectMapper();
+          String originalJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(newPublicationDTO);
+          RestApiAuditlog restApiAuditLog = new RestApiAuditlog("UpdateDeliverable", "Updated " + deliverable.getId(),
+            new Date(), deliverable.getId(), "class org.cgiar.ccafs.marlo.data.model.Deliverable", originalJson,
+            user.getId(), null, "", phase.getId());
+          restApiAuditlogManager.logApiCall(restApiAuditLog);
+        } catch (Throwable ex) {
+          Logger.getLogger(DeliverablesItem.class.getName()).log(Level.SEVERE, null, ex);
         }
 
       } else {

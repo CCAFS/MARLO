@@ -471,5 +471,6 @@
     <mapping resource="xmls/ExternalSourceAuthor.hbm.xml" />
     <mapping resource="xmls/DeliverableMetadataExternalSources.hbm.xml" />
     <mapping resource="xmls/DeliverableAffiliations.hbm.xml" />
+    <mapping resource="xmls/RestApiAuditlog.hbm.xml" />
   </session-factory>
 </hibernate-configuration>

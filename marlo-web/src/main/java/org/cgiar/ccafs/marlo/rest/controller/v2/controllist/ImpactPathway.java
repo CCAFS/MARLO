@@ -28,7 +28,11 @@ import com.opensymphony.xwork2.inject.Inject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.subject.Subject;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,12 +59,14 @@ public class ImpactPathway {
 
 
   // private InstitutionItem<InstitutionDTO> institutionItem;
-  // private final UserManager userManager;
+   private final UserManager userManager;
   //
   @Inject
-  public ImpactPathway(OutcomeItem<OutcomeDTO> outcomeItem, MilestoneItem<MilestoneDTO> milestoneItem) {
+  public ImpactPathway(OutcomeItem<OutcomeDTO> outcomeItem, MilestoneItem<MilestoneDTO> milestoneItem,
+          UserManager userManager) {
     this.outcomeItem = outcomeItem;
     this.milestoneItem = milestoneItem;
+    this.userManager = userManager;
   }
 
   @ApiOperation(tags = {"Table 5 - Status of Planned Outcomes and Milestones"},
@@ -72,7 +78,7 @@ public class ImpactPathway {
     @ApiParam(value = "${ImpactPathway.milestones.id.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${ImpactPathway.milestones.id.param.id}", required = true) @PathVariable String id,
     @ApiParam(value = "${ImpactPathway.milestones.id.param.year}", required = true) @RequestParam Integer year) {
-    ResponseEntity<MilestoneDTO> response = this.milestoneItem.findMilestoneById(id, CGIAREntity, year);
+    ResponseEntity<MilestoneDTO> response = this.milestoneItem.findMilestoneById(id, CGIAREntity, year, getCurrentUser());
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("ImpactPathway.milestones.id.404"));
     }
@@ -88,7 +94,7 @@ public class ImpactPathway {
     @ApiParam(value = "${ImpactPathway.outcomes.id.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${ImpactPathway.outcomes.id.param.id}", required = true) @PathVariable String id,
     @ApiParam(value = "${ImpactPathway.outcomes.id.param.year}", required = true) @RequestParam Integer year) {
-    ResponseEntity<OutcomeDTO> response = this.outcomeItem.findOutcomeById(id, CGIAREntity, year);
+    ResponseEntity<OutcomeDTO> response = this.outcomeItem.findOutcomeById(id, CGIAREntity, year, getCurrentUser());
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("ImpactPathway.outcomes.id.404"));
     }
@@ -110,7 +116,7 @@ public class ImpactPathway {
     @ApiParam(value = "${ImpactPathway.milestones.all.param.reportYear}",
       required = true) @RequestParam("reportYear") Integer repoYear)
     throws NotFoundException {
-    List<MilestoneDTO> response = this.milestoneItem.getAllMilestones(flagshipId, CGIAREntity, repoYear);
+    List<MilestoneDTO> response = this.milestoneItem.getAllMilestones(flagshipId, CGIAREntity, repoYear, getCurrentUser());
     if (response == null || response.isEmpty()) {
       throw new NotFoundException("404", this.env.getProperty("ImpactPathway.milestones.all.404"));
     }
@@ -132,10 +138,18 @@ public class ImpactPathway {
     @ApiParam(value = "${ImpactPathway.outcomes.all.param.reportYear}",
       required = true) @RequestParam("reportYear") Integer repoYear)
     throws NotFoundException {
-    List<OutcomeDTO> response = this.outcomeItem.getAllOutcomes(flagshipId, CGIAREntity, targetYear, repoYear);
+    List<OutcomeDTO> response = this.outcomeItem.getAllOutcomes(flagshipId, CGIAREntity, targetYear, repoYear, getCurrentUser());
     if (response == null || response.isEmpty()) {
       throw new NotFoundException("404", this.env.getProperty("ImpactPathway.outcomes.all.404"));
     }
     return response;
   }
+
+  private User getCurrentUser() {
+    Subject subject = SecurityUtils.getSubject();
+    Long principal = (Long) subject.getPrincipal();
+    User user = this.userManager.getUser(principal);
+    return user;
+  }
+
 }
