@@ -227,14 +227,14 @@ function activeByNoDOIProvidedCheckbox(){
     // console.log($(this).val());
     if ($('input.isOtherUrl').is(":checked")) {
       console.log("checked");
-      $('.doi-bridge').find('.requiredTag').hide(); 
+      // $('.doi-bridge').find('.requiredTag').hide(); 
       // $('.computerLicense input').prop("checked", true);
       // $(this).val(true)
       // $("#doi-bridge").prop('readonly', true);
       $('.isOtherUrlFiel').val(true);
     }else{
       console.log("No checked");
-      $('.doi-bridge').find('.requiredTag').hide(); 
+      // $('.doi-bridge').find('.requiredTag').hide(); 
       // $('.computerLicense input').prop("checked", false);
       // $(this).val(false)
       $('.isOtherUrlFiel').val(false);
