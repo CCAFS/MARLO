@@ -1,6 +1,6 @@
 $(document).ready(init);
 var countID = 0;
-
+let AuxcurrentActivity=undefined;
 function init() {
   /* Init Select2 plugin */
   $('form select').select2({
@@ -20,10 +20,11 @@ function init() {
     date("#startDate-" + index, "#endDate-" + index);
     countID = index;
   })
-
+  
   // Events
   $(".addActivity").on("click", addActivity);
   $(".removeActivity").on("click", removeactivity);
+  $(".removeActivityBtnInList").on("click", getAndSaveLocallyTitle);
   $(".deliverableList").on("change", addDeliverable);
   $(".activityTitle").on("change", changeTitle);
   $(".activityTitle").on("keyup", changeTitle);
@@ -73,7 +74,11 @@ function init() {
 }
 
 /** FUNCTIONS * */
-
+// change title
+function getAndSaveLocallyTitle() {
+  $('#activityName').html($(this).parents('.projectActivity').find('.blockTitle').text().trimStart().trimEnd() );
+  AuxcurrentActivity = this;
+}
 // change title
 function changeTitle() {
   var $blockTitle = $(this).parents(".projectActivity").find(".blockTitle");
@@ -113,8 +118,9 @@ function addActivity() {
 
 // Remove activity element
 function removeactivity() {
-  var $list = $(this).parents('.activitiesOG-content');
-  var $item = $(this).parents('.projectActivity');
+  console.log("removeactivity");
+  var $list = $(AuxcurrentActivity).parents('.activitiesOG-content');
+  var $item = $(AuxcurrentActivity).parents('.projectActivity');
   $item.hide(1000, function() {
     $item.remove();
     checkItems($list);
