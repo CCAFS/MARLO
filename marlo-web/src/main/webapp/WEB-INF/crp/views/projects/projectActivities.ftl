@@ -97,7 +97,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel" style="font-size: 1.3em; font-weight: 700;">Are you sure to delete this activity?</h5>
+        <h5 class="modal-title" id="exampleModalLabel" style="font-size: 1.3em; font-weight: 700;">Are you sure you want to remove this activity?</h5>
         <br>
         
       </div>
@@ -106,8 +106,8 @@
         
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-danger removeActivity" data-dismiss="modal">Remove activity</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+        <button type="button" class="btn btn-danger removeActivity" data-dismiss="modal">Yes, remove</button>
       </div>
     </div>
   </div>
