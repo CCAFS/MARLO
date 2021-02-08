@@ -43,6 +43,15 @@
         </div>
       </div>
       
+
+
+      [#-- Evidences table with types and their descriptions --]
+      [#if !((element.projectExpectedStudyInfo.studyType.id == 1)!false)]
+          <div class="note left" style="margin: 10px 0px; font-size: .85em; padding: 4px; border-radius: 10px;">
+            <div id="popup" class="helpMessage3">
+              <p><a style="cursor: pointer;" data-toggle="modal" data-target="#evidenceModal" > <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="study.generalInformation.studyType" /]</a></p>
+            </div>
+          </div>
       [#if (reportingActive)!false]
       <div class="form-group analysisGroup">
         <label for="">[@s.text name="study.covidAnalysis" /]:[@customForm.req required=false /]
@@ -56,8 +65,7 @@
       </div>
       [/#if]
 
-      [#-- Evidences table with types and their descriptions --]
-      [#if !((element.projectExpectedStudyInfo.studyType.id == 1)!false)]
+
         <div class="form-group evidenceTypeMessage">
           <div class="modal fade" id="evidenceModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-scrollable" style=" width:80%" role="document">
@@ -121,11 +129,7 @@
               </div>
             </div>
           </div>
-          <div class="note left">
-            <div id="popup" class="helpMessage3">
-              <p><a style="cursor: pointer;" data-toggle="modal" data-target="#evidenceModal" > <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="study.generalInformation.studyType" /]</a></p>
-            </div>
-          </div>
+
           <div class="clearfix"></div>
         </div>
       [/#if]  
