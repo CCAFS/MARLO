@@ -302,23 +302,25 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
     ReportSynthesis reportSynthesisPMU =
       reportSynthesisManager.findSynthesis(this.getSelectedPhase().getId(), liaisonInstitutionPMU.getId());
 
-    if (reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null) {
+    if (reportSynthesisPMU != null) {
+      if (reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null) {
 
-      AllPolicies = new LinkedHashSet<>(
-        projectPolicyManager.getProjectPoliciesList(liaisonInstitutionPMU, this.getSelectedPhase()));
+        AllPolicies = new LinkedHashSet<>(
+          projectPolicyManager.getProjectPoliciesList(liaisonInstitutionPMU, this.getSelectedPhase()));
 
 
-      if (reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressPolicies() != null
-        && !reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressPolicies()
-          .isEmpty()) {
-        for (ReportSynthesisFlagshipProgressPolicy flagshipProgressPolicy : reportSynthesisPMU
-          .getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressPolicies().stream()
-          .filter(ro -> ro.isActive()).collect(Collectors.toList())) {
-          ARPoliciesEvidence policiesEvidence = new ARPoliciesEvidence();
-          policiesEvidence.setProjectPolicy(flagshipProgressPolicy.getProjectPolicy());
-          policiesEvidence.setInclude(false);
-          policiesPMU.add(policiesEvidence);
-          AllPolicies.remove(flagshipProgressPolicy.getProjectPolicy());
+        if (reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressPolicies() != null
+          && !reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressPolicies()
+            .isEmpty()) {
+          for (ReportSynthesisFlagshipProgressPolicy flagshipProgressPolicy : reportSynthesisPMU
+            .getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressPolicies().stream()
+            .filter(ro -> ro.isActive()).collect(Collectors.toList())) {
+            ARPoliciesEvidence policiesEvidence = new ARPoliciesEvidence();
+            policiesEvidence.setProjectPolicy(flagshipProgressPolicy.getProjectPolicy());
+            policiesEvidence.setInclude(false);
+            policiesPMU.add(policiesEvidence);
+            AllPolicies.remove(flagshipProgressPolicy.getProjectPolicy());
+          }
         }
       }
 

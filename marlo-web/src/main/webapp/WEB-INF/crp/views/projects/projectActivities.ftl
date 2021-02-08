@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/fieldsValidation.js",
-  "${baseUrlMedia}/js/projects/projectActivities.js", 
+  "${baseUrlMedia}/js/projects/projectActivities.js?20210208", 
   "${baseUrlCdn}/global/js/autoSave.js"] /]
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectActivities.css"] /]
 [#assign currentSection = "projects" /]
@@ -92,6 +92,29 @@
 [@deliverablesMacro element={} name="project.projectActivities[-1].deliverables" index=-1 isTemplate=true /]
 
 
+<!-- Confirm removeactivity Modal -->
+<div class="modal fade" id="removeactivityModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel" style="font-size: 1.3em; font-weight: 700;">Are you sure you want to remove this activity?</h5>
+        <br>
+        
+      </div>
+      <div class="modal-body">
+        <p><strong style="font-size: 1.2em;">Title: </strong><span id="activityName"></span></p>
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+        <button type="button" class="btn btn-danger removeActivity" data-dismiss="modal">Yes, remove</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
   
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
@@ -105,7 +128,7 @@
     --]
     [#if isActive && editable] [#--&& (isTemplate) --]
       <div class="removeLink">
-        <div id="removeActivity" class="removeActivity removeElement removeLink" title="[@s.text name='projectActivities.removeActivity' /]"></div>
+        <div id="removeActivity" class="removeActivityBtnInList removeElement removeLink" data-toggle="modal" data-target="#removeactivityModal" title="[@s.text name='projectActivities.removeActivity' /]"></div>
       </div>
     [/#if]
     [#-- Partner Title --]
@@ -194,4 +217,3 @@
     <div class="clearfix"></div>
   </div>
 [/#macro]
-
