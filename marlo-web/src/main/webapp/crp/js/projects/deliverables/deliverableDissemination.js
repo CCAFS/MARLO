@@ -120,11 +120,11 @@ setTimeout(() => {
 }, 1500);
 }
 function nullDataPipe(data){
-  if (data === false) {
+  if (data == false || data == 'false') {
     return 'No'
-  }else if (data === false) {
+  }else if (data == true || data == 'true') {
     return 'Yes'
-  }else if (data === 0) {
+  }else if (data == 0 || data == '0') {
     return 'No'
   }else if (data != undefined) {
     return data;    
@@ -170,6 +170,27 @@ function JsoninstitutionsToOrder(data){
 function loadingAnimation(){
   $('.loading-WOS').hide;
 }
+function addZero(i) {
+  if (i < 10) {
+    i = "0" + i;
+  }
+  return i;
+}
+
+function getCurrentDate() {
+  var today = new Date();
+  var h = addZero(today.getHours());
+  var m = addZero(today.getMinutes());
+  //  var s = addZero(d.getSeconds());
+  var dd = String(today.getDate()).padStart(2, '0');
+  var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+  var yyyy = today.getFullYear();
+  var hours = today.getHours();
+  var ampm = hours >= 12 ? 'pm' : 'am';
+
+  return h + ":" + m+' '+ampm+' - '+ mm + '/' + dd + '/' + yyyy;
+  
+}
 function updateWOSFields(data){
   let {
     url,
@@ -193,9 +214,31 @@ function updateWOSFields(data){
   //    console.log(element);
   //    $('#td-WOS-URL').append(url);
   //   });
-     
+     if (nullDataPipe(isOpenAccess) == 'Yes') {
+      $('#WOS_tag_IOA_yes').show('slow');
+      $('#WOS_tag_IOA_no').hide('slow');
+     }else{
+      $('#WOS_tag_IOA_yes').hide('slow');
+      $('#WOS_tag_IOA_no').show('slow');
+
+     }
+
+     if (nullDataPipe(isISI) == 'Yes') {
+      $('#WOS_tag_ISI_yes').show('slow');
+      $('#WOS_tag_ISI__no').hide('slow');
+     }else{
+      $('#WOS_tag_ISI_yes').hide('slow');
+      $('#WOS_tag_ISI__no').show('slow');
+
+     }
+  
+  today = getCurrentDate();
 
 
+
+  $('.currentDate').html(today);
+
+  $('.WOS_tag').show('slow');
 
   $('#td-WOS-URL').html(nullDataPipe(url));
   $('#td-WOS-DOI').html(nullDataPipe(doi));
@@ -219,6 +262,7 @@ function updateReadOnly() {
   console.log("update only");
   $('#WOSModalBtn').hide("slow"); 
   let channel = $(".disseminationChannel").val();
+  // if is sync
   if ($('.deliverableDisseminationUrl ').prop('readonly')) {
     $('.isOtherUrlTohide').show("slow"); 
     console.log("solo lectura");
@@ -228,11 +272,14 @@ function updateReadOnly() {
     if ($('.deliverableDisseminationUrl ').prop('readonly')) {
       getWOSInfo();
     }
+    //if not
   } else {
+    
+    $('.WOS_tag').hide("slow");  
     console.log("editable");
    
     $('#output-dissemination').hide("slow");  
-    
+    // if not and different changel to other
     if ($('.disseminationChannel').val() != 'other') {
       $('#output-wos').hide("slow");  
       $('#WOSModalBtn').hide("slow");  
@@ -242,6 +289,7 @@ function updateReadOnly() {
       $('.isOtherUrlTohide').hide("slow"); 
       hideOrShowCheckBoxIsOtherUrl(false);
     } else {
+      //if not and its equal chanel to other
       $('#WOSSyncBtn').show('slow'); 
       $(".ifIsReadOnly .metadataElement-handle .input input").prop('readonly', false);
       $(".ifIsReadOnly .metadataElement-doi .input input").prop('readonly', false);
