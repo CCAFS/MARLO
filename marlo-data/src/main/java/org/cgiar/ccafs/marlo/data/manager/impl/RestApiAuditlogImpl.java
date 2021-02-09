@@ -22,7 +22,7 @@ public class RestApiAuditlogImpl implements RestApiAuditlogManager {
 
   @Override
   public void logApiCall(RestApiAuditlog restApiAuditlog) {
-    // restApiuditLogDAO.logThis(restApiAuditlog);
+    restApiuditLogDAO.logThis(restApiAuditlog);
   }
 
 }
