@@ -719,45 +719,49 @@ public class PublicationsAction extends BaseAction {
   public String save() {
     if (this.hasPermission("canEdit")) {
 
-      ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgressDB =
-        reportSynthesisManager.getReportSynthesisById(synthesisID).getReportSynthesisFlagshipProgress();
+      // Dont save records (check marks in exclusion table) for Flagships
+      if (!this.isPMU()) {
+        ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgressDB =
+          reportSynthesisManager.getReportSynthesisById(synthesisID).getReportSynthesisFlagshipProgress();
 
-      this.flagshipProgressprojectDeliverablesNewData(reportSynthesisFlagshipProgressDB);
+        this.flagshipProgressprojectDeliverablesNewData(reportSynthesisFlagshipProgressDB);
 
-      if (reportSynthesis.getReportSynthesisFlagshipProgress().getPlannedDeliverables() == null) {
-        reportSynthesis.getReportSynthesisFlagshipProgress().setPlannedDeliverables(new ArrayList<>());
-      }
-
-      reportSynthesisFlagshipProgressDB =
-        reportSynthesisFlagshipProgressManager.saveReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgressDB);
-
-      List<String> relationsName = new ArrayList<>();
-      reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
-
-      /**
-       * The following is required because we need to update something on the @ReportSynthesis if we want a row created
-       * in the auditlog table.
-       */
-      this.setModificationJustification(reportSynthesis);
-
-      reportSynthesisManager.save(reportSynthesis, this.getActionName(), relationsName, actualPhase);
-
-      Path path = this.getAutoSaveFilePath();
-      if (path.toFile().exists()) {
-        path.toFile().delete();
-      }
-
-      this.getActionMessages();
-      if (!this.getInvalidFields().isEmpty()) {
-        this.setActionMessages(null);
-        // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
-        List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
-        for (String key : keys) {
-          this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+        if (reportSynthesis.getReportSynthesisFlagshipProgress().getPlannedDeliverables() == null) {
+          reportSynthesis.getReportSynthesisFlagshipProgress().setPlannedDeliverables(new ArrayList<>());
         }
 
-      } else {
-        this.addActionMessage("message:" + this.getText("saving.saved"));
+        reportSynthesisFlagshipProgressDB =
+          reportSynthesisFlagshipProgressManager.saveReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgressDB);
+
+        List<String> relationsName = new ArrayList<>();
+        reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
+
+        /**
+         * The following is required because we need to update something on the @ReportSynthesis if we want a row
+         * created
+         * in the auditlog table.
+         */
+        this.setModificationJustification(reportSynthesis);
+
+        reportSynthesisManager.save(reportSynthesis, this.getActionName(), relationsName, actualPhase);
+
+        Path path = this.getAutoSaveFilePath();
+        if (path.toFile().exists()) {
+          path.toFile().delete();
+        }
+
+        this.getActionMessages();
+        if (!this.getInvalidFields().isEmpty()) {
+          this.setActionMessages(null);
+          // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+          List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+          for (String key : keys) {
+            this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+          }
+
+        } else {
+          this.addActionMessage("message:" + this.getText("saving.saved"));
+        }
       }
 
       return SUCCESS;

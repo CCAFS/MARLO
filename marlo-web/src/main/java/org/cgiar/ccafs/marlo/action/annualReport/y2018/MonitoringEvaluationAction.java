@@ -741,11 +741,13 @@ public class MonitoringEvaluationAction extends BaseAction {
       ReportSynthesisMelia meliaDB =
         reportSynthesisManager.getReportSynthesisById(synthesisID).getReportSynthesisMelia();
 
-
-      if (reportSynthesis.getReportSynthesisMelia().getPlannedStudies() == null) {
-        reportSynthesis.getReportSynthesisMelia().setPlannedStudies(new ArrayList<>());
+      // Dont save records (check marks in exclusion table) for Flagships
+      if (!this.isPMU()) {
+        if (reportSynthesis.getReportSynthesisMelia().getPlannedStudies() == null) {
+          reportSynthesis.getReportSynthesisMelia().setPlannedStudies(new ArrayList<>());
+        }
+        this.saveStudies(meliaDB);
       }
-      this.saveStudies(meliaDB);
 
       if (this.isPMU()) {
         this.saveEvaluations(meliaDB);
