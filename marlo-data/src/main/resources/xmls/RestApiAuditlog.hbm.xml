@@ -3,7 +3,7 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <!-- Generated 8 Jan 2021, 07:21:08 by Hibernate Tools 4.0.0 -->
 <hibernate-mapping>
-    <class name="org.cgiar.ccafs.marlo.data.model.RestApiAuditlog" table="rest_api_auditlog" catalog="marlo">
+    <class name="org.cgiar.ccafs.marlo.data.model.RestApiAuditlog" table="rest_api_auditlog">
         <id name="id" type="long">
             <column name="id" />
             <generator class="assigned" />
