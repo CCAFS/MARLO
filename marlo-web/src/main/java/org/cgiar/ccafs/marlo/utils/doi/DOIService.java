@@ -138,7 +138,7 @@ public class DOIService {
 
     Matcher matcher = REGEXP_PLAINDOI.matcher(possibleDoi);
 
-    if (matcher.lookingAt()) {
+    if (matcher.find()) {
       doi = matcher.group(0);
     }
     /*
