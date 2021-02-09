@@ -20,12 +20,14 @@
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.progressTowards;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisSrfProgressManager;
-import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisSrfProgressTargetManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisSrfProgressTargetCasesManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorManager;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -33,7 +35,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgress;
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTarget;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTargetCases;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicator;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -63,24 +65,26 @@ public class ProgressTowardsItem<T> {
 
   private PhaseManager phaseManager;
   private GlobalUnitManager globalUnitManager;
-  private ReportSynthesisSrfProgressTargetManager reportSynthesisSrfProgressTargetManager;
+  private ReportSynthesisSrfProgressTargetCasesManager reportSynthesisSrfProgressTargetCasesManager;
   private LiaisonInstitutionManager liaisonInstitutionManager;
   private ReportSynthesisManager reportSynthesisManager;
   private ReportSynthesisSrfProgressManager reportSynthesisSrfProgressManager;
-  // private CrpProgramManager crpProgramManager;
+  private RepIndGeographicScopeManager repIndGeographicScopeManager;
+  private CrpProgramManager crpProgramManager;
   private SrfSloIndicatorManager srfSloIndicatorManager;
 
   private SrfProgressTowardsTargetMapper srfProgressTowardsTargetMapper;
 
   @Inject
   public ProgressTowardsItem(GlobalUnitManager globalUnitManager, PhaseManager phaseManager,
-    ReportSynthesisSrfProgressTargetManager reportSynthesisSrfProgressTargetManager,
+    ReportSynthesisSrfProgressTargetCasesManager reportSynthesisSrfProgressTargetCasesManager,
     ReportSynthesisManager reportSynthesisManager, LiaisonInstitutionManager liaisonInstitutionManager,
-    /* CrpProgramManager crpProgramManager, */ReportSynthesisSrfProgressManager reportSynthesisSrfProgressManager,
-    SrfProgressTowardsTargetMapper srfProgressTowardsTargetMapper, SrfSloIndicatorManager srfSloIndicatorManager) {
+    CrpProgramManager crpProgramManager, ReportSynthesisSrfProgressManager reportSynthesisSrfProgressManager,
+    SrfProgressTowardsTargetMapper srfProgressTowardsTargetMapper, SrfSloIndicatorManager srfSloIndicatorManager,
+    RepIndGeographicScopeManager repIndGeographicScopeManager) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
-    this.reportSynthesisSrfProgressTargetManager = reportSynthesisSrfProgressTargetManager;
+    this.reportSynthesisSrfProgressTargetCasesManager = reportSynthesisSrfProgressTargetCasesManager;
     this.reportSynthesisManager = reportSynthesisManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     // this.crpProgramManager = crpProgramManager;
@@ -88,6 +92,7 @@ public class ProgressTowardsItem<T> {
     this.srfSloIndicatorManager = srfSloIndicatorManager;
 
     this.srfProgressTowardsTargetMapper = srfProgressTowardsTargetMapper;
+    this.repIndGeographicScopeManager = repIndGeographicScopeManager;
   }
 
   public Long createProgressTowards(NewSrfProgressTowardsTargetDTO newSrfProgressTowardsTargetDTO,
@@ -95,7 +100,7 @@ public class ProgressTowardsItem<T> {
     Long srfProgressTargetId = null;
     // CrpProgram crpProgram = null;
     LiaisonInstitution liaisonInstitution = null;
-    ReportSynthesisSrfProgressTarget reportSynthesisSrfProgressTarget = null;
+    ReportSynthesisSrfProgressTargetCases reportSynthesisSrfProgressTarget = null;
     Phase phase = null;
     String strippedId = null;
 
@@ -188,7 +193,7 @@ public class ProgressTowardsItem<T> {
           Long phaseId = phase.getId();
           Long sloIndicatorId = id;
 
-          reportSynthesisSrfProgressTarget = reportSynthesisSrfProgressTargetManager.findAll().stream()
+          reportSynthesisSrfProgressTarget = reportSynthesisSrfProgressTargetCasesManager.findAll().stream()
             .filter(pt -> pt.getReportSynthesisSrfProgress().getReportSynthesis().getPhase().getId() == phaseId
               && StringUtils.equalsIgnoreCase(
                 pt.getReportSynthesisSrfProgress().getReportSynthesis().getLiaisonInstitution().getAcronym(),
@@ -259,7 +264,7 @@ public class ProgressTowardsItem<T> {
 
       // all validated! now it is supposed to be ok to save the entities
       if (fieldErrors.isEmpty()) {
-        reportSynthesisSrfProgressTarget = new ReportSynthesisSrfProgressTarget();
+        reportSynthesisSrfProgressTarget = new ReportSynthesisSrfProgressTargetCases();
         // creating new ReportSynthesis if it does not exist
         if (reportSynthesis == null) {
           reportSynthesis = new ReportSynthesis();
@@ -278,12 +283,13 @@ public class ProgressTowardsItem<T> {
 
         reportSynthesisSrfProgressTarget.setReportSynthesisSrfProgress(reportSynthesisSrfProgress);
         reportSynthesisSrfProgressTarget.setSrfSloIndicatorTarget(srfSloIndicatorTarget);
-        reportSynthesisSrfProgressTarget.setBirefSummary(newSrfProgressTowardsTargetDTO.getBriefSummary().trim());
+        reportSynthesisSrfProgressTarget.setBriefSummary(newSrfProgressTowardsTargetDTO.getBriefSummary().trim());
         reportSynthesisSrfProgressTarget
           .setAdditionalContribution(newSrfProgressTowardsTargetDTO.getAdditionalContribution());
 
-        ReportSynthesisSrfProgressTarget reportSynthesisSrfProgressTargetDB = reportSynthesisSrfProgressTargetManager
-          .saveReportSynthesisSrfProgressTarget(reportSynthesisSrfProgressTarget);
+        ReportSynthesisSrfProgressTargetCases reportSynthesisSrfProgressTargetDB =
+          reportSynthesisSrfProgressTargetCasesManager
+            .saveReportSynthesisSrfProgressTargetCases(reportSynthesisSrfProgressTarget);
         if (reportSynthesisSrfProgressTargetDB != null) {
           srfProgressTargetId = reportSynthesisSrfProgressTargetDB.getId();
         }
@@ -303,7 +309,7 @@ public class ProgressTowardsItem<T> {
 
   public ResponseEntity<SrfProgressTowardsTargetDTO> deleteProgressTowardsById(Long id, String CGIARentityAcronym,
     Integer repoYear, String repoPhase, User user) {
-    ReportSynthesisSrfProgressTarget srfProgressTarget = null;
+    ReportSynthesisSrfProgressTargetCases srfProgressTarget = null;
 
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
 
@@ -342,7 +348,7 @@ public class ProgressTowardsItem<T> {
     }
 
     if (fieldErrors.isEmpty()) {
-      srfProgressTarget = reportSynthesisSrfProgressTargetManager.getReportSynthesisSrfProgressTargetById(id);
+      srfProgressTarget = reportSynthesisSrfProgressTargetCasesManager.getReportSynthesisSrfProgressTargetCasesById(id);
       if (srfProgressTarget != null && srfProgressTarget.isActive() == true) {
         if (srfProgressTarget.getReportSynthesisSrfProgress() == null) {
           fieldErrors.add(new FieldErrorDTO("findProgressTowardsById", "ReportSynthesisSrfProgressEntity",
@@ -362,8 +368,8 @@ public class ProgressTowardsItem<T> {
                   "The Report Synthesis Srf Progress Target with id " + id
                     + " do not correspond to the phase entered"));
               } else {
-                reportSynthesisSrfProgressTargetManager
-                  .deleteReportSynthesisSrfProgressTarget(srfProgressTarget.getId());
+                reportSynthesisSrfProgressTargetCasesManager
+                  .deleteReportSynthesisSrfProgressTargetCases(srfProgressTarget.getId());
               }
             }
           }
@@ -383,7 +389,7 @@ public class ProgressTowardsItem<T> {
     }
 
     return Optional.ofNullable(srfProgressTarget)
-      .map(this.srfProgressTowardsTargetMapper::reportSynthesisSrfProgressTargetToSrfProgressTowardsTargetsDTO)
+      .map(this.srfProgressTowardsTargetMapper::reportSynthesisSrfProgressCasesTargetToSrfProgressTowardsTargetsDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
@@ -391,6 +397,9 @@ public class ProgressTowardsItem<T> {
     Integer repoYear, String repoPhase, User user) {
     List<SrfProgressTowardsTargetDTO> progressTowardsTargets = new ArrayList<>();
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+
+    List<ReportSynthesisSrfProgressTargetCases> reportSynthesisSrfProgressTargetList =
+      new ArrayList<ReportSynthesisSrfProgressTargetCases>();
 
     String strippedEntityAcronym = StringUtils.stripToNull(CGIARentityAcronym);
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(strippedEntityAcronym);
@@ -418,11 +427,27 @@ public class ProgressTowardsItem<T> {
 
     if (fieldErrors.isEmpty()) {
       // not all ReportSynthesis have a ReportSynthesisSrfProgress, so we need to filter out those to avoid exceptions
-      progressTowardsTargets = reportSynthesisManager.findAll().stream()
+
+
+      for (ReportSynthesisSrfProgressTargetCases progressTowarsCase : reportSynthesisManager.findAll().stream()
         .filter(rs -> rs.getPhase().getId() == phase.getId() && rs.getReportSynthesisSrfProgress() != null
           && rs.getReportSynthesisSrfProgress().isActive() == true && rs.isActive() == true)
-        .flatMap(rs -> rs.getReportSynthesisSrfProgress().getReportSynthesisSrfProgressTargets().stream())
-        .map(srfProgressTowardsTargetMapper::reportSynthesisSrfProgressTargetToSrfProgressTowardsTargetsDTO)
+        .flatMap(rs -> rs.getReportSynthesisSrfProgress().getReportSynthesisSrfProgressTargetsCases().stream())
+        .collect(Collectors.toList())) {
+
+        progressTowarsCase.setGeographicScopes(progressTowarsCase.getProgressTargetCaseGeographicScopes().stream()
+          .filter(c -> c.isActive()).collect(Collectors.toList()));
+        progressTowarsCase.setGeographicCountries(progressTowarsCase.getProgressTargetCaseGeographicRegions().stream()
+          .filter(c -> c != null && c.isActive() && c.getLocElement().getLocElementType().getId().longValue() == 2)
+          .collect(Collectors.toList()));
+        progressTowarsCase.setGeographicRegions(progressTowarsCase.getProgressTargetCaseGeographicRegions().stream()
+          .filter(c -> c != null && c.isActive() && c.getLocElement().getLocElementType().getId().longValue() == 1)
+          .collect(Collectors.toList()));
+        reportSynthesisSrfProgressTargetList.add(progressTowarsCase);
+      }
+
+      reportSynthesisSrfProgressTargetList.stream()
+        .map(srfProgressTowardsTargetMapper::reportSynthesisSrfProgressCasesTargetToSrfProgressTowardsTargetsDTO)
         .collect(Collectors.toList());
     }
 
@@ -449,7 +474,7 @@ public class ProgressTowardsItem<T> {
     Integer repoYear, String repoPhase, User user) {
     // TODO: Include all security validations
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
-    ReportSynthesisSrfProgressTarget reportSynthesisSrfProgressTarget = null;
+    ReportSynthesisSrfProgressTargetCases reportSynthesisSrfProgressTarget = null;
 
     String strippedEntityAcronym = StringUtils.stripToNull(CGIARentityAcronym);
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(strippedEntityAcronym);
@@ -477,7 +502,7 @@ public class ProgressTowardsItem<T> {
 
     if (fieldErrors.isEmpty()) {
       reportSynthesisSrfProgressTarget =
-        reportSynthesisSrfProgressTargetManager.getReportSynthesisSrfProgressTargetById(id);
+        reportSynthesisSrfProgressTargetCasesManager.getReportSynthesisSrfProgressTargetCasesById(id);
       if (reportSynthesisSrfProgressTarget == null || reportSynthesisSrfProgressTarget.isActive() == false) {
         fieldErrors.add(new FieldErrorDTO("findProgressTowardsById", "ReportSynthesisSrfProgressTargetEntity",
           id + " is an invalid id of a Report Synthesis Srf Progress Target"));
@@ -500,6 +525,21 @@ public class ProgressTowardsItem<T> {
                 fieldErrors.add(new FieldErrorDTO("findProgressTowardsById", "ReportSynthesisSrfProgressTargetEntity",
                   "The Report Synthesis Srf Progress Target with id " + id
                     + " do not correspond to the phase entered"));
+              } else {
+                reportSynthesisSrfProgressTarget
+                  .setGeographicScopes(reportSynthesisSrfProgressTarget.getProgressTargetCaseGeographicScopes().stream()
+                    .filter(c -> c.isActive()).collect(Collectors.toList()));
+                reportSynthesisSrfProgressTarget.setGeographicCountries(
+                  reportSynthesisSrfProgressTarget.getProgressTargetCaseGeographicRegions().stream()
+                    .filter(
+                      c -> c != null && c.isActive() && c.getLocElement().getLocElementType().getId().longValue() == 2)
+                    .collect(Collectors.toList()));
+                reportSynthesisSrfProgressTarget.setGeographicRegions(
+                  reportSynthesisSrfProgressTarget.getProgressTargetCaseGeographicRegions().stream()
+                    .filter(
+                      c -> c != null && c.isActive() && c.getLocElement().getLocElementType().getId().longValue() == 1)
+                    .collect(Collectors.toList()));
+
               }
             }
           }
@@ -519,7 +559,7 @@ public class ProgressTowardsItem<T> {
     }
 
     return Optional.ofNullable(reportSynthesisSrfProgressTarget)
-      .map(this.srfProgressTowardsTargetMapper::reportSynthesisSrfProgressTargetToSrfProgressTowardsTargetsDTO)
+      .map(this.srfProgressTowardsTargetMapper::reportSynthesisSrfProgressCasesTargetToSrfProgressTowardsTargetsDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
@@ -611,8 +651,8 @@ public class ProgressTowardsItem<T> {
     // new FieldErrorDTO("putProgressTowards", "CrpProgramEntity", "CRP Program SMO code can not be null nor empty."));
     // }
 
-    ReportSynthesisSrfProgressTarget reportSynthesisSrfProgressTarget =
-      reportSynthesisSrfProgressTargetManager.getReportSynthesisSrfProgressTargetById(idProgressTowards);
+    ReportSynthesisSrfProgressTargetCases reportSynthesisSrfProgressTarget =
+      reportSynthesisSrfProgressTargetCasesManager.getReportSynthesisSrfProgressTargetCasesById(idProgressTowards);
     if (reportSynthesisSrfProgressTarget == null || reportSynthesisSrfProgressTarget.isActive() == false) {
       fieldErrors.add(new FieldErrorDTO("putProgressTowards", "ReportSynthesisSrfProgressTargetEntity",
         idProgressTowards + " is an invalid Report Synthesis Srf Progress Target Code"));
@@ -653,7 +693,7 @@ public class ProgressTowardsItem<T> {
 
       String strippedBriefSummary = StringUtils.stripToNull(newSrfProgressTowardsTargetDTO.getBriefSummary());
       if (strippedBriefSummary != null) {
-        reportSynthesisSrfProgressTarget.setBirefSummary(strippedBriefSummary);
+        reportSynthesisSrfProgressTarget.setBriefSummary(strippedBriefSummary);
       } else {
         fieldErrors.add(new FieldErrorDTO("putProgressTowards", "Summary", "Please enter a brief summary"));
       }
@@ -717,7 +757,8 @@ public class ProgressTowardsItem<T> {
           .collect(Collectors.toList()));
     }
 
-    reportSynthesisSrfProgressTargetManager.saveReportSynthesisSrfProgressTarget(reportSynthesisSrfProgressTarget);
+    reportSynthesisSrfProgressTargetCasesManager
+      .saveReportSynthesisSrfProgressTargetCases(reportSynthesisSrfProgressTarget);
     return idProgressTowardsDB;
   }
 
