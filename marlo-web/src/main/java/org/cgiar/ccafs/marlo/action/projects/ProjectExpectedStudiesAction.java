@@ -114,7 +114,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -491,6 +493,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
     this.loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     this.loggedCrp = this.crpManager.getGlobalUnitById(this.loggedCrp.getId());
+    this.setPhaseID(this.getActualPhase().getId());
 
     this.expectedID =
       Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.EXPECTED_REQUEST_ID)));
@@ -1153,13 +1156,26 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           }
         }
       } else {
+        // get the milestones list
+        Set<String> milestonesTemp = new HashSet<>();
         // Get the innovations List
         this.innovationsList = new ArrayList<>();
         // Get the policies List
         this.policyList = new ArrayList<>();
+        final int year = this.getActualPhase().getYear();
 
         if (this.myProjects != null && !this.myProjects.isEmpty()) {
           for (Project projectL : this.myProjects) {
+            List<ProjectMilestone> projectMilestones =
+              projectL.getProjectOutcomes().stream().filter(po -> po != null && po.getId() != null && po.isActive())
+                .flatMap(po -> po.getProjectMilestones().stream())
+                .filter(pi -> pi != null && pi.getId() != null && pi.isActive() && pi.getCrpMilestone() != null
+                  && pi.getCrpMilestone().getId() != null && pi.getCrpMilestone().isActive()
+                  && pi.getCrpMilestone().getComposeID() != null && pi.getYear() != 0 && pi.getYear() <= year)
+                .distinct().collect(Collectors.toList());
+            for (ProjectMilestone projectMilestone : projectMilestones) {
+              milestonesTemp.add(projectMilestone.getCrpMilestone().getComposeID());
+            }
 
             List<ProjectInnovation> innovations =
               projectL.getProjectInnovations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
@@ -1179,6 +1195,13 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           }
         }
 
+        this.milestones = new ArrayList<>();
+        for (String milestoneComposedId : milestonesTemp) {
+          CrpMilestone milestone = this.milestoneManager.getCrpMilestoneByPhase(milestoneComposedId, this.getPhaseID());
+          if (milestone != null) {
+            this.milestones.add(milestone);
+          }
+        }
       }
 
       if (this.project != null) {
