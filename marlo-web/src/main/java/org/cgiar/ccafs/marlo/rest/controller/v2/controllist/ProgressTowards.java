@@ -80,12 +80,17 @@ public class ProgressTowards {
       required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${ProgressTowards.progresstowardsSRF.POST.param.progresstowardsSRF}",
       required = true) @Valid @RequestBody NewSrfProgressTowardsTargetDTO newSrfProgressTowardsTargetDTO) {
+    Long progressTowardsId = null;
+    try {
+      progressTowardsId = this.progressTowardsItem.createProgressTowards(newSrfProgressTowardsTargetDTO, CGIAREntity,
+        this.getCurrentUser());
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
 
-    Long progressTowardsId = this.progressTowardsItem.createProgressTowards(newSrfProgressTowardsTargetDTO, CGIAREntity,
-      this.getCurrentUser());
 
     ResponseEntity<Long> response = new ResponseEntity<Long>(progressTowardsId, HttpStatus.OK);
-    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+    if (response == null || response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("ProgressTowards.progresstowardsSRF.GET.id.404"));
     }
 
