@@ -27,7 +27,7 @@ function checkDOI() {
     //    /10.\d{4,9}[-._;()/:A-Z0-9]+$/i            si lo contiene
 
     // nuevo doi ^((https?:\/\/)?(www\.)?[a-zA-Z0-9.-]+\.+[a-zA-Z0-9.-]+\/10\.\d{4,9}\/[-._;():A-Z0-9]+$|^10\.\d{4,9}\/[-._;():A-Z0-9]+$)
-    var result = /^((https?:\/\/)?(www\.)?[a-zA-Z0-9.-]+\.+[a-zA-Z0-9.-]+\/10\.\d{4,9}\/[-._;():A-Z0-9]+$|^10\.\d{4,9}\/[-._;():A-Z0-9]+$)/i.test($('#doi-bridge').val());
+    var result = /^((https?:\/\/)?(www\.)?[a-zA-Z0-9.-]+\.+[a-zA-Z0-9.-]+\/10\.\d{4,9}\/[-._;()/:A-Z0-9]+$|^10\.\d{4,9}\/[-._;()/:A-Z0-9]+$)/i.test($('#doi-bridge').val());
    
       if ( result  ) {
         $('#doi-bridge').css("border", "1px solid #ccc");
