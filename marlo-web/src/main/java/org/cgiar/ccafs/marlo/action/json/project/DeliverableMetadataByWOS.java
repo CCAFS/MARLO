@@ -133,7 +133,8 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
     // If there are parameters, take its values
     try {
-      this.link = StringUtils.stripToEmpty(parameters.get(APConstants.WOS_LINK).getMultipleValues()[0]);
+      String incomingUrl = StringUtils.stripToEmpty(parameters.get(APConstants.WOS_LINK).getMultipleValues()[0]);
+      this.link = DOIService.tryGetDoiName(incomingUrl);
       this.deliverableId = Long.valueOf(
         StringUtils.stripToEmpty(parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID).getMultipleValues()[0]));
     } catch (Exception e) {
@@ -222,6 +223,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
           newDeliverableAffiliation.setDeliverableMetadataExternalSources(externalSource);
           newDeliverableAffiliation.setInstitutionNameWebOfScience(incomingAffiliation.getFullName());
           newDeliverableAffiliation.setInstitutionMatchConfidence(incomingAffiliation.getClarisaMatchConfidence());
+          newDeliverableAffiliation.setActive(true);
 
           newDeliverableAffiliation =
             this.deliverableAffiliationManager.saveDeliverableAffiliation(newDeliverableAffiliation);
@@ -264,13 +266,15 @@ public class DeliverableMetadataByWOS extends BaseAction {
       for (WOSInstitution incomingAffiliation : incomingInstitutions) {
         if (incomingAffiliation.getClarisaMatchConfidence() < APConstants.ACCEPTATION_PERCENTAGE) {
           DeliverableAffiliationsNotMapped newDeliverableAffiliationNotMapped =
-            this.deliverableAffiliationsNotMappedManager.findAll().stream()
-              .filter(nda -> nda != null && nda.getDeliverableMetadataExternalSources() != null
-                && nda.getDeliverableMetadataExternalSources().getId() != null
-                && nda.getDeliverableMetadataExternalSources().getId().equals(externalSource.getId())
-                && nda.getPossibleInstitution() != null && nda.getPossibleInstitution().getId() != null
-                && nda.getPossibleInstitution().getId().equals(incomingAffiliation.getClarisaId()))
-              .findFirst().orElse(null);
+            this.deliverableAffiliationsNotMappedManager.findAll() != null
+              ? this.deliverableAffiliationsNotMappedManager.findAll().stream()
+                .filter(nda -> nda != null && nda.getDeliverableMetadataExternalSources() != null
+                  && nda.getDeliverableMetadataExternalSources().getId() != null
+                  && nda.getDeliverableMetadataExternalSources().getId().equals(externalSource.getId())
+                  && nda.getPossibleInstitution() != null && nda.getPossibleInstitution().getId() != null
+                  && nda.getPossibleInstitution().getId().equals(incomingAffiliation.getClarisaId()))
+                .findFirst().orElse(null)
+              : null;
           if (newDeliverableAffiliationNotMapped == null) {
             newDeliverableAffiliationNotMapped = new DeliverableAffiliationsNotMapped();
             newDeliverableAffiliationNotMapped.setDeliverableMetadataExternalSources(externalSource);
@@ -289,6 +293,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
           newDeliverableAffiliationNotMapped.setFullAddress(incomingAffiliation.getFullAddress());
           newDeliverableAffiliationNotMapped
             .setInstitutionMatchConfidence(incomingAffiliation.getClarisaMatchConfidence());
+          newDeliverableAffiliationNotMapped.setActive(true);
 
           newDeliverableAffiliationNotMapped = this.deliverableAffiliationsNotMappedManager
             .saveDeliverableAffiliationsNotMapped(newDeliverableAffiliationNotMapped);

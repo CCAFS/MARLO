@@ -2429,15 +2429,15 @@ public class DeliverableAction extends BaseAction {
         dissemination.setConfidentialUrl(null);
       }
 
-      if (deliverable.getDissemination().getHasDOI() != null && deliverable.getDissemination().getHasDOI() == true) {
-        dissemination.setHasDOI(true);
-      } else {
-        dissemination.setHasDOI(false);
-      }
+      boolean hasDOI =
+        deliverable.getDissemination().getHasDOI() != null && deliverable.getDissemination().getHasDOI() == true;
+      dissemination.setHasDOI(hasDOI);
 
-      if (deliverable.getDissemination().getArticleUrl() != null
+      if (hasDOI && deliverable.getDissemination().getArticleUrl() != null
         && !deliverable.getDissemination().getArticleUrl().isEmpty()) {
         dissemination.setArticleUrl(deliverable.getDissemination().getArticleUrl());
+      } else {
+        dissemination.setArticleUrl(null);
       }
 
       dissemination.setPhase(this.getActualPhase());
