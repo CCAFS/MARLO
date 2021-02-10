@@ -148,8 +148,18 @@
   <div class="simpleBox form-group">
     <input type="hidden"  name="${customName}.id" value="${(deliverable.dissemination.id)!}" />
     <div class="row yesNoInputDeliverable">
-      <label class="col-md-9 yesNoLabel" for="">Is this deliverable Open Access? [@customForm.req required=reportingActive /]</label>
-      <div class="col-md-3">[@customForm.yesNoInputDeliverable name="${customName}.isOpenAccess"  editable=editable inverse=false cssClass="type-accessible inverted-true text-center" /]  </div>
+    <span class="col-md-9">
+      <label class=" yesNoLabel" for="">Is this deliverable Open Access? [@customForm.req required=reportingActive /]</label>
+      <p><small>Please make sure the information from the repository you chose and the one on Web of Science match. </small></p>
+      <div class="WOS_tag" style="display: none;">
+        <p>According to Web of Science you should select: <span id="WOS_tag_IOA_yes" style="color: rgb(9, 211, 70); font-weight: 700;">Yes</span><span id="WOS_tag_IOA_no" style="color: rgb(207, 42, 42); font-weight: 700;">No</span></p>
+      </div>
+      
+    </span>
+    <div class="col-md-3">
+      [@customForm.yesNoInputDeliverable name="${customName}.isOpenAccess"  editable=editable inverse=false cssClass="type-accessible inverted-true text-center" /]  
+    </div>
+    
     </div> 
     [#--  <div class="block-accessible" style="display: ${((!deliverable.dissemination.isOpenAccess)!false)?string("block","none")};">
       <hr />
@@ -383,7 +393,7 @@
       </div>
       <div class="col-md-6 conditionalRequire doi-bridge" style="position: relative;">
         [@customForm.input name="doi-bridge" required=require value="" className="metadataValue "  type="text" i18nkey="DOI" help="nada2" readOnly=mElementHide editable=editable/]
-        <p class="invalidDOI" style="position: absolute; bottom: 0 + 15px; color: rgb(207, 40, 40); font-weight: 600; font-size: 0.8em; display: none;">Invalid DOI identifier</p>
+        <p class="invalidDOI" style="position: absolute; bottom: 0 + 15px; color: rgb(207, 40, 40); font-weight: 600; font-size: 0.8em; display: none;">Invalid DOI identifier.<br>Please use the correct format <strong>(e.g. 10.1109/5.771073)</strong></p>
         <p class="validDOI" style="position: absolute; bottom: 0 + 15px; color: rgb(50, 206, 45); font-weight: 600; font-size: 0.8em; display: none;">Valid DOI identifier</p>
       </div>
     </div>
@@ -446,8 +456,9 @@
       <div class="modal fade" id="WOSModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog " style=" width:80%">
           <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header" style="position: relative;">
               <h5 class="modal-title" id="exampleModalLabel" style="font-weight: 600; font-size: 1.5em; text-align: center;">WOS metadata information</h5>
+              <p style="font-style: italic; color: #868686; font-size: .9em; position: absolute; transform: translateX(-50%);left: 50%;">latest update date: <span style="color: #9e9e9e ;" class="currentDate"></span></p>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -511,6 +522,7 @@
                   </tr>
                 </tbody>
               </table>
+                   <input type="hidden"  id="acceptationPercentageValue" name="acceptationPercentage" value="${(acceptationPercentage)!}">
 
             </div>
             <div class="modal-footer">
@@ -642,10 +654,13 @@
     [#-- Is ISI Journal--]
     <div class="form-group isIsiJournal">
       <label for="">[@s.text name="deliverable.isiPublication" /] [@customForm.req required=editable /]
-      <p><i class="helpLabel">[@s.text name="deliverable.isiPublication.help"][@s.param]<a href="http://mjl.clarivate.com/">http://mjl.clarivate.com/</a>[/@s.param][/@s.text]</i></p></label> <br />
+      <p><i class="helpLabel">Please make sure the information from the repository you chose and the one on Web of Science match.</i></p></label> <br />
       [#local isISI = (deliverable.publication.isiPublication?string)!"" /]
       [@customForm.radioFlat id="optionISI-yes"  name="deliverable.publication.isiPublication" i18nkey="Yes"  value="true"  checked=(isISI == "true")  cssClass="radioType-optionISI" cssClassLabel="font-normal radio-label-yes" editable=editable /] 
       [@customForm.radioFlat id="optionISI-no"   name="deliverable.publication.isiPublication" i18nkey="No"   value="false" checked=(isISI == "false") cssClass="radioType-optionISI" cssClassLabel="font-normal radio-label-no"  editable=editable /] 
+      <div class="WOS_tag" style="display: none; margin: 5px 0px" >
+        <p>According to Web of Science you should select: <span id="WOS_tag_ISI_yes" style="color: rgb(9, 211, 70); font-weight: 700;">Yes</span><span id="WOS_tag_ISI__no" style="color: rgb(207, 42, 42); font-weight: 700;">No</span></p>
+      </div>
     </div>
     
     [#-- Journal Indicators --]
