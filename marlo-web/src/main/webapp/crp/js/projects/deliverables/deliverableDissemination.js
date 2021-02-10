@@ -92,6 +92,10 @@ setTimeout(() => {
       $('.loading-WOS-container').show('slow');
       $('#WOSModalBtn').hide("slow");  
       $('#output-wos').hide("slow");  
+      $('#A4NH_deliverable_save').prop('disabled', true);
+      $('#A4NH_deliverable_save').css("background-color", "#b6b6b6");
+      $('#A4NH_deliverable_save').css("border-bottom", "3px solid #acacac");
+     
       
     },
     success: function(data) {
@@ -113,6 +117,9 @@ setTimeout(() => {
       $('#output-wos').show('slow');   
       $('#output-wos').show('slow');  
       $('.loading-WOS-container').hide("slow");
+      $('#A4NH_deliverable_save').prop('disabled', false);
+      $('#A4NH_deliverable_save').css("background-color", "");
+      $('#A4NH_deliverable_save').css("border-bottom", "");
     }
  });
  }
@@ -289,6 +296,17 @@ function updateReadOnly() {
       $('.isOtherUrlTohide').hide("slow"); 
       hideOrShowCheckBoxIsOtherUrl(false);
     } else {
+      setTimeout(() => {
+        let result = /^((https?:\/\/)?(www\.)?[a-zA-Z0-9.-]+\.+[a-zA-Z0-9.-]+\/10\.\d{4,9}\/[-._;():A-Z0-9]+$|^10\.\d{4,9}\/[-._;():A-Z0-9]+$)/i.test($('#doi-bridge').val());
+        if (result) {
+          console.log('%cValid DOI','background: #222; color: #37ff73');
+          getWOSInfo();
+        }else{
+          console.log('%cInvalid DOI','background: #222; color: #fd8484');
+        }
+      }, 2000);
+
+
       //if not and its equal chanel to other
       $('#WOSSyncBtn').show('slow'); 
       $(".ifIsReadOnly .metadataElement-handle .input input").prop('readonly', false);
