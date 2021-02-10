@@ -850,7 +850,7 @@ public class ProgressTowardsItem<T> {
         boolean found = true;
         for (GeographicScopeDTO scopesDTO : newSrfProgressTowardsTargetDTO.getGeographicScope()) {
           if (scope.getRepIndGeographicScope().getId().longValue() == scopesDTO.getCode().longValue()) {
-            found = true;
+            found = false;
           }
         }
         if (found) {
