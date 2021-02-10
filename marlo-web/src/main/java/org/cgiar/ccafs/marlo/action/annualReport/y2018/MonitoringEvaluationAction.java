@@ -742,7 +742,7 @@ public class MonitoringEvaluationAction extends BaseAction {
         reportSynthesisManager.getReportSynthesisById(synthesisID).getReportSynthesisMelia();
 
       // Dont save records (check marks in exclusion table) for Flagships
-      if (!this.isPMU()) {
+      if (this.isPMU()) {
         if (reportSynthesis.getReportSynthesisMelia().getPlannedStudies() == null) {
           reportSynthesis.getReportSynthesisMelia().setPlannedStudies(new ArrayList<>());
         }

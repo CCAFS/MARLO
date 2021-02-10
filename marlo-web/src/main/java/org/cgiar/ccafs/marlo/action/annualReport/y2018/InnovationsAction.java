@@ -579,7 +579,7 @@ public class InnovationsAction extends BaseAction {
     if (this.hasPermission("canEdit")) {
 
       // Dont save records (check marks in exclusion table) for Flagships
-      if (!this.isPMU()) {
+      if (this.isPMU()) {
 
         ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgressDB =
           reportSynthesisManager.getReportSynthesisById(synthesisID).getReportSynthesisFlagshipProgress();
