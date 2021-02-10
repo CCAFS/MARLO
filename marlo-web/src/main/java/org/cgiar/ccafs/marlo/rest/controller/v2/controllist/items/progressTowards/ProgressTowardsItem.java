@@ -23,7 +23,10 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProgressTargetCaseGeographicRegionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProgressTargetCaseGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisSrfProgressManager;
@@ -32,14 +35,21 @@ import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorManager;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProgressTargetCaseGeographicRegion;
+import org.cgiar.ccafs.marlo.data.model.ProgressTargetCaseGeographicScope;
+import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTargetCases;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicator;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.rest.dto.CountryDTO;
+import org.cgiar.ccafs.marlo.rest.dto.GeographicScopeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewSrfProgressTowardsTargetDTO;
+import org.cgiar.ccafs.marlo.rest.dto.RegionDTO;
 import org.cgiar.ccafs.marlo.rest.dto.SrfProgressTowardsTargetDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
 import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
@@ -72,6 +82,9 @@ public class ProgressTowardsItem<T> {
   private RepIndGeographicScopeManager repIndGeographicScopeManager;
   private CrpProgramManager crpProgramManager;
   private SrfSloIndicatorManager srfSloIndicatorManager;
+  private LocElementManager locElementManager;
+  private ProgressTargetCaseGeographicScopeManager progressTargetCaseGeographicScopeManager;
+  private ProgressTargetCaseGeographicRegionManager progressTargetCaseGeographicRegionManager;
 
   private SrfProgressTowardsTargetMapper srfProgressTowardsTargetMapper;
 
@@ -81,7 +94,9 @@ public class ProgressTowardsItem<T> {
     ReportSynthesisManager reportSynthesisManager, LiaisonInstitutionManager liaisonInstitutionManager,
     CrpProgramManager crpProgramManager, ReportSynthesisSrfProgressManager reportSynthesisSrfProgressManager,
     SrfProgressTowardsTargetMapper srfProgressTowardsTargetMapper, SrfSloIndicatorManager srfSloIndicatorManager,
-    RepIndGeographicScopeManager repIndGeographicScopeManager) {
+    RepIndGeographicScopeManager repIndGeographicScopeManager, LocElementManager locElementManager,
+    ProgressTargetCaseGeographicRegionManager progressTargetCaseGeographicRegionManager,
+    ProgressTargetCaseGeographicScopeManager progressTargetCaseGeographicScopeManager) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.reportSynthesisSrfProgressTargetCasesManager = reportSynthesisSrfProgressTargetCasesManager;
@@ -93,6 +108,11 @@ public class ProgressTowardsItem<T> {
 
     this.srfProgressTowardsTargetMapper = srfProgressTowardsTargetMapper;
     this.repIndGeographicScopeManager = repIndGeographicScopeManager;
+
+    this.locElementManager = locElementManager;
+
+    this.progressTargetCaseGeographicScopeManager = progressTargetCaseGeographicScopeManager;
+    this.progressTargetCaseGeographicRegionManager = progressTargetCaseGeographicRegionManager;
   }
 
   public Long createProgressTowards(NewSrfProgressTowardsTargetDTO newSrfProgressTowardsTargetDTO,
@@ -201,10 +221,13 @@ public class ProgressTowardsItem<T> {
               && pt.getSrfSloIndicatorTarget().getSrfSloIndicator().getId() == sloIndicatorId)
             .findFirst().orElse(null);
 
-          if (reportSynthesisSrfProgressTarget != null) {
-            fieldErrors.add(new FieldErrorDTO("createProgressTowards", "ReportSynthesisSrfProgressTargetEntity",
-              "A Report Synthesis Srf Progress Target was found for the phase. If you want to update it, please use the update method."));
-          }
+          /*
+           * if (reportSynthesisSrfProgressTarget != null) {
+           * fieldErrors.add(new FieldErrorDTO("createProgressTowards", "ReportSynthesisSrfProgressTargetEntity",
+           * "A Report Synthesis Srf Progress Target was found for the phase. If you want to update it, please use the update method."
+           * ));
+           * }
+           */
         }
       } else {
         fieldErrors.add(new FieldErrorDTO("createProgressTowards", "SrfSloIndicatorEntity",
@@ -239,12 +262,6 @@ public class ProgressTowardsItem<T> {
       }
       // end SrfSloIndicatorTarget
 
-      // start ReportSynthesis
-      // if (crpProgram != null) {
-      // liaisonInstitution =
-      // liaisonInstitutionManager.findByAcronymAndCrp(crpProgram.getAcronym(), globalUnitEntity.getId());
-      // reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
-      // }
       if (liaisonInstitution != null) {
         reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
       }
@@ -287,11 +304,77 @@ public class ProgressTowardsItem<T> {
         reportSynthesisSrfProgressTarget
           .setAdditionalContribution(newSrfProgressTowardsTargetDTO.getAdditionalContribution());
 
-        ReportSynthesisSrfProgressTargetCases reportSynthesisSrfProgressTargetDB =
-          reportSynthesisSrfProgressTargetCasesManager
-            .saveReportSynthesisSrfProgressTargetCases(reportSynthesisSrfProgressTarget);
-        if (reportSynthesisSrfProgressTargetDB != null) {
-          srfProgressTargetId = reportSynthesisSrfProgressTargetDB.getId();
+        // AR2020 changes
+        List<ProgressTargetCaseGeographicScope> scopeList = new ArrayList<ProgressTargetCaseGeographicScope>();
+        for (GeographicScopeDTO geographicScope : newSrfProgressTowardsTargetDTO.getGeographicScope()) {
+          if (geographicScope.getCode() != null) {
+            RepIndGeographicScope repIndGeographicScope =
+              repIndGeographicScopeManager.getRepIndGeographicScopeById(geographicScope.getCode().longValue());
+            if (repIndGeographicScope != null) {
+              ProgressTargetCaseGeographicScope scope = new ProgressTargetCaseGeographicScope();
+              scope.setPhase(phase);
+              scope.setRepIndGeographicScope(repIndGeographicScope);
+              scopeList.add(scope);
+            } else {
+              fieldErrors.add(new FieldErrorDTO("createProgressTowards", "Geographic Scope",
+                geographicScope.getCode().longValue() + " is not a valid Geographic Scope"));
+            }
+          } else {
+            fieldErrors
+              .add(new FieldErrorDTO("createProgressTowards", "Geographic Scope", "Geographic Scope code is required"));
+          }
+        }
+        // regions
+        List<ProgressTargetCaseGeographicRegion> locationsList = new ArrayList<ProgressTargetCaseGeographicRegion>();
+        for (RegionDTO regions : newSrfProgressTowardsTargetDTO.getRegions()) {
+          if (regions.getUM49Code() != null) {
+            LocElement location = locElementManager.getLocElementByNumericISOCode(regions.getUM49Code());
+            if (location != null && location.getLocElementType().getId().longValue() == 1) {
+              ProgressTargetCaseGeographicRegion region = new ProgressTargetCaseGeographicRegion();
+              region.setLocElement(location);
+              region.setPhase(phase);
+              locationsList.add(region);
+            } else {
+              fieldErrors.add(new FieldErrorDTO("createProgressTowards", "Regions",
+                regions.getUM49Code().longValue() + " is not a valid Region UN49 code"));
+            }
+          } else {
+            fieldErrors.add(new FieldErrorDTO("createProgressTowards", "Region", "Region UN49 code is required"));
+          }
+        }
+        // countries
+        for (CountryDTO countries : newSrfProgressTowardsTargetDTO.getCountries()) {
+          if (countries.getCode() != null) {
+            LocElement location = locElementManager.getLocElementByNumericISOCode(countries.getCode());
+            if (location != null && location.getLocElementType().getId().longValue() == 2) {
+              ProgressTargetCaseGeographicRegion region = new ProgressTargetCaseGeographicRegion();
+              region.setLocElement(location);
+              region.setPhase(phase);
+              locationsList.add(region);
+            } else {
+              fieldErrors.add(new FieldErrorDTO("createProgressTowards", "Countries",
+                countries.getCode().longValue() + " is not a valid country"));
+            }
+          } else {
+            fieldErrors.add(new FieldErrorDTO("createProgressTowards", "Country", "Country iso code is required"));
+          }
+        }
+        if (fieldErrors.isEmpty()) {
+          ReportSynthesisSrfProgressTargetCases reportSynthesisSrfProgressTargetDB =
+            reportSynthesisSrfProgressTargetCasesManager
+              .saveReportSynthesisSrfProgressTargetCases(reportSynthesisSrfProgressTarget);
+          if (reportSynthesisSrfProgressTargetDB != null) {
+            srfProgressTargetId = reportSynthesisSrfProgressTargetDB.getId();
+          }
+          for (ProgressTargetCaseGeographicScope scope : scopeList) {
+            scope.setTargetCase(reportSynthesisSrfProgressTargetDB);
+            progressTargetCaseGeographicScopeManager.saveProgressTargetCaseGeographicScope(scope);
+          }
+
+          for (ProgressTargetCaseGeographicRegion location : locationsList) {
+            location.setTargetCase(reportSynthesisSrfProgressTargetDB);
+            progressTargetCaseGeographicRegionManager.saveProgressTargetCaseGeographicRegion(location);
+          }
         }
       }
     }
@@ -368,6 +451,16 @@ public class ProgressTowardsItem<T> {
                   "The Report Synthesis Srf Progress Target with id " + id
                     + " do not correspond to the phase entered"));
               } else {
+                List<ProgressTargetCaseGeographicRegion> regions =
+                  srfProgressTarget.getProgressTargetCaseGeographicRegions().stream().collect(Collectors.toList());
+                for (ProgressTargetCaseGeographicRegion region : regions) {
+                  progressTargetCaseGeographicRegionManager.deleteProgressTargetCaseGeographicRegion(region.getId());
+                }
+                List<ProgressTargetCaseGeographicScope> scopes =
+                  srfProgressTarget.getProgressTargetCaseGeographicScopes().stream().collect(Collectors.toList());
+                for (ProgressTargetCaseGeographicScope scope : scopes) {
+                  progressTargetCaseGeographicScopeManager.deleteProgressTargetCaseGeographicScope(scope.getId());
+                }
                 reportSynthesisSrfProgressTargetCasesManager
                   .deleteReportSynthesisSrfProgressTargetCases(srfProgressTarget.getId());
               }
@@ -633,24 +726,6 @@ public class ProgressTowardsItem<T> {
       }
     }
 
-    // strippedId = StringUtils.stripToNull(newSrfProgressTowardsTargetDTO.getFlagshipProgramId());
-    // if (strippedId != null) {
-    // crpProgram = crpProgramManager.getCrpProgramBySmoCode(strippedId);
-    // if (crpProgram == null) {
-    // fieldErrors.add(new FieldErrorDTO("putProgressTowards", "CrpProgramEntity",
-    // newSrfProgressTowardsTargetDTO.getFlagshipProgramId() + " is an invalid CRP Program SMO Code"));
-    // } else {
-    // if (!StringUtils.equalsIgnoreCase(crpProgram.getCrp().getAcronym(), strippedEntityAcronym)) {
-    // fieldErrors.add(new FieldErrorDTO("putProgressTowards", "FlagshipEntity",
-    // "The CRP Program SMO Code entered does not correspond to the GlobalUnit with acronym "
-    // + CGIARentityAcronym));
-    // }
-    // }
-    // } else {
-    // fieldErrors.add(
-    // new FieldErrorDTO("putProgressTowards", "CrpProgramEntity", "CRP Program SMO code can not be null nor empty."));
-    // }
-
     ReportSynthesisSrfProgressTargetCases reportSynthesisSrfProgressTarget =
       reportSynthesisSrfProgressTargetCasesManager.getReportSynthesisSrfProgressTargetCasesById(idProgressTowards);
     if (reportSynthesisSrfProgressTarget == null || reportSynthesisSrfProgressTarget.isActive() == false) {
@@ -725,12 +800,7 @@ public class ProgressTowardsItem<T> {
 
       reportSynthesisSrfProgressTarget.setSrfSloIndicatorTarget(srfSloIndicatorTarget);
 
-      // liaisonInstitution =
-      // liaisonInstitutionManager.findByAcronymAndCrp(crpProgram.getAcronym(), globalUnitEntity.getId());
-      // if (liaisonInstitution == null) {
-      // fieldErrors.add(new FieldErrorDTO("putProgressTowards", "LiaisonInstitutionEntity",
-      // "A Liaison Institution with the acronym " + crpProgram.getAcronym() + " could not be found"));
-      // } else {
+
       if (liaisonInstitution != null) {
         reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
         if (reportSynthesis == null) {
@@ -747,18 +817,152 @@ public class ProgressTowardsItem<T> {
           }
         }
       }
-    }
 
+      // geographicscope
+      List<ProgressTargetCaseGeographicScope> scopeList = new ArrayList<ProgressTargetCaseGeographicScope>();
+      List<ProgressTargetCaseGeographicScope> deleteScopeList = new ArrayList<ProgressTargetCaseGeographicScope>();
+      for (GeographicScopeDTO scopesDTO : newSrfProgressTowardsTargetDTO.getGeographicScope()) {
+        boolean found = false;
+        for (ProgressTargetCaseGeographicScope scope : reportSynthesisSrfProgressTarget
+          .getProgressTargetCaseGeographicScopes().stream().collect(Collectors.toList())) {
+          if (scope.getRepIndGeographicScope().getId().longValue() == scopesDTO.getCode().longValue()) {
+            found = true;
+          }
+        }
+        if (!found) {
+          RepIndGeographicScope geographicScope =
+            repIndGeographicScopeManager.getRepIndGeographicScopeById(scopesDTO.getCode());
+          if (geographicScope != null) {
+            ProgressTargetCaseGeographicScope scope = new ProgressTargetCaseGeographicScope();
+            scope.setPhase(phase);
+            scope.setTargetCase(reportSynthesisSrfProgressTarget);
+            scope.setRepIndGeographicScope(geographicScope);
+            scopeList.add(scope);
+          } else {
+            fieldErrors.add(new FieldErrorDTO("putProgressTowards", "Geographic Scope",
+              "There is no Report Synthesis SRF Progress linked to the Report Synthesis"));
+          }
+        }
+      }
+
+      for (ProgressTargetCaseGeographicScope scope : reportSynthesisSrfProgressTarget
+        .getProgressTargetCaseGeographicScopes().stream().collect(Collectors.toList())) {
+        boolean found = true;
+        for (GeographicScopeDTO scopesDTO : newSrfProgressTowardsTargetDTO.getGeographicScope()) {
+          if (scope.getRepIndGeographicScope().getId().longValue() == scopesDTO.getCode().longValue()) {
+            found = true;
+          }
+        }
+        if (found) {
+          deleteScopeList.add(scope);
+        }
+      }
+      List<ProgressTargetCaseGeographicRegion> locationList = new ArrayList<ProgressTargetCaseGeographicRegion>();
+      List<ProgressTargetCaseGeographicRegion> deleteLocationList = new ArrayList<ProgressTargetCaseGeographicRegion>();
+      // regions
+      for (RegionDTO regionsDTO : newSrfProgressTowardsTargetDTO.getRegions()) {
+        LocElement loc = locElementManager.getLocElementByNumericISOCode(regionsDTO.getUM49Code());
+        if (loc != null) {
+          boolean found = false;
+          for (ProgressTargetCaseGeographicRegion region : reportSynthesisSrfProgressTarget
+            .getProgressTargetCaseGeographicRegions().stream()
+            .filter(c -> c.isActive() && c.getLocElement().getLocElementType().getId().longValue() == 1)
+            .collect(Collectors.toList())) {
+            if (region.getLocElement().getIsoNumeric().longValue() == regionsDTO.getUM49Code()) {
+              found = true;
+            }
+          }
+          if (!found) {
+            ProgressTargetCaseGeographicRegion region = new ProgressTargetCaseGeographicRegion();
+            region.setPhase(phase);
+            region.setTargetCase(reportSynthesisSrfProgressTarget);
+            region.setLocElement(loc);
+            locationList.add(region);
+          }
+        } else {
+          fieldErrors.add(new FieldErrorDTO("putProgressTowards", "Regions",
+            regionsDTO.getUM49Code().longValue() + " is not a valid Region UN49 code"));
+
+        }
+      }
+      for (ProgressTargetCaseGeographicRegion region : reportSynthesisSrfProgressTarget
+        .getProgressTargetCaseGeographicRegions().stream()
+        .filter(c -> c.isActive() && c.getLocElement().getLocElementType().getId().longValue() == 1)
+        .collect(Collectors.toList())) {
+        boolean found = true;
+        for (RegionDTO regionsDTO : newSrfProgressTowardsTargetDTO.getRegions()) {
+          if (regionsDTO.getUM49Code().longValue() == region.getLocElement().getIsoNumeric().longValue()) {
+            found = false;
+          }
+        }
+        if (found) {
+          deleteLocationList.add(region);
+        }
+      }
+
+      // countries
+      for (CountryDTO countriesDTO : newSrfProgressTowardsTargetDTO.getCountries()) {
+        LocElement loc = locElementManager.getLocElementByNumericISOCode(countriesDTO.getCode());
+        if (loc != null) {
+          boolean found = false;
+          for (ProgressTargetCaseGeographicRegion region : reportSynthesisSrfProgressTarget
+            .getProgressTargetCaseGeographicRegions().stream()
+            .filter(c -> c.isActive() && c.getLocElement().getLocElementType().getId().longValue() == 2)
+            .collect(Collectors.toList())) {
+            if (region.getLocElement().getIsoNumeric().longValue() == countriesDTO.getCode()) {
+              found = true;
+            }
+          }
+          if (!found) {
+            ProgressTargetCaseGeographicRegion region = new ProgressTargetCaseGeographicRegion();
+            region.setPhase(phase);
+            region.setTargetCase(reportSynthesisSrfProgressTarget);
+            region.setLocElement(loc);
+            locationList.add(region);
+          }
+        } else {
+          fieldErrors.add(new FieldErrorDTO("putProgressTowards", "Regions",
+            countriesDTO.getCode().longValue() + " is not a valid Region UN49 code"));
+
+        }
+      }
+      for (ProgressTargetCaseGeographicRegion countries : reportSynthesisSrfProgressTarget
+        .getProgressTargetCaseGeographicRegions().stream()
+        .filter(c -> c.isActive() && c.getLocElement().getLocElementType().getId().longValue() == 2)
+        .collect(Collectors.toList())) {
+        boolean found = true;
+        for (CountryDTO countryDTO : newSrfProgressTowardsTargetDTO.getCountries()) {
+          if (countryDTO.getCode().longValue() == countries.getLocElement().getIsoNumeric().longValue()) {
+            found = false;
+          }
+        }
+        if (found) {
+          deleteLocationList.add(countries);
+        }
+      }
+      if (fieldErrors.isEmpty()) {
+        reportSynthesisSrfProgressTargetCasesManager
+          .saveReportSynthesisSrfProgressTargetCases(reportSynthesisSrfProgressTarget);
+        for (ProgressTargetCaseGeographicScope scope : scopeList) {
+          progressTargetCaseGeographicScopeManager.saveProgressTargetCaseGeographicScope(scope);
+        }
+        for (ProgressTargetCaseGeographicScope scope : deleteScopeList) {
+          progressTargetCaseGeographicScopeManager.deleteProgressTargetCaseGeographicScope(scope.getId());
+        }
+        for (ProgressTargetCaseGeographicRegion regions : locationList) {
+          progressTargetCaseGeographicRegionManager.saveProgressTargetCaseGeographicRegion(regions);
+        }
+        for (ProgressTargetCaseGeographicRegion regions : deleteLocationList) {
+          progressTargetCaseGeographicRegionManager.deleteProgressTargetCaseGeographicRegion(regions.getId());
+        }
+      }
+    }
     if (!fieldErrors.isEmpty()) {
-      // fieldErrors.forEach(e -> System.out.println(e.getMessage()));
       throw new MARLOFieldValidationException("Field Validation errors", "",
         fieldErrors.stream()
           .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
           .collect(Collectors.toList()));
     }
-
-    reportSynthesisSrfProgressTargetCasesManager
-      .saveReportSynthesisSrfProgressTargetCases(reportSynthesisSrfProgressTarget);
     return idProgressTowardsDB;
   }
 

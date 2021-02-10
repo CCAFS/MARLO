@@ -44,7 +44,7 @@ public class NewSrfProgressTowardsTargetDTO {
   private List<CountryDTO> countries;
 
   @ApiModelProperty(notes = "Regions", position = 7)
-  private List<CountryDTO> regions;
+  private List<RegionDTO> regions;
 
 
   @ApiModelProperty(notes = "Phase (AR, POWB) - Year", position = 8)
@@ -80,7 +80,7 @@ public class NewSrfProgressTowardsTargetDTO {
   }
 
 
-  public List<CountryDTO> getRegions() {
+  public List<RegionDTO> getRegions() {
     return regions;
   }
 
@@ -113,7 +113,7 @@ public class NewSrfProgressTowardsTargetDTO {
     this.phase = phase;
   }
 
-  public void setRegions(List<CountryDTO> regions) {
+  public void setRegions(List<RegionDTO> regions) {
     this.regions = regions;
   }
 
