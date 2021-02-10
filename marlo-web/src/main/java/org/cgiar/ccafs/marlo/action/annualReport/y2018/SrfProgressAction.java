@@ -689,10 +689,10 @@ public class SrfProgressAction extends BaseAction {
                   targetCasesSave.add(targetCaseDB);
                 }
               }
+            }
 
-              if (targetCasesSave != null) {
-                reportSynthesis.getReportSynthesisSrfProgress().setSloTargetsCases(targetCasesSave);
-              }
+            if (targetCasesSave != null) {
+              reportSynthesis.getReportSynthesisSrfProgress().setSloTargetsCases(targetCasesSave);
             }
           }
         }
@@ -719,8 +719,6 @@ public class SrfProgressAction extends BaseAction {
       // Flagships Synthesis Progress
       flagshipSrfProgress =
         reportSynthesisSrfProgressManager.getFlagshipSrfProgress(liaisonInstitutions, phase.getId());
-
-
     }
 
     // ADD PMU as liasion Institution too
@@ -736,6 +734,9 @@ public class SrfProgressAction extends BaseAction {
     if (this.isHttpPost()) {
       if (reportSynthesis.getReportSynthesisSrfProgress().getSloTargets() != null) {
         reportSynthesis.getReportSynthesisSrfProgress().getSloTargets().clear();
+      }
+      if (reportSynthesis.getReportSynthesisSrfProgress().getSloTargetsCases() != null) {
+        reportSynthesis.getReportSynthesisSrfProgress().getSloTargetsCases().clear();
       }
     }
   }
@@ -873,7 +874,7 @@ public class SrfProgressAction extends BaseAction {
    */
   public void saveSrfTargetsCases(ReportSynthesisSrfProgress srfProgressDB) {
     // Save form Information
-    if (reportSynthesis.getReportSynthesisSrfProgress().getSloTargets() != null) {
+    if (reportSynthesis.getReportSynthesisSrfProgress().getSloTargetsCases() != null) {
       for (ReportSynthesisSrfProgressTargetCases srfTarget : reportSynthesis.getReportSynthesisSrfProgress()
         .getSloTargetsCases()) {
         if (srfTarget.getId() == null) {
