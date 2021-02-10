@@ -41,7 +41,7 @@ public class ProgressTargetCaseGeographicRegionMySQLDAO
   public void deleteProgressTargetCaseGeographicRegion(long progressTargetCaseGeographicRegionId) {
     ProgressTargetCaseGeographicRegion progressTargetCaseGeographicRegion =
       this.find(progressTargetCaseGeographicRegionId);
-    this.update(progressTargetCaseGeographicRegion);
+    this.delete(progressTargetCaseGeographicRegion);
   }
 
   @Override
