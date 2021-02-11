@@ -522,6 +522,7 @@
                   </tr>
                 </tbody>
               </table>
+                   <input type="hidden"  id="acceptationPercentageValue" name="acceptationPercentage" value="${(acceptationPercentage)!}">
 
             </div>
             <div class="modal-footer">
