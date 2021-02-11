@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProgressTargetCaseGeographicCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProgressTargetCaseGeographicRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProgressTargetCaseGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
@@ -37,6 +38,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProgressTargetCaseGeographicCountry;
 import org.cgiar.ccafs.marlo.data.model.ProgressTargetCaseGeographicRegion;
 import org.cgiar.ccafs.marlo.data.model.ProgressTargetCaseGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
@@ -85,6 +87,7 @@ public class ProgressTowardsItem<T> {
   private LocElementManager locElementManager;
   private ProgressTargetCaseGeographicScopeManager progressTargetCaseGeographicScopeManager;
   private ProgressTargetCaseGeographicRegionManager progressTargetCaseGeographicRegionManager;
+  private ProgressTargetCaseGeographicCountryManager progressTargetCaseGeographicCountryManager;
 
   private SrfProgressTowardsTargetMapper srfProgressTowardsTargetMapper;
 
@@ -96,7 +99,8 @@ public class ProgressTowardsItem<T> {
     SrfProgressTowardsTargetMapper srfProgressTowardsTargetMapper, SrfSloIndicatorManager srfSloIndicatorManager,
     RepIndGeographicScopeManager repIndGeographicScopeManager, LocElementManager locElementManager,
     ProgressTargetCaseGeographicRegionManager progressTargetCaseGeographicRegionManager,
-    ProgressTargetCaseGeographicScopeManager progressTargetCaseGeographicScopeManager) {
+    ProgressTargetCaseGeographicScopeManager progressTargetCaseGeographicScopeManager,
+    ProgressTargetCaseGeographicCountryManager progressTargetCaseGeographicCountryManager) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.reportSynthesisSrfProgressTargetCasesManager = reportSynthesisSrfProgressTargetCasesManager;
@@ -325,7 +329,7 @@ public class ProgressTowardsItem<T> {
           }
         }
         // regions
-        List<ProgressTargetCaseGeographicRegion> locationsList = new ArrayList<ProgressTargetCaseGeographicRegion>();
+        List<ProgressTargetCaseGeographicRegion> regionList = new ArrayList<ProgressTargetCaseGeographicRegion>();
         for (RegionDTO regions : newSrfProgressTowardsTargetDTO.getRegions()) {
           if (regions.getUM49Code() != null) {
             LocElement location = locElementManager.getLocElementByNumericISOCode(regions.getUM49Code());
@@ -333,7 +337,7 @@ public class ProgressTowardsItem<T> {
               ProgressTargetCaseGeographicRegion region = new ProgressTargetCaseGeographicRegion();
               region.setLocElement(location);
               region.setPhase(phase);
-              locationsList.add(region);
+              regionList.add(region);
             } else {
               fieldErrors.add(new FieldErrorDTO("createProgressTowards", "Regions",
                 regions.getUM49Code().longValue() + " is not a valid Region UN49 code"));
@@ -343,14 +347,15 @@ public class ProgressTowardsItem<T> {
           }
         }
         // countries
+        List<ProgressTargetCaseGeographicCountry> countryList = new ArrayList<ProgressTargetCaseGeographicCountry>();
         for (CountryDTO countries : newSrfProgressTowardsTargetDTO.getCountries()) {
           if (countries.getCode() != null) {
             LocElement location = locElementManager.getLocElementByNumericISOCode(countries.getCode());
             if (location != null && location.getLocElementType().getId().longValue() == 2) {
-              ProgressTargetCaseGeographicRegion region = new ProgressTargetCaseGeographicRegion();
-              region.setLocElement(location);
-              region.setPhase(phase);
-              locationsList.add(region);
+              ProgressTargetCaseGeographicCountry country = new ProgressTargetCaseGeographicCountry();
+              country.setLocElement(location);
+              country.setPhase(phase);
+              countryList.add(country);
             } else {
               fieldErrors.add(new FieldErrorDTO("createProgressTowards", "Countries",
                 countries.getCode().longValue() + " is not a valid country"));
@@ -371,9 +376,14 @@ public class ProgressTowardsItem<T> {
             progressTargetCaseGeographicScopeManager.saveProgressTargetCaseGeographicScope(scope);
           }
 
-          for (ProgressTargetCaseGeographicRegion location : locationsList) {
+          for (ProgressTargetCaseGeographicRegion location : regionList) {
             location.setTargetCase(reportSynthesisSrfProgressTargetDB);
             progressTargetCaseGeographicRegionManager.saveProgressTargetCaseGeographicRegion(location);
+          }
+
+          for (ProgressTargetCaseGeographicCountry location : countryList) {
+            location.setTargetCase(reportSynthesisSrfProgressTargetDB);
+            progressTargetCaseGeographicCountryManager.saveProgressTargetCaseGeographicCountry(location);
           }
         }
       }
@@ -456,6 +466,15 @@ public class ProgressTowardsItem<T> {
                 for (ProgressTargetCaseGeographicRegion region : regions) {
                   progressTargetCaseGeographicRegionManager.deleteProgressTargetCaseGeographicRegion(region.getId());
                 }
+
+                List<ProgressTargetCaseGeographicCountry> countries =
+                  new ArrayList<ProgressTargetCaseGeographicCountry>();
+                // srfProgressTarget.getProgressTargetCaseGeographi().stream().collect(Collectors.toList());
+
+                for (ProgressTargetCaseGeographicCountry country : countries) {
+                  progressTargetCaseGeographicCountryManager.deleteProgressTargetCaseGeographicCountry(country.getId());
+                }
+
                 List<ProgressTargetCaseGeographicScope> scopes =
                   srfProgressTarget.getProgressTargetCaseGeographicScopes().stream().collect(Collectors.toList());
                 for (ProgressTargetCaseGeographicScope scope : scopes) {
