@@ -155,17 +155,20 @@ function addZero(i) {
 }
 
 function getCurrentDate() {
-  var today = new Date();
-  var h = addZero(today.getHours());
-  var m = addZero(today.getMinutes());
-  //  var s = addZero(d.getSeconds());
-  var dd = String(today.getDate()).padStart(2, '0');
-  var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-  var yyyy = today.getFullYear();
-  var hours = today.getHours();
-  var ampm = hours >= 12 ? 'pm' : 'am';
 
-  return h + ":" + m+' '+ampm+' - '+ mm + '/' + dd + '/' + yyyy;
+
+  // var today = new Date();
+  // var h = addZero(today.getHours());
+  // var m = addZero(today.getMinutes());
+  // //  var s = addZero(d.getSeconds());
+  // var dd = String(today.getDate()).padStart(2, '0');
+  // var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+  // var yyyy = today.getFullYear();
+  // var hours = today.getHours();
+  // var ampm = hours >= 12 ? 'pm' : 'am';
+
+  // return h + ":" + m+' '+ampm+' - '+ mm + '/' + dd + '/' + yyyy;
+  return new Date().toUTCString()
   
 }
 function updateWOSFields(data){
@@ -236,33 +239,32 @@ function updateWOSFields(data){
 
 function getWosInstitutions(institutions) {
 
-console.log(institutions);
-  institutions.forEach((element,index) => {
-    
-    if (parseInt(element.clarisaMatchConfidence) <= Number($('#acceptationPercentageValue').val())) {
+  console.log(institutions);
+  institutions.forEach((element, index) => {
+
+    if (parseInt(element.clarisaMatchConfidence) < Number($('#acceptationPercentageValue').val())) {
       element.finalName = element.fullName;
-    }else{
-    $.ajax({
-      url: baseURL + '/institutionById.do',
-      data: {
-        institutionID:  element.clarisaId
-      },
-      beforeSend: function() {
-  
-        
-      },
-      success: function(data) {
-        element.finalName = data.institution.institutionName;
-      },
-      error: function(e) {
-        console.log(e);
-      },
-      complete: function() {
-        $('#td-WOS-Institutions').html(JsoninstitutionsToOrder(nullDataPipe(institutions)));
-      }
-   });
+    } else {
+      $.ajax({
+        url: baseURL + '/institutionById.do',
+        data: {
+          institutionID: element.clarisaId
+        },
+        beforeSend: function () {
+
+
+        },
+        success: function (data) {
+          element.finalName = data.institution.institutionName;
+        },
+        error: function (e) {
+          console.log(e);
+        },
+        complete: function () {
+          $('#td-WOS-Institutions').html(JsoninstitutionsToOrder(nullDataPipe(institutions)));
+        }
+      });
     }
-    
   });
 
 }
