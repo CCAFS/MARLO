@@ -41,7 +41,7 @@ public class ProgressTargetCaseGeographicScopeMySQLDAO extends AbstractMarloDAO<
   public void deleteProgressTargetCaseGeographicScope(long progressTargetCaseGeographicScopeId) {
     ProgressTargetCaseGeographicScope progressTargetCaseGeographicScope =
       this.find(progressTargetCaseGeographicScopeId);
-    this.update(progressTargetCaseGeographicScope);
+    this.delete(progressTargetCaseGeographicScope);
   }
 
   @Override

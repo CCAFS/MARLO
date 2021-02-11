@@ -461,6 +461,7 @@
     <mapping resource="xmls/ProjectImpactsCategories.hbm.xml" />
     <mapping resource="xmls/ProgressTargetCaseGeographicScopes.hbm.xml" />
     <mapping resource="xmls/ProgressTargetCaseGeographicRegions.hbm.xml" />
+    <mapping resource="xmls/ProgressTargetCaseGeographicCountries.hbm.xml" />
     <mapping resource="xmls/ActionAreas.hbm.xml" />
     <mapping resource="xmls/ImpactAreas.hbm.xml" />
     <mapping resource="xmls/ImpactAreasIndicators.hbm.xml" />    	     
