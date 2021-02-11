@@ -1203,15 +1203,14 @@ public class FundingSourceListAction extends BaseAction {
         }
       }
     }
-
-    if (closedProjects != null) {
-      closedProjects.removeAll(closedProjects);
-    }
-
-    if (tempList != null) {
-      closedProjects.addAll(tempList);
-    }
-
+    /*
+     * if (closedProjects != null) {
+     * closedProjects.removeAll(closedProjects);
+     * }
+     * if (tempList != null) {
+     * closedProjects.addAll(tempList);
+     * }
+     */
     if (institutionsIDsFilter != null) {
       institutionsIDsFilter = "";
     }
