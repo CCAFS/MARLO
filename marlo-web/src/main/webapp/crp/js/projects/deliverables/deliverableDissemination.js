@@ -1,4 +1,4 @@
-
+let WOSInstitutions='';
 $(document).ready(init);
 $(document).ready(function () {
   validateSubCategorySelector();
@@ -47,12 +47,8 @@ function getWOSInfo(){
 setTimeout(() => {
 
   const queryString = window.location.search;
-  console.log(queryString);
   const urlParams = new URLSearchParams(queryString);
   const product = urlParams.get('deliverableID')
- console.log(product);
-
-
   let makeRequest = true;
 
   link = $('#doi-bridge').val();
@@ -72,12 +68,9 @@ setTimeout(() => {
     makeRequest = false;
   }
   
-  console.log("make a request?: "+makeRequest);
-  
  // '10.1016/j.jclepro.2020.122854'
   // link = '10.1016/j.agee.2016.12.042';
  if (makeRequest) {
-   console.log("link: "+link);
   $.ajax({
     url: baseURL + '/metadataByWOS.do',
     data: {
@@ -92,12 +85,13 @@ setTimeout(() => {
       $('.loading-WOS-container').show('slow');
       $('#WOSModalBtn').hide("slow");  
       $('#output-wos').hide("slow");  
+      $('#A4NH_deliverable_save').prop('disabled', true);
+      $('#A4NH_deliverable_save').css("background-color", "#b6b6b6");
+      $('#A4NH_deliverable_save').css("border-bottom", "3px solid #acacac");
+     
       
     },
     success: function(data) {
-      console.log(data);
-    console.log("succes");
-    console.log(data.response);
     updateWOSFields(data.response);
     $('#WOSModalBtn').show('slow');  
     $('#output-wos').html('Found metadata successfully in Web of Science.')
@@ -113,6 +107,9 @@ setTimeout(() => {
       $('#output-wos').show('slow');   
       $('#output-wos').show('slow');  
       $('.loading-WOS-container').hide("slow");
+      $('#A4NH_deliverable_save').prop('disabled', false);
+      $('#A4NH_deliverable_save').css("background-color", "");
+      $('#A4NH_deliverable_save').css("border-bottom", "");
     }
  });
  }
@@ -136,9 +133,7 @@ function nullDataPipe(data){
 function JsonAuthorsToOrder(data){
   if (data != 'Not Available') {
     let auxData='';
-    console.log(data);
     data.forEach(element => {
-     console.log(element.fullName);
      auxData +='<p>'+element.fullName+'</p></hr>';
    });
     return auxData;
@@ -147,25 +142,7 @@ function JsonAuthorsToOrder(data){
   }
 }
 
-function JsoninstitutionsToOrder(data){
-  if (data != 'Not Available') {
-    let auxData='';
-    let name='';
-    console.log(data);
-    data.forEach(element => {
-     console.log(element.fullName);
-     if (parseInt(element.clarisaMatchConfidence) <= 75) {
-      name=element.clarisaId;
-     }else{
-      name=element.fullName;
-     }
-     auxData +='<p>'+name+'</p></hr>';
-   });
-    return auxData;
-  }else{
-    return data;
-  }
-}
+
 
 function loadingAnimation(){
   $('.loading-WOS').hide;
@@ -253,9 +230,55 @@ function updateWOSFields(data){
   // $('#td-WOS-Issue').html(nullDataPipe(issue));
   $('#td-WOS-Pages').html(nullDataPipe(pages));
   $('#td-WOS-Authors').html(JsonAuthorsToOrder(nullDataPipe(authors)));
-  $('#td-WOS-Institutions').html(JsoninstitutionsToOrder(nullDataPipe(institutions)));
 
+  getWosInstitutions(institutions);
+}
+
+function getWosInstitutions(institutions) {
+
+console.log(institutions);
+  institutions.forEach((element,index) => {
+    
+    if (parseInt(element.clarisaMatchConfidence) <= Number($('#acceptationPercentageValue').val())) {
+      element.finalName = element.fullName;
+    }else{
+    $.ajax({
+      url: baseURL + '/institutionById.do',
+      data: {
+        institutionID:  element.clarisaId
+      },
+      beforeSend: function() {
   
+        
+      },
+      success: function(data) {
+        element.finalName = data.institution.institutionName;
+      },
+      error: function(e) {
+        console.log(e);
+      },
+      complete: function() {
+        $('#td-WOS-Institutions').html(JsoninstitutionsToOrder(nullDataPipe(institutions)));
+      }
+   });
+    }
+    
+  });
+
+}
+
+function JsoninstitutionsToOrder(data){
+  if (data != 'Not Available') {
+    let auxData='';
+    let name='';
+    data.forEach(element => {
+     name=element.finalName;
+     auxData +='<p>'+name+'</p></hr>';
+   });
+    return auxData;
+  }else{
+    return data;
+  }
 }
 
 function updateReadOnly() {
@@ -289,6 +312,17 @@ function updateReadOnly() {
       $('.isOtherUrlTohide').hide("slow"); 
       hideOrShowCheckBoxIsOtherUrl(false);
     } else {
+      setTimeout(() => {
+        let result = /^((https?:\/\/)?(www\.)?[a-zA-Z0-9.-]+\.+[a-zA-Z0-9.-]+\/10\.\d{4,9}\/[-._;():A-Z0-9]+$|^10\.\d{4,9}\/[-._;():A-Z0-9]+$)/i.test($('#doi-bridge').val());
+        if (result) {
+          console.log('%cValid DOI','background: #222; color: #37ff73');
+          getWOSInfo();
+        }else{
+          console.log('%cInvalid DOI','background: #222; color: #fd8484');
+        }
+      }, 2000);
+
+
       //if not and its equal chanel to other
       $('#WOSSyncBtn').show('slow'); 
       $(".ifIsReadOnly .metadataElement-handle .input input").prop('readonly', false);

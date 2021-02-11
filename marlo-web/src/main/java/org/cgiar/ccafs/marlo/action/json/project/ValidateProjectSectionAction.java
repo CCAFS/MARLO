@@ -412,7 +412,9 @@ public class ValidateProjectSectionAction extends BaseAction {
           for (ProjectInnovation projectInnovation : innovations) {
             sectionStatus = sectionStatusManager.getSectionStatusByProjectInnovation(projectInnovation.getId(), cycle,
               this.getActualPhase().getYear(), this.getActualPhase().getUpkeep(), sectionName);
-            section.put("sectionName", sectionStatus.getSectionName());
+            if (sectionStatus != null && sectionStatus.getSectionName() != null) {
+              section.put("sectionName", sectionStatus.getSectionName());
+            }
             if (sectionStatus == null) {
               sectionStatus = new SectionStatus();
               sectionStatus.setMissingFields("No section");
