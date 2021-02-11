@@ -19,9 +19,6 @@ public class ProgressTargetCaseGeographicCountry extends MarloAuditableEntity
   private LocElement locElement;
 
   @Expose
-  private Phase phase;
-
-  @Expose
   private ReportSynthesisSrfProgressTargetCases targetCase;
 
   public ProgressTargetCaseGeographicCountry() {
@@ -72,10 +69,6 @@ public class ProgressTargetCaseGeographicCountry extends MarloAuditableEntity
     return u;
   }
 
-  public Phase getPhase() {
-    return phase;
-  }
-
   public ReportSynthesisSrfProgressTargetCases getTargetCase() {
     return targetCase;
   }
@@ -100,10 +93,6 @@ public class ProgressTargetCaseGeographicCountry extends MarloAuditableEntity
   @Override
   public void setModifiedBy(User modifiedBy) {
 
-  }
-
-  public void setPhase(Phase phase) {
-    this.phase = phase;
   }
 
   public void setTargetCase(ReportSynthesisSrfProgressTargetCases targetCase) {
