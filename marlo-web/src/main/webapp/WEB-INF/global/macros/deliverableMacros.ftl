@@ -458,7 +458,7 @@
           <div class="modal-content">
             <div class="modal-header" style="position: relative;">
               <h5 class="modal-title" id="exampleModalLabel" style="font-weight: 600; font-size: 1.5em; text-align: center;">WOS metadata information</h5>
-              <p style="font-style: italic; color: #868686; font-size: .9em; position: absolute; transform: translateX(-50%);left: 50%;">latest update date: <span style="color: #9e9e9e ;" class="currentDate"></span></p>
+              <p style="font-style: italic; color: #868686; font-size: .9em; position: absolute; transform: translateX(-50%);left: 50%;">last updated: <span style="color: #9e9e9e ;" class="currentDate"></span></p>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
