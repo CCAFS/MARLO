@@ -244,7 +244,7 @@ public class StatusPlannedMilestonesItem<T> {
     if (status == null) {
       fieldErrors.add(new FieldErrorDTO("createStatusPlannedMilestone", "Status", "is an invalid Status identifier"));
     } else {
-      if (status.getId().longValue() == 4) {
+      if (status.getId().longValue() == 4 || status.getId().longValue() == 5 || status.getId().longValue() == 6) {
         repIndMilestoneReason =
           repIndMilestoneReasonManager.getRepIndMilestoneReasonById(newStatusPlannedMilestoneDTO.getMainReason());
         if (repIndMilestoneReason == null) {
@@ -669,7 +669,7 @@ public class StatusPlannedMilestonesItem<T> {
     if (status == null) {
       fieldErrors.add(new FieldErrorDTO("updateStatusPlannedMilestone", "Status", "is an invalid Status identifier"));
     } else {
-      if (status.getId().longValue() == 4) {
+      if (status.getId().longValue() == 4 || status.getId().longValue() == 5 || status.getId().longValue() == 6) {
         repIndMilestoneReason =
           repIndMilestoneReasonManager.getRepIndMilestoneReasonById(newStatusPlannedMilestoneDTO.getMainReason());
         if (repIndMilestoneReason == null) {
