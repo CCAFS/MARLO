@@ -157,9 +157,15 @@ public class StatusPlannedOutcomes {
       required = true) @RequestParam Integer year,
     @ApiParam(value = "${StatusPlannedOutcomes.outcomes.GET.id.param.phase}",
       required = true) @RequestParam String phase) {
-    ResponseEntity<StatusPlannedOutcomesDTO> response = this.statusPlannedOutcomesItem
-      .findStatusPlannedOutcome(outcomeID, CGIAREntity, year, phase, this.getCurrentUser());
-    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+    ResponseEntity<StatusPlannedOutcomesDTO> response = null;
+    try {
+      response = this.statusPlannedOutcomesItem.findStatusPlannedOutcome(outcomeID, CGIAREntity, year, phase,
+        this.getCurrentUser());
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    if (response != null && response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("StatusPlannedOutcomes.outcomes.GET.id.404"));
     }
     return response;
