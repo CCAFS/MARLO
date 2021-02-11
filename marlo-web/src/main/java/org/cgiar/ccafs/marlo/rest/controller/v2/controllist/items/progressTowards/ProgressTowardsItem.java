@@ -117,6 +117,7 @@ public class ProgressTowardsItem<T> {
 
     this.progressTargetCaseGeographicScopeManager = progressTargetCaseGeographicScopeManager;
     this.progressTargetCaseGeographicRegionManager = progressTargetCaseGeographicRegionManager;
+    this.progressTargetCaseGeographicCountryManager = progressTargetCaseGeographicCountryManager;
   }
 
   public Long createProgressTowards(NewSrfProgressTowardsTargetDTO newSrfProgressTowardsTargetDTO,
@@ -336,7 +337,6 @@ public class ProgressTowardsItem<T> {
             if (location != null && location.getLocElementType().getId().longValue() == 1) {
               ProgressTargetCaseGeographicRegion region = new ProgressTargetCaseGeographicRegion();
               region.setLocElement(location);
-              region.setPhase(phase);
               regionList.add(region);
             } else {
               fieldErrors.add(new FieldErrorDTO("createProgressTowards", "Regions",
@@ -354,7 +354,6 @@ public class ProgressTowardsItem<T> {
             if (location != null && location.getLocElementType().getId().longValue() == 2) {
               ProgressTargetCaseGeographicCountry country = new ProgressTargetCaseGeographicCountry();
               country.setLocElement(location);
-              country.setPhase(phase);
               countryList.add(country);
             } else {
               fieldErrors.add(new FieldErrorDTO("createProgressTowards", "Countries",
@@ -468,8 +467,7 @@ public class ProgressTowardsItem<T> {
                 }
 
                 List<ProgressTargetCaseGeographicCountry> countries =
-                  new ArrayList<ProgressTargetCaseGeographicCountry>();
-                // srfProgressTarget.getProgressTargetCaseGeographi().stream().collect(Collectors.toList());
+                  srfProgressTarget.getProgressTargetCaseGeographicCountries().stream().collect(Collectors.toList());
 
                 for (ProgressTargetCaseGeographicCountry country : countries) {
                   progressTargetCaseGeographicCountryManager.deleteProgressTargetCaseGeographicCountry(country.getId());
@@ -549,12 +547,10 @@ public class ProgressTowardsItem<T> {
 
         progressTowarsCase.setGeographicScopes(progressTowarsCase.getProgressTargetCaseGeographicScopes().stream()
           .filter(c -> c.isActive()).collect(Collectors.toList()));
-        progressTowarsCase.setGeographicCountries(progressTowarsCase.getProgressTargetCaseGeographicRegions().stream()
-          .filter(c -> c != null && c.isActive() && c.getLocElement().getLocElementType().getId().longValue() == 2)
-          .collect(Collectors.toList()));
+        progressTowarsCase.setGeographicCountries(progressTowarsCase.getProgressTargetCaseGeographicCountries().stream()
+          .filter(c -> c != null && c.isActive()).collect(Collectors.toList()));
         progressTowarsCase.setGeographicRegions(progressTowarsCase.getProgressTargetCaseGeographicRegions().stream()
-          .filter(c -> c != null && c.isActive() && c.getLocElement().getLocElementType().getId().longValue() == 1)
-          .collect(Collectors.toList()));
+          .filter(c -> c != null && c.isActive()).collect(Collectors.toList()));
         reportSynthesisSrfProgressTargetList.add(progressTowarsCase);
       }
 
@@ -642,7 +638,7 @@ public class ProgressTowardsItem<T> {
                   .setGeographicScopes(reportSynthesisSrfProgressTarget.getProgressTargetCaseGeographicScopes().stream()
                     .filter(c -> c.isActive()).collect(Collectors.toList()));
                 reportSynthesisSrfProgressTarget.setGeographicCountries(
-                  reportSynthesisSrfProgressTarget.getProgressTargetCaseGeographicRegions().stream()
+                  reportSynthesisSrfProgressTarget.getProgressTargetCaseGeographicCountries().stream()
                     .filter(
                       c -> c != null && c.isActive() && c.getLocElement().getLocElementType().getId().longValue() == 2)
                     .collect(Collectors.toList()));
@@ -876,27 +872,24 @@ public class ProgressTowardsItem<T> {
           deleteScopeList.add(scope);
         }
       }
-      List<ProgressTargetCaseGeographicRegion> locationList = new ArrayList<ProgressTargetCaseGeographicRegion>();
-      List<ProgressTargetCaseGeographicRegion> deleteLocationList = new ArrayList<ProgressTargetCaseGeographicRegion>();
+      List<ProgressTargetCaseGeographicRegion> regionList = new ArrayList<ProgressTargetCaseGeographicRegion>();
+      List<ProgressTargetCaseGeographicRegion> deleteRegionList = new ArrayList<ProgressTargetCaseGeographicRegion>();
       // regions
       for (RegionDTO regionsDTO : newSrfProgressTowardsTargetDTO.getRegions()) {
         LocElement loc = locElementManager.getLocElementByNumericISOCode(regionsDTO.getUM49Code());
         if (loc != null) {
           boolean found = false;
           for (ProgressTargetCaseGeographicRegion region : reportSynthesisSrfProgressTarget
-            .getProgressTargetCaseGeographicRegions().stream()
-            .filter(c -> c.isActive() && c.getLocElement().getLocElementType().getId().longValue() == 1)
-            .collect(Collectors.toList())) {
+            .getProgressTargetCaseGeographicRegions().stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
             if (region.getLocElement().getIsoNumeric().longValue() == regionsDTO.getUM49Code()) {
               found = true;
             }
           }
           if (!found) {
             ProgressTargetCaseGeographicRegion region = new ProgressTargetCaseGeographicRegion();
-            region.setPhase(phase);
             region.setTargetCase(reportSynthesisSrfProgressTarget);
             region.setLocElement(loc);
-            locationList.add(region);
+            regionList.add(region);
           }
         } else {
           fieldErrors.add(new FieldErrorDTO("putProgressTowards", "Regions",
@@ -905,9 +898,7 @@ public class ProgressTowardsItem<T> {
         }
       }
       for (ProgressTargetCaseGeographicRegion region : reportSynthesisSrfProgressTarget
-        .getProgressTargetCaseGeographicRegions().stream()
-        .filter(c -> c.isActive() && c.getLocElement().getLocElementType().getId().longValue() == 1)
-        .collect(Collectors.toList())) {
+        .getProgressTargetCaseGeographicRegions().stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
         boolean found = true;
         for (RegionDTO regionsDTO : newSrfProgressTowardsTargetDTO.getRegions()) {
           if (regionsDTO.getUM49Code().longValue() == region.getLocElement().getIsoNumeric().longValue()) {
@@ -915,29 +906,30 @@ public class ProgressTowardsItem<T> {
           }
         }
         if (found) {
-          deleteLocationList.add(region);
+          deleteRegionList.add(region);
         }
       }
 
       // countries
+      List<ProgressTargetCaseGeographicCountry> countryList = new ArrayList<ProgressTargetCaseGeographicCountry>();
+      List<ProgressTargetCaseGeographicCountry> deleteCountryList =
+        new ArrayList<ProgressTargetCaseGeographicCountry>();
       for (CountryDTO countriesDTO : newSrfProgressTowardsTargetDTO.getCountries()) {
         LocElement loc = locElementManager.getLocElementByNumericISOCode(countriesDTO.getCode());
         if (loc != null) {
           boolean found = false;
-          for (ProgressTargetCaseGeographicRegion region : reportSynthesisSrfProgressTarget
-            .getProgressTargetCaseGeographicRegions().stream()
-            .filter(c -> c.isActive() && c.getLocElement().getLocElementType().getId().longValue() == 2)
+          for (ProgressTargetCaseGeographicCountry region : reportSynthesisSrfProgressTarget
+            .getProgressTargetCaseGeographicCountries().stream().filter(c -> c.isActive())
             .collect(Collectors.toList())) {
             if (region.getLocElement().getIsoNumeric().longValue() == countriesDTO.getCode()) {
               found = true;
             }
           }
           if (!found) {
-            ProgressTargetCaseGeographicRegion region = new ProgressTargetCaseGeographicRegion();
-            region.setPhase(phase);
-            region.setTargetCase(reportSynthesisSrfProgressTarget);
-            region.setLocElement(loc);
-            locationList.add(region);
+            ProgressTargetCaseGeographicCountry country = new ProgressTargetCaseGeographicCountry();
+            country.setTargetCase(reportSynthesisSrfProgressTarget);
+            country.setLocElement(loc);
+            countryList.add(country);
           }
         } else {
           fieldErrors.add(new FieldErrorDTO("putProgressTowards", "Regions",
@@ -945,10 +937,8 @@ public class ProgressTowardsItem<T> {
 
         }
       }
-      for (ProgressTargetCaseGeographicRegion countries : reportSynthesisSrfProgressTarget
-        .getProgressTargetCaseGeographicRegions().stream()
-        .filter(c -> c.isActive() && c.getLocElement().getLocElementType().getId().longValue() == 2)
-        .collect(Collectors.toList())) {
+      for (ProgressTargetCaseGeographicCountry countries : reportSynthesisSrfProgressTarget
+        .getProgressTargetCaseGeographicCountries().stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
         boolean found = true;
         for (CountryDTO countryDTO : newSrfProgressTowardsTargetDTO.getCountries()) {
           if (countryDTO.getCode().longValue() == countries.getLocElement().getIsoNumeric().longValue()) {
@@ -956,7 +946,7 @@ public class ProgressTowardsItem<T> {
           }
         }
         if (found) {
-          deleteLocationList.add(countries);
+          deleteCountryList.add(countries);
         }
       }
       if (fieldErrors.isEmpty()) {
@@ -968,11 +958,18 @@ public class ProgressTowardsItem<T> {
         for (ProgressTargetCaseGeographicScope scope : deleteScopeList) {
           progressTargetCaseGeographicScopeManager.deleteProgressTargetCaseGeographicScope(scope.getId());
         }
-        for (ProgressTargetCaseGeographicRegion regions : locationList) {
+        for (ProgressTargetCaseGeographicRegion regions : regionList) {
           progressTargetCaseGeographicRegionManager.saveProgressTargetCaseGeographicRegion(regions);
         }
-        for (ProgressTargetCaseGeographicRegion regions : deleteLocationList) {
+        for (ProgressTargetCaseGeographicRegion regions : deleteRegionList) {
           progressTargetCaseGeographicRegionManager.deleteProgressTargetCaseGeographicRegion(regions.getId());
+        }
+
+        for (ProgressTargetCaseGeographicCountry countries : countryList) {
+          progressTargetCaseGeographicCountryManager.saveProgressTargetCaseGeographicCountry(countries);
+        }
+        for (ProgressTargetCaseGeographicCountry countries : deleteCountryList) {
+          progressTargetCaseGeographicCountryManager.deleteProgressTargetCaseGeographicCountry(countries.getId());
         }
       }
     }
