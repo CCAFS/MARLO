@@ -467,9 +467,12 @@
     <mapping resource="xmls/Sdg.hbm.xml" />   
     <mapping resource="xmls/SdgTargets.hbm.xml" />
     <mapping resource="xmls/SdgIndicators.hbm.xml" />
+    
+    <!-- Deliverable WOS/Scopus and Altmetrics -->
     <mapping resource="xmls/DeliverableAffiliationsNotMapped.hbm.xml" />
     <mapping resource="xmls/ExternalSourceAuthor.hbm.xml" />
     <mapping resource="xmls/DeliverableMetadataExternalSources.hbm.xml" />
     <mapping resource="xmls/DeliverableAffiliations.hbm.xml" />
+    <mapping resource="xmls/DeliverableAltmetricInfo.hbm.xml" />
   </session-factory>
 </hibernate-configuration>
