@@ -105,7 +105,7 @@ public class CGSpaceClientAPI extends MetadataClientApi {
                   jo.put("handle", value);
                   break;
 
-                case "dc.isijournal":
+                case "cg.isijournal":
                   jo.put("ISI", StringUtils.containsIgnoreCase(value.toLowerCase(), "ISI"));
                   break;
 
@@ -117,7 +117,7 @@ public class CGSpaceClientAPI extends MetadataClientApi {
                   jo.put("pages", value);
                   break;
 
-                case "dc.edition":
+                case "cg.edition":
                   // format is supposed to be volume(issue)
                   if (StringUtils.containsAny(value, '(', ')')) {
                     String issue = StringUtils.substringBetween(value, "(", ")");
