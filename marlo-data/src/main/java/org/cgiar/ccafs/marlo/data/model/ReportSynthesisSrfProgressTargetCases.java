@@ -42,6 +42,8 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
   private Set<ProgressTargetCaseGeographicRegion> progressTargetCaseGeographicRegions =
     new HashSet<ProgressTargetCaseGeographicRegion>(0);
   private List<ProgressTargetCaseGeographicRegion> geographicRegions;
+  private List<ProgressTargetCaseGeographicRegion> geographicCountries;
+
 
   public ReportSynthesisSrfProgressTargetCases() {
   }
@@ -54,6 +56,11 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
 
   public String getBriefSummary() {
     return briefSummary;
+  }
+
+
+  public List<ProgressTargetCaseGeographicRegion> getGeographicCountries() {
+    return geographicCountries;
   }
 
 
@@ -71,6 +78,7 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
     return isContributing;
   }
 
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -78,10 +86,10 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
     return sb.toString();
   }
 
-
   public Set<ProgressTargetCaseGeographicRegion> getProgressTargetCaseGeographicRegions() {
     return progressTargetCaseGeographicRegions;
   }
+
 
   public Set<ProgressTargetCaseGeographicScope> getProgressTargetCaseGeographicScopes() {
     return progressTargetCaseGeographicScopes;
@@ -101,6 +109,10 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
 
   public void setBriefSummary(String briefSummary) {
     this.briefSummary = briefSummary;
+  }
+
+  public void setGeographicCountries(List<ProgressTargetCaseGeographicRegion> geographicCountries) {
+    this.geographicCountries = geographicCountries;
   }
 
   public void setGeographicRegions(List<ProgressTargetCaseGeographicRegion> geographicRegions) {
