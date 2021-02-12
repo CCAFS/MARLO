@@ -560,8 +560,11 @@ public class ValidateProjectSectionAction extends BaseAction {
 
 
     Locale locale = new Locale(language);
-
-    return localizedTextProvider.findDefaultText(aTextName, locale);
+    if (aTextName != null && locale != null) {
+      return localizedTextProvider.findDefaultText(aTextName, locale);
+    } else {
+      return "";
+    }
   }
 
   @Override
