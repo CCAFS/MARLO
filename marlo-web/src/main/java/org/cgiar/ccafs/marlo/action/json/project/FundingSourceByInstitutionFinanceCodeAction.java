@@ -107,14 +107,13 @@ public class FundingSourceByInstitutionFinanceCodeAction extends BaseAction {
         summaries.addAll(summariesTemp);
       }
     }
-    if (summaries != null) {
+    if (summaries != null && !summaries.isEmpty()) {
       String crpName = null;
       Long phaseID;
       for (FundingSourceSearchSummary summary : summaries) {
         if (summary.getId() != null) {
           Long crpID = fundingSourceManager
             .getFundingSourceById(Long.parseLong(String.valueOf(summary.getId().intValue()))).getCrp().getId();
-          System.out.println(crpID);
           // Remove CIAT (ID = 29) from the list
           if (crpID != null && crpID != 29) {
             if (crpManager.getGlobalUnitById(crpID).getAcronym() != null) {
@@ -130,7 +129,7 @@ public class FundingSourceByInstitutionFinanceCodeAction extends BaseAction {
             phaseID =
               this.getCrpPhase(crpID, this.getActualPhase().getYear(), this.getActualPhase().getDescription()).getId();
 
-            if (crpID != null) {
+            if (crpID != null && phaseID != null) {
               summary.setPhaseID(phaseID);
             }
           }
