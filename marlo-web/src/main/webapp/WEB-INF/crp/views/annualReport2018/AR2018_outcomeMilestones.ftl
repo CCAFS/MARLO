@@ -347,6 +347,7 @@
 [#macro annualReport2018MilestoneMacro element name index reportedOutcomeID isTemplate=false]
   [#local annualReportElement= (action.getMilestone(reportedOutcomeID,element.id))! ]
   [#local customName = "${name}[${index}]" /]
+  [#local milestoneNextPOWB = action.getNextPOWBMilestone(element.composeID) /]
   <div id="powbMilestone-${isTemplate?string('template', index)}" class="synthesisMilestone simpleBox" style="display:${isTemplate?string('none','block')}">
     [#-- Index --]
     [#-- <div class="leftHead gray sm"><span class="index">${index+1}</span></div> --]
@@ -387,9 +388,14 @@
               <td class="text-center">
                 [@customForm.select name="${ccName}.focus.id" value="${(annualReportCrossCuting.focus.id)!-1}" label="" listName="focusLevels" keyFieldName="id"  displayFieldName="powbName" required=true showTitle=false className="" editable=editable/]</td>
               <td class="text-center">
-                [@customForm.input name="${ccName}.just" value="${(annualReportCrossCuting.just)!}" showTitle=false required=true editable=editable /]</td>
+                [@customForm.input name="${ccName}.just" value="${(annualReportCrossCuting.just)!}" showTitle=false required=true editable=editable /]
+              </td>
             </tr>
           [/#list]
+          <tr><div>Next gender: ${milestoneNextPOWB.genderFocusLevel.powbName}</div></tr>
+          <tr><div>Next youth: ${milestoneNextPOWB.youthFocusLevel.powbName}</div></tr>
+          <tr><div>Next capdev: ${milestoneNextPOWB.capdevFocusLevel.powbName}</div></tr>
+          <tr><div>Next climate: ${milestoneNextPOWB.climateFocusLevel.powbName}</div></tr>
         </tbody>
       </table>
     </div>
@@ -412,6 +418,7 @@
         [@customForm.radioFlat id="${customName}-status-${s.id}" name="${customName}.milestonesStatus.id" label="${s.name}"   value="${s.id}" checked=(milestoneStatus == s.id)!false editable=editable cssClass="milestoneStatus" cssClassLabel="font-normal"/]
       [/#list]
       [#if !editable && (milestoneStatus == -1)][@s.text name="form.values.fieldEmpty"/][/#if]
+      <div>Next status: ${milestoneNextPOWB.milestonesStatus.name}</div>
     </div>
     
     [#-- New year if extended --]
