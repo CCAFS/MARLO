@@ -122,7 +122,10 @@ public class ProjectInnovationValidator extends BaseValidator {
     } else {
 
       // Validate primary milestones
-      if (projectInnovation.getMilestones() != null) {
+      if (projectInnovation.getMilestones() != null
+        && (projectInnovation.getProjectInnovationInfo().getHasMilestones() != null
+          && projectInnovation.getProjectInnovationInfo().getHasMilestones() == true
+          && !projectInnovation.getMilestones().isEmpty())) {
         int count = 0;
         for (ProjectInnovationMilestone innovationMilestone : projectInnovation.getMilestones()) {
           if (innovationMilestone.getPrimary() != null && innovationMilestone.getPrimary()) {
