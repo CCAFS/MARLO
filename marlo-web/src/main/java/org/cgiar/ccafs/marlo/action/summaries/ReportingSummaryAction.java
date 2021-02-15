@@ -2222,16 +2222,16 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
               delivDisseminationChannel = repositoryChannel.getName();
             }
           }
-          if (deliverableDissemination.getDisseminationUrl() != null
+          if (deliverableDissemination != null && deliverableDissemination.getDisseminationUrl() != null
             && !deliverableDissemination.getDisseminationUrl().isEmpty()) {
             delivDisseminationUrl = deliverableDissemination.getDisseminationUrl().replace(" ", "%20");
           }
-          if (deliverableDissemination.getConfidentialUrl() != null
+          if (deliverableDissemination != null && deliverableDissemination.getConfidentialUrl() != null
             && !deliverableDissemination.getConfidentialUrl().isEmpty()) {
             delivConfidentialUrl = deliverableDissemination.getConfidentialUrl().replace(" ", "%20");
             System.out.println("confidential " + delivConfidentialUrl);
           }
-          if (deliverableDissemination.getIsOpenAccess() != null) {
+          if (deliverableDissemination != null && deliverableDissemination.getIsOpenAccess() != null) {
             if (deliverableDissemination.getIsOpenAccess() == true) {
               delivOpenAccess = "Yes";
             } else {

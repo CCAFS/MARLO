@@ -187,7 +187,10 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
       } else {
 
         // Validate milestones
-        if (projectExpectedStudy.getMilestones() != null) {
+        if (projectExpectedStudy.getMilestones() != null
+          && (projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() != null
+            && projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() == true
+            && !projectExpectedStudy.getMilestones().isEmpty())) {
           int count = 0;
           for (ProjectExpectedStudyMilestone studyMilestone : projectExpectedStudy.getMilestones()) {
             if (studyMilestone.getPrimary() != null && studyMilestone.getPrimary()) {
