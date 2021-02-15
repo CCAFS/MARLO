@@ -4,6 +4,7 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -35,6 +36,9 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
 
   @Expose
   private Boolean isContributing;
+
+  private Set<SrfSloIndicatorTarget> srfSloTargets = new HashSet<SrfSloIndicatorTarget>(0);
+  private List<SrfSloIndicatorTarget> sloTargets = new ArrayList<>();
 
   private Set<ProgressTargetCaseGeographicScope> progressTargetCaseGeographicScopes =
     new HashSet<ProgressTargetCaseGeographicScope>(0);
@@ -102,8 +106,16 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
     return reportSynthesisSrfProgress;
   }
 
+  public List<SrfSloIndicatorTarget> getSloTargets() {
+    return sloTargets;
+  }
+
   public SrfSloIndicatorTarget getSrfSloIndicatorTarget() {
     return srfSloIndicatorTarget;
+  }
+
+  public Set<SrfSloIndicatorTarget> getSrfSloTargets() {
+    return srfSloTargets;
   }
 
   public void setAdditionalContribution(String additionalContribution) {
@@ -149,8 +161,16 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
     this.reportSynthesisSrfProgress = reportSynthesisSrfProgress;
   }
 
+  public void setSloTargets(List<SrfSloIndicatorTarget> sloTargets) {
+    this.sloTargets = sloTargets;
+  }
+
   public void setSrfSloIndicatorTarget(SrfSloIndicatorTarget srfSloIndicatorTarget) {
     this.srfSloIndicatorTarget = srfSloIndicatorTarget;
+  }
+
+  public void setSrfSloTargets(Set<SrfSloIndicatorTarget> srfSloTargets) {
+    this.srfSloTargets = srfSloTargets;
   }
 
 }
