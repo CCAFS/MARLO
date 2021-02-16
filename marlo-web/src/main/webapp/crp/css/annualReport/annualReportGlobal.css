@@ -535,3 +535,23 @@ div#chart13 {
   height: 100%;
   z-index: 998;
 }
+
+.colTitleCenter{
+  text-align: center;
+}
+
+.rectGray{
+  padding: 5px 0px;
+  background-color: #fafafa;
+  margin: 5px 0px;
+}
+
+.boldCell{
+  font-weight: 600;
+}
+.helpTextPOWB{
+  color: #949393;
+  margin: 3px 0px 0px 0px !important;
+  font-size: .9em;
+  font-style: italic;
+}
