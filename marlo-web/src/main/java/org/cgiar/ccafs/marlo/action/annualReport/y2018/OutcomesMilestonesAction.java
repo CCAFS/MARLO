@@ -242,7 +242,6 @@ public class OutcomesMilestonesAction extends BaseAction {
     return milestones;
   }
 
-
   /**
    * Get the information for the Cross Cutting marker in the form
    * 
@@ -266,6 +265,7 @@ public class OutcomesMilestonesAction extends BaseAction {
       return null;
     }
   }
+
 
   public List<CrpProgram> getFlagships() {
     return flagships;
@@ -327,7 +327,6 @@ public class OutcomesMilestonesAction extends BaseAction {
     return loggedCrp;
   }
 
-
   /**
    * Get the information for the Milestones in the form
    * 
@@ -361,6 +360,25 @@ public class OutcomesMilestonesAction extends BaseAction {
     } else {
       return null;
     }
+  }
+
+
+  public CrpMilestone getNextPOWBMilestone(final String milestoneComposedId) {
+    CrpMilestone nextYearMilestone = null;
+    String stripped = StringUtils.stripToNull(milestoneComposedId);
+    Phase current = this.getActualPhase();
+    if (current != null) {
+      while (current.getName() != null && !StringUtils.containsIgnoreCase(current.getName(), "POWB")
+        && current.getYear() != this.getCurrentCycleYear() + 1) {
+        current = current.getNext();
+      }
+    }
+
+    if (stripped != null && current != null) {
+      nextYearMilestone = crpMilestoneManager.getCrpMilestoneByPhase(milestoneComposedId, current.getId());
+    }
+
+    return nextYearMilestone;
   }
 
 

@@ -18,7 +18,9 @@ function checkDOI() {
         $('.isOtherUrlTohide').hide('slow');
         hideOrShowCheckBoxIsOtherUrl(false);      
       }else{
-        hideOrShowCheckBoxIsOtherUrl(true);
+        if (($('.typeSelect').val() == 49 && $('.subTypeSelect ').val() ==63 )) {
+          hideOrShowCheckBoxIsOtherUrl(true);
+        }
       }
     }
     // ^((https?:\/\/)?(www\.)?[a-zA-Z0-9.-]+\.+[a-zA-Z0-9.-]+\/10\.\d{4,9}[-._;()/:A-Z0-9]+$|^(doi\:)?10.\d{4,9}[-._;()/:A-Z0-9]+$)

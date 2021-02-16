@@ -4,7 +4,9 @@ package org.cgiar.ccafs.marlo.data.model;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
@@ -36,6 +38,9 @@ public class SrfSloIndicatorTarget extends MarloAuditableEntity implements java.
 
   @Expose
   private Boolean hasEvidence;
+
+  private List<ReportSynthesisSrfProgressTargetCases> targetCases = new ArrayList<>();
+  private Set<ReportSynthesisSrfProgressTargetCases> ReportSynthesisSrfProgressTargetCases = new HashSet<>();
 
 
   private Set<ReportSynthesisCrpProgressTarget> reportSynthesisCrpProgressTargets =
@@ -89,12 +94,20 @@ public class SrfSloIndicatorTarget extends MarloAuditableEntity implements java.
     return this.reportSynthesisCrpProgressTargets;
   }
 
+  public Set<ReportSynthesisSrfProgressTargetCases> getReportSynthesisSrfProgressTargetCases() {
+    return ReportSynthesisSrfProgressTargetCases;
+  }
+
   public SrfSloIndicator getSrfSloIndicator() {
     return this.srfSloIndicator;
   }
 
   public SrfTargetUnit getSrfTargetUnit() {
     return this.srfTargetUnit;
+  }
+
+  public List<ReportSynthesisSrfProgressTargetCases> getTargetCases() {
+    return targetCases;
   }
 
   public String getTargetsIndicator() {
@@ -130,6 +143,11 @@ public class SrfSloIndicatorTarget extends MarloAuditableEntity implements java.
     this.reportSynthesisCrpProgressTargets = reportSynthesisCrpProgressTargets;
   }
 
+  public void setReportSynthesisSrfProgressTargetCases(
+    Set<ReportSynthesisSrfProgressTargetCases> reportSynthesisSrfProgressTargetCases) {
+    ReportSynthesisSrfProgressTargetCases = reportSynthesisSrfProgressTargetCases;
+  }
+
   public void setSrfSloIndicator(SrfSloIndicator srfSloIndicator) {
     this.srfSloIndicator = srfSloIndicator;
   }
@@ -138,13 +156,21 @@ public class SrfSloIndicatorTarget extends MarloAuditableEntity implements java.
     this.srfTargetUnit = srfTargetUnit;
   }
 
+
+  public void setTargetCases(List<ReportSynthesisSrfProgressTargetCases> targetCases) {
+    this.targetCases = targetCases;
+  }
+
+
   public void setTargetsIndicator(String targetsIndicator) {
     this.targetsIndicator = targetsIndicator;
   }
 
+
   public void setValue(BigDecimal value) {
     this.value = value;
   }
+
 
   public void setYear(int year) {
     this.year = year;
