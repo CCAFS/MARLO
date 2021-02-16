@@ -179,10 +179,10 @@
               <td class="text-center">
                 [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.studiesIds?seq_contains(item.id))!true) /]
                 [#local canBeRemoved = (action.canBeRemovedFromAR(item.id, actualPhase.id)!false)]
-                <!--<div data-toggle="tooltip" [#if !canBeRemoved]title="[@s.text name="annualReport2018.oicr.table3.cannotBeRemoved" /]"[/#if]>
+                <div data-toggle="tooltip" [#if !canBeRemoved]title="[@s.text name="annualReport2018.oicr.table3.cannotBeRemoved" /]"[/#if]>
                   [@customForm.checkmark id="study-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.studiesValue" value="${(item.id)!''}" checked=isChecked editable=(editable&&canBeRemoved) centered=true/] 
-                </div-->
-                [@customForm.checkmark id="study-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.studiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/] 
+                </div>
+                [#--@customForm.checkmark id="study-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.studiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/--] 
               </td>
              [/#if]
             </tr>
