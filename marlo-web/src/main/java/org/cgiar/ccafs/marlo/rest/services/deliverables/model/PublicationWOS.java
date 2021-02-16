@@ -57,9 +57,16 @@ public class PublicationWOS implements Serializable {
 
   private List<PublicationInstitutionWOS> organizations;
 
+  private PublicationAltmetricsWOS altmetric;
+
 
   public PublicationWOS() {
     super();
+  }
+
+
+  public PublicationAltmetricsWOS getAltmetric() {
+    return altmetric;
   }
 
 
@@ -125,6 +132,11 @@ public class PublicationWOS implements Serializable {
 
   public String getVolume() {
     return volume;
+  }
+
+
+  public void setAltmetric(PublicationAltmetricsWOS altmetric) {
+    this.altmetric = altmetric;
   }
 
 
