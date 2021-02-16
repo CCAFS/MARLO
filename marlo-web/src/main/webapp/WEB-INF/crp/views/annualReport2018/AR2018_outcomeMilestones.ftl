@@ -12,7 +12,7 @@
   "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js"
 ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20190621"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210216"] /]
 
 [#assign breadCrumb = [
   {"label":"${currentSection}",   "nameSpace":"",             "action":""},
@@ -367,6 +367,9 @@
     <div class="form-group">
       [#-- Word Document Tag --]
       [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+      <br>
+      
+      [#-- 
       <table class="milestones-crosscutting">
         <thead>
           <tr>
@@ -381,7 +384,7 @@
             [#local annualReportCrossCuting =  (action.getCrossCuttingMarker( ((annualReportElement.id)!-1), marker.id ))! ]
             <tr>
               <td class="row-title"> 
-                <span class="name">${marker.name}</span>
+                <span class="name ">${marker.name}</span>
                 <input type="hidden" name="${ccName}.id" value="${(annualReportCrossCuting.id)!}" />
                 <input type="hidden" name="${ccName}.marker.id" value="${marker.id}"/>
               </td>
@@ -398,6 +401,43 @@
           <tr><div>Next climate: ${milestoneNextPOWB.climateFocusLevel.powbName}</div></tr>
         </tbody>
       </table>
+
+
+      --]
+  
+        <div class="row">
+          <div class="col-sm-3 colTitleCenter boldCell"></div>
+          <div class="col-sm-3 colTitleCenter boldCell">[@s.text name="${customLabel}.milestoneScoreMarker" /][@customForm.req required=editable  /]</div>
+          <div class="col-sm-6 colTitleCenter boldCell">[@s.text name="${customLabel}.milestoneScoreJustification" /][@customForm.req required=editable  /]</div>
+        </div>
+          
+          [#assign markersPOWB=["${milestoneNextPOWB.genderFocusLevel.powbName}","${milestoneNextPOWB.youthFocusLevel.powbName}","${milestoneNextPOWB.capdevFocusLevel.powbName}","${milestoneNextPOWB.climateFocusLevel.powbName}"] /]
+          
+          [#list cgiarCrossCuttingMarkers as marker]
+          [#local ccName= "${customName}.markers[${marker_index}]"]
+          [#local annualReportCrossCuting = (action.getCrossCuttingMarker( ((annualReportElement.id)!-1), marker.id ))! ]
+          <div class="row rectGray">
+            <div class="col-sm-3 ">
+              <span class="name boldCell">${marker.name}</span>
+              <input type="hidden" name="${ccName}.id" value="${(annualReportCrossCuting.id)!}" />
+              <input type="hidden" name="${ccName}.marker.id" value="${marker.id}" />
+            </div>
+            <div class="col-sm-3 colTitleCenter">
+              [@customForm.select name="${ccName}.focus.id" value="${(annualReportCrossCuting.focus.id)!-1}" label=""
+              listName="focusLevels" keyFieldName="id" displayFieldName="powbName" required=true showTitle=false className=""
+              editable=editable/]</td>
+            </div>
+            <div class="col-sm-6 colTitleCenter">
+              [@customForm.input name="${ccName}.just" value="${(annualReportCrossCuting.just)!}" showTitle=false required=true
+              editable=editable /]
+            </div>
+            <div class="col-sm-12 ">
+              <p class="helpTextPOWB">In POWB ${(actualPhase.year+1)!} you selected for ${marker.name}: <span style="color: #1ca6ce">${(markersPOWB[marker_index])!}</span> </p>
+            </div>
+          </div>
+          [/#list]
+
+
     </div>
     
     
