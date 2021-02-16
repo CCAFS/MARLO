@@ -21,33 +21,46 @@ package org.cgiar.ccafs.marlo.rest.dto;
 
 import java.util.List;
 
+import io.swagger.annotations.ApiModelProperty;
+
 public class PublicationsWOSDTO {
 
+  @ApiModelProperty(notes = "Publication URL", position = 1)
   private String url;
-
+  @ApiModelProperty(notes = "Publication Title", position = 2)
   private String title;
-
+  @ApiModelProperty(notes = "Publication DOI", position = 3)
   private String doi;
-
+  @ApiModelProperty(notes = "WOS publication type", position = 4)
   private String publicationType;
 
+  @ApiModelProperty(notes = "Publication year", position = 5)
   private int publicationYear;
 
+  @ApiModelProperty(notes = "Publication is open access", position = 6)
   private boolean is_oa;
-
+  @ApiModelProperty(notes = "Publication open access link", position = 7)
   private String oa_link;
-
+  @ApiModelProperty(notes = "Publication is ISI", position = 8)
   private boolean is_isi;
 
+  @ApiModelProperty(notes = "Publication Journal name", position = 9)
   private String journalName;
-
+  @ApiModelProperty(notes = "Publication Volume", position = 10)
   private String volume;
-
+  @ApiModelProperty(notes = "Publication Pages", position = 11)
   private String pages;
-
+  @ApiModelProperty(notes = "Publication Authors", position = 12)
   private List<AuthorsWOSDTO> authors;
-
+  @ApiModelProperty(notes = "Publication Institutions", position = 13)
   private List<InstitutionsWOSDTO> organizations;
+  @ApiModelProperty(notes = "Publication Altmetrics Details", position = 14)
+  private PublicationAltmetricsWOSDTO altmetric;
+
+
+  public PublicationAltmetricsWOSDTO getAltmetric() {
+    return altmetric;
+  }
 
 
   public List<AuthorsWOSDTO> getAuthors() {
@@ -112,6 +125,11 @@ public class PublicationsWOSDTO {
 
   public boolean isIs_oa() {
     return is_oa;
+  }
+
+
+  public void setAltmetric(PublicationAltmetricsWOSDTO altmetric) {
+    this.altmetric = altmetric;
   }
 
 
