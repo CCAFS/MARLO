@@ -27,7 +27,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "jsr330", uses = {PublicationAuthorWOSMapper.class, PublicationInstitutionWOSMapper.class,
-  PublicationAltmetricsWOSMapper.class})
+  PublicationAltmetricsWOSMapper.class, PublicationGardianWOSMapper.class})
 public interface PublicationWOSMapper {
 
   @Mappings({@Mapping(source = "publication_type", target = "publicationType"),

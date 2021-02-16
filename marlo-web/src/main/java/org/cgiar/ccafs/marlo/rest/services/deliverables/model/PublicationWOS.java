@@ -59,6 +59,8 @@ public class PublicationWOS implements Serializable {
 
   private PublicationAltmetricsWOS altmetric;
 
+  private PublicationGardianWOS gardian;
+
 
   public PublicationWOS() {
     super();
@@ -77,6 +79,11 @@ public class PublicationWOS implements Serializable {
 
   public String getDoi() {
     return doi;
+  }
+
+
+  public PublicationGardianWOS getGardian() {
+    return gardian;
   }
 
 
@@ -147,6 +154,11 @@ public class PublicationWOS implements Serializable {
 
   public void setDoi(String doi) {
     this.doi = doi;
+  }
+
+
+  public void setGardian(PublicationGardianWOS gardian) {
+    this.gardian = gardian;
   }
 
 
