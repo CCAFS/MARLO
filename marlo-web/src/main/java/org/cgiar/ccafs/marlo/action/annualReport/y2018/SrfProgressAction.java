@@ -668,6 +668,16 @@ public class SrfProgressAction extends BaseAction {
                 ReportSynthesisSrfProgressTargetCases targetCaseDB = reportSynthesisSrfProgressTargetCasesManager
                   .getReportSynthesisSrfProgressTargetCasesById(targetCase.getId());
 
+                if (targetCase.getSrfSloIndicatorTarget() != null) {
+                  List<ReportSynthesisSrfProgressTargetCases> targetCasesTemp =
+                    reportSynthesisSrfProgressTargetCasesManager.getReportSynthesisSrfProgressId(synthesisID,
+                      targetCase.getSrfSloIndicatorTarget().getId());
+
+                  if (targetCasesTemp != null) {
+                    targetCase.getSrfSloIndicatorTarget().setTargetCases(targetCasesTemp);
+                  }
+                }
+
                 // Target case geographic scope
                 List<ProgressTargetCaseGeographicRegion> targetCaseGeographicRegions;
                 targetCaseGeographicRegions =
