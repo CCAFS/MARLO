@@ -91,8 +91,7 @@ public class ImpactCovid19SummaryAction extends BaseSummariesAction implements S
     masterReport.getParameterValues().put("i8nTitle", this.getText("project.title.readText"));
     masterReport.getParameterValues().put("i8nProjectSummary", this.getText("project.summary"));
     masterReport.getParameterValues().put("i8nProjectLeader", this.getText("summaries.oaprojects.projectLeader"));
-    masterReport.getParameterValues().put("i8nManagementLiasion",
-      this.getText("summaries.oaprojects.managementLiasion"));
+    masterReport.getParameterValues().put("i8nManagementLiasion", this.getText("project.liaisonInstitution"));
     masterReport.getParameterValues().put("i8nAnswer2020Covid19",
       this.getText("summaries.impacts.answer2020Covid19").concat(" " + this.getCurrentCycleYear()));
     masterReport.getParameterValues().put("i8nAnswerLastYearCovid19",
@@ -100,7 +99,7 @@ public class ImpactCovid19SummaryAction extends BaseSummariesAction implements S
     masterReport.getParameterValues().put("i8nProjectLeaderEmail",
       this.getText("summaries.impacts.projectLeaderEmail"));
     masterReport.getParameterValues().put("i8nManagementLiasionAcronym",
-      this.getText("summaries.impacts.managementLiasionAcronym"));
+      this.getText("project.liaisonInstitution") + " Acronym");
     masterReport.getParameterValues().put("i8nImpactCategory", this.getText("summaries.impacts.impactCategory"));
 
     return masterReport;
