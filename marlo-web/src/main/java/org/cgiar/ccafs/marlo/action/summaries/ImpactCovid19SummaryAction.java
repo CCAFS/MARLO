@@ -19,7 +19,10 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectImpactsManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ReportProjectImpactsCovid19DTO;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -29,6 +32,7 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -64,6 +68,7 @@ public class ImpactCovid19SummaryAction extends BaseSummariesAction implements S
 
   // Managers
   private ProjectImpactsManager projectImpactsManager;
+  private ProjectInfoManager projectInfoManager;
 
   // XLSX bytes
   private byte[] bytesXLSX;
@@ -72,10 +77,12 @@ public class ImpactCovid19SummaryAction extends BaseSummariesAction implements S
 
   @Inject
   public ImpactCovid19SummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
-    ProjectManager projectManager, ResourceManager resourceManager, ProjectImpactsManager projectImpactsManager) {
+    ProjectManager projectManager, ResourceManager resourceManager, ProjectImpactsManager projectImpactsManager,
+    ProjectInfoManager projectInfoManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.resourceManager = resourceManager;
     this.projectImpactsManager = projectImpactsManager;
+    this.projectInfoManager = projectInfoManager;
   }
 
   private MasterReport addi8nParameters(MasterReport masterReport) {
@@ -199,25 +206,63 @@ public class ImpactCovid19SummaryAction extends BaseSummariesAction implements S
     TypedTableModel model = new TypedTableModel(
       new String[] {"projectId", "title", "projectSummary", "projectLeader", "managementLiasion", "answer2020Covid19",
         "answerLastYearCovid19", "projectUrl", "phaseId", "projectLeaderEmail", "managementLiasionAcronym",
-        "impactCategory"},
+        "impactCategory", "projectStatus"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, Long.class, String.class, String.class, String.class},
+        String.class, Long.class, String.class, String.class, String.class, String.class},
       0);
 
     List<ReportProjectImpactsCovid19DTO> reportProjectImpactsCovid19DTO =
       projectImpactsManager.getProjectImpactsByProjectAndYears(this.getSelectedPhase());
 
     for (ReportProjectImpactsCovid19DTO reportProjectImpactCovid19DTO : reportProjectImpactsCovid19DTO) {
+      long projectID;
+      ProjectInfo info = new ProjectInfo();
 
-      model.addRow(new Object[] {reportProjectImpactCovid19DTO.getProjectId(), reportProjectImpactCovid19DTO.getTitle(),
-        reportProjectImpactCovid19DTO.getProjectSummary(), reportProjectImpactCovid19DTO.getProjectLeader(),
-        reportProjectImpactCovid19DTO.getManagementLiasion(),
-        reportProjectImpactCovid19DTO.getAnswer().get(this.getCurrentCycleYear()),
-        reportProjectImpactCovid19DTO.getAnswer().get(this.getCurrentCycleYear() - 1),
-        reportProjectImpactCovid19DTO.getProjectUrl(), reportProjectImpactCovid19DTO.getPhaseId(),
-        reportProjectImpactCovid19DTO.getProjectLeaderEmail(),
-        reportProjectImpactCovid19DTO.getManagementLiasionAcronym(),
-        reportProjectImpactCovid19DTO.getImpactCategory()});
+      if (reportProjectImpactCovid19DTO.getProjectId() != null) {
+        projectID = Long.parseLong(reportProjectImpactCovid19DTO.getProjectId());
+        info = projectInfoManager.getProjectInfoByProjectPhase(projectID, this.getSelectedPhase().getId());
+
+        if (info != null && info.getEndDate() != null) {
+
+          // Validation for cancelated projects
+          if (info.getStatus() != null && info.getStatus() != 4) {
+
+            switch (Integer.parseInt(String.valueOf(info.getStatus()))) {
+              case 2:
+                reportProjectImpactCovid19DTO.setProjectStatus(ProjectStatusEnum.Ongoing.getStatus());
+                break;
+              case 3:
+                reportProjectImpactCovid19DTO.setProjectStatus(ProjectStatusEnum.Complete.getStatus());
+                break;
+              case 4:
+                reportProjectImpactCovid19DTO.setProjectStatus(ProjectStatusEnum.Extended.getStatus());
+                break;
+              case 5:
+                reportProjectImpactCovid19DTO.setProjectStatus(ProjectStatusEnum.Cancelled.getStatus());
+                break;
+              default:
+                reportProjectImpactCovid19DTO.setProjectStatus("Not Defined");
+            }
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(info.getEndDate());
+            int endDateYear = calendar.get(Calendar.YEAR);
+            // Include just projects with year end date mayor equal to phase year
+            if (endDateYear != 0 && this.getSelectedPhase().getYear() != 0
+              && endDateYear >= this.getSelectedPhase().getYear()) {
+              model.addRow(new Object[] {reportProjectImpactCovid19DTO.getProjectId(),
+                reportProjectImpactCovid19DTO.getTitle(), reportProjectImpactCovid19DTO.getProjectSummary(),
+                reportProjectImpactCovid19DTO.getProjectLeader(), reportProjectImpactCovid19DTO.getManagementLiasion(),
+                reportProjectImpactCovid19DTO.getAnswer().get(this.getCurrentCycleYear()),
+                reportProjectImpactCovid19DTO.getAnswer().get(this.getCurrentCycleYear() - 1),
+                reportProjectImpactCovid19DTO.getProjectUrl(), reportProjectImpactCovid19DTO.getPhaseId(),
+                reportProjectImpactCovid19DTO.getProjectLeaderEmail(),
+                reportProjectImpactCovid19DTO.getManagementLiasionAcronym(),
+                reportProjectImpactCovid19DTO.getImpactCategory(), reportProjectImpactCovid19DTO.getProjectStatus()});
+            }
+          }
+        }
+      }
     }
     return model;
   }

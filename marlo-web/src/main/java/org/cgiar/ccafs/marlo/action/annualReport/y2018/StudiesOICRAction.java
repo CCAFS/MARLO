@@ -262,8 +262,8 @@ public class StudiesOICRAction extends BaseAction {
         if (!flagshipProgressStudies.contains(flagshipProgressStudyNew)) {
           flagshipProgressStudyNew = reportSynthesisFlagshipProgressStudyManager
             .saveReportSynthesisFlagshipProgressStudy(flagshipProgressStudyNew);
-          this.updateLinkedInnovations(projectExpectedStudy.getId(), reportSynthesisFlagshipProgressDB);
-          this.updateLinkedPolicies(projectExpectedStudy.getId(), reportSynthesisFlagshipProgressDB);
+          // this.updateLinkedInnovations(projectExpectedStudy.getId(), reportSynthesisFlagshipProgressDB);
+          // this.updateLinkedPolicies(projectExpectedStudy.getId(), reportSynthesisFlagshipProgressDB);
         }
 
       }
@@ -287,8 +287,8 @@ public class StudiesOICRAction extends BaseAction {
         if (!reportSynthesisFlagshipProgressStudies.contains(flagshipProgressPlannedStudyNew)) {
           flagshipProgressPlannedStudyNew = reportSynthesisFlagshipProgressStudyManager
             .saveReportSynthesisFlagshipProgressStudy(flagshipProgressPlannedStudyNew);
-          this.updateLinkedInnovations(projectExpectedStudy.getId(), reportSynthesisFlagshipProgressDB);
-          this.updateLinkedPolicies(projectExpectedStudy.getId(), reportSynthesisFlagshipProgressDB);
+          // this.updateLinkedInnovations(projectExpectedStudy.getId(), reportSynthesisFlagshipProgressDB);
+          // this.updateLinkedPolicies(projectExpectedStudy.getId(), reportSynthesisFlagshipProgressDB);
         }
       }
     }
@@ -322,11 +322,17 @@ public class StudiesOICRAction extends BaseAction {
 
     if (studyID > 0) {
       List<ProjectExpectedStudyInnovation> studyInnovations = new ArrayList<>();
+      Phase current = this.getActualPhase();
 
       studyInnovations = projectExpectedStudyInnovationManager.findAll().stream()
         .filter(i -> i != null && i.getProjectExpectedStudy() != null && studyID != 0
-          && i.getProjectExpectedStudy().getId() != null && i.getProjectExpectedStudy().getId().equals(studyID)
-          && i.getPhase() != null && phaseID != 0 && i.getPhase().getId().equals(phaseID))
+          && i.getProjectExpectedStudy().getId() != null && i.getProjectExpectedStudy().getId().longValue() == studyID
+          && i.getPhase() != null && i.getPhase().getId() != null && phaseID != 0
+          && i.getPhase().getId().longValue() == phaseID && i.getProjectInnovation() != null
+          && i.getProjectInnovation().getId() != null
+          && i.getProjectInnovation().getProjectInnovationInfo(current) != null
+          && i.getProjectInnovation().getProjectInnovationInfo().getYear() != null
+          && i.getProjectInnovation().getProjectInnovationInfo().getYear().longValue() == current.getYear())
         .collect(Collectors.toList());
 
       if (studyInnovations != null && !studyInnovations.isEmpty()) {
@@ -372,13 +378,25 @@ public class StudiesOICRAction extends BaseAction {
 
     if (studyID > 0) {
       ProjectExpectedStudy expectedStudy = projectExpectedStudyManager.getProjectExpectedStudyById(studyID);
+      Phase current = this.getActualPhase();
 
       if (expectedStudy != null) {
-        List<ProjectExpectedStudyPolicy> studyPolicies = expectedStudy.getProjectExpectedStudyPolicies().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(this.getActualPhase().getId()))
+        List<ProjectExpectedStudyPolicy> studyPolicies = projectExpectedStudyPolicyManager.findAll().stream()
+          .filter(p -> p != null && p.getProjectExpectedStudy() != null && studyID != 0
+            && p.getProjectExpectedStudy().getId() != null && p.getProjectExpectedStudy().getId().longValue() == studyID
+            && p.getPhase() != null && p.getPhase().getId() != null && phaseID != 0
+            && p.getPhase().getId().longValue() == phaseID && p.getProjectPolicy() != null
+            && p.getProjectPolicy().getId() != null && p.getProjectPolicy().getProjectPolicyInfo(current) != null
+            && p.getProjectPolicy().getProjectPolicyInfo().getYear() != null
+            && p.getProjectPolicy().getProjectPolicyInfo().getYear().longValue() == current.getYear())
           .collect(Collectors.toList());
+        /*
+         * expectedStudy.getProjectExpectedStudyPolicies().stream()
+         * .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(this.getActualPhase().getId()))
+         * .collect(Collectors.toList());
+         */
 
-        if (studyPolicies != null && studyPolicies.size() > 0) {
+        if (studyPolicies != null && !studyPolicies.isEmpty()) {
           for (ProjectExpectedStudyPolicy studyPolicy : studyPolicies) {
             if (studyPolicy != null && studyPolicy.getProjectPolicy() != null
               && studyPolicy.getProjectPolicy().getId() != null) {
@@ -445,12 +463,12 @@ public class StudiesOICRAction extends BaseAction {
             .equals(this.getLiaisonInstitutionID()))
         .collect(Collectors.toList());
 
-    long matchingPolicies = synthesisInnovations
-      .stream().filter(sp -> sp.isActive() && sp.getProjectInnovation() != null
-        && sp.getProjectInnovation().getId() != null && sp.getProjectInnovation().getId().longValue() == innovationID)
+    long matchingInnovations = synthesisInnovations
+      .stream().filter(si -> si.isActive() && si.getProjectInnovation() != null
+        && si.getProjectInnovation().getId() != null && si.getProjectInnovation().getId().longValue() == innovationID)
       .count();
 
-    return matchingPolicies == 0;
+    return matchingInnovations == 0;
   }
 
   @Override
@@ -777,6 +795,7 @@ public class StudiesOICRAction extends BaseAction {
     this.transaction = transaction;
   }
 
+  @SuppressWarnings("unused")
   private void updateLinkedInnovations(long studyId, ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress) {
     List<ProjectInnovation> linkedInnovations = projectExpectedStudyInnovationManager.findAll().stream()
       .filter(pesi -> pesi != null && pesi.getId() != null && pesi.getPhase() != null && pesi.getPhase().getId() != null
@@ -832,6 +851,8 @@ public class StudiesOICRAction extends BaseAction {
 
   }
 
+
+  @SuppressWarnings("unused")
   private void updateLinkedPolicies(long studyId, ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress) {
     List<ProjectPolicy> linkedPolicies = projectExpectedStudyPolicyManager.findAll().stream()
       .filter(pesp -> pesp != null && pesp.getId() != null && pesp.getPhase() != null && pesp.getPhase().getId() != null

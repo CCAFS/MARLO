@@ -50,6 +50,13 @@ public class DeliverableMetadataExternalSources extends MarloAuditableEntity
   private String pages;
   private Date createDate;
 
+  // Gardian fields
+  private String gardianFindability;
+  private String gardianAccessibility;
+  private String gardianInteroperability;
+  private String gardianReusability;
+  private String gardianTitle;
+
   private Set<DeliverableAffiliation> deliverableAffiliations;
   private Set<DeliverableAffiliationsNotMapped> deliverableAffiliationsNotMapped;
   private Set<ExternalSourceAuthor> externalSourceAuthors;
@@ -76,6 +83,11 @@ public class DeliverableMetadataExternalSources extends MarloAuditableEntity
     this.setActive(other.isActive());
     this.setCreatedBy(other.getCreatedBy());
     this.setCreateDate(other.getCreateDate());
+    this.setGardianFindability(other.getGardianFindability());
+    this.setGardianAccessibility(other.getGardianAccessibility());
+    this.setGardianInteroperability(other.getGardianInteroperability());
+    this.setGardianReusability(other.getGardianReusability());
+    this.setGardianTitle(other.getGardianTitle());
   }
 
   @Override
@@ -123,6 +135,26 @@ public class DeliverableMetadataExternalSources extends MarloAuditableEntity
 
   public Set<ExternalSourceAuthor> getExternalSourceAuthors() {
     return externalSourceAuthors;
+  }
+
+  public String getGardianAccessibility() {
+    return gardianAccessibility;
+  }
+
+  public String getGardianFindability() {
+    return gardianFindability;
+  }
+
+  public String getGardianInteroperability() {
+    return gardianInteroperability;
+  }
+
+  public String getGardianReusability() {
+    return gardianReusability;
+  }
+
+  public String getGardianTitle() {
+    return gardianTitle;
   }
 
   public String getIsiStatus() {
@@ -213,6 +245,26 @@ public class DeliverableMetadataExternalSources extends MarloAuditableEntity
     this.externalSourceAuthors = externalSourceAuthors;
   }
 
+  public void setGardianAccessibility(String gardianAccessibility) {
+    this.gardianAccessibility = gardianAccessibility;
+  }
+
+  public void setGardianFindability(String gardianFindability) {
+    this.gardianFindability = gardianFindability;
+  }
+
+  public void setGardianInteroperability(String gardianInteroperability) {
+    this.gardianInteroperability = gardianInteroperability;
+  }
+
+  public void setGardianReusability(String gardianReusability) {
+    this.gardianReusability = gardianReusability;
+  }
+
+  public void setGardianTitle(String gardianTitle) {
+    this.gardianTitle = gardianTitle;
+  }
+
   public void setIsiStatus(String isISI) {
     this.isiStatus = isISI;
   }
@@ -268,6 +320,9 @@ public class DeliverableMetadataExternalSources extends MarloAuditableEntity
       .add("publicationType", this.getPublicationType()).add("publicationYear", this.getPublicationYear())
       .add("openAccessStatus", this.getOpenAccessStatus()).add("openAccessLink", this.getOpenAccessLink())
       .add("isiStatus", this.getIsiStatus()).add("journalName", this.getJournalName()).add("volume", this.getVolume())
-      .add("pages", this.getPages()).toString();
+      .add("pages", this.getPages()).add("gardianFindability", this.getGardianFindability())
+      .add("gardianAccessibility", this.getGardianAccessibility())
+      .add("gardianInteroperability", this.getGardianInteroperability())
+      .add("gardianReusability", this.getGardianReusability()).add("gardianTitle", this.getGardianTitle()).toString();
   }
 }
