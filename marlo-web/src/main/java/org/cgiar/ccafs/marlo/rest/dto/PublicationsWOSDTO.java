@@ -57,6 +57,9 @@ public class PublicationsWOSDTO {
   @ApiModelProperty(notes = "Publication Altmetrics Details", position = 14)
   private PublicationAltmetricsWOSDTO altmetric;
 
+  @ApiModelProperty(notes = "Publication gardian", position = 15)
+  private PublicationGardianWOSDTO gardian;
+
 
   public PublicationAltmetricsWOSDTO getAltmetric() {
     return altmetric;
@@ -70,6 +73,11 @@ public class PublicationsWOSDTO {
 
   public String getDoi() {
     return doi;
+  }
+
+
+  public PublicationGardianWOSDTO getGardian() {
+    return gardian;
   }
 
 
@@ -140,6 +148,11 @@ public class PublicationsWOSDTO {
 
   public void setDoi(String doi) {
     this.doi = doi;
+  }
+
+
+  public void setGardian(PublicationGardianWOSDTO gardian) {
+    this.gardian = gardian;
   }
 
 
