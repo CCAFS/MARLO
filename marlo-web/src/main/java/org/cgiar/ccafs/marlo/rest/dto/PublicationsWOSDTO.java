@@ -38,11 +38,11 @@ public class PublicationsWOSDTO {
   private int publicationYear;
 
   @ApiModelProperty(notes = "Publication is open access", position = 6)
-  private boolean is_oa;
+  private String is_oa;
   @ApiModelProperty(notes = "Publication open access link", position = 7)
   private String oa_link;
   @ApiModelProperty(notes = "Publication is ISI", position = 8)
-  private boolean is_isi;
+  private String is_isi;
 
   @ApiModelProperty(notes = "Publication Journal name", position = 9)
   private String journalName;
@@ -78,6 +78,16 @@ public class PublicationsWOSDTO {
 
   public PublicationGardianWOSDTO getGardian() {
     return gardian;
+  }
+
+
+  public String getIs_isi() {
+    return is_isi;
+  }
+
+
+  public String getIs_oa() {
+    return is_oa;
   }
 
 
@@ -126,16 +136,6 @@ public class PublicationsWOSDTO {
   }
 
 
-  public boolean isIs_isi() {
-    return is_isi;
-  }
-
-
-  public boolean isIs_oa() {
-    return is_oa;
-  }
-
-
   public void setAltmetric(PublicationAltmetricsWOSDTO altmetric) {
     this.altmetric = altmetric;
   }
@@ -156,12 +156,12 @@ public class PublicationsWOSDTO {
   }
 
 
-  public void setIs_isi(boolean is_isi) {
+  public void setIs_isi(String is_isi) {
     this.is_isi = is_isi;
   }
 
 
-  public void setIs_oa(boolean is_oa) {
+  public void setIs_oa(String is_oa) {
     this.is_oa = is_oa;
   }
 
