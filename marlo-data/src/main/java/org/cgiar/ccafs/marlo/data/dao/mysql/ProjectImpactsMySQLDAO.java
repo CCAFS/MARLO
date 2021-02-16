@@ -88,8 +88,7 @@ public class ProjectImpactsMySQLDAO extends AbstractMarloDAO<ProjectImpacts, Lon
     query.append("FROM project_impacts AS pi ");
     query.append("INNER JOIN projects_info AS pin ");
     query.append("ON pi.project_id = pin.project_id ");
-    query.append("WHERE pi.is_active = 1 AND pin.id_phase = " + phase.getId());
-
+    query.append("WHERE pi.is_active = 1 AND pi.year = " + phase.getYear() + " AND pin.id_phase = " + phase.getId());
     List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
     List<ProjectImpacts> projectImpacts = new ArrayList<>();
 
