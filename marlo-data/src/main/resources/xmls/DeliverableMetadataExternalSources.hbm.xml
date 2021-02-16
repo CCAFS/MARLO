@@ -81,6 +81,23 @@
 		<property name="pages" type="string">
 			<column name="pages" sql-type="TEXT" />
 		</property>
+		<!-- New GARDIAN fields -->
+		<property name="gardianFindability" type="string">
+			<column name="gardian_findability" sql-type="TEXT" />
+		</property>
+		<property name="gardianAccessibility" type="string">
+			<column name="gardian_accessibility" sql-type="TEXT" />
+		</property>
+		<property name="gardianInteroperability" type="string">
+			<column name="gardian_interoperability" sql-type="TEXT" />
+		</property>
+		<property name="gardianReusability" type="string">
+			<column name="gardian_reusability" sql-type="TEXT" />
+		</property>
+		<property name="gardianTitle" type="string">
+			<column name="gardian_title" sql-type="TEXT" />
+		</property>
+		<!-- AUDITLOG -->
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
