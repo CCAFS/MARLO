@@ -158,6 +158,7 @@ public class DeliverablesItem<T> {
         DeliverableDissemination deliverableDissemination = new DeliverableDissemination();
         deliverableDissemination.setIsOpenAccess(deliverableDTO.getIsOpenAccess());
         deliverableDissemination.setDeliverable(deliverable);
+        deliverableDissemination.setArticleUrl(deliverableDTO.getArticleURL());
         deliverableDissemination.setPhase(phase);
         deliverableDisseminationManager.saveDeliverableDissemination(deliverableDissemination);
 
@@ -169,6 +170,7 @@ public class DeliverablesItem<T> {
         deliverablePublicationMetadata.setPages(deliverableDTO.getNpages());
         deliverablePublicationMetadata.setVolume(deliverableDTO.getVolume());
         deliverablePublicationMetadata.setIsiPublication(deliverableDTO.isISIJournal());
+
 
         deliverablePublicationMetadata.setPhase(phase);
         // save deliverablePublicationMetadata
@@ -724,6 +726,7 @@ public class DeliverablesItem<T> {
         }
         deliverableDissemination.setIsOpenAccess(newPublicationDTO.getIsOpenAccess());
         deliverableDissemination.setDeliverable(deliverable);
+        deliverableDissemination.setArticleUrl(newPublicationDTO.getArticleURL());
         deliverableDissemination.setPhase(phase);
         deliverableDisseminationManager.saveDeliverableDissemination(deliverableDissemination);
 
