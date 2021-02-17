@@ -46,6 +46,7 @@ import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
 import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
 import org.cgiar.ccafs.marlo.rest.mappers.DeliverablesMapper;
 import org.cgiar.ccafs.marlo.rest.mappers.PublicationsMapper;
+import org.cgiar.ccafs.marlo.utils.doi.DOIService;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -765,8 +766,8 @@ public class DeliverablesItem<T> {
             metadataElements.get(APConstants.METADATAELEMENTDOI);
           deliverableMetadataElementDoi.setDeliverable(deliverable);
           deliverableMetadataElementDoi.setPhase(phase);
-          deliverableMetadataElementDoi
-            .setElementValue(newPublicationDTO.getDoi() == null ? "" : newPublicationDTO.getDoi());
+          deliverableMetadataElementDoi.setElementValue(
+            newPublicationDTO.getDoi() == null ? "" : DOIService.tryGetDoiName(newPublicationDTO.getDoi()));
           deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementDoi);
 
           // deliverable metadataelement Title
