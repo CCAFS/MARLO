@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProgressTargetCaseGeographicCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProgressTargetCaseGeographicRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProgressTargetCaseGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
@@ -46,6 +47,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
+import org.cgiar.ccafs.marlo.data.model.ProgressTargetCaseGeographicCountry;
 import org.cgiar.ccafs.marlo.data.model.ProgressTargetCaseGeographicRegion;
 import org.cgiar.ccafs.marlo.data.model.ProgressTargetCaseGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -131,6 +133,7 @@ public class SrfProgressAction extends BaseAction {
   private LocElementManager locElementManager;
   private ProgressTargetCaseGeographicRegionManager progressTargetCaseGeographicRegionManager;
   private ProgressTargetCaseGeographicScopeManager progressTargetCaseGeographicScopeManager;
+  private ProgressTargetCaseGeographicCountryManager progressTargetCaseGeographicCountryManager;
 
 
   // Variables
@@ -175,7 +178,8 @@ public class SrfProgressAction extends BaseAction {
     ReportSynthesisSrfProgressManager reportSynthesisSrfProgressManager, SectionStatusManager sectionStatusManager,
     RepIndGeographicScopeManager repIndGeographicScopeManager, LocElementManager locElementManager,
     ProgressTargetCaseGeographicRegionManager progressTargetCaseGeographicRegionManager,
-    ProgressTargetCaseGeographicScopeManager progressTargetCaseGeographicScopeManager) {
+    ProgressTargetCaseGeographicScopeManager progressTargetCaseGeographicScopeManager,
+    ProgressTargetCaseGeographicCountryManager progressTargetCaseGeographicCountryManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -197,6 +201,7 @@ public class SrfProgressAction extends BaseAction {
     this.locElementManager = locElementManager;
     this.progressTargetCaseGeographicRegionManager = progressTargetCaseGeographicRegionManager;
     this.progressTargetCaseGeographicScopeManager = progressTargetCaseGeographicScopeManager;
+    this.progressTargetCaseGeographicCountryManager = progressTargetCaseGeographicCountryManager;
   }
 
 
@@ -725,6 +730,37 @@ public class SrfProgressAction extends BaseAction {
           reportSynthesisSrfProgressTargetCasesManager.getReportSynthesisSrfProgressId(synthesisID, target.getId());
 
         if (targetCases != null) {
+
+          // Fill target cases
+          for (ReportSynthesisSrfProgressTargetCases targetCase : targetCases) {
+            List<ProgressTargetCaseGeographicScope> targetCaseGeographicScopes = new ArrayList<>();
+
+            // Geographic scope
+            targetCaseGeographicScopes =
+              progressTargetCaseGeographicScopeManager.findGeographicScopeByTargetCase(targetCase.getId());
+
+            if (targetCaseGeographicScopes != null) {
+              targetCase.setGeographicScopes(targetCaseGeographicScopes);
+            }
+
+            // Geographic regions
+            List<ProgressTargetCaseGeographicRegion> targetCaseGeographicRegions = new ArrayList<>();
+            targetCaseGeographicRegions =
+              progressTargetCaseGeographicRegionManager.findGeographicRegionByTargetCase(targetCase.getId());
+
+            if (targetCaseGeographicRegions != null) {
+              targetCase.setGeographicRegions(targetCaseGeographicRegions);
+            }
+
+            // Geographic countries
+            List<ProgressTargetCaseGeographicCountry> targetCaseGeographicCountries = new ArrayList<>();
+            targetCaseGeographicCountries =
+              progressTargetCaseGeographicCountryManager.findGeographicCountryByTargetCase(targetCase.getId());
+
+            if (targetCaseGeographicCountries != null) {
+              targetCase.setGeographicCountries(targetCaseGeographicCountries);
+            }
+          }
           target.setTargetCases(targetCases);
         }
 
@@ -732,9 +768,11 @@ public class SrfProgressAction extends BaseAction {
 
       }
 
+
       sloTargets = new ArrayList<>();
       sloTargets.addAll(sloTargetsTemp);
     }
+
 
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
