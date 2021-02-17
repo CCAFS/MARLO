@@ -461,9 +461,10 @@
         [@customForm.radioFlat id="${customName}-status-${s.id}" name="${customName}.milestonesStatus.id" label="${s.name}"   value="${s.id}" checked=(milestoneStatus == s.id)!false editable=editable cssClass="milestoneStatus" cssClassLabel="font-normal"/]
       [/#list]
       [#if !editable && (milestoneStatus == -1)][@s.text name="form.values.fieldEmpty"/][/#if]
-      <div>Next status: ${milestoneNextPOWB.milestonesStatus.name}</div>
+      <div class="rectGray" style="padding-left: 10px;">
+        <p class="helpTextPOWB">In POWB you selected the status: <span style="color: #1ca6ce">${(milestoneNextPOWB.milestonesStatus.name)!}</span> </p>
+      </div>
     </div>
-    
     [#-- New year if extended --]
     <div class="row form-group extendedYearBlock" style="display:${(milestoneStatus == 4)?string('block', 'none')}">
       <div class="col-md-3">
