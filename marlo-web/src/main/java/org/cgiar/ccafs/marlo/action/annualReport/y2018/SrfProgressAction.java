@@ -712,9 +712,29 @@ public class SrfProgressAction extends BaseAction {
     }
 
 
+    // Fill sloTargetsList
+
+    List<SrfSloIndicatorTarget> sloTargetsTemp = new ArrayList<>();
     sloTargets = new ArrayList<>(srfSloIndicatorTargetManager.findAll().stream()
       .filter(sr -> sr.isActive() && sr.getYear() == 2022).collect(Collectors.toList()));
 
+    if (sloTargets != null) {
+      for (SrfSloIndicatorTarget target : sloTargets) {
+        List<ReportSynthesisSrfProgressTargetCases> targetCases = new ArrayList<>();
+        targetCases =
+          reportSynthesisSrfProgressTargetCasesManager.getReportSynthesisSrfProgressId(synthesisID, target.getId());
+
+        if (targetCases != null) {
+          target.setTargetCases(targetCases);
+        }
+
+        sloTargetsTemp.add(target);
+
+      }
+
+      sloTargets = new ArrayList<>();
+      sloTargets.addAll(sloTargetsTemp);
+    }
 
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
@@ -747,6 +767,9 @@ public class SrfProgressAction extends BaseAction {
       }
       if (reportSynthesis.getReportSynthesisSrfProgress().getSloTargetsCases() != null) {
         reportSynthesis.getReportSynthesisSrfProgress().getSloTargetsCases().clear();
+      }
+      if (sloTargets != null) {
+        sloTargets.clear();
       }
     }
   }
