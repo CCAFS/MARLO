@@ -222,7 +222,7 @@ public class DeliverableManagerImpl implements DeliverableManager {
       liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
 
       List<ReportSynthesisFlagshipProgressDeliverableDTO> flagshipPlannedList =
-        this.getFpPlannedList(liaisonInstitutions, phaseDB, liaisonInstitution);
+        this.getFpPlannedList(liaisonInstitutions, phaseDB, liaisonInstitution, true);
 
       for (ReportSynthesisFlagshipProgressDeliverableDTO reportSynthesisFlagshipProgressDeliverableDTO : flagshipPlannedList) {
 
@@ -250,13 +250,16 @@ public class DeliverableManagerImpl implements DeliverableManager {
   }
 
   /**
-   * Method to fill the list of deliverables selected by flagships
+   * Method to fill the list of deliverables (only publications or only Grey literature, depending on the
+   * getPublications parameter), selected by flagships.
    * 
    * @param flagshipsLiaisonInstitutions
+   * @param getPublications
    * @return
    */
   public List<ReportSynthesisFlagshipProgressDeliverableDTO> getFpPlannedList(
-    List<LiaisonInstitution> flagshipsLiaisonInstitutions, Phase phaseDB, LiaisonInstitution pmuInstitution) {
+    List<LiaisonInstitution> flagshipsLiaisonInstitutions, Phase phaseDB, LiaisonInstitution pmuInstitution,
+    boolean getPublications) {
     List<ReportSynthesisFlagshipProgressDeliverableDTO> flagshipPlannedList = new ArrayList<>();
 
     if (this.findAll() != null) {
@@ -265,7 +268,8 @@ public class DeliverableManagerImpl implements DeliverableManager {
       List<Deliverable> deliverables = new ArrayList<>(this.findAll().stream()
         .filter(d -> d.isActive() && d.getDeliverableInfo(phaseDB) != null
           && d.getDeliverableInfo().isRequiredToComplete() && d.getDeliverableInfo().getDeliverableType() != null
-          && d.getDeliverableInfo().getDeliverableType().getId() == 63)
+          && (getPublications ? d.getDeliverableInfo().getDeliverableType().getId() == 63
+            : d.getDeliverableInfo().getDeliverableType().getId() != 63))
         .collect(Collectors.toList()));
 
       // Fill all deliverables of the global unit
@@ -444,7 +448,7 @@ public class DeliverableManagerImpl implements DeliverableManager {
       liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
 
       List<ReportSynthesisFlagshipProgressDeliverableDTO> flagshipPlannedList =
-        this.getFpPlannedList(liaisonInstitutions, phaseDB, liaisonInstitution);
+        this.getFpPlannedList(liaisonInstitutions, phaseDB, liaisonInstitution, false);
 
       for (ReportSynthesisFlagshipProgressDeliverableDTO reportSynthesisFlagshipProgressDeliverableDTO : flagshipPlannedList) {
 
@@ -538,7 +542,7 @@ public class DeliverableManagerImpl implements DeliverableManager {
       liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
 
       List<ReportSynthesisFlagshipProgressDeliverableDTO> flagshipPlannedList =
-        this.getFpPlannedList(liaisonInstitutions, phaseDB, liaisonInstitution);
+        this.getFpPlannedList(liaisonInstitutions, phaseDB, liaisonInstitution, true);
 
       for (ReportSynthesisFlagshipProgressDeliverableDTO reportSynthesisFlagshipProgressDeliverableDTO : flagshipPlannedList) {
 

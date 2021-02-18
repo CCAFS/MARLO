@@ -174,6 +174,13 @@
               <h4 class="headTitle">[@s.text name="${customLabel}.fullList.title" /]</h4>
               [@listOfPublications name="fullList" list=(deliverables)![]  allowPopups=true /]
             </div>
+
+            [#-- Full list of publications published --]
+            <div class="form-group viewMoreSyntesisTableGrey-block"> 
+              [#-- Table --]
+              <h4 class="headTitle">[@s.text name="Grey" /]</h4>
+              [@listOfPublications name="fullGreyList" list=(deliverablesNotPublications)![]  allowPopups=true isGrey=true /]
+            </div>
             
           </div>
           [#-- Section Buttons & hidden inputs--]
@@ -220,7 +227,7 @@
 
 [/#macro]
 
-[#macro listOfPublications name list=[] allowPopups=false]
+[#macro listOfPublications name list=[] allowPopups=false isGrey=false]
     <table class="table table-bordered">
       <thead>
         <tr>
@@ -329,6 +336,12 @@
                   [/#if]
                 [/#if]
               </td>
+              [#if isGrey]
+                <td class="text-center " style="max-width: 250px;">
+                  [#local deliverableInfo = item.getDeliverableInfo(actualPhase)!]
+                  [@utils.tableText value="${item.deliverableInfo.deliverableType.deliverableCategory.name} - ${deliverableInfo.deliverableType.name}" /]
+                </td>
+              [/#if]
               [#if !allowPopups]
                 [#-- Volume --]
                 <td class="text-center urlify"  style="width: 50px !important;">[@utils.tableText value=(item.publication.volume)!"" /]</td>
@@ -359,7 +372,7 @@
                   [#-- Check --]
                   <td class="text-center">
                     [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.deliverablesIds?seq_contains(item.id))!true) /]
-                    [@customForm.checkmark id="deliverable-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.deliverablesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
+                    [@customForm.checkmark id="deliverableGrey-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.deliverablesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
                   </td>
                 [/#if]
               [/#if]
