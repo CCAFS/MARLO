@@ -105,13 +105,16 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    if (this.jsonStringResponse == null || StringUtils.equalsIgnoreCase(this.jsonStringResponse, "null")) {
-      return NOT_FOUND;
+    /*
+     * if (this.jsonStringResponse == null || StringUtils.equalsIgnoreCase(this.jsonStringResponse, "null")) {
+     * return NOT_FOUND;
+     * }
+     */
+    if (this.jsonStringResponse != null && !StringUtils.equalsIgnoreCase(this.jsonStringResponse, "null")) {
+      this.response = new Gson().fromJson(jsonStringResponse, MetadataWOSModel.class);
+
+      this.saveInfo();
     }
-
-    this.response = new Gson().fromJson(jsonStringResponse, MetadataWOSModel.class);
-
-    this.saveInfo();
 
     return SUCCESS;
   }
@@ -342,7 +345,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
     DeliverableMetadataExternalSources externalSource =
       this.deliverableMetadataExternalSourcesManager.findByPhaseAndDeliverable(phase, deliverable);
     MetadataGardianModel gardianInfo = this.response.getGardianInfo();
-    
+
     if (externalSource == null) {
       externalSource = new DeliverableMetadataExternalSources();
       externalSource.setPhase(phase);
@@ -364,8 +367,8 @@ public class DeliverableMetadataByWOS extends BaseAction {
     externalSource.setJournalName(this.response.getJournalName());
     externalSource.setVolume(this.response.getVolume());
     externalSource.setPages(this.response.getPages());
-    
-    if(gardianInfo != null) {
+
+    if (gardianInfo != null) {
       externalSource.setGardianFindability(gardianInfo.getFindability());
       externalSource.setGardianAccessibility(gardianInfo.getAccessibility());
       externalSource.setGardianInteroperability(gardianInfo.getInteroperability());
