@@ -55,6 +55,9 @@ public class MetadataWOSModel implements Serializable {
   @SerializedName("organizations")
   private List<WOSInstitution> institutions;
 
+  @SerializedName("gardian")
+  MetadataGardianModel gardianInfo;
+
   public MetadataWOSModel() {
   }
 
@@ -64,6 +67,10 @@ public class MetadataWOSModel implements Serializable {
 
   public String getDoi() {
     return doi;
+  }
+
+  public MetadataGardianModel getGardianInfo() {
+    return gardianInfo;
   }
 
   public List<WOSInstitution> getInstitutions() {
@@ -118,6 +125,10 @@ public class MetadataWOSModel implements Serializable {
     this.doi = doi;
   }
 
+  public void setGardianInfo(MetadataGardianModel gardianInfo) {
+    this.gardianInfo = gardianInfo;
+  }
+
   public void setInstitutions(List<WOSInstitution> organizations) {
     this.institutions = organizations;
   }
@@ -166,5 +177,4 @@ public class MetadataWOSModel implements Serializable {
   public String toString() {
     return ToStringBuilder.reflectionToString(this);
   }
-
 }

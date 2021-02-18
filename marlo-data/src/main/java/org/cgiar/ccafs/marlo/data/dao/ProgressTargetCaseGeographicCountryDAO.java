@@ -40,7 +40,8 @@ public interface ProgressTargetCaseGeographicCountryDAO {
   public boolean existProgressTargetCaseGeographicCountry(long progressTargetCaseGeographicCountryID);
 
   /**
-   * This method gets a progressTargetCaseGeographicCountry object by a given progressTargetCaseGeographicCountry identifier.
+   * This method gets a progressTargetCaseGeographicCountry object by a given progressTargetCaseGeographicCountry
+   * identifier.
    * 
    * @param progressTargetCaseGeographicCountryID is the progressTargetCaseGeographicCountry identifier.
    * @return a ProgressTargetCaseGeographicCountry object.
@@ -54,14 +55,19 @@ public interface ProgressTargetCaseGeographicCountryDAO {
    */
   public List<ProgressTargetCaseGeographicCountry> findAll();
 
+  public List<ProgressTargetCaseGeographicCountry> findGeographicCountryByTargetCase(long targetCaseID);
+
 
   /**
    * This method saves the information of the given progressTargetCaseGeographicCountry
    * 
-   * @param progressTargetCaseGeographicCountry - is the progressTargetCaseGeographicCountry object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the progressTargetCaseGeographicCountry was
+   * @param progressTargetCaseGeographicCountry - is the progressTargetCaseGeographicCountry object with the new
+   *        information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         progressTargetCaseGeographicCountry was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ProgressTargetCaseGeographicCountry save(ProgressTargetCaseGeographicCountry progressTargetCaseGeographicCountry);
+  public ProgressTargetCaseGeographicCountry
+    save(ProgressTargetCaseGeographicCountry progressTargetCaseGeographicCountry);
 }

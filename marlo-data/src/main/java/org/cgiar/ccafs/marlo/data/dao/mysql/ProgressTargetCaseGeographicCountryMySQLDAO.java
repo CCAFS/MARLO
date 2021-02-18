@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.ProgressTargetCaseGeographicCountryDAO;
 import org.cgiar.ccafs.marlo.data.model.ProgressTargetCaseGeographicCountry;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -27,7 +28,8 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class ProgressTargetCaseGeographicCountryMySQLDAO extends AbstractMarloDAO<ProgressTargetCaseGeographicCountry, Long> implements ProgressTargetCaseGeographicCountryDAO {
+public class ProgressTargetCaseGeographicCountryMySQLDAO extends
+  AbstractMarloDAO<ProgressTargetCaseGeographicCountry, Long> implements ProgressTargetCaseGeographicCountryDAO {
 
 
   @Inject
@@ -37,14 +39,16 @@ public class ProgressTargetCaseGeographicCountryMySQLDAO extends AbstractMarloDA
 
   @Override
   public void deleteProgressTargetCaseGeographicCountry(long progressTargetCaseGeographicCountryId) {
-    ProgressTargetCaseGeographicCountry progressTargetCaseGeographicCountry = this.find(progressTargetCaseGeographicCountryId);
+    ProgressTargetCaseGeographicCountry progressTargetCaseGeographicCountry =
+      this.find(progressTargetCaseGeographicCountryId);
     progressTargetCaseGeographicCountry.setActive(false);
     this.update(progressTargetCaseGeographicCountry);
   }
 
   @Override
   public boolean existProgressTargetCaseGeographicCountry(long progressTargetCaseGeographicCountryID) {
-    ProgressTargetCaseGeographicCountry progressTargetCaseGeographicCountry = this.find(progressTargetCaseGeographicCountryID);
+    ProgressTargetCaseGeographicCountry progressTargetCaseGeographicCountry =
+      this.find(progressTargetCaseGeographicCountryID);
     if (progressTargetCaseGeographicCountry == null) {
       return false;
     }
@@ -70,7 +74,19 @@ public class ProgressTargetCaseGeographicCountryMySQLDAO extends AbstractMarloDA
   }
 
   @Override
-  public ProgressTargetCaseGeographicCountry save(ProgressTargetCaseGeographicCountry progressTargetCaseGeographicCountry) {
+  public List<ProgressTargetCaseGeographicCountry> findGeographicCountryByTargetCase(long targetCaseID) {
+    String query = "from " + ProgressTargetCaseGeographicCountry.class.getName()
+      + " where report_synthesis_srf_progress_targets_case_id = " + targetCaseID;
+    List<ProgressTargetCaseGeographicCountry> list = super.findAll(query);
+    if (!list.isEmpty()) {
+      return list;
+    }
+    return Collections.emptyList();
+  }
+
+  @Override
+  public ProgressTargetCaseGeographicCountry
+    save(ProgressTargetCaseGeographicCountry progressTargetCaseGeographicCountry) {
     if (progressTargetCaseGeographicCountry.getId() == null) {
       super.saveEntity(progressTargetCaseGeographicCountry);
     } else {
