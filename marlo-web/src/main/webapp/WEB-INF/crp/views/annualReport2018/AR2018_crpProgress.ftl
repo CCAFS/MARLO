@@ -137,8 +137,9 @@
       <strong >SLO Target 2022</strong>
        <br />${(element.narrative)!} <br>
        <div class="checkboxDiTeAr">
+       
          <div class="contentCheckBox">
-          [@customForm.checkbox name="checkboxDiTeAr-${isTemplate?string('template', index)}" value="${(arrayCheckBV[index])!}" checked=(arrayCheckBV[index]?boolean) i18nkey="No new evidence" className="checkboxDiTeArClick" required=false editable=editable /]
+          [@customForm.checkbox name="sloTargets[${index}].hasEvidence" value="sloTargets[${index}].hasEvidence" checked=(sloTargets[index].hasEvidence?boolean)!false i18nkey="No new evidence" className="checkboxDiTeArClick" required=false editable=editable /]
 
          </div>
        </div>
