@@ -6,7 +6,7 @@
 [#assign pageLibs = [ "select2", "trumbowyg", "components-font-awesome", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js"
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js" ] /]
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210218" ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210114"] /]
 
 [#assign breadCrumb = [
@@ -146,7 +146,7 @@
     <div class="to-disabled-box">
       <div class="disabled-box"></div>
     <div class="evidenceList">
-      [#list arrayEvidence as evidence]
+      [#list element.targetCases as evidence]
        [@sloContribution name="" ccname=customName indexSlo=index index=evidence/]
       [/#list]
     </div>

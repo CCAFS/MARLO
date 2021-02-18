@@ -108,15 +108,21 @@ function setStatusByBack() {
       if ($(checkbox).val() == "true") {
         $(checkbox).val("false");
         // console.log("now is: "+$(this).val());
+
       } else {
         $(checkbox).val("true");
         // console.log("now is: "+$(this).val());
+
       }
     
       if ($(checkbox).val() == "false") {
-        $(checkbox).parents(".a-slo").find(".disabled-box").show();
+        $(checkbox).parents(".a-slo").find(".to-disabled-box").hide(400);
+        $(checkbox).parents(".a-slo").find(".btn-addEvidence").hide(400);
+        // $(checkbox).parents(".a-slo").find(".disabled-box").show();
       } else {
-        $(checkbox).parents(".a-slo").find(".disabled-box").hide();
+        // $(checkbox).parents(".a-slo").find(".disabled-box").hide();
+        $(checkbox).parents(".a-slo").find(".to-disabled-box").show(400);
+        $(checkbox).parents(".a-slo").find(".btn-addEvidence").show(400);
       }
 
     });
@@ -133,9 +139,14 @@ function setCheckboxValueTohide() {
   }
 
   if ($(this).val() == "false") {
-    $(this).parents(".a-slo").find(".disabled-box").show();
+    $(this).parents(".a-slo").find(".to-disabled-box").hide(400);
+    $(this).parents(".a-slo").find(".btn-addEvidence").hide(400);
+    // $(this).parents(".a-slo").find(".disabled-box").show();
   } else {
-    $(this).parents(".a-slo").find(".disabled-box").hide();
+    // $(this).parents(".a-slo").find(".disabled-box").hide();
+    $(this).parents(".a-slo").find(".to-disabled-box").show(400);
+    $(this).parents(".a-slo").find(".btn-addEvidence").show(400);
+    
   }
 
 }
