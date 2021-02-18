@@ -985,13 +985,13 @@ public class SrfProgressAction extends BaseAction {
      * }
      * }
      */
+
     // method 2
     if (sloTargets != null) {
       for (SrfSloIndicatorTarget sloIndicator : sloTargets) {
         if (sloIndicator.getTargetCases() != null) {
 
-          for (ReportSynthesisSrfProgressTargetCases srfTarget : reportSynthesis.getReportSynthesisSrfProgress()
-            .getSloTargetsCases()) {
+          for (ReportSynthesisSrfProgressTargetCases srfTarget : sloIndicator.getTargetCases()) {
             if (srfTarget.getId() == null) {
               ReportSynthesisSrfProgressTargetCases srfTargetSave = new ReportSynthesisSrfProgressTargetCases();
 
