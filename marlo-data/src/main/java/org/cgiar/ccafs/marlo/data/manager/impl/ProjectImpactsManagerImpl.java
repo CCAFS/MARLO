@@ -94,7 +94,6 @@ public class ProjectImpactsManagerImpl implements ProjectImpactsManager {
     List<ProjectImpacts> projectImpacts = this.getProjectImpactsByPhase(phase);
     if (projectImpacts != null) {
       for (ProjectImpacts projectImpact : projectImpacts) {
-
         // Validation for cancelated projects
         if (projectImpact.getProject() != null && projectImpact.getProject().getProjecInfoPhase(phase) != null
           && projectImpact.getProject().getProjecInfoPhase(phase).getEndDate() != null
@@ -105,7 +104,6 @@ public class ProjectImpactsManagerImpl implements ProjectImpactsManager {
           Calendar calendar = Calendar.getInstance();
           calendar.setTime(projectImpact.getProject().getProjecInfoPhase(phase).getEndDate());
           int endDateYear = calendar.get(Calendar.YEAR);
-          System.out.println("projectID: " + projectImpact.getProject().getId() + " / Year " + endDateYear);
           // Include just projects with year end date mayor equal to phase year
           if (endDateYear != 0 && phase.getYear() != 0 && endDateYear >= phase.getYear()) {
             String projectId = projectImpact.getProject().getId().toString();
