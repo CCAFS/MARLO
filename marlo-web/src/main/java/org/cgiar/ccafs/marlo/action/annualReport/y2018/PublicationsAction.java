@@ -94,6 +94,8 @@ public class PublicationsAction extends BaseAction {
   private GlobalUnit loggedCrp;
   private List<LiaisonInstitution> liaisonInstitutions;
   private List<Deliverable> deliverables;
+
+  // List for gray literature
   private List<Deliverable> deliverablesNotPublications;
   private List<String> emptyFields;
   private Phase actualPhase;
@@ -571,6 +573,10 @@ public class PublicationsAction extends BaseAction {
       liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
 
       deliverables = deliverableManager.getPublicationsList(liaisonInstitution, actualPhase);
+
+      // List for gray literature
+      deliverablesNotPublications = deliverableManager.getNotPublicationsList(liaisonInstitution, actualPhase);
+
 
       Path path = this.getAutoSaveFilePath();
       // Verify if there is a Draft file
