@@ -12,7 +12,7 @@
   "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js"
 ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20190621"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210216"] /]
 
 [#assign breadCrumb = [
   {"label":"${currentSection}",   "nameSpace":"",             "action":""},
@@ -348,8 +348,9 @@
   [#local annualReportElement= (action.getMilestone(reportedOutcomeID,element.id))! ]
   [#local customName = "${name}[${index}]" /]
   [#local milestoneNextPOWB = action.getNextPOWBMilestone(element.composeID) /]
-  <div id="powbMilestone-${isTemplate?string('template', index)}" class="synthesisMilestone simpleBox" style="display:${isTemplate?string('none','block')}">
-    [#-- Index --]
+  [#local milestoneAnnualReportStatus = (action.getCurrentMilestoneStatus(element.id))!]
+  <div id="powbMilestone-${isTemplate?string('template', index)}" class="synthesisMilestone simpleBox" style="display:${isTemplate?string('none','block')}"> 
+    [#-- Index  Outcome ${reportedOutcomeID}, Milestone ${element.id} --]
     [#-- <div class="leftHead gray sm"><span class="index">${index+1}</span></div> --]
     <div class="leftHead gray sm"><span class="index">${(element.composeID)!}</span></div>
     [#-- Hidden inputs --]
@@ -367,6 +368,9 @@
     <div class="form-group">
       [#-- Word Document Tag --]
       [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+      <br>
+      
+      [#-- 
       <table class="milestones-crosscutting">
         <thead>
           <tr>
@@ -381,7 +385,7 @@
             [#local annualReportCrossCuting =  (action.getCrossCuttingMarker( ((annualReportElement.id)!-1), marker.id ))! ]
             <tr>
               <td class="row-title"> 
-                <span class="name">${marker.name}</span>
+                <span class="name ">${marker.name}</span>
                 <input type="hidden" name="${ccName}.id" value="${(annualReportCrossCuting.id)!}" />
                 <input type="hidden" name="${ccName}.marker.id" value="${marker.id}"/>
               </td>
@@ -398,6 +402,43 @@
           <tr><div>Next climate: ${milestoneNextPOWB.climateFocusLevel.powbName}</div></tr>
         </tbody>
       </table>
+
+
+      --]
+  
+        <div class="row">
+          <div class="col-sm-3 colTitleCenter boldCell"></div>
+          <div class="col-sm-3 colTitleCenter boldCell">[@s.text name="${customLabel}.milestoneScoreMarker" /][@customForm.req required=editable  /]</div>
+          <div class="col-sm-6 colTitleCenter boldCell">[@s.text name="${customLabel}.milestoneScoreJustification" /][@customForm.req required=editable  /]</div>
+        </div>
+          
+          [#assign markersPOWB=["${milestoneNextPOWB.genderFocusLevel.powbName}","${milestoneNextPOWB.youthFocusLevel.powbName}","${milestoneNextPOWB.capdevFocusLevel.powbName}","${milestoneNextPOWB.climateFocusLevel.powbName}"] /]
+          
+          [#list cgiarCrossCuttingMarkers as marker]
+            [#local ccName= "${customName}.markers[${marker_index}]"]
+            [#local annualReportCrossCuting = (action.getCrossCuttingMarker( ((annualReportElement.id)!-1), marker.id ))! ]
+            <div class="row rectGray">
+              <div class="col-sm-3 ">
+                <span class="name boldCell">${marker.name}</span>
+                <input type="hidden" name="${ccName}.id" value="${(annualReportCrossCuting.id)!}" />
+                <input type="hidden" name="${ccName}.marker.id" value="${marker.id}" />
+              </div>
+              <div class="col-sm-3 colTitleCenter">
+                [@customForm.select name="${ccName}.focus.id" value="${(annualReportCrossCuting.focus.id)!-1}" label=""
+                listName="focusLevels" keyFieldName="id" displayFieldName="powbName" required=true showTitle=false className=""
+                editable=editable/]</td>
+              </div>
+              <div class="col-sm-6 colTitleCenter">
+                [@customForm.input name="${ccName}.just" value="${(annualReportCrossCuting.just)!}" showTitle=false required=true
+                editable=editable /]
+              </div>
+              <div class="col-sm-12 ">
+                <p class="helpTextPOWB">In POWB ${(actualPhase.year+1)!} you selected for ${marker.name}: <span style="color: #1ca6ce">${(markersPOWB[marker_index])!}</span> </p>
+              </div>
+            </div>
+          [/#list]
+
+
     </div>
     
     
@@ -405,9 +446,11 @@
     <div class="form-group">
       [#-- Word Document Tag --]
       [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
-    
       <label>[@s.text name="${customLabel}.milestoneStatus" /]:[@customForm.req required=editable  /]</label><br />
-      [#local milestoneStatus = (annualReportElement.milestonesStatus.id)!-1 /]
+      [#local milestoneStatus = (milestoneAnnualReportStatus.id)!-1 /]
+      [#if milestoneStatus == 2]
+        [#local milestoneStatus = 3 /]
+      [/#if]
       [#local statusesList = [
         { "id": 3, "name": "Complete" },
         { "id": 4, "name": "Extended" },
@@ -418,13 +461,15 @@
         [@customForm.radioFlat id="${customName}-status-${s.id}" name="${customName}.milestonesStatus.id" label="${s.name}"   value="${s.id}" checked=(milestoneStatus == s.id)!false editable=editable cssClass="milestoneStatus" cssClassLabel="font-normal"/]
       [/#list]
       [#if !editable && (milestoneStatus == -1)][@s.text name="form.values.fieldEmpty"/][/#if]
-      <div>Next status: ${milestoneNextPOWB.milestonesStatus.name}</div>
+      <div class="rectGray" style="padding-left: 10px;">
+        <p class="helpTextPOWB">In POWB you selected the status: <span style="color: #1ca6ce">${(milestoneNextPOWB.milestonesStatus.name)!}</span> </p>
+      </div>
     </div>
-    
     [#-- New year if extended --]
     <div class="row form-group extendedYearBlock" style="display:${(milestoneStatus == 4)?string('block', 'none')}">
       <div class="col-md-3">
-        [@customForm.select name="${customName}.extendedYear" label=""  i18nkey="${customLabel}.year" listName="allPhaseYearsGreater"  required=true  className="" editable=editable/]
+        [#local milestoneExtendedYear = (action.getMilestoneExtendedYear(element.id))!"-NULL"]
+        [@customForm.select name="${customName}.extendedYear" label=""  i18nkey="${customLabel}.year" listName="allPhaseYearsGreater" required=true value=milestoneExtendedYear  className="" editable=editable/]
       </div>
     </div>
     
