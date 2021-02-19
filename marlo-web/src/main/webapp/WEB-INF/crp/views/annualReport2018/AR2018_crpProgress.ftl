@@ -151,7 +151,7 @@
       <div class="disabled-box"></div>
     <div class="evidenceList">
       [#list element.targetCases as evidence]
-       [@sloContribution name="" indexSlo=index index=(evidence?index)  /]
+       [@sloContribution name="" element=evidence indexSlo=index index=(evidence?index)  /]
       [/#list]
     </div>
   </div>
@@ -177,7 +177,7 @@
 [/#macro]
 
 
-[#macro sloContribution  cssClass="" name="" indexSlo=0 index=0]
+[#macro sloContribution element cssClass="" name="" indexSlo=0 index=0]
 [#local ccname = "sloTargets[${indexSlo}].targetCases[${index}]" /]
 
 [#--  
@@ -196,7 +196,7 @@
 <hr>
   [#-- Brief summary of new evidence of CGIAR contribution to relevant targets for this CRP (with citation) --]
   <div class="form-group">
-    [@customForm.textArea name="${ccname}.briefSummary" value="${(sloTargetContribution.briefSummary?html)!}" i18nkey="${customLabel}.summaryEvidence" className="limitWords-150" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable allowTextEditor=true /]
+    [@customForm.textArea name="${ccname}.briefSummary" value=element.briefSummary i18nkey="${customLabel}.summaryEvidence" className="limitWords-150" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable allowTextEditor=true /]
     [#-- FP Synthesis table --]
     [#if PMU]
       [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableSloTargetBriefSummary" list=otherContributions columns=["briefSummary"] crpProgramField="reportSynthesisSrfProgress.reportSynthesis.liaisonInstitution.crpProgram" showTitle=false showHeader=false showEmptyRows=false /]
@@ -204,7 +204,7 @@
   </div>
   [#-- Expected additional contribution before end of 2022 (if not already fully covered). --]
   <div class="form-group">
-    [@customForm.textArea name="${ccname}.additionalContribution" value="${(sloTargetContribution.additionalContribution?html)!}" i18nkey="${customLabel}.additionalContribution" className="limitWords-100" help="${customLabel}.additionalContribution.help" helpIcon=false required=false editable=editable allowTextEditor=true /]
+    [@customForm.textArea name="${ccname}.additionalContribution" value=element.additionalContribution i18nkey="${customLabel}.additionalContribution" className="limitWords-100" help="${customLabel}.additionalContribution.help" helpIcon=false required=false editable=editable allowTextEditor=true /]
     [#-- FP Synthesis table --]
     [#if PMU]
       [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableSloTargetBriefSummary" list=otherContributions columns=["additionalContribution"] crpProgramField="reportSynthesisSrfProgress.reportSynthesis.liaisonInstitution.crpProgram" showTitle=false showHeader=false showEmptyRows=false /]
