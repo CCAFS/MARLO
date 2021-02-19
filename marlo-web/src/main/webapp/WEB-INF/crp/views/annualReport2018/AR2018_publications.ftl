@@ -203,7 +203,7 @@
                   [#-- Full list of publications published --]
                   <div class="form-group viewMoreSyntesisTableGrey-block"> 
                     [#-- Table --]
-                    <h4 class="headTitle">[@s.text name="Grey" /]</h4>
+                    <h4 class="headTitle">[@s.text name="${customLabel}.fullGreyList.title" /]</h4>
                     [@listOfPublications name="fullGreyList" list=(deliverablesNotPublications)![]  allowPopups=true isGrey=true /]
                   </div>
               </div>
