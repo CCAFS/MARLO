@@ -98,8 +98,9 @@
             [/#if]
             
           </div>
-        
-          [@sloContribution cssClass="slo-contribution-section-hide slo-contribution-template" name="" indexSlo=-1 index=-1/]
+          [#--  review this commented code
+          [@sloContribution element="" cssClass="slo-contribution-section-hide slo-contribution-template" name="" indexSlo=-1 index=-1/]
+          --]
           [#-- Section Buttons & hidden inputs--]
           [#include "/WEB-INF/crp/views/annualReport2018/buttons-AR2018.ftl" /]
         [/@s.form] 
