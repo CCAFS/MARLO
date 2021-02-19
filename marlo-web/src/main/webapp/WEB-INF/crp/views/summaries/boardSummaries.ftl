@@ -48,7 +48,7 @@
       "cycles": [ "Planning","Reporting" ]
     },
     { "active": !centerGlobalUnit && action.hasSpecificities("crp_show_section_impact_covid19"),
-      "available": true,
+      "available": false,
       "title": "summaries.board.report.impactCovid19Summary", 
       "description": "summaries.board.report.impactCovid19Summary.description",
       "namespace": "/projects",
