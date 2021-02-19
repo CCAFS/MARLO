@@ -126,6 +126,7 @@
 
     
     [#-- Hidden Inputs --]
+    <input type="hidden" name="sloTargets.id" value="${(element.id)!}" />
     <input type="hidden" name="${customName}.id" value="${(sloTargetContribution.id)!}" />
     <input type="hidden" name="${customName}.srfSloIndicatorTarget.id" class="indicatorTargetID" value="${(element.id)!}" />    
     [#-- SLO Target --]
