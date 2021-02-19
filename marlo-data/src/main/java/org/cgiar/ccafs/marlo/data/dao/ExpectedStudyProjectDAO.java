@@ -56,6 +56,15 @@ public interface ExpectedStudyProjectDAO {
 
 
   /**
+   * This method gets a List of expectedStudyProject by a given phase and project identifier.
+   * 
+   * @param projectId is the project identifier.
+   * @param phaseId is the phase identifier.
+   * @return a List of ExpectedStudyProject objects or null if not found.
+   */
+  public List<ExpectedStudyProject> getByProjectAndPhase(long projectId, long phaseId);
+
+  /**
    * This method saves the information of the given expectedStudyProject
    * 
    * @param expectedStudyProject - is the expectedStudyProject object with the new information to be added/updated.

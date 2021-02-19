@@ -53,6 +53,15 @@ public interface ExpectedStudyProjectManager {
 
 
   /**
+   * This method gets a List of expectedStudyProject by a given phase and project identifier.
+   * 
+   * @param projectId is the project identifier.
+   * @param phaseId is the phase identifier.
+   * @return a List of ExpectedStudyProject objects or null if not found.
+   */
+  public List<ExpectedStudyProject> getByProjectAndPhase(long projectId, long phaseId);
+
+  /**
    * This method gets a expectedStudyProject object by a given expectedStudyProject identifier.
    * 
    * @param expectedStudyProjectID is the expectedStudyProject identifier.
@@ -69,6 +78,4 @@ public interface ExpectedStudyProjectManager {
    *         or -1 is some error occurred.
    */
   public ExpectedStudyProject saveExpectedStudyProject(ExpectedStudyProject expectedStudyProject);
-
-
 }
