@@ -555,3 +555,31 @@ div#chart13 {
   font-size: .9em;
   font-style: italic;
 }
+
+.TdSroll{
+  overflow: auto;
+  /* max-width: 200px; */
+  white-space: nowrap;
+}
+
+.TdSroll::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+
+}
+
+/* Track */
+.TdSroll::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+ 
+/* Handle */
+.TdSroll::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: #888; 
+}
+
+/* Handle on hover */
+.TdSroll::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
