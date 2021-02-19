@@ -12,7 +12,7 @@
   "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20200310",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210219"
   ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20200430"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210219"] /]
 
 [#assign breadCrumb = [
   {"label":"${currentSection}",   "nameSpace":"",             "action":""},
@@ -303,7 +303,7 @@
             <tr>
               <td> <a href="${url}" target="_blank" >D${(item.id)!""}</a>  </td>
               [#-- Title --]
-              <td>
+              <td  >
                 [#local publicationTitle = (item.getMetadataValue(1))!""]
                 [#if !(publicationTitle?has_content) ]
                   [#local publicationTitle = (item.deliverableInfo.title)!"" ]
@@ -337,12 +337,12 @@
                 [/#if]
               </td>
               [#-- Date of Publication --]
-              <td>[@utils.tableText value=(item.getMetadataValue(17))!"" /]</td>
+              <td >[@utils.tableText value=(item.getMetadataValue(17))!"" /]</td>
               [#-- Journal Article --]
               <td class="urlify">[@utils.tableText value=(item.publication.journal)!"" /]</td>
               [/#if]
               [#-- DOI or Handle --]
-              <td class="text-center " style="max-width: 250px;">
+              <td class="text-center TdSroll"  style="max-width: 100px;">
                 [#if item.getMetadataValue(36)?has_content]
                   [#local doi = item.getMetadataValue(36) /]
                   [#-- TODO add www.doi.org/ to DOI identifiers. NOTE: validations will be needed. There are not just DOIs saved there and there are some
@@ -407,7 +407,7 @@
                 </td>
                 [#if PMU]
                   [#-- Check --]
-                  <td class="text-center">
+                  <td class="text-center" style="max-width: 20px;">
                     [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.deliverablesIds?seq_contains(item.id))!true) /]
                     [@customForm.checkmark id="deliverableGrey-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.deliverablesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
                   </td>
