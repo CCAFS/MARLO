@@ -35,6 +35,7 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -240,10 +241,12 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
 
       // Load Shared studies
       List<ExpectedStudyProject> expectedStudyProject =
-        this.expectedStudyProjectManager.getByProjectAndPhase(project.getId(), this.getPhaseID()).stream()
-          .filter(px -> px.isActive() && px.getProjectExpectedStudy().isActive()
-            && px.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()) != null)
-          .collect(Collectors.toList());
+        this.expectedStudyProjectManager.getByProjectAndPhase(project.getId(), this.getPhaseID()) != null
+          ? this.expectedStudyProjectManager.getByProjectAndPhase(project.getId(), this.getPhaseID()).stream()
+            .filter(px -> px.isActive() && px.getProjectExpectedStudy().isActive()
+              && px.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()) != null)
+            .collect(Collectors.toList())
+          : Collections.emptyList();
       if (expectedStudyProject != null && expectedStudyProject.size() > 0) {
         for (ExpectedStudyProject expectedStudy : expectedStudyProject) {
           if (!allProjectStudies.contains(expectedStudy.getProjectExpectedStudy())) {
