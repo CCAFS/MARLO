@@ -1,5 +1,5 @@
 var $tableViewMore;
-var tableDatatableViewmore, tableDataProgressTableViewmore;
+var tableDatatableViewmore, tableDataProgressTableViewmore, tableDatatableTableGrey;
 var pageName;
 var googleChartsLoaded = false;
 $(document).ready(function() {
@@ -26,6 +26,21 @@ $(document).ready(function() {
 
     $progressTableViewMore = $('.viewMoreSyntesisTable-block table');
     tableDataProgressTableViewmore = $progressTableViewMore.DataTable({
+        "paging": true,
+        "searching": true,
+        "info": true,
+        aoColumnDefs: [
+          {
+              sType: "natural",
+              aTargets: [
+                0
+              ]
+          }
+        ]
+    });
+
+    $TableGrey = $('.viewMoreSyntesisTableGrey-block table');
+    tableDatatableTableGrey = $TableGrey.DataTable({
         "paging": true,
         "searching": true,
         "info": true,
