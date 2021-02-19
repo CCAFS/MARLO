@@ -36,7 +36,8 @@ public class ProgressTargetCaseGeographicCountryManagerImpl implements ProgressT
 
 
   @Inject
-  public ProgressTargetCaseGeographicCountryManagerImpl(ProgressTargetCaseGeographicCountryDAO progressTargetCaseGeographicCountryDAO) {
+  public ProgressTargetCaseGeographicCountryManagerImpl(
+    ProgressTargetCaseGeographicCountryDAO progressTargetCaseGeographicCountryDAO) {
     this.progressTargetCaseGeographicCountryDAO = progressTargetCaseGeographicCountryDAO;
 
 
@@ -45,13 +46,15 @@ public class ProgressTargetCaseGeographicCountryManagerImpl implements ProgressT
   @Override
   public void deleteProgressTargetCaseGeographicCountry(long progressTargetCaseGeographicCountryId) {
 
-    progressTargetCaseGeographicCountryDAO.deleteProgressTargetCaseGeographicCountry(progressTargetCaseGeographicCountryId);
+    progressTargetCaseGeographicCountryDAO
+      .deleteProgressTargetCaseGeographicCountry(progressTargetCaseGeographicCountryId);
   }
 
   @Override
   public boolean existProgressTargetCaseGeographicCountry(long progressTargetCaseGeographicCountryID) {
 
-    return progressTargetCaseGeographicCountryDAO.existProgressTargetCaseGeographicCountry(progressTargetCaseGeographicCountryID);
+    return progressTargetCaseGeographicCountryDAO
+      .existProgressTargetCaseGeographicCountry(progressTargetCaseGeographicCountryID);
   }
 
   @Override
@@ -62,13 +65,20 @@ public class ProgressTargetCaseGeographicCountryManagerImpl implements ProgressT
   }
 
   @Override
-  public ProgressTargetCaseGeographicCountry getProgressTargetCaseGeographicCountryById(long progressTargetCaseGeographicCountryID) {
+  public List<ProgressTargetCaseGeographicCountry> findGeographicCountryByTargetCase(long targetCaseID) {
+    return progressTargetCaseGeographicCountryDAO.findGeographicCountryByTargetCase(targetCaseID);
+  }
+
+  @Override
+  public ProgressTargetCaseGeographicCountry
+    getProgressTargetCaseGeographicCountryById(long progressTargetCaseGeographicCountryID) {
 
     return progressTargetCaseGeographicCountryDAO.find(progressTargetCaseGeographicCountryID);
   }
 
   @Override
-  public ProgressTargetCaseGeographicCountry saveProgressTargetCaseGeographicCountry(ProgressTargetCaseGeographicCountry progressTargetCaseGeographicCountry) {
+  public ProgressTargetCaseGeographicCountry
+    saveProgressTargetCaseGeographicCountry(ProgressTargetCaseGeographicCountry progressTargetCaseGeographicCountry) {
 
     return progressTargetCaseGeographicCountryDAO.save(progressTargetCaseGeographicCountry);
   }
