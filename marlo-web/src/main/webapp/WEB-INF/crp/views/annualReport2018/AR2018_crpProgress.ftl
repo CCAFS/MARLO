@@ -126,7 +126,7 @@
 
     
     [#-- Hidden Inputs --]
-    <input type="hidden" name="sloTargets.id" value="${(element.id)!}" />
+    <input type="hidden" name="sloTargets[${index}].id" value="${(element.id)!}" />
     [#--  
     <input type="hidden" name="${customName}.id" value="${(sloTargetContribution.id)!}" />
     <input type="hidden" name="${customName}.srfSloIndicatorTarget.id" class="indicatorTargetID" value="${(element.id)!}" />    
@@ -179,6 +179,10 @@
 
 [#macro sloContribution  cssClass="" name="" indexSlo=0 index=0]
 [#local ccname = "sloTargets[${indexSlo}].targetCases[${index}]" /]
+
+[#--  
+<input type="hidden" name="${ccname}.id" value="${index}" />
+--]
 
 <div class="slo-contribution-section ${cssClass}" style="margin-top: 10px; padding-top: 20px;">
   <div class="leftHead  sm">
