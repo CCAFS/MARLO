@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableMetadataExternalSourcesManager;
 import org.cgiar.ccafs.marlo.data.manager.ExternalSourceAuthorManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableAffiliation;
 import org.cgiar.ccafs.marlo.data.model.DeliverableAffiliationsNotMapped;
@@ -79,6 +80,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
   private String jsonStringResponse;
   private MetadataWOSModel response;
   private Long deliverableId;
+  private Long phaseId;
 
   // Managers
   private DeliverableMetadataExternalSourcesManager deliverableMetadataExternalSourcesManager;
@@ -87,13 +89,14 @@ public class DeliverableMetadataByWOS extends BaseAction {
   private ExternalSourceAuthorManager externalSourceAuthorManager;
   private DeliverableManager deliverableManager;
   private InstitutionManager institutionManager;
+  private PhaseManager phaseManager;
 
   @Inject
   public DeliverableMetadataByWOS(APConfig config, DeliverableAffiliationManager deliverableAffiliationManager,
     DeliverableMetadataExternalSourcesManager deliverableMetadataExternalSourcesManager,
     DeliverableAffiliationsNotMappedManager deliverableAffiliationsNotMappedManager,
     ExternalSourceAuthorManager externalSourceAuthorManager, DeliverableManager deliverableManager,
-    InstitutionManager institutionManager) {
+    InstitutionManager institutionManager, PhaseManager phaseManager) {
     super(config);
     this.deliverableAffiliationManager = deliverableAffiliationManager;
     this.deliverableMetadataExternalSourcesManager = deliverableMetadataExternalSourcesManager;
@@ -101,6 +104,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
     this.externalSourceAuthorManager = externalSourceAuthorManager;
     this.deliverableManager = deliverableManager;
     this.institutionManager = institutionManager;
+    this.phaseManager = phaseManager;
   }
 
   @Override
@@ -112,6 +116,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
      */
     if (this.jsonStringResponse != null && !StringUtils.equalsIgnoreCase(this.jsonStringResponse, "null")) {
       this.response = new Gson().fromJson(jsonStringResponse, MetadataWOSModel.class);
+      this.phaseId = this.getActualPhase().getId();
 
       this.saveInfo();
     }
@@ -125,6 +130,10 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
   public String getLink() {
     return link;
+  }
+
+  public Long getPhaseId() {
+    return phaseId;
   }
 
   public MetadataWOSModel getResponse() {
@@ -147,14 +156,14 @@ public class DeliverableMetadataByWOS extends BaseAction {
     }
 
     if (!this.link.isEmpty() && DOIService.REGEXP_PLAINDOI.matcher(this.link).lookingAt()) {
-      JsonElement response = this.readWOSDataFromClarisa(this.link);
+      JsonElement response = this.readWOSDataFromClarisa();
 
       this.jsonStringResponse = StringUtils.stripToNull(new GsonBuilder().serializeNulls().create().toJson(response));
     }
   }
 
-  private JsonElement readWOSDataFromClarisa(final String url) throws IOException {
-    URL clarisaUrl = new URL(config.getClarisaWOSLink().replace("{1}", url));
+  private JsonElement readWOSDataFromClarisa() throws IOException {
+    URL clarisaUrl = new URL(config.getClarisaWOSLink().replace("{1}", this.link));
     String loginData = config.getClarisaWOSUser() + ":" + config.getClarisaWOSPassword();
     String encoded = Base64.encodeBase64String(loginData.getBytes());
 
@@ -383,12 +392,36 @@ public class DeliverableMetadataByWOS extends BaseAction {
   }
 
   private void saveInfo() {
-    Phase phase = this.getActualPhase();
     Deliverable deliverable = this.deliverableManager.getDeliverableById(this.deliverableId);
+    Phase phase = this.phaseManager.getPhaseById(this.phaseId);
 
     this.saveExternalSources(phase, deliverable);
     this.saveAffiliations(phase, deliverable);
     this.saveAffiliationsNotMapped(phase, deliverable);
     this.saveExternalSourceAuthors(phase, deliverable);
+  }
+
+  /**
+   * This method is created ONLY to be used for the deliverables bulk sync
+   * 
+   * @param phase the phase the sync info is going to be saved
+   * @param deliverableId the deliverableId
+   * @param link the DOI/URL link to be used for the metadata harvesting
+   * @return
+   * @throws IOException
+   */
+  public boolean saveInfo(Long phaseId, Long deliverableId, String link) throws IOException {
+    this.phaseId = phaseId;
+    this.deliverableId = deliverableId;
+    this.link = link;
+
+    this.response = new Gson().fromJson(this.readWOSDataFromClarisa(), MetadataWOSModel.class);
+
+    if (this.response != null) {
+      this.saveInfo();
+      return true;
+    }
+
+    return false;
   }
 }
