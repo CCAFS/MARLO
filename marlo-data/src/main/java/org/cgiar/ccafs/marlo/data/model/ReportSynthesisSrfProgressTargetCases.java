@@ -4,6 +4,7 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,12 +37,18 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
   @Expose
   private Boolean isContributing;
 
+  private Set<SrfSloIndicatorTarget> srfSloTargets = new HashSet<SrfSloIndicatorTarget>(0);
+  private List<SrfSloIndicatorTarget> sloTargets = new ArrayList<>();
+
   private Set<ProgressTargetCaseGeographicScope> progressTargetCaseGeographicScopes =
     new HashSet<ProgressTargetCaseGeographicScope>(0);
   private List<ProgressTargetCaseGeographicScope> geographicScopes;
   private Set<ProgressTargetCaseGeographicRegion> progressTargetCaseGeographicRegions =
     new HashSet<ProgressTargetCaseGeographicRegion>(0);
   private List<ProgressTargetCaseGeographicRegion> geographicRegions;
+  private Set<ProgressTargetCaseGeographicCountry> progressTargetCaseGeographicCountries =
+    new HashSet<ProgressTargetCaseGeographicCountry>(0);
+  private List<ProgressTargetCaseGeographicCountry> geographicCountries;
 
   public ReportSynthesisSrfProgressTargetCases() {
   }
@@ -57,6 +64,11 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
   }
 
 
+  public List<ProgressTargetCaseGeographicCountry> getGeographicCountries() {
+    return geographicCountries;
+  }
+
+
   public List<ProgressTargetCaseGeographicRegion> getGeographicRegions() {
     return geographicRegions;
   }
@@ -66,10 +78,10 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
     return geographicScopes;
   }
 
-
   public Boolean getIsContributing() {
     return isContributing;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -78,6 +90,9 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
     return sb.toString();
   }
 
+  public Set<ProgressTargetCaseGeographicCountry> getProgressTargetCaseGeographicCountries() {
+    return progressTargetCaseGeographicCountries;
+  }
 
   public Set<ProgressTargetCaseGeographicRegion> getProgressTargetCaseGeographicRegions() {
     return progressTargetCaseGeographicRegions;
@@ -91,8 +106,16 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
     return reportSynthesisSrfProgress;
   }
 
+  public List<SrfSloIndicatorTarget> getSloTargets() {
+    return sloTargets;
+  }
+
   public SrfSloIndicatorTarget getSrfSloIndicatorTarget() {
     return srfSloIndicatorTarget;
+  }
+
+  public Set<SrfSloIndicatorTarget> getSrfSloTargets() {
+    return srfSloTargets;
   }
 
   public void setAdditionalContribution(String additionalContribution) {
@@ -101,6 +124,10 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
 
   public void setBriefSummary(String briefSummary) {
     this.briefSummary = briefSummary;
+  }
+
+  public void setGeographicCountries(List<ProgressTargetCaseGeographicCountry> geographicCountries) {
+    this.geographicCountries = geographicCountries;
   }
 
   public void setGeographicRegions(List<ProgressTargetCaseGeographicRegion> geographicRegions) {
@@ -113,6 +140,11 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
 
   public void setIsContributing(Boolean isContributing) {
     this.isContributing = isContributing;
+  }
+
+  public void setProgressTargetCaseGeographicCountries(
+    Set<ProgressTargetCaseGeographicCountry> progressTargetCaseGeographicCountries) {
+    this.progressTargetCaseGeographicCountries = progressTargetCaseGeographicCountries;
   }
 
   public void setProgressTargetCaseGeographicRegions(
@@ -129,8 +161,16 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
     this.reportSynthesisSrfProgress = reportSynthesisSrfProgress;
   }
 
+  public void setSloTargets(List<SrfSloIndicatorTarget> sloTargets) {
+    this.sloTargets = sloTargets;
+  }
+
   public void setSrfSloIndicatorTarget(SrfSloIndicatorTarget srfSloIndicatorTarget) {
     this.srfSloIndicatorTarget = srfSloIndicatorTarget;
+  }
+
+  public void setSrfSloTargets(Set<SrfSloIndicatorTarget> srfSloTargets) {
+    this.srfSloTargets = srfSloTargets;
   }
 
 }

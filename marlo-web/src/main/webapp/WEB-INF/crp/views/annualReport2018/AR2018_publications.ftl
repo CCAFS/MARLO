@@ -10,9 +10,9 @@
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20200310",
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20201214"
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210219"
   ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20200430"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210219"] /]
 
 [#assign breadCrumb = [
   {"label":"${currentSection}",   "nameSpace":"",             "action":""},
@@ -48,134 +48,174 @@
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
           [#-- Title --]
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
-          <div class="borderBox">
+
+
+
+
+
+          <div class="deliverableTabs">
             
-            <div class="form-group">
-              [#assign guideSheetURL = "https://drive.google.com/file/d/1apWx9qJk5NXlZQTzZzhGqRNSx934Bp5H/view" /]
-                <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> #C4 Peer review papers  -  Guideline </a> </small>
-            </div>
-            <br />
-            
-            <div class="form-group row">
-              <div class="col-md-4">
-                [#-- Total number of peer reviewed articles --]
-                <div id="" class="simpleBox numberBox">
-                  <label for="">[@s.text name="${customLabel}.indicatorC4.totalArticles" /]</label><br />
-                  <span>${(total)!}</span>
-                </div>
-              </div>
-              <div class="col-md-8">
-              </div>
-             </div>
-              
-              <div class="form-group row">
-              <div class="col-md-6">
-                [#-- Chart 10 - Number of peer reviewed articles by Open Access status --]
-                <div id="chart10" class="chartBox simpleBox">
-                  [#assign chartData = [
-                      {"name":"Open Acess",   "value": "${(totalOpenAccess)!0}"},
-                      {"name":"Limited",      "value": "${(totalLimited)!0}"}
-                    ] /] 
-                  <ul class="chartData" style="display:none">
-                    <li>
-                      <span>[@s.text name="${customLabel}.indicatorC5.chart6.0" /]</span>
-                      <span>[@s.text name="${customLabel}.indicatorC5.chart6.1" /]</span>
-                    </li>
-                    [#list chartData as data]
-                      <li><span>${data.name}</span><span class="number">${data.value}</span></li>
-                    [/#list]
-                  </ul>
-                </div>
-              </div>
-              
-              <div class="col-md-6">
-                [#-- Chart 11 - Number of peer reviewed articles by ISI status --]
-                <div id="chart11" class="chartBox simpleBox">
-                  [#assign chartData = [
-                      {"name":"Yes",   "value": "${(totalIsis)!0}"},
-                      {"name":"No",    "value": "${(totalNoIsis)!0}"}
-                    ] 
-                  /] 
-                  <ul class="chartData" style="display:none">
-                    <li>
-                      <span>[@s.text name="${customLabel}.indicatorC5.chart7.0" /]</span>
-                      <span>[@s.text name="${customLabel}.indicatorC5.chart7.1" /]</span>
-                    </li>
-                    [#list chartData as data]
-                      <li><span>${data.name}</span><span class="number">${data.value}</span></li>
-                    [/#list]
-                  </ul>
-                </div>
-              </div>
-            </div>
-            
-            [#-- Number of peer-reviewed publications --]
-            <div class="form-group">
-              [#-- Word Document Tag --]
-              [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
-              
-              <h4 class="headTitle">[@s.text name="${customLabel}.peerReviewed.title" /]</h4>
-              [@numberOfPublications name="peerReviewed" list=["", ""]/]
-            </div>
-            
+            <ul class="nav nav-tabs" role="tablist"> 
+                <li role="presentation" class="active"><a index="1" href="#deliverable-mainInformation" aria-controls="info" role="tab" data-toggle="tab">Peer-reviewed Publications</a></li>
+                
+                <li role="presentation" class=""><a index="2" href="#deliverable-disseminationMetadata" aria-controls="metadata" role="tab" data-toggle="tab">Grey Literature</a></li>
+                        
+            </ul>
+            <div class="tab-content ">
+             
+              <div id="deliverable-mainInformation" role="tabpanel" class="tab-pane fade in active">
             
 
-              <div class="form-group btn-group btn-group-sm pull-right" role="group" aria-label="...">
-                <button type="button" class="btn btn-default evidenceD-export" data-toggle="modal" data-target="#modal-evidenceC"><span class="glyphicon glyphicon-fullscreen"></span> Export Evidence D</button>
-                <button type="button" class="btn btn-default btn-xs pull-right" data-toggle="modal" data-target="#modal-publications"><span class="glyphicon glyphicon-fullscreen"></span> See Full Evidence D</button>
-              </div>
-              
-              
-              [#-- Table 6 to export --]
-              <div class="modal fade" id="modal-evidenceC" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                <div class="modal-dialog modal-lg" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                      <h4 class="modal-title" id="myModalLabel">Export Evidence D: Full Publications List</h4>
-                    </div>
-                    <div class="modal-body">
-                      <small><i>[@s.text name="${customLabel}.export.evidenceD.help" /]</i></small>
-                      [#-- Full table --]
-                      <div class="dataTableExport">
-                        [@listOfPublicationsToExport name="fullList" list=(deliverables)![] /]
+                  <div class="form-group">
+                    [#assign guideSheetURL = "https://drive.google.com/file/d/1apWx9qJk5NXlZQTzZzhGqRNSx934Bp5H/view" /]
+                      <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> #C4 Peer review papers  -  Guideline </a> </small>
+                  </div>
+                  <br />
+                  
+                  <div class="form-group row">
+                    <div class="col-md-4">
+                      [#-- Total number of peer reviewed articles --]
+                      <div id="" class="simpleBox numberBox">
+                        <label for="">[@s.text name="${customLabel}.indicatorC4.totalArticles" /]</label><br />
+                        <span>${(total)!}</span>
                       </div>
                     </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <div class="col-md-8">
+                    </div>
+                   </div>
+                    
+                    <div class="form-group row">
+                    <div class="col-md-6">
+                      [#-- Chart 10 - Number of peer reviewed articles by Open Access status --]
+                      <div id="chart10" class="chartBox simpleBox">
+                        [#assign chartData = [
+                            {"name":"Open Acess",   "value": "${(totalOpenAccess)!0}"},
+                            {"name":"Limited",      "value": "${(totalLimited)!0}"}
+                          ] /] 
+                        <ul class="chartData" style="display:none">
+                          <li>
+                            <span>[@s.text name="${customLabel}.indicatorC5.chart6.0" /]</span>
+                            <span>[@s.text name="${customLabel}.indicatorC5.chart6.1" /]</span>
+                          </li>
+                          [#list chartData as data]
+                            <li><span>${data.name}</span><span class="number">${data.value}</span></li>
+                          [/#list]
+                        </ul>
+                      </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                      [#-- Chart 11 - Number of peer reviewed articles by ISI status --]
+                      <div id="chart11" class="chartBox simpleBox">
+                        [#assign chartData = [
+                            {"name":"Yes",   "value": "${(totalIsis)!0}"},
+                            {"name":"No",    "value": "${(totalNoIsis)!0}"}
+                          ] 
+                        /] 
+                        <ul class="chartData" style="display:none">
+                          <li>
+                            <span>[@s.text name="${customLabel}.indicatorC5.chart7.0" /]</span>
+                            <span>[@s.text name="${customLabel}.indicatorC5.chart7.1" /]</span>
+                          </li>
+                          [#list chartData as data]
+                            <li><span>${data.name}</span><span class="number">${data.value}</span></li>
+                          [/#list]
+                        </ul>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-              
-              [#-- See Full table 6 --]
-              <div class="modal fade" id="modal-publications" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                <div class="modal-dialog modal-lg" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                      <h4 class="modal-title" id="myModalLabel">[@s.text name="${customLabel}.fullList.title" /]</h4>
-                    </div>
-                    <div class="modal-body">
-                      [@listOfPublications name="fullList" list=(deliverables)![] allowPopups=false /]
-                    </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    </div>
+                  
+                  [#-- Number of peer-reviewed publications --]
+                  <div class="form-group">
+                    [#-- Word Document Tag --]
+                    [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                    
+                    <h4 class="headTitle">[@s.text name="${customLabel}.peerReviewed.title" /]</h4>
+                    [@numberOfPublications name="peerReviewed" list=["", ""]/]
                   </div>
-                </div>
+                  
+                  
+      
+                    <div class="form-group btn-group btn-group-sm pull-right" role="group" aria-label="...">
+                      <button type="button" class="btn btn-default evidenceD-export" data-toggle="modal" data-target="#modal-evidenceC"><span class="glyphicon glyphicon-fullscreen"></span> Export Evidence D</button>
+                      <button type="button" class="btn btn-default btn-xs pull-right" data-toggle="modal" data-target="#modal-publications"><span class="glyphicon glyphicon-fullscreen"></span> See Full Evidence D</button>
+                    </div>
+                    
+                    
+                    [#-- Table 6 to export --]
+                    <div class="modal fade" id="modal-evidenceC" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                      <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="myModalLabel">Export Evidence D: Full Publications List</h4>
+                          </div>
+                          <div class="modal-body">
+                            <small><i>[@s.text name="${customLabel}.export.evidenceD.help" /]</i></small>
+                            [#-- Full table --]
+                            <div class="dataTableExport">
+                              [@listOfPublicationsToExport name="fullList" list=(deliverables)![] /]
+                            </div>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    [#-- See Full table 6 --]
+                    <div class="modal fade" id="modal-publications" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                      <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="myModalLabel">[@s.text name="${customLabel}.fullList.title" /]</h4>
+                          </div>
+                          <div class="modal-body">
+                            [@listOfPublications name="fullList" list=(deliverables)![] allowPopups=false /]
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    
+                    
+                  [#-- Full list of publications published --]
+                  <div class="form-group viewMoreSyntesisTable-block"> 
+                    [#-- Table --]
+                    <h4 class="headTitle">[@s.text name="${customLabel}.fullList.title" /]</h4>
+                    [@listOfPublications name="fullList" list=(deliverables)![]  allowPopups=true /]
+                  </div>
+
+        
+                  
+              
+   
+                  
+               
               </div>
-              
-              
-              
-            [#-- Full list of publications published --]
-            <div class="form-group viewMoreSyntesisTable-block"> 
-              [#-- Table --]
-              <h4 class="headTitle">[@s.text name="${customLabel}.fullList.title" /]</h4>
-              [@listOfPublications name="fullList" list=(deliverables)![]  allowPopups=true /]
+ 
+              <div id="deliverable-disseminationMetadata" role="tabpanel" class="tab-pane fade ">
+                  [#-- Full list of publications published --]
+                  <div class="form-group viewMoreSyntesisTableGrey-block"> 
+                    [#-- Table --]
+                    <h4 class="headTitle">[@s.text name="${customLabel}.fullGreyList.title" /]</h4>
+                    [@listOfPublications name="fullGreyList" list=(deliverablesNotPublications)![]  allowPopups=true isGrey=true /]
+                  </div>
+              </div>
+
             </div>
-            
-          </div>
+
+           </div>
+
+
+
+
+     
           [#-- Section Buttons & hidden inputs--]
           [#include "/WEB-INF/crp/views/annualReport2018/buttons-AR2018.ftl" /]
         [/@s.form] 
@@ -220,11 +260,11 @@
 
 [/#macro]
 
-[#macro listOfPublications name list=[] allowPopups=false]
+[#macro listOfPublications name list=[] allowPopups=false isGrey=false]
     <table class="table table-bordered">
       <thead>
         <tr>
-          <th class="text-center"> ID </th>
+          <th class="text-center"> [@s.text name="${customLabel}.${name}.id" /] </th>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.article" /] </th>
           [#if !allowPopups]
             <th class="text-center"> [@s.text name="${customLabel}.${name}.author" /](s) </th>
@@ -237,6 +277,10 @@
             <th class="text-center"> [@s.text name="${customLabel}.${name}.issue" /] </th>
             <th class="text-center"> [@s.text name="${customLabel}.${name}.page" /] </th>
           [/#if]
+          [#if isGrey]
+            <th class="text-center"> [@s.text name="${customLabel}.${name}.category" /] </th>
+          [/#if]
+          
           <th class="text-center"> [@s.text name="${customLabel}.${name}.openAccess" /] </th>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.isi" /] </th>
           [#if allowPopups]
@@ -259,7 +303,7 @@
             <tr>
               <td> <a href="${url}" target="_blank" >D${(item.id)!""}</a>  </td>
               [#-- Title --]
-              <td>
+              <td  >
                 [#local publicationTitle = (item.getMetadataValue(1))!""]
                 [#if !(publicationTitle?has_content) ]
                   [#local publicationTitle = (item.deliverableInfo.title)!"" ]
@@ -293,12 +337,12 @@
                 [/#if]
               </td>
               [#-- Date of Publication --]
-              <td>[@utils.tableText value=(item.getMetadataValue(17))!"" /]</td>
+              <td >[@utils.tableText value=(item.getMetadataValue(17))!"" /]</td>
               [#-- Journal Article --]
               <td class="urlify">[@utils.tableText value=(item.publication.journal)!"" /]</td>
               [/#if]
               [#-- DOI or Handle --]
-              <td class="text-center " style="max-width: 250px;">
+              <td class="text-center TdSroll"  style="max-width: 100px;">
                 [#if item.getMetadataValue(36)?has_content]
                   [#local doi = item.getMetadataValue(36) /]
                   [#-- TODO add www.doi.org/ to DOI identifiers. NOTE: validations will be needed. There are not just DOIs saved there and there are some
@@ -329,6 +373,12 @@
                   [/#if]
                 [/#if]
               </td>
+              [#if isGrey]
+                <td class="text-center " style="max-width: 250px;">
+                  [#local deliverableInfo = item.getDeliverableInfo(actualPhase)!]
+                  [@utils.tableText value="${item.deliverableInfo.deliverableType.deliverableCategory.name} - ${deliverableInfo.deliverableType.name}" /]
+                </td>
+              [/#if]
               [#if !allowPopups]
                 [#-- Volume --]
                 <td class="text-center urlify"  style="width: 50px !important;">[@utils.tableText value=(item.publication.volume)!"" /]</td>
@@ -357,9 +407,9 @@
                 </td>
                 [#if PMU]
                   [#-- Check --]
-                  <td class="text-center">
+                  <td class="text-center" style="max-width: 20px;">
                     [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.deliverablesIds?seq_contains(item.id))!true) /]
-                    [@customForm.checkmark id="deliverable-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.deliverablesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
+                    [@customForm.checkmark id="deliverableGrey-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.deliverablesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
                   </td>
                 [/#if]
               [/#if]

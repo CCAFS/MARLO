@@ -94,7 +94,11 @@ public class PublicationsAction extends BaseAction {
   private GlobalUnit loggedCrp;
   private List<LiaisonInstitution> liaisonInstitutions;
   private List<Deliverable> deliverables;
+
+  // List for gray literature
   private List<Deliverable> deliverablesNotPublications;
+  private Integer totalGrey = 0;
+
   private List<String> emptyFields;
   private Phase actualPhase;
   private Integer totalOpenAccess = 0;
@@ -141,87 +145,6 @@ public class PublicationsAction extends BaseAction {
   }
 
 
-  private void
-    flagshipProgressprojectDeliverablesNewData(ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgressDB) {
-
-    List<Long> selectedPs = new ArrayList<>();
-    List<Long> selectedDeliverablesIds = new ArrayList<>();
-
-    for (Deliverable deliverable : deliverables) {
-      selectedDeliverablesIds.add(deliverable.getId());
-    }
-
-    // Add Deliverable (active =0)
-    if (reportSynthesis.getReportSynthesisFlagshipProgress().getDeliverablesValue() != null
-      && reportSynthesis.getReportSynthesisFlagshipProgress().getDeliverablesValue().length() > 0) {
-      List<Long> stList = new ArrayList<>();
-      for (String string : reportSynthesis.getReportSynthesisFlagshipProgress().getDeliverablesValue().trim()
-        .split(",")) {
-        stList.add(Long.parseLong(string.trim()));
-      }
-
-      for (Long deliverableId : selectedDeliverablesIds) {
-        int index = stList.indexOf(deliverableId);
-        if (index < 0) {
-          selectedPs.add(deliverableId);
-        }
-      }
-
-      for (ReportSynthesisFlagshipProgressDeliverable flagshipProgressDeliverable : reportSynthesisFlagshipProgressDB
-        .getReportSynthesisFlagshipProgressDeliverables().stream().filter(rio -> rio.isActive())
-        .collect(Collectors.toList())) {
-        if (!selectedPs.contains(flagshipProgressDeliverable.getDeliverable().getId())) {
-          reportSynthesisFlagshipProgressDeliverableManager
-            .deleteReportSynthesisFlagshipProgressDeliverable(flagshipProgressDeliverable.getId());
-        }
-      }
-
-      for (Long deliverableId : selectedPs) {
-        Deliverable deliverable = deliverableManager.getDeliverableById(deliverableId);
-
-        ReportSynthesisFlagshipProgressDeliverable flagshipProgressDeliverableNew =
-          new ReportSynthesisFlagshipProgressDeliverable();
-
-        flagshipProgressDeliverableNew.setDeliverable(deliverable);
-        flagshipProgressDeliverableNew.setReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgressDB);
-
-        List<ReportSynthesisFlagshipProgressDeliverable> flagshipProgressDeliverables =
-          reportSynthesisFlagshipProgressDB.getReportSynthesisFlagshipProgressDeliverables().stream()
-            .filter(rio -> rio.isActive()).collect(Collectors.toList());
-
-
-        if (!flagshipProgressDeliverables.contains(flagshipProgressDeliverableNew)) {
-          flagshipProgressDeliverableNew = reportSynthesisFlagshipProgressDeliverableManager
-            .saveReportSynthesisFlagshipProgressDeliverable(flagshipProgressDeliverableNew);
-        }
-
-      }
-    } else {
-
-      // Delete Deliverable (Save with active=1)
-      for (Long deliverableId : selectedDeliverablesIds) {
-        Deliverable deliverable = deliverableManager.getDeliverableById(deliverableId);
-
-        ReportSynthesisFlagshipProgressDeliverable flagshipProgressPlannedDeliverableNew =
-          new ReportSynthesisFlagshipProgressDeliverable();
-
-        flagshipProgressPlannedDeliverableNew.setDeliverable(deliverable);
-        flagshipProgressPlannedDeliverableNew.setReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgressDB);
-
-        List<ReportSynthesisFlagshipProgressDeliverable> reportSynthesisFlagshipProgressDeliverables =
-          reportSynthesisFlagshipProgressDB.getReportSynthesisFlagshipProgressDeliverables().stream()
-            .filter(rio -> rio.isActive()).collect(Collectors.toList());
-
-
-        if (!reportSynthesisFlagshipProgressDeliverables.contains(flagshipProgressPlannedDeliverableNew)) {
-          flagshipProgressPlannedDeliverableNew = reportSynthesisFlagshipProgressDeliverableManager
-            .saveReportSynthesisFlagshipProgressDeliverable(flagshipProgressPlannedDeliverableNew);
-        }
-      }
-    }
-
-  }
-
   public void getAuthorsFromClarisa() {
 
   }
@@ -238,7 +161,6 @@ public class PublicationsAction extends BaseAction {
     return deliverables;
   }
 
-
   public List<Deliverable> getDeliverablesNotPublications() {
     return deliverablesNotPublications;
   }
@@ -247,6 +169,7 @@ public class PublicationsAction extends BaseAction {
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
+
 
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
@@ -279,7 +202,6 @@ public class PublicationsAction extends BaseAction {
     return missingFieldsText;
   }
 
-
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
   }
@@ -292,6 +214,11 @@ public class PublicationsAction extends BaseAction {
 
   public Integer getTotal() {
     return total;
+  }
+
+
+  public Integer getTotalGrey() {
+    return totalGrey;
   }
 
 
@@ -572,6 +499,10 @@ public class PublicationsAction extends BaseAction {
 
       deliverables = deliverableManager.getPublicationsList(liaisonInstitution, actualPhase);
 
+      // List for gray literature
+      deliverablesNotPublications = deliverableManager.getNotPublicationsList(liaisonInstitution, actualPhase);
+
+
       Path path = this.getAutoSaveFilePath();
       // Verify if there is a Draft file
       if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
@@ -627,6 +558,7 @@ public class PublicationsAction extends BaseAction {
 
     /** Graphs and Tables */
     List<Deliverable> selectedDeliverables = new ArrayList<Deliverable>();
+
     if (deliverables != null && !deliverables.isEmpty()) {
       deliverables.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
       /*
@@ -702,6 +634,71 @@ public class PublicationsAction extends BaseAction {
       }
     }
 
+    List<Deliverable> selectedGreyDeliverables = new ArrayList<Deliverable>();
+    if (deliverablesNotPublications != null && !deliverablesNotPublications.isEmpty()) {
+      deliverablesNotPublications.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+
+      selectedGreyDeliverables.addAll(deliverablesNotPublications);
+      // Remove unchecked deliverables
+      if (reportSynthesis.getReportSynthesisFlagshipProgress().getDeliverables() != null
+        && !reportSynthesis.getReportSynthesisFlagshipProgress().getDeliverables().isEmpty()) {
+        for (Deliverable deliverable : reportSynthesis.getReportSynthesisFlagshipProgress().getDeliverables()) {
+          selectedGreyDeliverables.remove(deliverable);
+        }
+      }
+      totalGrey = selectedGreyDeliverables.size();
+      /*
+       * if (selectedGreyDeliverables != null && !selectedGreyDeliverables.isEmpty()) {
+       * for (Deliverable deliverable : selectedGreyDeliverables) {
+       * // Chart: Deliverables open access
+       * List<DeliverableDissemination> deliverableDisseminations =
+       * deliverable.getDeliverableInfo(actualPhase).getDeliverable().getDeliverableDisseminations().stream()
+       * .filter(dd -> dd.isActive() && dd.getPhase() != null && dd.getPhase().equals(actualPhase))
+       * .collect(Collectors.toList());
+       * if (deliverableDisseminations != null && !deliverableDisseminations.isEmpty()) {
+       * deliverable.getDeliverableInfo(actualPhase).getDeliverable()
+       * .setDissemination(deliverableDisseminations.get(0));
+       * if (deliverable.getDeliverableInfo(actualPhase).getDeliverable().getDissemination()
+       * .getIsOpenAccess() != null) {
+       * // Journal Articles by Open Access
+       * if (deliverable.getDeliverableInfo(actualPhase).getDeliverable().getDissemination().getIsOpenAccess()) {
+       * totalOpenAccess++;
+       * } else {
+       * totalLimited++;
+       * }
+       * } else {
+       * totalLimited++;
+       * }
+       * } else {
+       * totalLimited++;
+       * }
+       * // Chart: Deliverables by ISI
+       * List<DeliverablePublicationMetadata> deliverablePublicationMetadatas =
+       * deliverable.getDeliverableInfo(actualPhase).getDeliverable().getDeliverablePublicationMetadatas().stream()
+       * .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(actualPhase))
+       * .collect(Collectors.toList());
+       * if (deliverablePublicationMetadatas != null && !deliverablePublicationMetadatas.isEmpty()) {
+       * deliverable.getDeliverableInfo(actualPhase).getDeliverable()
+       * .setPublication(deliverablePublicationMetadatas.get(0));
+       * // Journal Articles by ISI status
+       * if (deliverable.getDeliverableInfo(actualPhase).getDeliverable().getPublication()
+       * .getIsiPublication() != null) {
+       * if (deliverable.getDeliverableInfo(actualPhase).getDeliverable().getPublication().getIsiPublication()) {
+       * totalIsis++;
+       * } else {
+       * totalNoIsis++;
+       * }
+       * } else {
+       * totalNoIsis++;
+       * }
+       * } else {
+       * totalNoIsis++;
+       * }
+       * }
+       * }
+       */
+    }
+
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), reportSynthesis.getId() + ""};
     this.setBasePermission(this.getText(Permission.REPORT_SYNTHESIS_FLAGSHIP_PROGRESS_BASE_PERMISSION, params));
@@ -714,7 +711,6 @@ public class PublicationsAction extends BaseAction {
 
   }
 
-
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -724,7 +720,7 @@ public class PublicationsAction extends BaseAction {
         ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgressDB =
           reportSynthesisManager.getReportSynthesisById(synthesisID).getReportSynthesisFlagshipProgress();
 
-        this.flagshipProgressprojectDeliverablesNewData(reportSynthesisFlagshipProgressDB);
+        this.saveDeliverables(reportSynthesisFlagshipProgressDB);
 
         if (reportSynthesis.getReportSynthesisFlagshipProgress().getPlannedDeliverables() == null) {
           reportSynthesis.getReportSynthesisFlagshipProgress().setPlannedDeliverables(new ArrayList<>());
@@ -770,10 +766,94 @@ public class PublicationsAction extends BaseAction {
     }
   }
 
+  private void saveDeliverables(ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgressDB) {
+
+    List<Long> selectedPs = new ArrayList<>();
+    List<Long> selectedDeliverablesIds = new ArrayList<>();
+
+    for (Deliverable deliverable : deliverables) {
+      selectedDeliverablesIds.add(deliverable.getId());
+    }
+
+    // grey
+    for (Deliverable deliverable : deliverablesNotPublications) {
+      selectedDeliverablesIds.add(deliverable.getId());
+    }
+
+    // Add Deliverable (active =0)
+    if (reportSynthesis.getReportSynthesisFlagshipProgress().getDeliverablesValue() != null
+      && reportSynthesis.getReportSynthesisFlagshipProgress().getDeliverablesValue().length() > 0) {
+      List<Long> stList = new ArrayList<>();
+      for (String string : reportSynthesis.getReportSynthesisFlagshipProgress().getDeliverablesValue().trim()
+        .split(",")) {
+        stList.add(Long.parseLong(string.trim()));
+      }
+
+      for (Long deliverableId : selectedDeliverablesIds) {
+        int index = stList.indexOf(deliverableId);
+        if (index < 0) {
+          selectedPs.add(deliverableId);
+        }
+      }
+
+      for (ReportSynthesisFlagshipProgressDeliverable flagshipProgressDeliverable : reportSynthesisFlagshipProgressDB
+        .getReportSynthesisFlagshipProgressDeliverables().stream().filter(rio -> rio.isActive())
+        .collect(Collectors.toList())) {
+        if (!selectedPs.contains(flagshipProgressDeliverable.getDeliverable().getId())) {
+          reportSynthesisFlagshipProgressDeliverableManager
+            .deleteReportSynthesisFlagshipProgressDeliverable(flagshipProgressDeliverable.getId());
+        }
+      }
+
+      for (Long deliverableId : selectedPs) {
+        Deliverable deliverable = deliverableManager.getDeliverableById(deliverableId);
+
+        ReportSynthesisFlagshipProgressDeliverable flagshipProgressDeliverableNew =
+          new ReportSynthesisFlagshipProgressDeliverable();
+
+        flagshipProgressDeliverableNew.setDeliverable(deliverable);
+        flagshipProgressDeliverableNew.setReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgressDB);
+
+        List<ReportSynthesisFlagshipProgressDeliverable> flagshipProgressDeliverables =
+          reportSynthesisFlagshipProgressDB.getReportSynthesisFlagshipProgressDeliverables().stream()
+            .filter(rio -> rio.isActive()).collect(Collectors.toList());
+
+
+        if (!flagshipProgressDeliverables.contains(flagshipProgressDeliverableNew)) {
+          flagshipProgressDeliverableNew = reportSynthesisFlagshipProgressDeliverableManager
+            .saveReportSynthesisFlagshipProgressDeliverable(flagshipProgressDeliverableNew);
+        }
+
+      }
+    } else {
+
+      // Delete Deliverable (Save with active=1)
+      for (Long deliverableId : selectedDeliverablesIds) {
+        Deliverable deliverable = deliverableManager.getDeliverableById(deliverableId);
+
+        ReportSynthesisFlagshipProgressDeliverable flagshipProgressPlannedDeliverableNew =
+          new ReportSynthesisFlagshipProgressDeliverable();
+
+        flagshipProgressPlannedDeliverableNew.setDeliverable(deliverable);
+        flagshipProgressPlannedDeliverableNew.setReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgressDB);
+
+        List<ReportSynthesisFlagshipProgressDeliverable> reportSynthesisFlagshipProgressDeliverables =
+          reportSynthesisFlagshipProgressDB.getReportSynthesisFlagshipProgressDeliverables().stream()
+            .filter(rio -> rio.isActive()).collect(Collectors.toList());
+
+
+        if (!reportSynthesisFlagshipProgressDeliverables.contains(flagshipProgressPlannedDeliverableNew)) {
+          flagshipProgressPlannedDeliverableNew = reportSynthesisFlagshipProgressDeliverableManager
+            .saveReportSynthesisFlagshipProgressDeliverable(flagshipProgressPlannedDeliverableNew);
+        }
+      }
+    }
+
+  }
+
   public void setDeliverables(List<Deliverable> deliverables) {
     this.deliverables = deliverables;
   }
-
 
   public void setDeliverablesNotPublications(List<Deliverable> deliverablesNotPublications) {
     this.deliverablesNotPublications = deliverablesNotPublications;
@@ -784,6 +864,7 @@ public class PublicationsAction extends BaseAction {
     this.liaisonInstitution = liaisonInstitution;
   }
 
+
   public void setLiaisonInstitutionID(Long liaisonInstitutionID) {
     this.liaisonInstitutionID = liaisonInstitutionID;
   }
@@ -792,10 +873,10 @@ public class PublicationsAction extends BaseAction {
     this.liaisonInstitutions = liaisonInstitutions;
   }
 
-
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
+
 
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
     this.reportSynthesis = reportSynthesis;
@@ -805,9 +886,13 @@ public class PublicationsAction extends BaseAction {
     this.synthesisID = synthesisID;
   }
 
-
   public void setTotal(Integer total) {
     this.total = total;
+  }
+
+
+  public void setTotalGrey(Integer totalGrey) {
+    this.totalGrey = totalGrey;
   }
 
   public void setTotalIsis(Integer totalIsis) {

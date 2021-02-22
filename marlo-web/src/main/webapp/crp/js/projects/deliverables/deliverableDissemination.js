@@ -14,6 +14,9 @@ function init() {
   $('#doi-bridge').change(function () {
     $('.metadataElement-doi .input input').val($(this).val())
   })
+  $('.typeSelect').change(validateRequiredTagToCategory);
+  $('.subTypeSelect').change(validateRequiredTagToCategory)
+  // $('.typeSelect ').on("click",   validateRequiredTagToCategory);
   // Setting ID to Date-picker input
   $(".dateMetadata").attr("id", "deliverableMetadataDate");
   $(".restrictionDate").attr("id", "restrictionDate");
@@ -36,11 +39,34 @@ function init() {
   // if ($('.deliverableDisseminationUrl ').prop('readonly')) {
   //   getWOSInfo();
   // }
-  if ($('.isOtherUrlFiel').val() == 'true') {
-    $('.conditionalRequire ').find('.requiredTag').hide('slow');
-  }else{
+  // $('.typeSelect').val() == 49 && $('.subTypeSelect ').val() ==63 
+
+  validateRequiredTagToCategory();
+}
+
+function validateRequiredTagToCategory(){
+  if ( $('.typeSelect').val() == 49 && $('.subTypeSelect ').val() ==63 ) {
+    console.log('%cIt is Articles and Books and Journal Article (peer reviewed)','background: #222; color: #37ff73');
     $('.conditionalRequire ').find('.requiredTag').show('slow');
-  }
+    $('.isOtherUrlTohide').show('slow');
+
+  }else{
+    console.log('%cIt is no Articles and Books and Journal Article (peer reviewed)','background: #222; color: #37ff73');
+    $('.conditionalRequire').find('.requiredTag').hide('slow');
+    $('.isOtherUrlTohide').hide('slow');
+    $('.other-url').hide('slow');
+    $('.isOtherUrlFiel').val(false);
+    $('input.isOtherUrl').prop('checked', false);
+    $('.other-url').find('input').val('');
+   
+
+    // if ($('.isOtherUrlFiel').val() == 'true') {
+    //   $('.conditionalRequire').find('.requiredTag').hide('slow');
+    // }else{
+    //   $('.conditionalRequire').find('.requiredTag').show('slow');
+    // }
+  } 
+  
 }
 
 function getWOSInfo(){
@@ -155,17 +181,20 @@ function addZero(i) {
 }
 
 function getCurrentDate() {
-  var today = new Date();
-  var h = addZero(today.getHours());
-  var m = addZero(today.getMinutes());
-  //  var s = addZero(d.getSeconds());
-  var dd = String(today.getDate()).padStart(2, '0');
-  var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-  var yyyy = today.getFullYear();
-  var hours = today.getHours();
-  var ampm = hours >= 12 ? 'pm' : 'am';
 
-  return h + ":" + m+' '+ampm+' - '+ mm + '/' + dd + '/' + yyyy;
+
+  // var today = new Date();
+  // var h = addZero(today.getHours());
+  // var m = addZero(today.getMinutes());
+  // //  var s = addZero(d.getSeconds());
+  // var dd = String(today.getDate()).padStart(2, '0');
+  // var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+  // var yyyy = today.getFullYear();
+  // var hours = today.getHours();
+  // var ampm = hours >= 12 ? 'pm' : 'am';
+
+  // return h + ":" + m+' '+ampm+' - '+ mm + '/' + dd + '/' + yyyy;
+  return new Date().toUTCString()
   
 }
 function updateWOSFields(data){
@@ -236,33 +265,32 @@ function updateWOSFields(data){
 
 function getWosInstitutions(institutions) {
 
-console.log(institutions);
-  institutions.forEach((element,index) => {
-    
-    if (parseInt(element.clarisaMatchConfidence) <= Number($('#acceptationPercentageValue').val())) {
+  console.log(institutions);
+  institutions.forEach((element, index) => {
+
+    if (parseInt(element.clarisaMatchConfidence) < Number($('#acceptationPercentageValue').val())) {
       element.finalName = element.fullName;
-    }else{
-    $.ajax({
-      url: baseURL + '/institutionById.do',
-      data: {
-        institutionID:  element.clarisaId
-      },
-      beforeSend: function() {
-  
-        
-      },
-      success: function(data) {
-        element.finalName = data.institution.institutionName;
-      },
-      error: function(e) {
-        console.log(e);
-      },
-      complete: function() {
-        $('#td-WOS-Institutions').html(JsoninstitutionsToOrder(nullDataPipe(institutions)));
-      }
-   });
+    } else {
+      $.ajax({
+        url: baseURL + '/institutionById.do',
+        data: {
+          institutionID: element.clarisaId
+        },
+        beforeSend: function () {
+
+
+        },
+        success: function (data) {
+          element.finalName = data.institution.institutionName;
+        },
+        error: function (e) {
+          console.log(e);
+        },
+        complete: function () {
+          $('#td-WOS-Institutions').html(JsoninstitutionsToOrder(nullDataPipe(institutions)));
+        }
+      });
     }
-    
   });
 
 }
@@ -313,7 +341,7 @@ function updateReadOnly() {
       hideOrShowCheckBoxIsOtherUrl(false);
     } else {
       setTimeout(() => {
-        let result = /^((https?:\/\/)?(www\.)?[a-zA-Z0-9.-]+\.+[a-zA-Z0-9.-]+\/10\.\d{4,9}\/[-._;():A-Z0-9]+$|^10\.\d{4,9}\/[-._;():A-Z0-9]+$)/i.test($('#doi-bridge').val());
+        let result =  /^((https?:\/\/)?(www\.)?[a-zA-Z0-9.-]+\.+[a-zA-Z0-9.-]+\/10\.\d{4,9}\/[-._;()/:A-Z0-9]+$|^10\.\d{4,9}\/[-._;()/:A-Z0-9]+$)/i.test($('#doi-bridge').val());
         if (result) {
           console.log('%cValid DOI','background: #222; color: #37ff73');
           getWOSInfo();
@@ -328,7 +356,9 @@ function updateReadOnly() {
       $(".ifIsReadOnly .metadataElement-handle .input input").prop('readonly', false);
       $(".ifIsReadOnly .metadataElement-doi .input input").prop('readonly', false);
       // $('.isOtherUrlTohide').show("slow"); 
-      hideOrShowCheckBoxIsOtherUrl(true);
+      if (($('.typeSelect').val() == 49 && $('.subTypeSelect ').val() ==63 )) {
+        hideOrShowCheckBoxIsOtherUrl(true);
+      }
     }
 
   }
@@ -597,14 +627,30 @@ function addDisseminationEvents() {
   //Display Other Url option for DOI
   $('input.isOtherUrl').on('change', function () {
     var selected = $('input.isOtherUrl').is(":checked");
+    console.log('%cType: '+$('.typeSelect').val()+ " - Subtype: "+$('.subTypeSelect ').val() ,'background: #222; color: #37ff73');
 
-    if (selected == true) {
-      $('.conditionalRequire .requiredTag').slideUp();
-      $('.other-url').css("display", "block");
-    } else {
-      $('.conditionalRequire .requiredTag').slideDown();
-      $('.other-url').css("display", "none");
-    }
+// if ( $('.typeSelect').val() == 49 && $('.subTypeSelect ').val() ==63 ) {
+//       $('.conditionalRequire ').find('.requiredTag').show('slow');
+//       $('.other-url').css("display", "block");
+
+      
+//   // $('.conditionalRequire .requiredTag').slideDown();
+// }else{
+  if (selected == true) {
+    console.log('%cMostar','background: #222; color: #fd8484');
+    $('.conditionalRequire .requiredTag').slideUp();
+    $('.other-url').css("display", "block");
+  } else {
+    console.log('%cOcultar','background: #222; color: #fd8484');
+    $('.conditionalRequire .requiredTag').slideDown();
+    $('.other-url').css("display", "none");
+  }
+// }
+
+
+
+
+
   });
   var crp = $('form').attr("name");
   $('#' + crp + '_deliverable_deliverableInfo_deliverableType_id').on('change', function () {
