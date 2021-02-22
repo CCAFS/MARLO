@@ -79,6 +79,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
   private String jsonStringResponse;
   private MetadataWOSModel response;
   private Long deliverableId;
+  private Phase phase;
 
   // Managers
   private DeliverableMetadataExternalSourcesManager deliverableMetadataExternalSourcesManager;
@@ -112,6 +113,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
      */
     if (this.jsonStringResponse != null && !StringUtils.equalsIgnoreCase(this.jsonStringResponse, "null")) {
       this.response = new Gson().fromJson(jsonStringResponse, MetadataWOSModel.class);
+      this.phase = this.getActualPhase();
 
       this.saveInfo();
     }
@@ -125,6 +127,10 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
   public String getLink() {
     return link;
+  }
+
+  public Phase getPhase() {
+    return phase;
   }
 
   public MetadataWOSModel getResponse() {
@@ -147,14 +153,14 @@ public class DeliverableMetadataByWOS extends BaseAction {
     }
 
     if (!this.link.isEmpty() && DOIService.REGEXP_PLAINDOI.matcher(this.link).lookingAt()) {
-      JsonElement response = this.readWOSDataFromClarisa(this.link);
+      JsonElement response = this.readWOSDataFromClarisa();
 
       this.jsonStringResponse = StringUtils.stripToNull(new GsonBuilder().serializeNulls().create().toJson(response));
     }
   }
 
-  private JsonElement readWOSDataFromClarisa(final String url) throws IOException {
-    URL clarisaUrl = new URL(config.getClarisaWOSLink().replace("{1}", url));
+  private JsonElement readWOSDataFromClarisa() throws IOException {
+    URL clarisaUrl = new URL(config.getClarisaWOSLink().replace("{1}", this.link));
     String loginData = config.getClarisaWOSUser() + ":" + config.getClarisaWOSPassword();
     String encoded = Base64.encodeBase64String(loginData.getBytes());
 
@@ -383,12 +389,35 @@ public class DeliverableMetadataByWOS extends BaseAction {
   }
 
   private void saveInfo() {
-    Phase phase = this.getActualPhase();
     Deliverable deliverable = this.deliverableManager.getDeliverableById(this.deliverableId);
 
-    this.saveExternalSources(phase, deliverable);
-    this.saveAffiliations(phase, deliverable);
-    this.saveAffiliationsNotMapped(phase, deliverable);
-    this.saveExternalSourceAuthors(phase, deliverable);
+    this.saveExternalSources(this.phase, deliverable);
+    this.saveAffiliations(this.phase, deliverable);
+    this.saveAffiliationsNotMapped(this.phase, deliverable);
+    this.saveExternalSourceAuthors(this.phase, deliverable);
+  }
+
+  /**
+   * This method is created ONLY to be used for the deliverables bulk sync
+   * 
+   * @param phase the phase the sync info is going to be saved
+   * @param deliverableId the deliverableId
+   * @param link the DOI/URL link to be used for the metadata harvesting
+   * @return
+   * @throws IOException
+   */
+  public boolean saveInfo(Phase phase, Long deliverableId, String link) throws IOException {
+    this.phase = phase;
+    this.deliverableId = deliverableId;
+    this.link = link;
+
+    this.response = new Gson().fromJson(this.readWOSDataFromClarisa(), MetadataWOSModel.class);
+
+    if (this.response != null) {
+      this.saveInfo();
+      return true;
+    }
+
+    return false;
   }
 }
