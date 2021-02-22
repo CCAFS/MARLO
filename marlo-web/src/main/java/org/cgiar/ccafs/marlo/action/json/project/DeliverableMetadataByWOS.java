@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableMetadataExternalSourcesManager;
 import org.cgiar.ccafs.marlo.data.manager.ExternalSourceAuthorManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableAffiliation;
 import org.cgiar.ccafs.marlo.data.model.DeliverableAffiliationsNotMapped;
@@ -79,7 +80,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
   private String jsonStringResponse;
   private MetadataWOSModel response;
   private Long deliverableId;
-  private Phase phase;
+  private Long phaseId;
 
   // Managers
   private DeliverableMetadataExternalSourcesManager deliverableMetadataExternalSourcesManager;
@@ -88,13 +89,14 @@ public class DeliverableMetadataByWOS extends BaseAction {
   private ExternalSourceAuthorManager externalSourceAuthorManager;
   private DeliverableManager deliverableManager;
   private InstitutionManager institutionManager;
+  private PhaseManager phaseManager;
 
   @Inject
   public DeliverableMetadataByWOS(APConfig config, DeliverableAffiliationManager deliverableAffiliationManager,
     DeliverableMetadataExternalSourcesManager deliverableMetadataExternalSourcesManager,
     DeliverableAffiliationsNotMappedManager deliverableAffiliationsNotMappedManager,
     ExternalSourceAuthorManager externalSourceAuthorManager, DeliverableManager deliverableManager,
-    InstitutionManager institutionManager) {
+    InstitutionManager institutionManager, PhaseManager phaseManager) {
     super(config);
     this.deliverableAffiliationManager = deliverableAffiliationManager;
     this.deliverableMetadataExternalSourcesManager = deliverableMetadataExternalSourcesManager;
@@ -102,6 +104,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
     this.externalSourceAuthorManager = externalSourceAuthorManager;
     this.deliverableManager = deliverableManager;
     this.institutionManager = institutionManager;
+    this.phaseManager = phaseManager;
   }
 
   @Override
@@ -113,7 +116,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
      */
     if (this.jsonStringResponse != null && !StringUtils.equalsIgnoreCase(this.jsonStringResponse, "null")) {
       this.response = new Gson().fromJson(jsonStringResponse, MetadataWOSModel.class);
-      this.phase = this.getActualPhase();
+      this.phaseId = this.getActualPhase().getId();
 
       this.saveInfo();
     }
@@ -129,8 +132,8 @@ public class DeliverableMetadataByWOS extends BaseAction {
     return link;
   }
 
-  public Phase getPhase() {
-    return phase;
+  public Long getPhaseId() {
+    return phaseId;
   }
 
   public MetadataWOSModel getResponse() {
@@ -390,11 +393,12 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
   private void saveInfo() {
     Deliverable deliverable = this.deliverableManager.getDeliverableById(this.deliverableId);
+    Phase phase = this.phaseManager.getPhaseById(this.phaseId);
 
-    this.saveExternalSources(this.phase, deliverable);
-    this.saveAffiliations(this.phase, deliverable);
-    this.saveAffiliationsNotMapped(this.phase, deliverable);
-    this.saveExternalSourceAuthors(this.phase, deliverable);
+    this.saveExternalSources(phase, deliverable);
+    this.saveAffiliations(phase, deliverable);
+    this.saveAffiliationsNotMapped(phase, deliverable);
+    this.saveExternalSourceAuthors(phase, deliverable);
   }
 
   /**
@@ -406,8 +410,8 @@ public class DeliverableMetadataByWOS extends BaseAction {
    * @return
    * @throws IOException
    */
-  public boolean saveInfo(Phase phase, Long deliverableId, String link) throws IOException {
-    this.phase = phase;
+  public boolean saveInfo(Long phaseId, Long deliverableId, String link) throws IOException {
+    this.phaseId = phaseId;
     this.deliverableId = deliverableId;
     this.link = link;
 

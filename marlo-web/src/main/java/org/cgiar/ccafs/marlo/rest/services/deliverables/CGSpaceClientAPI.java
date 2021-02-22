@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 public class CGSpaceClientAPI extends MetadataClientApi {
 
   private static final Logger LOG = LoggerFactory.getLogger(CGSpaceClientAPI.class);
-  private final String BASE_URL = "https://dspacetest.cgiar.org/";
+  private final String BASE_URL = "https://cgspace.cgiar.org/";
   private final String CGSPACE_URL = BASE_URL + "handle/";
   private final String CGSPACE_HANDLE = BASE_URL + "rest/handle/{0}";
   private final String REST_URL = BASE_URL + "rest/items/{0}/metadata";
