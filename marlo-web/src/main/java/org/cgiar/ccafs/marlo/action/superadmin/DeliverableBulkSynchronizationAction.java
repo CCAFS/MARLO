@@ -131,7 +131,7 @@ public class DeliverableBulkSynchronizationAction extends BaseAction {
           if (link != null) {
             LOG.debug("Synchronizing deliverable : " + id);
             try {
-              this.deliverableMetadataByWOS.saveInfo(phase, deliverableId, id);
+              this.deliverableMetadataByWOS.saveInfo(selectedPhaseID, deliverableId, id);
             } catch (IOException ioe) {
               ioe.printStackTrace();
             }
