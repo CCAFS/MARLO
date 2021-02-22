@@ -98,6 +98,8 @@ public interface DeliverableManager {
    */
   public List<Deliverable> getDeliverablesList(LiaisonInstitution liaisonInstitution, Phase phase);
 
+  public List<Deliverable> getNotPublicationsList(LiaisonInstitution liaisonInstitution, Phase phase);
+
   /**
    * This method gets a list of publications that are active by a given phase
    * 

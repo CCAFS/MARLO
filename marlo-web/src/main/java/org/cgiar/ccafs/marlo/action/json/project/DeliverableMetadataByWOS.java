@@ -30,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataExternalSources;
 import org.cgiar.ccafs.marlo.data.model.ExternalSourceAuthor;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.rest.services.deliverables.model.MetadataGardianModel;
 import org.cgiar.ccafs.marlo.rest.services.deliverables.model.MetadataWOSModel;
 import org.cgiar.ccafs.marlo.rest.services.deliverables.model.WOSAuthor;
 import org.cgiar.ccafs.marlo.rest.services.deliverables.model.WOSInstitution;
@@ -39,8 +40,8 @@ import org.cgiar.ccafs.marlo.utils.doi.DOIService;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -78,6 +79,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
   private String jsonStringResponse;
   private MetadataWOSModel response;
   private Long deliverableId;
+  private Phase phase;
 
   // Managers
   private DeliverableMetadataExternalSourcesManager deliverableMetadataExternalSourcesManager;
@@ -104,13 +106,17 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    if (this.jsonStringResponse == null) {
-      return NOT_FOUND;
+    /*
+     * if (this.jsonStringResponse == null || StringUtils.equalsIgnoreCase(this.jsonStringResponse, "null")) {
+     * return NOT_FOUND;
+     * }
+     */
+    if (this.jsonStringResponse != null && !StringUtils.equalsIgnoreCase(this.jsonStringResponse, "null")) {
+      this.response = new Gson().fromJson(jsonStringResponse, MetadataWOSModel.class);
+      this.phase = this.getActualPhase();
+
+      this.saveInfo();
     }
-
-    this.response = new Gson().fromJson(jsonStringResponse, MetadataWOSModel.class);
-
-    this.saveInfo();
 
     return SUCCESS;
   }
@@ -121,6 +127,10 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
   public String getLink() {
     return link;
+  }
+
+  public Phase getPhase() {
+    return phase;
   }
 
   public MetadataWOSModel getResponse() {
@@ -143,26 +153,27 @@ public class DeliverableMetadataByWOS extends BaseAction {
     }
 
     if (!this.link.isEmpty() && DOIService.REGEXP_PLAINDOI.matcher(this.link).lookingAt()) {
-      JsonElement response = this.readWOSDataFromClarisa(this.link);
+      JsonElement response = this.readWOSDataFromClarisa();
 
       this.jsonStringResponse = StringUtils.stripToNull(new GsonBuilder().serializeNulls().create().toJson(response));
     }
   }
 
-  private JsonElement readWOSDataFromClarisa(final String url) throws IOException {
-    URL clarisaUrl = new URL(config.getClarisaWOSLink().replace("{1}", url));
-
+  private JsonElement readWOSDataFromClarisa() throws IOException {
+    URL clarisaUrl = new URL(config.getClarisaWOSLink().replace("{1}", this.link));
     String loginData = config.getClarisaWOSUser() + ":" + config.getClarisaWOSPassword();
     String encoded = Base64.encodeBase64String(loginData.getBytes());
-    URLConnection conn = clarisaUrl.openConnection();
-    conn.setRequestProperty("Authorization", "Basic " + encoded);
 
+    HttpURLConnection conn = (HttpURLConnection) clarisaUrl.openConnection();
+    conn.setRequestProperty("Authorization", "Basic " + encoded);
     JsonElement element = null;
 
-    try (InputStreamReader reader = new InputStreamReader(conn.getInputStream())) {
-      element = new JsonParser().parse(reader);
-    } catch (FileNotFoundException fnfe) {
-      element = JsonNull.INSTANCE;
+    if (conn.getResponseCode() < 300) {
+      try (InputStreamReader reader = new InputStreamReader(conn.getInputStream())) {
+        element = new JsonParser().parse(reader);
+      } catch (FileNotFoundException fnfe) {
+        element = JsonNull.INSTANCE;
+      }
     }
 
     return element;
@@ -339,6 +350,8 @@ public class DeliverableMetadataByWOS extends BaseAction {
   private void saveExternalSources(Phase phase, Deliverable deliverable) {
     DeliverableMetadataExternalSources externalSource =
       this.deliverableMetadataExternalSourcesManager.findByPhaseAndDeliverable(phase, deliverable);
+    MetadataGardianModel gardianInfo = this.response.getGardianInfo();
+
     if (externalSource == null) {
       externalSource = new DeliverableMetadataExternalSources();
       externalSource.setPhase(phase);
@@ -361,6 +374,14 @@ public class DeliverableMetadataByWOS extends BaseAction {
     externalSource.setVolume(this.response.getVolume());
     externalSource.setPages(this.response.getPages());
 
+    if (gardianInfo != null) {
+      externalSource.setGardianFindability(gardianInfo.getFindability());
+      externalSource.setGardianAccessibility(gardianInfo.getAccessibility());
+      externalSource.setGardianInteroperability(gardianInfo.getInteroperability());
+      externalSource.setGardianReusability(gardianInfo.getReusability());
+      externalSource.setGardianTitle(gardianInfo.getTitle());
+    }
+
     externalSource =
       this.deliverableMetadataExternalSourcesManager.saveDeliverableMetadataExternalSources(externalSource);
 
@@ -368,12 +389,35 @@ public class DeliverableMetadataByWOS extends BaseAction {
   }
 
   private void saveInfo() {
-    Phase phase = this.getActualPhase();
     Deliverable deliverable = this.deliverableManager.getDeliverableById(this.deliverableId);
 
-    this.saveExternalSources(phase, deliverable);
-    this.saveAffiliations(phase, deliverable);
-    this.saveAffiliationsNotMapped(phase, deliverable);
-    this.saveExternalSourceAuthors(phase, deliverable);
+    this.saveExternalSources(this.phase, deliverable);
+    this.saveAffiliations(this.phase, deliverable);
+    this.saveAffiliationsNotMapped(this.phase, deliverable);
+    this.saveExternalSourceAuthors(this.phase, deliverable);
+  }
+
+  /**
+   * This method is created ONLY to be used for the deliverables bulk sync
+   * 
+   * @param phase the phase the sync info is going to be saved
+   * @param deliverableId the deliverableId
+   * @param link the DOI/URL link to be used for the metadata harvesting
+   * @return
+   * @throws IOException
+   */
+  public boolean saveInfo(Phase phase, Long deliverableId, String link) throws IOException {
+    this.phase = phase;
+    this.deliverableId = deliverableId;
+    this.link = link;
+
+    this.response = new Gson().fromJson(this.readWOSDataFromClarisa(), MetadataWOSModel.class);
+
+    if (this.response != null) {
+      this.saveInfo();
+      return true;
+    }
+
+    return false;
   }
 }

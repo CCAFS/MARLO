@@ -242,7 +242,6 @@ public class OutcomesMilestonesAction extends BaseAction {
     return milestones;
   }
 
-
   /**
    * Get the information for the Cross Cutting marker in the form
    * 
@@ -265,6 +264,19 @@ public class OutcomesMilestonesAction extends BaseAction {
     } else {
       return null;
     }
+  }
+
+  public GeneralStatus getCurrentMilestoneStatus(Long milestoneID) {
+    GeneralStatus milestoneStatus = null;
+    if (milestoneID != null && milestoneID != -1) {
+      CrpMilestone currentMilestone = crpMilestoneManager.getCrpMilestoneById(milestoneID);
+      if (currentMilestone != null && currentMilestone.getMilestonesStatus() != null
+        && currentMilestone.getMilestonesStatus().getId() != null) {
+        milestoneStatus = generalStatusManager.getGeneralStatusById(currentMilestone.getMilestonesStatus().getId());
+      }
+    }
+
+    return milestoneStatus;
   }
 
   public List<CrpProgram> getFlagships() {
@@ -327,7 +339,6 @@ public class OutcomesMilestonesAction extends BaseAction {
     return loggedCrp;
   }
 
-
   /**
    * Get the information for the Milestones in the form
    * 
@@ -335,32 +346,94 @@ public class OutcomesMilestonesAction extends BaseAction {
    * @return
    */
   public ReportSynthesisFlagshipProgressOutcomeMilestone getMilestone(Long outcomeID, long milestoneID) {
-    if (outcomeID != -1) {
-      ReportSynthesisFlagshipProgressOutcomeMilestone milestone = new ReportSynthesisFlagshipProgressOutcomeMilestone();
-      milestone = reportSynthesisFlagshipProgressOutcomeMilestoneManager.getMilestoneId(outcomeID, milestoneID);
-      if (milestone != null) {
-        // why is this setting local variables that are never being used?
-        // String outcomeInfo = "";
-        // String milestoneInfo = "";
-        if (crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeID) != null
-          && crpMilestoneManager.getCrpMilestoneById(milestoneID) != null) {
-          if (crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeID).getCrpProgram() != null
-            && crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeID).getCrpProgram().getAcronym() != null) {
-            // outcomeInfo = crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeID).getCrpProgram().getAcronym()
-            // + " - " + crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeID).getDescription();
-          }
-          if (crpMilestoneManager.getCrpMilestoneById(milestoneID).getComposedName() != null) {
-            // milestoneInfo = crpMilestoneManager.getCrpMilestoneById(milestoneID).getComposedName();
-          }
-        }
+    ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisMilestone = null;
+    if (outcomeID != null && outcomeID != -1) {
+      reportSynthesisMilestone =
+        reportSynthesisFlagshipProgressOutcomeMilestoneManager.getMilestoneId(outcomeID, milestoneID);
+      if (reportSynthesisMilestone == null) {
+        ReportSynthesisFlagshipProgressOutcome reportSynthesisOutcome =
+          reportSynthesisFlagshipProgressOutcomeManager.getReportSynthesisFlagshipProgressOutcomeById(outcomeID);
+        reportSynthesisMilestone = new ReportSynthesisFlagshipProgressOutcomeMilestone();
+        CrpMilestone annualReportMilestone = crpMilestoneManager.getCrpMilestoneById(milestoneID);
+        if (annualReportMilestone != null) {
+          reportSynthesisMilestone.setReportSynthesisFlagshipProgressOutcome(reportSynthesisOutcome);
+          reportSynthesisMilestone.setCrpMilestone(annualReportMilestone);
 
-        return milestone;
-      } else {
-        return null;
+          reportSynthesisMilestone = reportSynthesisFlagshipProgressOutcomeMilestoneManager
+            .saveReportSynthesisFlagshipProgressOutcomeMilestone(reportSynthesisMilestone);
+
+          List<ReportSynthesisFlagshipProgressCrossCuttingMarker> markers = new ArrayList<>();
+          List<CgiarCrossCuttingMarker> markerTypes = cgiarCrossCuttingMarkerManager.findAll();
+          for (CgiarCrossCuttingMarker markerType : markerTypes) {
+            ReportSynthesisFlagshipProgressCrossCuttingMarker newMarker =
+              new ReportSynthesisFlagshipProgressCrossCuttingMarker();
+            switch (markerType.getName()) {
+              case "Gender":
+                newMarker.setFocus(annualReportMilestone.getGenderFocusLevel());
+                break;
+
+              case "Youth":
+                newMarker.setFocus(annualReportMilestone.getYouthFocusLevel());
+                break;
+
+              case "CapDev":
+                newMarker.setFocus(annualReportMilestone.getCapdevFocusLevel());
+                break;
+
+              case "Climate Change":
+                newMarker.setFocus(annualReportMilestone.getClimateFocusLevel());
+                break;
+
+              default:
+                newMarker.setFocus(null);
+                break;
+            }
+
+            newMarker.setMarker(markerType);
+            newMarker.setReportSynthesisFlagshipProgressOutcomeMilestone(reportSynthesisMilestone);
+
+            newMarker = reportSynthesisFlagshipProgressCrossCuttingMarkerManager
+              .saveReportSynthesisFlagshipProgressCrossCuttingMarker(newMarker);
+
+            markers.add(newMarker);
+          }
+          reportSynthesisMilestone.setMarkers(markers);
+        }
       }
-    } else {
-      return null;
     }
+
+    return reportSynthesisMilestone;
+  }
+
+  public String getMilestoneExtendedYear(Long milestoneID) {
+    String extendedYear = null;
+    if (milestoneID != null && milestoneID != -1) {
+      CrpMilestone currentMilestone = crpMilestoneManager.getCrpMilestoneById(milestoneID);
+      if (currentMilestone != null && currentMilestone.getMilestonesStatus() != null && ProjectStatusEnum.Extended
+        .getStatusId().equals(String.valueOf(currentMilestone.getMilestonesStatus().getId()))) {
+        extendedYear = String.valueOf(currentMilestone.getExtendedYear());
+      }
+    }
+
+    return extendedYear;
+  }
+
+  public CrpMilestone getNextPOWBMilestone(final String milestoneComposedId) {
+    CrpMilestone nextYearMilestone = null;
+    String stripped = StringUtils.stripToNull(milestoneComposedId);
+    Phase current = this.getActualPhase();
+    if (current != null) {
+      while (current.getName() != null && !StringUtils.containsIgnoreCase(current.getName(), "POWB")
+        && current.getYear() != this.getCurrentCycleYear() + 1) {
+        current = current.getNext();
+      }
+    }
+
+    if (stripped != null && current != null) {
+      nextYearMilestone = crpMilestoneManager.getCrpMilestoneByPhase(milestoneComposedId, current.getId());
+    }
+
+    return nextYearMilestone;
   }
 
 
@@ -371,13 +444,22 @@ public class OutcomesMilestonesAction extends BaseAction {
    * @return
    */
   public ReportSynthesisFlagshipProgressOutcome getOutcome(long progressID, long outcomeID) {
-    ReportSynthesisFlagshipProgressOutcome outcome = new ReportSynthesisFlagshipProgressOutcome();
-    outcome = reportSynthesisFlagshipProgressOutcomeManager.getOutcomeId(progressID, outcomeID);
-    if (outcome != null) {
-      return outcome;
-    } else {
-      return null;
+    ReportSynthesisFlagshipProgressOutcome reportSynthesisOutcome =
+      reportSynthesisFlagshipProgressOutcomeManager.getOutcomeId(progressID, outcomeID);
+    if (reportSynthesisOutcome == null) {
+      CrpProgramOutcome annualReportOutcome = crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeID);
+      ReportSynthesisFlagshipProgress flagshipProgress =
+        reportSynthesisFlagshipProgressManager.getReportSynthesisFlagshipProgressById(progressID);
+      if (annualReportOutcome != null && flagshipProgress != null) {
+        reportSynthesisOutcome = new ReportSynthesisFlagshipProgressOutcome();
+        reportSynthesisOutcome.setCrpProgramOutcome(annualReportOutcome);
+        reportSynthesisOutcome.setReportSynthesisFlagshipProgress(flagshipProgress);
+        reportSynthesisOutcome = reportSynthesisFlagshipProgressOutcomeManager
+          .saveReportSynthesisFlagshipProgressOutcome(reportSynthesisOutcome);
+      }
     }
+
+    return reportSynthesisOutcome;
   }
 
 

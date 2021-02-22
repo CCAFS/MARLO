@@ -105,6 +105,11 @@ public class ExpectedStudyProjectManagerImpl implements ExpectedStudyProjectMana
   }
 
   @Override
+  public List<ExpectedStudyProject> getByProjectAndPhase(long projectId, long phaseId) {
+    return this.expectedStudyProjectDAO.getByProjectAndPhase(projectId, phaseId);
+  }
+
+  @Override
   public ExpectedStudyProject getExpectedStudyProjectById(long expectedStudyProjectID) {
 
     return expectedStudyProjectDAO.find(expectedStudyProjectID);
@@ -158,6 +163,5 @@ public class ExpectedStudyProjectManagerImpl implements ExpectedStudyProjectMana
       this.saveExpectedStudyProjectPhase(phase.getNext(), expectedID, expectedStudyProject);
     }
   }
-
 
 }

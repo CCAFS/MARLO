@@ -314,11 +314,12 @@
             [#if PMU]
               <td class="text-center">
                 [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.policiesIds?seq_contains(item.id))!true) /]
-                [#local canBeAddedToAR = ((action.canBeAddedToAR(item.id, actualPhase.id))!false)]
                 <div class="hidden">${isChecked?string}</div>
+                [#--local canBeAddedToAR = ((action.canBeAddedToAR(item.id, actualPhase.id))!false)]
                 <div data-toggle="tooltip" [#if !canBeAddedToAR]title="[@s.text name="annualReport2018.policies.table2.cannotBeAddedToAR" /]"[/#if]>
                   [@customForm.checkmark id="policy-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.policiesValue" value="${(item.id)!''}" checked=isChecked editable=(editable&&canBeAddedToAR) centered=true/]
-                </div>
+                </div>--]
+                [@customForm.checkmark id="policy-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.policiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
               </td>
             [/#if]
           [/#if]

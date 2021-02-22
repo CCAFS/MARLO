@@ -5,7 +5,7 @@
 <hibernate-mapping>
 	<class
 		name="org.cgiar.ccafs.marlo.data.model.ProgressTargetCaseGeographicCountry"
-		table="report_synthesis_srf_progress_targets_cases_regions"
+		table="report_synthesis_srf_progress_targets_cases_countries"
 		optimistic-lock="none">
 		<id name="id" type="java.lang.Long">
 			<column name="id" />
@@ -15,14 +15,10 @@
 			class="org.cgiar.ccafs.marlo.data.model.LocElement" fetch="select">
 			<column name="loc_element_id" />
 		</many-to-one>
-		<many-to-one name="phase"
-			class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
-			<column name="id_phase" />
-		</many-to-one>
 		<many-to-one name="targetCase"
 			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTargetCases"
 			fetch="select">
-			<column name="progress_target_case_id" />
+			<column name="report_synthesis_srf_progress_targets_case_id" />
 		</many-to-one>
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
