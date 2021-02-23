@@ -78,6 +78,14 @@ public interface ProjectImpactsManager {
   public List<ReportProjectImpactsCovid19DTO> getProjectImpactsByProjectAndYears(Phase selectedPhase);
 
   /**
+   * This method gets a projectImpacts object by a given project identifier.
+   * 
+   * @param projectId is the projectImpacts identifier.
+   * @return a ProjectImpacts object.
+   */
+  public List<ProjectImpacts> getProjectImpactsByProjectId(long projectId);
+
+  /**
    * This method saves the information of the given projectImpacts
    * 
    * @param projectImpacts - is the projectImpacts object with the new information to be added/updated.
@@ -87,12 +95,12 @@ public interface ProjectImpactsManager {
    */
 
   /**
-   * This method gets a projectImpacts object by a given project identifier.
+   * This method gets a projectImpacts object by year.
    * 
-   * @param projectId is the projectImpacts identifier.
+   * @param phase is a object phase.
    * @return a ProjectImpacts object.
    */
-  public List<ProjectImpacts> getProjectImpactsByProjectId(long projectId);
+  public List<ProjectImpacts> getProjectImpactsByYear(int year);
 
   /**
    * This method saves the information of the given projectImpacts
