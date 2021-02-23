@@ -245,6 +245,55 @@ function createGoogleChart(chartID, type, options) {
   }
 }
 
+function updateAllIndexesContribution() {
+  // All Outcomes List
+  // $('.outcomes-list').find('.outcome').each(function(i,outcome) {
+  //   $(outcome).attr('id', "outcome-"+(i+1));
+  //   // $(outcome).find('span.index').html(i + 1);
+  //   $(outcome).setNameIndexes(1, i);
+
+  //   // Update Milestones
+  //   $(outcome).find('.milestone').each(function(i,milestone) {
+  //     $(milestone).attr('id', "milestone-"+(i+1));
+  //     // $(milestone).find('span.index').text(i + 1);
+  //     $(milestone).setNameIndexes(2, i);
+
+  //     // Update radios for Assesment Risk
+  //     $(milestone).find('.radioFlat').each(function(i,radioBlock) {
+  //       var radioFlatID = ($(radioBlock).find('input').attr('id') + i).replace(/\W/g, '');
+  //       $(radioBlock).find('input').attr('id', radioFlatID);
+  //       $(radioBlock).find('label').attr('for', radioFlatID);
+  //     });
+
+  //   });
+
+  //   // Update SubIdos
+  //   $(outcome).find('.subIdo').each(function(i,subIdo) {
+  //     $(subIdo).find('span.index').text(i + 1);
+  //     $(subIdo).setNameIndexes(2, i);
+
+  //     // Update radios for primary option
+  //     var radioFlatID = $(subIdo).find('.radioFlat input').attr('id');
+  //     $(subIdo).find('.radioFlat label').attr('for', radioFlatID);
+
+  //     // Update Assumptions
+  //     $(subIdo).find('.assumption').each(function(i,assumption) {
+  //       $(assumption).find('.statement').attr('placeholder', 'Assumption statement #' + (i + 1));
+  //       $(assumption).setNameIndexes(3, i);
+  //     });
+  //   });
+
+  //   // Update Baseline Indicators
+  //   $(outcome).find('.baselineIndicator').each(function(i,indicator) {
+  //     $(indicator).find('span.index').text(i + 1);
+  //     $(indicator).setNameIndexes(2, i);
+  //   });
+  // });
+
+  // // Update component event
+  // $(document).trigger('updateComponent');
+
+}
 
 function addEvidence() {
 console.log('addEvidence');
