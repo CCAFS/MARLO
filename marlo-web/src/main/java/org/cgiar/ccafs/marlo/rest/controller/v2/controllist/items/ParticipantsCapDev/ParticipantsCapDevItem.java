@@ -152,9 +152,9 @@ public class ParticipantsCapDevItem<T> {
             reportSynthesisCrossCuttingDimension
               .setTraineesShortTermMale(new Double(newParticipantsCapDevDTO.getTraineesShortTermMale()));
             reportSynthesisCrossCuttingDimension
-              .setTraineesPhdFemale(new Double(newParticipantsCapDevDTO.getTraineesPhdFemale()));
-            reportSynthesisCrossCuttingDimension
-              .setTraineesPhdMale(new Double(newParticipantsCapDevDTO.getTraineesPhdMale()));
+              .setPhdFemale(new Double(newParticipantsCapDevDTO.getTraineesPhdFemale()));
+            reportSynthesisCrossCuttingDimension.setPhdMale(new Double(newParticipantsCapDevDTO.getTraineesPhdMale()));
+            reportSynthesisCrossCuttingDimension.setEvidenceLink(newParticipantsCapDevDTO.getEvidencelink());
             reportSynthesisCrossCuttingDimension.setReportSynthesis(reportSynthesis);
 
             reportSynthesisCrossCuttingDimension = this.reportSynthesisCrossCuttingDimensionManager
@@ -202,6 +202,7 @@ public class ParticipantsCapDevItem<T> {
     newParticipantsCapDevDTO.setTraineesShortTermMale(new Long(0));
     newParticipantsCapDevDTO.setTraineesPhdFemale(new Long(0));
     newParticipantsCapDevDTO.setTraineesPhdMale(new Long(0));
+    newParticipantsCapDevDTO.setEvidencelink("");
 
     return this.saveParticipantsCapDev(id, cGIAREntity, newParticipantsCapDevDTO);
   }
@@ -326,9 +327,10 @@ public class ParticipantsCapDevItem<T> {
             reportSynthesisCrossCuttingDimension
               .setTraineesLongTermMale(newParticipantsCapDevDTO.getTraineesLongTermMale().doubleValue());
             reportSynthesisCrossCuttingDimension
-              .setTraineesPhdFemale(newParticipantsCapDevDTO.getTraineesPhdFemale().doubleValue());
+              .setPhdFemale(newParticipantsCapDevDTO.getTraineesPhdFemale().doubleValue());
             reportSynthesisCrossCuttingDimension
-              .setTraineesPhdMale(newParticipantsCapDevDTO.getTraineesPhdMale().doubleValue());
+              .setPhdMale(newParticipantsCapDevDTO.getTraineesPhdMale().doubleValue());
+            reportSynthesisCrossCuttingDimension.setEvidenceLink(newParticipantsCapDevDTO.getEvidencelink());
 
             this.reportSynthesisCrossCuttingDimensionManager
               .saveReportSynthesisCrossCuttingDimension(reportSynthesisCrossCuttingDimension);
