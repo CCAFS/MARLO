@@ -188,7 +188,7 @@
 <div class="slo-contribution-section ${cssClass}" style="margin-top: 10px; padding-top: 20px;">
   <div class="leftHead  sm">
     <!--<span class="index">12</span>-->
-    <span class="index">5-87-48</span>
+    <span class="index">Aux index: ( ${index} )</span>
     <span class="elementId">lorem</span>
   </div>
 
