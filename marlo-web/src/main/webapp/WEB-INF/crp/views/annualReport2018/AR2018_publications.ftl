@@ -303,7 +303,7 @@
             <tr>
               <td> <a href="${url}" target="_blank" >D${(item.id)!""}</a>  </td>
               [#-- Title --]
-              <td  >
+              <td  style="max-width: 200px;">
                 [#local publicationTitle = (item.getMetadataValue(1))!""]
                 [#if !(publicationTitle?has_content) ]
                   [#local publicationTitle = (item.deliverableInfo.title)!"" ]
@@ -339,7 +339,7 @@
               [#-- Date of Publication --]
               <td >[@utils.tableText value=(item.getMetadataValue(17))!"" /]</td>
               [#-- Journal Article --]
-              <td class="urlify">[@utils.tableText value=(item.publication.journal)!"" /]</td>
+              <td class="urlify" >[@utils.tableText value=(item.publication.journal)!"" /]</td>
               [/#if]
               [#-- DOI or Handle --]
               <td class="text-center TdSroll"  style="max-width: 100px;">
