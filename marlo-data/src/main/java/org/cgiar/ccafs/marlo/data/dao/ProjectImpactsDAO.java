@@ -74,7 +74,7 @@ public interface ProjectImpactsDAO {
   /**
    * This method gets a projectImpacts object by year.
    * 
-   * @param phase is a object year.
+   * @param year is a integer number.
    * @return a ProjectImpacts object.
    */
   public List<ProjectImpacts> getProjectImpactsByYear(int year);
