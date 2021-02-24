@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectImpacts;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -103,6 +104,16 @@ public class ProjectImpactsMySQLDAO extends AbstractMarloDAO<ProjectImpacts, Lon
       return projectImpacts;
     }
     return null;
+  }
+
+  @Override
+  public List<ProjectImpacts> getProjectImpactsByYear(int year) {
+    String query = "from " + ProjectImpacts.class.getName() + " where is_active=1 and year =" + year;
+    List<ProjectImpacts> list = super.findAll(query);
+    if (list.isEmpty()) {
+      return list;
+    }
+    return Collections.emptyList();
   }
 
   @Override
