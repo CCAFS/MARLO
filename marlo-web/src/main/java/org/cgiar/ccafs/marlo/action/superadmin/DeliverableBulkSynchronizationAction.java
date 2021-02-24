@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.action.json.project.DeliverableMetadataByWOS;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableAffiliationManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableAffiliationsNotMappedManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableAltmetricInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableMetadataElementManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableMetadataExternalSourcesManager;
@@ -69,6 +70,7 @@ public class DeliverableBulkSynchronizationAction extends BaseAction {
   private InstitutionManager institutionManager;
   private DeliverableManager deliverableManager;
   private PhaseManager phaseManager;
+  private DeliverableAltmetricInfoManager deliverableAltmetricInfoManager;
 
   // Action
   private DeliverableMetadataByWOS deliverableMetadataByWOS;
@@ -86,7 +88,8 @@ public class DeliverableBulkSynchronizationAction extends BaseAction {
     PhaseManager phaseManager, DeliverableMetadataExternalSourcesManager deliverableMetadataExternalSourcesManager,
     DeliverableAffiliationManager deliverableAffiliationManager,
     DeliverableAffiliationsNotMappedManager deliverableAffiliationsNotMappedManager,
-    ExternalSourceAuthorManager externalSourceAuthorManager, InstitutionManager institutionManager) {
+    ExternalSourceAuthorManager externalSourceAuthorManager, InstitutionManager institutionManager,
+    DeliverableAltmetricInfoManager deliverableAltmetricInfoManager) {
     super(config);
     this.deliverableManager = deliverableManager;
     this.deliverableMetadataElementManager = deliverableMetadataElementManager;
@@ -97,6 +100,7 @@ public class DeliverableBulkSynchronizationAction extends BaseAction {
     this.deliverableAffiliationsNotMappedManager = deliverableAffiliationsNotMappedManager;
     this.externalSourceAuthorManager = externalSourceAuthorManager;
     this.institutionManager = institutionManager;
+    this.deliverableAltmetricInfoManager = deliverableAltmetricInfoManager;
   }
 
   private Path getAutoSaveFilePath() {
@@ -162,7 +166,7 @@ public class DeliverableBulkSynchronizationAction extends BaseAction {
     crps = globalUnitManager.findAll().stream().filter(c -> c.isMarlo() && c.isActive()).collect(Collectors.toList());
     this.deliverableMetadataByWOS = new DeliverableMetadataByWOS(config, deliverableAffiliationManager,
       deliverableMetadataExternalSourcesManager, deliverableAffiliationsNotMappedManager, externalSourceAuthorManager,
-      deliverableManager, institutionManager, phaseManager);
+      deliverableManager, institutionManager, phaseManager, deliverableAltmetricInfoManager);
   }
 
   @Override
