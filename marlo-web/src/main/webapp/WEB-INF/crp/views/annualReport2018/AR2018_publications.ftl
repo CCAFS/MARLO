@@ -409,7 +409,7 @@
                   [#-- Check --]
                   <td class="text-center" style="max-width: 20px;">
                     [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.deliverablesIds?seq_contains(item.id))!true) /]
-                    [@customForm.checkmark id="deliverableGrey-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.deliverablesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
+                    [@customForm.checkmark id="deliverable${isGrey?then('Grey','')}-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.deliverablesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
                   </td>
                 [/#if]
               [/#if]
