@@ -69,24 +69,29 @@
                   [#-- List any important CRP research findings --]
                   <div class="form-group">
                     [#-- Word Document Tag --]
-                    [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
-              
+                    [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                    [#else][@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/]
+                    [/#if]
                     [@customForm.textArea name="${customName}.genderResearchFindings" i18nkey="${customLabel}.gender.researchFindings" help="${customLabel}.gender.researchFindings.help" className="limitWords-${calculateLimitWords(450)}" helpIcon=false required=true editable=editable allowTextEditor=true /]
                   </div>
                   
                   [#-- What have you learned?  What are you doing differently? --]
                   <div class="form-group">
                     [#-- Word Document Tag --]
-                    [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
-                    
+                    <br>
+                    [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                    [#else][@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/]
+                    [/#if]
                     [@customForm.textArea name="${customName}.genderLearned" i18nkey="${customLabel}.gender.learned" help="${customLabel}.gender.learned.help" className="limitWords-${calculateLimitWords(200)}" helpIcon=false required=true editable=editable allowTextEditor=true /]
                   </div>
                   
                   [#-- Problems arisen in relation to gender issues --]
                   <div class="form-group">
                     [#-- Word Document Tag --]
-                    [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
-                    
+                    <br>
+                    [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                    [#else][@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/]
+                    [/#if]
                     [@customForm.textArea name="${customName}.genderProblemsArisen" i18nkey="${customLabel}.gender.problemsArisen" help="${customLabel}.gender.problemsArisen.help" className="limitWords-${calculateLimitWords(100)}" helpIcon=false required=true editable=editable allowTextEditor=true /]
                   </div>
                   
@@ -103,8 +108,9 @@
                   [#-- CRPs contribution to youth --]
                   <div class="form-group">
                     [#-- Word Document Tag --]
-                    [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
-                    
+                    [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                    [#else][@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/]
+                    [/#if]
                     [@customForm.textArea name="${customName}.youthContribution" i18nkey="${customLabel}.youth.youthContribution" help="${customLabel}.youth.youthContribution.help" className="limitWords-${calculateLimitWords(600)}" helpIcon=false required=false editable=editable allowTextEditor=true /]
                   </div>
                   
@@ -113,24 +119,29 @@
                    [#-- Youth - Research findings --]
                   <div class="form-group">
                     [#-- Word Document Tag --]
-                    [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
-                    
+                    [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                    [#else][@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/]
+                    [/#if]
                     [@customForm.textArea name="${customName}.youthResearchFindings" i18nkey="${customLabel}.youth.researchFindings" help="${customLabel}.youth.researchFindings.help" className="limitWords-${calculateLimitWords(450)}" helpIcon=false required=!isPlatform editable=editable allowTextEditor=true /]
                   </div>
                   
                   [#-- Youth - What have you learned --]
                   <div class="form-group">
                     [#-- Word Document Tag --]
-                    [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
-                    
+                    <br>
+                    [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                    [#else][@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/]
+                    [/#if]
                     [@customForm.textArea name="${customName}.youthLearned" i18nkey="${customLabel}.youth.learned" help="${customLabel}.youth.learned.help" className="limitWords-${calculateLimitWords(200)}" helpIcon=false required=!isPlatform editable=editable allowTextEditor=true /]
                   </div>
                   
                   [#-- Youth - Problems arisen --]
                   <div class="form-group">
                     [#-- Word Document Tag --]
-                    [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
-                    
+                    <br>
+                    [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                    [#else][@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/]
+                    [/#if]
                     [@customForm.textArea name="${customName}.youthProblemsArisen" i18nkey="${customLabel}.youth.problemsArisen" help="" className="limitWords-${calculateLimitWords(100)}" helpIcon=false required=!isPlatform editable=editable allowTextEditor=true /]
                   </div>
                   
@@ -147,8 +158,9 @@
                   [#-- CRPs contribution to CapDev --]
                   <div class="form-group">
                     [#-- Word Document Tag --]
-                    [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
-                    
+                    [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                    [#else][@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/]
+                    [/#if]
                     [@customForm.textArea name="${customName}.capDevKeyAchievements" i18nkey="${customLabel}.capDev.keyAchievements" help="${customLabel}.capDev.keyAchievements.help" className="limitWords-${calculateLimitWords(300)}" helpIcon=false required=true editable=editable allowTextEditor=true /]
                   
                     [#if PMU]
@@ -293,8 +305,9 @@
                   [#-- CRPs contribution to Climate Change --]
                   <div class="form-group">
                     [#-- Word Document Tag --]
-                    [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
-                    
+                    [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                    [#else][@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/]
+                    [/#if]
                     [@customForm.textArea name="${customName}.climateChangeKeyAchievements" i18nkey="${customLabel}.climateChange.keyAchievements" help="${customLabel}.climateChange.keyAchievements.help" className="limitWords-${calculateLimitWords(300)}" helpIcon=false required=false editable=editable allowTextEditor=true /]
                   </div>
                   
