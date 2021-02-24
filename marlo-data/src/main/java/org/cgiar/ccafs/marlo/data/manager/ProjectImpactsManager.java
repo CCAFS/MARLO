@@ -97,7 +97,7 @@ public interface ProjectImpactsManager {
   /**
    * This method gets a projectImpacts object by year.
    * 
-   * @param phase is a object phase.
+   * @param year is a integer number.
    * @return a ProjectImpacts object.
    */
   public List<ProjectImpacts> getProjectImpactsByYear(int year);
