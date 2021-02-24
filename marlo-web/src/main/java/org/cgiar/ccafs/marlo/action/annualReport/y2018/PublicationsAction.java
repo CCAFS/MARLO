@@ -405,7 +405,6 @@ public class PublicationsAction extends BaseAction {
     }
   }
 
-
   @Override
   public void prepare() throws Exception {
     this.actualPhase = this.getActualPhase();
@@ -502,7 +501,6 @@ public class PublicationsAction extends BaseAction {
       // List for gray literature
       deliverablesNotPublications = deliverableManager.getNotPublicationsList(liaisonInstitution, actualPhase);
 
-
       Path path = this.getAutoSaveFilePath();
       // Verify if there is a Draft file
       if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
@@ -543,7 +541,6 @@ public class PublicationsAction extends BaseAction {
       }
     }
 
-
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null && c.isActive()
@@ -555,6 +552,8 @@ public class PublicationsAction extends BaseAction {
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym() != null && c.getAcronym().equals("PMU"))
       .collect(Collectors.toList()));
+
+    this.updateGreyDeliverableReportSynthesis();
 
     /** Graphs and Tables */
     List<Deliverable> selectedDeliverables = new ArrayList<Deliverable>();
@@ -646,57 +645,8 @@ public class PublicationsAction extends BaseAction {
           selectedGreyDeliverables.remove(deliverable);
         }
       }
+
       totalGrey = selectedGreyDeliverables.size();
-      /*
-       * if (selectedGreyDeliverables != null && !selectedGreyDeliverables.isEmpty()) {
-       * for (Deliverable deliverable : selectedGreyDeliverables) {
-       * // Chart: Deliverables open access
-       * List<DeliverableDissemination> deliverableDisseminations =
-       * deliverable.getDeliverableInfo(actualPhase).getDeliverable().getDeliverableDisseminations().stream()
-       * .filter(dd -> dd.isActive() && dd.getPhase() != null && dd.getPhase().equals(actualPhase))
-       * .collect(Collectors.toList());
-       * if (deliverableDisseminations != null && !deliverableDisseminations.isEmpty()) {
-       * deliverable.getDeliverableInfo(actualPhase).getDeliverable()
-       * .setDissemination(deliverableDisseminations.get(0));
-       * if (deliverable.getDeliverableInfo(actualPhase).getDeliverable().getDissemination()
-       * .getIsOpenAccess() != null) {
-       * // Journal Articles by Open Access
-       * if (deliverable.getDeliverableInfo(actualPhase).getDeliverable().getDissemination().getIsOpenAccess()) {
-       * totalOpenAccess++;
-       * } else {
-       * totalLimited++;
-       * }
-       * } else {
-       * totalLimited++;
-       * }
-       * } else {
-       * totalLimited++;
-       * }
-       * // Chart: Deliverables by ISI
-       * List<DeliverablePublicationMetadata> deliverablePublicationMetadatas =
-       * deliverable.getDeliverableInfo(actualPhase).getDeliverable().getDeliverablePublicationMetadatas().stream()
-       * .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(actualPhase))
-       * .collect(Collectors.toList());
-       * if (deliverablePublicationMetadatas != null && !deliverablePublicationMetadatas.isEmpty()) {
-       * deliverable.getDeliverableInfo(actualPhase).getDeliverable()
-       * .setPublication(deliverablePublicationMetadatas.get(0));
-       * // Journal Articles by ISI status
-       * if (deliverable.getDeliverableInfo(actualPhase).getDeliverable().getPublication()
-       * .getIsiPublication() != null) {
-       * if (deliverable.getDeliverableInfo(actualPhase).getDeliverable().getPublication().getIsiPublication()) {
-       * totalIsis++;
-       * } else {
-       * totalNoIsis++;
-       * }
-       * } else {
-       * totalNoIsis++;
-       * }
-       * } else {
-       * totalNoIsis++;
-       * }
-       * }
-       * }
-       */
     }
 
     // Base Permission
@@ -708,7 +658,6 @@ public class PublicationsAction extends BaseAction {
         reportSynthesis.getReportSynthesisFlagshipProgress().getPlannedDeliverables().clear();
       }
     }
-
   }
 
   @Override
@@ -818,7 +767,6 @@ public class PublicationsAction extends BaseAction {
           reportSynthesisFlagshipProgressDB.getReportSynthesisFlagshipProgressDeliverables().stream()
             .filter(rio -> rio.isActive()).collect(Collectors.toList());
 
-
         if (!flagshipProgressDeliverables.contains(flagshipProgressDeliverableNew)) {
           flagshipProgressDeliverableNew = reportSynthesisFlagshipProgressDeliverableManager
             .saveReportSynthesisFlagshipProgressDeliverable(flagshipProgressDeliverableNew);
@@ -859,7 +807,6 @@ public class PublicationsAction extends BaseAction {
     this.deliverablesNotPublications = deliverablesNotPublications;
   }
 
-
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
@@ -869,6 +816,7 @@ public class PublicationsAction extends BaseAction {
     this.liaisonInstitutionID = liaisonInstitutionID;
   }
 
+
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
   }
@@ -877,10 +825,10 @@ public class PublicationsAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
-
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
     this.reportSynthesis = reportSynthesis;
   }
+
 
   public void setSynthesisID(Long synthesisID) {
     this.synthesisID = synthesisID;
@@ -890,10 +838,10 @@ public class PublicationsAction extends BaseAction {
     this.total = total;
   }
 
-
   public void setTotalGrey(Integer totalGrey) {
     this.totalGrey = totalGrey;
   }
+
 
   public void setTotalIsis(Integer totalIsis) {
     this.totalIsis = totalIsis;
@@ -903,10 +851,10 @@ public class PublicationsAction extends BaseAction {
     this.totalLimited = totalLimited;
   }
 
-
   public void setTotalNoIsis(Integer totalNoIsis) {
     this.totalNoIsis = totalNoIsis;
   }
+
 
   public void setTotalOpenAccess(Integer totalOpenAccess) {
     this.totalOpenAccess = totalOpenAccess;
@@ -914,6 +862,34 @@ public class PublicationsAction extends BaseAction {
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;
+  }
+
+  /**
+   * Ensures that every Grey deliverable has a row, in order for them to be marked by default as "excluded from AR"
+   */
+  private void updateGreyDeliverableReportSynthesis() {
+    if (deliverablesNotPublications != null && this.isPMU()) {
+      for (Deliverable greyDeliverable : deliverablesNotPublications) {
+        if (greyDeliverable != null && greyDeliverable.getId() != null) {
+          ReportSynthesisFlagshipProgressDeliverable reportSynthesisGreyDeliverable =
+            this.reportSynthesisFlagshipProgressDeliverableManager.getByFlagshipProgressAndDeliverable(
+              greyDeliverable.getId(), reportSynthesis.getReportSynthesisFlagshipProgress().getId());
+
+          if (reportSynthesisGreyDeliverable == null) {
+            reportSynthesisGreyDeliverable = new ReportSynthesisFlagshipProgressDeliverable();
+            reportSynthesisGreyDeliverable.setActive(true);
+            reportSynthesisGreyDeliverable.setCreatedBy(this.getCurrentUser());
+            reportSynthesisGreyDeliverable.setDeliverable(greyDeliverable);
+            reportSynthesisGreyDeliverable.setModifiedBy(this.getCurrentUser());
+            reportSynthesisGreyDeliverable
+              .setReportSynthesisFlagshipProgress(reportSynthesis.getReportSynthesisFlagshipProgress());
+
+            reportSynthesisFlagshipProgressDeliverableManager
+              .saveReportSynthesisFlagshipProgressDeliverable(reportSynthesisGreyDeliverable);
+          }
+        }
+      }
+    }
   }
 
   @Override
