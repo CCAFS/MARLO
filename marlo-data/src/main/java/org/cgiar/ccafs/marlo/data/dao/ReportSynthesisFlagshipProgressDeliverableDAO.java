@@ -32,7 +32,8 @@ public interface ReportSynthesisFlagshipProgressDeliverableDAO {
   public void deleteReportSynthesisFlagshipProgressDeliverable(long reportSynthesisFlagshipProgressDeliverableId);
 
   /**
-   * This method validate if the reportSynthesisFlagshipProgressDeliverable identify with the given id exists in the system.
+   * This method validate if the reportSynthesisFlagshipProgressDeliverable identify with the given id exists in the
+   * system.
    * 
    * @param reportSynthesisFlagshipProgressDeliverableID is a reportSynthesisFlagshipProgressDeliverable identifier.
    * @return true if the reportSynthesisFlagshipProgressDeliverable exists, false otherwise.
@@ -40,7 +41,8 @@ public interface ReportSynthesisFlagshipProgressDeliverableDAO {
   public boolean existReportSynthesisFlagshipProgressDeliverable(long reportSynthesisFlagshipProgressDeliverableID);
 
   /**
-   * This method gets a reportSynthesisFlagshipProgressDeliverable object by a given reportSynthesisFlagshipProgressDeliverable identifier.
+   * This method gets a reportSynthesisFlagshipProgressDeliverable object by a given
+   * reportSynthesisFlagshipProgressDeliverable identifier.
    * 
    * @param reportSynthesisFlagshipProgressDeliverableID is the reportSynthesisFlagshipProgressDeliverable identifier.
    * @return a ReportSynthesisFlagshipProgressDeliverable object.
@@ -54,14 +56,22 @@ public interface ReportSynthesisFlagshipProgressDeliverableDAO {
    */
   public List<ReportSynthesisFlagshipProgressDeliverable> findAll();
 
+  /**
+   * Finds a ReportSynthesisFlagshipProgressDeliverable by a ReportSynthesisFlagshipProgress id and a Deliverable id
+   */
+  public ReportSynthesisFlagshipProgressDeliverable getByFlagshipProgressAndDeliverable(long deliverableId,
+    long progressId);
 
   /**
    * This method saves the information of the given reportSynthesisFlagshipProgressDeliverable
    * 
-   * @param reportSynthesisFlagshipProgressDeliverable - is the reportSynthesisFlagshipProgressDeliverable object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the reportSynthesisFlagshipProgressDeliverable was
+   * @param reportSynthesisFlagshipProgressDeliverable - is the reportSynthesisFlagshipProgressDeliverable object with
+   *        the new information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         reportSynthesisFlagshipProgressDeliverable was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ReportSynthesisFlagshipProgressDeliverable save(ReportSynthesisFlagshipProgressDeliverable reportSynthesisFlagshipProgressDeliverable);
+  public ReportSynthesisFlagshipProgressDeliverable
+    save(ReportSynthesisFlagshipProgressDeliverable reportSynthesisFlagshipProgressDeliverable);
 }

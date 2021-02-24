@@ -24,10 +24,13 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
-public class ReportSynthesisFlagshipProgressDeliverableMySQLDAO extends AbstractMarloDAO<ReportSynthesisFlagshipProgressDeliverable, Long> implements ReportSynthesisFlagshipProgressDeliverableDAO {
+public class ReportSynthesisFlagshipProgressDeliverableMySQLDAO
+  extends AbstractMarloDAO<ReportSynthesisFlagshipProgressDeliverable, Long>
+  implements ReportSynthesisFlagshipProgressDeliverableDAO {
 
 
   @Inject
@@ -37,14 +40,16 @@ public class ReportSynthesisFlagshipProgressDeliverableMySQLDAO extends Abstract
 
   @Override
   public void deleteReportSynthesisFlagshipProgressDeliverable(long reportSynthesisFlagshipProgressDeliverableId) {
-    ReportSynthesisFlagshipProgressDeliverable reportSynthesisFlagshipProgressDeliverable = this.find(reportSynthesisFlagshipProgressDeliverableId);
+    ReportSynthesisFlagshipProgressDeliverable reportSynthesisFlagshipProgressDeliverable =
+      this.find(reportSynthesisFlagshipProgressDeliverableId);
     reportSynthesisFlagshipProgressDeliverable.setActive(false);
     this.update(reportSynthesisFlagshipProgressDeliverable);
   }
 
   @Override
   public boolean existReportSynthesisFlagshipProgressDeliverable(long reportSynthesisFlagshipProgressDeliverableID) {
-    ReportSynthesisFlagshipProgressDeliverable reportSynthesisFlagshipProgressDeliverable = this.find(reportSynthesisFlagshipProgressDeliverableID);
+    ReportSynthesisFlagshipProgressDeliverable reportSynthesisFlagshipProgressDeliverable =
+      this.find(reportSynthesisFlagshipProgressDeliverableID);
     if (reportSynthesisFlagshipProgressDeliverable == null) {
       return false;
     }
@@ -70,7 +75,29 @@ public class ReportSynthesisFlagshipProgressDeliverableMySQLDAO extends Abstract
   }
 
   @Override
-  public ReportSynthesisFlagshipProgressDeliverable save(ReportSynthesisFlagshipProgressDeliverable reportSynthesisFlagshipProgressDeliverable) {
+  public ReportSynthesisFlagshipProgressDeliverable getByFlagshipProgressAndDeliverable(long deliverableId,
+    long progressId) {
+    String query = "select distinct rsfpd from ReportSynthesisFlagshipProgressDeliverable rsfpd "
+      + "where reportSynthesisFlagshipProgress.id = :progressId and deliverable.id = :deliverableId order by activeSince desc";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("progressId", progressId);
+    createQuery.setParameter("deliverableId", deliverableId);
+    // equivalent to LIMIT 1
+    createQuery.setMaxResults(1);
+
+    List<ReportSynthesisFlagshipProgressDeliverable> resultAll = super.findAll(createQuery);
+    ReportSynthesisFlagshipProgressDeliverable result = null;
+
+    if (resultAll != null && !resultAll.isEmpty()) {
+      result = resultAll.get(0);
+    }
+
+    return result;
+  }
+
+  @Override
+  public ReportSynthesisFlagshipProgressDeliverable
+    save(ReportSynthesisFlagshipProgressDeliverable reportSynthesisFlagshipProgressDeliverable) {
     if (reportSynthesisFlagshipProgressDeliverable.getId() == null) {
       super.saveEntity(reportSynthesisFlagshipProgressDeliverable);
     } else {

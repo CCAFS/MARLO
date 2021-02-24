@@ -118,15 +118,21 @@ setTimeout(() => {
       
     },
     success: function(data) {
-    updateWOSFields(data.response);
-    $('#WOSModalBtn').show('slow');  
-    $('#output-wos').html('Found metadata successfully in Web of Science.')
+      console.log("data",data);
+      if (data.jsonStringResponse !=undefined && data.jsonStringResponse !="null" ) {
+        // console.log('%cUpdate','background: #222; color: #37ff73');
+        // console.log("data.jsonStringResponse",data.jsonStringResponse);
+        updateWOSFields(data.response);
+        $('#WOSModalBtn').show('slow');  
+        $('#output-wos').html('Found metadata successfully in Web of Science.')
+      }else{
+        errorRequestH();
+      }
+    
+
     },
     error: function(e) {
-     $('#WOSModalBtn').hide("slow");  
-      console.log(e);
-      console.log("Problem with the request");
-      $('#output-wos').html('The peer-reviewed publication was not found in Web of Science.')
+      errorRequestH();
     },
     complete: function() {
       // console.log("complete"); 
@@ -141,6 +147,11 @@ setTimeout(() => {
  }
 
 }, 1500);
+}
+
+function errorRequestH(){
+  $('#WOSModalBtn').hide("slow");  
+  $('#output-wos').html('The peer-reviewed publication was not found in Web of Science.')
 }
 function nullDataPipe(data){
   if (data == false || data == 'false') {

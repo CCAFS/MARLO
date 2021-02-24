@@ -224,7 +224,7 @@ public class ImpactCovid19SummaryAction extends BaseSummariesAction implements S
         if (info != null && info.getEndDate() != null) {
 
           // Validation for cancelated projects
-          if (info.getStatus() != null && info.getStatus() != 4) {
+          if (info.getStatus() != null) {
 
             switch (Integer.parseInt(String.valueOf(info.getStatus()))) {
               case 2:
