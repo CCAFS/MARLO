@@ -263,7 +263,7 @@ public class OutcomeMilestonesValidator extends BaseValidator {
       action.addMessage(action.getText("Milestone Status"));
       action.addMissingField("Milestone Status");
       action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
-        + "].milestones[" + j + "].milestonesStatus", InvalidFieldsMessages.EMPTYFIELD);;
+        + "].milestones[" + j + "].milestonesStatus.id", InvalidFieldsMessages.EMPTYFIELD);;
     } else {
       // status 3 = COMPLETED
       if (milestone.getMilestonesStatus().getId() != 3) {
@@ -300,16 +300,27 @@ public class OutcomeMilestonesValidator extends BaseValidator {
 
     // Extended year
     if (milestone.getMilestonesStatus() != null && milestone.getMilestonesStatus().getId() == 4
-      && (milestone.getExtendedYear() == null || milestone.getExtendedYear() == 0)) {
+      && (milestone.getExtendedYear() == null || milestone.getExtendedYear() == 0
+        || milestone.getExtendedYear() == -1)) {
       action.addMessage(action.getText("extendedYear"));
+      action.addMissingField("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i + "].milestones["
+        + j + "].extendedYear");
       action.getInvalidFields().put("list-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
         + "].milestones[" + j + "].extendedYear",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"extendedYear"}));
     }
 
     // Validate Milestone Evidence
-    if ((!(this.isValidString(milestone.getEvidence()))) && milestone.getEvidence() != null
-      && !milestone.getEvidence().isEmpty()) {
+    if ((!(this.isValidString(milestone.getEvidence())))
+      || (milestone.getEvidence() == null || milestone.getEvidence().isEmpty())) {
+      action.addMessage(action.getText("Evidence"));
+      action.addMissingField(
+        "input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i + "].milestones[" + j + "].evidence");
+      action.getInvalidFields().put(
+        "input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i + "].milestones[" + j + "].evidence",
+        InvalidFieldsMessages.EMPTYFIELD);
+    } else {
+
       if (this.wordCount(this.removeHtmlTags(milestone.getEvidence())) > 200) {
         action.addMessage(action.getText("Evidence"));
         action.addMissingField("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
@@ -321,8 +332,14 @@ public class OutcomeMilestonesValidator extends BaseValidator {
     }
 
     // Validate Milestone Evidence Link
-    if ((!(this.isValidString(milestone.getEvidenceLink()))) && milestone.getEvidenceLink() != null
-      && !milestone.getEvidence().isEmpty()) {
+    if ((!(this.isValidString(milestone.getEvidenceLink())))
+      || (milestone.getEvidence() == null || milestone.getEvidenceLink().isEmpty())) {
+      action.addMessage(action.getText("Evidence Link"));
+      action.addMissingField("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i + "].milestones["
+        + j + "].evidenceLink");
+      action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
+        + "].milestones[" + j + "].evidenceLink", InvalidFieldsMessages.EMPTYFIELD);
+    } else {
       if (this.wordCount(this.removeHtmlTags(milestone.getEvidence())) > 200) {
         action.addMessage(action.getText("Evidence Link"));
         action.addMissingField("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
