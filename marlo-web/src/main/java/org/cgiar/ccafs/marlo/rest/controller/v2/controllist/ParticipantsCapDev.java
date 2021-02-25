@@ -98,7 +98,7 @@ public class ParticipantsCapDev {
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIAREntity}/participantscapdev/{id}", method = RequestMethod.DELETE,
     produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<ParticipantsCapDevDTO> deleteParticipantsCapDevById(
+  public ResponseEntity<Long> deleteParticipantsCapDevById(
     @ApiParam(value = "${ParticipantsCapDev.participantscapdev.DELETE.id.param.CGIAR}",
       required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${ParticipantsCapDev.participantscapdev.DELETE.id.param.id}",
@@ -108,8 +108,14 @@ public class ParticipantsCapDev {
     @ApiParam(value = "${ParticipantsCapDev.participantscapdev.DELETE.id.param.phase}",
       required = true) @RequestParam String phase) {
 
-    ResponseEntity<ParticipantsCapDevDTO> response =
-      this.participantsCapDevItem.deleteParticipantsCapDevById(id, CGIAREntity, year, phase, this.getCurrentUser());
+    Long idcapdev = null;
+    try {
+      idcapdev =
+        this.participantsCapDevItem.deleteParticipantsCapDevById(id, CGIAREntity, year, phase, this.getCurrentUser());
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    ResponseEntity<Long> response = new ResponseEntity<Long>(idcapdev, HttpStatus.OK);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("ParticipantsCapDev.participantscapdev.DELETE.id.404"));
     }
