@@ -282,7 +282,7 @@
           [/#if]
           
           <th class="text-center"> [@s.text name="${customLabel}.${name}.openAccess" /] </th>
-          <th class="text-center"> [@s.text name="${customLabel}.${name}.isi" /] </th>
+          <th class="text-center"> [@s.text name="${customLabel}.${name}.${isGrey?string('altmetricScore','isi')}" /] </th>
           [#if allowPopups]
             <th class="col-md-1 text-center">[@s.text name="${customLabel}.${name}.missingFields" /]</th>
             [#if PMU]
@@ -391,10 +391,25 @@
               <td class="text-center">
                 <img src="${baseUrlCdn}/global/images/openAccess-${(item.dissemination.isOpenAccess?string)!'false'}.png" alt="" />
               </td>
-              [#-- Is ISI --]
-              <td class="text-center">
-                <img src="${baseUrlCdn}/global/images/checked-${(item.publication.isiPublication?string)!'false'}.png" alt="" />
-              </td>
+              [#-- Is ISI / Altmetric Score (Grey) --]
+              [#if !isGrey]
+                <td class="text-center">
+                  <img src="${baseUrlCdn}/global/images/checked-${(item.publication.isiPublication?string)!'false'}.png" alt="" />
+                </td>
+              [#else]
+                <td class="text-center">
+                  [#--local altmetricScore = (item.getDeliverableAltmetricInfo(actualPhase).score)!'Not Defined']
+                  [@utils.tableText value="${altmetricScore}" /--]
+                  [#local altmetricScoreUrl = (item.getDeliverableAltmetricInfo(actualPhase).imageSmall)!""]
+                  [#local altmetricScore = (item.getDeliverableAltmetricInfo(actualPhase).score)!""]
+                  [#if altmetricScoreUrl?? && altmetricScoreUrl?has_content]
+                    <img src="${altmetricScoreUrl}" alt="" />
+                    <div style="display: none">${altmetricScore}</div>
+                  [#else]
+                    [@utils.tableText value="Not Defined" /]
+                  [/#if]
+                </td>
+              [/#if]
               [#if allowPopups]
                 [#-- Complete Status--]
                 <td class="text-center">
@@ -410,6 +425,8 @@
                   <td class="text-center" style="max-width: 20px;">
                     [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.deliverablesIds?seq_contains(item.id))!true) /]
                     [@customForm.checkmark id="deliverable${isGrey?then('Grey','')}-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.deliverablesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
+                    <div style="display: none">${isChecked?string('1','0')}</div>
+                    <div>${action.getActionName()}</div>
                   </td>
                 [/#if]
               [/#if]
