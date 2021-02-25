@@ -182,6 +182,7 @@
                              (P${st.project.id})
                               ${st.id} -
                               ${st.projectExpectedStudyInfo.title}
+                              <a href="${"${baseUrl}/projects/${crpSession}/study.do?expectedID=${st.id}&edit=true&phaseID=${actualPhase.id}"}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
                             </td>
                             <td style="max-width: 90vw !important;">
                             [#if (st.projectExpectedStudyInfo.studyType.name?has_content)!false]
@@ -201,7 +202,7 @@
                               [#if (st.flagships?has_content)!false]                               
                                  [#list st.flagships as fp]                                                                                                        
                                        [#if (fp.crpProgram?has_content)!false]
-                                        ${fp.crpProgram.acronym}
+                                         <span class="programTag" style="border-color:${(fp.crpProgram.color)!'#fff'}" title="${(fp.crpProgram.composedName)!}">${(fp.crpProgram.acronym)!}</span>
                                        [/#if]                                            
                                  [/#list]                                                                  
                               [#else]
