@@ -656,7 +656,9 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
       // save the changes
       reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
     } else {
-      publications2018Validator.validate(action, reportSynthesis, false);
+      if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
+        publications2018Validator.validate(action, reportSynthesis, false);
+      }
     }
 
   }
@@ -675,7 +677,9 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
       // save the changes
       reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
     } else {
-      risk2018Validator.validate(action, reportSynthesis, false);
+      if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
+        risk2018Validator.validate(action, reportSynthesis, false);
+      }
     }
 
   }
