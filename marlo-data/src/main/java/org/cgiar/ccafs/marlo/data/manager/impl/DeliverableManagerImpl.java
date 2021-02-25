@@ -222,7 +222,7 @@ public class DeliverableManagerImpl implements DeliverableManager {
       liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
 
       List<ReportSynthesisFlagshipProgressDeliverableDTO> flagshipPlannedList =
-        this.getFpPlannedList(liaisonInstitutions, phaseDB, liaisonInstitution);
+        this.getFpPlannedList(liaisonInstitutions, phaseDB, liaisonInstitution, true);
 
       for (ReportSynthesisFlagshipProgressDeliverableDTO reportSynthesisFlagshipProgressDeliverableDTO : flagshipPlannedList) {
 
@@ -250,13 +250,16 @@ public class DeliverableManagerImpl implements DeliverableManager {
   }
 
   /**
-   * Method to fill the list of deliverables selected by flagships
+   * Method to fill the list of deliverables (only publications or only Grey literature, depending on the
+   * getPublications parameter), selected by flagships.
    * 
    * @param flagshipsLiaisonInstitutions
+   * @param getPublications
    * @return
    */
   public List<ReportSynthesisFlagshipProgressDeliverableDTO> getFpPlannedList(
-    List<LiaisonInstitution> flagshipsLiaisonInstitutions, Phase phaseDB, LiaisonInstitution pmuInstitution) {
+    List<LiaisonInstitution> flagshipsLiaisonInstitutions, Phase phaseDB, LiaisonInstitution pmuInstitution,
+    boolean getPublications) {
     List<ReportSynthesisFlagshipProgressDeliverableDTO> flagshipPlannedList = new ArrayList<>();
 
     if (this.findAll() != null) {
@@ -265,7 +268,8 @@ public class DeliverableManagerImpl implements DeliverableManager {
       List<Deliverable> deliverables = new ArrayList<>(this.findAll().stream()
         .filter(d -> d.isActive() && d.getDeliverableInfo(phaseDB) != null
           && d.getDeliverableInfo().isRequiredToComplete() && d.getDeliverableInfo().getDeliverableType() != null
-          && d.getDeliverableInfo().getDeliverableType().getId() == 63)
+          && (getPublications ? d.getDeliverableInfo().getDeliverableType().getId() == 63
+            : d.getDeliverableInfo().getDeliverableType().getId() != 63))
         .collect(Collectors.toList()));
 
       // Fill all deliverables of the global unit
@@ -384,6 +388,94 @@ public class DeliverableManagerImpl implements DeliverableManager {
   }
 
   @Override
+  public List<Deliverable> getNotPublicationsList(LiaisonInstitution liaisonInstitution, Phase phase) {
+    Phase phaseDB = phaseManager.getPhaseById(phase.getId());
+    List<Deliverable> deliverables = new ArrayList<>();
+
+    if (crpProgramManager.isFlagship(liaisonInstitution)) {
+      // Fill Project Deliverables of the current flagship
+      if (projectFocusManager.findAll() != null) {
+        List<ProjectFocus> projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
+          .filter(pf -> pf.isActive() && pf.getCrpProgram().getId().equals(liaisonInstitution.getCrpProgram().getId())
+            && pf.getPhase() != null && pf.getPhase().getId().equals(phaseDB.getId()))
+          .collect(Collectors.toList()));
+
+        for (ProjectFocus focus : projectFocus) {
+          Project project = projectManager.getProjectById(focus.getProject().getId());
+          List<Deliverable> plannedDeliverables = new ArrayList<>(project.getDeliverables().stream()
+            .filter(d -> d.isActive() && d.getDeliverableInfo(phaseDB) != null && d.getDeliverableInfo().isCompleted()
+              && d.getDeliverableInfo().getDeliverableType() != null
+              && d.getDeliverableInfo().getDeliverableType().getId() != 63)
+            .collect(Collectors.toList()));
+          for (Deliverable deliverable : plannedDeliverables) {
+            deliverable.getDeliverableInfo(phaseDB);
+            deliverable.setUsers(deliverable.getUsers(phaseDB));
+            deliverable.setDissemination(deliverable.getDissemination(phaseDB));
+            deliverable.setPublication(deliverable.getPublication(phaseDB));
+            deliverable.setMetadataElements(deliverable.getMetadataElements(phaseDB));
+            deliverables.add(deliverable);
+          }
+        }
+      }
+
+      // Fill Supplementary Deliverables
+      List<DeliverableProgram> deliverablePrograms = liaisonInstitution.getCrpProgram().getDeliverablePrograms()
+        .stream()
+        .filter(dp -> dp.isActive() && dp.getPhase().equals(phaseDB) && dp.getDeliverable() != null
+          && dp.getDeliverable().isActive() && dp.getDeliverable().getDeliverableInfo(phaseDB) != null
+          && dp.getDeliverable().getDeliverableInfo().isRequiredToComplete()
+          && dp.getDeliverable().getDeliverableInfo().getDeliverableType() != null
+          && dp.getDeliverable().getDeliverableInfo().getDeliverableType().getId() != 63)
+        .collect(Collectors.toList());
+
+      if (deliverablePrograms != null && !deliverablePrograms.isEmpty()) {
+        for (DeliverableProgram deliverableProgram : deliverablePrograms) {
+          Deliverable deliverable = deliverableProgram.getDeliverable();
+          deliverable.getDeliverableInfo(phaseDB);
+          deliverable.setUsers(deliverable.getUsers(phaseDB));
+          deliverable.setDissemination(deliverable.getDissemination(phaseDB));
+          deliverable.setPublication(deliverable.getPublication(phaseDB));
+          deliverable.setMetadataElements(deliverable.getMetadataElements(phaseDB));
+          deliverables.add(deliverable);
+        }
+      }
+    } else {
+      // Fill Project Deliverables of the PMU, removing flagship deletions
+      List<LiaisonInstitution> liaisonInstitutions = phaseDB.getCrp().getLiaisonInstitutions().stream()
+        .filter(c -> c.getCrpProgram() != null && c.isActive()
+          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        .collect(Collectors.toList());
+      liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
+
+      List<ReportSynthesisFlagshipProgressDeliverableDTO> flagshipPlannedList =
+        this.getFpPlannedList(liaisonInstitutions, phaseDB, liaisonInstitution, false);
+
+      for (ReportSynthesisFlagshipProgressDeliverableDTO reportSynthesisFlagshipProgressDeliverableDTO : flagshipPlannedList) {
+
+        Deliverable deliverable = reportSynthesisFlagshipProgressDeliverableDTO.getDeliverable();
+        deliverable.getDeliverableInfo(phaseDB);
+        deliverable.setUsers(deliverable.getUsers(phaseDB));
+        deliverable.setDissemination(deliverable.getDissemination(phaseDB));
+        deliverable.setPublication(deliverable.getPublication(phaseDB));
+        deliverable.setMetadataElements(deliverable.getMetadataElements(phaseDB));
+        deliverable.setSelectedFlahsgips(new ArrayList<>());
+        // sort selected flagships
+        if (reportSynthesisFlagshipProgressDeliverableDTO.getLiaisonInstitutions() != null
+          && !reportSynthesisFlagshipProgressDeliverableDTO.getLiaisonInstitutions().isEmpty()) {
+          reportSynthesisFlagshipProgressDeliverableDTO.getLiaisonInstitutions()
+            .sort((l1, l2) -> l1.getCrpProgram().getAcronym().compareTo(l2.getCrpProgram().getAcronym()));
+        }
+        deliverable.getSelectedFlahsgips()
+          .addAll(reportSynthesisFlagshipProgressDeliverableDTO.getLiaisonInstitutions());
+        deliverables.add(deliverable);
+
+      }
+    }
+    deliverables.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+    return deliverables;
+  }
+
+  @Override
   public List<Deliverable> getPublicationsByPhase(long phase) {
 
     return deliverableDAO.getPublicationsByPhase(phase);
@@ -450,7 +542,7 @@ public class DeliverableManagerImpl implements DeliverableManager {
       liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
 
       List<ReportSynthesisFlagshipProgressDeliverableDTO> flagshipPlannedList =
-        this.getFpPlannedList(liaisonInstitutions, phaseDB, liaisonInstitution);
+        this.getFpPlannedList(liaisonInstitutions, phaseDB, liaisonInstitution, true);
 
       for (ReportSynthesisFlagshipProgressDeliverableDTO reportSynthesisFlagshipProgressDeliverableDTO : flagshipPlannedList) {
 

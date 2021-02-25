@@ -19,17 +19,21 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableAffiliationManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableAffiliationsNotMappedManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableAltmetricInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableMetadataExternalSourcesManager;
 import org.cgiar.ccafs.marlo.data.manager.ExternalSourceAuthorManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableAffiliation;
 import org.cgiar.ccafs.marlo.data.model.DeliverableAffiliationsNotMapped;
+import org.cgiar.ccafs.marlo.data.model.DeliverableAltmetricInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataExternalSources;
 import org.cgiar.ccafs.marlo.data.model.ExternalSourceAuthor;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.rest.services.deliverables.model.MetadataAltmetricModel;
 import org.cgiar.ccafs.marlo.rest.services.deliverables.model.MetadataGardianModel;
 import org.cgiar.ccafs.marlo.rest.services.deliverables.model.MetadataWOSModel;
 import org.cgiar.ccafs.marlo.rest.services.deliverables.model.WOSAuthor;
@@ -79,6 +83,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
   private String jsonStringResponse;
   private MetadataWOSModel response;
   private Long deliverableId;
+  private Long phaseId;
 
   // Managers
   private DeliverableMetadataExternalSourcesManager deliverableMetadataExternalSourcesManager;
@@ -87,13 +92,16 @@ public class DeliverableMetadataByWOS extends BaseAction {
   private ExternalSourceAuthorManager externalSourceAuthorManager;
   private DeliverableManager deliverableManager;
   private InstitutionManager institutionManager;
+  private PhaseManager phaseManager;
+  private DeliverableAltmetricInfoManager deliverableAltmetricInfoManager;
 
   @Inject
   public DeliverableMetadataByWOS(APConfig config, DeliverableAffiliationManager deliverableAffiliationManager,
     DeliverableMetadataExternalSourcesManager deliverableMetadataExternalSourcesManager,
     DeliverableAffiliationsNotMappedManager deliverableAffiliationsNotMappedManager,
     ExternalSourceAuthorManager externalSourceAuthorManager, DeliverableManager deliverableManager,
-    InstitutionManager institutionManager) {
+    InstitutionManager institutionManager, PhaseManager phaseManager,
+    DeliverableAltmetricInfoManager deliverableAltmetricInfoManager) {
     super(config);
     this.deliverableAffiliationManager = deliverableAffiliationManager;
     this.deliverableMetadataExternalSourcesManager = deliverableMetadataExternalSourcesManager;
@@ -101,17 +109,23 @@ public class DeliverableMetadataByWOS extends BaseAction {
     this.externalSourceAuthorManager = externalSourceAuthorManager;
     this.deliverableManager = deliverableManager;
     this.institutionManager = institutionManager;
+    this.phaseManager = phaseManager;
+    this.deliverableAltmetricInfoManager = deliverableAltmetricInfoManager;
   }
 
   @Override
   public String execute() throws Exception {
-    if (this.jsonStringResponse == null || StringUtils.equalsIgnoreCase(this.jsonStringResponse, "null")) {
-      return NOT_FOUND;
+    /*
+     * if (this.jsonStringResponse == null || StringUtils.equalsIgnoreCase(this.jsonStringResponse, "null")) {
+     * return NOT_FOUND;
+     * }
+     */
+    if (this.jsonStringResponse != null && !StringUtils.equalsIgnoreCase(this.jsonStringResponse, "null")) {
+      this.response = new Gson().fromJson(jsonStringResponse, MetadataWOSModel.class);
+      this.phaseId = this.getActualPhase().getId();
+
+      this.saveInfo();
     }
-
-    this.response = new Gson().fromJson(jsonStringResponse, MetadataWOSModel.class);
-
-    this.saveInfo();
 
     return SUCCESS;
   }
@@ -122,6 +136,10 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
   public String getLink() {
     return link;
+  }
+
+  public Long getPhaseId() {
+    return phaseId;
   }
 
   public MetadataWOSModel getResponse() {
@@ -144,14 +162,14 @@ public class DeliverableMetadataByWOS extends BaseAction {
     }
 
     if (!this.link.isEmpty() && DOIService.REGEXP_PLAINDOI.matcher(this.link).lookingAt()) {
-      JsonElement response = this.readWOSDataFromClarisa(this.link);
+      JsonElement response = this.readWOSDataFromClarisa();
 
       this.jsonStringResponse = StringUtils.stripToNull(new GsonBuilder().serializeNulls().create().toJson(response));
     }
   }
 
-  private JsonElement readWOSDataFromClarisa(final String url) throws IOException {
-    URL clarisaUrl = new URL(config.getClarisaWOSLink().replace("{1}", url));
+  private JsonElement readWOSDataFromClarisa() throws IOException {
+    URL clarisaUrl = new URL(config.getClarisaWOSLink().replace("{1}", this.link));
     String loginData = config.getClarisaWOSUser() + ":" + config.getClarisaWOSPassword();
     String encoded = Base64.encodeBase64String(loginData.getBytes());
 
@@ -305,6 +323,71 @@ public class DeliverableMetadataByWOS extends BaseAction {
     }
   }
 
+  private void saveAltmetricInfo(Phase phase, Deliverable deliverable) {
+    DeliverableAltmetricInfo altmetricInfo =
+      this.deliverableAltmetricInfoManager.findByPhaseAndDeliverable(phase, deliverable);
+    MetadataAltmetricModel incomingAltmetricInfo = this.response.getAltmetricInfo();
+
+    if (incomingAltmetricInfo != null) {
+      if (altmetricInfo == null) {
+        altmetricInfo = new DeliverableAltmetricInfo();
+        altmetricInfo.setDeliverable(deliverable);
+        altmetricInfo.setPhase(phase);
+        altmetricInfo.setCreatedBy(this.getCurrentUser());
+        altmetricInfo.setLastSync(new Date());
+      }
+
+      altmetricInfo.setActive(true);
+      altmetricInfo.setAddedOn(
+        incomingAltmetricInfo.getAddedOn() != null ? new Date(incomingAltmetricInfo.getAddedOn() * 1000L) : null);
+      altmetricInfo.setAltmetricId(incomingAltmetricInfo.getAltmetricId());
+      altmetricInfo.setAltmetricJid(incomingAltmetricInfo.getAltmetricJid());
+      altmetricInfo.setAuthors(incomingAltmetricInfo.getAuthors() != null
+        ? incomingAltmetricInfo.getAuthors().stream().filter(StringUtils::isNotBlank).collect(Collectors.joining(", "))
+        : null);
+      altmetricInfo.setCitedByBlogs(incomingAltmetricInfo.getCitedByBlogs());
+      altmetricInfo.setCitedByDelicious(incomingAltmetricInfo.getCitedByDelicious());
+      altmetricInfo.setCitedByFacebookPages(incomingAltmetricInfo.getCitedByFacebookPages());
+      altmetricInfo.setCitedByForumUsers(incomingAltmetricInfo.getCitedByForumUsers());
+      altmetricInfo.setCitedByGooglePlusUsers(incomingAltmetricInfo.getCitedByGooglePlusUsers());
+      altmetricInfo.setCitedByLinkedinUsers(incomingAltmetricInfo.getCitedByLinkedinUsers());
+      altmetricInfo.setCitedByNewsOutlets(incomingAltmetricInfo.getCitedByNewsOutlets());
+      altmetricInfo.setCitedByPeerReviewSites(incomingAltmetricInfo.getCitedByPeerReviewSites());
+      altmetricInfo.setCitedByPinterestUsers(incomingAltmetricInfo.getCitedByPinterestUsers());
+      altmetricInfo.setCitedByPolicies(incomingAltmetricInfo.getCitedByPolicies());
+      altmetricInfo.setCitedByPosts(incomingAltmetricInfo.getCitedByPosts());
+      altmetricInfo.setCitedByRedditUsers(incomingAltmetricInfo.getCitedByRedditUsers());
+      altmetricInfo.setCitedByResearchHighlightPlatforms(incomingAltmetricInfo.getCitedByResearchHighlightPlatforms());
+      altmetricInfo.setCitedByStackExchangeResources(incomingAltmetricInfo.getCitedByStackExchangeResources());
+      altmetricInfo.setCitedByTwitterUsers(incomingAltmetricInfo.getCitedByTwitterUsers());
+      altmetricInfo.setCitedByWeiboUsers(incomingAltmetricInfo.getCitedByWeiboUsers());
+      altmetricInfo.setCitedByWikipediaPages(incomingAltmetricInfo.getCitedByWikipediaPages());
+      altmetricInfo.setCitedByYoutubeChannels(incomingAltmetricInfo.getCitedByYoutubeChannels());
+      altmetricInfo.setDetailsUrl(this.link);
+      altmetricInfo.setDoi(incomingAltmetricInfo.getDoi());
+      altmetricInfo.setHandle(incomingAltmetricInfo.getHandle());
+      altmetricInfo.setImageLarge(incomingAltmetricInfo.getImageLarge());
+      altmetricInfo.setImageMedium(incomingAltmetricInfo.getImageMedium());
+      altmetricInfo.setImageSmall(incomingAltmetricInfo.getImageSmall());
+      altmetricInfo.setIsOpenAccess(incomingAltmetricInfo.getIsOpenAccess());
+      altmetricInfo.setJournal(incomingAltmetricInfo.getJournal());
+      altmetricInfo.setLastUpdated(incomingAltmetricInfo.getLastUpdated() != null
+        ? new Date(incomingAltmetricInfo.getLastUpdated() * 1000L) : null);
+      altmetricInfo.setModifiedBy(this.getCurrentUser());
+      altmetricInfo.setPublishedOn(incomingAltmetricInfo.getPublishedOn() != null
+        ? new Date(incomingAltmetricInfo.getPublishedOn() * 1000L) : null);
+      altmetricInfo.setScore(incomingAltmetricInfo.getScore());
+      altmetricInfo.setTitle(incomingAltmetricInfo.getTitle());
+      altmetricInfo.setType(incomingAltmetricInfo.getTitle());
+      altmetricInfo.setUri(incomingAltmetricInfo.getUri());
+      altmetricInfo.setUrl(incomingAltmetricInfo.getUrl());
+
+      altmetricInfo = this.deliverableAltmetricInfoManager.saveDeliverableAltmetricInfo(altmetricInfo);
+
+      this.deliverableAltmetricInfoManager.replicate(altmetricInfo, phase.getNext());
+    }
+  }
+
   private void saveExternalSourceAuthors(Phase phase, Deliverable deliverable) {
     DeliverableMetadataExternalSources externalSource =
       this.deliverableMetadataExternalSourcesManager.findByPhaseAndDeliverable(phase, deliverable);
@@ -342,7 +425,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
     DeliverableMetadataExternalSources externalSource =
       this.deliverableMetadataExternalSourcesManager.findByPhaseAndDeliverable(phase, deliverable);
     MetadataGardianModel gardianInfo = this.response.getGardianInfo();
-    
+
     if (externalSource == null) {
       externalSource = new DeliverableMetadataExternalSources();
       externalSource.setPhase(phase);
@@ -364,8 +447,8 @@ public class DeliverableMetadataByWOS extends BaseAction {
     externalSource.setJournalName(this.response.getJournalName());
     externalSource.setVolume(this.response.getVolume());
     externalSource.setPages(this.response.getPages());
-    
-    if(gardianInfo != null) {
+
+    if (gardianInfo != null) {
       externalSource.setGardianFindability(gardianInfo.getFindability());
       externalSource.setGardianAccessibility(gardianInfo.getAccessibility());
       externalSource.setGardianInteroperability(gardianInfo.getInteroperability());
@@ -380,12 +463,37 @@ public class DeliverableMetadataByWOS extends BaseAction {
   }
 
   private void saveInfo() {
-    Phase phase = this.getActualPhase();
     Deliverable deliverable = this.deliverableManager.getDeliverableById(this.deliverableId);
+    Phase phase = this.phaseManager.getPhaseById(this.phaseId);
 
     this.saveExternalSources(phase, deliverable);
     this.saveAffiliations(phase, deliverable);
     this.saveAffiliationsNotMapped(phase, deliverable);
     this.saveExternalSourceAuthors(phase, deliverable);
+    this.saveAltmetricInfo(phase, deliverable);
+  }
+
+  /**
+   * This method is created ONLY to be used for the deliverables bulk sync
+   * 
+   * @param phase the phase the sync info is going to be saved
+   * @param deliverableId the deliverableId
+   * @param link the DOI/URL link to be used for the metadata harvesting
+   * @return
+   * @throws IOException
+   */
+  public boolean saveInfo(Long phaseId, Long deliverableId, String link) throws IOException {
+    this.phaseId = phaseId;
+    this.deliverableId = deliverableId;
+    this.link = link;
+
+    this.response = new Gson().fromJson(this.readWOSDataFromClarisa(), MetadataWOSModel.class);
+
+    if (this.response != null) {
+      this.saveInfo();
+      return true;
+    }
+
+    return false;
   }
 }

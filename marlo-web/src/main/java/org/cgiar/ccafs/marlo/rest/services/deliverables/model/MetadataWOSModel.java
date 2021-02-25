@@ -30,7 +30,7 @@ public class MetadataWOSModel implements Serializable {
   /**
    * 
    */
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 4540658318954192431L;
 
   private String url;
   private String title;
@@ -58,7 +58,15 @@ public class MetadataWOSModel implements Serializable {
   @SerializedName("gardian")
   MetadataGardianModel gardianInfo;
 
+  @SerializedName("altmetric")
+  MetadataAltmetricModel altmetricInfo;
+
   public MetadataWOSModel() {
+
+  }
+
+  public MetadataAltmetricModel getAltmetricInfo() {
+    return altmetricInfo;
   }
 
   public List<WOSAuthor> getAuthors() {
@@ -115,6 +123,10 @@ public class MetadataWOSModel implements Serializable {
 
   public String getVolume() {
     return volume;
+  }
+
+  public void setAltmetricInfo(MetadataAltmetricModel altmetricInfo) {
+    this.altmetricInfo = altmetricInfo;
   }
 
   public void setAuthors(List<WOSAuthor> authors) {

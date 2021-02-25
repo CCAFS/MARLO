@@ -1,5 +1,5 @@
 var $tableViewMore;
-var tableDatatableViewmore, tableDataProgressTableViewmore;
+var tableDatatableViewmore, tableDataProgressTableViewmore, tableDatatableTableGrey;
 var pageName;
 var googleChartsLoaded = false;
 $(document).ready(function() {
@@ -26,6 +26,21 @@ $(document).ready(function() {
 
     $progressTableViewMore = $('.viewMoreSyntesisTable-block table');
     tableDataProgressTableViewmore = $progressTableViewMore.DataTable({
+        "paging": true,
+        "searching": true,
+        "info": true,
+        aoColumnDefs: [
+          {
+              sType: "natural",
+              aTargets: [
+                0
+              ]
+          }
+        ]
+    });
+
+    $TableGrey = $('.viewMoreSyntesisTableGrey-block table');
+    tableDatatableTableGrey = $TableGrey.DataTable({
         "paging": true,
         "searching": true,
         "info": true,
@@ -92,7 +107,7 @@ $(document).ready(function() {
   $('.btn-addEvidence').on('click',addEvidence);
   $('.btn-removeEvidence').on('click',removeEvidence);
   setStatusByBack();
-
+  // updateAllIndexesContribution();
 });
 function setStatusByBack() {
   $(".sloTargetsList")
@@ -108,15 +123,21 @@ function setStatusByBack() {
       if ($(checkbox).val() == "true") {
         $(checkbox).val("false");
         // console.log("now is: "+$(this).val());
+
       } else {
         $(checkbox).val("true");
         // console.log("now is: "+$(this).val());
+
       }
     
       if ($(checkbox).val() == "false") {
-        $(checkbox).parents(".a-slo").find(".disabled-box").show();
+        $(checkbox).parents(".a-slo").find(".to-disabled-box").hide(400);
+        $(checkbox).parents(".a-slo").find(".btn-addEvidence").hide(400);
+        // $(checkbox).parents(".a-slo").find(".disabled-box").show();
       } else {
-        $(checkbox).parents(".a-slo").find(".disabled-box").hide();
+        // $(checkbox).parents(".a-slo").find(".disabled-box").hide();
+        $(checkbox).parents(".a-slo").find(".to-disabled-box").show(400);
+        $(checkbox).parents(".a-slo").find(".btn-addEvidence").show(400);
       }
 
     });
@@ -133,9 +154,14 @@ function setCheckboxValueTohide() {
   }
 
   if ($(this).val() == "false") {
-    $(this).parents(".a-slo").find(".disabled-box").show();
+    $(this).parents(".a-slo").find(".to-disabled-box").hide(400);
+    $(this).parents(".a-slo").find(".btn-addEvidence").hide(400);
+    // $(this).parents(".a-slo").find(".disabled-box").show();
   } else {
-    $(this).parents(".a-slo").find(".disabled-box").hide();
+    // $(this).parents(".a-slo").find(".disabled-box").hide();
+    $(this).parents(".a-slo").find(".to-disabled-box").show(400);
+    $(this).parents(".a-slo").find(".btn-addEvidence").show(400);
+    
   }
 
 }
@@ -219,22 +245,131 @@ function createGoogleChart(chartID, type, options) {
   }
 }
 
+function updateAllIndexesContribution() {
+  
 
+
+    console.log('%cupdateAllIndexesContribution','background: #222; color: #84c3fd');
+    console.log('%csloTargetsList: '+$('.sloTargetsList').find('.sloTarget').length,'background: #222; color: #fd8484');
+
+ //All sloTargetsList
+ 
+  $('.sloTargetsList').find('.sloTarget').each(function(i,sloTarget) {
+    let index1=i;
+    console.log('%c ('+(i+1)+') evidenceList: '+$(sloTarget).find('.evidenceList').find('.slo-contribution-section').length,'background: #222; color: #37ff73');
+
+    // console.log('evidenceList: ',$(sloTarget).find('.evidenceList').find('.slo-contribution-section').length);
+    $(sloTarget).attr('id', "outcome-"+(i+1));
+    $(sloTarget).setNameIndexes(1, i);
+    
+   
+    // $(sloTarget).find('span.index').html(i + 1);
+    // $(sloTarget).setNameIndexes(1, i);
+
+    //  Update Milestones
+     $(sloTarget).find('.evidenceList').find('.slo-contribution-section').each(function(i,evidence) {
+      //  $(evidence).attr('id', "milestone-"+(i+1));
+      //  $(evidence).find('.indexSloContribution').text(i + 1);
+   
+      $(evidence).attr('id', "milestone-"+(i+1));
+      $(evidence).setNameIndexes(2, i);
+
+ 
+     });
+
+     
+  });
+
+
+  $(document).trigger('updateComponent');
+
+}
+
+function setIndexesOfTheFieldsContribution(evidence,index1,index2){
+  $(evidence).find('.TA_summaryEvidence').find('label').removeAttr('for');
+  $(evidence).find('.TA_summaryEvidence').find('label').attr('for', `sloTargets[${index1}].targetCases[${index2}].briefSummary`);
+  $(evidence).find('.TA_summaryEvidence').find('textarea').removeAttr('id');
+  $(evidence).find('.TA_summaryEvidence').find('textarea').attr('id', `sloTargets[${index1}].targetCases[${index2}].briefSummary`);
+  $(evidence).find('.TA_summaryEvidence').find('textarea').removeAttr('name');
+  $(evidence).find('.TA_summaryEvidence').find('textarea').attr('name', `sloTargets[${index1}].targetCases[${index2}].briefSummary`);
+
+  
+  $(evidence).find('.TA_additionalContribution').find('label').removeAttr('for');
+  $(evidence).find('.TA_additionalContribution').find('label').attr('for', `sloTargets[${index1}].targetCases[${index2}].additionalContribution`);
+  $(evidence).find('.TA_additionalContribution').find('textarea').removeAttr('id');
+  $(evidence).find('.TA_additionalContribution').find('textarea').attr('id', `sloTargets[${index1}].targetCases[${index2}].additionalContribution`);
+  $(evidence).find('.TA_additionalContribution').find('textarea').removeAttr('name');
+  $(evidence).find('.TA_additionalContribution').find('textarea').attr('name', `sloTargets[${index1}].targetCases[${index2}].additionalContribution`);
+
+}
+// function updateAllIndexesContribution2() {
+//   // All Outcomes List
+//    $('.outcomes-list').find('.outcome').each(function(i,outcome) {
+//      $(outcome).attr('id', "outcome-"+(i+1));
+//      // $(outcome).find('span.index').html(i + 1);
+//      $(outcome).setNameIndexes(1, i);
+ 
+//      // Update Milestones
+//      $(outcome).find('.milestone').each(function(i,milestone) {
+//        $(milestone).attr('id', "milestone-"+(i+1));
+//        // $(milestone).find('span.index').text(i + 1);
+//        $(milestone).setNameIndexes(2, i);
+ 
+//        // Update radios for Assesment Risk
+//        $(milestone).find('.radioFlat').each(function(i,radioBlock) {
+//          var radioFlatID = ($(radioBlock).find('input').attr('id') + i).replace(/\W/g, '');
+//          $(radioBlock).find('input').attr('id', radioFlatID);
+//          $(radioBlock).find('label').attr('for', radioFlatID);
+//        });
+ 
+//      });
+ 
+//      // Update SubIdos
+//      $(outcome).find('.subIdo').each(function(i,subIdo) {
+//        $(subIdo).find('span.index').text(i + 1);
+//        $(subIdo).setNameIndexes(2, i);
+ 
+//        // Update radios for primary option
+//        var radioFlatID = $(subIdo).find('.radioFlat input').attr('id');
+//        $(subIdo).find('.radioFlat label').attr('for', radioFlatID);
+ 
+//        // Update Assumptions
+//        $(subIdo).find('.assumption').each(function(i,assumption) {
+//          $(assumption).find('.statement').attr('placeholder', 'Assumption statement #' + (i + 1));
+//          $(assumption).setNameIndexes(3, i);
+//        });
+//      });
+ 
+//      // Update Baseline Indicators
+//      $(outcome).find('.baselineIndicator').each(function(i,indicator) {
+//        $(indicator).find('span.index').text(i + 1);
+//        $(indicator).setNameIndexes(2, i);
+//      });
+//    });
+ 
+//    // Update component event
+//    $(document).trigger('updateComponent');
+ 
+//  }
 function addEvidence() {
+  
 console.log('addEvidence');
   // $(this).parents(".simpleBox").find(".evidenceList").hide();;
 
   var $list =  $(this).parents(".simpleBox").find(".evidenceList");
-  var $item = $('.slo-contribution-template').clone(true).removeAttr("id");
+  var $item = $('.slo-contribution-template').clone(true)
   $($item).removeClass('slo-contribution-template');
   // $item.find('select').select2({
   // width: '100%'
   // });
   $list.append($item);
   // updateAllIndexes();
+  updateAllIndexesContribution();
   $item.show('slow');
-  $list=null;
-  $item=null;
+  // $list=null;
+  // $item=null;
+
+  // updateAllIndexesContribution();
 }
 
 function removeEvidence(){
@@ -243,5 +378,7 @@ function removeEvidence(){
     $item.hide(function() {
       $item.remove();
     });
+
+    // updateAllIndexesContribution();
 } 
 
