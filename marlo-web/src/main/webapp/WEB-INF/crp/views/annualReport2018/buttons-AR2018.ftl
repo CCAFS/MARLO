@@ -27,8 +27,8 @@
       [@logHistory.logList list=recordsList itemName="liaisonInstitutionID" itemId=liaisonInstitutionID /]
       <a href="" onclick="return false" class="form-button button-history"><span class="glyphicon glyphicon-glyphicon glyphicon-list-alt" aria-hidden="true"></span> [@s.text name="form.buttons.history" /]</a>
     [/#if]
-
-[#if action.getActionName()?split("/")[1] != "publications" && action.getActionName()?split("/")[1] != "innovations" && action.getActionName()?split("/")[1] != "oicr" && action.getActionName()?split("/")[1] != "policies" || PMU]
+  [#assign actionName = action.getActionName()?split("/")[1] /]
+[#if actionName != "publications" && actionName != "innovations" && actionName!= "oicr" && actionName != "policies" || PMU]
     [#if editable ]
       [#-- Save Button --]
       [@s.submit type="button" name="save" cssClass="button-save"]<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> <span class="saveText">[@s.text name="form.buttons.save" /]</span> [/@s.submit]
