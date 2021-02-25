@@ -3339,6 +3339,16 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           }
           // poiSummary.textLineBreak(document, 1);
         }
+
+        if (flagshipProgress.getRelevanceCovid() != null && !flagshipProgress.getRelevanceCovid().isEmpty()) {
+          this.createSubtitle("Relevance to Covid-19:");
+          try {
+            poiSummary.convertHTMLTags(document, flagshipProgress.getRelevanceCovid(), null);
+          } catch (Exception e) {
+            poiSummary.convertHTMLTags(document, poiSummary.replaceHTMLTags(flagshipProgress.getRelevanceCovid()),
+              null);
+          }
+        }
         i++;
       }
     }
