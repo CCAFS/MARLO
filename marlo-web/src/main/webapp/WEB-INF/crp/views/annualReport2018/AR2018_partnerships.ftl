@@ -415,7 +415,7 @@
     </div>
     [#-- Value added --]
     <div class="form-group">
-      [@customForm.input name="${customName}.valueAdded" i18nkey="${customLabel}.table8.value" help="${customLabel}.table8.value.help" helpIcon=false required=true editable=editable /]
+      [@customForm.input name="${customName}.valueAdded" i18nkey="${customLabel}.table8.value" help="${customLabel}.table8.value.help" helpIcon=false required=false editable=editable /]
     </div>
   </div>
 [/#macro]
