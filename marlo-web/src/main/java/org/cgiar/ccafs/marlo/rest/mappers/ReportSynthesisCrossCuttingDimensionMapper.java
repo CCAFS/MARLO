@@ -24,6 +24,7 @@ import org.mapstruct.Mappings;
 
 /**
  * @author Luis Benavides - CIAT/CCAFS
+ * @author Diego Perez - CIAT/CCAFS
  */
 @Mapper(componentModel = "jsr330")
 public interface ReportSynthesisCrossCuttingDimensionMapper {
@@ -34,8 +35,9 @@ public interface ReportSynthesisCrossCuttingDimensionMapper {
     @Mapping(source = "reportSynthesisCrossCuttingDimension.traineesShortTermFemale",
       target = "traineesShortTermFemale"),
     @Mapping(source = "reportSynthesisCrossCuttingDimension.traineesShortTermMale", target = "traineesShortTermMale"),
-    @Mapping(source = "reportSynthesisCrossCuttingDimension.traineesPhdMale", target = "traineesPhdMale"),
-    @Mapping(source = "reportSynthesisCrossCuttingDimension.traineesPhdFemale", target = "traineesPhdFemale"),
+    @Mapping(source = "reportSynthesisCrossCuttingDimension.phdMale", target = "traineesPhdMale"),
+    @Mapping(source = "reportSynthesisCrossCuttingDimension.phdFemale", target = "traineesPhdFemale"),
+    @Mapping(source = "reportSynthesisCrossCuttingDimension.evidenceLink", target = "evidencelink"),
     @Mapping(source = "reportSynthesisCrossCuttingDimension.reportSynthesis.phase.name", target = "phase.name"),
     @Mapping(source = "reportSynthesisCrossCuttingDimension.reportSynthesis.phase.year", target = "phase.year")})
   public abstract ParticipantsCapDevDTO reportSynthesisCrossCuttingDimensionToParticipantsCapDevDTO(
