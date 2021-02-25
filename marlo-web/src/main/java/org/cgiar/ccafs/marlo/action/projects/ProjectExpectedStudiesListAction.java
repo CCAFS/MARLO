@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.ExpectedStudyProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
@@ -34,6 +35,7 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -56,7 +58,7 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
   private ProjectExpectedStudyManager projectExpectedStudyManager;
   private ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager;
   private StudyTypeManager studyTypeManager;
-
+  private ExpectedStudyProjectManager expectedStudyProjectManager;
 
   // Parameters or Variables
   private List<ProjectExpectedStudy> nonProjectStudies;
@@ -74,14 +76,15 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
   @Inject
   public ProjectExpectedStudiesListAction(APConfig config, SectionStatusManager sectionStatusManager,
     ProjectManager projectManager, ProjectExpectedStudyManager projectExpectedStudyManager,
-    ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager, StudyTypeManager studyTypeManager) {
+    ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager, StudyTypeManager studyTypeManager,
+    ExpectedStudyProjectManager expectedStudyProjectManager) {
     super(config);
     this.sectionStatusManager = sectionStatusManager;
     this.projectManager = projectManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.projectExpectedStudyInfoManager = projectExpectedStudyInfoManager;
     this.studyTypeManager = studyTypeManager;
-
+    this.expectedStudyProjectManager = expectedStudyProjectManager;
   }
 
   @Override
@@ -106,6 +109,7 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
     projectExpectedStudyInfo.setPhase(this.getActualPhase());
     projectExpectedStudyInfo.setProjectExpectedStudy(projectExpectedStudy);
     projectExpectedStudyInfo.setYear(this.getActualPhase().getYear());
+    projectExpectedStudyInfo.setIsContribution(true);
 
     // when a project expected study is created, it is assigned by default status 2 = On going
     GeneralStatus status = new GeneralStatus();
@@ -213,7 +217,7 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
   public void prepare() throws Exception {
 
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
-
+    this.setPhaseID(this.getActualPhase().getId());
 
     try {
       projectID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
@@ -237,11 +241,13 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
       }
 
       // Load Shared studies
-      List<ExpectedStudyProject> expectedStudyProject = new ArrayList<>(project.getExpectedStudyProjects().stream()
-        .filter(px -> px.isActive() && px.getPhase().getId() == this.getActualPhase().getId()
-          && px.getProjectExpectedStudy().isActive()
-          && px.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()) != null)
-        .collect(Collectors.toList()));
+      List<ExpectedStudyProject> expectedStudyProject =
+        this.expectedStudyProjectManager.getByProjectAndPhase(project.getId(), this.getPhaseID()) != null
+          ? this.expectedStudyProjectManager.getByProjectAndPhase(project.getId(), this.getPhaseID()).stream()
+            .filter(px -> px.isActive() && px.getProjectExpectedStudy().isActive()
+              && px.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()) != null)
+            .collect(Collectors.toList())
+          : Collections.emptyList();
       if (expectedStudyProject != null && expectedStudyProject.size() > 0) {
         for (ExpectedStudyProject expectedStudy : expectedStudyProject) {
           if (!allProjectStudies.contains(expectedStudy.getProjectExpectedStudy())) {

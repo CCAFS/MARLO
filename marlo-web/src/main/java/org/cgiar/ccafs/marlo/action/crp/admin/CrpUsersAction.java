@@ -53,6 +53,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -211,16 +212,30 @@ public class CrpUsersAction extends BaseAction {
           .filter(c -> c.isActive() && c.getProjectPartner().isActive() && c.getContactType().equalsIgnoreCase("PL")
             && c.getProjectPartner().getPhase() != null
             && c.getProjectPartner().getPhase().equals(this.getActualPhase())
-            && phasesProjects.contains(c.getProjectPartners().getProject()))
+            && phasesProjects.contains(c.getProjectPartners().getProject())
+            && c.getProjectPartners().getProject().isActive()
+            && c.getProjectPartners().getProject().getProjecInfoPhase(this.getActualPhase()) != null
+            && c.getProjectPartners().getProject().getProjecInfoPhase(this.getActualPhase()).isActive())
           .collect(Collectors.toList())) {
           if (projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
-            .getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-            || projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
-              .getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-            relations.add(projectPartnerPerson.getProjectPartner().getProject()
-              .getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER));
-          }
+            .getEndDate() != null) {
+            Calendar cal = Calendar.getInstance();
 
+            cal.setTime(projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
+              .getEndDate());
+            Integer year = cal.get(Calendar.YEAR);
+
+            if (year != null && (year >= this.getActualPhase().getYear())) {
+
+              if (projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
+                .getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+                || projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
+                  .getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+                relations.add(projectPartnerPerson.getProjectPartner().getProject()
+                  .getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER));
+              }
+            }
+          }
         }
         break;
       case "PC":
