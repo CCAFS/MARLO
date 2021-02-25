@@ -160,7 +160,7 @@ function nullDataPipe(data){
     return 'Yes'
   }else if (data == 0 || data == '0') {
     return 'No'
-  }else if (data != undefined) {
+  }else if (data != undefined && data) {
     return data;    
   }else{
     return 'Not Available';
@@ -168,7 +168,10 @@ function nullDataPipe(data){
 }
 
 function JsonAuthorsToOrder(data){
-  if (data != 'Not Available') {
+  console.log('%cdata'+data,'background: #222; color: #fd8484');
+  if(data == "No"){
+    return 'Not Available'; 
+  }else if (data != 'Not Available') {
     let auxData='';
     data.forEach(element => {
      auxData +='<p>'+element.fullName+'</p></hr>';
