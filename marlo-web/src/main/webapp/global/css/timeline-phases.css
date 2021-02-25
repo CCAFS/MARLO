@@ -132,6 +132,7 @@ div#tl-adnyds {
   height: 100%;
   font-size: 30px;
   padding: 0;
+  outline:none;
 }
 
 .example .forward {

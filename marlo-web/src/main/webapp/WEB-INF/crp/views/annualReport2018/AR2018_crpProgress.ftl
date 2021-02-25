@@ -99,7 +99,7 @@
             
           </div>
           [#--  review this commented code   --]
-          [@sloContribution element="" cssClass="slo-contribution-section-hide slo-contribution-template" name="" indexSlo=-1 index=-1 isMacro=true/]
+          [@sloContribution element={} name="outcomes[0].milestones" cssClass="slo-contribution-section-hide slo-contribution-template"  indexSlo=-1 index=-1 isMacro=true/]
         
           [#-- Section Buttons & hidden inputs--]
           [#include "/WEB-INF/crp/views/annualReport2018/buttons-AR2018.ftl" /]
