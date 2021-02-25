@@ -310,6 +310,10 @@ public class OutcomeMilestonesValidator extends BaseValidator {
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"extendedYear"}));
     }
 
+    action.addMissingField("Milestone Status");
+    action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
+      + "].milestones[" + j + "].milestonesStatus.id", InvalidFieldsMessages.EMPTYFIELD);;
+
     // Validate Milestone Evidence
     if ((!(this.isValidString(milestone.getEvidence())))
       || (milestone.getEvidence() == null || milestone.getEvidence().isEmpty())) {
