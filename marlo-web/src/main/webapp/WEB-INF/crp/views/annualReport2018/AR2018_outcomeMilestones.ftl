@@ -475,12 +475,12 @@
     
     [#-- Evidence for completed milestones or explanation for extended or cancelled --]
     <div class="form-group">
-      [@customForm.textArea name="${customName}.evidence" value="${(annualReportElement.evidence)!}" i18nkey="${customLabel}.milestoneEvidence" help="${customLabel}.milestoneEvidence.help" helpIcon=false display=true required=false className="limitWords-200" editable=editable allowTextEditor=true /]
+      [@customForm.textArea name="${customName}.evidence" value="${(annualReportElement.evidence)!}" i18nkey="${customLabel}.milestoneEvidence" help="${customLabel}.milestoneEvidence.help" helpIcon=false display=true required=true className="limitWords-200" editable=editable allowTextEditor=true /]
     </div>
     
     [#-- Links to evidence --]
     <div class="form-group">
-      [@customForm.textArea name="${customName}.evidenceLink" value="${(annualReportElement.evidenceLink)!}" i18nkey="${customLabel}.milestoneEvidenceLink" help="${customLabel}.milestoneEvidenceLink.help" helpIcon=false display=true required=false editable=editable allowTextEditor=true /]
+      [@customForm.textArea name="${customName}.evidenceLink" value="${(annualReportElement.evidenceLink)!}" i18nkey="${customLabel}.milestoneEvidenceLink" help="${customLabel}.milestoneEvidenceLink.help" helpIcon=false display=true required=true editable=editable allowTextEditor=true /]
     </div>
       
     <div class="form-group milestonesEvidence" style="width: 100%; display:${((milestoneStatus == 4) || (milestoneStatus == 5) || (milestoneStatus == 6))?string('block', 'none')}">

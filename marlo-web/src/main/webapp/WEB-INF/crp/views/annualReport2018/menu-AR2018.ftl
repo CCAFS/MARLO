@@ -8,7 +8,7 @@
   },
   { 'title': '1. Key Results', 'show': true,
     'items': [
-    { 'slug': 'crpProgress',          'name': 'annualReport2018.menu.crpProgress',          'action': 'crpProgress',        'active': true, 'subName': 'annualReport2018.menu.crpProgress.subName' },
+    { 'slug': 'crpProgress',          'name': 'annualReport2018.menu.crpProgress',          'action': 'crpProgress',        'active': false, 'subName': 'annualReport2018.menu.crpProgress.subName',  'development': true },
     { 'slug': 'flagshipProgress',     'name': 'annualReport2018.menu.flagshipProgress',     'action': 'flagshipProgress',   'active': true,
       'items': [
         { 'slug': 'policies',             'name': 'annualReport2018.menu.policies',           'action': 'policies',             'active': true     },
@@ -121,7 +121,7 @@
 <div class="text-center">
   [#assign documentLink][@s.url namespace="/summaries" action="${crpSession}/AnnualReportSummary2018"][@s.param name='phaseID']${actualPhase.id}[/@s.param][/@s.url][/#assign]
   <a class="btn btn-default" href="${documentLink}" target="_blank">
-   <img  src="${baseUrlCdn}/global/images/icons/file-doc.png" alt="" /> Generate DOC file <br /> [#-- <small> (Beta version, this is still under development)</small> --]
+   <img  src="${baseUrlCdn}/global/images/icons/file-doc.png" alt="" /> Generate DOC file <br /> <small> (Beta version, this is still under development)</small>
   </a>
 </div>
 [/#if]
