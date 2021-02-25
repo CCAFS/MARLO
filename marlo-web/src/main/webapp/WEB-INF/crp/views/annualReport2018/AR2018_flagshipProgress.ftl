@@ -47,7 +47,6 @@
               [#-- Progress by flagships --]
               <div class="form-group">
                 [#-- Word Document Tag --]
-                [@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/]
                 [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
                 [@customForm.textArea name="${customName}.progressByFlagships" i18nkey="${customLabel}.progressByFlagships" help="${customLabel}.progressByFlagships.help" className="limitWords-200" helpIcon=false required=false editable=editable allowTextEditor=true /]
               </div>
@@ -55,7 +54,6 @@
               <div class="form-group">
                 <br />
                 [#-- Word Document Tag --]
-                [@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/]
                 [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
                 [@customForm.textArea name="${customName}.detailedAnnex" i18nkey="${customLabel}.detailedAnnex" className="limitWords-800" helpIcon=false required=false editable=editable allowTextEditor=true /]
               </div>
@@ -89,7 +87,7 @@
               [/#if]
               <div class="form-group">
                   [#-- Word Document Tag --]
-                  [#if PMU]
+                [#if PMU]
                   [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
                 [/#if]
                 <h4 class="simpleTitle">[@s.text name="${customLabel}.progressByFlagships" /]</h4>
