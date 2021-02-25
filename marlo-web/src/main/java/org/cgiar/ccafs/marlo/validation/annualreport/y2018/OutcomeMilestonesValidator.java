@@ -298,6 +298,15 @@ public class OutcomeMilestonesValidator extends BaseValidator {
       }
     }
 
+    // Extended year
+    if (milestone.getMilestonesStatus() != null && milestone.getMilestonesStatus().getId() == 4
+      && (milestone.getExtendedYear() == null || milestone.getExtendedYear() == 0)) {
+      action.addMessage(action.getText("extendedYear"));
+      action.getInvalidFields().put("list-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
+        + "].milestones[" + j + "].extendedYear",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"extendedYear"}));
+    }
+
     // Validate Milestone Evidence
     if ((!(this.isValidString(milestone.getEvidence()))) && milestone.getEvidence() != null
       && !milestone.getEvidence().isEmpty()) {
