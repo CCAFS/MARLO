@@ -426,7 +426,6 @@
                     [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.deliverablesIds?seq_contains(item.id))!true) /]
                     [@customForm.checkmark id="deliverable${isGrey?then('Grey','')}-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.deliverablesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
                     <div style="display: none">${isChecked?string('1','0')}</div>
-                    <div>${action.getActionName()}</div>
                   </td>
                 [/#if]
               [/#if]
