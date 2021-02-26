@@ -74,6 +74,12 @@
   </span>
 [/#macro]
 
+[#macro tagPMU label="" tooltip=""]
+  <span class="doc-badge pull-right" title="[@s.text name="${tooltip}" /]">
+    <img src="${baseUrlCdn}/global/images/icons/file-pmu.png" style="width:18px;" alt=""> [@s.text name="${label}" /] 
+  </span>
+[/#macro]
+
 [#macro prefilledTag]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#macro]
 
 [#macro tableText value nobr=false emptyText="global.notDefined"]

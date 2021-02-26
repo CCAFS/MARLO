@@ -121,6 +121,7 @@ public class MonitoringEvaluationAction extends BaseAction {
   private List<ProjectExpectedStudy> studiesList;
   private List<PowbEvidencePlannedStudyDTO> flagshipPlannedList;
   private List<ReportSynthesisMeliaEvaluation> fpSynthesisTable;
+  private List<ReportSynthesisMelia> reportSynthesisMeliaList;
   private List<ReportSynthesisMelia> flagshipMeliaProgress;
   private List<ProjectExpectedStudy> projectExpectedStudies;
   private List<ReportSynthesisMeliaActionStudy> projectExpectedStudyConverted;
@@ -435,6 +436,10 @@ public class MonitoringEvaluationAction extends BaseAction {
     return reportSynthesis;
   }
 
+  public List<ReportSynthesisMelia> getReportSynthesisMeliaList() {
+    return reportSynthesisMeliaList;
+  }
+
   public List<ProjectExpectedStudy> getSelectedExpectedSt() {
     return selectedExpectedSt;
   }
@@ -677,6 +682,9 @@ public class MonitoringEvaluationAction extends BaseAction {
               }
             }
           }
+
+          // Flagship - Synthesis
+          reportSynthesisMeliaList = reportSynthesisMeliaManager.getFlagshipMelia(liaisonInstitutions, phase.getId());
         }
       }
     }
@@ -1124,9 +1132,13 @@ public class MonitoringEvaluationAction extends BaseAction {
     this.projectExpectedStudyConverted = projectExpectedStudyConverted;
   }
 
-
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
     this.reportSynthesis = reportSynthesis;
+  }
+
+
+  public void setReportSynthesisMeliaList(List<ReportSynthesisMelia> reportSynthesisMeliaList) {
+    this.reportSynthesisMeliaList = reportSynthesisMeliaList;
   }
 
 

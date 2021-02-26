@@ -97,8 +97,8 @@ public class ProjectImpactsManagerImpl implements ProjectImpactsManager {
         // Validation for cancelated projects
         if (projectImpact.getProject() != null && projectImpact.getProject().getProjecInfoPhase(phase) != null
           && projectImpact.getProject().getProjecInfoPhase(phase).getEndDate() != null
-          && projectImpact.getProject().getProjecInfoPhase(phase).getStatus() != null
-          && projectImpact.getProject().getProjecInfoPhase(phase).getStatus() != 4) {
+          && projectImpact.getProject().getProjecInfoPhase(phase).getStatus() != null) {
+
 
           // Validations for project with past end date
           Calendar calendar = Calendar.getInstance();
@@ -107,8 +107,8 @@ public class ProjectImpactsManagerImpl implements ProjectImpactsManager {
           // Include just projects with year end date mayor equal to phase year
           if (endDateYear != 0 && phase.getYear() != 0 && endDateYear >= phase.getYear()) {
             String projectId = projectImpact.getProject().getId().toString();
-            ProjectInfo info = new ProjectInfo();
-            info = projectInfoManager.getProjectInfoByProjectPhase(new Long(projectId), phase.getId());
+            ProjectInfo info =
+              projectInfoManager.getProjectInfoByProjectPhase(projectImpact.getProject().getId(), phase.getId());
             projectImpact.getProject().setProjectInfo(info);
             if (reportProjectImpactsCovid19DTO.stream().anyMatch(c -> c.getProjectId().equals(projectId))) {
               reportProjectImpactsCovid19DTO.stream().filter(c -> c.getProjectId().equals(projectId))
@@ -117,6 +117,7 @@ public class ProjectImpactsManagerImpl implements ProjectImpactsManager {
               reportProjectImpactsCovid19DTO
                 .add(this.projectImpactsToReportProjectImpactsCovid19DTO(projectImpact, phase));
             }
+
           }
         }
       }
@@ -124,9 +125,15 @@ public class ProjectImpactsManagerImpl implements ProjectImpactsManager {
     return reportProjectImpactsCovid19DTO;
   }
 
+
   @Override
   public List<ProjectImpacts> getProjectImpactsByProjectId(long projectId) {
     return projectImpactsDAO.findByProjectId(projectId);
+  }
+
+  @Override
+  public List<ProjectImpacts> getProjectImpactsByYear(int year) {
+    return projectImpactsDAO.getProjectImpactsByYear(year);
   }
 
   public ReportProjectImpactsCovid19DTO projectImpactsToReportProjectImpactsCovid19DTO(ProjectImpacts projectImpact,

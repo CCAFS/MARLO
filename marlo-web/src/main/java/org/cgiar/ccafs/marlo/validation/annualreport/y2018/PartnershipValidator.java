@@ -270,13 +270,15 @@ public class PartnershipValidator extends BaseValidator {
     }
 
     // Validate Value added
-    if (!(this.isValidString(collaboration.getValueAdded()))) {
-      action.addMessage(
-        action.getText("reportSynthesis.reportSynthesisKeyPartnership.collaborations[" + i + "].valueAdded"));
-      action.getInvalidFields().put(
-        "input-reportSynthesis.reportSynthesisKeyPartnership.collaborations[" + i + "].valueAdded",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
+    /*
+     * if (!(this.isValidString(collaboration.getValueAdded()))) {
+     * action.addMessage(
+     * action.getText("reportSynthesis.reportSynthesisKeyPartnership.collaborations[" + i + "].valueAdded"));
+     * action.getInvalidFields().put(
+     * "input-reportSynthesis.reportSynthesisKeyPartnership.collaborations[" + i + "].valueAdded",
+     * InvalidFieldsMessages.EMPTYFIELD);
+     * }
+     */
   }
 
   private void validateExternal(BaseAction action, ReportSynthesisKeyPartnershipExternal external, int i) {

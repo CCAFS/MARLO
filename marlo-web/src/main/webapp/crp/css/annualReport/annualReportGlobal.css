@@ -583,3 +583,14 @@ div#chart13 {
 .TdSroll::-webkit-scrollbar-thumb:hover {
   background: #555; 
 }
+
+.container-links{
+  position: inherit;
+  display: flex;
+  height: 2.5rem;
+  flex-flow: row nowrap;
+  justify-content: space-around;
+  align-items: center;
+  font-size: 2rem;
+  margin: 0.8rem 0 0 0;
+}

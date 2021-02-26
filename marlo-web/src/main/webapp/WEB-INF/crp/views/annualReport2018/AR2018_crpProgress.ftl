@@ -6,7 +6,7 @@
 [#assign pageLibs = [ "select2", "trumbowyg", "components-font-awesome", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js"
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210218" ] /]
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210223" ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210114"] /]
 
 [#assign breadCrumb = [
@@ -99,7 +99,7 @@
             
           </div>
           [#--  review this commented code   --]
-          [@sloContribution element="" cssClass="slo-contribution-section-hide slo-contribution-template" name="" indexSlo=-1 index=-1 isMacro=true/]
+          [@sloContribution element={} name="outcomes[0].milestones" cssClass="slo-contribution-section-hide slo-contribution-template"  indexSlo=-1 index=-1 isMacro=true/]
         
           [#-- Section Buttons & hidden inputs--]
           [#include "/WEB-INF/crp/views/annualReport2018/buttons-AR2018.ftl" /]
@@ -181,22 +181,25 @@
 [#macro sloContribution element cssClass="" name="" indexSlo=0 index=0 isMacro=false ]
 [#local ccname = "sloTargets[${indexSlo}].targetCases[${index}]" /]
 
-[#--  
-<input type="hidden" name="${ccname}.id" value="${index}" />
---]
+[#if isMacro]
+  <input type="hidden" name="${ccname}.id" value="" />
+
+[#else]
+  <input type="hidden" name="${ccname}.id" value="${(element.id)!}" />
+[/#if]
 
 <div class="slo-contribution-section ${cssClass}" style="margin-top: 10px; padding-top: 20px;">
   <div class="leftHead  sm">
     <!--<span class="index">12</span>-->
-    <span class="index">5-87-48</span>
-    <span class="elementId">lorem</span>
+    <span class="index indexSloContribution">${(index+1)}</span>
+    <span class="elementId"></span>
   </div>
 
   <div class="btn-removeEvidence removeElement sm" title="Remove Evidence"></div>
  [#--  [@arMacros.deliverableGeographicScope name="${ccname}"  /]
 <hr>
   [#-- Brief summary of new evidence of CGIAR contribution to relevant targets for this CRP (with citation) --]
-  <div class="form-group">
+  <div class="form-group TA_summaryEvidence">
   [#if isMacro]
       [@customForm.textArea name="${ccname}.briefSummary" value="" i18nkey="${customLabel}.summaryEvidence" className="limitWords-150" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable allowTextEditor=true /]
   [#else]
@@ -208,7 +211,7 @@
   [/#if]
   </div>
   [#-- Expected additional contribution before end of 2022 (if not already fully covered). --]
-  <div class="form-group">
+  <div class="form-group TA_additionalContribution">
   [#if isMacro]
     [@customForm.textArea name="${ccname}.additionalContribution" value="" i18nkey="${customLabel}.additionalContribution" className="limitWords-100" help="${customLabel}.additionalContribution.help" helpIcon=false required=false editable=editable allowTextEditor=true /]
   [#else]

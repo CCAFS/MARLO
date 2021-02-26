@@ -60,6 +60,10 @@
                   { "actionName": "fundingSourcesReplication",
                     "i18nkey": "Funding Sources",
                     "service": "getFundingSourcesByPhase"
+                  },
+                  { "actionName": "deliverableBulkSynchronization",
+                    "i18nkey": "marloBulkReplication.deliverableSync",
+                    "service": "getDeliverablesByPhase"
                   }
                 ] /]
                 <label for="entityID">Entity:</label>
