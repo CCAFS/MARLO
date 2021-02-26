@@ -8,7 +8,7 @@
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js" 
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210226" 
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210225"] /]
 
@@ -97,7 +97,7 @@
 [#macro listOfOutcomeImpactCaseReports name list=[]  isPMU=false expanded=false ]
 
 
-  <div class="form-group viewMoreSyntesisTable-block">
+  <div class="form-group tableOICRs-block">
     [#if isPMU][@customForm.helpLabel name="${customLabel}.help" showIcon=false editable=editable/][/#if]
     <table class="annual-report-table table-border">
       <thead>

@@ -1,5 +1,5 @@
 var $tableViewMore;
-var tableDatatableViewmore, tableDataProgressTableViewmore, tableDatatableTableGrey;
+var tableDatatableViewmore, tableDataProgressTableViewmore, tableDatatableTableGrey, tableInnovations, tablePolicies, tableOICRs;
 var pageName;
 var googleChartsLoaded = false;
 $(document).ready(function() {
@@ -37,6 +37,51 @@ $(document).ready(function() {
               ]
           }
         ]
+    });
+
+    $tableInnovationsHTML = $('.tableInnovations-block table');
+    tableInnovations = $tableInnovationsHTML.DataTable({
+      "paging": false,
+      "searching": true,
+      "info": true,
+      aoColumnDefs: [
+        {
+            sType: "natural",
+            aTargets: [
+              0
+            ]
+        }
+      ]
+    });
+
+    $tablePoliciesHTML = $('.tablePolicies-block table');
+    tablePolicies = $tablePoliciesHTML.DataTable({
+      "paging": false,
+      "searching": true,
+      "info": true,
+      aoColumnDefs: [
+        {
+            sType: "natural",
+            aTargets: [
+              0
+            ]
+        }
+      ]
+    });
+
+    $tableOICRsHTML = $('.tableOICRs-block table');
+    tableOICRs = $tableOICRsHTML.DataTable({
+      "paging": false,
+      "searching": true,
+      "info": true,
+      aoColumnDefs: [
+        {
+            sType: "natural",
+            aTargets: [
+              0
+            ]
+        }
+      ]
     });
 
     $TableGrey = $('.viewMoreSyntesisTableGrey-block table');
@@ -109,6 +154,7 @@ $(document).ready(function() {
   setStatusByBack();
   // updateAllIndexesContribution();
 });
+
 function setStatusByBack() {
   $(".sloTargetsList")
     .find(".sloTarget")
