@@ -60,7 +60,14 @@
                   [#-- Short narrative to introduce the table 9 --]
                   <div class="form-group">
                     [#-- Word Document Tag --]
-                    [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
+                    [#if PMU]
+                     [#--  Table for show the summary information of flagships -> use the list reportSynthesisMeliaList and the field summary
+                      <div class="form-group">
+                         [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableTest" list=reportSynthesisMeliaList columns=["summary"] showTitle=false allInOne=true /]
+                      </div>
+                      <br>
+                      --]
+                    [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
                     [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.narrative" className="" helpIcon=false required=true editable=editable allowTextEditor=true /]
                   </div>
                   
