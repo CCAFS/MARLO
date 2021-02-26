@@ -4,10 +4,10 @@
 [#assign reportingActiveMenu = (reportingActive)!false ]
 
 [#if annualReport2018]
-  [#assign reportingDefaultAction = '${((PMU)!false)?string("narrative","crpProgress")}' ]
+  [#assign reportingDefaultAction = '${((PMU)!false)?string("narrative","flagshipProgress")}' ]
   [#assign reportingDefaultNamespace = 'annualReport2018' ]
 [#else]
-  [#assign reportingDefaultAction = 'crpProgress' ]
+  [#assign reportingDefaultAction = 'flagshipProgress' ]
   [#assign reportingDefaultNamespace = 'annualReport' ]
 [/#if]
 
