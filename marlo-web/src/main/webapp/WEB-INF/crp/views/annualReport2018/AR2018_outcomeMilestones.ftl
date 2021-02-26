@@ -462,7 +462,7 @@
       [/#list]
       [#if !editable && (milestoneStatus == -1)][@s.text name="form.values.fieldEmpty"/][/#if]
       <div class="rectGray" style="padding-left: 10px;">
-        <p class="helpTextPOWB">In POWB you selected the status: <span style="color: #1ca6ce">${(milestoneNextPOWB.milestonesStatus.name)!}</span> </p>
+        <p class="helpTextPOWB">In POWB ${(actualPhase.year+1)!} you selected the status: <span style="color: #1ca6ce">${(milestoneNextPOWB.milestonesStatus.name)!}</span> </p>
       </div>
     </div>
     [#-- New year if extended --]
