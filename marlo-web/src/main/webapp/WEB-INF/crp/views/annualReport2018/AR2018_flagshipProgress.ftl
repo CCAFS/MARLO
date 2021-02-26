@@ -47,7 +47,6 @@
               [#-- Progress by flagships --]
               <div class="form-group">
                 [#-- Word Document Tag --]
-                [@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/]
                 [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
                 [@customForm.textArea name="${customName}.progressByFlagships" i18nkey="${customLabel}.progressByFlagships" help="${customLabel}.progressByFlagships.help" className="limitWords-200" helpIcon=false required=false editable=editable allowTextEditor=true /]
               </div>
@@ -55,7 +54,6 @@
               <div class="form-group">
                 <br />
                 [#-- Word Document Tag --]
-                [@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/]
                 [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
                 [@customForm.textArea name="${customName}.detailedAnnex" i18nkey="${customLabel}.detailedAnnex" className="limitWords-800" helpIcon=false required=false editable=editable allowTextEditor=true /]
               </div>
@@ -89,20 +87,23 @@
               [/#if]
               <div class="form-group">
                   [#-- Word Document Tag --]
-                  [#if PMU]
+                [#if PMU]
                   [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
                 [/#if]
                 <h4 class="simpleTitle">[@s.text name="${customLabel}.progressByFlagships" /]</h4>
-                [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableflagshipSynthesis" list=flagshipsReportSynthesisFlagshipProgress columns=["progressByFlagships", "detailedAnnex"] showTitle=false allInOne=true /]
+                [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableflagshipSynthesis" list=flagshipsReportSynthesisFlagshipProgress columns=["progressByFlagships", "detailedAnnex", "relevanceCovid"] showTitle=false allInOne=true /]
               </div>
             [/#if]
            
             <div class="form-group">
-             </br>
+             
               [#-- 1.2.2b Relevance to Covid-19 --]
-              [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
-              [@customForm.textArea name="${customName}.relevanceCovid" i18nkey="${customLabel}.relevanceCovid" help="${customLabel}.relevanceCovid.help" className="limitWords-300" helpIcon=false required=true editable=editable allowTextEditor=false /]
-             </br>
+              [#if !PMU]
+                </br>
+                  [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                  [@customForm.textArea name="${customName}.relevanceCovid" i18nkey="${customLabel}.relevanceCovid" help="${customLabel}.relevanceCovid.help" className="limitWords-300" helpIcon=false required=true editable=editable allowTextEditor=false /]
+                </br>
+              [/#if]             
             </div>
             
             
@@ -181,6 +182,7 @@
                              (P${st.project.id})
                               ${st.id} -
                               ${st.projectExpectedStudyInfo.title}
+                              <a href="${"${baseUrl}/projects/${crpSession}/study.do?expectedID=${st.id}&edit=true&phaseID=${actualPhase.id}"}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
                             </td>
                             <td style="max-width: 90vw !important;">
                             [#if (st.projectExpectedStudyInfo.studyType.name?has_content)!false]
@@ -200,7 +202,7 @@
                               [#if (st.flagships?has_content)!false]                               
                                  [#list st.flagships as fp]                                                                                                        
                                        [#if (fp.crpProgram?has_content)!false]
-                                        ${fp.crpProgram.acronym}
+                                         <span class="programTag" style="border-color:${(fp.crpProgram.color)!'#fff'}" title="${(fp.crpProgram.composedName)!}">${(fp.crpProgram.acronym)!}</span>
                                        [/#if]                                            
                                  [/#list]                                                                  
                               [#else]
