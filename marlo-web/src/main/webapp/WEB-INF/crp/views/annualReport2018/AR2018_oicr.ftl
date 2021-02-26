@@ -3,14 +3,14 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ "datatables.net", "datatables.net-bs" ] /]
+[#assign pageLibs = [ "datatables.net", "datatables.net-bs", "font-awesome" ] /]
 [#assign customJS = [   
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js" 
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210226" 
 ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20190621"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210225"] /]
 
 [#assign breadCrumb = [
   {"label":"${currentSection}",   "nameSpace":"",             "action":""},
@@ -26,7 +26,7 @@
 [#assign customLabel= "annualReport2018.${currentStage}" /]
 
 [#-- Helptext --]
-[@utilities.helpBox name="${customLabel}.help" /]
+[#if PMU][@utilities.helpBox name="${customLabel}.help" /][/#if]
     
 <section class="container">
   [#if !reportingActive]
@@ -97,8 +97,8 @@
 [#macro listOfOutcomeImpactCaseReports name list=[]  isPMU=false expanded=false ]
 
 
-  <div class="form-group viewMoreSyntesisTable-block">
-    [@customForm.helpLabel name="${customLabel}.help" showIcon=false editable=editable/]
+  <div class="form-group tableOICRs-block">
+    [#if isPMU][@customForm.helpLabel name="${customLabel}.help" showIcon=false editable=editable/][/#if]
     <table class="annual-report-table table-border">
       <thead>
         <tr>
@@ -109,7 +109,7 @@
           [#if expanded]
           <th> [@s.text name="${customLabel}.${name}.srfTargets" /] </th>
           <th> [@s.text name="${customLabel}.${name}.subIdos" /] </th>
-          <th></th>
+          [#--<th></th>--]
           [/#if]
           [#if !expanded]
             <th class="col-md-1 text-center no-sort">[@s.text name="${customLabel}.${name}.missingFields" /]</th>
@@ -153,9 +153,15 @@
                 </div>              
                 [/#if]
                 [#-- OICR Contributions --]
-                [#if !expanded] [@oicrContributions element=item /] [/#if]
-                
-                <a href="${url}" target="_blank" class="pull-right">[@s.text name="${customLabel}.${name}.linkToOicr" /] <span class="glyphicon glyphicon-new-window"></span></a>
+                [#if !expanded] [@oicrContributions element=item /] [/#if]                
+                <div class="container-links">
+                  <div data-toggle="tooltip" title="[@s.text name="${customLabel}.${name}.linkToMARLOOicr" /]">
+                    <a href="${url}" target="_blank" class="pull-right"> <span class="fa fa-external-link"></span></a>
+                  </div>
+                  <div data-toggle="tooltip" title="[@s.text name="${customLabel}.${name}.linkToPublicOicr" /]">
+                    <a href="${summaryPDF}" target="_blank" class="pull-right"> <span class="fa fa-file-pdf-o pdfIcon file"></span></a>
+                  </div>
+                </div>
               </td>
               <td>[@utils.tableText value=(item.projectExpectedStudyInfo.repIndStageStudy.name)!"" /]</td>
               [#-- Removed for AR 2020 --]
@@ -163,7 +169,7 @@
              [#if expanded]
               <td>[@utils.tableList list=(item.srfTargets)![] displayFieldName="srfSloIndicator.title" /]</td>
               <td>[@utils.tableList list=(item.subIdos)![] displayFieldName="srfSubIdo.description" /]</td>
-              <td> <a href="${summaryPDF}" target="_blank"><img src="${baseUrlCdn}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" /></a>  </td>
+              [#--<td> <a href="${summaryPDF}" target="_blank"><img src="${baseUrlCdn}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" /></a>  </td>--]
              [/#if]
              [#if !expanded]
                <td class="text-center">

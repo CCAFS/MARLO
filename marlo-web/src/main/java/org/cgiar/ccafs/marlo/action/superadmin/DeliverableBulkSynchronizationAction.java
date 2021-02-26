@@ -17,13 +17,23 @@ package org.cgiar.ccafs.marlo.action.superadmin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.action.json.project.DeliverableMetadataByWOS;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableAffiliationManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableAffiliationsNotMappedManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableAltmetricInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableMetadataElementManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableMetadataExternalSourcesManager;
+import org.cgiar.ccafs.marlo.data.manager.ExternalSourceAuthorManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
+import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.doi.DOIService;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -33,6 +43,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,8 +62,15 @@ public class DeliverableBulkSynchronizationAction extends BaseAction {
 
   // Managers
   private GlobalUnitManager globalUnitManager;
-  private PhaseManager phaseManager;
+  private DeliverableMetadataElementManager deliverableMetadataElementManager;
+  private DeliverableMetadataExternalSourcesManager deliverableMetadataExternalSourcesManager;
+  private DeliverableAffiliationManager deliverableAffiliationManager;
+  private DeliverableAffiliationsNotMappedManager deliverableAffiliationsNotMappedManager;
+  private ExternalSourceAuthorManager externalSourceAuthorManager;
+  private InstitutionManager institutionManager;
   private DeliverableManager deliverableManager;
+  private PhaseManager phaseManager;
+  private DeliverableAltmetricInfoManager deliverableAltmetricInfoManager;
 
   // Action
   private DeliverableMetadataByWOS deliverableMetadataByWOS;
@@ -65,11 +83,24 @@ public class DeliverableBulkSynchronizationAction extends BaseAction {
   private Phase phase;
 
   @Inject
-  public DeliverableBulkSynchronizationAction(APConfig config, DeliverableMetadataByWOS deliverableMetadataByWOS,
-    DeliverableManager deliverableManager) {
+  public DeliverableBulkSynchronizationAction(APConfig config, DeliverableManager deliverableManager,
+    DeliverableMetadataElementManager deliverableMetadataElementManager, GlobalUnitManager globalUnitManager,
+    PhaseManager phaseManager, DeliverableMetadataExternalSourcesManager deliverableMetadataExternalSourcesManager,
+    DeliverableAffiliationManager deliverableAffiliationManager,
+    DeliverableAffiliationsNotMappedManager deliverableAffiliationsNotMappedManager,
+    ExternalSourceAuthorManager externalSourceAuthorManager, InstitutionManager institutionManager,
+    DeliverableAltmetricInfoManager deliverableAltmetricInfoManager) {
     super(config);
-    this.deliverableMetadataByWOS = deliverableMetadataByWOS;
     this.deliverableManager = deliverableManager;
+    this.deliverableMetadataElementManager = deliverableMetadataElementManager;
+    this.globalUnitManager = globalUnitManager;
+    this.phaseManager = phaseManager;
+    this.deliverableMetadataExternalSourcesManager = deliverableMetadataExternalSourcesManager;
+    this.deliverableAffiliationManager = deliverableAffiliationManager;
+    this.deliverableAffiliationsNotMappedManager = deliverableAffiliationsNotMappedManager;
+    this.externalSourceAuthorManager = externalSourceAuthorManager;
+    this.institutionManager = institutionManager;
+    this.deliverableAltmetricInfoManager = deliverableAltmetricInfoManager;
   }
 
   private Path getAutoSaveFilePath() {
@@ -96,12 +127,30 @@ public class DeliverableBulkSynchronizationAction extends BaseAction {
 
   private String getLink(Long deliverableId) {
     String link = null;
-    Deliverable deliverable = this.deliverableManager.getDeliverableById(selectedPhaseID);
+    Deliverable deliverable = this.deliverableManager.getDeliverableById(deliverableId);
+
     if (deliverable != null) {
-      /*
-       * DeliverableMetadataElements, element_id = 36 -> DOI
-       * DeliverableDissemination, dissemination URL (look for doi), articleURL (look for doi)
-       */
+      // DeliverableMetadataElements, element_id = 36 -> DOI
+      List<DeliverableMetadataElement> metadataElements = deliverable.getMetadataElements(phase);
+      if (metadataElements != null) {
+        DeliverableMetadataElement doiMetadataElement = metadataElements.stream()
+          .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
+            && me.getMetadataElement().getId().longValue() == 36L && !StringUtils.isBlank(me.getElementValue()))
+          .findFirst().orElse(null);
+        if (doiMetadataElement != null) {
+          link = DOIService.tryGetDoiName(StringUtils.stripToEmpty(doiMetadataElement.getElementValue()));
+        }
+      }
+
+      if (StringUtils.isBlank(link)) {
+        // DeliverableDissemination, dissemination URL (look for doi), articleURL (look for doi)
+        DeliverableDissemination dissemination = deliverable.getDissemination(phase);
+
+        link = DOIService.tryGetDoiName(StringUtils.stripToEmpty(dissemination.getDisseminationUrl()));
+        if (StringUtils.isBlank(link)) {
+          link = DOIService.tryGetDoiName(StringUtils.stripToEmpty(dissemination.getArticleUrl()));
+        }
+      }
     }
 
     return link;
@@ -115,6 +164,9 @@ public class DeliverableBulkSynchronizationAction extends BaseAction {
   public void prepare() throws Exception {
     super.prepare();
     crps = globalUnitManager.findAll().stream().filter(c -> c.isMarlo() && c.isActive()).collect(Collectors.toList());
+    this.deliverableMetadataByWOS = new DeliverableMetadataByWOS(config, deliverableAffiliationManager,
+      deliverableMetadataExternalSourcesManager, deliverableAffiliationsNotMappedManager, externalSourceAuthorManager,
+      deliverableManager, institutionManager, phaseManager, deliverableAltmetricInfoManager);
   }
 
   @Override
@@ -131,7 +183,7 @@ public class DeliverableBulkSynchronizationAction extends BaseAction {
           if (link != null) {
             LOG.debug("Synchronizing deliverable : " + id);
             try {
-              this.deliverableMetadataByWOS.saveInfo(selectedPhaseID, deliverableId, id);
+              this.deliverableMetadataByWOS.saveInfo(selectedPhaseID, deliverableId, link);
             } catch (IOException ioe) {
               ioe.printStackTrace();
             }

@@ -109,6 +109,7 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
     projectExpectedStudyInfo.setPhase(this.getActualPhase());
     projectExpectedStudyInfo.setProjectExpectedStudy(projectExpectedStudy);
     projectExpectedStudyInfo.setYear(this.getActualPhase().getYear());
+    projectExpectedStudyInfo.setIsContribution(true);
 
     // when a project expected study is created, it is assigned by default status 2 = On going
     GeneralStatus status = new GeneralStatus();
