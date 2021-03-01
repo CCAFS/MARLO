@@ -18,6 +18,7 @@
 ]/]
 
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities /]
+[#import "/WEB-INF/crp/views/annualReport2018/macros-AR2018.ftl" as macrosAR /]
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
@@ -61,13 +62,17 @@
                   <div class="form-group">
                     [#-- Word Document Tag --]
                     [#if PMU]
-                     [#--  Table for show the summary information of flagships -> use the list reportSynthesisMeliaList and the field summary
+                    
+                     [#--  Table for show the summary information of flagships -> use the list reportSynthesisMeliaList and the field summary   --]
                       <div class="form-group">
-                         [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableTest" list=reportSynthesisMeliaList columns=["summary"] showTitle=false allInOne=true /]
+                         [@macrosAR.tableFPSynthesis tableName="${customLabel}.meliaTable" list=reportSynthesisMeliaList columns=["summary"] showTitle=false allInOne=false /]
                       </div>
                       <br>
-                      --]
-                    [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
+                    
+                    [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                    [#else]
+                    [@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/]
+                    [/#if]
                     [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.narrative" className="" helpIcon=false required=true editable=editable allowTextEditor=true /]
                   </div>
                   
