@@ -4,10 +4,10 @@
 [#assign reportingActiveMenu = (reportingActive)!false ]
 
 [#if annualReport2018]
-  [#assign reportingDefaultAction = '${((PMU)!false)?string("narrative","crpProgress")}' ]
+  [#assign reportingDefaultAction = '${((PMU)!false)?string("narrative","flagshipProgress")}' ]
   [#assign reportingDefaultNamespace = 'annualReport2018' ]
 [#else]
-  [#assign reportingDefaultAction = 'crpProgress' ]
+  [#assign reportingDefaultAction = 'flagshipProgress' ]
   [#assign reportingDefaultNamespace = 'annualReport' ]
 [/#if]
 
@@ -58,9 +58,9 @@
     ]
   },
   [#-- SYNTHESIS REPORTING - CRP --]
-  { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/${reportingDefaultNamespace}',       'action': '${(crpSession)!}/${reportingDefaultAction}','development':true,     'visible': logged && reportingActive && !centerGlobalUnit && !upKeepActive, 'active': (action.canAccessSuperAdmin())!false,    
+  { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/${reportingDefaultNamespace}',       'action': '${(crpSession)!}/${reportingDefaultAction}','development':false,     'visible': logged && reportingActive && !centerGlobalUnit && !upKeepActive, 'active': true,    
     'subItems' : [
-      { 'slug': 'annualReport', 'name': 'menu.synthesis.annualReport', 'namespace': '/${reportingDefaultNamespace}',  'action': '${(crpSession)!}/${reportingDefaultAction}',  'visible': logged, 'active': (action.canAccessSuperAdmin())!false },
+      { 'slug': 'annualReport', 'name': 'menu.synthesis.annualReport', 'namespace': '/${reportingDefaultNamespace}',  'action': '${(crpSession)!}/${reportingDefaultAction}',  'visible': logged, 'active': true },
       [#-- { 'slug': 'projectsEvaluation', 'name': 'menu.synthesis.projectsEvaluation', 'namespace': '/synthesis',  'action': '${(crpSession)!}/projectsEvaluation',  'visible': logged, 'active': false, "development": true }--]
       { 'slug': 'qualityAssessment', 'name': 'menu.synthesis.qualityAssessment', 'namespace': '/qa',  'action': '${(crpSession)!}/qa',  'visible': logged, 'active': (action.canAccessSuperAdmin())!false }
     ]
