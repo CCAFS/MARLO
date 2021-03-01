@@ -583,7 +583,9 @@ public class ProgressTowardsItem<T> {
     // TODO: Include all security validations
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
     ReportSynthesisSrfProgressTargetCases reportSynthesisSrfProgressTarget = null;
-
+    ReportSynthesis reportSynthesis = null;
+    ReportSynthesisSrfProgress reportSynthesisSrfProgress = null;
+    LiaisonInstitution liaisonInstitution = null;
     String strippedEntityAcronym = StringUtils.stripToNull(CGIARentityAcronym);
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(strippedEntityAcronym);
     if (globalUnitEntity == null) {
@@ -608,9 +610,34 @@ public class ProgressTowardsItem<T> {
         new FieldErrorDTO("findProgressTowardsById", "phase", repoPhase + ' ' + repoYear + " is an invalid phase"));
     }
 
+    if (globalUnitEntity != null) {
+      liaisonInstitution =
+        liaisonInstitutionManager.findByAcronymAndCrp(APConstants.CLARISA_ACRONYM_PMU, globalUnitEntity.getId());
+      if (liaisonInstitution == null) {
+        fieldErrors.add(
+          new FieldErrorDTO("findProgressTowards", "LiaisonInstitutionEntity", "A Liaison Institution with the acronym "
+            + APConstants.CLARISA_ACRONYM_PMU + " could not be found for " + CGIARentityAcronym));
+      }
+    }
+
     if (fieldErrors.isEmpty()) {
-      reportSynthesisSrfProgressTarget =
-        reportSynthesisSrfProgressTargetCasesManager.getReportSynthesisSrfProgressTargetCasesById(id);
+      if (liaisonInstitution != null) {
+        reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
+      }
+      // start ReportSynthesisSrfProgress
+      if (reportSynthesis != null) {
+        reportSynthesisSrfProgress = reportSynthesis.getReportSynthesisSrfProgress();
+      }
+      /*
+       * reportSynthesisSrfProgressTarget =
+       * reportSynthesisSrfProgressTargetCasesManager.getReportSynthesisSrfProgressTargetCasesById(id);
+       */
+      final long idProgress = reportSynthesisSrfProgress.getId().longValue();
+      reportSynthesisSrfProgressTarget = reportSynthesisSrfProgressTargetCasesManager.findAll().stream()
+        .filter(c -> c.getReportSynthesisSrfProgress().getId().longValue() == idProgress
+          && c.getId().longValue() == id.longValue())
+        .findFirst().orElse(null);
+      reportSynthesisSrfProgressTarget.setReportSynthesisSrfProgress(reportSynthesisSrfProgress);
       if (reportSynthesisSrfProgressTarget == null || reportSynthesisSrfProgressTarget.isActive() == false) {
         fieldErrors.add(new FieldErrorDTO("findProgressTowardsById", "ReportSynthesisSrfProgressTargetEntity",
           id + " is an invalid id of a Report Synthesis Srf Progress Target"));
@@ -637,16 +664,13 @@ public class ProgressTowardsItem<T> {
                 reportSynthesisSrfProgressTarget
                   .setGeographicScopes(reportSynthesisSrfProgressTarget.getProgressTargetCaseGeographicScopes().stream()
                     .filter(c -> c.isActive()).collect(Collectors.toList()));
-                reportSynthesisSrfProgressTarget.setGeographicCountries(
-                  reportSynthesisSrfProgressTarget.getProgressTargetCaseGeographicCountries().stream()
-                    .filter(
-                      c -> c != null && c.isActive() && c.getLocElement().getLocElementType().getId().longValue() == 2)
-                    .collect(Collectors.toList()));
-                reportSynthesisSrfProgressTarget.setGeographicRegions(
-                  reportSynthesisSrfProgressTarget.getProgressTargetCaseGeographicRegions().stream()
-                    .filter(
-                      c -> c != null && c.isActive() && c.getLocElement().getLocElementType().getId().longValue() == 1)
-                    .collect(Collectors.toList()));
+
+                reportSynthesisSrfProgressTarget
+                  .setGeographicCountries(reportSynthesisSrfProgressTarget.getProgressTargetCaseGeographicCountries()
+                    .stream().filter(c -> c != null && c.isActive()).collect(Collectors.toList()));
+                reportSynthesisSrfProgressTarget
+                  .setGeographicRegions(reportSynthesisSrfProgressTarget.getProgressTargetCaseGeographicRegions()
+                    .stream().filter(c -> c != null && c.isActive()).collect(Collectors.toList()));
 
               }
             }

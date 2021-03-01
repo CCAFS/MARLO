@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.rest.mappers;
 
 import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
+import org.cgiar.ccafs.marlo.data.model.ProgressTargetCaseGeographicCountry;
 import org.cgiar.ccafs.marlo.data.model.ProgressTargetCaseGeographicRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
@@ -65,8 +66,8 @@ public interface LocationMapper {
     @Mapping(source = "locElement.isoAlpha2", target = "isoAlpha2"),
     @Mapping(source = "locElement.name", target = "name"),
     @Mapping(source = "locElement.locElement", target = "regionDTO")})
-  public abstract CountryDTO progressTargetCaseGeographicRegionToCountryDTO(
-    ProgressTargetCaseGeographicRegion progressTargetCaseGeographicRegion);
+  public abstract CountryDTO progressTargetCaseGeographicCountryToCountryDTO(
+    ProgressTargetCaseGeographicCountry progressTargetCaseGeographicCountry);
 
   @Mappings({@Mapping(source = "locElement.isoNumeric", target = "UM49Code"),
     @Mapping(source = "locElement.name", target = "name"),
