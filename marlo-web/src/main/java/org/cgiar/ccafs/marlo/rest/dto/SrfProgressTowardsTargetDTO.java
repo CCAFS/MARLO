@@ -28,8 +28,10 @@ public class SrfProgressTowardsTargetDTO {
   @ApiModelProperty(notes = "The Generated identification Code", position = 1)
   private Long id;
 
-  @ApiModelProperty(notes = "Flagship / Module", position = 2)
-  private FlagshipProgramDTO flagshipProgramDTO;
+  /*
+   * @ApiModelProperty(notes = "Flagship / Module", position = 2)
+   * private FlagshipProgramDTO flagshipProgramDTO;
+   */
 
   @ApiModelProperty(notes = "SLO target", position = 3)
   private SrfSloIndicatorTargetDTO srfSloTarget;
@@ -65,9 +67,11 @@ public class SrfProgressTowardsTargetDTO {
   }
 
 
-  public FlagshipProgramDTO getFlagshipProgramDTO() {
-    return flagshipProgramDTO;
-  }
+  /*
+   * public FlagshipProgramDTO getFlagshipProgramDTO() {
+   * return flagshipProgramDTO;
+   * }
+   */
 
 
   public List<GeographicScopeDTO> getGeographicScope() {
@@ -100,9 +104,11 @@ public class SrfProgressTowardsTargetDTO {
   }
 
 
-  public void setFlagshipProgramDTO(FlagshipProgramDTO flagshipProgramDTO) {
-    this.flagshipProgramDTO = flagshipProgramDTO;
-  }
+  /*
+   * public void setFlagshipProgramDTO(FlagshipProgramDTO flagshipProgramDTO) {
+   * this.flagshipProgramDTO = flagshipProgramDTO;
+   * }
+   */
 
   public void setGeographicScope(List<GeographicScopeDTO> geographicScope) {
     this.geographicScope = geographicScope;

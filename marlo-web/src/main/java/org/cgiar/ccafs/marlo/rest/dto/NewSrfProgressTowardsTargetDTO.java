@@ -25,8 +25,10 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class NewSrfProgressTowardsTargetDTO {
 
-  @ApiModelProperty(notes = "Flagship / Module SMO Code", position = 1)
-  private String flagshipProgramId;
+  /*
+   * @ApiModelProperty(notes = "Flagship / Module SMO Code", position = 1)
+   * private String flagshipProgramId;
+   */
 
   @ApiModelProperty(notes = "SLO indicator ID", position = 2)
   private String srfSloIndicatorId;
@@ -66,9 +68,11 @@ public class NewSrfProgressTowardsTargetDTO {
   }
 
 
-  public String getFlagshipProgramId() {
-    return flagshipProgramId;
-  }
+  /*
+   * public String getFlagshipProgramId() {
+   * return flagshipProgramId;
+   * }
+   */
 
 
   public List<GeographicScopeDTO> getGeographicScope() {
@@ -101,9 +105,11 @@ public class NewSrfProgressTowardsTargetDTO {
   }
 
 
-  public void setFlagshipProgramId(String flagshipProgramId) {
-    this.flagshipProgramId = flagshipProgramId;
-  }
+  /*
+   * public void setFlagshipProgramId(String flagshipProgramId) {
+   * this.flagshipProgramId = flagshipProgramId;
+   * }
+   */
 
   public void setGeographicScope(List<GeographicScopeDTO> geographicScope) {
     this.geographicScope = geographicScope;
