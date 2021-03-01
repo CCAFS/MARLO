@@ -32,8 +32,6 @@ public interface SrfProgressTowardsTargetMapper {
 
   @Mappings({@Mapping(source = "briefSummary", target = "briefSummary"),
     @Mapping(source = "srfSloIndicatorTarget", target = "srfSloTarget"),
-    @Mapping(source = "reportSynthesisSrfProgress.reportSynthesis.liaisonInstitution.crpProgram",
-      target = "flagshipProgramDTO"),
     @Mapping(source = "geographicScopes", target = "geographicScope"),
     @Mapping(source = "geographicRegions", target = "regions"),
     @Mapping(source = "geographicCountries", target = "countries")})
