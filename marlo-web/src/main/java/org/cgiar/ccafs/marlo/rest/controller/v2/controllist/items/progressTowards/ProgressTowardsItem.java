@@ -554,7 +554,7 @@ public class ProgressTowardsItem<T> {
         reportSynthesisSrfProgressTargetList.add(progressTowarsCase);
       }
 
-      reportSynthesisSrfProgressTargetList.stream()
+      progressTowardsTargets = reportSynthesisSrfProgressTargetList.stream()
         .map(srfProgressTowardsTargetMapper::reportSynthesisSrfProgressCasesTargetToSrfProgressTowardsTargetsDTO)
         .collect(Collectors.toList());
     }
@@ -632,11 +632,9 @@ public class ProgressTowardsItem<T> {
        * reportSynthesisSrfProgressTarget =
        * reportSynthesisSrfProgressTargetCasesManager.getReportSynthesisSrfProgressTargetCasesById(id);
        */
-      final long idProgress = reportSynthesisSrfProgress.getId().longValue();
-      reportSynthesisSrfProgressTarget = reportSynthesisSrfProgressTargetCasesManager.findAll().stream()
-        .filter(c -> c.getReportSynthesisSrfProgress().getId().longValue() == idProgress
-          && c.getId().longValue() == id.longValue())
-        .findFirst().orElse(null);
+      // final long idProgress = reportSynthesisSrfProgress.getId().longValue();
+      reportSynthesisSrfProgressTarget = reportSynthesisSrfProgress.getReportSynthesisSrfProgressTargetsCases().stream()
+        .filter(c -> c.getId().longValue() == id.longValue()).findFirst().orElse(null);
       reportSynthesisSrfProgressTarget.setReportSynthesisSrfProgress(reportSynthesisSrfProgress);
       if (reportSynthesisSrfProgressTarget == null || reportSynthesisSrfProgressTarget.isActive() == false) {
         fieldErrors.add(new FieldErrorDTO("findProgressTowardsById", "ReportSynthesisSrfProgressTargetEntity",
