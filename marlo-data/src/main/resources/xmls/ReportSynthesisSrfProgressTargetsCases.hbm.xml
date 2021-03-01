@@ -57,20 +57,28 @@
 			unique="false">
 			<column length="65535" name="modification_justification" />
 		</property>	
-		<set name="progressTargetCaseGeographicScopes" table="progress_target_case_geographic_scope" inverse="true"
+		<set name="progressTargetCaseGeographicScopes" table="report_synthesis_srf_progress_targets_cases_geographic_scope" inverse="true"
       order-by="id" lazy="true" fetch="select">
       <key>
         <column name="progress_target_case_id" not-null="true" />
       </key>
       <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProgressTargetCaseGeographicScope" />
     </set>
-    <set name="progressTargetCaseGeographicRegions" table="progress_target_case_geographic_regions"
+    <set name="progressTargetCaseGeographicRegions" table="report_synthesis_srf_progress_targets_cases_regions"
       inverse="true" lazy="true" fetch="select">
       <key>
         <column name="progress_target_case_id" />
       </key>
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.ProgressTargetCaseGeographicRegion" />
+    </set>
+    <set name="progressTargetCaseGeographicCountries" table="report_synthesis_srf_progress_targets_cases_countries"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="progress_target_case_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProgressTargetCaseGeographicCountry" />
     </set>
 	</class>
 </hibernate-mapping>
