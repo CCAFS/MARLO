@@ -10,7 +10,7 @@
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20200310",
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js"
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210226"
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210225"] /]
 
@@ -162,7 +162,7 @@
 [#macro innovationsTable name list=[] expanded=false]
 
 
-  <div class="form-group viewMoreSyntesisTable-block">
+  <div class="form-group tableNoPaginator-block">
     <table class="table table-bordered">
       <thead>
         <tr>
