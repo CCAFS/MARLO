@@ -191,7 +191,7 @@
   <div class="leftHead  sm">
     <!--<span class="index">12</span>-->
     <span class="index indexSloContribution">${(index+1)}</span>
-    <span class="elementId"></span>
+    [#-- <span class="elementId">Id: ${(element.id)!"New"}</span>--]
   </div>
 
   <div class="btn-removeEvidence removeElement sm" title="Remove Evidence"></div>
