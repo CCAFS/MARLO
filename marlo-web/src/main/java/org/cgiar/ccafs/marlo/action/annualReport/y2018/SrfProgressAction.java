@@ -832,6 +832,19 @@ public class SrfProgressAction extends BaseAction {
           && sloIndicator.getTargetCases() != null && !sloIndicator.getTargetCases().isEmpty()
           && (srfProgressDB.getSloTargetsCases().size() > sloIndicator.getTargetCases().size())) {
           // Delete method
+
+          List<Long> targetsCasesIDs = new ArrayList<>();
+          List<Long> targetsCasesIDsToDelete = new ArrayList<>();
+
+          // List of Target Cases IDs from front end
+          targetsCasesIDs = sloIndicator.getTargetCases().stream().map(tc -> tc.getId()).collect(Collectors.toList());
+
+          for (ReportSynthesisSrfProgressTargetCases targetCaseDB : srfProgressDB.getSloTargetsCases()) {
+            if (!targetsCasesIDs.contains(targetCaseDB.getId())) {
+              reportSynthesisSrfProgressTargetCasesManager
+                .deleteReportSynthesisSrfProgressTargetCases(targetCaseDB.getId());
+            }
+          }
         }
       }
     }
