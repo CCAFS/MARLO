@@ -301,7 +301,7 @@ function updateAllIndexesContribution() {
  //All sloTargetsList
  
   $('.sloTargetsList').find('.sloTarget').each(function(i,sloTarget) {
-    let index1=i;
+    // let index1=i;
     console.log('%c ('+(i+1)+') evidenceList: '+$(sloTarget).find('.evidenceList').find('.slo-contribution-section').length,'background: #222; color: #37ff73');
 
     // console.log('evidenceList: ',$(sloTarget).find('.evidenceList').find('.slo-contribution-section').length);
@@ -403,7 +403,7 @@ console.log('addEvidence');
   // $(this).parents(".simpleBox").find(".evidenceList").hide();;
 
   var $list =  $(this).parents(".simpleBox").find(".evidenceList");
-  var $item = $('.slo-contribution-template').clone(true)
+  var $item = $('.slo-contribution-template').clone(true);
   $($item).removeClass('slo-contribution-template');
   // $item.find('select').select2({
   // width: '100%'
@@ -423,8 +423,8 @@ function removeEvidence(){
   var $item =  $(this).parents('.slo-contribution-section');
     $item.hide(function() {
       $item.remove();
+      updateAllIndexesContribution();
     });
 
-    // updateAllIndexesContribution();
 } 
 
