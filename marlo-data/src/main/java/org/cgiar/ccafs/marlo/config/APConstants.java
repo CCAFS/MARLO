@@ -745,6 +745,8 @@ public final class APConstants {
 
   public static final int CLARISA_AVALIABLE_INFO_YEAR = 2018;
 
+  public static final String IGNORE_NEWER_YEARS = "ignoreNewer";
+
   public static String getFilterBy() {
     return FILTER_BY;
   }
