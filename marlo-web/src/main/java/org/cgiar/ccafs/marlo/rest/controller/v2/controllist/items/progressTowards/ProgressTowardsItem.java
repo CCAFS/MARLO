@@ -628,11 +628,7 @@ public class ProgressTowardsItem<T> {
       if (reportSynthesis != null) {
         reportSynthesisSrfProgress = reportSynthesis.getReportSynthesisSrfProgress();
       }
-      /*
-       * reportSynthesisSrfProgressTarget =
-       * reportSynthesisSrfProgressTargetCasesManager.getReportSynthesisSrfProgressTargetCasesById(id);
-       */
-      // final long idProgress = reportSynthesisSrfProgress.getId().longValue();
+
       reportSynthesisSrfProgressTarget = reportSynthesisSrfProgress.getReportSynthesisSrfProgressTargetsCases().stream()
         .filter(c -> c.getId().longValue() == id.longValue()).findFirst().orElse(null);
       reportSynthesisSrfProgressTarget.setReportSynthesisSrfProgress(reportSynthesisSrfProgress);
@@ -705,7 +701,9 @@ public class ProgressTowardsItem<T> {
     NewSrfProgressTowardsTargetDTO newSrfProgressTowardsTargetDTO, String CGIARentityAcronym, User user) {
     Long idProgressTowardsDB = null;
     Phase phase = null;
-    // CrpProgram crpProgram = null;
+    ReportSynthesis reportSynthesis = null;
+    ReportSynthesisSrfProgress reportSynthesisSrfProgress = null;
+    ReportSynthesisSrfProgressTargetCases reportSynthesisSrfProgressTarget = null;
     LiaisonInstitution liaisonInstitution = null;
     String strippedId = null;
 
@@ -763,42 +761,36 @@ public class ProgressTowardsItem<T> {
       }
     }
 
-    ReportSynthesisSrfProgressTargetCases reportSynthesisSrfProgressTarget =
-      reportSynthesisSrfProgressTargetCasesManager.getReportSynthesisSrfProgressTargetCasesById(idProgressTowards);
+    if (liaisonInstitution != null) {
+      reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
+      if (reportSynthesis == null) {
+        fieldErrors.add(new FieldErrorDTO("putProgressTowards", "ReportSynthesisEntity",
+          "A report entity linked to the Phase with id " + phase.getId() + " and Liaison Institution with id "
+            + liaisonInstitution.getId() + " could not be found"));
+      } else {
+        reportSynthesisSrfProgress = reportSynthesis.getReportSynthesisSrfProgress();
+        if (reportSynthesisSrfProgress == null) {
+          fieldErrors.add(new FieldErrorDTO("putProgressTowards", "ReportSynthesisEntity",
+            "There is no Report Synthesis SRF Progress linked to the Report Synthesis"));
+        }
+      }
+    }
+    reportSynthesisSrfProgressTarget = reportSynthesisSrfProgress.getReportSynthesisSrfProgressTargetsCases().stream()
+      .filter(c -> c.getId().longValue() == idProgressTowards.longValue()).findFirst().orElse(null);
+    reportSynthesisSrfProgressTarget.setReportSynthesisSrfProgress(reportSynthesisSrfProgress);
+
     if (reportSynthesisSrfProgressTarget == null || reportSynthesisSrfProgressTarget.isActive() == false) {
       fieldErrors.add(new FieldErrorDTO("putProgressTowards", "ReportSynthesisSrfProgressTargetEntity",
         idProgressTowards + " is an invalid Report Synthesis Srf Progress Target Code"));
     }
 
+
     if (fieldErrors.isEmpty()) {
+
       idProgressTowardsDB = reportSynthesisSrfProgressTarget.getId();
       SrfSloIndicatorTarget srfSloIndicatorTarget = null;
       SrfSloIndicator srfSloIndicator = null;
       Long id = null;
-      ReportSynthesis reportSynthesis = null;
-
-      if (reportSynthesisSrfProgressTarget.getReportSynthesisSrfProgress() == null) {
-        fieldErrors.add(new FieldErrorDTO("putProgressTowards", "ReportSynthesisSrfProgressEntity",
-          "There is no Report Synthesis SRF Progress assosiated to this entity!"));
-      } else {
-        if (reportSynthesisSrfProgressTarget.getReportSynthesisSrfProgress().getReportSynthesis() == null) {
-          fieldErrors.add(new FieldErrorDTO("putProgressTowards", "ReportSynthesisEntity",
-            "There is no Report Synthesis assosiated to this entity!"));
-        } else {
-          if (reportSynthesisSrfProgressTarget.getReportSynthesisSrfProgress().getReportSynthesis()
-            .getPhase() == null) {
-            fieldErrors.add(
-              new FieldErrorDTO("putProgressTowards", "PhaseEntity", "There is no Phase assosiated to this entity!"));
-          } else {
-            if (reportSynthesisSrfProgressTarget.getReportSynthesisSrfProgress().getReportSynthesis().getPhase()
-              .getId() != phase.getId()) {
-              fieldErrors.add(new FieldErrorDTO("putProgressTowards", "ReportSynthesisSrfProgressTargetEntity",
-                "The Report Synthesis Srf Progress Target with id " + idProgressTowards
-                  + " do not correspond to the phase entered"));
-            }
-          }
-        }
-      }
 
       reportSynthesisSrfProgressTarget
         .setAdditionalContribution(newSrfProgressTowardsTargetDTO.getAdditionalContribution());
@@ -837,23 +829,6 @@ public class ProgressTowardsItem<T> {
 
       reportSynthesisSrfProgressTarget.setSrfSloIndicatorTarget(srfSloIndicatorTarget);
 
-
-      if (liaisonInstitution != null) {
-        reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
-        if (reportSynthesis == null) {
-          fieldErrors.add(new FieldErrorDTO("putProgressTowards", "ReportSynthesisEntity",
-            "A report entity linked to the Phase with id " + phase.getId() + " and Liaison Institution with id "
-              + liaisonInstitution.getId() + " could not be found"));
-        } else {
-          ReportSynthesisSrfProgress reportSynthesisSrfProgress = reportSynthesis.getReportSynthesisSrfProgress();
-          if (reportSynthesisSrfProgress == null) {
-            fieldErrors.add(new FieldErrorDTO("putProgressTowards", "ReportSynthesisEntity",
-              "There is no Report Synthesis SRF Progress linked to the Report Synthesis"));
-          } else {
-            reportSynthesisSrfProgressTarget.setReportSynthesisSrfProgress(reportSynthesisSrfProgress);
-          }
-        }
-      }
 
       // geographicscope
       List<ProgressTargetCaseGeographicScope> scopeList = new ArrayList<ProgressTargetCaseGeographicScope>();
@@ -940,10 +915,10 @@ public class ProgressTowardsItem<T> {
         LocElement loc = locElementManager.getLocElementByNumericISOCode(countriesDTO.getCode());
         if (loc != null) {
           boolean found = false;
-          for (ProgressTargetCaseGeographicCountry region : reportSynthesisSrfProgressTarget
+          for (ProgressTargetCaseGeographicCountry countries : reportSynthesisSrfProgressTarget
             .getProgressTargetCaseGeographicCountries().stream().filter(c -> c.isActive())
             .collect(Collectors.toList())) {
-            if (region.getLocElement().getIsoNumeric().longValue() == countriesDTO.getCode()) {
+            if (countries.getLocElement().getIsoNumeric().longValue() == countriesDTO.getCode().longValue()) {
               found = true;
             }
           }
@@ -954,8 +929,8 @@ public class ProgressTowardsItem<T> {
             countryList.add(country);
           }
         } else {
-          fieldErrors.add(new FieldErrorDTO("putProgressTowards", "Regions",
-            countriesDTO.getCode().longValue() + " is not a valid Region UN49 code"));
+          fieldErrors.add(new FieldErrorDTO("putProgressTowards", "Countries",
+            countriesDTO.getCode().longValue() + " is not a valid ISO numeric code"));
 
         }
       }
