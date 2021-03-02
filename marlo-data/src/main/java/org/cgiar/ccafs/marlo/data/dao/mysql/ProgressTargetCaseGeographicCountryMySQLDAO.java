@@ -41,7 +41,7 @@ public class ProgressTargetCaseGeographicCountryMySQLDAO extends
   public void deleteProgressTargetCaseGeographicCountry(long progressTargetCaseGeographicCountryId) {
     ProgressTargetCaseGeographicCountry progressTargetCaseGeographicCountry =
       this.find(progressTargetCaseGeographicCountryId);
-    progressTargetCaseGeographicCountry.setActive(false);
+    // progressTargetCaseGeographicCountry.setActive(false);
     this.delete(progressTargetCaseGeographicCountry);
   }
 
