@@ -316,7 +316,7 @@ function updateAllIndexesContribution() {
      $(sloTarget).find('.evidenceList').find('.slo-contribution-section').each(function(i,evidence) {
       //  $(evidence).attr('id', "milestone-"+(i+1));
       //  $(evidence).find('.indexSloContribution').text(i + 1);
-   
+      $(evidence).find('.indexSloContribution').html(i+1);
       $(evidence).attr('id', "milestone-"+(i+1));
       $(evidence).setNameIndexes(2, i);
 
