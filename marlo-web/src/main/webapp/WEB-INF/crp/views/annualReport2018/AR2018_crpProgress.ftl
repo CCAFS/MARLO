@@ -99,7 +99,7 @@
             
           </div>
           [#--  review this commented code   --]
-          [@sloContribution element={} name="outcomes[0].milestones" cssClass="slo-contribution-section-hide slo-contribution-template"  indexSlo=-1 index=-1 isMacro=true/]
+          [@sloContribution element={} name="outcomes[0].milestones" cssClass="slo-contribution-section-hide slo-contribution-template"  indexSlo=-1 index=-1 /]
         
           [#-- Section Buttons & hidden inputs--]
           [#include "/WEB-INF/crp/views/annualReport2018/buttons-AR2018.ftl" /]
@@ -178,21 +178,17 @@
 [/#macro]
 
 
-[#macro sloContribution element cssClass="" name="" indexSlo=0 index=0 isMacro=false ]
+[#macro sloContribution element cssClass="" name="" indexSlo=0 index=0 ]
 [#local ccname = "sloTargets[${indexSlo}].targetCases[${index}]" /]
 
-[#if isMacro]
-  <input type="hidden" name="${ccname}.id" value="" />
-
-[#else]
-  <input type="hidden" name="${ccname}.id" value="${(element.id)!}" />
-[/#if]
-
 <div class="slo-contribution-section ${cssClass}" style="margin-top: 10px; padding-top: 20px;">
+
+  <input type="hidden" name="${ccname}.id" value="${(element.id)!}" />
+  
   <div class="leftHead  sm">
     <!--<span class="index">12</span>-->
     <span class="index indexSloContribution">${(index+1)}</span>
-    <span class="elementId"></span>
+    [#-- <span class="elementId">Id: ${(element.id)!"New"}</span>--]
   </div>
 
   <div class="btn-removeEvidence removeElement sm" title="Remove Evidence"></div>
@@ -200,11 +196,9 @@
 <hr>
   [#-- Brief summary of new evidence of CGIAR contribution to relevant targets for this CRP (with citation) --]
   <div class="form-group TA_summaryEvidence">
-  [#if isMacro]
-      [@customForm.textArea name="${ccname}.briefSummary" value="" i18nkey="${customLabel}.summaryEvidence" className="limitWords-150" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable /]
-  [#else]
+
     [@customForm.textArea name="${ccname}.briefSummary" value=element.briefSummary i18nkey="${customLabel}.summaryEvidence" className="limitWords-150" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable /]
-  [/#if]
+
     [#-- FP Synthesis table --]
   [#if PMU]
     [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableSloTargetBriefSummary" list=otherContributions columns=["briefSummary"] crpProgramField="reportSynthesisSrfProgress.reportSynthesis.liaisonInstitution.crpProgram" showTitle=false showHeader=false showEmptyRows=false /]
@@ -212,11 +206,9 @@
   </div>
   [#-- Expected additional contribution before end of 2022 (if not already fully covered). --]
   <div class="form-group TA_additionalContribution">
-  [#if isMacro]
-    [@customForm.textArea name="${ccname}.additionalContribution" value="" i18nkey="${customLabel}.additionalContribution" className="limitWords-100" help="${customLabel}.additionalContribution.help" helpIcon=false required=false editable=editable  /]
-  [#else]
+
     [@customForm.textArea name="${ccname}.additionalContribution" value=element.additionalContribution i18nkey="${customLabel}.additionalContribution" className="limitWords-100" help="${customLabel}.additionalContribution.help" helpIcon=false required=false editable=editable /]
-  [/#if]
+
     [#-- FP Synthesis table --]
   [#if PMU]
     [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableSloTargetBriefSummary" list=otherContributions columns=["additionalContribution"] crpProgramField="reportSynthesisSrfProgress.reportSynthesis.liaisonInstitution.crpProgram" showTitle=false showHeader=false showEmptyRows=false /]
