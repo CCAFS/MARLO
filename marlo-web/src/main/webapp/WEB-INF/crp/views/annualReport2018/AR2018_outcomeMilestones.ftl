@@ -412,7 +412,7 @@
           <div class="col-sm-6 colTitleCenter boldCell">[@s.text name="${customLabel}.milestoneScoreJustification" /][@customForm.req required=editable  /]</div>
         </div>
           
-          [#assign markersPOWB=["${milestoneNextPOWB.genderFocusLevel.powbName}","${milestoneNextPOWB.youthFocusLevel.powbName}","${milestoneNextPOWB.capdevFocusLevel.powbName}","${milestoneNextPOWB.climateFocusLevel.powbName}"] /]
+          [#assign markersPOWB=["${(milestoneNextPOWB.genderFocusLevel.powbName)!'Not availbale'}","${(milestoneNextPOWB.youthFocusLevel.powbName)!'Not availbale'}","${(milestoneNextPOWB.capdevFocusLevel.powbName)!'Not availbale'}","${(milestoneNextPOWB.climateFocusLevel.powbName)!'Not availbale'}"] /]
           
           [#list cgiarCrossCuttingMarkers as marker]
             [#local ccName= "${customName}.markers[${marker_index}]"]
@@ -462,7 +462,7 @@
       [/#list]
       [#if !editable && (milestoneStatus == -1)][@s.text name="form.values.fieldEmpty"/][/#if]
       <div class="rectGray" style="padding-left: 10px;">
-        <p class="helpTextPOWB">In POWB ${(actualPhase.year+1)!} you selected the status: <span style="color: #1ca6ce">${(milestoneNextPOWB.milestonesStatus.name)!}</span> </p>
+        <p class="helpTextPOWB">In POWB ${(actualPhase.year+1)!} you selected the status: <span style="color: #1ca6ce">${(milestoneNextPOWB.milestonesStatus.name)!'Not availbale'}</span> </p>
       </div>
     </div>
     [#-- New year if extended --]

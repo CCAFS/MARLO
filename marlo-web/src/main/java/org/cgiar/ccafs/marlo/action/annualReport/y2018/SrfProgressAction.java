@@ -644,63 +644,6 @@ public class SrfProgressAction extends BaseAction {
         // Srf Targets cases List
         if (reportSynthesis.getReportSynthesisSrfProgress() != null
           && reportSynthesis.getReportSynthesisSrfProgress().getId() != null) {
-
-          /*
-           * Check the target cases received from the manager and get the object(reportSynthesisSrfProgressTargetCases)
-           * search by ID
-           * Then add the object to the list and finally assigns the list to ReportSynthesisSrfProgress
-           */
-          if (reportSynthesisSrfProgressTargetCasesManager.getReportSynthesisSrfProgressTargetCaseBySrfProgress(
-            reportSynthesis.getReportSynthesisSrfProgress().getId()) != null) {
-
-            List<ReportSynthesisSrfProgressTargetCases> targetCasesDB;
-            targetCasesDB =
-              reportSynthesisSrfProgressTargetCasesManager.getReportSynthesisSrfProgressTargetCaseBySrfProgress(
-                reportSynthesis.getReportSynthesisSrfProgress().getId());
-            List<ReportSynthesisSrfProgressTargetCases> targetCasesSave = new ArrayList<>();
-
-            for (ReportSynthesisSrfProgressTargetCases targetCase : targetCasesDB) {
-              if (targetCase.getId() != null) {
-                ReportSynthesisSrfProgressTargetCases targetCaseDB = reportSynthesisSrfProgressTargetCasesManager
-                  .getReportSynthesisSrfProgressTargetCasesById(targetCase.getId());
-
-                if (targetCase.getSrfSloIndicatorTarget() != null) {
-                  List<ReportSynthesisSrfProgressTargetCases> targetCasesTemp =
-                    reportSynthesisSrfProgressTargetCasesManager.getReportSynthesisSrfProgressId(synthesisID,
-                      targetCase.getSrfSloIndicatorTarget().getId());
-
-                  if (targetCasesTemp != null) {
-                    targetCase.getSrfSloIndicatorTarget().setTargetCases(targetCasesTemp);
-                  }
-                }
-
-                // Target case geographic scope
-                List<ProgressTargetCaseGeographicRegion> targetCaseGeographicRegions;
-                targetCaseGeographicRegions =
-                  progressTargetCaseGeographicRegionManager.findGeographicRegionByTargetCase(targetCase.getId());
-                List<ProgressTargetCaseGeographicScope> targetCaseGeographicScope;
-                targetCaseGeographicScope =
-                  progressTargetCaseGeographicScopeManager.findGeographicScopeByTargetCase(targetCase.getId());
-
-                if (targetCaseDB != null) {
-                  if (targetCaseGeographicScope != null) {
-                    targetCaseDB.setGeographicScopes(targetCaseGeographicScope);
-                  }
-                  if (targetCaseGeographicRegions != null) {
-                    targetCaseDB.setGeographicRegions(targetCaseGeographicRegions);
-                  }
-                }
-
-                if (targetCaseDB != null) {
-                  targetCasesSave.add(targetCaseDB);
-                }
-              }
-            }
-
-            if (targetCasesSave != null) {
-              reportSynthesis.getReportSynthesisSrfProgress().setSloTargetsCases(targetCasesSave);
-            }
-          }
         }
 
 
@@ -708,7 +651,7 @@ public class SrfProgressAction extends BaseAction {
     }
 
 
-    // Fill sloTargetsList
+    // Fill sloTargets List
     List<SrfSloIndicatorTarget> sloTargetsTemp = new ArrayList<>();
     sloTargets = new ArrayList<>(srfSloIndicatorTargetManager.findAll().stream()
       .filter(sr -> sr.isActive() && sr.getYear() == 2022).collect(Collectors.toList()));
@@ -877,6 +820,29 @@ public class SrfProgressAction extends BaseAction {
                 srfTargetPrev.setActive(true);
                 reportSynthesisSrfProgressTargetCasesManager.saveReportSynthesisSrfProgressTargetCases(srfTargetPrev);
               }
+            }
+          }
+        }
+
+        // Delete target cases
+
+        // If the list of contributions (target cases) from BD is greater than front end contributions list (target
+        // cases)
+        if (srfProgressDB.getSloTargetsCases() != null && !srfProgressDB.getSloTargetsCases().isEmpty()
+          && sloIndicator.getTargetCases() != null && !sloIndicator.getTargetCases().isEmpty()
+          && (srfProgressDB.getSloTargetsCases().size() > sloIndicator.getTargetCases().size())) {
+          // Delete method
+
+          List<Long> targetsCasesIDs = new ArrayList<>();
+          List<Long> targetsCasesIDsToDelete = new ArrayList<>();
+
+          // List of Target Cases IDs from front end
+          targetsCasesIDs = sloIndicator.getTargetCases().stream().map(tc -> tc.getId()).collect(Collectors.toList());
+
+          for (ReportSynthesisSrfProgressTargetCases targetCaseDB : srfProgressDB.getSloTargetsCases()) {
+            if (!targetsCasesIDs.contains(targetCaseDB.getId())) {
+              reportSynthesisSrfProgressTargetCasesManager
+                .deleteReportSynthesisSrfProgressTargetCases(targetCaseDB.getId());
             }
           }
         }
