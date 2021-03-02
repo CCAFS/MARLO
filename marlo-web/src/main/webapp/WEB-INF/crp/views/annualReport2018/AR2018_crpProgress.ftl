@@ -181,14 +181,13 @@
 [#macro sloContribution element cssClass="" name="" indexSlo=0 index=0 isMacro=false ]
 [#local ccname = "sloTargets[${indexSlo}].targetCases[${index}]" /]
 
-[#if isMacro]
-  <input type="hidden" name="${ccname}.id" value="" />
-
-[#else]
-  <input type="hidden" name="${ccname}.id" value="${(element.id)!}" />
-[/#if]
-
 <div class="slo-contribution-section ${cssClass}" style="margin-top: 10px; padding-top: 20px;">
+  [#if isMacro]
+    <input type="hidden" name="${ccname}.id" value="" />
+
+  [#else]
+    <input type="hidden" name="${ccname}.id" value="${(element.id)!}" />
+  [/#if]
   <div class="leftHead  sm">
     <!--<span class="index">12</span>-->
     <span class="index indexSloContribution">${(index+1)}</span>
