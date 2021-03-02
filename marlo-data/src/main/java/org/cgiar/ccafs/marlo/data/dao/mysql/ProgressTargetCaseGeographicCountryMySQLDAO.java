@@ -42,7 +42,7 @@ public class ProgressTargetCaseGeographicCountryMySQLDAO extends
     ProgressTargetCaseGeographicCountry progressTargetCaseGeographicCountry =
       this.find(progressTargetCaseGeographicCountryId);
     progressTargetCaseGeographicCountry.setActive(false);
-    this.update(progressTargetCaseGeographicCountry);
+    this.delete(progressTargetCaseGeographicCountry);
   }
 
   @Override
