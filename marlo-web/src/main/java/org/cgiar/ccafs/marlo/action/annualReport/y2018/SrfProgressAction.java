@@ -809,7 +809,8 @@ public class SrfProgressAction extends BaseAction {
               srfTargetSave.setAdditionalContribution(srfTarget.getAdditionalContribution());
               srfTargetSave.setActive(true);
 
-              reportSynthesisSrfProgressTargetCasesManager.saveReportSynthesisSrfProgressTargetCases(srfTargetSave);
+              srfTarget =
+                reportSynthesisSrfProgressTargetCasesManager.saveReportSynthesisSrfProgressTargetCases(srfTargetSave);
             } else {
               targetsCasesIDs.add(srfTarget.getId());
               ReportSynthesisSrfProgressTargetCases srfTargetPrev = reportSynthesisSrfProgressTargetCasesManager
@@ -819,6 +820,29 @@ public class SrfProgressAction extends BaseAction {
                 srfTargetPrev.setAdditionalContribution(srfTarget.getAdditionalContribution());
                 srfTargetPrev.setActive(true);
                 reportSynthesisSrfProgressTargetCasesManager.saveReportSynthesisSrfProgressTargetCases(srfTargetPrev);
+              }
+            }
+
+            if (srfTarget.getGeographicScopes() != null) {
+              for (ProgressTargetCaseGeographicScope geographicScope : srfTarget.getGeographicScopes()) {
+                if (geographicScope.getId() == null) {
+                  // Save Geographic scope
+                  ProgressTargetCaseGeographicScope geographicScopeSave = new ProgressTargetCaseGeographicScope();
+                  geographicScopeSave.setTargetCase(srfTarget);
+                  geographicScopeSave.setPhase(this.getActualPhase());
+                  geographicScopeSave.setRepIndGeographicScope(geographicScope.getRepIndGeographicScope());
+                  progressTargetCaseGeographicScopeManager.saveProgressTargetCaseGeographicScope(geographicScopeSave);
+                } else {
+                  // Update Geographic scope
+                  ProgressTargetCaseGeographicScope geographicScopePrev = progressTargetCaseGeographicScopeManager
+                    .getProgressTargetCaseGeographicScopeById(geographicScope.getId());
+                  if (geographicScopePrev != null) {
+                    geographicScopePrev.setTargetCase(srfTarget);
+                    geographicScopePrev.setPhase(this.getActualPhase());
+                    geographicScopePrev.setRepIndGeographicScope(geographicScope.getRepIndGeographicScope());
+                    progressTargetCaseGeographicScopeManager.saveProgressTargetCaseGeographicScope(geographicScopePrev);
+                  }
+                }
               }
             }
           }
@@ -848,8 +872,8 @@ public class SrfProgressAction extends BaseAction {
 
       if (targetsCasesIDsDB != null && targetsCasesIDs != null && (targetsCasesIDsDB.size() > targetsCasesIDs.size())) {
 
-        for (Long targetCaseIDDB : targetsCasesIDs) {
-          if (!targetsCasesIDsDB.contains(targetCaseIDDB)) {
+        for (Long targetCaseIDDB : targetsCasesIDsDB) {
+          if (!targetsCasesIDs.contains(targetCaseIDDB)) {
             reportSynthesisSrfProgressTargetCasesManager.deleteReportSynthesisSrfProgressTargetCases(targetCaseIDDB);
           }
         }
