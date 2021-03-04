@@ -347,7 +347,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
       altmetricInfo.setAltmetricId(incomingAltmetricInfo.getAltmetricId());
       altmetricInfo.setAltmetricJid(incomingAltmetricInfo.getAltmetricJid());
       altmetricInfo.setAuthors(incomingAltmetricInfo.getAuthors() != null
-        ? incomingAltmetricInfo.getAuthors().stream().filter(StringUtils::isNotBlank).collect(Collectors.joining(", "))
+        ? incomingAltmetricInfo.getAuthors().stream().filter(StringUtils::isNotBlank).collect(Collectors.joining("; "))
         : null);
       altmetricInfo.setCitedByBlogs(incomingAltmetricInfo.getCitedByBlogs());
       altmetricInfo.setCitedByDelicious(incomingAltmetricInfo.getCitedByDelicious());
