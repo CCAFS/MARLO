@@ -50,7 +50,8 @@ function loadMilestonesByYear(i,e) {
       data: {
           year: currentCycleYear,
           outcomeID: outcomeID,
-          phaseID: phaseID
+          phaseID: phaseID,
+          ignoreNewer: true,
       },
       success: function(data) {
         for(var i = 0, len = data.crpMilestones.length; i < len; i++) {
