@@ -463,18 +463,20 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
     Set<CrpMilestone> crpMilestones = new HashSet<>();
-    if (projectOutcome.getMilestones() != null)
-
-    {
+    if (projectOutcome.getMilestones() != null) {
       for (ProjectMilestone crpMilestone : projectOutcome.getMilestones()) {
         CrpMilestone milestone = crpMilestoneManager.getCrpMilestoneById(crpMilestone.getCrpMilestone().getId());
-
+        /*
+         * if ((milestone.getYear() != null && milestone.getYear().intValue() == this.getCurrentCycleYear())
+         * || (milestone.getExtendedYear() != null
+         * && milestone.getExtendedYear().intValue() == this.getCurrentCycleYear())) {
+         */
         milestone.setIndex(crpMilestone.getId());
         crpMilestones.add(milestone);
-
+        // }
       }
-
     }
+
     milestonesProject = new ArrayList<>();
     milestonesProject.addAll(crpMilestones);
     milestonesProject.sort(Comparator.comparing(CrpMilestone::getYear));
