@@ -823,6 +823,7 @@ public class SrfProgressAction extends BaseAction {
               }
             }
 
+            // Geographic scope
             if (srfTarget.getGeographicScopes() != null) {
               for (ProgressTargetCaseGeographicScope geographicScope : srfTarget.getGeographicScopes()) {
                 if (geographicScope.getId() == null) {
@@ -841,6 +842,55 @@ public class SrfProgressAction extends BaseAction {
                     geographicScopePrev.setPhase(this.getActualPhase());
                     geographicScopePrev.setRepIndGeographicScope(geographicScope.getRepIndGeographicScope());
                     progressTargetCaseGeographicScopeManager.saveProgressTargetCaseGeographicScope(geographicScopePrev);
+                  }
+                }
+              }
+            }
+
+            // Geographic Regions
+            if (srfTarget.getGeographicRegions() != null) {
+              for (ProgressTargetCaseGeographicRegion geographicRegion : srfTarget.getGeographicRegions()) {
+                if (geographicRegion.getId() == null) {
+                  // Save Geographic scope
+                  ProgressTargetCaseGeographicRegion geographicRegionSave = new ProgressTargetCaseGeographicRegion();
+                  geographicRegionSave.setTargetCase(srfTarget);
+                  geographicRegionSave.setPhase(this.getActualPhase());
+                  geographicRegionSave.setLocElement(geographicRegion.getLocElement());
+                  progressTargetCaseGeographicRegionManager
+                    .saveProgressTargetCaseGeographicRegion(geographicRegionSave);
+                } else {
+                  // Update Geographic scope
+                  ProgressTargetCaseGeographicRegion geographicRegionPrev = progressTargetCaseGeographicRegionManager
+                    .getProgressTargetCaseGeographicRegionById(geographicRegion.getId());
+                  if (geographicRegionPrev != null) {
+                    geographicRegionPrev.setTargetCase(srfTarget);
+                    geographicRegionPrev.setPhase(this.getActualPhase());
+                    geographicRegionPrev.setLocElement(geographicRegion.getLocElement());
+                    progressTargetCaseGeographicRegionManager
+                      .saveProgressTargetCaseGeographicRegion(geographicRegionPrev);
+                  }
+                }
+              }
+            }
+            // Geographic Countries
+            if (srfTarget.getGeographicCountries() != null) {
+              for (ProgressTargetCaseGeographicCountry geographicCountry : srfTarget.getGeographicCountries()) {
+                if (geographicCountry.getId() == null) {
+                  // Save Geographic scope
+                  ProgressTargetCaseGeographicCountry geographicCountrySave = new ProgressTargetCaseGeographicCountry();
+                  geographicCountrySave.setTargetCase(srfTarget);
+                  geographicCountrySave.setLocElement(geographicCountry.getLocElement());
+                  progressTargetCaseGeographicCountryManager
+                    .saveProgressTargetCaseGeographicCountry(geographicCountrySave);
+                } else {
+                  // Update Geographic scope
+                  ProgressTargetCaseGeographicCountry geographicCountryPrev = progressTargetCaseGeographicCountryManager
+                    .getProgressTargetCaseGeographicCountryById(geographicCountry.getId());
+                  if (geographicCountryPrev != null) {
+                    geographicCountryPrev.setTargetCase(srfTarget);
+                    geographicCountryPrev.setLocElement(geographicCountry.getLocElement());
+                    progressTargetCaseGeographicCountryManager
+                      .saveProgressTargetCaseGeographicCountry(geographicCountryPrev);
                   }
                 }
               }
