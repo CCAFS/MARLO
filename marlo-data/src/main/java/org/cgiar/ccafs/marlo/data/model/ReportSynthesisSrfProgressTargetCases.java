@@ -78,6 +78,7 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
     return geographicScopes;
   }
 
+
   public Boolean getIsContributing() {
     return isContributing;
   }
@@ -90,6 +91,7 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
     return sb.toString();
   }
 
+
   public Set<ProgressTargetCaseGeographicCountry> getProgressTargetCaseGeographicCountries() {
     return progressTargetCaseGeographicCountries;
   }
@@ -101,6 +103,7 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
   public Set<ProgressTargetCaseGeographicScope> getProgressTargetCaseGeographicScopes() {
     return progressTargetCaseGeographicScopes;
   }
+
 
   public ReportSynthesisSrfProgress getReportSynthesisSrfProgress() {
     return reportSynthesisSrfProgress;
@@ -129,6 +132,7 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
   public void setGeographicCountries(List<ProgressTargetCaseGeographicCountry> geographicCountries) {
     this.geographicCountries = geographicCountries;
   }
+
 
   public void setGeographicRegions(List<ProgressTargetCaseGeographicRegion> geographicRegions) {
     this.geographicRegions = geographicRegions;

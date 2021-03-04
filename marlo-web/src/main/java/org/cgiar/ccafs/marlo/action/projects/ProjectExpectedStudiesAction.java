@@ -567,7 +567,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         if (this.expectedStudy.getProjectExpectedStudyInfo().getStatus() != null
           && this.expectedStudy.getProjectExpectedStudyInfo().getStatus().getId() != null
           && this.expectedStudy.getProjectExpectedStudyInfo().getStatus().getId() == 4
-          && this.expectedStudy.getProjectExpectedStudyInfo().getYear() != 0) {
+          && this.expectedStudy.getProjectExpectedStudyInfo().getYear() > 0) {
           newExpectedYear = this.expectedStudy.getProjectExpectedStudyInfo().getYear();
         }
 
@@ -1202,6 +1202,14 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             this.milestones.add(milestone);
           }
         }
+      }
+
+      // Load new Expected Year
+      if (this.expectedStudy.getProjectExpectedStudyInfo().getStatus() != null
+        && this.expectedStudy.getProjectExpectedStudyInfo().getStatus().getId() != null
+        && this.expectedStudy.getProjectExpectedStudyInfo().getStatus().getId() == 4
+        && this.expectedStudy.getProjectExpectedStudyInfo().getYear() > 0) {
+        newExpectedYear = this.expectedStudy.getProjectExpectedStudyInfo().getYear();
       }
 
       if (this.project != null) {
