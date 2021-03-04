@@ -823,6 +823,9 @@ public class SrfProgressAction extends BaseAction {
                 reportSynthesisSrfProgressTargetCasesManager.saveReportSynthesisSrfProgressTargetCases(srfTargetPrev);
               }
             }
+
+            // Geographic scope
+
             // Search and deleted form Information
             if (srfTarget.getGeographicScopes() != null && !srfTarget.getGeographicScopes().isEmpty()) {
 
@@ -838,7 +841,6 @@ public class SrfProgressAction extends BaseAction {
               }
             }
 
-            // Geographic scope
             if (srfTarget.getGeographicScopes() != null) {
               for (ProgressTargetCaseGeographicScope geographicScope : srfTarget.getGeographicScopes()) {
                 if (geographicScope.getId() == null) {
@@ -863,6 +865,23 @@ public class SrfProgressAction extends BaseAction {
             }
 
             // Geographic Regions
+
+            // Search and deleted form Information
+            if (srfTarget.getGeographicRegions() != null && !srfTarget.getGeographicRegions().isEmpty()) {
+
+              List<ProgressTargetCaseGeographicRegion> scopesPrev = new ArrayList<>(
+                progressTargetCaseGeographicRegionManager.findGeographicRegionByTargetCase(srfTarget.getId()));
+
+              if (scopesPrev != null) {
+                for (ProgressTargetCaseGeographicRegion scopePrev : scopesPrev) {
+                  if (!srfTarget.getGeographicRegions().contains(scopePrev)) {
+                    progressTargetCaseGeographicRegionManager
+                      .deleteProgressTargetCaseGeographicRegion(scopePrev.getId());
+                  }
+                }
+              }
+            }
+
             if (srfTarget.getGeographicRegions() != null) {
               for (ProgressTargetCaseGeographicRegion geographicRegion : srfTarget.getGeographicRegions()) {
                 if (geographicRegion.getId() == null) {
@@ -887,7 +906,25 @@ public class SrfProgressAction extends BaseAction {
                 }
               }
             }
+
             // Geographic Countries
+
+            // Search and deleted form Information
+            if (srfTarget.getGeographicCountries() != null && !srfTarget.getGeographicCountries().isEmpty()) {
+
+              List<ProgressTargetCaseGeographicCountry> scopesPrev = new ArrayList<>(
+                progressTargetCaseGeographicCountryManager.findGeographicCountryByTargetCase(srfTarget.getId()));
+
+              if (scopesPrev != null) {
+                for (ProgressTargetCaseGeographicCountry scopePrev : scopesPrev) {
+                  if (!srfTarget.getGeographicCountries().contains(scopePrev)) {
+                    progressTargetCaseGeographicCountryManager
+                      .deleteProgressTargetCaseGeographicCountry(scopePrev.getId());
+                  }
+                }
+              }
+            }
+
             if (srfTarget.getGeographicCountries() != null) {
               for (ProgressTargetCaseGeographicCountry geographicCountry : srfTarget.getGeographicCountries()) {
                 if (geographicCountry.getId() == null) {
