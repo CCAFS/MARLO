@@ -702,6 +702,7 @@ public class SrfProgressAction extends BaseAction {
       }
     }
 
+    // Fill Slo Targets, contributions and Geographic scope information
     this.fillSloTargetsCasesDB();
 
     // Get the list of liaison institutions Flagships and PMU.
@@ -820,6 +821,20 @@ public class SrfProgressAction extends BaseAction {
                 srfTargetPrev.setAdditionalContribution(srfTarget.getAdditionalContribution());
                 srfTargetPrev.setActive(true);
                 reportSynthesisSrfProgressTargetCasesManager.saveReportSynthesisSrfProgressTargetCases(srfTargetPrev);
+              }
+            }
+            // Search and deleted form Information
+            if (srfTarget.getGeographicScopes() != null && !srfTarget.getGeographicScopes().isEmpty()) {
+
+              List<ProgressTargetCaseGeographicScope> scopesPrev = new ArrayList<>(
+                progressTargetCaseGeographicScopeManager.findGeographicScopeByTargetCase(srfTarget.getId()));
+
+              if (scopesPrev != null) {
+                for (ProgressTargetCaseGeographicScope scopePrev : scopesPrev) {
+                  if (!srfTarget.getGeographicScopes().contains(scopePrev)) {
+                    progressTargetCaseGeographicScopeManager.deleteProgressTargetCaseGeographicScope(scopePrev.getId());
+                  }
+                }
               }
             }
 
