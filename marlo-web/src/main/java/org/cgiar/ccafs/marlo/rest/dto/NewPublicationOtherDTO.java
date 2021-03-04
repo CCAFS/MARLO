@@ -13,48 +13,38 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
+/**************
+ * @author Diego Perez - CIAT/CCAFS
+ **************/
+
 package org.cgiar.ccafs.marlo.rest.dto;
 
 import java.util.List;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class NewPublicationDTO {
+public class NewPublicationOtherDTO {
 
-  @ApiModelProperty(notes = "Deliverable Author List")
-  private List<DeliverableUserDTO> authorlist;
-  @ApiModelProperty(notes = "Deliverable title")
+  @ApiModelProperty(notes = "Deliverable title", position = 1)
   private String title;
-  @ApiModelProperty(notes = "Jorunal/Publish Name")
-  private String journal;
-  @ApiModelProperty(notes = "Deliverable Volume")
-  private String volume;
-  @ApiModelProperty(notes = "Deliverable issue")
-  private String issue;
-  @ApiModelProperty(notes = "Number of pages")
-  private String npages;
-  @ApiModelProperty(notes = "Is open access")
-  private Boolean isOpenAccess;
-  @ApiModelProperty(notes = "Is this journal article an ISI publication?")
-  private Boolean isISIJournal;
-  @ApiModelProperty(notes = "Digital object identifier")
-  private String doi;
-  @ApiModelProperty(notes = "Handle URL")
-  private String handle;
-  @ApiModelProperty(notes = "Article URL")
-  private String articleURL;
-
-
-  @ApiModelProperty(notes = "Phase")
-  private PhaseDTO phase;
-
-
-  @ApiModelProperty(notes = "Year Of publication")
-  private Integer year;
-
-
-  @ApiModelProperty(notes = "Publication Authors Field")
+  @ApiModelProperty(notes = "Deliverable type", position = 2)
+  private Long type;
+  @ApiModelProperty(notes = "Deliverable Author List", position = 3)
+  private List<DeliverableUserDTO> authorlist;
+  @ApiModelProperty(notes = "Publication Authors Field", position = 3)
   private String authors;
+  @ApiModelProperty(notes = "Year Of publication", position = 4)
+  private Integer year;
+  @ApiModelProperty(notes = "Is open access", position = 5)
+  private Boolean isOpenAccess;
+  @ApiModelProperty(notes = "Digital object identifier", position = 6)
+  private String doi;
+  @ApiModelProperty(notes = "Handle URL", position = 7)
+  private String handle;
+  @ApiModelProperty(notes = "Article URL", position = 8)
+  private String articleURL;
+  @ApiModelProperty(notes = "Phase", position = 9)
+  private PhaseDTO phase;
 
 
   public String getArticleURL() {
@@ -65,12 +55,6 @@ public class NewPublicationDTO {
   public List<DeliverableUserDTO> getAuthorlist() {
     return authorlist;
   }
-
-
-  public List<DeliverableUserDTO> getAuthorList() {
-    return authorlist;
-  }
-
 
   public String getAuthors() {
     return authors;
@@ -84,24 +68,8 @@ public class NewPublicationDTO {
     return handle;
   }
 
-  public Boolean getIsISIJournal() {
-    return isISIJournal;
-  }
-
   public Boolean getIsOpenAccess() {
     return isOpenAccess;
-  }
-
-  public String getIssue() {
-    return issue;
-  }
-
-  public String getJournal() {
-    return journal;
-  }
-
-  public String getNpages() {
-    return npages;
   }
 
   public PhaseDTO getPhase() {
@@ -112,18 +80,12 @@ public class NewPublicationDTO {
     return title;
   }
 
-
-  public String getVolume() {
-    return volume;
+  public Long getType() {
+    return type;
   }
 
   public Integer getYear() {
     return year;
-  }
-
-
-  public Boolean isISIJournal() {
-    return isISIJournal;
   }
 
   public void setArticleURL(String articleURL) {
@@ -131,10 +93,6 @@ public class NewPublicationDTO {
   }
 
   public void setAuthorlist(List<DeliverableUserDTO> authorlist) {
-    this.authorlist = authorlist;
-  }
-
-  public void setAuthorList(List<DeliverableUserDTO> authorlist) {
     this.authorlist = authorlist;
   }
 
@@ -150,52 +108,24 @@ public class NewPublicationDTO {
     this.handle = handle;
   }
 
-  public void setISIJournal(Boolean isISIJournal) {
-    this.isISIJournal = isISIJournal;
-  }
-
-  public void setIsISIJournal(Boolean isISIJournal) {
-    this.isISIJournal = isISIJournal;
-  }
-
-
   public void setIsOpenAccess(Boolean isOpenAccess) {
     this.isOpenAccess = isOpenAccess;
   }
-
-  public void setIssue(String issue) {
-    this.issue = issue;
-  }
-
-
-  public void setJournal(String journal) {
-    this.journal = journal;
-  }
-
-
-  public void setNpages(String npages) {
-    this.npages = npages;
-  }
-
 
   public void setPhase(PhaseDTO phase) {
     this.phase = phase;
   }
 
-
   public void setTitle(String title) {
     this.title = title;
   }
 
-
-  public void setVolume(String volume) {
-    this.volume = volume;
+  public void setType(Long type) {
+    this.type = type;
   }
-
 
   public void setYear(Integer year) {
     this.year = year;
   }
-
 
 }

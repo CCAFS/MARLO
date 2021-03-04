@@ -13,27 +13,47 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.mappers;
+/**************
+ * @author Diego Perez - CIAT/CCAFS
+ **************/
 
-import org.cgiar.ccafs.marlo.data.model.StudyType;
-import org.cgiar.ccafs.marlo.rest.dto.StudyTypeDTO;
+package org.cgiar.ccafs.marlo.rest.services.deliverables.model;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
+import java.io.Serializable;
 
-/**
- * @author Hermes Jiménez - CIAT/CCAFS
- */
+public class PublicationAlmetricsImages implements Serializable {
 
-@Mapper(componentModel = "jsr330")
-public interface StudyTypeMapper {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -2270220906196525457L;
 
-  @Mappings({@Mapping(source = "id", target = "code"), @Mapping(source = "keyIdentifier", target = "key_identifier"),
-    @Mapping(source = "forNarrative", target = "narrative")})
-  public abstract StudyTypeDTO studyTipeToStudyTypeDTO(StudyType studyTipe);
 
-  @Mappings({@Mapping(source = "code", target = "id")})
-  public abstract StudyType studyTypeDTOToStudyType(StudyTypeDTO studyTypeDTO);
+  private String small;
+  private String medium;
+  private String large;
 
+  public String getLarge() {
+    return large;
+  }
+
+  public String getMedium() {
+    return medium;
+  }
+
+  public String getSmall() {
+    return small;
+  }
+
+  public void setLarge(String large) {
+    this.large = large;
+  }
+
+  public void setMedium(String medium) {
+    this.medium = medium;
+  }
+
+  public void setSmall(String small) {
+    this.small = small;
+  }
 }

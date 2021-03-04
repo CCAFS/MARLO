@@ -67,6 +67,7 @@ public abstract interface PublicationsMapper {
       publication.setTitle(deliverableMetadataElement != null ? deliverableMetadataElement.getElementValue() : null);
       publication.setVolume(deliverablePublicationMetadata != null ? deliverablePublicationMetadata.getVolume() : null);
       publication.setYear(deliverableInfo != null ? deliverableInfo.getYear() : -1);
+      publication.setArticleURL(deliverableDissemination != null ? deliverableDissemination.getArticleUrl() : null);
     }
 
     return publication;
