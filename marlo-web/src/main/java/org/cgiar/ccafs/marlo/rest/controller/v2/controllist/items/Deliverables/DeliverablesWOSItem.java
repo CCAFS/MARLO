@@ -79,7 +79,7 @@ public class DeliverablesWOSItem<T> {
     if (url != null) {
       try {
         JsonElement json = this.getServiceWOS("http://clarisa.wos.api.mel.cgiar.org/?link=" + url);
-        System.out.println(json.toString());
+        // System.out.println(json.toString());
 
         PublicationWOS publication = new Gson().fromJson(json, PublicationWOS.class);
         publicationDTO = this.publicationWOSMapper.publicationWOSToPublicationWOSDTO(publication);
