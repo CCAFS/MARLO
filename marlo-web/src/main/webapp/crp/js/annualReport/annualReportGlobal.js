@@ -151,6 +151,17 @@ $(document).ready(function() {
   $('.checkboxDiTeArClick').on('click',setCheckboxValueTohide);
   $('.btn-addEvidence').on('click',addEvidence);
   $('.btn-removeEvidence').on('click',removeEvidence);
+
+  $('.TA_summaryEvidence .trumbowyg-editor').bind('DOMSubtreeModified', function(){
+    // $(this).parents('.slo-contribution-section').find('.TA_summaryEvidence .briefSummaryTAHidden').css("background-color", "yellow");
+    $(this).parents('.slo-contribution-section').find('.TA_summaryEvidence .briefSummaryTAHidden').html($(this).html());
+  });
+
+
+  $('.TA_additionalContribution .trumbowyg-editor').bind('DOMSubtreeModified', function(){
+    $(this).parents('.slo-contribution-section').find('.TA_additionalContribution .additionalContributionTAHidden').html($(this).html());
+  });
+
   setStatusByBack();
   // updateAllIndexesContribution();
 });
