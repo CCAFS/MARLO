@@ -19,20 +19,15 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
-import org.cgiar.ccafs.marlo.rest.dto.PublicationsWOSDTO;
-import org.cgiar.ccafs.marlo.rest.services.deliverables.model.PublicationWOS;
+import org.cgiar.ccafs.marlo.rest.dto.PublicationGardianWOSDTO;
+import org.cgiar.ccafs.marlo.rest.services.deliverables.model.PublicationGardianWOS;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
 
-@Mapper(componentModel = "jsr330", uses = {PublicationAuthorWOSMapper.class, PublicationInstitutionWOSMapper.class,
-  PublicationAltmetricsWOSMapper.class, PublicationGardianWOSMapper.class})
-public interface PublicationWOSMapper {
+@Mapper(componentModel = "jsr330")
+public interface PublicationGardianWOSMapper {
 
-  @Mappings({@Mapping(source = "publication_type", target = "publicationType"),
-    @Mapping(source = "authors", target = "authors"), @Mapping(source = "publication_year", target = "publicationYear"),
-    @Mapping(source = "journal_name", target = "journalName"), @Mapping(source = "start_end_pages", target = "pages"),
-    @Mapping(source = "is_isi", target = "is_isi"), @Mapping(source = "is_oa", target = "is_oa")})
-  public abstract PublicationsWOSDTO publicationWOSToPublicationWOSDTO(PublicationWOS publicationWOS);
+  public abstract PublicationGardianWOSDTO
+    PublicationGardianWOSToPublicationGardianWOSDTO(PublicationGardianWOS publicationGardian);
+
 }

@@ -57,9 +57,18 @@ public class PublicationWOS implements Serializable {
 
   private List<PublicationInstitutionWOS> organizations;
 
+  private PublicationAltmetricsWOS altmetric;
+
+  private PublicationGardianWOS gardian;
+
 
   public PublicationWOS() {
     super();
+  }
+
+
+  public PublicationAltmetricsWOS getAltmetric() {
+    return altmetric;
   }
 
 
@@ -70,6 +79,11 @@ public class PublicationWOS implements Serializable {
 
   public String getDoi() {
     return doi;
+  }
+
+
+  public PublicationGardianWOS getGardian() {
+    return gardian;
   }
 
 
@@ -128,6 +142,11 @@ public class PublicationWOS implements Serializable {
   }
 
 
+  public void setAltmetric(PublicationAltmetricsWOS altmetric) {
+    this.altmetric = altmetric;
+  }
+
+
   public void setAuthors(List<PublicationAuthorWOS> authors) {
     this.authors = authors;
   }
@@ -135,6 +154,11 @@ public class PublicationWOS implements Serializable {
 
   public void setDoi(String doi) {
     this.doi = doi;
+  }
+
+
+  public void setGardian(PublicationGardianWOS gardian) {
+    this.gardian = gardian;
   }
 
 
