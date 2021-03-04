@@ -794,6 +794,24 @@ public class SrfProgressAction extends BaseAction {
    * @param crpProgressDB
    */
   public void saveSrfTargetsCases(ReportSynthesisSrfProgress srfProgressDB) {
+
+    // Get targetCases from DB
+    List<Long> targetsCasesIDsDB = new ArrayList<>();
+    if (sloTargets != null) {
+      for (SrfSloIndicatorTarget target : sloTargets) {
+        List<ReportSynthesisSrfProgressTargetCases> targetCases;
+        targetCases =
+          reportSynthesisSrfProgressTargetCasesManager.getReportSynthesisSrfProgressId(synthesisID, target.getId());
+
+        if (targetCases != null) {
+
+          // Fill target cases
+          for (ReportSynthesisSrfProgressTargetCases targetCase : targetCases) {
+            targetsCasesIDsDB.add(targetCase.getId());
+          }
+        }
+      }
+    }
     // Save form Information
     List<Long> targetsCasesIDs = new ArrayList<>();
     if (sloTargets != null) {
@@ -955,22 +973,7 @@ public class SrfProgressAction extends BaseAction {
 
       // If the list of contributions (target cases) from BD is greater than front end contributions list (target
       // cases)
-      List<Long> targetsCasesIDsDB = new ArrayList<>();
-      if (sloTargets != null) {
-        for (SrfSloIndicatorTarget target : sloTargets) {
-          List<ReportSynthesisSrfProgressTargetCases> targetCases;
-          targetCases =
-            reportSynthesisSrfProgressTargetCasesManager.getReportSynthesisSrfProgressId(synthesisID, target.getId());
 
-          if (targetCases != null) {
-
-            // Fill target cases
-            for (ReportSynthesisSrfProgressTargetCases targetCase : targetCases) {
-              targetsCasesIDsDB.add(targetCase.getId());
-            }
-          }
-        }
-      }
 
       if (targetsCasesIDsDB != null && targetsCasesIDs != null && (targetsCasesIDsDB.size() > targetsCasesIDs.size())) {
 
