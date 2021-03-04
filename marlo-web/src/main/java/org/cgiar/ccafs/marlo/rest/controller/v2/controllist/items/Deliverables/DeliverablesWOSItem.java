@@ -83,8 +83,9 @@ public class DeliverablesWOSItem<T> {
 
         PublicationWOS publication = new Gson().fromJson(json, PublicationWOS.class);
         publicationDTO = this.publicationWOSMapper.publicationWOSToPublicationWOSDTO(publication);
-        publicationDTO.setUrl(url);
-
+        if (publicationDTO != null) {
+          publicationDTO.setUrl(url);
+        }
       } catch (Exception e) {
         e.printStackTrace();
         fieldErrors.add(
