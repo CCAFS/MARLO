@@ -29,20 +29,59 @@ public class StudyTypeDTO {
   @NotNull
   private String name;
 
+  @ApiModelProperty(notes = "Key Identifier")
+  private String key_identifier;
+
+
+  @ApiModelProperty(notes = "Study Narrative")
+  private String narrative;
+
+
+  @ApiModelProperty(notes = "Study Example")
+  private String example;
+
+
   public Long getCode() {
     return this.code;
   }
 
+
+  public String getExample() {
+    return example;
+  }
+
+
+  public String getKey_identifier() {
+    return key_identifier;
+  }
+
+
   public String getName() {
     return this.name;
+  }
+
+  public String getNarrative() {
+    return narrative;
   }
 
   public void setCode(Long code) {
     this.code = code;
   }
 
+  public void setExample(String example) {
+    this.example = example;
+  }
+
+  public void setKey_identifier(String key_identifier) {
+    this.key_identifier = key_identifier;
+  }
+
   public void setName(String name) {
     this.name = name;
+  }
+
+  public void setNarrative(String narrative) {
+    this.narrative = narrative;
   }
 
 }
