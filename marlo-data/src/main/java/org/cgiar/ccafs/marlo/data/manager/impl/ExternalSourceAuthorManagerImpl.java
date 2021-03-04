@@ -15,6 +15,7 @@
 
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.ExternalSourceAuthorDAO;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableMetadataExternalSourcesManager;
@@ -58,6 +59,33 @@ public class ExternalSourceAuthorManagerImpl implements ExternalSourceAuthorMana
   }
 
   @Override
+  public void deleteAllAuthorsFromPhase(Deliverable deliverable, Phase initialPhase) {
+    Phase current = initialPhase;
+    int initialPhaseYear = initialPhase.getYear();
+    Deliverable thisDeliverable = deliverable;
+
+    if (thisDeliverable != null) {
+      thisDeliverable = deliverableManager.getDeliverableById(thisDeliverable.getId());
+    }
+
+    while (current != null) {
+      DeliverableMetadataExternalSources deliverableMetadataExternalSources =
+        this.deliverableMetadataExternalSourcesManager.findByPhaseAndDeliverable(current, deliverable);
+      List<ExternalSourceAuthor> phaseAuthors =
+        this.findExternalSourceAuthorFromExternalSource(deliverableMetadataExternalSources.getId());
+
+      for (ExternalSourceAuthor externalSourceAuthor : phaseAuthors) {
+        if (externalSourceAuthor != null) {
+          this.deleteExternalSourceAuthor(externalSourceAuthor.getId());
+        }
+      }
+
+      current = ((current.getDescription().equals(APConstants.REPORTING) && current.getYear() == initialPhaseYear)
+        ? current.getNext().getNext() : current.getNext());
+    }
+  }
+
+  @Override
   public void deleteExternalSourceAuthor(long externalSourceAuthorId) {
     externalSourceAuthorDAO.deleteExternalSourceAuthor(externalSourceAuthorId);
   }
@@ -70,6 +98,12 @@ public class ExternalSourceAuthorManagerImpl implements ExternalSourceAuthorMana
   @Override
   public List<ExternalSourceAuthor> findAll() {
     return externalSourceAuthorDAO.findAll();
+  }
+
+  @Override
+  public List<ExternalSourceAuthor>
+    findExternalSourceAuthorFromExternalSource(long deliverableMetadataExternalSourceId) {
+    return this.externalSourceAuthorDAO.findExternalSourceAuthorFromExternalSource(deliverableMetadataExternalSourceId);
   }
 
   @Override
@@ -87,7 +121,7 @@ public class ExternalSourceAuthorManagerImpl implements ExternalSourceAuthorMana
 
     while (current != null) {
       DeliverableMetadataExternalSources externalSource =
-        this.deliverableMetadataExternalSourcesManager.findByPhaseAndDeliverable(initialPhase, deliverable);
+        this.deliverableMetadataExternalSourcesManager.findByPhaseAndDeliverable(current, deliverable);
 
       ExternalSourceAuthor externalSourceAuthor = new ExternalSourceAuthor();
       externalSourceAuthor.copyFields(originalExternalSourceAuthor);
