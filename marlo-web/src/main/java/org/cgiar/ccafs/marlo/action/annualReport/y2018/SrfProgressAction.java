@@ -1272,10 +1272,11 @@ public class SrfProgressAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
+      this.fillSloTargetsCasesDB();
       if (this.isPMU()) {
         validator.validateCheckButton(this, reportSynthesis, true);
       } else {
-        validator.validate(this, reportSynthesis, true);
+        validator.validate(this, reportSynthesis, true, sloTargets);
       }
     }
   }
