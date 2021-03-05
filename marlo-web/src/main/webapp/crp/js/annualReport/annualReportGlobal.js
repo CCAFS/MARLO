@@ -156,18 +156,23 @@ $(document).ready(function() {
   $('.btn-addEvidence').on('click',addEvidence);
   $('.btn-removeEvidence').on('click',removeEvidence);
 
-  $('.TA_summaryEvidence .trumbowyg-editor').bind('DOMSubtreeModified', function(){
-    console.log('%cmovement','background: #222; color: #fd8484');
-    // $(this).parents('.slo-contribution-section').find('.TA_summaryEvidence .briefSummaryTAHidden').css("background-color", "yellow");
-    $(this).parents('.slo-contribution-section').find('.TA_summaryEvidence .briefSummaryTAHidden').html($(this).html());
-  });
+  // $('.TA_summaryEvidence .trumbowyg-editor').bind('DOMSubtreeModified', function(){
+  //   console.log('%cmovement','background: #222; color: #fd8484');
+  //   // $(this).parents('.slo-contribution-section').find('.TA_summaryEvidence .briefSummaryTAHidden').css("background-color", "yellow");
+  //   $(this).parents('.slo-contribution-section').find('.TA_summaryEvidence .briefSummaryTAHidden').html($(this).html());
+  // });
 
 
-  $('.TA_additionalContribution .trumbowyg-editor').bind('DOMSubtreeModified', function(){
-    console.log('%cmovement','background: #222; color: #fd8484');
+  // $('.TA_additionalContribution .trumbowyg-editor').bind('DOMSubtreeModified', function(){
+  //   console.log('%cmovement','background: #222; color: #fd8484');
 
-    $(this).parents('.slo-contribution-section').find('.TA_additionalContribution .additionalContributionTAHidden').html($(this).html());
-  });
+  //   $(this).parents('.slo-contribution-section').find('.TA_additionalContribution .additionalContributionTAHidden').html($(this).html());
+  // });
+
+  // $('.button-save').on('click',updateALltexareas);
+  $(document).keypress(updateALltexareas);
+  $(document).click(updateALltexareas);
+ 
 
   // $('.slo-contribution-section').on("bind",".TA_summaryEvidence .trumbowyg-editor", function() {
   //   //do whatever
@@ -177,6 +182,20 @@ $(document).ready(function() {
   setStatusByBack();
   // updateAllIndexesContribution();
 });
+
+function updateALltexareas(){
+  $('.sloTargetsList').find('.sloTarget').each(function (i, sloTarget) {
+    setTimeout(() => {
+      $(sloTarget).find('.evidenceList').find('.slo-contribution-section').each(function (i, evidence) {
+        // $(evidence).css("background-color", "yellow");
+        $(evidence).find('.TA_summaryEvidence .briefSummaryTAHidden').html($(evidence).find('.TA_summaryEvidence .trumbowyg-editor').html());
+        $(evidence).find('.TA_additionalContribution .additionalContributionTAHidden').html($(evidence).find('.TA_additionalContribution .trumbowyg-editor').html());
+        // console.log($(evidence).find('.TA_additionalContribution .trumbowyg-editor').val());
+      });
+    }, 10);
+  });
+  $(document).trigger('updateComponent');
+}
 
 function setStatusByBack() {
   $(".sloTargetsList")
@@ -347,6 +366,13 @@ console.log('addEvidence');
   $item = $item.clone(true);
   $($item).removeClass('slo-contribution-template');
   $list.append($item);
+
+
+  // $($item).find('.TA_summaryEvidence .trumbowyg-editor').bind('DOMSubtreeModified', function(){
+  //  console.log('%csome','background: #222; color: #84c3fd');
+  // });
+
+
   updateAllIndexesContribution();
   $item.show('slow');
   $item.find("select").select2({
