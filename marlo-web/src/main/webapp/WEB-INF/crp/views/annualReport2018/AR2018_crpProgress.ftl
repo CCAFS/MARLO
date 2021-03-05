@@ -6,7 +6,7 @@
 [#assign pageLibs = [ "select2", "trumbowyg", "components-font-awesome", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js"
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210305" ] /]
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210305A" ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210114"] /]
 
 [#assign breadCrumb = [
@@ -137,14 +137,13 @@
       <strong >SLO Target 2022</strong>
        <br />${(element.narrative)!} <br>
        <div class="checkboxDiTeAr">
-       
          <div class="contentCheckBox">
-          [@customForm.checkbox name="sloTargets[${index}].hasEvidence" value="false" checked=(sloTargets[index].hasEvidence)!false i18nkey="No new evidence" className="checkboxDiTeArClick" required=false editable=editable /]
+          [@customForm.checkbox name="sloTargets[${index}].hasEvidence" value="${element.hasEvidence?string('false', 'true')}" checked=element.hasEvidence!false i18nkey="No new evidence" className="checkboxDiTeArClick" required=false editable=editable /]
 
          </div>
        </div>
     </div>
-    <div class="to-disabled-box">
+    <div class="to-disabled-box" style="display:${element.hasEvidence?string('none', 'block')}">
       <div class="disabled-box"></div>
     <div class="evidenceList">
       [#list element.targetCases as evidence]
@@ -153,7 +152,7 @@
     </div>
   </div>
 
-  <div class="btn-addEvidence bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add contribution</div>
+  <div class="btn-addEvidence bigAddButton text-center" style="display:${element.hasEvidence?string('none', 'block')}"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add contribution</div>
     
     
     
