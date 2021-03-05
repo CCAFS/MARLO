@@ -142,7 +142,6 @@ public class ProjectImpactsAction extends BaseAction {
     return newProjectImpact;
   }
 
-
   /**
    * The name of the autosave file is constructed and the path is searched
    * 
@@ -160,6 +159,15 @@ public class ProjectImpactsAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+
+  public ProjectImpactsCategories getCategoryById(Long projectImpactCategoryId) {
+    ProjectImpactsCategories impactsCategories = null;
+    if (projectImpactCategoryId != null) {
+      impactsCategories = this.projectImpactsCategoriesManager.getProjectImpactsCategoriesById(projectImpactCategoryId);
+    }
+
+    return impactsCategories;
+  }
 
   public GlobalUnitManager getCrpManager() {
     return crpManager;
