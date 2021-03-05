@@ -932,26 +932,27 @@ public class ProjectLocationAction extends BaseAction {
     GlobalUnitProject gp = globalUnitProjectManager.findByProjectId(projectID);
 
     for (LocElement locElement : hashElements) {
-      CountryFundingSources countryFundingSources = new CountryFundingSources();
-      countryFundingSources.setLocElement(locElement);
+      if (locElement != null && locElement.getId() != null) {
+        CountryFundingSources countryFundingSources = new CountryFundingSources();
+        countryFundingSources.setLocElement(locElement);
 
-      List<FundingSource> sources = fundingSourceManager.searchFundingSourcesByLocElement(projectID, locElement.getId(),
-        this.getCurrentCycleYear(), gp.getGlobalUnit().getId(), this.getActualPhase().getId());
-      for (FundingSource fundingSourceElement : sources) {
-        fundingSourceElement.setFundingSourceInfo(fundingSourceElement.getFundingSourceInfo(this.getActualPhase()));
-      }
-      countryFundingSources.setFundingSources(new ArrayList<>(sources));
-      if (locElement.getLocElementType().getId().longValue() == 2) {
-        if (!project.getCountryFS().contains(countryFundingSources)) {
-          project.getCountryFS().add(countryFundingSources);
+        List<FundingSource> sources = fundingSourceManager.searchFundingSourcesByLocElement(projectID,
+          locElement.getId(), this.getCurrentCycleYear(), gp.getGlobalUnit().getId(), this.getActualPhase().getId());
+        for (FundingSource fundingSourceElement : sources) {
+          fundingSourceElement.setFundingSourceInfo(fundingSourceElement.getFundingSourceInfo(this.getActualPhase()));
         }
+        countryFundingSources.setFundingSources(new ArrayList<>(sources));
+        if (locElement.getLocElementType().getId().longValue() == 2) {
+          if (!project.getCountryFS().contains(countryFundingSources)) {
+            project.getCountryFS().add(countryFundingSources);
+          }
 
-      } else {
-        if (!project.getRegionFS().contains(countryFundingSources)) {
-          project.getRegionFS().add(countryFundingSources);
+        } else {
+          if (!project.getRegionFS().contains(countryFundingSources)) {
+            project.getRegionFS().add(countryFundingSources);
+          }
         }
       }
-
     }
 
     HashSet<LocElementType> hashElementTypes = new HashSet<>();
