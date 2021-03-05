@@ -218,7 +218,7 @@ function setStatusByBack() {
 
       }
     
-      if ($(checkbox).val() == "false") {
+      if ($(checkbox).val() == "true") {
         $(checkbox).parents(".a-slo").find(".to-disabled-box").hide(400);
         $(checkbox).parents(".a-slo").find(".btn-addEvidence").hide(400);
         // $(checkbox).parents(".a-slo").find(".disabled-box").show();
@@ -241,7 +241,7 @@ function setCheckboxValueTohide() {
     // console.log("now is: "+$(this).val());
   }
 
-  if ($(this).val() == "false") {
+  if ($(this).val() == "true") {
     $(this).parents(".a-slo").find(".to-disabled-box").hide(400);
     $(this).parents(".a-slo").find(".btn-addEvidence").hide(400);
     // $(this).parents(".a-slo").find(".disabled-box").show();
