@@ -28,7 +28,8 @@ import javax.inject.Named;
  * @author CCAFS
  */
 @Named
-public class ReportSynthesisSrfProgressTargetContributionManagerImpl implements ReportSynthesisSrfProgressTargetContributionManager {
+public class ReportSynthesisSrfProgressTargetContributionManagerImpl
+  implements ReportSynthesisSrfProgressTargetContributionManager {
 
 
   private ReportSynthesisSrfProgressTargetContributionDAO reportSynthesisSrfProgressTargetContributionDAO;
@@ -36,7 +37,8 @@ public class ReportSynthesisSrfProgressTargetContributionManagerImpl implements 
 
 
   @Inject
-  public ReportSynthesisSrfProgressTargetContributionManagerImpl(ReportSynthesisSrfProgressTargetContributionDAO reportSynthesisSrfProgressTargetContributionDAO) {
+  public ReportSynthesisSrfProgressTargetContributionManagerImpl(
+    ReportSynthesisSrfProgressTargetContributionDAO reportSynthesisSrfProgressTargetContributionDAO) {
     this.reportSynthesisSrfProgressTargetContributionDAO = reportSynthesisSrfProgressTargetContributionDAO;
 
 
@@ -45,13 +47,16 @@ public class ReportSynthesisSrfProgressTargetContributionManagerImpl implements 
   @Override
   public void deleteReportSynthesisSrfProgressTargetContribution(long reportSynthesisSrfProgressTargetContributionId) {
 
-    reportSynthesisSrfProgressTargetContributionDAO.deleteReportSynthesisSrfProgressTargetContribution(reportSynthesisSrfProgressTargetContributionId);
+    reportSynthesisSrfProgressTargetContributionDAO
+      .deleteReportSynthesisSrfProgressTargetContribution(reportSynthesisSrfProgressTargetContributionId);
   }
 
   @Override
-  public boolean existReportSynthesisSrfProgressTargetContribution(long reportSynthesisSrfProgressTargetContributionID) {
+  public boolean
+    existReportSynthesisSrfProgressTargetContribution(long reportSynthesisSrfProgressTargetContributionID) {
 
-    return reportSynthesisSrfProgressTargetContributionDAO.existReportSynthesisSrfProgressTargetContribution(reportSynthesisSrfProgressTargetContributionID);
+    return reportSynthesisSrfProgressTargetContributionDAO
+      .existReportSynthesisSrfProgressTargetContribution(reportSynthesisSrfProgressTargetContributionID);
   }
 
   @Override
@@ -62,13 +67,20 @@ public class ReportSynthesisSrfProgressTargetContributionManagerImpl implements 
   }
 
   @Override
-  public ReportSynthesisSrfProgressTargetContribution getReportSynthesisSrfProgressTargetContributionById(long reportSynthesisSrfProgressTargetContributionID) {
+  public List<ReportSynthesisSrfProgressTargetContribution> findBySloTargetID(long sloTargetID) {
+    return reportSynthesisSrfProgressTargetContributionDAO.findBySloTargetID(sloTargetID);
+  }
+
+  @Override
+  public ReportSynthesisSrfProgressTargetContribution
+    getReportSynthesisSrfProgressTargetContributionById(long reportSynthesisSrfProgressTargetContributionID) {
 
     return reportSynthesisSrfProgressTargetContributionDAO.find(reportSynthesisSrfProgressTargetContributionID);
   }
 
   @Override
-  public ReportSynthesisSrfProgressTargetContribution saveReportSynthesisSrfProgressTargetContribution(ReportSynthesisSrfProgressTargetContribution reportSynthesisSrfProgressTargetContribution) {
+  public ReportSynthesisSrfProgressTargetContribution saveReportSynthesisSrfProgressTargetContribution(
+    ReportSynthesisSrfProgressTargetContribution reportSynthesisSrfProgressTargetContribution) {
 
     return reportSynthesisSrfProgressTargetContributionDAO.save(reportSynthesisSrfProgressTargetContribution);
   }
