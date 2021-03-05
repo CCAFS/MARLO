@@ -894,7 +894,10 @@ public class ProjectLocationAction extends BaseAction {
         for (FundingSourceLocation fundingSourceLocation : fundingSourceLocations) {
           if (fundingSourceLocation.getLocElementType() == null) {
             locElements.add(fundingSourceLocation.getLocElement());
-            if (fundingSourceLocation.getLocElement().getLocElementType().getId() != 2) {
+            if (fundingSourceLocation != null && fundingSourceLocation.getLocElement() != null
+              && fundingSourceLocation.getLocElement().getLocElementType() != null
+              && fundingSourceLocation.getLocElement().getLocElementType().getId() != null
+              && fundingSourceLocation.getLocElement().getLocElementType().getId() != 2) {
               if (calculateYesOrNo) {
                 project.getProjecInfoPhase(this.getActualPhase())
                   .setLocationRegional(project.getProjecInfoPhase(this.getActualPhase()).getLocationRegional() || true);
