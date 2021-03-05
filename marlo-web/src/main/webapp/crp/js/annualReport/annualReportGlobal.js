@@ -3,6 +3,10 @@ var tableDatatableViewmore, tableDataProgressTableViewmore, tableDatatableTableG
 var pageName;
 var googleChartsLoaded = false;
 $(document).ready(function() {
+  
+  // $('.slo-contribution-template').find('textarea').trumbowyg("destroy");
+
+  $('.slo-contribution-template').find('select').select2("destroy");
   pageName = actionName.replace(/[^a-z0-9+]+/gi, '_');
 
   // Set data tables
@@ -153,14 +157,22 @@ $(document).ready(function() {
   $('.btn-removeEvidence').on('click',removeEvidence);
 
   $('.TA_summaryEvidence .trumbowyg-editor').bind('DOMSubtreeModified', function(){
+    console.log('%cmovement','background: #222; color: #fd8484');
     // $(this).parents('.slo-contribution-section').find('.TA_summaryEvidence .briefSummaryTAHidden').css("background-color", "yellow");
     $(this).parents('.slo-contribution-section').find('.TA_summaryEvidence .briefSummaryTAHidden').html($(this).html());
   });
 
 
   $('.TA_additionalContribution .trumbowyg-editor').bind('DOMSubtreeModified', function(){
+    console.log('%cmovement','background: #222; color: #fd8484');
+
     $(this).parents('.slo-contribution-section').find('.TA_additionalContribution .additionalContributionTAHidden').html($(this).html());
   });
+
+  // $('.slo-contribution-section').on("bind",".TA_summaryEvidence .trumbowyg-editor", function() {
+  //   //do whatever
+  //   console.log('%cHola mundo','background: #222; color: #fd8484');
+  // });
 
   setStatusByBack();
   // updateAllIndexesContribution();
@@ -331,11 +343,32 @@ function addEvidence() {
 console.log('addEvidence');
 
   var $list =  $(this).parents(".simpleBox").find(".evidenceList");
-  var $item = $('.slo-contribution-template').clone(true);
+  var $item = $('.slo-contribution-template');
+  $item = $item.clone(true);
   $($item).removeClass('slo-contribution-template');
   $list.append($item);
   updateAllIndexesContribution();
   $item.show('slow');
+  $item.find("select").select2({
+    // templateResult: formatState,
+    width: '100%'
+});
+
+
+$item.find('textarea.tumaco').trumbowyg({
+  btns: [
+    [
+        'link', 'strong', 'em'
+    ]
+  ],
+  allowTagsFromPaste: [
+      'a', 'p', 'br', 'b', 'strong', 'i', 'em'
+  ],
+  urlProtocol: true,
+  autogrow: true,
+  minimalLinks: true,
+  semantic: true
+});
 
 }
 
