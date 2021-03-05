@@ -212,7 +212,8 @@ public class DeliverableMetadataByWOS extends BaseAction {
               && i.getClarisaMatchConfidence() < APConstants.ACCEPTATION_PERCENTAGE)
             .count() == 0)) {
           this.deliverableAffiliationManager.deleteDeliverableAffiliation(dbDeliverableAffiliation.getId());
-          this.deliverableAffiliationManager.replicate(dbDeliverableAffiliation, phase.getNext());
+          this.deliverableAffiliationManager.replicate(dbDeliverableAffiliation,
+            phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
         }
       }
 
@@ -247,7 +248,8 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
           newDeliverableAffiliation =
             this.deliverableAffiliationManager.saveDeliverableAffiliation(newDeliverableAffiliation);
-          this.deliverableAffiliationManager.replicate(newDeliverableAffiliation, phase.getNext());
+          this.deliverableAffiliationManager.replicate(newDeliverableAffiliation,
+            phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
         }
       }
     }
@@ -278,7 +280,8 @@ public class DeliverableMetadataByWOS extends BaseAction {
             .count() == 0)) {
           this.deliverableAffiliationsNotMappedManager
             .deleteDeliverableAffiliationsNotMapped(dbDeliverableAffiliationNotMapped.getId());
-          this.deliverableAffiliationsNotMappedManager.replicate(dbDeliverableAffiliationNotMapped, phase.getNext());
+          this.deliverableAffiliationsNotMappedManager.replicate(dbDeliverableAffiliationNotMapped,
+            phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
         }
       }
 
@@ -317,7 +320,8 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
           newDeliverableAffiliationNotMapped = this.deliverableAffiliationsNotMappedManager
             .saveDeliverableAffiliationsNotMapped(newDeliverableAffiliationNotMapped);
-          this.deliverableAffiliationsNotMappedManager.replicate(newDeliverableAffiliationNotMapped, phase.getNext());
+          this.deliverableAffiliationsNotMappedManager.replicate(newDeliverableAffiliationNotMapped,
+            phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
         }
       }
     }
@@ -343,7 +347,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
       altmetricInfo.setAltmetricId(incomingAltmetricInfo.getAltmetricId());
       altmetricInfo.setAltmetricJid(incomingAltmetricInfo.getAltmetricJid());
       altmetricInfo.setAuthors(incomingAltmetricInfo.getAuthors() != null
-        ? incomingAltmetricInfo.getAuthors().stream().filter(StringUtils::isNotBlank).collect(Collectors.joining(", "))
+        ? incomingAltmetricInfo.getAuthors().stream().filter(StringUtils::isNotBlank).collect(Collectors.joining("; "))
         : null);
       altmetricInfo.setCitedByBlogs(incomingAltmetricInfo.getCitedByBlogs());
       altmetricInfo.setCitedByDelicious(incomingAltmetricInfo.getCitedByDelicious());
@@ -384,7 +388,8 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
       altmetricInfo = this.deliverableAltmetricInfoManager.saveDeliverableAltmetricInfo(altmetricInfo);
 
-      this.deliverableAltmetricInfoManager.replicate(altmetricInfo, phase.getNext());
+      this.deliverableAltmetricInfoManager.replicate(altmetricInfo,
+        phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
     }
   }
 
@@ -394,18 +399,8 @@ public class DeliverableMetadataByWOS extends BaseAction {
     List<WOSAuthor> incomingAuthors = this.response.getAuthors();
 
     if (incomingAuthors != null) {
-      List<ExternalSourceAuthor> dbExternalSourceAuthors =
-        this.externalSourceAuthorManager.findAll() != null ? this.externalSourceAuthorManager.findAll().stream()
-          .filter(esa -> esa != null && esa.getId() != null && esa.getDeliverableMetadataExternalSources() != null
-            && esa.getDeliverableMetadataExternalSources().getId() != null
-            && esa.getDeliverableMetadataExternalSources().getId().equals(externalSource.getId()))
-          .collect(Collectors.toList()) : Collections.emptyList();
-
       // we are going to remove all of them and just accept the incoming authors
-      for (ExternalSourceAuthor dbExternalSourceAuthor : dbExternalSourceAuthors) {
-        this.externalSourceAuthorManager.deleteExternalSourceAuthor(dbExternalSourceAuthor.getId());
-        this.externalSourceAuthorManager.replicate(dbExternalSourceAuthor, phase.getNext());
-      }
+      this.externalSourceAuthorManager.deleteAllAuthorsFromPhase(deliverable, phase);
 
       // save
       for (WOSAuthor incomingAuthor : incomingAuthors) {
@@ -416,7 +411,8 @@ public class DeliverableMetadataByWOS extends BaseAction {
         externalSourceAuthor.setFullName(incomingAuthor.getFullName());
 
         externalSourceAuthor = this.externalSourceAuthorManager.saveExternalSourceAuthor(externalSourceAuthor);
-        this.externalSourceAuthorManager.replicate(externalSourceAuthor, phase.getNext());
+        this.externalSourceAuthorManager.replicate(externalSourceAuthor,
+          phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
       }
     }
   }
@@ -459,7 +455,8 @@ public class DeliverableMetadataByWOS extends BaseAction {
     externalSource =
       this.deliverableMetadataExternalSourcesManager.saveDeliverableMetadataExternalSources(externalSource);
 
-    this.deliverableMetadataExternalSourcesManager.replicate(externalSource, phase.getNext());
+    this.deliverableMetadataExternalSourcesManager.replicate(externalSource,
+      phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
   }
 
   private void saveInfo() {

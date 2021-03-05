@@ -23,6 +23,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 /**************
@@ -41,8 +42,8 @@ public class ExternalSourceAuthorMySQLDAO extends AbstractMarloDAO<ExternalSourc
   @Override
   public void deleteExternalSourceAuthor(long externalSourceAuthorId) {
     ExternalSourceAuthor externalSourceAuthor = this.find(externalSourceAuthorId);
-    externalSourceAuthor.setActive(false);
-    this.save(externalSourceAuthor);
+    // externalSourceAuthor.setActive(false);
+    this.delete(externalSourceAuthor);
   }
 
   @Override
@@ -70,6 +71,18 @@ public class ExternalSourceAuthorMySQLDAO extends AbstractMarloDAO<ExternalSourc
     }
     return null;
 
+  }
+
+  @Override
+  public List<ExternalSourceAuthor>
+    findExternalSourceAuthorFromExternalSource(long deliverableMetadataExternalSourceId) {
+    String query = "select distinct esa from ExternalSourceAuthor esa "
+      + "where deliverableMetadataExternalSources.id = :deliverableMetadataExternalSourceId";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("deliverableMetadataExternalSourceId", deliverableMetadataExternalSourceId);
+    List<ExternalSourceAuthor> result = super.findAll(createQuery);
+
+    return result;
   }
 
   @Override

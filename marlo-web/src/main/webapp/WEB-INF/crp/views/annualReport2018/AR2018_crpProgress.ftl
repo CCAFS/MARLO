@@ -6,7 +6,7 @@
 [#assign pageLibs = [ "select2", "trumbowyg", "components-font-awesome", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js"
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210302" ] /]
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210303" ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210114"] /]
 
 [#assign breadCrumb = [
@@ -22,10 +22,6 @@
 [#import "/WEB-INF/global/macros/ARMacros.ftl" as arMacros /]
 [#assign customName= "reportSynthesis.reportSynthesisSrfProgress" /]
 [#assign customLabel= "annualReport2018.${currentStage}" /]
-
-[#assign arrayCheckBV=["true","false","true","false","true","false","true","false","true","false"] /]
-
-[#assign arrayEvidence=[0,1,2] /]
 
 [#-- Helptext --]
 [@utilities.helpBox name="${customLabel}.help" /]
@@ -143,7 +139,7 @@
        <div class="checkboxDiTeAr">
        
          <div class="contentCheckBox">
-          [@customForm.checkbox name="sloTargets[${index}].hasEvidence" value="sloTargets[${index}].hasEvidence" checked=(sloTargets[index].hasEvidence?boolean)!false i18nkey="No new evidence" className="checkboxDiTeArClick" required=false editable=editable /]
+          [@customForm.checkbox name="sloTargets[${index}].hasEvidence" value="false" checked=(sloTargets[index].hasEvidence)!false i18nkey="No new evidence" className="checkboxDiTeArClick" required=false editable=editable /]
 
          </div>
        </div>
@@ -196,10 +192,11 @@
   <hr>
   [#-- Brief summary of new evidence of CGIAR contribution to relevant targets for this CRP (with citation) --]
   <div class="form-group TA_summaryEvidence">
-    [#-- [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.overallContribution" help="${customLabel}.overallContribution.help" className="limitWords-${calculateLimitWords(400)}" helpIcon=false required=true editable=editable allowTextEditor=true /]--]
+    [@customForm.textArea name="" value=element.briefSummary i18nkey="${customLabel}.summaryEvidence" className="limitWords-150" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable allowTextEditor=true /]
 
-    [@customForm.textArea name="${ccname}.briefSummary" value=element.briefSummary i18nkey="${customLabel}.summaryEvidence" className="limitWords-150" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable /]
-
+    <div style="display:none">
+    [@customForm.textArea name="${ccname}.briefSummary" value=element.briefSummary i18nkey="${customLabel}.summaryEvidence" className="limitWords-150 briefSummaryTAHidden" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable /]
+    </div>
     [#-- FP Synthesis table --]
   [#if PMU]
     [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableSloTargetBriefSummary" list=otherContributions columns=["briefSummary"] crpProgramField="reportSynthesisSrfProgress.reportSynthesis.liaisonInstitution.crpProgram" showTitle=false showHeader=false showEmptyRows=false /]
@@ -208,8 +205,12 @@
   [#-- Expected additional contribution before end of 2022 (if not already fully covered). --]
   <div class="form-group TA_additionalContribution">
 
-    [@customForm.textArea name="${ccname}.additionalContribution" value=element.additionalContribution i18nkey="${customLabel}.additionalContribution" className="limitWords-100" help="${customLabel}.additionalContribution.help" helpIcon=false required=false editable=editable /]
+    [@customForm.textArea name="" value=element.additionalContribution i18nkey="${customLabel}.additionalContribution" className="limitWords-100" help="${customLabel}.additionalContribution.help" helpIcon=false required=false editable=editable  allowTextEditor=true /]
 
+    <div style="display:none">
+    [@customForm.textArea name="${ccname}.additionalContribution" value=element.additionalContribution i18nkey="${customLabel}.additionalContribution" className="limitWords-100 additionalContributionTAHidden" help="${customLabel}.additionalContribution.help" helpIcon=false required=false editable=editable /]
+    </div>
+  
     [#-- FP Synthesis table --]
   [#if PMU]
     [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableSloTargetBriefSummary" list=otherContributions columns=["additionalContribution"] crpProgramField="reportSynthesisSrfProgress.reportSynthesis.liaisonInstitution.crpProgram" showTitle=false showHeader=false showEmptyRows=false /]

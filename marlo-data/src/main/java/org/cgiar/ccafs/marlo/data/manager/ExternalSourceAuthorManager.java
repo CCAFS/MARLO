@@ -15,6 +15,7 @@
 
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.ExternalSourceAuthor;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
@@ -27,13 +28,20 @@ import java.util.List;
 public interface ExternalSourceAuthorManager {
 
   /**
+   * Deletes <strong>All</strong> the authors from a deliverable starting from a given phase
+   * 
+   * @param deliverable the deliverable from which the authors will be deleted
+   * @param initialPhase the phase
+   */
+  public void deleteAllAuthorsFromPhase(Deliverable deliverable, Phase initialPhase);
+
+  /**
    * This method removes a specific externalSourceAuthor value from the database.
    * 
    * @param externalSourceAuthorId is the externalSourceAuthor identifier.
    * @return true if the externalSourceAuthor was successfully deleted, false otherwise.
    */
   public void deleteExternalSourceAuthor(long externalSourceAuthorId);
-
 
   /**
    * This method validate if the externalSourceAuthor identify with the given id exists in the system.
@@ -43,13 +51,22 @@ public interface ExternalSourceAuthorManager {
    */
   public boolean existExternalSourceAuthor(long externalSourceAuthorID);
 
-
   /**
    * This method gets a list of externalSourceAuthor that are active
    * 
    * @return a list from ExternalSourceAuthor null if no exist records
    */
   public List<ExternalSourceAuthor> findAll();
+
+
+  /**
+   * Finds all the authors from a DeliverableMetatadaExternalSource
+   * 
+   * @param deliverableMetadataExternalSourceId
+   * @return a list of ExternalSourceAuthor linked to the deliverableMetadataExternalSource, or null if not found
+   */
+  public List<ExternalSourceAuthor>
+    findExternalSourceAuthorFromExternalSource(long deliverableMetadataExternalSourceId);
 
   /**
    * This method gets a externalSourceAuthor object by a given externalSourceAuthor
@@ -61,7 +78,8 @@ public interface ExternalSourceAuthorManager {
   public ExternalSourceAuthor getExternalSourceAuthorById(long externalSourceAuthorID);
 
   /**
-   * Replicates a externalSourceAuthor, starting from the given phase
+   * Replicates a externalSourceAuthor, starting from the given phase. <i>Note:</i> for delete, please use
+   * {@link #deleteAllAuthorsFromPhase(Deliverable, Phase) deleteAllAuthorsFromPhase}
    * 
    * @param originalExternalSourceAuthor ExternalSourceAuthor to be replicated
    * @param initialPhase initial replication phase
@@ -69,7 +87,7 @@ public interface ExternalSourceAuthorManager {
   public void replicate(ExternalSourceAuthor originalExternalSourceAuthor, Phase initialPhase);
 
   /**
-   * This method saves the information of the given externalSourceAuthor
+   * This method saves the information of the given externalSourceAuthor.
    * 
    * @param externalSourceAuthor - is the externalSourceAuthor object with the new information
    *        to be

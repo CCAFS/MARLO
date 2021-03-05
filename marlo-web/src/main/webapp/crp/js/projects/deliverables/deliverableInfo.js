@@ -451,7 +451,7 @@ function justificationByStatus(statusId) {
         if(statusId==4) {
           showNewExpectedComponent(true);
           $('.expectedDisabled').hide("slow");
-        } else if(statusId==3){
+        } else if(statusId==2 || statusId==3 || statusId==5 || statusId==6){
           
           if (($('.yearNewExpected').val() != '-1') && ($('.yearNewExpected').val() != $('.yearExpected').val())) {  
             showNewExpectedComponent(true);
