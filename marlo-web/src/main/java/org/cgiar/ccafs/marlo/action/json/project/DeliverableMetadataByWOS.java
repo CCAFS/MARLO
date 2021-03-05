@@ -399,19 +399,8 @@ public class DeliverableMetadataByWOS extends BaseAction {
     List<WOSAuthor> incomingAuthors = this.response.getAuthors();
 
     if (incomingAuthors != null) {
-      List<ExternalSourceAuthor> dbExternalSourceAuthors =
-        this.externalSourceAuthorManager.findAll() != null ? this.externalSourceAuthorManager.findAll().stream()
-          .filter(esa -> esa != null && esa.getId() != null && esa.getDeliverableMetadataExternalSources() != null
-            && esa.getDeliverableMetadataExternalSources().getId() != null
-            && esa.getDeliverableMetadataExternalSources().getId().equals(externalSource.getId()))
-          .collect(Collectors.toList()) : Collections.emptyList();
-
       // we are going to remove all of them and just accept the incoming authors
-      for (ExternalSourceAuthor dbExternalSourceAuthor : dbExternalSourceAuthors) {
-        this.externalSourceAuthorManager.deleteExternalSourceAuthor(dbExternalSourceAuthor.getId());
-        this.externalSourceAuthorManager.replicate(dbExternalSourceAuthor,
-          phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
-      }
+      this.externalSourceAuthorManager.deleteAllAuthorsFromPhase(deliverable, phase);
 
       // save
       for (WOSAuthor incomingAuthor : incomingAuthors) {

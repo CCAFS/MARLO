@@ -139,7 +139,7 @@
        <div class="checkboxDiTeAr">
        
          <div class="contentCheckBox">
-          [@customForm.checkbox name="sloTargets[${index}].hasEvidence" value="sloTargets[${index}].hasEvidence" checked=(sloTargets[index].hasEvidence?boolean)!false i18nkey="No new evidence" className="checkboxDiTeArClick" required=false editable=editable /]
+          [@customForm.checkbox name="sloTargets[${index}].hasEvidence" value="false" checked=(sloTargets[index].hasEvidence)!false i18nkey="No new evidence" className="checkboxDiTeArClick" required=false editable=editable /]
 
          </div>
        </div>

@@ -58,6 +58,15 @@ public interface ExternalSourceAuthorDAO {
   public List<ExternalSourceAuthor> findAll();
 
   /**
+   * Finds all the authors from a DeliverableMetatadaExternalSource
+   * 
+   * @param deliverableMetadataExternalSourceId
+   * @return a list of ExternalSourceAuthor linked to the deliverableMetadataExternalSource, or null if not found
+   */
+  public List<ExternalSourceAuthor>
+    findExternalSourceAuthorFromExternalSource(long deliverableMetadataExternalSourceId);
+
+  /**
    * This method saves the information of the given externalSourceAuthor
    * 
    * @param externalSourceAuthor - is the externalSourceAuthor object with the new information
