@@ -25,7 +25,7 @@
     
       <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
         [#-- Multinational, National and Subnational scope --]
-        [@customForm.select name="${name}.geographicCountries"  label="" i18nkey="" listName=(element.geographicCountries)! keyFieldName="isoAlpha2"  displayFieldName="name" value="deliverable.countriesIds" multiple=true required=true className="countriesSelect" disabled=!editable/]
+        [@customForm.select name="${name}.geographicCountries"  label="" i18nkey="" listName=(element.countries)! keyFieldName="isoAlpha2"  displayFieldName="name"  multiple=true required=true className="countriesSelect" disabled=!editable/]
       </div>
     </div>
    
