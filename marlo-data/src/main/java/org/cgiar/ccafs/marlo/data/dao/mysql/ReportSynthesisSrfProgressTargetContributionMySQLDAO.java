@@ -64,9 +64,21 @@ public class ReportSynthesisSrfProgressTargetContributionMySQLDAO
 
   @Override
   public List<ReportSynthesisSrfProgressTargetContribution> findAll() {
-    String query = "from " + ReportSynthesisSrfProgressTargetContribution.class.getName() + " where is_active=1";
+    String query = "from " + ReportSynthesisSrfProgressTargetContribution.class.getName();
     List<ReportSynthesisSrfProgressTargetContribution> list = super.findAll(query);
-    if (list.size() > 0) {
+    if (!list.isEmpty()) {
+      return list;
+    }
+    return null;
+
+  }
+
+  @Override
+  public List<ReportSynthesisSrfProgressTargetContribution> findBySloTargetID(long sloTargetID) {
+    String query = "from " + ReportSynthesisSrfProgressTargetContribution.class.getName()
+      + " where srf_slo_indicator_targets_id = " + sloTargetID;
+    List<ReportSynthesisSrfProgressTargetContribution> list = super.findAll(query);
+    if (!list.isEmpty()) {
       return list;
     }
     return null;

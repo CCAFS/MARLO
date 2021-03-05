@@ -26,13 +26,15 @@ public interface ReportSynthesisSrfProgressTargetContributionDAO {
   /**
    * This method removes a specific reportSynthesisSrfProgressTargetContribution value from the database.
    * 
-   * @param reportSynthesisSrfProgressTargetContributionId is the reportSynthesisSrfProgressTargetContribution identifier.
+   * @param reportSynthesisSrfProgressTargetContributionId is the reportSynthesisSrfProgressTargetContribution
+   *        identifier.
    * @return true if the reportSynthesisSrfProgressTargetContribution was successfully deleted, false otherwise.
    */
   public void deleteReportSynthesisSrfProgressTargetContribution(long reportSynthesisSrfProgressTargetContributionId);
 
   /**
-   * This method validate if the reportSynthesisSrfProgressTargetContribution identify with the given id exists in the system.
+   * This method validate if the reportSynthesisSrfProgressTargetContribution identify with the given id exists in the
+   * system.
    * 
    * @param reportSynthesisSrfProgressTargetContributionID is a reportSynthesisSrfProgressTargetContribution identifier.
    * @return true if the reportSynthesisSrfProgressTargetContribution exists, false otherwise.
@@ -40,9 +42,11 @@ public interface ReportSynthesisSrfProgressTargetContributionDAO {
   public boolean existReportSynthesisSrfProgressTargetContribution(long reportSynthesisSrfProgressTargetContributionID);
 
   /**
-   * This method gets a reportSynthesisSrfProgressTargetContribution object by a given reportSynthesisSrfProgressTargetContribution identifier.
+   * This method gets a reportSynthesisSrfProgressTargetContribution object by a given
+   * reportSynthesisSrfProgressTargetContribution identifier.
    * 
-   * @param reportSynthesisSrfProgressTargetContributionID is the reportSynthesisSrfProgressTargetContribution identifier.
+   * @param reportSynthesisSrfProgressTargetContributionID is the reportSynthesisSrfProgressTargetContribution
+   *        identifier.
    * @return a ReportSynthesisSrfProgressTargetContribution object.
    */
   public ReportSynthesisSrfProgressTargetContribution find(long id);
@@ -54,14 +58,24 @@ public interface ReportSynthesisSrfProgressTargetContributionDAO {
    */
   public List<ReportSynthesisSrfProgressTargetContribution> findAll();
 
+  /**
+   * This method gets a reportSynthesisSrfProgressTargetContribution object by a given sloTarget identifier.
+   * 
+   * @param sloTargetID is the sloTarget identifier.
+   * @return a ReportSynthesisSrfProgressTargetContribution object.
+   */
+  public List<ReportSynthesisSrfProgressTargetContribution> findBySloTargetID(long sloTargetID);
 
   /**
    * This method saves the information of the given reportSynthesisSrfProgressTargetContribution
    * 
-   * @param reportSynthesisSrfProgressTargetContribution - is the reportSynthesisSrfProgressTargetContribution object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the reportSynthesisSrfProgressTargetContribution was
+   * @param reportSynthesisSrfProgressTargetContribution - is the reportSynthesisSrfProgressTargetContribution object
+   *        with the new information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         reportSynthesisSrfProgressTargetContribution was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ReportSynthesisSrfProgressTargetContribution save(ReportSynthesisSrfProgressTargetContribution reportSynthesisSrfProgressTargetContribution);
+  public ReportSynthesisSrfProgressTargetContribution
+    save(ReportSynthesisSrfProgressTargetContribution reportSynthesisSrfProgressTargetContribution);
 }

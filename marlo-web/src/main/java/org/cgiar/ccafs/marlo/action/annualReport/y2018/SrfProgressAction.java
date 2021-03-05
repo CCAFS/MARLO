@@ -36,6 +36,7 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrpProgressTargetManage
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisSrfProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisSrfProgressTargetCasesManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisSrfProgressTargetContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisSrfProgressTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorTargetManager;
@@ -61,6 +62,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpProgressTarget;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTarget;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTargetCases;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTargetContribution;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget;
 import org.cgiar.ccafs.marlo.data.model.StudiesStatusPlanningEnum;
@@ -118,7 +120,7 @@ public class SrfProgressAction extends BaseAction {
 
   private ReportSynthesisSrfProgressTargetManager reportSynthesisSrfProgressTargetManager;
   private ReportSynthesisSrfProgressTargetCasesManager reportSynthesisSrfProgressTargetCasesManager;
-
+  private ReportSynthesisSrfProgressTargetContributionManager reportSynthesisSrfProgressTargetContributionManager;
 
   private SrfSloIndicatorTargetManager srfSloIndicatorTargetManager;
 
@@ -178,7 +180,8 @@ public class SrfProgressAction extends BaseAction {
     RepIndGeographicScopeManager repIndGeographicScopeManager, LocElementManager locElementManager,
     ProgressTargetCaseGeographicRegionManager progressTargetCaseGeographicRegionManager,
     ProgressTargetCaseGeographicScopeManager progressTargetCaseGeographicScopeManager,
-    ProgressTargetCaseGeographicCountryManager progressTargetCaseGeographicCountryManager) {
+    ProgressTargetCaseGeographicCountryManager progressTargetCaseGeographicCountryManager,
+    ReportSynthesisSrfProgressTargetContributionManager reportSynthesisSrfProgressTargetContributionManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -200,6 +203,7 @@ public class SrfProgressAction extends BaseAction {
     this.progressTargetCaseGeographicRegionManager = progressTargetCaseGeographicRegionManager;
     this.progressTargetCaseGeographicScopeManager = progressTargetCaseGeographicScopeManager;
     this.progressTargetCaseGeographicCountryManager = progressTargetCaseGeographicCountryManager;
+    this.reportSynthesisSrfProgressTargetContributionManager = reportSynthesisSrfProgressTargetContributionManager;
   }
 
 
@@ -230,7 +234,23 @@ public class SrfProgressAction extends BaseAction {
       .filter(sr -> sr.isActive() && sr.getYear() == 2022).collect(Collectors.toList()));
 
     if (sloTargets != null) {
+
       for (SrfSloIndicatorTarget target : sloTargets) {
+
+        // Get value for 'no new evidence' check button
+        ReportSynthesisSrfProgressTargetContribution sloContribution =
+          new ReportSynthesisSrfProgressTargetContribution();
+        if (reportSynthesisSrfProgressTargetContributionManager.findBySloTargetID(target.getId()) != null) {
+          sloContribution =
+            reportSynthesisSrfProgressTargetContributionManager.findBySloTargetID(target.getId()).get(0);
+        }
+
+        if (sloContribution != null && sloContribution.getHasEvidence()) {
+          target.setHasEvidence(true);
+        } else {
+          target.setHasEvidence(false);
+        }
+
         List<ReportSynthesisSrfProgressTargetCases> targetCases;
         targetCases =
           reportSynthesisSrfProgressTargetCasesManager.getReportSynthesisSrfProgressId(synthesisID, target.getId());
@@ -799,6 +819,7 @@ public class SrfProgressAction extends BaseAction {
     List<Long> targetsCasesIDsDB = new ArrayList<>();
     if (sloTargets != null) {
       for (SrfSloIndicatorTarget target : sloTargets) {
+
         List<ReportSynthesisSrfProgressTargetCases> targetCases;
         targetCases =
           reportSynthesisSrfProgressTargetCasesManager.getReportSynthesisSrfProgressId(synthesisID, target.getId());
@@ -812,11 +833,33 @@ public class SrfProgressAction extends BaseAction {
         }
       }
     }
+
     // Save form Information
     List<Long> targetsCasesIDs = new ArrayList<>();
     if (sloTargets != null) {
       for (SrfSloIndicatorTarget sloIndicator : sloTargets) {
         if (sloIndicator.getTargetCases() != null) {
+
+          // Save has evidence check field
+          ReportSynthesisSrfProgressTargetContribution contribution =
+            new ReportSynthesisSrfProgressTargetContribution();
+
+          if (reportSynthesisSrfProgressTargetContributionManager.findBySloTargetID(sloIndicator.getId()) != null) {
+            long id = reportSynthesisSrfProgressTargetContributionManager.findBySloTargetID(sloIndicator.getId()).get(0)
+              .getId();
+            contribution.setId(id);
+          }
+
+          contribution.setReportSynthesisSrfProgress(srfProgressDB);
+          contribution.setSrfSloIndicatorTarget(sloIndicator);
+
+          if (sloIndicator.getHasEvidence()) {
+            contribution.setHasEvidence(true);
+          } else {
+            contribution.setHasEvidence(false);
+          }
+          reportSynthesisSrfProgressTargetContributionManager
+            .saveReportSynthesisSrfProgressTargetContribution(contribution);
 
           for (ReportSynthesisSrfProgressTargetCases srfTarget : sloIndicator.getTargetCases()) {
             if (srfTarget.getId() == null) {
