@@ -156,6 +156,15 @@ $(document).ready(function() {
   $('.btn-addEvidence').on('click',addEvidence);
   $('.btn-removeEvidence').on('click',removeEvidence);
 
+    // Deliverable Geographic Scope
+    $('select.elementType-repIndGeographicScope').on("addElement removeElement", function(event,id,name) {
+      console.log('%cevent setGeographicScope','background: #222; color: #37ff73');
+      setGeographicScope(this);
+    });
+    setGeographicScope($('form select.elementType-repIndGeographicScope')[0]);
+      // valiate checkbox "No DOI provided" value
+   
+
   // $('.TA_summaryEvidence .trumbowyg-editor').bind('DOMSubtreeModified', function(){
   //   console.log('%cmovement','background: #222; color: #fd8484');
   //   // $(this).parents('.slo-contribution-section').find('.TA_summaryEvidence .briefSummaryTAHidden').css("background-color", "yellow");
