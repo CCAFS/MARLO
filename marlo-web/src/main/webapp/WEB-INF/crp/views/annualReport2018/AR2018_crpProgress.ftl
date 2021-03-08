@@ -6,7 +6,7 @@
 [#assign pageLibs = [ "select2", "trumbowyg", "components-font-awesome", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js"
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210303" ] /]
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210308A" ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210114"] /]
 
 [#assign breadCrumb = [
@@ -95,7 +95,7 @@
             
           </div>
           [#--  review this commented code   --]
-          [@sloContribution element={} name="outcomes[0].milestones" cssClass="slo-contribution-section-hide slo-contribution-template"  indexSlo=-1 index=-1 /]
+          [@sloContribution element={} name="outcomes[0].milestones" cssClass="slo-contribution-section-hide slo-contribution-template"  indexSlo=-1 index=-1 isTemplate=true /]
         
           [#-- Section Buttons & hidden inputs--]
           [#include "/WEB-INF/crp/views/annualReport2018/buttons-AR2018.ftl" /]
@@ -137,14 +137,13 @@
       <strong >SLO Target 2022</strong>
        <br />${(element.narrative)!} <br>
        <div class="checkboxDiTeAr">
-       
          <div class="contentCheckBox">
-          [@customForm.checkbox name="sloTargets[${index}].hasEvidence" value="false" checked=(sloTargets[index].hasEvidence)!false i18nkey="No new evidence" className="checkboxDiTeArClick" required=false editable=editable /]
+          [@customForm.checkbox name="sloTargets[${index}].hasEvidence" value="${element.hasEvidence?string('false', 'true')}" checked=element.hasEvidence!false i18nkey="No new evidence" className="checkboxDiTeArClick" required=false editable=editable /]
 
          </div>
        </div>
     </div>
-    <div class="to-disabled-box">
+    <div class="to-disabled-box" style="display:${element.hasEvidence?string('none', 'block')}">
       <div class="disabled-box"></div>
     <div class="evidenceList">
       [#list element.targetCases as evidence]
@@ -153,7 +152,7 @@
     </div>
   </div>
 
-  <div class="btn-addEvidence bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add contribution</div>
+  <div class="btn-addEvidence bigAddButton text-center" style="display:${element.hasEvidence?string('none', 'block')}"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add contribution</div>
     
     
     
@@ -174,7 +173,7 @@
 [/#macro]
 
 
-[#macro sloContribution element cssClass="" name="" indexSlo=0 index=0 ]
+[#macro sloContribution element cssClass="" name="" indexSlo=0 index=0 isTemplate=false ]
 [#local ccname = "sloTargets[${indexSlo}].targetCases[${index}]" /]
 
 <div class="slo-contribution-section ${cssClass}" style="margin-top: 10px; padding-top: 20px;">
@@ -192,10 +191,10 @@
   <hr>
   [#-- Brief summary of new evidence of CGIAR contribution to relevant targets for this CRP (with citation) --]
   <div class="form-group TA_summaryEvidence">
-    [@customForm.textArea name="" value=element.briefSummary i18nkey="${customLabel}.summaryEvidence" className="limitWords-150" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable allowTextEditor=true /]
+    [@customForm.textArea name="" value=element.briefSummary i18nkey="${customLabel}.summaryEvidence" className="limitWords-150 tumaco" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable allowTextEditor=!isTemplate /]
 
     <div style="display:none">
-    [@customForm.textArea name="${ccname}.briefSummary" value=element.briefSummary i18nkey="${customLabel}.summaryEvidence" className="limitWords-150 briefSummaryTAHidden" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable /]
+    [@customForm.textArea name="${ccname}.briefSummary" value=element.briefSummary i18nkey="${customLabel}.summaryEvidence" className="limitWords-150 briefSummaryTAHidden" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable  /]
     </div>
     [#-- FP Synthesis table --]
   [#if PMU]
@@ -205,7 +204,7 @@
   [#-- Expected additional contribution before end of 2022 (if not already fully covered). --]
   <div class="form-group TA_additionalContribution">
 
-    [@customForm.textArea name="" value=element.additionalContribution i18nkey="${customLabel}.additionalContribution" className="limitWords-100" help="${customLabel}.additionalContribution.help" helpIcon=false required=false editable=editable  allowTextEditor=true /]
+    [@customForm.textArea name="" value=element.additionalContribution i18nkey="${customLabel}.additionalContribution" className="limitWords-100 tumaco" help="${customLabel}.additionalContribution.help" helpIcon=false required=false editable=editable  allowTextEditor=!isTemplate /]
 
     <div style="display:none">
     [@customForm.textArea name="${ccname}.additionalContribution" value=element.additionalContribution i18nkey="${customLabel}.additionalContribution" className="limitWords-100 additionalContributionTAHidden" help="${customLabel}.additionalContribution.help" helpIcon=false required=false editable=editable /]
