@@ -715,10 +715,6 @@ public class SrfProgressAction extends BaseAction {
         this.setCountries(locElementManager.findAll().stream()
           .filter(c -> c.isActive() && c.getLocElementType().getId() == 2).collect(Collectors.toList()));
 
-        // Srf Targets cases List
-        if (reportSynthesis.getReportSynthesisSrfProgress() != null
-          && reportSynthesis.getReportSynthesisSrfProgress().getId() != null) {
-        }
       }
     }
 
