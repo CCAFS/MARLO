@@ -49,6 +49,8 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
   private Set<ProgressTargetCaseGeographicCountry> progressTargetCaseGeographicCountries =
     new HashSet<ProgressTargetCaseGeographicCountry>(0);
   private List<ProgressTargetCaseGeographicCountry> geographicCountries;
+  private List<String> countriesIds = new ArrayList<>();
+  private String countriesIdsText;
 
   public ReportSynthesisSrfProgressTargetCases() {
   }
@@ -61,6 +63,16 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
 
   public String getBriefSummary() {
     return briefSummary;
+  }
+
+
+  public List<String> getCountriesIds() {
+    return countriesIds;
+  }
+
+
+  public String getCountriesIdsText() {
+    return countriesIdsText;
   }
 
 
@@ -96,14 +108,15 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
     return progressTargetCaseGeographicCountries;
   }
 
+
   public Set<ProgressTargetCaseGeographicRegion> getProgressTargetCaseGeographicRegions() {
     return progressTargetCaseGeographicRegions;
   }
 
+
   public Set<ProgressTargetCaseGeographicScope> getProgressTargetCaseGeographicScopes() {
     return progressTargetCaseGeographicScopes;
   }
-
 
   public ReportSynthesisSrfProgress getReportSynthesisSrfProgress() {
     return reportSynthesisSrfProgress;
@@ -112,6 +125,7 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
   public List<SrfSloIndicatorTarget> getSloTargets() {
     return sloTargets;
   }
+
 
   public SrfSloIndicatorTarget getSrfSloIndicatorTarget() {
     return srfSloIndicatorTarget;
@@ -127,6 +141,14 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
 
   public void setBriefSummary(String briefSummary) {
     this.briefSummary = briefSummary;
+  }
+
+  public void setCountriesIds(List<String> countriesIds) {
+    this.countriesIds = countriesIds;
+  }
+
+  public void setCountriesIdsText(String countriesIdsText) {
+    this.countriesIdsText = countriesIdsText;
   }
 
   public void setGeographicCountries(List<ProgressTargetCaseGeographicCountry> geographicCountries) {

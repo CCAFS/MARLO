@@ -69,7 +69,7 @@
                
                 [#-- Word Document Tag --]
                 [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
-                [@customForm.textArea name="${customName}.overallProgress" i18nkey="${customLabel}.overallProgress" help="${customLabel}.overallProgress.help" className="limitWords-${limit}" helpIcon=false required=true editable=editable allowTextEditor=true /]
+                [@customForm.textArea name="${customName}.overallProgress" i18nkey="${customLabel}.overallProgress" help="${customLabel}.overallProgress.help" className="limitWords-1000" helpIcon=false required=true editable=editable allowTextEditor=true /]
               </div>
               
               [#-- Flagship Synthesis (1.2.2)--]

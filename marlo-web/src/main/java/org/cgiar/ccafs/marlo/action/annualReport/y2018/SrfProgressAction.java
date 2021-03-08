@@ -285,6 +285,9 @@ public class SrfProgressAction extends BaseAction {
 
             if (targetCaseGeographicCountries != null) {
               targetCase.setGeographicCountries(targetCaseGeographicCountries);
+              for (ProgressTargetCaseGeographicCountry country : targetCaseGeographicCountries) {
+                targetCase.getCountriesIds().add(country.getLocElement().getIsoAlpha2());
+              }
             }
           }
           target.setTargetCases(targetCases);
@@ -298,7 +301,6 @@ public class SrfProgressAction extends BaseAction {
     }
 
   }
-
 
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
@@ -321,7 +323,6 @@ public class SrfProgressAction extends BaseAction {
   public List<LocElement> getCountries() {
     return countries;
   }
-
 
   /**
    * Get the information of evidences according to srf target
@@ -354,6 +355,96 @@ public class SrfProgressAction extends BaseAction {
 
 
     return studiesInfo;
+  }
+
+  /**
+   * Get the List of target cases for each SLO and flagship
+   *
+   * @param sloID
+   * @return SrfSloIndicatorTarget list
+   */
+  public List<SrfSloIndicatorTarget> getEvidencesBySLO(int sloID) {
+    List<SrfSloIndicatorTarget> sloTargetsFront = new ArrayList<>();
+
+    if (sloID == 0) {
+      for (LiaisonInstitution li : liaisonInstitutions) {
+        ReportSynthesis reportSynthesisFP =
+          reportSynthesisManager.findSynthesis(this.getActualPhase().getId(), li.getId());
+
+
+        // Fill sloTargets List
+
+        List<SrfSloIndicatorTarget> sloTargetsTemp = new ArrayList<>();
+        sloTargets = new ArrayList<>(srfSloIndicatorTargetManager.findAll().stream()
+          .filter(sr -> sr.isActive() && sr.getYear() == 2022 && sr.getId().equals(Long.parseLong(sloID + "")))
+          .collect(Collectors.toList()));
+
+        if (sloTargets != null) {
+
+          for (SrfSloIndicatorTarget target : sloTargets) {
+
+            // Get value for 'no new evidence' check button
+            ReportSynthesisSrfProgressTargetContribution sloContribution =
+              new ReportSynthesisSrfProgressTargetContribution();
+            if (reportSynthesisSrfProgressTargetContributionManager.findBySloTargetID(target.getId()) != null) {
+              sloContribution =
+                reportSynthesisSrfProgressTargetContributionManager.findBySloTargetID(target.getId()).get(0);
+            }
+
+            if (sloContribution != null && sloContribution.getHasEvidence()) {
+              target.setHasEvidence(true);
+            } else {
+              target.setHasEvidence(false);
+            }
+
+            List<ReportSynthesisSrfProgressTargetCases> targetCases;
+            targetCases = reportSynthesisSrfProgressTargetCasesManager
+              .getReportSynthesisSrfProgressId(reportSynthesisFP.getId(), target.getId());
+
+            if (targetCases != null) {
+
+              // Fill target cases
+              for (ReportSynthesisSrfProgressTargetCases targetCase : targetCases) {
+                List<ProgressTargetCaseGeographicScope> targetCaseGeographicScopes;
+
+                // Geographic scope
+                targetCaseGeographicScopes =
+                  progressTargetCaseGeographicScopeManager.findGeographicScopeByTargetCase(targetCase.getId());
+
+                if (targetCaseGeographicScopes != null) {
+                  targetCase.setGeographicScopes(targetCaseGeographicScopes);
+                }
+
+                // Geographic regions
+                List<ProgressTargetCaseGeographicRegion> targetCaseGeographicRegions;
+                targetCaseGeographicRegions =
+                  progressTargetCaseGeographicRegionManager.findGeographicRegionByTargetCase(targetCase.getId());
+
+                if (targetCaseGeographicRegions != null) {
+                  targetCase.setGeographicRegions(targetCaseGeographicRegions);
+                }
+
+                // Geographic countries
+                List<ProgressTargetCaseGeographicCountry> targetCaseGeographicCountries;
+                targetCaseGeographicCountries =
+                  progressTargetCaseGeographicCountryManager.findGeographicCountryByTargetCase(targetCase.getId());
+
+                if (targetCaseGeographicCountries != null) {
+                  targetCase.setGeographicCountries(targetCaseGeographicCountries);
+                }
+              }
+              target.setTargetCases(targetCases);
+            }
+
+            sloTargetsTemp.add(target);
+          }
+
+          sloTargetsFront = new ArrayList<>();
+          sloTargetsFront.addAll(sloTargetsTemp);
+        }
+      }
+    }
+    return sloTargetsFront;
   }
 
   public List<ReportSynthesisSrfProgress> getFlagshipSrfProgress() {
@@ -715,10 +806,6 @@ public class SrfProgressAction extends BaseAction {
         this.setCountries(locElementManager.findAll().stream()
           .filter(c -> c.isActive() && c.getLocElementType().getId() == 2).collect(Collectors.toList()));
 
-        // Srf Targets cases List
-        if (reportSynthesis.getReportSynthesisSrfProgress() != null
-          && reportSynthesis.getReportSynthesisSrfProgress().getId() != null) {
-        }
       }
     }
 
@@ -900,6 +987,8 @@ public class SrfProgressAction extends BaseAction {
                   }
                 }
               }
+            } else {
+              // delete all
             }
 
             if (srfTarget.getGeographicScopes() != null) {
@@ -941,6 +1030,8 @@ public class SrfProgressAction extends BaseAction {
                   }
                 }
               }
+            } else {
+              // delete all
             }
 
             if (srfTarget.getGeographicRegions() != null) {
@@ -970,40 +1061,29 @@ public class SrfProgressAction extends BaseAction {
 
             // Geographic Countries
 
-            // Search and deleted form Information
-            if (srfTarget.getGeographicCountries() != null && !srfTarget.getGeographicCountries().isEmpty()) {
+            if (srfTarget.getCountriesIds() != null || !srfTarget.getCountriesIds().isEmpty()) {
 
-              List<ProgressTargetCaseGeographicCountry> scopesPrev = new ArrayList<>(
+              List<ProgressTargetCaseGeographicCountry> countries = new ArrayList<>(
                 progressTargetCaseGeographicCountryManager.findGeographicCountryByTargetCase(srfTarget.getId()));
-
-              if (scopesPrev != null) {
-                for (ProgressTargetCaseGeographicCountry scopePrev : scopesPrev) {
-                  if (!srfTarget.getGeographicCountries().contains(scopePrev)) {
+              List<ProgressTargetCaseGeographicCountry> scopesSave = new ArrayList<>();
+              for (String countryIds : srfTarget.getCountriesIds()) {
+                if (countryIds != null && !countryIds.isEmpty()) {
+                  ProgressTargetCaseGeographicCountry geographicCountrySave = new ProgressTargetCaseGeographicCountry();
+                  geographicCountrySave.setTargetCase(srfTarget);
+                  geographicCountrySave.setLocElement(locElementManager.getLocElementByISOCode(countryIds));
+                  scopesSave.add(geographicCountrySave);
+                  if (!countries.contains(geographicCountrySave)) {
                     progressTargetCaseGeographicCountryManager
-                      .deleteProgressTargetCaseGeographicCountry(scopePrev.getId());
+                      .saveProgressTargetCaseGeographicCountry(geographicCountrySave);
                   }
                 }
               }
-            }
 
-            if (srfTarget.getGeographicCountries() != null) {
-              for (ProgressTargetCaseGeographicCountry geographicCountry : srfTarget.getGeographicCountries()) {
-                if (geographicCountry.getId() == null) {
-                  // Save Geographic scope
-                  ProgressTargetCaseGeographicCountry geographicCountrySave = new ProgressTargetCaseGeographicCountry();
-                  geographicCountrySave.setTargetCase(srfTarget);
-                  geographicCountrySave.setLocElement(geographicCountry.getLocElement());
-                  progressTargetCaseGeographicCountryManager
-                    .saveProgressTargetCaseGeographicCountry(geographicCountrySave);
-                } else {
-                  // Update Geographic scope
-                  ProgressTargetCaseGeographicCountry geographicCountryPrev = progressTargetCaseGeographicCountryManager
-                    .getProgressTargetCaseGeographicCountryById(geographicCountry.getId());
-                  if (geographicCountryPrev != null) {
-                    geographicCountryPrev.setTargetCase(srfTarget);
-                    geographicCountryPrev.setLocElement(geographicCountry.getLocElement());
+              if (countries != null && scopesSave != null) {
+                for (ProgressTargetCaseGeographicCountry scopePrev : countries) {
+                  if (!scopesSave.contains(scopePrev)) {
                     progressTargetCaseGeographicCountryManager
-                      .saveProgressTargetCaseGeographicCountry(geographicCountryPrev);
+                      .deleteProgressTargetCaseGeographicCountry(scopePrev.getId());
                   }
                 }
               }

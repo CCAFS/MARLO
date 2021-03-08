@@ -3,6 +3,10 @@ var tableDatatableViewmore, tableDataProgressTableViewmore, tableDatatableTableG
 var pageName;
 var googleChartsLoaded = false;
 $(document).ready(function() {
+  
+  // $('.slo-contribution-template').find('textarea').trumbowyg("destroy");
+
+  $('.slo-contribution-template').find('select').select2("destroy");
   pageName = actionName.replace(/[^a-z0-9+]+/gi, '_');
 
   // Set data tables
@@ -152,19 +156,55 @@ $(document).ready(function() {
   $('.btn-addEvidence').on('click',addEvidence);
   $('.btn-removeEvidence').on('click',removeEvidence);
 
-  $('.TA_summaryEvidence .trumbowyg-editor').bind('DOMSubtreeModified', function(){
-    // $(this).parents('.slo-contribution-section').find('.TA_summaryEvidence .briefSummaryTAHidden').css("background-color", "yellow");
-    $(this).parents('.slo-contribution-section').find('.TA_summaryEvidence .briefSummaryTAHidden').html($(this).html());
-  });
+    // Deliverable Geographic Scope
+    $('select.elementType-repIndGeographicScope').on("addElement removeElement", function(event,id,name) {
+      console.log('%cevent setGeographicScope','background: #222; color: #37ff73');
+      setGeographicScope(this);
+    });
+    setGeographicScope($('form select.elementType-repIndGeographicScope')[0]);
+      // valiate checkbox "No DOI provided" value
+   
+
+  // $('.TA_summaryEvidence .trumbowyg-editor').bind('DOMSubtreeModified', function(){
+  //   console.log('%cmovement','background: #222; color: #fd8484');
+  //   // $(this).parents('.slo-contribution-section').find('.TA_summaryEvidence .briefSummaryTAHidden').css("background-color", "yellow");
+  //   $(this).parents('.slo-contribution-section').find('.TA_summaryEvidence .briefSummaryTAHidden').html($(this).html());
+  // });
 
 
-  $('.TA_additionalContribution .trumbowyg-editor').bind('DOMSubtreeModified', function(){
-    $(this).parents('.slo-contribution-section').find('.TA_additionalContribution .additionalContributionTAHidden').html($(this).html());
-  });
+  // $('.TA_additionalContribution .trumbowyg-editor').bind('DOMSubtreeModified', function(){
+  //   console.log('%cmovement','background: #222; color: #fd8484');
+
+  //   $(this).parents('.slo-contribution-section').find('.TA_additionalContribution .additionalContributionTAHidden').html($(this).html());
+  // });
+
+  // $('.button-save').on('click',updateALltexareas);
+  $(document).keypress(updateALltexareas);
+  $(document).click(updateALltexareas);
+ 
+
+  // $('.slo-contribution-section').on("bind",".TA_summaryEvidence .trumbowyg-editor", function() {
+  //   //do whatever
+  //   console.log('%cHola mundo','background: #222; color: #fd8484');
+  // });
 
   setStatusByBack();
   // updateAllIndexesContribution();
 });
+
+function updateALltexareas(){
+  $('.sloTargetsList').find('.sloTarget').each(function (i, sloTarget) {
+    setTimeout(() => {
+      $(sloTarget).find('.evidenceList').find('.slo-contribution-section').each(function (i, evidence) {
+        // $(evidence).css("background-color", "yellow");
+        $(evidence).find('.TA_summaryEvidence .briefSummaryTAHidden').html($(evidence).find('.TA_summaryEvidence .trumbowyg-editor').html());
+        $(evidence).find('.TA_additionalContribution .additionalContributionTAHidden').html($(evidence).find('.TA_additionalContribution .trumbowyg-editor').html());
+        // console.log($(evidence).find('.TA_additionalContribution .trumbowyg-editor').val());
+      });
+    }, 10);
+  });
+  $(document).trigger('updateComponent');
+}
 
 function setStatusByBack() {
   $(".sloTargetsList")
@@ -187,7 +227,7 @@ function setStatusByBack() {
 
       }
     
-      if ($(checkbox).val() == "false") {
+      if ($(checkbox).val() == "true") {
         $(checkbox).parents(".a-slo").find(".to-disabled-box").hide(400);
         $(checkbox).parents(".a-slo").find(".btn-addEvidence").hide(400);
         // $(checkbox).parents(".a-slo").find(".disabled-box").show();
@@ -210,7 +250,7 @@ function setCheckboxValueTohide() {
     // console.log("now is: "+$(this).val());
   }
 
-  if ($(this).val() == "false") {
+  if ($(this).val() == "true") {
     $(this).parents(".a-slo").find(".to-disabled-box").hide(400);
     $(this).parents(".a-slo").find(".btn-addEvidence").hide(400);
     // $(this).parents(".a-slo").find(".disabled-box").show();
@@ -331,11 +371,39 @@ function addEvidence() {
 console.log('addEvidence');
 
   var $list =  $(this).parents(".simpleBox").find(".evidenceList");
-  var $item = $('.slo-contribution-template').clone(true);
+  var $item = $('.slo-contribution-template');
+  $item = $item.clone(true);
   $($item).removeClass('slo-contribution-template');
   $list.append($item);
+
+
+  // $($item).find('.TA_summaryEvidence .trumbowyg-editor').bind('DOMSubtreeModified', function(){
+  //  console.log('%csome','background: #222; color: #84c3fd');
+  // });
+
+
   updateAllIndexesContribution();
   $item.show('slow');
+  $item.find("select").select2({
+    // templateResult: formatState,
+    width: '100%'
+});
+
+
+$item.find('textarea.tumaco').trumbowyg({
+  btns: [
+    [
+        'link', 'strong', 'em'
+    ]
+  ],
+  allowTagsFromPaste: [
+      'a', 'p', 'br', 'b', 'strong', 'i', 'em'
+  ],
+  urlProtocol: true,
+  autogrow: true,
+  minimalLinks: true,
+  semantic: true
+});
 
 }
 
