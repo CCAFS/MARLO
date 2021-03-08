@@ -929,21 +929,19 @@ public class SrfProgressAction extends BaseAction {
 
           // Save has evidence check field
           ReportSynthesisSrfProgressTargetContribution contribution =
-            new ReportSynthesisSrfProgressTargetContribution();
+            reportSynthesisSrfProgressTargetContributionManager.findBySloTargetID(sloIndicator.getId()).get(0);
 
-          if (reportSynthesisSrfProgressTargetContributionManager.findBySloTargetID(sloIndicator.getId()) != null) {
-            long id = reportSynthesisSrfProgressTargetContributionManager.findBySloTargetID(sloIndicator.getId()).get(0)
-              .getId();
-            contribution.setId(id);
+          if (contribution == null) {
+            contribution = new ReportSynthesisSrfProgressTargetContribution();
           }
 
           contribution.setReportSynthesisSrfProgress(srfProgressDB);
           contribution.setSrfSloIndicatorTarget(sloIndicator);
 
-          if (sloIndicator.getHasEvidence()) {
-            contribution.setHasEvidence(true);
-          } else {
+          if (sloIndicator.getHasEvidence() == null || sloIndicator.getHasEvidence() == false) {
             contribution.setHasEvidence(false);
+          } else {
+            contribution.setHasEvidence(true);
           }
           reportSynthesisSrfProgressTargetContributionManager
             .saveReportSynthesisSrfProgressTargetContribution(contribution);
@@ -1061,7 +1059,7 @@ public class SrfProgressAction extends BaseAction {
 
             // Geographic Countries
 
-            if (srfTarget.getCountriesIds() != null || !srfTarget.getCountriesIds().isEmpty()) {
+            if (srfTarget.getCountriesIds() != null) {
 
               List<ProgressTargetCaseGeographicCountry> countries = new ArrayList<>(
                 progressTargetCaseGeographicCountryManager.findGeographicCountryByTargetCase(srfTarget.getId()));
