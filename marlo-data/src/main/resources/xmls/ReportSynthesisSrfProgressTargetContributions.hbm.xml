@@ -27,8 +27,8 @@
 			optimistic-lock="true" unique="false" update="true">
 			<column name="srf_slo_indicator_targets_id" />
 		</many-to-one>
-		<property name="hasEvidence" type="java.lang.Boolean">
-			<column name="has_evidence"/>
+		<property name="hasEvidence" type="boolean">
+			<column name="has_evidence" not-null="true"/>
 		</property>
 	</class>
 </hibernate-mapping>
