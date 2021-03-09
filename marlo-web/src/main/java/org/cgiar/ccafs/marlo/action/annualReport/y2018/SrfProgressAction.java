@@ -844,9 +844,7 @@ public class SrfProgressAction extends BaseAction {
       if (reportSynthesis.getReportSynthesisSrfProgress().getSloTargetsCases() != null) {
         reportSynthesis.getReportSynthesisSrfProgress().getSloTargetsCases().clear();
       }
-      if (sloTargets != null) {
-        sloTargets.clear();
-      }
+
     }
   }
 
