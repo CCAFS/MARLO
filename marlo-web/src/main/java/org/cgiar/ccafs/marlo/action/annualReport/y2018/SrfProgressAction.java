@@ -245,7 +245,7 @@ public class SrfProgressAction extends BaseAction {
             reportSynthesisSrfProgressTargetContributionManager.findBySloTargetID(target.getId()).get(0);
         }
 
-        if (sloContribution != null && sloContribution.getHasEvidence()) {
+        if (sloContribution != null) {
           target.setHasEvidence(true);
         } else {
           target.setHasEvidence(false);
@@ -391,7 +391,7 @@ public class SrfProgressAction extends BaseAction {
                 reportSynthesisSrfProgressTargetContributionManager.findBySloTargetID(target.getId()).get(0);
             }
 
-            if (sloContribution != null && sloContribution.getHasEvidence()) {
+            if (sloContribution != null) {
               target.setHasEvidence(true);
             } else {
               target.setHasEvidence(false);
