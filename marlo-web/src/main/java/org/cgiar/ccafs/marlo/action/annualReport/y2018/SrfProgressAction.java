@@ -246,7 +246,7 @@ public class SrfProgressAction extends BaseAction {
         }
 
         if (sloContribution != null) {
-          target.setHasEvidence(true);
+          target.setHasEvidence(sloContribution.isHasEvidence());
         } else {
           target.setHasEvidence(false);
         }
