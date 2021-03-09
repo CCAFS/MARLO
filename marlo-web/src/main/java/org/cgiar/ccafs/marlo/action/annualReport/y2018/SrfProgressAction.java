@@ -927,16 +927,17 @@ public class SrfProgressAction extends BaseAction {
 
           // Save has evidence check field
           ReportSynthesisSrfProgressTargetContribution contribution =
-            reportSynthesisSrfProgressTargetContributionManager.findBySloTargetID(sloIndicator.getId()).get(0);
+            new ReportSynthesisSrfProgressTargetContribution();
 
-          if (contribution == null) {
-            contribution = new ReportSynthesisSrfProgressTargetContribution();
+          if (sloIndicator.getId() != null) {
+            contribution =
+              reportSynthesisSrfProgressTargetContributionManager.findBySloTargetID(sloIndicator.getId()).get(0);
           }
 
           contribution.setReportSynthesisSrfProgress(srfProgressDB);
           contribution.setSrfSloIndicatorTarget(sloIndicator);
 
-          if (sloIndicator.getHasEvidence() == null || sloIndicator.getHasEvidence() == false) {
+          if (sloIndicator.getHasEvidence() == null || !sloIndicator.getHasEvidence()) {
             contribution.setHasEvidence(false);
           } else {
             contribution.setHasEvidence(true);
@@ -1348,7 +1349,7 @@ public class SrfProgressAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      this.fillSloTargetsCasesDB();
+      // this.fillSloTargetsCasesDB();
       if (this.isPMU()) {
         validator.validateCheckButton(this, reportSynthesis, true);
       } else {
