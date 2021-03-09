@@ -130,6 +130,21 @@ public class DeliverableMetadataByWOS extends BaseAction {
     return SUCCESS;
   }
 
+  private String getBooleanStringOrNotAvailable(String string) {
+    String result = null;
+    if (string != null) {
+      if (StringUtils.equalsIgnoreCase(string, "yes")) {
+        result = "true";
+      } else if (StringUtils.equalsIgnoreCase(string, "no")) {
+        result = "false";
+      } else if (StringUtils.equalsIgnoreCase(string, "n/a")) {
+        result = "N/A";
+      }
+    }
+
+    return result;
+  }
+
   public String getJsonStringResponse() {
     return jsonStringResponse;
   }
@@ -206,11 +221,9 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
       for (DeliverableAffiliation dbDeliverableAffiliation : dbAffiliations) {
         if (dbDeliverableAffiliation != null && dbDeliverableAffiliation.getInstitution() != null
-          && (incomingInstitutions.stream()
-            .filter(i -> i != null && i.getClarisaId() != null
-              && i.getClarisaId().equals(dbDeliverableAffiliation.getInstitution().getId())
-              && i.getClarisaMatchConfidence() < APConstants.ACCEPTATION_PERCENTAGE)
-            .count() == 0)) {
+          && (incomingInstitutions.stream().filter(i -> i != null && i.getFullName() != null
+            && StringUtils.equalsIgnoreCase(i.getFullName(), dbDeliverableAffiliation.getInstitutionNameWebOfScience())
+            && i.getClarisaMatchConfidence() < APConstants.ACCEPTATION_PERCENTAGE).count() == 0)) {
           this.deliverableAffiliationManager.deleteDeliverableAffiliation(dbDeliverableAffiliation.getId());
           this.deliverableAffiliationManager.replicate(dbDeliverableAffiliation,
             phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
@@ -225,8 +238,8 @@ public class DeliverableMetadataByWOS extends BaseAction {
               .filter(nda -> nda != null && nda.getDeliverableMetadataExternalSources() != null
                 && nda.getDeliverableMetadataExternalSources().getId() != null
                 && nda.getDeliverableMetadataExternalSources().getId().equals(externalSource.getId())
-                && nda.getInstitution() != null && nda.getInstitution().getId() != null
-                && nda.getInstitution().getId().equals(incomingAffiliation.getClarisaId()))
+                && nda.getInstitutionNameWebOfScience() != null && StringUtils
+                  .equalsIgnoreCase(incomingAffiliation.getFullName(), nda.getInstitutionNameWebOfScience()))
               .findFirst().orElse(null);
           if (newDeliverableAffiliation == null) {
             newDeliverableAffiliation = new DeliverableAffiliation();
@@ -274,8 +287,8 @@ public class DeliverableMetadataByWOS extends BaseAction {
         if (dbDeliverableAffiliationNotMapped != null
           && dbDeliverableAffiliationNotMapped.getPossibleInstitution() != null
           && (incomingInstitutions.stream()
-            .filter(i -> i != null && i.getClarisaId() != null
-              && i.getClarisaId().equals(dbDeliverableAffiliationNotMapped.getPossibleInstitution().getId())
+            .filter(i -> i != null && i.getFullName() != null
+              && i.getFullName().equals(dbDeliverableAffiliationNotMapped.getPossibleInstitution().getName())
               && i.getClarisaMatchConfidence() >= APConstants.ACCEPTATION_PERCENTAGE)
             .count() == 0)) {
           this.deliverableAffiliationsNotMappedManager
@@ -294,8 +307,8 @@ public class DeliverableMetadataByWOS extends BaseAction {
                 .filter(nda -> nda != null && nda.getDeliverableMetadataExternalSources() != null
                   && nda.getDeliverableMetadataExternalSources().getId() != null
                   && nda.getDeliverableMetadataExternalSources().getId().equals(externalSource.getId())
-                  && nda.getPossibleInstitution() != null && nda.getPossibleInstitution().getId() != null
-                  && nda.getPossibleInstitution().getId().equals(incomingAffiliation.getClarisaId()))
+                  && nda.getName() != null
+                  && StringUtils.equalsIgnoreCase(incomingAffiliation.getFullName(), nda.getName()))
                 .findFirst().orElse(null)
               : null;
           if (newDeliverableAffiliationNotMapped == null) {
@@ -437,9 +450,9 @@ public class DeliverableMetadataByWOS extends BaseAction {
     externalSource.setTitle(this.response.getTitle());
     externalSource.setPublicationType(this.response.getPublicationType());
     externalSource.setPublicationYear(this.response.getPublicationYear());
-    externalSource.setOpenAccessStatus(String.valueOf(this.response.getIsOpenAccess()));
+    externalSource.setOpenAccessStatus(this.getBooleanStringOrNotAvailable(this.response.getIsOpenAccess()));
     externalSource.setOpenAccessLink(this.response.getOpenAcessLink());
-    externalSource.setIsiStatus(String.valueOf(this.response.getIsISI()));
+    externalSource.setIsiStatus(this.getBooleanStringOrNotAvailable(this.response.getIsISI()));
     externalSource.setJournalName(this.response.getJournalName());
     externalSource.setVolume(this.response.getVolume());
     externalSource.setPages(this.response.getPages());
