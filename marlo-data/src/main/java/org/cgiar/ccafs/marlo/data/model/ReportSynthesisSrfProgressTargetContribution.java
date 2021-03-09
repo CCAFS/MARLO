@@ -21,13 +21,9 @@ public class ReportSynthesisSrfProgressTargetContribution extends MarloAuditable
   private SrfSloIndicatorTarget srfSloIndicatorTarget;
 
   @Expose
-  boolean hasEvidence;
+  private boolean hasEvidence;
 
   public ReportSynthesisSrfProgressTargetContribution() {
-  }
-
-  public boolean getHasEvidence() {
-    return hasEvidence;
   }
 
   @Override
@@ -43,6 +39,10 @@ public class ReportSynthesisSrfProgressTargetContribution extends MarloAuditable
 
   public SrfSloIndicatorTarget getSrfSloIndicatorTarget() {
     return srfSloIndicatorTarget;
+  }
+
+  public boolean isHasEvidence() {
+    return hasEvidence;
   }
 
   public void setHasEvidence(boolean hasEvidence) {
