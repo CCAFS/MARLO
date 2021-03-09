@@ -6,7 +6,7 @@
 [#assign pageLibs = [ "select2", "trumbowyg", "components-font-awesome", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js"
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210305" ] /]
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210308A" ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210114"] /]
 
 [#assign breadCrumb = [
@@ -48,7 +48,7 @@
             [#-- Overall contribution towards SRF targets --]
             <div class="form-group">
               [#-- Word Document Tag --]
-              [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
+              [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][#else][@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/][/#if]
               [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.overallContribution" help="${customLabel}.overallContribution.help" className="limitWords-${calculateLimitWords(400)}" helpIcon=false required=true editable=editable allowTextEditor=true /]
               <br />
             </div>
@@ -137,14 +137,13 @@
       <strong >SLO Target 2022</strong>
        <br />${(element.narrative)!} <br>
        <div class="checkboxDiTeAr">
-       
          <div class="contentCheckBox">
-          [@customForm.checkbox name="sloTargets[${index}].hasEvidence" value="false" checked=(sloTargets[index].hasEvidence)!false i18nkey="No new evidence" className="checkboxDiTeArClick" required=false editable=editable /]
+          [@customForm.checkbox name="sloTargets[${index}].hasEvidence" value="${element.hasEvidence?string('false', 'true')}" checked=element.hasEvidence!false i18nkey="No new evidence" className="checkboxDiTeArClick" required=false editable=editable /]
 
          </div>
        </div>
     </div>
-    <div class="to-disabled-box">
+    <div class="to-disabled-box" style="display:${element.hasEvidence?string('none', 'block')}">
       <div class="disabled-box"></div>
     <div class="evidenceList">
       [#list element.targetCases as evidence]
@@ -153,7 +152,7 @@
     </div>
   </div>
 
-  <div class="btn-addEvidence bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add contribution</div>
+  <div class="btn-addEvidence bigAddButton text-center" style="display:${element.hasEvidence?string('none', 'block')}"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add contribution</div>
     
     
     
@@ -188,25 +187,29 @@
   </div>
 
   <div class="btn-removeEvidence removeElement sm" title="Remove Evidence"></div>
+  [#if !PMU] [@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/][/#if]
   [@arMacros.deliverableGeographicScope name="${ccname}" element=element /]
   <hr>
   [#-- Brief summary of new evidence of CGIAR contribution to relevant targets for this CRP (with citation) --]
+  <br>
   <div class="form-group TA_summaryEvidence">
+  [#if !PMU] [@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/][/#if]
     [@customForm.textArea name="" value=element.briefSummary i18nkey="${customLabel}.summaryEvidence" className="limitWords-150 tumaco" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable allowTextEditor=!isTemplate /]
 
     <div style="display:none">
     [@customForm.textArea name="${ccname}.briefSummary" value=element.briefSummary i18nkey="${customLabel}.summaryEvidence" className="limitWords-150 briefSummaryTAHidden" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable  /]
     </div>
-    [#-- FP Synthesis table --]
+  [#-- FP Synthesis table --]
   [#if PMU]
     [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableSloTargetBriefSummary" list=otherContributions columns=["briefSummary"] crpProgramField="reportSynthesisSrfProgress.reportSynthesis.liaisonInstitution.crpProgram" showTitle=false showHeader=false showEmptyRows=false /]
   [/#if]
   </div>
   [#-- Expected additional contribution before end of 2022 (if not already fully covered). --]
+  <br>
   <div class="form-group TA_additionalContribution">
-
+  [#if !PMU] [@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/][/#if]
     [@customForm.textArea name="" value=element.additionalContribution i18nkey="${customLabel}.additionalContribution" className="limitWords-100 tumaco" help="${customLabel}.additionalContribution.help" helpIcon=false required=false editable=editable  allowTextEditor=!isTemplate /]
-
+    <br>
     <div style="display:none">
     [@customForm.textArea name="${ccname}.additionalContribution" value=element.additionalContribution i18nkey="${customLabel}.additionalContribution" className="limitWords-100 additionalContributionTAHidden" help="${customLabel}.additionalContribution.help" helpIcon=false required=false editable=editable /]
     </div>

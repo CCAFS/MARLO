@@ -135,20 +135,29 @@ public class FlagshipProgress2018Validator extends BaseValidator {
       } else {
         // Validate PMU fields
 
-        if (hasFlagshipsProgress == true) {
-          if (!(this.isValidString(reportSynthesis.getReportSynthesisFlagshipProgress().getOverallProgress()))
-            && reportSynthesis.getReportSynthesisFlagshipProgress().getOverallProgress().length() > 250) {
-            action.addMissingField(action.getText("annualReport2018.flagshipProgress.overallProgress.readText"));
-            action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.overallProgress",
-              InvalidFieldsMessages.EMPTYFIELD);
-          } else {
-            if (!(this.isValidString(reportSynthesis.getReportSynthesisFlagshipProgress().getOverallProgress()))
-              && reportSynthesis.getReportSynthesisFlagshipProgress().getOverallProgress().length() > 1000) {
-              action.addMissingField(action.getText("annualReport2018.flagshipProgress.overallProgress.readText"));
-              action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.overallProgress",
-                InvalidFieldsMessages.EMPTYFIELD);
-            }
-          }
+        /*
+         * if (hasFlagshipsProgress == true) {
+         * if (!(this.isValidString(reportSynthesis.getReportSynthesisFlagshipProgress().getOverallProgress()))
+         * && reportSynthesis.getReportSynthesisFlagshipProgress().getOverallProgress().length() > 250) {
+         * action.addMissingField(action.getText("annualReport2018.flagshipProgress.overallProgress.readText"));
+         * action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.overallProgress",
+         * InvalidFieldsMessages.EMPTYFIELD);
+         * } else {
+         * if (!(this.isValidString(reportSynthesis.getReportSynthesisFlagshipProgress().getOverallProgress()))
+         * && reportSynthesis.getReportSynthesisFlagshipProgress().getOverallProgress().length() > 1000) {
+         * action.addMissingField(action.getText("annualReport2018.flagshipProgress.overallProgress.readText"));
+         * action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.overallProgress",
+         * InvalidFieldsMessages.EMPTYFIELD);
+         * }
+         * }
+         * }
+         */
+
+        if (!(this.isValidString(reportSynthesis.getReportSynthesisFlagshipProgress().getOverallProgress()))
+          && reportSynthesis.getReportSynthesisFlagshipProgress().getOverallProgress().length() > 1000) {
+          action.addMissingField(action.getText("annualReport2018.flagshipProgress.overallProgress.readText"));
+          action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.overallProgress",
+            InvalidFieldsMessages.EMPTYFIELD);
         }
       }
 
@@ -278,11 +287,14 @@ public class FlagshipProgress2018Validator extends BaseValidator {
 
 
       // Validate Relevance to covid field - for Flagships and PMU
-      if (!(this.isValidString(reportSynthesis.getReportSynthesisFlagshipProgress().getRelevanceCovid()))
-        && reportSynthesis.getReportSynthesisFlagshipProgress().getRelevanceCovid().length() < 300) {
-        action.addMissingField(action.getText("annualReport2018.flagshipProgress.relevanceCovid"));
-        action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.relevanceCovid",
-          InvalidFieldsMessages.EMPTYFIELD);
+      if (reportSynthesis != null && reportSynthesis.getReportSynthesisFlagshipProgress() != null
+        && reportSynthesis.getReportSynthesisFlagshipProgress().getRelevanceCovid() != null) {
+        if (!(this.isValidString(reportSynthesis.getReportSynthesisFlagshipProgress().getRelevanceCovid()))
+          && reportSynthesis.getReportSynthesisFlagshipProgress().getRelevanceCovid().length() < 300) {
+          action.addMissingField(action.getText("annualReport2018.flagshipProgress.relevanceCovid"));
+          action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.relevanceCovid",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
       }
 
       // Validate flagship fields
@@ -297,20 +309,29 @@ public class FlagshipProgress2018Validator extends BaseValidator {
       } else {
         // Validate PMU fields
 
-        if (hasFlagshipsProgress == true) {
-          if (!(this.isValidString(reportSynthesis.getReportSynthesisFlagshipProgress().getOverallProgress()))
-            && reportSynthesis.getReportSynthesisFlagshipProgress().getOverallProgress().length() > 250) {
-            action.addMissingField(action.getText("annualReport2018.flagshipProgress.overallProgress.readText"));
-            action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.overallProgress",
-              InvalidFieldsMessages.EMPTYFIELD);
-          } else {
-            if (!(this.isValidString(reportSynthesis.getReportSynthesisFlagshipProgress().getOverallProgress()))
-              && reportSynthesis.getReportSynthesisFlagshipProgress().getOverallProgress().length() > 1000) {
-              action.addMissingField(action.getText("annualReport2018.flagshipProgress.overallProgress.readText"));
-              action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.overallProgress",
-                InvalidFieldsMessages.EMPTYFIELD);
-            }
-          }
+        /*
+         * if (hasFlagshipsProgress == true) {
+         * if (!(this.isValidString(reportSynthesis.getReportSynthesisFlagshipProgress().getOverallProgress()))
+         * && reportSynthesis.getReportSynthesisFlagshipProgress().getOverallProgress().length() > 250) {
+         * action.addMissingField(action.getText("annualReport2018.flagshipProgress.overallProgress.readText"));
+         * action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.overallProgress",
+         * InvalidFieldsMessages.EMPTYFIELD);
+         * } else {
+         * if (!(this.isValidString(reportSynthesis.getReportSynthesisFlagshipProgress().getOverallProgress()))
+         * && reportSynthesis.getReportSynthesisFlagshipProgress().getOverallProgress().length() > 1000) {
+         * action.addMissingField(action.getText("annualReport2018.flagshipProgress.overallProgress.readText"));
+         * action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.overallProgress",
+         * InvalidFieldsMessages.EMPTYFIELD);
+         * }
+         * }
+         * }
+         */
+
+        if (!(this.isValidString(reportSynthesis.getReportSynthesisFlagshipProgress().getOverallProgress()))
+          && reportSynthesis.getReportSynthesisFlagshipProgress().getOverallProgress().length() > 1000) {
+          action.addMissingField(action.getText("annualReport2018.flagshipProgress.overallProgress.readText"));
+          action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.overallProgress",
+            InvalidFieldsMessages.EMPTYFIELD);
         }
       }
 
