@@ -431,6 +431,8 @@ public class SrfProgressAction extends BaseAction {
                   evidence.setGeographicRegions(targetCaseGeographicRegions);
                 }
 
+                evidence.setLiaisonInstitution(li);
+
                 // Geographic countries
                 List<ProgressTargetCaseGeographicCountry> targetCaseGeographicCountries;
                 targetCaseGeographicCountries =
@@ -446,6 +448,7 @@ public class SrfProgressAction extends BaseAction {
         }
       }
     }
+    System.out.println(sloTargetFront.getTargetCases());
     return sloTargetFront;
   }
 
@@ -813,7 +816,7 @@ public class SrfProgressAction extends BaseAction {
 
     // Fill Slo Targets, contributions and Geographic scope information
     this.fillSloTargetsCasesDB();
-
+    this.getEvidencesBySLO(1);
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null && c.isActive()
@@ -931,7 +934,9 @@ public class SrfProgressAction extends BaseAction {
           ReportSynthesisSrfProgressTargetContribution contribution =
             new ReportSynthesisSrfProgressTargetContribution();
 
-          if (sloIndicator.getId() != null) {
+          if (sloIndicator.getId() != null
+            && reportSynthesisSrfProgressTargetContributionManager.findBySloTargetID(sloIndicator.getId()) != null
+            && !reportSynthesisSrfProgressTargetContributionManager.findBySloTargetID(sloIndicator.getId()).isEmpty()) {
             contribution =
               reportSynthesisSrfProgressTargetContributionManager.findBySloTargetID(sloIndicator.getId()).get(0);
           }
