@@ -112,11 +112,13 @@ public class SrfProgressValidator extends BaseValidator {
       }
 
       // Validate Targets
-      if (reportSynthesis.getReportSynthesisSrfProgress().getSloTargets() != null) {
-        for (int i = 0; i < reportSynthesis.getReportSynthesisSrfProgress().getSloTargets().size(); i++) {
-          this.validateTargets(action, reportSynthesis.getReportSynthesisSrfProgress().getSloTargets().get(i), i);
-        }
-      }
+      /*
+       * if (reportSynthesis.getReportSynthesisSrfProgress().getSloTargets() != null) {
+       * for (int i = 0; i < reportSynthesis.getReportSynthesisSrfProgress().getSloTargets().size(); i++) {
+       * this.validateTargets(action, reportSynthesis.getReportSynthesisSrfProgress().getSloTargets().get(i), i);
+       * }
+       * }
+       */
 
       if (sloTargets != null && !sloTargets.isEmpty()) {
         for (int i = 0; i < sloTargets.size(); i++) {
@@ -238,12 +240,13 @@ public class SrfProgressValidator extends BaseValidator {
       }
 
       // Validate Targets
-      if (reportSynthesis.getReportSynthesisSrfProgress().getSloTargets() != null) {
-        for (int i = 0; i < reportSynthesis.getReportSynthesisSrfProgress().getSloTargets().size(); i++) {
-          this.validateTargets(action, reportSynthesis.getReportSynthesisSrfProgress().getSloTargets().get(i), i);
-        }
-      }
-
+      /*
+       * if (reportSynthesis.getReportSynthesisSrfProgress().getSloTargets() != null) {
+       * for (int i = 0; i < reportSynthesis.getReportSynthesisSrfProgress().getSloTargets().size(); i++) {
+       * this.validateTargets(action, reportSynthesis.getReportSynthesisSrfProgress().getSloTargets().get(i), i);
+       * }
+       * }
+       */
 
       String flagshipsWithMisingInformation = "";
       // Get all liaison institutions for current CRP
