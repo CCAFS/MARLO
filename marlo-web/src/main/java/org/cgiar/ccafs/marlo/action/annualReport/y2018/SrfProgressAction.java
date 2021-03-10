@@ -261,7 +261,7 @@ public class SrfProgressAction extends BaseAction {
           for (ReportSynthesisSrfProgressTargetCases targetCase : targetCases) {
             List<ProgressTargetCaseGeographicScope> targetCaseGeographicScopes;
 
-            // Geographic scope
+            // Geographic Scope
             targetCaseGeographicScopes =
               progressTargetCaseGeographicScopeManager.findGeographicScopeByTargetCase(targetCase.getId());
 
@@ -431,6 +431,8 @@ public class SrfProgressAction extends BaseAction {
                   evidence.setGeographicRegions(targetCaseGeographicRegions);
                 }
 
+                evidence.setLiaisonInstitution(li);
+
                 // Geographic countries
                 List<ProgressTargetCaseGeographicCountry> targetCaseGeographicCountries;
                 targetCaseGeographicCountries =
@@ -446,6 +448,7 @@ public class SrfProgressAction extends BaseAction {
         }
       }
     }
+    System.out.println(sloTargetFront.getTargetCases());
     return sloTargetFront;
   }
 
@@ -789,6 +792,9 @@ public class SrfProgressAction extends BaseAction {
 
         this.setDraft(false);
 
+        // Fill Slo Targets, contributions and Geographic scope information
+        this.fillSloTargetsCasesDB();
+
         // Check if relation is null -create it
         if (reportSynthesis.getReportSynthesisSrfProgress() == null) {
           ReportSynthesisSrfProgress srfProgress = new ReportSynthesisSrfProgress();
@@ -810,9 +816,6 @@ public class SrfProgressAction extends BaseAction {
 
       }
     }
-
-    // Fill Slo Targets, contributions and Geographic scope information
-    this.fillSloTargetsCasesDB();
 
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
@@ -845,6 +848,25 @@ public class SrfProgressAction extends BaseAction {
       }
       if (reportSynthesis.getReportSynthesisSrfProgress().getSloTargetsCases() != null) {
         reportSynthesis.getReportSynthesisSrfProgress().getSloTargetsCases().clear();
+      }
+
+      if (sloTargets != null && !sloTargets.isEmpty()) {
+        for (SrfSloIndicatorTarget sloTarget : sloTargets) {
+          if (sloTarget != null && sloTarget.getTargetCases() != null && !sloTarget.getTargetCases().isEmpty()) {
+            for (ReportSynthesisSrfProgressTargetCases targetCase : sloTarget.getTargetCases()) {
+              if (targetCase.getGeographicScopes() != null) {
+                targetCase.getGeographicScopes().clear();
+              }
+              if (targetCase.getGeographicRegions() != null) {
+                targetCase.getGeographicRegions().clear();
+              }
+              if (targetCase.getGeographicCountries() != null) {
+                targetCase.getGeographicCountries().clear();
+              }
+            }
+            sloTarget.getTargetCases().clear();
+          }
+        }
       }
 
     }
@@ -931,7 +953,9 @@ public class SrfProgressAction extends BaseAction {
           ReportSynthesisSrfProgressTargetContribution contribution =
             new ReportSynthesisSrfProgressTargetContribution();
 
-          if (sloIndicator.getId() != null) {
+          if (sloIndicator.getId() != null
+            && reportSynthesisSrfProgressTargetContributionManager.findBySloTargetID(sloIndicator.getId()) != null
+            && !reportSynthesisSrfProgressTargetContributionManager.findBySloTargetID(sloIndicator.getId()).isEmpty()) {
             contribution =
               reportSynthesisSrfProgressTargetContributionManager.findBySloTargetID(sloIndicator.getId()).get(0);
           }
@@ -997,7 +1021,11 @@ public class SrfProgressAction extends BaseAction {
                   ProgressTargetCaseGeographicScope geographicScopeSave = new ProgressTargetCaseGeographicScope();
                   geographicScopeSave.setTargetCase(srfTarget);
                   geographicScopeSave.setPhase(this.getActualPhase());
-                  geographicScopeSave.setRepIndGeographicScope(geographicScope.getRepIndGeographicScope());
+                  RepIndGeographicScope repIndGeographicScope = repIndGeographicScopeManager
+                    .getRepIndGeographicScopeById(geographicScope.getRepIndGeographicScope().getId());
+
+                  geographicScopeSave.setRepIndGeographicScope(repIndGeographicScope);
+
                   progressTargetCaseGeographicScopeManager.saveProgressTargetCaseGeographicScope(geographicScopeSave);
                 } else {
                   // Update Geographic scope
@@ -1053,7 +1081,7 @@ public class SrfProgressAction extends BaseAction {
 
             // Geographic Countries
 
-            if (srfTarget.getCountriesIds() != null) {
+            if (srfTarget.getCountriesIds() != null && !srfTarget.getCountriesIds().isEmpty()) {
 
               List<ProgressTargetCaseGeographicCountry> countries = new ArrayList<>(
                 progressTargetCaseGeographicCountryManager.findGeographicCountryByTargetCase(srfTarget.getId()));

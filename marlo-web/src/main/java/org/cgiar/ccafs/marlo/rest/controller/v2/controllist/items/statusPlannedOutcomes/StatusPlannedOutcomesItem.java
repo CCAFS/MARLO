@@ -122,6 +122,17 @@ public class StatusPlannedOutcomesItem<T> {
     this.restApiAuditlogManager = restApiAuditlogManager;
   }
 
+  private int countWords(String string) {
+    int wordCount = 0;
+    string = StringUtils.stripToEmpty(string);
+    if (!string.isEmpty()) {
+      String[] words = StringUtils.split(string);
+      wordCount = words.length;
+    }
+
+    return wordCount;
+  }
+
   public Long createStatusPlannedOutcome(NewStatusPlannedOutcomeDTO newStatusPlannedOutcomeDTO,
     String CGIARentityAcronym, User user) {
     Long plannedOutcomeStatusID = null;
@@ -209,6 +220,12 @@ public class StatusPlannedOutcomesItem<T> {
     } else {
       fieldErrors.add(new FieldErrorDTO("createStatusPlannedOutcome", "LiaisonInstitutionEntity",
         "A Liaison Institution can not be found if either the CRP or the Flagship/Module is invalid"));
+    }
+
+    long wordCount = this.countWords(newStatusPlannedOutcomeDTO.getSumary());
+    if (wordCount > 100) {
+      fieldErrors.add(new FieldErrorDTO("createStatusPlannedOutcome", "Summary Narrative",
+        "Summary Narrative excedes the maximum number of words (100 words)"));
     }
 
     strippedId = StringUtils.stripToNull(newStatusPlannedOutcomeDTO.getCrpOutcomeCode());
