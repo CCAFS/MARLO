@@ -234,7 +234,7 @@ function updateWOSFields(data){
   //    console.log(element);
   //    $('#td-WOS-URL').append(url);
   //   });
-     if (nullDataPipe(isOpenAccess) == 'Yes') {
+     if (nullDataPipe(isOpenAccess).toLowerCase() == 'yes') {
       $('#WOS_tag_IOA_yes').show('slow');
       $('#WOS_tag_IOA_no').hide('slow');
      }else{
@@ -243,7 +243,7 @@ function updateWOSFields(data){
 
      }
 
-     if (nullDataPipe(isISI) == 'Yes') {
+     if (nullDataPipe(isISI).toLowerCase() == 'yes') {
       $('#WOS_tag_ISI_yes').show('slow');
       $('#WOS_tag_ISI__no').hide('slow');
      }else{
