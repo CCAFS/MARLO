@@ -118,7 +118,7 @@
   [#local customClass = "sloTarget" /]
   [#local sloTargetContribution = action.getTargetsCasesInfo(element.id)!{} ]
   [#local otherContributions = action.getTargetsCasesFlagshipInfo(element.id)![] ]
-  [#local flagshipsInfo = action.getEvidencesBySLO(element.id)![] ]
+  [#--[#local flagshipsInfo = action.getEvidencesBySLO(element.id)![] ]--]
 
   <div id="${customClass}-${isTemplate?string('template', index)}" class="simpleBox a-slo ${customClass}" style="display:${isTemplate?string('none', 'block')}">
 
@@ -213,14 +213,28 @@
 <div style="background-color: rgb(250, 250, 250); border-radius: 10px; padding: 7px; position: relative;">
   <div class="leftHead  sm">
     <!--<span class="index">12</span>-->
-     [#--<span class="index indexSloContribution">1</span>--]
+    <span class="index indexSloContribution">...</span>
     [#-- <span class="elementId">Id: ${(element.id)!"New"}</span>--]
   </div>
   <br>
-       <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px; margin-top: 10px;">Geographic scope</p>
-       <p>Lorem ipsum dolor sit amet.</p>
+       <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px; margin-top: 10px;">Geographic scope:</p>
+        [#list element.geographicScopes as geographicScope]
+        <p> - ${geographicScope.repIndGeographicScope.name}<p> 
+        [/#list]
 
-       <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px;">Brief summary of new evidence of CGIAR contribution:*</p>
+        <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px; margin-top: 10px;">Regions:</p>
+        [#list element.geographicRegions as region]
+        <p> - ${region.locElement.name}<p> 
+        [/#list]
+
+        [#--
+        <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px; margin-top: 10px;">Country(ies):</p>
+        [#list element.countriesIds as countrieId]
+        <p> - ${countrieId.......}<p> 
+        [/#list]
+        --]
+
+       <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px;">Brief summary of new evidence of CGIAR contribution:</p>
        <p>${(element.briefSummary)!}</p>
    
        <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px;">Expected additional contribution before end of 2022 (if not already fully covered)</p>
