@@ -432,6 +432,13 @@ public class SrfProgressAction extends BaseAction {
                 }
 
                 evidence.setLiaisonInstitution(li);
+                if (li.getCrpProgram() != null && li.getCrpProgram().getId() != null
+                  && evidence.getLiaisonInstitution() != null) {
+                  CrpProgram crpProgram = crpProgramManager.getCrpProgramById(li.getCrpProgram().getId());
+                  if (crpProgram != null) {
+                    evidence.getLiaisonInstitution().setCrpProgram(crpProgram);
+                  }
+                }
 
                 // Geographic countries
                 List<ProgressTargetCaseGeographicCountry> targetCaseGeographicCountries;
