@@ -455,7 +455,6 @@ public class SrfProgressAction extends BaseAction {
         }
       }
     }
-    System.out.println(sloTargetFront.getTargetCases());
     return sloTargetFront;
   }
 
