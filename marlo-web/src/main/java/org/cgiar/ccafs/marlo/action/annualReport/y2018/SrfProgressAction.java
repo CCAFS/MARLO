@@ -816,7 +816,6 @@ public class SrfProgressAction extends BaseAction {
 
     // Fill Slo Targets, contributions and Geographic scope information
     this.fillSloTargetsCasesDB();
-    this.getEvidencesBySLO(1);
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null && c.isActive()
