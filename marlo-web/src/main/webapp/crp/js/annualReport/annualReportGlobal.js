@@ -3,6 +3,10 @@ var tableDatatableViewmore, tableDataProgressTableViewmore, tableDatatableTableG
 var pageName;
 var googleChartsLoaded = false;
 $(document).ready(function() {
+  
+  // $('.slo-contribution-template').find('textarea').trumbowyg("destroy");
+
+  $('.slo-contribution-template').find('select').select2("destroy");
   pageName = actionName.replace(/[^a-z0-9+]+/gi, '_');
 
   // Set data tables
@@ -151,9 +155,56 @@ $(document).ready(function() {
   $('.checkboxDiTeArClick').on('click',setCheckboxValueTohide);
   $('.btn-addEvidence').on('click',addEvidence);
   $('.btn-removeEvidence').on('click',removeEvidence);
+
+    // Deliverable Geographic Scope
+    $('select.elementType-repIndGeographicScope').on("addElement removeElement", function(event,id,name) {
+      console.log('%cevent setGeographicScope','background: #222; color: #37ff73');
+      setGeographicScope(this);
+    });
+    setGeographicScope($('form select.elementType-repIndGeographicScope')[0]);
+      // valiate checkbox "No DOI provided" value
+   
+
+  // $('.TA_summaryEvidence .trumbowyg-editor').bind('DOMSubtreeModified', function(){
+  //   console.log('%cmovement','background: #222; color: #fd8484');
+  //   // $(this).parents('.slo-contribution-section').find('.TA_summaryEvidence .briefSummaryTAHidden').css("background-color", "yellow");
+  //   $(this).parents('.slo-contribution-section').find('.TA_summaryEvidence .briefSummaryTAHidden').html($(this).html());
+  // });
+
+
+  // $('.TA_additionalContribution .trumbowyg-editor').bind('DOMSubtreeModified', function(){
+  //   console.log('%cmovement','background: #222; color: #fd8484');
+
+  //   $(this).parents('.slo-contribution-section').find('.TA_additionalContribution .additionalContributionTAHidden').html($(this).html());
+  // });
+
+  // $('.button-save').on('click',updateALltexareas);
+  $(document).keypress(updateALltexareas);
+  $(document).click(updateALltexareas);
+ 
+
+  // $('.slo-contribution-section').on("bind",".TA_summaryEvidence .trumbowyg-editor", function() {
+  //   //do whatever
+  //   console.log('%cHola mundo','background: #222; color: #fd8484');
+  // });
+
   setStatusByBack();
   // updateAllIndexesContribution();
 });
+
+function updateALltexareas(){
+  $('.sloTargetsList').find('.sloTarget').each(function (i, sloTarget) {
+    setTimeout(() => {
+      $(sloTarget).find('.evidenceList').find('.slo-contribution-section').each(function (i, evidence) {
+        // $(evidence).css("background-color", "yellow");
+        $(evidence).find('.TA_summaryEvidence .briefSummaryTAHidden').html($(evidence).find('.TA_summaryEvidence .trumbowyg-editor').html());
+        $(evidence).find('.TA_additionalContribution .additionalContributionTAHidden').html($(evidence).find('.TA_additionalContribution .trumbowyg-editor').html());
+        // console.log($(evidence).find('.TA_additionalContribution .trumbowyg-editor').val());
+      });
+    }, 10);
+  });
+  $(document).trigger('updateComponent');
+}
 
 function setStatusByBack() {
   $(".sloTargetsList")
@@ -176,7 +227,7 @@ function setStatusByBack() {
 
       }
     
-      if ($(checkbox).val() == "false") {
+      if ($(checkbox).val() == "true") {
         $(checkbox).parents(".a-slo").find(".to-disabled-box").hide(400);
         $(checkbox).parents(".a-slo").find(".btn-addEvidence").hide(400);
         // $(checkbox).parents(".a-slo").find(".disabled-box").show();
@@ -199,7 +250,7 @@ function setCheckboxValueTohide() {
     // console.log("now is: "+$(this).val());
   }
 
-  if ($(this).val() == "false") {
+  if ($(this).val() == "true") {
     $(this).parents(".a-slo").find(".to-disabled-box").hide(400);
     $(this).parents(".a-slo").find(".btn-addEvidence").hide(400);
     // $(this).parents(".a-slo").find(".disabled-box").show();
@@ -294,128 +345,66 @@ function createGoogleChart(chartID, type, options) {
 function updateAllIndexesContribution() {
   
 
-
     console.log('%cupdateAllIndexesContribution','background: #222; color: #84c3fd');
-    console.log('%csloTargetsList: '+$('.sloTargetsList').find('.sloTarget').length,'background: #222; color: #fd8484');
-
- //All sloTargetsList
+    //All sloTargetsList
  
   $('.sloTargetsList').find('.sloTarget').each(function(i,sloTarget) {
-    // let index1=i;
-    console.log('%c ('+(i+1)+') evidenceList: '+$(sloTarget).find('.evidenceList').find('.slo-contribution-section').length,'background: #222; color: #37ff73');
 
-    // console.log('evidenceList: ',$(sloTarget).find('.evidenceList').find('.slo-contribution-section').length);
     $(sloTarget).attr('id', "outcome-"+(i+1));
     $(sloTarget).setNameIndexes(1, i);
     
-   
-    // $(sloTarget).find('span.index').html(i + 1);
-    // $(sloTarget).setNameIndexes(1, i);
-
-    //  Update Milestones
+    //  Update slo-contribution
      $(sloTarget).find('.evidenceList').find('.slo-contribution-section').each(function(i,evidence) {
-      //  $(evidence).attr('id', "milestone-"+(i+1));
-      //  $(evidence).find('.indexSloContribution').text(i + 1);
-   
+      $(evidence).find('.indexSloContribution').html(i+1);
       $(evidence).attr('id', "milestone-"+(i+1));
       $(evidence).setNameIndexes(2, i);
-
- 
      });
-
      
   });
-
 
   $(document).trigger('updateComponent');
 
 }
 
-function setIndexesOfTheFieldsContribution(evidence,index1,index2){
-  $(evidence).find('.TA_summaryEvidence').find('label').removeAttr('for');
-  $(evidence).find('.TA_summaryEvidence').find('label').attr('for', `sloTargets[${index1}].targetCases[${index2}].briefSummary`);
-  $(evidence).find('.TA_summaryEvidence').find('textarea').removeAttr('id');
-  $(evidence).find('.TA_summaryEvidence').find('textarea').attr('id', `sloTargets[${index1}].targetCases[${index2}].briefSummary`);
-  $(evidence).find('.TA_summaryEvidence').find('textarea').removeAttr('name');
-  $(evidence).find('.TA_summaryEvidence').find('textarea').attr('name', `sloTargets[${index1}].targetCases[${index2}].briefSummary`);
-
-  
-  $(evidence).find('.TA_additionalContribution').find('label').removeAttr('for');
-  $(evidence).find('.TA_additionalContribution').find('label').attr('for', `sloTargets[${index1}].targetCases[${index2}].additionalContribution`);
-  $(evidence).find('.TA_additionalContribution').find('textarea').removeAttr('id');
-  $(evidence).find('.TA_additionalContribution').find('textarea').attr('id', `sloTargets[${index1}].targetCases[${index2}].additionalContribution`);
-  $(evidence).find('.TA_additionalContribution').find('textarea').removeAttr('name');
-  $(evidence).find('.TA_additionalContribution').find('textarea').attr('name', `sloTargets[${index1}].targetCases[${index2}].additionalContribution`);
-
-}
-// function updateAllIndexesContribution2() {
-//   // All Outcomes List
-//    $('.outcomes-list').find('.outcome').each(function(i,outcome) {
-//      $(outcome).attr('id', "outcome-"+(i+1));
-//      // $(outcome).find('span.index').html(i + 1);
-//      $(outcome).setNameIndexes(1, i);
- 
-//      // Update Milestones
-//      $(outcome).find('.milestone').each(function(i,milestone) {
-//        $(milestone).attr('id', "milestone-"+(i+1));
-//        // $(milestone).find('span.index').text(i + 1);
-//        $(milestone).setNameIndexes(2, i);
- 
-//        // Update radios for Assesment Risk
-//        $(milestone).find('.radioFlat').each(function(i,radioBlock) {
-//          var radioFlatID = ($(radioBlock).find('input').attr('id') + i).replace(/\W/g, '');
-//          $(radioBlock).find('input').attr('id', radioFlatID);
-//          $(radioBlock).find('label').attr('for', radioFlatID);
-//        });
- 
-//      });
- 
-//      // Update SubIdos
-//      $(outcome).find('.subIdo').each(function(i,subIdo) {
-//        $(subIdo).find('span.index').text(i + 1);
-//        $(subIdo).setNameIndexes(2, i);
- 
-//        // Update radios for primary option
-//        var radioFlatID = $(subIdo).find('.radioFlat input').attr('id');
-//        $(subIdo).find('.radioFlat label').attr('for', radioFlatID);
- 
-//        // Update Assumptions
-//        $(subIdo).find('.assumption').each(function(i,assumption) {
-//          $(assumption).find('.statement').attr('placeholder', 'Assumption statement #' + (i + 1));
-//          $(assumption).setNameIndexes(3, i);
-//        });
-//      });
- 
-//      // Update Baseline Indicators
-//      $(outcome).find('.baselineIndicator').each(function(i,indicator) {
-//        $(indicator).find('span.index').text(i + 1);
-//        $(indicator).setNameIndexes(2, i);
-//      });
-//    });
- 
-//    // Update component event
-//    $(document).trigger('updateComponent');
- 
-//  }
 function addEvidence() {
   
 console.log('addEvidence');
-  // $(this).parents(".simpleBox").find(".evidenceList").hide();;
 
   var $list =  $(this).parents(".simpleBox").find(".evidenceList");
-  var $item = $('.slo-contribution-template').clone(true);
+  var $item = $('.slo-contribution-template');
+  $item = $item.clone(true);
   $($item).removeClass('slo-contribution-template');
-  // $item.find('select').select2({
-  // width: '100%'
-  // });
   $list.append($item);
-  // updateAllIndexes();
+
+
+  // $($item).find('.TA_summaryEvidence .trumbowyg-editor').bind('DOMSubtreeModified', function(){
+  //  console.log('%csome','background: #222; color: #84c3fd');
+  // });
+
+
   updateAllIndexesContribution();
   $item.show('slow');
-  // $list=null;
-  // $item=null;
+  $item.find("select").select2({
+    // templateResult: formatState,
+    width: '100%'
+});
 
-  // updateAllIndexesContribution();
+
+$item.find('textarea.tumaco').trumbowyg({
+  btns: [
+    [
+        'link', 'strong', 'em'
+    ]
+  ],
+  allowTagsFromPaste: [
+      'a', 'p', 'br', 'b', 'strong', 'i', 'em'
+  ],
+  urlProtocol: true,
+  autogrow: true,
+  minimalLinks: true,
+  semantic: true
+});
+
 }
 
 function removeEvidence(){

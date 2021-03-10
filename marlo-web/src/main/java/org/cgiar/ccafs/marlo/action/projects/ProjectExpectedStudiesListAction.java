@@ -155,19 +155,36 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
   @Override
   public String delete() {
     // if (project.getExpectedStudies() != null) {
-    if (projectStudies != null) {
-      // for (ProjectExpectedStudy projectStudy : project.getExpectedStudies()) {
-      for (ProjectExpectedStudy projectStudy : projectStudies) {
+    if (project != null) {
+      if (projectStudies != null) {
+        // for (ProjectExpectedStudy projectStudy : project.getExpectedStudies()) {
+        for (ProjectExpectedStudy projectStudy : projectStudies) {
+          if (projectStudy.getId().longValue() == expectedID) {
+            ProjectExpectedStudy projectExpectedBD =
+              projectExpectedStudyManager.getProjectExpectedStudyById(expectedID);
+            for (SectionStatus sectionStatus : projectExpectedBD.getSectionStatuses()) {
+              sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+            }
+
+            projectStudy.setModificationJustification(justification);
+            projectExpectedStudyManager.deleteProjectExpectedStudy(projectStudy.getId());
+          }
+        }
+      }
+    } else {
+      for (ProjectExpectedStudy projectStudy : myNonProjectStudies) {
         if (projectStudy.getId().longValue() == expectedID) {
           ProjectExpectedStudy projectExpectedBD = projectExpectedStudyManager.getProjectExpectedStudyById(expectedID);
           for (SectionStatus sectionStatus : projectExpectedBD.getSectionStatuses()) {
             sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
           }
+
           projectStudy.setModificationJustification(justification);
           projectExpectedStudyManager.deleteProjectExpectedStudy(projectStudy.getId());
         }
       }
     }
+
     return SUCCESS;
   }
 

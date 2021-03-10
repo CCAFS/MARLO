@@ -113,6 +113,8 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.StringUtils;
+
 @Named
 public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator {
 
@@ -1278,6 +1280,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     Project project = projectManager.getProjectById(projectID);
 
     List<ProjectExpectedStudy> allProjectStudies = new ArrayList<ProjectExpectedStudy>();
+    Phase phase = action.getActualPhase();
 
     // Load Studies
     List<ProjectExpectedStudy> studies = project.getProjectExpectedStudies().stream()
@@ -1295,12 +1298,13 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
       projectStudies = allProjectStudies.stream()
         .filter(ps -> ps.getProjectExpectedStudyInfo().getYear() != null
           && ps.getProjectExpectedStudyInfo().getStatus() != null
-          && ps.getProjectExpectedStudyInfo().getYear() >= action.getCurrentCycleYear())
+          && ((StringUtils.equalsIgnoreCase(phase.getDescription(), APConstants.REPORTING)
+            ? action.getCurrentCycleYear() == ps.getProjectExpectedStudyInfo().getYear().intValue()
+            : action.getCurrentCycleYear() >= ps.getProjectExpectedStudyInfo().getYear().intValue())))
         .collect(Collectors.toList());
     }
 
 
-    Phase phase = action.getActualPhase();
     for (ProjectExpectedStudy expectedStudy : projectStudies) {
 
       if (expectedStudy.getProjectExpectedStudyInfo() == null) {

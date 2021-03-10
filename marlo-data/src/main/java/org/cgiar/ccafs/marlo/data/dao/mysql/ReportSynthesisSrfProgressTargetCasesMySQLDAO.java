@@ -43,7 +43,7 @@ public class ReportSynthesisSrfProgressTargetCasesMySQLDAO extends
     ReportSynthesisSrfProgressTargetCases reportSynthesisSrfProgressTargetCases =
       this.find(reportSynthesisSrfProgressTargetCasesId);
     reportSynthesisSrfProgressTargetCases.setActive(false);
-    this.update(reportSynthesisSrfProgressTargetCases);
+    super.update(reportSynthesisSrfProgressTargetCases);
   }
 
   @Override
@@ -82,7 +82,7 @@ public class ReportSynthesisSrfProgressTargetCasesMySQLDAO extends
     query.append(" WHERE report_synthesis_srf_progress_id = ");
     query.append(synthesisID);
     query.append(" AND srf_slo_indicator_targets_id = ");
-    query.append(srfTargetID);
+    query.append(srfTargetID + " AND is_active = 1");
 
     List<Map<String, Object>> list = super.findCustomQuery(query.toString());
 
