@@ -87,7 +87,7 @@ function init() {
   
 
   $('input.isOtherUrl').on("click", activeByNoDOIProvidedCheckbox);
-
+  activeByNoDOIProvidedCheckbox();
   // justificationByStatus($statuses.val());
   // validateCurrentDate();
 
