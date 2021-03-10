@@ -39,13 +39,13 @@ public class MetadataWOSModel implements Serializable {
   private Integer publicationYear;
 
   @SerializedName("is_oa")
-  private Boolean isOpenAccess;
+  private String isOpenAccess;
 
   @SerializedName("oa_link")
   private String openAcessLink;
 
   @SerializedName("is_isi")
-  private Boolean isISI;
+  private String isISI;
 
   private String journalName;
   private String volume;
@@ -85,11 +85,11 @@ public class MetadataWOSModel implements Serializable {
     return institutions;
   }
 
-  public Boolean getIsISI() {
+  public String getIsISI() {
     return isISI;
   }
 
-  public Boolean getIsOpenAccess() {
+  public String getIsOpenAccess() {
     return isOpenAccess;
   }
 
@@ -145,11 +145,11 @@ public class MetadataWOSModel implements Serializable {
     this.institutions = organizations;
   }
 
-  public void setIsISI(Boolean isISI) {
+  public void setIsISI(String isISI) {
     this.isISI = isISI;
   }
 
-  public void setIsOpenAccess(Boolean isOA) {
+  public void setIsOpenAccess(String isOA) {
     this.isOpenAccess = isOA;
   }
 

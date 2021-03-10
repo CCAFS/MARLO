@@ -6,7 +6,7 @@
 [#assign pageLibs = [ "select2", "trumbowyg", "components-font-awesome", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js"
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210302" ] /]
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210308A" ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210114"] /]
 
 [#assign breadCrumb = [
@@ -22,10 +22,6 @@
 [#import "/WEB-INF/global/macros/ARMacros.ftl" as arMacros /]
 [#assign customName= "reportSynthesis.reportSynthesisSrfProgress" /]
 [#assign customLabel= "annualReport2018.${currentStage}" /]
-
-[#assign arrayCheckBV=["true","false","true","false","true","false","true","false","true","false"] /]
-
-[#assign arrayEvidence=[0,1,2] /]
 
 [#-- Helptext --]
 [@utilities.helpBox name="${customLabel}.help" /]
@@ -52,7 +48,7 @@
             [#-- Overall contribution towards SRF targets --]
             <div class="form-group">
               [#-- Word Document Tag --]
-              [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
+              [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][#else][@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/][/#if]
               [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.overallContribution" help="${customLabel}.overallContribution.help" className="limitWords-${calculateLimitWords(400)}" helpIcon=false required=true editable=editable allowTextEditor=true /]
               <br />
             </div>
@@ -99,7 +95,7 @@
             
           </div>
           [#--  review this commented code   --]
-          [@sloContribution element={} name="outcomes[0].milestones" cssClass="slo-contribution-section-hide slo-contribution-template"  indexSlo=-1 index=-1 isMacro=true/]
+          [@sloContribution element={} name="outcomes[0].milestones" cssClass="slo-contribution-section-hide slo-contribution-template"  indexSlo=-1 index=-1 isTemplate=true /]
         
           [#-- Section Buttons & hidden inputs--]
           [#include "/WEB-INF/crp/views/annualReport2018/buttons-AR2018.ftl" /]
@@ -141,14 +137,13 @@
       <strong >SLO Target 2022</strong>
        <br />${(element.narrative)!} <br>
        <div class="checkboxDiTeAr">
-       
          <div class="contentCheckBox">
-          [@customForm.checkbox name="sloTargets[${index}].hasEvidence" value="sloTargets[${index}].hasEvidence" checked=(sloTargets[index].hasEvidence?boolean)!false i18nkey="No new evidence" className="checkboxDiTeArClick" required=false editable=editable /]
+          [@customForm.checkbox name="sloTargets[${index}].hasEvidence" value="${element.hasEvidence?string('false', 'true')}" checked=element.hasEvidence!false i18nkey="No new evidence" className="checkboxDiTeArClick" required=false editable=editable /]
 
          </div>
        </div>
     </div>
-    <div class="to-disabled-box">
+    <div class="to-disabled-box" style="display:${element.hasEvidence?string('none', 'block')}">
       <div class="disabled-box"></div>
     <div class="evidenceList">
       [#list element.targetCases as evidence]
@@ -157,7 +152,7 @@
     </div>
   </div>
 
-  <div class="btn-addEvidence bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add contribution</div>
+  <div class="btn-addEvidence bigAddButton text-center" style="display:${element.hasEvidence?string('none', 'block')}"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add contribution</div>
     
     
     
@@ -178,45 +173,47 @@
 [/#macro]
 
 
-[#macro sloContribution element cssClass="" name="" indexSlo=0 index=0 isMacro=false ]
+[#macro sloContribution element cssClass="" name="" indexSlo=0 index=0 isTemplate=false ]
 [#local ccname = "sloTargets[${indexSlo}].targetCases[${index}]" /]
 
-[#if isMacro]
-  <input type="hidden" name="${ccname}.id" value="" />
-
-[#else]
-  <input type="hidden" name="${ccname}.id" value="${(element.id)!}" />
-[/#if]
-
 <div class="slo-contribution-section ${cssClass}" style="margin-top: 10px; padding-top: 20px;">
+
+  <input type="hidden" name="${ccname}.id" value="${(element.id)!}" />
+  
   <div class="leftHead  sm">
     <!--<span class="index">12</span>-->
     <span class="index indexSloContribution">${(index+1)}</span>
-    <span class="elementId"></span>
+    [#-- <span class="elementId">Id: ${(element.id)!"New"}</span>--]
   </div>
 
   <div class="btn-removeEvidence removeElement sm" title="Remove Evidence"></div>
- [#--  [@arMacros.deliverableGeographicScope name="${ccname}"  /]
-<hr>
+  [#if !PMU] [@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/][/#if]
+  [@arMacros.deliverableGeographicScope name="${ccname}" element=element /]
+  <hr>
   [#-- Brief summary of new evidence of CGIAR contribution to relevant targets for this CRP (with citation) --]
+  <br>
   <div class="form-group TA_summaryEvidence">
-  [#if isMacro]
-      [@customForm.textArea name="${ccname}.briefSummary" value="" i18nkey="${customLabel}.summaryEvidence" className="limitWords-150" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable /]
-  [#else]
-    [@customForm.textArea name="${ccname}.briefSummary" value=element.briefSummary i18nkey="${customLabel}.summaryEvidence" className="limitWords-150" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable /]
-  [/#if]
-    [#-- FP Synthesis table --]
+  [#if !PMU] [@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/][/#if]
+    [@customForm.textArea name="" value=element.briefSummary i18nkey="${customLabel}.summaryEvidence" className="limitWords-150 tumaco" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable allowTextEditor=!isTemplate /]
+
+    <div style="display:none">
+    [@customForm.textArea name="${ccname}.briefSummary" value=element.briefSummary i18nkey="${customLabel}.summaryEvidence" className="limitWords-150 briefSummaryTAHidden" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable  /]
+    </div>
+  [#-- FP Synthesis table --]
   [#if PMU]
     [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableSloTargetBriefSummary" list=otherContributions columns=["briefSummary"] crpProgramField="reportSynthesisSrfProgress.reportSynthesis.liaisonInstitution.crpProgram" showTitle=false showHeader=false showEmptyRows=false /]
   [/#if]
   </div>
   [#-- Expected additional contribution before end of 2022 (if not already fully covered). --]
+  <br>
   <div class="form-group TA_additionalContribution">
-  [#if isMacro]
-    [@customForm.textArea name="${ccname}.additionalContribution" value="" i18nkey="${customLabel}.additionalContribution" className="limitWords-100" help="${customLabel}.additionalContribution.help" helpIcon=false required=false editable=editable  /]
-  [#else]
-    [@customForm.textArea name="${ccname}.additionalContribution" value=element.additionalContribution i18nkey="${customLabel}.additionalContribution" className="limitWords-100" help="${customLabel}.additionalContribution.help" helpIcon=false required=false editable=editable /]
-  [/#if]
+  [#if !PMU] [@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/][/#if]
+    [@customForm.textArea name="" value=element.additionalContribution i18nkey="${customLabel}.additionalContribution" className="limitWords-100 tumaco" help="${customLabel}.additionalContribution.help" helpIcon=false required=false editable=editable  allowTextEditor=!isTemplate /]
+    <br>
+    <div style="display:none">
+    [@customForm.textArea name="${ccname}.additionalContribution" value=element.additionalContribution i18nkey="${customLabel}.additionalContribution" className="limitWords-100 additionalContributionTAHidden" help="${customLabel}.additionalContribution.help" helpIcon=false required=false editable=editable /]
+    </div>
+  
     [#-- FP Synthesis table --]
   [#if PMU]
     [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableSloTargetBriefSummary" list=otherContributions columns=["additionalContribution"] crpProgramField="reportSynthesisSrfProgress.reportSynthesis.liaisonInstitution.crpProgram" showTitle=false showHeader=false showEmptyRows=false /]

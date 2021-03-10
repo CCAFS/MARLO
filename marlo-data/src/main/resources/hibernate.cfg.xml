@@ -469,6 +469,7 @@
     <mapping resource="xmls/SdgTargets.hbm.xml" />
     <mapping resource="xmls/SdgIndicators.hbm.xml" />
     <mapping resource="xmls/RestApiAuditlog.hbm.xml" />
+    <mapping resource="xmls/ReportSynthesisSrfProgressTargetContributions.hbm.xml" />
     
     <!-- Deliverable WOS/Scopus and Altmetrics -->
     <mapping resource="xmls/DeliverableAffiliationsNotMapped.hbm.xml" />

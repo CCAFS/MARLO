@@ -16,30 +16,39 @@
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.Deliverables;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableAffiliationManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableAffiliationsNotMappedManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableDisseminationManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableMetadataElementManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableMetadataExternalSourcesManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverablePublicationMetadataManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableUserManager;
+import org.cgiar.ccafs.marlo.data.manager.ExternalSourceAuthorManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.MetadataElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
-import org.cgiar.ccafs.marlo.data.manager.RestApiAuditlogManager;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableAffiliation;
+import org.cgiar.ccafs.marlo.data.model.DeliverableAffiliationsNotMapped;
+import org.cgiar.ccafs.marlo.data.model.DeliverableAltmetricInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
+import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataExternalSources;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
+import org.cgiar.ccafs.marlo.data.model.ExternalSourceAuthor;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.MetadataElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Publication;
-import org.cgiar.ccafs.marlo.data.model.RestApiAuditlog;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.DeliverableUserDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewPublicationDTO;
@@ -49,8 +58,17 @@ import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
 import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
 import org.cgiar.ccafs.marlo.rest.mappers.DeliverablesMapper;
 import org.cgiar.ccafs.marlo.rest.mappers.PublicationsMapper;
+import org.cgiar.ccafs.marlo.rest.services.deliverables.model.PublicationAuthorWOS;
+import org.cgiar.ccafs.marlo.rest.services.deliverables.model.PublicationInstitutionWOS;
+import org.cgiar.ccafs.marlo.rest.services.deliverables.model.PublicationWOS;
 import org.cgiar.ccafs.marlo.utils.doi.DOIService;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -60,14 +78,15 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonParser;
 import com.ibm.icu.util.Calendar;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.http.HttpStatus;
@@ -86,7 +105,11 @@ public class DeliverablesItem<T> {
   private DeliverableDisseminationManager deliverableDisseminationManager;
   private DeliverableMetadataElementManager deliverableMetadataElementManager;
   private DeliverableUserManager deliverableUserManager;
-  private RestApiAuditlogManager restApiAuditlogManager;
+  private DeliverableMetadataExternalSourcesManager deliverableMetadataExternalSourcesManager;
+  private DeliverableAffiliationManager deliverableAffiliationManager;
+  private DeliverableAffiliationsNotMappedManager deliverableAffiliationsNotMappedManager;
+  private InstitutionManager institutionManager;
+  private ExternalSourceAuthorManager externalSourceAuthorManager;
 
 
   private DeliverablesMapper deliverablesMapper;
@@ -99,7 +122,11 @@ public class DeliverablesItem<T> {
     DeliverablePublicationMetadataManager deliverablePubMetadataManager,
     DeliverableMetadataElementManager deliverableMetadataElementManager, DeliverableUserManager deliverableUserManager,
     DeliverableDisseminationManager deliverableDisseminationManager, DeliverablesMapper deliverablesMapper,
-    PublicationsMapper publicationsMapper, RestApiAuditlogManager restApiAuditlogManager) {
+    PublicationsMapper publicationsMapper,
+    DeliverableMetadataExternalSourcesManager deliverableMetadataExternalSourcesManager,
+    DeliverableAffiliationManager deliverableAffiliationManager,
+    DeliverableAffiliationsNotMappedManager deliverableAffiliationsNotMappedManager,
+    InstitutionManager institutionManager, ExternalSourceAuthorManager externalSourceAuthorManager) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.metadataElementManager = metadataElementManager;
@@ -110,9 +137,13 @@ public class DeliverablesItem<T> {
     this.deliverableMetadataElementManager = deliverableMetadataElementManager;
     this.deliverableUserManager = deliverableUserManager;
     this.deliverableDisseminationManager = deliverableDisseminationManager;
-    this.restApiAuditlogManager = restApiAuditlogManager;
     this.deliverablesMapper = deliverablesMapper;
     this.publicationsMapper = publicationsMapper;
+    this.deliverableMetadataExternalSourcesManager = deliverableMetadataExternalSourcesManager;
+    this.deliverableAffiliationManager = deliverableAffiliationManager;
+    this.deliverableAffiliationsNotMappedManager = deliverableAffiliationsNotMappedManager;
+    this.institutionManager = institutionManager;
+    this.externalSourceAuthorManager = externalSourceAuthorManager;
   }
 
   public Long createDeliverable(NewPublicationDTO deliverableDTO, String entityAcronym, User user) {
@@ -212,7 +243,8 @@ public class DeliverablesItem<T> {
             metadataElements.stream().filter(me -> me.getEcondedName().equals(APConstants.METADATAELEMENTDOI))
               .collect(Collectors.toList()).get(0);
           deliverableMetadataElementDoi.setMetadataElement(metadataElementDoi);
-          deliverableMetadataElementDoi.setElementValue(deliverableDTO.getDoi() == null ? "" : deliverableDTO.getDoi());
+          deliverableMetadataElementDoi
+            .setElementValue(deliverableDTO.getDoi() == null ? "" : DOIService.tryGetDoiName(deliverableDTO.getDoi()));
           deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementDoi);
 
           // deliverable metadataelement Title
@@ -286,19 +318,6 @@ public class DeliverablesItem<T> {
           deliverableUser.setDeliverable(deliverable);
           deliverableUser.setPhase(phase);
           deliverableUserManager.saveDeliverableUser(deliverableUser);
-        }
-
-        // Log Action
-        try {
-          ObjectMapper mapper = new ObjectMapper();
-          String originalJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(deliverableDTO);
-          RestApiAuditlog restApiAuditLog = new RestApiAuditlog("createDeliverable",
-            "Created CGIAR Entity Acronym " + entityAcronym + " ID " + deliverable.getId(), new Date(),
-            deliverable.getId(), "class org.cgiar.ccafs.marlo.data.model.Deliverable", originalJson, user.getId(), null,
-            "", phase.getId());
-          restApiAuditlogManager.logApiCall(restApiAuditLog);
-        } catch (Throwable ex) {
-          Logger.getLogger(DeliverablesItem.class.getName()).log(Level.SEVERE, null, ex);
         }
       } else {
         fieldErrors.add(new FieldErrorDTO("createDeliverable", "phase", "Error while creating a publication "));
@@ -539,13 +558,6 @@ public class DeliverablesItem<T> {
               List<DeliverableMetadataElement> phaseMetadata = deliverable.getMetadataElements(phase);
               Map<String, DeliverableMetadataElement> metadataElements = this.getMetadataElements(phaseMetadata);
               publication = this.publicationsMapper.deliverableToPublication(deliverable, phase, metadataElements);
-              // Log Action
-              RestApiAuditlog restApiAuditLog = new RestApiAuditlog("deleteDeliverableById",
-                "Deleted CGIAR Entity Acronym " + CGIARentityAcronym + " ID " + id + " Year:" + repoYear + " Phase: "
-                  + repoPhase,
-                new Date(), id, "class org.cgiar.ccafs.marlo.data.model.Deliverable", "N/A", user.getId(), null, "",
-                phase.getId());
-              restApiAuditlogManager.logApiCall(restApiAuditLog);
             }
           } else {
             fieldErrors.add(new FieldErrorDTO("deleteDeliverableById", "DeliverableEntity",
@@ -648,13 +660,7 @@ public class DeliverablesItem<T> {
           .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
           .collect(Collectors.toList()));
     }
-    // Log Action
-    RestApiAuditlog restApiAuditLog = new RestApiAuditlog("findDeliverableById",
-      "Search deliverable by ID" + CGIARentityAcronym + " ID " + idDeliverable + " Year:" + repoYear + " Phase: "
-        + repoPhase,
-      new Date(), idDeliverable, "class org.cgiar.ccafs.marlo.data.model.Deliverable", "N/A", user.getId(), null, "",
-      phase.getId());
-    restApiAuditlogManager.logApiCall(restApiAuditLog);
+
     return Optional.ofNullable(publication).map(this.publicationsMapper::publicationToPublicationDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
@@ -806,12 +812,6 @@ public class DeliverablesItem<T> {
             .collect(Collectors.toList()));
       }
     }
-
-    // Log Action
-    RestApiAuditlog restApiAuditLog = new RestApiAuditlog("findAllDeliverables",
-      "Search All deliverables Year:" + repoyear + " Phase: " + repoPhase, new Date(), 0L,
-      "class org.cgiar.ccafs.marlo.data.model.Deliverable", "N/A", user.getId(), null, "", phase.getId());
-    restApiAuditlogManager.logApiCall(restApiAuditLog);
     return deliverablesListDTO;
   }
 
@@ -826,6 +826,20 @@ public class DeliverablesItem<T> {
     }
 
     return map;
+  }
+
+  public JsonElement getServiceWOS(String url) throws MalformedURLException, IOException {
+    URL clarisaUrl = new URL(url);
+
+    URLConnection conn = clarisaUrl.openConnection();
+    conn.setRequestProperty("Authorization", "3174h8-c40e68-5ge392-218caa-a664b3");
+    JsonElement element = null;
+    try (InputStreamReader reader = new InputStreamReader(conn.getInputStream())) {
+      element = new JsonParser().parse(reader);
+    } catch (FileNotFoundException fnfe) {
+      element = JsonNull.INSTANCE;
+    }
+    return element;
   }
 
   public Long putDeliverableById(Long idDeliverable, NewPublicationDTO newPublicationDTO, String CGIARentityAcronym,
@@ -1068,16 +1082,121 @@ public class DeliverablesItem<T> {
           }
         }
 
-        // Log Action
-        try {
-          ObjectMapper mapper = new ObjectMapper();
-          String originalJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(newPublicationDTO);
-          RestApiAuditlog restApiAuditLog = new RestApiAuditlog("UpdateDeliverable", "Updated " + deliverable.getId(),
-            new Date(), deliverable.getId(), "class org.cgiar.ccafs.marlo.data.model.Deliverable", originalJson,
-            user.getId(), null, "", phase.getId());
-          restApiAuditlogManager.logApiCall(restApiAuditLog);
-        } catch (Throwable ex) {
-          Logger.getLogger(DeliverablesItem.class.getName()).log(Level.SEVERE, null, ex);
+        // web of science integration
+        if (newPublicationDTO.getDoi() != null) {
+          try {
+            JsonElement json = this.getServiceWOS(
+              "http://clarisa.wos.api.mel.cgiar.org/?link=" + DOIService.tryGetDoiName(newPublicationDTO.getDoi()));
+            System.out.println(json.toString());
+
+            PublicationWOS publication = new Gson().fromJson(json, PublicationWOS.class);
+            if (publication != null) {
+              // save deliverable metadata external sources WOS and GARDIAN
+              final Long deliverableID = deliverable.getId();
+              DeliverableMetadataExternalSources deliverableMetadataExternalSources =
+                deliverable.getDeliverableMetadataExternalSources().stream()
+                  .filter(c -> c.getDeliverable().getId().equals(deliverableID)).findFirst().orElse(null);
+              if (deliverableMetadataExternalSources != null) {
+                deliverableMetadataExternalSources.setDeliverable(deliverable);
+                deliverableMetadataExternalSources.setDoi(publication.getDoi());
+                deliverableMetadataExternalSources.setIsiStatus(publication.getIs_isi());
+                deliverableMetadataExternalSources.setJournalName(publication.getJournal_name());
+                deliverableMetadataExternalSources.setTitle(publication.getTitle());
+                deliverableMetadataExternalSources.setOpenAccessStatus(publication.getIs_oa());
+                deliverableMetadataExternalSources.setOpenAccessLink(publication.getOa_link());
+                deliverableMetadataExternalSources.setPublicationType(publication.getPublication_type());
+                deliverableMetadataExternalSources.setPublicationYear(publication.getPublication_year() != null
+                  ? Integer.valueOf(publication.getPublication_year()) : null);
+                deliverableMetadataExternalSources.setSource(publication.getSource());
+                deliverableMetadataExternalSources.setUrl(publication.getDoi());
+                deliverableMetadataExternalSources.setPages(publication.getStart_end_pages());
+                deliverableMetadataExternalSources.setPhase(phase);
+                deliverableMetadataExternalSources.setCreatedBy(user);
+                deliverableMetadataExternalSources.setVolume(publication.getVolume());
+                if (publication.getGardian() != null) {
+                  deliverableMetadataExternalSources
+                    .setGardianAccessibility(publication.getGardian().getAccessibility());
+                  deliverableMetadataExternalSources.setGardianFindability(publication.getGardian().getFindability());
+                  deliverableMetadataExternalSources
+                    .setGardianInteroperability(publication.getGardian().getInteroperability());
+                  deliverableMetadataExternalSources.setGardianReusability(publication.getGardian().getReusability());
+                }
+                deliverableMetadataExternalSources = deliverableMetadataExternalSourcesManager
+                  .saveDeliverableMetadataExternalSources(deliverableMetadataExternalSources);
+                deliverableMetadataExternalSourcesManager.replicate(deliverableMetadataExternalSources, phase);
+
+                for (PublicationInstitutionWOS institution : publication.getOrganizations()) {
+                  if (institution.getConfidant() != null
+                    && institution.getConfidant().longValue() >= APConstants.ACCEPTATION_PERCENTAGE) {
+                    DeliverableAffiliation deliverableAffiliation = new DeliverableAffiliation();
+                    deliverableAffiliation.setCreatedBy(user);
+                    Institution institutionAffiliation =
+                      institutionManager.getInstitutionById(institution.getClarisa_id());
+                    deliverableAffiliation.setInstitution(institutionAffiliation);
+                    deliverableAffiliation.setInstitutionMatchConfidence(institution.getClarisa_id().intValue());
+                    deliverableAffiliation.setDeliverableMetadataExternalSources(deliverableMetadataExternalSources);
+                    deliverableAffiliation.setInstitutionNameWebOfScience(institution.getName());
+                    deliverableAffiliation.setPhase(phase);
+                    deliverableAffiliation.setDeliverable(deliverable);
+                    deliverableAffiliation =
+                      deliverableAffiliationManager.saveDeliverableAffiliation(deliverableAffiliation);
+                    deliverableAffiliationManager.replicate(deliverableAffiliation, phase);
+                  }
+                  if (institution.getConfidant() != null
+                    && (institution.getConfidant().longValue() < APConstants.ACCEPTATION_PERCENTAGE
+                      || institution.getConfidant() == null)) {
+                    DeliverableAffiliationsNotMapped deliverableAffiliationsNotMapped =
+                      new DeliverableAffiliationsNotMapped();
+                    deliverableAffiliationsNotMapped.setCountry(institution.getCountry());
+                    deliverableAffiliationsNotMapped
+                      .setDeliverableMetadataExternalSources(deliverableMetadataExternalSources);
+                    deliverableAffiliationsNotMapped
+                      .setInstitutionMatchConfidence(institution.getConfidant().intValue());
+                    deliverableAffiliationsNotMapped.setName(institution.getName());
+                    deliverableAffiliationsNotMapped.setFullAddress(institution.getFull_address());
+                    deliverableAffiliationsNotMapped.setPossibleInstitution(institution.getClarisa_id() != null
+                      ? institutionManager.getInstitutionById(institution.getClarisa_id()) : null);
+                    deliverableAffiliationsNotMappedManager
+                      .saveDeliverableAffiliationsNotMapped(deliverableAffiliationsNotMapped);
+                  }
+                }
+
+                if (publication.getAuthors() != null) {
+                  for (PublicationAuthorWOS author : publication.getAuthors()) {
+                    ExternalSourceAuthor externalSourceAuthor = new ExternalSourceAuthor();
+                    externalSourceAuthor.setDeliverableMetadataExternalSources(deliverableMetadataExternalSources);
+                    externalSourceAuthor.setCreatedBy(user);
+                    externalSourceAuthor.setFullName(author.getFull_name());
+                    externalSourceAuthorManager.saveExternalSourceAuthor(externalSourceAuthor);
+                  }
+                }
+
+                if (publication.getAltmetric() != null) {
+                  DeliverableAltmetricInfo altmetrics = deliverable.getDeliverableAltmetricInfo(phase);
+                  if (altmetrics == null) {
+                    altmetrics = new DeliverableAltmetricInfo();
+                  }
+                  altmetrics.setDeliverable(deliverable);
+                  altmetrics.setAltmetricId(publication.getAltmetric().getAltmetric_id());
+                  altmetrics.setAltmetricJid(publication.getAltmetric().getAltmetric_jid());
+                }
+
+              }
+
+
+              // save institutions with a percentage above APCONSTANT percentage acceptance in deliverable affiliation
+
+              // save institutions with a percentage below APCONSTANT percentage acceptance in deliverable affiliation
+              // not mapped
+
+              // save authors of WOS external sources authors
+
+              // save altmetrics information in deliverable altmetrics
+            }
+
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
         }
 
       } else {
@@ -1089,7 +1208,9 @@ public class DeliverablesItem<T> {
       }
 
 
-    } else {
+    } else
+
+    {
       // validators
       throw new MARLOFieldValidationException("Field Validation errors", "",
         fieldErrors.stream()

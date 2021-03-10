@@ -266,7 +266,8 @@ public class ProjectPolicyValidator extends BaseValidator {
 
     if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()) != null
       && projectPolicy.getProjectPolicyInfo().getHasMilestones() != null
-      && projectPolicy.getProjectPolicyInfo().getHasMilestones() == true && !projectPolicy.getMilestones().isEmpty()) {
+      && projectPolicy.getProjectPolicyInfo().getHasMilestones() == true && projectPolicy.getMilestones() != null
+      && !projectPolicy.getMilestones().isEmpty()) {
       int countPrimaries = 0;
       for (PolicyMilestone policyMilestone : projectPolicy.getMilestones()) {
         if (policyMilestone != null && policyMilestone.getCrpMilestone() != null

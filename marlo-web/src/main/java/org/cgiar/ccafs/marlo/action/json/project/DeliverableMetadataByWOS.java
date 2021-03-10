@@ -130,6 +130,21 @@ public class DeliverableMetadataByWOS extends BaseAction {
     return SUCCESS;
   }
 
+  private String getBooleanStringOrNotAvailable(String string) {
+    String result = null;
+    if (string != null) {
+      if (StringUtils.equalsIgnoreCase(string, "yes")) {
+        result = "true";
+      } else if (StringUtils.equalsIgnoreCase(string, "no")) {
+        result = "false";
+      } else if (StringUtils.equalsIgnoreCase(string, "n/a")) {
+        result = "N/A";
+      }
+    }
+
+    return result;
+  }
+
   public String getJsonStringResponse() {
     return jsonStringResponse;
   }
@@ -206,13 +221,12 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
       for (DeliverableAffiliation dbDeliverableAffiliation : dbAffiliations) {
         if (dbDeliverableAffiliation != null && dbDeliverableAffiliation.getInstitution() != null
-          && (incomingInstitutions.stream()
-            .filter(i -> i != null && i.getClarisaId() != null
-              && i.getClarisaId().equals(dbDeliverableAffiliation.getInstitution().getId())
-              && i.getClarisaMatchConfidence() < APConstants.ACCEPTATION_PERCENTAGE)
-            .count() == 0)) {
+          && (incomingInstitutions.stream().filter(i -> i != null && i.getFullName() != null
+            && StringUtils.equalsIgnoreCase(i.getFullName(), dbDeliverableAffiliation.getInstitutionNameWebOfScience())
+            && i.getClarisaMatchConfidence() < APConstants.ACCEPTATION_PERCENTAGE).count() == 0)) {
           this.deliverableAffiliationManager.deleteDeliverableAffiliation(dbDeliverableAffiliation.getId());
-          this.deliverableAffiliationManager.replicate(dbDeliverableAffiliation, phase.getNext());
+          this.deliverableAffiliationManager.replicate(dbDeliverableAffiliation,
+            phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
         }
       }
 
@@ -224,8 +238,8 @@ public class DeliverableMetadataByWOS extends BaseAction {
               .filter(nda -> nda != null && nda.getDeliverableMetadataExternalSources() != null
                 && nda.getDeliverableMetadataExternalSources().getId() != null
                 && nda.getDeliverableMetadataExternalSources().getId().equals(externalSource.getId())
-                && nda.getInstitution() != null && nda.getInstitution().getId() != null
-                && nda.getInstitution().getId().equals(incomingAffiliation.getClarisaId()))
+                && nda.getInstitutionNameWebOfScience() != null && StringUtils
+                  .equalsIgnoreCase(incomingAffiliation.getFullName(), nda.getInstitutionNameWebOfScience()))
               .findFirst().orElse(null);
           if (newDeliverableAffiliation == null) {
             newDeliverableAffiliation = new DeliverableAffiliation();
@@ -247,7 +261,8 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
           newDeliverableAffiliation =
             this.deliverableAffiliationManager.saveDeliverableAffiliation(newDeliverableAffiliation);
-          this.deliverableAffiliationManager.replicate(newDeliverableAffiliation, phase.getNext());
+          this.deliverableAffiliationManager.replicate(newDeliverableAffiliation,
+            phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
         }
       }
     }
@@ -272,13 +287,14 @@ public class DeliverableMetadataByWOS extends BaseAction {
         if (dbDeliverableAffiliationNotMapped != null
           && dbDeliverableAffiliationNotMapped.getPossibleInstitution() != null
           && (incomingInstitutions.stream()
-            .filter(i -> i != null && i.getClarisaId() != null
-              && i.getClarisaId().equals(dbDeliverableAffiliationNotMapped.getPossibleInstitution().getId())
+            .filter(i -> i != null && i.getFullName() != null
+              && i.getFullName().equals(dbDeliverableAffiliationNotMapped.getPossibleInstitution().getName())
               && i.getClarisaMatchConfidence() >= APConstants.ACCEPTATION_PERCENTAGE)
             .count() == 0)) {
           this.deliverableAffiliationsNotMappedManager
             .deleteDeliverableAffiliationsNotMapped(dbDeliverableAffiliationNotMapped.getId());
-          this.deliverableAffiliationsNotMappedManager.replicate(dbDeliverableAffiliationNotMapped, phase.getNext());
+          this.deliverableAffiliationsNotMappedManager.replicate(dbDeliverableAffiliationNotMapped,
+            phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
         }
       }
 
@@ -291,8 +307,8 @@ public class DeliverableMetadataByWOS extends BaseAction {
                 .filter(nda -> nda != null && nda.getDeliverableMetadataExternalSources() != null
                   && nda.getDeliverableMetadataExternalSources().getId() != null
                   && nda.getDeliverableMetadataExternalSources().getId().equals(externalSource.getId())
-                  && nda.getPossibleInstitution() != null && nda.getPossibleInstitution().getId() != null
-                  && nda.getPossibleInstitution().getId().equals(incomingAffiliation.getClarisaId()))
+                  && nda.getName() != null
+                  && StringUtils.equalsIgnoreCase(incomingAffiliation.getFullName(), nda.getName()))
                 .findFirst().orElse(null)
               : null;
           if (newDeliverableAffiliationNotMapped == null) {
@@ -317,7 +333,8 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
           newDeliverableAffiliationNotMapped = this.deliverableAffiliationsNotMappedManager
             .saveDeliverableAffiliationsNotMapped(newDeliverableAffiliationNotMapped);
-          this.deliverableAffiliationsNotMappedManager.replicate(newDeliverableAffiliationNotMapped, phase.getNext());
+          this.deliverableAffiliationsNotMappedManager.replicate(newDeliverableAffiliationNotMapped,
+            phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
         }
       }
     }
@@ -343,7 +360,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
       altmetricInfo.setAltmetricId(incomingAltmetricInfo.getAltmetricId());
       altmetricInfo.setAltmetricJid(incomingAltmetricInfo.getAltmetricJid());
       altmetricInfo.setAuthors(incomingAltmetricInfo.getAuthors() != null
-        ? incomingAltmetricInfo.getAuthors().stream().filter(StringUtils::isNotBlank).collect(Collectors.joining(", "))
+        ? incomingAltmetricInfo.getAuthors().stream().filter(StringUtils::isNotBlank).collect(Collectors.joining("; "))
         : null);
       altmetricInfo.setCitedByBlogs(incomingAltmetricInfo.getCitedByBlogs());
       altmetricInfo.setCitedByDelicious(incomingAltmetricInfo.getCitedByDelicious());
@@ -384,7 +401,8 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
       altmetricInfo = this.deliverableAltmetricInfoManager.saveDeliverableAltmetricInfo(altmetricInfo);
 
-      this.deliverableAltmetricInfoManager.replicate(altmetricInfo, phase.getNext());
+      this.deliverableAltmetricInfoManager.replicate(altmetricInfo,
+        phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
     }
   }
 
@@ -394,18 +412,8 @@ public class DeliverableMetadataByWOS extends BaseAction {
     List<WOSAuthor> incomingAuthors = this.response.getAuthors();
 
     if (incomingAuthors != null) {
-      List<ExternalSourceAuthor> dbExternalSourceAuthors =
-        this.externalSourceAuthorManager.findAll() != null ? this.externalSourceAuthorManager.findAll().stream()
-          .filter(esa -> esa != null && esa.getId() != null && esa.getDeliverableMetadataExternalSources() != null
-            && esa.getDeliverableMetadataExternalSources().getId() != null
-            && esa.getDeliverableMetadataExternalSources().getId().equals(externalSource.getId()))
-          .collect(Collectors.toList()) : Collections.emptyList();
-
       // we are going to remove all of them and just accept the incoming authors
-      for (ExternalSourceAuthor dbExternalSourceAuthor : dbExternalSourceAuthors) {
-        this.externalSourceAuthorManager.deleteExternalSourceAuthor(dbExternalSourceAuthor.getId());
-        this.externalSourceAuthorManager.replicate(dbExternalSourceAuthor, phase.getNext());
-      }
+      this.externalSourceAuthorManager.deleteAllAuthorsFromPhase(deliverable, phase);
 
       // save
       for (WOSAuthor incomingAuthor : incomingAuthors) {
@@ -416,7 +424,8 @@ public class DeliverableMetadataByWOS extends BaseAction {
         externalSourceAuthor.setFullName(incomingAuthor.getFullName());
 
         externalSourceAuthor = this.externalSourceAuthorManager.saveExternalSourceAuthor(externalSourceAuthor);
-        this.externalSourceAuthorManager.replicate(externalSourceAuthor, phase.getNext());
+        this.externalSourceAuthorManager.replicate(externalSourceAuthor,
+          phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
       }
     }
   }
@@ -441,9 +450,9 @@ public class DeliverableMetadataByWOS extends BaseAction {
     externalSource.setTitle(this.response.getTitle());
     externalSource.setPublicationType(this.response.getPublicationType());
     externalSource.setPublicationYear(this.response.getPublicationYear());
-    externalSource.setOpenAccessStatus(String.valueOf(this.response.getIsOpenAccess()));
+    externalSource.setOpenAccessStatus(this.getBooleanStringOrNotAvailable(this.response.getIsOpenAccess()));
     externalSource.setOpenAccessLink(this.response.getOpenAcessLink());
-    externalSource.setIsiStatus(String.valueOf(this.response.getIsISI()));
+    externalSource.setIsiStatus(this.getBooleanStringOrNotAvailable(this.response.getIsISI()));
     externalSource.setJournalName(this.response.getJournalName());
     externalSource.setVolume(this.response.getVolume());
     externalSource.setPages(this.response.getPages());
@@ -459,7 +468,8 @@ public class DeliverableMetadataByWOS extends BaseAction {
     externalSource =
       this.deliverableMetadataExternalSourcesManager.saveDeliverableMetadataExternalSources(externalSource);
 
-    this.deliverableMetadataExternalSourcesManager.replicate(externalSource, phase.getNext());
+    this.deliverableMetadataExternalSourcesManager.replicate(externalSource,
+      phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
   }
 
   private void saveInfo() {

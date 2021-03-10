@@ -46,6 +46,7 @@ public class MilestonesbyYearAction extends BaseAction {
   private long crpProgamID;
   private int year;
   private CrpProgramOutcomeManager crpProgramManager;
+  private Boolean ignoreNewer;
 
   private List<Map<String, Object>> crpMilestones;
 
@@ -55,14 +56,17 @@ public class MilestonesbyYearAction extends BaseAction {
     this.crpProgramManager = crpProgramManager;
   }
 
-
   @Override
   public String execute() throws Exception {
     crpMilestones = new ArrayList<Map<String, Object>>();
     CrpProgramOutcome crpProgramOutcome = crpProgramManager.getCrpProgramOutcomeById(crpProgamID);
+
     List<CrpMilestone> milestones = crpProgramOutcome.getCrpMilestones().stream()
-      .filter(c -> c.isActive()
-        && (c.getYear().intValue() >= year || (c.getExtendedYear() != null && c.getExtendedYear().intValue() >= year)))
+      .filter(c -> c.isActive() && (ignoreNewer
+        ? (c.getYear() != null && c.getYear().intValue() == year
+          || (c.getExtendedYear() != null && c.getExtendedYear().intValue() == year))
+        : (c.getYear() != null && c.getYear().intValue() >= year
+          || (c.getExtendedYear() != null && c.getExtendedYear().intValue() >= year))))
       .collect(Collectors.toList());
     milestones.sort(Comparator.comparing(CrpMilestone::getYear));
 
@@ -79,6 +83,12 @@ public class MilestonesbyYearAction extends BaseAction {
     return crpMilestones;
   }
 
+  /*
+   * public Boolean getIgnoreNewer() {
+   * return ignoreNewer;
+   * }
+   */
+
   @Override
   public void prepare() throws Exception {
     // Map<String, Object> parameters = this.getParameters();
@@ -89,13 +99,20 @@ public class MilestonesbyYearAction extends BaseAction {
     crpProgamID =
       Long.parseLong(StringUtils.trim(parameters.get(APConstants.OUTCOME_REQUEST_ID).getMultipleValues()[0]));
     year = Integer.parseInt(StringUtils.trim(parameters.get(APConstants.YEAR_REQUEST).getMultipleValues()[0]));
-
+    ignoreNewer =
+      Boolean.valueOf(StringUtils.stripToNull(parameters.get(APConstants.IGNORE_NEWER_YEARS).getMultipleValues()[0]));
   }
-
 
   public void setCrpMilestones(List<Map<String, Object>> crpMilestone) {
     this.crpMilestones = crpMilestone;
   }
+
+
+  /*
+   * public void setIgnoreNewer(Boolean includeNewer) {
+   * this.ignoreNewer = includeNewer;
+   * }
+   */
 
 
 }
