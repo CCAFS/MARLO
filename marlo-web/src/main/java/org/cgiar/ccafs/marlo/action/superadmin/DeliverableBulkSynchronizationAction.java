@@ -177,7 +177,7 @@ public class DeliverableBulkSynchronizationAction extends BaseAction {
         phase = phaseManager.getPhaseById(selectedPhaseID);
 
         for (String id : entityByPhaseList.trim().split(",")) {
-          Long deliverableId = Long.valueOf(id);
+          Long deliverableId = Long.valueOf(StringUtils.stripToNull(id));
           String link = this.getLink(deliverableId);
 
           if (link != null) {

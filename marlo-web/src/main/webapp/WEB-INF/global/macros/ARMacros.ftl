@@ -14,13 +14,13 @@
       <div class="row">
         <div class="col-md-6">
           [#-- Geographic Scope --]
-          [@customForm.elementsListComponent name="${name}.geographicScopes" indexLevel=3 elementType="repIndGeographicScope" elementList=(element.geographicScopes)! label="deliverable.geographicScope" listName="repIndGeographicScopes" keyFieldName="id" displayFieldName="name" required=true /]
+          [@customForm.elementsListComponent name="${name}.geographicScopes" indexLevel=3 elementType="repIndGeographicScope" elementList=element.geographicScopes label="deliverable.geographicScope" listName="repIndGeographicScopes" keyFieldName="id" displayFieldName="name" required=true /]
         </div>
       </div>
 
       <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
         [#-- Regional scope --]
-        [@customForm.elementsListComponent name="${name}.geographicRegions" indexLevel=3  elementType="locElement" elementList=(element.geographicRegions)! label="deliverable.region"  listName="repIndRegions" keyFieldName="id" displayFieldName="composedName" required=false /]
+        [@customForm.elementsListComponent name="${name}.geographicRegions" indexLevel=3  elementType="locElement" elementList=element.geographicRegions label="deliverable.region"  listName="repIndRegions" keyFieldName="id" displayFieldName="composedName" required=false /]
       </div>
     
       <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
