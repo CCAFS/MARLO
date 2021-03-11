@@ -294,9 +294,13 @@ public class SrfProgressAction extends BaseAction {
               progressTargetCaseGeographicCountryManager.findGeographicCountryByTargetCase(targetCase.getId());
 
             if (targetCaseGeographicCountries != null) {
-              targetCase.setGeographicCountries(targetCaseGeographicCountries);
-              for (ProgressTargetCaseGeographicCountry country : targetCaseGeographicCountries) {
-                targetCase.getCountriesIds().add(country.getLocElement().getIsoAlpha2());
+              // targetCase.setGeographicCountries(targetCaseGeographicCountries);
+              targetCase.setCountries(targetCaseGeographicCountries);
+
+              if (targetCase.getCountries() != null) {
+                for (ProgressTargetCaseGeographicCountry country : targetCase.getCountries()) {
+                  targetCase.getCountriesIds().add(country.getLocElement().getIsoAlpha2());
+                }
               }
             }
             targetCase.setLiaisonInstitution(currentLiaison);
