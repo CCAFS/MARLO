@@ -144,7 +144,7 @@
          </div>
        </div>
   
-       [#if PMU]
+       [#if PMU && false] 
        <div class="checkboxDiTeAr">
         <div class="">
           <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample-${index}"
@@ -172,9 +172,11 @@
         [#list liaisonInstitutions as flagship]
         <div role="tabpanel" [#if (flagship_index)! == 0] class="tab-pane active" [#else]class="tab-pane" [/#if] id="${(flagship.crpProgram.acronym)!}-${index}" style="overflow-y: scroll; max-height: 700px;">
          [#--  <p>this is a ${(flagship.crpProgram.acronym)!}</p> --]
-          [#list sloTargetList[index].targetCases as slo]
+          [#-- 
+           [#list sloTargetList[index].targetCases as slo]
              [@contributionListComponent element=slo targetIndex=index flagship="${(flagship.crpProgram.acronym)!}" /]  
-          [/#list]
+          [/#list] 
+           --]
         </div>
         [/#list]
       </div>
