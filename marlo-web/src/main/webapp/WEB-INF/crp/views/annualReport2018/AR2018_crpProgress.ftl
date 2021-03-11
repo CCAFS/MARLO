@@ -172,7 +172,7 @@
         [#list liaisonInstitutions as flagship]
         <div role="tabpanel" [#if (flagship_index)! == 0] class="tab-pane active" [#else]class="tab-pane" [/#if] id="${(flagship.crpProgram.acronym)!}-${index}" style="overflow-y: scroll; max-height: 700px;">
          [#--  <p>this is a ${(flagship.crpProgram.acronym)!}</p> --]
-          [#list flagshipsInfo.targetCases as slo]
+          [#list sloTargetList[index].targetCases as slo]
              [@contributionListComponent element=slo targetIndex=index flagship="${(flagship.crpProgram.acronym)!}" /]  
           [/#list]
         </div>
