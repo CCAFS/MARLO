@@ -906,7 +906,7 @@ public class SrfProgressAction extends BaseAction {
 
     if (this.isPMU()) {
 
-      sloTargetList = new ArrayList<>(this.getEvidences());
+      // sloTargetList = new ArrayList<>(this.getEvidences());
 
       // Flagships Synthesis Progress
       flagshipSrfProgress =
