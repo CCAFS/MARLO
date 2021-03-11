@@ -25,6 +25,10 @@
 
 [#-- Helptext --]
 [@utilities.helpBox name="${customLabel}.help" /]
+
+[#if PMU]
+  [@utilities.helpBox name="Inputs received by Flagship leaders will be displayed here soon. Meanwhile, we suggest you to please go to the respective Flagship directly" /]
+[/#if]
     
 <section class="container">
   [#if !reportingActive]
