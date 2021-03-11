@@ -25,6 +25,10 @@
 
 [#-- Helptext --]
 [@utilities.helpBox name="${customLabel}.help" /]
+
+[#if PMU]
+  [@utilities.helpBox name="Inputs received by Flagship leaders will be displayed here soon. Meanwhile, we suggest you to please go to the respective Flagship directly" /]
+[/#if]
     
 <section class="container">
   [#if !reportingActive]
@@ -118,6 +122,7 @@
   [#local customClass = "sloTarget" /]
   [#local sloTargetContribution = action.getTargetsCasesInfo(element.id)!{} ]
   [#local otherContributions = action.getTargetsCasesFlagshipInfo(element.id)![] ]
+  [#--[#local flagshipsInfo = action.getEvidencesBySLO(element.id)![] ]--]
 
   <div id="${customClass}-${isTemplate?string('template', index)}" class="simpleBox a-slo ${customClass}" style="display:${isTemplate?string('none', 'block')}">
 
@@ -142,6 +147,51 @@
 
          </div>
        </div>
+  
+       [#if PMU && false] 
+       <div class="checkboxDiTeAr">
+        <div class="">
+          <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample-${index}"
+          aria-expanded="false" aria-controls="collapseExample" style="outline: none;">
+          Show table
+        </button>
+        </div>
+      </div>
+
+
+      <div class="collapse" id="collapseExample-${index}">
+
+          <div>
+
+
+      <ul class="nav nav-tabs" role="tablist">
+      [#list liaisonInstitutions as flagship]
+            [#if (flagship.crpProgram.acronym)! != ""]
+                <li role="presentation" [#if (flagship_index)! == 0]class="active" [/#if]><a href="#${(flagship.crpProgram.acronym)!}-${index}" aria-controls="${(flagship.crpProgram.acronym)!}" role="tab" data-toggle="tab">${(flagship.crpProgram.acronym)!}</a></li>
+            [/#if]
+      [/#list]
+      </ul>
+     
+      <div class="tab-content">
+        [#list liaisonInstitutions as flagship]
+        <div role="tabpanel" [#if (flagship_index)! == 0] class="tab-pane active" [#else]class="tab-pane" [/#if] id="${(flagship.crpProgram.acronym)!}-${index}" style="overflow-y: scroll; max-height: 700px;">
+         [#--  <p>this is a ${(flagship.crpProgram.acronym)!}</p> --]
+          [#-- 
+           [#list sloTargetList[index].targetCases as slo]
+             [@contributionListComponent element=slo targetIndex=index flagship="${(flagship.crpProgram.acronym)!}" /]  
+          [/#list] 
+           --]
+        </div>
+        [/#list]
+      </div>
+
+
+          </div>
+       
+      </div>
+     [/#if]
+
+
     </div>
     <div class="to-disabled-box" style="display:${element.hasEvidence?string('none', 'block')}">
       <div class="disabled-box"></div>
@@ -157,6 +207,46 @@
     
     
   </div>
+[/#macro]
+
+
+[#macro contributionListComponent element={}  targetIndex=-1 flagship=""]
+
+
+
+[#if flagship == element.liaisonInstitution.acronym]
+<br>
+<div style="background-color: rgb(250, 250, 250); border-radius: 10px; padding: 7px; position: relative;">
+  <div class="leftHead  sm">
+    <!--<span class="index">12</span>-->
+    <span class="index indexSloContribution">...</span>
+    [#-- <span class="elementId">Id: ${(element.id)!"New"}</span>--]
+  </div>
+  <br>
+       <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px; margin-top: 10px;">Geographic scope:</p>
+        [#list element.geographicScopes as geographicScope]
+        <p> - ${geographicScope.repIndGeographicScope.name}<p> 
+        [/#list]
+
+        <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px; margin-top: 10px;">Regions:</p>
+        [#list element.geographicRegions as region]
+        <p> - ${region.locElement.name}<p> 
+        [/#list]
+
+        [#--
+        <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px; margin-top: 10px;">Country(ies):</p>
+        [#list element.countriesIds as countrieId]
+        <p> - ${countrieId.......}<p> 
+        [/#list]
+        --]
+
+       <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px;">Brief summary of new evidence of CGIAR contribution:</p>
+       <p>${(element.briefSummary)!}</p>
+   
+       <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px;">Expected additional contribution before end of 2022 (if not already fully covered)</p>
+       <p>${(element.additionalContribution)!}</p>
+</div>
+[/#if]
 [/#macro]
 
 [#macro helpViewMore name=""]

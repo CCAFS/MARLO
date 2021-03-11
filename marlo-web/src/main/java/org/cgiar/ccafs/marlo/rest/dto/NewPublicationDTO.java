@@ -62,11 +62,6 @@ public class NewPublicationDTO {
   }
 
 
-  public List<DeliverableUserDTO> getAuthorlist() {
-    return authorlist;
-  }
-
-
   public List<DeliverableUserDTO> getAuthorList() {
     return authorlist;
   }
@@ -150,9 +145,6 @@ public class NewPublicationDTO {
     this.handle = handle;
   }
 
-  public void setISIJournal(Boolean isISIJournal) {
-    this.isISIJournal = isISIJournal;
-  }
 
   public void setIsISIJournal(Boolean isISIJournal) {
     this.isISIJournal = isISIJournal;

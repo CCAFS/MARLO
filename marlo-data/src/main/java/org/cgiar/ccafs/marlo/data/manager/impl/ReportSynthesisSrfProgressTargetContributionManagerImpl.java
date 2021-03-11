@@ -72,6 +72,12 @@ public class ReportSynthesisSrfProgressTargetContributionManagerImpl
   }
 
   @Override
+  public List<ReportSynthesisSrfProgressTargetContribution> findBySloTargetSynthesis(long sloTargetID,
+    long synthesisID) {
+    return reportSynthesisSrfProgressTargetContributionDAO.findBySloTargetSynthesis(sloTargetID, synthesisID);
+  }
+
+  @Override
   public ReportSynthesisSrfProgressTargetContribution
     getReportSynthesisSrfProgressTargetContributionById(long reportSynthesisSrfProgressTargetContributionID) {
 

@@ -65,6 +65,9 @@ public interface ReportSynthesisSrfProgressTargetContributionManager {
   public List<ReportSynthesisSrfProgressTargetContribution>
     findBySloTargetID(long reportSynthesisSrfProgressTargetContributionID);
 
+  public List<ReportSynthesisSrfProgressTargetContribution> findBySloTargetSynthesis(long sloTargetID,
+    long synthesisID);
+
   /**
    * This method gets a reportSynthesisSrfProgressTargetContribution object by a given sloTargetID identifier.
    * 
@@ -73,6 +76,7 @@ public interface ReportSynthesisSrfProgressTargetContributionManager {
    */
   public ReportSynthesisSrfProgressTargetContribution
     getReportSynthesisSrfProgressTargetContributionById(long sloTargetID);
+
 
   /**
    * This method saves the information of the given reportSynthesisSrfProgressTargetContribution

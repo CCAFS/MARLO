@@ -519,8 +519,10 @@ public class PublicationsAction extends BaseAction {
         if (reportSynthesis.getReportSynthesisFlagshipProgress() == null) {
           ReportSynthesisFlagshipProgress flagshipProgress = new ReportSynthesisFlagshipProgress();
           // create one to one relation
-          reportSynthesis.setReportSynthesisFlagshipProgress(flagshipProgress);
           flagshipProgress.setReportSynthesis(reportSynthesis);
+          flagshipProgress =
+            reportSynthesisFlagshipProgressManager.saveReportSynthesisFlagshipProgress(flagshipProgress);
+          reportSynthesis.setReportSynthesisFlagshipProgress(flagshipProgress);
           // save the changes
           reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
         }
