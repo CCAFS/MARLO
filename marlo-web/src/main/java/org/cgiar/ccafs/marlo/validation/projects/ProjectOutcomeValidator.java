@@ -262,21 +262,21 @@ public class ProjectOutcomeValidator extends BaseValidator {
       action.getInvalidFields().put("input-projectOutcome.narrativeTarget", InvalidFieldsMessages.EMPTYFIELD);
     }
     // not validate if is AICCRA instance
-    if (action.isAiccra() == false) {
-      if (projectOutcome.getMilestones() != null && projectOutcome.getMilestones().size() > 0) {
-        if (action.isPlanningActive()) {
-          List<ProjectMilestone> milestones = projectOutcome.getMilestones().stream()
-            .filter(c -> c != null && c.getYear() == action.getCurrentCycleYear()).collect(Collectors.toList());
-          for (int i = 0; i < milestones.size(); i++) {
-            this.validateProjectMilestone(action, milestones.get(i), i);
-          }
-        } else {
-          for (int i = 0; i < projectOutcome.getMilestones().size(); i++) {
-            this.validateProjectMilestone(action, projectOutcome.getMilestones().get(i), i);
-          }
+    // if (action.isAiccra() == false) {
+    if (projectOutcome.getMilestones() != null && projectOutcome.getMilestones().size() > 0) {
+      if (action.isPlanningActive()) {
+        List<ProjectMilestone> milestones = projectOutcome.getMilestones().stream()
+          .filter(c -> c != null && c.getYear() == action.getCurrentCycleYear()).collect(Collectors.toList());
+        for (int i = 0; i < milestones.size(); i++) {
+          this.validateProjectMilestone(action, milestones.get(i), i);
+        }
+      } else {
+        for (int i = 0; i < projectOutcome.getMilestones().size(); i++) {
+          this.validateProjectMilestone(action, projectOutcome.getMilestones().get(i), i);
         }
       }
     }
+    // }
 
     if (action.hasSpecificities(APConstants.CRP_BASELINE_INDICATORS)) {
       // TODO: check validation for reporting 2018

@@ -164,10 +164,10 @@
           </div>
           
           [#-- Project Milestones and Communications contributions per year--]
-          <h4 class="headTitle" style=display:none> [@s.text name="projectOutcome.contributionToMilestones" /]</h4>
+          <h4 class="headTitle"> [@s.text name="projectOutcome.contributionToMilestones" /]</h4>
           
           [#-- List milestones  --]
-          <div class="milestonesYearBlock borderBox" listname="milestonesProject" style=display:none>
+          <div class="milestonesYearBlock borderBox" listname="milestonesProject">
             <div class="milestonesYearList">
               [#if milestonesProject?has_content]
                 [#list milestonesProject as milestone]
