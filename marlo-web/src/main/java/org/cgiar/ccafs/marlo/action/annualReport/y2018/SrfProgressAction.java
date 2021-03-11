@@ -941,11 +941,17 @@ public class SrfProgressAction extends BaseAction {
               if (targetCase.getGeographicRegions() != null) {
                 targetCase.getGeographicRegions().clear();
               }
+
               if (targetCase.getGeographicCountries() != null) {
                 targetCase.getGeographicCountries().clear();
               }
+
+              if (targetCase.getCountries() != null) {
+                targetCase.getCountries().clear();
+              }
             }
             sloTarget.getTargetCases().clear();
+
           }
         }
       }
