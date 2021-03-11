@@ -247,9 +247,10 @@ public class SrfProgressAction extends BaseAction {
         // Get value for 'no new evidence' check button TODO
         ReportSynthesisSrfProgressTargetContribution sloContribution =
           new ReportSynthesisSrfProgressTargetContribution();
-        if (reportSynthesisSrfProgressTargetContributionManager.findBySloTargetID(target.getId()) != null) {
-          sloContribution =
-            reportSynthesisSrfProgressTargetContributionManager.findBySloTargetID(target.getId()).get(0);
+        if (reportSynthesisSrfProgressTargetContributionManager.findBySloTargetSynthesis(target.getId(),
+          synthesisID) != null) {
+          sloContribution = reportSynthesisSrfProgressTargetContributionManager
+            .findBySloTargetSynthesis(target.getId(), synthesisID).get(0);
         }
 
         if (sloContribution != null) {
@@ -1034,10 +1035,12 @@ public class SrfProgressAction extends BaseAction {
             new ReportSynthesisSrfProgressTargetContribution();
 
           if (sloIndicator.getId() != null
-            && reportSynthesisSrfProgressTargetContributionManager.findBySloTargetID(sloIndicator.getId()) != null
-            && !reportSynthesisSrfProgressTargetContributionManager.findBySloTargetID(sloIndicator.getId()).isEmpty()) {
-            contribution =
-              reportSynthesisSrfProgressTargetContributionManager.findBySloTargetID(sloIndicator.getId()).get(0);
+            && reportSynthesisSrfProgressTargetContributionManager.findBySloTargetSynthesis(sloIndicator.getId(),
+              synthesisID) != null
+            && !reportSynthesisSrfProgressTargetContributionManager
+              .findBySloTargetSynthesis(sloIndicator.getId(), synthesisID).isEmpty()) {
+            contribution = reportSynthesisSrfProgressTargetContributionManager
+              .findBySloTargetSynthesis(sloIndicator.getId(), synthesisID).get(0);
           }
 
           contribution.setReportSynthesisSrfProgress(srfProgressDB);
