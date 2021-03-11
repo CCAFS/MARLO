@@ -78,6 +78,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -164,6 +165,7 @@ public class SrfProgressAction extends BaseAction {
   private List<RepIndGeographicScope> repIndGeographicScopes;
   private List<LocElement> repIndRegions;
   private List<LocElement> countries;
+  private List<SrfSloIndicatorTarget> sloTargetList;
 
   @Inject
   public SrfProgressAction(APConfig config, GlobalUnitManager crpManager,
@@ -226,23 +228,29 @@ public class SrfProgressAction extends BaseAction {
     return SUCCESS;
   }
 
-
-  public void fillSloTargetsCasesDB() {
+  /**
+   * FP ONLY
+   */
+  public List<SrfSloIndicatorTarget> fillSloTargetsCasesDB(long currentLiaisonId,
+    List<SrfSloIndicatorTarget> incomingSloTargets) {
     // Fill sloTargets List
     List<SrfSloIndicatorTarget> sloTargetsTemp = new ArrayList<>();
-    sloTargets = new ArrayList<>(srfSloIndicatorTargetManager.findAll().stream()
-      .filter(sr -> sr.isActive() && sr.getYear() == 2022).collect(Collectors.toList()));
+    List<SrfSloIndicatorTarget> sloTargetsFP = incomingSloTargets.isEmpty()
+      ? new ArrayList<>(srfSloIndicatorTargetManager.findAll().stream()
+        .filter(sr -> sr.isActive() && sr.getYear() == 2022).collect(Collectors.toList()))
+      : new ArrayList<>(incomingSloTargets);
 
-    if (sloTargets != null) {
+    if (sloTargetsFP != null) {
 
-      for (SrfSloIndicatorTarget target : sloTargets) {
+      for (SrfSloIndicatorTarget target : sloTargetsFP) {
 
-        // Get value for 'no new evidence' check button
+        // Get value for 'no new evidence' check button TODO
         ReportSynthesisSrfProgressTargetContribution sloContribution =
           new ReportSynthesisSrfProgressTargetContribution();
-        if (reportSynthesisSrfProgressTargetContributionManager.findBySloTargetID(target.getId()) != null) {
-          sloContribution =
-            reportSynthesisSrfProgressTargetContributionManager.findBySloTargetID(target.getId()).get(0);
+        if (reportSynthesisSrfProgressTargetContributionManager.findBySloTargetSynthesis(target.getId(),
+          synthesisID) != null) {
+          sloContribution = reportSynthesisSrfProgressTargetContributionManager
+            .findBySloTargetSynthesis(target.getId(), synthesisID).get(0);
         }
 
         if (sloContribution != null) {
@@ -250,10 +258,13 @@ public class SrfProgressAction extends BaseAction {
         } else {
           target.setHasEvidence(false);
         }
+        LiaisonInstitution currentLiaison = liaisonInstitutionManager.getLiaisonInstitutionById(currentLiaisonId);
+        ReportSynthesis currentReportSynthesis =
+          reportSynthesisManager.findSynthesis(this.getActualPhase().getId(), currentLiaison.getId());
 
         List<ReportSynthesisSrfProgressTargetCases> targetCases;
-        targetCases =
-          reportSynthesisSrfProgressTargetCasesManager.getReportSynthesisSrfProgressId(synthesisID, target.getId());
+        targetCases = reportSynthesisSrfProgressTargetCasesManager
+          .getReportSynthesisSrfProgressId(currentReportSynthesis.getId(), target.getId());
 
         if (targetCases != null) {
 
@@ -261,7 +272,7 @@ public class SrfProgressAction extends BaseAction {
           for (ReportSynthesisSrfProgressTargetCases targetCase : targetCases) {
             List<ProgressTargetCaseGeographicScope> targetCaseGeographicScopes;
 
-            // Geographic scope
+            // Geographic Scope
             targetCaseGeographicScopes =
               progressTargetCaseGeographicScopeManager.findGeographicScopeByTargetCase(targetCase.getId());
 
@@ -284,22 +295,30 @@ public class SrfProgressAction extends BaseAction {
               progressTargetCaseGeographicCountryManager.findGeographicCountryByTargetCase(targetCase.getId());
 
             if (targetCaseGeographicCountries != null) {
-              targetCase.setGeographicCountries(targetCaseGeographicCountries);
-              for (ProgressTargetCaseGeographicCountry country : targetCaseGeographicCountries) {
-                targetCase.getCountriesIds().add(country.getLocElement().getIsoAlpha2());
+              // targetCase.setGeographicCountries(targetCaseGeographicCountries);
+              targetCase.setCountries(targetCaseGeographicCountries);
+
+              if (targetCase.getCountries() != null) {
+                for (ProgressTargetCaseGeographicCountry country : targetCase.getCountries()) {
+                  targetCase.getCountriesIds().add(country.getLocElement().getIsoAlpha2());
+                }
               }
             }
+            targetCase.setLiaisonInstitution(currentLiaison);
           }
+
+          targetCases.addAll(target.getTargetCases());
           target.setTargetCases(targetCases);
         }
 
         sloTargetsTemp.add(target);
       }
 
-      sloTargets = new ArrayList<>();
-      sloTargets.addAll(sloTargetsTemp);
+      sloTargetsFP = new ArrayList<>();
+      sloTargetsFP.addAll(sloTargetsTemp);
     }
 
+    return sloTargetsFP;
   }
 
   public Long firstFlagship() {
@@ -358,18 +377,63 @@ public class SrfProgressAction extends BaseAction {
   }
 
   /**
+   * Get the List of target cases for each SLO and flagship (PMU ONLY)
+   *
+   * @param sloID
+   * @return SrfSloIndicatorTarget list
+   */
+  public List<SrfSloIndicatorTarget> getEvidences() {
+    List<ReportSynthesisSrfProgressTargetCases> targetCasesTemp = new ArrayList<>();
+
+    List<SrfSloIndicatorTarget> sloTargetsTemp = new ArrayList<>();
+    List<SrfSloIndicatorTarget> sloTargetsPMU = new ArrayList<>();
+    GlobalUnit globalUnit = loggedCrp;
+
+    // Fill sloTargets List TODO
+
+    sloTargetsPMU = srfSloIndicatorTargetManager.findAll().stream().filter(sr -> sr.isActive() && sr.getYear() == 2022)
+      .collect(Collectors.toList());
+
+    // Get the list of liaison institutions Flagships and PMU.
+    List<LiaisonInstitution> liaisonInstitutionsFg = globalUnit.getLiaisonInstitutions().stream()
+      .filter(c -> c.getCrpProgram() != null && c.isActive()
+        && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toList());
+
+    if (liaisonInstitutionsFg != null && !liaisonInstitutionsFg.isEmpty()) {
+      liaisonInstitutionsFg.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
+
+      for (LiaisonInstitution li : liaisonInstitutionsFg) {
+        ReportSynthesis reportSynthesisFP =
+          reportSynthesisManager.findSynthesis(this.getActualPhase().getId(), li.getId());
+        if (reportSynthesisFP != null) {
+          if (sloTargetsPMU != null) {
+            sloTargetsTemp = this.fillSloTargetsCasesDB(li.getId(), sloTargetsPMU);
+          }
+        }
+      }
+
+      sloTargetsPMU.clear();
+      sloTargetsPMU.addAll(sloTargetsTemp);
+    }
+
+    return sloTargetsPMU;
+  }
+
+  /**
    * Get the List of target cases for each SLO and flagship
    *
    * @param sloID
    * @return SrfSloIndicatorTarget list
    */
   public SrfSloIndicatorTarget getEvidencesBySLO(int sloID) {
-    SrfSloIndicatorTarget sloTargetFront = new SrfSloIndicatorTarget();
-
+    List<ReportSynthesisSrfProgressTargetCases> targetCasesTemp = new ArrayList<>();
+    SrfSloIndicatorTarget sloTarget = new SrfSloIndicatorTarget();
+    GlobalUnit globalUnit = loggedCrp;
     if (sloID != 0) {
 
       // Get the list of liaison institutions Flagships and PMU.
-      List<LiaisonInstitution> liaisonInstitutionsFg = loggedCrp.getLiaisonInstitutions().stream()
+      List<LiaisonInstitution> liaisonInstitutionsFg = globalUnit.getLiaisonInstitutions().stream()
         .filter(c -> c.getCrpProgram() != null && c.isActive()
           && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
         .collect(Collectors.toList());
@@ -384,70 +448,84 @@ public class SrfProgressAction extends BaseAction {
 
           // Fill sloTargets List
 
-          sloTargetFront = srfSloIndicatorTargetManager.getSrfSloIndicatorTargetById(Long.parseLong(sloID + ""));
+          sloTarget = srfSloIndicatorTargetManager.getSrfSloIndicatorTargetById(Long.parseLong(sloID + ""));
 
-          if (sloTargetFront != null) {
+          if (sloTarget != null) {
 
             // Get value for 'no new evidence' check button
-            ReportSynthesisSrfProgressTargetContribution sloContribution =
+            ReportSynthesisSrfProgressTargetContribution sloContributionTemp =
               new ReportSynthesisSrfProgressTargetContribution();
-            if (reportSynthesisSrfProgressTargetContributionManager.findBySloTargetID(sloTargetFront.getId()) != null) {
-              sloContribution =
-                reportSynthesisSrfProgressTargetContributionManager.findBySloTargetID(sloTargetFront.getId()).get(0);
+            if (reportSynthesisSrfProgressTargetContributionManager.findBySloTargetID(sloTarget.getId()) != null) {
+              sloContributionTemp =
+                reportSynthesisSrfProgressTargetContributionManager.findBySloTargetID(sloTarget.getId()).get(0);
             }
 
-            if (sloContribution != null) {
-              sloTargetFront.setHasEvidence(sloContribution.isHasEvidence());
+            if (sloContributionTemp != null) {
+              sloTarget.setHasEvidence(sloContributionTemp.isHasEvidence());
             }
 
             List<ReportSynthesisSrfProgressTargetCases> targetCases = new ArrayList<>();
-            if (reportSynthesisFP != null && reportSynthesisFP.getId() != null && sloTargetFront != null
-              && sloTargetFront.getId() != null && reportSynthesisSrfProgressTargetCasesManager
-                .getReportSynthesisSrfProgressId(reportSynthesisFP.getId(), sloTargetFront.getId()) != null) {
+            if (reportSynthesisFP != null && reportSynthesisFP.getId() != null && sloTarget != null
+              && sloTarget.getId() != null && reportSynthesisSrfProgressTargetCasesManager
+                .getReportSynthesisSrfProgressId(reportSynthesisFP.getId(), sloTarget.getId()) != null) {
               targetCases = reportSynthesisSrfProgressTargetCasesManager
-                .getReportSynthesisSrfProgressId(reportSynthesisFP.getId(), sloTargetFront.getId());
+                .getReportSynthesisSrfProgressId(reportSynthesisFP.getId(), sloTarget.getId());
             }
 
             if (targetCases != null && !targetCases.isEmpty()) {
 
               // Fill target cases
-              for (ReportSynthesisSrfProgressTargetCases evidence : targetCases) {
+              for (ReportSynthesisSrfProgressTargetCases targetCase : targetCases) {
                 List<ProgressTargetCaseGeographicScope> targetCaseGeographicScopes;
 
                 // Geographic scope
                 targetCaseGeographicScopes =
-                  progressTargetCaseGeographicScopeManager.findGeographicScopeByTargetCase(evidence.getId());
+                  progressTargetCaseGeographicScopeManager.findGeographicScopeByTargetCase(targetCase.getId());
 
                 if (targetCaseGeographicScopes != null) {
-                  evidence.setGeographicScopes(targetCaseGeographicScopes);
+                  targetCase.setGeographicScopes(targetCaseGeographicScopes);
                 }
 
                 // Geographic regions
                 List<ProgressTargetCaseGeographicRegion> targetCaseGeographicRegions;
                 targetCaseGeographicRegions =
-                  progressTargetCaseGeographicRegionManager.findGeographicRegionByTargetCase(evidence.getId());
+                  progressTargetCaseGeographicRegionManager.findGeographicRegionByTargetCase(targetCase.getId());
 
                 if (targetCaseGeographicRegions != null) {
-                  evidence.setGeographicRegions(targetCaseGeographicRegions);
+                  targetCase.setGeographicRegions(targetCaseGeographicRegions);
+                }
+
+                targetCase.setLiaisonInstitution(li);
+                if (li.getCrpProgram() != null && li.getCrpProgram().getId() != null
+                  && targetCase.getLiaisonInstitution() != null) {
+                  CrpProgram crpProgram = crpProgramManager.getCrpProgramById(li.getCrpProgram().getId());
+                  if (crpProgram != null) {
+                    targetCase.getLiaisonInstitution().setCrpProgram(crpProgram);
+                  }
                 }
 
                 // Geographic countries
                 List<ProgressTargetCaseGeographicCountry> targetCaseGeographicCountries;
                 targetCaseGeographicCountries =
-                  progressTargetCaseGeographicCountryManager.findGeographicCountryByTargetCase(evidence.getId());
+                  progressTargetCaseGeographicCountryManager.findGeographicCountryByTargetCase(targetCase.getId());
 
                 if (targetCaseGeographicCountries != null) {
-                  evidence.setGeographicCountries(targetCaseGeographicCountries);
+                  targetCase.setGeographicCountries(targetCaseGeographicCountries);
                 }
               }
-              sloTargetFront.setTargetCases(targetCases);
+              targetCasesTemp.addAll(targetCases);
             }
+
           }
+        }
+        if (sloTarget != null) {
+          sloTarget.setTargetCases(targetCasesTemp);
         }
       }
     }
-    return sloTargetFront;
+    return sloTarget;
   }
+
 
   public List<ReportSynthesisSrfProgress> getFlagshipSrfProgress() {
     return flagshipSrfProgress;
@@ -511,6 +589,10 @@ public class SrfProgressAction extends BaseAction {
 
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
+  }
+
+  public List<SrfSloIndicatorTarget> getSloTargetList() {
+    return sloTargetList;
   }
 
   public List<SrfSloIndicatorTarget> getSloTargets() {
@@ -611,6 +693,7 @@ public class SrfProgressAction extends BaseAction {
     return targets;
   }
 
+
   /**
    * Get the information for the Slo targets in the form
    * 
@@ -638,7 +721,6 @@ public class SrfProgressAction extends BaseAction {
       return null;
     }
   }
-
 
   public String getTransaction() {
     return transaction;
@@ -789,6 +871,9 @@ public class SrfProgressAction extends BaseAction {
 
         this.setDraft(false);
 
+        // Fill Slo Targets, contributions and Geographic scope information
+        sloTargets = this.fillSloTargetsCasesDB(this.liaisonInstitutionID, Collections.emptyList());
+
         // Check if relation is null -create it
         if (reportSynthesis.getReportSynthesisSrfProgress() == null) {
           ReportSynthesisSrfProgress srfProgress = new ReportSynthesisSrfProgress();
@@ -811,9 +896,6 @@ public class SrfProgressAction extends BaseAction {
       }
     }
 
-    // Fill Slo Targets, contributions and Geographic scope information
-    this.fillSloTargetsCasesDB();
-
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null && c.isActive()
@@ -823,6 +905,8 @@ public class SrfProgressAction extends BaseAction {
 
 
     if (this.isPMU()) {
+
+      // sloTargetList = new ArrayList<>(this.getEvidences());
 
       // Flagships Synthesis Progress
       flagshipSrfProgress =
@@ -845,6 +929,31 @@ public class SrfProgressAction extends BaseAction {
       }
       if (reportSynthesis.getReportSynthesisSrfProgress().getSloTargetsCases() != null) {
         reportSynthesis.getReportSynthesisSrfProgress().getSloTargetsCases().clear();
+      }
+
+      if (sloTargets != null && !sloTargets.isEmpty()) {
+        for (SrfSloIndicatorTarget sloTarget : sloTargets) {
+          if (sloTarget != null && sloTarget.getTargetCases() != null && !sloTarget.getTargetCases().isEmpty()) {
+            for (ReportSynthesisSrfProgressTargetCases targetCase : sloTarget.getTargetCases()) {
+              if (targetCase.getGeographicScopes() != null) {
+                targetCase.getGeographicScopes().clear();
+              }
+              if (targetCase.getGeographicRegions() != null) {
+                targetCase.getGeographicRegions().clear();
+              }
+
+              if (targetCase.getGeographicCountries() != null) {
+                targetCase.getGeographicCountries().clear();
+              }
+
+              if (targetCase.getCountries() != null) {
+                targetCase.getCountries().clear();
+              }
+            }
+            sloTarget.getTargetCases().clear();
+
+          }
+        }
       }
 
     }
@@ -931,9 +1040,13 @@ public class SrfProgressAction extends BaseAction {
           ReportSynthesisSrfProgressTargetContribution contribution =
             new ReportSynthesisSrfProgressTargetContribution();
 
-          if (sloIndicator.getId() != null) {
-            contribution =
-              reportSynthesisSrfProgressTargetContributionManager.findBySloTargetID(sloIndicator.getId()).get(0);
+          if (sloIndicator.getId() != null
+            && reportSynthesisSrfProgressTargetContributionManager.findBySloTargetSynthesis(sloIndicator.getId(),
+              synthesisID) != null
+            && !reportSynthesisSrfProgressTargetContributionManager
+              .findBySloTargetSynthesis(sloIndicator.getId(), synthesisID).isEmpty()) {
+            contribution = reportSynthesisSrfProgressTargetContributionManager
+              .findBySloTargetSynthesis(sloIndicator.getId(), synthesisID).get(0);
           }
 
           contribution.setReportSynthesisSrfProgress(srfProgressDB);
@@ -997,7 +1110,11 @@ public class SrfProgressAction extends BaseAction {
                   ProgressTargetCaseGeographicScope geographicScopeSave = new ProgressTargetCaseGeographicScope();
                   geographicScopeSave.setTargetCase(srfTarget);
                   geographicScopeSave.setPhase(this.getActualPhase());
-                  geographicScopeSave.setRepIndGeographicScope(geographicScope.getRepIndGeographicScope());
+                  RepIndGeographicScope repIndGeographicScope = repIndGeographicScopeManager
+                    .getRepIndGeographicScopeById(geographicScope.getRepIndGeographicScope().getId());
+
+                  geographicScopeSave.setRepIndGeographicScope(repIndGeographicScope);
+
                   progressTargetCaseGeographicScopeManager.saveProgressTargetCaseGeographicScope(geographicScopeSave);
                 } else {
                   // Update Geographic scope
@@ -1053,7 +1170,7 @@ public class SrfProgressAction extends BaseAction {
 
             // Geographic Countries
 
-            if (srfTarget.getCountriesIds() != null) {
+            if (srfTarget.getCountriesIds() != null && !srfTarget.getCountriesIds().isEmpty()) {
 
               List<ProgressTargetCaseGeographicCountry> countries = new ArrayList<>(
                 progressTargetCaseGeographicCountryManager.findGeographicCountryByTargetCase(srfTarget.getId()));
@@ -1101,15 +1218,14 @@ public class SrfProgressAction extends BaseAction {
     }
   }
 
-
   public void setCountries(List<LocElement> countries) {
     this.countries = countries;
   }
 
-
   public void setFlagshipSrfProgress(List<ReportSynthesisSrfProgress> flagshipSrfProgress) {
     this.flagshipSrfProgress = flagshipSrfProgress;
   }
+
 
   public void setFpSynthesisTable(List<ReportSynthesisCrpProgressTarget> fpSynthesisTable) {
     this.fpSynthesisTable = fpSynthesisTable;
@@ -1123,7 +1239,6 @@ public class SrfProgressAction extends BaseAction {
     this.liaisonInstitutionID = liaisonInstitutionID;
   }
 
-
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
   }
@@ -1132,6 +1247,7 @@ public class SrfProgressAction extends BaseAction {
   public void setListOfFlagships(List<String> listOfFlagships) {
     this.listOfFlagships = listOfFlagships;
   }
+
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
@@ -1147,6 +1263,10 @@ public class SrfProgressAction extends BaseAction {
 
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
     this.reportSynthesis = reportSynthesis;
+  }
+
+  public void setSloTargetList(List<SrfSloIndicatorTarget> sloTargetList) {
+    this.sloTargetList = sloTargetList;
   }
 
   public void setSloTargets(List<SrfSloIndicatorTarget> sloTargets) {
