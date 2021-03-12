@@ -206,6 +206,8 @@ public class TargetCasesBySLOAction extends BaseAction {
           targets = new HashMap<>();
           targets.put("id", sloTarget.getId());
           targets.put("Narrative", sloTarget.getNarrative());
+          targets.put("evidence", sloTarget.getHasEvidence());
+
           for (ReportSynthesisSrfProgressTargetCases targetCase : sloTarget.getTargetCases()) {
             List<ReportSynthesisSrfProgressTargetCases> targetCaseList = new ArrayList<>();
             targetCaseList.add(targetCase);
