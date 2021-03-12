@@ -3,7 +3,7 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ "select2", "trumbowyg", "components-font-awesome", "datatables.net", "datatables.net-bs"] /]
+[#assign pageLibs = [ "select2", "trumbowyg", "components-font-awesome", "datatables.net", "datatables.net-bs","flag-icon-css"] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js"
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210308A" ] /]
@@ -25,6 +25,10 @@
 
 [#-- Helptext --]
 [@utilities.helpBox name="${customLabel}.help" /]
+
+[#if PMU]
+  [@utilities.helpBox name="Inputs received by Flagship leaders will be displayed here soon. Meanwhile, we suggest you to please go to the respective Flagship directly" /]
+[/#if]
     
 <section class="container">
   [#if !reportingActive]
