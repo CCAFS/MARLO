@@ -52,7 +52,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 
 
-public class TargetCasesBySLO extends BaseAction {
+public class TargetCasesBySLOAction extends BaseAction {
 
   /**
    * 
@@ -74,10 +74,11 @@ public class TargetCasesBySLO extends BaseAction {
   private ProgressTargetCaseGeographicRegionManager progressTargetCaseGeographicRegionManager;
   private ProgressTargetCaseGeographicCountryManager progressTargetCaseGeographicCountryManager;
   private CrpProgramManager crpProgramManager;
+  private long phaseID;
 
 
   @Inject
-  public TargetCasesBySLO(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
+  public TargetCasesBySLOAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
     ReportSynthesisManager reportSynthesisManager,
     ReportSynthesisSrfProgressTargetCasesManager reportSynthesisSrfProgressTargetCasesManager,
     SrfSloIndicatorTargetManager srfSloIndicatorTargetManager,
@@ -95,6 +96,7 @@ public class TargetCasesBySLO extends BaseAction {
     this.progressTargetCaseGeographicRegionManager = progressTargetCaseGeographicRegionManager;
     this.progressTargetCaseGeographicCountryManager = progressTargetCaseGeographicCountryManager;
     this.crpProgramManager = crpProgramManager;
+    this.reportSynthesisManager = reportSynthesisManager;
   }
 
 
@@ -123,8 +125,7 @@ public class TargetCasesBySLO extends BaseAction {
         liaisonInstitutionsFg.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
 
         for (LiaisonInstitution li : liaisonInstitutionsFg) {
-          ReportSynthesis reportSynthesisFP =
-            reportSynthesisManager.findSynthesis(this.getActualPhase().getId(), li.getId());
+          ReportSynthesis reportSynthesisFP = reportSynthesisManager.findSynthesis(phaseID, li.getId());
 
           // Fill sloTargets List
           sloTarget = srfSloIndicatorTargetManager.getSrfSloIndicatorTargetById(Long.parseLong(sloID + ""));
@@ -134,12 +135,13 @@ public class TargetCasesBySLO extends BaseAction {
             // Get value for 'no new evidence' check button
             ReportSynthesisSrfProgressTargetContribution sloContributionTemp =
               new ReportSynthesisSrfProgressTargetContribution();
-            if (reportSynthesisSrfProgressTargetContributionManager.findBySloTargetSynthesis(sloTarget.getId(),
-              reportSynthesisFP.getId()) != null) {
-              sloContributionTemp =
-                reportSynthesisSrfProgressTargetContributionManager.findBySloTargetID(sloTarget.getId()).get(0);
-            }
-
+            /*
+             * if (reportSynthesisSrfProgressTargetContributionManager.findBySloTargetSynthesis(sloTarget.getId(),
+             * reportSynthesisFP.getId()) != null) {
+             * sloContributionTemp =
+             * reportSynthesisSrfProgressTargetContributionManager.findBySloTargetID(sloTarget.getId()).get(0);
+             * }
+             */
             if (sloContributionTemp != null) {
               sloTarget.setHasEvidence(sloContributionTemp.isHasEvidence());
             }
@@ -216,6 +218,11 @@ public class TargetCasesBySLO extends BaseAction {
   public void prepare() throws Exception {
     Map<String, Parameter> parameters = this.getParameters();
     sloTargetID = StringUtils.trim(parameters.get(APConstants.ID).getMultipleValues()[0]);
+    phaseID = 0;
+    if (this.getActualPhase() != null) {
+      this.getActualPhase().getId();
+    }
+
   }
 
 
