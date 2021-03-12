@@ -104,7 +104,6 @@ public class TargetCasesBySLOAction extends BaseAction {
   @Override
   public String execute() throws Exception {
     sources = new ArrayList<>();
-    Map<String, Object> targets;
     GlobalUnit loggedCrp = crpManager.getGlobalUnitById(this.getCrpID());
 
     List<ReportSynthesisSrfProgressTargetCases> targetCasesTemp = new ArrayList<>();
@@ -200,38 +199,64 @@ public class TargetCasesBySLOAction extends BaseAction {
             }
 
           }
+
         }
         if (sloTarget != null) {
           sloTarget.setTargetCases(targetCasesTemp);
-          targets = new HashMap<>();
-          targets.put("id", sloTarget.getId());
-          targets.put("Narrative", sloTarget.getNarrative());
-          targets.put("evidence", sloTarget.getHasEvidence());
+          Map<String, Object> fp;
+          List<Map<String, Object>> flagships = new ArrayList<>();
+          List<Map<String, Object>> contributions;
+          List<Map<String, Object>> geoScopes;
+          List<Map<String, Object>> elements;
 
-          for (ReportSynthesisSrfProgressTargetCases targetCase : sloTarget.getTargetCases()) {
-            List<ReportSynthesisSrfProgressTargetCases> targetCaseList = new ArrayList<>();
-            targetCaseList.add(targetCase);
-            if (targetCase.getGeographicScopes() != null) {
+          for (LiaisonInstitution li : liaisonInstitutionsFg) {
+            ReportSynthesis reportSynthesisFP = reportSynthesisManager.findSynthesis(phaseId, li.getId());
+            fp = new HashMap<>();
+            fp.put("id", li.getAcronym());
+            contributions = new ArrayList<>();
+            for (ReportSynthesisSrfProgressTargetCases targetCase : targetCasesTemp.stream()
+              .filter(tc -> tc != null && tc.getId() != null && tc.getReportSynthesisSrfProgress() != null
+                && tc.getReportSynthesisSrfProgress().getId() != null
+                && tc.getReportSynthesisSrfProgress().getReportSynthesis() != null
+                && tc.getReportSynthesisSrfProgress().getReportSynthesis().getId() != null
+                && tc.getReportSynthesisSrfProgress().getReportSynthesis().equals(reportSynthesisFP))
+              .collect(Collectors.toList())) {
+              Map<String, Object> contribution = new HashMap<>();
+              contribution.put("summary", targetCase.getBriefSummary());
+              contribution.put("additionalContribution", targetCase.getAdditionalContribution());
+              geoScopes = new ArrayList<>();
               for (ProgressTargetCaseGeographicScope geographicScope : targetCase.getGeographicScopes()) {
-                targets.put("scope", geographicScope.getRepIndGeographicScope().getName());
+                Map<String, Object> geoScope = new HashMap<>();
+                String geoName = geographicScope.getRepIndGeographicScope().getName();
+                geoScope.put("id", geographicScope.getRepIndGeographicScope().getId());
+                geoScope.put("name", geoName);
+                elements = new ArrayList<>();
+                if (StringUtils.containsIgnoreCase(geoName, "region")) {
+                  for (ProgressTargetCaseGeographicRegion geographicRegion : targetCase.getGeographicRegions()) {
+                    Map<String, Object> element = new HashMap<>();
+                    element.put("id", geographicRegion.getLocElement().getId());
+                    element.put("name", geographicRegion.getLocElement().getName());
+                    elements.add(element);
+                  }
+                } else if (StringUtils.containsIgnoreCase(geoName, "nation")) {
+                  for (ProgressTargetCaseGeographicCountry geographicCountry : targetCase.getGeographicCountries()) {
+                    Map<String, Object> element = new HashMap<>();
+                    element.put("id", geographicCountry.getLocElement().getId());
+                    element.put("name", geographicCountry.getLocElement().getName());
+                    elements.add(element);
+                  }
+                }
+                geoScope.put("element", elements);
+                geoScopes.add(geoScope);
               }
+              contribution.put("geographicScope", geoScopes);
+              contributions.add(contribution);
             }
-            if (targetCase.getGeographicRegions() != null) {
-              for (ProgressTargetCaseGeographicCountry geographicScope : targetCase.getGeographicCountries()) {
-                targets.put("country", geographicScope.getLocElement().getName());
-              }
-            }
-            if (targetCase.getGeographicCountries() != null) {
-              for (ProgressTargetCaseGeographicRegion geographicScope : targetCase.getGeographicRegions()) {
-                targets.put("region", geographicScope.getLocElement().getName());
-              }
-            }
-            targets.put("briefSummary", targetCase.getBriefSummary());
-            targets.put("additionalContribution", targetCase.getAdditionalContribution());
+            fp.put("contribution", contributions);
+            flagships.add(fp);
           }
 
-
-          sources.add(targets);
+          sources = new ArrayList<>(flagships);
         }
       }
     }
