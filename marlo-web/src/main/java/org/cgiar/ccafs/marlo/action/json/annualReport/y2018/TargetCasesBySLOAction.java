@@ -74,7 +74,7 @@ public class TargetCasesBySLOAction extends BaseAction {
   private ProgressTargetCaseGeographicRegionManager progressTargetCaseGeographicRegionManager;
   private ProgressTargetCaseGeographicCountryManager progressTargetCaseGeographicCountryManager;
   private CrpProgramManager crpProgramManager;
-  private long phaseID;
+  private Long phaseID;
 
 
   @Inject
@@ -218,11 +218,9 @@ public class TargetCasesBySLOAction extends BaseAction {
   public void prepare() throws Exception {
     Map<String, Parameter> parameters = this.getParameters();
     sloTargetID = StringUtils.trim(parameters.get(APConstants.ID).getMultipleValues()[0]);
-    phaseID = 0;
     if (this.getActualPhase() != null) {
-      this.getActualPhase().getId();
+      this.phaseID = this.getActualPhase().getId();
     }
-
   }
 
 
