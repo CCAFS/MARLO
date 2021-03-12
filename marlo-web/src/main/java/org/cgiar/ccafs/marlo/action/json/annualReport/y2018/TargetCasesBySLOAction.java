@@ -42,6 +42,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -74,7 +75,7 @@ public class TargetCasesBySLOAction extends BaseAction {
   private ProgressTargetCaseGeographicRegionManager progressTargetCaseGeographicRegionManager;
   private ProgressTargetCaseGeographicCountryManager progressTargetCaseGeographicCountryManager;
   private CrpProgramManager crpProgramManager;
-  private Long phaseID;
+  private Long phaseId;
 
 
   @Inject
@@ -103,7 +104,7 @@ public class TargetCasesBySLOAction extends BaseAction {
   @Override
   public String execute() throws Exception {
     sources = new ArrayList<>();
-
+    Map<String, Object> targets;
     GlobalUnit loggedCrp = crpManager.getGlobalUnitById(this.getCrpID());
 
     List<ReportSynthesisSrfProgressTargetCases> targetCasesTemp = new ArrayList<>();
@@ -125,7 +126,7 @@ public class TargetCasesBySLOAction extends BaseAction {
         liaisonInstitutionsFg.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
 
         for (LiaisonInstitution li : liaisonInstitutionsFg) {
-          ReportSynthesis reportSynthesisFP = reportSynthesisManager.findSynthesis(phaseID, li.getId());
+          ReportSynthesis reportSynthesisFP = reportSynthesisManager.findSynthesis(phaseId, li.getId());
 
           // Fill sloTargets List
           sloTarget = srfSloIndicatorTargetManager.getSrfSloIndicatorTargetById(Long.parseLong(sloID + ""));
@@ -202,9 +203,37 @@ public class TargetCasesBySLOAction extends BaseAction {
         }
         if (sloTarget != null) {
           sloTarget.setTargetCases(targetCasesTemp);
+          targets = new HashMap<>();
+          targets.put("id", sloTarget.getId());
+          targets.put("Narrative", sloTarget.getNarrative());
+          for (ReportSynthesisSrfProgressTargetCases targetCase : sloTarget.getTargetCases()) {
+            List<ReportSynthesisSrfProgressTargetCases> targetCaseList = new ArrayList<>();
+            targetCaseList.add(targetCase);
+            if (targetCase.getGeographicScopes() != null) {
+              for (ProgressTargetCaseGeographicScope geographicScope : targetCase.getGeographicScopes()) {
+                targets.put("scope", geographicScope.getRepIndGeographicScope().getName());
+              }
+            }
+            if (targetCase.getGeographicRegions() != null) {
+              for (ProgressTargetCaseGeographicCountry geographicScope : targetCase.getGeographicCountries()) {
+                targets.put("country", geographicScope.getLocElement().getName());
+              }
+            }
+            if (targetCase.getGeographicCountries() != null) {
+              for (ProgressTargetCaseGeographicRegion geographicScope : targetCase.getGeographicRegions()) {
+                targets.put("region", geographicScope.getLocElement().getName());
+              }
+            }
+            targets.put("briefSummary", targetCase.getBriefSummary());
+            targets.put("additionalContribution", targetCase.getAdditionalContribution());
+          }
+
+
+          sources.add(targets);
         }
       }
     }
+
 
     return SUCCESS;
   }
@@ -219,7 +248,7 @@ public class TargetCasesBySLOAction extends BaseAction {
     Map<String, Parameter> parameters = this.getParameters();
     sloTargetID = StringUtils.trim(parameters.get(APConstants.ID).getMultipleValues()[0]);
     if (this.getActualPhase() != null) {
-      this.phaseID = this.getActualPhase().getId();
+      this.phaseId = this.getActualPhase().getId();
     }
   }
 
