@@ -131,6 +131,16 @@ public class SrfProgressValidator extends BaseValidator {
                   InvalidFieldsMessages.EMPTYFIELD);
               }
             }
+            for (int j = 0; j < sloTargets.get(i).getTargetCases().size(); j++) {
+              if (!(this.isValidString(sloTargets.get(i).getTargetCases().get(j).getAdditionalContribution())
+                && this.wordCount(sloTargets.get(i).getTargetCases().get(j).getAdditionalContribution()) <= 150)) {
+                action.addMessage(
+                  action.getText("input-sloTarget[" + i + "].targetCases[" + j + "].additionalContribution"));
+                action.getInvalidFields().put(
+                  "input-sloTarget[" + i + "].targetCases[" + j + "].additionalContribution",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              }
+            }
           }
         }
       }
