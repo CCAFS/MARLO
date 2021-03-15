@@ -237,34 +237,24 @@ public class IFPRIEBraryClientAPI extends MetadataClientApi {
         }
       }
 
+      if (jo.has("doi") && jo.get("doi") != null) {
+        String otherUrl = StringUtils.stripToEmpty(jo.get("doi").toString());
+        if (!StringUtils.equalsIgnoreCase(otherUrl, "{}")) {
+          jo.remove("doi");
+
+          jo.put("otherUrl", otherUrl);
+        }
+      }
       // get real doi
       if (jo.has("doia") && jo.get("doia") != null) {
         String realDoi = StringUtils.stripToEmpty(jo.get("doia").toString());
         if (!StringUtils.equalsIgnoreCase(realDoi, "{}")) {
-          if (jo.has("doi") && jo.get("doi") != null) {
-            String otherUrl = StringUtils.stripToEmpty(jo.get("doi").toString());
-            if (!StringUtils.equalsIgnoreCase(otherUrl, "{}")) {
-              jo.remove("doi");
-              jo.put("otherUrl", otherUrl);
-            }
-          }
-
           jo.remove("doia");
           jo.put("doi", realDoi);
-        }
-      } else {
-        if (jo.has("doi") && jo.get("doi") != null) {
-          String otherUrl = StringUtils.stripToEmpty(jo.get("doi").toString());
-          if (!StringUtils.equalsIgnoreCase(otherUrl, "{}")) {
-            jo.remove("doi");
-
-            jo.put("otherUrl", otherUrl);
-          }
         }
       }
 
       this.setDoi(jo);
-
 
       String data = jo.toString();
       for (String key : coverterAtrributes.keySet()) {
