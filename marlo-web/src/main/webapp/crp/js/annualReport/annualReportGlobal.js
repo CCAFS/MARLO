@@ -487,12 +487,9 @@ function updateAllIndexesContribution() {
 }
 
 function changeButtonText() {
-  console.log('Entré a cambiar el texto');
   if ($(this).text() == 'Show flagship information') {
-    console.log('Hide');
     $(this).text('Hide flagship information');
   } else {
-    console.log('Show');
     $(this).text('Show flagship information');
   }
 }
