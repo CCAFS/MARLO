@@ -287,6 +287,7 @@ $(document).ready(function() {
   $('.checkboxDiTeArClick').on('click',setCheckboxValueTohide);
   $('.btn-addEvidence').on('click',addEvidence);
   $('.btn-removeEvidence').on('click',removeEvidence);
+  $('.flagshipBtn').on('click',changeButtonText);
 
     // Deliverable Geographic Scope
     $('select.elementType-repIndGeographicScope').on("addElement removeElement", function(event,id,name) {
@@ -496,6 +497,17 @@ function updateAllIndexesContribution() {
 
   $(document).trigger('updateComponent');
 
+}
+
+function changeButtonText() {
+  console.log('Entré a cambiar el texto');
+  if ($(this).text() == 'Show flagship information') {
+    console.log('Hide');
+    $(this).text('Hide flagship information');
+  } else {
+    console.log('Show');
+    $(this).text('Show flagship information');
+  }
 }
 
 function addEvidence() {
