@@ -128,8 +128,8 @@ public class SrfProgressValidator extends BaseValidator {
             for (int j = 0; j < sloTargets.get(i).getTargetCases().size(); j++) {
               if (!(this.isValidString(sloTargets.get(i).getTargetCases().get(j).getBriefSummary())
                 && this.wordCount(sloTargets.get(i).getTargetCases().get(j).getBriefSummary()) <= 150)) {
-                action.addMessage(action.getText("input-sloTarget[" + i + "].targetCases[" + j + "].briefSummary"));
-                action.getInvalidFields().put("input-sloTarget[" + i + "].targetCases[" + j + "].briefSummary",
+                action.addMessage(action.getText("sloTargets[" + i + "].targetCases[" + j + "].briefSummary"));
+                action.getInvalidFields().put("input-sloTargets[" + i + "].targetCases[" + j + "].briefSummary",
                   InvalidFieldsMessages.EMPTYFIELD);
               }
             }
@@ -137,8 +137,8 @@ public class SrfProgressValidator extends BaseValidator {
             // Validate Geographic scope
             for (int j = 0; j < sloTargets.get(i).getTargetCases().size(); j++) {
               if (sloTargets.get(i).getTargetCases().get(j).getGeographicScopes() == null) {
-                action.addMessage(action.getText("list-sloTarget[" + i + "].targetCases[" + j + "].geographicScopes"));
-                action.getInvalidFields().put("list-sloTarget[" + i + "].targetCases[" + j + "].geographicScopes",
+                action.addMessage(action.getText("sloTargets[" + i + "].targetCases[" + j + "].geographicScopes"));
+                action.getInvalidFields().put("list-sloTargets[" + i + "].targetCases[" + j + "].geographicScopes",
                   InvalidFieldsMessages.EMPTYFIELD);
               } else {
                 // Validate regions and countries in geographic scope
@@ -166,16 +166,15 @@ public class SrfProgressValidator extends BaseValidator {
 
                 // Validate list of regions
                 if (hasRegions && sloTargets.get(i).getTargetCases().get(j).getGeographicRegions() == null) {
-                  action
-                    .addMessage(action.getText("list-sloTarget[" + i + "].targetCases[" + j + "].geographicRegions"));
-                  action.getInvalidFields().put("list-sloTarget[" + i + "].targetCases[" + j + "].geographicRegions",
+                  action.addMessage(action.getText("sloTargetss[" + i + "].targetCases[" + j + "].geographicRegions"));
+                  action.getInvalidFields().put("list-sloTargets[" + i + "].targetCases[" + j + "].geographicRegions",
                     InvalidFieldsMessages.EMPTYFIELD);
                 }
 
                 // Validate list of countries
                 if (hasCountries && sloTargets.get(i).getTargetCases().get(j).getCountriesIds() == null) {
-                  action.addMessage(action.getText("list-sloTarget[" + i + "].targetCases[" + j + "].countriesIds"));
-                  action.getInvalidFields().put("list-sloTarget[" + i + "].targetCases[" + j + "].countriesIds",
+                  action.addMessage(action.getText("sloTargets[" + i + "].targetCases[" + j + "].countriesIds"));
+                  action.getInvalidFields().put("list-sloTargets[" + i + "].targetCases[" + j + "].countriesIds",
                     InvalidFieldsMessages.EMPTYFIELD);
                 }
               }
