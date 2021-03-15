@@ -136,7 +136,9 @@ $(document).ready(function() {
   getTargetCasesBySLO();
   // $('.slo-contribution-template').find('textarea').trumbowyg("destroy");
 
-  $('.slo-contribution-template').find('select').select2("destroy");
+  if ($('.slo-contribution-template').length) {
+    $('.slo-contribution-template').find('select').select2("destroy");
+  }
   pageName = actionName.replace(/[^a-z0-9+]+/gi, '_');
 
   // Set data tables
