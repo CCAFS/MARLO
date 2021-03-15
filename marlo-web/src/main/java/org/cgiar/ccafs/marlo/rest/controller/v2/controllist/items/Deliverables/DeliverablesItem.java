@@ -204,6 +204,8 @@ public class DeliverablesItem<T> {
         deliverableDissemination.setIsOpenAccess(deliverableDTO.getIsOpenAccess());
         deliverableDissemination.setDeliverable(deliverable);
         deliverableDissemination.setArticleUrl(deliverableDTO.getArticleURL());
+        deliverableDissemination.setDisseminationChannel("other");
+        deliverableDissemination.setDisseminationUrl(DOIService.tryGetDoiName(deliverableDTO.getDoi()));
         deliverableDissemination.setPhase(phase);
         deliverableDisseminationManager.saveDeliverableDissemination(deliverableDissemination);
 
@@ -1218,6 +1220,8 @@ public class DeliverablesItem<T> {
     try (InputStreamReader reader = new InputStreamReader(conn.getInputStream())) {
       element = new JsonParser().parse(reader);
     } catch (FileNotFoundException fnfe) {
+      element = JsonNull.INSTANCE;
+    } catch (IOException ioe) {
       element = JsonNull.INSTANCE;
     }
     return element;
