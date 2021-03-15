@@ -45,8 +45,8 @@ function getContributionListComponentValue(contributionData){
 
 
   geographicScopeString = geographicScopeString == '' ? '<p>  Not available</p>':geographicScopeString;
-  regionString = regionString == '' ? '<p>  Not available</p>':regionString;
-  countriesString = countriesString == '' ? '<p>  Not available</p>':countriesString;
+  // regionString = regionString == '' ? '<p>  Not available</p>':regionString;
+  // countriesString = countriesString == '' ? '<p>  Not available</p>':countriesString;
   // additionalContribution = additionalContribution ? '<p>  Not available</p>':additionalContribution;
   // summary = summary == '' ? '<p>  Not available</p>':summary;
 
@@ -65,10 +65,10 @@ function getContributionListComponentValue(contributionData){
       <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px; margin-top: 10px;">Geographic scope:</p>
       ${geographicScopeString}
      
-      <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px; margin-top: 10px;">Regions:</p>
+      <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px; margin-top: 10px;display: ${regionString==''?'none':'block'};">Regions:</p>
       ${regionString} 
 
-      <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px; margin-top: 10px;">Country(ies):</p>
+      <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px; margin-top: 10px;display: ${countriesString==''?'none':'block'};">Country(ies):</p>
       ${countriesString} 
       
       <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px;">Brief summary of new evidence of CGIAR contribution:</p>
