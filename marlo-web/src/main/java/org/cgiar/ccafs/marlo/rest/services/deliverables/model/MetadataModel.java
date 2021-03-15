@@ -23,40 +23,24 @@ import org.apache.struts2.json.annotations.JSON;
 public class MetadataModel {
 
   private Author[] authors;
-
   private String citation;
-
   private String title;
-
   private String handle;
-
   private String keywords;
-
   private String description;
-
   private String rights;
-
   private String language;
-
   private String openAccess;
-
   private String ISI;
-
   private String doi;
-
   private Date publicationDate;
-
   private String countries;
-
   private String publisher;
-
   private String journal;
-
   private String volume;
-
   private String issue;
-
   private String pages;
+  private String otherUrl;
 
   public MetadataModel() {
     this.citation = "";
@@ -75,6 +59,7 @@ public class MetadataModel {
     this.volume = "";
     this.issue = "";
     this.pages = "";
+    this.otherUrl = "";
   }
 
 
@@ -86,16 +71,13 @@ public class MetadataModel {
     return citation;
   }
 
-
   public String getCountries() {
     return countries;
   }
 
-
   public String getDescription() {
     return description;
   }
-
 
   public String getDoi() {
     return doi;
@@ -109,16 +91,13 @@ public class MetadataModel {
     return ISI;
   }
 
-
   public String getIssue() {
     return issue;
   }
 
-
   public String getJournal() {
     return journal;
   }
-
 
   public String getKeywords() {
     return keywords;
@@ -132,16 +111,18 @@ public class MetadataModel {
     return openAccess;
   }
 
+  public String getOtherUrl() {
+    return otherUrl;
+  }
+
   public String getPages() {
     return pages;
   }
-
 
   @JSON(format = "yyyy-MM-dd")
   public Date getPublicationDate() {
     return publicationDate;
   }
-
 
   public String getPublisher() {
     return publisher;
@@ -151,11 +132,9 @@ public class MetadataModel {
     return rights;
   }
 
-
   public String getTitle() {
     return title;
   }
-
 
   public String getVolume() {
     return volume;
@@ -166,21 +145,17 @@ public class MetadataModel {
     this.authors = authors;
   }
 
-
   public void setCitation(String citation) {
     this.citation = citation;
   }
-
 
   public void setCountries(String countries) {
     this.countries = countries;
   }
 
-
   public void setDescription(String description) {
     this.description = description;
   }
-
 
   public void setDoi(String doi) {
     this.doi = doi;
@@ -214,6 +189,9 @@ public class MetadataModel {
     this.openAccess = openAccess;
   }
 
+  public void setOtherUrl(String otherUrl) {
+    this.otherUrl = otherUrl;
+  }
 
   public void setPages(String pages) {
     this.pages = pages;
@@ -222,7 +200,6 @@ public class MetadataModel {
   public void setPublicationDate(Date publicationDate) {
     this.publicationDate = publicationDate;
   }
-
 
   public void setPublisher(String publisher) {
     this.publisher = publisher;
@@ -239,5 +216,4 @@ public class MetadataModel {
   public void setVolume(String volume) {
     this.volume = volume;
   }
-
 }
