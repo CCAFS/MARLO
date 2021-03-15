@@ -157,7 +157,6 @@
       </div>
 
       <div class="collapse" id="collapseExample-${index}">
-        <h1>ID slo target: ${element.id}</h1>
         <ul class="nav nav-tabs insertHtmlSlo-tabs-${element.id}" role="tablist">
         </ul>
         <div class="tab-content insertHtmlSlo-tabpanel-${element.id}">
