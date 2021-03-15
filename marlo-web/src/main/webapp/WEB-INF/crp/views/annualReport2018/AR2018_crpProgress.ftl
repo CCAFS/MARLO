@@ -151,10 +151,8 @@
 
        <div class="checkboxDiTeAr">
         <div class="">
-          <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample-${index}"
-          aria-expanded="false" aria-controls="collapseExample" style="outline: none;">
-          Show table
-        </button>
+          <button class="btn btn-primary flagshipBtn" type="button" data-toggle="collapse" data-target="#collapseExample-${index}"
+          aria-expanded="false" aria-controls="collapseExample" style="outline: none;">Show flagship information</button>
         </div>
       </div>
 
