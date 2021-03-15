@@ -136,8 +136,7 @@ public class SrfProgressValidator extends BaseValidator {
 
             // Validate Geographic scope
             for (int j = 0; j < sloTargets.get(i).getTargetCases().size(); j++) {
-              if (sloTargets.get(i).getTargetCases().get(j).getGeographicScopes() == null
-                || sloTargets.get(i).getTargetCases().get(j).getGeographicScopes().isEmpty()) {
+              if (sloTargets.get(i).getTargetCases().get(j).getGeographicScopes() == null) {
                 action.addMessage(action.getText("list-sloTarget[" + i + "].targetCases[" + j + "].geographicScopes"));
                 action.getInvalidFields().put("list-sloTarget[" + i + "].targetCases[" + j + "].geographicScopes",
                   InvalidFieldsMessages.EMPTYFIELD);
@@ -166,8 +165,7 @@ public class SrfProgressValidator extends BaseValidator {
                 }
 
                 // Validate list of regions
-                if (hasRegions && sloTargets.get(i).getTargetCases().get(j).getGeographicRegions() == null
-                  || sloTargets.get(i).getTargetCases().get(j).getGeographicRegions().isEmpty()) {
+                if (hasRegions && sloTargets.get(i).getTargetCases().get(j).getGeographicRegions() == null) {
                   action
                     .addMessage(action.getText("list-sloTarget[" + i + "].targetCases[" + j + "].geographicRegions"));
                   action.getInvalidFields().put("list-sloTarget[" + i + "].targetCases[" + j + "].geographicRegions",
@@ -175,8 +173,7 @@ public class SrfProgressValidator extends BaseValidator {
                 }
 
                 // Validate list of countries
-                if (hasCountries && sloTargets.get(i).getTargetCases().get(j).getCountriesIds() == null
-                  || sloTargets.get(i).getTargetCases().get(j).getCountriesIds().isEmpty()) {
+                if (hasCountries && sloTargets.get(i).getTargetCases().get(j).getCountriesIds() == null) {
                   action.addMessage(action.getText("list-sloTarget[" + i + "].targetCases[" + j + "].countriesIds"));
                   action.getInvalidFields().put("list-sloTarget[" + i + "].targetCases[" + j + "].countriesIds",
                     InvalidFieldsMessages.EMPTYFIELD);
