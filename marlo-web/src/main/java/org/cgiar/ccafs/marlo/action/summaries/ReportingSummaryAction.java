@@ -841,7 +841,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       this.getText("metadata.description.readText"));
     masterReport.getParameterValues().put("i8nDeliverablesRMetadataDate", this.getText("metadata.date"));
     masterReport.getParameterValues().put("i8nDeliverablesRLanguage", this.getText("metadata.language"));
-    masterReport.getParameterValues().put("i8nDeliverablesRCountry", this.getText("metadata.country"));
+    masterReport.getParameterValues().put("i8nDeliverablesRCountry", this.getText("metadata.countries"));
     masterReport.getParameterValues().put("i8nDeliverablesRKeywords", this.getText("metadata.keywords.help"));
     masterReport.getParameterValues().put("i8nDeliverablesRCitation", this.getText("metadata.citation.readText"));
     masterReport.getParameterValues().put("i8nDeliverablesRHandle", this.getText("metadata.handle"));
@@ -2640,12 +2640,15 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         String flContrib = "";
         // Publication metadata
         // Verify if the deliverable is of type Articles and Books
-        if (deliverable.getDeliverablePublicationMetadatas().stream().filter(dpm -> dpm.isActive())
+        if (deliverable.getDeliverablePublicationMetadatas().stream()
+          .filter(dpm -> dpm.isActive() && dpm.getPhase() != null && dpm.getPhase().equals(this.getSelectedPhase()))
           .collect(Collectors.toList()).size() > 0
-          && deliverable.getDeliverablePublicationMetadatas().stream().filter(dpm -> dpm.isActive())
+          && deliverable.getDeliverablePublicationMetadatas().stream()
+            .filter(dpm -> dpm.isActive() && dpm.getPhase() != null && dpm.getPhase().equals(this.getSelectedPhase()))
             .collect(Collectors.toList()).get(0) != null) {
           DeliverablePublicationMetadata deliverablePublicationMetadata =
-            deliverable.getDeliverablePublicationMetadatas().stream().filter(dpm -> dpm.isActive())
+            deliverable.getDeliverablePublicationMetadatas().stream()
+              .filter(dpm -> dpm.isActive() && dpm.getPhase() != null && dpm.getPhase().equals(this.getSelectedPhase()))
               .collect(Collectors.toList()).get(0);
           volume = deliverablePublicationMetadata.getVolume();
           issue = deliverablePublicationMetadata.getIssue();
