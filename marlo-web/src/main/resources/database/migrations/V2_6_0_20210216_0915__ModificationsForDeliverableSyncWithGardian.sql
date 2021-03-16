@@ -1,0 +1,5 @@
+alter table deliverable_metadata_external_sources add gardian_findability text;
+alter table deliverable_metadata_external_sources add gardian_accessibility text;
+alter table deliverable_metadata_external_sources add gardian_interoperability text;
+alter table deliverable_metadata_external_sources add gardian_reusability text;
+alter table deliverable_metadata_external_sources add gardian_title text;

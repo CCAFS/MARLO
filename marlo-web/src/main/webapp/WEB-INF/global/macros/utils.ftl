@@ -29,7 +29,11 @@
   <div class="container helpText viewMore-block">
     <div class="helpMessage infoText">
       <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
+      [#if text?starts_with("<ul>") || text?starts_with("<ol>")]
+        <div class="col-md-10"> ${text} </div>
+      [#else]
         <p class="col-md-10"> ${text} </p>
+      [/#if]
     </div> 
     <div style="display:none" class="viewMore closed"></div>
   </div>
@@ -67,6 +71,12 @@
 [#macro tag label="" tooltip=""]
   <span class="doc-badge pull-right" title="[@s.text name="${tooltip}" /]">
     <img src="${baseUrlCdn}/global/images/icons/file-doc.png" style="width:18px;" alt=""> [@s.text name="${label}" /] 
+  </span>
+[/#macro]
+
+[#macro tagPMU label="" tooltip=""]
+  <span class="doc-badge pull-right" title="[@s.text name="${tooltip}" /]">
+    <img src="${baseUrlCdn}/global/images/icons/file-pmu.png" style="width:18px;" alt=""> [@s.text name="${label}" /] 
   </span>
 [/#macro]
 

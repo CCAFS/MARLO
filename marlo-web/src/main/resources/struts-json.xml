@@ -150,7 +150,6 @@
 			</result>
 		</action>
 
-
 		<action name="institutionsByTypeAndCountry"
 			class="org.cgiar.ccafs.marlo.action.json.global.InstitutionsByFilterAction">
 			<result type="json">
@@ -175,6 +174,14 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		  <action name="targetCasesBySLO"
+      class="org.cgiar.ccafs.marlo.action.json.annualReport.y2018.TargetCasesBySLOAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
 
 		<action name="requestCountryOffice"
 			class="org.cgiar.ccafs.marlo.action.json.project.RequestCountryOfficeAction">
@@ -555,6 +562,22 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		<action name="metadataByWOS"
+			class="org.cgiar.ccafs.marlo.action.json.project.DeliverableMetadataByWOS">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+		
+		<action name="institutionById"
+      class="org.cgiar.ccafs.marlo.action.json.project.InstitutionById">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
 
 		<action name="targetUnitRequest"
 			class="org.cgiar.ccafs.marlo.action.json.crpadmin.RequestTargetUnitAction">
@@ -595,6 +618,14 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		<action name="getFundingSourcesByPhase"
+      class="org.cgiar.ccafs.marlo.action.json.superadmin.bulkreplication.FundingSourceByPhaseAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
 
 		<action name="getProjectsByPhase"
 			class="org.cgiar.ccafs.marlo.action.json.superadmin.bulkreplication.ProjectsByPhaseAction">

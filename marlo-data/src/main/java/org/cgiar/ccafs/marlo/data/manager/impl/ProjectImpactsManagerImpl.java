@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ReportProjectImpactsCovid19DTO;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -89,28 +90,50 @@ public class ProjectImpactsManagerImpl implements ProjectImpactsManager {
 
   @Override
   public List<ReportProjectImpactsCovid19DTO> getProjectImpactsByProjectAndYears(Phase phase) {
-    List<ReportProjectImpactsCovid19DTO> reportProjectImpactsCovid19DTO = new ArrayList();
+    List<ReportProjectImpactsCovid19DTO> reportProjectImpactsCovid19DTO = new ArrayList<>();
     List<ProjectImpacts> projectImpacts = this.getProjectImpactsByPhase(phase);
     if (projectImpacts != null) {
       for (ProjectImpacts projectImpact : projectImpacts) {
-        String projectId = projectImpact.getProject().getId().toString();
-        ProjectInfo info = new ProjectInfo();
-        info = projectInfoManager.getProjectInfoByProjectPhase(new Long(projectId), phase.getId());
-        projectImpact.getProject().setProjectInfo(info);
-        if (reportProjectImpactsCovid19DTO.stream().anyMatch(c -> c.getProjectId().equals(projectId))) {
-          reportProjectImpactsCovid19DTO.stream().filter(c -> c.getProjectId().equals(projectId))
-            .forEach(e -> e.getAnswer().put(projectImpact.getYear(), projectImpact.getAnswer()));
-        } else {
-          reportProjectImpactsCovid19DTO.add(this.projectImpactsToReportProjectImpactsCovid19DTO(projectImpact, phase));
+        // Validation for cancelated projects
+        if (projectImpact.getProject() != null && projectImpact.getProject().getProjecInfoPhase(phase) != null
+          && projectImpact.getProject().getProjecInfoPhase(phase).getEndDate() != null
+          && projectImpact.getProject().getProjecInfoPhase(phase).getStatus() != null) {
+
+
+          // Validations for project with past end date
+          Calendar calendar = Calendar.getInstance();
+          calendar.setTime(projectImpact.getProject().getProjecInfoPhase(phase).getEndDate());
+          int endDateYear = calendar.get(Calendar.YEAR);
+          // Include just projects with year end date mayor equal to phase year
+          if (endDateYear != 0 && phase.getYear() != 0 && endDateYear >= phase.getYear()) {
+            String projectId = projectImpact.getProject().getId().toString();
+            ProjectInfo info =
+              projectInfoManager.getProjectInfoByProjectPhase(projectImpact.getProject().getId(), phase.getId());
+            projectImpact.getProject().setProjectInfo(info);
+            if (reportProjectImpactsCovid19DTO.stream().anyMatch(c -> c.getProjectId().equals(projectId))) {
+              reportProjectImpactsCovid19DTO.stream().filter(c -> c.getProjectId().equals(projectId))
+                .forEach(e -> e.getAnswer().put(projectImpact.getYear(), projectImpact.getAnswer()));
+            } else {
+              reportProjectImpactsCovid19DTO
+                .add(this.projectImpactsToReportProjectImpactsCovid19DTO(projectImpact, phase));
+            }
+
+          }
         }
       }
     }
     return reportProjectImpactsCovid19DTO;
   }
 
+
   @Override
   public List<ProjectImpacts> getProjectImpactsByProjectId(long projectId) {
     return projectImpactsDAO.findByProjectId(projectId);
+  }
+
+  @Override
+  public List<ProjectImpacts> getProjectImpactsByYear(int year) {
+    return projectImpactsDAO.getProjectImpactsByYear(year);
   }
 
   public ReportProjectImpactsCovid19DTO projectImpactsToReportProjectImpactsCovid19DTO(ProjectImpacts projectImpact,

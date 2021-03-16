@@ -1416,16 +1416,12 @@ public class FundingSourceAction extends BaseAction {
               fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
             instituionsEdited = true;
           } else {
-            /**
-             * Looks like there are no fields to update.
-             */
-            // FundingSourceInstitution fundingSourceInstitutionDB =
-            // fundingSourceInstitutionManager.getFundingSourceInstitutionById(fundingSourceInstitution.getId());
-            // fundingSourceInstitutionDB.setFundingSource(fundingSourceDB);
-            // fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitutionDB);
-
+            FundingSourceInstitution fundingSourceInstitutionDB =
+              fundingSourceInstitutionManager.getFundingSourceInstitutionById(fundingSourceInstitution.getId());
+            fundingSourceInstitutionDB.setFundingSource(fundingSourceDB);
+            fundingSourceInstitutionDB.setPhase(this.getActualPhase());
+            fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitutionDB);
           }
-
         }
       }
 
@@ -1455,6 +1451,11 @@ public class FundingSourceAction extends BaseAction {
               // This is to add innovationCrpSave to generate correct auditlog.
               fundingSource.getFundingSourceDivisions().add(fundingSourceDivisionSave);
               divisionsEdited = true;
+            } else {
+              FundingSourceDivision fundingSourceDivisionDB =
+                fundingSourceDivisionManager.getFundingSourceDivisionById(fundingSourceDivision.getId());
+              fundingSourceDivisionDB.setFundingSource(fundingSourceDB);
+              fundingSourceDivisionManager.saveFundingSourceDivision(fundingSourceDivisionDB);
             }
           }
         }
@@ -1493,11 +1494,8 @@ public class FundingSourceAction extends BaseAction {
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.FUNDING_SOURCES_BUDGETS_RELATION);
-
       relationsName.add(APConstants.FUNDING_SOURCES_LOCATIONS_RELATION);
       relationsName.add(APConstants.FUNDING_SOURCES_INFO);
-      relationsName.add(APConstants.FUNDING_SOURCES_LOCATIONS_RELATION);
-      relationsName.add(APConstants.FUNDING_SOURCES_LOCATIONS_RELATION);
       relationsName.add(APConstants.FUNDING_SOURCES_INSTITUTIONS_RELATION);
       relationsName.add(APConstants.FUNDING_SOURCES_DIVISIONS_RELATION);
 
@@ -1621,11 +1619,9 @@ public class FundingSourceAction extends BaseAction {
 
           fundingSourceLocationsManager.saveFundingSourceLocations(fundingSourceLocationSave);
         } else {
-          // Looks like we don't need to do anything here.
-          // FundingSourceLocation fundingSourceLocationDB =
-          // fundingSourceLocationsManager.getFundingSourceLocationsById(fundingSourceLocation.getId());
-          // fundingSourceLocationDB.setSomething
-          // fundingSourceLocationsManager.saveFundingSourceLocations(fundingSourceLocationDB);
+          FundingSourceLocation fundingSourceLocationDB =
+            fundingSourceLocationsManager.getFundingSourceLocationsById(fundingSourceLocation.getId());
+          fundingSourceLocationsManager.saveFundingSourceLocations(fundingSourceLocationDB);
 
         }
       }

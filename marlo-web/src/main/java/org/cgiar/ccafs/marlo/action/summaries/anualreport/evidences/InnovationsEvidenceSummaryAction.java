@@ -297,6 +297,18 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
     // Load the Innovations information
     List<ARInnovationsEvidence> innovationsEvidences = this.getInnovationsInfo();
 
+    // Filter the innovations for the current cycle year
+    // 03/15/2021
+    if (innovationsEvidences != null && !innovationsEvidences.isEmpty()) {
+      innovationsEvidences = innovationsEvidences.stream()
+        .filter(in -> in != null && in.getProjectInnovation() != null
+          && in.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase()) != null
+          && in.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase()).getYear() != null
+          && in.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase()).getYear() == this
+            .getSelectedPhase().getYear())
+        .collect(Collectors.toList());
+    }
+
     for (ARInnovationsEvidence innovationEvidences : innovationsEvidences) {
       Long paramA = null, paramB = null;
       String paramC = "", paramD = "", paramE = "", paramF = "", paramG = "", paramH = "", paramI = "", paramJ = "",

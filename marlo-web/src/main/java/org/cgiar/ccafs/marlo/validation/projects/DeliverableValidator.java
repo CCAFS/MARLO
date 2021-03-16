@@ -38,6 +38,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.RepIndTypeActivity;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
+import org.cgiar.ccafs.marlo.utils.doi.DOIService;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
@@ -68,6 +69,8 @@ public class DeliverableValidator extends BaseValidator {
   private DeliverableUserManager deliverableUserManager;
   private CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager;
   private RepIndTypeActivityManager repIndTypeActivityManager;
+
+  Boolean doesNotHaveDOI;
 
   @Inject
   public DeliverableValidator(GlobalUnitManager crpManager, ProjectManager projectManager,
@@ -145,14 +148,14 @@ public class DeliverableValidator extends BaseValidator {
               || deliverable.getOtherPartnerships().get(i).getInstitution().getId() == null) {
 
               action.addMessage("Other Partnership Institution");
-              action.getInvalidFields().put("input-deliverable.otherPartnerships[" + i + "].institution.id",
+              action.getInvalidFields().put("deliverable.otherPartnerships[" + i + "].institution.id",
                 InvalidFieldsMessages.EMPTYFIELD);
 
             } else {
               if (isManagingPartnerPersonRequerid) {
                 if (deliverable.getOtherPartnerships().get(i).getPartnershipPersons() == null) {
                   action.addMessage("Other Partnership Persons");
-                  action.getInvalidFields().put("input-deliverable.otherPartnerships[" + i + "].partnershipPersons",
+                  action.getInvalidFields().put("deliverable.otherPartnerships[" + i + "].partnershipPersons",
                     InvalidFieldsMessages.EMPTYFIELD);
                 } else {
                   boolean haveUser = false;
@@ -166,7 +169,7 @@ public class DeliverableValidator extends BaseValidator {
                   }
                   if (!haveUser) {
                     action.addMessage("Other Partnership Persons");
-                    action.getInvalidFields().put("input-deliverable.otherPartnerships[" + i + "].partnershipPersons",
+                    action.getInvalidFields().put("deliverable.otherPartnerships[" + i + "].partnershipPersons",
                       InvalidFieldsMessages.EMPTYFIELD);
                   }
                 }
@@ -178,24 +181,24 @@ public class DeliverableValidator extends BaseValidator {
 
         // Deliverable responsible
         if (deliverable.getResponsiblePartnership() == null) {
-          action.addMessage(action.getText("deliverable others"));
-          action.getInvalidFields().put("list-deliverable.otherPartnerships",
-            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"deliverable others"}));
+          action.addMessage(action.getText("Responsible Partner Institution"));
+          action.getInvalidFields().put("deliverable.responsiblePartnership",
+            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"deliverable responsible"}));
         } else {
 
           for (int i = 0; i < deliverable.getResponsiblePartnership().size(); i++) {
             if (deliverable.getResponsiblePartnership().get(i).getInstitution() == null
               || deliverable.getResponsiblePartnership().get(i).getInstitution().getId() == null) {
 
-              action.addMessage("Other Partnership Institution");
-              action.getInvalidFields().put("input-deliverable.otherPartnerships[" + i + "].institution.id",
+              action.addMessage("Responsible Partner Institution");
+              action.getInvalidFields().put("deliverable.responsiblePartnership[" + i + "].institution.id",
                 InvalidFieldsMessages.EMPTYFIELD);
 
             } else {
               if (isManagingPartnerPersonRequerid) {
                 if (deliverable.getResponsiblePartnership().get(i).getPartnershipPersons() == null) {
-                  action.addMessage("Other Partnership Persons");
-                  action.getInvalidFields().put("input-deliverable.otherPartnerships[" + i + "].partnershipPersons",
+                  action.addMessage("Responsible Partner Persons");
+                  action.getInvalidFields().put("deliverable.responsiblePartnership[" + i + "].partnershipPersons",
                     InvalidFieldsMessages.EMPTYFIELD);
                 } else {
                   boolean haveUser = false;
@@ -209,8 +212,8 @@ public class DeliverableValidator extends BaseValidator {
                     }
                   }
                   if (!haveUser) {
-                    action.addMessage("Other Partnership Persons");
-                    action.getInvalidFields().put("input-deliverable.otherPartnerships[" + i + "].partnershipPersons",
+                    action.addMessage("Responsible Partner Persons");
+                    action.getInvalidFields().put("deliverable.responsiblePartnership[" + i + "].partnershipPersons",
                       InvalidFieldsMessages.EMPTYFIELD);
                   }
                 }
@@ -239,10 +242,19 @@ public class DeliverableValidator extends BaseValidator {
         }
 
         if (action.hasSpecificities(APConstants.CRP_HAS_DISEMINATION)) {
+          boolean isPRP = false;
+          // type 63 = Peer-reviewed publication (PRP). doi should only be mandatory for PRPs
+          if (action.getActualPhase() != null && deliverable.getDeliverableInfo(action.getActualPhase()) != null
+            && deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType() != null
+            && deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId() != null
+            && deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId()
+              .longValue() == 63L) {
+            isPRP = true;
+          }
 
           // Deliverable Dissemination
           if (deliverable.getDissemination() != null) {
-            this.validateDissemination(deliverable.getDissemination(), saving, action);
+            this.validateDissemination(deliverable.getDissemination(), saving, action, isPRP);
           } else {
             action.addMessage(action.getText("project.deliverable.dissemination.v.dissemination"));
             action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.isOpenAccess",
@@ -251,7 +263,7 @@ public class DeliverableValidator extends BaseValidator {
 
           // Deliverable Meta-data Elements
           if (deliverable.getMetadataElements() != null) {
-            // this.validateMetadata(deliverable.getMetadataElements());
+            this.validateMetadata(deliverable.getMetadataElements(), action, isPRP);
           } else {
             action.addMessage(action.getText("project.deliverable.v.metadata"));
             action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.isOpenAccess",
@@ -613,7 +625,8 @@ public class DeliverableValidator extends BaseValidator {
   }
 
 
-  public void validateDissemination(DeliverableDissemination dissemination, boolean saving, BaseAction action) {
+  public void validateDissemination(DeliverableDissemination dissemination, boolean saving, BaseAction action,
+    boolean isPRP) {
     /*
      * if (dissemination.getIsOpenAccess() != null) {
      * if (!dissemination.getIsOpenAccess().booleanValue()) {
@@ -656,6 +669,17 @@ public class DeliverableValidator extends BaseValidator {
      */
 
     if (dissemination.getAlreadyDisseminated() != null) {
+      this.doesNotHaveDOI = dissemination.getHasDOI();
+      if (isPRP) {
+        if (this.doesNotHaveDOI != null && this.doesNotHaveDOI.booleanValue() == true) {
+          if (!this.isValidString(dissemination.getArticleUrl())) {
+            action.addMessage(action.getText("deliverable.dissemination.articleUrl"));
+            action.getInvalidFields().put("input-deliverable.dissemination.articleUrl",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        }
+      }
+
       if (dissemination.getAlreadyDisseminated().booleanValue()) {
         if (dissemination.getDisseminationChannel() != null) {
           if (dissemination.getDisseminationChannel().equals("-1")) {
@@ -728,32 +752,52 @@ public class DeliverableValidator extends BaseValidator {
      */
   }
 
-  public void validateMetadata(List<DeliverableMetadataElement> elements, BaseAction action) {
+  public void validateMetadata(List<DeliverableMetadataElement> elements, BaseAction action, boolean isPRP) {
 
-    boolean description = false;
+    // boolean description = false;
 
 
     for (DeliverableMetadataElement deliverableMetadataElement : elements) {
       if (deliverableMetadataElement != null) {
         if (deliverableMetadataElement.getMetadataElement().getId() != null) {
-          if (8L == deliverableMetadataElement.getMetadataElement().getId().longValue()) {
-            if ((this.isValidString(deliverableMetadataElement.getElementValue())
-              && this.wordCount(deliverableMetadataElement.getElementValue()) <= 100)) {
-              description = true;
+          /*
+           * if (8L == deliverableMetadataElement.getMetadataElement().getId().longValue()) {
+           * if ((this.isValidString(deliverableMetadataElement.getElementValue())
+           * && this.wordCount(deliverableMetadataElement.getElementValue()) <= 100)) {
+           * description = description || true;
+           * }
+           * // break;
+           * }
+           */
+          // DOI validation only mandatory for PRPs
+          if (isPRP) {
+            if (this.doesNotHaveDOI == null || this.doesNotHaveDOI.booleanValue() == false) {
+              if (deliverableMetadataElement.getMetadataElement().getId() != null
+                && 36L == deliverableMetadataElement.getMetadataElement().getId()) {
+                if (deliverableMetadataElement.getElementValue() != null
+                  && !deliverableMetadataElement.getElementValue().isEmpty()) {
+                  String cleanDoi = DOIService.tryGetDoiName(deliverableMetadataElement.getElementValue());
+                  if (cleanDoi.isEmpty()) {
+                    action.addMessage(action.getText("metadata.doi"));
+                    action.getInvalidFields().put("input-doi-bridge", InvalidFieldsMessages.WRONGVALUE);
+                  }
+                } else {
+                  action.addMessage(action.getText("metadata.doi"));
+                  action.getInvalidFields().put("input-doi-bridge", InvalidFieldsMessages.EMPTYFIELD);
+                }
+              }
             }
-            break;
-
           }
         }
       }
     }
-    if (!description) {
-      action.addMessage(action.getText("project.deliverable.metadata.v.description"));
-      action.getInvalidFields().put("input-deliverable.deliverableInfo.metadataElements[7].elementValue",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
-
-
+    /*
+     * if (!description) {
+     * action.addMessage(action.getText("project.deliverable.metadata.v.description"));
+     * action.getInvalidFields().put("input-deliverable.deliverableInfo.metadataElements[7].elementValue",
+     * InvalidFieldsMessages.EMPTYFIELD);
+     * }
+     */
   }
 
 
@@ -764,14 +808,18 @@ public class DeliverableValidator extends BaseValidator {
         && deliverablePublicationMetadata.getId().intValue() != -1) {
 
         if (action.hasDeliverableRule(deliverableInfo, APConstants.DELIVERABLE_RULE_JORNAL_ARTICLES)) {
-          // Validation of Volume or Issue or Pages
-          if (!this.isValidString(deliverablePublicationMetadata.getVolume())
-            && !this.isValidString(deliverablePublicationMetadata.getIssue())
-            && !this.isValidString(deliverablePublicationMetadata.getPages())) {
+          // Validation Volume, Issue and Pages
+          if (!this.isValidString(deliverablePublicationMetadata.getVolume())) {
             action.addMessage(action.getText("project.deliverable.publication.v.volume"));
             action.getInvalidFields().put("input-deliverable.publication.volume", InvalidFieldsMessages.EMPTYFIELD);
+          }
+
+          if (!this.isValidString(deliverablePublicationMetadata.getIssue())) {
             action.addMessage(action.getText("project.deliverable.publication.v.issue"));
             action.getInvalidFields().put("input-deliverable.publication.issue", InvalidFieldsMessages.EMPTYFIELD);
+          }
+
+          if (!this.isValidString(deliverablePublicationMetadata.getPages())) {
             action.addMessage(action.getText("project.deliverable.publication.v.pages"));
             action.getInvalidFields().put("input-deliverable.publication.pages", InvalidFieldsMessages.EMPTYFIELD);
           }

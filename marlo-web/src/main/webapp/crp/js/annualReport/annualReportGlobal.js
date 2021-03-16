@@ -1,8 +1,131 @@
 var $tableViewMore;
-var tableDatatableViewmore, tableDataProgressTableViewmore;
+var tableDatatableViewmore, tableDataProgressTableViewmore, tableDatatableTableGrey, tableInnovations, tablePolicies, tableOICRs;
 var pageName;
 var googleChartsLoaded = false;
+
+
+function getContributionListComponentValue(contributionData){
+
+  //Variables
+  const {
+    additionalContribution,
+    geographicScope,
+    summary
+  } = contributionData;
+  
+  //strings
+  let geographicScopeString='';
+  let regionString='';
+  let countriesString='';
+
+  geographicScope.forEach(geoData => {
+    geographicScopeString += `<p> - ${geoData.name}</p>`;
+
+    if (geoData.name == "National") {
+      console.log("tiene nacional y no se hace nada");
+    }
+
+    if (geoData.name == "Multi-national") {
+      geoData.element.forEach(multiNationalData => {
+        countriesString += `<p> - ${multiNationalData.name}</p>`;
+      });
+    }
+
+    if (geoData.name == "Regional") {
+      geoData.element.forEach(regionalData => {
+        regionString += `<p> - ${regionalData.name}</p>`;
+      });
+    }
+
+  });
+
+
+  geographicScopeString = geographicScopeString == '' ? '<p>  Not available</p>':geographicScopeString;
+  // regionString = regionString == '' ? '<p>  Not available</p>':regionString;
+  // countriesString = countriesString == '' ? '<p>  Not available</p>':countriesString;
+  // additionalContribution = additionalContribution ? '<p>  Not available</p>':additionalContribution;
+  // summary = summary == '' ? '<p>  Not available</p>':summary;
+
+
+
+  return `
+  <br>
+  <div style="background-color: rgb(250, 250, 250); border-radius: 10px; padding: 7px; position: relative;">
+
+  <div class="leftHead  sm">
+    <!--<span class="index">12</span>-->
+    <span class="index indexSloContribution">...</span>
+  </div>
+
+  <br>
+      <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px; margin-top: 10px;">Geographic scope:</p>
+      ${geographicScopeString}
+     
+      <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px; margin-top: 10px;display: ${regionString==''?'none':'block'};">Regions:</p>
+      ${regionString} 
+
+      <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px; margin-top: 10px;display: ${countriesString==''?'none':'block'};">Country(ies):</p>
+      ${countriesString} 
+      
+      <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px;">Brief summary of new evidence of CGIAR contribution:</p>
+      <p>${summary||"Not available"}</p>
+   
+      <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px;">Expected additional contribution before end of 2022 (if not already fully covered)</p>
+      <p>${additionalContribution||"Not available"}</p>
+</div>
+  
+  `  
+}
+
+function getTargetCasesBySLO(){
+
+    for (let index = 1; index < 11; index++) {
+
+      $.ajax({
+        url: baseURL + '/targetCasesBySLO.do',
+        data: {
+          id: index
+        },
+        beforeSend: function () {
+          // console.log("before");
+        },
+        success: function (data) {
+
+          contributionListComponentInsertHTML(data,index);
+        },
+        error: function (e) {
+          console.log(e);
+        },
+        complete: function () {
+          // console.log("complete"); 
+        }
+      });
+    }
+  
+
+}
+
+
+function contributionListComponentInsertHTML(data,id){
+  data.sources.forEach((item,index) => {
+    $('.insertHtmlSlo-tabs-'+id).append(`<li role="presentation" class="${index==0?'active':''}" ><a href="#${item.id}-${id}-tab" aria-controls="${item.id}-${id}-tab" role="tab" data-toggle="tab">${item.id}</a></li>`);
+    $('.insertHtmlSlo-tabpanel-'+id).append(`<div role="tabpanel" class="tab-pane ${index==0?'active':''}" id="${item.id}-${id}-tab" style="overflow-y: scroll; max-height: 700px;"></div>`);
+
+    item.contribution.forEach(contributionData => {
+      $(`#${item.id}-${id}-tab`).append(getContributionListComponentValue(contributionData));
+    });
+ });
+
+}
+
 $(document).ready(function() {
+
+  getTargetCasesBySLO();
+  // $('.slo-contribution-template').find('textarea').trumbowyg("destroy");
+
+  if ($('.slo-contribution-template').length) {
+    $('.slo-contribution-template').find('select').select2("destroy");
+  }
   pageName = actionName.replace(/[^a-z0-9+]+/gi, '_');
 
   // Set data tables
@@ -26,8 +149,68 @@ $(document).ready(function() {
 
     $progressTableViewMore = $('.viewMoreSyntesisTable-block table');
     tableDataProgressTableViewmore = $progressTableViewMore.DataTable({
-        "paging": false,
-        "searching": false,
+        "paging": true,
+        "searching": true,
+        "info": true,
+        aoColumnDefs: [
+          {
+              sType: "natural",
+              aTargets: [
+                0
+              ]
+          }
+        ]
+    });
+
+    $tableInnovationsHTML = $('.tableInnovations-block table');
+    tableInnovations = $tableInnovationsHTML.DataTable({
+      "paging": false,
+      "searching": true,
+      "info": true,
+      aoColumnDefs: [
+        {
+            sType: "natural",
+            aTargets: [
+              0
+            ]
+        }
+      ]
+    });
+
+    $tablePoliciesHTML = $('.tablePolicies-block table');
+    tablePolicies = $tablePoliciesHTML.DataTable({
+      "paging": false,
+      "searching": true,
+      "info": true,
+      aoColumnDefs: [
+        {
+            sType: "natural",
+            aTargets: [
+              0
+            ]
+        }
+      ]
+    });
+
+    $tableOICRsHTML = $('.tableOICRs-block table');
+    tableOICRs = $tableOICRsHTML.DataTable({
+      "paging": false,
+      "searching": true,
+      "info": true,
+      aoColumnDefs: [
+        {
+            sType: "natural",
+            aTargets: [
+              0
+            ]
+        }
+      ]
+    });
+
+    $TableGrey = $('.viewMoreSyntesisTableGrey-block table');
+    tableDatatableTableGrey = $TableGrey.DataTable({
+        "paging": true,
+        "searching": true,
         "info": true,
         aoColumnDefs: [
           {
@@ -87,10 +270,62 @@ $(document).ready(function() {
 
   // checkbox disables field
   console.log("init press");
-  setStatusByBack();
+  
   $('.checkboxDiTeArClick').on('click',setCheckboxValueTohide);
+  $('.btn-addEvidence').on('click',addEvidence);
+  $('.btn-removeEvidence').on('click',removeEvidence);
+  $('.flagshipBtn').on('click',changeButtonText);
 
+    // Deliverable Geographic Scope
+    $('select.elementType-repIndGeographicScope').on("addElement removeElement", function(event,id,name) {
+      console.log('%cevent setGeographicScope','background: #222; color: #37ff73');
+      setGeographicScope(this);
+    });
+    setGeographicScope($('form select.elementType-repIndGeographicScope')[0]);
+      // valiate checkbox "No DOI provided" value
+   
+
+  // $('.TA_summaryEvidence .trumbowyg-editor').bind('DOMSubtreeModified', function(){
+  //   console.log('%cmovement','background: #222; color: #fd8484');
+  //   // $(this).parents('.slo-contribution-section').find('.TA_summaryEvidence .briefSummaryTAHidden').css("background-color", "yellow");
+  //   $(this).parents('.slo-contribution-section').find('.TA_summaryEvidence .briefSummaryTAHidden').html($(this).html());
+  // });
+
+
+  // $('.TA_additionalContribution .trumbowyg-editor').bind('DOMSubtreeModified', function(){
+  //   console.log('%cmovement','background: #222; color: #fd8484');
+
+  //   $(this).parents('.slo-contribution-section').find('.TA_additionalContribution .additionalContributionTAHidden').html($(this).html());
+  // });
+
+  // $('.button-save').on('click',updateALltexareas);
+  $(document).keypress(updateALltexareas);
+  $(document).click(updateALltexareas);
+ 
+
+  // $('.slo-contribution-section').on("bind",".TA_summaryEvidence .trumbowyg-editor", function() {
+  //   //do whatever
+  //   console.log('%cHola mundo','background: #222; color: #fd8484');
+  // });
+
+  setStatusByBack();
+  // updateAllIndexesContribution();
 });
+
+function updateALltexareas(){
+  $('.sloTargetsList').find('.sloTarget').each(function (i, sloTarget) {
+    setTimeout(() => {
+      $(sloTarget).find('.evidenceList').find('.slo-contribution-section').each(function (i, evidence) {
+        // $(evidence).css("background-color", "yellow");
+        $(evidence).find('.TA_summaryEvidence .briefSummaryTAHidden').html($(evidence).find('.TA_summaryEvidence .trumbowyg-editor').html());
+        $(evidence).find('.TA_additionalContribution .additionalContributionTAHidden').html($(evidence).find('.TA_additionalContribution .trumbowyg-editor').html());
+        // console.log($(evidence).find('.TA_additionalContribution .trumbowyg-editor').val());
+      });
+    }, 10);
+  });
+  $(document).trigger('updateComponent');
+}
+
 function setStatusByBack() {
   $(".sloTargetsList")
     .find(".sloTarget")
@@ -98,35 +333,30 @@ function setStatusByBack() {
       // console.log($(field).find(".checkboxDiTeArClick").val());
 
       let checkbox = $(field).find(".checkboxDiTeArClick");
+      console.log($(checkbox).val());
 
-      // console.log("init value: "+$(this).val());
+
+
       if ($(checkbox).val() == "true") {
         $(checkbox).val("false");
         // console.log("now is: "+$(this).val());
+
       } else {
         $(checkbox).val("true");
         // console.log("now is: "+$(this).val());
+
       }
+    
       if ($(checkbox).val() == "true") {
-        $(checkbox).parents(".sloTarget").addClass("disabled");
-        let $currrentSlo = $(checkbox).parents(".sloTarget");
-        $($currrentSlo)
-          .find(".trumbowyg-box")
-          .each(function (i, field) {
-            $(field).find(".trumbowyg-button-pane").hide();
-            $(field).find(".trumbowyg-editor").attr("contenteditable", "false");
-          });
+        $(checkbox).parents(".a-slo").find(".to-disabled-box").hide(400);
+        $(checkbox).parents(".a-slo").find(".btn-addEvidence").hide(400);
+        // $(checkbox).parents(".a-slo").find(".disabled-box").show();
       } else {
-        $(this).parents(".sloTarget").removeClass("disabled");
-        let $currrentSlo = $(checkbox).parents(".sloTarget");
-        $($currrentSlo)
-          .find(".trumbowyg-box")
-          .each(function (i, field) {
-            $(field).find(".trumbowyg-button-pane").show();
-            $(field).find(".trumbowyg-editor").attr("contenteditable", "true");
-          });
+        // $(checkbox).parents(".a-slo").find(".disabled-box").hide();
+        $(checkbox).parents(".a-slo").find(".to-disabled-box").show(400);
+        $(checkbox).parents(".a-slo").find(".btn-addEvidence").show(400);
       }
-      // $('.editor').trumbowyg('disable');
+
     });
 }
 
@@ -141,25 +371,16 @@ function setCheckboxValueTohide() {
   }
 
   if ($(this).val() == "true") {
-    $(this).parents(".sloTarget").addClass("disabled");
-    let $currrentSlo = $(this).parents(".sloTarget");
-    $($currrentSlo)
-      .find(".trumbowyg-box")
-      .each(function (i, field) {
-        $(field).find(".trumbowyg-button-pane").hide();
-        $(field).find(".trumbowyg-editor").attr("contenteditable", "false");
-      });
+    $(this).parents(".a-slo").find(".to-disabled-box").hide(400);
+    $(this).parents(".a-slo").find(".btn-addEvidence").hide(400);
+    // $(this).parents(".a-slo").find(".disabled-box").show();
   } else {
-    $(this).parents(".sloTarget").removeClass("disabled");
-    let $currrentSlo = $(this).parents(".sloTarget");
-    $($currrentSlo)
-      .find(".trumbowyg-box")
-      .each(function (i, field) {
-        $(field).find(".trumbowyg-button-pane").show();
-        $(field).find(".trumbowyg-editor").attr("contenteditable", "true");
-      });
+    // $(this).parents(".a-slo").find(".disabled-box").hide();
+    $(this).parents(".a-slo").find(".to-disabled-box").show(400);
+    $(this).parents(".a-slo").find(".btn-addEvidence").show(400);
+    
   }
-  // $('.editor').trumbowyg('disable');
+
 }
 
 
@@ -202,30 +423,37 @@ function createGoogleBarChart(chartID,options) {
   createGoogleChart(chartID, "Bar", options);
 }
 
-function createGoogleChart(chartID,type,options) {
-  if(!googleChartsLoaded) {
-    google.charts.load('current', {
-      packages: [
-          'corechart', 'bar'
-      ]
+function createGoogleChart(chartID, type, options) {
+  if (!googleChartsLoaded) {
+    google.charts.load("current", {
+      packages: ["corechart", "bar"],
     });
     googleChartsLoaded = true;
   }
 
   var $chart = $(chartID);
-  if($chart.exists()) {
-    google.charts.setOnLoadCallback(function() {
-      $chart.addClass('loaded');
-      var data = new google.visualization.arrayToDataTable(getChartDataArray($chart));
-      if(data.hg.length === 0) {
-        $chart.append('<p  class="text-center"> ' + options.title + ' <br>  No data </p>');
+  if ($chart.exists()) {
+    google.charts.setOnLoadCallback(function () {
+      $chart.addClass("loaded");
+      var data = new google.visualization.arrayToDataTable(
+        getChartDataArray($chart)
+      );
+      console.log(data);
+      if (!data) {
+        $chart.append(
+          '<p  class="text-center"> ' + options.title + " <br>  No data </p>"
+        );
       } else {
-        if(type == "Bar") {
+        if (type == "Bar") {
           var view = new google.visualization.DataView(data);
-          var chart = new google.visualization.BarChart(document.getElementById($chart[0].id));
+          var chart = new google.visualization.BarChart(
+            document.getElementById($chart[0].id)
+          );
           chart.draw(view, google.charts.Bar.convertOptions(options));
-        } else if(type == "Pie") {
-          var chart = new google.visualization.PieChart(document.getElementById($chart[0].id));
+        } else if (type == "Pie") {
+          var chart = new google.visualization.PieChart(
+            document.getElementById($chart[0].id)
+          );
           chart.draw(data, options);
         }
       }
@@ -233,3 +461,87 @@ function createGoogleChart(chartID,type,options) {
     });
   }
 }
+
+function updateAllIndexesContribution() {
+  
+
+    console.log('%cupdateAllIndexesContribution','background: #222; color: #84c3fd');
+    //All sloTargetsList
+ 
+  $('.sloTargetsList').find('.sloTarget').each(function(i,sloTarget) {
+
+    $(sloTarget).attr('id', "outcome-"+(i+1));
+    $(sloTarget).setNameIndexes(1, i);
+    
+    //  Update slo-contribution
+     $(sloTarget).find('.evidenceList').find('.slo-contribution-section').each(function(i,evidence) {
+      $(evidence).find('.indexSloContribution').html(i+1);
+      $(evidence).attr('id', "milestone-"+(i+1));
+      $(evidence).setNameIndexes(2, i);
+     });
+     
+  });
+
+  $(document).trigger('updateComponent');
+
+}
+
+function changeButtonText() {
+  if ($(this).text() == 'Show flagship information') {
+    $(this).text('Hide flagship information');
+  } else {
+    $(this).text('Show flagship information');
+  }
+}
+
+function addEvidence() {
+  
+console.log('addEvidence');
+
+  var $list =  $(this).parents(".simpleBox").find(".evidenceList");
+  var $item = $('.slo-contribution-template');
+  $item = $item.clone(true);
+  $($item).removeClass('slo-contribution-template');
+  $list.append($item);
+
+
+  // $($item).find('.TA_summaryEvidence .trumbowyg-editor').bind('DOMSubtreeModified', function(){
+  //  console.log('%csome','background: #222; color: #84c3fd');
+  // });
+
+
+  updateAllIndexesContribution();
+  $item.show('slow');
+  $item.find("select").select2({
+    // templateResult: formatState,
+    width: '100%'
+});
+
+
+$item.find('textarea.tumaco').trumbowyg({
+  btns: [
+    [
+        'link', 'strong', 'em'
+    ]
+  ],
+  allowTagsFromPaste: [
+      'a', 'p', 'br', 'b', 'strong', 'i', 'em'
+  ],
+  urlProtocol: true,
+  autogrow: true,
+  minimalLinks: true,
+  semantic: true
+});
+
+}
+
+function removeEvidence(){
+  console.log('Remove Evidence');
+  var $item =  $(this).parents('.slo-contribution-section');
+    $item.hide(function() {
+      $item.remove();
+      updateAllIndexesContribution();
+    });
+
+} 
+

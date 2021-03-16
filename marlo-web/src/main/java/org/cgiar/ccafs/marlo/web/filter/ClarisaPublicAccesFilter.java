@@ -66,8 +66,8 @@ public class ClarisaPublicAccesFilter extends OncePerRequestFilter {
 
     String indexString = split[0];
 
-    if (StringUtils.isNotEmpty(indexString)
-      && (indexString.equals("index.html") || indexString.equals("api.html") || indexString.equals("home.html"))) {
+    if (StringUtils.isNotEmpty(indexString) && (indexString.equals("index.html") || indexString.equals("api.html")
+      || indexString.equals("home.html") || indexString.equals("generalListReference.html"))) {
 
       Subject subject = SecurityUtils.getSubject();
 

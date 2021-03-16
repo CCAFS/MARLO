@@ -324,7 +324,7 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     if (startDate != null && endDate != null) {
 
       Calendar calendarEnd = Calendar.getInstance();
-      calendarEnd.set(Calendar.YEAR, 2050);
+      calendarEnd.set(Calendar.YEAR, 2023);
 
       while (year < calendarEnd.get(Calendar.YEAR)) {
 
@@ -493,6 +493,8 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     this.setCrossCuttingCapacity(update.getCrossCuttingCapacity());
     this.setCrossCuttingClimate(update.getCrossCuttingClimate());
     this.setCrossCuttingNa(update.getCrossCuttingNa());
+    this.setCrossCuttingGender(update.getCrossCuttingGender());
+    this.setCrossCuttingYouth(update.getCrossCuttingYouth());
     this.setDimension(update.getDimension());
     this.setEndDate(update.getEndDate());
     this.setLeaderResponsabilities(update.getLeaderResponsabilities());

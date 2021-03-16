@@ -19,8 +19,11 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.Deliverables.DeliverablesItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.Deliverables.DeliverablesWOSItem;
 import org.cgiar.ccafs.marlo.rest.dto.NewPublicationDTO;
+import org.cgiar.ccafs.marlo.rest.dto.NewPublicationOtherDTO;
 import org.cgiar.ccafs.marlo.rest.dto.PublicationDTO;
+import org.cgiar.ccafs.marlo.rest.dto.PublicationsWOSDTO;
 import org.cgiar.ccafs.marlo.rest.errors.NotFoundException;
 import org.cgiar.ccafs.marlo.security.Permission;
 
@@ -58,6 +61,7 @@ public class Deliverables {
   private Environment env;
 
   private DeliverablesItem<PublicationDTO> publicationItem;
+  public DeliverablesWOSItem<PublicationsWOSDTO> publicationWOSItem;
   private final UserManager userManager;
 
   /**
@@ -68,9 +72,11 @@ public class Deliverables {
    * @return a DeliverablenDTO with the deliverable created
    */
   @Inject
-  public Deliverables(DeliverablesItem<PublicationDTO> publicationItem, UserManager userManager) {
+  public Deliverables(DeliverablesItem<PublicationDTO> publicationItem,
+    DeliverablesWOSItem<PublicationsWOSDTO> publicationWOSItem, UserManager userManager) {
     super();
     this.publicationItem = publicationItem;
+    this.publicationWOSItem = publicationWOSItem;
     this.userManager = userManager;
   }
 
@@ -84,6 +90,22 @@ public class Deliverables {
     @ApiParam(value = "${Deliverables.deliverable.POST.param.deliverable}",
       required = true) @Valid @RequestBody NewPublicationDTO newPublicationDTO) {
     Long innovationId = this.publicationItem.createDeliverable(newPublicationDTO, CGIAREntity, this.getCurrentUser());
+    ResponseEntity<Long> response = new ResponseEntity<Long>(innovationId, HttpStatus.OK);
+    return response;
+  }
+
+  @ApiOperation(tags = {"Table 6 - Peer-reviewed publications"}, value = "${Deliverables.deliverableOther.POST.value}",
+    response = PublicationDTO.class)
+  @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/publicationsOther", method = RequestMethod.POST,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Long> createDeliverableOther(
+    @ApiParam(value = "${Deliverables.deliverableOther.POST.param.CGIAR}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${Deliverables.deliverableOther.POST.param.deliverable}",
+      required = true) @Valid @RequestBody NewPublicationOtherDTO newPublicationDTO) {
+    Long innovationId =
+      this.publicationItem.createDeliverableOther(newPublicationDTO, CGIAREntity, this.getCurrentUser());
     ResponseEntity<Long> response = new ResponseEntity<Long>(innovationId, HttpStatus.OK);
     return response;
   }
@@ -156,6 +178,12 @@ public class Deliverables {
     return user;
   }
 
+  /**
+   * Update publication by publication model given*
+   * 
+   * @return a Long id of the publication
+   */
+
   @ApiOperation(tags = {"Table 6 - Peer-reviewed publications"}, value = "${Deliverables.deliverable.PUT.value}",
     response = PublicationDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
@@ -175,6 +203,48 @@ public class Deliverables {
       throw new NotFoundException("404", this.env.getProperty("Deliverables.deliverable.PUT.id.404"));
     }
 
+    return response;
+  }
+
+  /**
+   * Update publication by publication deliverable type model given*
+   * 
+   * @return a Long id of the publication
+   */
+
+  @ApiOperation(tags = {"Table 6 - Peer-reviewed publications"}, value = "${Deliverables.deliverableOther.PUT.value}",
+    response = PublicationDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/publicationsOther/{id}", method = RequestMethod.PUT,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Long> putDeliverableById(
+    @ApiParam(value = "${Deliverables.deliverableOther.PUT.param.CGIAR}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${Deliverables.deliverableOther.PUT.param.id}", required = true) @PathVariable Long id,
+    @ApiParam(value = "${Deliverables.deliverableOther.PUT.param.deliverable}",
+      required = true) @Valid @RequestBody NewPublicationOtherDTO newPublicationDTO) {
+
+    Long deliverableID =
+      this.publicationItem.putDeliverableOtherById(id, newPublicationDTO, CGIAREntity, this.getCurrentUser());
+
+    ResponseEntity<Long> response = new ResponseEntity<Long>(deliverableID, HttpStatus.OK);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("Deliverables.deliverableOther.PUT.id.404"));
+    }
+
+    return response;
+  }
+
+  @ApiOperation(tags = {"Utils"}, value = "${Deliverables.deliverableWOS.GET.id.value}",
+    response = PublicationsWOSDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/publicationsWOS", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<PublicationsWOSDTO> validateDeliverableWOS(
+    @ApiParam(value = "${Deliverables.WOS.GET.id.param.id}", required = true) @RequestParam String url) {
+    ResponseEntity<PublicationsWOSDTO> response = this.publicationWOSItem.validateDeliverable(url);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("Deliverables.WOS.GET.id.404"));
+    }
     return response;
   }
 

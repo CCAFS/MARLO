@@ -148,8 +148,18 @@
   <div class="simpleBox form-group">
     <input type="hidden"  name="${customName}.id" value="${(deliverable.dissemination.id)!}" />
     <div class="row yesNoInputDeliverable">
-      <label class="col-md-9 yesNoLabel" for="">Is this deliverable Open Access? [@customForm.req required=reportingActive /]</label>
-      <div class="col-md-3">[@customForm.yesNoInputDeliverable name="${customName}.isOpenAccess"  editable=editable inverse=false cssClass="type-accessible inverted-true text-center" /]  </div>
+    <span class="col-md-9">
+      <label class=" yesNoLabel" for="">Is this deliverable Open Access? [@customForm.req required=reportingActive /]</label>
+      <p><small>Please make sure the information from the repository you chose and the one on Web of Science match. </small></p>
+      <div class="WOS_tag" style="display: none;">
+        <p>According to Web of Science you should select: <span id="WOS_tag_IOA_yes" style="color: rgb(9, 211, 70); font-weight: 700;">Yes</span><span id="WOS_tag_IOA_no" style="color: rgb(207, 42, 42); font-weight: 700;">No</span></p>
+      </div>
+      
+    </span>
+    <div class="col-md-3">
+      [@customForm.yesNoInputDeliverable name="${customName}.isOpenAccess"  editable=editable inverse=false cssClass="type-accessible inverted-true text-center" /]  
+    </div>
+    
     </div> 
     [#--  <div class="block-accessible" style="display: ${((!deliverable.dissemination.isOpenAccess)!false)?string("block","none")};">
       <hr />
@@ -358,6 +368,7 @@
       </div>
       <div class="buttons-field">
         [#if editable]
+        <div class="checkButton" id="WOSSyncBtn" style="text-align: center ;display:none;">WOS sync</div>
           [#local showSync = (channelsArray?seq_contains(deliverable.dissemination.disseminationChannel))!false ]
           <div id="fillMetadata" style="display:${showSync?string('block','none')};">
             <input type="hidden" name="deliverable.dissemination.synced" value="${isSynced?string}" />
@@ -372,10 +383,159 @@
           </div>
         [/#if]
       </div>
+      
     </div>
     <div class="clearfix"></div>
+
+    <div class="form-group row ifIsReadOnly" style="margin-top: 10px;">
+      <div class="col-md-6 conditionalRequire handle-bridge">
+        [@customForm.input name="handle-bridge" required=require value="" className="metadataValue "  type="text" i18nkey="Handle" help="" readOnly=mElementHide editable=editable/]
+      </div>
+      <div class="col-md-6 conditionalRequire doi-bridge" style="position: relative;">
+        [@customForm.input name="doi-bridge" required=require value="" className="metadataValue "  type="text" i18nkey="DOI" help="nada2" readOnly=mElementHide editable=editable/]
+        <p class="invalidDOI" style="position: absolute; bottom: 0 + 15px; color: rgb(207, 40, 40); font-weight: 600; font-size: 0.8em; display: none;">Invalid DOI identifier.<br>Please use the correct format <strong>(e.g. 10.1109/5.771073)</strong></p>
+        <p class="validDOI" style="position: absolute; bottom: 0 + 15px; color: rgb(50, 206, 45); font-weight: 600; font-size: 0.8em; display: none;">Valid DOI identifier</p>
+      </div>
+    </div>
+    <br>
+    <hr>
+    [#assign isOtherUrl = (deliverable.dissemination.hasDOI)!false /]
+    <div class="form-group row " style="margin-top:5px; display:block">
+      [#-- Alternative url Check --]
+      <div class="col-md-12" style="display: none;">
+        [@customForm.input name="deliverable.dissemination.hasDOI" type="text" i18nkey="aux checkbox" className="isOtherUrlFiel"  placeholder="" required=false editable=editable /]
+       </div>
+      <div class="col-md-6 isOtherUrl isOtherUrlTohide">
+        <br />
+        [@customForm.checkmark id="" name="" i18nkey="project.deliverable.hasDOI" help="" paramText="" value="true" helpIcon=true disabled=false editable=editable checked=(deliverable.dissemination.hasDOI)!false cssClass="isOtherUrl" cssClassLabel=""  /]
+      </div>
+      [#-- Alternative url TextField --]
+      <div class="col-md-6 other-url" style="display:${(isOtherUrl)?string('block','none')}">
+        [@customForm.input name="deliverable.dissemination.articleUrl" type="text" i18nkey="project.deliverable.articleURL"  placeholder="" required=true editable=editable /]
+      </div>
+   </div>
+
+<div class="loading-WOS-container" style="position: relative; ">
+  <p style="position: absolute; top: 10px; font-weight: 500; color: rgb(16, 122, 192); font-size: 1.3em;">Synchronizing  with WOS</p>
+  <svg class="loading-WOS" width="110px"  height="110px"  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" style="background: none;"><g transform="translate(20 50)">
+    <circle cx="0" cy="0" r="5" fill="#93dbe9" transform="scale(0.629707 0.629707)">
+      <animateTransform attributeName="transform" type="scale" begin="-0.3375s" calcMode="spline" keySplines="0.3 0 0.7 1;0.3 0 0.7 1" values="0;1;0" keyTimes="0;0.5;1" dur="1.2s" repeatCount="indefinite"></animateTransform>
+    </circle>
+    </g><g transform="translate(40 50)">
+    <circle cx="0" cy="0" r="5" fill="#689cc5" transform="scale(0.921425 0.921425)">
+      <animateTransform attributeName="transform" type="scale" begin="-0.225s" calcMode="spline" keySplines="0.3 0 0.7 1;0.3 0 0.7 1" values="0;1;0" keyTimes="0;0.5;1" dur="1.2s" repeatCount="indefinite"></animateTransform>
+    </circle>
+    </g><g transform="translate(60 50)">
+    <circle cx="0" cy="0" r="5" fill="#5e6fa3" transform="scale(0.974999 0.974999)">
+      <animateTransform attributeName="transform" type="scale" begin="-0.1125s" calcMode="spline" keySplines="0.3 0 0.7 1;0.3 0 0.7 1" values="0;1;0" keyTimes="0;0.5;1" dur="1.2s" repeatCount="indefinite"></animateTransform>
+    </circle>
+    </g><g transform="translate(80 50)">
+    <circle cx="0" cy="0" r="5" fill="#3b4368" transform="scale(0.725877 0.725877)">
+      <animateTransform attributeName="transform" type="scale" begin="0s" calcMode="spline" keySplines="0.3 0 0.7 1;0.3 0 0.7 1" values="0;1;0" keyTimes="0;0.5;1" dur="1.2s" repeatCount="indefinite"></animateTransform>
+    </circle>
+    </g></svg>
+    
+</div>
+
+    <div class="note left" id="WOSModalBtn" style="display: none;">
+      <div  class="helpMessage4">
+        <p><a style="cursor: pointer;" data-toggle="modal" data-target="#WOSModal" > <span class="glyphicon glyphicon-info-sign"></span> Click here to get the metadata information received from Web of Science
+        </a></p>
+      </div>
+    </div>
+
   </div>
+
+
   <div id="metadata-output"></div>
+  <div class="metadata-output-persistent" id="output-dissemination" style="display: none;"></div>
+  <div class="metadata-output-persistent" id="output-wos" style="display: none;"></div>
+
+
+      <!-- Modal WOS -->
+      <div class="modal fade" id="WOSModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog " style=" width:80%">
+          <div class="modal-content">
+            <div class="modal-header" style="position: relative;">
+              <h5 class="modal-title" id="exampleModalLabel" style="font-weight: 600; font-size: 1.5em; text-align: center;">WOS metadata information</h5>
+              <p style="font-style: italic; color: #868686; font-size: .9em; position: absolute; transform: translateX(-50%);left: 50%;">last updated: <span style="color: #9e9e9e ;" class="currentDate"></span></p>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              
+              <table class="table">
+
+                <tbody>
+                  <tr>
+                    <th scope="row">URL</th>
+                    <td id="td-WOS-URL" ></td>
+                  </tr>
+                  <tr>
+                    <th  scope="row">DOI</th>
+                    <td id="td-WOS-DOI"></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Title</th>
+                    <td id="td-WOS-Title" ></td>
+                  </tr>
+                  <tr>
+                    <th  scope="row">Publication type</th>
+                    <td id="td-WOS-Publication_type"></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Publication Year</th>
+                    <td id="td-WOS-Publication_Year" ></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Is Open Access</th>
+                    <td id="td-WOS-Is_Open_Access" ></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Open access link</th>
+                    <td  id="td-WOS-Open_access_link" ></td>
+                  </tr>
+                  <tr>
+                    <th  scope="row">Is ISI</th>
+                    <td id="td-WOS-Is_ISI"></td>
+                  </tr>
+                  <tr>
+                    <th  scope="row">Journal name</th>
+                    <td id="td-WOS-Journal_name"></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Volume</th>
+                    <td id="td-WOS-Volume" ></td>
+                  </tr>
+                  <tr>
+                    <th  scope="row">Pages</th>
+                    <td id="td-WOS-Pages"></td>
+                  </tr>
+                  <tr>
+                    <th  scope="row">Authors</th>
+                    <td id="td-WOS-Authors"></td>
+                  </tr>
+                  <tr>
+                    <th  scope="row">Institutions</th>
+                    <td id="td-WOS-Institutions"></td>
+                  </tr>
+                </tbody>
+              </table>
+                   <input type="hidden"  id="acceptationPercentageValue" name="acceptationPercentage" value="${(acceptationPercentage)!}">
+
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+
+
+
+      </div>
+
+
 [/#macro]
 
 [#macro channelExampleMacro name="" url="" ]
@@ -411,7 +571,7 @@
   <div class="form-group"> 
     [@metadataField title="citation" encodedName="dc.identifier.citation" type="textArea" require=false/]
   </div>
-  <div class="form-group row">
+  <div class="form-group row ifIsReadOnly" style="display: none;">
     <div class="col-md-6">
       [@metadataField title="handle" encodedName="marlo.handle" type="input" require=false/]
     </div>
@@ -422,18 +582,7 @@
     </div>
   </div>
   
-   <div class="form-group row isOtherUrlContentBox" style="margin-top:5px; display:none">
-      [#-- Alternative url Check --]
-      <div class="col-md-6 isOtherUrl">
-        <br />
-        [@customForm.checkmark id="" name="deliverable.dissemination.hasDOI" i18nkey="project.deliverable.hasDOI" help="" paramText="" value="true" helpIcon=true disabled=false editable=editable checked=(deliverable.dissemination.hasDOI)!false cssClass="isOtherUrl" cssClassLabel=""  /]
-      </div>
 
-      [#-- Alternative url TextField --]
-      <div class="col-md-6 other-url" style="display:${(isOtherUrl)?string('block','none')}">
-        [@customForm.input name="deliverable.dissemination.articleUrl" type="text" i18nkey="project.deliverable.articleURL"  placeholder="" required=true editable=editable /]
-      </div>
-   </div>
    
   <hr />
    
@@ -505,10 +654,13 @@
     [#-- Is ISI Journal--]
     <div class="form-group isIsiJournal">
       <label for="">[@s.text name="deliverable.isiPublication" /] [@customForm.req required=editable /]
-      <p><i class="helpLabel">[@s.text name="deliverable.isiPublication.help"][@s.param]<a href="http://mjl.clarivate.com/">http://mjl.clarivate.com/</a>[/@s.param][/@s.text]</i></p></label> <br />
+      <p><i class="helpLabel">Please make sure the information from the repository you chose and the one on Web of Science match.</i></p></label> <br />
       [#local isISI = (deliverable.publication.isiPublication?string)!"" /]
       [@customForm.radioFlat id="optionISI-yes"  name="deliverable.publication.isiPublication" i18nkey="Yes"  value="true"  checked=(isISI == "true")  cssClass="radioType-optionISI" cssClassLabel="font-normal radio-label-yes" editable=editable /] 
       [@customForm.radioFlat id="optionISI-no"   name="deliverable.publication.isiPublication" i18nkey="No"   value="false" checked=(isISI == "false") cssClass="radioType-optionISI" cssClassLabel="font-normal radio-label-no"  editable=editable /] 
+      <div class="WOS_tag" style="display: none; margin: 5px 0px" >
+        <p>According to Web of Science you should select: <span id="WOS_tag_ISI_yes" style="color: rgb(9, 211, 70); font-weight: 700;">Yes</span><span id="WOS_tag_ISI__no" style="color: rgb(207, 42, 42); font-weight: 700;">No</span></p>
+      </div>
     </div>
     
     [#-- Journal Indicators --]

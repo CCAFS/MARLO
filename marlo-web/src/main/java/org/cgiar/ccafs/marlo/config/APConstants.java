@@ -792,12 +792,17 @@ public final class APConstants {
   public static final String METADATAELEMENTAUTHORS = "marlo.authors";
   public static final String MESSAGE_MODIFICATION_JUSTIFICATION = "Created by CLARISA ";
 
+  public static final String WOS_LINK = "wosLink";
+  public static final Integer ACCEPTATION_PERCENTAGE = 75;
+
   // deliverables import clarisa value
   public static final long IMPORT_DELIVERABLE_VALUE = 63;
 
   public static final String CRP_EMAIL_NOTIFICATIONS = "crp_enable_email_notification";
 
   public static final int CLARISA_AVALIABLE_INFO_YEAR = 2018;
+
+  public static final String IGNORE_NEWER_YEARS = "ignoreNewer";
 
   public static String getFilterBy() {
     return FILTER_BY;
