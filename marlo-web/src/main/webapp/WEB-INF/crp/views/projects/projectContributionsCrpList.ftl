@@ -69,7 +69,7 @@
               <thead>
                 <tr>
                   <th>[@s.text name="global.flagship" /]</th>
-                  <th>Outcome 2022</th>
+                  <th>Performance Indicator 2023</th>
                   <th></th>
                   <th>Status</th>
                   <th>Remove</th>

@@ -1123,7 +1123,7 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
       new String[] {"center", "date", "managingPPAField", "year", "showPIEmail", "cycle", "hasResearchHuman"},
       new Class[] {String.class, String.class, String.class, Integer.class, Boolean.class, String.class,
         Boolean.class});
-    model.addRow(new Object[] {center, date, "Managing / PPA Partner", this.getSelectedYear(), showPIEmail,
+    model.addRow(new Object[] {center, date, "Managing Partner", this.getSelectedYear(), showPIEmail,
       this.getSelectedCycle(), hasResearchHuman});
     return model;
   }

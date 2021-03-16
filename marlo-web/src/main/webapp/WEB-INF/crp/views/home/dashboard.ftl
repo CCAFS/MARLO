@@ -145,6 +145,10 @@
         </div>
       </div>
       [/#if]
+      
+        [@s.text name="dashboard.aiccra.instructions" ] [@s.param] <a href="https://docs.google.com/document/d/1hy2yt6E4pJ5orGqHxBSX_ACcr72pPTwaSesQ9P6vHYQ/edit" target="_blank">here</a>.[/@s.param][/@s.text]
+        <img src="${baseUrlCdn}/global/images/aiccra-planning.png" width="450">
+      
     </div>     
     
     [#-- Dashboard --]   

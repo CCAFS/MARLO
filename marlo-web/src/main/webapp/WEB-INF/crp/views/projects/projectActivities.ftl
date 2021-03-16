@@ -58,7 +58,7 @@
             [/#list]
           [/#if]
           </div>
-          [#if editable && canEdit]
+          [#if editable && canEdit && action.canAccessSuperAdmin()]
             <div id="addPartnerBlock" class="addPerson text-right">
               <div class="button-blue  addActivity"><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="form.buttons.addActivity" /]</div>
             </div>
@@ -126,7 +126,7 @@
       <span>[@s.text name="project.activities.index" /] [#if element.id?? && element.id?number != -1]${(element.id)!}[/#if]</span>  
     </div>
     --]
-    [#if isActive && editable] [#--&& (isTemplate) --]
+    [#if isActive && editable && action.canAccessSuperAdmin()] [#--&& (isTemplate) --]
       <div class="removeLink">
         <div id="removeActivity" class="removeActivityBtnInList removeElement removeLink" data-toggle="modal" data-target="#removeactivityModal" title="[@s.text name='projectActivities.removeActivity' /]"></div>
       </div>
@@ -140,7 +140,7 @@
     <div class="blockContent" style="display:none">
       [#-- Title --]
       <div class="form-group">
-        [@customForm.input name="${customName}.title" value="${(element.title)!'New Activity'}" type="text" i18nkey="project.activities.inputTitle"  placeholder="" className="activityTitle limitWords-15" required=true editable=editable && isActive /]
+        [@customForm.input name="${customName}.title" value="${(element.title)!'New Activity'}" type="text" i18nkey="project.activities.inputTitle"  placeholder="" className="activityTitle limitWords-30" required=true editable=editable && isActive /]
         <input class="activityId" type="hidden" name="${customName}.id" value="${(element.id)!-1}" />
         <input class="activityId" type="hidden" name="${customName}.composeID" value="${(element.composeID)!}" />
         <span class="index hidden">${index}</span>

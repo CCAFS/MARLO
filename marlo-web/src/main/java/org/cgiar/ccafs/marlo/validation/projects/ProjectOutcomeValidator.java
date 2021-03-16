@@ -261,7 +261,8 @@ public class ProjectOutcomeValidator extends BaseValidator {
       action.addMessage(action.getText("projectOutcome.narrativeTarget"));
       action.getInvalidFields().put("input-projectOutcome.narrativeTarget", InvalidFieldsMessages.EMPTYFIELD);
     }
-
+    // not validate if is AICCRA instance
+    // if (action.isAiccra() == false) {
     if (projectOutcome.getMilestones() != null && projectOutcome.getMilestones().size() > 0) {
       if (action.isPlanningActive()) {
         List<ProjectMilestone> milestones = projectOutcome.getMilestones().stream()
@@ -274,9 +275,8 @@ public class ProjectOutcomeValidator extends BaseValidator {
           this.validateProjectMilestone(action, projectOutcome.getMilestones().get(i), i);
         }
       }
-
     }
-
+    // }
 
     if (action.hasSpecificities(APConstants.CRP_BASELINE_INDICATORS)) {
       // TODO: check validation for reporting 2018
