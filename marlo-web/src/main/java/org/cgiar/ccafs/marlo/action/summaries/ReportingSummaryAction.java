@@ -2010,7 +2010,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       for (Deliverable deliverable : deliverables) {
         String delivType = null, delivSubType = null, delivYear = null, keyOutput = "", leader = null,
           institution = null, fundingSources = "", deliv_description = null, otherPartner = "";
-        String delivDescription = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDescription();
+//        String delivDescription = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDescription();
         String delivStatus =
           deliverable.getDeliverableInfo(this.getSelectedPhase()).getStatusName(this.getSelectedPhase());
         String delivDescription = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDescription();
@@ -2784,7 +2784,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           delivDescription = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDescription();
         }
         Boolean isExtended = false;
-        String delivDescription = null;
+//        String delivDescription = null;
         if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType() != null) {
           delivSubType = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getName();
           if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType()
