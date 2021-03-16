@@ -841,7 +841,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       this.getText("metadata.description.readText"));
     masterReport.getParameterValues().put("i8nDeliverablesRMetadataDate", this.getText("metadata.date"));
     masterReport.getParameterValues().put("i8nDeliverablesRLanguage", this.getText("metadata.language"));
-    masterReport.getParameterValues().put("i8nDeliverablesRCountry", this.getText("metadata.country"));
+    masterReport.getParameterValues().put("i8nDeliverablesRCountry", this.getText("metadata.countries"));
     masterReport.getParameterValues().put("i8nDeliverablesRKeywords", this.getText("metadata.keywords.help"));
     masterReport.getParameterValues().put("i8nDeliverablesRCitation", this.getText("metadata.citation.readText"));
     masterReport.getParameterValues().put("i8nDeliverablesRHandle", this.getText("metadata.handle"));
@@ -2640,12 +2640,15 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         String flContrib = "";
         // Publication metadata
         // Verify if the deliverable is of type Articles and Books
-        if (deliverable.getDeliverablePublicationMetadatas().stream().filter(dpm -> dpm.isActive())
+        if (deliverable.getDeliverablePublicationMetadatas().stream()
+          .filter(dpm -> dpm.isActive() && dpm.getPhase() != null && dpm.getPhase().equals(this.getSelectedPhase()))
           .collect(Collectors.toList()).size() > 0
-          && deliverable.getDeliverablePublicationMetadatas().stream().filter(dpm -> dpm.isActive())
+          && deliverable.getDeliverablePublicationMetadatas().stream()
+            .filter(dpm -> dpm.isActive() && dpm.getPhase() != null && dpm.getPhase().equals(this.getSelectedPhase()))
             .collect(Collectors.toList()).get(0) != null) {
           DeliverablePublicationMetadata deliverablePublicationMetadata =
-            deliverable.getDeliverablePublicationMetadatas().stream().filter(dpm -> dpm.isActive())
+            deliverable.getDeliverablePublicationMetadatas().stream()
+              .filter(dpm -> dpm.isActive() && dpm.getPhase() != null && dpm.getPhase().equals(this.getSelectedPhase()))
               .collect(Collectors.toList()).get(0);
           volume = deliverablePublicationMetadata.getVolume();
           issue = deliverablePublicationMetadata.getIssue();
@@ -4893,10 +4896,13 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         if (studyinfo.getTitle() != null && !studyinfo.getTitle().trim().isEmpty()) {
           title = studyinfo.getTitle();
         }
-        // Tagged
-        if (studyinfo != null && studyinfo.getEvidenceTag() != null && studyinfo.getEvidenceTag().getName() != null) {
-          tagget = studyinfo.getEvidenceTag().getName();
-        }
+        // Tagged - REMOVED FOR AR 2020
+        /*
+         * if (studyinfo != null && studyinfo.getEvidenceTag() != null && studyinfo.getEvidenceTag().getName() != null)
+         * {
+         * tagget = studyinfo.getEvidenceTag().getName();
+         * }
+         */
         // Status
         if (studyinfo.getStatus() != null) {
           status = studyinfo.getStatus().getName();
@@ -4959,29 +4965,31 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         if (studyinfo.getIsContribution() != null) {
           isContribution = studyinfo.getIsContribution();
           isContributionText = studyinfo.getIsContribution() ? "Yes" : "No";
-          if (isContribution) {
-            // Policy Investment and Amount
-            if (studyinfo.getRepIndPolicyInvestimentType() != null) {
-              policyInvestimentType = studyinfo.getRepIndPolicyInvestimentType().getName();
-              if (studyinfo.getRepIndPolicyInvestimentType().getId().equals(3l)) {
-                isBudgetInvestment = true;
-                if (studyinfo.getPolicyAmount() != null) {
-                  policyAmount = studyinfo.getPolicyAmount();
-                }
-              }
-            }
-            // organizationType
-            if (studyinfo.getRepIndOrganizationType() != null) {
-              organizationType = studyinfo.getRepIndOrganizationType().getName();
-            }
-            // stageProcess and stageStudy
-            if (studyinfo.getRepIndStageProcess() != null) {
-              stageProcess = studyinfo.getRepIndStageProcess().getName();
-              if (studyinfo.getRepIndStageProcess().getId().equals(1l)) {
-                isStage1 = true;
-              }
-            }
-          }
+          /*
+           * if (isContribution) {
+           * // Policy Investment and Amount
+           * if (studyinfo.getRepIndPolicyInvestimentType() != null) {
+           * policyInvestimentType = studyinfo.getRepIndPolicyInvestimentType().getName();
+           * if (studyinfo.getRepIndPolicyInvestimentType().getId().equals(3l)) {
+           * isBudgetInvestment = true;
+           * if (studyinfo.getPolicyAmount() != null) {
+           * policyAmount = studyinfo.getPolicyAmount();
+           * }
+           * }
+           * }
+           * // organizationType
+           * if (studyinfo.getRepIndOrganizationType() != null) {
+           * organizationType = studyinfo.getRepIndOrganizationType().getName();
+           * }
+           * // stageProcess and stageStudy
+           * if (studyinfo.getRepIndStageProcess() != null) {
+           * stageProcess = studyinfo.getRepIndStageProcess().getName();
+           * if (studyinfo.getRepIndStageProcess().getId().equals(1l)) {
+           * isStage1 = true;
+           * }
+           * }
+           * }
+           */
         }
         if (studyinfo.getRepIndStageStudy() != null) {
           stageStudy = studyinfo.getRepIndStageStudy().getName();
