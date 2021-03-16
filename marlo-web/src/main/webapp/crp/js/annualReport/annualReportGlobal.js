@@ -167,7 +167,7 @@ $(document).ready(function() {
         ]
     });
 
-    $tableInnovationsHTML = $('.tableInnovations-block table');
+    $tableInnovationsHTML = $('.tableNoPaginator-block table');
     tableInnovations = $tableInnovationsHTML.DataTable({
       "paging": false,
       "searching": true,
