@@ -1513,17 +1513,21 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           .collect(Collectors.toList());
         if (deliverableActivityList != null && !deliverableActivityList.isEmpty()) {
           for (DeliverableActivity deliverableActivity : deliverableActivityList) {
-            String deliverableTitle = "";
-            if (deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getTitle() != null) {
-              deliverableTitle =
-                deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getTitle();
-            } else {
-              deliverableTitle = "&lt;Not Defined&gt;";
-            }
-            if (deliverables.isEmpty()) {
-              deliverables = "● D" + deliverableActivity.getDeliverable().getId() + ": " + deliverableTitle;
-            } else {
-              deliverables += "<br>● D" + deliverableActivity.getDeliverable().getId() + ": " + deliverableTitle;
+            if (deliverableActivity.getDeliverable().isActive()) {
+              String deliverableTitle = "";
+              if (deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()) != null
+                && deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase())
+                  .getTitle() != null) {
+                deliverableTitle =
+                  deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getTitle();
+              } else {
+                deliverableTitle = "&lt;Not Defined&gt;";
+              }
+              if (deliverables.isEmpty()) {
+                deliverables = "● D" + deliverableActivity.getDeliverable().getId() + ": " + deliverableTitle;
+              } else {
+                deliverables += "<br>● D" + deliverableActivity.getDeliverable().getId() + ": " + deliverableTitle;
+              }
             }
           }
         }
@@ -2009,6 +2013,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         String delivDescription = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDescription();
         String delivStatus =
           deliverable.getDeliverableInfo(this.getSelectedPhase()).getStatusName(this.getSelectedPhase());
+        String delivDescription = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDescription();
         Boolean showFAIR = false, showPublication = false, showCompilance = false;
 
         if (deliverable.getDeliverableInfo().getDescription() != null
@@ -2218,16 +2223,16 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
               delivDisseminationChannel = repositoryChannel.getName();
             }
           }
-          if (deliverableDissemination.getDisseminationUrl() != null
+          if (deliverableDissemination != null && deliverableDissemination.getDisseminationUrl() != null
             && !deliverableDissemination.getDisseminationUrl().isEmpty()) {
             delivDisseminationUrl = deliverableDissemination.getDisseminationUrl().replace(" ", "%20");
           }
-          if (deliverableDissemination.getConfidentialUrl() != null
+          if (deliverableDissemination != null && deliverableDissemination.getConfidentialUrl() != null
             && !deliverableDissemination.getConfidentialUrl().isEmpty()) {
             delivConfidentialUrl = deliverableDissemination.getConfidentialUrl().replace(" ", "%20");
             System.out.println("confidential " + delivConfidentialUrl);
           }
-          if (deliverableDissemination.getIsOpenAccess() != null) {
+          if (deliverableDissemination != null && deliverableDissemination.getIsOpenAccess() != null) {
             if (deliverableDissemination.getIsOpenAccess() == true) {
               delivOpenAccess = "Yes";
             } else {
@@ -2701,6 +2706,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
               && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_OTHER))
             .collect(Collectors.toList());
 
+          if (delivDescription == null || delivDescription.isEmpty()) {
+            delivDescription = "<Not Defined>";
+          }
+
           if (otherPartners != null) {
             for (DeliverableUserPartnership partner : otherPartners) {
               if (partner.getInstitution() != null) {
@@ -2725,7 +2734,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           intellectualAssetPvpCountry, intellectualAssetPvpApplicationNumber, intellectualAssetPvpBreederCrop,
           intellectualAssetDateFilling, intellectualAssetDateRegistration, intellectualAssetDateExpiry,
           intellectualAssetAdditionalInformation, intellectualAssetLinkPublished, intellectualAssetCommunication,
-          otherPartner, deliv_description});
+          otherPartner, delivDescription});
       }
     }
     return model;
@@ -2775,6 +2784,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           delivDescription = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDescription();
         }
         Boolean isExtended = false;
+        String delivDescription = null;
         if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType() != null) {
           delivSubType = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getName();
           if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType()
@@ -2804,6 +2814,12 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           }
           keyOutput += deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrpClusterKeyOutput().getKeyOutput();
         }
+
+        if (deliverable.getDeliverableInfo(this.getSelectedPhase()) != null
+          && deliverable.getDeliverableInfo(this.getSelectedPhase()).getDescription() != null) {
+          delivDescription = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDescription();
+        }
+
         // Get partner responsible and institution
         List<DeliverableUserPartnership> deliverablePartnershipResponsibles =
           deliverable.getDeliverableUserPartnerships().stream()

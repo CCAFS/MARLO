@@ -28,6 +28,18 @@ public class FundingSourceBudget extends MarloAuditableEntity implements java.io
   public FundingSourceBudget() {
   }
 
+  public void copyFields(FundingSourceBudget other) {
+    this.setActive(other.isActive());
+    this.setActiveSince(other.getActiveSince());
+    this.setBudget(other.getBudget());
+    this.setCreatedBy(other.getCreatedBy());
+    this.setFundingSource(other.getFundingSource());
+    this.setModificationJustification(other.getModificationJustification());
+    this.setModifiedBy(other.getModifiedBy());
+    this.setPhase(other.getPhase());
+    this.setYear(other.getYear());
+  }
+
   public Double getBudget() {
     return budget;
   }

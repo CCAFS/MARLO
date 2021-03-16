@@ -3,16 +3,16 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ "datatables.net", "datatables.net-bs", "components-font-awesome" ] /]
+[#assign pageLibs = [ "datatables.net", "datatables.net-bs", "font-awesome" ] /]
 [#assign customJS = [
   "https://www.gstatic.com/charts/loader.js", 
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20200310",
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js"
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210226"
 ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20190621"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210225"] /]
 
 [#assign breadCrumb = [
   {"label":"${currentSection}",   "nameSpace":"",             "action":""},
@@ -162,7 +162,7 @@
 [#macro innovationsTable name list=[] expanded=false]
 
 
-  <div class="form-group viewMoreSyntesisTable-block">
+  <div class="form-group tableNoPaginator-block">
     <table class="table table-bordered">
       <thead>
         <tr>
@@ -178,18 +178,21 @@
             <th class="text-center"> Top five contributing partners</th>
             <th class="text-center"> [@s.text name="${customLabel}.${name}.geoScope" /] </th>
             <th class="text-center col-md-1"> [@s.text name="${customLabel}.${name}.evidence" /] </th>
-            <th class="text-center"></th>
+            [#--<th class="text-center"></th>--]
           [/#if]
           [#if !expanded]
             <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.missingFields" /] </th>
-            <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
+            [#if PMU]
+              <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
+            [/#if]
           [/#if]
         </tr>
       </thead>
       <tbody>
         [#if list?has_content]
           [#list list as item]
-          [#local url][@s.url namespace="/projects" action="${(crpSession)!}/innovation"][@s.param name='innovationID']${item.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+          [#local marloUrl][@s.url namespace="/projects" action="${(crpSession)!}/innovation"][@s.param name='innovationID']${item.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+          [#local publicUrl][@s.url namespace="/summaries" action='${(crpSession)!}/projectInnovationSummary'][@s.param name='innovationID']${item.id?c}[/@s.param][@s.param name='phaseID']${(actualPhase.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
           [#local isStageFour = (item.projectInnovationInfo.repIndStageInnovation.id == 4)!false]
           <tr>
             [#-- 1. Title of innovation--]
@@ -211,7 +214,14 @@
                 <span>[@s.text name="${customLabel}.${name}.linkToOicr" /] <a href="${oicrUrl}" target="_blank">${(item.projectInnovationInfo.projectExpectedStudy.composedName)!'Untitled'}</span></a>
               [/#if]
               [#-- [#if !expanded] [@oicrPopup element=item isStageFour=true /] [/#if] --]
-              <a href="${url}" target="_blank" class="pull-right">[@s.text name="${customLabel}.${name}.linkToInnovation" /] <span class="glyphicon glyphicon-new-window"></span></a>
+              <div class="container-links">
+                <div data-toggle="tooltip" title="[@s.text name="${customLabel}.${name}.linkToMARLOInnovation" /]">
+                  <a href="${marloUrl}" target="_blank" class="pull-right"> <span class="fa fa-external-link"></span></a>
+                </div>
+                <div data-toggle="tooltip" title="[@s.text name="${customLabel}.${name}.linkToPublicInnovation" /]">
+                  <a href="${publicUrl}" target="_blank" class="pull-right"> <span class="fa fa-file-pdf-o pdfIcon file"></span></a>
+                </div>
+              </div>
             </td>
             [#-- 3. Description of Innovation  --]
             [#if expanded]
@@ -259,25 +269,33 @@
                   [/#if]
                 [/#if]
               </td>
-              <td class="text-center">
+              [#--<td class="text-center">
                 <a href="[@s.url namespace="/summaries" action='${(crpSession)!}/projectInnovationSummary'][@s.param name='innovationID']${item.id?c}[/@s.param][@s.param name='phaseID']${(item.projectInnovationInfo.phase.id)!''}[/@s.param][/@s.url]" target="__BLANK">
                   <img src="${baseUrlCdn}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
                 </a>
-              </td>
+              </td>--]
             [/#if]
             [#if !expanded]
+              [#-- 11. Innovation Completion--]
               <td class="text-center">
-              [#assign isInnovationComplete = action.isInnovationComplete(item.id, actualPhase.id)!false /]
-              [#if  isInnovationComplete]
-                <span class="glyphicon glyphicon-ok-sign mf-icon check" title="Complete"></span> 
+                [#assign isInnovationComplete = action.isInnovationComplete(item.id, actualPhase.id)!false /]
+                [#if  isInnovationComplete]
+                  <span class="glyphicon glyphicon-ok-sign mf-icon check" title="Complete"></span> 
                 [#else]
                   <span class="glyphicon glyphicon-exclamation-sign mf-icon" title="Incomplete"></span> 
-              [/#if]   
+                [/#if]
               </td>
-              <td class="text-center">
-              [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.innovationsIds?seq_contains(item.id))!true) /]
-              [@customForm.checkmark id="innovation-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.innovationsValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/] 
-            </td>
+              [#-- 12. Included in AR? --]
+              [#if PMU]
+                <td class="text-center">
+                  [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.innovationsIds?seq_contains(item.id))!true) /]
+                  [#--local canBeAddedToAR = ((action.canBeAddedToAR(item.id, actualPhase.id))!false)]
+                  <div data-toggle="tooltip" [#if !canBeAddedToAR]title="[@s.text name="annualReport2018.innovations.table4.cannotBeAddedToAR" /]"[/#if]>
+                    [@customForm.checkmark id="innovation-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.innovationsValue" value="${(item.id)!''}" checked=isChecked editable=(editable&&canBeAddedToAR) centered=true/]
+                  </div>--]
+                  [@customForm.checkmark id="innovation-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.innovationsValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/] 
+                </td>
+              [/#if]
             [/#if]
           </tr>
           [/#list]

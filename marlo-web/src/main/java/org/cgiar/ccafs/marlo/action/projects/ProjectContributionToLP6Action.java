@@ -305,9 +305,9 @@ public class ProjectContributionToLP6Action extends BaseAction {
         /*
          * Get the actual projectLp6Contribution
          */
-        project.setProjectLp6Contribution(project.getProjectLp6Contributions().stream()
-          .filter(c -> c.isActive() && c.getPhase().getId() == this.getActualPhase().getId())
-          .collect(Collectors.toList()).get(0));
+        ProjectLp6Contribution lp6Contribution = project.getProjectLp6Contributions().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).findFirst().orElse(null);
+        project.setProjectLp6Contribution(lp6Contribution);
 
         if (project.getProjectLp6Contribution() != null) {
           // Get selected deliverables
@@ -350,9 +350,10 @@ public class ProjectContributionToLP6Action extends BaseAction {
       }
     }
 
-    projectLp6ContributionDB = projectLp6ContributionManager.findAll().stream().filter(
-      c -> c.isActive() && c.getProject().getId() == projectID && c.getPhase().getId() == this.getActualPhase().getId())
-      .collect(Collectors.toList()).get(0);
+    projectLp6ContributionDB = projectLp6ContributionManager.findAll().stream()
+      .filter(c -> c.isActive() && c.getProject() != null && c.getProject().getId() != null
+        && c.getProject().getId().longValue() == projectID && c.getPhase().equals(this.getActualPhase()))
+      .findFirst().orElse(null);
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_LP6_BASE_PERMISSION, params));

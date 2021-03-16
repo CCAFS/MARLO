@@ -77,6 +77,8 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
   private Boolean activitiesCSV;
   @Expose
   private FileDB activitiesCSVFile;
+  @Expose
+  private Long previousProjectId;
 
   public ProjectInfo() {
   }
@@ -245,6 +247,10 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     return presetDate;
   }
 
+  public Long getPreviousProjectId() {
+    return previousProjectId;
+  }
+
   public Project getProject() {
     return project;
   }
@@ -318,7 +324,7 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     if (startDate != null && endDate != null) {
 
       Calendar calendarEnd = Calendar.getInstance();
-      calendarEnd.set(Calendar.YEAR, 2050);
+      calendarEnd.set(Calendar.YEAR, 2023);
 
       while (year < calendarEnd.get(Calendar.YEAR)) {
 
@@ -432,6 +438,10 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     this.presetDate = presetDate;
   }
 
+  public void setPreviousProjectId(Long previousProjectId) {
+    this.previousProjectId = previousProjectId;
+  }
+
   public void setProject(Project project) {
     this.project = project;
   }
@@ -483,6 +493,8 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     this.setCrossCuttingCapacity(update.getCrossCuttingCapacity());
     this.setCrossCuttingClimate(update.getCrossCuttingClimate());
     this.setCrossCuttingNa(update.getCrossCuttingNa());
+    this.setCrossCuttingGender(update.getCrossCuttingGender());
+    this.setCrossCuttingYouth(update.getCrossCuttingYouth());
     this.setDimension(update.getDimension());
     this.setEndDate(update.getEndDate());
     this.setLeaderResponsabilities(update.getLeaderResponsabilities());
@@ -495,6 +507,7 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     this.setScale(update.getScale());
     this.setStartDate(update.getStartDate());
     this.setStatus(update.getStatus());
+    this.setPreviousProjectId(update.getPreviousProjectId());
     this.setStatusJustification(update.getStatusJustification());
     this.setSummary(update.getSummary());
     this.setTitle(update.getTitle());

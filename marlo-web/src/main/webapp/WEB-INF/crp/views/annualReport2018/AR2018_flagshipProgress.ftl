@@ -69,7 +69,7 @@
                
                 [#-- Word Document Tag --]
                 [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
-                [@customForm.textArea name="${customName}.overallProgress" i18nkey="${customLabel}.overallProgress" help="${customLabel}.overallProgress.help" className="limitWords-${limit}" helpIcon=false required=true editable=editable allowTextEditor=true /]
+                [@customForm.textArea name="${customName}.overallProgress" i18nkey="${customLabel}.overallProgress" help="${customLabel}.overallProgress.help" className="limitWords-1000" helpIcon=false required=true editable=editable allowTextEditor=true /]
               </div>
               
               [#-- Flagship Synthesis (1.2.2)--]
@@ -87,15 +87,152 @@
               [/#if]
               <div class="form-group">
                   [#-- Word Document Tag --]
-                  [#if PMU]
+                [#if PMU]
                   [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
                 [/#if]
                 <h4 class="simpleTitle">[@s.text name="${customLabel}.progressByFlagships" /]</h4>
-                [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableflagshipSynthesis" list=flagshipsReportSynthesisFlagshipProgress columns=["progressByFlagships", "detailedAnnex"] showTitle=false allInOne=true /]
+                [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableflagshipSynthesis" list=flagshipsReportSynthesisFlagshipProgress columns=["progressByFlagships", "detailedAnnex", "relevanceCovid"] showTitle=false allInOne=true /]
               </div>
             [/#if]
+           
+            <div class="form-group">
+             
+              [#-- 1.2.2b Relevance to Covid-19 --]
+              [#if !PMU]
+                </br>
+                  [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                  [@customForm.textArea name="${customName}.relevanceCovid" i18nkey="${customLabel}.relevanceCovid" help="${customLabel}.relevanceCovid.help" className="limitWords-300" helpIcon=false required=true editable=editable allowTextEditor=false /]
+                </br>
+              [/#if]             
+            </div>
             
             
+            
+            
+            [#-- test --]
+            
+            [#-- Evidences table with types and their descriptions --]
+              <div class="form-group evidenceTypeMessage">
+                <div id="dialog" title="Evidence types" style="display: none">
+                  <table id="evidenceTypes" style="height:700px; width:950px;">
+                    <th> [@s.text name="study.ARdialogMessage.part1" /] </th>
+                    <th> [@s.text name="study.ARdialogMessage.part2" /] </th>
+                    <th> [@s.text name="study.ARdialogMessage.part3" /] </th>
+                    <th>  [@s.text name="study.ARdialogMessage.part4"/] </th>
+                    [#if covidAnalysisStudies?has_content]
+                      [#list covidAnalysisStudies as st]
+                        <tr>
+                          [#--if st_index == 0]
+                          <th rowspan="${action.getDeliverablesSubTypes(mt.id).size()}" class="text-center"> ${mt.name} </th>
+                          [/#if--]
+                          <td> 
+                            ${st.projectExpectedStudyInfo.title} 
+                          </td>
+                          <td>
+                          [#if (st.projectExpectedStudyInfo.studyType.name?has_content)!false]
+                            ${st.projectExpectedStudyInfo.studyType.name}
+                          [#else]
+                            <i>([@s.text name="study.dialogMessage.notProvided" /])</i>
+                          [/#if]
+                          </td>
+                          <td>
+                          [#if (st.projectExpectedStudyInfo.status.name?has_content)!false]
+                             ${st.projectExpectedStudyInfo.status.name}
+                          [/#if]
+                          </td>
+                          <td>
+                          [#if (st.projectExpectedStudyInfo.status.name?has_content)!false]
+                            
+                          [/#if]
+                          </td>
+                        </tr>
+                      [/#list]
+                    [/#if]  
+                  </table>
+                </div> <!-- End dialog-->
+                      
+                  <div class="modal fade" id="evidenceModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-scrollable" style=" width:80%" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <!-- <h5 class="modal-title" id="exampleModalLabel">Modal title</h5> -->
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        
+                        <table id="evidenceTypes" class="table ">
+                          <thead style="background-color: #0b7ba6; font-weight: 500; color: white;">
+                            <tr>
+                              <th> [@s.text name="study.ARdialogMessage.part1" /]</th>
+                              <th > [@s.text name="study.ARdialogMessage.part2"/]</th>
+                              <th> [@s.text name="study.ARdialogMessage.part3" /]</th>
+                              <th> [@s.text name="study.ARdialogMessage.part4" /]</th>
+                            </tr>
+                          </thead>
+                
+                          [#if covidAnalysisStudies?has_content]
+                          [#list covidAnalysisStudies as st]
+                          <tr>
+                            [#--if st_index == 0]
+                            <th rowspan="${action.getDeliverablesSubTypes(mt.id).size()}" class="text-center"> ${mt.name} </th>
+                            [/#if--]
+                            <td>
+                             (P${st.project.id})
+                              ${st.id} -
+                              ${st.projectExpectedStudyInfo.title}
+                              <a href="${"${baseUrl}/projects/${crpSession}/study.do?expectedID=${st.id}&edit=true&phaseID=${actualPhase.id}"}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
+                            </td>
+                            <td style="max-width: 90vw !important;">
+                            [#if (st.projectExpectedStudyInfo.studyType.name?has_content)!false]
+                              ${st.projectExpectedStudyInfo.studyType.name}
+                            [#else]
+                              <i>([@s.text name="study.dialogMessage.notProvided" /])</i>
+                            [/#if]
+                            </td>
+                            <td>
+                              [#if (st.projectExpectedStudyInfo.status.name?has_content)!false]
+                                ${st.projectExpectedStudyInfo.status.name}
+                              [#else]
+                               <i>([@s.text name="study.dialogMessage.notProvided" /])</i>
+                              [/#if]                                              
+                            </td>
+                            <td>
+                              [#if (st.flagships?has_content)!false]                               
+                                 [#list st.flagships as fp]                                                                                                        
+                                       [#if (fp.crpProgram?has_content)!false]
+                                         <span class="programTag" style="border-color:${(fp.crpProgram.color)!'#fff'}" title="${(fp.crpProgram.composedName)!}">${(fp.crpProgram.acronym)!}</span>
+                                       [/#if]                                            
+                                 [/#list]                                                                  
+                              [#else]
+                               <i>([@s.text name="study.dialogMessage.notProvided" /])</i>
+                              [/#if]                                              
+                            </td>
+                          </tr>
+                          [/#list]
+                          [/#if]
+                        </table>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                       
+                <div class="note left">
+                  <div id="popup" class="helpMessage3">
+                    <p><a style="cursor: pointer;" data-toggle="modal" data-target="#evidenceModal" > <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="annualReport2018.flagshipProgress.covidAnalysis" /]</a></p>
+                  </div>
+                </div>
+                <div class="clearfix"></div>
+              </div>
+        
+            </div>
+            [#-- end test --]
+            
+
             [#-- 1.2.3 Variance from Planned Program for this year --]
             <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="${customLabel}.variance" /]</h4>
             [@customForm.helpLabel name="${customLabel}.variance.help" showIcon=false editable=editable/]
@@ -103,21 +240,21 @@
             [#-- Expandend research areas --]
             <div class="form-group">
               [#-- Word Document Tag --]
-              [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
+              [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][#else][@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/][/#if]
               [@customForm.textArea name="${customName}.expandedResearchAreas" i18nkey="${customLabel}.expandedResearchAreas" help="${customLabel}.expandedResearchAreas.help" className="limitWords-${calculateLimitWords(200)}" helpIcon=false required=true editable=editable allowTextEditor=true /]
             </div>
             
             [#-- Dropped research lines --]
             <div class="form-group">
               [#-- Word Document Tag --]
-              [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
+              [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][#else][@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/][/#if]
               [@customForm.textArea name="${customName}.droppedResearchLines" i18nkey="${customLabel}.droppedResearchLines" help="${customLabel}.droppedResearchLines.help" className="limitWords-${calculateLimitWords(200)}" helpIcon=false required=true editable=editable allowTextEditor=true /]
             </div>
             
             [#-- Changed direction --]
             <div class="form-group">
               [#-- Word Document Tag --]
-              [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
+              [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][#else][@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/][/#if]
               [@customForm.textArea name="${customName}.changedDirection" i18nkey="${customLabel}.changedDirection" help="${customLabel}.changedDirection.help" className="limitWords-${calculateLimitWords(200)}" helpIcon=false required=true editable=editable allowTextEditor=true /]
             </div>
             

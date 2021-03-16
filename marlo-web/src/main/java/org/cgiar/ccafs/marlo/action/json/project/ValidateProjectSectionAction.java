@@ -124,6 +124,9 @@ public class ValidateProjectSectionAction extends BaseAction {
         case DESCRIPTION:
           this.projectSectionValidator.validateProjectDescription(this, this.getProjectID());
           break;
+        case IMPACTS:
+          this.projectSectionValidator.validateProjectImpactCovid(this, this.getProjectID());
+          break;
         case ACTIVITIES:
           this.projectSectionValidator.validateProjectActivities(this, this.getProjectID());
           break;
@@ -413,7 +416,9 @@ public class ValidateProjectSectionAction extends BaseAction {
           for (ProjectInnovation projectInnovation : innovations) {
             sectionStatus = sectionStatusManager.getSectionStatusByProjectInnovation(projectInnovation.getId(), cycle,
               this.getActualPhase().getYear(), this.getActualPhase().getUpkeep(), sectionName);
-            section.put("sectionName", sectionStatus.getSectionName());
+            if (sectionStatus != null && sectionStatus.getSectionName() != null) {
+              section.put("sectionName", sectionStatus.getSectionName());
+            }
             if (sectionStatus == null) {
               sectionStatus = new SectionStatus();
               sectionStatus.setMissingFields("No section");
@@ -477,6 +482,22 @@ public class ValidateProjectSectionAction extends BaseAction {
 
           section.put("sectionName", sectionStatus.getSectionName());
           section.put("missingFields", sectionStatus.getMissingFields());
+          break;
+
+        case IMPACTS:
+          if (!this.hasSpecificities(APConstants.CRP_COVID_REQUIRED)) {
+            section = new HashMap<String, Object>();
+
+            section.put("sectionName", ProjectSectionStatusEnum.IMPACTS);
+            section.put("missingFields", "");
+          } else {
+            sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, cycle,
+              this.getActualPhase().getYear(), this.getActualPhase().getUpkeep(), sectionName);
+            section = new HashMap<String, Object>();
+
+            section.put("sectionName", sectionStatus.getSectionName());
+            section.put("missingFields", sectionStatus.getMissingFields());
+          }
           break;
 
         default:
@@ -543,8 +564,11 @@ public class ValidateProjectSectionAction extends BaseAction {
 
 
     Locale locale = new Locale(language);
-
-    return localizedTextProvider.findDefaultText(aTextName, locale);
+    if (aTextName != null && locale != null) {
+      return localizedTextProvider.findDefaultText(aTextName, locale);
+    } else {
+      return "";
+    }
   }
 
   @Override

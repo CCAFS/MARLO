@@ -507,7 +507,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
       for (ProjectBudget projectBudget : project.getBudgets()) {
         if (projectBudget != null) {
-          if (projectBudget.getBudgetType() != null) {
+          if (projectBudget.getBudgetType() != null && projectBudget.getBudgetType().getId() != null) {
             if (year == projectBudget.getYear() && type == projectBudget.getBudgetType().getId().longValue()) {
               if (projectBudget.getAmount() != null) {
                 total = total + projectBudget.getAmount();
@@ -517,7 +517,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
         }
       }
     }
-
 
     return total;
   }
@@ -667,7 +666,12 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
-        project = (Project) autoSaveReader.readFromJson(jReader);
+        if (jReader != null) {
+          project = (Project) autoSaveReader.readFromJson(jReader);
+        } else {
+          LOG.error("null jReader in autoSaveReader");
+        }
+
         Project projectDb = projectManager.getProjectById(project.getId());
         project.setProjectInfo(projectDb.getProjecInfoPhase(this.getActualPhase()));
         project.getProjectInfo()
@@ -864,7 +868,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   }
 
   public void saveBudget(ProjectBudget projectBudget, Project projectDB) {
-
     /**
      * If the entity is new we can save it as is.
      */
@@ -890,6 +893,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     projectBudgetDB.setGenderValue(projectBudget.getGenderValue());
     projectBudgetDB.setInstitution(projectBudget.getInstitution());
     projectBudgetDB.setYear(projectBudget.getYear());
+    projectBudgetDB.setRationale(projectBudget.getRationale());
 
     projectBudgetManager.saveProjectBudget(projectBudgetDB);
 

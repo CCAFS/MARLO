@@ -344,7 +344,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
           new POIField(this.getText("financialPlan2019.tableE.plannedBudget",
             new String[] {String.valueOf(this.getSelectedYear())}), ParagraphAlignment.CENTER, bold, blackColor),
           new POIField("", ParagraphAlignment.CENTER, false), new POIField("", ParagraphAlignment.CENTER, false),
-          new POIField("", ParagraphAlignment.CENTER, false), new POIField("", ParagraphAlignment.CENTER, false),
+          new POIField("", ParagraphAlignment.CENTER, false),
           new POIField(this.getText("financialPlan2019.tableE.comments"), ParagraphAlignment.LEFT, bold, blackColor)};
 
       POIField[] sHeader2 = {new POIField(" ", ParagraphAlignment.CENTER, bold, blackColor),
@@ -588,7 +588,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
             for (CrpOutcomeSubIdo subIdo : outcome.getSubIdos()) {
               if (subIdo != null && subIdo.getSrfSubIdo() != null) {
                 String primary = "";
-                if (subIdo.getPrimary() == true) {
+                if (subIdo.getPrimary() != null && subIdo.getPrimary()) {
                   primary = " {primary} ";
                 }
                 if (subIDO.isEmpty()) {
@@ -796,58 +796,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
           }
 
 
-          /******************************************************
-           * 
-           * 
-           */
-          /*
-           * // Geographic Scope
-           * if (projectExpectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope() != null) {
-           * geographicScope = projectExpectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope().getName();
-           * // Regional
-           * if (projectExpectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope().getId()
-           * .equals(this.getReportingIndGeographicScopeRegional())) {
-           * List<ProjectExpectedStudyCountry> studyRegions =
-           * projectExpectedStudy.getProjectExpectedStudyCountries().stream()
-           * .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())
-           * && c.getLocElement() != null && c.getLocElement().getLocElementType() != null
-           * && c.getLocElement().getLocElementType().getId() == 1)
-           * .collect(Collectors.toList());
-           * if (studyRegions != null && studyRegions.size() > 0) {
-           * Set<String> countriesSet = new HashSet<>();
-           * for (ProjectExpectedStudyCountry studyCountry : studyRegions) {
-           * countriesSet.add(studyCountry.getLocElement().getName());
-           * }
-           * geographicScope = geographicScope + "," + countriesSet;
-           * }
-           * }
-           * // Country
-           * if (!projectExpectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope().getId()
-           * .equals(this.getReportingIndGeographicScopeGlobal())
-           * && !projectExpectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope().getId()
-           * .equals(this.getReportingIndGeographicScopeRegional())) {
-           * List<ProjectExpectedStudyCountry> studyCountries =
-           * projectExpectedStudy.getProjectExpectedStudyCountries().stream()
-           * .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())
-           * && c.getLocElement() != null && c.getLocElement().getLocElementType() != null
-           * && c.getLocElement().getLocElementType().getId() == 2)
-           * .collect(Collectors.toList());
-           * if (studyCountries != null && studyCountries.size() > 0) {
-           * Set<String> countriesSet = new HashSet<>();
-           * for (ProjectExpectedStudyCountry studyCountry : studyCountries) {
-           * countriesSet.add(studyCountry.getLocElement().getName());
-           * }
-           * geographicScope = geographicScope + "," + countriesSet;
-           * }
-           * }
-           * } else {
-           * geographicScope = "";
-           * }
-           */
-          /***********************************
-           * 
-           * 
-           */
           // Geographic scope new - Load information
 
           // Setup Geographic Scope
@@ -919,10 +867,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
               }
             }
           }
-
-          /*****
-           * 
-           */
 
           if (projectExpectedStudy.getProjectExpectedStudyInfo().getCommissioningStudy() != null) {
             commissioningStudy = projectExpectedStudy.getProjectExpectedStudyInfo().getCommissioningStudy();
@@ -1093,9 +1037,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         // First page - table of contents
         // poiSummary.textLineBreak(document, 2);
         poiSummary.textHeadPrincipalTitle(document.createParagraph(),
-          this.getText("summaries.powb2019.mainTitlePlatform"));
-        poiSummary.textParagraphItalicLightBlue(document.createParagraph(),
-          this.getText("summaries.powb2019.subTitle"));
+          this.getText("summaries.powb2019.mainTitlePlatform2") + " " + this.getCurrentCycleYear());
         poiSummary.textLineBreak(document, 4);
 
         // document.createTOC();
@@ -1130,8 +1072,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         // poiSummary.textHead1TitleFontCalibri(document.createParagraph(),
         // this.getText("summaries.powb2019.narrativeSection"));
         // poiSummary.textLineBreak(document, 1);
-        String unitName = this.getLoggedCrp().getAcronym() != null && !this.getLoggedCrp().getAcronym().isEmpty()
-          ? this.getLoggedCrp().getAcronym() : this.getLoggedCrp().getName();
 
         // cover page
         paragraph = document.createParagraph();
@@ -1175,8 +1115,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         run.setColor("5B9BD5");
         // paragraph.setStyle("heading 2");
 
-        // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
-        // this.getText("summaries.powb2019.expectedKeyResults.plan"));
+
         this.addExpectedKeyResults();
         poiSummary.textLineBreak(document, 1);
 
@@ -1190,8 +1129,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         run.setColor("5B9BD5");
         // paragraph.setStyle("heading 2");
 
-        // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
-        // this.getText("summaries.powb2019.effectiveness.financial"));
         this.addFinancialPlan();
 
         /* Create a landscape text Section */
@@ -1254,8 +1191,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         run.setColor("5B9BD5");
         // paragraph.setStyle("heading 2");
 
-        // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
-        // this.getText("summaries.powb2019.tableC2.title"));
         this.createTableC2();
         document.createParagraph().setPageBreak(true); // Fast Page Break
 
@@ -1272,7 +1207,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         this.createTable3();
 
         String additionalExplanationT3 = "";
-        if (powbSynthesis.getFinancialPlan() != null
+        if (powbSynthesis != null && powbSynthesis.getFinancialPlan() != null
           && powbSynthesis.getFinancialPlan().getAdditionalExplanationT3() != null) {
           additionalExplanationT3 = powbSynthesis.getFinancialPlan().getAdditionalExplanationT3();
           poiSummary.convertHTMLTags(document,
@@ -1374,7 +1309,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         poiSummary.textHeadPrincipalTitlefirtsPageCRP(document.createParagraph(),
           this.getText("summaries.powb2019.mainTitle"));
         poiSummary.textHeadPrincipalTitlefirtsPageCRP(document.createParagraph(),
-          this.getText("summaries.powb2019.subTitle"));
+          this.getText("summaries.powb2019.subTitle2") + " " + this.getCurrentCycleYear());
         poiSummary.textLineBreak(document, 11);
         // poiSummary.addLineSeparator(document.createParagraph());
         document.createParagraph().setPageBreak(true);
@@ -1412,10 +1347,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         run.setColor("4472C4");
         paragraph.setStyle("heading 1");
         /*****************************/
-
-        // poiSummary.textLineBreak(document, 1);
-        String unitName = this.getLoggedCrp().getAcronym() != null && !this.getLoggedCrp().getAcronym().isEmpty()
-          ? this.getLoggedCrp().getAcronym() : this.getLoggedCrp().getName();
 
         // cover page
         paragraph = document.createParagraph();
@@ -1630,7 +1561,9 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("2019_");
+    if (this.getCurrentCycleYear() != 0) {
+      fileName.append(this.getCurrentCycleYear() + "_");
+    }
     fileName.append(this.getLoggedCrp().getAcronym());
     fileName.append("_POWB_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));

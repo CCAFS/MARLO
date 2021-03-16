@@ -28,7 +28,8 @@ import javax.inject.Named;
  * @author CCAFS
  */
 @Named
-public class ReportSynthesisFlagshipProgressDeliverableManagerImpl implements ReportSynthesisFlagshipProgressDeliverableManager {
+public class ReportSynthesisFlagshipProgressDeliverableManagerImpl
+  implements ReportSynthesisFlagshipProgressDeliverableManager {
 
 
   private ReportSynthesisFlagshipProgressDeliverableDAO reportSynthesisFlagshipProgressDeliverableDAO;
@@ -36,22 +37,23 @@ public class ReportSynthesisFlagshipProgressDeliverableManagerImpl implements Re
 
 
   @Inject
-  public ReportSynthesisFlagshipProgressDeliverableManagerImpl(ReportSynthesisFlagshipProgressDeliverableDAO reportSynthesisFlagshipProgressDeliverableDAO) {
+  public ReportSynthesisFlagshipProgressDeliverableManagerImpl(
+    ReportSynthesisFlagshipProgressDeliverableDAO reportSynthesisFlagshipProgressDeliverableDAO) {
     this.reportSynthesisFlagshipProgressDeliverableDAO = reportSynthesisFlagshipProgressDeliverableDAO;
-
-
   }
 
   @Override
   public void deleteReportSynthesisFlagshipProgressDeliverable(long reportSynthesisFlagshipProgressDeliverableId) {
 
-    reportSynthesisFlagshipProgressDeliverableDAO.deleteReportSynthesisFlagshipProgressDeliverable(reportSynthesisFlagshipProgressDeliverableId);
+    reportSynthesisFlagshipProgressDeliverableDAO
+      .deleteReportSynthesisFlagshipProgressDeliverable(reportSynthesisFlagshipProgressDeliverableId);
   }
 
   @Override
   public boolean existReportSynthesisFlagshipProgressDeliverable(long reportSynthesisFlagshipProgressDeliverableID) {
 
-    return reportSynthesisFlagshipProgressDeliverableDAO.existReportSynthesisFlagshipProgressDeliverable(reportSynthesisFlagshipProgressDeliverableID);
+    return reportSynthesisFlagshipProgressDeliverableDAO
+      .existReportSynthesisFlagshipProgressDeliverable(reportSynthesisFlagshipProgressDeliverableID);
   }
 
   @Override
@@ -62,13 +64,21 @@ public class ReportSynthesisFlagshipProgressDeliverableManagerImpl implements Re
   }
 
   @Override
-  public ReportSynthesisFlagshipProgressDeliverable getReportSynthesisFlagshipProgressDeliverableById(long reportSynthesisFlagshipProgressDeliverableID) {
+  public ReportSynthesisFlagshipProgressDeliverable getByFlagshipProgressAndDeliverable(long deliverableId,
+    long progressId) {
+    return reportSynthesisFlagshipProgressDeliverableDAO.getByFlagshipProgressAndDeliverable(deliverableId, progressId);
+  }
+
+  @Override
+  public ReportSynthesisFlagshipProgressDeliverable
+    getReportSynthesisFlagshipProgressDeliverableById(long reportSynthesisFlagshipProgressDeliverableID) {
 
     return reportSynthesisFlagshipProgressDeliverableDAO.find(reportSynthesisFlagshipProgressDeliverableID);
   }
 
   @Override
-  public ReportSynthesisFlagshipProgressDeliverable saveReportSynthesisFlagshipProgressDeliverable(ReportSynthesisFlagshipProgressDeliverable reportSynthesisFlagshipProgressDeliverable) {
+  public ReportSynthesisFlagshipProgressDeliverable saveReportSynthesisFlagshipProgressDeliverable(
+    ReportSynthesisFlagshipProgressDeliverable reportSynthesisFlagshipProgressDeliverable) {
 
     return reportSynthesisFlagshipProgressDeliverableDAO.save(reportSynthesisFlagshipProgressDeliverable);
   }

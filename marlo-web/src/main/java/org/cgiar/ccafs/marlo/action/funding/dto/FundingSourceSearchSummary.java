@@ -39,14 +39,22 @@ public class FundingSourceSearchSummary {
 
   private Boolean w1w2;
 
+  private String crpName;
+
+  private Long phaseID;
+
+
   /**
    * This needs to be determined by the securityContext in some cases where the specificity applies
    */
   private boolean canSelect = true;
 
+
   private Double budget = new Double(0);
 
+
   private Double usedAmount = new Double(0);
+
 
   public FundingSourceSearchSummary() {
 
@@ -59,9 +67,7 @@ public class FundingSourceSearchSummary {
     Map<String, Object> map = oMapper.convertValue(this, Map.class);
 
     return map;
-
   }
-
 
   public Double getAmount() {
     return budget - usedAmount;
@@ -69,6 +75,10 @@ public class FundingSourceSearchSummary {
 
   public Double getBudget() {
     return budget;
+  }
+
+  public String getCrpName() {
+    return crpName;
   }
 
 
@@ -84,6 +94,11 @@ public class FundingSourceSearchSummary {
 
   public String getName() {
     return name;
+  }
+
+
+  public Long getPhaseID() {
+    return phaseID;
   }
 
 
@@ -111,7 +126,6 @@ public class FundingSourceSearchSummary {
     return canSelect;
   }
 
-
   public void setBudget(Double budget) {
 
     if (budget == null) {
@@ -121,9 +135,12 @@ public class FundingSourceSearchSummary {
     this.budget = budget;
   }
 
-
   public void setCanSelect(boolean canSelect) {
     this.canSelect = canSelect;
+  }
+
+  public void setCrpName(String crpName) {
+    this.crpName = crpName;
   }
 
 
@@ -142,15 +159,18 @@ public class FundingSourceSearchSummary {
   }
 
 
+  public void setPhaseID(Long phaseID) {
+    this.phaseID = phaseID;
+  }
+
+
   public void setType(String type) {
     this.type = type;
   }
 
-
   public void setTypeId(BigInteger typeId) {
     this.typeId = typeId;
   }
-
 
   public void setUsedAmount(Double usedAmount) {
     if (usedAmount == null) {
@@ -164,6 +184,4 @@ public class FundingSourceSearchSummary {
   public void setW1w2(Boolean w1w2) {
     this.w1w2 = w1w2;
   }
-
-
 }

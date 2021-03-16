@@ -26,14 +26,27 @@ public class ProjectPagePoliciesDTO {
   @ApiModelProperty(notes = "Policy Title", position = 1)
   private String title;
 
+  @ApiModelProperty(notes = "Policy year", position = 2)
+  private int year;
+
 
   public String getTitle() {
     return title;
   }
 
 
+  public int getYear() {
+    return year;
+  }
+
+
   public void setTitle(String title) {
     this.title = title;
+  }
+
+
+  public void setYear(int year) {
+    this.year = year;
   }
 
 }

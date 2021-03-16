@@ -18,6 +18,7 @@
 ]/]
 
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities /]
+[#import "/WEB-INF/crp/views/annualReport2018/macros-AR2018.ftl" as macrosAR /]
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
@@ -60,7 +61,18 @@
                   [#-- Short narrative to introduce the table 9 --]
                   <div class="form-group">
                     [#-- Word Document Tag --]
-                    [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
+                    [#if PMU]
+                    
+                     [#--  Table for show the summary information of flagships -> use the list reportSynthesisMeliaList and the field summary   --]
+                      <div class="form-group">
+                         [@macrosAR.tableFPSynthesis tableName="${customLabel}.meliaTable" list=reportSynthesisMeliaList columns=["summary"] showTitle=false allInOne=false /]
+                      </div>
+                      <br>
+                    
+                    [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                    [#else]
+                    [@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/]
+                    [/#if]
                     [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.narrative" className="" helpIcon=false required=true editable=editable allowTextEditor=true /]
                   </div>
                   
@@ -174,8 +186,9 @@
           [/#if]
           [#if !expandedTable]
             <th class="col-md-1 text-center"> <small>[@s.text name="${customLabel}.table11.missingFields" /]</small>  </th>
-
-            <th class="col-md-1 text-center"> <small>[@s.text name="${customLabel}.table10.includeAR" /]</small>  </th>
+            [#if PMU]
+              <th class="col-md-1 text-center"> <small>[@s.text name="${customLabel}.table10.includeAR" /]</small>  </th>
+            [/#if]
           [/#if]
         </tr>
       </thead>
@@ -222,21 +235,21 @@
               </td>
               [/#if]
               [#if !expandedTable]
-              
-              [#-- Complete Status--]
-              <td class="text-center">
-               [#assign isStudyComplete = action.isStudyComplete(item.id, actualPhase.id) /]
-                [#if isStudyComplete]
+                [#-- Complete Status--]
+                <td class="text-center">
+                  [#assign isStudyComplete = action.isStudyComplete(item.id, actualPhase.id) /]
+                  [#if isStudyComplete]
                     <span class="glyphicon glyphicon-ok-sign mf-icon check" title="Complete"></span> 
                   [#else]
                     <span class="glyphicon glyphicon-exclamation-sign mf-icon" title="Incomplete"></span>
-                [/#if]   
-               </td>
-                            
-              <td class="text-center">
-                [#local isChecked = ((!reportSynthesis.reportSynthesisMelia.studiesIds?seq_contains(item.id))!true) /]
-                [@customForm.checkmark id="study-${(item.id)!}" name="reportSynthesis.reportSynthesisMelia.plannedStudiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
-              </td>
+                  [/#if]   
+                </td>
+                [#if PMU]         
+                  <td class="text-center">
+                    [#local isChecked = ((!reportSynthesis.reportSynthesisMelia.studiesIds?seq_contains(item.id))!true) /]
+                    [@customForm.checkmark id="study-${(item.id)!}" name="reportSynthesis.reportSynthesisMelia.plannedStudiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
+                  </td>
+                [/#if]
               [/#if]
             </tr>
           [/#list]

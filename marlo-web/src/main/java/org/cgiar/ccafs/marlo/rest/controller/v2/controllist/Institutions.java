@@ -53,6 +53,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -80,6 +81,27 @@ public class Institutions {
     this.countryOfficeRequestItem = countryOfficeRequestItem;
   }
 
+
+  @ApiOperation(value = "${Institutions.institution-requests.accept.value}", response = InstitutionRequestDTO.class)
+  @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/institutions/accept-institution-request/{code}", method = RequestMethod.POST,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<InstitutionRequestDTO> acceptPartnerRequest(
+    @ApiParam(value = "${Institutions.institution-requests.create.param.CGIAR}",
+      required = true) @PathVariable("CGIAREntity") String CGIAREntity,
+    @ApiParam(value = "${Institutions.institution-requests.code.param.requestId}",
+      required = true) @PathVariable(name = "code") Long code,
+    @ApiParam(value = "${Institutions.institution.code.param.accept}", required = true) @RequestParam boolean accept,
+    @ApiParam(value = "${Institutions.institution.code.param.justification}",
+      required = false) @RequestParam String justification)
+    throws Exception {
+    ResponseEntity<InstitutionRequestDTO> response =
+      this.institutionItem.acceptPartnerRequest(code, accept, justification, CGIAREntity, this.getCurrentUser());
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("Institutions.institution-requests.code.404"));
+    }
+    return response;
+  }
 
   /**
    * Create a new Country Office Request *
@@ -186,6 +208,24 @@ public class Institutions {
       throw new NotFoundException("404", this.env.getProperty("Institutions.institution-types.code.404"));
     }
     return response;
+  }
+
+  /**
+   * Find a institution request by CRP *
+   * 
+   * @param acronym of global unit
+   * @return a InstitutionRequestDTO list with institution request data item
+   */
+  @ApiOperation(value = "${Institutions.institution-all-requests.code.value}", response = InstitutionRequestDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/institutions/institution-all-requests", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<InstitutionRequestDTO>
+    findPartnerRequestByGlobalUnit(@ApiParam(value = "${Institutions.institution-requests.code.param.CGIAR}",
+      required = true) @PathVariable(name = "CGIAREntity") String CGIAREntity) {
+    List<InstitutionRequestDTO> partnersList =
+      this.institutionItem.getParterRequestByGlobalUnit(CGIAREntity, this.getCurrentUser());
+    return partnersList;
   }
 
   /**

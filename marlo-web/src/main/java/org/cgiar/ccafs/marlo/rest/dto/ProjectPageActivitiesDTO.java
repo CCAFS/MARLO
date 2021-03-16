@@ -19,6 +19,9 @@
 
 package org.cgiar.ccafs.marlo.rest.dto;
 
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 
 public class ProjectPageActivitiesDTO {
@@ -32,14 +35,40 @@ public class ProjectPageActivitiesDTO {
   @ApiModelProperty(notes = "Activity Description", position = 3)
   private String description;
 
+  @JsonFormat(pattern = "yyyy-MM-dd")
+  @ApiModelProperty(notes = "Activity Start Date", position = 4)
+  private Date startDate;
+
+  @JsonFormat(pattern = "yyyy-MM-dd")
+  @ApiModelProperty(notes = "Activity End Date", position = 5)
+  private Date endDate;
+
+  @ApiModelProperty(notes = "Activity Status", position = 6)
+  private String status;
+
 
   public String getDescription() {
     return description;
   }
 
 
+  public Date getEndDate() {
+    return endDate;
+  }
+
+
   public Long getId() {
     return id;
+  }
+
+
+  public Date getStartDate() {
+    return startDate;
+  }
+
+
+  public String getStatus() {
+    return status;
   }
 
 
@@ -53,8 +82,23 @@ public class ProjectPageActivitiesDTO {
   }
 
 
+  public void setEndDate(Date endDate) {
+    this.endDate = endDate;
+  }
+
+
   public void setId(Long id) {
     this.id = id;
+  }
+
+
+  public void setStartDate(Date startDate) {
+    this.startDate = startDate;
+  }
+
+
+  public void setStatus(String status) {
+    this.status = status;
   }
 
 

@@ -95,7 +95,7 @@ public class ExpectedStudies {
   @RequestMapping(value = "/{CGIAREntity}/OICR/{id}", method = RequestMethod.DELETE,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<ProjectExpectedStudyDTO> deleteExpectedStudyById(
-    @ApiParam(value = "${ExpectedStudies.innovation.DELETE.id.param.CGIAR}",
+    @ApiParam(value = "${ExpectedStudies.OICR.DELETE.id.param.CGIAR}",
       required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${ExpectedStudies.OICR.DELETE.id.param.id}", required = true) @PathVariable Long id,
     @ApiParam(value = "${ExpectedStudies.OICR.DELETE.id.param.year}", required = true) @RequestParam Integer year,
@@ -119,13 +119,8 @@ public class ExpectedStudies {
     @ApiParam(value = "${ExpectedStudies.OICR.GET.all.param.year}", required = true) @RequestParam Integer year,
     @ApiParam(value = "${ExpectedStudies.OICR.GET.all.param.phase}", required = true) @RequestParam String phase) {
     List<ProjectExpectedStudiesARDTO> studiesList = new ArrayList<ProjectExpectedStudiesARDTO>();
-    try {
-      studiesList =
-        this.expectedStudiesItem.findAllExpectedStudyByGlobalUnit(CGIAREntity, year, phase, this.getCurrentUser());
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-
+    studiesList =
+      this.expectedStudiesItem.findAllExpectedStudyByGlobalUnit(CGIAREntity, year, phase, this.getCurrentUser());
     return studiesList;
   }
 

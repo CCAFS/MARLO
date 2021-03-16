@@ -43,9 +43,100 @@
         </div>
       </div>
       
-      [#if isOutcomeCaseStudy]
+
+
+      [#-- Evidences table with types and their descriptions --]
+      [#if !((element.projectExpectedStudyInfo.studyType.id == 1)!false)]
+          <div class="note left" style="margin: 10px 0px; font-size: .85em; padding: 4px; border-radius: 10px;">
+            <div id="popup" class="helpMessage3">
+              <p><a style="cursor: pointer;" data-toggle="modal" data-target="#evidenceModal" > <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="study.generalInformation.studyType" /]</a></p>
+            </div>
+          </div>
+      [#if (reportingActive)!false]
+      <div class="form-group analysisGroup">
+        <label for="">[@s.text name="study.covidAnalysis" /]:[@customForm.req required=false /]
+        </label>        
+        <div class="form-group">
+          [#assign covidAnalisis = "covidAnalisis"]
+          [#assign showAnalysis = (expectedStudy.projectExpectedStudyInfo.hasCovidAnalysis?string)!"" /]
+          [@customForm.radioFlat id="${covidAnalisis}-yes" name="${customName}.projectExpectedStudyInfo.hasCovidAnalysis" label="Yes" value="true" checked=(showAnalysis == "true") cssClassLabel="radio-label-yes" editable=editable /]
+          [@customForm.radioFlat id="${covidAnalisis}-no" name="${customName}.projectExpectedStudyInfo.hasCovidAnalysis" label="No" value="false" checked=(showAnalysis == "false") cssClassLabel="radio-label-no" editable=editable /]
+        </div>  
+      </div>
+      [/#if]
+
+
+        <div class="form-group evidenceTypeMessage">
+          <div class="modal fade" id="evidenceModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable" style=" width:80%" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <!-- <h5 class="modal-title" id="exampleModalLabel">Modal title</h5> -->
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  
+                  <table id="evidenceTypes" class="table ">
+                    <thead style="background-color: #0b7ba6; font-weight: 500; color: white;">
+                      <tr>
+                        <th> [@s.text name="study.dialogMessage.part1" /]</th>
+                        <th > [@s.text name="study.dialogMessage.part2" /] </th>
+                        <th> [@s.text name="study.dialogMessage.part3" /] / [@s.text name="study.dialogMessage.part4" /] </th>
+                      </tr>
+                    </thead>
+
+                    [#if studyTypes?has_content]
+                    [#list studyTypes as st]
+                    <tr>
+                      [#--if st_index == 0]
+                      <th rowspan="${action.getDeliverablesSubTypes(mt.id).size()}" class="text-center"> ${mt.name} </th>
+                      [/#if--]
+                      <td  >
+                        ${st.name}
+                      </td>
+                      <td style="max-width: 90vw !important;">
+                      [#if (st.description?has_content)!false]
+                        ${st.description}
+                      [#else]
+                        <i>([@s.text name="study.dialogMessage.notProvided" /])</i>
+                      [/#if]
+                      </td>
+                      <td>
+                        [#if (((st.keyIdentifier?has_content)!false) || ((st.forNarrative?has_content)!false) || ((st.example?has_content)!false))]
+                          [#if (st.keyIdentifier?has_content)!false]
+                            <i><u>How to identify?</u></i> ${st.keyIdentifier}
+                          [/#if]
+                          [#if (st.forNarrative?has_content)!false]
+                            <br><i><u>For:</u></i> ${st.forNarrative}
+                          [/#if]
+                          [#if (st.example?has_content)!false]
+                            <br /> (<i><small>Example: ${st.example}</small></i>)
+                          [/#if]
+                        [#else]
+                          <i>([@s.text name="study.dialogMessage.notProvided" /])</i>
+                        [/#if]
+                      </td>
+                    </tr>
+                    [/#list]
+                    [/#if]
+                  </table>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="clearfix"></div>
+        </div>
+      [/#if]  
+      [#-- REMOVED FOR AR 2020 --]
+      [#--]if isOutcomeCaseStudy]
         <hr />
-        [#-- Tags --]
+        [#-- Tags]
         <div class="form-group">
           <label for="">[@s.text name="study.tags" /]:[@customForm.req required=editable /]</label>
           [#local tagValue = (element.projectExpectedStudyInfo.evidenceTag.id)!-1 ]
@@ -53,9 +144,27 @@
             <br /> [@customForm.radioFlat id="tag-${tag_index}" name="${customName}.projectExpectedStudyInfo.evidenceTag.id" label="${tag.name}" value="${tag.id}" checked=(tagValue == tag.id) cssClass="radioType-tags" cssClassLabel="font-normal" editable=editable /] 
           [/#list]
         </div>
-      [/#if]
+      [/#if] --]
     </div>
     <div class="borderBox">
+      [#-- 0. Link to PDF version of this study: AR 2020 and onwards -> ALL OICRs are ALWAYS public--]
+      [#if isOutcomeCaseStudy]
+        <div class="form-group">
+          <div class="optionPublicComponent form-group" style="display:block">         
+            <br />
+            <div class="input-group">
+              <span class="input-group-btn">
+                <button class="btn btn-default btn-sm copyButton" type="button"> <span class="glyphicon glyphicon-duplicate"></span> Copy URL </button>
+              </span>
+              [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(element.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
+              [@customForm.input name="${customName}.projectExpectedStudyInfo.link" i18nkey="study.link" className="form-control input-sm urlInput" value="${summaryPDF}" editable=editable readOnly=true/]
+              <!--input type="text" class="form-control input-sm urlInput" value="${summaryPDF}" readonly-->
+            </div>
+            <div class="message text-center" style="display:none">Copied!</div>
+          </div>
+        </div>
+      [/#if]
+
       [#-- 1. Title (up to 25 words) --]
       <div class="form-group">
         [@customForm.input name="${customName}.projectExpectedStudyInfo.title" i18nkey="study.title" help="study.title.help" className="limitWords-25" helpIcon=!isOutcomeCaseStudy required=true editable=editable /]
@@ -490,30 +599,31 @@
       
     </div>
     
-    [#-- Private Option --]
-    [#if isOutcomeCaseStudy]
-    <h3 class="headTitle">[@s.text name="study.confidentialTitle" /]</h3>
-    <div class="borderBox">
-      <label for="">[@s.text name="study.public" ][@s.param]${(element.projectExpectedStudyInfo.studyType.name)!}[/@][/@] 
-        [@customForm.helpLabel name="study.public.help" showIcon=false paramText="${(element.projectExpectedStudyInfo.studyType.name)!}" editable=editable/]
-      </label> <br />
-      [#local isPublic = (element.projectExpectedStudyInfo.isPublic)!true /]
-      [@customForm.radioFlat id="optionPublic-yes"  name="${customName}.projectExpectedStudyInfo.isPublic" i18nkey="Yes"  value="true"  checked=isPublic  cssClass="radioType-optionPublic" cssClassLabel="font-normal radio-label-yes" editable=editable /] 
-      [@customForm.radioFlat id="optionPublic-no"   name="${customName}.projectExpectedStudyInfo.isPublic" i18nkey="No"   value="false" checked=!isPublic cssClass="radioType-optionPublic" cssClassLabel="font-normal radio-label-no"  editable=editable /] 
-      
-      <div class="optionPublicComponent form-group" style="display:${isPublic?string('block', 'none')}">         
-        <br />
-        <div class="input-group">
-          <span class="input-group-btn">
-            <button class="btn btn-default btn-sm copyButton" type="button"> <span class="glyphicon glyphicon-link"></span> Copy URL </button>
-          </span>
-          [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(element.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
-          <input type="text" class="form-control input-sm urlInput" value="${summaryPDF}" readonly>
+    [#-- Private Option: FOR AR 2020 and onwards -> ALL OICRs are ALWAYS public --]
+    [#--if isOutcomeCaseStudy]
+      <h3 class="headTitle">[@s.text name="study.confidentialTitle" /]</h3>
+      <div class="borderBox">
+        <label for="">[@s.text name="study.public" ][@s.param]${(element.projectExpectedStudyInfo.studyType.name)!}[/@][/@] 
+          [@customForm.helpLabel name="study.public.help" showIcon=false paramText="${(element.projectExpectedStudyInfo.studyType.name)!}" editable=editable/]
+        </label> <br />
+        [#local isPublic = (element.projectExpectedStudyInfo.isPublic)!true /]
+        [#local isPublic = true /]
+        [@customForm.radioFlat id="optionPublic-yes"  name="${customName}.projectExpectedStudyInfo.isPublic" i18nkey="Yes"  value="true"  checked=isPublic  cssClass="radioType-optionPublic" cssClassLabel="font-normal radio-label-yes" editable=editable /] 
+        [@customForm.radioFlat id="optionPublic-no"   name="${customName}.projectExpectedStudyInfo.isPublic" i18nkey="No"   value="false" checked=!isPublic cssClass="radioType-optionPublic" cssClassLabel="font-normal radio-label-no"  editable=editable /] 
+        
+        <div class="optionPublicComponent form-group" style="display:${isPublic?string('block', 'none')}">         
+          <br />
+          <div class="input-group">
+            <span class="input-group-btn">
+              <button class="btn btn-default btn-sm copyButton" type="button"> <span class="glyphicon glyphicon-link"></span> Copy URL </button>
+            </span>
+            [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(element.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
+            <input type="text" class="form-control input-sm urlInput" value="${summaryPDF}" readonly>
+          </div>
+          <div class="message text-center" style="display:none">Copied!</div>
         </div>
-        <div class="message text-center" style="display:none">Copied!</div>
       </div>
-    </div>
-    [/#if]
+    [/#if--]
     
     [#-- Projects shared --]
     [#if fromProject]

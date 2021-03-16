@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 
 import java.util.List;
 
@@ -67,6 +68,11 @@ public class CrpOutcomeSubIdoManagerImpl implements CrpOutcomeSubIdoManager {
   }
 
   @Override
+  public CrpOutcomeSubIdo getCrpOutcomeSubIdoByOutcomeComposedIdAndPhase(String outcomeComposedId, long phaseId) {
+    return crpOutcomeSubIdoDAO.getCrpOutcomeSubIdoByOutcomeComposedIdAndPhase(outcomeComposedId, phaseId);
+  }
+
+  @Override
   public CrpOutcomeSubIdo getCrpOutcomeSubIdoByOutcomeComposedIdPhaseAndSubIdo(String outcomeComposedId, long phaseId,
     long subIdoId) {
     return crpOutcomeSubIdoDAO.getCrpOutcomeSubIdoByOutcomeComposedIdPhaseAndSubIdo(outcomeComposedId, phaseId,
@@ -77,11 +83,12 @@ public class CrpOutcomeSubIdoManagerImpl implements CrpOutcomeSubIdoManager {
   public void replicate(CrpOutcomeSubIdo originalCrpOutcomeSubIdo, Phase initialPhase) {
     Phase current = initialPhase;
     String outcomeComposedId = originalCrpOutcomeSubIdo.getCrpProgramOutcome().getComposeID();
-    Long subIdoId = originalCrpOutcomeSubIdo.getSrfSubIdo().getId();
+    SrfSubIdo subIdo = originalCrpOutcomeSubIdo.getSrfSubIdo();
 
     while (current != null) {
-      CrpOutcomeSubIdo outcomeSubIdo =
-        this.getCrpOutcomeSubIdoByOutcomeComposedIdPhaseAndSubIdo(outcomeComposedId, current.getId(), subIdoId);
+      CrpOutcomeSubIdo outcomeSubIdo = subIdo != null
+        ? this.getCrpOutcomeSubIdoByOutcomeComposedIdPhaseAndSubIdo(outcomeComposedId, current.getId(), subIdo.getId())
+        : this.getCrpOutcomeSubIdoByOutcomeComposedIdAndPhase(outcomeComposedId, current.getId());
       CrpProgramOutcome crpProgramOutcome = crpProgramOutcomeManager.getCrpProgramOutcome(outcomeComposedId, current);
       if (outcomeSubIdo == null) {
         outcomeSubIdo = new CrpOutcomeSubIdo();

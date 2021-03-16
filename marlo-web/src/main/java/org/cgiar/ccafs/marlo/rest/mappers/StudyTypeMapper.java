@@ -29,7 +29,8 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "jsr330")
 public interface StudyTypeMapper {
 
-  @Mappings({@Mapping(source = "id", target = "code")})
+  @Mappings({@Mapping(source = "id", target = "code"), @Mapping(source = "keyIdentifier", target = "key_identifier"),
+    @Mapping(source = "forNarrative", target = "narrative")})
   public abstract StudyTypeDTO studyTipeToStudyTypeDTO(StudyType studyTipe);
 
   @Mappings({@Mapping(source = "code", target = "id")})

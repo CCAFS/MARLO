@@ -85,6 +85,8 @@ function syncFundingSource() {
   $('.financeCode').attr('readOnly', true);
   // Update Grant total amount triggering the currency inputs
   $('.currencyInput').trigger('keyup');
+  // Finance Channel
+  $('.financeChannel button').addClass('disabled');
   // Update Funding source last update
   var today = new Date();
   var dd = today.getDate();
@@ -151,6 +153,8 @@ function unSyncFundingSource() {
   $('.financeCode').attr('readOnly', false);
   // show Date labels
   $('.dateLabel').removeClass('disabled');
+  // Finance Channel
+  $('.financeChannel button').removeClass('disabled');
   // Hide Last update label
   $('.lastDaySync').hide();
   // Set datepicker
@@ -226,12 +230,15 @@ function getOCSMetadata() {
             agreement.agreementStatus = 2; 
           } else if(agreement.contractStatus == "S") {
             agreement.agreementStatus = 2; 
+          }else if(agreement.contractStatus == "E") {
+            agreement.agreementStatus = 4; 
           }
-           
+            
 
           // Set Funding Source Agreement Status
           if(agreement.extensionDate){
-            agreement.agreementStatus = EXTENDED_STATUS;
+            // agreement.agreementStatus = EXTENDED_STATUS;
+            // agreement.agreementStatus = ((parseInt(agreement.extensionDate.split("-")[0])) < parseInt($("#actualPhaseValue").val())) ? 3 : EXTENDED_STATUS;
             $('.extensionDateBlock').show();
             $('.endDateBlock .dateLabel').addClass('disabled');
           } else {

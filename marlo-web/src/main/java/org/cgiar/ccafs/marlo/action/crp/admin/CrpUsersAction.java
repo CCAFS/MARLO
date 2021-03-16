@@ -53,6 +53,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -211,16 +212,30 @@ public class CrpUsersAction extends BaseAction {
           .filter(c -> c.isActive() && c.getProjectPartner().isActive() && c.getContactType().equalsIgnoreCase("PL")
             && c.getProjectPartner().getPhase() != null
             && c.getProjectPartner().getPhase().equals(this.getActualPhase())
-            && phasesProjects.contains(c.getProjectPartners().getProject()))
+            && phasesProjects.contains(c.getProjectPartners().getProject())
+            && c.getProjectPartners().getProject().isActive()
+            && c.getProjectPartners().getProject().getProjecInfoPhase(this.getActualPhase()) != null
+            && c.getProjectPartners().getProject().getProjecInfoPhase(this.getActualPhase()).isActive())
           .collect(Collectors.toList())) {
           if (projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
-            .getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-            || projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
-              .getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-            relations.add(projectPartnerPerson.getProjectPartner().getProject()
-              .getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER));
-          }
+            .getEndDate() != null) {
+            Calendar cal = Calendar.getInstance();
 
+            cal.setTime(projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
+              .getEndDate());
+            Integer year = cal.get(Calendar.YEAR);
+
+            if (year != null && (year >= this.getActualPhase().getYear())) {
+
+              if (projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
+                .getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+                || projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
+                  .getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+                relations.add(projectPartnerPerson.getProjectPartner().getProject()
+                  .getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER));
+              }
+            }
+          }
         }
         break;
       case "PC":
@@ -414,9 +429,11 @@ public class CrpUsersAction extends BaseAction {
     message.append(this.getText("email.support", new String[] {crpAdmins}));
     message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
-    sendMailS.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
-  }
+    if (this.validateEmailNotification(globalUnit)) {
+      sendMailS.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    }
 
+  }
 
   @Override
   public void prepare() throws Exception {
@@ -501,7 +518,6 @@ public class CrpUsersAction extends BaseAction {
     users.clear();
     users.addAll(userSet);
   }
-
 
   @Override
   public String save() {
@@ -787,15 +803,15 @@ public class CrpUsersAction extends BaseAction {
         }
       }
     }
+    if (this.validateEmailNotification(loggedCrp)) {
+      if (buffer != null && fileName != null && contentType != null) {
 
-    if (buffer != null && fileName != null && contentType != null) {
-
-      sendMailS.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer, contentType, fileName, true);
-    } else {
-      sendMailS.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+        sendMailS.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer, contentType, fileName, true);
+      } else {
+        sendMailS.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+      }
     }
   }
-
 
   public void setCGIARUser(boolean isCGIARUser) {
     this.isCGIARUser = isCGIARUser;
@@ -810,6 +826,7 @@ public class CrpUsersAction extends BaseAction {
   public void setRolesCrp(List<Role> rolesCrp) {
     this.rolesCrp = rolesCrp;
   }
+
 
   public void setUser(User user) {
     this.user = user;
@@ -826,5 +843,15 @@ public class CrpUsersAction extends BaseAction {
       validator.validate(this, user, selectedGlobalUnitAcronym, isCGIARUser, true);
     }
   }
+
+
+  private boolean validateEmailNotification(GlobalUnit globalUnit) {
+
+    Boolean crpNotification = globalUnit.getCustomParameters().stream()
+      .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_EMAIL_NOTIFICATIONS))
+      .allMatch(t -> (t.getValue() == null) ? true : t.getValue().equalsIgnoreCase("true"));
+    return crpNotification;
+  }
+
 
 }
