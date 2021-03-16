@@ -4896,10 +4896,13 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         if (studyinfo.getTitle() != null && !studyinfo.getTitle().trim().isEmpty()) {
           title = studyinfo.getTitle();
         }
-        // Tagged
-        if (studyinfo != null && studyinfo.getEvidenceTag() != null && studyinfo.getEvidenceTag().getName() != null) {
-          tagget = studyinfo.getEvidenceTag().getName();
-        }
+        // Tagged - REMOVED FOR AR 2020
+        /*
+         * if (studyinfo != null && studyinfo.getEvidenceTag() != null && studyinfo.getEvidenceTag().getName() != null)
+         * {
+         * tagget = studyinfo.getEvidenceTag().getName();
+         * }
+         */
         // Status
         if (studyinfo.getStatus() != null) {
           status = studyinfo.getStatus().getName();
