@@ -107,10 +107,15 @@ function getTargetCasesBySLO(){
 
 
 function contributionListComponentInsertHTML(data,id){
+  console.log('%cID: '+id,'background: #222; color: #fd8484');
+  console.log(data);
   data.sources.forEach((item,index) => {
     $('.insertHtmlSlo-tabs-'+id).append(`<li role="presentation" class="${index==0?'active':''}" ><a href="#${item.id}-${id}-tab" aria-controls="${item.id}-${id}-tab" role="tab" data-toggle="tab">${item.id}</a></li>`);
     $('.insertHtmlSlo-tabpanel-'+id).append(`<div role="tabpanel" class="tab-pane ${index==0?'active':''}" id="${item.id}-${id}-tab" style="overflow-y: scroll; max-height: 700px;"></div>`);
-
+    if (item.contribution.length == 0) {
+      $(`#${item.id}-${id}-tab`).append(`<p class="tb1-Fp-noData"><span class="glyphicon glyphicon-info-sign" style="margin-right: 7px; position: relative; top:3px"></span>No Flagship information</p>`);
+      $(`#${item.id}-${id}-tab`).css("overflow-y", "unset"); 
+    }
     item.contribution.forEach(contributionData => {
       $(`#${item.id}-${id}-tab`).append(getContributionListComponentValue(contributionData));
     });
@@ -333,7 +338,7 @@ function setStatusByBack() {
       // console.log($(field).find(".checkboxDiTeArClick").val());
 
       let checkbox = $(field).find(".checkboxDiTeArClick");
-      console.log($(checkbox).val());
+      // console.log($(checkbox).val());
 
 
 
@@ -487,10 +492,10 @@ function updateAllIndexesContribution() {
 }
 
 function changeButtonText() {
-  if ($(this).text() == 'Show flagship information') {
-    $(this).text('Hide flagship information');
+  if ($(this).text() == 'Show flagships information') {
+    $(this).text('Hide flagships information');
   } else {
-    $(this).text('Show flagship information');
+    $(this).text('Show flagships information');
   }
 }
 
