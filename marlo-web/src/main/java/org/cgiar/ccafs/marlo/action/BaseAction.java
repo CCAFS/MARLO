@@ -2298,11 +2298,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           GlobalUnit crp = (GlobalUnit) this.session.get(APConstants.SESSION_CRP) != null
             ? (GlobalUnit) this.session.get(APConstants.SESSION_CRP) : null;
           this.crpID = crp.getId();
+
+          if (crp == null || crpID == null || crpID == 0) {
+            crp = crpManager.getGlobalUnitById(45);
+          }
         } catch (Exception e) {
           LOG.warn("There was a problem trying to find the user crp in the session.");
         }
       } else {
-
+        if (this.crpID == null || this.crpID == 0) {
+          GlobalUnit crp = crpManager.getGlobalUnitById(45);
+          this.crpID = crp.getId();
+        }
         return this.crpID;
 
       }
@@ -4705,6 +4712,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public boolean isAdmin() {
     return this.securityContext.hasRole("Admin");
+  }
+
+  public boolean isAiccra() {
+    if (this.getCurrentCrp() != null && this.getCurrentCrp().getId() != null && this.getCurrentCrp().getId() == 45) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   /**

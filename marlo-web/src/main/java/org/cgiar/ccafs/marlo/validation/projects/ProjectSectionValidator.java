@@ -1428,8 +1428,9 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           expectedStudy.getCountriesIds().add(country.getLocElement().getIsoAlpha2());
         }
       }
-
-      projectExpectedStudiesValidator.validate(action, project, expectedStudy, false);
+      if (action.isAiccra() == false) {
+        projectExpectedStudiesValidator.validate(action, project, expectedStudy, false);
+      }
     }
 
 

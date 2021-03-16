@@ -2009,7 +2009,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       deliverables.addAll(deliverablesHL);
       for (Deliverable deliverable : deliverables) {
         String delivType = null, delivSubType = null, delivYear = null, keyOutput = "", leader = null,
-          institution = null, fundingSources = "", deliv_description = null, otherPartner = "";;
+          institution = null, fundingSources = "", deliv_description = null, otherPartner = "";
+        String delivDescription = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDescription();
         String delivStatus =
           deliverable.getDeliverableInfo(this.getSelectedPhase()).getStatusName(this.getSelectedPhase());
         String delivDescription = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDescription();
@@ -2695,6 +2696,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
             }
           }
 
+          if (delivDescription == null || delivDescription.isEmpty()) {
+            delivDescription = "<Not Defined>";
+          }
+
           // Other partnert
           List<DeliverableUserPartnership> otherPartners = deliverable.getDeliverableUserPartnerships().stream()
             .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
@@ -2774,6 +2779,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         String leader = null;
         String institution = null;
         String fundingSources = "";
+        String delivDescription = null;
+        if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDescription() != null) {
+          delivDescription = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDescription();
+        }
         Boolean isExtended = false;
         String delivDescription = null;
         if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType() != null) {

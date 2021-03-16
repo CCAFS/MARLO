@@ -22,8 +22,8 @@
 [#-- Title --]
 ${(title)!"MARLO"}
 
-[#-- Testing Environment --]
-[#if !config.production][Testing Environment][/#if]
+[#-- AICCRA Environment --]
+[#if !config.production][AICCRA Project][/#if]
 
 [#-- Phase --]
 [#if (actualPhase.id??)!false](${(actualPhase.composedName)!})[/#if]

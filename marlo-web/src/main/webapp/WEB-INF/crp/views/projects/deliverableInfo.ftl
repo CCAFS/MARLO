@@ -7,7 +7,7 @@
   
   [#-- Description input on Planning only --] 
   <div class="form-group">
-    [@customForm.textArea name="deliverable.deliverableInfo.description" value="${(deliverable.deliverableInfo.description)!}" i18nkey="project.deliverable.generalInformation.description"  placeholder="" className="limitWords-50" required=true editable=editable /]
+    [@customForm.textArea name="deliverable.deliverableInfo.description" value="${(deliverable.deliverableInfo.description)!}" i18nkey="project.deliverable.generalInformation.description"  placeholder="" className="limitWords-100" required=true editable=editable /]
   </div> 
   [#-- Type and subtype inputs --] 
   <div class="form-group row">
@@ -67,9 +67,13 @@
       <div id="deliverableYear" class="col-md-4 form-group">
         [#--  [#assign canNotEditYear = (deliverable.deliverableInfo.status == 4)!false || !action.candEditYear(deliverable.id)/]  --]
          [#assign dbExpectedYear = ((deliverable.deliverableInfo.year)!currentCycleYear)  ]
-         [#if isDeliverableNew && reportingActive]
-          [#assign projectExpectedYear = "project.projectInfo.getYearActualPhase(${currentCycleYear})"]
+         [#if isDeliverableNew]
+         	[#if reportingActive]
+          	[#assign projectExpectedYear = "project.projectInfo.getYearActualPhase(${currentCycleYear})"]
           [#else]
+          	[#assign projectExpectedYear = "project.projectInfo.getAllYearsPhase(${currentCycleYear})"]
+          [/#if]
+         [#else]
           [#assign projectExpectedYear = "project.projectInfo.getAllYearsPhase(${dbExpectedYear})"]
          [/#if]
         [#if editable ]
@@ -133,7 +137,7 @@
   [#-- Key Outputs select --]
   [#if !project.projectInfo.administrative && !phaseOne && !isCenterProject ]
     [#if !(keyOutputs?has_content) && editable]
-      <p class="note">The Key outputs list come from the Project Outcomes you choose in ‘[@s.text name="projects.menu.contributionsCrpList" /]’, once the project is contributing, this deliverable can be mapped to a specific Key output.</p>
+      <p class="note">The Performance Indicators list come from the Project Indicators you choose in ‘[@s.text name="projects.menu.contributionsCrpList" /]’, once the project is contributing, this deliverable can be mapped to a specific Performance indicator.</p>
     [/#if]
     <div class="form-group">
       [@customForm.select name="deliverable.deliverableInfo.crpClusterKeyOutput.id" label=""  i18nkey="project.deliverable.generalInformation.keyOutput" listName="keyOutputs" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="keyOutput" editable=editable/]
@@ -212,7 +216,8 @@
 
 
 
-[#-- Partners --] 
+[#-- Partners --]
+[#--if !action.isAiccra() --]
 <h3 class="headTitle">[@s.text name="Partners contributing to this deliverable" /]</h3>  
 <div id="deliverable-partnerships-new" class="form-group simpleBox">
   [#-- Partner who is responsible --]
@@ -247,3 +252,4 @@
     </div>
   [/#if]
 </div>
+[#-- /if --]

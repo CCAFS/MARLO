@@ -564,7 +564,7 @@ function formatRepo(repo) {
   // Is PPA
   markup += "<small class='pull-right'>";
   if(repo.isPPA) {
-    markup += "<span class='label label-warning'>Managing / PPA Partner</span>"
+    markup += "<span class='label label-warning'>Managing Partner</span>"
   } else {
     markup += "<span class='label label-default'>Partner</span>";
   }
@@ -690,7 +690,7 @@ function onSelectElement() {
   // Clone the new element
   var $element = $parent.find('.relationElement-template').clone(true);
   $element.removeClass('relationElement-template');
-  $element.attr('class',' '+$element.attr('class'));
+  $element.attr('class', ' ' + $element.attr('class'));
 
   // Remove template tag
   $element.find('input').each(function(i,e) {
@@ -736,11 +736,12 @@ function onSelectElement() {
   if(className.indexOf("primary") >= 0){
     if(($list.children().length < 3 && $list.children().first().is('label')) || $list.children().length < 2){
       $element.find('input.radio-input').attr('checked', true);
-    }else{
+    } else {
       $element.find('input.radio-input').attr('checked', false);
     }
 
-    $element.find('label.radio-label').attr('for', $element.find('label.radio-label').parents('.radioFlat').find('input').attr("id"));
+    $element.find('label.radio-label').attr('for',
+        $element.find('label.radio-label').parents('.radioFlat').find('input').attr("id"));
     $element.find('input.radio-input').on('change', onSelectElementPrimary);
   }
 }
@@ -875,7 +876,7 @@ function formatStateCountries(state) {
   if(!state.id) {
     return state.text;
   }
-  var flag = '<i class="flag-icon flag-icon-'+ state.element.value.toLowerCase() +'"></i> ';
+  var flag = '<i class="flag-icon flag-icon-' + state.element.value.toLowerCase() + '"></i> ';
   var $state;
   if(state.id != -1) {
     $state = $('<span>' + flag + state.text + '</span>');

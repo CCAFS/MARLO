@@ -61,7 +61,7 @@
 
           <div class="grayBox">
             <div class="col-md-12">
-              <strong>${(projectOutcome.crpProgramOutcome.crpProgram.acronym)!} - Outcome ${(projectOutcome.crpProgramOutcome.year)!}</strong>: ${projectOutcome.crpProgramOutcome.description}
+              <strong>${(projectOutcome.crpProgramOutcome.crpProgram.acronym)!} - Performance Indicator ${(projectOutcome.crpProgramOutcome.year)!}</strong>: ${projectOutcome.crpProgramOutcome.description}
             </div>
             <div class="clearfix"></div>
             [#if showOutcomeValue]
