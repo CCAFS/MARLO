@@ -1558,7 +1558,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     if (flagships != null && !flagships.isEmpty()) {
       flagships.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
       for (CrpProgram flagship : flagships) {
-        System.out.println(flagship.getAcronym());
 
         int outcome_index = 0;
         if (flagship.getOutcomes() != null) {
