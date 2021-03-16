@@ -1069,9 +1069,12 @@ public class SrfProgressAction extends BaseAction {
               srfTargetSave.setBriefSummary(srfTarget.getBriefSummary());
               srfTargetSave.setAdditionalContribution(srfTarget.getAdditionalContribution());
               srfTargetSave.setActive(true);
-
-              srfTarget =
+              ReportSynthesisSrfProgressTargetCases targetTemp = new ReportSynthesisSrfProgressTargetCases();
+              targetTemp =
                 reportSynthesisSrfProgressTargetCasesManager.saveReportSynthesisSrfProgressTargetCases(srfTargetSave);
+              if (targetTemp != null && targetTemp.getId() != null) {
+                srfTarget.setId(targetTemp.getId());
+              }
             } else {
               targetsCasesIDs.add(srfTarget.getId());
               ReportSynthesisSrfProgressTargetCases srfTargetPrev = reportSynthesisSrfProgressTargetCasesManager
