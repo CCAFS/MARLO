@@ -166,7 +166,7 @@ public class SrfProgressValidator extends BaseValidator {
 
                 // Validate list of regions
                 if (hasRegions && sloTargets.get(i).getTargetCases().get(j).getGeographicRegions() == null) {
-                  action.addMessage(action.getText("sloTargetss[" + i + "].targetCases[" + j + "].geographicRegions"));
+                  action.addMessage(action.getText("sloTargets[" + i + "].targetCases[" + j + "].geographicRegions"));
                   action.getInvalidFields().put("list-sloTargets[" + i + "].targetCases[" + j + "].geographicRegions",
                     InvalidFieldsMessages.EMPTYFIELD);
                 }
