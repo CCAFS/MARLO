@@ -400,6 +400,18 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
     // Load the policies information
     List<ARPoliciesEvidence> policyEvidences = this.getPoliciesInfo();
 
+    // Filter the policies for the current cycle year
+    // 03/15/2021
+    if (policyEvidences != null && !policyEvidences.isEmpty()) {
+      policyEvidences = policyEvidences.stream()
+        .filter(in -> in != null && in.getProjectPolicy() != null
+          && in.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()) != null
+          && in.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()).getYear() != null
+          && in.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()).getYear() == this.getSelectedPhase()
+            .getYear())
+        .collect(Collectors.toList());
+    }
+
     for (ARPoliciesEvidence policyEvidence : policyEvidences) {
       Long paramA = null, paramB = null;
       String paramC = "", paramD = "", paramE = "", paramF = "", paramG = "", paramH = "", paramI = "", paramJ = "",
