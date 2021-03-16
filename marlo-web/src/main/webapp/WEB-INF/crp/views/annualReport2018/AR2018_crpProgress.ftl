@@ -303,7 +303,7 @@
   <br>
   <div class="form-group TA_summaryEvidence">
   [#if !PMU] [@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/][/#if]
-    [@customForm.textArea name="" value=element.briefSummary i18nkey="${customLabel}.summaryEvidence" className="limitWords-150 tumaco" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable allowTextEditor=!isTemplate /]
+    [@customForm.textArea name="${ccname}.briefSummaryShow" value=element.briefSummary i18nkey="${customLabel}.summaryEvidence" className="limitWords-150 tumaco" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable allowTextEditor=!isTemplate /]
 
     <div style="display:none">
     [@customForm.textArea name="${ccname}.briefSummary" value=element.briefSummary i18nkey="${customLabel}.summaryEvidence" className="limitWords-150 briefSummaryTAHidden" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable  /]
