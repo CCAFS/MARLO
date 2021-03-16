@@ -6,8 +6,8 @@
 [#assign pageLibs = [ "select2", "trumbowyg", "components-font-awesome", "datatables.net", "datatables.net-bs","flag-icon-css"] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js"
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210315B" ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210114"] /]
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210316A" ] /]
+[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210316"] /]
 
 [#assign breadCrumb = [
   {"label":"${currentSection}",   "nameSpace":"",             "action":""},
@@ -152,9 +152,11 @@
        <div class="checkboxDiTeAr">
         <div class="">
           <button class="btn btn-primary flagshipBtn" type="button" data-toggle="collapse" data-target="#collapseExample-${index}"
-          aria-expanded="false" aria-controls="collapseExample" style="outline: none;">Show flagship information</button>
+          aria-expanded="false" aria-controls="collapseExample" style="outline: none;">Show flagships information</button>
         </div>
       </div>
+
+     <br>
 
       <div class="collapse" id="collapseExample-${index}">
         <ul class="nav nav-tabs insertHtmlSlo-tabs-${element.id}" role="tablist">
