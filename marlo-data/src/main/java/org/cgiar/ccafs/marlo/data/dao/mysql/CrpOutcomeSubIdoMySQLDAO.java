@@ -69,6 +69,20 @@ public class CrpOutcomeSubIdoMySQLDAO extends AbstractMarloDAO<CrpOutcomeSubIdo,
   }
 
   @Override
+  public CrpOutcomeSubIdo getCrpOutcomeSubIdoByOutcomeComposedIdAndPhase(String outcomeComposedId, long phaseId) {
+    String query = "select distinct cosi from CrpOutcomeSubIdo cosi " + "join cosi.crpProgramOutcome cpo "
+      + "with cpo.composeID = :composeID and cpo.active=true " + "and cpo.phase.id = :phaseID "
+      + " where cosi.srfSubIdo is null and cosi.active=true and cosi.crpProgramOutcome.active=true";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("composeID", outcomeComposedId);
+    createQuery.setParameter("phaseID", phaseId);
+
+    CrpOutcomeSubIdo result = super.findSingleResult(CrpOutcomeSubIdo.class, createQuery);
+    return result;
+  }
+
+  @Override
   public CrpOutcomeSubIdo getCrpOutcomeSubIdoByOutcomeComposedIdPhaseAndSubIdo(String outcomeComposedId, long phaseId,
     long subIdoId) {
     String query = "select distinct cosi from CrpOutcomeSubIdo cosi " + "join cosi.crpProgramOutcome cpo "

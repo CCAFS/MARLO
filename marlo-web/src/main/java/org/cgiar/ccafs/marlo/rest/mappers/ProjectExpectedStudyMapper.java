@@ -78,6 +78,7 @@ public interface ProjectExpectedStudyMapper {
     projectExpectedStudyToProjectExpectedStudyDTO(ProjectExpectedStudy projectExpectedStudy);
 
   @Mappings({@Mapping(source = "projectExpectedStudyInfo.title", target = "title"),
+    @Mapping(source = "projectExpectedStudyInfo.year", target = "year"),
     @Mapping(source = "pdfLink", target = "externalLink")})
   public abstract ProjectPageStudiesDTO
     projectExpectedStudyToProjectPageStudiesDTO(ProjectExpectedStudy projectExpectedStudy);

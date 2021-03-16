@@ -166,28 +166,33 @@ public class ProjectBudgetsValidator extends BaseValidator {
           // action.getInvalidFields().put("list-project.budgets",
           // action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Budgets"}));
         }
-
-        if ((action.isReportingActive() || action.isUpKeepActive())
-          && action.hasSpecificities(action.getCrpEnableBudgetExecution())) {
-          if (project.getBudgetExecutions() != null && project.getBudgetExecutions().size() > 0) {
-            int i = 0;
-            for (ProjectBudgetExecution projectBudgetExecution : project.getBudgetExecutions()) {
-              if (projectBudgetExecution.getYear() >= action.getActualPhase().getYear()) {
-                if (!this.isValidNumber(String.valueOf(projectBudgetExecution.getActualExpenditure()))
-                  || projectBudgetExecution.getActualExpenditure() < 0) {
-                  action.addMessage("Actual expenditure" + "[" + i + "]");
-                  action.getInvalidFields().put("input-project.budgetExecutions[" + i + "].actualExpenditure",
-                    InvalidFieldsMessages.EMPTYFIELD);
+        // validation 2020-10-19 by Dperez/Htobon
+        // if project is in pre-setting phase doesn't validate budget execution
+        if (project.getProjecInfoPhase(action.getActualPhase()) != null
+          && project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
+          if ((action.isReportingActive() || action.isUpKeepActive())
+            && action.hasSpecificities(action.getCrpEnableBudgetExecution())) {
+            if (project.getBudgetExecutions() != null && project.getBudgetExecutions().size() > 0) {
+              int i = 0;
+              for (ProjectBudgetExecution projectBudgetExecution : project.getBudgetExecutions()) {
+                if (projectBudgetExecution.getYear() >= action.getActualPhase().getYear()) {
+                  if (!this.isValidNumber(String.valueOf(projectBudgetExecution.getActualExpenditure()))
+                    || projectBudgetExecution.getActualExpenditure() < 0) {
+                    action.addMessage("Actual expenditure" + "[" + i + "]");
+                    action.getInvalidFields().put("input-project.budgetExecutions[" + i + "].actualExpenditure",
+                      InvalidFieldsMessages.EMPTYFIELD);
+                  }
                 }
+                i++;
               }
-              i++;
+            } else {
+              action.addMessage(action.getText("projectBudgetsExecution"));
+              action.getInvalidFields().put("input-project.budgetExecutions[0].actualExpenditure",
+                action.getText(InvalidFieldsMessages.EMPTYFIELD));
             }
-          } else {
-            action.addMessage(action.getText("projectBudgetsExecution"));
-            action.getInvalidFields().put("input-project.budgetExecutions[0].actualExpenditure",
-              action.getText(InvalidFieldsMessages.EMPTYFIELD));
           }
         }
+
         if (!action.getFieldErrors().isEmpty()) {
           hasErros = true;
           action.addActionError(action.getText("saving.fields.required"));

@@ -34,6 +34,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.mail.internet.InternetAddress;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.jsoup.Jsoup;
 import org.slf4j.Logger;
@@ -69,10 +70,12 @@ public class BaseValidator {
    * @param field is the name of the field.
    */
   public void addMissingField(String field) {
-    if (this.missingFields.length() != 0) {
-      this.missingFields.append(";");
+    if (!StringUtils.stripToEmpty(field).isEmpty()) {
+      if (this.missingFields.length() != 0) {
+        this.missingFields.append(";");
+      }
+      this.missingFields.append(field);
     }
-    this.missingFields.append(field);
   }
 
   public StringBuilder getMissingFields() {

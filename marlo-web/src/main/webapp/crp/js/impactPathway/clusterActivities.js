@@ -28,6 +28,10 @@ function init() {
 // Remove outcome
   $('.removeOutcome').on('click', removeOutcome);
 
+  $(document).ready(function(){
+    $('[data-toggle="popover"]').popover();   
+});
+
   // Validate if funding source exists in select
 
   $("form .outcomeByClusterItem").each(function(i,e) {

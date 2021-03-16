@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 
@@ -75,7 +76,8 @@ public class InstitutionMySQLDAO extends AbstractMarloDAO<Institution, Long> imp
 
   public List<Institution> findPPAInstitutions(long crpID) {
     StringBuilder query = new StringBuilder();
-    query.append("select inst.id from institutions inst INNER JOIN crp_ppa_partners ppa on ppa.institution_id=inst.id");
+    query.append(
+      "select DISTINCT(inst.id) from institutions inst INNER JOIN crp_ppa_partners ppa on ppa.institution_id=inst.id");
     query.append(" where ppa.global_unit_id=");
     query.append(crpID);
     query.append("  and ppa.is_active=1");
@@ -100,38 +102,23 @@ public class InstitutionMySQLDAO extends AbstractMarloDAO<Institution, Long> imp
 
   @Override
   public List<Institution> searchInstitution(String searchValue, int ppaPartner, int onlyPPA, long crpID) {
-    StringBuilder query = new StringBuilder();
+    String query = "select i from Institution i where i.name like concat('%', :institutionName, '%') "
+      + "or i.acronym like concat('%', :institutionName, '%') or i.websiteLink like concat('%', :institutionName, '%') "
+      + "group by i.name, i.acronym, i.websiteLink order by (case when i.name like concat(:institutionName, '%') then 0 "
+      + "when i.name like concat('% %', :institutionName, '% %') then 3 when i.name like concat('%', :institutionName) then 6 "
+      + "when i.acronym like concat(:institutionName, '%') then 1 when i.acronym like concat('% %', :institutionName, '% %') then 4 "
+      + "when i.acronym like concat('%', :institutionName) then 7 when i.websiteLink like concat(:institutionName, '%') then 2 "
+      + "when i.websiteLink like concat('% %', :institutionName, '% %') then 5 when i.websiteLink like concat('%', :institutionName) then 8 "
+      + "else 12 end), i.name, i.acronym, i.websiteLink";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
 
-    query.append("from " + Institution.class.getName());
-    query.append(" WHERE ");
-    query.append("name like '%" + searchValue + "%' ");
-    query.append("OR acronym like '%" + searchValue + "%' ");
+    createQuery.setParameter("institutionName", searchValue);
 
-    query.append("OR website_link like '%" + searchValue + "%' ");
-
-
-    query.append("GROUP BY name, acronym, website_link ");
-    query.append("ORDER BY CASE ");
-    query.append("WHEN name like '" + searchValue + "%' THEN 0 ");
-    query.append("WHEN name like '% %" + searchValue + "% %' THEN 3 ");
-    query.append("WHEN name like '%" + searchValue + "' THEN 6 ");
-    query.append("WHEN acronym like '" + searchValue + "%' THEN 1 ");
-    query.append("WHEN acronym like '% %" + searchValue + "% %' THEN 4 ");
-    query.append("WHEN acronym like '%" + searchValue + "' THEN 7 ");
-
-    query.append("WHEN website_link like '%" + searchValue + "%' THEN 2 ");
-    query.append("WHEN website_link like '" + searchValue + "%' THEN 5 ");
-    query.append("WHEN website_link like '%" + searchValue + "' THEN 8 ");
-    query.append("ELSE 12 ");
-    query.append("END, name, acronym,website_link ");
-
-
-    List<Institution> institutions = super.findAll(query.toString());
-    List<Institution> institutionsAux = new ArrayList<Institution>();
+    List<Institution> institutions = super.findAll(createQuery);
+    List<Institution> institutionsAux = new ArrayList<>(institutions);
 
     if (onlyPPA == 1) {
 
-      institutionsAux.addAll(institutions);
       for (Institution institution : institutionsAux) {
         if (institution.getCrpPpaPartners().stream()
           .filter(c -> c.isActive() && c.getCrp().getId().longValue() == crpID).collect(Collectors.toList())
@@ -141,7 +128,6 @@ public class InstitutionMySQLDAO extends AbstractMarloDAO<Institution, Long> imp
       }
     } else {
       if (ppaPartner == 0) {
-        institutionsAux.addAll(institutions);
         for (Institution institution : institutionsAux) {
           if (!institution.getCrpPpaPartners().stream()
             .filter(c -> c.isActive() && c.getCrp().getId().longValue() == crpID).collect(Collectors.toList())
@@ -151,7 +137,6 @@ public class InstitutionMySQLDAO extends AbstractMarloDAO<Institution, Long> imp
         }
       }
     }
-
 
     return institutions;
   }

@@ -17,6 +17,7 @@
 [#assign hideJustification = true /]
 [#assign isCrpProject = (action.isProjectCrpOrPlatform(project.id))!false ]
 [#assign isCenterProject = (action.isProjectCenter(project.id))!false ]
+[#assign isNewCenterTypeProject = (action.isNewCenterType(project.id))!false ]
 
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
@@ -64,6 +65,7 @@
           
           <h3 class="headTitle">[@s.text name="projectDescription.title" /]</h3>  
           <div id="projectDescription" class="borderBox">
+          
             
             [#-- Project Title --]
             <div class="form-group">
@@ -75,7 +77,12 @@
               [#-- Project Program Creator --]
               <div class="col-md-6">
                 [@customForm.select name="project.projectInfo.liaisonInstitution.id" className="liaisonInstitutionSelect" i18nkey="project.liaisonInstitution"  disabled=!editable  listName="liaisonInstitutions" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable && action.hasPermission("managementLiaison") /]
-              </div>             
+              </div>       
+              [#if action.hasSpecificities('previous_project_id_field_active') ]
+                <div class="col-md-3">
+                  [@customForm.input name="project.projectInfo.previousProjectId" i18nkey="project.previousId" required=false className="previousID" editable=editable && action.hasPermission("title") /]
+                </div>   
+              [/#if]          
             </div>
             [/#if]
             [#if isCenterProject ]
@@ -84,6 +91,11 @@
               <div class="col-md-6 researchProgram ">
                 [@customForm.select name="project.projectInfo.liaisonInstitution.id" listName="liaisonInstitutions" paramText="${currentCrp.acronym}" keyFieldName="id" displayFieldName="composedName" i18nkey="project.researchProgram" className="liaisonInstitutionSelect" help="project.researchProgram.help" required=true editable=editable /]
               </div>
+              [#if action.hasSpecificities('previous_project_id_field_active') ]
+                <div class="col-md-3">
+                  [@customForm.input name="project.projectInfo.previousProjectId" i18nkey="project.previousId" required=false className="previousID" editable=editable && action.hasPermission("title") /]
+                </div>   
+              [/#if]    
             </div>
             [/#if]
             <div class="form-group row">  
@@ -135,12 +147,11 @@
                      
                     [#-- Contributions allowed to this flagship --]
                     [#list (programFlagships)![] as element]
-                      [#assign flagshipName][#if isCrpProject]${element.composedName}[#else]${element.centerComposedName}[/#if][/#assign]
+                      [#assign flagshipName][#if isCrpProject || isNewCenterTypeProject ]${element.composedName}[#else]${element.centerComposedName}[/#if][/#assign]
                       
                       [#assign outcomesContributions = (action.getContributionsOutcome(project.id, element.id))![] /]
                       [#assign clustersContributions = (action.getClusterOutcome(project.id, element.id))![] /]
                       [#assign totalContributions = outcomesContributions?size + clustersContributions?size ]
-                      
                       [#if (totalContributions != 0)] 
                         <p class="checkDisable"> 
                           ${flagshipName} [#if outcomesContributions?size > 0] [@outcomesRelationsPopup  element outcomesContributions clustersContributions /][/#if]

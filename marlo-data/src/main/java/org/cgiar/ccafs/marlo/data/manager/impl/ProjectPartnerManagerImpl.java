@@ -443,9 +443,10 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
         LocElement locElement =
           locElementManager.getLocElementByISOCode(institutionLocation.getLocElement().getIsoAlpha2());
 
-        if (projectPartnerPrev.getProjectPartnerLocations().stream()
-          .filter(c -> c.isActive() && c.getInstitutionLocation().getLocElement().getId().equals(locElement.getId()))
-          .collect(Collectors.toList()).isEmpty()) {
+        if (locElement != null && projectPartner.getInstitution() != null
+          && projectPartnerPrev.getProjectPartnerLocations().stream()
+            .filter(c -> c.isActive() && c.getInstitutionLocation().getLocElement().getId().equals(locElement.getId()))
+            .collect(Collectors.toList()).isEmpty()) {
           ProjectPartnerLocation partnerLocation = new ProjectPartnerLocation();
 
 

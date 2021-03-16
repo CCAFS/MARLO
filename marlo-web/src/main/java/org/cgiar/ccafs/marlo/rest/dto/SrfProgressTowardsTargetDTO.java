@@ -19,6 +19,8 @@
 
 package org.cgiar.ccafs.marlo.rest.dto;
 
+import java.util.List;
+
 import io.swagger.annotations.ApiModelProperty;
 
 public class SrfProgressTowardsTargetDTO {
@@ -26,39 +28,68 @@ public class SrfProgressTowardsTargetDTO {
   @ApiModelProperty(notes = "The Generated identification Code", position = 1)
   private Long id;
 
-  @ApiModelProperty(notes = "SLO target", position = 2)
+  /*
+   * @ApiModelProperty(notes = "Flagship / Module", position = 2)
+   * private FlagshipProgramDTO flagshipProgramDTO;
+   */
+
+  @ApiModelProperty(notes = "SLO target", position = 3)
   private SrfSloIndicatorTargetDTO srfSloTarget;
 
-  @ApiModelProperty(notes = "Brief summary of new evidence of CGIAR contribution", position = 3)
+  @ApiModelProperty(notes = "Brief summary of new evidence of CGIAR contribution", position = 4)
   private String briefSummary;
 
-  @ApiModelProperty(notes = "Progress Towards additional contribution", position = 4)
+  @ApiModelProperty(notes = "Progress Towards additional contribution", position = 5)
   private String additionalContribution;
 
-  @ApiModelProperty(notes = "Flagship / Module", position = 5)
-  private FlagshipProgramDTO flagshipProgramDTO;
+  @ApiModelProperty(notes = "geographic Scope", position = 6)
+  private List<GeographicScopeDTO> geographicScope;
+
+  @ApiModelProperty(notes = "Regios", position = 6)
+  private List<RegionDTO> regions;
+
+  @ApiModelProperty(notes = "Contries", position = 6)
+  private List<CountryDTO> countries;
 
 
   public String getAdditionalContribution() {
     return additionalContribution;
   }
 
+
   public String getBriefSummary() {
     return briefSummary;
   }
 
-  public FlagshipProgramDTO getFlagshipProgramDTO() {
-    return flagshipProgramDTO;
+
+  public List<CountryDTO> getCountries() {
+    return countries;
   }
+
+
+  /*
+   * public FlagshipProgramDTO getFlagshipProgramDTO() {
+   * return flagshipProgramDTO;
+   * }
+   */
+
+
+  public List<GeographicScopeDTO> getGeographicScope() {
+    return geographicScope;
+  }
+
 
   public Long getId() {
     return id;
   }
 
+  public List<RegionDTO> getRegions() {
+    return regions;
+  }
+
   public SrfSloIndicatorTargetDTO getSrfSloTarget() {
     return srfSloTarget;
   }
-
 
   public void setAdditionalContribution(String additionalContribution) {
     this.additionalContribution = additionalContribution;
@@ -68,12 +99,27 @@ public class SrfProgressTowardsTargetDTO {
     this.briefSummary = briefSummary;
   }
 
-  public void setFlagshipProgramDTO(FlagshipProgramDTO flagshipProgramDTO) {
-    this.flagshipProgramDTO = flagshipProgramDTO;
+  public void setCountries(List<CountryDTO> countries) {
+    this.countries = countries;
+  }
+
+
+  /*
+   * public void setFlagshipProgramDTO(FlagshipProgramDTO flagshipProgramDTO) {
+   * this.flagshipProgramDTO = flagshipProgramDTO;
+   * }
+   */
+
+  public void setGeographicScope(List<GeographicScopeDTO> geographicScope) {
+    this.geographicScope = geographicScope;
   }
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public void setRegions(List<RegionDTO> regions) {
+    this.regions = regions;
   }
 
   public void setSrfSloTarget(SrfSloIndicatorTargetDTO srfSloTarget) {

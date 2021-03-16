@@ -89,7 +89,7 @@
       </div>
       
       [#-- New Expected Year - Extended = 4 or exist--]
-      <div id="newExpectedYear" class="col-md-4" style="display:${(hasExpectedYear)?string('block','none')}">
+      <div id="newExpectedYear" class="col-md-4" style="display:${(isStatusExtended)?string('block','none')}">
         [#assign startExpectedYear = ((deliverable.deliverableInfo.year)!currentCycleYear)  ]
         [#if editable || editStatus]
           <div class="overlay expectedDisabled" style="display:${(!isStatusExtended)?string('block', 'none')}"></div>

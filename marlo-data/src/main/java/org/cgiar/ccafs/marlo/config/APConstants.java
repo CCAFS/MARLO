@@ -124,6 +124,7 @@ public final class APConstants {
   public static final String CRP_SHOW_SECTION_IMPACT_COVID19 = "crp_show_section_impact_covid19";
   public static final String CRP_SHOW_SECTION_IMPACT_COVID19_RANGES_YEARS =
     "crp_show_section_impact_covid19_ranges_years";
+  public static final String PREVIOUS_PROJECT_ID_ACTIVE = "previous_project_id_field_active";
 
   public static final String IS_EXPECTED_DELIVERABLE_REPORT_All_YEARS_VISIBLE =
     "is_expected_deliverable_report_all_years_visible";
@@ -157,7 +158,7 @@ public final class APConstants {
   public static final String ELEMENT_TYPE_ID = "parentId";
   public static final int ELEMENT_TYPE_OUTCOME2019 = 3;
 
-  // end year
+  // TODO remove this variable and create an specificity for each CRP/Platform
   public static Integer END_YEAR = 2022;
   public static final String ERROR_ACCOUNT_DISABLED = "ERROR_ACCOUNT_DISABLED";
   public static final String ERROR_ACCOUNT_EXPIRED = "ERROR_ACCOUNT_EXPIRED";
@@ -715,18 +716,39 @@ public final class APConstants {
   public static final String CRP_CAP_DEV_ACTIVE = "crp_capdev_active";
 
   // Marlo PDF Manual Name
-  public static final String MARLO_PDF_MANUAL_NAME = "Introduction_To_MARLO_v2.6.pdf";
+  public static final String MARLO_PDF_MANUAL_NAME = "Introduction_To_MARLO_v2.9.pdf";
 
-  // GeoiIp maps database
+  // GeoiIp maps database8
   public static final String DATABASE_COUNTRY_FILENAME = "GeoLite2-Country.mmdb";
   public static final String DATABASE_CITY_FILENAME = "GeoLite2-City.mmdb";
 
   // Clarisa public
   public static final String CLARISA_PUBLIC = "clarisa_public";
+  // publish handle for clarisa
+  public static final String METADATAELEMENTHANDLE = "marlo.handle";
+  // publish doi for clarisa
+  public static final String METADATAELEMENTDOI = "marlo.doi";
+  // publish title for disemination data in clarisa
+  public static final String METADATAELEMENTTITLE = "dc.title";
+  public static final String METADATAELEMENTPUBLICATION = "dc.date";
+  public static final String METADATAELEMENTCITATION = "dc.identifier.citation";
+  public static final String METADATAELEMENTAUTHORS = "marlo.authors";
+  public static final String MESSAGE_MODIFICATION_JUSTIFICATION = "Created by CLARISA ";
+
+  public static final String WOS_LINK = "wosLink";
+  public static final Integer ACCEPTATION_PERCENTAGE = 75;
+
+  // deliverables import clarisa value
+  public static final long IMPORT_DELIVERABLE_VALUE = 63;
+
+  public static final String CRP_EMAIL_NOTIFICATIONS = "crp_enable_email_notification";
+
+  public static final int CLARISA_AVALIABLE_INFO_YEAR = 2018;
+
+  public static final String IGNORE_NEWER_YEARS = "ignoreNewer";
 
   public static String getFilterBy() {
     return FILTER_BY;
   }
 
 }
-

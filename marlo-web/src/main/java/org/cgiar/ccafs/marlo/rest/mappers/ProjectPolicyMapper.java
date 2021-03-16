@@ -36,10 +36,11 @@ import org.mapstruct.Mappings;
     DefaultFieldPrimaryMapper.class})
 public interface ProjectPolicyMapper {
 
-  @Mappings({@Mapping(source = "projectPolicyDTO.project", target = "project.id"),})
+  @Mappings({@Mapping(source = "projectPolicyDTO.project", target = "project.id")})
   public abstract ProjectPolicy projectPolicyDTOToProjectPolicy(ProjectPolicyDTO projectPolicyDTO);
 
-  @Mappings({@Mapping(source = "projectPolicy.projectPolicyInfo.title", target = "title"),})
+  @Mappings({@Mapping(source = "projectPolicy.projectPolicyInfo.title", target = "title"),
+    @Mapping(source = "projectPolicy.projectPolicyInfo.year", target = "year")})
   public abstract ProjectPagePoliciesDTO projectPolicyToProjectPagePoliciesDTO(ProjectPolicy projectPolicy);
 
 

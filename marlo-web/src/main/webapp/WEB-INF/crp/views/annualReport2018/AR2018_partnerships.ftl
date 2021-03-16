@@ -74,7 +74,9 @@
                     [#else]
                       <div class="textArea">
                           <label for="">[@customForm.text name="${customLabel}.summary" readText=true /]</label>:
-                          <p>[#if (pmuText?has_content)!false]${pmuText?replace('\n', '<br>')}[#else] [@s.text name="global.prefilledByPmu"/] [/#if]</p>
+                          <p>[#if (pmuText?has_content)!false]${pmuText?replace('\n', '<br>')}
+                               [#else] [@s.text name="global.prefilledByPmu"/] [@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/]
+                             [/#if]</p>
                       </div>
                     [/#if]
                     <br />
@@ -187,6 +189,7 @@
                       
                       <hr />
                     [#else]
+                      [@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/]
                     [#-- <div class="form-group">
                        [@utils.tableText value=(reportSynthesis.reportSynthesisKeyPartnership.crossCGIAR)!'' nobr=false emptyText="global.prefilledByPmu" /] 
                     </div> --]
@@ -412,7 +415,7 @@
     </div>
     [#-- Value added --]
     <div class="form-group">
-      [@customForm.input name="${customName}.valueAdded" i18nkey="${customLabel}.table8.value" help="${customLabel}.table8.value.help" helpIcon=false required=true editable=editable /]
+      [@customForm.input name="${customName}.valueAdded" i18nkey="${customLabel}.table8.value" help="${customLabel}.table8.value.help" helpIcon=false required=false editable=editable /]
     </div>
   </div>
 [/#macro]
