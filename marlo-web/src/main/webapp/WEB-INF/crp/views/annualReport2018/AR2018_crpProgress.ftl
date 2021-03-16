@@ -6,7 +6,7 @@
 [#assign pageLibs = [ "select2", "trumbowyg", "components-font-awesome", "datatables.net", "datatables.net-bs","flag-icon-css"] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js"
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210316A" ] /]
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210316B" ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210316"] /]
 
 [#assign breadCrumb = [
@@ -26,7 +26,7 @@
 [#-- Helptext --]
 [@utilities.helpBox name="${customLabel}.help" /]
 
-[#if PMU]
+[#if PMU && false]
   [@utilities.helpBox name="Inputs received by Flagship leaders will be displayed here soon. Meanwhile, we suggest you to please go to the respective Flagship directly" /]
 [/#if]
     
