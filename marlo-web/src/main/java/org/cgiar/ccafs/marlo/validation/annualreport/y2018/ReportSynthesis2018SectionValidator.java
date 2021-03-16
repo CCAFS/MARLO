@@ -161,7 +161,7 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
       srfProgress.setReportSynthesis(reportSynthesis);
 
       if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
-        srfProgressValidator.validateCheckButton(action, reportSynthesis, false);
+        srfProgressValidator.validateCheckButton(action, reportSynthesis, false, null);
       } else {
         srfProgressValidator.validate(action, reportSynthesis, false, null);
       }
@@ -177,7 +177,7 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
       }
 
       if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
-        srfProgressValidator.validateCheckButton(action, reportSynthesis, false);
+        srfProgressValidator.validateCheckButton(action, reportSynthesis, false, null);
       } else {
         srfProgressValidator.validate(action, reportSynthesis, false, null);
       }

@@ -71,12 +71,14 @@ public class ExternalSourceAuthorManagerImpl implements ExternalSourceAuthorMana
     while (current != null) {
       DeliverableMetadataExternalSources deliverableMetadataExternalSources =
         this.deliverableMetadataExternalSourcesManager.findByPhaseAndDeliverable(current, deliverable);
-      List<ExternalSourceAuthor> phaseAuthors =
-        this.findExternalSourceAuthorFromExternalSource(deliverableMetadataExternalSources.getId());
+      if (deliverableMetadataExternalSources != null) {
+        List<ExternalSourceAuthor> phaseAuthors =
+          this.findExternalSourceAuthorFromExternalSource(deliverableMetadataExternalSources.getId());
 
-      for (ExternalSourceAuthor externalSourceAuthor : phaseAuthors) {
-        if (externalSourceAuthor != null) {
-          this.deleteExternalSourceAuthor(externalSourceAuthor.getId());
+        for (ExternalSourceAuthor externalSourceAuthor : phaseAuthors) {
+          if (externalSourceAuthor != null) {
+            this.deleteExternalSourceAuthor(externalSourceAuthor.getId());
+          }
         }
       }
 
