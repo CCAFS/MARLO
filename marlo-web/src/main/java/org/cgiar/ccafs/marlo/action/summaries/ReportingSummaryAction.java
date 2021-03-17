@@ -4965,29 +4965,31 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         if (studyinfo.getIsContribution() != null) {
           isContribution = studyinfo.getIsContribution();
           isContributionText = studyinfo.getIsContribution() ? "Yes" : "No";
-          if (isContribution) {
-            // Policy Investment and Amount
-            if (studyinfo.getRepIndPolicyInvestimentType() != null) {
-              policyInvestimentType = studyinfo.getRepIndPolicyInvestimentType().getName();
-              if (studyinfo.getRepIndPolicyInvestimentType().getId().equals(3l)) {
-                isBudgetInvestment = true;
-                if (studyinfo.getPolicyAmount() != null) {
-                  policyAmount = studyinfo.getPolicyAmount();
-                }
-              }
-            }
-            // organizationType
-            if (studyinfo.getRepIndOrganizationType() != null) {
-              organizationType = studyinfo.getRepIndOrganizationType().getName();
-            }
-            // stageProcess and stageStudy
-            if (studyinfo.getRepIndStageProcess() != null) {
-              stageProcess = studyinfo.getRepIndStageProcess().getName();
-              if (studyinfo.getRepIndStageProcess().getId().equals(1l)) {
-                isStage1 = true;
-              }
-            }
-          }
+          /*
+           * if (isContribution) {
+           * // Policy Investment and Amount
+           * if (studyinfo.getRepIndPolicyInvestimentType() != null) {
+           * policyInvestimentType = studyinfo.getRepIndPolicyInvestimentType().getName();
+           * if (studyinfo.getRepIndPolicyInvestimentType().getId().equals(3l)) {
+           * isBudgetInvestment = true;
+           * if (studyinfo.getPolicyAmount() != null) {
+           * policyAmount = studyinfo.getPolicyAmount();
+           * }
+           * }
+           * }
+           * // organizationType
+           * if (studyinfo.getRepIndOrganizationType() != null) {
+           * organizationType = studyinfo.getRepIndOrganizationType().getName();
+           * }
+           * // stageProcess and stageStudy
+           * if (studyinfo.getRepIndStageProcess() != null) {
+           * stageProcess = studyinfo.getRepIndStageProcess().getName();
+           * if (studyinfo.getRepIndStageProcess().getId().equals(1l)) {
+           * isStage1 = true;
+           * }
+           * }
+           * }
+           */
         }
         if (studyinfo.getRepIndStageStudy() != null) {
           stageStudy = studyinfo.getRepIndStageStudy().getName();
