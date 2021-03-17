@@ -329,12 +329,14 @@ public class FlagshipProgress2018Validator extends BaseValidator {
          * }
          * }
          */
-
-        if (!(this.isValidString(reportSynthesis.getReportSynthesisFlagshipProgress().getOverallProgress()))
-          && reportSynthesis.getReportSynthesisFlagshipProgress().getOverallProgress().length() > 1000) {
-          action.addMissingField(action.getText("annualReport2018.flagshipProgress.overallProgress.readText"));
-          action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.overallProgress",
-            InvalidFieldsMessages.EMPTYFIELD);
+        if (reportSynthesis != null && reportSynthesis.getReportSynthesisFlagshipProgress() != null
+          && reportSynthesis.getReportSynthesisFlagshipProgress().getOverallProgress() != null) {
+          if (!(this.isValidString(reportSynthesis.getReportSynthesisFlagshipProgress().getOverallProgress()))
+            && reportSynthesis.getReportSynthesisFlagshipProgress().getOverallProgress().length() > 1000) {
+            action.addMissingField(action.getText("annualReport2018.flagshipProgress.overallProgress.readText"));
+            action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.overallProgress",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
         }
       }
 
