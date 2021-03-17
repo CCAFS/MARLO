@@ -116,11 +116,14 @@ public class FlagshipProgress2018Validator extends BaseValidator {
         liaisonInstitutionManager.getLiaisonInstitutionById(reportSynthesis.getLiaisonInstitution().getId());
 
       // Validate Relevance to covid field - for Flagships and PMU
-      if (!(this.isValidString(reportSynthesis.getReportSynthesisFlagshipProgress().getRelevanceCovid()))
-        && reportSynthesis.getReportSynthesisFlagshipProgress().getRelevanceCovid().length() < 300) {
-        action.addMissingField(action.getText("annualReport2018.flagshipProgress.relevanceCovid"));
-        action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.relevanceCovid",
-          InvalidFieldsMessages.EMPTYFIELD);
+      if (reportSynthesis != null && reportSynthesis.getReportSynthesisFlagshipProgress() != null
+        && reportSynthesis.getReportSynthesisFlagshipProgress().getRelevanceCovid() != null) {
+        if (!(this.isValidString(reportSynthesis.getReportSynthesisFlagshipProgress().getRelevanceCovid()))
+          && reportSynthesis.getReportSynthesisFlagshipProgress().getRelevanceCovid().length() < 300) {
+          action.addMissingField(action.getText("annualReport2018.flagshipProgress.relevanceCovid"));
+          action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.relevanceCovid",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
       }
 
       // Validate flagship fields
