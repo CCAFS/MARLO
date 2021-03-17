@@ -24,7 +24,6 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis2018SectionStatusEnum;
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTarget;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
@@ -110,15 +109,6 @@ public class SrfProgressValidator extends BaseValidator {
         action.getInvalidFields().put("input-reportSynthesis.reportSynthesisSrfProgress.summary",
           InvalidFieldsMessages.EMPTYFIELD);
       }
-
-      // Validate Targets
-      /*
-       * if (reportSynthesis.getReportSynthesisSrfProgress().getSloTargets() != null) {
-       * for (int i = 0; i < reportSynthesis.getReportSynthesisSrfProgress().getSloTargets().size(); i++) {
-       * this.validateTargets(action, reportSynthesis.getReportSynthesisSrfProgress().getSloTargets().get(i), i);
-       * }
-       * }
-       */
 
       if (sloTargets != null && !sloTargets.isEmpty()) {
         for (int i = 0; i < sloTargets.size(); i++) {
@@ -288,15 +278,6 @@ public class SrfProgressValidator extends BaseValidator {
           InvalidFieldsMessages.EMPTYFIELD);
       }
 
-      // Validate Targets
-      /*
-       * if (reportSynthesis.getReportSynthesisSrfProgress().getSloTargets() != null) {
-       * for (int i = 0; i < reportSynthesis.getReportSynthesisSrfProgress().getSloTargets().size(); i++) {
-       * this.validateTargets(action, reportSynthesis.getReportSynthesisSrfProgress().getSloTargets().get(i), i);
-       * }
-       * }
-       */
-
       if (sloTargets != null && !sloTargets.isEmpty()) {
         for (int i = 0; i < sloTargets.size(); i++) {
           if (sloTargets.get(i).getTargetCases() != null && !sloTargets.get(i).getTargetCases().isEmpty()) {
@@ -462,31 +443,4 @@ public class SrfProgressValidator extends BaseValidator {
     }
 
   }
-
-  public void validateTargets(BaseAction action, ReportSynthesisSrfProgressTarget target, int i) {
-
-    // Validate Brief Summary
-    /*
-     * if (!(this.isValidString(target.getBirefSummary())
-     * && this.wordCount(this.removeHtmlTags(target.getBirefSummary())) <= 150)) {
-     * action.addMessage(action.getText("Brief Summary"));
-     * action.addMissingField("Brief Summary");
-     * action.getInvalidFields().put(
-     * "input-reportSynthesis.reportSynthesisSrfProgress.sloTargets[" + i + "].birefSummary",
-     * InvalidFieldsMessages.EMPTYFIELD);;
-     * }
-     */
-    // Validate Brief Summary
-    /*
-     * if (!(this.isValidString(target.getAdditionalContribution())
-     * && this.wordCount(target.getAdditionalContribution()) <= 100)) {
-     * action.addMessage(action.getText("Additional Contribution"));
-     * action.addMissingField("Additional Contribution");
-     * action.getInvalidFields().put(
-     * "input-reportSynthesis.reportSynthesisSrfProgress.sloTargets[" + i + "].additionalContribution",
-     * InvalidFieldsMessages.EMPTYFIELD);;
-     * }
-     */
-  }
-
 }
