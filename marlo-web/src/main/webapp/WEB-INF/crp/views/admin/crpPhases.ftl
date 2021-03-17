@@ -63,7 +63,7 @@
                 <h4> ${(phase.name)!} ${(phase.year)!}</h4>
                 
                 <hr />
-                [#assign yearLimit = 2018 /]
+                [#assign yearLimit = 2019 /]
                 [#assign canOpenClose = ((phase.year > yearLimit) && !((phase.year = (yearLimit + 1)) && (phase.name == "POWB")))  || phase.editable /]
                 <div class="form-group row">
                   [#-- Visible Phase --]
