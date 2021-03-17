@@ -15,12 +15,16 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbExpenditureAreasManager;
+import org.cgiar.ccafs.marlo.data.manager.ProgressTargetCaseGeographicCountryManager;
+import org.cgiar.ccafs.marlo.data.manager.ProgressTargetCaseGeographicRegionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProgressTargetCaseGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
@@ -33,7 +37,10 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisKeyPartnershipCollabora
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisKeyPartnershipExternalManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisMeliaManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisSrfProgressTargetCasesManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisSrfProgressTargetContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisSrfProgressTargetManager;
+import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorTargetManager;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
@@ -46,6 +53,9 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PowbExpenditureAreas;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
+import org.cgiar.ccafs.marlo.data.model.ProgressTargetCaseGeographicCountry;
+import org.cgiar.ccafs.marlo.data.model.ProgressTargetCaseGeographicRegion;
+import org.cgiar.ccafs.marlo.data.model.ProgressTargetCaseGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsFlagship;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
@@ -82,6 +92,9 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaEvaluation;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaEvaluationAction;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisRisk;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTarget;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTargetCases;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTargetContribution;
+import org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.POIField;
 import org.cgiar.ccafs.marlo.utils.POISummary;
@@ -198,6 +211,13 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
   private ReportSynthesisKeyPartnershipCollaborationManager reportSynthesisKeyPartnershipCollaborationManager;
   private ReportSynthesisMeliaManager reportSynthesisMeliaManager;
   private FileDBManager fileDBManager;
+  private SrfSloIndicatorTargetManager srfSloIndicatorTargetManager;
+  private ProgressTargetCaseGeographicCountryManager progressTargetCaseGeographicCountryManager;
+  private ReportSynthesisSrfProgressTargetCasesManager reportSynthesisSrfProgressTargetCasesManager;
+  private ReportSynthesisSrfProgressTargetContributionManager reportSynthesisSrfProgressTargetContributionManager;
+  private ProgressTargetCaseGeographicScopeManager progressTargetCaseGeographicScopeManager;
+  private ProgressTargetCaseGeographicRegionManager progressTargetCaseGeographicRegionManager;
+  private CrpProgramManager crpProgramManager;
 
 
   private DeliverableManager deliverableManager;
@@ -246,7 +266,14 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     DeliverableManager deliverableManager,
     ReportSynthesisKeyPartnershipExternalManager reportSynthesisKeyPartnershipExternalManager,
     ReportSynthesisKeyPartnershipCollaborationManager reportSynthesisKeyPartnershipCollaborationManager,
-    ReportSynthesisMeliaManager reportSynthesisMeliaManager, FileDBManager fileDBManager) {
+    ReportSynthesisMeliaManager reportSynthesisMeliaManager, FileDBManager fileDBManager,
+    SrfSloIndicatorTargetManager srfSloIndicatorTargetManager,
+    ProgressTargetCaseGeographicCountryManager progressTargetCaseGeographicCountryManager,
+    ReportSynthesisSrfProgressTargetCasesManager reportSynthesisSrfProgressTargetCasesManager,
+    ReportSynthesisSrfProgressTargetContributionManager reportSynthesisSrfProgressTargetContributionManager,
+    ProgressTargetCaseGeographicScopeManager progressTargetCaseGeographicScopeManager,
+    CrpProgramManager crpProgramManager,
+    ProgressTargetCaseGeographicRegionManager progressTargetCaseGeographicRegionManager) {
     super(config, crpManager, phaseManager, projectManager);
     document = new XWPFDocument();
     poiSummary = new POISummary();
@@ -265,6 +292,11 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     this.reportSynthesisKeyPartnershipCollaborationManager = reportSynthesisKeyPartnershipCollaborationManager;
     this.reportSynthesisMeliaManager = reportSynthesisMeliaManager;
     this.fileDBManager = fileDBManager;
+    this.srfSloIndicatorTargetManager = srfSloIndicatorTargetManager;
+    this.reportSynthesisSrfProgressTargetCasesManager = reportSynthesisSrfProgressTargetCasesManager;
+    this.reportSynthesisSrfProgressTargetContributionManager = reportSynthesisSrfProgressTargetContributionManager;
+    this.crpProgramManager = crpProgramManager;
+    this.progressTargetCaseGeographicRegionManager = progressTargetCaseGeographicRegionManager;
   }
 
   private void addAlmetricCrp() {
@@ -746,12 +778,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         .collect(Collectors.toList())) {
         String sloTarget = "", briefSummaries = "", additionalContribution = "";
         if (reportSynthesisSrfProgressTarget.getSrfSloIndicatorTarget() != null) {
-          /*
-           * if (reportSynthesisSrfProgressTarget.getSrfSloIndicatorTarget().getTargetsIndicator() != null
-           * && !reportSynthesisSrfProgressTarget.getSrfSloIndicatorTarget().getTargetsIndicator().isEmpty()) {
-           * sloTarget = reportSynthesisSrfProgressTarget.getSrfSloIndicatorTarget().getTargetsIndicator();
-           * }
-           */
           if (reportSynthesisSrfProgressTarget.getSrfSloIndicatorTarget().getNarrative() != null
             && !reportSynthesisSrfProgressTarget.getSrfSloIndicatorTarget().getNarrative().isEmpty()) {
             sloTarget += " " + reportSynthesisSrfProgressTarget.getSrfSloIndicatorTarget().getNarrative();
@@ -3449,6 +3475,94 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
   }
 
+  public List<SrfSloIndicatorTarget> getTable1Info() {
+
+    List<SrfSloIndicatorTarget> sloTargetsFP = new ArrayList<>(srfSloIndicatorTargetManager.findAll().stream()
+      .filter(sr -> sr.isActive() && sr.getYear() == 2022).collect(Collectors.toList()));
+
+    // Fill sloTargets List
+    List<SrfSloIndicatorTarget> sloTargetsTemp = new ArrayList<>();
+
+    if (sloTargetsFP != null) {
+
+      for (SrfSloIndicatorTarget target : sloTargetsFP) {
+
+        // Get value for 'no new evidence' check button
+        ReportSynthesisSrfProgressTargetContribution sloContribution =
+          new ReportSynthesisSrfProgressTargetContribution();
+        if (reportSynthesisSrfProgressTargetContributionManager.findBySloTargetSynthesis(target.getId(),
+          reportSynthesisPMU.getId()) != null) {
+          sloContribution = reportSynthesisSrfProgressTargetContributionManager
+            .findBySloTargetSynthesis(target.getId(), reportSynthesisPMU.getId()).get(0);
+        }
+
+        if (sloContribution != null) {
+          target.setHasEvidence(sloContribution.isHasEvidence());
+        } else {
+          target.setHasEvidence(false);
+        }
+        ReportSynthesis currentReportSynthesis =
+          reportSynthesisManager.findSynthesis(this.getActualPhase().getId(), pmuInstitution.getId());
+
+        List<ReportSynthesisSrfProgressTargetCases> targetCases;
+        targetCases = reportSynthesisSrfProgressTargetCasesManager
+          .getReportSynthesisSrfProgressId(currentReportSynthesis.getId(), target.getId());
+
+        if (targetCases != null) {
+
+          // Fill target cases
+          for (ReportSynthesisSrfProgressTargetCases targetCase : targetCases) {
+            List<ProgressTargetCaseGeographicScope> targetCaseGeographicScopes;
+
+            // Geographic Scope
+            targetCaseGeographicScopes =
+              progressTargetCaseGeographicScopeManager.findGeographicScopeByTargetCase(targetCase.getId());
+
+            if (targetCaseGeographicScopes != null) {
+              targetCase.setGeographicScopes(targetCaseGeographicScopes);
+            }
+
+            // Geographic regions
+            List<ProgressTargetCaseGeographicRegion> targetCaseGeographicRegions;
+            targetCaseGeographicRegions =
+              progressTargetCaseGeographicRegionManager.findGeographicRegionByTargetCase(targetCase.getId());
+
+            if (targetCaseGeographicRegions != null) {
+              targetCase.setGeographicRegions(targetCaseGeographicRegions);
+            }
+
+            // Geographic countries
+            List<ProgressTargetCaseGeographicCountry> targetCaseGeographicCountries;
+            targetCaseGeographicCountries =
+              progressTargetCaseGeographicCountryManager.findGeographicCountryByTargetCase(targetCase.getId());
+
+            if (targetCaseGeographicCountries != null) {
+              // targetCase.setGeographicCountries(targetCaseGeographicCountries);
+              targetCase.setCountries(targetCaseGeographicCountries);
+
+              if (targetCase.getCountries() != null) {
+                for (ProgressTargetCaseGeographicCountry country : targetCase.getCountries()) {
+                  targetCase.getCountriesIds().add(country.getLocElement().getIsoAlpha2());
+                }
+              }
+            }
+            targetCase.setLiaisonInstitution(pmuInstitution);
+          }
+
+          targetCases.addAll(target.getTargetCases());
+          target.setTargetCases(targetCases);
+        }
+
+        sloTargetsTemp.add(target);
+      }
+
+      sloTargetsFP = new ArrayList<>();
+      sloTargetsFP.addAll(sloTargetsTemp);
+    }
+
+    return sloTargetsFP;
+  }
+
   private void getTable6Info() {
     /** Graphs and Tables */
     LinkedHashSet<Deliverable> deliverables =
@@ -3607,6 +3721,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
   }
 
+
   public void loadTablePMU() {
     flagships = this.getLoggedCrp().getCrpPrograms().stream()
       .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
@@ -3638,7 +3753,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
     }
   }
-
 
   @Override
   public void prepare() {
