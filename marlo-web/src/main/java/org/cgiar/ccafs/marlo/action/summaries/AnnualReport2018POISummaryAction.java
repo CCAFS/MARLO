@@ -91,7 +91,6 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnershipExternalMai
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaEvaluation;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaEvaluationAction;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisRisk;
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTarget;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTargetCases;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTargetContribution;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget;
@@ -297,6 +296,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     this.reportSynthesisSrfProgressTargetContributionManager = reportSynthesisSrfProgressTargetContributionManager;
     this.crpProgramManager = crpProgramManager;
     this.progressTargetCaseGeographicRegionManager = progressTargetCaseGeographicRegionManager;
+    this.progressTargetCaseGeographicScopeManager = progressTargetCaseGeographicScopeManager;
+    this.progressTargetCaseGeographicCountryManager = progressTargetCaseGeographicCountryManager;
   }
 
   private void addAlmetricCrp() {
@@ -745,8 +746,9 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     POIField[] sHeader = {
       new POIField(this.getText("annualReport.crpProgress.selectSLOTarget"), ParagraphAlignment.CENTER, true,
         blackColor),
-      new POIField(this.getText("summaries.annualReport2018.table1a"), ParagraphAlignment.LEFT, true, blackColor),
-      new POIField(this.getText("summaries.annualReport2018.table1b"), ParagraphAlignment.LEFT, true, blackColor)};
+      new POIField(this.getText("summaries.annualReport2018.table1a"), ParagraphAlignment.CENTER, true, blackColor),
+      new POIField(this.getText("summaries.annualReport2018.table1b"), ParagraphAlignment.CENTER, true, blackColor),
+      new POIField("Geographic Scope", ParagraphAlignment.CENTER, true, blackColor)};
 
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
@@ -757,50 +759,96 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
     List<List<POIField>> datas = new ArrayList<>();
     List<POIField> data;
-
+    List<SrfSloIndicatorTarget> sloTargets = new ArrayList<>(this.getTable1Info());
     data = new ArrayList<>();
     // Table A-1 Evidence on Progress
-    List<ReportSynthesisSrfProgressTarget> listSrfProgressTargets = new ArrayList<>();
 
-    if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisSrfProgress() != null) {
-      if (reportSynthesisPMU.getReportSynthesisSrfProgress().getReportSynthesisSrfProgressTargets() != null) {
-        listSrfProgressTargets = new ArrayList<>(reportSynthesisPMU.getReportSynthesisSrfProgress()
-          .getReportSynthesisSrfProgressTargets().stream().filter(t -> t.isActive()).collect(Collectors.toList()));
-      }
-    }
+    if (reportSynthesisPMU != null && sloTargets != null) {
 
-    if (listSrfProgressTargets != null && !listSrfProgressTargets.isEmpty()) {
-
-      for (ReportSynthesisSrfProgressTarget reportSynthesisSrfProgressTarget : listSrfProgressTargets.stream()
-        .filter(c -> c.getSrfSloIndicatorTarget().getTargetsIndicator() != null)
-        .sorted((c1, c2) -> c1.getSrfSloIndicatorTarget().getTargetsIndicator()
-          .compareTo(c2.getSrfSloIndicatorTarget().getTargetsIndicator()))
-        .collect(Collectors.toList())) {
-        String sloTarget = "", briefSummaries = "", additionalContribution = "";
-        if (reportSynthesisSrfProgressTarget.getSrfSloIndicatorTarget() != null) {
-          if (reportSynthesisSrfProgressTarget.getSrfSloIndicatorTarget().getNarrative() != null
-            && !reportSynthesisSrfProgressTarget.getSrfSloIndicatorTarget().getNarrative().isEmpty()) {
-            sloTarget += " " + reportSynthesisSrfProgressTarget.getSrfSloIndicatorTarget().getNarrative();
-          }
+      for (SrfSloIndicatorTarget sloTarget : sloTargets) {
+        String sloTargetSummary = "", briefSummaries = "", additionalContribution = "", geographicScope = "";
+        if (sloTarget.getNarrative() != null && !sloTarget.getNarrative().isEmpty()) {
+          sloTargetSummary = sloTarget.getNarrative();
         }
 
-        // TODO the replaceAll() is a temporal solution. we need to check where the problem comes from
-        briefSummaries = reportSynthesisSrfProgressTarget.getBirefSummary() != null
-          ? reportSynthesisSrfProgressTarget.getBirefSummary().replaceAll("&amp;", "&") : "";
+        if (sloTarget.getTargetCases() != null && !sloTarget.getTargetCases().isEmpty()) {
 
-        additionalContribution = reportSynthesisSrfProgressTarget.getAdditionalContribution() != null
-          ? reportSynthesisSrfProgressTarget.getAdditionalContribution() : "";
+          int count = 1;
+          for (ReportSynthesisSrfProgressTargetCases targetCase : sloTarget.getTargetCases()) {
+            if (targetCase != null) {
 
+              briefSummaries = "Contribution" + count + "\n";
+              additionalContribution = "Contribution" + count + "\n";
+              geographicScope = "Contribution" + count + "\n";
 
+              if (targetCase.getBriefSummary() != null && !targetCase.getBriefSummary().isEmpty()) {
+                briefSummaries = targetCase.getBriefSummary();
+              }
+              if (targetCase.getAdditionalContribution() != null && !targetCase.getAdditionalContribution().isEmpty()) {
+                additionalContribution = targetCase.getAdditionalContribution();
+              }
+
+              if (targetCase.getGeographicScopes() != null && !targetCase.getGeographicScopes().isEmpty()) {
+                boolean hasRegions = false, hasCountries = false;
+                geographicScope += "Geographic Scope:";
+                for (ProgressTargetCaseGeographicScope geScope : targetCase.getGeographicScopes()) {
+                  if (geScope != null && geScope.getRepIndGeographicScope() != null
+                    && geScope.getRepIndGeographicScope().getName() != null
+                    && !geScope.getRepIndGeographicScope().getName().isEmpty()) {
+                    geographicScope += "\n  " + geScope.getRepIndGeographicScope().getName();
+                  }
+
+                  if (geScope.getRepIndGeographicScope().getId() == 2) {
+                    hasRegions = true;
+                  }
+
+                  if (geScope.getRepIndGeographicScope().getId() == 3 || geScope.getRepIndGeographicScope().getId() == 4
+                    || geScope.getRepIndGeographicScope().getId() == 5) {
+                    hasCountries = true;
+                  }
+                }
+
+                if (targetCase.getGeographicRegions() != null && !targetCase.getGeographicRegions().isEmpty()
+                  && hasRegions) {
+                  geographicScope += "\n Regions: \n";
+                  for (ProgressTargetCaseGeographicRegion region : targetCase.getGeographicRegions()) {
+                    if (region != null && region.getLocElement() != null && region.getLocElement().getName() != null
+                      && !region.getLocElement().getName().isEmpty()) {
+                      geographicScope += region.getLocElement().getName() + ", ";
+                    }
+                  }
+                }
+
+                if (targetCase.getGeographicScopes() != null && !targetCase.getGeographicScopes().isEmpty()
+                  && hasCountries) {
+                  geographicScope += "\n Countries: \n";
+                  for (ProgressTargetCaseGeographicCountry country : targetCase.getCountries()) {
+                    if (country != null && country.getLocElement() != null && country.getLocElement().getName() != null
+                      && !country.getLocElement().getName().isEmpty()) {
+                      geographicScope += country.getLocElement().getName() + ", ";
+                    }
+                  }
+                }
+              }
+
+              briefSummaries = "\n \n";
+              additionalContribution = "\n \n";
+              geographicScope = "\n \n";
+              count++;
+            }
+
+          }
+
+        }
         Boolean bold = false;
         POIField[] sData =
-          {new POIField(poiSummary.replaceHTMLTags(sloTarget), ParagraphAlignment.LEFT, bold, blackColor),
+          {new POIField(poiSummary.replaceHTMLTags(sloTargetSummary), ParagraphAlignment.LEFT, bold, blackColor),
             new POIField(this.deleteSpanTags(briefSummaries), ParagraphAlignment.LEFT, true),
-            new POIField(additionalContribution, ParagraphAlignment.LEFT, true)};
+            new POIField(additionalContribution, ParagraphAlignment.LEFT, true),
+            new POIField(geographicScope, ParagraphAlignment.LEFT, true)};
         data = Arrays.asList(sData);
         datas.add(data);
       }
-
     }
     poiSummary.textTable(document, headers, datas, true, "tableA1AnnualReport2018");
   }
@@ -3512,41 +3560,42 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
           // Fill target cases
           for (ReportSynthesisSrfProgressTargetCases targetCase : targetCases) {
-            List<ProgressTargetCaseGeographicScope> targetCaseGeographicScopes;
+            if (targetCase != null && targetCase.getId() != null) {
+              List<ProgressTargetCaseGeographicScope> targetCaseGeographicScopes = new ArrayList<>();
 
-            // Geographic Scope
-            targetCaseGeographicScopes =
-              progressTargetCaseGeographicScopeManager.findGeographicScopeByTargetCase(targetCase.getId());
+              // Geographic Scope
+              targetCaseGeographicScopes =
+                progressTargetCaseGeographicScopeManager.findGeographicScopeByTargetCase(targetCase.getId());
 
-            if (targetCaseGeographicScopes != null) {
-              targetCase.setGeographicScopes(targetCaseGeographicScopes);
-            }
+              if (targetCaseGeographicScopes != null) {
+                targetCase.setGeographicScopes(targetCaseGeographicScopes);
+              }
 
-            // Geographic regions
-            List<ProgressTargetCaseGeographicRegion> targetCaseGeographicRegions;
-            targetCaseGeographicRegions =
-              progressTargetCaseGeographicRegionManager.findGeographicRegionByTargetCase(targetCase.getId());
+              // Geographic regions
+              List<ProgressTargetCaseGeographicRegion> targetCaseGeographicRegions;
+              targetCaseGeographicRegions =
+                progressTargetCaseGeographicRegionManager.findGeographicRegionByTargetCase(targetCase.getId());
 
-            if (targetCaseGeographicRegions != null) {
-              targetCase.setGeographicRegions(targetCaseGeographicRegions);
-            }
+              if (targetCaseGeographicRegions != null) {
+                targetCase.setGeographicRegions(targetCaseGeographicRegions);
+              }
 
-            // Geographic countries
-            List<ProgressTargetCaseGeographicCountry> targetCaseGeographicCountries;
-            targetCaseGeographicCountries =
-              progressTargetCaseGeographicCountryManager.findGeographicCountryByTargetCase(targetCase.getId());
+              // Geographic countries
+              List<ProgressTargetCaseGeographicCountry> targetCaseGeographicCountries;
+              targetCaseGeographicCountries =
+                progressTargetCaseGeographicCountryManager.findGeographicCountryByTargetCase(targetCase.getId());
 
-            if (targetCaseGeographicCountries != null) {
-              // targetCase.setGeographicCountries(targetCaseGeographicCountries);
-              targetCase.setCountries(targetCaseGeographicCountries);
+              if (targetCaseGeographicCountries != null) {
+                targetCase.setCountries(targetCaseGeographicCountries);
 
-              if (targetCase.getCountries() != null) {
-                for (ProgressTargetCaseGeographicCountry country : targetCase.getCountries()) {
-                  targetCase.getCountriesIds().add(country.getLocElement().getIsoAlpha2());
+                if (targetCase.getCountries() != null) {
+                  for (ProgressTargetCaseGeographicCountry country : targetCase.getCountries()) {
+                    targetCase.getCountriesIds().add(country.getLocElement().getIsoAlpha2());
+                  }
                 }
               }
+              targetCase.setLiaisonInstitution(pmuInstitution);
             }
-            targetCase.setLiaisonInstitution(pmuInstitution);
           }
 
           targetCases.addAll(target.getTargetCases());
