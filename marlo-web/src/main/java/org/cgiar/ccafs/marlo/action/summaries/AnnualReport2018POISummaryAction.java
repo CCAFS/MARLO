@@ -789,7 +789,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
               if (targetCase.getGeographicScopes() != null && !targetCase.getGeographicScopes().isEmpty()) {
                 boolean hasRegions = false, hasCountries = false;
-                geographicScope = "  •Geographic Scope: ";
+                geographicScope = " •Geographic Scope: ";
                 for (ProgressTargetCaseGeographicScope geScope : targetCase.getGeographicScopes()) {
                   if (geScope != null && geScope.getRepIndGeographicScope() != null
                     && geScope.getRepIndGeographicScope().getName() != null
@@ -806,30 +806,45 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
                     hasCountries = true;
                   }
                 }
-                geographicScope += "\n";
+                if (geographicScope.contains(",")) {
+                  StringBuilder textBuilder = new StringBuilder(geographicScope);
+                  textBuilder.setCharAt(geographicScope.lastIndexOf(","), '.');
+                  geographicScope = textBuilder.toString();
+                  geographicScope = geographicScope += "\n";
+                }
 
                 if (targetCase.getGeographicRegions() != null && !targetCase.getGeographicRegions().isEmpty()
                   && hasRegions) {
-                  regions = "   •Regions: ";
+                  regions = "  •Regions: ";
                   for (ProgressTargetCaseGeographicRegion region : targetCase.getGeographicRegions()) {
                     if (region != null && region.getLocElement() != null && region.getLocElement().getName() != null
                       && !region.getLocElement().getName().isEmpty()) {
                       regions += region.getLocElement().getName() + ", ";
                     }
                   }
-                  regions += "\n";
+                  if (regions.contains(",")) {
+                    StringBuilder textBuilder2 = new StringBuilder(regions);
+                    textBuilder2.setCharAt(regions.lastIndexOf(","), '.');
+                    regions = textBuilder2.toString();
+                    regions = regions += "\n";
+                  }
                 }
 
                 if (targetCase.getGeographicScopes() != null && !targetCase.getGeographicScopes().isEmpty()
                   && hasCountries) {
-                  countries = "   •Countries: ";
+                  countries = "  •Countries: ";
                   for (ProgressTargetCaseGeographicCountry country : targetCase.getCountries()) {
                     if (country != null && country.getLocElement() != null && country.getLocElement().getName() != null
                       && !country.getLocElement().getName().isEmpty()) {
                       countries += country.getLocElement().getName() + ", ";
                     }
                   }
-                  countries += "\n";
+                  if (countries.contains(",")) {
+                    StringBuilder textBuilder2 = new StringBuilder(countries);
+                    textBuilder2.setCharAt(countries.lastIndexOf(","), '.');
+                    countries = textBuilder2.toString();
+                    countries += "\n";
+                  }
                 }
               }
             }
