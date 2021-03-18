@@ -98,7 +98,6 @@ public class CrpPhasesAction extends BaseAction {
         }
         phaseManager.savePhase(phase);
         if (phase.getId().equals(defaultPhaseID)) {
-          System.out.println(" phase ID " + defaultPhaseID);
           for (CustomParameter customParameter : loggedCrp.getCustomParameters().stream().filter(c -> c.isActive())
             .collect(Collectors.toList())) {
             if (customParameter.getParameter().getKey().equals(APConstants.CURRENT_PHASE_PARAM)) {
