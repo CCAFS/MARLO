@@ -1069,9 +1069,12 @@ public class SrfProgressAction extends BaseAction {
               srfTargetSave.setBriefSummary(srfTarget.getBriefSummary());
               srfTargetSave.setAdditionalContribution(srfTarget.getAdditionalContribution());
               srfTargetSave.setActive(true);
-
-              srfTarget =
+              ReportSynthesisSrfProgressTargetCases targetTemp = new ReportSynthesisSrfProgressTargetCases();
+              targetTemp =
                 reportSynthesisSrfProgressTargetCasesManager.saveReportSynthesisSrfProgressTargetCases(srfTargetSave);
+              if (targetTemp != null && targetTemp.getId() != null) {
+                srfTarget.setId(targetTemp.getId());
+              }
             } else {
               targetsCasesIDs.add(srfTarget.getId());
               ReportSynthesisSrfProgressTargetCases srfTargetPrev = reportSynthesisSrfProgressTargetCasesManager
@@ -1465,7 +1468,7 @@ public class SrfProgressAction extends BaseAction {
   public void validate() {
     if (save) {
       if (this.isPMU()) {
-        validator.validateCheckButton(this, reportSynthesis, true);
+        validator.validateCheckButton(this, reportSynthesis, true, sloTargets);
       } else {
         validator.validate(this, reportSynthesis, true, sloTargets);
       }

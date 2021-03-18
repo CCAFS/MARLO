@@ -17,12 +17,15 @@ function getContributionListComponentValue(contributionData){
   let geographicScopeString='';
   let regionString='';
   let countriesString='';
+  let countriesStringV2='';
 
   geographicScope.forEach(geoData => {
     geographicScopeString += `<p> - ${geoData.name}</p>`;
 
     if (geoData.name == "National") {
-      console.log("tiene nacional y no se hace nada");
+      geoData.element.forEach(nationalData => {
+        countriesStringV2 += `<p> - ${nationalData.name}</p>`;
+      });
     }
 
     if (geoData.name == "Multi-national") {
@@ -41,11 +44,6 @@ function getContributionListComponentValue(contributionData){
 
 
   geographicScopeString = geographicScopeString == '' ? '<p>  Not available</p>':geographicScopeString;
-  // regionString = regionString == '' ? '<p>  Not available</p>':regionString;
-  // countriesString = countriesString == '' ? '<p>  Not available</p>':countriesString;
-  // additionalContribution = additionalContribution ? '<p>  Not available</p>':additionalContribution;
-  // summary = summary == '' ? '<p>  Not available</p>':summary;
-
 
 
   return `
@@ -64,8 +62,8 @@ function getContributionListComponentValue(contributionData){
       <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px; margin-top: 10px;display: ${regionString==''?'none':'block'};">Regions:</p>
       ${regionString} 
 
-      <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px; margin-top: 10px;display: ${countriesString==''?'none':'block'};">Country(ies):</p>
-      ${countriesString} 
+      <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px; margin-top: 10px;display: ${(countriesString=='' && countriesStringV2=='')?'none':'block'};">Country(ies):</p>
+      ${countriesString||countriesStringV2} 
       
       <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px;">Brief summary of new evidence of CGIAR contribution:</p>
       <p>${summary||"Not available"}</p>
@@ -107,10 +105,15 @@ function getTargetCasesBySLO(){
 
 
 function contributionListComponentInsertHTML(data,id){
+  console.log('%cID: '+id,'background: #222; color: #fd8484');
+  console.log(data);
   data.sources.forEach((item,index) => {
     $('.insertHtmlSlo-tabs-'+id).append(`<li role="presentation" class="${index==0?'active':''}" ><a href="#${item.id}-${id}-tab" aria-controls="${item.id}-${id}-tab" role="tab" data-toggle="tab">${item.id}</a></li>`);
     $('.insertHtmlSlo-tabpanel-'+id).append(`<div role="tabpanel" class="tab-pane ${index==0?'active':''}" id="${item.id}-${id}-tab" style="overflow-y: scroll; max-height: 700px;"></div>`);
-
+    if (item.contribution.length == 0) {
+      $(`#${item.id}-${id}-tab`).append(`<p class="tb1-Fp-noData"><span class="glyphicon glyphicon-info-sign" style="margin-right: 7px; position: relative; top:3px"></span>No Flagships information</p>`);
+      $(`#${item.id}-${id}-tab`).css("overflow-y", "unset"); 
+    }
     item.contribution.forEach(contributionData => {
       $(`#${item.id}-${id}-tab`).append(getContributionListComponentValue(contributionData));
     });
@@ -162,7 +165,7 @@ $(document).ready(function() {
         ]
     });
 
-    $tableInnovationsHTML = $('.tableInnovations-block table');
+    $tableInnovationsHTML = $('.tableNoPaginator-block table');
     tableInnovations = $tableInnovationsHTML.DataTable({
       "paging": false,
       "searching": true,
@@ -333,7 +336,7 @@ function setStatusByBack() {
       // console.log($(field).find(".checkboxDiTeArClick").val());
 
       let checkbox = $(field).find(".checkboxDiTeArClick");
-      console.log($(checkbox).val());
+      // console.log($(checkbox).val());
 
 
 
@@ -487,10 +490,10 @@ function updateAllIndexesContribution() {
 }
 
 function changeButtonText() {
-  if ($(this).text() == 'Show flagship information') {
-    $(this).text('Hide flagship information');
+  if ($(this).text() == 'Show flagships information') {
+    $(this).text('Hide flagships information');
   } else {
-    $(this).text('Show flagship information');
+    $(this).text('Show flagships information');
   }
 }
 
