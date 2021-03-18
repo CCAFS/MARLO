@@ -191,6 +191,7 @@ public class DeliverablesItem<T> {
         deliverableInfo.setYear(deliverable.getPhase().getYear());
         deliverableInfo.setDeliverableType(deliverableType);
         deliverableInfo.setPhase(phase);
+
         deliverableInfo.setStatus(APConstants.CLARISA_PUBLICATIONS_STATUS);
         deliverableInfo.setModificationJustification(APConstants.MESSAGE_MODIFICATION_JUSTIFICATION
           + sdf.format(new Date(Calendar.getInstance().getTimeInMillis())));
@@ -205,7 +206,7 @@ public class DeliverablesItem<T> {
         deliverableDissemination.setDeliverable(deliverable);
         deliverableDissemination.setArticleUrl(deliverableDTO.getArticleURL());
         deliverableDissemination.setDisseminationChannel("other");
-        deliverableDissemination.setDisseminationUrl(DOIService.tryGetDoiName(deliverableDTO.getDoi()));
+        deliverableDissemination.setDisseminationUrl("Not Defined");
         deliverableDissemination.setPhase(phase);
         deliverableDisseminationManager.saveDeliverableDissemination(deliverableDissemination);
 
@@ -370,7 +371,7 @@ public class DeliverablesItem<T> {
                 }
                 deliverableMetadataExternalSources = deliverableMetadataExternalSourcesManager
                   .saveDeliverableMetadataExternalSources(deliverableMetadataExternalSources);
-                deliverableMetadataExternalSourcesManager.replicate(deliverableMetadataExternalSources, phase);
+                // deliverableMetadataExternalSourcesManager.replicate(deliverableMetadataExternalSources, phase);
 
                 // save institutions with a percentage above APCONSTANT percentage acceptance in deliverable affiliation
                 // save institutions with a percentage below APCONSTANT percentage acceptance in deliverable affiliation
@@ -390,7 +391,7 @@ public class DeliverablesItem<T> {
                     deliverableAffiliation.setDeliverable(deliverable);
                     deliverableAffiliation =
                       deliverableAffiliationManager.saveDeliverableAffiliation(deliverableAffiliation);
-                    deliverableAffiliationManager.replicate(deliverableAffiliation, phase);
+                    // deliverableAffiliationManager.replicate(deliverableAffiliation, phase);
                   }
                   if (institution.getConfidant() != null
                     && (institution.getConfidant().longValue() < APConstants.ACCEPTATION_PERCENTAGE
@@ -408,7 +409,7 @@ public class DeliverablesItem<T> {
                       ? institutionManager.getInstitutionById(institution.getClarisa_id()) : null);
                     deliverableAffiliationsNotMapped = deliverableAffiliationsNotMappedManager
                       .saveDeliverableAffiliationsNotMapped(deliverableAffiliationsNotMapped);
-                    deliverableAffiliationsNotMappedManager.replicate(deliverableAffiliationsNotMapped, phase);
+                    // deliverableAffiliationsNotMappedManager.replicate(deliverableAffiliationsNotMapped, phase);
                   }
                 }
                 // save authors of WOS external sources authors
@@ -421,7 +422,7 @@ public class DeliverablesItem<T> {
                     externalSourceAuthor.setCreatedBy(user);
                     externalSourceAuthor.setFullName(author.getFull_name());
                     externalSourceAuthor = externalSourceAuthorManager.saveExternalSourceAuthor(externalSourceAuthor);
-                    externalSourceAuthorManager.replicate(externalSourceAuthor, phase);
+                    // externalSourceAuthorManager.replicate(externalSourceAuthor, phase);
                   }
                 }
                 // save altmetrics information in deliverable altmetrics
@@ -506,7 +507,7 @@ public class DeliverablesItem<T> {
                   altmetrics.setImageLarge(publication.getAltmetric().getImages() != null
                     ? publication.getAltmetric().getImages().getLarge() : null);
                   altmetrics = deliverableAltmetricInfoManager.saveDeliverableAltmetricInfo(altmetrics);
-                  deliverableAltmetricInfoManager.replicate(altmetrics, phase);
+                  // deliverableAltmetricInfoManager.replicate(altmetrics, phase);
                 }
               }
             }
@@ -593,7 +594,7 @@ public class DeliverablesItem<T> {
         deliverableDissemination.setDeliverable(deliverable);
         deliverableDissemination.setArticleUrl(deliverableDTO.getArticleURL());
         deliverableDissemination.setDisseminationChannel("other");
-        deliverableDissemination.setDisseminationUrl(DOIService.tryGetDoiName(deliverableDTO.getDoi()));
+        deliverableDissemination.setDisseminationUrl("Not Defined");
         deliverableDissemination.setPhase(phase);
         deliverableDisseminationManager.saveDeliverableDissemination(deliverableDissemination);
 
@@ -734,7 +735,7 @@ public class DeliverablesItem<T> {
                 }
                 deliverableMetadataExternalSources = deliverableMetadataExternalSourcesManager
                   .saveDeliverableMetadataExternalSources(deliverableMetadataExternalSources);
-                deliverableMetadataExternalSourcesManager.replicate(deliverableMetadataExternalSources, phase);
+                // deliverableMetadataExternalSourcesManager.replicate(deliverableMetadataExternalSources, phase);
 
                 // save institutions with a percentage above APCONSTANT percentage acceptance in deliverable affiliation
                 // save institutions with a percentage below APCONSTANT percentage acceptance in deliverable affiliation
@@ -754,7 +755,7 @@ public class DeliverablesItem<T> {
                     deliverableAffiliation.setDeliverable(deliverable);
                     deliverableAffiliation =
                       deliverableAffiliationManager.saveDeliverableAffiliation(deliverableAffiliation);
-                    deliverableAffiliationManager.replicate(deliverableAffiliation, phase);
+                    // deliverableAffiliationManager.replicate(deliverableAffiliation, phase);
                   }
                   if (institution.getConfidant() != null
                     && (institution.getConfidant().longValue() < APConstants.ACCEPTATION_PERCENTAGE
@@ -772,7 +773,7 @@ public class DeliverablesItem<T> {
                       ? institutionManager.getInstitutionById(institution.getClarisa_id()) : null);
                     deliverableAffiliationsNotMapped = deliverableAffiliationsNotMappedManager
                       .saveDeliverableAffiliationsNotMapped(deliverableAffiliationsNotMapped);
-                    deliverableAffiliationsNotMappedManager.replicate(deliverableAffiliationsNotMapped, phase);
+                    // deliverableAffiliationsNotMappedManager.replicate(deliverableAffiliationsNotMapped, phase);
                   }
                 }
                 // save authors of WOS external sources authors
@@ -785,7 +786,7 @@ public class DeliverablesItem<T> {
                     externalSourceAuthor.setCreatedBy(user);
                     externalSourceAuthor.setFullName(author.getFull_name());
                     externalSourceAuthor = externalSourceAuthorManager.saveExternalSourceAuthor(externalSourceAuthor);
-                    externalSourceAuthorManager.replicate(externalSourceAuthor, phase);
+                    // externalSourceAuthorManager.replicate(externalSourceAuthor, phase);
                   }
                 }
                 // save altmetrics information in deliverable altmetrics
@@ -870,7 +871,7 @@ public class DeliverablesItem<T> {
                   altmetrics.setImageLarge(publication.getAltmetric().getImages() != null
                     ? publication.getAltmetric().getImages().getLarge() : null);
                   altmetrics = deliverableAltmetricInfoManager.saveDeliverableAltmetricInfo(altmetrics);
-                  deliverableAltmetricInfoManager.replicate(altmetrics, phase);
+                  // deliverableAltmetricInfoManager.replicate(altmetrics, phase);
                 }
               }
             }
@@ -1333,7 +1334,7 @@ public class DeliverablesItem<T> {
         }
         deliverableDissemination.setIsOpenAccess(newPublicationDTO.getIsOpenAccess());
         deliverableDissemination.setDeliverable(deliverable);
-        deliverableDissemination.setDisseminationUrl(DOIService.tryGetDoiName(newPublicationDTO.getDoi()));
+        deliverableDissemination.setDisseminationUrl("Not Defined");
         deliverableDissemination.setDisseminationChannel("other");
         deliverableDissemination.setArticleUrl(newPublicationDTO.getArticleURL());
         deliverableDissemination.setPhase(phase);
@@ -1510,7 +1511,7 @@ public class DeliverablesItem<T> {
               }
               deliverableMetadataExternalSources = deliverableMetadataExternalSourcesManager
                 .saveDeliverableMetadataExternalSources(deliverableMetadataExternalSources);
-              deliverableMetadataExternalSourcesManager.replicate(deliverableMetadataExternalSources, phase);
+              // deliverableMetadataExternalSourcesManager.replicate(deliverableMetadataExternalSources, phase);
 
               // save institutions with a percentage above APCONSTANT percentage acceptance in deliverable affiliation
               for (PublicationInstitutionWOS institution : publication.getOrganizations()) {
@@ -1547,7 +1548,7 @@ public class DeliverablesItem<T> {
                   deliverableAffiliation.setDeliverable(deliverable);
                   deliverableAffiliation =
                     deliverableAffiliationManager.saveDeliverableAffiliation(deliverableAffiliation);
-                  deliverableAffiliationManager.replicate(deliverableAffiliation, phase);
+                  // deliverableAffiliationManager.replicate(deliverableAffiliation, phase);
                 }
                 // save institutions with a percentage below APCONSTANT percentage acceptance in deliverable
                 // affiliation not mapped
@@ -1566,7 +1567,7 @@ public class DeliverablesItem<T> {
                     ? institutionManager.getInstitutionById(institution.getClarisa_id()) : null);
                   deliverableAffiliationsNotMapped = deliverableAffiliationsNotMappedManager
                     .saveDeliverableAffiliationsNotMapped(deliverableAffiliationsNotMapped);
-                  deliverableAffiliationsNotMappedManager.replicate(deliverableAffiliationsNotMapped, phase);
+                  // deliverableAffiliationsNotMappedManager.replicate(deliverableAffiliationsNotMapped, phase);
                 }
               }
 
@@ -1614,12 +1615,12 @@ public class DeliverablesItem<T> {
               }
               for (DeliverableAffiliation dataDelete : affiliationsDelete) {
                 deliverableAffiliationManager.deleteDeliverableAffiliation(dataDelete.getId());
-                deliverableAffiliationManager.replicate(dataDelete, phase);
+                // deliverableAffiliationManager.replicate(dataDelete, phase);
               }
 
               for (DeliverableAffiliationsNotMapped dataDelete : affiliationsNotMappedDelete) {
                 deliverableAffiliationsNotMappedManager.deleteDeliverableAffiliationsNotMapped(dataDelete.getId());
-                deliverableAffiliationsNotMappedManager.replicate(dataDelete, phase);
+                // deliverableAffiliationsNotMappedManager.replicate(dataDelete, phase);
               }
 
               // delete all authors and insert again
@@ -1632,7 +1633,7 @@ public class DeliverablesItem<T> {
                   externalSourceAuthor.setCreatedBy(user);
                   externalSourceAuthor.setFullName(author.getFull_name());
                   externalSourceAuthor = externalSourceAuthorManager.saveExternalSourceAuthor(externalSourceAuthor);
-                  externalSourceAuthorManager.replicate(externalSourceAuthor, phase);
+                  // externalSourceAuthorManager.replicate(externalSourceAuthor, phase);
                 }
               }
               // save altmetrics information in deliverable altmetrics
@@ -1717,7 +1718,7 @@ public class DeliverablesItem<T> {
                 altmetrics.setImageLarge(publication.getAltmetric().getImages() != null
                   ? publication.getAltmetric().getImages().getLarge() : null);
                 altmetrics = deliverableAltmetricInfoManager.saveDeliverableAltmetricInfo(altmetrics);
-                deliverableAltmetricInfoManager.replicate(altmetrics, phase);
+                // deliverableAltmetricInfoManager.replicate(altmetrics, phase);
               }
 
             }
@@ -1857,7 +1858,7 @@ public class DeliverablesItem<T> {
         deliverableDissemination.setDeliverable(deliverable);
         deliverableDissemination.setArticleUrl(newPublicationDTO.getArticleURL());
         deliverableDissemination.setDisseminationChannel("other");
-        deliverableDissemination.setDisseminationUrl(DOIService.tryGetDoiName(newPublicationDTO.getDoi()));
+        deliverableDissemination.setDisseminationUrl("Not Defined");
         deliverableDissemination.setPhase(phase);
         deliverableDisseminationManager.saveDeliverableDissemination(deliverableDissemination);
 
@@ -1997,7 +1998,7 @@ public class DeliverablesItem<T> {
                 }
                 deliverableMetadataExternalSources = deliverableMetadataExternalSourcesManager
                   .saveDeliverableMetadataExternalSources(deliverableMetadataExternalSources);
-                deliverableMetadataExternalSourcesManager.replicate(deliverableMetadataExternalSources, phase);
+                // deliverableMetadataExternalSourcesManager.replicate(deliverableMetadataExternalSources, phase);
 
                 // save institutions with a percentage above APCONSTANT percentage acceptance in deliverable affiliation
                 for (PublicationInstitutionWOS institution : publication.getOrganizations()) {
@@ -2027,7 +2028,7 @@ public class DeliverablesItem<T> {
                     deliverableAffiliation.setDeliverable(deliverable);
                     deliverableAffiliation =
                       deliverableAffiliationManager.saveDeliverableAffiliation(deliverableAffiliation);
-                    deliverableAffiliationManager.replicate(deliverableAffiliation, phase);
+                    // deliverableAffiliationManager.replicate(deliverableAffiliation, phase);
                   }
                   // save institutions with a percentage below APCONSTANT percentage acceptance in deliverable
                   // affiliation not mapped
@@ -2047,7 +2048,7 @@ public class DeliverablesItem<T> {
                       ? institutionManager.getInstitutionById(institution.getClarisa_id()) : null);
                     deliverableAffiliationsNotMapped = deliverableAffiliationsNotMappedManager
                       .saveDeliverableAffiliationsNotMapped(deliverableAffiliationsNotMapped);
-                    deliverableAffiliationsNotMappedManager.replicate(deliverableAffiliationsNotMapped, phase);
+                    // deliverableAffiliationsNotMappedManager.replicate(deliverableAffiliationsNotMapped, phase);
                   }
                 }
 
@@ -2099,12 +2100,12 @@ public class DeliverablesItem<T> {
                 }
                 for (DeliverableAffiliation dataDelete : affiliationsDelete) {
                   deliverableAffiliationManager.deleteDeliverableAffiliation(dataDelete.getId());
-                  deliverableAffiliationManager.replicate(dataDelete, phase);
+                  // deliverableAffiliationManager.replicate(dataDelete, phase);
                 }
 
                 for (DeliverableAffiliationsNotMapped dataDelete : affiliationsNotMappedDelete) {
                   deliverableAffiliationsNotMappedManager.deleteDeliverableAffiliationsNotMapped(dataDelete.getId());
-                  deliverableAffiliationsNotMappedManager.replicate(dataDelete, phase);
+                  // deliverableAffiliationsNotMappedManager.replicate(dataDelete, phase);
                 }
 
                 // delete all authors and insert again
@@ -2117,7 +2118,7 @@ public class DeliverablesItem<T> {
                     externalSourceAuthor.setCreatedBy(user);
                     externalSourceAuthor.setFullName(author.getFull_name());
                     externalSourceAuthor = externalSourceAuthorManager.saveExternalSourceAuthor(externalSourceAuthor);
-                    externalSourceAuthorManager.replicate(externalSourceAuthor, phase);
+                    // externalSourceAuthorManager.replicate(externalSourceAuthor, phase);
                   }
                 }
                 // save altmetrics information in deliverable altmetrics
@@ -2202,7 +2203,7 @@ public class DeliverablesItem<T> {
                   altmetrics.setImageLarge(publication.getAltmetric().getImages() != null
                     ? publication.getAltmetric().getImages().getLarge() : null);
                   altmetrics = deliverableAltmetricInfoManager.saveDeliverableAltmetricInfo(altmetrics);
-                  deliverableAltmetricInfoManager.replicate(altmetrics, phase);
+                  // deliverableAltmetricInfoManager.replicate(altmetrics, phase);
                 }
               }
             }
