@@ -761,7 +761,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       String sloTargetPrev = "";
       for (SrfSloIndicatorTarget sloTarget : sloTargets) {
         String sloTargetSummary = "", briefSummaries = "", additionalContribution = "", geographicScope = "",
-          checkContributing = "";
+          regions = "", countries = "", checkContributing = "";
 
         // Slo Target Name
         if (sloTarget.getNarrative() != null && !sloTarget.getNarrative().isEmpty()) {
@@ -789,12 +789,12 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
               if (targetCase.getGeographicScopes() != null && !targetCase.getGeographicScopes().isEmpty()) {
                 boolean hasRegions = false, hasCountries = false;
-                geographicScope += "-Geographic Scope:";
+                geographicScope = "  •Geographic Scope: ";
                 for (ProgressTargetCaseGeographicScope geScope : targetCase.getGeographicScopes()) {
                   if (geScope != null && geScope.getRepIndGeographicScope() != null
                     && geScope.getRepIndGeographicScope().getName() != null
                     && !geScope.getRepIndGeographicScope().getName().isEmpty()) {
-                    geographicScope += "\n  " + geScope.getRepIndGeographicScope().getName();
+                    geographicScope += " " + geScope.getRepIndGeographicScope().getName() + ", ";
                   }
 
                   if (geScope.getRepIndGeographicScope().getId() == 2) {
@@ -806,33 +806,32 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
                     hasCountries = true;
                   }
                 }
+                geographicScope += "\n";
 
                 if (targetCase.getGeographicRegions() != null && !targetCase.getGeographicRegions().isEmpty()
                   && hasRegions) {
-                  geographicScope += "\n -Regions: \n";
+                  regions = "   •Regions: ";
                   for (ProgressTargetCaseGeographicRegion region : targetCase.getGeographicRegions()) {
                     if (region != null && region.getLocElement() != null && region.getLocElement().getName() != null
                       && !region.getLocElement().getName().isEmpty()) {
-                      geographicScope += region.getLocElement().getName() + ", ";
+                      regions += region.getLocElement().getName() + ", ";
                     }
                   }
+                  regions += "\n";
                 }
 
                 if (targetCase.getGeographicScopes() != null && !targetCase.getGeographicScopes().isEmpty()
                   && hasCountries) {
-                  geographicScope += "\n -Countries: \n";
+                  countries = "   •Countries: ";
                   for (ProgressTargetCaseGeographicCountry country : targetCase.getCountries()) {
                     if (country != null && country.getLocElement() != null && country.getLocElement().getName() != null
                       && !country.getLocElement().getName().isEmpty()) {
-                      geographicScope += country.getLocElement().getName() + ", ";
+                      countries += country.getLocElement().getName() + ", ";
                     }
                   }
+                  countries += "\n";
                 }
               }
-
-              briefSummaries += "\n \n";
-              additionalContribution += "\n \n";
-              geographicScope += "\n \n";
             }
 
             if (sloTargetPrev.equals(sloTargetSummary)) {
@@ -842,8 +841,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
             POIField[] sData =
               {new POIField(poiSummary.replaceHTMLTags(sloTargetSummary), ParagraphAlignment.LEFT, bold, blackColor),
                 new POIField(this.deleteSpanTags(briefSummaries), ParagraphAlignment.LEFT, true),
-                new POIField(additionalContribution, ParagraphAlignment.LEFT, true),
-                new POIField(geographicScope, ParagraphAlignment.LEFT, true)};
+                new POIField(this.deleteSpanTags(additionalContribution), ParagraphAlignment.LEFT, true),
+                new POIField(geographicScope + " " + regions + " " + countries, ParagraphAlignment.LEFT, true)};
             data = Arrays.asList(sData);
             datas.add(data);
             sloTargetPrev = sloTargetSummary;
@@ -852,9 +851,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           Boolean bold = false;
           POIField[] sData =
             {new POIField(poiSummary.replaceHTMLTags(sloTargetSummary), ParagraphAlignment.LEFT, bold, blackColor),
-              new POIField(this.deleteSpanTags(briefSummaries), ParagraphAlignment.LEFT, true),
-              new POIField(additionalContribution, ParagraphAlignment.LEFT, true),
-              new POIField(geographicScope, ParagraphAlignment.LEFT, true)};
+              new POIField("", ParagraphAlignment.LEFT, true), new POIField("", ParagraphAlignment.LEFT, true),
+              new POIField("", ParagraphAlignment.LEFT, true)};
           data = Arrays.asList(sData);
           datas.add(data);
         }
