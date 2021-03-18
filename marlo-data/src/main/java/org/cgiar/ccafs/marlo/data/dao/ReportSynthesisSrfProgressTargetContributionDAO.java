@@ -66,6 +66,9 @@ public interface ReportSynthesisSrfProgressTargetContributionDAO {
    */
   public List<ReportSynthesisSrfProgressTargetContribution> findBySloTargetID(long sloTargetID);
 
+  public List<ReportSynthesisSrfProgressTargetContribution> findBySloTargetSynthesis(long sloTargetID,
+    long synthesisID);
+
   /**
    * This method saves the information of the given reportSynthesisSrfProgressTargetContribution
    * 

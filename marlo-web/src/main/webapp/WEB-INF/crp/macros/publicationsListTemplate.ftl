@@ -17,6 +17,8 @@
         <th>[@s.text name="publicationsList.column.title" /]</th>
         [#-- Added by --]
         <th>[@s.text name="publicationsList.column.addedBy" /]</th>
+        [#-- Type --]
+        <th>[@s.text name="publicationsList.column.type" /]</th>
         [#-- Lead partner(s) --]
         <th>[@s.text name="publicationsList.column.lead" /]</th>
         [#-- Flagship / Region --]
@@ -56,6 +58,14 @@
           <td >
               [#if deliverable.createdBy?has_content]
                 ${(deliverable.createdBy.composedName)!}
+              [#else]
+                Not defined
+              [/#if]
+          </td>
+          [#-- Type --]
+          <td >
+              [#if (deliverable.deliverableInfo.deliverableType.name?has_content)!false]
+                ${(deliverable.deliverableInfo.deliverableType.name)!}
               [#else]
                 Not defined
               [/#if]

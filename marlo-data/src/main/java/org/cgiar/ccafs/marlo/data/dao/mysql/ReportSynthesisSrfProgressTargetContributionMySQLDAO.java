@@ -86,6 +86,20 @@ public class ReportSynthesisSrfProgressTargetContributionMySQLDAO
   }
 
   @Override
+  public List<ReportSynthesisSrfProgressTargetContribution> findBySloTargetSynthesis(long sloTargetID,
+    long synthesisID) {
+    String query =
+      "from " + ReportSynthesisSrfProgressTargetContribution.class.getName() + " where srf_slo_indicator_targets_id = "
+        + sloTargetID + " and report_synthesis_srf_progress_id = " + synthesisID;
+    List<ReportSynthesisSrfProgressTargetContribution> list = super.findAll(query);
+    if (!list.isEmpty()) {
+      return list;
+    }
+    return null;
+
+  }
+
+  @Override
   public ReportSynthesisSrfProgressTargetContribution
     save(ReportSynthesisSrfProgressTargetContribution reportSynthesisSrfProgressTargetContribution) {
     if (reportSynthesisSrfProgressTargetContribution.getId() == null) {
