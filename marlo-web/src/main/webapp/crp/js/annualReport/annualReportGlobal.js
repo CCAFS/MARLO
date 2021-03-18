@@ -2,11 +2,133 @@ var $tableViewMore;
 var tableDatatableViewmore, tableDataProgressTableViewmore, tableDatatableTableGrey, tableInnovations, tablePolicies, tableOICRs;
 var pageName;
 var googleChartsLoaded = false;
-$(document).ready(function() {
+
+
+function getContributionListComponentValue(contributionData){
+
+  //Variables
+  const {
+    additionalContribution,
+    geographicScope,
+    summary
+  } = contributionData;
   
+  //strings
+  let geographicScopeString='';
+  let regionString='';
+  let countriesString='';
+  let countriesStringV2='';
+
+  geographicScope.forEach(geoData => {
+    geographicScopeString += `<p> - ${geoData.name}</p>`;
+
+    if (geoData.name == "National") {
+      geoData.element.forEach(nationalData => {
+        countriesStringV2 += `<p> - ${nationalData.name}</p>`;
+      });
+    }
+
+    if (geoData.name == "Multi-national") {
+      geoData.element.forEach(multiNationalData => {
+        countriesString += `<p> - ${multiNationalData.name}</p>`;
+      });
+    }
+
+    if (geoData.name == "Regional") {
+      geoData.element.forEach(regionalData => {
+        regionString += `<p> - ${regionalData.name}</p>`;
+      });
+    }
+
+  });
+
+
+  geographicScopeString = geographicScopeString == '' ? '<p>  Not available</p>':geographicScopeString;
+
+
+  return `
+  <br>
+  <div style="background-color: rgb(250, 250, 250); border-radius: 10px; padding: 7px; position: relative;">
+
+  <div class="leftHead  sm">
+    <!--<span class="index">12</span>-->
+    <span class="index indexSloContribution">...</span>
+  </div>
+
+  <br>
+      <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px; margin-top: 10px;">Geographic scope:</p>
+      ${geographicScopeString}
+     
+      <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px; margin-top: 10px;display: ${regionString==''?'none':'block'};">Regions:</p>
+      ${regionString} 
+
+      <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px; margin-top: 10px;display: ${(countriesString=='' && countriesStringV2=='')?'none':'block'};">Country(ies):</p>
+      ${countriesString||countriesStringV2} 
+      
+      <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px;">Brief summary of new evidence of CGIAR contribution:</p>
+      <p>${summary||"Not available"}</p>
+   
+      <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px;">Expected additional contribution before end of 2022 (if not already fully covered)</p>
+      <p>${additionalContribution||"Not available"}</p>
+</div>
+  
+  `  
+}
+
+function getTargetCasesBySLO(){
+
+    for (let index = 1; index < 11; index++) {
+
+      $.ajax({
+        url: baseURL + '/targetCasesBySLO.do',
+        data: {
+          id: index
+        },
+        beforeSend: function () {
+          // console.log("before");
+        },
+        success: function (data) {
+
+          contributionListComponentInsertHTML(data,index);
+        },
+        error: function (e) {
+          console.log(e);
+        },
+        complete: function () {
+          // console.log("complete"); 
+        }
+      });
+    }
+  
+
+}
+
+
+function contributionListComponentInsertHTML(data,id){
+  console.log('%cID: '+id,'background: #222; color: #fd8484');
+  console.log(data);
+  data.sources.forEach((item,index) => {
+    $('.insertHtmlSlo-tabs-'+id).append(`<li role="presentation" class="${index==0?'active':''}" ><a href="#${item.id}-${id}-tab" aria-controls="${item.id}-${id}-tab" role="tab" data-toggle="tab">${item.id}</a></li>`);
+    $('.insertHtmlSlo-tabpanel-'+id).append(`<div role="tabpanel" class="tab-pane ${index==0?'active':''}" id="${item.id}-${id}-tab" style="overflow-y: scroll; max-height: 700px;"></div>`);
+    if (item.contribution.length == 0) {
+      $(`#${item.id}-${id}-tab`).append(`<p class="tb1-Fp-noData"><span class="glyphicon glyphicon-info-sign" style="margin-right: 7px; position: relative; top:3px"></span>No Flagships information</p>`);
+      $(`#${item.id}-${id}-tab`).css("overflow-y", "unset"); 
+    }
+    item.contribution.forEach(contributionData => {
+      $(`#${item.id}-${id}-tab`).append(getContributionListComponentValue(contributionData));
+    });
+ });
+
+}
+
+$(document).ready(function() {
+
+  getTargetCasesBySLO();
   // $('.slo-contribution-template').find('textarea').trumbowyg("destroy");
 
-  $('.slo-contribution-template').find('select').select2("destroy");
+  if ($('.slo-contribution-template').length) {
+    $('.slo-contribution-template').find('select').select2("destroy");
+  }
   pageName = actionName.replace(/[^a-z0-9+]+/gi, '_');
 
   // Set data tables
@@ -43,7 +165,7 @@ $(document).ready(function() {
         ]
     });
 
-    $tableInnovationsHTML = $('.tableInnovations-block table');
+    $tableInnovationsHTML = $('.tableNoPaginator-block table');
     tableInnovations = $tableInnovationsHTML.DataTable({
       "paging": false,
       "searching": true,
@@ -155,6 +277,7 @@ $(document).ready(function() {
   $('.checkboxDiTeArClick').on('click',setCheckboxValueTohide);
   $('.btn-addEvidence').on('click',addEvidence);
   $('.btn-removeEvidence').on('click',removeEvidence);
+  $('.flagshipBtn').on('click',changeButtonText);
 
     // Deliverable Geographic Scope
     $('select.elementType-repIndGeographicScope').on("addElement removeElement", function(event,id,name) {
@@ -213,7 +336,7 @@ function setStatusByBack() {
       // console.log($(field).find(".checkboxDiTeArClick").val());
 
       let checkbox = $(field).find(".checkboxDiTeArClick");
-      console.log($(checkbox).val());
+      // console.log($(checkbox).val());
 
 
 
@@ -364,6 +487,14 @@ function updateAllIndexesContribution() {
 
   $(document).trigger('updateComponent');
 
+}
+
+function changeButtonText() {
+  if ($(this).text() == 'Show flagships information') {
+    $(this).text('Hide flagships information');
+  } else {
+    $(this).text('Show flagships information');
+  }
 }
 
 function addEvidence() {

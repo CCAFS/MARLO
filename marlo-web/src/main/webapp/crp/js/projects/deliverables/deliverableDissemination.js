@@ -664,7 +664,8 @@ function addDisseminationEvents() {
       console.log('%cOcultar', 'background: #222; color: #fd8484');
       $('.conditionalRequire .requiredTag').slideDown();
       $('.other-url').css("display", "none");
-    }
+      // $('.other-url input').val("");
+    }  
     // }
 
 
@@ -1172,6 +1173,13 @@ function getMetadata(channel, url) {
     },
     success: function (metadata) {
       metadata = metadata.metadata;
+      if (!(metadata.doi != null && metadata.doi != undefined && metadata.doi != "")) {
+        $('.other-url input').val(metadata.otherUrl);
+        $('.isOtherUrlTohide').show('slow');
+        $('.other-url').show('slow');
+        $('.isOtherUrlFiel').val(true);
+        $('input.isOtherUrl').prop('checked', true);
+      }
       if (jQuery.isEmptyObject(metadata)) {
         $('#output-dissemination').html("Metadata empty");
       } else {

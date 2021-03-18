@@ -38,7 +38,7 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
   private Boolean isContributing;
 
   private LiaisonInstitution liaisonInstitution;
-
+  private List<ProgressTargetCaseGeographicCountry> countries;
   private Set<SrfSloIndicatorTarget> srfSloTargets = new HashSet<SrfSloIndicatorTarget>(0);
   private List<SrfSloIndicatorTarget> sloTargets = new ArrayList<>();
 
@@ -65,6 +65,11 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
 
   public String getBriefSummary() {
     return briefSummary;
+  }
+
+
+  public List<ProgressTargetCaseGeographicCountry> getCountries() {
+    return countries;
   }
 
 
@@ -97,7 +102,6 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
     return isContributing;
   }
 
-
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
@@ -113,6 +117,7 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
     return progressTargetCaseGeographicCountries;
   }
 
+
   public Set<ProgressTargetCaseGeographicRegion> getProgressTargetCaseGeographicRegions() {
     return progressTargetCaseGeographicRegions;
   }
@@ -122,7 +127,6 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
     return progressTargetCaseGeographicScopes;
   }
 
-
   public ReportSynthesisSrfProgress getReportSynthesisSrfProgress() {
     return reportSynthesisSrfProgress;
   }
@@ -131,10 +135,10 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
     return sloTargets;
   }
 
+
   public SrfSloIndicatorTarget getSrfSloIndicatorTarget() {
     return srfSloIndicatorTarget;
   }
-
 
   public Set<SrfSloIndicatorTarget> getSrfSloTargets() {
     return srfSloTargets;
@@ -146,6 +150,10 @@ public class ReportSynthesisSrfProgressTargetCases extends MarloAuditableEntity
 
   public void setBriefSummary(String briefSummary) {
     this.briefSummary = briefSummary;
+  }
+
+  public void setCountries(List<ProgressTargetCaseGeographicCountry> countries) {
+    this.countries = countries;
   }
 
   public void setCountriesIds(List<String> countriesIds) {
