@@ -753,33 +753,32 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
 
-    /*
-     * Get all crp Progress Targets and compare the slo indicador Target id with the actual slotarget id
-     */
-
     List<List<POIField>> datas = new ArrayList<>();
     List<POIField> data;
     List<SrfSloIndicatorTarget> sloTargets = new ArrayList<>(this.getTable1Info());
-    data = new ArrayList<>();
-    // Table A-1 Evidence on Progress
 
     if (reportSynthesisPMU != null && sloTargets != null) {
-
+      String sloTargetPrev = "";
       for (SrfSloIndicatorTarget sloTarget : sloTargets) {
-        String sloTargetSummary = "", briefSummaries = "", additionalContribution = "", geographicScope = "";
+        String sloTargetSummary = "", briefSummaries = "", additionalContribution = "", geographicScope = "",
+          regions = "", countries = "", checkContributing = "";
+
+        // Slo Target Name
         if (sloTarget.getNarrative() != null && !sloTarget.getNarrative().isEmpty()) {
           sloTargetSummary = sloTarget.getNarrative();
         }
 
-        if (sloTarget.getTargetCases() != null && !sloTarget.getTargetCases().isEmpty()) {
+        // Slo Target Check contributing
+        if (sloTarget.getHasEvidence() != null && sloTarget.getHasEvidence()) {
+          checkContributing = "";
+        } else if (sloTarget.getHasEvidence() == false) {
+          checkContributing = "Not evidence for this SLO Target";
+        }
 
-          int count = 1;
+        // Get Target Cases (evidences)
+        if (sloTarget.getTargetCases() != null && !sloTarget.getTargetCases().isEmpty()) {
           for (ReportSynthesisSrfProgressTargetCases targetCase : sloTarget.getTargetCases()) {
             if (targetCase != null) {
-
-              briefSummaries = "Contribution" + count + "\n";
-              additionalContribution = "Contribution" + count + "\n";
-              geographicScope = "Contribution" + count + "\n";
 
               if (targetCase.getBriefSummary() != null && !targetCase.getBriefSummary().isEmpty()) {
                 briefSummaries = targetCase.getBriefSummary();
@@ -790,12 +789,12 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
               if (targetCase.getGeographicScopes() != null && !targetCase.getGeographicScopes().isEmpty()) {
                 boolean hasRegions = false, hasCountries = false;
-                geographicScope += "Geographic Scope:";
+                geographicScope = "  •Geographic Scope: ";
                 for (ProgressTargetCaseGeographicScope geScope : targetCase.getGeographicScopes()) {
                   if (geScope != null && geScope.getRepIndGeographicScope() != null
                     && geScope.getRepIndGeographicScope().getName() != null
                     && !geScope.getRepIndGeographicScope().getName().isEmpty()) {
-                    geographicScope += "\n  " + geScope.getRepIndGeographicScope().getName();
+                    geographicScope += " " + geScope.getRepIndGeographicScope().getName() + ", ";
                   }
 
                   if (geScope.getRepIndGeographicScope().getId() == 2) {
@@ -807,47 +806,56 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
                     hasCountries = true;
                   }
                 }
+                geographicScope += "\n";
 
                 if (targetCase.getGeographicRegions() != null && !targetCase.getGeographicRegions().isEmpty()
                   && hasRegions) {
-                  geographicScope += "\n Regions: \n";
+                  regions = "   •Regions: ";
                   for (ProgressTargetCaseGeographicRegion region : targetCase.getGeographicRegions()) {
                     if (region != null && region.getLocElement() != null && region.getLocElement().getName() != null
                       && !region.getLocElement().getName().isEmpty()) {
-                      geographicScope += region.getLocElement().getName() + ", ";
+                      regions += region.getLocElement().getName() + ", ";
                     }
                   }
+                  regions += "\n";
                 }
 
                 if (targetCase.getGeographicScopes() != null && !targetCase.getGeographicScopes().isEmpty()
                   && hasCountries) {
-                  geographicScope += "\n Countries: \n";
+                  countries = "   •Countries: ";
                   for (ProgressTargetCaseGeographicCountry country : targetCase.getCountries()) {
                     if (country != null && country.getLocElement() != null && country.getLocElement().getName() != null
                       && !country.getLocElement().getName().isEmpty()) {
-                      geographicScope += country.getLocElement().getName() + ", ";
+                      countries += country.getLocElement().getName() + ", ";
                     }
                   }
+                  countries += "\n";
                 }
               }
-
-              briefSummaries = "\n \n";
-              additionalContribution = "\n \n";
-              geographicScope = "\n \n";
-              count++;
             }
 
+            if (sloTargetPrev.equals(sloTargetSummary)) {
+              sloTargetSummary = "";
+            }
+            Boolean bold = false;
+            POIField[] sData =
+              {new POIField(poiSummary.replaceHTMLTags(sloTargetSummary), ParagraphAlignment.LEFT, bold, blackColor),
+                new POIField(this.deleteSpanTags(briefSummaries), ParagraphAlignment.LEFT, true),
+                new POIField(this.deleteSpanTags(additionalContribution), ParagraphAlignment.LEFT, true),
+                new POIField(geographicScope + " " + regions + " " + countries, ParagraphAlignment.LEFT, true)};
+            data = Arrays.asList(sData);
+            datas.add(data);
+            sloTargetPrev = sloTargetSummary;
           }
-
+        } else {
+          Boolean bold = false;
+          POIField[] sData =
+            {new POIField(poiSummary.replaceHTMLTags(sloTargetSummary), ParagraphAlignment.LEFT, bold, blackColor),
+              new POIField("", ParagraphAlignment.LEFT, true), new POIField("", ParagraphAlignment.LEFT, true),
+              new POIField("", ParagraphAlignment.LEFT, true)};
+          data = Arrays.asList(sData);
+          datas.add(data);
         }
-        Boolean bold = false;
-        POIField[] sData =
-          {new POIField(poiSummary.replaceHTMLTags(sloTargetSummary), ParagraphAlignment.LEFT, bold, blackColor),
-            new POIField(this.deleteSpanTags(briefSummaries), ParagraphAlignment.LEFT, true),
-            new POIField(additionalContribution, ParagraphAlignment.LEFT, true),
-            new POIField(geographicScope, ParagraphAlignment.LEFT, true)};
-        data = Arrays.asList(sData);
-        datas.add(data);
       }
     }
     poiSummary.textTable(document, headers, datas, true, "tableA1AnnualReport2018");
@@ -1279,7 +1287,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
     for (ProjectPolicy projectPolicy : projectPoliciesTable2) {
       String name = null, description = null, levelMaturity = "", srfSubIdo = "", gender = "", youth = "", capdev = "",
-        climateChange = "", evidences = "", evidenceComposed = "";
+        climateChange = "", evidences = "";
 
       // List of Urls
       List<String> urls = new ArrayList<>();
@@ -1310,7 +1318,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           }
         }
 
-
         if (projectPolicy.getProjectPolicyInfo().getRepIndStageProcess() != null
           && projectPolicy.getProjectPolicyInfo().getRepIndStageProcess().getId() == 3) {
           if (projectPolicy.getProjectPolicyInfo().getNarrativeEvidence() != null
@@ -1326,11 +1333,9 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
               temp = this.getBaseUrl() + "/projects/" + this.getCrpSession() + "/studySummary.do?studyID="
                 + (evidence.getProjectExpectedStudy().getId()).toString() + "&cycle=" + this.getCurrentCycle()
                 + "&year=" + this.getSelectedPhase().getYear();
-              // ${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(item.projectExpectedStudy.id)!}&cycle=Reporting&year=${(actualPhase.year)!}
-              // evidences += temp + ", ";
+
               urls.add(temp);
               if (evidence.getProjectExpectedStudy().getComposedName() != null) {
-                // evidenceComposed = evidence.getProjectExpectedStudy().getComposedIdentifier();
                 texts.add(evidence.getProjectExpectedStudy().getComposedIdentifier());
               } else {
                 texts.add(evidence.getProjectExpectedStudy().getId().toString());
@@ -1363,13 +1368,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           }
         }
 
-        // try {
-        // if (evidences.contains(",")) {
-        // evidences = evidences.substring(0, evidences.length() - 2);
-        // }
-        // } catch (Exception e) {
-        //
-        // }
         try {
           if (srfSubIdo.contains(",")) {
             srfSubIdo = srfSubIdo.substring(0, srfSubIdo.length() - 2);
@@ -1379,7 +1377,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         }
       }
 
-      // if (evidences.startsWith("http") && !evidences.contains(" ")) {
       if (urls != null && !urls.isEmpty()) {
         POIField[] sData = {new POIField(name, ParagraphAlignment.LEFT, false),
           new POIField(description, ParagraphAlignment.LEFT, false),
@@ -1388,7 +1385,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           new POIField(gender, ParagraphAlignment.LEFT, false, blackColor),
           new POIField(youth, ParagraphAlignment.LEFT, false), new POIField(capdev, ParagraphAlignment.LEFT, false),
           new POIField(climateChange, ParagraphAlignment.CENTER, false),
-          // new POIField(evidenceComposed, ParagraphAlignment.LEFT, false, blackColor, evidences, 1)};
           new POIField(texts, urls, ParagraphAlignment.LEFT, false, blackColor, 1)};
         data = Arrays.asList(sData);
         datas.add(data);
@@ -1449,13 +1445,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           && projectExpectStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getName() != null) {
           maturity = projectExpectStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getName();
         }
-        // REMOVED FOR AR 2020
-        /*
-         * if (projectExpectStudy.getProjectExpectedStudyInfo().getEvidenceTag() != null
-         * && projectExpectStudy.getProjectExpectedStudyInfo().getEvidenceTag().getName() != null) {
-         * indicator = projectExpectStudy.getProjectExpectedStudyInfo().getEvidenceTag().getName();
-         * }
-         */
+
         if (projectExpectStudy.getProjectExpectedStudyInfo().getIsPublic() != null
           && projectExpectStudy.getProjectExpectedStudyInfo().getIsPublic() == true) {
           linkOICR = this.getBaseUrl() + "/projects/" + this.getCrpSession() + "/studySummary.do?studyID="
@@ -1849,7 +1839,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       }
       percent = new BigDecimal(percent).setScale(2, RoundingMode.HALF_UP).doubleValue();
       Boolean bold = false;
-      POIField[] sData = {new POIField(title, ParagraphAlignment.LEFT, true, blackColor),
+      POIField[] sData = {new POIField(title, ParagraphAlignment.CENTER, true, blackColor),
         new POIField(number + "", ParagraphAlignment.LEFT, bold, blackColor),
         new POIField(percent + "%", ParagraphAlignment.LEFT, bold, blackColor)};
       data = Arrays.asList(sData);
@@ -1874,7 +1864,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     String trainees = "";
     String female = "0", male = "0";
 
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 3; i++) {
       switch (i) {
         case 0:
           trainees = this.getText("summaries.annualReport2018.table7.field1");
@@ -1915,15 +1905,16 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
             }
           }
           break;
-        case 3:
-          trainees = this.getText("annualReport2018.ccDimensions.table7.evidenceLink");
-          male = "";
-          female = "";
-          if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisCrossCuttingDimension() != null
-            && reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getEvidenceLink() != null) {
-            male = reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getEvidenceLink();
-
-          }
+        /*
+         * case 3:
+         * trainees = this.getText("annualReport2018.ccDimensions.table7.evidenceLink");
+         * male = "";
+         * female = "";
+         * if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisCrossCuttingDimension() != null
+         * && reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getEvidenceLink() != null) {
+         * male = reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getEvidenceLink();
+         * }
+         */
       }
 
       POIField[] sData = {new POIField(trainees, ParagraphAlignment.LEFT, false),
@@ -2302,7 +2293,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(14);
-        run.setColor("76923C");
+        run.setColor("063970");
         run.setBold(true);
         run.setText(this.getText("summaries.annualReportCRP2018.executiveSummary"));
         this.addNarrativeSection();
@@ -2786,7 +2777,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(14);
-        run.setColor("76923C");
+        run.setColor("063970");
         run.setBold(true);
         run.setText(this.getText("summaries.annualReportCRP2018.executiveSummary"));
         this.addNarrativeSection();
