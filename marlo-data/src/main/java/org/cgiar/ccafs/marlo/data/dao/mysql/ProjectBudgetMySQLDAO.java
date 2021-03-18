@@ -207,7 +207,7 @@ public class ProjectBudgetMySQLDAO extends AbstractMarloDAO<ProjectBudget, Long>
       "select sum(pb.amount)'amount' from project_budgets pb where pb.project_id=" + projetId + " and pb.id_phase="
         + phaseID + " and pb.`year`=" + year + " and pb.budget_type=" + type + " and pb.is_active=1";
     List<Map<String, Object>> list = super.findCustomQuery(query);
-    if (list.size() > 0) {
+    if (!list.isEmpty() && list.get(0) != null) {
       Map<String, Object> result = list.get(0);
       if (result.get("amount") != null) {
         return Double.parseDouble(result.get("amount").toString());
