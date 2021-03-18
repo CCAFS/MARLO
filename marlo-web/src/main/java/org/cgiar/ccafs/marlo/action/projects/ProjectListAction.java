@@ -517,8 +517,8 @@ public class ProjectListAction extends BaseAction {
         project.setFlagships(new ArrayList<>());
         project.setRegions(new ArrayList<>());
       }
-      if (this.getActualPhase() != null && this.getActualPhase().getId() != null
-        && this.getActualPhase().getYear() != 0) {
+      if (this.getActualPhase() != null && this.getActualPhase().getId() != null && this.getActualPhase().getYear() != 0
+        && project.getId() != null) {
         project.setCoreBudget(projectBudgetManager.getTotalBudget(project.getId(), this.getActualPhase().getId(), 1,
           this.getActualPhase().getYear()));
         project.setBilateralBudget(projectBudgetManager.getTotalBudget(project.getId(), this.getActualPhase().getId(),

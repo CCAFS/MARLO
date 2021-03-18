@@ -753,25 +753,29 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
 
-    /*
-     * Get all crp Progress Targets and compare the slo indicador Target id with the actual slotarget id
-     */
-
     List<List<POIField>> datas = new ArrayList<>();
     List<POIField> data;
-    List<POIField> data2;
     List<SrfSloIndicatorTarget> sloTargets = new ArrayList<>(this.getTable1Info());
-    data = new ArrayList<>();
-    // Table A-1 Evidence on Progress
 
     if (reportSynthesisPMU != null && sloTargets != null) {
       String sloTargetPrev = "";
       for (SrfSloIndicatorTarget sloTarget : sloTargets) {
-        String sloTargetSummary = "", briefSummaries = "", additionalContribution = "", geographicScope = "";
+        String sloTargetSummary = "", briefSummaries = "", additionalContribution = "", geographicScope = "",
+          checkContributing = "";
+
+        // Slo Target Name
         if (sloTarget.getNarrative() != null && !sloTarget.getNarrative().isEmpty()) {
           sloTargetSummary = sloTarget.getNarrative();
         }
 
+        // Slo Target Check contributing
+        if (sloTarget.getHasEvidence() != null && sloTarget.getHasEvidence()) {
+          checkContributing = "";
+        } else if (sloTarget.getHasEvidence() == false) {
+          checkContributing = "Not evidence for this SLO Target";
+        }
+
+        // Get Target Cases (evidences)
         if (sloTarget.getTargetCases() != null && !sloTarget.getTargetCases().isEmpty()) {
           for (ReportSynthesisSrfProgressTargetCases targetCase : sloTarget.getTargetCases()) {
             if (targetCase != null) {
