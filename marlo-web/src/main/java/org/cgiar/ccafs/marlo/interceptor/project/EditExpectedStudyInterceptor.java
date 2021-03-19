@@ -121,8 +121,8 @@ public class EditExpectedStudyInterceptor extends AbstractInterceptor implements
             baseAction.generatePermission(Permission.PROJECT_EXPECTED_STUDIES_EDIT_PERMISSION, params))) {
             canEdit = true;
           }
-          if (baseAction.isSubmit(projectExpectedStudy.getProject().getId())
-            && !baseAction.getActualPhase().getUpkeep()) {
+          if (baseAction.isSubmit(projectExpectedStudy.getProject().getId()) && !baseAction.getActualPhase().getUpkeep()
+            && !baseAction.isPMU()) {
             canEdit = false;
           }
         } else {
