@@ -115,7 +115,8 @@ public class EditHighLightInterceptor extends AbstractInterceptor implements Ser
           .hasPermission(baseAction.generatePermission(Permission.PROJECT_HIGH_LIGHTS_EDIT_PERMISSION, params))) {
           canEdit = true;
         }
-        if (baseAction.isSubmit(projectHighlight.getProject().getId()) && !baseAction.getActualPhase().getUpkeep()) {
+        if (baseAction.isSubmit(projectHighlight.getProject().getId()) && !baseAction.getActualPhase().getUpkeep()
+          && !baseAction.isPMU()) {
           canEdit = false;
 
         }
