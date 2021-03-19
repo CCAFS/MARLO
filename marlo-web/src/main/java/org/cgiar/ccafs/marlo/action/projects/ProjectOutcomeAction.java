@@ -471,8 +471,10 @@ public class ProjectOutcomeAction extends BaseAction {
          * || (milestone.getExtendedYear() != null
          * && milestone.getExtendedYear().intValue() == this.getCurrentCycleYear())) {
          */
-        milestone.setIndex(crpMilestone.getId());
-        crpMilestones.add(milestone);
+        if (milestone != null && milestone.isActive()) {
+          milestone.setIndex(crpMilestone.getId());
+          crpMilestones.add(milestone);
+        }
         // }
       }
     }

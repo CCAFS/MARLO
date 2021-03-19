@@ -130,7 +130,13 @@ function getWOSInfo() {
             // console.log("data.jsonStringResponse",data.jsonStringResponse);
             updateWOSFields(data.response);
             $('#WOSModalBtn').show('slow');
-            $('#output-wos').html('Found metadata successfully in Web of Science.')
+            $('#output-wos').html('Found metadata successfully in Web of Science.');
+            if (data.response.altmetricInfo != undefined && data.response.altmetricInfo != "null" && data.response.altmetricInfo != "") {
+              if (data.response.altmetricInfo.imageSmall != undefined && data.response.altmetricInfo.imageSmall != "null" && data.response.altmetricInfo.imageSmall != "") {
+                $('.almetricImg').attr('src', data.response.altmetricInfo.imageSmall);
+                $('.almetricImg').show('slow');
+              }
+            }
           } else {
             errorRequestH();
           }
