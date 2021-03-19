@@ -190,7 +190,8 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
           canEdit = true;
         }
 
-        if (baseAction.isSubmit(deliverable.getProject().getId()) && !baseAction.getActualPhase().getUpkeep()) {
+        if (baseAction.isSubmit(deliverable.getProject().getId()) && !baseAction.getActualPhase().getUpkeep()
+          && !baseAction.isPMU()) {
           canEdit = false;
         }
 

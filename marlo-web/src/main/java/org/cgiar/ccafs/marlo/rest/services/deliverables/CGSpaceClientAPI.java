@@ -55,8 +55,8 @@ public class CGSpaceClientAPI extends MetadataClientApi {
     xmlReaderConnectionUtil = new RestConnectionUtil();
     coverterAtrributes = new HashMap<String, String>();
     coverterAtrributes.put("description.abstract", "description");
-    coverterAtrributes.put("date.issued", "publicationDate");
-    coverterAtrributes.put("language.iso", "language");
+    coverterAtrributes.put("date", "publicationDate");
+    // coverterAtrributes.put("language.iso", "language");
     coverterAtrributes.put("subject", "keywords");
   }
 
