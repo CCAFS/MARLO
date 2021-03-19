@@ -1049,22 +1049,24 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
 
       this.crps = this.crpManager.findAll().stream()
-        .filter(gu -> gu.isActive() && (gu.getGlobalUnitType().getId() == 1 || gu.getGlobalUnitType().getId() == 3))
+        .filter(gu -> gu.isActive() && (gu.getGlobalUnitType().getId() == 1 || gu.getGlobalUnitType().getId() == 3)
+          && !gu.getId().equals(this.getCurrentGlobalUnit().getId()))
         .collect(Collectors.toList());
 
-      List<ProjectExpectedStudyCrp> tempPcrp = null;
-      // Update crp list - Delete the actual crp from the list except if this crp was
-
-      if (expectedStudy.getCrps() != null && expectedStudy.getCrps().stream()
-        .filter(x -> x != null && x.getGlobalUnit().getId().equals(this.getCurrentGlobalUnit().getId())) != null) {
-        tempPcrp = expectedStudy.getCrps().stream()
-          .filter(x -> x != null && x.getGlobalUnit().getId().equals(this.getCurrentGlobalUnit().getId()))
-          .collect(Collectors.toList());
-      }
-
-      if (tempPcrp != null && tempPcrp.size() == 0 && this.getCurrentGlobalUnit() != null) {
-        crps.remove(this.getCurrentGlobalUnit());
-      }
+      /*
+       * List<ProjectExpectedStudyCrp> tempPcrp = null;
+       * // Update crp list - Delete the actual crp from the list except if this crp was
+       * if (expectedStudy.getCrps() != null && expectedStudy.getCrps().stream()
+       * .filter(x -> x != null && x.getGlobalUnit() != null && x.getGlobalUnit().getId() != null
+       * && x.getGlobalUnit().getId().equals(this.getCurrentGlobalUnit().getId())) != null) {
+       * tempPcrp = expectedStudy.getCrps().stream()
+       * .filter(x -> x != null && x.getGlobalUnit().getId().equals(this.getCurrentGlobalUnit().getId()))
+       * .collect(Collectors.toList());
+       * }
+       * if (tempPcrp != null && tempPcrp.size() == 0 && this.getCurrentGlobalUnit() != null) {
+       * crps.remove(this.getCurrentGlobalUnit());
+       * }
+       */
 
       this.flagshipList = this.crpProgramManager.findAll().stream()
         .filter(p -> p.isActive() && p.getCrp() != null && p.getCrp().getId() == this.loggedCrp.getId()
