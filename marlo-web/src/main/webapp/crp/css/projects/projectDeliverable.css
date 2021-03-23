@@ -742,6 +742,7 @@ div#ccDimension-capacity {
 
 .almetricImg {
   transition: all ease 0.7s;
+  cursor: pointer;
 }
 
 #metadata-container {
