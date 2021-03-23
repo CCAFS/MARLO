@@ -20,10 +20,8 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
-import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
-import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis2018SectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressCrossCuttingMarker;
@@ -103,27 +101,33 @@ public class OutcomeMilestonesValidator extends BaseValidator {
         }
       }
 
-      LiaisonInstitution liaisonInstitution =
-        liaisonInstitutionManager.getLiaisonInstitutionById(reportSynthesis.getLiaisonInstitution().getId());
-      if (!this.isPMU(liaisonInstitution)) {
-        if (liaisonInstitution.getCrpProgram() != null) {
-          CrpProgram crpProgram = liaisonInstitution.getCrpProgram();
-          if (crpProgram.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
-            if (reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList() != null) {
-              if (!reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList().isEmpty()) {
-                for (int i = 0; i < reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList().size(); i++) {
-                  this.validateOutcomes(action,
-                    reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList().get(i), i);
-                }
-              } else {
-                action.addMissingField(action.getText("Not Expected Crp Progress"));
-              }
-            } else {
-              action.addMissingField(action.getText("Not Expected Crp Progress"));
-            }
-          }
-        }
-      }
+      /*
+       * Empty list of Outcomes and Milestones for table 5
+       * Any Outcomes or Milestones for the current year
+       */
+      /*
+       * LiaisonInstitution liaisonInstitution =
+       * liaisonInstitutionManager.getLiaisonInstitutionById(reportSynthesis.getLiaisonInstitution().getId());
+       * if (!this.isPMU(liaisonInstitution)) {
+       * if (liaisonInstitution.getCrpProgram() != null) {
+       * CrpProgram crpProgram = liaisonInstitution.getCrpProgram();
+       * if (crpProgram.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
+       * if (reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList() != null) {
+       * if (!reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList().isEmpty()) {
+       * for (int i = 0; i < reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList().size(); i++) {
+       * this.validateOutcomes(action,
+       * reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList().get(i), i);
+       * }
+       * } else {
+       * action.addMissingField(action.getText("Not Expected Crp Progress"));
+       * }
+       * } else {
+       * action.addMissingField(action.getText("Not Expected Crp Progress"));
+       * }
+       * }
+       * }
+       * }
+       */
 
       // Validate Flagships
       if (action.isPMU()) {
