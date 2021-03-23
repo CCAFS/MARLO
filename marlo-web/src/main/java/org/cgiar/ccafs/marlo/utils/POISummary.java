@@ -852,29 +852,30 @@ public class POISummary {
         XWPFTableRow row1 = table.getRow(x);
         for (int y = 0; y <= 7; y++) {
           XWPFTableCell cell = row1.getCell(y);
-
-          if (cell.getCTTc() == null) {
-            ((CTTc) cell).addNewTcPr();
-          }
-
-          if (cell.getCTTc().getTcPr() == null) {
-            cell.getCTTc().addNewTcPr();
-          }
-          if (x == 2 && !(cell.getText().trim().length() > 0)) {
-            break;
-          }
-          if (cell.getText().trim().length() > 0) {
-            if (y == 0) {
-              cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(1500));
+          if (cell != null) {
+            if (cell.getCTTc() == null) {
+              ((CTTc) cell).addNewTcPr();
             }
-            vmerge.setVal(STMerge.RESTART);
-            cell.getCTTc().getTcPr().setVMerge(vmerge);
-          } else {
-            if (y == 0) {
-              cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(1500));
+
+            if (cell.getCTTc().getTcPr() == null) {
+              cell.getCTTc().addNewTcPr();
             }
-            vmerge1.setVal(STMerge.CONTINUE);
-            cell.getCTTc().getTcPr().setVMerge(vmerge1);
+            if (x == 2 && !(cell.getText().trim().length() > 0)) {
+              break;
+            }
+            if (cell.getText().trim().length() > 0) {
+              if (y == 0) {
+                cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(1500));
+              }
+              vmerge.setVal(STMerge.RESTART);
+              cell.getCTTc().getTcPr().setVMerge(vmerge);
+            } else {
+              if (y == 0) {
+                cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(1500));
+              }
+              vmerge1.setVal(STMerge.CONTINUE);
+              cell.getCTTc().getTcPr().setVMerge(vmerge1);
+            }
           }
         }
 
