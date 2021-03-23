@@ -739,3 +739,19 @@ div#ccDimension-capacity {
 #newExpectedYear label {
   font-size: 0.95em;
 }
+
+.almetricImg {
+  transition: all ease 0.7s;
+  cursor: pointer;
+}
+
+#metadata-container {
+  display: flex;
+  flex-flow: row;
+}
+
+.metadata-text-container {
+  display: flex;
+  flex-flow: column;
+  width: 90%;
+}

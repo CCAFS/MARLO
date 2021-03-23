@@ -51,7 +51,6 @@ public class MELDSpaceClientAPI extends MetadataClientApi {
     coverterAtrributes = new HashMap<String, String>();
     coverterAtrributes.put("description.abstract", "description");
     coverterAtrributes.put("date.issued", "publicationDate");
-    coverterAtrributes.put("language.iso", "language");
     coverterAtrributes.put("subject", "keywords");
     coverterAtrributes.put("identifier.citation", "citation");
     coverterAtrributes.put("identifier.uri", "handle");
