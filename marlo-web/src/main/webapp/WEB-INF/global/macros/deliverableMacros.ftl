@@ -455,7 +455,9 @@
     </div>
     [#-- Almetric Image --]
     <div data-toggle="tooltip" class="" title="[@s.text name="project.deliverable.dissemination.altmetricTooltip" /]">
-      <img class="almetricImg" src="" alt="" srcset="" style="display: none;">
+      <a class="altmetricURL" target="_blank" href="">
+        <img class="altmetricImg" src="" alt="" srcset="" style="display: none;">
+      </a>
     </div>
   </div>
 
