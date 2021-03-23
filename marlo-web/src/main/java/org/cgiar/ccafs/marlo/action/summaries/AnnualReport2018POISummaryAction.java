@@ -1289,7 +1289,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
     for (ProjectPolicy projectPolicy : projectPoliciesTable2) {
       String name = null, description = null, levelMaturity = "", srfSubIdo = "", gender = "", youth = "", capdev = "",
-        climateChange = "", evidences = "", evidenceComposed = "";
+        climateChange = "", evidences = "";
 
       // List of Urls
       List<String> urls = new ArrayList<>();
@@ -1320,7 +1320,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           }
         }
 
-
         if (projectPolicy.getProjectPolicyInfo().getRepIndStageProcess() != null
           && projectPolicy.getProjectPolicyInfo().getRepIndStageProcess().getId() == 3) {
           if (projectPolicy.getProjectPolicyInfo().getNarrativeEvidence() != null
@@ -1336,11 +1335,9 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
               temp = this.getBaseUrl() + "/projects/" + this.getCrpSession() + "/studySummary.do?studyID="
                 + (evidence.getProjectExpectedStudy().getId()).toString() + "&cycle=" + this.getCurrentCycle()
                 + "&year=" + this.getSelectedPhase().getYear();
-              // ${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(item.projectExpectedStudy.id)!}&cycle=Reporting&year=${(actualPhase.year)!}
-              // evidences += temp + ", ";
+
               urls.add(temp);
               if (evidence.getProjectExpectedStudy().getComposedName() != null) {
-                // evidenceComposed = evidence.getProjectExpectedStudy().getComposedIdentifier();
                 texts.add(evidence.getProjectExpectedStudy().getComposedIdentifier());
               } else {
                 texts.add(evidence.getProjectExpectedStudy().getId().toString());
@@ -1373,13 +1370,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           }
         }
 
-        // try {
-        // if (evidences.contains(",")) {
-        // evidences = evidences.substring(0, evidences.length() - 2);
-        // }
-        // } catch (Exception e) {
-        //
-        // }
         try {
           if (srfSubIdo.contains(",")) {
             srfSubIdo = srfSubIdo.substring(0, srfSubIdo.length() - 2);
@@ -1389,7 +1379,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         }
       }
 
-      // if (evidences.startsWith("http") && !evidences.contains(" ")) {
       if (urls != null && !urls.isEmpty()) {
         POIField[] sData = {new POIField(name, ParagraphAlignment.LEFT, false),
           new POIField(description, ParagraphAlignment.LEFT, false),
@@ -1398,7 +1387,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           new POIField(gender, ParagraphAlignment.LEFT, false, blackColor),
           new POIField(youth, ParagraphAlignment.LEFT, false), new POIField(capdev, ParagraphAlignment.LEFT, false),
           new POIField(climateChange, ParagraphAlignment.CENTER, false),
-          // new POIField(evidenceComposed, ParagraphAlignment.LEFT, false, blackColor, evidences, 1)};
           new POIField(texts, urls, ParagraphAlignment.LEFT, false, blackColor, 1)};
         data = Arrays.asList(sData);
         datas.add(data);
@@ -1459,13 +1447,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           && projectExpectStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getName() != null) {
           maturity = projectExpectStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getName();
         }
-        // REMOVED FOR AR 2020
-        /*
-         * if (projectExpectStudy.getProjectExpectedStudyInfo().getEvidenceTag() != null
-         * && projectExpectStudy.getProjectExpectedStudyInfo().getEvidenceTag().getName() != null) {
-         * indicator = projectExpectStudy.getProjectExpectedStudyInfo().getEvidenceTag().getName();
-         * }
-         */
+
         if (projectExpectStudy.getProjectExpectedStudyInfo().getIsPublic() != null
           && projectExpectStudy.getProjectExpectedStudyInfo().getIsPublic() == true) {
           linkOICR = this.getBaseUrl() + "/projects/" + this.getCrpSession() + "/studySummary.do?studyID="
@@ -1859,7 +1841,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       }
       percent = new BigDecimal(percent).setScale(2, RoundingMode.HALF_UP).doubleValue();
       Boolean bold = false;
-      POIField[] sData = {new POIField(title, ParagraphAlignment.LEFT, true, blackColor),
+      POIField[] sData = {new POIField(title, ParagraphAlignment.CENTER, true, blackColor),
         new POIField(number + "", ParagraphAlignment.LEFT, bold, blackColor),
         new POIField(percent + "%", ParagraphAlignment.LEFT, bold, blackColor)};
       data = Arrays.asList(sData);
@@ -1884,7 +1866,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     String trainees = "";
     String female = "0", male = "0";
 
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 3; i++) {
       switch (i) {
         case 0:
           trainees = this.getText("summaries.annualReport2018.table7.field1");
@@ -1925,15 +1907,16 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
             }
           }
           break;
-        case 3:
-          trainees = this.getText("annualReport2018.ccDimensions.table7.evidenceLink");
-          male = "";
-          female = "";
-          if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisCrossCuttingDimension() != null
-            && reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getEvidenceLink() != null) {
-            male = reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getEvidenceLink();
-
-          }
+        /*
+         * case 3:
+         * trainees = this.getText("annualReport2018.ccDimensions.table7.evidenceLink");
+         * male = "";
+         * female = "";
+         * if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisCrossCuttingDimension() != null
+         * && reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getEvidenceLink() != null) {
+         * male = reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getEvidenceLink();
+         * }
+         */
       }
 
       POIField[] sData = {new POIField(trainees, ParagraphAlignment.LEFT, false),
@@ -2312,7 +2295,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(14);
-        run.setColor("76923C");
+        run.setColor("063970");
         run.setBold(true);
         run.setText(this.getText("summaries.annualReportCRP2018.executiveSummary"));
         this.addNarrativeSection();
@@ -2796,7 +2779,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(14);
-        run.setColor("76923C");
+        run.setColor("063970");
         run.setBold(true);
         run.setText(this.getText("summaries.annualReportCRP2018.executiveSummary"));
         this.addNarrativeSection();
