@@ -816,6 +816,46 @@ public class POISummary {
     }
   }
 
+  public void table1AnnualReport2020Style(XWPFTable table) {
+    /* Horizontal merge, From format tables B */
+    CTVMerge vmerge = CTVMerge.Factory.newInstance();
+    CTVMerge vmerge1 = CTVMerge.Factory.newInstance();
+
+    for (int x = 0; x < table.getNumberOfRows(); x++) {
+      if (x > 0) {
+        XWPFTableRow row = table.getRow(x);
+        for (int y = 0; y < 1; y++) {
+          XWPFTableCell cell = row.getCell(y);
+
+          if (cell.getCTTc() == null) {
+            ((CTTc) cell).addNewTcPr();
+          }
+
+          if (cell.getCTTc().getTcPr() == null) {
+            cell.getCTTc().addNewTcPr();
+          }
+          if (x == 1 && !(cell.getText().trim().length() > 0)) {
+            break;
+          }
+          if (cell.getText().trim().length() > 0) {
+            if (y == 0) {
+              cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(1500));
+            }
+            vmerge.setVal(STMerge.RESTART);
+            cell.getCTTc().getTcPr().setVMerge(vmerge);
+          } else {
+            if (y == 0) {
+              cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(1500));
+            }
+            vmerge1.setVal(STMerge.CONTINUE);
+            cell.getCTTc().getTcPr().setVMerge(vmerge1);
+          }
+        }
+
+      }
+    }
+  }
+
   public void table2AnnualReportCRPStyle(XWPFTable table) {
     /* Horizontal merge, From format table A */
     CTHMerge hMerge = CTHMerge.Factory.newInstance();
@@ -852,29 +892,30 @@ public class POISummary {
         XWPFTableRow row1 = table.getRow(x);
         for (int y = 0; y <= 7; y++) {
           XWPFTableCell cell = row1.getCell(y);
-
-          if (cell.getCTTc() == null) {
-            ((CTTc) cell).addNewTcPr();
-          }
-
-          if (cell.getCTTc().getTcPr() == null) {
-            cell.getCTTc().addNewTcPr();
-          }
-          if (x == 2 && !(cell.getText().trim().length() > 0)) {
-            break;
-          }
-          if (cell.getText().trim().length() > 0) {
-            if (y == 0) {
-              cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(1500));
+          if (cell != null) {
+            if (cell.getCTTc() == null) {
+              ((CTTc) cell).addNewTcPr();
             }
-            vmerge.setVal(STMerge.RESTART);
-            cell.getCTTc().getTcPr().setVMerge(vmerge);
-          } else {
-            if (y == 0) {
-              cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(1500));
+
+            if (cell.getCTTc().getTcPr() == null) {
+              cell.getCTTc().addNewTcPr();
             }
-            vmerge1.setVal(STMerge.CONTINUE);
-            cell.getCTTc().getTcPr().setVMerge(vmerge1);
+            if (x == 2 && !(cell.getText().trim().length() > 0)) {
+              break;
+            }
+            if (cell.getText().trim().length() > 0) {
+              if (y == 0) {
+                cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(1500));
+              }
+              vmerge.setVal(STMerge.RESTART);
+              cell.getCTTc().getTcPr().setVMerge(vmerge);
+            } else {
+              if (y == 0) {
+                cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(1500));
+              }
+              vmerge1.setVal(STMerge.CONTINUE);
+              cell.getCTTc().getTcPr().setVMerge(vmerge1);
+            }
           }
         }
 
@@ -882,6 +923,7 @@ public class POISummary {
     }
 
   }
+
 
   public void table3AnnualReport2018Style(XWPFTable table) {
     /* horizontal merge, From format tables I */
@@ -899,7 +941,6 @@ public class POISummary {
     }
   }
 
-
   public void table4AnnualReport2018Style(XWPFTable table) {
     /* horizontal merge, From format tables I */
 
@@ -915,6 +956,7 @@ public class POISummary {
       }
     }
   }
+
 
   public void table5AnnualReport2018Style(XWPFTable table) {
     /* Horizontal merge, From format tables D1 Annual report */
@@ -956,7 +998,6 @@ public class POISummary {
     }
   }
 
-
   public void table6Annual2018ReportStyle(XWPFTable table) {
     /* horizontal merge, From format tables A1 */
 
@@ -989,6 +1030,7 @@ public class POISummary {
     }
   }
 
+
   public void tableA1AnnualReportStyle(XWPFTable table) {
     /* horizontal merge, From format tables A1 */
 
@@ -1004,7 +1046,6 @@ public class POISummary {
       }
     }
   }
-
 
   public void tableA2PowbStyle(XWPFTable table) {
     /* Horizontal merge, From format tables A */
@@ -2149,6 +2190,9 @@ public class POISummary {
         break;
       case "tableBAnnualReport":
         this.tableBAnnualReportStyle(table);
+        break;
+      case "table1AnnualReport2020":
+        this.table1AnnualReport2020Style(table);
         break;
       case "tableCAnnualReport":
         count = 0;
