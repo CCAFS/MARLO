@@ -50,6 +50,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -755,8 +756,6 @@ public class DeliverableValidator extends BaseValidator {
   public void validateMetadata(List<DeliverableMetadataElement> elements, BaseAction action, boolean isPRP) {
 
     // boolean description = false;
-
-
     for (DeliverableMetadataElement deliverableMetadataElement : elements) {
       if (deliverableMetadataElement != null) {
         if (deliverableMetadataElement.getMetadataElement().getId() != null) {
@@ -785,6 +784,36 @@ public class DeliverableValidator extends BaseValidator {
                   action.addMessage(action.getText("metadata.doi"));
                   action.getInvalidFields().put("input-doi-bridge", InvalidFieldsMessages.EMPTYFIELD);
                 }
+              }
+            }
+
+            // Adding title, creation date and authors validation, as per Margarita and Manuel request
+            if (deliverableMetadataElement.getId() != null && deliverableMetadataElement.getId().longValue() == 38L) {
+              // Authors
+              if (StringUtils.isBlank(deliverableMetadataElement.getElementValue())) {
+                action.addMessage(action.getText("metadata.creator"));
+                action.getInvalidFields().put("deliverable.metadataElements[37].elementValue",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              }
+            }
+
+            if (deliverableMetadataElement.getMetadataElement().getId() != null
+              && deliverableMetadataElement.getMetadataElement().getId().longValue() == 1L) {
+              // Title
+              if (StringUtils.isBlank(deliverableMetadataElement.getElementValue())) {
+                action.addMessage(action.getText("metadata.title"));
+                action.getInvalidFields().put("deliverable.metadataElements[0].elementValue",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              }
+            }
+
+            if (deliverableMetadataElement.getMetadataElement().getId() != null
+              && deliverableMetadataElement.getMetadataElement().getId().longValue() == 17L) {
+              // Creation Date
+              if (StringUtils.isBlank(deliverableMetadataElement.getElementValue())) {
+                action.addMessage(action.getText("metadata.publicationDate"));
+                action.getInvalidFields().put("deliverable.metadataElements[16].elementValue",
+                  InvalidFieldsMessages.EMPTYFIELD);
               }
             }
           }
