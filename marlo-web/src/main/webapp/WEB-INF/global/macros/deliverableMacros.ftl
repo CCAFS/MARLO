@@ -555,14 +555,14 @@
 [/#macro]
 
 [#macro deliverableMetadataMacro flagshipslistName="programs" crpsListName="crps" allowFlagships=true]
-  <div class="form-group">
+  <div class="form-group conditionalRequire">
     [@metadataField title="title" encodedName="dc.title" type="input" require=false/]
   </div>
   <div class="form-group">
     [@metadataField title="description" encodedName="dc.description.abstract" type="textArea" require=false/]
   </div>
   <div class="form-group row">
-    <div class="col-md-6">
+    <div class="col-md-6 conditionalRequire">
       [@metadataField title="publicationDate" encodedName="dc.date" type="input" require=false/]
     </div>
     <div class="col-md-6">
