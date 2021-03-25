@@ -804,12 +804,12 @@ public class BaseValidator {
     String sMissingField = action.getMissingFields().toString();
     if (sMissingField.length() > 0) {
       if (sMissingField.equals("null") && sectionName.equals("policies")) {
-        status.setMissingFields("");
-      }
-      if (sMissingField.equals("null") && sectionName.equals("budgetByPartners")) {
-        status.setMissingFields("");
+        sMissingField = "";
+      } else if (sMissingField.equals("null") && sectionName.equals("budgetByPartners")) {
+        sMissingField = "";
       }
       status.setMissingFields(sMissingField);
+
     } else {
       status.setMissingFields("");
     }
