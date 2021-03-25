@@ -29,7 +29,7 @@ label {
 
 .input-sm {
   padding: 4px 10px;
-  height: 27px;
+  height: 26px;
   font-size: 13px;
 }
 
@@ -431,13 +431,14 @@ h2.successTitle {
 }
 
 h6.checked-true, p.checked-true {
-  background: url(../../global/images/checked-true.png) no-repeat 0;
-  padding: 3px 0 3px 23px;
+  /* background: url(../../global/images/grayCheckbox.png) no-repeat 0; */
+  /* padding: 3px 0 3px 23px; */
+  padding-top: 7px;
 }
 
 h6.checked-false, p.checked-false {
-  background: url(../../global/images/checked-false.png) no-repeat 0;
-  padding: 1px 0 1px 23px;
+  /* background: url(../../global/images/checked-false.png) no-repeat 0; */
+  padding-top: 7px;
 }
 
 h6.subTitle {
