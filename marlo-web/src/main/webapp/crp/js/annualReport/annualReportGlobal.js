@@ -166,19 +166,21 @@ $(document).ready(function() {
     });
 
     $tableInnovationsHTML = $('.tableNoPaginator-block table');
-    tableInnovations = $tableInnovationsHTML.DataTable({
-      "paging": false,
-      "searching": true,
-      "info": true,
-      aoColumnDefs: [
-        {
-            sType: "natural",
-            aTargets: [
-              0
-            ]
-        }
-      ]
-    });
+    if ($('.totalInnovationsNumber').html() != 0) {
+      tableInnovations = $tableInnovationsHTML.DataTable({
+        "paging": false,
+        "searching": true,
+        "info": true,
+        aoColumnDefs: [
+          {
+              sType: "natural",
+              aTargets: [
+                0
+              ]
+          }
+        ]
+      });
+    }
 
     $tablePoliciesHTML = $('.tablePolicies-block table');
     tablePolicies = $tablePoliciesHTML.DataTable({
@@ -442,7 +444,7 @@ function createGoogleChart(chartID, type, options) {
         getChartDataArray($chart)
       );
       console.log(data);
-      if (!data) {
+      if ($('.totalInnovationsNumber').html() == 0) {
         $chart.append(
           '<p  class="text-center"> ' + options.title + " <br>  No data </p>"
         );
