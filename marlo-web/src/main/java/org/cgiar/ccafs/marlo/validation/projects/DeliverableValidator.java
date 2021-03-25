@@ -792,7 +792,7 @@ public class DeliverableValidator extends BaseValidator {
               // Authors
               if (StringUtils.isBlank(deliverableMetadataElement.getElementValue())) {
                 action.addMessage(action.getText("metadata.creator"));
-                action.getInvalidFields().put("deliverable.metadataElements[37].elementValue",
+                action.getInvalidFields().put("input-deliverable.metadataElements[37].elementValue",
                   InvalidFieldsMessages.EMPTYFIELD);
               }
             }
@@ -802,7 +802,7 @@ public class DeliverableValidator extends BaseValidator {
               // Title
               if (StringUtils.isBlank(deliverableMetadataElement.getElementValue())) {
                 action.addMessage(action.getText("metadata.title"));
-                action.getInvalidFields().put("deliverable.metadataElements[0].elementValue",
+                action.getInvalidFields().put("input-deliverable.metadataElements[0].elementValue",
                   InvalidFieldsMessages.EMPTYFIELD);
               }
             }
@@ -812,7 +812,7 @@ public class DeliverableValidator extends BaseValidator {
               // Creation Date
               if (StringUtils.isBlank(deliverableMetadataElement.getElementValue())) {
                 action.addMessage(action.getText("metadata.publicationDate"));
-                action.getInvalidFields().put("deliverable.metadataElements[16].elementValue",
+                action.getInvalidFields().put("input-deliverable.metadataElements[16].elementValue",
                   InvalidFieldsMessages.EMPTYFIELD);
               }
             }
