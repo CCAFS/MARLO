@@ -127,6 +127,12 @@ public class ProjectFocusManagerImpl implements ProjectFocusManager {
   }
 
   @Override
+  public List<ProjectFocus> findByProjectId(long projectID) {
+
+    return projectFocusDAO.findByProjectId(projectID);
+  }
+
+  @Override
   public ProjectFocus getProjectFocusById(long projectFocusID) {
 
     return projectFocusDAO.find(projectFocusID);
