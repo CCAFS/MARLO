@@ -1,8 +1,60 @@
 var $statuses, $statusDescription;
 
 $(document).ready(init);
+function hideOrShowCheckBoxIsOtherUrl(value){
+  if (value) {
+    $('.isOtherUrlTohide').show('slow');
+  }else{
+    $('input.isOtherUrl').prop('checked', false);
+    $('.other-url').hide('slow');
+    $('.isOtherUrlFiel').val(false);
 
-function init() {
+  }
+}
+function checkDOI() { 
+  setTimeout(() => {
+    if ($('.deliverableDisseminationUrl ').prop('readonly') || $('.disseminationChannel').val() == 'other' ) {
+      if ($('#doi-bridge').val()) {
+        $('.isOtherUrlTohide').hide('slow');
+        hideOrShowCheckBoxIsOtherUrl(false);      
+      }else{
+        if (($('.typeSelect').val() == 49 && $('.subTypeSelect ').val() ==63 )) {
+          hideOrShowCheckBoxIsOtherUrl(true);
+        }
+      }
+    }
+    // ^((https?:\/\/)?(www\.)?[a-zA-Z0-9.-]+\.+[a-zA-Z0-9.-]+\/10\.\d{4,9}[-._;()/:A-Z0-9]+$|^(doi\:)?10.\d{4,9}[-._;()/:A-Z0-9]+$)
+    // ^((https?:\/\/)?(www\.)?[a-zA-Z0-9.-]+\.+[a-zA-Z0-9.-]+\/10\.\d{4,9}[-._;()/:A-Z0-9]+$|^10.\d{4,9}[-._;()/:A-Z0-9]+$)
+    //    /^10.\d{4,9}[-._;()/:A-Z0-9]+$/i           comienza
+    //    /10.\d{4,9}[-._;()/:A-Z0-9]+$/i            si lo contiene
+
+    // nuevo doi ^((https?:\/\/)?(www\.)?[a-zA-Z0-9.-]+\.+[a-zA-Z0-9.-]+\/10\.\d{4,9}\/[-._;():A-Z0-9]+$|^10\.\d{4,9}\/[-._;():A-Z0-9]+$)
+    var result = /^((https?:\/\/)?(www\.)?[a-zA-Z0-9.-]+\.+[a-zA-Z0-9.-]+\/10\.\d{4,9}\/[-._;()/:A-Z0-9]+$|^10\.\d{4,9}\/[-._;()/:A-Z0-9]+$)/i.test($('#doi-bridge').val());
+   
+      if ( result  ) {
+        $('#doi-bridge').css("border", "1px solid #ccc");
+        $('.invalidDOI').hide('slow');
+        $('.validDOI').show('slow');
+      }
+      if(!result && $('#doi-bridge').val())
+      {
+        $('#doi-bridge').css("border", "red solid 1px");
+        $('.invalidDOI').show('slow');
+        $('.validDOI').hide('slow');
+        
+      }
+      if ( !$('#doi-bridge').val()  ) {
+        $('#doi-bridge').css("border", "1px solid #ccc");
+        $('.invalidDOI').hide('slow');
+        $('.validDOI').hide('slow');
+      
+      }
+
+  }, 50);
+
+}
+
+function init() { 
 
   $statuses = $('select.status');
   isDeliverableNew = $statuses.classParam('isNew') == "true";
@@ -24,7 +76,18 @@ function init() {
   });
 
   validateDeliverableStatus();
+  
 
+  $('#doi-bridge').keydown(checkDOI);
+  $('#doi-bridge').change(checkDOI);
+  $('#doi-bridge').bind("paste",checkDOI);
+  if ($('#doi-bridge')[0]) {
+    document.getElementById("doi-bridge").addEventListener("paste", checkDOI);
+  }
+  
+
+  $('input.isOtherUrl').on("click", activeByNoDOIProvidedCheckbox);
+  activeByNoDOIProvidedCheckbox();
   // justificationByStatus($statuses.val());
   // validateCurrentDate();
 
@@ -162,8 +225,21 @@ function init() {
     setGeographicScope(this);
   });
   setGeographicScope($('form select.elementType-repIndGeographicScope')[0]);
-
+    // valiate checkbox "No DOI provided" value
+ 
   deliverablePartnersModule.init();
+}
+
+function activeByNoDOIProvidedCheckbox(){
+    if ($('input.isOtherUrl').is(":checked")) {
+      console.log("checked");
+      $('.isOtherUrlFiel').val(true);
+    }else{
+      console.log("No checked");
+      $('.isOtherUrlFiel').val(false);
+
+    }
+  
 }
 
 function openDialog() {
@@ -374,10 +450,15 @@ function justificationByStatus(statusId) {
         console.log("else");
         if(statusId==4) {
           showNewExpectedComponent(true);
-          $('.expectedDisabled').hide();
-        } else if(statusId==3){
-          showNewExpectedComponent(true);
-          $('.expectedDisabled').show();
+          $('.expectedDisabled').hide("slow");
+        } else if(statusId==2 || statusId==3 || statusId==5 || statusId==6){
+          
+          if (($('.yearNewExpected').val() != '-1') && ($('.yearNewExpected').val() != $('.yearExpected').val())) {  
+            showNewExpectedComponent(true);
+          } else {
+            showNewExpectedComponent(false);
+          }
+          $('.expectedDisabled').show("slow");
         } else {
           showNewExpectedComponent(false);
         }

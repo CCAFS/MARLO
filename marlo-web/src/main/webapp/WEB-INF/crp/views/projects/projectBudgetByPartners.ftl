@@ -4,7 +4,6 @@
 [#assign pageLibs = ["select2", "dropzone", "blueimp-file-upload"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectBudgetByPartners.js?20190403",
-  "${baseUrlCdn}/global/js/autoSave.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js"
   ] 
 /]
@@ -276,7 +275,7 @@
         [#-- Funding sources --]
         <div class="projectW3bilateralFund-list simpleBox project-fs-expandible-true" style="display:${expandedProjectFundingSource?string('block', 'none')}">
           [#list projectFundingSources as budget ] 
-            [#local indexBudgetfundingSource=action.getIndexBudget(element.institution.id,selectedYear,budget.fundingSource.fundingSourceInfo.budgetType.id,budget.fundingSource.id) ]
+            [#local indexBudgetfundingSource=(action.getIndexBudget(element.institution.id,selectedYear,budget.fundingSource.fundingSourceInfo.budgetType.id,budget.fundingSource.id))!"" ]
             [@projectFundingBudget element=budget name="project.budgets" selectedYear=selectedYear  index=indexBudgetfundingSource /]
           [#else]
             [#if editable && isYearEditable(selectedYear) && action.canSearchFunding(element.institution.id)]
@@ -300,6 +299,7 @@
     </div>
   </div>
 [/#macro]
+
 
 
 [#macro fundingSourceRowMacro element name selectedYear index=-1  isTemplate=false]
@@ -481,14 +481,18 @@
             [#if (editable && isYearEditable(selectedYear) && action.canSearchFunding(element.institution.id) && action.canEditGender()) || isTemplate]
               [@customForm.input name="${customName}.genderPercentage" i18nkey="budget.genderPercentage" showTitle=false className="percentageInput cycle-planning type-${(element.fundingSource.fundingSourceInfo.budgetType.id)!'none'}" required=true   /]
             [#else]  
-            <div class="${customForm.changedField(customName+'.genderPercentage')}">
-              <div class="input"><p><span>${((element.genderPercentage)!0)}%</span></p></div>
-              <input type="hidden" name="${customName}.genderPercentage"  value="${(element.genderPercentage)!0}" />
-            </div>
+              <div class="${customForm.changedField(customName+'.genderPercentage')}">
+                <div class="input"><p><span>${((element.genderPercentage)!0)}%</span></p></div>
+                <input type="hidden" name="${customName}.genderPercentage"  value="${(element.genderPercentage)!0}" />
+              </div>
             [/#if]
           </div>
         [/#if]
       </div>
+    </div>
+    
+    <div class="form-group">
+      [@customForm.textArea name="${customName}.rationale"  value="${(element.rationale)!}" i18nkey="mapFunding.justification" help="mapFunding.justification.help" helpIcon=true className="" required=true editable=editable && (isYearEditable(selectedYear) || isTemplate) /]
     </div>
     
     <div class="">

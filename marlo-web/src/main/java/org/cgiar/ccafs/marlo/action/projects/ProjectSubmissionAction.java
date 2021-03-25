@@ -345,12 +345,13 @@ public class ProjectSubmissionAction extends BaseAction {
         LOG.error("There was an error trying to get the URL to download the PDF file: " + e.getMessage());
       }
     }
-
-    if (buffer != null && fileName != null && contentType != null) {
-      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer.array(), contentType, fileName,
-        true);
-    } else {
-      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    if (this.validateEmailNotification()) {
+      if (buffer != null && fileName != null && contentType != null) {
+        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer.array(), contentType, fileName,
+          true);
+      } else {
+        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+      }
     }
   }
 
@@ -362,10 +363,10 @@ public class ProjectSubmissionAction extends BaseAction {
     this.project = project;
   }
 
-
   public void setProjectID(long projectID) {
     this.projectID = projectID;
   }
+
 
   private void submitProject() {
     Submission submission = new Submission();
@@ -381,10 +382,19 @@ public class ProjectSubmissionAction extends BaseAction {
     submission = submissionManager.saveSubmission(submission);
     this.setSubmission(submission);
     if (submission != null) {
-
-      this.sendNotficationEmail();
-
+      if (this.validateEmailNotification()) {
+        this.sendNotficationEmail();
+      }
     }
   }
+
+  private boolean validateEmailNotification() {
+    GlobalUnit globalUnit = loggedCrp;
+    Boolean crpNotification = globalUnit.getCustomParameters().stream()
+      .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_EMAIL_NOTIFICATIONS))
+      .allMatch(t -> (t.getValue() == null) ? true : t.getValue().equalsIgnoreCase("true"));
+    return crpNotification;
+  }
+
 
 }

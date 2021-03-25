@@ -1316,11 +1316,6 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
 
-      if (innovation.getProjectInnovationInfo().getLeadOrganization() != null) {
-        if (innovation.getProjectInnovationInfo().getLeadOrganization().getId() == -1) {
-          innovation.getProjectInnovationInfo().setLeadOrganization(null);
-        }
-      }
 
       if (innovation.getProjectInnovationInfo().getRepIndInnovationType() != null
         && innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() != null
@@ -1337,11 +1332,19 @@ public class ProjectInnovationAction extends BaseAction {
         innovation.getProjectInnovationInfo().setInnovationNumber(null);
       }
 
-      if (clearLead == null || clearLead == false) {
+      // NOTE -> FOR SOME REASON "CLEAR LEAD" MEANS "NOT A CLEAR LEAD", SO WE HAVE TO REVERSE THE CONDITIONAL
+      if (/* NO */clearLead == null || /* NO */clearLead == false) {
         innovation.getProjectInnovationInfo().setClearLead(false);
+        if (innovation.getProjectInnovationInfo().getLeadOrganization() != null) {
+          if (innovation.getProjectInnovationInfo().getLeadOrganization().getId() == -1) {
+            innovation.getProjectInnovationInfo().setLeadOrganization(null);
+          }
+        }
       } else {
         innovation.getProjectInnovationInfo().setClearLead(true);
+        innovation.getProjectInnovationInfo().setLeadOrganization(null);
       }
+
       // End
 
       projectInnovationInfoManager.saveProjectInnovationInfo(innovation.getProjectInnovationInfo());
@@ -1709,6 +1712,15 @@ public class ProjectInnovationAction extends BaseAction {
 
       for (ProjectInnovationOrganization innovationOrganization : organizationPrev) {
         if (innovation.getOrganizations() == null || !innovation.getOrganizations().contains(innovationOrganization)) {
+          projectInnovationOrganizationManager.deleteProjectInnovationOrganization(innovationOrganization.getId());
+        }
+      }
+
+      // Delete innovations organizations when stage is different to 4
+      if (projectInnovation.getProjectInnovationInfo(this.getActualPhase()) != null
+        && projectInnovation.getProjectInnovationInfo(this.getActualPhase()).getRepIndStageInnovation() != null
+        && projectInnovation.getProjectInnovationInfo(this.getActualPhase()).getRepIndStageInnovation().getId() != 4) {
+        for (ProjectInnovationOrganization innovationOrganization : organizationPrev) {
           projectInnovationOrganizationManager.deleteProjectInnovationOrganization(innovationOrganization.getId());
         }
       }

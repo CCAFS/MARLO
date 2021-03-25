@@ -1,9 +1,11 @@
 /************* 1. GENERAL ***************/
-@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,800); @import url("custom.pickadate.css"); @import url("custom.bootstrap.css"); @import url("customLogin.css"); @import url("customInputsFlat.css"); @import url("customTrumbowyg.css"); /* END IMPORTS*/
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,800); @import url("custom.pickadate.css"); @import url("custom.bootstrap.css"); @import url("customLogin.css?20201120"); @import url("customInputsFlat.css"); @import url("customTrumbowyg.css"); /* END IMPORTS*/
 .mce-widget.mce-tooltip {
   display: none !important;
 }
-
+#evidenceTypes th,#evidenceTypes td{
+font-size: 1.2em !important;
+}
 table {
   width: 100%;
 }
@@ -292,8 +294,14 @@ textarea.fieldError, input.fieldError, textarea.fieldError:focus, input.fieldErr
   color: #EE1D1D !important;
 }
  
-div.fieldError, label.fieldError {
-  border-color: #F44 !important; 
+div.fieldError, label.fieldError, small.fieldError {
+  border-color: #F44 !important;
+  color: #EE1D1D !important;
+  font-weight: 600 !important;
+}
+
+div.fieldError button{
+  border-color: #F44 !important;
   color: #EE1D1D !important;
   font-weight: 600 !important;
 }
@@ -358,7 +366,7 @@ label.readOnly {
   cursor: initial;
 }
 
-p.fieldError {
+p.fieldError, span.remainingAmount.fieldError  {
   color: #F52626 !important;
   font-weight: bold;
   margin-right: 4px;
@@ -678,7 +686,7 @@ ul#noty_bottomRight_layout_container {
 
 input:-webkit-autofill, textarea:-webkit-autofill, select:-webkit-autofill {
   background-color: #fff !important;
-  background-image: none !important;
+  /* background-image: none !important; */
   color: #ccc !important;
 }
 
@@ -890,6 +898,17 @@ img.icon {
   left: 0;
 }
 
+.loading-neutral {
+  width: 100%;
+  height: 100%;
+  background: url(../../global/images/loading-neutral.svg) #FFF no-repeat 50%;
+  position: absolute;
+  z-index: 99;
+  opacity: 0.5;
+  top: 0;
+  left: 0;
+}
+
 .syncedBlock {
   background: #fff;
   width: 100%;
@@ -910,7 +929,9 @@ img.icon {
 }
 
 input.input-loading {
-  background: url(../../global/images/loading_3.gif) #FFF no-repeat right;
+  background-image: url(../../global/images/loading_3.gif);
+  background-position: right;
+  background-repeat: no-repeat !important;
 }
 
 /* Horizontal sub menu */
@@ -2496,7 +2517,7 @@ h3.contentSubTitle {
   width: 18px;
 }
 
-.helpMessage3 p {
+.helpMessage3 p , .helpMessage4 p{
   padding: 1px;
   margin-bottom: 0px;
 }
@@ -3505,6 +3526,10 @@ p.projectValidateButton-message {
   height: 44px;
 }
 
+.fundingSource-title {
+  height: 44px !important;
+}
+
 .coreProject_name {
   display: block;
   width: 90%;
@@ -4217,7 +4242,7 @@ span.indicatorsFound {
   background-color: #5b80c3;
 }
 
-#metadata-output {
+#metadata-output, .metadata-output-persistent {
   color: #777;
   padding: 7px 4px;
   font-style: italic;
@@ -5672,6 +5697,7 @@ h4.testEnvironment {
   color: #FFFFFF;
   background: #8EA786;
   border-bottom: 3px solid #7E9377;
+  outline: none;
 }
 
 .button-save:[disabled], 
@@ -6980,6 +7006,35 @@ i.authorVisibles {}
   cursor: pointer;
 }
 
+button.btn.btn-primary {
+  border-radius: 2px;
+  background-color: #298bb1;
+  border: 0;
+  border-bottom: 2px solid;
+  border-color: #267d9e;
+}
+
+article#mainInformation {
+  min-height: 100px;
+}
+
+.trashIcon {
+  cursor: pointer;
+  display: inline-block;
+  height: 21px;
+  width: 21px;
+  background-image: url(../../global/images/trash.png);
+}
+
+.trashIcon.icon-disabled {
+  cursor:  auto;
+  opacity: 0.5 !important;
+}
+
+.icon-loading {
+  background-image: url(../../global/images/loading_3.gif) !important;
+}
+
 .text-bold {
   font-weight: 500 !important;
 }
@@ -7036,4 +7091,14 @@ li.currentSection#bi::before{
   font-size: 5px;
   padding: 0.3em 2.5em 0.3em 2.5em;
   border-radius: 0em 0em 0.3em 0.3em;
+}
+
+.slo-contribution-section{
+  border: 1px solid #D1D1D1;
+  padding: 9px 22px 9px 22px;
+  margin: 2px 0px 5px 0;
+  border-radius: 4px;
+  position: relative;
+  transition: box-shadow 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  background: #fff;
 }

@@ -25,8 +25,19 @@ $(document).ready(function() {
                 $.each(full.countries.split(','), function(i,flag) {
                   flags += '<i title="' + flag + '" class="flag-icon flag-icon-' + $.trim(flag.toLowerCase()) + '"></i>';
                 });
-
-                return data + " <br/>  " + flags;
+                // console.log(full.webPage);
+                var link = "";
+                if (full.webPage != undefined) {
+                  link = "<a style='margin: 20px;' href='"+full.webPage+"' target='_blank' data-toggle='tooltip' data-placement='top' title='"+full.webPage+"'>Web page</a>";
+                }else{
+                  link = "";
+                }
+                // if(full.webPage == undefined){
+                //   console.log("Nullooooooooooooooooooooooooooooooooooooooooooo");
+                //   console.log(full.name);
+                // }
+                // console.log(full.webpage);
+                return data + " <br/>  " + flags +link;
               }
           }, {
             data: "type"

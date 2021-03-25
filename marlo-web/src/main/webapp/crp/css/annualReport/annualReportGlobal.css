@@ -1,3 +1,24 @@
+#evidenceTypes th{
+ color: #5e5d5d !important;
+}
+
+.checkboxDiTeAr{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+}
+
+.contentCheckBox{
+  color: white;
+  font-weight: 1000;
+  background-color: #b0b99d;
+  border-radius: 5px;
+  padding: 0px 10px;
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+
 svg > g > g:last-child {
   pointer-events: none
 }
@@ -495,4 +516,81 @@ div#chart13 {
 .missingFieldFp{
   margin-top: 16px;
   text-align-last: right;
+}
+
+.slo-contribution-section-hide{
+  display: none;
+}
+
+.to-disabled-box{
+  position: relative;
+}
+
+.disabled-box{
+  display: none;
+  position: absolute;
+  background-color: #ffffff67;
+  filter: blur(100%);
+  width: 100%;
+  height: 100%;
+  z-index: 998;
+}
+
+.colTitleCenter{
+  text-align: center;
+}
+
+.rectGray{
+  padding: 5px 0px;
+  background-color: #fafafa;
+  margin: 5px 0px;
+}
+
+.boldCell{
+  font-weight: 600;
+}
+.helpTextPOWB{
+  color: #949393;
+  margin: 3px 0px 0px 0px !important;
+  font-size: .9em;
+  font-style: italic;
+}
+
+.TdSroll{
+  overflow: auto;
+  /* max-width: 200px; */
+  white-space: nowrap;
+}
+
+.TdSroll::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+
+}
+
+/* Track */
+.TdSroll::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+ 
+/* Handle */
+.TdSroll::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: #888; 
+}
+
+/* Handle on hover */
+.TdSroll::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+
+.container-links{
+  position: inherit;
+  display: flex;
+  height: 2.5rem;
+  flex-flow: row nowrap;
+  justify-content: space-around;
+  align-items: center;
+  font-size: 2rem;
+  margin: 0.8rem 0 0 0;
 }

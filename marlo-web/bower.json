@@ -50,7 +50,8 @@
     "pusher-js": "pusher#^4.2.2",
     "trumbowyg": "^2.15.1",
     "malihu-custom-scrollbar-plugin": "^3.1.5",
-    "cookieconsent": "^3.1.0"
+    "cookieconsent": "^3.1.0",
+    "vue": "^2.6.10"
   },
   "overrides": {
     "jquery": {
@@ -134,6 +135,11 @@
         "dist/plugins/cleanpaste/trumbowyg.cleanpaste.min.js",
         "dist/plugins/allowtagsfrompaste/trumbowyg.allowtagsfrompaste.js",
         "dist/ui/trumbowyg.min.css"
+      ]
+    },
+    "vue": {
+      "main": [
+        "dist/vue.min.js"
       ]
     }
   }

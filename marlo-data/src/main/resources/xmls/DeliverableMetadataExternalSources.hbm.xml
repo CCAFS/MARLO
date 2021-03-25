@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Created Jan 26, 2021 10:07:32 PM by German Martinez -->
+<hibernate-mapping>
+	<class name="org.cgiar.ccafs.marlo.data.model.DeliverableMetadataExternalSources" table="deliverable_metadata_external_sources" 
+		optimistic-lock="none">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		
+		<many-to-one name="deliverable"
+			class="org.cgiar.ccafs.marlo.data.model.Deliverable" fetch="select">
+			<column name="deliverable_id" />
+		</many-to-one>
+		<many-to-one name="phase"
+			class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
+			<column name="phase_id" />
+		</many-to-one>
+		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select" update="false">
+			<column name="created_by" not-null="true" />
+		</many-to-one>
+		
+		<!--set name="deliverableAffiliations" table="deliverable_affiliations" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="deliverable_metadata_external_sources_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableMetadataExternalSources" />
+		</set>
+		<set name="deliverableAffiliationsNotMapped" table="deliverable_affiliations_not_mapped" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="deliverable_metadata_external_sources_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableMetadataExternalSources" />
+		</set>
+		<set name="externalSourceAuthors" table="external_source_author" inverse="false"
+			lazy="true" fetch="select">
+			<key>
+				<column name="deliverable_metadata_external_sources_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableMetadataExternalSources" />
+		</set-->
+		
+		<property name="source" type="string">
+			<column name="source" sql-type="TEXT" />
+		</property>
+		<property name="url" type="string">
+			<column name="url" sql-type="TEXT" />
+		</property>
+		<property name="doi" type="string">
+			<column name="doi" sql-type="TEXT" />
+		</property>
+		<property name="title" type="string">
+			<column name="title" sql-type="TEXT" />
+		</property>
+		<property name="publicationType" type="string">
+			<column name="publication_type" sql-type="TEXT" />
+		</property>
+		<property name="publicationYear" type="java.lang.Integer">
+			<column name="publication_year" />
+		</property>
+		<property name="openAccessStatus" type="string">
+			<column name="is_open_access" sql-type="TEXT" />
+		</property>
+		<property name="openAccessLink" type="string">
+			<column name="open_access_link" sql-type="TEXT" />
+		</property>
+		<property name="isiStatus" type="string">
+			<column name="is_isi" sql-type="TEXT" />
+		</property>
+		<property name="journalName" type="string">
+			<column name="journal_name" sql-type="TEXT" />
+		</property>
+		<property name="volume" type="string">
+			<column name="volume" sql-type="TEXT" />
+		</property>
+		<property name="pages" type="string">
+			<column name="pages" sql-type="TEXT" />
+		</property>
+		<!-- New GARDIAN fields -->
+		<property name="gardianFindability" type="string">
+			<column name="gardian_findability" sql-type="TEXT" />
+		</property>
+		<property name="gardianAccessibility" type="string">
+			<column name="gardian_accessibility" sql-type="TEXT" />
+		</property>
+		<property name="gardianInteroperability" type="string">
+			<column name="gardian_interoperability" sql-type="TEXT" />
+		</property>
+		<property name="gardianReusability" type="string">
+			<column name="gardian_reusability" sql-type="TEXT" />
+		</property>
+		<property name="gardianTitle" type="string">
+			<column name="gardian_title" sql-type="TEXT" />
+		</property>
+		<!-- AUDITLOG -->
+		<property name="active" type="boolean">
+			<column name="is_active" not-null="true" />
+		</property>
+		<property name="activeSince" type="timestamp" update="false" >
+			<column name="active_since" length="19" not-null="true" />
+		</property>
+		<property name="createDate" type="timestamp">
+			<column name="create_date" length="19" not-null="true" />
+		</property>
+	</class>
+</hibernate-mapping>

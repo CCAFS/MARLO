@@ -50,6 +50,9 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
   private String detailedAnnex;
 
   @Expose
+  private String relevanceCovid;
+
+  @Expose
   private String expandedResearchAreas;
 
   @Expose
@@ -257,10 +260,14 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
     return projectStudies;
   }
 
+  public String getRelevanceCovid() {
+    return relevanceCovid;
+  }
+
+
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
   }
-
 
   public Set<ReportSynthesisFlagshipProgressDeliverable> getReportSynthesisFlagshipProgressDeliverables() {
     return reportSynthesisFlagshipProgressDeliverables;
@@ -269,6 +276,7 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
   public Set<ReportSynthesisFlagshipProgressInnovation> getReportSynthesisFlagshipProgressInnovations() {
     return reportSynthesisFlagshipProgressInnovations;
   }
+
 
   public Set<ReportSynthesisFlagshipProgressMilestone> getReportSynthesisFlagshipProgressMilestones() {
     return reportSynthesisFlagshipProgressMilestones;
@@ -284,10 +292,10 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
     return reportSynthesisFlagshipProgressPolicies;
   }
 
-
   public Set<ReportSynthesisFlagshipProgressStudy> getReportSynthesisFlagshipProgressStudies() {
     return reportSynthesisFlagshipProgressStudies;
   }
+
 
   /**
    * @return Get an array of studies IDs checked.
@@ -319,7 +327,6 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
     this.altmetricScore = altmetricScore;
   }
 
-
   public void setChangedDirection(String changedDirection) {
     this.changedDirection = changedDirection;
   }
@@ -328,7 +335,6 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
   public void setDeliverables(List<Deliverable> deliverables) {
     this.deliverables = deliverables;
   }
-
 
   public void setDeliverablesValue(String deliverablesValue) {
     this.deliverablesValue = deliverablesValue;
@@ -399,6 +405,7 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
     this.progressByFlagships = progressByFlagships;
   }
 
+
   public void setProjectInnovations(List<ProjectInnovation> projectInnovations) {
     this.projectInnovations = projectInnovations;
   }
@@ -407,9 +414,13 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
     this.projectPolicies = projectPolicies;
   }
 
-
   public void setProjectStudies(List<ProjectExpectedStudy> projectStudies) {
     this.projectStudies = projectStudies;
+  }
+
+
+  public void setRelevanceCovid(String relevanceCovid) {
+    this.relevanceCovid = relevanceCovid;
   }
 
 

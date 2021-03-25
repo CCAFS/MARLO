@@ -422,6 +422,28 @@ public class PublicationAction extends BaseAction {
   }
 
 
+  private List<DeliverableType> getDeliverableSubtypes(Deliverable deliverable) {
+    ArrayList<DeliverableType> subCategories = new ArrayList<>();
+
+    ArrayList<DeliverableType> categories = new ArrayList<>(
+      deliverableTypeManager.findAll().stream().filter(dt -> dt.isActive() && dt.getDeliverableCategory() == null
+        && dt.getCrp() == null && !dt.getAdminType().booleanValue()).collect(Collectors.toList()));
+
+    categories.addAll(new ArrayList<>(deliverableTypeManager.findAll().stream()
+      .filter(dt -> dt.isActive() && dt.getDeliverableCategory() == null && dt.getCrp() != null
+        && dt.getCrp().getId().longValue() == loggedCrp.getId().longValue() && !dt.getAdminType().booleanValue())
+      .collect(Collectors.toList())));
+
+    for (DeliverableType category : categories) {
+      if (category != null && category.getId() != null) {
+        subCategories.addAll(deliverableTypeManager.getSubDeliverableType(category.getId()));
+      }
+    }
+
+    return subCategories;
+  }
+
+
   public List<DeliverableType> getDeliverableSubTypes() {
     return deliverableSubTypes;
   }
@@ -446,7 +468,6 @@ public class PublicationAction extends BaseAction {
     return null;
   }
 
-
   public List<CrpProgram> getFlagshipsList() {
     return crpProgramManager.findAll().stream()
       .filter(c -> c.isActive() && c.getCrp().equals(this.loggedCrp)
@@ -458,6 +479,7 @@ public class PublicationAction extends BaseAction {
     return focusLevels;
   }
 
+
   public List<FundingSource> getFundingSources() {
     return fundingSources;
   }
@@ -466,7 +488,6 @@ public class PublicationAction extends BaseAction {
   public List<GenderType> getGenderLevels() {
     return genderLevels;
   }
-
 
   public List<Institution> getInstitutions() {
     return institutions;
@@ -501,6 +522,7 @@ public class PublicationAction extends BaseAction {
       .sorted((r1, r2) -> r1.getAcronym().compareTo(r2.getAcronym())).collect(Collectors.toList());
   }
 
+
   public List<RepIndFillingType> getRepIndFillingTypes() {
     return repIndFillingTypes;
   }
@@ -520,15 +542,14 @@ public class PublicationAction extends BaseAction {
     return repIndRegions;
   }
 
-
   public List<RepIndTrainingTerm> getRepIndTrainingTerms() {
     return repIndTrainingTerms;
   }
 
+
   public List<RepIndTypeActivity> getRepIndTypeActivities() {
     return repIndTypeActivities;
   }
-
 
   public List<RepIndTypeParticipant> getRepIndTypeParticipants() {
     return repIndTypeParticipants;
@@ -538,14 +559,15 @@ public class PublicationAction extends BaseAction {
     return repositoryChannels;
   }
 
+
   public Map<String, String> getStatuses() {
     return statuses;
   }
 
-
   public String getTransaction() {
     return transaction;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -980,12 +1002,7 @@ public class PublicationAction extends BaseAction {
       }
 
 
-      deliverableSubTypes = new ArrayList<>(
-        deliverableTypeManager.findAll().stream().filter(dt -> dt.isActive() && dt.getDeliverableCategory() != null
-          && dt.getDeliverableCategory().getId().intValue() == 49).collect(Collectors.toList()));
-      deliverableSubTypes.add(deliverableTypeManager.getDeliverableTypeById(55));
-      deliverableSubTypes.add(deliverableTypeManager.getDeliverableTypeById(56));
-      deliverableSubTypes.sort((t1, t2) -> t1.getName().compareTo(t2.getName()));
+      deliverableSubTypes = this.getDeliverableSubtypes(this.deliverable);
 
       crps = new ArrayList<GlobalUnit>();
       for (GlobalUnit crp : crpManager.findAll().stream()
@@ -1139,7 +1156,6 @@ public class PublicationAction extends BaseAction {
       }
     }
   }
-
 
   @Override
   public String save() {

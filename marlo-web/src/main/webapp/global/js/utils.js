@@ -428,6 +428,14 @@ jQuery.fn.addOptionFast = function(val,name) {
   $(this).append("<option value='" + val + "'>" + name + "</option>");
 };
 
+jQuery.fn.addArrayOptions = function(array) {
+  var optionsText = "";
+  for(var i = 0, len = array.length; i < len; i++) {
+    optionsText += "<option value='" + array[i][0] + "'>" + array[i][1] + "</option>";
+  }
+  $(this).append(optionsText);
+};
+
 function removeOption(select,val) {
   $(select).find('option[value=' + val + ']').remove();
 }
@@ -762,9 +770,9 @@ function getKeyByValue(obj,value) {
 function postMessageToSlack(messageJson) {
   var xmlhttp = new XMLHttpRequest();
   // Webhook URLs for Your Workspace #marlo-notifications
-  var channelToken = "T0L2KT42Z/BTHFGL30U/uBl8mIsLfEos0Ytm8ppiriax";
+  var channelToken = "T0L2KT42Z/BTHFGL30U/iYg9pidxAjc1BpsXadJJwkjt";
   if(production) {
-    channelToken = "T0L2KT42Z/BTHFGL30U/uBl8mIsLfEos0Ytm8ppiriax";
+    channelToken = "T0L2KT42Z/BTHFGL30U/iYg9pidxAjc1BpsXadJJwkjt";
   }
 
   var webhook_url = 'https://hooks.slack.com/services/' + channelToken;

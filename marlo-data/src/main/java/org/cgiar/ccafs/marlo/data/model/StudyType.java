@@ -15,6 +15,12 @@ public class StudyType extends MarloBaseEntity implements java.io.Serializable {
   private String name;
   private int order;
 
+  // AR 2020 added new fields description, key identifier, for, example. Used for type explanation for users
+  private String description;
+  private String keyIdentifier;
+  private String forNarrative;
+  private String example;
+
 
   public StudyType() {
   }
@@ -41,6 +47,22 @@ public class StudyType extends MarloBaseEntity implements java.io.Serializable {
     return true;
   }
 
+  public String getDescription() {
+    return description;
+  }
+
+  public String getExample() {
+    return example;
+  }
+
+  public String getForNarrative() {
+    return forNarrative;
+  }
+
+  public String getKeyIdentifier() {
+    return keyIdentifier;
+  }
+
   public String getName() {
     return name;
   }
@@ -55,6 +77,22 @@ public class StudyType extends MarloBaseEntity implements java.io.Serializable {
     int result = 1;
     result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
     return result;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public void setExample(String example) {
+    this.example = example;
+  }
+
+  public void setForNarrative(String forNarrative) {
+    this.forNarrative = forNarrative;
+  }
+
+  public void setKeyIdentifier(String keyIdentifier) {
+    this.keyIdentifier = keyIdentifier;
   }
 
 

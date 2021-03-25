@@ -105,6 +105,9 @@ public class SearchInstitutionsAction extends BaseAction {
       institutionMap.put("acronym", institution.getAcronym());
       institutionMap.put("name", institution.getName());
       institutionMap.put("type", institution.getInstitutionType().getName());
+      if (institution.getWebsiteLink() != null) {
+        institutionMap.put("webPage", institution.getWebsiteLink());
+      }
       // Add locations to a set to show it separated by comma
       Set<String> locHash = new TreeSet<String>();
       for (InstitutionLocation il : institution.getInstitutionsLocations()) {
