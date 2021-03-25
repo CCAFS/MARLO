@@ -41,16 +41,31 @@ public class NewPublicationDTO {
   private String doi;
   @ApiModelProperty(notes = "Handle URL")
   private String handle;
+  @ApiModelProperty(notes = "Article URL")
+  private String articleURL;
+
+
   @ApiModelProperty(notes = "Phase")
   private PhaseDTO phase;
+
+
   @ApiModelProperty(notes = "Year Of publication")
   private Integer year;
+
+
   @ApiModelProperty(notes = "Publication Authors Field")
   private String authors;
+
+
+  public String getArticleURL() {
+    return articleURL;
+  }
+
 
   public List<DeliverableUserDTO> getAuthorList() {
     return authorlist;
   }
+
 
   public String getAuthors() {
     return authors;
@@ -62,6 +77,10 @@ public class NewPublicationDTO {
 
   public String getHandle() {
     return handle;
+  }
+
+  public Boolean getIsISIJournal() {
+    return isISIJournal;
   }
 
   public Boolean getIsOpenAccess() {
@@ -76,7 +95,6 @@ public class NewPublicationDTO {
     return journal;
   }
 
-
   public String getNpages() {
     return npages;
   }
@@ -85,10 +103,10 @@ public class NewPublicationDTO {
     return phase;
   }
 
-
   public String getTitle() {
     return title;
   }
+
 
   public String getVolume() {
     return volume;
@@ -98,8 +116,17 @@ public class NewPublicationDTO {
     return year;
   }
 
+
   public Boolean isISIJournal() {
     return isISIJournal;
+  }
+
+  public void setArticleURL(String articleURL) {
+    this.articleURL = articleURL;
+  }
+
+  public void setAuthorlist(List<DeliverableUserDTO> authorlist) {
+    this.authorlist = authorlist;
   }
 
   public void setAuthorList(List<DeliverableUserDTO> authorlist) {
@@ -118,7 +145,8 @@ public class NewPublicationDTO {
     this.handle = handle;
   }
 
-  public void setISIJournal(Boolean isISIJournal) {
+
+  public void setIsISIJournal(Boolean isISIJournal) {
     this.isISIJournal = isISIJournal;
   }
 

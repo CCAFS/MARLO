@@ -1090,6 +1090,12 @@ public class ProjectPolicyAction extends BaseAction {
       if (policy.getProjectPolicyInfo().getRepIndPolicyInvestimentType() != null) {
         if (policy.getProjectPolicyInfo().getRepIndPolicyInvestimentType().getId() == -1) {
           policy.getProjectPolicyInfo().setRepIndPolicyInvestimentType(null);
+        } else {
+          if (policy.getProjectPolicyInfo().getRepIndPolicyInvestimentType() != null
+            && policy.getProjectPolicyInfo().getRepIndPolicyInvestimentType().getId() != null
+            && policy.getProjectPolicyInfo().getRepIndPolicyInvestimentType().getId().longValue() != 3) {
+            policy.getProjectPolicyInfo().setAmount(null);
+          }
         }
       }
 

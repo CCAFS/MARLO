@@ -52,9 +52,16 @@ public class Publication implements java.io.Serializable {
   private int year;
   @Expose
   private String authors;
+  @Expose
+  private String articleURL;
 
 
   private List<DeliverableUser> authorlist;
+
+
+  public String getArticleURL() {
+    return articleURL;
+  }
 
 
   public List<DeliverableUser> getAuthorlist() {
@@ -124,6 +131,11 @@ public class Publication implements java.io.Serializable {
 
   public boolean isISIJournal() {
     return isISIJournal;
+  }
+
+
+  public void setArticleURL(String articleURL) {
+    this.articleURL = articleURL;
   }
 
 

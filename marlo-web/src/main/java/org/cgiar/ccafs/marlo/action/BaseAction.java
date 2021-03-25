@@ -142,7 +142,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
-import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
@@ -545,11 +544,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public void addMessage(String message) {
-    this.validationMessage.append("<p> - ");
-    this.validationMessage.append(message);
-    this.validationMessage.append("</p>");
+    if (!StringUtils.stripToEmpty(message).isEmpty()) {
+      this.validationMessage.append("<p> - ");
+      this.validationMessage.append(message);
+      this.validationMessage.append("</p>");
 
-    this.addMissingField(message);
+      this.addMissingField(message);
+    }
   }
 
   /**
@@ -558,10 +559,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @param field is the name of the field.
    */
   public void addMissingField(String field) {
-    if (this.missingFields.length() != 0) {
-      this.missingFields.append(";");
+    if (!StringUtils.stripToEmpty(field).isEmpty()) {
+      if (this.missingFields.length() != 0) {
+        this.missingFields.append(";");
+      }
+      this.missingFields.append(field);
     }
-    this.missingFields.append(field);
   }
 
   /**
@@ -695,29 +698,30 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     Class<?> clazz;
     try {
       clazz = Class.forName(className);
-      if (clazz == UserRole.class) {
-
-        UserRole userRole = this.userRoleManager.getUserRoleById(id);
-        long cuId = Long.parseLong((String) this.getSession().get(APConstants.CRP_CU));
-        /**
-         * Optimize this to a SQL query that takes the userId and the
-         * LiasionInstitutionId as parameters
-         **/
-        List<LiaisonUser> liaisonUsers = this.liaisonUserManager.findAll().stream()
-          .filter(c -> c.getUser().getId().longValue() == userRole.getUser().getId().longValue()
-            && c.getLiaisonInstitution().getId().longValue() == cuId)
-          .collect(Collectors.toList());
-
-        for (LiaisonUser liaisonUser : liaisonUsers) {
-          if (!liaisonUser.getProjects().stream()
-            .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase()) && c.getStatus() != null
-              && (c.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                || c.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))
-            .collect(Collectors.toList()).isEmpty()) {
-            return false;
-          }
-        }
-      }
+      /*
+       * if (clazz == UserRole.class) {
+       * UserRole userRole = this.userRoleManager.getUserRoleById(id);
+       * long cuId = Long.parseLong((String) this.getSession().get(APConstants.CRP_CU));
+       * /**
+       * Optimize this to a SQL query that takes the userId and the
+       * LiasionInstitutionId as parameters
+       **/
+      /*
+       * List<LiaisonUser> liaisonUsers = this.liaisonUserManager.findAll().stream()
+       * .filter(c -> c.getUser().getId().longValue() == userRole.getUser().getId().longValue()
+       * && c.getLiaisonInstitution().getId().longValue() == cuId)
+       * .collect(Collectors.toList());
+       * for (LiaisonUser liaisonUser : liaisonUsers) {
+       * if (!liaisonUser.getProjects().stream()
+       * .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase()) && c.getStatus() != null
+       * && (c.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+       * || c.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))
+       * .collect(Collectors.toList()).isEmpty()) {
+       * return false;
+       * }
+       * }
+       * }
+       **/
 
       if (clazz == CrpProgram.class) {
         CrpProgram crpProgram = this.crpProgramManager.getCrpProgramById(id);
@@ -744,39 +748,36 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
       }
       if (clazz == CrpProgramLeader.class) {
-        CrpProgramLeader crpProgramLeader = this.crpProgramLeaderManager.getCrpProgramLeaderById(id);
-        for (LiaisonUser liaisonUser : crpProgramLeader.getUser().getLiasonsUsers().stream()
-          .filter(c -> c.getLiaisonInstitution().getCrpProgram() != null && c.getLiaisonInstitution().getCrpProgram()
-            .getId().longValue() == crpProgramLeader.getCrpProgram().getId().longValue())
-          .collect(Collectors.toList())) {
-
-          List<ProjectInfo> projects = liaisonUser.getProjects().stream()
-            .filter(c -> c.isActive() && c.getPhase().getId().equals(this.getActualPhase().getId()))
-            .collect(Collectors.toList());
-          boolean deleted = true;
-          if (projects.size() > 0) {
-
-            for (ProjectInfo projectInfo : projects) {
-              Project project = projectInfo.getProject();
-              if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram().getId()
-                .equals(crpProgramLeader.getCrpProgram().getId())) {
-                if (project.getProjecInfoPhase(this.getActualPhase()).getStatus() != null) {
-                  switch (ProjectStatusEnum
-                    .getValue(project.getProjecInfoPhase(this.getActualPhase()).getStatus().intValue())) {
-                    case Ongoing:
-                    case Extended:
-                      deleted = false;
-                      break;
-
-                  }
-                }
-              }
-
-            }
-            return deleted;
-          }
-
-        }
+        /*
+         * CrpProgramLeader crpProgramLeader = this.crpProgramLeaderManager.getCrpProgramLeaderById(id);
+         * for (LiaisonUser liaisonUser : crpProgramLeader.getUser().getLiasonsUsers().stream()
+         * .filter(c -> c.getLiaisonInstitution().getCrpProgram() != null && c.getLiaisonInstitution().getCrpProgram()
+         * .getId().longValue() == crpProgramLeader.getCrpProgram().getId().longValue())
+         * .collect(Collectors.toList())) {
+         * List<ProjectInfo> projects = liaisonUser.getProjects().stream()
+         * .filter(c -> c.isActive() && c.getPhase().getId().equals(this.getActualPhase().getId()))
+         * .collect(Collectors.toList());
+         * boolean deleted = true;
+         * if (projects.size() > 0) {
+         * for (ProjectInfo projectInfo : projects) {
+         * Project project = projectInfo.getProject();
+         * if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram().getId()
+         * .equals(crpProgramLeader.getCrpProgram().getId())) {
+         * if (project.getProjecInfoPhase(this.getActualPhase()).getStatus() != null) {
+         * switch (ProjectStatusEnum
+         * .getValue(project.getProjecInfoPhase(this.getActualPhase()).getStatus().intValue())) {
+         * case Ongoing:
+         * case Extended:
+         * deleted = false;
+         * break;
+         * }
+         * }
+         * }
+         * }
+         * return deleted;
+         * }
+         * }
+         */
 
       }
 
@@ -1000,6 +1001,24 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   /* Override this method depending of the cancel action. */
   public String cancel() {
     return CANCEL;
+  }
+
+  /**
+   * Make the validation for CRP Admin, PMU or Finance Manager role
+   * to determinate if a Funding source can be duplicated.
+   *
+   * @return boolean with true o false permission to duplicate FS.
+   */
+  public boolean canDuplicateFunding() {
+    boolean canDuplicate = false;
+    String roles = this.getRoles();
+    if (roles != null && !roles.isEmpty() && (roles.contains("CRP-Admin") || roles.contains("PMU")
+      || roles.contains("FM") || roles.contains("SuperAdmin"))) {
+      canDuplicate = true;
+    } else {
+      canDuplicate = false;
+    }
+    return canDuplicate;
   }
 
   /**
@@ -1736,28 +1755,16 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   /**
-   * Years for all phases, but show the year greater or equal to current phase
-   * year.
+   * Obtains the list of years greater than the current one.
    * 
    * @return String of years for a CRP/Platform/Center for all created phases
    */
   public ArrayList<String> getAllPhaseYearsGreater() {
-    this.years = new ArrayList<>();
-    Set<Integer> yearsSet = new HashSet<>();
     List<Phase> phases = this.getAllCreatedPhases();
-    if (phases != null && !phases.isEmpty()) {
-      for (Phase phase : phases) {
-        yearsSet.add(phase.getYear());
-      }
-      if (yearsSet != null && !yearsSet.isEmpty()) {
-        for (Integer yearInt : yearsSet) {
-          if (yearInt >= this.getCurrentCycleYear()) {
-            this.years.add(yearInt.toString());
-          }
-        }
-        java.util.Collections.sort(this.years);
-      }
-    }
+
+    this.years = phases != null ? phases.stream().map(p -> p.getYear()).filter(y -> y > this.getCurrentCycleYear())
+      .distinct().sorted().map(String::valueOf).collect(Collectors.toCollection(ArrayList::new)) : new ArrayList<>();
+
     return this.years;
   }
 
@@ -2344,6 +2351,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return this.crpManager.findAll().stream().filter(c -> c.isActive() && c.getGlobalUnitType().getId() == 1)
         .collect(Collectors.toList());
     }
+  }
+
+  public Phase getCrpPhase(Long crpID, int year, String phaseDescription) {
+    Phase phase = null;
+    if (crpID != null && crpID != 0 && year != 0 && phaseDescription != null && !phaseDescription.isEmpty()) {
+
+      phase = phaseManager.findAll().stream()
+        .filter(p -> p != null && p.getYear() == year && p.getCrp() != null && p.getCrp().getId() != null
+          && p.getCrp().getId() == crpID && p.getDescription() != null && p.getDescription().equals(phaseDescription))
+        .collect(Collectors.toList()).get(0);
+    }
+    return phase;
   }
 
   /**
@@ -4767,6 +4786,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
+
   /**
    * ************************ CENTER METHOD ********************* verify if the
    * cap-dev is complete
@@ -5293,91 +5313,64 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       for (SectionStatus sectionStatus : sections) {
         if (sectionStatus.getCycle().equals(this.getCurrentCycle())
           && sectionStatus.getYear().intValue() == this.getCurrentCycleYear()) {
-          switch (ReportSynthesisSectionStatusEnum.value(sectionStatus.getSectionName().toUpperCase())) {
-            case CRP_PROGRESS:
-              secctions++;
-              if (sectionStatus.getMissingFields().length() > 0) {
-                return false;
+          // AR2019(?) section_names
+          ReportSynthesisSectionStatusEnum sectionStatusValue =
+            ReportSynthesisSectionStatusEnum.value(sectionStatus.getSectionName().toUpperCase());
+          if (sectionStatusValue != null) {
+            switch (sectionStatusValue) {
+              case CRP_PROGRESS:
+              case FLAGSHIP_PROGRESS:
+              case CROSS_CUTTING:
+              case VARIANCE:
+              case FUNDING_USE:
+              case EXTERNAL_PARTNERSHIP:
+              case CROSS_CGIAR:
+              case MELIA:
+              case EFFICIENCY:
+              case GOVERNANCE:
+              case RISKS:
+              case FINANCIAL_SUMMARY:
+              case INFLUENCE:
+              case CONTROL:
+                secctions++;
+                if (sectionStatus.getMissingFields().length() > 0) {
+                  return false;
+                }
+                break;
+            }
+          } else {
+            // may be section_names from AR2018
+            ReportSynthesis2018SectionStatusEnum sectionStatusValue2018 =
+              ReportSynthesis2018SectionStatusEnum.value(sectionStatus.getSectionName().toUpperCase());
+            if (sectionStatusValue2018 != null) {
+              switch (sectionStatusValue2018) {
+                case CRP_PROGRESS:
+                case FLAGSHIP_PROGRESS:
+                case POLICIES:
+                case OICR:
+                case INNOVATIONS:
+                case OUTOMESMILESTONES:
+                case PUBLICATIONS:
+                case CC_DIMENSIONS:
+                case GOVERNANCE:
+                case EXTERNAL_PARTNERSHIPS:
+                case INTELLECTUAL_ASSETS:
+                case MELIA:
+                case EFFICIENCY:
+                case RISKS:
+                case FUNDING_USE:
+                case FINANCIAL:
+                case NARRATIVE:
+                  secctions++;
+                  if (sectionStatus.getMissingFields().length() > 0) {
+                    return false;
+                  }
+                  break;
               }
-              break;
-            case FLAGSHIP_PROGRESS:
-              secctions++;
-              if (sectionStatus.getMissingFields().length() > 0) {
-                return false;
-              }
-              break;
-            case CROSS_CUTTING:
-              secctions++;
-              if (sectionStatus.getMissingFields().length() > 0) {
-                return false;
-              }
-              break;
-            case VARIANCE:
-              secctions++;
-              if (sectionStatus.getMissingFields().length() > 0) {
-                return false;
-              }
-              break;
-            case FUNDING_USE:
-              secctions++;
-              if (sectionStatus.getMissingFields().length() > 0) {
-                return false;
-              }
-              break;
-            case EXTERNAL_PARTNERSHIP:
-              secctions++;
-              if (sectionStatus.getMissingFields().length() > 0) {
-                return false;
-              }
-              break;
-            case CROSS_CGIAR:
-              secctions++;
-              if (sectionStatus.getMissingFields().length() > 0) {
-                return false;
-              }
-              break;
-            case MELIA:
-              secctions++;
-              if (sectionStatus.getMissingFields().length() > 0) {
-                return false;
-              }
-              break;
-            case EFFICIENCY:
-              secctions++;
-              if (sectionStatus.getMissingFields().length() > 0) {
-                return false;
-              }
-              break;
-            case GOVERNANCE:
-              secctions++;
-              if (sectionStatus.getMissingFields().length() > 0) {
-                return false;
-              }
-              break;
-            case RISKS:
-              secctions++;
-              if (sectionStatus.getMissingFields().length() > 0) {
-                return false;
-              }
-              break;
-            case FINANCIAL_SUMMARY:
-              secctions++;
-              if (sectionStatus.getMissingFields().length() > 0) {
-                return false;
-              }
-              break;
-            case INFLUENCE:
-              secctions++;
-              if (sectionStatus.getMissingFields().length() > 0) {
-                return false;
-              }
-              break;
-            case CONTROL:
-              secctions++;
-              if (sectionStatus.getMissingFields().length() > 0) {
-                return false;
-              }
-              break;
+            } else {
+              // no idea what section_name it could be
+              return false;
+            }
           }
         }
       }
@@ -5652,7 +5645,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           return false;
         }
 
-        if (sectionStatus.getMissingFields().length() != 0) {
+        if (sectionStatus.getMissingFields() == null || sectionStatus.getMissingFields().length() != 0) {
           return false;
         }
       } else {
@@ -5920,6 +5913,24 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
     return true;
+  }
+
+  /**
+   * Check if the project was created in a new Center
+   *
+   * @param projectID
+   * @return
+   */
+  public boolean isNewCenterType(long projectID) {
+
+    GlobalUnitProject globalUnitProject = this.globalUnitProjectManager.findByProjectId(projectID);
+
+    if (globalUnitProject.getGlobalUnit().getGlobalUnitType().getId().intValue() == 5) {
+      return true;
+    }
+
+    return false;
+
   }
 
   public boolean isOtherUrl() {

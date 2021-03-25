@@ -1,0 +1,155 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Created Jan 26, 2021 10:07:32 PM by German Martinez -->
+<hibernate-mapping>
+	<class name="org.cgiar.ccafs.marlo.data.model.DeliverableAltmetricInfo" table="deliverable_altmetric_info" 
+		optimistic-lock="none">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		
+		<many-to-one name="deliverable"
+			class="org.cgiar.ccafs.marlo.data.model.Deliverable" fetch="select">
+			<column name="deliverable_id" />
+		</many-to-one>
+		<many-to-one name="phase"
+			class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
+			<column name="phase_id" />
+		</many-to-one>
+		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select" update="false">
+			<column name="created_by" not-null="true" />
+		</many-to-one>
+		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="modified_by" />
+		</many-to-one>
+		
+		<property name="title" type="string">
+			<column name="title" sql-type="TEXT" />
+		</property>
+		<property name="doi" type="string">
+			<column name="doi" sql-type="TEXT" />
+		</property>
+		<property name="uri" type="string">
+			<column name="uri" sql-type="TEXT" />
+		</property>
+		<property name="altmetricJid" type="string">
+			<column name="altmetric_jid" sql-type="TEXT" />
+		</property>
+		<property name="journal" type="string">
+			<column name="journal" sql-type="TEXT" />
+		</property>
+		<property name="authors" type="string">
+			<column name="authors" sql-type="TEXT" />
+		</property>
+		<property name="type" type="string">
+			<column name="type" sql-type="TEXT" />
+		</property>
+		<property name="handle" type="string">
+			<column name="handle" sql-type="TEXT" />
+		</property>
+		<property name="altmetricId" type="string">
+			<column name="altmetric_id" sql-type="TEXT" />
+		</property>
+		<property name="isOpenAccess" type="string">
+			<column name="is_oa" sql-type="TEXT" />
+		</property>
+		<property name="citedByPosts" type="java.lang.Integer">
+			<column name="cited_by_posts" />
+		</property>
+		<property name="citedByDelicious" type="java.lang.Integer">
+			<column name="cited_by_delicious" />
+		</property>
+		<property name="citedByFacebookPages" type="java.lang.Integer">
+			<column name="cited_by_facebook_pages" />
+		</property>
+		<property name="citedByBlogs" type="java.lang.Integer">
+			<column name="cited_by_blogs" />
+		</property>
+		<property name="citedByForumUsers" type="java.lang.Integer">
+			<column name="cited_by_forum_users" />
+		</property>
+		<property name="citedByGooglePlusUsers" type="java.lang.Integer">
+			<column name="cited_by_google_plus_users" />
+		</property>
+		<property name="citedByLinkedinUsers" type="java.lang.Integer">
+			<column name="cited_by_linkedin_users" />
+		</property>
+		<property name="citedByNewsOutlets" type="java.lang.Integer">
+			<column name="cited_by_news_outlets" />
+		</property>
+		<property name="citedByPeerReviewSites" type="java.lang.Integer">
+			<column name="cited_by_peer_review_sites" />
+		</property>
+		<property name="citedByPinterestUsers" type="java.lang.Integer">
+			<column name="cited_by_pinterest_users" />
+		</property>
+		<property name="citedByPolicies" type="java.lang.Integer">
+			<column name="cited_by_policies" />
+		</property>
+		<property name="citedByStackExchangeResources" type="java.lang.Integer">
+			<column name="cited_by_stack_exchange_resources" />
+		</property>
+		<property name="citedByRedditUsers" type="java.lang.Integer">
+			<column name="cited_by_reddit_users" />
+		</property>
+		<property name="citedByResearchHighlightPlatforms" type="java.lang.Integer">
+			<column name="cited_by_research_highlight_platforms" />
+		</property>
+		<property name="citedByTwitterUsers" type="java.lang.Integer">
+			<column name="cited_by_twitter_users" />
+		</property>
+		<property name="citedByYoutubeChannels" type="java.lang.Integer">
+			<column name="cited_by_youtube_channels" />
+		</property>
+		<property name="citedByWeiboUsers" type="java.lang.Integer">
+			<column name="cited_by_weibo_users" />
+		</property>
+		<property name="citedByWikipediaPages" type="java.lang.Integer">
+			<column name="cited_by_wikipedia_pages" />
+		</property>
+		<property name="lastUpdated" type="timestamp" update="false" >
+			<column name="last_updated" length="19" />
+		</property>
+		<property name="score" type="string">
+			<column name="score" sql-type="TEXT" />
+		</property>
+		<property name="url" type="string">
+			<column name="url" sql-type="TEXT" />
+		</property>
+		<property name="addedOn" type="timestamp" update="false" >
+			<column name="added_on" length="19" />
+		</property>
+		<property name="publishedOn" type="timestamp" update="false" >
+			<column name="published_on" length="19" />
+		</property>
+		<property name="imageSmall" type="string">
+			<column name="image_small" sql-type="TEXT" />
+		</property>
+		<property name="imageMedium" type="string">
+			<column name="image_medium" sql-type="TEXT" />
+		</property>
+		<property name="imageLarge" type="string">
+			<column name="image_large" sql-type="TEXT" />
+		</property>
+		<property name="detailsUrl" type="string">
+			<column name="details_url" sql-type="TEXT" />
+		</property>
+		<property name="lastSync" type="timestamp" update="false" >
+			<column name="last_sync" length="19" not-null="true" />
+		</property>
+		
+		<property name="active" type="boolean">
+			<column name="is_active" not-null="true" />
+		</property>
+		<property name="activeSince" type="timestamp" update="false" >
+			<column name="active_since" length="19" not-null="true" />
+		</property>
+		<property name="modificationJustification" type="string">
+			<column name="modification_justification" sql-type="TEXT" />
+		</property>
+	</class>
+</hibernate-mapping>

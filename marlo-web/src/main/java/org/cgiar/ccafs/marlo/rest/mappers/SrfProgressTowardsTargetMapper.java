@@ -15,7 +15,7 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTarget;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTargetCases;
 import org.cgiar.ccafs.marlo.rest.dto.SrfProgressTowardsTargetDTO;
 
 import org.mapstruct.Mapper;
@@ -24,16 +24,19 @@ import org.mapstruct.Mappings;
 
 /**************
  * @author German C. Martinez - CIAT/CCAFS
+ * @author Diego F. Perez - CIAT/CCAFS
  **************/
-@Mapper(componentModel = "jsr330", uses = {SrfSloIndicatorTargetMapper.class, FlagshipProgramMapper.class})
+@Mapper(componentModel = "jsr330", uses = {SrfSloIndicatorTargetMapper.class, FlagshipProgramMapper.class,
+  GeographicScopeMapper.class, LocationMapper.class})
 public interface SrfProgressTowardsTargetMapper {
 
-  @Mappings({@Mapping(source = "birefSummary", target = "briefSummary"),
+  @Mappings({@Mapping(source = "briefSummary", target = "briefSummary"),
     @Mapping(source = "srfSloIndicatorTarget", target = "srfSloTarget"),
-    @Mapping(source = "reportSynthesisSrfProgress.reportSynthesis.liaisonInstitution.crpProgram",
-      target = "flagshipProgramDTO")})
-  public abstract SrfProgressTowardsTargetDTO reportSynthesisSrfProgressTargetToSrfProgressTowardsTargetsDTO(
-    ReportSynthesisSrfProgressTarget reportSynthesisSrfProgressTarget);
+    @Mapping(source = "geographicScopes", target = "geographicScope"),
+    @Mapping(source = "geographicRegions", target = "regions"),
+    @Mapping(source = "geographicCountries", target = "countries")})
+  public abstract SrfProgressTowardsTargetDTO reportSynthesisSrfProgressCasesTargetToSrfProgressTowardsTargetsDTO(
+    ReportSynthesisSrfProgressTargetCases reportSynthesisSrfProgressTargetCases);
 
   // @Mappings({@Mapping(source = "birefSummary", target = "briefSummary"),
   // @Mapping(source = "srfSloIndicatorTarget", target = "srfSloTarget")})

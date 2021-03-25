@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+                                   "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Feb 27, 2019 2:52:09 PM by Hibernate Tools 5.3.6.Final -->
+<hibernate-mapping>
+ <class
+  name="org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTargetCasesLinks" table="report_synthesis_srf_progress_targets_cases_links">
+  <id name="id" type="java.lang.Long">
+   <column name="id"/>
+   <generator class="identity"/>
+  </id>
+  <many-to-one
+   class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTargetCases" embed-xml="true"
+   fetch="select" insert="true" name="reportSynthesisSrfProgressTargetCases" not-found="exception"
+      optimistic-lock="true" unique="false" update="true">
+   <column name="report_synthesis_srf_progress_targets_case_id"/>
+  </many-to-one>
+  <property generated="never" lazy="false" name="linkName" type="string">
+   <column length="65535" name="link_name"/>
+  </property>
+  <property generated="never" lazy="false" name="link" type="string">
+   <column length="65535" name="link"/>
+  </property>
+ </class>
+</hibernate-mapping>

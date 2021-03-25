@@ -217,12 +217,12 @@
       <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectLp6ContributionDeliverable" />
     </set>
     
-    <set name="deliverableGeographicScopes" table="deliverable_geographic_scopes" inverse="true"
+   <set name="deliverableGeographicScopes" table="deliverable_geographic_scopes" inverse="true"
       order-by="id" lazy="true" fetch="select">
       <key>
         <column name="deliverable_id" not-null="true" />
       </key>
-      <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableGeographicScope" />
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableGeographicScope" /> 
     </set>
     
     <set name="deliverableUserPartnerships" table="deliverable_user_partnerships" inverse="true"
@@ -232,6 +232,21 @@
       </key>
       <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership" />
     </set>
- 
+    
+ 		<set name="deliverableMetadataExternalSources" table="deliverable_metadata_external_sources" inverse="true"
+      order-by="id" lazy="true" fetch="select">
+      <key>
+        <column name="deliverable_id" not-null="true" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableMetadataExternalSources" />
+    </set>
+    
+    <set name="deliverableAltmetricInfos" table="deliverable_altmetric_info" inverse="true"
+      order-by="id" lazy="true" fetch="select">
+      <key>
+        <column name="deliverable_id" not-null="true" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableAltmetricInfo" />
+    </set>
 	</class>
 </hibernate-mapping>

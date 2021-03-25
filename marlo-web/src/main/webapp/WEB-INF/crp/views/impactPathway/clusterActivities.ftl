@@ -8,7 +8,7 @@
   "${baseUrlCdn}/global/js/autoSave.js", 
   "${baseUrlCdn}/global/js/impactGraphic.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js", 
-  "${baseUrlMedia}/js/impactPathway/clusterActivities.js"
+  "${baseUrlMedia}/js/impactPathway/clusterActivities.js?20202710"
   ] 
 /]
 [#assign customCSS = [ 

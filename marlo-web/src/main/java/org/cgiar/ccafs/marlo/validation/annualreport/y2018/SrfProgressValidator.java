@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis2018SectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTarget;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
+import org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -91,7 +92,8 @@ public class SrfProgressValidator extends BaseValidator {
   }
 
 
-  public void validate(BaseAction action, ReportSynthesis reportSynthesis, boolean saving) {
+  public void validate(BaseAction action, ReportSynthesis reportSynthesis, boolean saving,
+    List<SrfSloIndicatorTarget> sloTargets) {
     action.setInvalidFields(new HashMap<>());
     if (reportSynthesis != null) {
       if (!saving) {
@@ -110,9 +112,74 @@ public class SrfProgressValidator extends BaseValidator {
       }
 
       // Validate Targets
-      if (reportSynthesis.getReportSynthesisSrfProgress().getSloTargets() != null) {
-        for (int i = 0; i < reportSynthesis.getReportSynthesisSrfProgress().getSloTargets().size(); i++) {
-          this.validateTargets(action, reportSynthesis.getReportSynthesisSrfProgress().getSloTargets().get(i), i);
+      /*
+       * if (reportSynthesis.getReportSynthesisSrfProgress().getSloTargets() != null) {
+       * for (int i = 0; i < reportSynthesis.getReportSynthesisSrfProgress().getSloTargets().size(); i++) {
+       * this.validateTargets(action, reportSynthesis.getReportSynthesisSrfProgress().getSloTargets().get(i), i);
+       * }
+       * }
+       */
+
+      if (sloTargets != null && !sloTargets.isEmpty()) {
+        for (int i = 0; i < sloTargets.size(); i++) {
+          if (sloTargets.get(i).getTargetCases() != null && !sloTargets.get(i).getTargetCases().isEmpty()) {
+
+            // Validate Brief Summary
+            for (int j = 0; j < sloTargets.get(i).getTargetCases().size(); j++) {
+              if (!(this.isValidString(sloTargets.get(i).getTargetCases().get(j).getBriefSummary())
+                && this.wordCount(sloTargets.get(i).getTargetCases().get(j).getBriefSummary()) <= 150)) {
+                action.addMessage(action.getText("sloTargets[" + i + "].targetCases[" + j + "].briefSummary"));
+                action.getInvalidFields().put("input-sloTargets[" + i + "].targetCases[" + j + "].briefSummary",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              }
+            }
+
+            // Validate Geographic scope
+            for (int j = 0; j < sloTargets.get(i).getTargetCases().size(); j++) {
+              if (sloTargets.get(i).getTargetCases().get(j).getGeographicScopes() == null) {
+                action.addMessage(action.getText("sloTargets[" + i + "].targetCases[" + j + "].geographicScopes"));
+                action.getInvalidFields().put("list-sloTargets[" + i + "].targetCases[" + j + "].geographicScopes",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              } else {
+                // Validate regions and countries in geographic scope
+                boolean hasRegions = false, hasCountries = false;
+                for (int k = 0; k < sloTargets.get(i).getTargetCases().get(j).getGeographicScopes().size(); k++) {
+                  if (sloTargets.get(i).getTargetCases().get(j).getGeographicScopes().get(k)
+                    .getRepIndGeographicScope() != null
+                    && sloTargets.get(i).getTargetCases().get(j).getGeographicScopes().get(k).getRepIndGeographicScope()
+                      .getName() != null) {
+
+                    // Validate regions option in geographic scope
+                    if (sloTargets.get(i).getTargetCases().get(j).getGeographicScopes().get(k)
+                      .getRepIndGeographicScope().getName().contains("Regional")) {
+                      hasRegions = true;
+                    }
+
+                    // Validate countries option in geographic scope
+                    if (sloTargets.get(i).getTargetCases().get(j).getGeographicScopes().get(k)
+                      .getRepIndGeographicScope().getName().contains("ational")) {
+                      // Compare with word 'ational' to ignore the Upper case of 'N'
+                      hasCountries = true;
+                    }
+                  }
+                }
+
+                // Validate list of regions
+                if (hasRegions && sloTargets.get(i).getTargetCases().get(j).getGeographicRegions() == null) {
+                  action.addMessage(action.getText("sloTargetss[" + i + "].targetCases[" + j + "].geographicRegions"));
+                  action.getInvalidFields().put("list-sloTargets[" + i + "].targetCases[" + j + "].geographicRegions",
+                    InvalidFieldsMessages.EMPTYFIELD);
+                }
+
+                // Validate list of countries
+                if (hasCountries && sloTargets.get(i).getTargetCases().get(j).getCountriesIds() == null) {
+                  action.addMessage(action.getText("sloTargets[" + i + "].targetCases[" + j + "].countriesIds"));
+                  action.getInvalidFields().put("list-sloTargets[" + i + "].targetCases[" + j + "].countriesIds",
+                    InvalidFieldsMessages.EMPTYFIELD);
+                }
+              }
+            }
+          }
         }
       }
 
@@ -221,12 +288,13 @@ public class SrfProgressValidator extends BaseValidator {
       }
 
       // Validate Targets
-      if (reportSynthesis.getReportSynthesisSrfProgress().getSloTargets() != null) {
-        for (int i = 0; i < reportSynthesis.getReportSynthesisSrfProgress().getSloTargets().size(); i++) {
-          this.validateTargets(action, reportSynthesis.getReportSynthesisSrfProgress().getSloTargets().get(i), i);
-        }
-      }
-
+      /*
+       * if (reportSynthesis.getReportSynthesisSrfProgress().getSloTargets() != null) {
+       * for (int i = 0; i < reportSynthesis.getReportSynthesisSrfProgress().getSloTargets().size(); i++) {
+       * this.validateTargets(action, reportSynthesis.getReportSynthesisSrfProgress().getSloTargets().get(i), i);
+       * }
+       * }
+       */
 
       String flagshipsWithMisingInformation = "";
       // Get all liaison institutions for current CRP
@@ -333,15 +401,16 @@ public class SrfProgressValidator extends BaseValidator {
   public void validateTargets(BaseAction action, ReportSynthesisSrfProgressTarget target, int i) {
 
     // Validate Brief Summary
-    if (!(this.isValidString(target.getBirefSummary())
-      && this.wordCount(this.removeHtmlTags(target.getBirefSummary())) <= 150)) {
-      action.addMessage(action.getText("Brief Summary"));
-      action.addMissingField("Brief Summary");
-      action.getInvalidFields().put(
-        "input-reportSynthesis.reportSynthesisSrfProgress.sloTargets[" + i + "].birefSummary",
-        InvalidFieldsMessages.EMPTYFIELD);;
-    }
-
+    /*
+     * if (!(this.isValidString(target.getBirefSummary())
+     * && this.wordCount(this.removeHtmlTags(target.getBirefSummary())) <= 150)) {
+     * action.addMessage(action.getText("Brief Summary"));
+     * action.addMissingField("Brief Summary");
+     * action.getInvalidFields().put(
+     * "input-reportSynthesis.reportSynthesisSrfProgress.sloTargets[" + i + "].birefSummary",
+     * InvalidFieldsMessages.EMPTYFIELD);;
+     * }
+     */
     // Validate Brief Summary
     /*
      * if (!(this.isValidString(target.getAdditionalContribution())

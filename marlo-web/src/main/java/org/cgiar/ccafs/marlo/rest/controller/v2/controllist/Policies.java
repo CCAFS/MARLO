@@ -127,11 +127,9 @@ public class Policies {
 
     List<ProjectPolicyARDTO> policyList = new ArrayList<ProjectPolicyARDTO>();
 
-    try {
-      policyList = this.policyItem.findAllPoliciesByGlobalUnit(CGIAREntity, year, phase, this.getCurrentUser());
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+
+    policyList = this.policyItem.findAllPoliciesByGlobalUnit(CGIAREntity, year, phase, this.getCurrentUser());
+
     return policyList;
   }
 

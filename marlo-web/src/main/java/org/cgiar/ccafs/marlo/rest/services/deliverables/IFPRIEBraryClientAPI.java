@@ -31,6 +31,7 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -233,6 +234,23 @@ public class IFPRIEBraryClientAPI extends MetadataClientApi {
         String keywords = jo.get("loc").toString();
         if (!keywords.equals("{}")) {
           jo.put("keywords", keywords);
+        }
+      }
+
+      if (jo.has("doi") && jo.get("doi") != null) {
+        String otherUrl = StringUtils.stripToEmpty(jo.get("doi").toString());
+        if (!StringUtils.equalsIgnoreCase(otherUrl, "{}")) {
+          jo.remove("doi");
+
+          jo.put("otherUrl", otherUrl);
+        }
+      }
+      // get real doi
+      if (jo.has("doia") && jo.get("doia") != null) {
+        String realDoi = StringUtils.stripToEmpty(jo.get("doia").toString());
+        if (!StringUtils.equalsIgnoreCase(realDoi, "{}")) {
+          jo.remove("doia");
+          jo.put("doi", realDoi);
         }
       }
 

@@ -40,8 +40,17 @@ public class ParticipantsCapDevDTO {
   @ApiModelProperty(notes = "Trainees phd male", position = 50)
   private Long traineesPhdMale;
 
+  @ApiModelProperty(notes = "Link to evidence", position = 60)
+  private String evidencelink;
+
+
   @ApiModelProperty(notes = "Phase year/section", position = 140)
   private PhaseDTO phase;
+
+
+  public String getEvidencelink() {
+    return evidencelink;
+  }
 
 
   public Long getId() {
@@ -81,6 +90,11 @@ public class ParticipantsCapDevDTO {
 
   public Long getTraineesShortTermMale() {
     return traineesShortTermMale;
+  }
+
+
+  public void setEvidencelink(String evidencelink) {
+    this.evidencelink = evidencelink;
   }
 
 

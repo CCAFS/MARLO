@@ -19,6 +19,7 @@
 
 package org.cgiar.ccafs.marlo.rest.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 public class ProjectPageStudiesDTO {
 
@@ -26,13 +27,15 @@ public class ProjectPageStudiesDTO {
 
   private String title;
 
+  private Integer year;
+
+  @JsonInclude(JsonInclude.Include.NON_NULL)
   private String externalLink;
 
 
   public String getExternalLink() {
     return externalLink;
   }
-
 
   public Long getId() {
     return id;
@@ -41,6 +44,11 @@ public class ProjectPageStudiesDTO {
 
   public String getTitle() {
     return title;
+  }
+
+
+  public Integer getYear() {
+    return year;
   }
 
 
@@ -56,6 +64,11 @@ public class ProjectPageStudiesDTO {
 
   public void setTitle(String title) {
     this.title = title;
+  }
+
+
+  public void setYear(Integer year) {
+    this.year = year;
   }
 
 }

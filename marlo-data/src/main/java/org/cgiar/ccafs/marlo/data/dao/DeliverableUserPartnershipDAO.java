@@ -54,12 +54,22 @@ public interface DeliverableUserPartnershipDAO {
    */
   public List<DeliverableUserPartnership> findAll();
 
+  /**
+   * This method gets a deliverableUserPartnership object by a given deliverableUserPartnership identifier.
+   * 
+   * @param deliverableID is the deliverable identifier.
+   * @return a DeliverableUserPartnership object.
+   */
+  public List<DeliverableUserPartnership> findByDeliverableID(long deliverableID);
+
 
   /**
    * This method saves the information of the given deliverableUserPartnership
    * 
-   * @param deliverableUserPartnership - is the deliverableUserPartnership object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the deliverableUserPartnership was
+   * @param deliverableUserPartnership - is the deliverableUserPartnership object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         deliverableUserPartnership was
    *         updated
    *         or -1 is some error occurred.
    */

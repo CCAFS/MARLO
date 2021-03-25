@@ -48,6 +48,7 @@ public final class APConstants {
   public static final String CRP_CLOSED = "crp_closed";
   public static final String CRP_CLUSTER_ACTIVITY_ID = "clusterActivityID";
   public static final String CRP_CU = "crp_cu";
+  public static final String CRP_COVID_REQUIRED = "crp_covid_required";
 
   public static final String CRP_CUSTOM_FILE = "crp_custom_file";
   public static final String CRP_CUSTOM_GENDER = "crp_custom_gender";
@@ -81,7 +82,7 @@ public final class APConstants {
 
 
   public static final String CRP_FS_W1W2_COFINANCING = "crp_fs_w1w2_cofinancing";
-
+  public static final String FINANCE_CODE = "financeCode";
   public static final String CRP_PL_ROLE = "crp_pl_rol";
   public static final String CRP_PLANNING_ACTIVE = "crp_planning_active";
   public static final String CRP_PLANNING_YEAR = "crp_planning_year";
@@ -130,6 +131,7 @@ public final class APConstants {
   public static final String CRP_SHOW_SECTION_IMPACT_COVID19 = "crp_show_section_impact_covid19";
   public static final String CRP_SHOW_SECTION_IMPACT_COVID19_RANGES_YEARS =
     "crp_show_section_impact_covid19_ranges_years";
+  public static final String PREVIOUS_PROJECT_ID_ACTIVE = "previous_project_id_field_active";
   public static final String CRP_BI_MODULE_ACTIVE = "crp_bi_module_active";
 
   public static final String IS_EXPECTED_DELIVERABLE_REPORT_All_YEARS_VISIBLE =
@@ -155,6 +157,7 @@ public final class APConstants {
   public static final int DELIVERABLE_QUALITY_ANSWER_YES_BUT_NO = 1;
 
   public static final int BUDGET_TYPE = 1;
+  public static final String PROJECT_BUDGET_ID = "project_budget_id";
 
   public static final String DELIVERABLE_TYPE_ID = "deliverableTypeId";
   // Request variables
@@ -164,7 +167,7 @@ public final class APConstants {
   public static final String ELEMENT_TYPE_ID = "parentId";
   public static final int ELEMENT_TYPE_OUTCOME2019 = 3;
 
-  // end year
+  // TODO remove this variable and create an specificity for each CRP/Platform
   public static Integer END_YEAR = 2022;
   public static final String ERROR_ACCOUNT_DISABLED = "ERROR_ACCOUNT_DISABLED";
   public static final String ERROR_ACCOUNT_EXPIRED = "ERROR_ACCOUNT_EXPIRED";
@@ -183,6 +186,9 @@ public final class APConstants {
   public static final String FUNDING_SOURCE_REQUEST_ID = "fundingSourceID";
   public static final String FUNDING_SOURCES_BUDGETS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.fundingSourceBudgets)";
+  public static final String INSTITUTION_LEAD = "institutionLead";
+  public static final String AGREEMENT_STATUS = "agreementStatus";
+  public static final String PARTNERS_ID = "partnerIDs";
 
   public static final String TEMP_CYCLE = "temp_cycle";
   public static final String TEMP_YEAR = "temp_year";
@@ -192,6 +198,8 @@ public final class APConstants {
 
   public static final String FUNDING_SOURCES_DIVISIONS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.fundingSourceDivisions)";
+
+  public static final String INSTITUTIONS_ID = "institutionsID";
 
   public static final String FUNDING_SOURCES_LOCATIONS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.fundingSourceLocations)";
@@ -558,6 +566,10 @@ public final class APConstants {
 
   public static final String YEAR_REQUEST = "year";
 
+  public static final String AMOUNT_REQUEST = "amount";
+
+  public static final String GENDER_PERCENTAGE_REQUEST = "gender";
+
 
   /** cross cutting scores ****/
   public static final long CROSS_CUTTING_NOT_TARGETED = 0;
@@ -756,7 +768,7 @@ public final class APConstants {
   public static final String CRP_CAP_DEV_ACTIVE = "crp_capdev_active";
 
   // Marlo PDF Manual Name
-  public static final String MARLO_PDF_MANUAL_NAME = "Introduction_To_MARLO_V2.6.pdf";
+  public static final String MARLO_PDF_MANUAL_NAME = "Introduction_To_MARLO_V2.9.pdf";
 
   // GeoiIp maps database
   public static final String DATABASE_COUNTRY_FILENAME = "GeoLite2-Country.mmdb";
@@ -780,8 +792,17 @@ public final class APConstants {
   public static final String METADATAELEMENTAUTHORS = "marlo.authors";
   public static final String MESSAGE_MODIFICATION_JUSTIFICATION = "Created by CLARISA ";
 
+  public static final String WOS_LINK = "wosLink";
+  public static final Integer ACCEPTATION_PERCENTAGE = 75;
+
   // deliverables import clarisa value
   public static final long IMPORT_DELIVERABLE_VALUE = 63;
+
+  public static final String CRP_EMAIL_NOTIFICATIONS = "crp_enable_email_notification";
+
+  public static final int CLARISA_AVALIABLE_INFO_YEAR = 2018;
+
+  public static final String IGNORE_NEWER_YEARS = "ignoreNewer";
 
   public static String getFilterBy() {
     return FILTER_BY;

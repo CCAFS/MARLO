@@ -502,12 +502,13 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
       List<CrpProgramOutcome> validOutcomes = new ArrayList<>();
       for (CrpProgramOutcome crpProgramOutcome : crpProgram.getOutcomes()) {
 
-        crpProgramOutcome.setMilestones(crpProgramOutcome
-          .getCrpMilestones().stream().filter(c -> c.isActive()
+        crpProgramOutcome.setMilestones(crpProgramOutcome.getCrpMilestones().stream()
+          .filter(c -> c.isActive()
             && ((c.getYear().intValue() == this.getActualPhase().getYear())
-            || (c.getExtendedYear() != null && c.getExtendedYear().equals(this.getActualPhase().getYear()))) && c.getIsPowb() != null && c.getIsPowb())
+              || (c.getExtendedYear() != null && c.getExtendedYear().equals(this.getActualPhase().getYear())))
+            && c.getIsPowb() != null && c.getIsPowb())
           .collect(Collectors.toList()));
-        
+
         crpProgramOutcome.setSubIdos(
           crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
         crpProgram.getMilestones().addAll(crpProgramOutcome.getMilestones());
@@ -723,7 +724,6 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
       powbSynthesisDB.setExpectedProgressNarrative(powbSynthesis.getExpectedProgressNarrative());
       powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesisDB);
 
-
       // POWB 2019 Include Milestones
       if (this.isFlagship()) {
         if (powbSynthesis.getMilestones() != null && !powbSynthesis.getMilestones().isEmpty()) {
@@ -733,8 +733,10 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
             milestone = crpMilestoneManager.getCrpMilestoneById(milestone.getId());
             milestone.setIsPowb(isPowb);
 
-            crpMilestoneManager.saveCrpMilestone(milestone);
-
+            milestone = crpMilestoneManager.saveCrpMilestone(milestone);
+            if (this.getActualPhase().getNext() != null) {
+              crpMilestoneManager.replicate(milestone, this.getActualPhase().getNext());
+            }
           }
         }
       }
