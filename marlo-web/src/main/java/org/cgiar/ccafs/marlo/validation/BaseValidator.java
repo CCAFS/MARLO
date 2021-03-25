@@ -806,6 +806,9 @@ public class BaseValidator {
       if (sMissingField.equals("null") && sectionName.equals("policies")) {
         status.setMissingFields("");
       }
+      if (sMissingField.equals("null") && sectionName.equals("budgetByPartners")) {
+        status.setMissingFields("");
+      }
       status.setMissingFields(sMissingField);
     } else {
       status.setMissingFields("");
