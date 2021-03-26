@@ -168,17 +168,6 @@ public class FlagshipProgressAction extends BaseAction {
         listOfFlagships.add(element);
       }
     }
-
-    /*
-     * List<String> arraylist = new ArrayList<>();
-     * String textToSeparate = "Go,PHP,JavaScript,Python";
-     * String separator = ";";
-     * String[] arrayText = textToSeparate.split(separator);
-     * for (String element : arrayText) {
-     * arraylist.add(element);
-     * }
-     */
-
   }
 
   public void getInfoCovidAnalisysStudies() {
@@ -195,22 +184,22 @@ public class FlagshipProgressAction extends BaseAction {
 
         // Get the project flagships for each study
         if (study.getProject() != null && study.getProject().getId() != null) {
-          List<ProjectFocus> focusList = new ArrayList<>();
-          focusList = projectFocusManager.findByProjectId(study.getProject().getId());
+          List<ProjectFocus> focusList = projectFocusManager.findByProjectId(study.getProject().getId());
           if (focusList != null && !focusList.isEmpty()) {
 
             // Filter project Focuses for actual phase
-            focusList = focusList.stream()
-              .filter(f -> f.getPhase() != null && f.getPhase().getId().equals(this.getActualPhase().getId()))
-              .collect(Collectors.toList());
+            focusList = focusList.stream().filter(f -> f.getPhase() != null && this.getActualPhase() != null
+              && f.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList());
 
             List<CrpProgram> programs = new ArrayList<>();
             for (ProjectFocus focus : focusList) {
 
               // Get CRP Program ID for each Project Focus
+              // Filter the crpPrograms without SmoCode
               CrpProgram program = new CrpProgram();
               if (focus.getCrpProgram() != null && focus.getCrpProgram().getId() != null
-                && focus.getCrpProgram().getProgramType() == 1 && focus.getCrpProgram().getSmoCode() != null) {
+                && focus.getCrpProgram().getProgramType() == 1 && focus.getCrpProgram().getSmoCode() != null
+                && !focus.getCrpProgram().getSmoCode().isEmpty()) {
                 program = crpProgramManager.getCrpProgramById(focus.getCrpProgram().getId());
               }
 
@@ -554,8 +543,7 @@ public class FlagshipProgressAction extends BaseAction {
       this.getActionMessages();
       if (!this.getInvalidFields().isEmpty()) {
         this.setActionMessages(null);
-        // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
-        List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+        List<String> keys = new ArrayList<>(this.getInvalidFields().keySet());
         for (String key : keys) {
           this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
         }
