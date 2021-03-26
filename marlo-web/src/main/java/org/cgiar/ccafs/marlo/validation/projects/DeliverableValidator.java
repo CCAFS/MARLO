@@ -253,8 +253,20 @@ public class DeliverableValidator extends BaseValidator {
             isPRP = true;
           }
 
+          if (isPRP) {
+            if ((deliverable.getUsers() != null && deliverable.getUsers().isEmpty())
+              || (deliverable.getUsers() == null)) {
+              action.addMessage(action.getText("deliverable.users"));
+              action.getInvalidFields().put("input-deliverable.users", InvalidFieldsMessages.EMPTYFIELD);
+            }
+          }
+          boolean isDisseminated = false;
           // Deliverable Dissemination
           if (deliverable.getDissemination() != null) {
+            if (deliverable.getDissemination().getAlreadyDisseminated() != null
+              && deliverable.getDissemination().getAlreadyDisseminated()) {
+              isDisseminated = true;
+            }
             this.validateDissemination(deliverable.getDissemination(), saving, action, isPRP);
           } else {
             action.addMessage(action.getText("project.deliverable.dissemination.v.dissemination"));
@@ -262,9 +274,10 @@ public class DeliverableValidator extends BaseValidator {
               InvalidFieldsMessages.EMPTYFIELD);
           }
 
+
           // Deliverable Meta-data Elements
           if (deliverable.getMetadataElements() != null) {
-            this.validateMetadata(deliverable.getMetadataElements(), action, isPRP);
+            this.validateMetadata(deliverable.getMetadataElements(), action, isPRP, isDisseminated);
           } else {
             action.addMessage(action.getText("project.deliverable.v.metadata"));
             action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.isOpenAccess",
@@ -753,7 +766,8 @@ public class DeliverableValidator extends BaseValidator {
      */
   }
 
-  public void validateMetadata(List<DeliverableMetadataElement> elements, BaseAction action, boolean isPRP) {
+  public void validateMetadata(List<DeliverableMetadataElement> elements, BaseAction action, boolean isPRP,
+    boolean isDisseminated) {
 
     // boolean description = false;
     for (DeliverableMetadataElement deliverableMetadataElement : elements) {
@@ -770,7 +784,8 @@ public class DeliverableValidator extends BaseValidator {
            */
           // DOI validation only mandatory for PRPs
           if (isPRP) {
-            if (this.doesNotHaveDOI == null || this.doesNotHaveDOI.booleanValue() == false) {
+
+            if ((this.doesNotHaveDOI == null || this.doesNotHaveDOI.booleanValue() == false) && isDisseminated) {
               if (deliverableMetadataElement.getMetadataElement().getId() != null
                 && 36L == deliverableMetadataElement.getMetadataElement().getId()) {
                 if (deliverableMetadataElement.getElementValue() != null
