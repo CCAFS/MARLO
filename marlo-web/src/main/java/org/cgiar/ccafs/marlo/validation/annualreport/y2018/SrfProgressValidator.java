@@ -169,6 +169,14 @@ public class SrfProgressValidator extends BaseValidator {
                 }
               }
             }
+          } else {
+            // If empty target cases then validate the check mack button
+            if ((sloTargets.get(i).getHasEvidence() != null && !sloTargets.get(i).getHasEvidence())
+              || (sloTargets.get(i).getHasEvidence() == null)) {
+              action.addMessage(action.getText("sloTargets[" + i + "].hasEvidence"));
+              action.getInvalidFields().put("input-sloTargets[" + i + "].hasEvidence",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
           }
         }
       }
@@ -336,6 +344,14 @@ public class SrfProgressValidator extends BaseValidator {
                     InvalidFieldsMessages.EMPTYFIELD);
                 }
               }
+            }
+          } else {
+            // If empty target cases then validate the check mack button
+            if ((sloTargets.get(i).getHasEvidence() != null && !sloTargets.get(i).getHasEvidence())
+              || (sloTargets.get(i).getHasEvidence() == null)) {
+              action.addMessage(action.getText("sloTargets[" + i + "].hasEvidence"));
+              action.getInvalidFields().put("input-sloTargets[" + i + "].hasEvidence",
+                InvalidFieldsMessages.EMPTYFIELD);
             }
           }
         }
