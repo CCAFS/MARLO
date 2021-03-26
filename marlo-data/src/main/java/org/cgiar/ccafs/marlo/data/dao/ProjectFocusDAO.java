@@ -56,6 +56,14 @@ public interface ProjectFocusDAO {
 
 
   /**
+   * This method gets a projectFocus list by a given project identifier.
+   * 
+   * @param projectID is the project identifier.
+   * @return a ProjectFocus list.
+   */
+  public List<ProjectFocus> findByProjectId(long projectID);
+
+  /**
    * This method saves the information of the given projectFocus
    * 
    * @param projectFocus - is the projectFocus object with the new information to be added/updated.

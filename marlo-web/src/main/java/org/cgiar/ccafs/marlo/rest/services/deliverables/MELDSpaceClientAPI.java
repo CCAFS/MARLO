@@ -29,6 +29,7 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -50,7 +51,7 @@ public class MELDSpaceClientAPI extends MetadataClientApi {
     xmlReaderConnectionUtil = new RestConnectionUtil();
     coverterAtrributes = new HashMap<String, String>();
     coverterAtrributes.put("description.abstract", "description");
-    coverterAtrributes.put("date.issued", "publicationDate");
+    coverterAtrributes.put("date", "publicationDate");
     coverterAtrributes.put("subject", "keywords");
     coverterAtrributes.put("identifier.citation", "citation");
     coverterAtrributes.put("identifier.uri", "handle");
@@ -163,6 +164,13 @@ public class MELDSpaceClientAPI extends MetadataClientApi {
       }
 
       this.setDoi(jo);
+      // date trick
+      if (jo.has("publicationDate") && StringUtils.isBlank(jo.get("publicationDate").toString())) {
+        Object value = jo.remove("publicationDate");
+        if (jo.has("date") && StringUtils.isNotBlank(jo.get("date").toString())) {
+          jo.put("publicationDate", jo.get("date").toString());
+        }
+      }
 
       GsonBuilder gsonBuilder = new GsonBuilder();
       gsonBuilder.registerTypeAdapter(Date.class, new DateTypeAdapter());

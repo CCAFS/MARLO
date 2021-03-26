@@ -133,8 +133,11 @@ function getWOSInfo() {
             $('#output-wos').html('Found metadata successfully in Web of Science.');
             if (data.response.altmetricInfo != undefined && data.response.altmetricInfo != "null" && data.response.altmetricInfo != "") {
               if (data.response.altmetricInfo.imageSmall != undefined && data.response.altmetricInfo.imageSmall != "null" && data.response.altmetricInfo.imageSmall != "") {
-                $('.almetricImg').attr('src', data.response.altmetricInfo.imageSmall);
-                $('.almetricImg').show('slow');
+                $('.altmetricImg').attr('src', data.response.altmetricInfo.imageSmall);
+                $('.altmetricImg').show('slow');
+                if (data.response.altmetricInfo.altmetricId != undefined && data.response.altmetricInfo.altmetricId !="null" && data.response.altmetricInfo.altmetricId != "") {
+                  $('.altmetricURL').attr("href", "https://www.altmetric.com/details/" + data.response.altmetricInfo.altmetricId);
+                }
               }
             }
           } else {
@@ -413,6 +416,8 @@ function addDisseminationEvents() {
 
   // 
   $("#WOSSyncBtn").on("click", function () {
+    $(".altmetricURL").attr("href", "");
+    $(".altmetricImg").attr("src", "");
     getWOSInfo();
   });
 

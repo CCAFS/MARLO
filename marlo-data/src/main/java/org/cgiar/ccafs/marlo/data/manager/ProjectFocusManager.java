@@ -69,6 +69,14 @@ public interface ProjectFocusManager {
    *         or -1 is some error occurred.
    */
   public ProjectFocus saveProjectFocus(ProjectFocus projectFocus);
+  
+  /**
+   * This method gets a projectFocus list by a given project identifier.
+   * 
+   * @param projectID is the projectFocus identifier.
+   * @return a list of ProjectFocus.
+   */
+  public List<ProjectFocus> findByProjectId(long projectID);
 
 
 }
