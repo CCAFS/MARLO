@@ -800,12 +800,12 @@ public class DeliverableValidator extends BaseValidator {
             }
 
             // Validate deliverable users -KT 20210326
-            // Maybe this validation is necesary in validate() method
+            // Maybe this validation is necessary in validate() method
             /*
              * if((deliverable.getUsers() != null && deliverable.getUsers().isEmpty()) || (deliverable.getUsers() ==
              * null)) {
-             * action.addMessage(action.getText("project.deliverable.v.metadata"));
-             * action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.isOpenAccess",
+             * action.addMessage(action.getText("deliverable.users"));
+             * action.getInvalidFields().put("input-deliverable.users",
              * InvalidFieldsMessages.EMPTYFIELD);
              * }
              */
