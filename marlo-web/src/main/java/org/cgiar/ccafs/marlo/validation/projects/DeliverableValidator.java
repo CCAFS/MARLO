@@ -770,6 +770,8 @@ public class DeliverableValidator extends BaseValidator {
            */
           // DOI validation only mandatory for PRPs
           if (isPRP) {
+
+            // TODO: Validate just when already disseminate selection is equal to true
             if (this.doesNotHaveDOI == null || this.doesNotHaveDOI.booleanValue() == false) {
               if (deliverableMetadataElement.getMetadataElement().getId() != null
                 && 36L == deliverableMetadataElement.getMetadataElement().getId()) {
@@ -796,6 +798,17 @@ public class DeliverableValidator extends BaseValidator {
                   InvalidFieldsMessages.EMPTYFIELD);
               }
             }
+
+            // Validate deliverable users -KT 20210326
+            // Maybe this validation is necesary in validate() method
+            /*
+             * if((deliverable.getUsers() != null && deliverable.getUsers().isEmpty()) || (deliverable.getUsers() ==
+             * null)) {
+             * action.addMessage(action.getText("project.deliverable.v.metadata"));
+             * action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.isOpenAccess",
+             * InvalidFieldsMessages.EMPTYFIELD);
+             * }
+             */
 
             if (deliverableMetadataElement.getMetadataElement().getId() != null
               && deliverableMetadataElement.getMetadataElement().getId().longValue() == 1L) {
