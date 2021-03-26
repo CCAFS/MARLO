@@ -341,7 +341,7 @@
               <td class="urlify" >[@utils.tableText value=(item.publication.journal)!"" /]</td>
               [/#if]
               [#-- DOI or Handle --]
-              <td class="text-center TdSroll"  style="max-width: 100px;">
+              <td class="text-center"  style="max-width: 100px;">
                 [#if item.getMetadataValue(36)?has_content]
                   [#local directLink = "https://www.doi.org/"+item.getMetadataValue(36) /]
                   [#-- TODO add www.doi.org/ to DOI identifiers. NOTE: validations will be needed. There are not just DOIs saved there and there are some
@@ -368,7 +368,7 @@
                 [/#if--]
                 [#if directLink?has_content && directLink?contains("http") && !(directLink?contains(";"))]
                   [#--<a target="_blank" href="${directLink}">${directLink}</span></a>--]
-                  <a href="${directLink}" target="_blank" class="pull-right">[@s.text name="${customLabel}.${name}.linkToPublication" /] <span class="glyphicon glyphicon-new-window"></span></a>
+                  <a href="${directLink}" target="_blank" class="">[@s.text name="${customLabel}.${name}.linkToPublication" /] <span class="glyphicon glyphicon-new-window"></span></a>
                 [#else]
                   [#if !(directLink?has_content) ]
                     [@utils.tableText value="" /]
