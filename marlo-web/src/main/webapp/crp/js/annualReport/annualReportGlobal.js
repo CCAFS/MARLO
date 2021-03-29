@@ -212,9 +212,24 @@ $(document).ready(function() {
       ]
     });
 
+    $TablePRP = $('.viewMoreSyntesisTablePRP-block table');
+    tableDatatableTablePRP = $TablePRP.DataTable({
+        "paging": false,
+        "searching": true,
+        "info": true,
+        aoColumnDefs: [
+          {
+              sType: "natural",
+              aTargets: [
+                0
+              ]
+          }
+        ]
+    });
+
     $TableGrey = $('.viewMoreSyntesisTableGrey-block table');
     tableDatatableTableGrey = $TableGrey.DataTable({
-        "paging": true,
+        "paging": false,
         "searching": true,
         "info": true,
         aoColumnDefs: [
