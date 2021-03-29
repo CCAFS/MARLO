@@ -412,7 +412,7 @@
           <div class="col-sm-6 colTitleCenter boldCell">[@s.text name="${customLabel}.milestoneScoreJustification" /][@customForm.req required=editable  /]</div>
         </div>
           
-          [#assign markersPOWB=["${(milestoneNextPOWB.genderFocusLevel.powbName)!'Not availbale'}","${(milestoneNextPOWB.youthFocusLevel.powbName)!'Not availbale'}","${(milestoneNextPOWB.capdevFocusLevel.powbName)!'Not availbale'}","${(milestoneNextPOWB.climateFocusLevel.powbName)!'Not availbale'}"] /]
+          [#assign markersPOWB=["${(milestoneNextPOWB.genderFocusLevel.powbName)!'Not available'}","${(milestoneNextPOWB.youthFocusLevel.powbName)!'Not available'}","${(milestoneNextPOWB.capdevFocusLevel.powbName)!'Not available'}","${(milestoneNextPOWB.climateFocusLevel.powbName)!'Not available'}"] /]
           
           [#list cgiarCrossCuttingMarkers as marker]
             [#local ccName= "${customName}.markers[${marker_index}]"]
