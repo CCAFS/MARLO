@@ -32,7 +32,6 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
-import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.RepIndTypeActivity;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
@@ -353,38 +352,39 @@ public class PublicationValidator extends BaseValidator {
     if (dissemination.getIsOpenAccess() != null) {
       if (!dissemination.getIsOpenAccess().booleanValue()) {
 
-        Boolean hasIntellectualProperty =
-          (dissemination.getIntellectualProperty() != null && dissemination.getIntellectualProperty().booleanValue())
-            || (dissemination.getType() != null && dissemination.getType().equals("intellectualProperty"));
-        Boolean hasLimitedExclusivity =
-          (dissemination.getLimitedExclusivity() != null && dissemination.getLimitedExclusivity().booleanValue())
-            || (dissemination.getType() != null && dissemination.getType().equals("limitedExclusivity"));
-        Boolean hasRestrictedUse = (dissemination.getRestrictedUseAgreement() != null
-          && dissemination.getRestrictedUseAgreement().booleanValue())
-          || (dissemination.getType() != null && dissemination.getType().equals("restrictedUseAgreement"));
-        Boolean hasEffectiveDate = (dissemination.getEffectiveDateRestriction() != null
-          && dissemination.getEffectiveDateRestriction().booleanValue())
-          || (dissemination.getType() != null && dissemination.getType().equals("effectiveDateRestriction"));
-        Boolean hasNotDisseminated =
-          (dissemination.getNotDisseminated() != null && dissemination.getNotDisseminated().booleanValue())
-            || (dissemination.getType() != null && dissemination.getType().equals("notDisseminated"));
-
-        if (hasIntellectualProperty || hasLimitedExclusivity || hasRestrictedUse || hasEffectiveDate
-          || hasNotDisseminated) {
-          if (hasRestrictedUse && dissemination.getRestrictedAccessUntil() == null) {
-            action.addMessage(action.getText("project.deliverable.dissemination.v.restrictedUseAgreement"));
-            action.getInvalidFields().put("input-deliverable.dissemination.restrictedAccessUntil",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
-          if (hasEffectiveDate && dissemination.getRestrictedEmbargoed() == null) {
-            action.addMessage(action.getText("project.deliverable.dissemination.v.restrictedEmbargoed"));
-            action.getInvalidFields().put("input-deliverable.dissemination.restrictedEmbargoed",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
-        } else {
-          action.addMessage(action.getText("project.deliverable.dissemination.v.openAccessRestriction"));
-          action.getInvalidFields().put("input-deliverable.dissemination.type", InvalidFieldsMessages.EMPTYFIELD);
-        }
+        /*
+         * Boolean hasIntellectualProperty =
+         * (dissemination.getIntellectualProperty() != null && dissemination.getIntellectualProperty().booleanValue())
+         * || (dissemination.getType() != null && dissemination.getType().equals("intellectualProperty"));
+         * Boolean hasLimitedExclusivity =
+         * (dissemination.getLimitedExclusivity() != null && dissemination.getLimitedExclusivity().booleanValue())
+         * || (dissemination.getType() != null && dissemination.getType().equals("limitedExclusivity"));
+         * Boolean hasRestrictedUse = (dissemination.getRestrictedUseAgreement() != null
+         * && dissemination.getRestrictedUseAgreement().booleanValue())
+         * || (dissemination.getType() != null && dissemination.getType().equals("restrictedUseAgreement"));
+         * Boolean hasEffectiveDate = (dissemination.getEffectiveDateRestriction() != null
+         * && dissemination.getEffectiveDateRestriction().booleanValue())
+         * || (dissemination.getType() != null && dissemination.getType().equals("effectiveDateRestriction"));
+         * Boolean hasNotDisseminated =
+         * (dissemination.getNotDisseminated() != null && dissemination.getNotDisseminated().booleanValue())
+         * || (dissemination.getType() != null && dissemination.getType().equals("notDisseminated"));
+         * if (hasIntellectualProperty || hasLimitedExclusivity || hasRestrictedUse || hasEffectiveDate
+         * || hasNotDisseminated) {
+         * if (hasRestrictedUse && dissemination.getRestrictedAccessUntil() == null) {
+         * action.addMessage(action.getText("project.deliverable.dissemination.v.restrictedUseAgreement"));
+         * action.getInvalidFields().put("input-deliverable.dissemination.restrictedAccessUntil",
+         * InvalidFieldsMessages.EMPTYFIELD);
+         * }
+         * if (hasEffectiveDate && dissemination.getRestrictedEmbargoed() == null) {
+         * action.addMessage(action.getText("project.deliverable.dissemination.v.restrictedEmbargoed"));
+         * action.getInvalidFields().put("input-deliverable.dissemination.restrictedEmbargoed",
+         * InvalidFieldsMessages.EMPTYFIELD);
+         * }
+         * } else {
+         * action.addMessage(action.getText("project.deliverable.dissemination.v.openAccessRestriction"));
+         * action.getInvalidFields().put("input-deliverable.dissemination.type", InvalidFieldsMessages.EMPTYFIELD);
+         * }
+         */
       }
     } else {
       action.addMessage(action.getText("project.deliverable.dissemination.v.isOpenAccess"));
@@ -516,35 +516,35 @@ public class PublicationValidator extends BaseValidator {
   }
 
   public void validateLicense(DeliverableInfo deliverableInfo, BaseAction action) {
-	  /*
-    if (deliverableInfo.getAdoptedLicense().booleanValue()) {
-      if (deliverableInfo.getLicense() != null) {
-        if (this.isValidString(deliverableInfo.getLicense())) {
-          if (deliverableInfo.getLicense().equals(LicensesTypeEnum.OTHER.getValue())) {
-            if (deliverableInfo.getOtherLicense() != null) {
-              if (!(this.isValidString(deliverableInfo.getOtherLicense())
-                && this.wordCount(deliverableInfo.getOtherLicense()) <= 100)) {
-                action.addMessage(action.getText("project.deliverable.license.v.other"));
-                action.getInvalidFields().put("input-deliverable.deliverableInfo.otherLicense",
-                  InvalidFieldsMessages.EMPTYFIELD);
-              }
-              if (deliverableInfo.getAllowModifications() == null) {
-                action.addMessage(action.getText("project.deliverable.license.v.allowModification"));
-                action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.allowModification",
-                  InvalidFieldsMessages.EMPTYFIELD);
-              }
-            }
-          }
-        } else {
-          action.addMessage(action.getText("project.deliverable.v.license"));
-          action.getInvalidFields().put("input-deliverable.deliverableInfo.license", InvalidFieldsMessages.EMPTYFIELD);
-        }
-      } else {
-        action.addMessage(action.getText("project.deliverable.v.license"));
-        action.getInvalidFields().put("input-deliverable.deliverableInfo.license", InvalidFieldsMessages.EMPTYFIELD);
-      }
-    }
-  */
+    /*
+     * if (deliverableInfo.getAdoptedLicense().booleanValue()) {
+     * if (deliverableInfo.getLicense() != null) {
+     * if (this.isValidString(deliverableInfo.getLicense())) {
+     * if (deliverableInfo.getLicense().equals(LicensesTypeEnum.OTHER.getValue())) {
+     * if (deliverableInfo.getOtherLicense() != null) {
+     * if (!(this.isValidString(deliverableInfo.getOtherLicense())
+     * && this.wordCount(deliverableInfo.getOtherLicense()) <= 100)) {
+     * action.addMessage(action.getText("project.deliverable.license.v.other"));
+     * action.getInvalidFields().put("input-deliverable.deliverableInfo.otherLicense",
+     * InvalidFieldsMessages.EMPTYFIELD);
+     * }
+     * if (deliverableInfo.getAllowModifications() == null) {
+     * action.addMessage(action.getText("project.deliverable.license.v.allowModification"));
+     * action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.allowModification",
+     * InvalidFieldsMessages.EMPTYFIELD);
+     * }
+     * }
+     * }
+     * } else {
+     * action.addMessage(action.getText("project.deliverable.v.license"));
+     * action.getInvalidFields().put("input-deliverable.deliverableInfo.license", InvalidFieldsMessages.EMPTYFIELD);
+     * }
+     * } else {
+     * action.addMessage(action.getText("project.deliverable.v.license"));
+     * action.getInvalidFields().put("input-deliverable.deliverableInfo.license", InvalidFieldsMessages.EMPTYFIELD);
+     * }
+     * }
+     */
   }
 
   public void validateMetadata(List<DeliverableMetadataElement> elements, BaseAction action) {
