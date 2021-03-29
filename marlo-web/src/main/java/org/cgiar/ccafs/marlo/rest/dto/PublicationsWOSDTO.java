@@ -34,20 +34,28 @@ public class PublicationsWOSDTO {
   @ApiModelProperty(notes = "WOS publication type", position = 4)
   private String publicationType;
 
+  @ApiModelProperty(notes = "Source", position = 4)
+  private String source;
+
+
   @ApiModelProperty(notes = "Publication year", position = 5)
   private int publicationYear;
 
+
   @ApiModelProperty(notes = "Publication is open access", position = 6)
   private String is_oa;
+
+
   @ApiModelProperty(notes = "Publication open access link", position = 7)
   private String oa_link;
+
   @ApiModelProperty(notes = "Publication is ISI", position = 8)
   private String is_isi;
-
   @ApiModelProperty(notes = "Publication Journal name", position = 9)
   private String journalName;
   @ApiModelProperty(notes = "Publication Volume", position = 10)
   private String volume;
+
   @ApiModelProperty(notes = "Publication Pages", position = 11)
   private String pages;
   @ApiModelProperty(notes = "Publication Authors", position = 12)
@@ -56,15 +64,12 @@ public class PublicationsWOSDTO {
   private List<InstitutionsWOSDTO> organizations;
   @ApiModelProperty(notes = "Publication Altmetrics Details", position = 14)
   private PublicationAltmetricsWOSDTO altmetric;
-
   @ApiModelProperty(notes = "Publication gardian", position = 15)
   private PublicationGardianWOSDTO gardian;
-
 
   public PublicationAltmetricsWOSDTO getAltmetric() {
     return altmetric;
   }
-
 
   public List<AuthorsWOSDTO> getAuthors() {
     return authors;
@@ -118,6 +123,11 @@ public class PublicationsWOSDTO {
 
   public int getPublicationYear() {
     return publicationYear;
+  }
+
+
+  public String getSource() {
+    return source;
   }
 
 
@@ -193,6 +203,11 @@ public class PublicationsWOSDTO {
 
   public void setPublicationYear(int publicationYear) {
     this.publicationYear = publicationYear;
+  }
+
+
+  public void setSource(String source) {
+    this.source = source;
   }
 
 
