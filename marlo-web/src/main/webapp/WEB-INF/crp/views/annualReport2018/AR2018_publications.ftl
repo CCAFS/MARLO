@@ -185,7 +185,7 @@
                     
                     
                   [#-- Full list of publications published --]
-                  <div class="form-group viewMoreSyntesisTable-block"> 
+                  <div class="form-group viewMoreSyntesisTablePRP-block"> 
                     [#-- Table --]
                     <h4 class="headTitle">[@s.text name="${customLabel}.fullList.title" /]</h4>
                     [@listOfPublications name="fullList" list=(deliverables)![]  allowPopups=true /]
