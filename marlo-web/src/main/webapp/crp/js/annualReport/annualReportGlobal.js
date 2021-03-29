@@ -105,20 +105,26 @@ function getTargetCasesBySLO(){
 
 
 function contributionListComponentInsertHTML(data,id){
-  console.log('%cID: '+id,'background: #222; color: #fd8484');
-  console.log(data);
+  var count = 0;
+  $(`.flagshipBtn-${id}`).on('click',changeButtonText);
+
   data.sources.forEach((item,index) => {
-    $('.insertHtmlSlo-tabs-'+id).append(`<li role="presentation" class="${index==0?'active':''}" ><a href="#${item.id}-${id}-tab" aria-controls="${item.id}-${id}-tab" role="tab" data-toggle="tab">${item.id}</a></li>`);
-    $('.insertHtmlSlo-tabpanel-'+id).append(`<div role="tabpanel" class="tab-pane ${index==0?'active':''}" id="${item.id}-${id}-tab" style="overflow-y: scroll; max-height: 700px;"></div>`);
     if (item.contribution.length == 0) {
-      $(`#${item.id}-${id}-tab`).append(`<p class="tb1-Fp-noData"><span class="glyphicon glyphicon-info-sign" style="margin-right: 7px; position: relative; top:3px"></span>No Flagships information</p>`);
-      $(`#${item.id}-${id}-tab`).css("overflow-y", "unset"); 
+      count += 1;
+      if (count == data.sources.length) {
+        $(`.flagshipBtn-${id}`).prop("disabled", true);
+        $(`.flagshipBtn-${id}`).text("No Flagships information");
+        $(`.flagshipBtn-${id}`).prepend(`<span class="glyphicon glyphicon-info-sign" style="margin-right: 7px; position: relative; top:3px"></span>`);
+        // $(`.insertHtmlSlo-tabpanel-${id}`).append(`<p class="tb1-Fp-noData"><span class="glyphicon glyphicon-info-sign" style="margin-right: 7px; position: relative; top:3px"></span>No Flagships information</p>`);
+      }
+    } else {
+    $('.insertHtmlSlo-tabs-'+id).append(`<li role="presentation" class="${index?'active':''}" ><a href="#${item.id}-${id}-tab" aria-controls="${item.id}-${id}-tab" role="tab" data-toggle="tab">${item.id}</a></li>`);
+      $('.insertHtmlSlo-tabpanel-'+id).append(`<div role="tabpanel" class="tab-pane ${index?'active':''}" id="${item.id}-${id}-tab" style="overflow-y: scroll; max-height: 700px;"></div>`);
     }
     item.contribution.forEach(contributionData => {
       $(`#${item.id}-${id}-tab`).append(getContributionListComponentValue(contributionData));
     });
  });
-
 }
 
 $(document).ready(function() {
@@ -166,19 +172,21 @@ $(document).ready(function() {
     });
 
     $tableInnovationsHTML = $('.tableNoPaginator-block table');
-    tableInnovations = $tableInnovationsHTML.DataTable({
-      "paging": false,
-      "searching": true,
-      "info": true,
-      aoColumnDefs: [
-        {
-            sType: "natural",
-            aTargets: [
-              0
-            ]
-        }
-      ]
-    });
+    if ($('.totalInnovationsNumber').html() != 0) {
+      tableInnovations = $tableInnovationsHTML.DataTable({
+        "paging": false,
+        "searching": true,
+        "info": true,
+        aoColumnDefs: [
+          {
+              sType: "natural",
+              aTargets: [
+                0
+              ]
+          }
+        ]
+      });
+    }
 
     $tablePoliciesHTML = $('.tablePolicies-block table');
     tablePolicies = $tablePoliciesHTML.DataTable({
@@ -210,9 +218,24 @@ $(document).ready(function() {
       ]
     });
 
+    $TablePRP = $('.viewMoreSyntesisTablePRP-block table');
+    tableDatatableTablePRP = $TablePRP.DataTable({
+        "paging": false,
+        "searching": true,
+        "info": true,
+        aoColumnDefs: [
+          {
+              sType: "natural",
+              aTargets: [
+                0
+              ]
+          }
+        ]
+    });
+
     $TableGrey = $('.viewMoreSyntesisTableGrey-block table');
     tableDatatableTableGrey = $TableGrey.DataTable({
-        "paging": true,
+        "paging": false,
         "searching": true,
         "info": true,
         aoColumnDefs: [
@@ -277,7 +300,6 @@ $(document).ready(function() {
   $('.checkboxDiTeArClick').on('click',setCheckboxValueTohide);
   $('.btn-addEvidence').on('click',addEvidence);
   $('.btn-removeEvidence').on('click',removeEvidence);
-  $('.flagshipBtn').on('click',changeButtonText);
 
     // Deliverable Geographic Scope
     $('select.elementType-repIndGeographicScope').on("addElement removeElement", function(event,id,name) {
@@ -442,7 +464,7 @@ function createGoogleChart(chartID, type, options) {
         getChartDataArray($chart)
       );
       console.log(data);
-      if (!data) {
+      if ($('.totalInnovationsNumber').html() == 0) {
         $chart.append(
           '<p  class="text-center"> ' + options.title + " <br>  No data </p>"
         );

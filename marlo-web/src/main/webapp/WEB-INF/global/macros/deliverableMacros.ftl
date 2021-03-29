@@ -555,14 +555,14 @@
 [/#macro]
 
 [#macro deliverableMetadataMacro flagshipslistName="programs" crpsListName="crps" allowFlagships=true]
-  <div class="form-group">
+  <div class="form-group conditionalRequire">
     [@metadataField title="title" encodedName="dc.title" type="input" require=false/]
   </div>
   <div class="form-group">
     [@metadataField title="description" encodedName="dc.description.abstract" type="textArea" require=false/]
   </div>
   <div class="form-group row">
-    <div class="col-md-6">
+    <div class="col-md-6 conditionalRequire">
       [@metadataField title="publicationDate" encodedName="dc.date" type="input" require=false/]
     </div>
     <div class="col-md-6">
@@ -596,12 +596,12 @@
   <hr />
    
   [#-- Creator/Authors --]
-  <div class="form-group">
+  <div class="form-group conditionalRequire">
   
     [#if !(deliverable.users?has_content) && deliverable.getMetadataValue(38)?has_content]
       [@metadataField title="creator" encodedName="marlo.authors" type="textArea" require=false/]
     [#else]
-    <label for="">[@s.text name="metadata.creator" /]:  </label>    
+    <label for="" style="display: none;">[@s.text name="metadata.creator" /]:  </label>
     [#-- Hidden input --]
     [@metadataField title="authors" encodedName="marlo.authors" type="hidden" require=false/]
     [#-- Some Instructions  --]
@@ -956,7 +956,9 @@
     [#elseif type == "select"]
       [@customForm.select name="${customName}.elementValue" required=require value="${metadataValue}" className="metadataValue " i18nkey="metadata.${title}" listName=list disabled=mElementHide editable=editable /]
     [#elseif type == "hidden"]
-      <input type="hidden" name="${customName}.elementValue" value="${metadataValue}" class="metadataValue "/>
+    <label for="">[@s.text name="metadata.creator" /]: <input type="hidden" name="${customName}.elementValue" value="${metadataValue}" class="metadataValue "/>
+      [@customForm.req required=require && editable/] </label>
+      
     [#elseif type == "text"]
       <input type="hidden" name="${customName}.elementValue" value="${metadataValue}" class="metadataValue "/>
       <p class="${cssLabelName}" style="display:${(metadataValue?has_content)?string('block', 'none')}"> Recorded in the public repository: <span class="metadataText">${metadataValue}</span> </p>
