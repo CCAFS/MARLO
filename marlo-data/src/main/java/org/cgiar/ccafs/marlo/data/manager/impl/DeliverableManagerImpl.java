@@ -383,7 +383,11 @@ public class DeliverableManagerImpl implements DeliverableManager {
         flagshipPlannedList.remove(i);
       }
 
+
     }
+    String deliverableIds = flagshipPlannedList.stream()
+      .filter(d -> d != null && d.getDeliverable() != null && d.getDeliverable().getId() != null)
+      .map(d -> String.valueOf(d.getDeliverable().getId())).collect(Collectors.joining(", "));
     return flagshipPlannedList;
   }
 
