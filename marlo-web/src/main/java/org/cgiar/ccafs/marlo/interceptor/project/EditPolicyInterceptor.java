@@ -110,7 +110,8 @@ public class EditPolicyInterceptor extends AbstractInterceptor implements Serial
           .hasPermission(baseAction.generatePermission(Permission.PROJECT_POLICIES_EDIT_PERMISSION, params))) {
           canEdit = true;
         }
-        if (baseAction.isSubmit(projectPolicy.getProject().getId()) && !baseAction.getActualPhase().getUpkeep()) {
+        if (baseAction.isSubmit(projectPolicy.getProject().getId()) && !baseAction.getActualPhase().getUpkeep()
+          && !baseAction.isPMU()) {
           canEdit = false;
         }
         if (baseAction.isCrpClosed()) {
