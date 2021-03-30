@@ -303,7 +303,7 @@
             <tr>
               <td> <a href="${url}" target="_blank" >D${(item.id)!""}</a>  </td>
               [#-- Title --]
-              <td  style="max-width: 200px;">
+              <td  style="max-width: 100px;">
                 [#local publicationTitle = (item.getMetadataValue(1))!""]
                 [#if !(publicationTitle?has_content) ]
                   [#local publicationTitle = (item.deliverableInfo.title)!"" ]
@@ -378,7 +378,7 @@
                 [/#if]
               </td>
               [#if isGrey]
-                <td class="text-center " style="max-width: 250px;">
+                <td class="text-center " style="max-width: 100px;">
                   [#local deliverableInfo = item.getDeliverableInfo(actualPhase)!]
                   [@utils.tableText value="${item.deliverableInfo.deliverableType.deliverableCategory.name} - ${deliverableInfo.deliverableType.name}" /]
                 </td>
