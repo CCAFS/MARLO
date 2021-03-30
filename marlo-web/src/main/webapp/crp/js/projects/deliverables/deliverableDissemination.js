@@ -43,6 +43,9 @@ function init() {
 
 
   validateRequiredTagToCategory();
+  if($('.isOtherUrlFiel').val() == 'false') {
+    $('input[name="deliverable.dissemination.articleUrl"').attr('value', '');
+  }
 }
 
 function validateRequiredTagToCategory() {
