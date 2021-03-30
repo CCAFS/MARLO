@@ -46,7 +46,7 @@ function init() {
 }
 
 function validateRequiredTagToCategory() {
-  if ($('.typeSelect').val() == 49 && $('.subTypeSelect ').val() == 63) {
+  if ($('.subTypeSelect ').val() == 63) {
     console.log('%cThere is Articles and Books and Journal Article (peer reviewed)', 'background: #222; color: #37ff73');
     // $('.conditionalRequire').find('.requiredTag').show('slow');
     // $('.isOtherUrlTohide').show('slow');
@@ -385,7 +385,7 @@ function updateReadOnly() {
       $(".ifIsReadOnly .metadataElement-handle .input input").prop('readonly', false);
       $(".ifIsReadOnly .metadataElement-doi .input input").prop('readonly', false);
       // $('.isOtherUrlTohide').show("slow"); 
-      if (($('.typeSelect').val() == 49 && $('.subTypeSelect ').val() == 63)) {
+      if (($('.subTypeSelect ').val() == 63)) {
         hideOrShowCheckBoxIsOtherUrl(true);
       }
     }
@@ -413,7 +413,6 @@ function updateReadOnly() {
 }
 
 function addDisseminationEvents() {
-
   // 
   $("#WOSSyncBtn").on("click", function () {
     $(".altmetricURL").attr("href", "");
@@ -1117,6 +1116,10 @@ function unSyncDeliverable() {
   if (selector.val() == '63' && (doiField.value == '')) {
     displayExtraFieldUrl(true, true);
   }
+
+  // clean URL and Altmetric img
+  $(".altmetricURL").attr("href", "");
+  $(".altmetricImg").attr("src", "");
 
   // Show authors
   $('.author').removeClass('hideAuthor');
