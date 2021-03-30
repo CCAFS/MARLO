@@ -286,6 +286,7 @@
           [#if allowPopups]
             <th class="col-md-1 text-center">[@s.text name="${customLabel}.${name}.missingFields" /]</th>
             [#if PMU]
+              <span class="selectAllText">Select all<span class="selectAllCheck" style="margin-left: 10px;">[@customForm.checkmark id="selectAll" name="selectAll" checked=isChecked editable=editable centered=true/]</span></span> 
               <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
             [/#if]
           [/#if]

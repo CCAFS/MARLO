@@ -300,6 +300,8 @@ $(document).ready(function() {
   $('.checkboxDiTeArClick').on('click',setCheckboxValueTohide);
   $('.btn-addEvidence').on('click',addEvidence);
   $('.btn-removeEvidence').on('click',removeEvidence);
+  $('#selectAll').on('click', selectDeselectAll);
+  $('input[name="reportSynthesis.reportSynthesisFlagshipProgress.deliverablesValue"').on('click', selectIndividual);
 
     // Deliverable Geographic Scope
     $('select.elementType-repIndGeographicScope').on("addElement removeElement", function(event,id,name) {
@@ -383,6 +385,20 @@ function setStatusByBack() {
       }
 
     });
+}
+
+function selectDeselectAll() {
+  console.log(this.checked);
+  console.log($('input[name="reportSynthesis.reportSynthesisFlagshipProgress.deliverablesValue"'));
+  // $('input[name="reportSynthesis.reportSynthesisFlagshipProgress.deliverablesValue"').attr('checked', this.checked);
+}
+
+function selectIndividual() {
+  if ($('input[name="reportSynthesis.reportSynthesisFlagshipProgress.deliverablesValue"').length == $('input[name="reportSynthesis.reportSynthesisFlagshipProgress.deliverablesValue:checked"').length) {
+    $('#selectAll').attr('checked', 'checked');
+  } else {
+    $('#selectAll').removeAttr('checked');
+  }
 }
 
 function setCheckboxValueTohide() {
