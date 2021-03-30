@@ -195,7 +195,7 @@
                 
           [#-- Evidence Link --] 
           <div class="form-group stageFourBlock-false" style="display:${isStageFour?string('none','block')}">
-            [@customForm.input name="innovation.projectInnovationInfo.evidenceLink"  type="text" i18nkey="projectInnovations.evidenceLink"  placeholder="marloRequestCreation.webSiteLink.placeholder" className="" required=true editable=editable /]
+            [@customForm.input name="innovation.projectInnovationInfo.evidenceLink"  type="text" i18nkey="projectInnovations.evidenceLink" help="projectInnovations.evidenceLink.help"  placeholder="marloRequestCreation.webSiteLink.placeholder" className="" required=true editable=editable helpIcon=false /]
           </div>
         
           [#-- Or Deliverable ID (optional) --]
