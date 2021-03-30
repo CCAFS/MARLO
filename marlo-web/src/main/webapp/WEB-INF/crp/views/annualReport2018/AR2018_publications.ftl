@@ -185,7 +185,7 @@
                     
                     
                   [#-- Full list of publications published --]
-                  <div class="form-group viewMoreSyntesisTable-block"> 
+                  <div class="form-group viewMoreSyntesisTablePRP-block"> 
                     [#-- Table --]
                     <h4 class="headTitle">[@s.text name="${customLabel}.fullList.title" /]</h4>
                     [@listOfPublications name="fullList" list=(deliverables)![]  allowPopups=true /]
@@ -271,7 +271,7 @@
             <th class="text-center"> [@s.text name="${customLabel}.${name}.date" /] </th>
             <th class="text-center"> [@s.text name="${customLabel}.${name}.journal" /] </th>
           [/#if]
-          <th class="text-center" > [@s.text name="${customLabel}.${name}.identifier" /] </th>
+          <th class="text-center" > [@s.text name="${customLabel}.${name}.directLink" /] </th>
           [#if !allowPopups]
             <th class="text-center"> [@s.text name="${customLabel}.${name}.volume" /] </th>
             <th class="text-center"> [@s.text name="${customLabel}.${name}.issue" /] </th>
@@ -303,7 +303,7 @@
             <tr>
               <td> <a href="${url}" target="_blank" >D${(item.id)!""}</a>  </td>
               [#-- Title --]
-              <td  style="max-width: 200px;">
+              <td  style="max-width: 100px;">
                 [#local publicationTitle = (item.getMetadataValue(1))!""]
                 [#if !(publicationTitle?has_content) ]
                   [#local publicationTitle = (item.deliverableInfo.title)!"" ]
@@ -322,7 +322,6 @@
                 </div>
                 [/#if]
                 
-                <a href="${url}" target="_blank" class="pull-right">[@s.text name="${customLabel}.${name}.linkToPublication" /] <span class="glyphicon glyphicon-new-window"></span></a>
                 
               </td>
               [#if !allowPopups]
@@ -342,39 +341,44 @@
               <td class="urlify" >[@utils.tableText value=(item.publication.journal)!"" /]</td>
               [/#if]
               [#-- DOI or Handle --]
-              <td class="text-center TdSroll"  style="max-width: 100px;">
+              <td class="text-center"  style="max-width: 100px;">
                 [#if item.getMetadataValue(36)?has_content]
-                  [#local doi = item.getMetadataValue(36) /]
+                  [#local directLink = "https://www.doi.org/"+item.getMetadataValue(36) /]
                   [#-- TODO add www.doi.org/ to DOI identifiers. NOTE: validations will be needed. There are not just DOIs saved there and there are some
                   DOIs that has not been cleaned (being stripped of the www.doi.org/ part) yet. --]
+                [#elseif item.getMetadataValue(35)?has_content]
+                  [#local directLink = item.getMetadataValue(35) /]
                 [#elseif item.dissemination.articleUrl?has_content]
-                  [#local doi = item.dissemination.articleUrl /]
+                  [#local directLink = item.dissemination.articleUrl /]
+                [#elseif item.dissemination.disseminationUrl?has_content]
+                  [#local directLink = item.dissemination.disseminationUrl /]
                 [#else]
-                  [#local doi = "" /]
+                  [#local directLink = "" /]
                 [/#if]
                 
-                [#--if doi?has_content && doi?contains("http") && !(doi?contains(";"))]
-                  [#--<a target="_blank" href="${doi}"><span class="glyphicon glyphicon-link"></span></a>
-                  <a target="_blank" href="${doi}"><span class="glyphicon glyphicon-link"></span></a>
+                [#--if directLink?has_content && directLink?contains("http") && !(directLink?contains(";"))]
+                  [#--<a target="_blank" href="${directLink}"><span class="glyphicon glyphicon-link"></span></a>
+                  <a target="_blank" href="${directLink}"><span class="glyphicon glyphicon-link"></span></a>
                 [#else]
-                  [#if !(doi?has_content) ]
+                  [#if !(directLink?has_content) ]
                     <span class="glyphicon glyphicon-link" title="Not defined"></span>
                   [#else]
-                    <span class="glyphicon glyphicon-link" title="${doi}"></span>
+                    <span class="glyphicon glyphicon-link" title="${directLink}"></span>
                   [/#if]
                 [/#if--]
-                [#if doi?has_content && doi?contains("http") && !(doi?contains(";"))]
-                  <a target="_blank" href="${doi}">${doi}</span></a>
+                [#if directLink?has_content && directLink?contains("http") && !(directLink?contains(";"))]
+                  [#--<a target="_blank" href="${directLink}">${directLink}</span></a>--]
+                  <a href="${directLink}" target="_blank" class="">[@s.text name="${customLabel}.${name}.linkToPublication" /] <span class="glyphicon glyphicon-new-window"></span></a>
                 [#else]
-                  [#if !(doi?has_content) ]
-                    [@utils.tableText value="Not defined" /]
+                  [#if !(directLink?has_content) ]
+                    [@utils.tableText value="" /]
                   [#else]
-                    [@utils.tableText value=doi /]
+                    [@utils.tableText value=directLink /]
                   [/#if]
                 [/#if]
               </td>
               [#if isGrey]
-                <td class="text-center " style="max-width: 250px;">
+                <td class="text-center " style="max-width: 100px;">
                   [#local deliverableInfo = item.getDeliverableInfo(actualPhase)!]
                   [@utils.tableText value="${item.deliverableInfo.deliverableType.deliverableCategory.name} - ${deliverableInfo.deliverableType.name}" /]
                 </td>
@@ -520,14 +524,20 @@
               <td class="text-center">${((item.publication.isiPublication)!false)?string('Yes', 'No')}</td>
               [#-- DOI or Handle --]
               <td class="text-center">
-              [#if item.getMetadataValue(36)?has_content]
-                [#local doi = item.getMetadataValue(36) /]
-              [#elseif item.dissemination.articleUrl?has_content]
-                [#local doi = item.dissemination.articleUrl /]
-              [#else]
-                [#local doi = "" /]
-              [/#if]
-                ${doi}
+                [#if item.getMetadataValue(36)?has_content]
+                  [#local directLink = "www.doi.org/"+item.getMetadataValue(36) /]
+                  [#-- TODO add www.doi.org/ to DOI identifiers. NOTE: validations will be needed. There are not just DOIs saved there and there are some
+                  DOIs that has not been cleaned (being stripped of the www.doi.org/ part) yet. --]
+                [#elseif item.getMetadataValue(35)?has_content]
+                  [#local directLink = item.getMetadataValue(35) /]
+                [#elseif item.dissemination.articleUrl?has_content]
+                  [#local directLink = item.dissemination.articleUrl /]
+                [#elseif item.dissemination.disseminationUrl?has_content]
+                  [#local directLink = item.dissemination.disseminationUrl /]
+                [#else]
+                  [#local directLink = "" /]
+                [/#if]
+                ${directLink}
               </td> 
               [#-- Check --]
               <td class="text-center">

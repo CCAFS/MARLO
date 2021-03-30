@@ -225,8 +225,10 @@ public class DeliverableMetadataByWOS extends BaseAction {
             && StringUtils.equalsIgnoreCase(i.getFullName(), dbDeliverableAffiliation.getInstitutionNameWebOfScience())
             && i.getClarisaMatchConfidence() < APConstants.ACCEPTATION_PERCENTAGE).count() == 0)) {
           this.deliverableAffiliationManager.deleteDeliverableAffiliation(dbDeliverableAffiliation.getId());
-          this.deliverableAffiliationManager.replicate(dbDeliverableAffiliation,
-            phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
+          if (deliverable.getIsPublication() == null || deliverable.getIsPublication() == false) {
+            this.deliverableAffiliationManager.replicate(dbDeliverableAffiliation,
+              phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
+          }
         }
       }
 
@@ -296,8 +298,10 @@ public class DeliverableMetadataByWOS extends BaseAction {
             .count() == 0)) {
           this.deliverableAffiliationsNotMappedManager
             .deleteDeliverableAffiliationsNotMapped(dbDeliverableAffiliationNotMapped.getId());
-          this.deliverableAffiliationsNotMappedManager.replicate(dbDeliverableAffiliationNotMapped,
-            phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
+          if (deliverable.getIsPublication() == null || deliverable.getIsPublication() == false) {
+            this.deliverableAffiliationsNotMappedManager.replicate(dbDeliverableAffiliationNotMapped,
+              phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
+          }
         }
       }
 
@@ -467,6 +471,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
     externalSource.setJournalName(this.response.getJournalName());
     externalSource.setVolume(this.response.getVolume());
     externalSource.setPages(this.response.getPages());
+    externalSource.setSource(this.response.getSource());
 
     if (gardianInfo != null) {
       externalSource.setGardianFindability(gardianInfo.getFindability());

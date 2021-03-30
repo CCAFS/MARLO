@@ -2001,7 +2001,7 @@ a.currentReportingSection li, a.currentSection li {
   display: block;
   text-decoration: none;
   color: #5E5E5E;
-  padding: 5px 19px 5px 10px !important;
+  padding: 5px 25px 5px 10px !important;
   /* border-left: 5px solid; */
 }
 
