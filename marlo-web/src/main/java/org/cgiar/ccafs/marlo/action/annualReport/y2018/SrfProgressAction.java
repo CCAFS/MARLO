@@ -232,7 +232,7 @@ public class SrfProgressAction extends BaseAction {
    * Delete SLO Target Cases (contributions) from SLo with true 'Not evidence' check mark
    */
   public void deleteTargetCasesFromSLOWithoutEvidences() {
-    if (sloTargets != null) {
+    if (sloTargets != null && !sloTargets.isEmpty()) {
       // Delete contributions for slo Targets with true check marks
 
       // Fill again the info and relations for sloTargets
@@ -291,8 +291,11 @@ public class SrfProgressAction extends BaseAction {
             }
 
             // Delete Target Case
-            reportSynthesisSrfProgressTargetCasesManager
-              .deleteReportSynthesisSrfProgressTargetCases(targetCaseDelete.getId());
+            if (reportSynthesisSrfProgressTargetCasesManager
+              .getReportSynthesisSrfProgressTargetCasesById(targetCaseDelete.getId()) != null) {
+              reportSynthesisSrfProgressTargetCasesManager
+                .deleteReportSynthesisSrfProgressTargetCases(targetCaseDelete.getId());
+            }
           }
         }
       }
