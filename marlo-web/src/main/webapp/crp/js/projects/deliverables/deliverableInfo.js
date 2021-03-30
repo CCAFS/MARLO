@@ -18,7 +18,7 @@ function checkDOI() {
         $('.isOtherUrlTohide').hide('slow');
         hideOrShowCheckBoxIsOtherUrl(false);      
       }else{
-        if (($('.typeSelect').val() == 49 && $('.subTypeSelect ').val() ==63 )) {
+        if (($('.subTypeSelect ').val() ==63 )) {
           hideOrShowCheckBoxIsOtherUrl(true);
         }
       }
