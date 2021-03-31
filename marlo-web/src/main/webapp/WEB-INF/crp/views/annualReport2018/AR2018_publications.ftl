@@ -10,7 +10,7 @@
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20200310",
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210219"
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210331A"
   ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210219"] /]
 
@@ -286,8 +286,10 @@
           [#if allowPopups]
             <th class="col-md-1 text-center">[@s.text name="${customLabel}.${name}.missingFields" /]</th>
             [#if PMU]
-              <span class="selectAllText">Select all<span class="selectAllCheck" style="margin-left: 10px;">[@customForm.checkmark id="selectAll" name="selectAll" checked=isChecked editable=editable centered=true/]</span></span> 
-              <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
+              <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] 
+              <br>
+              <span class="selectAllCheck">[@customForm.checkmark id="selectAll${isGrey?then('Grey','')}" name="selectAll${isGrey?then('Grey','')}" value="false" checked=false editable=editable centered=true/]</span>
+              </th>
             [/#if]
           [/#if]
         </tr>

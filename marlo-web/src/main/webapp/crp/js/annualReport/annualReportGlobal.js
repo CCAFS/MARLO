@@ -301,7 +301,9 @@ $(document).ready(function() {
   $('.btn-addEvidence').on('click',addEvidence);
   $('.btn-removeEvidence').on('click',removeEvidence);
   $('#selectAll').on('click', selectDeselectAll);
-  $('input[name="reportSynthesis.reportSynthesisFlagshipProgress.deliverablesValue"').on('click', selectIndividual);
+  $('input[id^="deliverable-"]').on('click', selectIndividual);
+  $('#selectAllGrey').on('click', selectDeselectAllGrey);
+  $('input[id^="deliverableGrey"]').on('click', selectIndividualGrey);
 
     // Deliverable Geographic Scope
     $('select.elementType-repIndGeographicScope').on("addElement removeElement", function(event,id,name) {
@@ -337,6 +339,9 @@ $(document).ready(function() {
 
   setStatusByBack();
   // updateAllIndexesContribution();
+  
+  selectIndividual();
+  selectIndividualGrey();
 });
 
 function updateALltexareas(){
@@ -388,16 +393,34 @@ function setStatusByBack() {
 }
 
 function selectDeselectAll() {
-  console.log(this.checked);
-  console.log($('input[name="reportSynthesis.reportSynthesisFlagshipProgress.deliverablesValue"'));
-  // $('input[name="reportSynthesis.reportSynthesisFlagshipProgress.deliverablesValue"').attr('checked', this.checked);
+  if (this.checked == true) {
+    $('input[id^="deliverable-"]').prop('checked', true);
+  } else {
+    $('input[id^="deliverable-"]').prop('checked', false);
+  }
 }
 
 function selectIndividual() {
-  if ($('input[name="reportSynthesis.reportSynthesisFlagshipProgress.deliverablesValue"').length == $('input[name="reportSynthesis.reportSynthesisFlagshipProgress.deliverablesValue:checked"').length) {
-    $('#selectAll').attr('checked', 'checked');
+  if ($('input[id^="deliverable-"]').length == $('input[id^="deliverable-"]:checked').length) {
+    $('#selectAll').prop('checked', true);
   } else {
-    $('#selectAll').removeAttr('checked');
+    $('#selectAll').prop('checked', false);
+  }
+}
+
+function selectDeselectAllGrey() {
+  if (this.checked == true) {
+    $('input[id^="deliverableGrey"]').prop('checked', true);
+  } else {
+    $('input[id^="deliverableGrey"]').prop('checked', false);
+  }
+}
+
+function selectIndividualGrey() {
+  if ($('input[id^="deliverableGrey"]').length == $('input[id^="deliverableGrey"]:checked').length) {
+    $('#selectAllGrey').prop('checked', true);
+  } else {
+    $('#selectAllGrey').prop('checked', false);
   }
 }
 
