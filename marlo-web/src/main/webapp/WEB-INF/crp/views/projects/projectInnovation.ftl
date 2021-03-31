@@ -192,16 +192,21 @@
             --]
             [@customForm.elementsListComponent name="innovation.studies" elementType="projectExpectedStudy" elementList=innovation.studies label="projectInnovations.outcomeCaseStudy" helpIcon=false listName="expectedStudyList" keyFieldName="id" displayFieldName="composedNameAlternative" required=isEvidenceRequired/]
           </div>
-                
-          [#-- Evidence Link --] 
-          <div class="form-group stageFourBlock-false" style="display:${isStageFour?string('none','block')}">
-            [@customForm.input name="innovation.projectInnovationInfo.evidenceLink"  type="text" i18nkey="projectInnovations.evidenceLink" help="projectInnovations.evidenceLink.help"  placeholder="marloRequestCreation.webSiteLink.placeholder" className="" required=true editable=editable helpIcon=false /]
+          
+          <label for="">[@customForm.helpLabel name="projectInnovations.mandatoryFields.help" showIcon=false editable=editable/]</label>
+          <div class="form-group simpleBox">   
+
+            [#-- Evidence Link --] 
+            <div class="form-group stageFourBlock-false" style="display:${isStageFour?string('none','block')}">
+              [@customForm.input name="innovation.projectInnovationInfo.evidenceLink"  type="text" i18nkey="projectInnovations.evidenceLink" help="projectInnovations.evidenceLink.help"  placeholder="marloRequestCreation.webSiteLink.placeholder" className="" required=true editable=editable helpIcon=false /]
+            </div>
+          
+            [#-- Or Deliverable ID (optional) --]
+            <div class="form-group">
+              [@customForm.elementsListComponent name="innovation.deliverables" elementType="deliverable" elementList=innovation.deliverables label="projectInnovations.deliverableId"  listName="deliverableList" required=false keyFieldName="id" displayFieldName="composedName"/]
+            </div>
           </div>
-        
-          [#-- Or Deliverable ID (optional) --]
-          <div class="form-group">
-            [@customForm.elementsListComponent name="innovation.deliverables" elementType="deliverable" elementList=innovation.deliverables label="projectInnovations.deliverableId"  listName="deliverableList" required=false keyFieldName="id" displayFieldName="composedName"/]
-          </div>
+         <br>
           
          [#-- Milestones Contribution --]
         <div class="form-group">          
