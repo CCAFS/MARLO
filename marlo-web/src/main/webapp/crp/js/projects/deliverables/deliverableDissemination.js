@@ -43,9 +43,12 @@ function init() {
 
 
   validateRequiredTagToCategory();
+
   if($('.isOtherUrlFiel').val() == 'false') {
     $('input[name="deliverable.dissemination.articleUrl"').attr('value', '');
   }
+
+  validateEmptyAuthors();
 }
 
 function validateRequiredTagToCategory() {
@@ -76,6 +79,19 @@ function validateRequiredTagToCategory() {
     // }
   }
 
+}
+
+function validateEmptyAuthors() {
+  console.log($('.authorsList').children().length);
+  if ($('.authorsList').children('div').length > 0) {
+    // ocultar banderilla
+    console.log("oculto");
+    $('#warningEmptyAuthorsTag').hide();
+  } else {
+    // mostrar banderilla
+    console.log("muestro");
+    $('#warningEmptyAuthorsTag').show();
+  }
 }
 
 function getWOSInfo() {
@@ -163,7 +179,7 @@ function getWOSInfo() {
         }
       });
     }
-
+    validateEmptyAuthors();
   }, 1500);
 }
 
@@ -873,6 +889,7 @@ function addAuthorElement() {
 
     // Clean add inputs
     $(".lName, .fName, .oId").val("");
+    validateEmptyAuthors();
   } else {
     $(".lName, .fName, .oId").addClass("fieldError");
   }
@@ -912,6 +929,7 @@ function removeAuthor() {
     $item.remove();
     checkNextAuthorItems($list);
     updateAuthor();
+    validateEmptyAuthors();
   });
 }
 
@@ -1143,6 +1161,9 @@ function unSyncDeliverable() {
   // Update component
   $(document).trigger('updateComponent');
   updateReadOnly();
+
+  // Calls the function to validate if there's no authors so it shows or hides the flag warning
+  validateEmptyAuthors();
 }
 
 /**

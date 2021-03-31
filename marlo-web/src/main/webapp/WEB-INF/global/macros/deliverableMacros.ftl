@@ -957,7 +957,7 @@
       [@customForm.select name="${customName}.elementValue" required=require value="${metadataValue}" className="metadataValue " i18nkey="metadata.${title}" listName=list disabled=mElementHide editable=editable /]
     [#elseif type == "hidden"]
     <label for="">[@s.text name="metadata.creator" /]: <input type="hidden" name="${customName}.elementValue" value="${metadataValue}" class="metadataValue "/>
-      [@customForm.req required=require && editable/] </label>
+    [@customForm.req required=require && editable/] <span id="warningEmptyAuthorsTag" class="errorTag glyphicon glyphicon-info-sign" style="position: relative; left: 612px;" title="" aria-describedby="ui-id-5"> </span> </label>
       
     [#elseif type == "text"]
       <input type="hidden" name="${customName}.elementValue" value="${metadataValue}" class="metadataValue "/>
