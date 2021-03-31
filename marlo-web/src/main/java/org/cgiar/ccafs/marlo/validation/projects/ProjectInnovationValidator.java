@@ -226,12 +226,12 @@ public class ProjectInnovationValidator extends BaseValidator {
           // Validate evidence link and deliverables for stage 1 and 3
           if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndStageInnovation()
             .getId() == 1
-            && projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndStageInnovation()
+            || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndStageInnovation()
               .getId() == 3) {
 
             if ((!this
               .isValidString(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getEvidenceLink()))
-              || ((projectInnovation.getProjectInnovationDeliverables() != null
+              && ((projectInnovation.getProjectInnovationDeliverables() != null
                 && projectInnovation.getProjectInnovationDeliverables().isEmpty())
                 || (projectInnovation.getProjectInnovationDeliverables() == null))) {
               if (struts) {
