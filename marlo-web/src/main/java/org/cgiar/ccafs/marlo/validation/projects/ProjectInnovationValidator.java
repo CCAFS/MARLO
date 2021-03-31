@@ -207,13 +207,39 @@ public class ProjectInnovationValidator extends BaseValidator {
           }
         } else {
           // Validate Evidence Link (URL)
-          if (!this
-            .isValidString(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getEvidenceLink())) {
-            if (struts) {
-              action.addMessage(action.getText("projectInnovations.evidenceLink"));
-              action.addMissingField("projectInnovations.evidenceLink");
-              action.getInvalidFields().put("input-innovation.projectInnovationInfo.evidenceLink",
-                InvalidFieldsMessages.EMPTYFIELD);
+          // Validate stage different to 1 and 3
+          if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndStageInnovation()
+            .getId() != 1
+            && projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndStageInnovation()
+              .getId() != 3) {
+            if (!this.isValidString(
+              projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getEvidenceLink())) {
+              if (struts) {
+                action.addMessage(action.getText("projectInnovations.evidenceLink"));
+                action.addMissingField("projectInnovations.evidenceLink");
+                action.getInvalidFields().put("input-innovation.projectInnovationInfo.evidenceLink",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              }
+            }
+          }
+
+          // Validate evidence link and deliverables for stage 1 and 3
+          if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndStageInnovation()
+            .getId() == 1
+            && projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndStageInnovation()
+              .getId() == 3) {
+
+            if ((!this
+              .isValidString(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getEvidenceLink()))
+              || ((projectInnovation.getProjectInnovationDeliverables() != null
+                && projectInnovation.getProjectInnovationDeliverables().isEmpty())
+                || (projectInnovation.getProjectInnovationDeliverables() == null))) {
+              if (struts) {
+                action.addMessage(action.getText("projectInnovations.evidenceLink"));
+                action.addMissingField("projectInnovations.evidenceLink");
+                action.getInvalidFields().put("input-innovation.projectInnovationInfo.evidenceLink",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              }
             }
           }
         }
