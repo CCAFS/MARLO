@@ -15,7 +15,8 @@ function init() {
     $('.metadataElement-doi .input input').val($(this).val())
   })
   $('.typeSelect').change(validateRequiredTagToCategory);
-  $('.subTypeSelect').change(validateRequiredTagToCategory)
+  $('.subTypeSelect').change(validateRequiredTagToCategory);
+  $('.subTypeSelect').change(validateEmptyAuthors);
   // $('.typeSelect ').on("click",   validateRequiredTagToCategory);
   // Setting ID to Date-picker input
   $(".dateMetadata").attr("id", "deliverableMetadataDate");
@@ -43,10 +44,16 @@ function init() {
 
 
   validateRequiredTagToCategory();
+
+  if ($('.isOtherUrlFiel').val() == 'false') {
+    $('input[name="deliverable.dissemination.articleUrl"').attr('value', '');
+  }
+
+  validateEmptyAuthors();
 }
 
 function validateRequiredTagToCategory() {
-  if ($('.typeSelect').val() == 49 && $('.subTypeSelect ').val() == 63) {
+  if ($('.subTypeSelect ').val() == 63) {
     console.log('%cThere is Articles and Books and Journal Article (peer reviewed)', 'background: #222; color: #37ff73');
     // $('.conditionalRequire').find('.requiredTag').show('slow');
     // $('.isOtherUrlTohide').show('slow');
@@ -73,6 +80,21 @@ function validateRequiredTagToCategory() {
     // }
   }
 
+}
+
+function validateEmptyAuthors() {
+  if ($('.subTypeSelect ').val() == 63) {
+    if ($('.authorsList').children('div').length > 0) {
+      // ocultar banderilla
+      $('#warningEmptyAuthorsTag').hide();
+    } else {
+      // mostrar banderilla
+      $('#warningEmptyAuthorsTag').show();
+    }
+  } else {
+    // ocultar banderilla
+    $('#warningEmptyAuthorsTag').hide();
+  }
 }
 
 function getWOSInfo() {
@@ -135,7 +157,7 @@ function getWOSInfo() {
               if (data.response.altmetricInfo.imageSmall != undefined && data.response.altmetricInfo.imageSmall != "null" && data.response.altmetricInfo.imageSmall != "") {
                 $('.altmetricImg').attr('src', data.response.altmetricInfo.imageSmall);
                 $('.altmetricImg').show('slow');
-                if (data.response.altmetricInfo.altmetricId != undefined && data.response.altmetricInfo.altmetricId !="null" && data.response.altmetricInfo.altmetricId != "") {
+                if (data.response.altmetricInfo.altmetricId != undefined && data.response.altmetricInfo.altmetricId != "null" && data.response.altmetricInfo.altmetricId != "") {
                   $('.altmetricURL').attr("href", "https://www.altmetric.com/details/" + data.response.altmetricInfo.altmetricId);
                 }
               }
@@ -160,7 +182,7 @@ function getWOSInfo() {
         }
       });
     }
-
+    validateEmptyAuthors();
   }, 1500);
 }
 
@@ -385,7 +407,7 @@ function updateReadOnly() {
       $(".ifIsReadOnly .metadataElement-handle .input input").prop('readonly', false);
       $(".ifIsReadOnly .metadataElement-doi .input input").prop('readonly', false);
       // $('.isOtherUrlTohide').show("slow"); 
-      if (($('.typeSelect').val() == 49 && $('.subTypeSelect ').val() == 63)) {
+      if (($('.subTypeSelect ').val() == 63)) {
         hideOrShowCheckBoxIsOtherUrl(true);
       }
     }
@@ -413,7 +435,6 @@ function updateReadOnly() {
 }
 
 function addDisseminationEvents() {
-
   // 
   $("#WOSSyncBtn").on("click", function () {
     $(".altmetricURL").attr("href", "");
@@ -676,7 +697,7 @@ function addDisseminationEvents() {
       $('.conditionalRequire .requiredTag').slideDown();
       $('.other-url').css("display", "none");
       // $('.other-url input').val("");
-    }  
+    }
     // }
 
 
@@ -871,6 +892,7 @@ function addAuthorElement() {
 
     // Clean add inputs
     $(".lName, .fName, .oId").val("");
+    validateEmptyAuthors();
   } else {
     $(".lName, .fName, .oId").addClass("fieldError");
   }
@@ -910,6 +932,7 @@ function removeAuthor() {
     $item.remove();
     checkNextAuthorItems($list);
     updateAuthor();
+    validateEmptyAuthors();
   });
 }
 
@@ -1118,6 +1141,10 @@ function unSyncDeliverable() {
     displayExtraFieldUrl(true, true);
   }
 
+  // clean URL and Altmetric img
+  $(".altmetricURL").attr("href", "");
+  $(".altmetricImg").attr("src", "");
+
   // Show authors
   $('.author').removeClass('hideAuthor');
   $('.authorVisibles').show();
@@ -1137,6 +1164,9 @@ function unSyncDeliverable() {
   // Update component
   $(document).trigger('updateComponent');
   updateReadOnly();
+
+  // Calls the function to validate if there's no authors so it shows or hides the flag warning
+  validateEmptyAuthors();
 }
 
 /**

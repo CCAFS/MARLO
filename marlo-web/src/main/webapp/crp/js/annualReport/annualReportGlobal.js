@@ -300,6 +300,10 @@ $(document).ready(function() {
   $('.checkboxDiTeArClick').on('click',setCheckboxValueTohide);
   $('.btn-addEvidence').on('click',addEvidence);
   $('.btn-removeEvidence').on('click',removeEvidence);
+  $('#selectAll').on('click', selectDeselectAll);
+  $('input[id^="deliverable-"]').on('click', selectIndividual);
+  $('#selectAllGrey').on('click', selectDeselectAllGrey);
+  $('input[id^="deliverableGrey"]').on('click', selectIndividualGrey);
 
     // Deliverable Geographic Scope
     $('select.elementType-repIndGeographicScope').on("addElement removeElement", function(event,id,name) {
@@ -335,6 +339,9 @@ $(document).ready(function() {
 
   setStatusByBack();
   // updateAllIndexesContribution();
+  
+  selectIndividual();
+  selectIndividualGrey();
 });
 
 function updateALltexareas(){
@@ -383,6 +390,38 @@ function setStatusByBack() {
       }
 
     });
+}
+
+function selectDeselectAll() {
+  if (this.checked == true) {
+    $('input[id^="deliverable-"]').prop('checked', true);
+  } else {
+    $('input[id^="deliverable-"]').prop('checked', false);
+  }
+}
+
+function selectIndividual() {
+  if ($('input[id^="deliverable-"]').length == $('input[id^="deliverable-"]:checked').length) {
+    $('#selectAll').prop('checked', true);
+  } else {
+    $('#selectAll').prop('checked', false);
+  }
+}
+
+function selectDeselectAllGrey() {
+  if (this.checked == true) {
+    $('input[id^="deliverableGrey"]').prop('checked', true);
+  } else {
+    $('input[id^="deliverableGrey"]').prop('checked', false);
+  }
+}
+
+function selectIndividualGrey() {
+  if ($('input[id^="deliverableGrey"]').length == $('input[id^="deliverableGrey"]:checked').length) {
+    $('#selectAllGrey').prop('checked', true);
+  } else {
+    $('#selectAllGrey').prop('checked', false);
+  }
 }
 
 function setCheckboxValueTohide() {
