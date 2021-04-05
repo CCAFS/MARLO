@@ -149,7 +149,8 @@
                     </div>
                   [#else]
                     <div class="form-group">
-                      <h4 class="simpleTitle headTitle">[@s.text name="${customLabel}.table7.title" /]</h4>
+                      <h4 class="simpleTitle headTitle annualReport-table" style="margin-bottom: 0;">[@s.text name="${customLabel}.table7.title" /] [@customForm.req required=true/]</h4>
+                      [@customForm.helpLabel name="${customLabel}.table8.help" showIcon=false editable=editable/]
                       <div class="listKeyPartnerships">
                         [#if reportSynthesis.reportSynthesisKeyPartnership.partnerships?has_content]
                           [#list reportSynthesis.reportSynthesisKeyPartnership.partnerships as item]
@@ -200,7 +201,7 @@
                     [#-- Word Document Tag --]
                     [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
                     
-                    <h4 class="headTitle annualReport-table">[@s.text name="${customLabel}.table8.title" /]</h4>
+                    <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="${customLabel}.table8.title" /] [@customForm.req required=true/]</h4>
                     [@customForm.helpLabel name="${customLabel}.table8.help" showIcon=false editable=editable/]
                     
                     [#if PMU]

@@ -232,7 +232,7 @@ div.disabled {
 }
 
 .red {
-  color: red;
+  color: red !important;
   font-weight: bold;
   font-size: 1.2em;
   padding: 0.15em;
