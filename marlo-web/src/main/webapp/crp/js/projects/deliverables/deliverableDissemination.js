@@ -43,10 +43,16 @@ function init() {
 
 
   validateRequiredTagToCategory();
+
+  if($('.isOtherUrlFiel').val() == 'false') {
+    $('input[name="deliverable.dissemination.articleUrl"').attr('value', '');
+  }
+
+  validateEmptyAuthors();
 }
 
 function validateRequiredTagToCategory() {
-  if ($('.typeSelect').val() == 49 && $('.subTypeSelect ').val() == 63) {
+  if ($('.subTypeSelect ').val() == 63) {
     console.log('%cThere is Articles and Books and Journal Article (peer reviewed)', 'background: #222; color: #37ff73');
     // $('.conditionalRequire').find('.requiredTag').show('slow');
     // $('.isOtherUrlTohide').show('slow');
@@ -73,6 +79,19 @@ function validateRequiredTagToCategory() {
     // }
   }
 
+}
+
+function validateEmptyAuthors() {
+  console.log($('.authorsList').children().length);
+  if ($('.authorsList').children('div').length > 0) {
+    // ocultar banderilla
+    console.log("oculto");
+    $('#warningEmptyAuthorsTag').hide();
+  } else {
+    // mostrar banderilla
+    console.log("muestro");
+    $('#warningEmptyAuthorsTag').show();
+  }
 }
 
 function getWOSInfo() {
@@ -160,7 +179,7 @@ function getWOSInfo() {
         }
       });
     }
-
+    validateEmptyAuthors();
   }, 1500);
 }
 
@@ -385,7 +404,7 @@ function updateReadOnly() {
       $(".ifIsReadOnly .metadataElement-handle .input input").prop('readonly', false);
       $(".ifIsReadOnly .metadataElement-doi .input input").prop('readonly', false);
       // $('.isOtherUrlTohide').show("slow"); 
-      if (($('.typeSelect').val() == 49 && $('.subTypeSelect ').val() == 63)) {
+      if (($('.subTypeSelect ').val() == 63)) {
         hideOrShowCheckBoxIsOtherUrl(true);
       }
     }
@@ -413,7 +432,6 @@ function updateReadOnly() {
 }
 
 function addDisseminationEvents() {
-
   // 
   $("#WOSSyncBtn").on("click", function () {
     $(".altmetricURL").attr("href", "");
@@ -871,6 +889,7 @@ function addAuthorElement() {
 
     // Clean add inputs
     $(".lName, .fName, .oId").val("");
+    validateEmptyAuthors();
   } else {
     $(".lName, .fName, .oId").addClass("fieldError");
   }
@@ -910,6 +929,7 @@ function removeAuthor() {
     $item.remove();
     checkNextAuthorItems($list);
     updateAuthor();
+    validateEmptyAuthors();
   });
 }
 
@@ -1118,6 +1138,10 @@ function unSyncDeliverable() {
     displayExtraFieldUrl(true, true);
   }
 
+  // clean URL and Altmetric img
+  $(".altmetricURL").attr("href", "");
+  $(".altmetricImg").attr("src", "");
+
   // Show authors
   $('.author').removeClass('hideAuthor');
   $('.authorVisibles').show();
@@ -1137,6 +1161,9 @@ function unSyncDeliverable() {
   // Update component
   $(document).trigger('updateComponent');
   updateReadOnly();
+
+  // Calls the function to validate if there's no authors so it shows or hides the flag warning
+  validateEmptyAuthors();
 }
 
 /**
