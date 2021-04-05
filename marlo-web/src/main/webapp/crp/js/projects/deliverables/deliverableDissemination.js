@@ -15,7 +15,8 @@ function init() {
     $('.metadataElement-doi .input input').val($(this).val())
   })
   $('.typeSelect').change(validateRequiredTagToCategory);
-  $('.subTypeSelect').change(validateRequiredTagToCategory)
+  $('.subTypeSelect').change(validateRequiredTagToCategory);
+  $('.subTypeSelect').change(validateEmptyAuthors);
   // $('.typeSelect ').on("click",   validateRequiredTagToCategory);
   // Setting ID to Date-picker input
   $(".dateMetadata").attr("id", "deliverableMetadataDate");
@@ -44,7 +45,7 @@ function init() {
 
   validateRequiredTagToCategory();
 
-  if($('.isOtherUrlFiel').val() == 'false') {
+  if ($('.isOtherUrlFiel').val() == 'false') {
     $('input[name="deliverable.dissemination.articleUrl"').attr('value', '');
   }
 
@@ -82,15 +83,17 @@ function validateRequiredTagToCategory() {
 }
 
 function validateEmptyAuthors() {
-  console.log($('.authorsList').children().length);
-  if ($('.authorsList').children('div').length > 0) {
-    // ocultar banderilla
-    console.log("oculto");
-    $('#warningEmptyAuthorsTag').hide();
+  if ($('.subTypeSelect ').val() == 63) {
+    if ($('.authorsList').children('div').length > 0) {
+      // ocultar banderilla
+      $('#warningEmptyAuthorsTag').hide();
+    } else {
+      // mostrar banderilla
+      $('#warningEmptyAuthorsTag').show();
+    }
   } else {
-    // mostrar banderilla
-    console.log("muestro");
-    $('#warningEmptyAuthorsTag').show();
+    // ocultar banderilla
+    $('#warningEmptyAuthorsTag').hide();
   }
 }
 
@@ -154,7 +157,7 @@ function getWOSInfo() {
               if (data.response.altmetricInfo.imageSmall != undefined && data.response.altmetricInfo.imageSmall != "null" && data.response.altmetricInfo.imageSmall != "") {
                 $('.altmetricImg').attr('src', data.response.altmetricInfo.imageSmall);
                 $('.altmetricImg').show('slow');
-                if (data.response.altmetricInfo.altmetricId != undefined && data.response.altmetricInfo.altmetricId !="null" && data.response.altmetricInfo.altmetricId != "") {
+                if (data.response.altmetricInfo.altmetricId != undefined && data.response.altmetricInfo.altmetricId != "null" && data.response.altmetricInfo.altmetricId != "") {
                   $('.altmetricURL').attr("href", "https://www.altmetric.com/details/" + data.response.altmetricInfo.altmetricId);
                 }
               }
@@ -694,7 +697,7 @@ function addDisseminationEvents() {
       $('.conditionalRequire .requiredTag').slideDown();
       $('.other-url').css("display", "none");
       // $('.other-url input').val("");
-    }  
+    }
     // }
 
 
