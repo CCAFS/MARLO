@@ -229,6 +229,80 @@ public class SrfProgressAction extends BaseAction {
   }
 
   /**
+   * Delete SLO Target Cases (contributions) from SLo with true 'Not evidence' check mark
+   */
+  public void deleteTargetCasesFromSLOWithoutEvidences() {
+    if (sloTargets != null && !sloTargets.isEmpty()) {
+      // Delete contributions for slo Targets with true check marks
+
+      // Fill again the info and relations for sloTargets
+      this.fillSloTargetsCasesDB(this.liaisonInstitutionID, Collections.emptyList());
+      List<ReportSynthesisSrfProgressTargetCases> targetCasesDelete = new ArrayList<>();
+
+      for (SrfSloIndicatorTarget sloIndicator : sloTargets) {
+        if (sloIndicator.getHasEvidence() != null && sloIndicator.getHasEvidence()) {
+          // Delete contributions for this sloTarget
+          if (sloIndicator.getTargetCases() != null && !sloIndicator.getTargetCases().isEmpty()) {
+            targetCasesDelete.addAll(sloIndicator.getTargetCases());
+          }
+        }
+      }
+
+      if (targetCasesDelete != null && !targetCasesDelete.isEmpty()) {
+        for (ReportSynthesisSrfProgressTargetCases targetCaseDelete : targetCasesDelete) {
+          if (targetCaseDelete != null && targetCaseDelete.getId() != null) {
+
+            // Delete geographic scopes
+            if (targetCaseDelete.getGeographicScopes() != null && !targetCaseDelete.getGeographicScopes().isEmpty()) {
+              for (ProgressTargetCaseGeographicScope geographicScope : targetCaseDelete.getGeographicScopes()) {
+                if (geographicScope != null && geographicScope.getId() != null) {
+                  if (progressTargetCaseGeographicScopeManager
+                    .getProgressTargetCaseGeographicScopeById(geographicScope.getId()) != null) {
+                    progressTargetCaseGeographicScopeManager
+                      .deleteProgressTargetCaseGeographicScope(geographicScope.getId());
+                  }
+                }
+              }
+            }
+
+            // Delete regions
+            if (targetCaseDelete.getGeographicRegions() != null && !targetCaseDelete.getGeographicRegions().isEmpty()) {
+              for (ProgressTargetCaseGeographicRegion region : targetCaseDelete.getGeographicRegions()) {
+                if (region != null && region.getId() != null) {
+                  if (progressTargetCaseGeographicRegionManager
+                    .getProgressTargetCaseGeographicRegionById(region.getId()) != null) {
+                    progressTargetCaseGeographicRegionManager.deleteProgressTargetCaseGeographicRegion(region.getId());
+                  }
+                }
+              }
+            }
+
+            // Delete countries
+            if (targetCaseDelete.getCountries() != null && !targetCaseDelete.getCountries().isEmpty()) {
+              for (ProgressTargetCaseGeographicCountry country : targetCaseDelete.getCountries()) {
+                if (country != null && country.getId() != null) {
+                  if (progressTargetCaseGeographicCountryManager
+                    .getProgressTargetCaseGeographicCountryById(country.getId()) != null) {
+                    progressTargetCaseGeographicCountryManager
+                      .deleteProgressTargetCaseGeographicCountry(country.getId());
+                  }
+                }
+              }
+            }
+
+            // Delete Target Case
+            if (reportSynthesisSrfProgressTargetCasesManager
+              .getReportSynthesisSrfProgressTargetCasesById(targetCaseDelete.getId()) != null) {
+              reportSynthesisSrfProgressTargetCasesManager
+                .deleteReportSynthesisSrfProgressTargetCases(targetCaseDelete.getId());
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /**
    * FP ONLY
    */
   public List<SrfSloIndicatorTarget> fillSloTargetsCasesDB(long currentLiaisonId,
@@ -420,6 +494,7 @@ public class SrfProgressAction extends BaseAction {
     return sloTargetsPMU;
   }
 
+
   /**
    * Get the List of target cases for each SLO and flagship
    *
@@ -531,7 +606,6 @@ public class SrfProgressAction extends BaseAction {
     return flagshipSrfProgress;
   }
 
-
   public void getFlagshipsWithMissingFields() {
     listOfFlagships = new ArrayList<>();
     SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
@@ -566,10 +640,10 @@ public class SrfProgressAction extends BaseAction {
     return liaisonInstitutionID;
   }
 
+
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
-
 
   public List<String> getListOfFlagships() {
     return listOfFlagships;
@@ -664,6 +738,7 @@ public class SrfProgressAction extends BaseAction {
     }
   }
 
+
   /**
    * Get the information list for the Flagships Slo Targets Information in the form
    *
@@ -692,7 +767,6 @@ public class SrfProgressAction extends BaseAction {
     }
     return targets;
   }
-
 
   /**
    * Get the information for the Slo targets in the form
@@ -1004,6 +1078,7 @@ public class SrfProgressAction extends BaseAction {
     }
   }
 
+
   /**
    * Save Crp Progress Srf Targets Cases Information
    * 
@@ -1218,71 +1293,7 @@ public class SrfProgressAction extends BaseAction {
           }
         }
       }
-    }
-  }
-
-
-  /**
-   * Delete SLO Target Cases (contributions) from SLo with true 'Not evidence' check mark
-   */
-  public void deleteTargetCasesFromSLOWithoutEvidences() {
-    if (sloTargets != null) {
-      // Delete contributions for slo Targets with true check marks
-
-      // Fill again the info and relations for sloTargets
-      this.fillSloTargetsCasesDB(this.liaisonInstitutionID, Collections.emptyList());
-      List<ReportSynthesisSrfProgressTargetCases> targetCasesDelete = new ArrayList<>();
-
-      for (SrfSloIndicatorTarget sloIndicator : sloTargets) {
-        if (sloIndicator.getHasEvidence() != null && sloIndicator.getHasEvidence()) {
-          // Delete contributions for this sloTarget
-          if (sloIndicator.getTargetCases() != null && !sloIndicator.getTargetCases().isEmpty()) {
-            targetCasesDelete.addAll(sloIndicator.getTargetCases());
-          }
-        }
-      }
-
-      if (targetCasesDelete != null && !targetCasesDelete.isEmpty()) {
-        for (ReportSynthesisSrfProgressTargetCases targetCaseDelete : targetCasesDelete) {
-          if (targetCaseDelete != null && targetCaseDelete.getId() != null) {
-            
-            // Delete geographic scopes
-            if (targetCaseDelete.getGeographicScopes() != null && !targetCaseDelete.getGeographicScopes().isEmpty()) {
-              for (ProgressTargetCaseGeographicScope geographicScope : targetCaseDelete.getGeographicScopes()) {
-                if (geographicScope != null && geographicScope.getId() != null) {
-                  progressTargetCaseGeographicScopeManager
-                  .deleteProgressTargetCaseGeographicScope(geographicScope.getId());
-                }
-              }
-            }
-
-            // Delete regions
-            if (targetCaseDelete.getGeographicRegions() != null && !targetCaseDelete.getGeographicRegions().isEmpty()) {
-              for (ProgressTargetCaseGeographicRegion region : targetCaseDelete.getGeographicRegions()) {
-                if (region != null && region.getId() != null) {
-                  progressTargetCaseGeographicRegionManager
-                  .deleteProgressTargetCaseGeographicRegion(region.getId());
-                }
-              }
-            }
-
-            // Delete countries
-            if (targetCaseDelete.getGeographicCountries() != null
-              && !targetCaseDelete.getGeographicCountries().isEmpty()) {
-              for (ProgressTargetCaseGeographicCountry countries : targetCaseDelete.getGeographicCountries()) {
-                if (countries != null && countries.getId() != null) {
-                  progressTargetCaseGeographicCountryManager
-                  .deleteProgressTargetCaseGeographicCountry(countries.getId());
-                }
-              }
-            }
-
-            // Delete Target Case
-            reportSynthesisSrfProgressTargetCasesManager
-              .deleteReportSynthesisSrfProgressTargetCases(targetCaseDelete.getId());
-          }
-        }
-      }
+      this.deleteTargetCasesFromSLOWithoutEvidences();
     }
   }
 

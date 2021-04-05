@@ -471,6 +471,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
     externalSource.setJournalName(this.response.getJournalName());
     externalSource.setVolume(this.response.getVolume());
     externalSource.setPages(this.response.getPages());
+    externalSource.setSource(this.response.getSource());
 
     if (gardianInfo != null) {
       externalSource.setGardianFindability(gardianInfo.getFindability());
