@@ -242,8 +242,8 @@ public class DeliverablesParticipantsSummaryAction extends BaseSummariesAction i
         "paramK", "paramL", "paramM", "paramN", "paramO", "paramP", "paramQ", "paramR", "paramS", "paramT",
         "deliverableURL"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, Integer.class,
+        String.class, Integer.class, String.class, String.class, String.class, String.class},
       0);
 
 
@@ -260,7 +260,7 @@ public class DeliverablesParticipantsSummaryAction extends BaseSummariesAction i
           paramH = null, paramI = null, paramJ = null, paramK = null, paramL = null, paramM = null, paramN = null,
           paramP = null, paramR = null, paramS = null, paramT = null, deliverableURL = null;
 
-        Double paramQ = 0.0, paramO = 0.0;
+        int paramQ = 0, paramO = 0;
 
         // paramA - DeliverableID
         paramA = "D" + deliverable.getId();
@@ -424,7 +424,7 @@ public class DeliverablesParticipantsSummaryAction extends BaseSummariesAction i
 
           // paramO - Total number of participants
           if (deliverableParticipant.getParticipants() != null && !deliverableParticipant.getParticipants().isNaN()) {
-            paramO = deliverableParticipant.getParticipants();
+            paramO = deliverableParticipant.getParticipants().intValue();
           }
           // paramP - Total estimate
           if (deliverableParticipant.getEstimateParticipants() != null) {
@@ -444,7 +444,7 @@ public class DeliverablesParticipantsSummaryAction extends BaseSummariesAction i
            */
           // paramQ - Number of females (Possible <Not applicable>)
           if (deliverableParticipant.getFemales() != null && !deliverableParticipant.getFemales().isNaN()) {
-            paramQ = deliverableParticipant.getFemales();
+            paramQ = deliverableParticipant.getFemales().intValue();
           }
           // paramR - Female Estimate (Possible <Not applicable>)
           if (deliverableParticipant.getEstimateFemales() != null) {
