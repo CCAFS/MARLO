@@ -213,7 +213,7 @@
                 [#local oicrUrl][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${item.projectInnovationInfo.projectExpectedStudy.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
                 <span>[@s.text name="${customLabel}.${name}.linkToOicr" /] <a href="${oicrUrl}" target="_blank">${(item.projectInnovationInfo.projectExpectedStudy.composedName)!'Untitled'}</span></a>
               [/#if]
-              [#if !expanded] [@oicrPopup element=item /] [/#if]
+              [#if !expanded] [@oicrPopup element=item isStageFour=isStageFour/] [/#if]
               <div class="container-links">
                 <div data-toggle="tooltip" title="[@s.text name="${customLabel}.${name}.linkToMARLOInnovation" /]">
                   <a href="${marloUrl}" target="_blank" class="pull-right"> <span class="fa fa-external-link"></span></a>
@@ -309,10 +309,10 @@
   </div>
 [/#macro]
 
-[#macro oicrPopup element tiny=false]
+[#macro oicrPopup element tiny=false isStageFour=false]
   [#local totalContributions = (element.studies?size)!0 ]
   
-  [#if element.studies?has_content]
+  [#if element.studies?has_content && isStageFour]
     <br /> 
     <button type="button" class="innovationsOicrsButton btn btn-default btn-xs" data-toggle="modal" data-target="#innovationsOicrs-${element.id}">
       <span class="icon-20 project"></span> <strong>${totalContributions}</strong> [#if !tiny][@s.text name="${customLabel}.table4.linkToOicrs" /][/#if]
