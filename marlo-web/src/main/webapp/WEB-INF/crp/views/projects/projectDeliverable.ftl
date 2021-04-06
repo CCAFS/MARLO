@@ -8,7 +8,7 @@
   "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20200205",
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
   [#--  "${baseUrlCdn}/global/js/autoSave.js",--]
-  "${baseUrlCdn}/global/js/fieldsValidation.js?20180529"
+  "${baseUrlCdn}/global/js/fieldsValidation.js?20210406a"
 ] /]
 [#assign customCSS = ["${baseUrl}/crp/css/projects/projectDeliverable.css"] /]
 [#assign currentSection = "projects" /]
