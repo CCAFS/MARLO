@@ -207,11 +207,35 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
 
   public String getComposedNameWithFlagship() {
     StringBuilder stringBuilder = new StringBuilder();
-    stringBuilder.append("<span class=\"programTag\" style=\"border-color:")
-      .append(StringUtils.isBlank(this.getCrpProgramOutcome().getCrpProgram().getColor()) ? "#fff"
-        : this.getCrpProgramOutcome().getCrpProgram().getColor())
-      .append(";margin-right: 10px\">")
-      .append(StringUtils.stripToEmpty(this.getCrpProgramOutcome().getCrpProgram().getAcronym())).append("</span>");
+    stringBuilder.append("<span class=\"programTag\" style=\"border-color:");
+
+    if (this.getCrpProgramOutcome() != null && this.getCrpProgramOutcome().getId() != null) {
+      if (this.getCrpProgramOutcome().getCrpProgram() != null
+        && this.getCrpProgramOutcome().getCrpProgram().getId() != null) {
+        if (this.getCrpProgramOutcome().getCrpProgram().getColor() != null) {
+          stringBuilder.append(StringUtils.stripToEmpty(this.getCrpProgramOutcome().getCrpProgram().getColor()));
+        } else {
+          stringBuilder.append("#fff");
+        }
+      } else {
+        stringBuilder.append("#fff");
+      }
+    } else {
+      stringBuilder.append("#fff");
+    }
+
+    stringBuilder.append(";margin-right: 10px\">");
+
+    if (this.getCrpProgramOutcome() != null && this.getCrpProgramOutcome().getId() != null) {
+      if (this.getCrpProgramOutcome().getCrpProgram() != null
+        && this.getCrpProgramOutcome().getCrpProgram().getId() != null) {
+        if (this.getCrpProgramOutcome().getCrpProgram().getAcronym() != null) {
+          stringBuilder.append(StringUtils.stripToEmpty(this.getCrpProgramOutcome().getCrpProgram().getAcronym()));
+        }
+      }
+    }
+
+    stringBuilder.append("</span>");
 
     if ((this.extendedYear != null) && (!this.extendedYear.equals(-1))) {
       stringBuilder.append(" ").append(this.getYear()).append(" extended to ").append(this.getExtendedYear())
