@@ -111,7 +111,8 @@ public class MilestoneItem<T> {
 
       for (CrpProgramOutcome crpProgramOutcome : crpProgramOutcomes) {
         milestoneList.addAll(crpProgramOutcome.getCrpMilestones().stream()
-          .filter(c -> c.getYear() == phases.get(0).getYear() || c.getExtendedYear() == phases.get(0).getYear())
+          .filter(c -> c != null && (c.getYear() == phases.get(0).getYear()
+            || (c.getExtendedYear() == null ? 0 : c.getExtendedYear().intValue()) == phases.get(0).getYear()))
           .collect(Collectors.toList()));
       }
 
