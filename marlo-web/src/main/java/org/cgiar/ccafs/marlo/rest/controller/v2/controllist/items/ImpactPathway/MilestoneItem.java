@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.MilestoneDTO;
 import org.cgiar.ccafs.marlo.rest.mappers.MilestoneMapper;
 
@@ -67,7 +68,7 @@ public class MilestoneItem<T> {
    * @return a OutcomeDTO with the milestone data.
    */
 
-  public ResponseEntity<MilestoneDTO> findMilestoneById(String id, String CGIARentityAcronym, Integer year) {
+  public ResponseEntity<MilestoneDTO> findMilestoneById(String id, String CGIARentityAcronym, Integer year, User user) {
     CrpMilestone crpMilestone = null;
     Phase phase = this.phaseManager.findAll().stream()
       .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), CGIARentityAcronym) && p.getYear() == year
@@ -96,7 +97,8 @@ public class MilestoneItem<T> {
    * @param repoYear year of the reporting
    * @return a OutcomeDTO with the flagship or program data.
    */
-  public List<MilestoneDTO> getAllMilestones(String crpProgramCode, String CGIARentityAcronym, Integer repoYear) {
+  public List<MilestoneDTO> getAllMilestones(String crpProgramCode, String CGIARentityAcronym, Integer repoYear,
+    User user) {
     List<MilestoneDTO> milestonesDTOs = null;
     List<CrpMilestone> milestoneList = new ArrayList<CrpMilestone>();
     CrpProgram crpProgram = this.crpProgramManager.getCrpProgramBySmoCode(crpProgramCode);
