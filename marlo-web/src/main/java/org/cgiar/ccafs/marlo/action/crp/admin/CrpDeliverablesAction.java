@@ -219,12 +219,10 @@ public class CrpDeliverablesAction extends BaseAction {
     deliverables = deliverableManager.getDeliverablesByPhase(this.getActualPhase().getId()).stream()
       .filter(d -> d != null && d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null
         && d.getDeliverableInfo(this.getActualPhase()).isActive() && d.getDeliverableInfo() != null
-        && d.getDeliverableInfo().getStatus() != null && d.getDeliverableInfo().getStatus() != 3
         && d.getDeliverableInfo().getStatus() != 5 && d.getProject() != null
         && d.getProject().getProjecInfoPhase(this.getActualPhase()) != null && d.getProject().isActive()
         && d.getProject().getProjecInfoPhase(this.getActualPhase()).isActive()
         && d.getProject().getProjecInfoPhase(this.getActualPhase()).getStatus() != null
-        && d.getProject().getProjecInfoPhase(this.getActualPhase()).getStatus() != 3
         && d.getProject().getProjecInfoPhase(this.getActualPhase()).getStatus() != 5)
       .collect(Collectors.toList());
 
