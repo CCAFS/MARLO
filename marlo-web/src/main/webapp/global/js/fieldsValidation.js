@@ -166,15 +166,15 @@ function getInputElement(fieldName,message) {
 
 // EVENT TO ERROR TAG
 
-$(".errorTag").on("click", function() {
-  var $this = $(this).parents(".expandableBlock").find(".blockTitle");
-  $($this).next().slideToggle('slow', function() {
-    $($this).find('textarea').autoGrow();
-  });
-  $(this).fadeOut("slow", function() {
-    $(this).remove();
-  });
-});
+// $(".errorTag").on("click", function() {
+//   var $this = $(this).parents(".expandableBlock").find(".blockTitle");
+//   $($this).next().slideToggle('slow', function() {
+//     $($this).find('textarea').autoGrow();
+//   });
+//   $(this).fadeOut("slow", function() {
+//     $(this).remove();
+//   });
+// });
 
 // VERIFY FIELD ERRORS IN HIDDEN ELEMENTS
 function verifyMissingFields(element) {
