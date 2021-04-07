@@ -10,7 +10,7 @@
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20200311",
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210226"
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210406a"
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210225"] /]
 
@@ -208,7 +208,10 @@
           [#-- Complete Status    --]
           <th class="col-md-1 text-center no-sort" rowspan="${rows}">[@s.text name="${customLabel}.table2.missingFields" /]</th>
           [#if PMU]
-            <th class="col-md-1 text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.includeAR" /]</th>
+            <th class="col-md-1 text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.includeAR" /]
+            <br>
+            <span class="selectAllCheckPolicies">[@customForm.checkmark id="selectAllPolicies" name="selectAllPolicies" value="false" checked=false editable=editable centered=true/]</span>
+            </th>
           [/#if]
         [/#if]        
       </tr>

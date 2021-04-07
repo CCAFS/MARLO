@@ -1878,6 +1878,21 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
     }
+
+    // For Stage different to 4, delete previous expect studies milestones information
+    if (projectInnovation.getProjectInnovationInfo() != null
+      && projectInnovation.getProjectInnovationInfo().getRepIndStageInnovation() != null
+      && projectInnovation.getProjectInnovationInfo().getRepIndStageInnovation().getId() != null
+      && projectInnovation.getProjectInnovationInfo().getRepIndStageInnovation().getId() != 4
+      && projectInnovation.getStudies() != null && !projectInnovation.getStudies().isEmpty()) {
+      for (ProjectExpectedStudyInnovation studies : projectInnovation.getStudies()) {
+        if (studies != null && studies.getId() != null) {
+          if (projectExpectedStudyInnovationManager.getProjectExpectedStudyInnovationById(studies.getId()) != null) {
+            projectExpectedStudyInnovationManager.deleteProjectExpectedStudyInnovation(studies.getId());
+          }
+        }
+      }
+    }
   }
 
   /**
