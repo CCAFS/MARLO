@@ -31,6 +31,18 @@
   box-shadow: 1px 1px 2px #ccc;
 }
 
+input:disabled ~ .checkmark {
+  position: absolute;
+  /* top: 0; */
+  /* left: 0; */
+  height: 18px;
+  width: 18px;
+  background-color: #5F5E5E;
+  border: 1px solid #5F5E5E;
+  border-radius: 2px;
+  box-shadow: 1px 1px 2px #ccc;
+}
+
 .checkmark.centered-true {
   top: -9px;
   left: -9px;
@@ -53,9 +65,15 @@
   transition: all 350ms ease;
 }
 
-.inputContainer:hover input:checked ~ .checkmark {
+.inputContainer:hover input:checked:enabled ~ .checkmark {
   background-color: #60adea;
   border-color: #60adea;
+}
+
+/* When the checkbox is disbled, add a gray background */
+.inputContainer input:disabled ~ .checkmark {
+  background-color: #5F5E5E;
+  border-color: #5F5E5E;
 }
 
 /* Create the checkmark/indicator (hidden when not checked) */
