@@ -304,6 +304,12 @@ $(document).ready(function() {
   $('input[id^="deliverable-"]').on('click', selectIndividual);
   $('#selectAllGrey').on('click', selectDeselectAllGrey);
   $('input[id^="deliverableGrey"]').on('click', selectIndividualGrey);
+  $('#selectAllPolicies').on('click', selectDeselectAllPolicies);
+  $('input[id^="policy-"]').on('click', selectIndividualPolicies);
+  $('#selectAllInnovations').on('click', selectDeselectAllInnovations);
+  $('input[id^="innovation-"]').on('click', selectIndividualInnovations);
+  $('#selectAllStudies').on('click', selectDeselectAllStudies);
+  $('input[id^="study-"]').on('click', selectIndividualStudies);
 
     // Deliverable Geographic Scope
     $('select.elementType-repIndGeographicScope').on("addElement removeElement", function(event,id,name) {
@@ -342,6 +348,9 @@ $(document).ready(function() {
   
   selectIndividual();
   selectIndividualGrey();
+  selectIndividualPolicies();
+  selectIndividualInnovations();
+  selectIndividualStudies();
 });
 
 function updateALltexareas(){
@@ -421,6 +430,54 @@ function selectIndividualGrey() {
     $('#selectAllGrey').prop('checked', true);
   } else {
     $('#selectAllGrey').prop('checked', false);
+  }
+}
+
+function selectDeselectAllPolicies() {
+  if (this.checked == true) {
+    $('input[id^="policy-"]').prop('checked', true);
+  } else {
+    $('input[id^="policy-"]').prop('checked', false);
+  }
+}
+
+function selectIndividualPolicies() {
+  if ($('input[id^="policy-"]').length == $('input[id^="policy-"]:checked').length) {
+    $('#selectAllPolicies').prop('checked', true);
+  } else {
+    $('#selectAllPolicies').prop('checked', false);
+  }
+}
+
+function selectDeselectAllInnovations() {
+  if (this.checked == true) {
+    $('input[id^="innovation-"]').prop('checked', true);
+  } else {
+    $('input[id^="innovation-"]').prop('checked', false);
+  }
+}
+
+function selectIndividualInnovations() {
+  if ($('input[id^="innovation-"]').length == $('input[id^="innovation-"]:checked').length) {
+    $('#selectAllInnovations').prop('checked', true);
+  } else {
+    $('#selectAllInnovations').prop('checked', false);
+  }
+}
+
+function selectDeselectAllStudies() {
+  if (this.checked == true) {
+    $('input[id^="study-"]').prop('checked', true);
+  } else {
+    $('input[id^="study-"]').prop('checked', false);
+  }
+}
+
+function selectIndividualStudies() {
+  if ($('input[id^="study-"]').length == $('input[id^="study-"]:checked').length) {
+    $('#selectAllStudies').prop('checked', true);
+  } else {
+    $('#selectAllStudies').prop('checked', false);
   }
 }
 

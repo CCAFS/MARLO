@@ -10,7 +10,7 @@
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20200310",
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210324"
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210406a"
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210225"] /]
 
@@ -183,7 +183,11 @@
           [#if !expanded]
             <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.missingFields" /] </th>
             [#if PMU]
-              <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
+              <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] 
+              <br>
+              <br>
+              <span class="selectAllCheckInnovations">[@customForm.checkmark id="selectAllInnovations" name="selectAllInnovations" value="false" checked=false editable=editable centered=true/]</span>
+              </th>
             [/#if]
           [/#if]
         </tr>
@@ -213,7 +217,7 @@
                 [#local oicrUrl][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${item.projectInnovationInfo.projectExpectedStudy.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
                 <span>[@s.text name="${customLabel}.${name}.linkToOicr" /] <a href="${oicrUrl}" target="_blank">${(item.projectInnovationInfo.projectExpectedStudy.composedName)!'Untitled'}</span></a>
               [/#if]
-              [#-- [#if !expanded] [@oicrPopup element=item isStageFour=true /] [/#if] --]
+              [#if !expanded] [@oicrPopup element=item isStageFour=isStageFour/] [/#if]
               <div class="container-links">
                 <div data-toggle="tooltip" title="[@s.text name="${customLabel}.${name}.linkToMARLOInnovation" /]">
                   <a href="${marloUrl}" target="_blank" class="pull-right"> <span class="fa fa-external-link"></span></a>
@@ -309,13 +313,54 @@
   </div>
 [/#macro]
 
-[#macro oicrPopup element isStageFour=false]
-  [#local totalContributions = 0 ]
-  [#if element.projectInnovationInfo.projectExpectedStudy?has_content && isStageFour]
-  <br />
-  [#local oicrUrl][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${element.projectInnovationInfo.projectExpectedStudy.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
-  <span>OICR associated: </span><a href="${oicrUrl}" target="_blank">${(element.projectInnovationInfo.projectExpectedStudy.composedName)!'Untitled'}</span></a>  </td>
-  [#local totalContributions = 1 ]
-    
+[#macro oicrPopup element tiny=false isStageFour=false]
+  [#local totalContributions = (element.studies?size)!0 ]
+  
+  [#if element.studies?has_content && isStageFour]
+    <br /> 
+    <button type="button" class="innovationsOicrsButton btn btn-default btn-xs" data-toggle="modal" data-target="#innovationsOicrs-${element.id}">
+      <span class="icon-20 project"></span> <strong>${totalContributions}</strong> [#if !tiny][@s.text name="${customLabel}.table4.linkToOicrs" /][/#if]
+    </button>
+    <!-- Modal -->
+    <div class="modal fade" id="innovationsOicrs-${element.id}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">
+              [@s.text name="${customLabel}.table4.innovationsOicrs" /]
+            </h4>
+          </div>
+          <div class="modal-body">
+            <div class="">            
+              [#-- OICRs --]
+              <h4 class="simpleTitle">[@s.text name="${customLabel}.table4.innovationsOicrs.oicrs" /]</h4>
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th id="ids">[@s.text name="${customLabel}.table4.innovationsOicrs.id" /]</th>
+                      <th id="policyTitles">[@s.text name="${customLabel}.table4.innovationsOicrs.oicrName" /]</th>
+                      <th id="policyMaturityLevel">[@s.text name="${customLabel}.table4.innovationsOicrs.maturityLevel" /]</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    [#list element.studies as oicr]
+                      [#local oicrUrl][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${oicr.projectExpectedStudy.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                      <tr>
+                        <th scope="row" class="col-md-1">${oicr.projectExpectedStudy.id}</th>
+                        <td>${(oicr.projectExpectedStudy.composedName)!'Untitled'}</td>
+                        <td>${(oicr.projectExpectedStudy.projectExpectedStudyInfo.repIndStageStudy.name)!'Undefined'}</td>
+                        <td class="col-md-2 text-center"> <a href="${oicrUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
+                      </tr>
+                      [/#list]
+                  </tbody>
+                </table>           
+            </div>
+          </div>
+          <div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div>
+        </div>
+      </div>
+    </div>
   [/#if]
 [/#macro]
