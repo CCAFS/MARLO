@@ -513,10 +513,14 @@
       <span class="checkmark centered-${centered?string}"></span>
        [#if label?has_content || i18nkey?has_content]<label for="${id}" class="labelText ${cssClassLabel}">[#if i18nkey?has_content][@s.text name=i18nkey /][#else]${label}[/#if]</label>[/#if]
     [#else]
-      <p class="checked-${checked?string}"> 
+      [#--<p class="checked-${checked?string}"> 
       <img src="${baseUrlCdn}/global/images/grayCheckbox-${checked?string}.png" style="height: 17px; width: 18px;" alt="" srcset="">
         [#if label?has_content || i18nkey?has_content ]<span class="${cssClassLabel}">[#if i18nkey?has_content][@s.text name=i18nkey /][#else]${label}[/#if]</span>[[/#if] 
-      </p>
+      </p>--]
+      <input id="disabled-${id}" class="${cssClass}" type="checkbox" name="${name}" value="${value}" [#if checked]checked="checked"[/#if] disabled>
+      <span class="checkmark centered-${centered?string}"></span>
+       [#if label?has_content || i18nkey?has_content]<label for="${id}" class="labelText ${cssClassLabel}">[#if i18nkey?has_content][@s.text name=i18nkey /][#else]${label}[/#if]</label>[/#if]
+       <input type="hidden" [#if checked]name="${name}"[/#if] value="${value}" [#if checked]checked="checked"[/#if]>
     [/#if]
   </label>
 [/#macro]
