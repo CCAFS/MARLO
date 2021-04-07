@@ -308,6 +308,8 @@ $(document).ready(function() {
   $('input[id^="policy-"]').on('click', selectIndividualPolicies);
   $('#selectAllInnovations').on('click', selectDeselectAllInnovations);
   $('input[id^="innovation-"]').on('click', selectIndividualInnovations);
+  $('#selectAllStudies').on('click', selectDeselectAllStudies);
+  $('input[id^="study-"]').on('click', selectIndividualStudies);
 
     // Deliverable Geographic Scope
     $('select.elementType-repIndGeographicScope').on("addElement removeElement", function(event,id,name) {
@@ -348,6 +350,7 @@ $(document).ready(function() {
   selectIndividualGrey();
   selectIndividualPolicies();
   selectIndividualInnovations();
+  selectIndividualStudies();
 });
 
 function updateALltexareas(){
@@ -459,6 +462,22 @@ function selectIndividualInnovations() {
     $('#selectAllInnovations').prop('checked', true);
   } else {
     $('#selectAllInnovations').prop('checked', false);
+  }
+}
+
+function selectDeselectAllStudies() {
+  if (this.checked == true) {
+    $('input[id^="study-"]').prop('checked', true);
+  } else {
+    $('input[id^="study-"]').prop('checked', false);
+  }
+}
+
+function selectIndividualStudies() {
+  if ($('input[id^="study-"]').length == $('input[id^="study-"]:checked').length) {
+    $('#selectAllStudies').prop('checked', true);
+  } else {
+    $('#selectAllStudies').prop('checked', false);
   }
 }
 

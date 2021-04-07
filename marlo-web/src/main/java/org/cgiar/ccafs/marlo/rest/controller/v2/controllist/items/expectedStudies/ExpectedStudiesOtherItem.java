@@ -847,6 +847,7 @@ public class ExpectedStudiesOtherItem<T> {
           fieldErrors.add(new FieldErrorDTO("UpdateExpectedStudy", "Year", "Please insert a valid year"));
         }
         projectExpectedStudyInfo.setPhase(phase);
+        projectExpectedStudyInfo.setTitle(newProjectExpectedStudy.getNewProjectExpectedStudiesOtherInfo().getTitle());
         projectExpectedStudyInfo.setCommissioningStudy(
           newProjectExpectedStudy.getNewProjectExpectedStudiesOtherInfo().getCommissioningStudy());
         projectExpectedStudyInfo
