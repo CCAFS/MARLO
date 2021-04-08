@@ -237,7 +237,7 @@ function loadAvailableItems(email) {
 
               //console.log(data.crps[0].acronym);
 
-              if(data.crps[0].acronym == "CCAFS_") {
+              if(data.crps[0].acronym == "AICCRA") {
                 $('.selection-bar-options ul #crp-' + data.crps[0].acronym).click();
               }
               else {
