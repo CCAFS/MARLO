@@ -43,6 +43,7 @@
 <section class="marlo-content">
   <div class="container">
     [#-- What do you want to do --]
+    [#if !action.isAiccra()]
     <div class="homeTitle"><b>[@s.text name="dashboard.decisionTree.title" /]</b></div>
     <div id="decisionTree">
     
@@ -106,6 +107,7 @@
       [/#if]
       <div class="clearfix"></div>
     </div>
+    [/#if]
     
     
     [#-- Shorcuts --]    
@@ -155,13 +157,21 @@
     <div id="dashboardContent" class="col-md-12">
       <div class="homeTitle col-md-12">[#-- <strong>Dashboard</strong> --]</div>
       <div class="col-md-12">
+      [#if !action.isAiccra()]
         <ul class="nav nav-tabs" role="tablist">
           <li role="presentation" class="active"><a  id="projects" href="#myProjects" aria-controls="myProjects" role="tab" data-toggle="tab">My projects</a></li>
           <li role="presentation" style="display:none;"><a id="impact" href="#impactP" aria-controls="impactP" role="tab" data-toggle="tab">Impact pathway</a></li>
         </ul>
-        
+      [#else]
+      <ul class="nav nav-tabs" role="tablist">
+          <li role="presentation" class="active"><a  id="projects" href="#myProjects" aria-controls="myProjects" role="tab" data-toggle="tab">My clusters</a></li>
+          <li role="presentation" style="display:none;"><a id="impact" href="#impactP" aria-controls="impactP" role="tab" data-toggle="tab">Impact pathway</a></li>
+        </ul>
+      [/#if]
+      
         <div class="tab-content">
           <div role="tabpanel" class="tab-pane fade in active" id="myProjects">
+          
             [@projectList.dashboardProjectsList projects=myProjects canValidate=true canEdit=true namespace="/projects" defaultAction="${(crpSession)!}/description" /]
           </div>
           
