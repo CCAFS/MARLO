@@ -108,7 +108,6 @@
           </div>
         [/#if]
       
-      [/#if]
       <div class="clearfix"></div>
     </div>
     [/#if]
