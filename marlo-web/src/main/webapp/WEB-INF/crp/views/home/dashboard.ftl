@@ -42,8 +42,10 @@
 
 <section class="marlo-content">
   <div class="container">
-    [#-- What do you want to do --]
+  [#if !aiccra]
     <div class="homeTitle"><b>[@s.text name="dashboard.decisionTree.title" /]</b></div>
+  [/#if]
+    [#-- What do you want to do --]
     <div id="decisionTree">
     
       [#if centerGlobalUnit]
@@ -76,32 +78,34 @@
       
       [#else]
       
-        [#-- Add new Project --]
-        <div class="flex-container">
-        [#assign canAddCoreProject = (action.canAddCoreProject()) && (!crpClosed) && (!reportingActive) && (action.getActualPhase().editable)]
-        [#if canAddCoreProject]<a href="[@s.url namespace="/projects" action='${crpSession}/addNewCoreProject'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[/#if]
-          <div id="newProject" class="hvr-float option ${(!canAddCoreProject)?string('disabled','')}" ${(!canAddCoreProject)?string('title="This link is disabled"','')}>
-            <p>[@s.text name="dashboard.decisionTree.newProject" /]</p>
+        [#if !aiccra]
+          [#-- Add new Project --]
+          <div class="flex-container">
+          [#assign canAddCoreProject = (action.canAddCoreProject()) && (!crpClosed) && (!reportingActive) && (action.getActualPhase().editable)]
+          [#if canAddCoreProject]<a href="[@s.url namespace="/projects" action='${crpSession}/addNewCoreProject'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[/#if]
+            <div id="newProject" class="hvr-float option ${(!canAddCoreProject)?string('disabled','')}" ${(!canAddCoreProject)?string('title="This link is disabled"','')}>
+              <p>[@s.text name="dashboard.decisionTree.newProject" /]</p>
+            </div>
+          [#if canAddCoreProject]</a>[/#if]
           </div>
-        [#if canAddCoreProject]</a>[/#if]
-        </div>
-        
-        [#-- Update an ongoing Project --]
-        <div class="flex-container">
-        [#assign canUpdateOngoingProjects = !crpClosed && canEditPhase ]
-        [#if canUpdateOngoingProjects]<a href="[@s.url namespace="/projects" action='${crpSession}/projectsList'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"> [/#if]
-          <div id="updatePlanning" class="hvr-float option ${(!canUpdateOngoingProjects)?string('disabled','')}" ${(!canUpdateOngoingProjects)?string('title="This link is disabled"','')}>
-            <p>[@s.text name="dashboard.decisionTree.updateProject" /]</p>
+
+          [#-- Update an ongoing Project --]
+          <div class="flex-container">
+          [#assign canUpdateOngoingProjects = !crpClosed && canEditPhase ]
+          [#if canUpdateOngoingProjects]<a href="[@s.url namespace="/projects" action='${crpSession}/projectsList'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"> [/#if]
+            <div id="updatePlanning" class="hvr-float option ${(!canUpdateOngoingProjects)?string('disabled','')}" ${(!canUpdateOngoingProjects)?string('title="This link is disabled"','')}>
+              <p>[@s.text name="dashboard.decisionTree.updateProject" /]</p>
+            </div>
+          [#if canUpdateOngoingProjects]</a>[/#if]
           </div>
-        [#if canUpdateOngoingProjects]</a>[/#if]
-        </div>
-        
-        [#-- Evaluate Project --]
-        <div class="flex-container">
-          <div id="reportProject" class="option disabled" title="This link is disabled">
-            <p>[@s.text name="dashboard.decisionTree.evaluateProject" /]</p>
+
+          [#-- Evaluate Project --]
+          <div class="flex-container">
+            <div id="reportProject" class="option disabled" title="This link is disabled">
+              <p>[@s.text name="dashboard.decisionTree.evaluateProject" /]</p>
+            </div>
           </div>
-        </div>
+        [/#if]
       
       [/#if]
       <div class="clearfix"></div>
@@ -146,8 +150,16 @@
       </div>
       [/#if]
       
-        [@s.text name="dashboard.aiccra.instructions" ] [@s.param] <a href="https://docs.google.com/document/d/1hy2yt6E4pJ5orGqHxBSX_ACcr72pPTwaSesQ9P6vHYQ/edit" target="_blank">here</a>.[/@s.param][/@s.text]
-        <img src="${baseUrlCdn}/global/images/aiccra-planning.png" width="450">
+        [#if aiccra]
+            [@s.text name="dashboard.aiccra.instructions" ][/@s.text]
+            <img src="${baseUrlCdn}/global/images/aiccra-planning-header.png" width="450">
+            <p></p>
+            <p></p>
+            <p>A new workplan for the coming progress report will soon be in place here</p>
+        [#else]
+            [@s.text name="dashboard.aiccra.instructions" ] [@s.param] <a href="https://docs.google.com/document/d/1hy2yt6E4pJ5orGqHxBSX_ACcr72pPTwaSesQ9P6vHYQ/edit" target="_blank">here</a>.[/@s.param][/@s.text]
+            <img src="${baseUrlCdn}/global/images/aiccra-planning.png" width="450">
+        [/#if]
       
     </div>     
     
@@ -156,7 +168,7 @@
       <div class="homeTitle col-md-12">[#-- <strong>Dashboard</strong> --]</div>
       <div class="col-md-12">
         <ul class="nav nav-tabs" role="tablist">
-          <li role="presentation" class="active"><a  id="projects" href="#myProjects" aria-controls="myProjects" role="tab" data-toggle="tab">My projects</a></li>
+          <li role="presentation" class="active"><a  id="projects" href="#myProjects" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.myProjects.title" /]</a></li>
           <li role="presentation" style="display:none;"><a id="impact" href="#impactP" aria-controls="impactP" role="tab" data-toggle="tab">Impact pathway</a></li>
         </ul>
         
