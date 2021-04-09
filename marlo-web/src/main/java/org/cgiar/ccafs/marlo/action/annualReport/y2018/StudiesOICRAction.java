@@ -111,6 +111,8 @@ public class StudiesOICRAction extends BaseAction {
   private boolean tableComplete;
   private String flagshipsIncomplete;
 
+  private Integer total = 0;
+
   @Inject
   public StudiesOICRAction(APConfig config, GlobalUnitManager crpManager,
     LiaisonInstitutionManager liaisonInstitutionManager, ReportSynthesisManager reportSynthesisManager,
@@ -691,6 +693,35 @@ public class StudiesOICRAction extends BaseAction {
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym() != null && c.getAcronym().equals("PMU"))
       .collect(Collectors.toList()));
+
+    /** Graphs and Tables */
+    List<ProjectExpectedStudy> selectedStudies = new ArrayList<>();
+    if (projectExpectedStudies != null && !projectExpectedStudies.isEmpty()) {
+      projectExpectedStudies.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+      selectedStudies.addAll(projectExpectedStudies);
+      // Remove unchecked studies
+      if (reportSynthesis.getReportSynthesisFlagshipProgress().getProjectStudies() != null
+        && !reportSynthesis.getReportSynthesisFlagshipProgress().getProjectStudies().isEmpty()) {
+        for (ProjectExpectedStudy study : reportSynthesis.getReportSynthesisFlagshipProgress().getProjectStudies()) {
+          selectedStudies.remove(study);
+        }
+      }
+      total = selectedStudies.size();
+
+      /*
+       * if (selectedStudies != null && !selectedStudies.isEmpty()) {
+       * // Chart: Policies by organization type
+       * policiesByOrganizationTypeDTOs =
+       * repIndOrganizationTypeManager.getPoliciesByOrganizationTypes(selectedProjectPolicies, phase);
+       * // Chart: Policies by stage process
+       * policiesByRepIndStageProcessDTOs =
+       * repIndStageProcessManager.getPoliciesByStageProcess(selectedProjectPolicies, phase);
+       * // Chat: Policies by investiment type
+       * policiesByRepIndInvestimentTypeDTOs =
+       * repIndInvestimentTypeManager.getPoliciesByInvestimentType(selectedProjectPolicies, phase);
+       * }
+       */
+    }
 
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), reportSynthesis.getId() + ""};

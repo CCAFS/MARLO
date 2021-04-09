@@ -708,7 +708,8 @@ public class DeliverablesItem<T> {
               DeliverableMetadataExternalSources deliverableMetadataExternalSources =
                 deliverable.getDeliverableMetadataExternalSources().stream()
                   .filter(c -> c.getDeliverable().getId().equals(deliverableID)).findFirst().orElse(null);
-              if (deliverableMetadataExternalSources != null) {
+              if (deliverableMetadataExternalSources == null) {
+                deliverableMetadataExternalSources = new DeliverableMetadataExternalSources();
                 deliverableMetadataExternalSources.setDeliverable(deliverable);
                 deliverableMetadataExternalSources.setDoi(publication.getDoi());
                 deliverableMetadataExternalSources.setIsiStatus(publication.getIs_isi());
