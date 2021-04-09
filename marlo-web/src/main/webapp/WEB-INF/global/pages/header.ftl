@@ -109,7 +109,7 @@
             [#-- MARLO Title --]
             <div id="marlo-logo" class="animated fadeIn">
               <a href="${baseUrl}">
-              [#if !baseUrl?contains('AICCRA')]
+              [#if !baseUrl?contains('aiccra')]
                 <div id="title" >MARLO</div>    
                 <div id="subTitle" class="visible-md-block visible-lg-block">Managing Agricultural Research for Learning & Outcomes</div>
                 <div class="clearfix"></div>
