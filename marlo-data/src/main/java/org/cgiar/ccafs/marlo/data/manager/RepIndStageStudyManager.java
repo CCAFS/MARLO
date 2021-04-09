@@ -14,7 +14,10 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageStudy;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisStudiesByRepIndStageStudyDTO;
 
 import java.util.List;
 
@@ -51,7 +54,6 @@ public interface RepIndStageStudyManager {
    */
   public List<RepIndStageStudy> findAll();
 
-
   /**
    * This method gets a repIndStageStudy object by a given repIndStageStudy identifier.
    * 
@@ -59,6 +61,16 @@ public interface RepIndStageStudyManager {
    * @return a RepIndStageStudy object.
    */
   public RepIndStageStudy getRepIndStageStudyById(long repIndStageStudyID);
+
+
+  /**
+   * This method gets a list of ReportSynthesisStudiesByRepIndStageStudyDTO that are active:
+   * List of ProjectExpectedStudy grouped by RepIndStageStudy
+   * 
+   * @return a list from ReportSynthesisStudiesByRepIndStageStudyDTO null if no exist records
+   */
+  public List<ReportSynthesisStudiesByRepIndStageStudyDTO>
+    getStudiesByStageStudy(List<ProjectExpectedStudy> selectedProjectStudies, Phase phase);
 
   /**
    * This method saves the information of the given repIndStageStudy
