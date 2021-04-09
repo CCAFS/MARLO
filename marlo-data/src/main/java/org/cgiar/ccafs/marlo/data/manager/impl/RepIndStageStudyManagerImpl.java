@@ -16,10 +16,17 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.data.dao.RepIndStageStudyDAO;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageStudyManager;
+import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageStudy;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisStudiesByRepIndStageStudyDTO;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -33,13 +40,13 @@ public class RepIndStageStudyManagerImpl implements RepIndStageStudyManager {
 
   private RepIndStageStudyDAO repIndStageStudyDAO;
   // Managers
-
+  private ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager;
 
   @Inject
-  public RepIndStageStudyManagerImpl(RepIndStageStudyDAO repIndStageStudyDAO) {
+  public RepIndStageStudyManagerImpl(RepIndStageStudyDAO repIndStageStudyDAO,
+    ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager) {
     this.repIndStageStudyDAO = repIndStageStudyDAO;
-
-
+    this.projectExpectedStudyInfoManager = projectExpectedStudyInfoManager;
   }
 
   @Override
@@ -56,22 +63,57 @@ public class RepIndStageStudyManagerImpl implements RepIndStageStudyManager {
 
   @Override
   public List<RepIndStageStudy> findAll() {
-
     return repIndStageStudyDAO.findAll();
-
   }
 
   @Override
   public RepIndStageStudy getRepIndStageStudyById(long repIndStageStudyID) {
-
     return repIndStageStudyDAO.find(repIndStageStudyID);
   }
 
   @Override
-  public RepIndStageStudy saveRepIndStageStudy(RepIndStageStudy repIndStageStudy) {
+  public List<ReportSynthesisStudiesByRepIndStageStudyDTO>
+    getStudiesByStageStudy(List<ProjectExpectedStudy> selectedProjectStudies, Phase phase) {
+    List<ReportSynthesisStudiesByRepIndStageStudyDTO> reportSynthesisStudiesByRepIndStageStudyDTOs = new ArrayList<>();
+    List<RepIndStageStudy> stageStudies =
+      this.findAll().stream().sorted((o1, o2) -> o1.getName().compareTo(o2.getName())).collect(Collectors.toList());
 
-    return repIndStageStudyDAO.save(repIndStageStudy);
+    if (stageStudies != null) {
+      for (RepIndStageStudy repIndStageStudies : stageStudies) {
+        if (repIndStageStudies != null && repIndStageStudies.getId() != null) {
+          ReportSynthesisStudiesByRepIndStageStudyDTO reportSynthesisStudiesByRepIndStageStudyDTO =
+            new ReportSynthesisStudiesByRepIndStageStudyDTO();
+          reportSynthesisStudiesByRepIndStageStudyDTO.setRepIndStageStudy(repIndStageStudies);
+          List<ProjectExpectedStudy> projectStudiesByRepIndStageStudy = new ArrayList<>();
+
+          for (ProjectExpectedStudy pp : selectedProjectStudies) {
+            if (pp != null && pp.getId() != null && pp.isActive()) {
+              ProjectExpectedStudyInfo info = pp.getProjectExpectedStudyInfo(phase);
+              if (info != null && info.getId() != null) {
+                info = projectExpectedStudyInfoManager.getProjectExpectedStudyInfoById(info.getId());
+                RepIndStageStudy stage = info.getRepIndStageStudy();
+                if (stage != null && stage.getId() != null && stage.getId().equals(repIndStageStudies.getId())) {
+                  projectStudiesByRepIndStageStudy.add(pp);
+                }
+              }
+            }
+          }
+
+          reportSynthesisStudiesByRepIndStageStudyDTO.setProjectStudies(projectStudiesByRepIndStageStudy);
+          reportSynthesisStudiesByRepIndStageStudyDTOs.add(reportSynthesisStudiesByRepIndStageStudyDTO);
+        }
+      }
+    }
+
+    return reportSynthesisStudiesByRepIndStageStudyDTOs.stream()
+      .sorted(
+        (o1, o2) -> new Integer(o2.getProjectStudies().size()).compareTo(new Integer(o1.getProjectStudies().size())))
+      .collect(Collectors.toList());
+
   }
 
-
+  @Override
+  public RepIndStageStudy saveRepIndStageStudy(RepIndStageStudy repIndStageStudy) {
+    return repIndStageStudyDAO.save(repIndStageStudy);
+  }
 }
