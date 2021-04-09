@@ -29,7 +29,6 @@ import org.hibernate.SessionFactory;
 @Named
 public class RepIndStageStudyMySQLDAO extends AbstractMarloDAO<RepIndStageStudy, Long> implements RepIndStageStudyDAO {
 
-
   @Inject
   public RepIndStageStudyMySQLDAO(SessionFactory sessionFactory) {
     super(sessionFactory);
@@ -64,8 +63,8 @@ public class RepIndStageStudyMySQLDAO extends AbstractMarloDAO<RepIndStageStudy,
     if (list.size() > 0) {
       return list;
     }
-    return null;
 
+    return null;
   }
 
   @Override
