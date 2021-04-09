@@ -148,6 +148,56 @@ public class CCDimension2018Validator extends BaseValidator {
           InvalidFieldsMessages.EMPTYFIELD);
       }
 
+      /*
+       * // Short Term Female
+       * if ((reportSynthesis.getReportSynthesisCrossCuttingDimension().getTraineesShortTermFemale() != null)
+       * && (reportSynthesis.getReportSynthesisCrossCuttingDimension().getTraineesShortTermFemale() != 0)) {
+       * action
+       * .addMessage(action.getText("reportSynthesis.reportSynthesisCrossCuttingDimension.traineesShortTermFemale"));
+       * action.getInvalidFields().put(
+       * "input-reportSynthesis.reportSynthesisCrossCuttingDimension.traineesShortTermFemale",
+       * InvalidFieldsMessages.EMPTYFIELD);
+       * }
+       * // Short Term Male
+       * if ((reportSynthesis.getReportSynthesisCrossCuttingDimension().getTraineesShortTermMale() != null)
+       * && (reportSynthesis.getReportSynthesisCrossCuttingDimension().getTraineesShortTermMale() != 0)) {
+       * action.addMessage(action.getText("reportSynthesis.reportSynthesisCrossCuttingDimension.traineesShortTermMale"))
+       * ;
+       * action.getInvalidFields().put("reportSynthesis.reportSynthesisCrossCuttingDimension.traineesShortTermMale",
+       * InvalidFieldsMessages.EMPTYFIELD);
+       * }
+       * // Long Term Female
+       * if ((reportSynthesis.getReportSynthesisCrossCuttingDimension().getTraineesLongTermFemale() != null)
+       * && (reportSynthesis.getReportSynthesisCrossCuttingDimension().getTraineesLongTermFemale() != 0)) {
+       * action
+       * .addMessage(action.getText("reportSynthesis.reportSynthesisCrossCuttingDimension.traineesLongTermFemale"));
+       * action.getInvalidFields().put(
+       * "input-reportSynthesis.reportSynthesisCrossCuttingDimension.traineesLongTermFemale",
+       * InvalidFieldsMessages.EMPTYFIELD);
+       * }
+       * // Long Term Male
+       * if ((reportSynthesis.getReportSynthesisCrossCuttingDimension().getTraineesLongTermMale() != null)
+       * && (reportSynthesis.getReportSynthesisCrossCuttingDimension().getTraineesLongTermMale() != 0)) {
+       * action.addMessage(action.getText("reportSynthesis.reportSynthesisCrossCuttingDimension.traineesLongTermMale"));
+       * action.getInvalidFields().put("reportSynthesis.reportSynthesisCrossCuttingDimension.traineesLongTermMale",
+       * InvalidFieldsMessages.EMPTYFIELD);
+       * }
+       * // PhDs Female
+       * if ((reportSynthesis.getReportSynthesisCrossCuttingDimension().getPhdFemale() != null)
+       * && (reportSynthesis.getReportSynthesisCrossCuttingDimension().getPhdFemale() != 0)) {
+       * action.addMessage(action.getText("reportSynthesis.reportSynthesisCrossCuttingDimension.phdFemale"));
+       * action.getInvalidFields().put("input-reportSynthesis.reportSynthesisCrossCuttingDimension.phdFemale",
+       * InvalidFieldsMessages.EMPTYFIELD);
+       * }
+       * // PhDs Male
+       * if ((reportSynthesis.getReportSynthesisCrossCuttingDimension().getPhdMale() != null)
+       * && (reportSynthesis.getReportSynthesisCrossCuttingDimension().getPhdMale() != 0)) {
+       * action.addMessage(action.getText("reportSynthesis.reportSynthesisCrossCuttingDimension.phdMale"));
+       * action.getInvalidFields().put("reportSynthesis.reportSynthesisCrossCuttingDimension.phdMale",
+       * InvalidFieldsMessages.EMPTYFIELD);
+       * }
+       */
+
       // Validate Flagships
       if (action.isPMU()) {
         String flagshipsWithMisingInformation = "";

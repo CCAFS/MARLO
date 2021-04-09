@@ -54,7 +54,6 @@ public interface RepIndStageStudyDAO {
    */
   public List<RepIndStageStudy> findAll();
 
-
   /**
    * This method saves the information of the given repIndStageStudy
    * 
