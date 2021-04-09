@@ -29,7 +29,7 @@ label {
 
 .input-sm {
   padding: 4px 10px;
-  height: 27px;
+  height: 26px;
   font-size: 13px;
 }
 
@@ -232,7 +232,7 @@ div.disabled {
 }
 
 .red {
-  color: red;
+  color: red !important;
   font-weight: bold;
   font-size: 1.2em;
   padding: 0.15em;
@@ -431,13 +431,14 @@ h2.successTitle {
 }
 
 h6.checked-true, p.checked-true {
-  background: url(../../global/images/checked-true.png) no-repeat 0;
-  padding: 3px 0 3px 23px;
+  /* background: url(../../global/images/grayCheckbox.png) no-repeat 0; */
+  /* padding: 3px 0 3px 23px; */
+  padding-top: 7px;
 }
 
 h6.checked-false, p.checked-false {
-  background: url(../../global/images/checked-false.png) no-repeat 0;
-  padding: 1px 0 1px 23px;
+  /* background: url(../../global/images/checked-false.png) no-repeat 0; */
+  padding-top: 7px;
 }
 
 h6.subTitle {
@@ -2000,7 +2001,7 @@ a.currentReportingSection li, a.currentSection li {
   display: block;
   text-decoration: none;
   color: #5E5E5E;
-  padding: 5px 19px 5px 10px !important;
+  padding: 5px 25px 5px 10px !important;
   /* border-left: 5px solid; */
 }
 
@@ -4244,7 +4245,7 @@ span.indicatorsFound {
 
 #metadata-output, .metadata-output-persistent {
   color: #777;
-  padding: 7px 4px;
+  padding: 5px 4px;
   font-style: italic;
 }
 
@@ -5697,6 +5698,7 @@ h4.testEnvironment {
   color: #FFFFFF;
   background: #8EA786;
   border-bottom: 3px solid #7E9377;
+  outline: none;
 }
 
 .button-save:[disabled], 
