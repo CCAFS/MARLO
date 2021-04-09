@@ -1927,16 +1927,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
             }
           }
           break;
-        /*
-         * case 3:
-         * trainees = this.getText("annualReport2018.ccDimensions.table7.evidenceLink");
-         * male = "";
-         * female = "";
-         * if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisCrossCuttingDimension() != null
-         * && reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getEvidenceLink() != null) {
-         * male = reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getEvidenceLink();
-         * }
-         */
       }
 
       POIField[] sData = {new POIField(trainees, ParagraphAlignment.LEFT, false),
@@ -1947,6 +1937,23 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     poiSummary.textTable(document, headers, datas, false, "table3AnnualReport2018");
+
+    // Evidence Link - Visible only if evidence link is indicated in synthesis section
+    if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisCrossCuttingDimension() != null
+      && reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getEvidenceLink() != null
+      && !reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getEvidenceLink().isEmpty()) {
+      String link = reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getEvidenceLink();
+
+      // Convert evidence link to html link format if its has the right structure
+      if (link.contains("http") && link.contains("://")) {
+        link = "<a href=\"" + reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getEvidenceLink() + "\">"
+          + reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getEvidenceLink() + "</a>";
+      }
+
+      // One space between table and evidence link text
+      poiSummary.textLineBreak(document, 1);
+      poiSummary.convertHTMLTags(document, "Evidence Link: " + link, null);
+    }
   }
 
   private void createTable8() {
