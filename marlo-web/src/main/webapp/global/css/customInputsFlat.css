@@ -72,8 +72,8 @@ input:disabled ~ .checkmark {
 
 /* When the checkbox is disbled, add a gray background */
 .inputContainer input:disabled ~ .checkmark {
-  background-color: #5F5E5E;
-  border-color: #5F5E5E;
+  background-color: #9f9d9d;
+  border-color: #9f9d9d;
 }
 
 /* Create the checkmark/indicator (hidden when not checked) */
