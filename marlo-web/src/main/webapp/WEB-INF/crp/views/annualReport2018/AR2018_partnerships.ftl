@@ -75,7 +75,7 @@
                       <div class="textArea">
                           <label for="">[@customForm.text name="${customLabel}.summary" readText=true /]</label>:
                           <p>[#if (pmuText?has_content)!false]${pmuText?replace('\n', '<br>')}
-                               [#else] [@s.text name="global.prefilledByPmu"/] [@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/]
+                               [#else] [@s.text name="global.prefilledByPmu"/] [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
                              [/#if]</p>
                       </div>
                     [/#if]
@@ -191,7 +191,7 @@
                       
                       <hr />
                     [#else]
-                      [@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/]
+                       [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
                     [#-- <div class="form-group">
                        [@utils.tableText value=(reportSynthesis.reportSynthesisKeyPartnership.crossCGIAR)!'' nobr=false emptyText="global.prefilledByPmu" /] 
                     </div> --]
