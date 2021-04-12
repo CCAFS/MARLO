@@ -106,6 +106,8 @@ function getTargetCasesBySLO(){
 
 function contributionListComponentInsertHTML(data,id){
   var count = 0;
+  var activeFP = false;
+
   $(`.flagshipBtn-${id}`).on('click',changeButtonText);
 
   data.sources.forEach((item,index) => {
@@ -118,8 +120,9 @@ function contributionListComponentInsertHTML(data,id){
         // $(`.insertHtmlSlo-tabpanel-${id}`).append(`<p class="tb1-Fp-noData"><span class="glyphicon glyphicon-info-sign" style="margin-right: 7px; position: relative; top:3px"></span>No Flagships information</p>`);
       }
     } else {
-    $('.insertHtmlSlo-tabs-'+id).append(`<li role="presentation" class="${index?'active':''}" ><a href="#${item.id}-${id}-tab" aria-controls="${item.id}-${id}-tab" role="tab" data-toggle="tab">${item.id}</a></li>`);
-      $('.insertHtmlSlo-tabpanel-'+id).append(`<div role="tabpanel" class="tab-pane ${index?'active':''}" id="${item.id}-${id}-tab" style="overflow-y: scroll; max-height: 700px;"></div>`);
+      $('.insertHtmlSlo-tabs-'+id).append(`<li role="presentation" class="${!activeFP?'active':''}" ><a href="#${item.id}-${id}-tab" aria-controls="${item.id}-${id}-tab" role="tab" data-toggle="tab">${item.id}</a></li>`);
+      $('.insertHtmlSlo-tabpanel-'+id).append(`<div role="tabpanel" class="tab-pane ${!activeFP?'active':''}" id="${item.id}-${id}-tab" style="overflow-y: scroll; max-height: 700px;"></div>`);
+      activeFP = true;
     }
     item.contribution.forEach(contributionData => {
       $(`#${item.id}-${id}-tab`).append(getContributionListComponentValue(contributionData));
