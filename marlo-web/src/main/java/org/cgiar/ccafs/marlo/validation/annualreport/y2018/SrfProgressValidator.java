@@ -116,8 +116,8 @@ public class SrfProgressValidator extends BaseValidator {
 
             // Validate Brief Summary
             for (int j = 0; j < sloTargets.get(i).getTargetCases().size(); j++) {
-              if (!(this.isValidString(sloTargets.get(i).getTargetCases().get(j).getBriefSummary())
-                && this.wordCount(sloTargets.get(i).getTargetCases().get(j).getBriefSummary()) <= 150)) {
+              if (!(this.isValidString(sloTargets.get(i).getTargetCases().get(j).getBriefSummary()) && this
+                .wordCount(this.removeHtmlTags(sloTargets.get(i).getTargetCases().get(j).getBriefSummary())) <= 150)) {
                 action.addMessage(action.getText("sloTargets[" + i + "].targetCases[" + j + "].briefSummaryShow"));
                 action.getInvalidFields().put("input-sloTargets[" + i + "].targetCases[" + j + "].briefSummaryShow",
                   InvalidFieldsMessages.EMPTYFIELD);
@@ -292,8 +292,8 @@ public class SrfProgressValidator extends BaseValidator {
 
             // Validate Brief Summary
             for (int j = 0; j < sloTargets.get(i).getTargetCases().size(); j++) {
-              if (!(this.isValidString(sloTargets.get(i).getTargetCases().get(j).getBriefSummary())
-                && this.wordCount(sloTargets.get(i).getTargetCases().get(j).getBriefSummary()) <= 150)) {
+              if (!(this.isValidString(sloTargets.get(i).getTargetCases().get(j).getBriefSummary()) && this
+                .wordCount(this.removeHtmlTags(sloTargets.get(i).getTargetCases().get(j).getBriefSummary())) <= 150)) {
                 action.addMessage(action.getText("sloTargets[" + i + "].targetCases[" + j + "].briefSummaryShow"));
                 action.getInvalidFields().put("input-sloTargets[" + i + "].targetCases[" + j + "].briefSummaryShow",
                   InvalidFieldsMessages.EMPTYFIELD);
