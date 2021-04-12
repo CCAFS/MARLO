@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudyDAO;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
@@ -32,6 +33,7 @@ import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressStudy;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressStudyDTO;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisStudiesByCrpProgramDTO;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -55,18 +57,21 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
   private ProjectManager projectManager;
   private ReportSynthesisManager reportSynthesisManager;
   private PhaseManager phaseManager;
+  private LiaisonInstitutionManager liaisonInstitutionManager;
 
 
   @Inject
   public ProjectExpectedStudyManagerImpl(ProjectExpectedStudyDAO projectExpectedStudyDAO,
     CrpProgramManager crpProgramManager, ProjectFocusManager projectFocusManager, ProjectManager projectManager,
-    ReportSynthesisManager reportSynthesisManager, PhaseManager phaseManager) {
+    ReportSynthesisManager reportSynthesisManager, PhaseManager phaseManager,
+    LiaisonInstitutionManager liaisonInstitutionManager) {
     this.projectExpectedStudyDAO = projectExpectedStudyDAO;
     this.crpProgramManager = crpProgramManager;
     this.projectFocusManager = projectFocusManager;
     this.projectManager = projectManager;
     this.reportSynthesisManager = reportSynthesisManager;
     this.phaseManager = phaseManager;
+    this.liaisonInstitutionManager = liaisonInstitutionManager;
   }
 
   @Override
@@ -296,6 +301,54 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
       projectExpectedStudies.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
     }
     return projectExpectedStudies;
+  }
+
+  @Override
+  public List<ReportSynthesisStudiesByCrpProgramDTO>
+    getProjectStudiesListByFP(List<LiaisonInstitution> liaisonInstitutions, Phase phase) {
+    Phase phaseDB = phaseManager.getPhaseById(phase.getId());
+    List<ReportSynthesisStudiesByCrpProgramDTO> reportSynthesisStudiesByCrpProgramDTOs = new ArrayList<>();
+
+    for (LiaisonInstitution liaison : liaisonInstitutions) {
+      List<ProjectExpectedStudy> projectExpectedStudies = new ArrayList<>();
+      if (crpProgramManager.isFlagship(liaison)) {
+        // Fill Project Expected Studies of the current flagship
+        if (projectFocusManager.findAll() != null) {
+          List<ProjectFocus> projectFocus =
+            new ArrayList<>(projectFocusManager.findAll().stream()
+              .filter(pf -> pf.isActive() && pf.getCrpProgram().getId().equals(liaison.getCrpProgram().getId())
+                && pf.getPhase() != null && pf.getPhase().getId().equals(phaseDB.getId()))
+              .collect(Collectors.toList()));
+
+          for (ProjectFocus focus : projectFocus) {
+            Project project = projectManager.getProjectById(focus.getProject().getId());
+            List<ProjectExpectedStudy> plannedProjectExpectedStudies = new ArrayList<>(project
+              .getProjectExpectedStudies().stream()
+              .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(phaseDB) != null
+                && ps.getProjectExpectedStudyInfo().getStudyType() != null
+                && ps.getProjectExpectedStudyInfo().getStudyType().getId() == 1
+                && ps.getProjectExpectedStudyInfo().getYear() != null
+                && ps.getProjectExpectedStudyInfo().getYear().equals(phaseDB.getYear()))
+              .collect(Collectors.toList()));
+
+            for (ProjectExpectedStudy projectExpectedStudy : plannedProjectExpectedStudies) {
+              projectExpectedStudy.getProjectExpectedStudyInfo(phaseDB);
+              projectExpectedStudy.setSrfTargets(projectExpectedStudy.getSrfTargets(phaseDB));
+              projectExpectedStudy.setSubIdos(projectExpectedStudy.getSubIdos(phaseDB));
+              projectExpectedStudies.add(projectExpectedStudy);
+            }
+          }
+        }
+
+        ReportSynthesisStudiesByCrpProgramDTO studiesByCrpProgramDTO = new ReportSynthesisStudiesByCrpProgramDTO();
+        studiesByCrpProgramDTO.setProjectStudies(projectExpectedStudies);
+        studiesByCrpProgramDTO.setCrpProgram(liaison.getCrpProgram());
+
+        reportSynthesisStudiesByCrpProgramDTOs.add(studiesByCrpProgramDTO);
+      }
+    }
+
+    return reportSynthesisStudiesByCrpProgramDTOs;
   }
 
 

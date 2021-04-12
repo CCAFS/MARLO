@@ -50,8 +50,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressInnovation;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressPolicy;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressStudy;
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesisPoliciesByOrganizationTypeDTO;
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesisPoliciesByRepIndStageProcessDTO;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisStudiesByCrpProgramDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisStudiesByRepIndStageStudyDTO;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -115,10 +114,12 @@ public class StudiesOICRAction extends BaseAction {
   private Phase actualPhase;
   private boolean tableComplete;
   private String flagshipsIncomplete;
-  
+
   // Graph variables
   private Integer total = 0;
   private List<ReportSynthesisStudiesByRepIndStageStudyDTO> reportSynthesisStudiesByRepIndStageStudyDTOs;
+  private List<ReportSynthesisStudiesByCrpProgramDTO> reportSynthesisStudiesByCrpProgramDTOs;
+
 
   @Inject
   public StudiesOICRAction(APConfig config, GlobalUnitManager crpManager,
@@ -132,7 +133,8 @@ public class StudiesOICRAction extends BaseAction {
     SectionStatusManager sectionStatusManager,
     ReportSynthesisFlagshipProgressInnovationManager reportSynthesisFlagshipProgressInnovationManager,
     ReportSynthesisFlagshipProgressPolicyManager reportSynthesisFlagshipProgressPolicyManager,
-    ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager, RepIndStageStudyManager repIndStageStudyManager) {
+    ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager,
+    RepIndStageStudyManager repIndStageStudyManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -701,7 +703,7 @@ public class StudiesOICRAction extends BaseAction {
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym() != null && c.getAcronym().equals("PMU"))
       .collect(Collectors.toList()));
-    
+
     /** Graphs and Tables */
     List<ProjectExpectedStudy> selectedStudies = new ArrayList<>();
     if (projectExpectedStudies != null && !projectExpectedStudies.isEmpty()) {
@@ -717,17 +719,19 @@ public class StudiesOICRAction extends BaseAction {
       total = selectedStudies.size();
 
       if (selectedStudies != null && !selectedStudies.isEmpty()) {
-        // Chart: Policies by organization type
-        /*policiesByOrganizationTypeDTOs =
-          repIndOrganizationTypeManager.getPoliciesByOrganizationTypes(selectedProjectPolicies, phase);*/
+        // Chart: Studies by CRP Program
+        reportSynthesisStudiesByCrpProgramDTOs =
+          projectExpectedStudyManager.getProjectStudiesListByFP(liaisonInstitutions, actualPhase);
 
         // Chart: Policies by stage process
         reportSynthesisStudiesByRepIndStageStudyDTOs =
           repIndStageStudyManager.getStudiesByStageStudy(selectedStudies, actualPhase);
 
         // Chat: Policies by investiment type
-        /*policiesByRepIndInvestimentTypeDTOs =
-          repIndInvestimentTypeManager.getPoliciesByInvestimentType(selectedProjectPolicies, phase);*/
+        /*
+         * policiesByRepIndInvestimentTypeDTOs =
+         * repIndInvestimentTypeManager.getPoliciesByInvestimentType(selectedProjectPolicies, phase);
+         */
       }
     }
 
