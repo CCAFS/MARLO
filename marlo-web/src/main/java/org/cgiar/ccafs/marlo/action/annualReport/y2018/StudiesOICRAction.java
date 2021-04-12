@@ -436,10 +436,23 @@ public class StudiesOICRAction extends BaseAction {
     return reportSynthesis;
   }
 
+  public List<ReportSynthesisStudiesByCrpProgramDTO> getReportSynthesisStudiesByCrpProgramDTOs() {
+    return reportSynthesisStudiesByCrpProgramDTOs;
+  }
+
+
+  public List<ReportSynthesisStudiesByRepIndStageStudyDTO> getReportSynthesisStudiesByRepIndStageStudyDTOs() {
+    return reportSynthesisStudiesByRepIndStageStudyDTOs;
+  }
+
+
   public Long getSynthesisID() {
     return synthesisID;
   }
 
+  public Integer getTotal() {
+    return total;
+  }
 
   public String getTransaction() {
     return transaction;
@@ -495,7 +508,6 @@ public class StudiesOICRAction extends BaseAction {
 
   }
 
-
   public boolean isPolicyIncludedInReport(long policyID, long phaseID) {
     // boolean included = false;
     List<ReportSynthesisFlagshipProgressPolicy> synthesisPolicies =
@@ -516,6 +528,7 @@ public class StudiesOICRAction extends BaseAction {
 
     return matchingPolicies == 0;
   }
+
 
   /**
    * This method get the status of an specific study depending of the
@@ -544,6 +557,7 @@ public class StudiesOICRAction extends BaseAction {
 
   }
 
+
   @Override
   public String next() {
     String result = this.save();
@@ -553,6 +567,7 @@ public class StudiesOICRAction extends BaseAction {
       return result;
     }
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -810,7 +825,6 @@ public class StudiesOICRAction extends BaseAction {
     this.liaisonInstitutionID = liaisonInstitutionID;
   }
 
-
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
   }
@@ -819,18 +833,33 @@ public class StudiesOICRAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
-
   public void setProjectExpectedStudies(List<ProjectExpectedStudy> projectExpectedStudies) {
     this.projectExpectedStudies = projectExpectedStudies;
   }
+
 
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
     this.reportSynthesis = reportSynthesis;
   }
 
+  public void setReportSynthesisStudiesByCrpProgramDTOs(
+    List<ReportSynthesisStudiesByCrpProgramDTO> reportSynthesisStudiesByCrpProgramDTOs) {
+    this.reportSynthesisStudiesByCrpProgramDTOs = reportSynthesisStudiesByCrpProgramDTOs;
+  }
+
+
+  public void setReportSynthesisStudiesByRepIndStageStudyDTOs(
+    List<ReportSynthesisStudiesByRepIndStageStudyDTO> reportSynthesisStudiesByRepIndStageStudyDTOs) {
+    this.reportSynthesisStudiesByRepIndStageStudyDTOs = reportSynthesisStudiesByRepIndStageStudyDTOs;
+  }
 
   public void setSynthesisID(Long synthesisID) {
     this.synthesisID = synthesisID;
+  }
+
+
+  public void setTotal(Integer total) {
+    this.total = total;
   }
 
 
