@@ -37,8 +37,8 @@ input:disabled ~ .checkmark {
   /* left: 0; */
   height: 18px;
   width: 18px;
-  background-color: #5F5E5E;
-  border: 1px solid #5F5E5E;
+  background-color: #9f9d9d;
+  border: 1px solid #9f9d9d;
   border-radius: 2px;
   box-shadow: 1px 1px 2px #ccc;
 }
