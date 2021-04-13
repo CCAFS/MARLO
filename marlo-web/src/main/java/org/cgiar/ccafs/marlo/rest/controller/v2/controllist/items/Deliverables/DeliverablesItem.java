@@ -207,6 +207,10 @@ public class DeliverablesItem<T> {
         deliverableDissemination.setArticleUrl(deliverableDTO.getArticleURL());
         deliverableDissemination.setDisseminationChannel("other");
         deliverableDissemination.setDisseminationUrl("Not Defined");
+        if ((deliverableDTO.getDoi() == null || deliverableDTO.getDoi().equals(""))
+          && deliverableDTO.getArticleURL() != null && !deliverableDTO.getArticleURL().isEmpty()) {
+          deliverableDissemination.setHasDOI(true);
+        }
         deliverableDissemination.setPhase(phase);
         deliverableDisseminationManager.saveDeliverableDissemination(deliverableDissemination);
 
@@ -595,6 +599,10 @@ public class DeliverablesItem<T> {
         deliverableDissemination.setArticleUrl(deliverableDTO.getArticleURL());
         deliverableDissemination.setDisseminationChannel("other");
         deliverableDissemination.setDisseminationUrl("Not Defined");
+        if ((deliverableDTO.getDoi() == null || deliverableDTO.getDoi().equals(""))
+          && deliverableDTO.getArticleURL() != null && !deliverableDTO.getArticleURL().isEmpty()) {
+          deliverableDissemination.setHasDOI(true);
+        }
         deliverableDissemination.setPhase(phase);
         deliverableDisseminationManager.saveDeliverableDissemination(deliverableDissemination);
 
@@ -1341,6 +1349,10 @@ public class DeliverablesItem<T> {
         deliverableDissemination.setDisseminationUrl("Not Defined");
         deliverableDissemination.setDisseminationChannel("other");
         deliverableDissemination.setArticleUrl(newPublicationDTO.getArticleURL());
+        if ((newPublicationDTO.getDoi() == null || newPublicationDTO.getDoi().equals(""))
+          && newPublicationDTO.getArticleURL() != null && !newPublicationDTO.getArticleURL().isEmpty()) {
+          deliverableDissemination.setHasDOI(true);
+        }
         deliverableDissemination.setPhase(phase);
         deliverableDisseminationManager.saveDeliverableDissemination(deliverableDissemination);
 
@@ -1863,6 +1875,10 @@ public class DeliverablesItem<T> {
         deliverableDissemination.setArticleUrl(newPublicationDTO.getArticleURL());
         deliverableDissemination.setDisseminationChannel("other");
         deliverableDissemination.setDisseminationUrl("Not Defined");
+        if ((newPublicationDTO.getDoi() == null || newPublicationDTO.getDoi().equals(""))
+          && newPublicationDTO.getArticleURL() != null && !newPublicationDTO.getArticleURL().isEmpty()) {
+          deliverableDissemination.setHasDOI(true);
+        }
         deliverableDissemination.setPhase(phase);
         deliverableDisseminationManager.saveDeliverableDissemination(deliverableDissemination);
 
