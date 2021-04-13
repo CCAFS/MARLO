@@ -10,7 +10,7 @@
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlMedia}/js/annualReport2018/annualReport2018_outomesMilestones.js?20210412",
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210412a" 
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210413a" 
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210225"] /]
 
@@ -244,7 +244,7 @@
               <td class="text-center">
                 [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.studiesIds?seq_contains(item.id))!true) /]
                 [#local canBeRemoved = (action.canBeRemovedFromAR(item.id, actualPhase.id)!false)]
-                <div data-toggle="tooltip" [#if !canBeRemoved]title="[@s.text name="annualReport2018.oicr.table3.cannotBeRemoved" /]"[/#if]>
+                <div data-toggle="tooltip" [#if !canBeRemoved && isChecked]title="[@s.text name="annualReport2018.oicr.table3.cannotBeRemoved" /]"[/#if]>
                   [@customForm.checkmark id="study-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.studiesValue" value="${(item.id)!''}" checked=isChecked editable=(editable&&canBeRemoved) centered=true/] 
                 </div>
                 [#--@customForm.checkmark id="study-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.studiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/--] 
