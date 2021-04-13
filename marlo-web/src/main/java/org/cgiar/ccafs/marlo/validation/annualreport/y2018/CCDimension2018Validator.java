@@ -148,50 +148,51 @@ public class CCDimension2018Validator extends BaseValidator {
           InvalidFieldsMessages.EMPTYFIELD);
       }
 
-      // Short Term Female
-      if (reportSynthesis.getReportSynthesisCrossCuttingDimension().getTraineesShortTermFemale() == null) {
-        action
-          .addMessage(action.getText("reportSynthesis.reportSynthesisCrossCuttingDimension.traineesShortTermFemale"));
-        action.getInvalidFields().put(
-          "input-reportSynthesis.reportSynthesisCrossCuttingDimension.traineesShortTermFemale",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
-      // Short Term Male
-      if (reportSynthesis.getReportSynthesisCrossCuttingDimension().getTraineesShortTermMale() == null) {
-        action.addMessage(action.getText("reportSynthesis.reportSynthesisCrossCuttingDimension.traineesShortTermMale"));
-        action.getInvalidFields().put("reportSynthesis.reportSynthesisCrossCuttingDimension.traineesShortTermMale",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
-      // Long Term Female
-      if (reportSynthesis.getReportSynthesisCrossCuttingDimension().getTraineesLongTermFemale() == null) {
-        action
-          .addMessage(action.getText("reportSynthesis.reportSynthesisCrossCuttingDimension.traineesLongTermFemale"));
-        action.getInvalidFields().put(
-          "input-reportSynthesis.reportSynthesisCrossCuttingDimension.traineesLongTermFemale",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
-      // Long Term Male
-      if (reportSynthesis.getReportSynthesisCrossCuttingDimension().getTraineesLongTermMale() == null) {
-        action.addMessage(action.getText("reportSynthesis.reportSynthesisCrossCuttingDimension.traineesLongTermMale"));
-        action.getInvalidFields().put("reportSynthesis.reportSynthesisCrossCuttingDimension.traineesLongTermMale",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
-      // PhDs Female
-      if (reportSynthesis.getReportSynthesisCrossCuttingDimension().getPhdFemale() == null) {
-        action.addMessage(action.getText("reportSynthesis.reportSynthesisCrossCuttingDimension.phdFemale"));
-        action.getInvalidFields().put("input-reportSynthesis.reportSynthesisCrossCuttingDimension.phdFemale",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
-      // PhDs Male
-      if (reportSynthesis.getReportSynthesisCrossCuttingDimension().getPhdMale() == null) {
-        action.addMessage(action.getText("reportSynthesis.reportSynthesisCrossCuttingDimension.phdMale"));
-        action.getInvalidFields().put("reportSynthesis.reportSynthesisCrossCuttingDimension.phdMale",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
-
-
       // Validate Flagships
       if (action.isPMU()) {
+        // Short Term Female
+        if (reportSynthesis.getReportSynthesisCrossCuttingDimension().getTraineesShortTermFemale() == null) {
+          action
+            .addMessage(action.getText("reportSynthesis.reportSynthesisCrossCuttingDimension.traineesShortTermFemale"));
+          action.getInvalidFields().put(
+            "input-reportSynthesis.reportSynthesisCrossCuttingDimension.traineesShortTermFemale",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+        // Short Term Male
+        if (reportSynthesis.getReportSynthesisCrossCuttingDimension().getTraineesShortTermMale() == null) {
+          action
+            .addMessage(action.getText("reportSynthesis.reportSynthesisCrossCuttingDimension.traineesShortTermMale"));
+          action.getInvalidFields().put("reportSynthesis.reportSynthesisCrossCuttingDimension.traineesShortTermMale",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+        // Long Term Female
+        if (reportSynthesis.getReportSynthesisCrossCuttingDimension().getTraineesLongTermFemale() == null) {
+          action
+            .addMessage(action.getText("reportSynthesis.reportSynthesisCrossCuttingDimension.traineesLongTermFemale"));
+          action.getInvalidFields().put(
+            "input-reportSynthesis.reportSynthesisCrossCuttingDimension.traineesLongTermFemale",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+        // Long Term Male
+        if (reportSynthesis.getReportSynthesisCrossCuttingDimension().getTraineesLongTermMale() == null) {
+          action
+            .addMessage(action.getText("reportSynthesis.reportSynthesisCrossCuttingDimension.traineesLongTermMale"));
+          action.getInvalidFields().put("reportSynthesis.reportSynthesisCrossCuttingDimension.traineesLongTermMale",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+        // PhDs Female
+        if (reportSynthesis.getReportSynthesisCrossCuttingDimension().getPhdFemale() == null) {
+          action.addMessage(action.getText("reportSynthesis.reportSynthesisCrossCuttingDimension.phdFemale"));
+          action.getInvalidFields().put("input-reportSynthesis.reportSynthesisCrossCuttingDimension.phdFemale",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+        // PhDs Male
+        if (reportSynthesis.getReportSynthesisCrossCuttingDimension().getPhdMale() == null) {
+          action.addMessage(action.getText("reportSynthesis.reportSynthesisCrossCuttingDimension.phdMale"));
+          action.getInvalidFields().put("reportSynthesis.reportSynthesisCrossCuttingDimension.phdMale",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
         String flagshipsWithMisingInformation = "";
         // Get all liaison institutions for current CRP
         List<LiaisonInstitution> liaisonInstitutionsFromCrp = liaisonInstitutionManager.findAll().stream()
