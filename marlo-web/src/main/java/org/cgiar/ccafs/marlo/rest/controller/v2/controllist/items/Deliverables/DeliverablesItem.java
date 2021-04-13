@@ -801,14 +801,17 @@ public class DeliverablesItem<T> {
                   altmetrics.setAltmetricJid(publication.getAltmetric().getAltmetric_jid());
                   String authors = "";
                   boolean init = true;
-                  for (String data : publication.getAltmetric().getAuthors()) {
-                    if (init) {
-                      authors += data;
-                      init = false;
-                    } else {
-                      authors += ";" + data;
+                  if (publication.getAltmetric().getAuthors() != null) {
+                    for (String data : publication.getAltmetric().getAuthors()) {
+                      if (init) {
+                        authors += data;
+                        init = false;
+                      } else {
+                        authors += ";" + data;
+                      }
                     }
                   }
+
                   altmetrics.setAuthors(authors);
                   altmetrics.setCitedByBlogs(publication.getAltmetric().getCited_by_posts_count() != null
                     ? Integer.valueOf(publication.getAltmetric().getCited_by_posts_count()) : null);
