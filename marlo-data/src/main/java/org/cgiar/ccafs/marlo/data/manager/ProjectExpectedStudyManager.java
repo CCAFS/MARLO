@@ -18,6 +18,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisStudiesByCrpProgramDTO;
 
 import java.util.List;
 
@@ -72,6 +73,16 @@ public interface ProjectExpectedStudyManager {
    * @return a list from ProjectExpectedStudy null if no exist records
    */
   public List<ProjectExpectedStudy> getProjectStudiesList(LiaisonInstitution liaisonInstitution, Phase phase);
+
+  /**
+   * This method gets a list of projectExpectedStudy that are active for all the LiaisonInstitutions (Excluding PMU)
+   * 
+   * @param liaisonInstitutions the LiaisonInstitutions
+   * @param phase the phase to fetch the studies from
+   * @return a list from ProjectExpectedStudy null if no exist records
+   */
+  public List<ReportSynthesisStudiesByCrpProgramDTO>
+    getProjectStudiesListByFP(List<LiaisonInstitution> liaisonInstitutions, Phase phase);
 
   /**
    * This method gets a list of projectExpectedStudy that are active by a given organizationType and phase
