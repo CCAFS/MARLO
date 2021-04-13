@@ -57,6 +57,7 @@ import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -180,6 +181,23 @@ public class InnovationsAction extends BaseAction {
     return editable;
   }
 
+  public void convertEvidencesLinkstoList() {
+    if (projectInnovations != null && !projectInnovations.isEmpty()) {
+      for (ProjectInnovation innovation : projectInnovations) {
+        if (innovation.getProjectInnovationInfo(this.getActualPhase()) != null
+          && innovation.getProjectInnovationInfo(this.getActualPhase()).getEvidenceLink() != null
+          && !innovation.getProjectInnovationInfo(this.getActualPhase()).getEvidenceLink().isEmpty()
+          && innovation.getProjectInnovationInfo(this.getActualPhase()).getEvidenceLink().contains("; ")) {
+          List<String> evidencesLinks = new ArrayList<>(
+            Arrays.asList(innovation.getProjectInnovationInfo(this.getActualPhase()).getEvidenceLink().split("; ")));
+          if (!evidencesLinks.isEmpty()) {
+            innovation.getProjectInnovationInfo(this.getActualPhase()).setEvidencesLink(evidencesLinks);
+          }
+        }
+      }
+    }
+  }
+
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null && c.isActive()
@@ -283,6 +301,7 @@ public class InnovationsAction extends BaseAction {
     return innovationsByStageDTO;
   }
 
+
   public List<ReportSynthesisInnovationsByTypeDTO> getInnovationsByTypeDTO() {
     return innovationsByTypeDTO;
   }
@@ -326,7 +345,6 @@ public class InnovationsAction extends BaseAction {
   public Integer getTotal() {
     return total;
   }
-
 
   public String getTransaction() {
     return transaction;
@@ -561,6 +579,8 @@ public class InnovationsAction extends BaseAction {
       innovationsByTypeDTO =
         repIndInnovationTypeManager.getInnovationsByTypeDTO(selectedProjectInnovations, actualPhase);
     }
+
+    // this.convertEvidencesLinkstoList();
 
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), reportSynthesis.getId() + ""};
