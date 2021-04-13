@@ -2026,7 +2026,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
             .getInstitutions()) {
             if (institution != null && institution.getInstitution() != null
               && institution.getInstitution().getComposedName() != null) {
-              keyPartners += "• " + institution.getInstitution().getComposedName() + "\n";
+              keyPartners += "• " + institution.getInstitution().getComposedName() + " \n";
             }
           }
         }
