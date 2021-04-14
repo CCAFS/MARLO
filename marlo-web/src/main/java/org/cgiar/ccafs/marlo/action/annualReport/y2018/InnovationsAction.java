@@ -23,7 +23,9 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndInnovationTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageInnovationManager;
@@ -40,6 +42,8 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationRegion;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressInnovation;
@@ -57,6 +61,7 @@ import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -93,6 +98,8 @@ public class InnovationsAction extends BaseAction {
   private RepIndInnovationTypeManager repIndInnovationTypeManager;
   private SectionStatusManager sectionStatusManager;
   private ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager;
+  private ProjectInnovationCountryManager projectInnovationCountryManager;
+  private ProjectInnovationRegionManager projectInnovationRegionManager;
 
 
   // Variables
@@ -121,7 +128,9 @@ public class InnovationsAction extends BaseAction {
     RepIndStageInnovationManager repIndStageInnovationManager, RepIndInnovationTypeManager repIndInnovationTypeManager,
     SectionStatusManager sectionStatusManager,
     ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager,
-    ReportSynthesisFlagshipProgressStudyManager reportSynthesisFlagshipProgressStudyManager) {
+    ReportSynthesisFlagshipProgressStudyManager reportSynthesisFlagshipProgressStudyManager,
+    ProjectInnovationCountryManager projectInnovationCountryManager,
+    ProjectInnovationRegionManager projectInnovationRegionManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -140,6 +149,8 @@ public class InnovationsAction extends BaseAction {
     this.sectionStatusManager = sectionStatusManager;
     this.projectExpectedStudyInnovationManager = projectExpectedStudyInnovationManager;
     this.reportSynthesisFlagshipProgressStudyManager = reportSynthesisFlagshipProgressStudyManager;
+    this.projectInnovationCountryManager = projectInnovationCountryManager;
+    this.projectInnovationRegionManager = projectInnovationRegionManager;
   }
 
 
@@ -178,6 +189,67 @@ public class InnovationsAction extends BaseAction {
     }
 
     return editable;
+  }
+
+  public void convertEvidencesLinkstoList() {
+    if (projectInnovations != null && !projectInnovations.isEmpty()) {
+      for (ProjectInnovation innovation : projectInnovations) {
+        if (innovation.getProjectInnovationInfo(this.getActualPhase()) != null
+          && innovation.getProjectInnovationInfo(this.getActualPhase()).getEvidenceLink() != null
+          && !innovation.getProjectInnovationInfo(this.getActualPhase()).getEvidenceLink().isEmpty()
+          && innovation.getProjectInnovationInfo(this.getActualPhase()).getEvidenceLink().contains("; ")) {
+          List<String> evidencesLinks = new ArrayList<>(
+            Arrays.asList(innovation.getProjectInnovationInfo(this.getActualPhase()).getEvidenceLink().split("; ")));
+          if (!evidencesLinks.isEmpty()) {
+            innovation.getProjectInnovationInfo(this.getActualPhase()).setEvidencesLink(evidencesLinks);
+          }
+        }
+      }
+    }
+  }
+
+  /*
+   * Fill Countries and Regions information to projectInnovations list
+   */
+  public void fillGeographicInformation() {
+    if (projectInnovations != null && !projectInnovations.isEmpty()) {
+      List<ProjectInnovationCountry> countries = new ArrayList<>();
+      List<ProjectInnovationRegion> regions = new ArrayList<>();
+
+      for (ProjectInnovation innovation : projectInnovations) {
+
+        if (innovation.getId() != null) {
+
+          // Fill Policy Countries
+          if ((innovation.getCountries() != null && innovation.getCountries().isEmpty())
+            || innovation.getCountries() == null) {
+            if (projectInnovationCountryManager.getInnovationCountrybyPhase(innovation.getId(),
+              this.getActualPhase().getId()) != null) {
+              countries = projectInnovationCountryManager.getInnovationCountrybyPhase(innovation.getId(),
+                this.getActualPhase().getId());
+            }
+
+            if (countries != null && !countries.isEmpty()) {
+              innovation.setCountries(countries);
+            }
+          }
+
+          // Fill Policy Regions
+          if ((innovation.getRegions() != null && innovation.getRegions().isEmpty())
+            || innovation.getRegions() == null) {
+            if (projectInnovationRegionManager.getInnovationRegionbyPhase(innovation.getId(),
+              this.getActualPhase().getId()) != null) {
+              regions = projectInnovationRegionManager.getInnovationRegionbyPhase(innovation.getId(),
+                this.getActualPhase().getId());
+            }
+
+            if (regions != null && !regions.isEmpty()) {
+              innovation.setRegions(regions);
+            }
+          }
+        }
+      }
+    }
   }
 
   public Long firstFlagship() {
@@ -283,6 +355,7 @@ public class InnovationsAction extends BaseAction {
     return innovationsByStageDTO;
   }
 
+
   public List<ReportSynthesisInnovationsByTypeDTO> getInnovationsByTypeDTO() {
     return innovationsByTypeDTO;
   }
@@ -326,7 +399,6 @@ public class InnovationsAction extends BaseAction {
   public Integer getTotal() {
     return total;
   }
-
 
   public String getTransaction() {
     return transaction;
@@ -561,6 +633,8 @@ public class InnovationsAction extends BaseAction {
       innovationsByTypeDTO =
         repIndInnovationTypeManager.getInnovationsByTypeDTO(selectedProjectInnovations, actualPhase);
     }
+    this.fillGeographicInformation();
+    // this.convertEvidencesLinkstoList();
 
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), reportSynthesis.getId() + ""};
