@@ -152,7 +152,7 @@
       [/#if]
       
         [#if aiccra]
-            [@s.text name="dashboard.aiccra.instructions" ][/@s.text]
+            <p><h3>What is a Cluster?</h3></p><p>A cluster is defined as the group of AICCRA main activities led by each AICCRA Country Leader (Ghana, Mali, Senegal, Ethiopia, Kenya and Zambia), AICCRA Regional Leaders (Western Africa and Eastern & Southern Africa) and AICCRA-CCAFS Flagship Leaders (FP1, FP2 and FP4). In each cluster, participants are involved as leader, coordinators and collaborators with specific budget allocations for each AICCRA main activity with a set of deliverables and contributions towards our performance indicators.</p>
             <img src="${baseUrlCdn}/global/images/aiccra-planning-header.png" width="450">
             <p></p>
             <p></p>
