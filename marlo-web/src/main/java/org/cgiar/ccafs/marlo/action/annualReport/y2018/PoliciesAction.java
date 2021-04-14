@@ -196,25 +196,34 @@ public class PoliciesAction extends BaseAction {
 
       for (ProjectPolicy policy : projectPolicies) {
 
-        // Fill Policy Countries
-        if ((policy.getCountries() != null && policy.getCountries().isEmpty()) || policy.getCountries() == null) {
-          countries =
-            projectPolicyCountryManager.getPolicyCountrybyPhase(policy.getId(), this.getActualPhase().getId());
+        if (policy.getId() != null) {
 
-          if (countries != null && !countries.isEmpty()) {
-            policy.setCountries(countries);
+          // Fill Policy Countries
+          if ((policy.getCountries() != null && policy.getCountries().isEmpty()) || policy.getCountries() == null) {
+            if (projectPolicyCountryManager.getPolicyCountrybyPhase(policy.getId(),
+              this.getActualPhase().getId()) != null) {
+              countries =
+                projectPolicyCountryManager.getPolicyCountrybyPhase(policy.getId(), this.getActualPhase().getId());
+            }
+
+            if (countries != null && !countries.isEmpty()) {
+              policy.setCountries(countries);
+            }
+          }
+
+          // Fill Policy Regions
+          if ((policy.getRegions() != null && policy.getRegions().isEmpty()) || policy.getRegions() == null) {
+            if (projectPolicyRegionManager.getPolicyRegionbyPhase(policy.getId(),
+              this.getActualPhase().getId()) != null) {
+              regions =
+                projectPolicyRegionManager.getPolicyRegionbyPhase(policy.getId(), this.getActualPhase().getId());
+            }
+
+            if (regions != null && !regions.isEmpty()) {
+              policy.setRegions(regions);
+            }
           }
         }
-
-        // Fill Policy Regions
-        if ((policy.getRegions() != null && policy.getRegions().isEmpty()) || policy.getRegions() == null) {
-          regions = projectPolicyRegionManager.getPolicyRegionbyPhase(policy.getId(), this.getActualPhase().getId());
-
-          if (regions != null && !regions.isEmpty()) {
-            policy.setRegions(regions);
-          }
-        }
-
       }
     }
   }
