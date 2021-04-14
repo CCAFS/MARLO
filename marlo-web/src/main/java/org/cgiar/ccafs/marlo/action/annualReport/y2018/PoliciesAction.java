@@ -22,7 +22,9 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPolicyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndOrganizationTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndPolicyInvestimentTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageProcessManager;
@@ -39,6 +41,8 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCountry;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicyRegion;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressPolicy;
@@ -92,6 +96,8 @@ public class PoliciesAction extends BaseAction {
   private RepIndStageProcessManager repIndStageProcessManager;
   private RepIndPolicyInvestimentTypeManager repIndInvestimentTypeManager;
   private SectionStatusManager sectionStatusManager;
+  private ProjectPolicyCountryManager projectPolicyCountryManager;
+  private ProjectPolicyRegionManager projectPolicyRegionManager;
 
   // Variables
   private String transaction;
@@ -119,7 +125,8 @@ public class PoliciesAction extends BaseAction {
     RepIndOrganizationTypeManager repIndOrganizationTypeManager, RepIndStageProcessManager repIndStageProcessManager,
     RepIndPolicyInvestimentTypeManager repIndInvestimentTypeManager, SectionStatusManager sectionStatusManager,
     ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager,
-    ReportSynthesisFlagshipProgressStudyManager reportSynthesisFlagshipProgressStudyManager) {
+    ReportSynthesisFlagshipProgressStudyManager reportSynthesisFlagshipProgressStudyManager,
+    ProjectPolicyCountryManager projectPolicyCountryManager, ProjectPolicyRegionManager projectPolicyRegionManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -137,6 +144,9 @@ public class PoliciesAction extends BaseAction {
     this.sectionStatusManager = sectionStatusManager;
     this.projectExpectedStudyPolicyManager = projectExpectedStudyPolicyManager;
     this.reportSynthesisFlagshipProgressStudyManager = reportSynthesisFlagshipProgressStudyManager;
+    this.projectPolicyCountryManager = projectPolicyCountryManager;
+    this.projectPolicyRegionManager = projectPolicyRegionManager;
+
   }
 
   /**
@@ -175,6 +185,40 @@ public class PoliciesAction extends BaseAction {
 
     return editable;
   }
+
+  /*
+   * Fill Countries and Regions information to projectPolicies list
+   */
+  public void fillGeographicInformation() {
+    if (projectPolicies != null && !projectPolicies.isEmpty()) {
+      List<ProjectPolicyCountry> countries = new ArrayList<>();
+      List<ProjectPolicyRegion> regions = new ArrayList<>();
+
+      for (ProjectPolicy policy : projectPolicies) {
+
+        // Fill Policy Countries
+        if ((policy.getCountries() != null && policy.getCountries().isEmpty()) || policy.getCountries() == null) {
+          countries =
+            projectPolicyCountryManager.getPolicyCountrybyPhase(policy.getId(), this.getActualPhase().getId());
+
+          if (countries != null && !countries.isEmpty()) {
+            policy.setCountries(countries);
+          }
+        }
+
+        // Fill Policy Regions
+        if ((policy.getRegions() != null && policy.getRegions().isEmpty()) || policy.getRegions() == null) {
+          regions = projectPolicyRegionManager.getPolicyRegionbyPhase(policy.getId(), this.getActualPhase().getId());
+
+          if (regions != null && !regions.isEmpty()) {
+            policy.setRegions(regions);
+          }
+        }
+
+      }
+    }
+  }
+
 
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
@@ -300,7 +344,6 @@ public class PoliciesAction extends BaseAction {
     return policiesByOrganizationTypeDTOs;
   }
 
-
   public List<ReportSynthesisPoliciesByRepIndPolicyInvestimentTypeDTO> getPoliciesByRepIndInvestimentTypeDTOs() {
     return policiesByRepIndInvestimentTypeDTOs;
   }
@@ -313,6 +356,7 @@ public class PoliciesAction extends BaseAction {
     return projectPolicies;
   }
 
+
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
   }
@@ -321,7 +365,6 @@ public class PoliciesAction extends BaseAction {
   public Long getSynthesisID() {
     return synthesisID;
   }
-
 
   public Integer getTotal() {
     return total;
@@ -345,6 +388,7 @@ public class PoliciesAction extends BaseAction {
     return isFP;
   }
 
+
   @Override
   public boolean isPMU() {
     boolean isFP = false;
@@ -356,7 +400,6 @@ public class PoliciesAction extends BaseAction {
     return isFP;
 
   }
-
 
   /**
    * This method get the status of an specific policy depending of the
@@ -394,6 +437,7 @@ public class PoliciesAction extends BaseAction {
       return result;
     }
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -571,6 +615,8 @@ public class PoliciesAction extends BaseAction {
 
     }
 
+    this.fillGeographicInformation();
+
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), reportSynthesis.getId() + ""};
     this.setBasePermission(this.getText(Permission.REPORT_SYNTHESIS_FLAGSHIP_PROGRESS_BASE_PERMISSION, params));
@@ -582,7 +628,6 @@ public class PoliciesAction extends BaseAction {
     }
 
   }
-
 
   @Override
   public String save() {
