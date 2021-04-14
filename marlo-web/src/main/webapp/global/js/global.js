@@ -376,16 +376,18 @@ jQuery.fn.setTrumbowyg = function() {
               'link', 'strong', 'em'
           ]
         ],
-        allowTagsFromPaste: [
-            'a', 'p', 'br', 'b', 'strong', 'i', 'em'
-        ],
+        plugins: {
+          allowTagsFromPaste: {
+            allowedTags: ['a', 'p', 'br', 'b', 'strong', 'i', 'em']
+          }
+        },
         urlProtocol: true,
         autogrow: true,
         minimalLinks: true,
         semantic: true
     });
 
-    $editor.trumbowyg().on('tbwpaste ', function() {
+    $editor.trumbowyg().on('tbwpaste', function() {
       console.log('tbwpaste !');
     });
   }

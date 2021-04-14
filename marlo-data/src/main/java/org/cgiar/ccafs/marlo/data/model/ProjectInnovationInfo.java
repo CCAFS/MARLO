@@ -3,6 +3,8 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.List;
+
 import com.google.gson.annotations.Expose;
 
 /**
@@ -62,7 +64,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
 
   @Expose
   private Long year;
-  
+
   @Expose
   private Long innovationNumber;
 
@@ -85,6 +87,8 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   private String otherInnovationType;
   @Expose
   private Boolean hasMilestones;
+
+  private List<String> evidencesLink;
 
   public ProjectInnovationInfo() {
   }
@@ -127,15 +131,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.youthExplaniation = youthExplaniation;
     this.year = year;
   }
-  
-  
-  public Long getInnovationNumber() {
-	return innovationNumber;
-  }
 
-  public void setInnovationNumber(Long innovationNumber) {
-	this.innovationNumber = innovationNumber;
-  }
 
   public String getAdaptativeResearchNarrative() {
     return adaptativeResearchNarrative;
@@ -145,21 +141,17 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return clearLead;
   }
 
-
   public String getDescriptionStage() {
     return descriptionStage;
-  }
-  
-  public Boolean getHasMilestones() {
-	return hasMilestones;
-  }
-
-  public void setHasMilestones(Boolean hasMilestones) {
-	this.hasMilestones = hasMilestones;
   }
 
   public String getEvidenceLink() {
     return evidenceLink;
+  }
+
+
+  public List<String> getEvidencesLink() {
+    return evidencesLink;
   }
 
   public String getGenderExplaniation() {
@@ -168,6 +160,14 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
 
   public RepIndGenderYouthFocusLevel getGenderFocusLevel() {
     return genderFocusLevel;
+  }
+
+  public Boolean getHasMilestones() {
+    return hasMilestones;
+  }
+
+  public Long getInnovationNumber() {
+    return innovationNumber;
   }
 
   public Institution getLeadOrganization() {
@@ -197,7 +197,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return narrative;
   }
 
-
   public String getOtherInnovationType() {
     return otherInnovationType;
   }
@@ -205,7 +204,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   public Phase getPhase() {
     return phase;
   }
-
 
   public ProjectExpectedStudy getProjectExpectedStudy() {
     return projectExpectedStudy;
@@ -215,7 +213,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   public ProjectInnovation getProjectInnovation() {
     return projectInnovation;
   }
-
 
   public RepIndDegreeInnovation getRepIndDegreeInnovation() {
     return repIndDegreeInnovation;
@@ -287,9 +284,16 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.descriptionStage = descriptionStage;
   }
 
+
   public void setEvidenceLink(String evidenceLink) {
     this.evidenceLink = evidenceLink;
   }
+
+
+  public void setEvidencesLink(List<String> evidencesLink) {
+    this.evidencesLink = evidencesLink;
+  }
+
 
   public void setGenderExplaniation(String genderExplaniation) {
     this.genderExplaniation = genderExplaniation;
@@ -297,6 +301,14 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
 
   public void setGenderFocusLevel(RepIndGenderYouthFocusLevel genderFocusLevel) {
     this.genderFocusLevel = genderFocusLevel;
+  }
+
+  public void setHasMilestones(Boolean hasMilestones) {
+    this.hasMilestones = hasMilestones;
+  }
+
+  public void setInnovationNumber(Long innovationNumber) {
+    this.innovationNumber = innovationNumber;
   }
 
   public void setLeadOrganization(Institution leadOrganization) {
