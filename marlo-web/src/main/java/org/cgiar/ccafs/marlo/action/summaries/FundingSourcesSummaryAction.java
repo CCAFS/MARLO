@@ -642,9 +642,11 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
         String regionalDimension = "";
         // Regions
         for (FundingSourceLocation fundingSourceLocation : fundingSource.getFundingSourceLocations().stream()
-          .filter(
-            fl -> fl.isActive() && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 1
-              && fl.getPhase() != null && fl.getPhase().equals(this.getSelectedPhase()))
+          .filter(fl -> fl.isActive() && fl.getLocElementType() == null && fl.getLocElement() != null
+            && fl.getLocElement().getId() != null && fl.getLocElement().getLocElementType() != null
+            && fl.getLocElement().getLocElementType().getId() != null
+            && fl.getLocElement().getLocElementType().getId() == 1 && fl.getPhase() != null
+            && fl.getPhase().equals(this.getSelectedPhase()))
           .collect(Collectors.toList())) {
           if (regionalDimension.isEmpty()) {
             regionalDimension += fundingSourceLocation.getLocElement().getName();
@@ -670,9 +672,9 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
 
         String specificCountries = "";
         for (FundingSourceLocation fundingSourceLocation : fundingSource.getFundingSourceLocations().stream()
-          .filter(
-            fl -> fl.isActive() && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 2
-              && fl.getPhase() != null && fl.getPhase().equals(this.getSelectedPhase()))
+          .filter(fl -> fl != null && fl.isActive() && fl.getLocElementType() == null && fl.getLocElement() != null
+            && fl.getLocElement().getLocElementType() != null && fl.getLocElement().getLocElementType().getId() == 2
+            && fl.getPhase() != null && fl.getPhase().equals(this.getSelectedPhase()))
           .collect(Collectors.toList())) {
           if (specificCountries.isEmpty()) {
             specificCountries += fundingSourceLocation.getLocElement().getName();
