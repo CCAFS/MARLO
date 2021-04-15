@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Aug 23, 2016 1:40:35 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+	<class name="org.cgiar.ccafs.marlo.data.model.LeverOutcome"
+		table="lever_outcomes" optimistic-lock="none">
+		
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		
+		<many-to-one name="leverOutcomeCategory"
+			class="org.cgiar.ccafs.marlo.data.model.LeverOutcome"
+			fetch="select">
+			<column name="parent_id" />
+		</many-to-one>
+
+		<property name="name" type="string">
+			<column name="name" />
+		</property>
+		
+		<property name="description" type="string">
+			<column name="description" sql-type="TEXT" />
+		</property>
+
+		<property name="indicator" type="string">
+			<column name="indicator" sql-type="TEXT" />
+		</property>
+
+		<set name="leverOutcomeTypes" table="lever_outcomes"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="parent_id" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.LeverOutcome" />
+		</set>
+
+	</class>
+</hibernate-mapping>

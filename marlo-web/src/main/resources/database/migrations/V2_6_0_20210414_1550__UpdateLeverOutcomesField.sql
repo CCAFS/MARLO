@@ -1,0 +1,1 @@
+ALTER TABLE `lever_outcomes` ADD CONSTRAINT `lever_outcomes_parent_fk` FOREIGN KEY (`parent_id`) REFERENCES `lever_outcomes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
