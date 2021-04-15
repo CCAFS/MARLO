@@ -351,10 +351,11 @@ public class DeliverablesItem<T> {
                 deliverableMetadataExternalSources = new DeliverableMetadataExternalSources();
                 deliverableMetadataExternalSources.setDeliverable(deliverable);
                 deliverableMetadataExternalSources.setDoi(publication.getDoi());
-                deliverableMetadataExternalSources.setIsiStatus(publication.getIs_isi());
+
+                deliverableMetadataExternalSources.setIsiStatus(this.getBooleanString(publication.getIs_isi()));
                 deliverableMetadataExternalSources.setJournalName(publication.getJournal_name());
                 deliverableMetadataExternalSources.setTitle(publication.getTitle());
-                deliverableMetadataExternalSources.setOpenAccessStatus(publication.getIs_oa());
+                deliverableMetadataExternalSources.setOpenAccessStatus(this.getBooleanString(publication.getIs_oa()));
                 deliverableMetadataExternalSources.setOpenAccessLink(publication.getOa_link());
                 deliverableMetadataExternalSources.setPublicationType(publication.getPublication_type());
                 deliverableMetadataExternalSources.setPublicationYear(publication.getPublication_year() != null
@@ -720,10 +721,10 @@ public class DeliverablesItem<T> {
                 deliverableMetadataExternalSources = new DeliverableMetadataExternalSources();
                 deliverableMetadataExternalSources.setDeliverable(deliverable);
                 deliverableMetadataExternalSources.setDoi(publication.getDoi());
-                deliverableMetadataExternalSources.setIsiStatus(publication.getIs_isi());
+                deliverableMetadataExternalSources.setIsiStatus(this.getBooleanString(publication.getIs_isi()));
                 deliverableMetadataExternalSources.setJournalName(publication.getJournal_name());
                 deliverableMetadataExternalSources.setTitle(publication.getTitle());
-                deliverableMetadataExternalSources.setOpenAccessStatus(publication.getIs_oa());
+                deliverableMetadataExternalSources.setOpenAccessStatus(this.getBooleanString(publication.getIs_oa()));
                 deliverableMetadataExternalSources.setOpenAccessLink(publication.getOa_link());
                 deliverableMetadataExternalSources.setPublicationType(publication.getPublication_type());
                 deliverableMetadataExternalSources.setPublicationYear(publication.getPublication_year() != null
@@ -1211,6 +1212,20 @@ public class DeliverablesItem<T> {
     return deliverablesListDTO;
   }
 
+  public String getBooleanString(String data) {
+    String result = null;
+    if (data != null) {
+      if (StringUtils.equalsIgnoreCase(data, "yes")) {
+        result = "true";
+      } else if (StringUtils.equalsIgnoreCase(data, "no")) {
+        result = "false";
+      } else if (StringUtils.equalsIgnoreCase(data, "n/a")) {
+        result = "N/A";
+      }
+    }
+    return result;
+  }
+
   private Map<String, DeliverableMetadataElement>
     getMetadataElements(List<DeliverableMetadataElement> deliverableMetadataElements) {
     Map<String, DeliverableMetadataElement> map = new TreeMap<>(Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
@@ -1504,10 +1519,10 @@ public class DeliverablesItem<T> {
               }
               deliverableMetadataExternalSources.setDeliverable(deliverable);
               deliverableMetadataExternalSources.setDoi(publication.getDoi());
-              deliverableMetadataExternalSources.setIsiStatus(publication.getIs_isi());
+              deliverableMetadataExternalSources.setIsiStatus(this.getBooleanString(publication.getIs_isi()));
               deliverableMetadataExternalSources.setJournalName(publication.getJournal_name());
               deliverableMetadataExternalSources.setTitle(publication.getTitle());
-              deliverableMetadataExternalSources.setOpenAccessStatus(publication.getIs_oa());
+              deliverableMetadataExternalSources.setOpenAccessStatus(this.getBooleanString(publication.getIs_oa()));
               deliverableMetadataExternalSources.setOpenAccessLink(publication.getOa_link());
               deliverableMetadataExternalSources.setPublicationType(publication.getPublication_type());
               deliverableMetadataExternalSources.setPublicationYear(
@@ -1994,10 +2009,10 @@ public class DeliverablesItem<T> {
               if (deliverableMetadataExternalSources != null) {
                 deliverableMetadataExternalSources.setDeliverable(deliverable);
                 deliverableMetadataExternalSources.setDoi(publication.getDoi());
-                deliverableMetadataExternalSources.setIsiStatus(publication.getIs_isi());
+                deliverableMetadataExternalSources.setIsiStatus(this.getBooleanString(publication.getIs_isi()));
                 deliverableMetadataExternalSources.setJournalName(publication.getJournal_name());
                 deliverableMetadataExternalSources.setTitle(publication.getTitle());
-                deliverableMetadataExternalSources.setOpenAccessStatus(publication.getIs_oa());
+                deliverableMetadataExternalSources.setOpenAccessStatus(this.getBooleanString(publication.getIs_oa()));
                 deliverableMetadataExternalSources.setOpenAccessLink(publication.getOa_link());
                 deliverableMetadataExternalSources.setPublicationType(publication.getPublication_type());
                 deliverableMetadataExternalSources.setPublicationYear(publication.getPublication_year() != null
