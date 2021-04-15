@@ -71,7 +71,7 @@
   [#if libraryName="pickadate"]<script src="${baseUrlCdn}/global/bower_components/pickadate/lib/picker.time.js"></script>[/#if]
   [#if libraryName="pusher-js"]<script src="${baseUrlCdn}/global/bower_components/pusher-js/dist/web/pusher.js"></script>[/#if]
   [#if libraryName="trumbowyg"]<script src="${baseUrlCdn}/global/bower_components/trumbowyg/dist/trumbowyg.min.js"></script>[/#if]
-  [#--  [#if libraryName="trumbowyg"]<script src="${baseUrlCdn}/global/bower_components/trumbowyg/dist/plugins/cleanpaste/trumbowyg.cleanpaste.min.js"></script>[/#if]  --]
+  [#if libraryName="trumbowyg"]<script src="${baseUrlCdn}/global/bower_components/trumbowyg/dist/plugins/cleanpaste/trumbowyg.cleanpaste.min.js"></script>[/#if]
   [#if libraryName="trumbowyg"]<script src="${baseUrlCdn}/global/bower_components/trumbowyg/dist/plugins/allowtagsfrompaste/trumbowyg.allowtagsfrompaste.min.js"></script>[/#if]
   [#if libraryName="trumbowyg"]<script src="${baseUrlCdn}/global/bower_components/trumbowyg/dist/plugins/colors/trumbowyg.colors.min.js"></script>[/#if]
   [#if libraryName="jquery-mousewheel"]<script src="${baseUrlCdn}/global/bower_components/jquery-mousewheel/jquery.mousewheel.js"></script>[/#if]
