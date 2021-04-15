@@ -257,13 +257,15 @@
               </td>
               [#-- 10. Evidence for Innovation --]
               <td class="text-center">
-                [#if isStageFour && ((item.projectInnovationInfo.projectExpectedStudy?has_content)!false)]
+                [#if isStageFour]
+                 [#list (item.studies)![] as item]
                   [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(item.projectInnovationInfo.projectExpectedStudy.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
                   <p>
-                    <a href="${summaryPDF}" class="btn btn-default btn-xs" target="_blank" style="text-decoration: none;" title="${(item.projectInnovationInfo.projectExpectedStudy.composedName)!''}">
-                      <img src="${baseUrlCdn}/global/images/pdf.png" height="20"  /> ${(item.projectInnovationInfo.projectExpectedStudy.composedIdentifier)!''}
+                    <a href="${summaryPDF}" class="btn btn-default btn-xs" target="_blank" style="text-decoration: none;" title="${(item.projectExpectedStudy.composedName)!''}">
+                      <img src="${baseUrlCdn}/global/images/pdf.png" height="20"  /> ${(item.projectExpectedStudy.composedIdentifier)!''}
                     </a>
                   </p>
+                  [/#list]
                 [#else]                
                   [#local innovationEvidence = (item.projectInnovationInfo.evidenceLink)!""/]
                   [#if innovationEvidence?has_content]

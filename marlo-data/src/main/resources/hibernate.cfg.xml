@@ -477,5 +477,6 @@
     <mapping resource="xmls/DeliverableMetadataExternalSources.hbm.xml" />
     <mapping resource="xmls/DeliverableAffiliations.hbm.xml" />
     <mapping resource="xmls/DeliverableAltmetricInfo.hbm.xml" />
+    <mapping resource="xmls/Nexus.hbm.xml" />
   </session-factory>
 </hibernate-configuration>
