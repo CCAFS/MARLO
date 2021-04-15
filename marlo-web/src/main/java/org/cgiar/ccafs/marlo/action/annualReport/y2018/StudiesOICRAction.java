@@ -50,8 +50,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressInnovation;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressPolicy;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressStudy;
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesisPoliciesByOrganizationTypeDTO;
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesisPoliciesByRepIndStageProcessDTO;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisStudiesByCrpProgramDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisStudiesByRepIndStageStudyDTO;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -115,10 +114,12 @@ public class StudiesOICRAction extends BaseAction {
   private Phase actualPhase;
   private boolean tableComplete;
   private String flagshipsIncomplete;
-  
+
   // Graph variables
   private Integer total = 0;
   private List<ReportSynthesisStudiesByRepIndStageStudyDTO> reportSynthesisStudiesByRepIndStageStudyDTOs;
+  private List<ReportSynthesisStudiesByCrpProgramDTO> reportSynthesisStudiesByCrpProgramDTOs;
+
 
   @Inject
   public StudiesOICRAction(APConfig config, GlobalUnitManager crpManager,
@@ -132,7 +133,8 @@ public class StudiesOICRAction extends BaseAction {
     SectionStatusManager sectionStatusManager,
     ReportSynthesisFlagshipProgressInnovationManager reportSynthesisFlagshipProgressInnovationManager,
     ReportSynthesisFlagshipProgressPolicyManager reportSynthesisFlagshipProgressPolicyManager,
-    ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager, RepIndStageStudyManager repIndStageStudyManager) {
+    ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager,
+    RepIndStageStudyManager repIndStageStudyManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -434,10 +436,23 @@ public class StudiesOICRAction extends BaseAction {
     return reportSynthesis;
   }
 
+  public List<ReportSynthesisStudiesByCrpProgramDTO> getReportSynthesisStudiesByCrpProgramDTOs() {
+    return reportSynthesisStudiesByCrpProgramDTOs;
+  }
+
+
+  public List<ReportSynthesisStudiesByRepIndStageStudyDTO> getReportSynthesisStudiesByRepIndStageStudyDTOs() {
+    return reportSynthesisStudiesByRepIndStageStudyDTOs;
+  }
+
+
   public Long getSynthesisID() {
     return synthesisID;
   }
 
+  public Integer getTotal() {
+    return total;
+  }
 
   public String getTransaction() {
     return transaction;
@@ -493,7 +508,6 @@ public class StudiesOICRAction extends BaseAction {
 
   }
 
-
   public boolean isPolicyIncludedInReport(long policyID, long phaseID) {
     // boolean included = false;
     List<ReportSynthesisFlagshipProgressPolicy> synthesisPolicies =
@@ -514,6 +528,7 @@ public class StudiesOICRAction extends BaseAction {
 
     return matchingPolicies == 0;
   }
+
 
   /**
    * This method get the status of an specific study depending of the
@@ -542,6 +557,7 @@ public class StudiesOICRAction extends BaseAction {
 
   }
 
+
   @Override
   public String next() {
     String result = this.save();
@@ -551,6 +567,7 @@ public class StudiesOICRAction extends BaseAction {
       return result;
     }
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -701,7 +718,7 @@ public class StudiesOICRAction extends BaseAction {
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym() != null && c.getAcronym().equals("PMU"))
       .collect(Collectors.toList()));
-    
+
     /** Graphs and Tables */
     List<ProjectExpectedStudy> selectedStudies = new ArrayList<>();
     if (projectExpectedStudies != null && !projectExpectedStudies.isEmpty()) {
@@ -717,17 +734,19 @@ public class StudiesOICRAction extends BaseAction {
       total = selectedStudies.size();
 
       if (selectedStudies != null && !selectedStudies.isEmpty()) {
-        // Chart: Policies by organization type
-        /*policiesByOrganizationTypeDTOs =
-          repIndOrganizationTypeManager.getPoliciesByOrganizationTypes(selectedProjectPolicies, phase);*/
+        // Chart: Studies by CRP Program
+        reportSynthesisStudiesByCrpProgramDTOs =
+          projectExpectedStudyManager.getProjectStudiesListByFP(liaisonInstitutions, actualPhase);
 
         // Chart: Policies by stage process
         reportSynthesisStudiesByRepIndStageStudyDTOs =
           repIndStageStudyManager.getStudiesByStageStudy(selectedStudies, actualPhase);
 
         // Chat: Policies by investiment type
-        /*policiesByRepIndInvestimentTypeDTOs =
-          repIndInvestimentTypeManager.getPoliciesByInvestimentType(selectedProjectPolicies, phase);*/
+        /*
+         * policiesByRepIndInvestimentTypeDTOs =
+         * repIndInvestimentTypeManager.getPoliciesByInvestimentType(selectedProjectPolicies, phase);
+         */
       }
     }
 
@@ -806,7 +825,6 @@ public class StudiesOICRAction extends BaseAction {
     this.liaisonInstitutionID = liaisonInstitutionID;
   }
 
-
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
   }
@@ -815,18 +833,33 @@ public class StudiesOICRAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
-
   public void setProjectExpectedStudies(List<ProjectExpectedStudy> projectExpectedStudies) {
     this.projectExpectedStudies = projectExpectedStudies;
   }
+
 
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
     this.reportSynthesis = reportSynthesis;
   }
 
+  public void setReportSynthesisStudiesByCrpProgramDTOs(
+    List<ReportSynthesisStudiesByCrpProgramDTO> reportSynthesisStudiesByCrpProgramDTOs) {
+    this.reportSynthesisStudiesByCrpProgramDTOs = reportSynthesisStudiesByCrpProgramDTOs;
+  }
+
+
+  public void setReportSynthesisStudiesByRepIndStageStudyDTOs(
+    List<ReportSynthesisStudiesByRepIndStageStudyDTO> reportSynthesisStudiesByRepIndStageStudyDTOs) {
+    this.reportSynthesisStudiesByRepIndStageStudyDTOs = reportSynthesisStudiesByRepIndStageStudyDTOs;
+  }
 
   public void setSynthesisID(Long synthesisID) {
     this.synthesisID = synthesisID;
+  }
+
+
+  public void setTotal(Integer total) {
+    this.total = total;
   }
 
 
@@ -950,7 +983,7 @@ public class StudiesOICRAction extends BaseAction {
   public void validate() {
     if (this.isPMU()) {
       if (save) {
-        validator.validateCheckButton(this, reportSynthesis, true);
+        validator.validateCheckButton(this, reportSynthesis, true, liaisonInstitution);
       }
     } else {
       if (save) {
