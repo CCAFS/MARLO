@@ -662,9 +662,11 @@ $item.find('textarea.tumaco').trumbowyg({
         'link', 'strong', 'em'
     ]
   ],
-  allowTagsFromPaste: [
-      'a', 'p', 'br', 'b', 'strong', 'i', 'em'
-  ],
+  plugins: {
+    allowTagsFromPaste: {
+      allowedTags: ['a', 'p', 'br', 'b', 'strong', 'i', 'em']
+    }
+  },
   urlProtocol: true,
   autogrow: true,
   minimalLinks: true,
