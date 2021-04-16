@@ -983,7 +983,7 @@ public class StudiesOICRAction extends BaseAction {
   public void validate() {
     if (this.isPMU()) {
       if (save) {
-        validator.validateCheckButton(this, reportSynthesis, true);
+        validator.validateCheckButton(this, reportSynthesis, true, liaisonInstitution);
       }
     } else {
       if (save) {

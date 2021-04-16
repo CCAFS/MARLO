@@ -323,7 +323,7 @@
       
     [#-- Comments --] 
     <div class="form-group">
-      [@customForm.textArea name="${customName}.comments" i18nkey="${customLabel}.table11.comments" help="${customLabel}.table11.comments.help" helpIcon=false className="" required=true editable=isEditable allowTextEditor=true /]
+      [@customForm.textArea name="${customName}.comments" i18nkey="${customLabel}.table11.comments" help="${customLabel}.table11.comments.help" helpIcon=false className="" required=false editable=isEditable allowTextEditor=true /]
     </div>
     
   </div>

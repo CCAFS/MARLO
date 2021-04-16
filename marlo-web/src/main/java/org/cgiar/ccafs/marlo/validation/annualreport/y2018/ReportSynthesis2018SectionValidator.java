@@ -693,7 +693,8 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
       reportSynthesis.setReportSynthesisFlagshipProgress(flagshipProgress);
       flagshipProgress.setReportSynthesis(reportSynthesis);
       if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
-        studiesOICR2018Validator.validateCheckButton(action, reportSynthesis, false);
+        studiesOICR2018Validator.validateCheckButton(action, reportSynthesis, false,
+          reportSynthesis.getLiaisonInstitution());
       } else {
         studiesOICR2018Validator.validate(action, reportSynthesis, false);
       }
@@ -701,7 +702,8 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
       reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
     } else {
       if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
-        studiesOICR2018Validator.validateCheckButton(action, reportSynthesis, false);
+        studiesOICR2018Validator.validateCheckButton(action, reportSynthesis, false,
+          reportSynthesis.getLiaisonInstitution());
       } else {
         studiesOICR2018Validator.validate(action, reportSynthesis, false);
       }
