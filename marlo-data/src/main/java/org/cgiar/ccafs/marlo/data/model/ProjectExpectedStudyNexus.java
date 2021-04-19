@@ -16,7 +16,8 @@ public class ProjectExpectedStudyNexus extends MarloBaseEntity implements java.i
 
   @Expose
   private Nexus nexus;
-
+  @Expose
+  private Phase phase;
 
   public ProjectExpectedStudyNexus() {
   }
@@ -69,6 +70,10 @@ public class ProjectExpectedStudyNexus extends MarloBaseEntity implements java.i
   }
 
 
+  public Phase getPhase() {
+    return phase;
+  }
+
   public ProjectExpectedStudy getProjectExpectedStudy() {
     return projectExpectedStudy;
   }
@@ -94,8 +99,13 @@ public class ProjectExpectedStudyNexus extends MarloBaseEntity implements java.i
     this.nexus = nexus;
   }
 
+  public void setPhase(Phase phase) {
+    this.phase = phase;
+  }
+
   public void setProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy) {
     this.projectExpectedStudy = projectExpectedStudy;
   }
+
 }
 
