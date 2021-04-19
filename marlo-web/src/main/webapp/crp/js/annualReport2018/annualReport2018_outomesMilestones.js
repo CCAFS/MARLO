@@ -112,7 +112,8 @@ function setGoogleCharts() {
         textPosition: 'none',
         gridlines: {
           count: 0
-        }
+        },
+        title: '*Note: Please note that a OICR can contribute to more than one Flagship/Module.'
       },
       vAxis: {
         textStyle: {
