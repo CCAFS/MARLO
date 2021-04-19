@@ -16,7 +16,8 @@ public class ProjectExpectedStudyLeverOutcome extends MarloBaseEntity implements
 
   @Expose
   private LeverOutcome leverOutcome;
-
+  @Expose
+  private Phase phase;
 
   public ProjectExpectedStudyLeverOutcome() {
   }
@@ -68,6 +69,10 @@ public class ProjectExpectedStudyLeverOutcome extends MarloBaseEntity implements
     return u;
   }
 
+  public Phase getPhase() {
+    return phase;
+  }
+
   public ProjectExpectedStudy getProjectExpectedStudy() {
     return projectExpectedStudy;
   }
@@ -91,6 +96,10 @@ public class ProjectExpectedStudyLeverOutcome extends MarloBaseEntity implements
 
   @Override
   public void setModifiedBy(User modifiedBy) {
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
   public void setProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy) {

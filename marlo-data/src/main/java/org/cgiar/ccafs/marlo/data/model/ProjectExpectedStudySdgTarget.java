@@ -16,7 +16,8 @@ public class ProjectExpectedStudySdgTarget extends MarloBaseEntity implements ja
 
   @Expose
   private SdgTargets sdgTarget;
-
+  @Expose
+  private Phase phase;
 
   public ProjectExpectedStudySdgTarget() {
   }
@@ -62,6 +63,10 @@ public class ProjectExpectedStudySdgTarget extends MarloBaseEntity implements ja
     return u;
   }
 
+  public Phase getPhase() {
+    return phase;
+  }
+
   public ProjectExpectedStudy getProjectExpectedStudy() {
     return projectExpectedStudy;
   }
@@ -85,6 +90,10 @@ public class ProjectExpectedStudySdgTarget extends MarloBaseEntity implements ja
 
   @Override
   public void setModifiedBy(User modifiedBy) {
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
   public void setProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy) {
