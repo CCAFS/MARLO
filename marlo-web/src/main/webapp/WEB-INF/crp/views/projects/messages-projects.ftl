@@ -39,7 +39,7 @@
         [@s.text name="message.submittedOn" ]
           [@s.param]${(lastSubmission.dateTime?string["MMMM dd, yyyy"])!}[/@s.param]
           [@s.param]${(lastSubmission.user.composedCompleteName)!}[/@s.param]
-          [@s.param][@s.text name="global.${((audit.element.class.name)?split('.')?last)!''}"/][/@s.param]
+          [@s.param]Project[/@s.param]
         [/@s.text]
         [#if centerGlobalUnit]in ${(project.projectInfo.phase.crp.acronym)!}[/#if]
       </p>

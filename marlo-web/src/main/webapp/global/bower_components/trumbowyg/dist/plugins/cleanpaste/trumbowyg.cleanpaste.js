@@ -46,6 +46,8 @@
         html = html.replace(/<b(\s+|>)/g, '<strong$1');
         // Replace closing bold tags with closing strong
         html = html.replace(/<\/b(\s+|>)/g, '</strong$1');
+        // Replace opening a href tags with a space in front 
+        html = html.replace(/<a(\s+|>)/g, ' <a$1');
 
         // Replace italic tags with em
         html = html.replace(/<i(\s+|>)/g, '<em$1');
