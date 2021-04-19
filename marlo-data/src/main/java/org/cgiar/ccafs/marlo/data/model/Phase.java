@@ -349,12 +349,6 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return projectBudgetsFlagships;
   }
 
-
-  public Set<ProjectCenterOutcome> getProjectCenterOutcomes() {
-    return projectCenterOutcomes;
-  }
-
-
   public Set<ProjectClusterActivity> getProjectClusters() {
     return projectClusters;
   }
@@ -723,10 +717,6 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
 
   public void setProjectBudgetsFlagships(Set<ProjectBudgetsFlagship> projectBudgetsFlagships) {
     this.projectBudgetsFlagships = projectBudgetsFlagships;
-  }
-
-  public void setProjectCenterOutcomes(Set<ProjectCenterOutcome> projectCenterOutcomes) {
-    this.projectCenterOutcomes = projectCenterOutcomes;
   }
 
   public void setProjectClusters(Set<ProjectClusterActivity> projectClusters) {
