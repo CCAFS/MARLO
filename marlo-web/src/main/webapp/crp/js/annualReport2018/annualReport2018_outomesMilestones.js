@@ -101,8 +101,8 @@ function setGoogleCharts() {
       },
       chartArea: {
           top: 65,
-          right: 0,
-          width: '70%',
+          left: 55,
+          width: '80%',
           heigth: "100%"
       },
       hAxis: {
