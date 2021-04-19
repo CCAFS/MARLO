@@ -284,7 +284,9 @@
           <th class="text-center"> [@s.text name="${customLabel}.${name}.openAccess" /] </th>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.${isGrey?string('altmetricScore','isi')}" /] </th>
           [#if allowPopups]
-            <th class="col-md-1 text-center">[@s.text name="${customLabel}.${name}.missingFields" /]</th>
+            [#if !isGrey]
+              <th class="col-md-1 text-center">[@s.text name="${customLabel}.${name}.missingFields" /]</th>
+            [/#if]
             [#if PMU]
               <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] 
               <br>
@@ -418,15 +420,17 @@
                 </td>
               [/#if]
               [#if allowPopups]
-                [#-- Complete Status--]
-                <td class="text-center">
-                [#assign isPublicationComplete = action.isPublicationComplete(item.id, actualPhase.id)!false /]
-                 [#if isPublicationComplete]
+                [#if !isGrey]
+                  [#-- Complete Status--]
+                  <td class="text-center">
+                  [#assign isPublicationComplete = action.isPublicationComplete(item.id, actualPhase.id)!false /]
+                  [#if isPublicationComplete]
                     <span class="glyphicon glyphicon-ok-sign mf-icon check" title="Complete"></span> 
-                    [#else]
-                      <span class="glyphicon glyphicon-exclamation-sign mf-icon" title="Incomplete"></span> 
+                  [#else]
+                    <span class="glyphicon glyphicon-exclamation-sign mf-icon" title="Incomplete"></span> 
                   [/#if]   
-                </td>
+                  </td>
+                [/#if]
                 [#if PMU]
                   [#-- Check --]
                   <td class="text-center" style="max-width: 20px;">

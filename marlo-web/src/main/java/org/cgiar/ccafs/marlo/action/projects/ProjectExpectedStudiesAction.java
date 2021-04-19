@@ -25,7 +25,9 @@ import org.cgiar.ccafs.marlo.data.manager.ExpectedStudyProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.GeneralStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.LeverOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
+import org.cgiar.ccafs.marlo.data.manager.NexusManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
@@ -53,6 +55,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndPolicyInvestimentTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageProcessManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.SdgTargetsManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.StudyTypeManager;
@@ -63,7 +66,9 @@ import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.LeverOutcome;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
+import org.cgiar.ccafs.marlo.data.model.Nexus;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -96,6 +101,7 @@ import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
 import org.cgiar.ccafs.marlo.data.model.RepIndPolicyInvestimentType;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageProcess;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageStudy;
+import org.cgiar.ccafs.marlo.data.model.SdgTargets;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicator;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.data.model.StudyType;
@@ -169,6 +175,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private ProjectExpectedStudyGeographicScopeManager projectExpectedStudyGeographicScopeManager;
   private GeneralStatusManager generalStatusManager;
   private CrpMilestoneManager milestoneManager;
+  private NexusManager nexusManager;
+  private LeverOutcomeManager leverOutcomeManager;
+  private SdgTargetsManager sdgTargetsManager;
 
   // AR 2018 Managers
   private EvidenceTagManager evidenceTagManager;
@@ -213,6 +222,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private List<CrpProgram> regionList;
   private List<Institution> institutions;
   private List<Project> myProjects;
+  private List<Nexus> nexus;
+  private List<LeverOutcome> leverOutcomes;
+  private List<SdgTargets> sdgTargets;
+
   private String transaction;
 
   // AR 2018 Sel-List
@@ -250,7 +263,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     ProjectInnovationManager projectInnovationManager, ProjectPolicyManager projectPolicyManager,
     ProjectExpectedStudyGeographicScopeManager projectExpectedStudyGeographicScopeManager,
     ProjectExpectedStudyCenterManager projectExpectedStudyCenterManager, CrpMilestoneManager milestoneManager,
-    ProjectExpectedStudyMilestoneManager projectExpectedStudyMilestoneManager) {
+    ProjectExpectedStudyMilestoneManager projectExpectedStudyMilestoneManager, NexusManager nexusManager,
+    LeverOutcomeManager leverOutcomeManager, SdgTargetsManager sdgTargetsManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -297,6 +311,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.projectExpectedStudyCenterManager = projectExpectedStudyCenterManager;
     this.milestoneManager = milestoneManager;
     this.projectExpectedStudyMilestoneManager = projectExpectedStudyMilestoneManager;
+
+    this.nexusManager = nexusManager;
+    this.leverOutcomeManager = leverOutcomeManager;
+    this.sdgTargetsManager = sdgTargetsManager;
   }
 
   /**
@@ -390,6 +408,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return this.institutions;
   }
 
+  public List<LeverOutcome> getLeverOutcomes() {
+    return leverOutcomes;
+  }
+
   public GlobalUnit getLoggedCrp() {
     return this.loggedCrp;
   }
@@ -408,6 +430,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   public int getNewExpectedYear() {
     return newExpectedYear;
+  }
+
+  public List<Nexus> getNexus() {
+    return nexus;
   }
 
   public List<RepIndOrganizationType> getOrganizationTypes() {
@@ -440,6 +466,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   public List<LocElement> getRegions() {
     return this.regions;
+  }
+
+  public List<SdgTargets> getSdgTargets() {
+    return sdgTargets;
   }
 
   public long getSrfSubIdoPrimary() {
@@ -934,6 +964,19 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           }
         }
 
+        // Load Information (Nexus, Lever Outcomes and SDG Targets) for Alliance Global unit
+        if (this.getCurrentCrp() != null && this.getCurrentCrp().getId() != null
+          && this.getCurrentCrp().getId() == 45) {
+
+          // Nexus
+          nexus = nexusManager.findAll();
+
+          // Lever Outcomes
+          leverOutcomes = leverOutcomeManager.findAll();
+
+          // SGD Targets
+          sdgTargets = sdgTargetsManager.findAll();
+        }
       }
 
       if (!this.isDraft()) {
@@ -1662,7 +1705,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
     }
   }
-
 
   /**
    * Save Expected Studies Flagships Information
@@ -2428,6 +2470,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.institutions = institutions;
   }
 
+  public void setLeverOutcomes(List<LeverOutcome> leverOutcomes) {
+    this.leverOutcomes = leverOutcomes;
+  }
+
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
@@ -2446,6 +2492,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   public void setNewExpectedYear(int newExpectedYear) {
     this.newExpectedYear = newExpectedYear;
+  }
+
+  public void setNexus(List<Nexus> nexus) {
+    this.nexus = nexus;
   }
 
   public void setOrganizationTypes(List<RepIndOrganizationType> organizationTypes) {
@@ -2474,6 +2524,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   public void setRegions(List<LocElement> regions) {
     this.regions = regions;
+  }
+
+  public void setSdgTargets(List<SdgTargets> sdgTargets) {
+    this.sdgTargets = sdgTargets;
   }
 
   public void setSrfSubIdoPrimary(long srfSubIdoPrimary) {

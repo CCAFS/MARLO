@@ -274,11 +274,13 @@ public class MonitoringEvaluationValidator extends BaseValidator {
     }
 
     // Validate Comments
-    if (!this.isValidString(evaluation.getComments())) {
-      action.addMessage(action.getText("reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].comments"));
-      action.getInvalidFields().put("input-reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].comments",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
+    /*
+     * if (!this.isValidString(evaluation.getComments())) {
+     * action.addMessage(action.getText("reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].comments"));
+     * action.getInvalidFields().put("input-reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].comments",
+     * InvalidFieldsMessages.EMPTYFIELD);
+     * }
+     */
 
     // Validate evidences
     if (!this.isValidString(evaluation.getEvidences())) {
