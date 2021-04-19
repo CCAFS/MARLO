@@ -75,14 +75,15 @@ public interface ProjectExpectedStudyManager {
   public List<ProjectExpectedStudy> getProjectStudiesList(LiaisonInstitution liaisonInstitution, Phase phase);
 
   /**
-   * This method gets a list of projectExpectedStudy that are active for all the LiaisonInstitutions (Excluding PMU)
+   * This method gets a list of projectExpectedStudy that are selected for all the LiaisonInstitutions (Excluding PMU)
    * 
-   * @param liaisonInstitutions the LiaisonInstitutions
+   * @param selectedStudies the selected studies
+   * @param liaisonInstitutions the liaisonInstitutions of the CRP
    * @param phase the phase to fetch the studies from
    * @return a list from ProjectExpectedStudy null if no exist records
    */
-  public List<ReportSynthesisStudiesByCrpProgramDTO>
-    getProjectStudiesListByFP(List<LiaisonInstitution> liaisonInstitutions, Phase phase);
+  public List<ReportSynthesisStudiesByCrpProgramDTO> getProjectStudiesListByFP(
+    List<LiaisonInstitution> liaisonInstitutions, List<ProjectExpectedStudy> selectedStudies, Phase phase);
 
   /**
    * This method gets a list of projectExpectedStudy that are active by a given organizationType and phase

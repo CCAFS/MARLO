@@ -304,8 +304,8 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
   }
 
   @Override
-  public List<ReportSynthesisStudiesByCrpProgramDTO>
-    getProjectStudiesListByFP(List<LiaisonInstitution> liaisonInstitutions, Phase phase) {
+  public List<ReportSynthesisStudiesByCrpProgramDTO> getProjectStudiesListByFP(
+    List<LiaisonInstitution> liaisonInstitutions, List<ProjectExpectedStudy> selectedStudies, Phase phase) {
     Phase phaseDB = phaseManager.getPhaseById(phase.getId());
     List<ReportSynthesisStudiesByCrpProgramDTO> reportSynthesisStudiesByCrpProgramDTOs = new ArrayList<>();
 
@@ -332,10 +332,12 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
               .collect(Collectors.toList()));
 
             for (ProjectExpectedStudy projectExpectedStudy : plannedProjectExpectedStudies) {
-              projectExpectedStudy.getProjectExpectedStudyInfo(phaseDB);
-              projectExpectedStudy.setSrfTargets(projectExpectedStudy.getSrfTargets(phaseDB));
-              projectExpectedStudy.setSubIdos(projectExpectedStudy.getSubIdos(phaseDB));
-              projectExpectedStudies.add(projectExpectedStudy);
+              if (selectedStudies.contains(projectExpectedStudy)) {
+                projectExpectedStudy.getProjectExpectedStudyInfo(phaseDB);
+                projectExpectedStudy.setSrfTargets(projectExpectedStudy.getSrfTargets(phaseDB));
+                projectExpectedStudy.setSubIdos(projectExpectedStudy.getSubIdos(phaseDB));
+                projectExpectedStudies.add(projectExpectedStudy);
+              }
             }
           }
         }

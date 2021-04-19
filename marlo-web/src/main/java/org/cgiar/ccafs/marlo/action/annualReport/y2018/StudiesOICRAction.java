@@ -736,9 +736,9 @@ public class StudiesOICRAction extends BaseAction {
       if (selectedStudies != null && !selectedStudies.isEmpty()) {
         // Chart: Studies by CRP Program
         reportSynthesisStudiesByCrpProgramDTOs =
-          projectExpectedStudyManager.getProjectStudiesListByFP(liaisonInstitutions, actualPhase);
+          projectExpectedStudyManager.getProjectStudiesListByFP(liaisonInstitutions, selectedStudies, actualPhase);
 
-        // Chart: Policies by stage process
+        // Chart: Studies by stage process
         reportSynthesisStudiesByRepIndStageStudyDTOs =
           repIndStageStudyManager.getStudiesByStageStudy(selectedStudies, actualPhase);
 
