@@ -968,6 +968,26 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         if (this.getCurrentCrp() != null && this.getCurrentCrp().getId() != null
           && this.getCurrentCrp().getId() == 45) {
 
+          // Expected Study Nexus List
+          if (this.expectedStudy.getProjectExpectedStudyNexus() != null) {
+            this.expectedStudy.setNexus(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyNexus().stream()
+              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+          }
+
+          // Expected Study Nexus Lever Outcomes List
+          if (this.expectedStudy.getProjectExpectedStudyLeverOutcomes() != null) {
+            this.expectedStudy
+              .setLeverOutcomes(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyLeverOutcomes().stream()
+                .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+          }
+
+          // Expected Study Sdg Targets List
+          if (this.expectedStudy.getProjectExpectedStudySdgTargets() != null) {
+            this.expectedStudy
+              .setSdgTargets(new ArrayList<>(this.expectedStudy.getProjectExpectedStudySdgTargets().stream()
+                .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+          }
+
           // Nexus
           nexus = nexusManager.findAll();
 
