@@ -222,9 +222,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private List<CrpProgram> regionList;
   private List<Institution> institutions;
   private List<Project> myProjects;
-  private List<Nexus> nexus;
-  private List<LeverOutcome> leverOutcomes;
-  private List<SdgTargets> sdgTargets;
+  private List<Nexus> nexusList;
+  private List<LeverOutcome> leverOutcomeList;
+  private List<SdgTargets> sdgTargetList;
 
   private String transaction;
 
@@ -408,8 +408,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return this.institutions;
   }
 
-  public List<LeverOutcome> getLeverOutcomes() {
-    return leverOutcomes;
+  public List<LeverOutcome> getLeverOutcomeList() {
+    return leverOutcomeList;
   }
 
   public GlobalUnit getLoggedCrp() {
@@ -432,8 +432,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return newExpectedYear;
   }
 
-  public List<Nexus> getNexus() {
-    return nexus;
+  public List<Nexus> getNexusList() {
+    return nexusList;
   }
 
   public List<RepIndOrganizationType> getOrganizationTypes() {
@@ -468,8 +468,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return this.regions;
   }
 
-  public List<SdgTargets> getSdgTargets() {
-    return sdgTargets;
+  public List<SdgTargets> getSdgTargetList() {
+    return sdgTargetList;
   }
 
   public long getSrfSubIdoPrimary() {
@@ -964,9 +964,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           }
         }
 
-        // Load Information (Nexus, Lever Outcomes and SDG Targets) for Alliance Global unit
-        if (this.getCurrentCrp() != null && this.getCurrentCrp().getId() != null
-          && this.getCurrentCrp().getId() == 45) {
+        // Load Information (Nexus, Lever Outcomes and SDG Targets) for Alliance Global unit - Just for active
+        // specificity
+        if (this.hasSpecificities(APConstants.CRP_ENABLE_NEXUS_LEVER_SDG_FIELDS)) {
 
           // Expected Study Nexus List
           if (this.expectedStudy.getProjectExpectedStudyNexus() != null) {
@@ -989,13 +989,13 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           }
 
           // Nexus
-          nexus = nexusManager.findAll();
+          nexusList = nexusManager.findAll();
 
           // Lever Outcomes
-          leverOutcomes = leverOutcomeManager.findAll();
+          leverOutcomeList = leverOutcomeManager.findAll();
 
           // SGD Targets
-          sdgTargets = sdgTargetsManager.findAll();
+          sdgTargetList = sdgTargetsManager.findAll();
         }
       }
 
@@ -2490,8 +2490,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.institutions = institutions;
   }
 
-  public void setLeverOutcomes(List<LeverOutcome> leverOutcomes) {
-    this.leverOutcomes = leverOutcomes;
+  public void setLeverOutcomeList(List<LeverOutcome> leverOutcomeList) {
+    this.leverOutcomeList = leverOutcomeList;
   }
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
@@ -2514,8 +2514,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.newExpectedYear = newExpectedYear;
   }
 
-  public void setNexus(List<Nexus> nexus) {
-    this.nexus = nexus;
+  public void setNexusList(List<Nexus> nexusList) {
+    this.nexusList = nexusList;
   }
 
   public void setOrganizationTypes(List<RepIndOrganizationType> organizationTypes) {
@@ -2546,8 +2546,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.regions = regions;
   }
 
-  public void setSdgTargets(List<SdgTargets> sdgTargets) {
-    this.sdgTargets = sdgTargets;
+  public void setSdgTargetList(List<SdgTargets> sdgTargetList) {
+    this.sdgTargetList = sdgTargetList;
   }
 
   public void setSrfSubIdoPrimary(long srfSubIdoPrimary) {
