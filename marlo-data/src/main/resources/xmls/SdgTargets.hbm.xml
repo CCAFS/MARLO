@@ -18,5 +18,14 @@
       fetch="select">
       <column name="sdg_id"  not-null="true" />
     </many-to-one>
+    <set fetch="select" inverse="true" lazy="true"
+      name="projectExpectedStudySdgTargets" table="project_expected_study_sdg_targets">
+      <key on-delete="noaction">
+        <column name="expected_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySdgTarget"
+        embed-xml="true" not-found="exception" />
+    </set>
   </class>
 </hibernate-mapping>

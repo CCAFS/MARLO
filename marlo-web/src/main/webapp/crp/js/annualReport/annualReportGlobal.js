@@ -486,14 +486,9 @@ function selectIndividualStudies() {
 }
 
 function disabledUncheckedCheckmarkColor() {
-  console.log($('input[id^="disabled-"]'));
   $('input[id^="disabled-"]').each((index, item) => {
     if ($(item).prop('checked') == false) {
-      console.log('sí cambio');
-      // $(item).closest('.inputContainer').find('.checkmark').css('background-color', '#ff0000');
       $(item).closest('.inputContainer').find('.checkmark').css('border', '2px solid #ff0000');
-    } else {
-      console.log('no cambio');
     }
   });
 }
