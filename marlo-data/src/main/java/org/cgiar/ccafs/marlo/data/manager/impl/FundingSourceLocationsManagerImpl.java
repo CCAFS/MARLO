@@ -69,8 +69,8 @@ public class FundingSourceLocationsManagerImpl implements FundingSourceLocations
     } else {
       locations.addAll(phase.getFundingSourceLocations().stream()
         .filter(c -> c.isActive() && c.getFundingSource().getId().longValue() == fundingSourceID
-          && c.getLocElementType() != null && fundingSourceLocation.getLocElementType().getId().longValue() == c
-            .getLocElementType().getId().longValue())
+          && c.getLocElementType() != null
+          && fundingSourceLocation.getLocElementType().getId().longValue() == c.getLocElementType().getId().longValue())
         .collect(Collectors.toList()));
     }
 
@@ -113,8 +113,8 @@ public class FundingSourceLocationsManagerImpl implements FundingSourceLocations
     } else {
       locations.addAll(phase.getFundingSourceLocations().stream()
         .filter(c -> c.isActive() && c.getFundingSource().getId().longValue() == fundingSourceID
-          && c.getLocElementType() != null && fundingSourceLocation.getLocElementType().getId().longValue() == c
-            .getLocElementType().getId().longValue())
+          && c.getLocElementType() != null
+          && fundingSourceLocation.getLocElementType().getId().longValue() == c.getLocElementType().getId().longValue())
         .collect(Collectors.toList()));
     }
     for (FundingSourceLocation location : locations) {
@@ -161,6 +161,12 @@ public class FundingSourceLocationsManagerImpl implements FundingSourceLocations
   @Override
   public List<FundingSourceLocation> findAllByFundingSourceId(Long fundingSourceId) {
     return fundingSourceLocationsDAO.findAllByFundingSourceId(fundingSourceId);
+  }
+
+  @Override
+  public List<FundingSourceLocation> findAllByPhase(Long phaseid) {
+
+    return fundingSourceLocationsDAO.findAllByPhase(phaseid);
   }
 
   @Override

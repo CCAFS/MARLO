@@ -86,6 +86,11 @@ public class DeliverableLocationManagerImpl implements DeliverableLocationManage
   }
 
   @Override
+  public List<DeliverableLocation> findAllByPhase(Long phaseId) {
+    return deliverableLocationDAO.findAllByPhase(phaseId);
+  }
+
+  @Override
   public DeliverableLocation getDeliverableLocationById(long deliverableLocationID) {
 
     return deliverableLocationDAO.find(deliverableLocationID);
