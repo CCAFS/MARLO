@@ -53,6 +53,14 @@ public interface DeliverableLocationManager {
 
 
   /**
+   * This method gets a list of deliverableLocation that are active
+   * 
+   * @param phaseId - Phase identifier
+   * @return a list from DeliverableLocation by given phase identifier null if no exist records
+   */
+  public List<DeliverableLocation> findAllByPhase(Long phaseId);
+
+  /**
    * This method gets a deliverableLocation object by a given deliverableLocation identifier.
    * 
    * @param deliverableLocationID is the deliverableLocation identifier.

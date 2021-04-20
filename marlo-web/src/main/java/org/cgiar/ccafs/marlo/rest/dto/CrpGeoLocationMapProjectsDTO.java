@@ -26,28 +26,26 @@ public class CrpGeoLocationMapProjectsDTO {
   private long id;
   private String title;
   private String status;
-  private List<String> flagships;
-  private List<String> regionalPrograms;
-  private String gender;
-  private String youth;
+  private List<DefaultFieldStringDTO> flagships;
+  private List<DefaultFieldStringDTO> regionalPrograms;
+  private Boolean gender;
+  private Boolean youth;
+  private Boolean capdev;
+  private Boolean climateChange;
 
-  private String capdev;
-
-  private String climateChange;
-
-  public String getCapdev() {
+  public Boolean getCapdev() {
     return capdev;
   }
 
-  public String getClimateChange() {
+  public Boolean getClimateChange() {
     return climateChange;
   }
 
-  public List<String> getFlagships() {
+  public List<DefaultFieldStringDTO> getFlagships() {
     return flagships;
   }
 
-  public String getGender() {
+  public Boolean getGender() {
     return gender;
   }
 
@@ -55,7 +53,7 @@ public class CrpGeoLocationMapProjectsDTO {
     return id;
   }
 
-  public List<String> getRegionalPrograms() {
+  public List<DefaultFieldStringDTO> getRegionalPrograms() {
     return regionalPrograms;
   }
 
@@ -67,23 +65,23 @@ public class CrpGeoLocationMapProjectsDTO {
     return title;
   }
 
-  public String getYouth() {
+  public Boolean getYouth() {
     return youth;
   }
 
-  public void setCapdev(String capdev) {
+  public void setCapdev(Boolean capdev) {
     this.capdev = capdev;
   }
 
-  public void setClimateChange(String climateChange) {
+  public void setClimateChange(Boolean climateChange) {
     this.climateChange = climateChange;
   }
 
-  public void setFlagships(List<String> flagships) {
+  public void setFlagships(List<DefaultFieldStringDTO> flagships) {
     this.flagships = flagships;
   }
 
-  public void setGender(String gender) {
+  public void setGender(Boolean gender) {
     this.gender = gender;
   }
 
@@ -91,7 +89,7 @@ public class CrpGeoLocationMapProjectsDTO {
     this.id = id;
   }
 
-  public void setRegionalPrograms(List<String> regionalPrograms) {
+  public void setRegionalPrograms(List<DefaultFieldStringDTO> regionalPrograms) {
     this.regionalPrograms = regionalPrograms;
   }
 
@@ -103,7 +101,7 @@ public class CrpGeoLocationMapProjectsDTO {
     this.title = title;
   }
 
-  public void setYouth(String youth) {
+  public void setYouth(Boolean youth) {
     this.youth = youth;
   }
 

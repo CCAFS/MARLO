@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.ContributionOfCrpItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.CrossCuttingMarkerItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.CrossCuttingMarkerScoreItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.CrpGeoLocationMapItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.DegreeOfInnovationItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.InnovationTypeItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.MaturityOfChangeItem;
@@ -38,6 +39,7 @@ import org.cgiar.ccafs.marlo.rest.dto.BroadAreaDTO;
 import org.cgiar.ccafs.marlo.rest.dto.BudgetTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.CrossCuttingMarkerDTO;
 import org.cgiar.ccafs.marlo.rest.dto.CrossCuttingMarkerScoreDTO;
+import org.cgiar.ccafs.marlo.rest.dto.CrpGeoLocationMapDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InnovationTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.MaturityOfChangeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.MilestoneStatusDTO;
@@ -74,6 +76,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Configuration
@@ -105,6 +108,7 @@ public class ARControlLists {
   private BroadAreaItem<ARControlLists> broadAreaItem;
   private StatusOfResponseItem<ARControlLists> statusOfResponseItem;
   private MilestoneStatusItem<ARControlLists> milestoneStatusItem;
+  private CrpGeoLocationMapItem<ARControlLists> crpGeoLocationMapItem;
 
   @Autowired
   private Environment env;
@@ -124,8 +128,8 @@ public class ARControlLists {
     OrganizationTypeItem<ARControlLists> organizationTypeItem, StudyTypeItem<ARControlLists> studyTypeItem,
     TagItem<ARControlLists> tagItem, PartnershipMainAreaItem<ARControlLists> partnershipMainAreaItem,
     BudgetTypeItem<ARControlLists> bugdetTypeItem, BroadAreaItem<ARControlLists> broadAreaItem,
-    StatusOfResponseItem<ARControlLists> statusOfResponseItem,
-    MilestoneStatusItem<ARControlLists> milestoneStatusItem) {
+    StatusOfResponseItem<ARControlLists> statusOfResponseItem, MilestoneStatusItem<ARControlLists> milestoneStatusItem,
+    CrpGeoLocationMapItem<ARControlLists> crpGeoLocationMapItem) {
     this.crossCuttingMarkerScoreItem = crossCuttingMarkerScoreItem;
     this.innovationTypesItem = innovationTypesItem;
     this.researchPartnershipsItem = researchPartnershipsItem;
@@ -145,6 +149,7 @@ public class ARControlLists {
     this.broadAreaItem = broadAreaItem;
     this.statusOfResponseItem = statusOfResponseItem;
     this.milestoneStatusItem = milestoneStatusItem;
+    this.crpGeoLocationMapItem = crpGeoLocationMapItem;
   }
 
   /**
@@ -733,6 +738,24 @@ public class ARControlLists {
   @RequestMapping(value = "/tags", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public List<TagDTO> getAllTags() {
     return this.tagItem.getAllTags();
+  }
+
+  @ApiOperation(tags = "Utils", value = "${ARControlLists.CrpGeoLocationMap.code.value}",
+    response = CrpGeoLocationMapDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/CrpGeoLocationMap", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<CrpGeoLocationMapDTO> getCrpGeoLocationMap(
+    @ApiParam(value = "${Deliverables.deliverable.GET.all.param.CGIAR}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${ExpectedStudies.OICR.GET.all.param.year}", required = true) @RequestParam Integer year) {
+    List<CrpGeoLocationMapDTO> data = null;
+    try {
+      data = crpGeoLocationMapItem.getAllCrpGeoLocationMap(CGIAREntity, year);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return data;
   }
 
 }
