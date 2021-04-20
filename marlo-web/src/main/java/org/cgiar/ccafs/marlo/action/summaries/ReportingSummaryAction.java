@@ -5632,11 +5632,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     // Get project from DB
     try {
       this.setProject(projectManager.getProjectById(this.getProjectID()));
+      if (this.getSelectedPhase() != null && project.getProjecInfoPhase(this.getSelectedPhase()) != null) {
+        this.setProjectInfo(project.getProjecInfoPhase(this.getSelectedPhase()));
+      }
     } catch (Exception e) {
       LOG.error("Failed to get project. Exception: " + e.getMessage());
-    }
-    if (this.getSelectedPhase() != null && project.getProjecInfoPhase(this.getSelectedPhase()) != null) {
-      this.setProjectInfo(project.getProjecInfoPhase(this.getSelectedPhase()));
     }
   }
 
