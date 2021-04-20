@@ -50,6 +50,30 @@ public class SdgTargets implements java.io.Serializable {
   }
 
 
+  public String getComposedName() {
+    String composedName = "";
+    if (this.getId() == null || this.getId() == -1) {
+      return "";
+    } else {
+      if (this.getSdg() != null) {
+
+        if (this.getSdg().getSmoCode() != null && !this.getSdg().getSmoCode().isEmpty()) {
+          composedName.concat(this.getSdg().getSmoCode() + " ");
+        }
+        if (this.getSdg().getShortName() != null && !this.getSdg().getShortName().isEmpty()) {
+          composedName.concat(this.getSdg().getShortName() + " ");
+        }
+        if (this.getSdg().getDescription() != null && !this.getSdg().getDescription().isEmpty()) {
+          composedName.concat(this.getSdg().getDescription() + " ");
+        }
+      } else {
+        return "";
+      }
+    }
+    return composedName;
+  }
+
+
   public Long getId() {
     return id;
   }
@@ -64,10 +88,10 @@ public class SdgTargets implements java.io.Serializable {
     return sdg;
   }
 
-
   public List<ProjectExpectedStudySdgTarget> getStudySdgTargets() {
     return studySdgTargets;
   }
+
 
   public List<ProjectExpectedStudySdgTarget> getStudySdgTargets(Phase phase) {
     return new ArrayList<>(this.getProjectExpectedStudySdgTargets().stream()
@@ -91,7 +115,6 @@ public class SdgTargets implements java.io.Serializable {
     this.id = id;
   }
 
-
   public void setProjectExpectedStudySdgTargets(Set<ProjectExpectedStudySdgTarget> projectExpectedStudySdgTargets) {
     this.projectExpectedStudySdgTargets = projectExpectedStudySdgTargets;
   }
@@ -111,5 +134,4 @@ public class SdgTargets implements java.io.Serializable {
   public void setTarget_code(String target_code) {
     this.target_code = target_code;
   }
-
 }
