@@ -6,7 +6,7 @@
 [#assign pageLibs = [ "select2", "trumbowyg", "components-font-awesome", "datatables.net", "datatables.net-bs","flag-icon-css"] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js"
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210421A" ] /]
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210421B" ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210316"] /]
 
 [#assign breadCrumb = [
@@ -139,8 +139,8 @@
       <div class="pull-right">
         [@macrosAR.evidencesPopup element=(element)!{} list=(action.getEvidenceInfo(element.id))![]  /]
       </div> 
-      <strong >SLO Target 2022</strong>
-       <br />${(element.narrative)!} <br>
+      <strong class="highlightedSLO-${element.id}">SLO Target 2022</strong>
+       <br/><span class="highlightedTitle-${element.id}">${(element.narrative)!}</span><br>
        <div class="checkboxDiTeAr">
          <div class="contentCheckBox">
           [@customForm.checkbox name="sloTargets[${index}].hasEvidence" value="${element.hasEvidence?string('false', 'true')}" checked=element.hasEvidence!false i18nkey="No new evidence" className="checkboxDiTeArClick" required=false editable=editable /]
@@ -162,6 +162,8 @@
         <ul class="nav nav-tabs insertHtmlSlo-tabs-${element.id}" role="tablist">
         </ul>
         <div class="tab-content insertHtmlSlo-tabpanel-${element.id}">
+        <span class="highlightedTitle-${element.id}">${(element.narrative)!}</span>
+        <br>
         </div>
       </div>
 
@@ -193,7 +195,7 @@
      
       <div class="tab-content">
         [#list liaisonInstitutions as flagship]
-        <div role="tabpanel" [#if (flagship_index)! == 0] class="tab-pane active" [#else]class="tab-pane" [/#if] id="${(flagship.crpProgram.acronym)!}-${index}" style="overflow-y: scroll; max-height: 590px;">
+        <div role="tabpanel" [#if (flagship_index)! == 0] class="tab-pane active" [#else]class="tab-pane" [/#if] id="${(flagship.crpProgram.acronym)!}-${index}" style="overflow-y: scroll; max-height: 510px;">
          [#--  <p>this is a ${(flagship.crpProgram.acronym)!}</p> --]
           [#-- 
            [#list sloTargetList[index].targetCases as slo]
