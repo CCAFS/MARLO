@@ -6,7 +6,7 @@
 [#assign pageLibs = [ "select2", "trumbowyg", "components-font-awesome", "datatables.net", "datatables.net-bs","flag-icon-css"] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js"
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210412A" ] /]
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210421A" ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210316"] /]
 
 [#assign breadCrumb = [
@@ -157,8 +157,8 @@
       </div>
 
      <br>
-
-      <div class="collapse" id="collapseExample-${index}">
+      
+      <div class="collapse flagships col-md-3" id="collapseExample-${index}">
         <ul class="nav nav-tabs insertHtmlSlo-tabs-${element.id}" role="tablist">
         </ul>
         <div class="tab-content insertHtmlSlo-tabpanel-${element.id}">
@@ -178,7 +178,7 @@
       </div>
 
 
-      <div class="collapse" id="collapseExample-${index}">
+      <div class="collapse flagships col-md-3" id="collapseExample-${index}">
 
           <div>
 
@@ -193,7 +193,7 @@
      
       <div class="tab-content">
         [#list liaisonInstitutions as flagship]
-        <div role="tabpanel" [#if (flagship_index)! == 0] class="tab-pane active" [#else]class="tab-pane" [/#if] id="${(flagship.crpProgram.acronym)!}-${index}" style="overflow-y: scroll; max-height: 700px;">
+        <div role="tabpanel" [#if (flagship_index)! == 0] class="tab-pane active" [#else]class="tab-pane" [/#if] id="${(flagship.crpProgram.acronym)!}-${index}" style="overflow-y: scroll; max-height: 590px;">
          [#--  <p>this is a ${(flagship.crpProgram.acronym)!}</p> --]
           [#-- 
            [#list sloTargetList[index].targetCases as slo]
