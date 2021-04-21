@@ -82,7 +82,7 @@
               <hr />
               <div class="form-group">
                 <h4 class="headTitle annualReport-table">[@s.text name="${customLabel}.evidenceProgress" /]</h4>
-                [@customForm.helpLabel name="${customLabel}.evidenceProgress.help" showIcon=false editable=editable helpMore=true /]
+                [@customForm.helpLabel name="${customLabel}.evidenceProgress2020.help" showIcon=false editable=editable helpMore=true /]
                 <div class="block-selectedSLOs">
                   <div class="form-group sloTargetsList">
                     [#if sloTargets?has_content]
@@ -305,10 +305,10 @@
   <br>
   <div class="form-group TA_summaryEvidence">
   [#if !PMU] [@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/][/#if]
-    [@customForm.textArea name="${ccname}.briefSummaryShow" value=element.briefSummary i18nkey="${customLabel}.summaryEvidence" className="limitWords-150 tumaco" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable allowTextEditor=!isTemplate /]
+    [@customForm.textArea name="${ccname}.briefSummaryShow" value=element.briefSummary i18nkey="${customLabel}.summaryEvidence" className="limitWords-150 tumaco" help="${customLabel}.summaryEvidence2020.help" helpIcon=false required=true editable=editable allowTextEditor=!isTemplate /]
 
     <div style="display:none">
-    [@customForm.textArea name="${ccname}.briefSummary" value=element.briefSummary i18nkey="${customLabel}.summaryEvidence" className="limitWords-150 briefSummaryTAHidden" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable  /]
+    [@customForm.textArea name="${ccname}.briefSummary" value=element.briefSummary i18nkey="${customLabel}.summaryEvidence" className="limitWords-150 briefSummaryTAHidden" help="${customLabel}.summaryEvidence2020.help" helpIcon=false required=true editable=editable  /]
     </div>
   [#-- FP Synthesis table --]
   [#if PMU]
