@@ -1469,6 +1469,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       if (this.hasSpecificities(APConstants.CRP_ENABLE_NEXUS_LEVER_SDG_FIELDS)) {
         this.saveNexus(this.expectedStudyDB, phase);
         this.saveLeverOutcomes(this.expectedStudyDB, phase);
+        this.saveSdgTargets(this.expectedStudyDB, phase);
       }
 
       boolean haveRegions = false;
