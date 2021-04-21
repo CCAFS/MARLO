@@ -133,6 +133,7 @@ public final class APConstants {
     "crp_show_section_impact_covid19_ranges_years";
   public static final String PREVIOUS_PROJECT_ID_ACTIVE = "previous_project_id_field_active";
   public static final String CRP_BI_MODULE_ACTIVE = "crp_bi_module_active";
+  public static final String CRP_ENABLE_NEXUS_LEVER_SDG_FIELDS = "crp_enable_nexus_lever_sdg_fields";
 
   public static final String IS_EXPECTED_DELIVERABLE_REPORT_All_YEARS_VISIBLE =
     "is_expected_deliverable_report_all_years_visible";

@@ -17,8 +17,11 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.google.gson.annotations.Expose;
 
@@ -40,6 +43,11 @@ public class LeverOutcome extends MarloBaseEntity implements java.io.Serializabl
   private String indicator;
 
   private Set<LeverOutcome> leverOutcomeTypes = new HashSet<>(0);
+
+  private Set<ProjectExpectedStudyLeverOutcome> projectExpectedStudyLeverOutcomes =
+    new HashSet<ProjectExpectedStudyLeverOutcome>(0);
+
+  private List<ProjectExpectedStudyLeverOutcome> studyLeverOutcomes;
 
   public LeverOutcome() {
   }
@@ -87,6 +95,21 @@ public class LeverOutcome extends MarloBaseEntity implements java.io.Serializabl
     return this.name;
   }
 
+  public Set<ProjectExpectedStudyLeverOutcome> getProjectExpectedStudyLeverOutcomes() {
+    return projectExpectedStudyLeverOutcomes;
+  }
+
+  public List<ProjectExpectedStudyLeverOutcome> getStudyLeverOutcomes() {
+    return studyLeverOutcomes;
+  }
+
+  public List<ProjectExpectedStudyLeverOutcome> getStudyLeverOutcomes(Phase phase) {
+    return new ArrayList<>(this.getProjectExpectedStudyLeverOutcomes().stream()
+      .filter(pp -> pp.isActive() && pp.getPhase().equals(phase) && pp.getProjectExpectedStudy() != null
+        && pp.getProjectExpectedStudy().getProjectExpectedStudyInfo(phase) != null)
+      .collect(Collectors.toList()));
+  }
+
   @Override
   public boolean isActive() {
     return true;
@@ -108,11 +131,41 @@ public class LeverOutcome extends MarloBaseEntity implements java.io.Serializabl
     this.leverOutcomeTypes = leverOutcomeTypes;
   }
 
+
   @Override
   public void setModifiedBy(User modifiedBy) {
   }
 
+
   public void setName(String name) {
     this.name = name;
   }
+
+  public void
+    setProjectExpectedStudyLeverOutcomes(Set<ProjectExpectedStudyLeverOutcome> projectExpectedStudyLeverOutcomes) {
+    this.projectExpectedStudyLeverOutcomes = projectExpectedStudyLeverOutcomes;
+  }
+
+  public void setStudyLeverOutcomes(List<ProjectExpectedStudyLeverOutcome> studyLeverOutcomes) {
+    this.studyLeverOutcomes = studyLeverOutcomes;
+  }
+  
+  public String getComposedName() {
+    String composedName = "";
+    if (this.getId() == null || this.getId() == -1) {
+      return "";
+    }else {
+      if(this.getIndicator() != null && !this.getIndicator().isEmpty()) {
+        composedName.concat(this.getIndicator() + " ");
+      }
+      if(this.getName() != null && !this.getName().isEmpty()) {
+        composedName.concat(this.getName() + " ");
+      }
+      if(this.getDescription() != null && !this.getDescription().isEmpty()) {
+        composedName.concat(this.getDescription() + " ");
+      }
+    }
+    return composedName;
+  }
+
 }
