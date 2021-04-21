@@ -2,7 +2,7 @@ var $tableViewMore;
 var tableDatatableViewmore, tableDataProgressTableViewmore, tableDatatableTableGrey, tableInnovations, tablePolicies, tableOICRs;
 var pageName;
 var googleChartsLoaded = false;
-
+var isActive = false;
 
 function getContributionListComponentValue(contributionData){
 
@@ -99,16 +99,13 @@ function getTargetCasesBySLO(){
         }
       });
     }
-  
-
 }
-
 
 function contributionListComponentInsertHTML(data,id){
   var count = 0;
   var activeFP = false;
 
-  $(`.flagshipBtn-${id}`).on('click',changeButtonText);
+  $(`.flagshipBtn-${id}`).on('click', changeButtonText);
 
   data.sources.forEach((item,index) => {
     if (item.contribution.length == 0) {
@@ -121,7 +118,7 @@ function contributionListComponentInsertHTML(data,id){
       }
     } else {
       $('.insertHtmlSlo-tabs-'+id).append(`<li role="presentation" class="${!activeFP?'active':''}" ><a href="#${item.id}-${id}-tab" aria-controls="${item.id}-${id}-tab" role="tab" data-toggle="tab">${item.id}</a></li>`);
-      $('.insertHtmlSlo-tabpanel-'+id).append(`<div role="tabpanel" class="tab-pane ${!activeFP?'active':''}" id="${item.id}-${id}-tab" style="overflow-y: scroll; max-height: 700px;"></div>`);
+      $('.insertHtmlSlo-tabpanel-'+id).append(`<div role="tabpanel" class="tab-pane ${!activeFP?'active':''}" id="${item.id}-${id}-tab" style="overflow-y: scroll; max-height: 510px;"></div>`);
       activeFP = true;
     }
     item.contribution.forEach(contributionData => {
@@ -355,6 +352,7 @@ $(document).ready(function() {
   selectIndividualInnovations();
   selectIndividualStudies();
   disabledUncheckedCheckmarkColor();
+  appearDisappearFlagshipsTable(isActive, 0);
 });
 
 function updateALltexareas(){
@@ -620,10 +618,46 @@ function updateAllIndexesContribution() {
 }
 
 function changeButtonText() {
+  var className = $(this).attr('class');
+  var theNum = className.match(/\d/g).join('');
+
   if ($(this).text() == 'Show flagships information') {
     $(this).text('Hide flagships information');
+    $(`.highlightedTitle-${theNum}`).css('background', '#71b2ff');
+    $(`.highlightedTitle-${theNum}`).css('color', 'white');
+    isActive = true;
   } else {
     $(this).text('Show flagships information');
+    $(`.highlightedTitle-${theNum}`).css('background', 'none');
+    $(`.highlightedTitle-${theNum}`).css('color', '#5f5e5e');
+    isActive = false;
+  }
+
+  if (isActive) {
+    $('button[class*="flagshipBtn"]').not(this).prop('ariaExpanded', "false");
+    $('button[class*="flagshipBtn"]').not(this).addClass('collapsed');
+    $('div[class*="flagships"]').removeClass('in');
+    $('button[class*="flagshipBtn"]').not(this).text('Show flagships information');
+    $('span[class*="highlightedTitle"]').not($(`.highlightedTitle-${theNum}`)).css('background', 'none');
+    $(`span[class*="highlightedTitle"]`).not($(`.highlightedTitle-${theNum}`)).css('color', '#5f5e5e');
+  } 
+
+  appearDisappearFlagshipsTable(isActive, theNum);
+}
+
+function appearDisappearFlagshipsTable(isActive, theNum) {
+  window.onscroll = function () {
+    let yScroll = window.scrollY;
+
+    if (isActive) {
+      if (yScroll <= 1444) {
+        $(`#collapseExample-${theNum-1}`).css('opacity', 0);
+        $(`#collapseExample-${theNum-1}`).removeClass('in');
+      } else {
+        $(`#collapseExample-${theNum-1}`).css('opacity', 1);
+        $(`#collapseExample-${theNum-1}`).addClass('in');
+      }
+    }
   }
 }
 
