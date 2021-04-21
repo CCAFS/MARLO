@@ -11,6 +11,15 @@ function init() {
 
   // Set google charts
   setGoogleCharts();
+  disabledUncheckedCheckmarkColor();
+}
+
+function disabledUncheckedCheckmarkColor() {
+  $('input[id^="disabled-"]').each((index, item) => {
+    if ($(item).prop('checked') == false) {
+      $(item).closest('.inputContainer').find('.checkmark').css('border', '2px solid #ff0000');
+    }
+  });
 }
 
 function attachEvents() {
