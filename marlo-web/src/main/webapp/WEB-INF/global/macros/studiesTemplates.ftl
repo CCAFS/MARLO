@@ -323,6 +323,20 @@
         [/#if]
       </div>
       
+      [#if isOutcomeCaseStudy && action.hasSpecificities('crp_enable_nexus_lever_sdg_fields')]
+      <br>
+        <div class="form-group" simpleBox>      
+          [#-- Nexus  --]
+          [@customForm.elementsListComponent name="${customName}.nexus" elementType="nexus" elementList=element.nexus label="study.nexus"  listName="nexusList" keyFieldName="id" displayFieldName="name"/]
+       
+          [#-- Lever Outcomes  --]
+          [@customForm.elementsListComponent name="${customName}.leverOutcomes" elementType="leverOutcome" elementList=element.leverOutcomes label="study.leverOutcomes"  listName="leverOutcomeList" keyFieldName="id" displayFieldName="composedName"/]
+       
+          [#-- Sdg Targets  --]
+          [@customForm.elementsListComponent name="${customName}.sdgTargets" elementType="sdgTargets" elementList=element.sdgTargets label="study.sdgTargets"  listName="sdgTargetList" keyFieldName="id" displayFieldName="composedName"/]
+        </div>
+      [/#if]
+      
       [#-- Milestones --]
         [#if isOutcomeCaseStudy]
         <div class="form-group">          

@@ -111,6 +111,17 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
   private Set<ProjectExpectedStudyPolicy> projectExpectedStudyPolicies = new HashSet<ProjectExpectedStudyPolicy>(0);
   private List<ProjectExpectedStudyPolicy> policies;
 
+  private Set<ProjectExpectedStudyNexus> projectExpectedStudyNexus = new HashSet<ProjectExpectedStudyNexus>(0);
+  private List<ProjectExpectedStudyNexus> nexus;
+
+  private Set<ProjectExpectedStudyLeverOutcome> projectExpectedStudyLeverOutcomes =
+    new HashSet<ProjectExpectedStudyLeverOutcome>(0);
+  private List<ProjectExpectedStudyLeverOutcome> leverOutcomes;
+
+  private Set<ProjectExpectedStudySdgTarget> projectExpectedStudySdgTargets =
+    new HashSet<ProjectExpectedStudySdgTarget>(0);
+  private List<ProjectExpectedStudySdgTarget> sdgTargets;
+
   private Set<ProjectExpectedStudyQuantification> projectExpectedStudyQuantifications =
     new HashSet<ProjectExpectedStudyQuantification>(0);
   private List<ProjectExpectedStudyQuantification> quantifications;
@@ -255,6 +266,10 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     return institutions;
   }
 
+  public List<ProjectExpectedStudyLeverOutcome> getLeverOutcomes() {
+    return leverOutcomes;
+  }
+
   public List<ProjectExpectedStudyLink> getLinks() {
     return links;
   }
@@ -268,6 +283,10 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
 
   public List<ProjectExpectedStudyMilestone> getMilestones() {
     return milestones;
+  }
+
+  public List<ProjectExpectedStudyNexus> getNexus() {
+    return nexus;
   }
 
   public String getOtherType() {
@@ -342,12 +361,20 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     return projectExpectedStudyInstitutions;
   }
 
+  public Set<ProjectExpectedStudyLeverOutcome> getProjectExpectedStudyLeverOutcomes() {
+    return projectExpectedStudyLeverOutcomes;
+  }
+
   public Set<ProjectExpectedStudyLink> getProjectExpectedStudyLinks() {
     return projectExpectedStudyLinks;
   }
 
   public Set<ProjectExpectedStudyMilestone> getProjectExpectedStudyMilestones() {
     return projectExpectedStudyMilestones;
+  }
+
+  public Set<ProjectExpectedStudyNexus> getProjectExpectedStudyNexus() {
+    return projectExpectedStudyNexus;
   }
 
   public Set<ProjectExpectedStudyPolicy> getProjectExpectedStudyPolicies() {
@@ -360,6 +387,10 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
 
   public Set<ProjectExpectedStudyRegion> getProjectExpectedStudyRegions() {
     return projectExpectedStudyRegions;
+  }
+
+  public Set<ProjectExpectedStudySdgTarget> getProjectExpectedStudySdgTargets() {
+    return projectExpectedStudySdgTargets;
   }
 
   public Set<ProjectExpectedStudySrfTarget> getProjectExpectedStudySrfTargets() {
@@ -392,6 +423,10 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     }
     return GlobalScopeEnum.getValue(scope.intValue()).getType();
 
+  }
+
+  public List<ProjectExpectedStudySdgTarget> getSdgTargets() {
+    return sdgTargets;
   }
 
   public Set<SectionStatus> getSectionStatuses() {
@@ -516,12 +551,20 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     this.institutions = institutions;
   }
 
+  public void setLeverOutcomes(List<ProjectExpectedStudyLeverOutcome> leverOutcomes) {
+    this.leverOutcomes = leverOutcomes;
+  }
+
   public void setLinks(List<ProjectExpectedStudyLink> links) {
     this.links = links;
   }
 
   public void setMilestones(List<ProjectExpectedStudyMilestone> milestones) {
     this.milestones = milestones;
+  }
+
+  public void setNexus(List<ProjectExpectedStudyNexus> nexus) {
+    this.nexus = nexus;
   }
 
   public void setOtherType(String otherType) {
@@ -582,12 +625,21 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     this.projectExpectedStudyInstitutions = projectExpectedStudyInstitutions;
   }
 
+  public void
+    setProjectExpectedStudyLeverOutcomes(Set<ProjectExpectedStudyLeverOutcome> projectExpectedStudyLeverOutcomes) {
+    this.projectExpectedStudyLeverOutcomes = projectExpectedStudyLeverOutcomes;
+  }
+
   public void setProjectExpectedStudyLinks(Set<ProjectExpectedStudyLink> projectExpectedStudyLinks) {
     this.projectExpectedStudyLinks = projectExpectedStudyLinks;
   }
 
   public void setProjectExpectedStudyMilestones(Set<ProjectExpectedStudyMilestone> projectExpectedStudyMilestones) {
     this.projectExpectedStudyMilestones = projectExpectedStudyMilestones;
+  }
+
+  public void setProjectExpectedStudyNexus(Set<ProjectExpectedStudyNexus> projectExpectedStudyNexus) {
+    this.projectExpectedStudyNexus = projectExpectedStudyNexus;
   }
 
   public void setProjectExpectedStudyPolicies(Set<ProjectExpectedStudyPolicy> projectExpectedStudyPolicies) {
@@ -601,6 +653,10 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
 
   public void setProjectExpectedStudyRegions(Set<ProjectExpectedStudyRegion> projectExpectedStudyRegions) {
     this.projectExpectedStudyRegions = projectExpectedStudyRegions;
+  }
+
+  public void setProjectExpectedStudySdgTargets(Set<ProjectExpectedStudySdgTarget> projectExpectedStudySdgTargets) {
+    this.projectExpectedStudySdgTargets = projectExpectedStudySdgTargets;
   }
 
   public void setProjectExpectedStudySrfTargets(Set<ProjectExpectedStudySrfTarget> projectExpectedStudySrfTargets) {
@@ -625,6 +681,10 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
 
   public void setScope(Integer scope) {
     this.scope = scope;
+  }
+
+  public void setSdgTargets(List<ProjectExpectedStudySdgTarget> sdgTargets) {
+    this.sdgTargets = sdgTargets;
   }
 
   public void setSectionStatuses(Set<SectionStatus> sectionStatuses) {
@@ -672,5 +732,4 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     return "Id [" + this.getId() + "]" + "ProjectExpectedStudy [projectExpectedStudyInfo=" + projectExpectedStudyInfo
       + "]";
   }
-
 }

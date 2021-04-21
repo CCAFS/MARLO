@@ -37,6 +37,14 @@
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.LeverOutcome" />
 		</set>
-
+    <set fetch="select" inverse="true" lazy="true"
+      name="projectExpectedStudyLeverOutcomes" table="project_expected_study_lever_outcomes">
+      <key on-delete="noaction">
+        <column name="expected_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLeverOutcome"
+        embed-xml="true" not-found="exception" />
+    </set>
 	</class>
 </hibernate-mapping>

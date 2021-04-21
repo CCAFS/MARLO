@@ -204,6 +204,15 @@
                   <div class="form-group viewMoreSyntesisTableGrey-block"> 
                     [#-- Table --]
                     <h4 class="headTitle">[@s.text name="${customLabel}.fullGreyList.title" /]</h4>
+                    <div class="form-group row">
+                      <div class="col-md-4">
+                        [#-- Total number of Grey Literature --]
+                        <div id="" class="simpleBox numberBox">
+                          <label for="">[@s.text name="${customLabel}.indicatorC4.totalGrey" /]</label><br />
+                          <span>${(totalGrey)!}</span>
+                        </div>
+                      </div>
+                    </div>
                     [@listOfPublications name="fullGreyList" list=(deliverablesNotPublications)![]  allowPopups=true isGrey=true /]
                   </div>
               </div>

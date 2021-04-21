@@ -59,7 +59,7 @@ public class LeverOutcomeMySQLDAO extends AbstractMarloDAO<LeverOutcome, Long> i
 
   @Override
   public List<LeverOutcome> findAll() {
-    String query = "from " + LeverOutcome.class.getName() + " where is_active=1";
+    String query = "from " + LeverOutcome.class.getName();
     List<LeverOutcome> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
@@ -75,8 +75,6 @@ public class LeverOutcomeMySQLDAO extends AbstractMarloDAO<LeverOutcome, Long> i
     } else {
       leverOutcome = super.update(leverOutcome);
     }
-
-
     return leverOutcome;
   }
 
