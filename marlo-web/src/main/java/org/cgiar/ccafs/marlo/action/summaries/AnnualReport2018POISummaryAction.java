@@ -772,7 +772,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         if (sloTarget.getHasEvidence() != null && sloTarget.getHasEvidence()) {
           checkContributing = "";
         } else if (sloTarget.getHasEvidence() == false) {
-          checkContributing = "Not evidence for this SLO Target";
+          checkContributing = "N/A";
         }
 
         // Get Target Cases (evidences)
@@ -1023,7 +1023,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
            * }
            */
           POIField[] sData = {new POIField(name, ParagraphAlignment.LEFT, false, "000000"),
-            new POIField(recomendation, ParagraphAlignment.LEFT, true),
+            new POIField(recomendation, ParagraphAlignment.LEFT, false),
             new POIField(text, ParagraphAlignment.LEFT, true),
             new POIField(status, ParagraphAlignment.LEFT, false, "000000"),
             new POIField(actions, ParagraphAlignment.LEFT, true, "000000"),
@@ -1531,7 +1531,11 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           for (ProjectInnovationGeographicScope innovationGeographic : innovationGeographics) {
             if (innovationGeographic != null && innovationGeographic.getRepIndGeographicScope() != null
               && innovationGeographic.getRepIndGeographicScope().getName() != null) {
-              geographic += innovationGeographic.getRepIndGeographicScope().getName() + ", ";
+              if (innovationGeographic.getRepIndGeographicScope().getName().contains("Global")) {
+                geographic += innovationGeographic.getRepIndGeographicScope().getName() + ", ";
+              } else {
+                geographic += innovationGeographic.getRepIndGeographicScope().getName() + ": ";
+              }
             }
           }
         }

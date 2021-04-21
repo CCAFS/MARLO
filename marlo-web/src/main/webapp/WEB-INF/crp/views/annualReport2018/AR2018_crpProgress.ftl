@@ -143,7 +143,7 @@
        <br/><span class="highlightedTitle-${element.id}">${(element.narrative)!}</span><br>
        <div class="checkboxDiTeAr">
          <div class="contentCheckBox">
-          [@customForm.checkbox name="sloTargets[${index}].hasEvidence" value="${element.hasEvidence?string('false', 'true')}" checked=element.hasEvidence!false i18nkey="No new evidence" className="checkboxDiTeArClick" required=false editable=editable /]
+          [@customForm.checkbox name="sloTargets[${index}].hasEvidence" value="${element.hasEvidence?string('false', 'true')}" checked=element.hasEvidence!false i18nkey="Target not applicable for your CRP" className="checkboxDiTeArClick" required=false editable=editable /]
          </div>
        </div>
       
