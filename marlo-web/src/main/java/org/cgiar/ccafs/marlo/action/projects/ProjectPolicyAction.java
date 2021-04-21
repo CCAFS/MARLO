@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.manager.PolicyMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSharedManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCountryManager;
@@ -145,6 +146,7 @@ public class ProjectPolicyAction extends BaseAction {
   private ProjectPolicyCenterManager projectPolicyCenterManager;
   private InstitutionManager institutionManager;
   private SrfIdoManager srfIdoManager;
+  private ProjectInnovationSharedManager projectInnovationSharedManager;
 
   // Variables
   private GlobalUnit loggedCrp;
@@ -197,7 +199,8 @@ public class ProjectPolicyAction extends BaseAction {
     ProjectPolicyGeographicScopeManager projectPolicyGeographicScopeManager,
     ProjectPolicyRegionManager projectPolicyRegionManager, PolicyMilestoneManager policyMilestoneManager,
     CrpMilestoneManager crpMilestoneManager, ProjectPolicyCenterManager projectPolicyCenterManager,
-    InstitutionManager institutionManager, SrfIdoManager srfIdoManager) {
+    InstitutionManager institutionManager, SrfIdoManager srfIdoManager,
+    ProjectInnovationSharedManager projectInnovationSharedManager) {
     super(config);
     this.globalUnitManager = globalUnitManager;
     this.projectPolicyManager = projectPolicyManager;
@@ -231,6 +234,7 @@ public class ProjectPolicyAction extends BaseAction {
     this.projectPolicyCenterManager = projectPolicyCenterManager;
     this.institutionManager = institutionManager;
     this.srfIdoManager = srfIdoManager;
+    this.projectInnovationSharedManager = projectInnovationSharedManager;
   }
 
   /**
@@ -846,13 +850,23 @@ public class ProjectPolicyAction extends BaseAction {
       /*
        * Update 4/25/2019 Adding Shared Project Innovation in the lists.
        */
-      List<ProjectInnovationShared> innovationShareds = new ArrayList<>(project.getProjectInnovationShareds().stream()
-        .filter(px -> px.isActive() && px.getPhase().getId() == this.getActualPhase().getId()
-          && px.getProjectInnovation().isActive()
-          && px.getProjectInnovation().getProjectInnovationInfo(this.getActualPhase()) != null)
-        .collect(Collectors.toList()));
-      if (innovationShareds != null && innovationShareds.size() > 0) {
-        for (ProjectInnovationShared innovationShared : innovationShareds) {
+      List<ProjectInnovationShared> innovationsShared = projectInnovationSharedManager.findAll().stream()
+        .filter(p -> p != null && p.getId() != null && p.getProject() != null && p.getProject().getId() != null
+          && p.getProject().equals(this.project) && p.isActive() && p.getPhase() != null && p.getPhase().getId() != null
+          && p.getPhase().equals(this.getActualPhase()) && p.getProjectInnovation() != null
+          && p.getProjectInnovation().getId() != null && p.getProjectInnovation().isActive()
+          && p.getProjectInnovation().getProjectInnovationInfo(this.getActualPhase()) != null)
+        .collect(Collectors.toList());
+      /*
+       * List<ProjectInnovationShared> innovationShareds = new
+       * ArrayList<>(project.getProjectInnovationShareds().stream()
+       * .filter(px -> px.isActive() && px.getPhase().getId() == this.getActualPhase().getId()
+       * && px.getProjectInnovation().isActive()
+       * && px.getProjectInnovation().getProjectInnovationInfo(this.getActualPhase()) != null)
+       * .collect(Collectors.toList()));
+       */
+      if (innovationsShared != null && innovationsShared.size() > 0) {
+        for (ProjectInnovationShared innovationShared : innovationsShared) {
           if (!innovationList.contains(innovationShared.getProjectInnovation())) {
             this.innovationList.add(innovationShared.getProjectInnovation());
           }
