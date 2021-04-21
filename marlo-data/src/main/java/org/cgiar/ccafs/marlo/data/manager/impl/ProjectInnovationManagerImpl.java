@@ -228,6 +228,7 @@ public class ProjectInnovationManagerImpl implements ProjectInnovationManager {
             projectInnovation.setCountries(projectInnovation.getCountries(phaseDB));
             projectInnovation.setRegions(projectInnovation.getRegions(phaseDB));
             projectInnovation.setContributingOrganizations(projectInnovation.getContributingOrganizations(phaseDB));
+            projectInnovation.setStudies(projectInnovation.getStudies(phaseDB));
             projectInnovations.add(projectInnovation);
           }
         }
@@ -261,6 +262,7 @@ public class ProjectInnovationManagerImpl implements ProjectInnovationManager {
         }
         projectInnovation.getSelectedFlahsgips()
           .addAll(reportSynthesisFlagshipProgressInnovationDTO.getLiaisonInstitutions());
+        projectInnovation.setStudies(projectInnovation.getStudies(phaseDB));
         projectInnovations.add(projectInnovation);
 
       }

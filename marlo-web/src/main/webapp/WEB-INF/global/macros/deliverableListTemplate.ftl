@@ -73,15 +73,13 @@
               None
             [#else]
               ${(deliverable.deliverableInfo.year)!'None'}
-              [#if  
-                    ((deliverable.deliverableInfo.status == 4 || deliverable.deliverableInfo.status==3)!false )
-                    && ((deliverable.deliverableInfo.newExpectedYear != -1)!false) 
-                    ]
-                Extended to ${deliverable.deliverableInfo.newExpectedYear}
+              [#if ((deliverable.deliverableInfo.status == 4 || deliverable.deliverableInfo.status==3 || deliverable.deliverableInfo.status == 5)!false) && ((deliverable.deliverableInfo.newExpectedYear != -1)!false) ]
+                extended to ${deliverable.deliverableInfo.newExpectedYear}
               [/#if]
             [/#if]
             
           </td>
+
           [#if isReportingActive]
             [#-- Deliverable FAIR compliance --]
             <td class="fair text-center"> 

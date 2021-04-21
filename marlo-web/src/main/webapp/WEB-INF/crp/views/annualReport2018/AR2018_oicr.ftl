@@ -5,10 +5,12 @@
 [#assign currentStage = actionName?split('/')[1]/]
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs", "font-awesome" ] /]
 [#assign customJS = [   
+  "https://www.gstatic.com/charts/loader.js",
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210226" 
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_outomesMilestones.js?20210419",
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210413a" 
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210225"] /]
 
@@ -47,7 +49,61 @@
           [#-- Title --]
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
           <div class="borderBox">
-          
+            <br />
+            <div class="form-group row">
+              <div class="col-md-5">
+                <div class="simpleBox numberBox">
+                  <label for="">[@s.text name="${customLabel}.indicatorI1.totalOicrs" /]</label><br />
+                  <span class="animated infinite bounce">${(((total)!0)?number?string(",##0"))!0}</span>
+                </div>
+                <div id="chart14" class="chartBox simpleBox" style="height: 250px;">
+                   <ul class="chartData" style="display:none">
+                    <li>
+                      <span></span>
+                      [#list (reportSynthesisStudiesByRepIndStageStudyDTOs)![] as data]
+                        [#if data.repIndStageStudy.name?contains("Level")]    
+                            <span>${data.repIndStageStudy.name}</span>
+                            <span class="json">{"role":"annotation"}</span> 
+                        [/#if]                    
+                      [/#list] 
+                    </li>
+                    <li>
+                      <span></span>
+                      [#list (reportSynthesisStudiesByRepIndStageStudyDTOs)![] as data]
+                        [#if data.repIndStageStudy.name?contains("Level")]
+                          <span class="number">${data.projectStudies?size}</span>
+                          <span>${data.projectStudies?size}</span>
+                        [/#if]  
+                      [/#list]
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              
+              [#-- Chart 15 - OICRs by FP --]
+              <div class="col-md-7">
+                 <div id="chart15" class="chartBox simpleBox" style="height: 294px;">
+                  <ul class="chartData" style="display:none">
+                    <li>
+                      <span>[@s.text name="" /]</span>
+                      <span>[@s.text name="" /]</span>
+                      <span class="json">{"role":"style"}</span>
+                      <span class="json">{"role":"annotation"}</span>
+                    </li>
+                                        
+                    [#list (reportSynthesisStudiesByCrpProgramDTOs)![] as data]
+                      <li>
+                          <span>${(data.crpProgram.acronym)!}</span>
+                          <span class="number">${data.projectStudies?size}</span>
+                          <span>${(data.crpProgram.color)!}</span>
+                          <span>${data.projectStudies?size}</span>
+                      </li> 
+                    [/#list]
+                  </ul>
+                </div> 
+              </div>
+            </div>
+
             [#-- Table 3: List of Outcome/Impact Case Reports --]
             <div class="form-group">
               [#-- Word Document Tag --]
@@ -114,7 +170,10 @@
           [#if !expanded]
             <th class="col-md-1 text-center no-sort">[@s.text name="${customLabel}.${name}.missingFields" /]</th>
             [#if PMU]
-              <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
+              <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] 
+              <br>
+              <span class="selectAllCheckStudies">[@customForm.checkmark id="selectAllStudies" name="selectAllStudies" value="false" checked=false editable=editable centered=true/]</span>
+              </th>
             [/#if]
           [/#if]
         </tr>
@@ -185,9 +244,10 @@
               <td class="text-center">
                 [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.studiesIds?seq_contains(item.id))!true) /]
                 [#local canBeRemoved = (action.canBeRemovedFromAR(item.id, actualPhase.id)!false)]
-                <div data-toggle="tooltip" [#if !canBeRemoved]title="[@s.text name="annualReport2018.oicr.table3.cannotBeRemoved" /]"[/#if]>
+                <div data-toggle="tooltip" [#if !canBeRemoved && isChecked]title="[@s.text name="annualReport2018.oicr.table3.cannotBeRemoved" /]"[/#if]>
                   [@customForm.checkmark id="study-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.studiesValue" value="${(item.id)!''}" checked=isChecked editable=(editable&&canBeRemoved) centered=true/] 
                 </div>
+                <div style="display: none">${isChecked?string('1','0')}</div>
                 [#--@customForm.checkmark id="study-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.studiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/--] 
               </td>
              [/#if]

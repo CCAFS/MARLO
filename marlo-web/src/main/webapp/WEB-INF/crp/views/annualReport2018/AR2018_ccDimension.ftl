@@ -191,17 +191,17 @@
                           </thead>
                           <tbody>
                             <tr>
-                              <td> [@s.text name="${customLabel}.table7.shortTerm" /]</td>
+                              <td> [@s.text name="${customLabel}.table7.shortTerm" /] [@s.text name="*" /]</td>
                               <td> [@customForm.input name="${customName}.traineesShortTermFemale" i18nkey="" showTitle=false className="numericInput" required=true editable=editable /] </td>
                               <td> [@customForm.input name="${customName}.traineesShortTermMale" i18nkey="" showTitle=false className="numericInput" required=true editable=editable /] </td>
                             </tr>
                             <tr>
-                              <td> [@s.text name="${customLabel}.table7.longTerm" /]</td>
+                              <td> [@s.text name="${customLabel}.table7.longTerm" /] [@s.text name="*" /]</td>
                               <td> [@customForm.input name="${customName}.traineesLongTermFemale" i18nkey="" showTitle=false className="numericInput" required=true editable=editable /] </td>
                               <td> [@customForm.input name="${customName}.traineesLongTermMale" i18nkey="" showTitle=false className="numericInput" required=true editable=editable /] </td>
                             </tr>
                             <tr>
-                              <td> [@s.text name="${customLabel}.table7.phd" /]
+                              <td> [@s.text name="${customLabel}.table7.phd" /] [@s.text name="*" /]
                                    <br/><small>([@s.text name="${customLabel}.table7.phd.help" /])</small>
                               </td>
                               <td> [@customForm.input name="${customName}.phdFemale" i18nkey="" showTitle=false className="numericInput" required=true editable=editable /] </td>

@@ -19,6 +19,11 @@
 
 package org.cgiar.ccafs.marlo.data.model;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class SdgTargets implements java.io.Serializable {
 
@@ -27,6 +32,9 @@ public class SdgTargets implements java.io.Serializable {
   private String target_code;
   private String target;
   private Sdg sdg;
+  private Set<ProjectExpectedStudySdgTarget> projectExpectedStudySdgTargets =
+    new HashSet<ProjectExpectedStudySdgTarget>(0);
+  private List<ProjectExpectedStudySdgTarget> studySdgTargets;
 
   public SdgTargets() {
     super();
@@ -42,13 +50,54 @@ public class SdgTargets implements java.io.Serializable {
   }
 
 
+  public String getComposedName() {
+    String composedName = "";
+    if (this.getId() == null || this.getId() == -1) {
+      return "";
+    } else {
+      if (this.getSdg() != null) {
+
+        if (this.getSdg().getSmoCode() != null && !this.getSdg().getSmoCode().isEmpty()) {
+          composedName.concat(this.getSdg().getSmoCode() + " ");
+        }
+        if (this.getSdg().getShortName() != null && !this.getSdg().getShortName().isEmpty()) {
+          composedName.concat(this.getSdg().getShortName() + " ");
+        }
+        if (this.getSdg().getDescription() != null && !this.getSdg().getDescription().isEmpty()) {
+          composedName.concat(this.getSdg().getDescription() + " ");
+        }
+      } else {
+        return "";
+      }
+    }
+    return composedName;
+  }
+
+
   public Long getId() {
     return id;
   }
 
 
+  public Set<ProjectExpectedStudySdgTarget> getProjectExpectedStudySdgTargets() {
+    return projectExpectedStudySdgTargets;
+  }
+
+
   public Sdg getSdg() {
     return sdg;
+  }
+
+  public List<ProjectExpectedStudySdgTarget> getStudySdgTargets() {
+    return studySdgTargets;
+  }
+
+
+  public List<ProjectExpectedStudySdgTarget> getStudySdgTargets(Phase phase) {
+    return new ArrayList<>(this.getProjectExpectedStudySdgTargets().stream()
+      .filter(pp -> pp.isActive() && pp.getPhase().equals(phase) && pp.getProjectExpectedStudy() != null
+        && pp.getProjectExpectedStudy().getProjectExpectedStudyInfo(phase) != null)
+      .collect(Collectors.toList()));
   }
 
 
@@ -66,20 +115,23 @@ public class SdgTargets implements java.io.Serializable {
     this.id = id;
   }
 
+  public void setProjectExpectedStudySdgTargets(Set<ProjectExpectedStudySdgTarget> projectExpectedStudySdgTargets) {
+    this.projectExpectedStudySdgTargets = projectExpectedStudySdgTargets;
+  }
 
   public void setSdg(Sdg sdg) {
     this.sdg = sdg;
   }
 
+  public void setStudySdgTargets(List<ProjectExpectedStudySdgTarget> studySdgTargets) {
+    this.studySdgTargets = studySdgTargets;
+  }
 
   public void setTarget(String target) {
     this.target = target;
   }
 
-
   public void setTarget_code(String target_code) {
     this.target_code = target_code;
   }
-
-
 }
