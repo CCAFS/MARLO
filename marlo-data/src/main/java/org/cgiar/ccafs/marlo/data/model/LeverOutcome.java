@@ -149,5 +149,23 @@ public class LeverOutcome extends MarloBaseEntity implements java.io.Serializabl
   public void setStudyLeverOutcomes(List<ProjectExpectedStudyLeverOutcome> studyLeverOutcomes) {
     this.studyLeverOutcomes = studyLeverOutcomes;
   }
+  
+  public String getComposedName() {
+    String composedName = "";
+    if (this.getId() == null || this.getId() == -1) {
+      return "";
+    }else {
+      if(this.getIndicator() != null && !this.getIndicator().isEmpty()) {
+        composedName.concat(this.getIndicator() + " ");
+      }
+      if(this.getName() != null && !this.getName().isEmpty()) {
+        composedName.concat(this.getName() + " ");
+      }
+      if(this.getDescription() != null && !this.getDescription().isEmpty()) {
+        composedName.concat(this.getDescription() + " ");
+      }
+    }
+    return composedName;
+  }
 
 }
