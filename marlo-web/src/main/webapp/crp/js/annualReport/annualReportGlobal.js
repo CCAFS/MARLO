@@ -99,10 +99,7 @@ function getTargetCasesBySLO(){
         }
       });
     }
-  
-
 }
-
 
 function contributionListComponentInsertHTML(data,id){
   var count = 0;
@@ -121,7 +118,7 @@ function contributionListComponentInsertHTML(data,id){
       }
     } else {
       $('.insertHtmlSlo-tabs-'+id).append(`<li role="presentation" class="${!activeFP?'active':''}" ><a href="#${item.id}-${id}-tab" aria-controls="${item.id}-${id}-tab" role="tab" data-toggle="tab">${item.id}</a></li>`);
-      $('.insertHtmlSlo-tabpanel-'+id).append(`<div role="tabpanel" class="tab-pane ${!activeFP?'active':''}" id="${item.id}-${id}-tab" style="overflow-y: scroll; max-height: 590px;"></div>`);
+      $('.insertHtmlSlo-tabpanel-'+id).append(`<div role="tabpanel" class="tab-pane ${!activeFP?'active':''}" id="${item.id}-${id}-tab" style="overflow-y: scroll; max-height: 510px;"></div>`);
       activeFP = true;
     }
     item.contribution.forEach(contributionData => {
@@ -626,9 +623,13 @@ function changeButtonText() {
 
   if ($(this).text() == 'Show flagships information') {
     $(this).text('Hide flagships information');
+    $(`.highlightedTitle-${theNum}`).css('background', '#71b2ff');
+    $(`.highlightedTitle-${theNum}`).css('color', 'white');
     isActive = true;
   } else {
     $(this).text('Show flagships information');
+    $(`.highlightedTitle-${theNum}`).css('background', 'none');
+    $(`.highlightedTitle-${theNum}`).css('color', '#5f5e5e');
     isActive = false;
   }
 
@@ -637,6 +638,8 @@ function changeButtonText() {
     $('button[class*="flagshipBtn"]').not(this).addClass('collapsed');
     $('div[class*="flagships"]').removeClass('in');
     $('button[class*="flagshipBtn"]').not(this).text('Show flagships information');
+    $('span[class*="highlightedTitle"]').not($(`.highlightedTitle-${theNum}`)).css('background', 'none');
+    $(`span[class*="highlightedTitle"]`).not($(`.highlightedTitle-${theNum}`)).css('color', '#5f5e5e');
   } 
 
   appearDisappearFlagshipsTable(isActive, theNum);
