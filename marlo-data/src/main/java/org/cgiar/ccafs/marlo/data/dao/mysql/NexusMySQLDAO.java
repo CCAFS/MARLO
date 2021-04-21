@@ -38,7 +38,7 @@ public class NexusMySQLDAO extends AbstractMarloDAO<Nexus, Long> implements Nexu
   @Override
   public void deleteNexus(long nexusId) {
     Nexus nexus = this.find(nexusId);
-    this.update(nexus);
+    this.delete(nexus);
   }
 
   @Override

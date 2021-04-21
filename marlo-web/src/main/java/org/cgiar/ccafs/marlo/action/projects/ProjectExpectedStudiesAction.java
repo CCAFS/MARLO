@@ -37,12 +37,15 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyGeographicScopeMan
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyLeverOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyLinkManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyMilestoneManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyNexusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyQuantificationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyRegionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySdgTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySrfTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
@@ -82,6 +85,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLink;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyMilestone;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyNexus;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyQuantification;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
@@ -178,6 +182,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private NexusManager nexusManager;
   private LeverOutcomeManager leverOutcomeManager;
   private SdgTargetsManager sdgTargetsManager;
+  private ProjectExpectedStudyNexusManager projectExpectedStudyNexusManager;
+  private ProjectExpectedStudySdgTargetManager projectExpectedStudySdgTargetManager;
+  private ProjectExpectedStudyLeverOutcomeManager projectExpectedStudyLeverOutcomeManager;
 
   // AR 2018 Managers
   private EvidenceTagManager evidenceTagManager;
@@ -222,9 +229,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private List<CrpProgram> regionList;
   private List<Institution> institutions;
   private List<Project> myProjects;
-  private List<Nexus> nexus;
-  private List<LeverOutcome> leverOutcomes;
-  private List<SdgTargets> sdgTargets;
+  private List<Nexus> nexusList;
+  private List<LeverOutcome> leverOutcomeList;
+  private List<SdgTargets> sdgTargetList;
 
   private String transaction;
 
@@ -264,7 +271,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     ProjectExpectedStudyGeographicScopeManager projectExpectedStudyGeographicScopeManager,
     ProjectExpectedStudyCenterManager projectExpectedStudyCenterManager, CrpMilestoneManager milestoneManager,
     ProjectExpectedStudyMilestoneManager projectExpectedStudyMilestoneManager, NexusManager nexusManager,
-    LeverOutcomeManager leverOutcomeManager, SdgTargetsManager sdgTargetsManager) {
+    LeverOutcomeManager leverOutcomeManager, SdgTargetsManager sdgTargetsManager,
+    ProjectExpectedStudyNexusManager projectExpectedStudyNexusManager,
+    ProjectExpectedStudySdgTargetManager projectExpectedStudySdgTargetManager,
+    ProjectExpectedStudyLeverOutcomeManager projectExpectedStudyLeverOutcomeManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -315,6 +325,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.nexusManager = nexusManager;
     this.leverOutcomeManager = leverOutcomeManager;
     this.sdgTargetsManager = sdgTargetsManager;
+
+    this.projectExpectedStudyNexusManager = projectExpectedStudyNexusManager;
+    this.projectExpectedStudySdgTargetManager = projectExpectedStudySdgTargetManager;
+    this.projectExpectedStudyLeverOutcomeManager = projectExpectedStudyLeverOutcomeManager;
   }
 
   /**
@@ -408,8 +422,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return this.institutions;
   }
 
-  public List<LeverOutcome> getLeverOutcomes() {
-    return leverOutcomes;
+  public List<LeverOutcome> getLeverOutcomeList() {
+    return leverOutcomeList;
   }
 
   public GlobalUnit getLoggedCrp() {
@@ -432,8 +446,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return newExpectedYear;
   }
 
-  public List<Nexus> getNexus() {
-    return nexus;
+  public List<Nexus> getNexusList() {
+    return nexusList;
   }
 
   public List<RepIndOrganizationType> getOrganizationTypes() {
@@ -468,8 +482,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return this.regions;
   }
 
-  public List<SdgTargets> getSdgTargets() {
-    return sdgTargets;
+  public List<SdgTargets> getSdgTargetList() {
+    return sdgTargetList;
   }
 
   public long getSrfSubIdoPrimary() {
@@ -964,18 +978,38 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           }
         }
 
-        // Load Information (Nexus, Lever Outcomes and SDG Targets) for Alliance Global unit
-        if (this.getCurrentCrp() != null && this.getCurrentCrp().getId() != null
-          && this.getCurrentCrp().getId() == 45) {
+        // Load Information (Nexus, Lever Outcomes and SDG Targets) for Alliance Global unit - Just for active
+        // specificity
+        if (this.hasSpecificities(APConstants.CRP_ENABLE_NEXUS_LEVER_SDG_FIELDS)) {
+
+          // Expected Study Nexus List
+          if (this.expectedStudy.getProjectExpectedStudyNexus() != null) {
+            this.expectedStudy.setNexus(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyNexus().stream()
+              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+          }
+
+          // Expected Study Nexus Lever Outcomes List
+          if (this.expectedStudy.getProjectExpectedStudyLeverOutcomes() != null) {
+            this.expectedStudy
+              .setLeverOutcomes(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyLeverOutcomes().stream()
+                .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+          }
+
+          // Expected Study Sdg Targets List
+          if (this.expectedStudy.getProjectExpectedStudySdgTargets() != null) {
+            this.expectedStudy
+              .setSdgTargets(new ArrayList<>(this.expectedStudy.getProjectExpectedStudySdgTargets().stream()
+                .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+          }
 
           // Nexus
-          nexus = nexusManager.findAll();
+          nexusList = nexusManager.findAll();
 
           // Lever Outcomes
-          leverOutcomes = leverOutcomeManager.findAll();
+          leverOutcomeList = leverOutcomeManager.findAll();
 
           // SGD Targets
-          sdgTargets = sdgTargetsManager.findAll();
+          sdgTargetList = sdgTargetsManager.findAll();
         }
       }
 
@@ -1385,6 +1419,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       // Save Geographic Scope Data
       this.saveGeographicScopes(this.expectedStudyDB, phase);
+
+      // Save specifity tables
+      this.saveNexus(this.expectedStudyDB, phase);
 
       boolean haveRegions = false;
       boolean haveCountries = false;
@@ -2037,6 +2074,59 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   }
 
   /**
+   * Save Expected Studies Nexus Information
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  public void saveNexus(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
+
+    // Search and deleted form Information
+    if (projectExpectedStudy.getProjectExpectedStudyNexus() != null
+      && projectExpectedStudy.getProjectExpectedStudyNexus().size() > 0) {
+      List<ProjectExpectedStudyNexus> nexusPrev =
+        new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyNexus().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+      for (ProjectExpectedStudyNexus nexus : nexusPrev) {
+        if (this.expectedStudy.getNexus() == null || !this.expectedStudy.getNexus().contains(nexus)) {
+          this.projectExpectedStudyNexusManager.deleteProjectExpectedStudyNexus(nexus.getId());
+        }
+      }
+
+
+      // Delete prev studies policies if the question is not
+      if (expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()) != null
+        && expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getIsContribution() != null
+        && expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getIsContribution() == false) {
+        for (ProjectExpectedStudyNexus nexus : nexusPrev) {
+          this.projectExpectedStudyNexusManager.deleteProjectExpectedStudyNexus(nexus.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (this.expectedStudy.getNexus() != null) {
+      for (ProjectExpectedStudyNexus studyNexus : this.expectedStudy.getNexus()) {
+        if (studyNexus.getId() == null) {
+          ProjectExpectedStudyNexus nexusSave = new ProjectExpectedStudyNexus();
+          nexusSave.setProjectExpectedStudy(projectExpectedStudy);
+          nexusSave.setPhase(phase);
+
+          Nexus nexus = this.nexusManager.getNexusById(studyNexus.getNexus().getId());
+
+          nexusSave.setNexus(nexus);
+
+          this.projectExpectedStudyNexusManager.saveProjectExpectedStudyNexus(nexusSave);
+          // This is to add studyLinkSave to generate correct
+          // auditlog.
+          this.expectedStudy.getProjectExpectedStudyNexus().add(nexusSave);
+        }
+      }
+    }
+  }
+
+  /**
    * Save Expected Studies Policies Information
    * 
    * @param projectExpectedStudy
@@ -2470,8 +2560,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.institutions = institutions;
   }
 
-  public void setLeverOutcomes(List<LeverOutcome> leverOutcomes) {
-    this.leverOutcomes = leverOutcomes;
+  public void setLeverOutcomeList(List<LeverOutcome> leverOutcomeList) {
+    this.leverOutcomeList = leverOutcomeList;
   }
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
@@ -2494,8 +2584,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.newExpectedYear = newExpectedYear;
   }
 
-  public void setNexus(List<Nexus> nexus) {
-    this.nexus = nexus;
+  public void setNexusList(List<Nexus> nexusList) {
+    this.nexusList = nexusList;
   }
 
   public void setOrganizationTypes(List<RepIndOrganizationType> organizationTypes) {
@@ -2526,8 +2616,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.regions = regions;
   }
 
-  public void setSdgTargets(List<SdgTargets> sdgTargets) {
-    this.sdgTargets = sdgTargets;
+  public void setSdgTargetList(List<SdgTargets> sdgTargetList) {
+    this.sdgTargetList = sdgTargetList;
   }
 
   public void setSrfSubIdoPrimary(long srfSubIdoPrimary) {
