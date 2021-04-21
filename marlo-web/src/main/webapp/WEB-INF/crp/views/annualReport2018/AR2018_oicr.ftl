@@ -9,8 +9,8 @@
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
-  "${baseUrlMedia}/js/annualReport2018/annualReport2018_outomesMilestones.js?20210419",
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210413a" 
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_outomesMilestones.js?20210421",
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210421a" 
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210225"] /]
 
@@ -172,7 +172,8 @@
             [#if PMU]
               <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] 
               <br>
-              <span class="selectAllCheckStudies">[@customForm.checkmark id="selectAllStudies" name="selectAllStudies" value="false" checked=false editable=editable centered=true/]</span>
+              <button type="button" class="selectAllCheckStudies" id="selectAllStudies" style="color: #1da5ce; font-style: italic; font-weight: 500; background-color: #F9F9F9; border-bottom: none; outline: none">Select All</button>
+              [#--  <span class="selectAllCheckStudies">[@customForm.checkmark id="selectAllStudies" name="selectAllStudies" value="false" checked=false editable=editable centered=true/]</span>  --]
               </th>
             [/#if]
           [/#if]
