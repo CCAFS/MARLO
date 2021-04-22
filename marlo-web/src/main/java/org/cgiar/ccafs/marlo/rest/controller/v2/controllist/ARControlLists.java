@@ -847,5 +847,23 @@ public class ARControlLists {
         
         return this.tagItem.getAllTags();
     }
+    
+    @ApiOperation(tags = "Utils", value = "${ARControlLists.CrpGeoLocationMap.code.value}",
+      response = CrpGeoLocationMapDTO.class)
+    @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+    @RequestMapping(value = "/{CGIAREntity}/CrpGeoLocationMap", method = RequestMethod.GET,
+      produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<CrpGeoLocationMapDTO> getCrpGeoLocationMap(
+      @ApiParam(value = "${Deliverables.deliverable.GET.all.param.CGIAR}",
+        required = true) @PathVariable String CGIAREntity,
+      @ApiParam(value = "${ExpectedStudies.OICR.GET.all.param.year}", required = true) @RequestParam Integer year) {
+      List<CrpGeoLocationMapDTO> data = null;
+      try {
+        data = crpGeoLocationMapItem.getAllCrpGeoLocationMap(CGIAREntity, year);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+      return data;
+    }
 
 }

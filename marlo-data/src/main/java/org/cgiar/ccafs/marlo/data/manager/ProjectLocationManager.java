@@ -57,6 +57,14 @@ public interface ProjectLocationManager {
   public List<ProjectLocation> findAll();
 
   /**
+   * This method gets a list of projectLocation by given phase ID that are active
+   * 
+   * @param phaseId - Phase identifier
+   * @return a list from ProjectLocation null if no exist records
+   */
+  public List<ProjectLocation> findAllByPhase(Long phaseId);
+
+  /**
    * return the parents of project locations data
    * 
    * @param projectId - the project id
@@ -92,6 +100,5 @@ public interface ProjectLocationManager {
    *         or -1 is some error occurred.
    */
   public ProjectLocation saveProjectLocation(ProjectLocation projectLocation);
-
 
 }
