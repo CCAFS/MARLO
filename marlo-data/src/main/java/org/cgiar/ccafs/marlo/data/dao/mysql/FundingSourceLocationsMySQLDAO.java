@@ -97,6 +97,17 @@ public class FundingSourceLocationsMySQLDAO extends AbstractMarloDAO<FundingSour
 
 
   @Override
+  public List<FundingSourceLocation> findAllByPhase(Long phaseid) {
+    String queryString = "SELECT fsl FROM FundingSourceLocation fsl "
+      + "INNER JOIN fsl.phase ph WHERE fsl.active = TRUE " + "AND ph.id = :phaseid";
+    List<FundingSourceLocation> fundingSourceLocations =
+      this.getSessionFactory().getCurrentSession().createQuery(queryString).setParameter("phaseid", phaseid).list();
+
+    return fundingSourceLocations;
+  }
+
+
+  @Override
   public FundingSourceLocation save(FundingSourceLocation fundingSourceLocations) {
     if (fundingSourceLocations.getId() == null) {
       super.saveEntity(fundingSourceLocations);

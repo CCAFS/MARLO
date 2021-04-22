@@ -67,6 +67,14 @@ public interface FundingSourceLocationsDAO {
 
 
   /**
+   * This will return all fundingSourceLocations of phase id giving, preventing N+1 issues
+   * 
+   * @param phaseid - Phase identifier
+   * @return
+   */
+  public List<FundingSourceLocation> findAllByPhase(Long phaseid);
+
+  /**
    * This method saves the information of the given fundingSourceLocations
    * 
    * @param fundingSourceLocations - is the fundingSourceLocations object with the new information to be added/updated.

@@ -56,6 +56,14 @@ public interface ProjectPartnerLocationDAO {
 
 
   /**
+   * This method gets a list of projectPartnerLocation that are active
+   * 
+   * @param phase_id - phase identifier
+   * @return a list from ProjectPartnerLocation by giving phase id if no exist records
+   */
+  public List<ProjectPartnerLocation> findAllByPhase(Long phase_id);
+
+  /**
    * This method saves the information of the given projectPartnerLocation
    * 
    * @param projectPartnerLocation - is the projectPartnerLocation object with the new information to be added/updated.
