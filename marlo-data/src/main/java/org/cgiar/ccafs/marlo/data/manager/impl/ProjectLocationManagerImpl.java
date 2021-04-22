@@ -218,6 +218,11 @@ public class ProjectLocationManagerImpl implements ProjectLocationManager {
   }
 
   @Override
+  public List<ProjectLocation> findAllByPhase(Long phaseId) {
+    return projectLocationDAO.findAllByPhase(phaseId);
+  }
+
+  @Override
   public List<Map<String, Object>> getParentLocations(long projectId, String parentField) {
 
     return projectLocationDAO.getParentLocations(projectId, parentField);
