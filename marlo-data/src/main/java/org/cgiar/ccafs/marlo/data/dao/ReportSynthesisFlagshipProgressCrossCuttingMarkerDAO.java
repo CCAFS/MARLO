@@ -65,6 +65,14 @@ public interface ReportSynthesisFlagshipProgressCrossCuttingMarkerDAO {
   ReportSynthesisFlagshipProgressCrossCuttingMarker getMarkerId(long milestoneID, long cgiarCrossCuttingMarkerID,
     long phaseID);
 
+  /**
+   * Gets all the markers per ReportSynthesisFlagshipProgressOutcomeMilestone
+   * 
+   * @param progressOutcomeMilestoneID the ReportSynthesisFlagshipProgressOutcomeMilestone id
+   * @return a list of all the crosscutting markers of the ReportSynthesisFlagshipProgressOutcomeMilestone
+   */
+  public List<ReportSynthesisFlagshipProgressCrossCuttingMarker>
+    getMarkersPerMilestone(long progressOutcomeMilestoneID);
 
   /**
    * This method saves the information of the given reportSynthesisFlagshipProgressCrossCuttingMarker
