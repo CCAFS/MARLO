@@ -75,6 +75,12 @@ public class ReportSynthesisFlagshipProgressCrossCuttingMarkerManagerImpl
   }
 
   @Override
+  public List<ReportSynthesisFlagshipProgressCrossCuttingMarker>
+    getMarkersPerMilestone(long progressOutcomeMilestoneID) {
+    return reportSynthesisFlagshipProgressCrossCuttingMarkerDAO.getMarkersPerMilestone(progressOutcomeMilestoneID);
+  }
+
+  @Override
   public ReportSynthesisFlagshipProgressCrossCuttingMarker
     getReportSynthesisFlagshipProgressCrossCuttingMarkerById(long reportSynthesisFlagshipProgressCrossCuttingMarkerID) {
 
