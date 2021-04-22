@@ -139,7 +139,7 @@
       <div class="pull-right">
         [@macrosAR.evidencesPopup element=(element)!{} list=(action.getEvidenceInfo(element.id))![]  /]
       </div> 
-      <strong class="highlightedSLO-${element.id}">SLO Target 2022</strong>
+      <strong class="highlightedSLO-${element.id}">SLO Target 2022: ${(element.title)!}</strong>
        <br/><span class="highlightedTitle-${element.id}">${(element.narrative)!}</span><br>
        <div class="checkboxDiTeAr">
          <div class="contentCheckBox">
