@@ -66,7 +66,7 @@ public class URLShortener {
           }
 
           if (text.charAt(i) == ' ') {
-            finalUrl = i - 1;
+            finalUrl = i;
           }
 
           if ((i + 1) == text.length()) {
@@ -78,6 +78,7 @@ public class URLShortener {
           if (finalUrl > 0) {
 
             url = text.substring(startUrl, finalUrl);
+            url = url.trim();
             if (url.length() > LENGTH_LINK) {
               String shortURL = null;
               try {
@@ -162,6 +163,7 @@ public class URLShortener {
           if (finalUrl > 0) {
 
             url = text.substring(startUrl, finalUrl);
+            url = url.trim();
             if (url.length() > number) {
               String shortURL = null;
               try {

@@ -10,7 +10,7 @@
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20200311",
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210406a"
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210421a"
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210225"] /]
 
@@ -210,7 +210,8 @@
           [#if PMU]
             <th class="col-md-1 text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.includeAR" /]
             <br>
-            <span class="selectAllCheckPolicies">[@customForm.checkmark id="selectAllPolicies" name="selectAllPolicies" value="false" checked=false editable=editable centered=true/]</span>
+            <button type="button" class="selectAllCheckPolicies" id="selectAllPolicies" style="color: #1da5ce; font-style: italic; font-weight: 500; background-color: #F9F9F9; border-bottom: none; outline: none">Select All</button>
+            [#--  <span class="selectAllCheckPolicies">[@customForm.checkmark id="selectAllPolicies" name="selectAllPolicies" value="false" checked=false editable=editable centered=true/]</span>  --]
             </th>
           [/#if]
         [/#if]        
@@ -317,12 +318,13 @@
             [#if PMU]
               <td class="text-center">
                 [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.policiesIds?seq_contains(item.id))!true) /]
-                <div class="hidden">${isChecked?string}</div>
+                [#--  <div class="hidden">${isChecked?string}</div>  --]
                 [#--local canBeAddedToAR = ((action.canBeAddedToAR(item.id, actualPhase.id))!false)]
                 <div data-toggle="tooltip" [#if !canBeAddedToAR]title="[@s.text name="annualReport2018.policies.table2.cannotBeAddedToAR" /]"[/#if]>
                   [@customForm.checkmark id="policy-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.policiesValue" value="${(item.id)!''}" checked=isChecked editable=(editable&&canBeAddedToAR) centered=true/]
                 </div>--]
                 [@customForm.checkmark id="policy-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.policiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
+                <div style="display: none">${isChecked?string('1','0')}</div>
               </td>
             [/#if]
           [/#if]

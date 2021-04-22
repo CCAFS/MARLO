@@ -11,6 +11,15 @@ function init() {
 
   // Set google charts
   setGoogleCharts();
+  disabledUncheckedCheckmarkColor();
+}
+
+function disabledUncheckedCheckmarkColor() {
+  $('input[id^="disabled-"]').each((index, item) => {
+    if ($(item).prop('checked') == false) {
+      $(item).closest('.inputContainer').find('.checkmark').css('border', '2px solid #ff0000');
+    }
+  });
 }
 
 function attachEvents() {
@@ -101,8 +110,8 @@ function setGoogleCharts() {
       },
       chartArea: {
           top: 65,
-          right: 0,
-          width: '70%',
+          left: 55,
+          width: '80%',
           heigth: "100%"
       },
       hAxis: {
@@ -112,7 +121,8 @@ function setGoogleCharts() {
         textPosition: 'none',
         gridlines: {
           count: 0
-        }
+        },
+        title: '*Note: Please note that an OICR can contribute to more than one Flagship/Module.'
       },
       vAxis: {
         textStyle: {
