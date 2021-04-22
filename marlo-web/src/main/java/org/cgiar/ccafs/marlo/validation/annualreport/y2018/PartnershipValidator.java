@@ -143,7 +143,7 @@ public class PartnershipValidator extends BaseValidator {
       if (reportSynthesis.getReportSynthesisKeyPartnership().getCollaborations() == null
         || reportSynthesis.getReportSynthesisKeyPartnership().getCollaborations().isEmpty()) {
 
-        if (!action.isPMU()) {
+        if (!this.isPMU(this.getLiaisonInstitution(action, reportSynthesis.getId()))) {
           action.addMessage(action.getText("CGIAR Collaborations"));
           action.addMissingField("reportSynthesis.reportSynthesisKeyPartnership.collaborations");
           action.getInvalidFields().put("list-reportSynthesis.reportSynthesisKeyPartnership.collaborations",
