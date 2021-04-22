@@ -39,6 +39,12 @@ public class SrfSloIndicatorTarget extends MarloAuditableEntity implements java.
   @Expose
   private Boolean hasEvidence;
 
+  @Expose
+  private String smoCode;
+
+  @Expose
+  private String title;
+
   private List<ReportSynthesisSrfProgressTargetCases> targetCases = new ArrayList<>();
   private Set<ReportSynthesisSrfProgressTargetCases> ReportSynthesisSrfProgressTargetCases = new HashSet<>();
 
@@ -98,6 +104,10 @@ public class SrfSloIndicatorTarget extends MarloAuditableEntity implements java.
     return ReportSynthesisSrfProgressTargetCases;
   }
 
+  public String getSmoCode() {
+    return smoCode;
+  }
+
   public SrfSloIndicator getSrfSloIndicator() {
     return this.srfSloIndicator;
   }
@@ -112,6 +122,10 @@ public class SrfSloIndicatorTarget extends MarloAuditableEntity implements java.
 
   public String getTargetsIndicator() {
     return this.targetsIndicator;
+  }
+
+  public String getTitle() {
+    return title;
   }
 
   public BigDecimal getValue() {
@@ -148,9 +162,16 @@ public class SrfSloIndicatorTarget extends MarloAuditableEntity implements java.
     ReportSynthesisSrfProgressTargetCases = reportSynthesisSrfProgressTargetCases;
   }
 
+
+  public void setSmoCode(String smoCode) {
+    this.smoCode = smoCode;
+  }
+
+
   public void setSrfSloIndicator(SrfSloIndicator srfSloIndicator) {
     this.srfSloIndicator = srfSloIndicator;
   }
+
 
   public void setSrfTargetUnit(SrfTargetUnit srfTargetUnit) {
     this.srfTargetUnit = srfTargetUnit;
@@ -161,16 +182,17 @@ public class SrfSloIndicatorTarget extends MarloAuditableEntity implements java.
     this.targetCases = targetCases;
   }
 
-
   public void setTargetsIndicator(String targetsIndicator) {
     this.targetsIndicator = targetsIndicator;
   }
 
+  public void setTitle(String title) {
+    this.title = title;
+  }
 
   public void setValue(BigDecimal value) {
     this.value = value;
   }
-
 
   public void setYear(int year) {
     this.year = year;
