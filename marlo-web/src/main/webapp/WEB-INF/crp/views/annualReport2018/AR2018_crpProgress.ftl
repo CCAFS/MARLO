@@ -6,7 +6,7 @@
 [#assign pageLibs = [ "select2", "trumbowyg", "components-font-awesome", "datatables.net", "datatables.net-bs","flag-icon-css"] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js"
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210421B" ] /]
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210421C" ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210316"] /]
 
 [#assign breadCrumb = [
@@ -143,7 +143,7 @@
        <br/><span class="highlightedTitle-${element.id}">${(element.narrative)!}</span><br>
        <div class="checkboxDiTeAr">
          <div class="contentCheckBox">
-          [@customForm.checkbox name="sloTargets[${index}].hasEvidence" value="${element.hasEvidence?string('false', 'true')}" checked=element.hasEvidence!false i18nkey="Target not applicable for your CRP" className="checkboxDiTeArClick" required=false editable=editable /]
+          [@customForm.checkbox name="sloTargets[${index}].hasEvidence" value="${element.hasEvidence?string('false', 'true')}" checked=element.hasEvidence!false i18nkey="annualReport2018.flagshipProgress.targetNotApplicable" className="checkboxDiTeArClick" required=false editable=editable /]
          </div>
        </div>
       
@@ -158,7 +158,7 @@
 
      <br>
       
-      <div class="collapse flagships col-md-3" id="collapseExample-${index}">
+      <div class="collapse crpProgressflagships col-md-3" id="collapseExample-${index}">
         <ul class="nav nav-tabs insertHtmlSlo-tabs-${element.id}" role="tablist">
         </ul>
         <div class="tab-content insertHtmlSlo-tabpanel-${element.id}">
@@ -180,7 +180,7 @@
       </div>
 
 
-      <div class="collapse flagships col-md-3" id="collapseExample-${index}">
+      <div class="collapse crpProgressflagships col-md-3" id="collapseExample-${index}">
 
           <div>
 
