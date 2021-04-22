@@ -26,7 +26,6 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis2018SectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressDeliverable;
-import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
@@ -91,7 +90,6 @@ public class Publications2018Validator extends BaseValidator {
     return isFP;
   }
 
-
   public void validate(BaseAction action, ReportSynthesis reportSynthesis, boolean saving) {
     action.setInvalidFields(new HashMap<>());
     List<String> emptyFields = new ArrayList<>();
@@ -133,36 +131,36 @@ public class Publications2018Validator extends BaseValidator {
         }
 
         boolean tableComplete = false;
-        SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
-          "Reporting", 2019, false, "publications");
-
-        if (sectionStatus == null) {
-          tableComplete = true;
-          // sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
-        } else
-
-        if (sectionStatus != null && sectionStatus.getId() != 0 && sectionStatus.getMissingFields() != null
-          && sectionStatus.getMissingFields().length() != 0) {
-          if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table6") && sectionStatus.getId() != null
-            && sectionStatus.getId() != 0) {
-            // sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
-            sectionStatus.setMissingFields("");
-            tableComplete = true;
-          } else {
-            tableComplete = false;
-          }
-        } else {
-          if (sectionStatus != null && sectionStatus.getId() != 0) {
-            tableComplete = true;
-            // sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
-            sectionStatus.setMissingFields("");
-          }
-        }
+        /*
+         * SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
+         * "Reporting", 2019, false, "publications");
+         * if (sectionStatus == null) {
+         * tableComplete = true;
+         * // sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+         * } else
+         * if (sectionStatus != null && sectionStatus.getId() != 0 && sectionStatus.getMissingFields() != null
+         * && sectionStatus.getMissingFields().length() != 0) {
+         * if (sectionStatus.getMissingFields().contains("synthesis.AR2019Table6") && sectionStatus.getId() != null
+         * && sectionStatus.getId() != 0) {
+         * // sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+         * sectionStatus.setMissingFields("");
+         * tableComplete = true;
+         * } else {
+         * tableComplete = false;
+         * }
+         * } else {
+         * if (sectionStatus != null && sectionStatus.getId() != 0) {
+         * tableComplete = true;
+         * // sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+         * sectionStatus.setMissingFields("");
+         * }
+         * }
+         */
 
         int count = 0;
-        List<Deliverable> deliverables = new ArrayList<>();
+        List<Deliverable> deliverables = null;
         if (deliverablesTable6 != null) {
-          deliverables = deliverablesTable6;
+          deliverables = new ArrayList<>(deliverablesTable6);
         } else {
           deliverables =
             deliverableManager.getPublicationsList(reportSynthesis.getLiaisonInstitution(), action.getActualPhase());
@@ -170,11 +168,11 @@ public class Publications2018Validator extends BaseValidator {
         if (deliverables != null && !deliverables.isEmpty()) {
           for (Deliverable deliverable : deliverables) {
             if (deliverable != null && deliverable.getId() != null) {
-
               // Validate Specific fields
               deliverable = deliverableManager.getDeliverableById(deliverable.getId());
+              String link = null;
               int countB = 0;
-              int count2 = 0;
+              // int count2 = 0;
               if (deliverable != null) {
                 deliverable.setCrps(deliverable.getDeliverableCrps().stream()
                   .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase()))
@@ -189,27 +187,49 @@ public class Publications2018Validator extends BaseValidator {
 
                   // Is publication
                   if (deliverable.getPublication().getIsiPublication() == null) {
-                    emptyFields.add("Is publication");
+                    emptyFields.add("null ISI");
                     countB++;
                   }
 
+                  if (StringUtils.isBlank(deliverable.getPublication().getJournal())) {
+                    emptyFields.add("Journal name");
+                  }
+
                   // Issue - Page - Volume
-                  if (deliverable.getPublication().getVolume() == null
-                    || deliverable.getPublication().getVolume().isEmpty()) {
-                    count2++;
-                  }
-                  if (deliverable.getPublication().getPages() == null
-                    || deliverable.getPublication().getPages().isEmpty()) {
-                    count2++;
-                  }
-                  if (deliverable.getPublication().getIssue() == null
-                    || deliverable.getPublication().getIssue().isEmpty()) {
-                    count2++;
-                  }
+                  /*
+                   * if (deliverable.getPublication().getVolume() == null
+                   * || deliverable.getPublication().getVolume().isEmpty()) {
+                   * count2++;
+                   * }
+                   * if (deliverable.getPublication().getPages() == null
+                   * || deliverable.getPublication().getPages().isEmpty()) {
+                   * count2++;
+                   * }
+                   * if (deliverable.getPublication().getIssue() == null
+                   * || deliverable.getPublication().getIssue().isEmpty()) {
+                   * count2++;
+                   * }
+                   */
                 }
-                if (count2 == 3) {
-                  emptyFields.add("Issue/Pages/Volume");
-                  countB++;
+                /*
+                 * if (count2 == 3) {
+                 * emptyFields.add("Issue/Pages/Volume");
+                 * countB++;
+                 * }
+                 */
+
+                if (deliverable.getDissemination(action.getActualPhase()) != null) {
+                  if (deliverable.getDissemination().getIsOpenAccess() == null) {
+                    emptyFields.add("null OpenAccess");
+                    countB++;
+                  }
+
+                  if (link == null && deliverable.getDissemination().getHasDOI() != null
+                    && deliverable.getDissemination().getHasDOI().booleanValue() && !StringUtils.startsWithIgnoreCase(
+                      StringUtils.stripToNull(deliverable.getDissemination().getArticleUrl()), "Not")) {
+                    // emptyFields.add("empty ArticleURL");
+                    link = StringUtils.stripToNull(deliverable.getDissemination().getArticleUrl());
+                  }
                 }
 
                 int countAuthors = 0;
@@ -232,23 +252,21 @@ public class Publications2018Validator extends BaseValidator {
                   countB++;
                 }
 
-                if (deliverable.getMetadata() != null) {
-                  // Unique identifier (DOI)
-                  if (deliverable.getMetadataValue(36) != null
-                    || StringUtils.isBlank(deliverable.getMetadataValue(36))) {
-                    // Has DOI
-                  } else {
-                    if (deliverable.getDissemination(action.getActualPhase()) != null
-                      && deliverable.getDissemination(action.getActualPhase()).getHasDOI() != null
-                      && deliverable.getDissemination(action.getActualPhase()).getArticleUrl() != null
-                      && !deliverable.getDissemination(action.getActualPhase()).getArticleUrl().isEmpty()) {
-                      // Has DOI
-                    } else {
-                      // If the mark of No DOI is empty
-                      emptyFields.add("DOI");
-                      count++;
-                    }
+                if (deliverable.getMetadataElements(action.getActualPhase()) != null
+                  && !deliverable.getMetadataElements().isEmpty()) {
+                  // Handle
+                  if (link == null && !StringUtils
+                    .startsWithIgnoreCase(StringUtils.stripToNull(deliverable.getMetadataValue(35)), "Not")) {
+                    link = StringUtils.stripToNull(deliverable.getMetadataValue(35));
                   }
+                  // DOI
+                  if (link == null && !StringUtils
+                    .startsWithIgnoreCase(StringUtils.stripToNull(deliverable.getMetadataValue(36)), "Not")) {
+                    // Has DOI
+                    link = StringUtils.stripToNull(deliverable.getMetadataValue(36));
+                  }
+
+
                   // Date of Publication
                   if ((deliverable.getMetadataValue(17) == null || deliverable.getMetadataValue(17).isEmpty())
                     && (deliverable.getMetadataValue(16) == null || deliverable.getMetadataValue(16).isEmpty())) {
@@ -262,6 +280,11 @@ public class Publications2018Validator extends BaseValidator {
                     count++;
                   }
                 }
+              }
+
+              if (StringUtils.isBlank(link)) {
+                emptyFields.add("URL(DOI,Handle,ArticleURL)");
+                count++;
               }
 
               if (countB > 0) {

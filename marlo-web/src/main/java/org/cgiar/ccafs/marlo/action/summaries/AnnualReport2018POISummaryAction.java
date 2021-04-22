@@ -769,10 +769,18 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         }
 
         // Slo Target Check contributing
-        if (sloTarget.getHasEvidence() != null && sloTarget.getHasEvidence()) {
+        ReportSynthesisSrfProgressTargetContribution sloContribution =
+          new ReportSynthesisSrfProgressTargetContribution();
+        if (reportSynthesisSrfProgressTargetContributionManager.findBySloTargetSynthesis(sloTarget.getId(),
+          reportSynthesisPMU.getId()) != null) {
+          sloContribution = reportSynthesisSrfProgressTargetContributionManager
+            .findBySloTargetSynthesis(sloTarget.getId(), reportSynthesisPMU.getId()).get(0);
+        }
+
+        if (sloContribution != null && sloContribution.isHasEvidence()) {
+          checkContributing = "N/A";
+        } else {
           checkContributing = "";
-        } else if (sloTarget.getHasEvidence() == false) {
-          checkContributing = "Not evidence for this SLO Target";
         }
 
         // Get Target Cases (evidences)
@@ -866,14 +874,15 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           Boolean bold = false;
           POIField[] sData =
             {new POIField(poiSummary.replaceHTMLTags(sloTargetSummary), ParagraphAlignment.LEFT, bold, blackColor),
-              new POIField("", ParagraphAlignment.LEFT, true), new POIField("", ParagraphAlignment.LEFT, true),
-              new POIField("", ParagraphAlignment.LEFT, true)};
+              new POIField(checkContributing, ParagraphAlignment.LEFT, true),
+              new POIField("", ParagraphAlignment.LEFT, true), new POIField("", ParagraphAlignment.LEFT, true)};
           data = Arrays.asList(sData);
           datas.add(data);
         }
       }
     }
     poiSummary.textTable(document, headers, datas, true, "table1AnnualReport2020");
+
   }
 
   private void createTable10() {
@@ -1023,10 +1032,10 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
            * }
            */
           POIField[] sData = {new POIField(name, ParagraphAlignment.LEFT, false, "000000"),
-            new POIField(recomendation, ParagraphAlignment.LEFT, true),
+            new POIField(recomendation, ParagraphAlignment.LEFT, false),
             new POIField(text, ParagraphAlignment.LEFT, true),
             new POIField(status, ParagraphAlignment.LEFT, false, "000000"),
-            new POIField(actions, ParagraphAlignment.LEFT, true, "000000"),
+            new POIField(actions, ParagraphAlignment.LEFT, false, "000000"),
             new POIField(whom, ParagraphAlignment.LEFT, false, "000000"),
             new POIField(when, ParagraphAlignment.LEFT, false, "000000"),
             new POIField(evidence, ParagraphAlignment.LEFT, true)};
@@ -1531,7 +1540,11 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           for (ProjectInnovationGeographicScope innovationGeographic : innovationGeographics) {
             if (innovationGeographic != null && innovationGeographic.getRepIndGeographicScope() != null
               && innovationGeographic.getRepIndGeographicScope().getName() != null) {
-              geographic += innovationGeographic.getRepIndGeographicScope().getName() + ", ";
+              if (innovationGeographic.getRepIndGeographicScope().getName().contains("Global")) {
+                geographic += innovationGeographic.getRepIndGeographicScope().getName() + ", ";
+              } else {
+                geographic += innovationGeographic.getRepIndGeographicScope().getName() + ": ";
+              }
             }
           }
         }

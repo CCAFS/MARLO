@@ -6,7 +6,7 @@
 [#assign pageLibs = [ "select2", "trumbowyg", "components-font-awesome", "datatables.net", "datatables.net-bs","flag-icon-css"] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js"
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210412A" ] /]
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210421C" ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210316"] /]
 
 [#assign breadCrumb = [
@@ -82,7 +82,7 @@
               <hr />
               <div class="form-group">
                 <h4 class="headTitle annualReport-table">[@s.text name="${customLabel}.evidenceProgress" /]</h4>
-                [@customForm.helpLabel name="${customLabel}.evidenceProgress.help" showIcon=false editable=editable helpMore=true /]
+                [@customForm.helpLabel name="${customLabel}.evidenceProgress2020.help" showIcon=false editable=editable helpMore=true /]
                 <div class="block-selectedSLOs">
                   <div class="form-group sloTargetsList">
                     [#if sloTargets?has_content]
@@ -139,11 +139,11 @@
       <div class="pull-right">
         [@macrosAR.evidencesPopup element=(element)!{} list=(action.getEvidenceInfo(element.id))![]  /]
       </div> 
-      <strong >SLO Target 2022</strong>
-       <br />${(element.narrative)!} <br>
+      <strong class="highlightedSLO-${element.id}">SLO Target 2022</strong>
+       <br/><span class="highlightedTitle-${element.id}">${(element.narrative)!}</span><br>
        <div class="checkboxDiTeAr">
          <div class="contentCheckBox">
-          [@customForm.checkbox name="sloTargets[${index}].hasEvidence" value="${element.hasEvidence?string('false', 'true')}" checked=element.hasEvidence!false i18nkey="No new evidence" className="checkboxDiTeArClick" required=false editable=editable /]
+          [@customForm.checkbox name="sloTargets[${index}].hasEvidence" value="${element.hasEvidence?string('false', 'true')}" checked=element.hasEvidence!false i18nkey="Target not applicable for your CRP" className="checkboxDiTeArClick" required=false editable=editable /]
          </div>
        </div>
       
@@ -157,11 +157,13 @@
       </div>
 
      <br>
-
-      <div class="collapse" id="collapseExample-${index}">
+      
+      <div class="collapse crpProgressflagships col-md-3" id="collapseExample-${index}">
         <ul class="nav nav-tabs insertHtmlSlo-tabs-${element.id}" role="tablist">
         </ul>
         <div class="tab-content insertHtmlSlo-tabpanel-${element.id}">
+        <span class="highlightedTitle-${element.id}">${(element.narrative)!}</span>
+        <br>
         </div>
       </div>
 
@@ -178,7 +180,7 @@
       </div>
 
 
-      <div class="collapse" id="collapseExample-${index}">
+      <div class="collapse crpProgressflagships col-md-3" id="collapseExample-${index}">
 
           <div>
 
@@ -193,7 +195,7 @@
      
       <div class="tab-content">
         [#list liaisonInstitutions as flagship]
-        <div role="tabpanel" [#if (flagship_index)! == 0] class="tab-pane active" [#else]class="tab-pane" [/#if] id="${(flagship.crpProgram.acronym)!}-${index}" style="overflow-y: scroll; max-height: 700px;">
+        <div role="tabpanel" [#if (flagship_index)! == 0] class="tab-pane active" [#else]class="tab-pane" [/#if] id="${(flagship.crpProgram.acronym)!}-${index}" style="overflow-y: scroll; max-height: 510px;">
          [#--  <p>this is a ${(flagship.crpProgram.acronym)!}</p> --]
           [#-- 
            [#list sloTargetList[index].targetCases as slo]
@@ -303,10 +305,10 @@
   <br>
   <div class="form-group TA_summaryEvidence">
   [#if !PMU] [@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/][/#if]
-    [@customForm.textArea name="${ccname}.briefSummaryShow" value=element.briefSummary i18nkey="${customLabel}.summaryEvidence" className="limitWords-150 tumaco" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable allowTextEditor=!isTemplate /]
+    [@customForm.textArea name="${ccname}.briefSummaryShow" value=element.briefSummary i18nkey="${customLabel}.summaryEvidence" className="limitWords-150 tumaco" help="${customLabel}.summaryEvidence2020.help" helpIcon=false required=true editable=editable allowTextEditor=!isTemplate /]
 
     <div style="display:none">
-    [@customForm.textArea name="${ccname}.briefSummary" value=element.briefSummary i18nkey="${customLabel}.summaryEvidence" className="limitWords-150 briefSummaryTAHidden" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable  /]
+    [@customForm.textArea name="${ccname}.briefSummary" value=element.briefSummary i18nkey="${customLabel}.summaryEvidence" className="limitWords-150 briefSummaryTAHidden" help="${customLabel}.summaryEvidence2020.help" helpIcon=false required=true editable=editable  /]
     </div>
   [#-- FP Synthesis table --]
   [#if PMU]

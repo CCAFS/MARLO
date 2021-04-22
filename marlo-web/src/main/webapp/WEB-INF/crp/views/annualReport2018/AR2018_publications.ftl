@@ -10,7 +10,7 @@
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20200310",
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210331A"
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210421A"
   ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210219"] /]
 
@@ -204,6 +204,15 @@
                   <div class="form-group viewMoreSyntesisTableGrey-block"> 
                     [#-- Table --]
                     <h4 class="headTitle">[@s.text name="${customLabel}.fullGreyList.title" /]</h4>
+                    <div class="form-group row">
+                      <div class="col-md-4">
+                        [#-- Total number of Grey Literature --]
+                        <div id="" class="simpleBox numberBox">
+                          <label for="">[@s.text name="${customLabel}.indicatorC4.totalGrey" /]</label><br />
+                          <span>${(totalGrey)!}</span>
+                        </div>
+                      </div>
+                    </div>
                     [@listOfPublications name="fullGreyList" list=(deliverablesNotPublications)![]  allowPopups=true isGrey=true /]
                   </div>
               </div>
@@ -284,11 +293,14 @@
           <th class="text-center"> [@s.text name="${customLabel}.${name}.openAccess" /] </th>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.${isGrey?string('altmetricScore','isi')}" /] </th>
           [#if allowPopups]
-            <th class="col-md-1 text-center">[@s.text name="${customLabel}.${name}.missingFields" /]</th>
+            [#if !isGrey]
+              <th class="col-md-1 text-center">[@s.text name="${customLabel}.${name}.missingFields" /]</th>
+            [/#if]
             [#if PMU]
               <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] 
               <br>
-              <span class="selectAllCheck">[@customForm.checkmark id="selectAll${isGrey?then('Grey','')}" name="selectAll${isGrey?then('Grey','')}" value="false" checked=false editable=editable centered=true/]</span>
+              <button type="button" class="selectAllCheck" id="selectAll${isGrey?then('Grey','')}" style="color: #1da5ce; font-style: italic; font-weight: 500; background-color: #F9F9F9; border-bottom: none; outline: none">Select All</button>
+              [#--  [@customForm.checkmark id="selectAll${isGrey?then('Grey','')}" name="selectAll${isGrey?then('Grey','')}" value="false" checked=false editable=editable centered=true/]  --]
               </th>
             [/#if]
           [/#if]
@@ -418,15 +430,17 @@
                 </td>
               [/#if]
               [#if allowPopups]
-                [#-- Complete Status--]
-                <td class="text-center">
-                [#assign isPublicationComplete = action.isPublicationComplete(item.id, actualPhase.id)!false /]
-                 [#if isPublicationComplete]
+                [#if !isGrey]
+                  [#-- Complete Status--]
+                  <td class="text-center">
+                  [#assign isPublicationComplete = action.isPublicationComplete(item.id, actualPhase.id)!false /]
+                  [#if isPublicationComplete]
                     <span class="glyphicon glyphicon-ok-sign mf-icon check" title="Complete"></span> 
-                    [#else]
-                      <span class="glyphicon glyphicon-exclamation-sign mf-icon" title="Incomplete"></span> 
+                  [#else]
+                    <span class="glyphicon glyphicon-exclamation-sign mf-icon" title="Incomplete"></span> 
                   [/#if]   
-                </td>
+                  </td>
+                [/#if]
                 [#if PMU]
                   [#-- Check --]
                   <td class="text-center" style="max-width: 20px;">

@@ -162,6 +162,30 @@
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy" />
     </set>
+    <set name="projectExpectedStudyNexus" table="project_expected_study_nexus"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="expected_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyNexus" />
+    </set>
+    <set name="projectExpectedStudyLeverOutcomes" table="project_expected_study_lever_outcomes"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="expected_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLeverOutcome" />
+    </set>
+    <set name="projectExpectedStudySdgTargets" table="project_expected_study_sdg_targets"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="expected_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySdgTarget" />
+    </set>
     <set name="projectExpectedStudyQuantifications" table="project_expected_study_quantifications"
       inverse="true" lazy="true" fetch="select">
       <key>
