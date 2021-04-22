@@ -35,6 +35,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableLocation;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
@@ -42,9 +43,11 @@ import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
+import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
@@ -151,8 +154,8 @@ public class CrpGeoLocationMapItem<T> {
 
     if (fieldErrors.isEmpty()) {
       // for every country lookup for data related
-      List<LocElement> countries = locElementManager.findAll().stream()
-        .filter(c -> c.getLocElementType().getId().longValue() == 2).collect(Collectors.toList());
+      List<LocElement> countries =
+        locElementManager.findAllLocationMap(phase.getId()).stream().collect(Collectors.toList());
       CrpGeoLocationMapDTO geoLocation = null;
       List<Project> projectList = null;
       List<ProjectInnovation> innovationlist = null;
@@ -161,7 +164,7 @@ public class CrpGeoLocationMapItem<T> {
       List<ProjectPartner> partners = null;
       List<FundingSource> fundingSources = null;
       // getting all project Locations
-      List<ProjectLocation> lprojectLocation = projectLocationManager.findAll().stream()
+      List<ProjectLocation> lprojectLocation = projectLocationManager.findAllByPhase(phase.getId()).stream()
         .filter(c -> c != null && c.isActive() && c.getPhase() != null && c.getPhase().getId().equals(phase.getId()))
         .collect(Collectors.toList());
       // getting all partners locations
@@ -188,10 +191,11 @@ public class CrpGeoLocationMapItem<T> {
         .collect(Collectors.toList());
       // List All Loc_Elements
       for (LocElement locElement : countries) {
+        LocElement newLocElement = locElementManager.getLocElementById(locElement.getId());
         geoLocation = new CrpGeoLocationMapDTO();
-        geoLocation.setCountry(locElement.getName());
-        geoLocation.setCountryIsoAlpha2(locElement.getIsoAlpha2());
-        geoLocation.setCountryIso("" + locElement.getIsoNumeric());
+        geoLocation.setCountry(newLocElement.getName());
+        geoLocation.setCountryIsoAlpha2(newLocElement.getIsoAlpha2());
+        geoLocation.setCountryIso("" + newLocElement.getIsoNumeric());
         // Project Locations
         projectList = new ArrayList<Project>();
         if (lprojectLocation != null) {
@@ -199,6 +203,25 @@ public class CrpGeoLocationMapItem<T> {
             .filter(c -> c.getLocElement().getId().equals(locElement.getId())).collect(Collectors.toList())) {
             Project project = projectManager.getProjectById(projectLocation.getProject().getId());
             project.getProjecInfoPhase(phase);
+            List<CrpProgram> programs = new ArrayList<>();
+            for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+              .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().getId().equals(phase.getId())
+                && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+                && c.getCrpProgram().getCrp().getId().equals(globalUnitEntity.getId()))
+              .collect(Collectors.toList())) {
+              programs.add(projectFocuses.getCrpProgram());
+            }
+            project.setFlagships(programs);
+            List<CrpProgram> regions = new ArrayList<>();
+
+            for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+              .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().getId().equals(phase.getId())
+                && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
+                && c.getCrpProgram().getCrp().getId().equals(globalUnitEntity.getId()))
+              .collect(Collectors.toList())) {
+              regions.add(projectFocuses.getCrpProgram());
+            }
+            project.setRegions(regions);
             projectList.add(project);
           }
         } else {
