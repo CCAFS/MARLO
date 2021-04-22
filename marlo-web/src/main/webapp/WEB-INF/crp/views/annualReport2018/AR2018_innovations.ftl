@@ -10,7 +10,7 @@
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20200310",
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210406a"
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210421a"
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210225"] /]
 
@@ -185,8 +185,8 @@
             [#if PMU]
               <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] 
               <br>
-              <br>
-              <span class="selectAllCheckInnovations">[@customForm.checkmark id="selectAllInnovations" name="selectAllInnovations" value="false" checked=false editable=editable centered=true/]</span>
+              <button type="button" class="selectAllCheckInnovations" id="selectAllInnovations" style="color: #1da5ce; font-style: italic; font-weight: 500; background-color: #F9F9F9; border-bottom: none; outline: none">Select All</button>
+              [#--  <span class="selectAllCheckInnovations">[@customForm.checkmark id="selectAllInnovations" name="selectAllInnovations" value="false" checked=false editable=editable centered=true/]</span>  --]
               </th>
             [/#if]
           [/#if]
@@ -300,6 +300,7 @@
                     [@customForm.checkmark id="innovation-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.innovationsValue" value="${(item.id)!''}" checked=isChecked editable=(editable&&canBeAddedToAR) centered=true/]
                   </div>--]
                   [@customForm.checkmark id="innovation-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.innovationsValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/] 
+                  <div style="display: none">${isChecked?string('1','0')}</div>
                 </td>
               [/#if]
             [/#if]
