@@ -249,7 +249,6 @@
                   [@customForm.checkmark id="study-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.studiesValue" value="${(item.id)!''}" checked=isChecked editable=(editable&&canBeRemoved) centered=true/] 
                 </div>
                 <div style="display: none">${isChecked?string('1','0')}</div>
-                [#--@customForm.checkmark id="study-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.studiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/--] 
               </td>
              [/#if]
             </tr>
