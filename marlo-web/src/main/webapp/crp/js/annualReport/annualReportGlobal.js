@@ -140,7 +140,8 @@ $(document).ready(function() {
   // Set data tables
   if($.fn.DataTable) {
     $tableViewMore = $('.viewMoreSyntesis-block table');
-    tableDatatableViewmore = $tableViewMore.DataTable({
+    if ($('.totalParticipantsNumber').html() != 0 && $('.totalParticipantFormalTrainingNumber').html() != 0) {
+      tableDatatableViewmore = $tableViewMore.DataTable({
         "paging": false,
         "searching": false,
         "info": false,
@@ -154,7 +155,8 @@ $(document).ready(function() {
               ]
           }
         ]
-    });
+      });
+    }
 
     $progressTableViewMore = $('.viewMoreSyntesisTable-block table');
     tableDataProgressTableViewmore = $progressTableViewMore.DataTable({
@@ -570,8 +572,8 @@ function createGoogleChart(chartID, type, options) {
       var data = new google.visualization.arrayToDataTable(
         getChartDataArray($chart)
       );
-      console.log(data);
-      if ($('.totalInnovationsNumber').html() == 0) {
+      console.log(data, data.Vf.length);
+      if (!data.Vf.length) {
         $chart.append(
           '<p  class="text-center"> ' + options.title + " <br>  No data </p>"
         );
