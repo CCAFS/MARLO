@@ -28,7 +28,9 @@ import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.inject.Named;
 
@@ -96,11 +98,12 @@ public class FinancialSummary2018Validator extends BaseValidator {
             InvalidFieldsMessages.EMPTYFIELD);
         }
 
+        List<ReportSynthesisFinancialSummaryBudget> budget = new ArrayList<>(
+          reportSynthesis.getReportSynthesisFinancialSummary().getReportSynthesisFinancialSummaryBudgets());
         // Validate Budgets
-        if (reportSynthesis.getReportSynthesisFinancialSummary().getBudgets() != null
-          && !reportSynthesis.getReportSynthesisFinancialSummary().getBudgets().isEmpty()) {
-          for (int i = 0; i < reportSynthesis.getReportSynthesisFinancialSummary().getBudgets().size(); i++) {
-            this.validateBudgets(action, reportSynthesis.getReportSynthesisFinancialSummary().getBudgets().get(i), i);
+        if (budget != null && !budget.isEmpty()) {
+          for (int i = 0; i < budget.size(); i++) {
+            this.validateBudgets(action, budget.get(i), i);
           }
         } else {
           action.addMessage(action.getText("Budgets"));
