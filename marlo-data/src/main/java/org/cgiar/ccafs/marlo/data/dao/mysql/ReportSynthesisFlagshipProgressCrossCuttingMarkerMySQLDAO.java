@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -101,6 +102,17 @@ public class ReportSynthesisFlagshipProgressCrossCuttingMarkerMySQLDAO
       return null;
     }
 
+  }
+
+  @Override
+  public List<ReportSynthesisFlagshipProgressCrossCuttingMarker>
+    getMarkersPerMilestone(long progressOutcomeMilestoneID) {
+    String query = "SELECT rsfpc FROM ReportSynthesisFlagshipProgressCrossCuttingMarker rsfpc "
+      + "where rsfpc.reportSynthesisFlagshipProgressOutcomeMilestone.id = :progressOutcomeMilestoneID";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("progressOutcomeMilestoneID", progressOutcomeMilestoneID);
+    List<ReportSynthesisFlagshipProgressCrossCuttingMarker> resultList = super.findAll(createQuery);
+    return resultList;
   }
 
   @Override

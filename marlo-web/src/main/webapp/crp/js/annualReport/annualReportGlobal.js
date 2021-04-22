@@ -159,7 +159,7 @@ $(document).ready(function() {
     $progressTableViewMore = $('.viewMoreSyntesisTable-block table');
     tableDataProgressTableViewmore = $progressTableViewMore.DataTable({
         "paging": true,
-        "searching": true,
+        "searching": false,
         "info": true,
         aoColumnDefs: [
           {
@@ -175,7 +175,7 @@ $(document).ready(function() {
     if ($('.totalInnovationsNumber').html() != 0) {
       tableInnovations = $tableInnovationsHTML.DataTable({
         "paging": false,
-        "searching": true,
+        "searching": false,
         "info": true,
         aoColumnDefs: [
           {
@@ -191,7 +191,7 @@ $(document).ready(function() {
     $tablePoliciesHTML = $('.tablePolicies-block table');
     tablePolicies = $tablePoliciesHTML.DataTable({
       "paging": false,
-      "searching": true,
+      "searching": false,
       "info": true,
       aoColumnDefs: [
         {
@@ -206,7 +206,7 @@ $(document).ready(function() {
     $tableOICRsHTML = $('.tableOICRs-block table');
     tableOICRs = $tableOICRsHTML.DataTable({
       "paging": false,
-      "searching": true,
+      "searching": false,
       "info": true,
       aoColumnDefs: [
         {
@@ -221,7 +221,7 @@ $(document).ready(function() {
     $TablePRP = $('.viewMoreSyntesisTablePRP-block table');
     tableDatatableTablePRP = $TablePRP.DataTable({
         "paging": false,
-        "searching": true,
+        "searching": false,
         "info": true,
         aoColumnDefs: [
           {
@@ -236,7 +236,7 @@ $(document).ready(function() {
     $TableGrey = $('.viewMoreSyntesisTableGrey-block table');
     tableDatatableTableGrey = $TableGrey.DataTable({
         "paging": false,
-        "searching": true,
+        "searching": false,
         "info": true,
         aoColumnDefs: [
           {
@@ -351,7 +351,6 @@ $(document).ready(function() {
   selectIndividualPolicies();
   selectIndividualInnovations();
   selectIndividualStudies();
-  disabledUncheckedCheckmarkColor();
   appearDisappearFlagshipsTable(isActive, 0);
 });
 
@@ -404,10 +403,12 @@ function setStatusByBack() {
 }
 
 function selectDeselectAll() {
-  if (this.checked == true) {
+  if ($(this).hasClass('checked')) {
     $('input[id^="deliverable-"]').prop('checked', true);
+    $(this).removeClass('checked');
   } else {
     $('input[id^="deliverable-"]').prop('checked', false);
+    $(this).addClass('checked');
   }
 }
 
@@ -420,10 +421,12 @@ function selectIndividual() {
 }
 
 function selectDeselectAllGrey() {
-  if (this.checked == true) {
+  if ($(this).hasClass('checked')) {
     $('input[id^="deliverableGrey"]').prop('checked', true);
+    $(this).removeClass('checked');
   } else {
     $('input[id^="deliverableGrey"]').prop('checked', false);
+    $(this).addClass('checked');
   }
 }
 
@@ -436,10 +439,12 @@ function selectIndividualGrey() {
 }
 
 function selectDeselectAllPolicies() {
-  if (this.checked == true) {
+  if ($(this).hasClass('checked')) {
     $('input[id^="policy-"]').prop('checked', true);
+    $(this).removeClass('checked');
   } else {
     $('input[id^="policy-"]').prop('checked', false);
+    $(this).addClass('checked');
   }
 }
 
@@ -452,10 +457,12 @@ function selectIndividualPolicies() {
 }
 
 function selectDeselectAllInnovations() {
-  if (this.checked == true) {
+  if ($(this).hasClass('checked')) {
     $('input[id^="innovation-"]').prop('checked', true);
+    $(this).removeClass('checked');
   } else {
     $('input[id^="innovation-"]').prop('checked', false);
+    $(this).addClass('checked');
   }
 }
 
@@ -468,10 +475,12 @@ function selectIndividualInnovations() {
 }
 
 function selectDeselectAllStudies() {
-  if (this.checked == true) {
+  if ($(this).hasClass('checked')) {
     $('input[id^="study-"]').prop('checked', true);
+    $(this).removeClass('checked');
   } else {
     $('input[id^="study-"]').prop('checked', false);
+    $(this).addClass('checked');
   }
 }
 
@@ -481,14 +490,6 @@ function selectIndividualStudies() {
   } else {
     $('#selectAllStudies').prop('checked', false);
   }
-}
-
-function disabledUncheckedCheckmarkColor() {
-  $('input[id^="disabled-"]').each((index, item) => {
-    if ($(item).prop('checked') == false) {
-      $(item).closest('.inputContainer').find('.checkmark').css('border', '2px solid #ff0000');
-    }
-  });
 }
 
 function setCheckboxValueTohide() {
@@ -636,7 +637,7 @@ function changeButtonText() {
   if (isActive) {
     $('button[class*="flagshipBtn"]').not(this).prop('ariaExpanded', "false");
     $('button[class*="flagshipBtn"]').not(this).addClass('collapsed');
-    $('div[class*="flagships"]').removeClass('in');
+    $('div[class*="crpProgressflagships"]').removeClass('in');
     $('button[class*="flagshipBtn"]').not(this).text('Show flagships information');
     $('span[class*="highlightedTitle"]').not($(`.highlightedTitle-${theNum}`)).css('background', 'none');
     $(`span[class*="highlightedTitle"]`).not($(`.highlightedTitle-${theNum}`)).css('color', '#5f5e5e');
