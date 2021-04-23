@@ -764,8 +764,9 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           regions = "", countries = "", checkContributing = "";
 
         // Slo Target Name
-        if (sloTarget.getNarrative() != null && !sloTarget.getNarrative().isEmpty()) {
-          sloTargetSummary = sloTarget.getNarrative();
+        if (sloTarget.getNarrative() != null && !sloTarget.getNarrative().isEmpty() && sloTarget.getSmoCode() != null
+          && sloTarget.getTitle() != null) {
+          sloTargetSummary = sloTarget.getSmoCode() + " " + sloTarget.getTitle() + ": " + sloTarget.getNarrative();
         }
 
         // Slo Target Check contributing

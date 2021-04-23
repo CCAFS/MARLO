@@ -74,7 +74,7 @@
         [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
       </label>
     [#else]
-      [#if checked]<p class="checked">[#if i18nkey==""]${label}[#else][@s.text name="${i18nkey}.readText" /][/#if]</p>[/#if]
+      [#if checked]<p class="checked">[#if i18nkey==""] ${label}[#else][@s.text name="${i18nkey}.readText" /][/#if]</p>[#else]<p>[@s.text name="${i18nkey}.readText" /]</p>[/#if]
     [/#if]
   </div>
 [/#macro]

@@ -20,6 +20,12 @@
         <property name="narrative" type="string">
             <column name="narrative" length="65535" />
         </property>
+        <property name="smoCode" type="string">
+            <column name="smo_code" />
+        </property>
+        <property name="title" type="string">
+            <column name="title" />
+        </property>
           <property name="targetsIndicator" type="string">
             <column name="targets_indicator" length="5" />
         </property>
