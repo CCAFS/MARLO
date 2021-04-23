@@ -20,10 +20,12 @@
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceLocationsManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
+import org.cgiar.ccafs.marlo.data.manager.GeneralStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
@@ -40,6 +42,7 @@ import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableLocation;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
+import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -48,6 +51,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
@@ -94,6 +98,8 @@ public class CrpGeoLocationMapItem<T> {
   private DeliverableManager deliverableManager;
   private ProjectPartnerManager projectPartnerManager;
   private FundingSourceManager fundingSourceManager;
+  private GeneralStatusManager generalStatusManager;
+  private DeliverableInfoManager deliverableInfoManager;
 
   CrpGeoLocationMapMapper crpGeoLocationMapMapper;
 
@@ -107,7 +113,8 @@ public class CrpGeoLocationMapItem<T> {
     LocElementManager locElementManager, ProjectManager projectManager,
     ProjectInnovationManager projectInnovationManager, ProjectExpectedStudyManager projectExpectedStudyManager,
     DeliverableManager deliverableManager, ProjectPartnerManager projectPartnerManager,
-    FundingSourceManager fundingSourceManager) {
+    FundingSourceManager fundingSourceManager, GeneralStatusManager generalStatusManager,
+    DeliverableInfoManager deliverableInfoManager) {
     this.projectInnovationCountryManager = projectInnovationCountryManager;
     this.projectExpectedStudyCountryManager = projectExpectedStudyCountryManager;
     this.deliverableLocationManager = deliverableLocationManager;
@@ -125,6 +132,8 @@ public class CrpGeoLocationMapItem<T> {
     this.deliverableManager = deliverableManager;
     this.projectPartnerManager = projectPartnerManager;
     this.fundingSourceManager = fundingSourceManager;
+    this.generalStatusManager = generalStatusManager;
+    this.deliverableInfoManager = deliverableInfoManager;
   }
 
   public List<CrpGeoLocationMapDTO> getAllCrpGeoLocationMap(String CGIARentityAcronym, int repoYear) {
@@ -202,7 +211,13 @@ public class CrpGeoLocationMapItem<T> {
           for (ProjectLocation projectLocation : lprojectLocation.stream()
             .filter(c -> c.getLocElement().getId().equals(locElement.getId())).collect(Collectors.toList())) {
             Project project = projectManager.getProjectById(projectLocation.getProject().getId());
-            project.getProjecInfoPhase(phase);
+            ProjectInfo info = project.getProjecInfoPhase(phase);
+            GeneralStatus status = generalStatusManager.getGeneralStatusById(info.getStatus());
+            if (status != null) {
+              info.setStatusName(status.getName());
+            }
+            project.setProjectInfo(info);
+
             List<CrpProgram> programs = new ArrayList<>();
             for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
               .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().getId().equals(phase.getId())
@@ -237,11 +252,17 @@ public class CrpGeoLocationMapItem<T> {
           ProjectInnovation innovation =
             projectInnovationManager.getProjectInnovationById(innovationCountry.getProjectInnovation().getId());
           innovation.getProjectInnovationInfo(phase);
-          String pdflink = config.getClarisa_summaries_pdf() + "summaries/" + CGIARentityAcronym
-            + "/projectInnovationSummary.do?innovationID=" + innovation.getId().longValue() + "&phaseID="
-            + phase.getId().longValue();
-          innovation.setPdfLink(pdflink);
-          innovationlist.add(innovation);
+          Project project = projectManager.getProjectById(innovation.getProject().getId());
+          ProjectInfo info = project.getProjecInfoPhase(phase);
+          project.setProjectInfo(info);
+          innovation.setProject(project);
+          if (innovation.getProjectInnovationInfo().getYear() == repoYear) {
+            String pdflink = config.getClarisa_summaries_pdf() + "summaries/" + CGIARentityAcronym
+              + "/projectInnovationSummary.do?innovationID=" + innovation.getId().longValue() + "&phaseID="
+              + phase.getId().longValue();
+            innovation.setPdfLink(pdflink);
+            innovationlist.add(innovation);
+          }
         }
         List<CrpGeoLocationMapInnovationsDTO> crpGeoLocationMapInnovationsList = innovationlist.stream()
           .map(p -> this.crpGeoLocationMapMapper.projectInnovationToCrpGeoLocationMapInnovationsDTO(p))
@@ -255,33 +276,43 @@ public class CrpGeoLocationMapItem<T> {
           ProjectExpectedStudy study =
             projectExpectedStudyManager.getProjectExpectedStudyById(studyCountry.getProjectExpectedStudy().getId());
           study.getProjectExpectedStudyInfo(phase);
-          if (study.getProjectExpectedStudyInfo().getIsPublic() != null
-            && study.getProjectExpectedStudyInfo().getIsPublic()) {
-            String pdflink =
-              config.getClarisa_summaries_pdf() + "projects/" + CGIARentityAcronym + "/studySummary.do?studyID="
-                + study.getId().longValue() + "&cycle=" + phase.getDescription() + "&year=" + phase.getYear();
-            study.setPdfLink(pdflink);
-          } else {
-            study.setPdfLink(null);
+          if (study.getProjectExpectedStudyInfo().getYear() == repoYear) {
+            if (study.getProjectExpectedStudyInfo().getIsPublic() != null
+              && study.getProjectExpectedStudyInfo().getIsPublic()) {
+              String pdflink =
+                config.getClarisa_summaries_pdf() + "projects/" + CGIARentityAcronym + "/studySummary.do?studyID="
+                  + study.getId().longValue() + "&cycle=" + phase.getDescription() + "&year=" + phase.getYear();
+              study.setPdfLink(pdflink);
+            } else {
+              study.setPdfLink(null);
+            }
+            OICRs.add(study);
           }
-          OICRs.add(study);
         }
-
         List<CrpGeoLocationMapOICRDTO> crpGeoLocationMapOICRsList =
           OICRs.stream().map(p -> this.crpGeoLocationMapMapper.projectExpectedStudyToCrpGeoLocationMapOICRDTO(p))
             .collect(Collectors.toList());
         geoLocation.setExpectedStudies(crpGeoLocationMapOICRsList);
-
 
         // Deliverables
         deliverableList = new ArrayList<Deliverable>();
         for (DeliverableLocation deliverableLocation : ldeliverableLocation.stream()
           .filter(c -> c.getLocElement().getId().equals(locElement.getId())).collect(Collectors.toList())) {
           Deliverable deliverable = deliverableManager.getDeliverableById(deliverableLocation.getDeliverable().getId());
-          deliverable.getDeliverableInfo(phase);
-          deliverable.setDissemination(deliverable.getDeliverableDisseminations().stream()
-            .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).findFirst().orElse(null));
-          deliverableList.add(deliverable);
+          if (deliverable.isActive() && deliverable.getDeliverableInfo() != null) {
+            deliverable.getDeliverableInfo(phase);
+
+            if (deliverable.getDeliverableInfo() != null && deliverable.getDeliverableInfo().getYear() == repoYear) {
+              deliverable.setDissemination(deliverable.getDeliverableDisseminations().stream()
+                .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).findFirst().orElse(null));
+              if (deliverable.getProject() != null) {
+                Project project = projectManager.getProjectById(deliverable.getProject().getId());
+                project.getProjecInfoPhase(phase);
+                deliverable.setProject(project);
+                deliverableList.add(deliverable);
+              }
+            }
+          }
         }
         List<CrpGeoLocationMapDeliverablesDTO> crpGeoLocationMapDeliverablesDTO = deliverableList.stream()
           .map(p -> this.crpGeoLocationMapMapper.deliverableToCrpGeoLocationMapDeliverablesDTO(p))
@@ -320,7 +351,6 @@ public class CrpGeoLocationMapItem<T> {
           || geoLocation.getFundingSources().size() > 0 || geoLocation.getDeliverables().size() > 0) {
           crpGeoLocationMapList.add(geoLocation);
         }
-
       }
     }
     if (!fieldErrors.isEmpty()) {
