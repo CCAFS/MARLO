@@ -269,10 +269,12 @@ public class OutcomesMilestonesAction extends BaseAction {
   public GeneralStatus getCurrentMilestoneStatus(Long milestoneID) {
     GeneralStatus milestoneStatus = null;
     if (milestoneID != null && milestoneID != -1) {
-      CrpMilestone currentMilestone = crpMilestoneManager.getCrpMilestoneById(milestoneID);
-      if (currentMilestone != null && currentMilestone.getMilestonesStatus() != null
-        && currentMilestone.getMilestonesStatus().getId() != null) {
-        milestoneStatus = generalStatusManager.getGeneralStatusById(currentMilestone.getMilestonesStatus().getId());
+      CrpMilestone milestone = crpMilestoneManager.getCrpMilestoneById(milestoneID);
+      milestone = crpMilestoneManager.getCrpMilestoneByPhase(milestone.getComposeID(),
+        milestone.getCrpProgramOutcome().getPhase().getNext().getNext().getId());
+      if (milestone != null && milestone.getMilestonesStatus() != null
+        && milestone.getMilestonesStatus().getId() != null) {
+        milestoneStatus = generalStatusManager.getGeneralStatusById(milestone.getMilestonesStatus().getId());
       }
     }
 
@@ -410,7 +412,7 @@ public class OutcomesMilestonesAction extends BaseAction {
     if (milestoneID != null && milestoneID != -1) {
       CrpMilestone milestone = crpMilestoneManager.getCrpMilestoneById(milestoneID);
       milestone = crpMilestoneManager.getCrpMilestoneByPhase(milestone.getComposeID(),
-        milestone.getCrpProgramOutcome().getPhase().getNext().getId());
+        milestone.getCrpProgramOutcome().getPhase().getNext().getNext().getId());
       if (milestone != null && milestone.getMilestonesStatus() != null
         && ProjectStatusEnum.Extended.getStatusId().equals(String.valueOf(milestone.getMilestonesStatus().getId()))) {
         extendedYear = String.valueOf(milestone.getExtendedYear());
