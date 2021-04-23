@@ -41,13 +41,15 @@ public interface CrpGeoLocationMapMapper {
 
   @Mappings({@Mapping(source = "deliverableInfo.title", target = "title"),
     @Mapping(source = "deliverableInfo.deliverableType.name", target = "deliverableType"),
-    @Mapping(source = "project.id", target = "projectId"),
+    @Mapping(source = "project.id", target = "project"),
+    @Mapping(source = "project.projectInfo.title", target = "project_title"),
     @Mapping(source = "dissemination.disseminationUrl", target = "link"),
     @Mapping(source = "deliverableInfo.status", target = "status")})
   public abstract CrpGeoLocationMapDeliverablesDTO
     deliverableToCrpGeoLocationMapDeliverablesDTO(Deliverable deliverable);
 
-  @Mappings({@Mapping(source = "fundingSourceInfo.title", target = "title"), @Mapping(source = "id", target = "id")})
+  @Mappings({@Mapping(source = "fundingSourceInfo.title", target = "title"),
+    @Mapping(source = "fundingSourceInfo.budgetType.name", target = "type"), @Mapping(source = "id", target = "id")})
   public abstract CrpGeoLocationMapFundingSourcesDTO
     fundingSourceToCrpGeoLocationMapFundingSourcesDTO(FundingSource fundingSource);
 
@@ -59,7 +61,8 @@ public interface CrpGeoLocationMapMapper {
     projectExpectedStudyToCrpGeoLocationMapOICRDTO(ProjectExpectedStudy expectedStudy);
 
   @Mappings({@Mapping(source = "id", target = "id"), @Mapping(source = "projectInnovationInfo.title", target = "title"),
-    @Mapping(source = "project.id", target = "projectId"),
+    @Mapping(source = "project.id", target = "project"),
+    @Mapping(source = "project.projectInfo.title", target = "project_title"),
     @Mapping(source = "projectInnovationInfo.repIndInnovationType.name", target = "type"),
     @Mapping(source = "projectInnovationInfo.repIndStageInnovation.name", target = "stage"),
     @Mapping(source = "projectInnovationInfo.year", target = "year"), @Mapping(source = "pdfLink", target = "link")})
