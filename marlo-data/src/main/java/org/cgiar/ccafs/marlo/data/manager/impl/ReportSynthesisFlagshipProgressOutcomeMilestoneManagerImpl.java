@@ -128,7 +128,7 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestoneManagerImpl
       phase = phase.getNext();
     }
 
-    crpMilestone = crpMilestoneManager.getCrpMilestoneById(crpMilestone.getId());
+    crpMilestone = crpMilestoneManager.getCrpMilestoneByPhase(crpMilestone.getComposeID(), phase.getId());
     crpMilestone.setMilestonesStatus(status);
     if (status != null && StringUtils.equalsIgnoreCase(status.getName(), "Extended")) {
       crpMilestone.setExtendedYear(extendedYear);

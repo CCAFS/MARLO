@@ -5946,6 +5946,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_PLANNING_ACTIVE).toString());
   }
 
+  /**
+   * This method verifies if the logged user has the role "PMU" assigned
+   * 
+   * @return true if the user is PMU, false otherwise
+   */
   public boolean isPMU() {
     String roles = this.getRoles();
     if (roles.contains("PMU")) {

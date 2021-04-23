@@ -61,6 +61,15 @@ public interface ReportSynthesisFlagshipProgressCrossCuttingMarkerManager {
     long phaseID);
 
   /**
+   * Gets all the markers per ReportSynthesisFlagshipProgressOutcomeMilestone
+   * 
+   * @param progressOutcomeMilestoneID the ReportSynthesisFlagshipProgressOutcomeMilestone id
+   * @return a list of all the crosscutting markers of the ReportSynthesisFlagshipProgressOutcomeMilestone
+   */
+  public List<ReportSynthesisFlagshipProgressCrossCuttingMarker>
+    getMarkersPerMilestone(long progressOutcomeMilestoneID);
+
+  /**
    * This method gets a reportSynthesisFlagshipProgressCrossCuttingMarker object by a given
    * reportSynthesisFlagshipProgressCrossCuttingMarker identifier.
    * 

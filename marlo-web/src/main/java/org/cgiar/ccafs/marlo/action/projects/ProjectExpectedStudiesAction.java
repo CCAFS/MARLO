@@ -1018,21 +1018,20 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           // Expected Study Nexus List
           if (this.expectedStudy.getProjectExpectedStudyNexus() != null) {
             this.expectedStudy.setNexus(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyNexus().stream()
-              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+              .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
           }
 
-          // Expected Study Nexus Lever Outcomes List
+          // Expected Study Lever Outcomes List
           if (this.expectedStudy.getProjectExpectedStudyLeverOutcomes() != null) {
             this.expectedStudy
               .setLeverOutcomes(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyLeverOutcomes().stream()
-                .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+                .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
           }
 
-          // Expected Study Sdg Targets List
+          // Expected Study SDG Targets List
           if (this.expectedStudy.getProjectExpectedStudySdgTargets() != null) {
-            this.expectedStudy
-              .setSdgTargets(new ArrayList<>(this.expectedStudy.getProjectExpectedStudySdgTargets().stream()
-                .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+            this.expectedStudy.setSdgTargets(new ArrayList<>(this.expectedStudy.getProjectExpectedStudySdgTargets()
+              .stream().filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
           }
 
           // Nexus
