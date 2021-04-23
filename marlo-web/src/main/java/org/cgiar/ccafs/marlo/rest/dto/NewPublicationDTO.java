@@ -117,10 +117,6 @@ public class NewPublicationDTO {
   }
 
 
-  public Boolean isISIJournal() {
-    return isISIJournal;
-  }
-
   public void setArticleURL(String articleURL) {
     this.articleURL = articleURL;
   }
