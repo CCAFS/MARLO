@@ -56,6 +56,15 @@ public interface ProjectLocationDAO {
   public List<ProjectLocation> findAll();
 
   /**
+   * This method gets a list of projectLocation by given phase ID that are active
+   * 
+   * @param phaseId - Phase identifier
+   * @return a list from ProjectLocation null if no exist records
+   */
+  public List<ProjectLocation> findAllByPhase(Long phaseId);
+
+
+  /**
    * get a list of parent project locations
    * 
    * @param projectId - the project id
@@ -63,7 +72,6 @@ public interface ProjectLocationDAO {
    * @return list of parent of the project location
    */
   public List<Map<String, Object>> getParentLocations(long projectId, String parentField);
-
 
   /**
    * This method get a projectLocation object by the project and loc element id's.
@@ -84,4 +92,5 @@ public interface ProjectLocationDAO {
    *         or -1 is some error occurred.
    */
   public ProjectLocation save(ProjectLocation projectLocation);
+
 }

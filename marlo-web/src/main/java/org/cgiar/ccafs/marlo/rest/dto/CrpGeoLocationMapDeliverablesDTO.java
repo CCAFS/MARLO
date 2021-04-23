@@ -25,7 +25,8 @@ public class CrpGeoLocationMapDeliverablesDTO {
   private long id;
   private String title;
   private String deliverableType;
-  private String projectId;
+  private long project;
+  private String project_title;
   private String status;
   private String link;
 
@@ -33,16 +34,24 @@ public class CrpGeoLocationMapDeliverablesDTO {
     return deliverableType;
   }
 
+
   public long getId() {
     return id;
   }
+
 
   public String getLink() {
     return link;
   }
 
-  public String getProjectId() {
-    return projectId;
+
+  public long getProject() {
+    return project;
+  }
+
+
+  public String getProject_title() {
+    return project_title;
   }
 
   public String getStatus() {
@@ -52,6 +61,7 @@ public class CrpGeoLocationMapDeliverablesDTO {
   public String getTitle() {
     return title;
   }
+
 
   public void setDeliverableType(String deliverableType) {
     this.deliverableType = deliverableType;
@@ -65,8 +75,12 @@ public class CrpGeoLocationMapDeliverablesDTO {
     this.link = link;
   }
 
-  public void setProjectId(String projectId) {
-    this.projectId = projectId;
+  public void setProject(long project) {
+    this.project = project;
+  }
+
+  public void setProject_title(String project_title) {
+    this.project_title = project_title;
   }
 
   public void setStatus(String status) {
