@@ -14,5 +14,17 @@
         <property name="order" type="java.lang.Integer">
             <column name="norder" />
         </property>
+        <property name="description" type="string">
+            <column name="description" sql-type="TEXT" />
+        </property>
+        <property name="keyIdentifier" type="string">
+            <column name="key_identifier" sql-type="TEXT" />
+        </property>
+        <property name="forNarrative" type="string">
+            <column name="for_narrative" sql-type="TEXT" />
+        </property>
+        <property name="example" type="string">
+            <column name="example" sql-type="TEXT" />
+        </property>
     </class>
 </hibernate-mapping>

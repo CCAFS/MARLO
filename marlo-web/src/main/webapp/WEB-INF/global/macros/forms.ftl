@@ -74,7 +74,7 @@
         [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
       </label>
     [#else]
-      [#if checked]<p class="checked">[#if i18nkey==""]${label}[#else][@s.text name="${i18nkey}.readText" /][/#if]</p>[/#if]
+      [#if checked]<p class="checked">[#if i18nkey==""] ${label}[#else][@s.text name="${i18nkey}.readText" /][/#if]</p>[#else]<p>[@s.text name="${i18nkey}.readText" /]</p>[/#if]
     [/#if]
   </div>
 [/#macro]
@@ -513,9 +513,14 @@
       <span class="checkmark centered-${centered?string}"></span>
        [#if label?has_content || i18nkey?has_content]<label for="${id}" class="labelText ${cssClassLabel}">[#if i18nkey?has_content][@s.text name=i18nkey /][#else]${label}[/#if]</label>[/#if]
     [#else]
-      <p class="checked-${checked?string}">
+      [#--<p class="checked-${checked?string}"> 
+      <img src="${baseUrlCdn}/global/images/grayCheckbox-${checked?string}.png" style="height: 17px; width: 18px;" alt="" srcset="">
         [#if label?has_content || i18nkey?has_content ]<span class="${cssClassLabel}">[#if i18nkey?has_content][@s.text name=i18nkey /][#else]${label}[/#if]</span>[[/#if] 
-      </p>
+      </p>--]
+      <input id="disabled-${id}" class="${cssClass}" type="checkbox" name="${name}" value="${value}" [#if checked]checked="checked"[/#if] disabled>
+      <span class="checkmark centered-${centered?string}"></span>
+       [#if label?has_content || i18nkey?has_content]<label for="${id}" class="labelText ${cssClassLabel}">[#if i18nkey?has_content][@s.text name=i18nkey /][#else]${label}[/#if]</label>[/#if]
+       <input type="hidden" [#if checked]name="${name}"[/#if] value="${value}" [#if checked]checked="checked"[/#if]>
     [/#if]
   </label>
 [/#macro]
@@ -577,7 +582,7 @@
   [#return '']
 [/#function]
 
-[#macro elementsListComponent name elementType id="" elementList=[] label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true hasPrimary=false forceEditable=false onlyElementIDs=false]
+[#macro elementsListComponent name elementType id="" elementList=[] label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true hasPrimary=false forceEditable=false onlyElementIDs=false i18nkey=""]
   [#attempt]
     [#local list = ((listName?eval)?sort_by((displayFieldName?split("."))))![] /] 
   [#recover]
@@ -775,7 +780,7 @@
           <div class="form-group row primary-list">
           <div class="col-md-1 primary-radio">
           [#if editable]
-            [@radioFlat id="${customName}.primary" name="${customName}.primary" value="true" cssClassLabel="radio-label-yes" editable=editable checked=(primaryValue)!false /]
+            [@radioFlat id="${customName}.primary" name="${customName}.primary" value="true" cssClassLabel="radio-label-yes in-radio-list" editable=editable checked=(primaryValue)!false/]
             [#else]
               [#if primaryValue==true]
                 <span class="primary-element glyphicon glyphicon-ok-sign"></span>

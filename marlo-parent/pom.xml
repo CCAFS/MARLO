@@ -11,7 +11,11 @@
 	<description>Parent</description>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+<<<<<<< HEAD
 		<ciat-adauth.version>5.2</ciat-adauth.version>
+=======
+		<ciat-adauth.version>2.2</ciat-adauth.version>
+>>>>>>> staging
 		<hibernate-core-version>4.3.5.Final</hibernate-core-version>
 		<org.springframework-version>4.3.24.RELEASE</org.springframework-version>
 		<junit.version>4.12</junit.version>

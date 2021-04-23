@@ -10,9 +10,9 @@
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20200311",
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js"
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210421a"
 ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20200416"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210225"] /]
 
 [#assign breadCrumb = [
   {"label":"${currentSection}",   "nameSpace":"",             "action":""},
@@ -164,7 +164,7 @@
               </div>
               
               [#-- Table --]
-              <div class="viewMoreSyntesisTable-block">
+              <div class="tablePolicies-block">
                 [@table2ListOfPolicies list=(projectPolicies)![] expanded=false/]
               </div>
             </div>
@@ -198,17 +198,22 @@
         <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.maturity" /]</th>
         <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.subIDOs" /]</th>
         [#if expanded]
-        <th class="text-center" colspan="4">[@s.text name="${customLabel}.table2.crossCutting" /]</th>
-        [#--  <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.type" /]</th>--]
-        <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.whose" /]</th>
-        <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.geoScope" /]</th>
-        <th class="text-center" rowspan="${rows}">Evidence(s)</th>
+          <th class="text-center" colspan="4">[@s.text name="${customLabel}.table2.crossCutting" /]</th>
+          [#--  <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.type" /]</th>--]
+          <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.whose" /]</th>
+          <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.geoScope" /]</th>
+          <th class="text-center" rowspan="${rows}">Evidence(s)</th>
         [/#if]
         [#if !expanded]
-        [#-- Complete Status    --]
-        <th class="col-md-1 text-center no-sort" rowspan="${rows}">[@s.text name="${customLabel}.table2.missingFields" /]</th>
-     
-        <th class="col-md-1 text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.includeAR" /]</th>
+          [#-- Complete Status    --]
+          <th class="col-md-1 text-center no-sort" rowspan="${rows}">[@s.text name="${customLabel}.table2.missingFields" /]</th>
+          [#if PMU]
+            <th class="col-md-1 text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.includeAR" /]
+            <br>
+            <button type="button" class="selectAllCheckPolicies" id="selectAllPolicies" style="color: #1da5ce; font-style: italic; font-weight: 500; background-color: #F9F9F9; border-bottom: none; outline: none">Select All</button>
+            [#--  <span class="selectAllCheckPolicies">[@customForm.checkmark id="selectAllPolicies" name="selectAllPolicies" value="false" checked=false editable=editable centered=true/]</span>  --]
+            </th>
+          [/#if]
         [/#if]        
       </tr>
       [#if expanded]
@@ -231,12 +236,12 @@
             [#if item.project??]<br /> <small>(From Project P${item.project.id})</small> [/#if]
             
             [#if PMU]
-            <br />
-            <div class="form-group">
+              <br />
+              <div class="form-group">
               [#list (item.selectedFlahsgips)![] as liason]
                 <span class="programTag" style="border-color:${(liason.crpProgram.color)!'#444'}" title="${(liason.composedName)!}">${(liason.acronym)!}</span>
               [/#list]
-            </div>
+              </div>
             [/#if]
             [#if !expanded] [@oicrPopup element=item /] [/#if]
             <a href="${url}" target="_blank" class="pull-right mt-1">[@s.text name="${customLabel}.table2.linkToPolicy" /] <span class="glyphicon glyphicon-new-window"></span></a>
@@ -300,21 +305,28 @@
           [/#if]
           
           [#if !expanded]
-          [#-- Complete Status--]
-          <td class="text-center">
-          [#-- Is Complete --]
-          [#assign isPolicyComplete = action.isPolicyComplete(item.id, actualPhase.id)!false /]
-           [#if isPolicyComplete]
-              <span class="glyphicon glyphicon-ok-sign mf-icon check" title="Complete"></span> 
+            [#-- Complete Status--]
+            <td class="text-center">
+              [#-- Is Complete --]
+              [#assign isPolicyComplete = action.isPolicyComplete(item.id, actualPhase.id)!false /]
+              [#if isPolicyComplete]
+                <span class="glyphicon glyphicon-ok-sign mf-icon check" title="Complete"></span> 
               [#else]
                 <span class="glyphicon glyphicon-exclamation-sign mf-icon" title="Incomplete"></span> 
-            [/#if]   
-          </td>
-          <td class="text-center">
-            [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.policiesIds?seq_contains(item.id))!true) /]
-            <div class="hidden">${isChecked?string}</div>
-            [@customForm.checkmark id="policy-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.policiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
-          </td>
+              [/#if]   
+            </td>
+            [#if PMU]
+              <td class="text-center">
+                [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.policiesIds?seq_contains(item.id))!true) /]
+                [#--  <div class="hidden">${isChecked?string}</div>  --]
+                [#--local canBeAddedToAR = ((action.canBeAddedToAR(item.id, actualPhase.id))!false)]
+                <div data-toggle="tooltip" [#if !canBeAddedToAR]title="[@s.text name="annualReport2018.policies.table2.cannotBeAddedToAR" /]"[/#if]>
+                  [@customForm.checkmark id="policy-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.policiesValue" value="${(item.id)!''}" checked=isChecked editable=(editable&&canBeAddedToAR) centered=true/]
+                </div>--]
+                [@customForm.checkmark id="policy-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.policiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
+                <div style="display: none">${isChecked?string('1','0')}</div>
+              </td>
+            [/#if]
           [/#if]
         </tr>
       [/#list]

@@ -302,23 +302,25 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
     ReportSynthesis reportSynthesisPMU =
       reportSynthesisManager.findSynthesis(this.getSelectedPhase().getId(), liaisonInstitutionPMU.getId());
 
-    if (reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null) {
+    if (reportSynthesisPMU != null) {
+      if (reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null) {
 
-      AllPolicies = new LinkedHashSet<>(
-        projectPolicyManager.getProjectPoliciesList(liaisonInstitutionPMU, this.getSelectedPhase()));
+        AllPolicies = new LinkedHashSet<>(
+          projectPolicyManager.getProjectPoliciesList(liaisonInstitutionPMU, this.getSelectedPhase()));
 
 
-      if (reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressPolicies() != null
-        && !reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressPolicies()
-          .isEmpty()) {
-        for (ReportSynthesisFlagshipProgressPolicy flagshipProgressPolicy : reportSynthesisPMU
-          .getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressPolicies().stream()
-          .filter(ro -> ro.isActive()).collect(Collectors.toList())) {
-          ARPoliciesEvidence policiesEvidence = new ARPoliciesEvidence();
-          policiesEvidence.setProjectPolicy(flagshipProgressPolicy.getProjectPolicy());
-          policiesEvidence.setInclude(false);
-          policiesPMU.add(policiesEvidence);
-          AllPolicies.remove(flagshipProgressPolicy.getProjectPolicy());
+        if (reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressPolicies() != null
+          && !reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressPolicies()
+            .isEmpty()) {
+          for (ReportSynthesisFlagshipProgressPolicy flagshipProgressPolicy : reportSynthesisPMU
+            .getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressPolicies().stream()
+            .filter(ro -> ro.isActive()).collect(Collectors.toList())) {
+            ARPoliciesEvidence policiesEvidence = new ARPoliciesEvidence();
+            policiesEvidence.setProjectPolicy(flagshipProgressPolicy.getProjectPolicy());
+            policiesEvidence.setInclude(false);
+            policiesPMU.add(policiesEvidence);
+            AllPolicies.remove(flagshipProgressPolicy.getProjectPolicy());
+          }
         }
       }
 
@@ -397,6 +399,18 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
 
     // Load the policies information
     List<ARPoliciesEvidence> policyEvidences = this.getPoliciesInfo();
+
+    // Filter the policies for the current cycle year
+    // 03/15/2021
+    if (policyEvidences != null && !policyEvidences.isEmpty()) {
+      policyEvidences = policyEvidences.stream()
+        .filter(in -> in != null && in.getProjectPolicy() != null
+          && in.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()) != null
+          && in.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()).getYear() != null
+          && in.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()).getYear() == this.getSelectedPhase()
+            .getYear())
+        .collect(Collectors.toList());
+    }
 
     for (ARPoliciesEvidence policyEvidence : policyEvidences) {
       Long paramA = null, paramB = null;

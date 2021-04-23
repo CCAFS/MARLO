@@ -16,14 +16,20 @@
 package org.cgiar.ccafs.marlo.validation.annualreport.y2018;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
+import org.cgiar.ccafs.marlo.data.manager.GeneralStatusManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
+import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
+import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingDimension;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisEfficiency;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummary;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcome;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestone;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFundingUseSummary;
@@ -59,6 +65,9 @@ import javax.inject.Named;
 public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends BaseValidator {
 
   private ReportSynthesisManager reportSynthesisManager;
+  private CrpMilestoneManager crpMilestoneManager;
+  private GeneralStatusManager generalStatusManager;
+  private ReportSynthesisFlagshipProgressCrossCuttingMarkerManager reportSynthesisFlagshipProgressCrossCuttingMarkerManager;
 
   // Validations
   private final IntellectualAssetsValidator intellectualAssetsValidator;
@@ -91,8 +100,9 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
     Efficiency2018Validator efficiency2018Validator, Risk2018Validator risk2018Validator,
     Governance2018Validator governance2018Validator, SrfProgressValidator srfProgressValidator,
     PartnershipValidator partnershipValidator, FileDBManager fileDBManager,
-    MonitoringEvaluationValidator monitoringEvaluationValidator,
-    OutcomeMilestonesValidator outcomeMilestonesValidator) {
+    MonitoringEvaluationValidator monitoringEvaluationValidator, OutcomeMilestonesValidator outcomeMilestonesValidator,
+    CrpMilestoneManager crpMilestoneManager, GeneralStatusManager generalStatusManager,
+    ReportSynthesisFlagshipProgressCrossCuttingMarkerManager reportSynthesisFlagshipProgressCrossCuttingMarkerManager) {
     super();
     this.reportSynthesisManager = reportSynthesisManager;
     this.intellectualAssetsValidator = intellectualAssetsValidator;
@@ -113,8 +123,45 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
     this.fileDBManager = fileDBManager;
     this.monitoringEvaluationValidator = monitoringEvaluationValidator;
     this.outcomeMilestonesValidator = outcomeMilestonesValidator;
+    this.crpMilestoneManager = crpMilestoneManager;
+    this.generalStatusManager = generalStatusManager;
+    this.reportSynthesisFlagshipProgressCrossCuttingMarkerManager =
+      reportSynthesisFlagshipProgressCrossCuttingMarkerManager;
   }
 
+
+  /**
+   * Get the information for the Cross Cutting marker in the form
+   * 
+   * @param markerID
+   * @return
+   */
+  public List<ReportSynthesisFlagshipProgressCrossCuttingMarker>
+    getCrossCuttingMarker(ReportSynthesisFlagshipProgressOutcomeMilestone progressOutcomeMilestone) {
+    Long progressOutcomeMilestoneID = progressOutcomeMilestone.getId();
+    if (progressOutcomeMilestoneID != -1) {
+      List<ReportSynthesisFlagshipProgressCrossCuttingMarker> crossCuttingMarkers =
+        reportSynthesisFlagshipProgressCrossCuttingMarkerManager.getMarkersPerMilestone(progressOutcomeMilestoneID);
+      return (crossCuttingMarkers != null && !crossCuttingMarkers.isEmpty()) ? crossCuttingMarkers : null;
+    } else {
+      return null;
+    }
+  }
+
+
+  private GeneralStatus getCurrentMilestoneStatus(CrpMilestone milestone) {
+    Long milestoneID = milestone.getId();
+    GeneralStatus milestoneStatus = null;
+    if (milestoneID != null && milestoneID != -1) {
+      CrpMilestone currentMilestone = crpMilestoneManager.getCrpMilestoneById(milestoneID);
+      if (currentMilestone != null && currentMilestone.getMilestonesStatus() != null
+        && currentMilestone.getMilestonesStatus().getId() != null) {
+        milestoneStatus = generalStatusManager.getGeneralStatusById(currentMilestone.getMilestonesStatus().getId());
+      }
+    }
+
+    return milestoneStatus;
+  }
 
   /**
    * Check if the Liaison Institution is PMU
@@ -130,7 +177,6 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
     }
     return isFP;
   }
-
 
   public void validateCrossCuttingDimensionValidator(BaseAction action, ReportSynthesis reportSynthesis) {
 
@@ -161,9 +207,9 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
       srfProgress.setReportSynthesis(reportSynthesis);
 
       if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
-        srfProgressValidator.validateCheckButton(action, reportSynthesis, false);
+        srfProgressValidator.validateCheckButton(action, reportSynthesis, false, null);
       } else {
-        srfProgressValidator.validate(action, reportSynthesis, false);
+        srfProgressValidator.validate(action, reportSynthesis, false, null);
       }
       // save the changes
       reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
@@ -177,9 +223,9 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
       }
 
       if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
-        srfProgressValidator.validateCheckButton(action, reportSynthesis, false);
+        srfProgressValidator.validateCheckButton(action, reportSynthesis, false, null);
       } else {
-        srfProgressValidator.validate(action, reportSynthesis, false);
+        srfProgressValidator.validate(action, reportSynthesis, false, null);
       }
     }
 
@@ -328,6 +374,7 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
 
   }
 
+
   public void validateFinancial(BaseAction action, ReportSynthesis reportSynthesis) {
 
     if (reportSynthesis.getReportSynthesisFinancialSummary() == null) {
@@ -357,6 +404,7 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
     }
   }
 
+
   public void validateFlagshipProgressValidator(BaseAction action, ReportSynthesis reportSynthesis) {
 
     if (reportSynthesis.getReportSynthesisFlagshipProgress() == null) {
@@ -383,7 +431,6 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
 
   }
 
-
   public void validateFundingUse(BaseAction action, ReportSynthesis reportSynthesis) {
 
     if (reportSynthesis.getReportSynthesisFundingUseSummary() == null) {
@@ -402,7 +449,6 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
     }
 
   }
-
 
   public void validateGovernance(BaseAction action, ReportSynthesis reportSynthesis) {
 
@@ -578,9 +624,21 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
 
           for (ReportSynthesisFlagshipProgressOutcome reportSynthesisFlagshipProgressOutcome : reportOutcomes) {
 
-            List<ReportSynthesisFlagshipProgressOutcomeMilestone> milestones = new ArrayList<>(
-              reportSynthesisFlagshipProgressOutcome.getReportSynthesisFlagshipProgressOutcomeMilestones().stream()
-                .filter(c -> c.isActive()).collect(Collectors.toList()));
+            List<ReportSynthesisFlagshipProgressOutcomeMilestone> milestones = new ArrayList<>();
+            for (ReportSynthesisFlagshipProgressOutcomeMilestone progressOutcomeMilestone : reportSynthesisFlagshipProgressOutcome
+              .getReportSynthesisFlagshipProgressOutcomeMilestones()) {
+
+              if (progressOutcomeMilestone != null && progressOutcomeMilestone.getId() != null
+                && progressOutcomeMilestone.isActive() && progressOutcomeMilestone.getCrpMilestone() != null
+                && progressOutcomeMilestone.getCrpMilestone().getId() != null) {
+
+                progressOutcomeMilestone
+                  .setMilestonesStatus(this.getCurrentMilestoneStatus(progressOutcomeMilestone.getCrpMilestone()));
+                progressOutcomeMilestone.setMarkers(this.getCrossCuttingMarker(progressOutcomeMilestone));
+
+                milestones.add(progressOutcomeMilestone);
+              }
+            }
 
             reportSynthesisFlagshipProgressOutcome.setMilestones(milestones);
 
@@ -656,7 +714,9 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
       // save the changes
       reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
     } else {
-      publications2018Validator.validate(action, reportSynthesis, false);
+      if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
+        publications2018Validator.validate(action, reportSynthesis, false);
+      }
     }
 
   }
@@ -675,7 +735,9 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
       // save the changes
       reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
     } else {
-      risk2018Validator.validate(action, reportSynthesis, false);
+      if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
+        risk2018Validator.validate(action, reportSynthesis, false);
+      }
     }
 
   }
@@ -689,7 +751,8 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
       reportSynthesis.setReportSynthesisFlagshipProgress(flagshipProgress);
       flagshipProgress.setReportSynthesis(reportSynthesis);
       if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
-        studiesOICR2018Validator.validateCheckButton(action, reportSynthesis, false);
+        studiesOICR2018Validator.validateCheckButton(action, reportSynthesis, false,
+          reportSynthesis.getLiaisonInstitution());
       } else {
         studiesOICR2018Validator.validate(action, reportSynthesis, false);
       }
@@ -697,7 +760,8 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
       reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
     } else {
       if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
-        studiesOICR2018Validator.validateCheckButton(action, reportSynthesis, false);
+        studiesOICR2018Validator.validateCheckButton(action, reportSynthesis, false,
+          reportSynthesis.getLiaisonInstitution());
       } else {
         studiesOICR2018Validator.validate(action, reportSynthesis, false);
       }

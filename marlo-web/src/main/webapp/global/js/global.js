@@ -46,6 +46,32 @@ $(document).ready(function() {
   // View More link button
   $('#helpViewMoreLink').on("click", expandViewMoreLink);
 
+  $('.primarySelect').on("change", function(){
+    $($(this).parents('.panel-body')).find(".radio-input").each(function(i,e) {
+    if ($(this).parents('.panel-body').find('.list').find('li').size() == 1) {
+      $(e).attr('checked',true);
+    }
+    });
+  });
+
+  // View More link button
+  $('.in-radio-list').on("click", function (){
+    $list = $(this).parents('.list');
+    $($list ).find(".radio-input").each(function(i,e) {
+      // console.log(e.value);
+      $(e).val('false');
+      $(e).removeAttr('checked')
+        // var option =
+        //     $("#regionSelect").find(
+        //         "option[value='" + $(e).find("input.rId").val() + "-" + $(e).find("input.regionScope").val() + "']");
+        // option.prop('disabled', true);
+      });
+
+      $(this).parents('.radioFlat').find('.radio-input').val('true');
+
+      $(this).parents('.radioFlat').find('.radio-input').attr('checked');
+  });
+
   $(".removeHelp").on("click", function() {
     $(this).parent().parent().fadeOut(function() {
       console.log(this);
@@ -350,16 +376,18 @@ jQuery.fn.setTrumbowyg = function() {
               'link', 'strong', 'em'
           ]
         ],
-        allowTagsFromPaste: [
-            'a', 'p', 'br', 'b', 'strong', 'i', 'em'
-        ],
+        plugins: {
+          allowTagsFromPaste: {
+            allowedTags: ['a', 'p', 'br', 'b', 'strong', 'i', 'em']
+          }
+        },
         urlProtocol: true,
         autogrow: true,
         minimalLinks: true,
         semantic: true
     });
 
-    $editor.trumbowyg().on('tbwpaste ', function() {
+    $editor.trumbowyg().on('tbwpaste', function() {
       console.log('tbwpaste !');
     });
   }
@@ -705,7 +733,7 @@ function onSelectElement() {
     var indexLevel = $(element).classParam('indexLevel');
     $(element).setNameIndexes(indexLevel, i);
   });
-
+  $element.find('label.radio-label').attr('for', $element.find('label.radio-label').parents('.radioFlat').find('input').attr("id"));
   //Validate if is a primary radioButton group
   if(className.indexOf("primary") >= 0){
     if(($list.children().length < 3 && $list.children().first().is('label')) || $list.children().length < 2){
@@ -720,11 +748,13 @@ function onSelectElement() {
 }
 
 function onClickRemoveElement() {
+  console.log("remove element");
   var removeElementType = $(this).classParam('removeElementType');
   var $parent = $(this).parent();
   var $select = $(this).parents(".panel-body").find('select');
   var $primaryRadioElement = $(this).parents('.elementsListComponent').find('ul.primaryRadio');
   var $list = $(this).parents('.elementsListComponent').find('ul.list');
+  var className = $list.attr('class');
   var counted = $list.find('li').length;
   var maxLimit = $select.classParam('maxLimit');
   var id = $parent.find(".elementRelationID").val();
@@ -756,9 +786,11 @@ function onClickRemoveElement() {
     $list.find('li.relationElement').each(function(i,element) {
       var indexLevel = $(element).classParam('indexLevel');
       $(element).setNameIndexes(indexLevel, i);
-
+      $(element).find('label.radio-label').attr('for', $(element).find('label.radio-label').parents('.radioFlat').find('input').attr("id"));
+ 
       if(className.indexOf("primary") >= 0){
-        $(element).find('label.radio-label').attr('for', $(element).find('label.radio-label').parents('.radiot').find('input').attr("id"));
+        $(element).find('label.radio-label').attr('for', $(element).find('label.radio-label').parents('.radioFlat').find('input').attr("id"));
+        
         //$(element).find('input.radio-input').attr('checked', true);
         /*
         if ($list.children().length < 3){

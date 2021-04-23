@@ -9,7 +9,7 @@
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js",
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210422A",
   "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20200330"
   ]
 /]
@@ -74,7 +74,9 @@
                     [#else]
                       <div class="textArea">
                           <label for="">[@customForm.text name="${customLabel}.summary" readText=true /]</label>:
-                          <p>[#if (pmuText?has_content)!false]${pmuText?replace('\n', '<br>')}[#else] [@s.text name="global.prefilledByPmu"/] [/#if]</p>
+                          <p>[#if (pmuText?has_content)!false]${pmuText?replace('\n', '<br>')}
+                               [#else] [@s.text name="global.prefilledByPmu"/] [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                             [/#if]</p>
                       </div>
                     [/#if]
                     <br />
@@ -112,7 +114,8 @@
                       </div>
                       [/#if]
                                                                   
-                      <h4 class="simpleTitle headTitle">[@s.text name="${customLabel}.table7.title" /]</h4>
+                      <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="${customLabel}.table7.title" /]</h4>
+                      [@customForm.helpLabel name="${customLabel}.table7.help" showIcon=false editable=editable/]
                       <div class="viewMoreSyntesisTable-block">
                         <table class="table">
                           <thead>
@@ -147,7 +150,8 @@
                     </div>
                   [#else]
                     <div class="form-group">
-                      <h4 class="simpleTitle headTitle">[@s.text name="${customLabel}.table7.title" /]</h4>
+                      <h4 class="simpleTitle headTitle annualReport-table" style="margin-bottom: 0;">[@s.text name="${customLabel}.table7.title" /] [@customForm.req required=true/]</h4>
+                      [@customForm.helpLabel name="${customLabel}.table7.help" showIcon=false editable=editable/]
                       <div class="listKeyPartnerships">
                         [#if reportSynthesis.reportSynthesisKeyPartnership.partnerships?has_content]
                           [#list reportSynthesis.reportSynthesisKeyPartnership.partnerships as item]
@@ -187,6 +191,7 @@
                       
                       <hr />
                     [#else]
+                       [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
                     [#-- <div class="form-group">
                        [@utils.tableText value=(reportSynthesis.reportSynthesisKeyPartnership.crossCGIAR)!'' nobr=false emptyText="global.prefilledByPmu" /] 
                     </div> --]
@@ -195,10 +200,14 @@
                   <div class="form-group">
                     <br />
                     [#-- Word Document Tag --]
-                    [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
-                    
-                    <h4 class="headTitle annualReport-table">[@s.text name="${customLabel}.table8.title" /]</h4>
-                    [@customForm.helpLabel name="${customLabel}.table8.help" showIcon=false editable=editable/]
+                    [#if PMU]
+                      [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                      <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="${customLabel}.table8.title" /]</h4>
+                      [@customForm.helpLabel name="${customLabel}.table8.help" showIcon=false editable=editable/]
+                    [#else]
+                      <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="${customLabel}.table8.title" /] [@customForm.req required=true/]</h4>
+                      [@customForm.helpLabel name="${customLabel}.table8.help" showIcon=false editable=editable/]
+                    [/#if]
                     
                     [#if PMU]
                       <div class="viewMoreSyntesisTable-block">
@@ -355,7 +364,7 @@
       <tr class="subHeader">
         <th class="col-md-1"> Project</th>
         <th class="col-md-3"> Partner </th>
-        <th class="col-md-1"> Formal</th>
+        [#--<th class="col-md-1"> Formal</th>--]
         <th class="col-md-7"> Responsibilities </th>
       </tr>
     </thead>
@@ -375,9 +384,9 @@
               <td class="">
                 [@utils.tableText value=(partner.institution.composedName)!"" /] 
               </td>
-              <td class="text-center">
+              [#--<td class="text-center">
                 [@utils.tableText value=(partner.hasPartnerships?string('Yes', 'No'))!"" /]
-              </td>
+              </td>--]
                <td class="text-justify">
                 [@utils.tableText value=(partner.responsibilities)!"" /] 
               </td>
@@ -412,7 +421,7 @@
     </div>
     [#-- Value added --]
     <div class="form-group">
-      [@customForm.input name="${customName}.valueAdded" i18nkey="${customLabel}.table8.value" help="${customLabel}.table8.value.help" helpIcon=false required=true editable=editable /]
+      [@customForm.input name="${customName}.valueAdded" i18nkey="${customLabel}.table8.value" help="${customLabel}.table8.value.help" helpIcon=false required=false editable=editable /]
     </div>
   </div>
 [/#macro]

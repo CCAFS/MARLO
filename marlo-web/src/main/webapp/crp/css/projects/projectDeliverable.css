@@ -10,7 +10,28 @@
   cursor: pointer;
   opacity: 0.7;
 }
+body .handle-bridge .requiredTag{
+  color: #0b7aa600;
+}
+body .WOS_tag{
+  width: 350px;
+  border-radius: 20px;
+  padding: 5px 15px;
+  background-color: rgb(248, 248, 248);
+  border: 1px solid rgb(233, 232, 232);
 
+}
+body .WOS_tag p{
+  color: rgb(83, 83, 83);
+  font-size: .8em;
+  margin: 0px;
+  width: 350px;
+}
+.loading-WOS-container{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .fair .achieved {
   background-color: #8ea786;
   color: white;
@@ -717,4 +738,20 @@ div#ccDimension-capacity {
 
 #newExpectedYear label {
   font-size: 0.95em;
+}
+
+.altmetricImg {
+  transition: all ease 0.7s;
+  cursor: pointer;
+}
+
+#metadata-container {
+  display: flex;
+  flex-flow: row;
+}
+
+.metadata-text-container {
+  display: flex;
+  flex-flow: column;
+  width: 90%;
 }

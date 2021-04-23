@@ -3,14 +3,16 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ "datatables.net", "datatables.net-bs" ] /]
+[#assign pageLibs = [ "datatables.net", "datatables.net-bs", "font-awesome" ] /]
 [#assign customJS = [   
+  "https://www.gstatic.com/charts/loader.js",
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js" 
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_outomesMilestones.js?20210421",
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210421a" 
 ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20190621"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210225"] /]
 
 [#assign breadCrumb = [
   {"label":"${currentSection}",   "nameSpace":"",             "action":""},
@@ -26,7 +28,7 @@
 [#assign customLabel= "annualReport2018.${currentStage}" /]
 
 [#-- Helptext --]
-[@utilities.helpBox name="${customLabel}.help" /]
+[#if PMU][@utilities.helpBox name="${customLabel}.help" /][/#if]
     
 <section class="container">
   [#if !reportingActive]
@@ -47,7 +49,61 @@
           [#-- Title --]
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
           <div class="borderBox">
-          
+            <br />
+            <div class="form-group row">
+              <div class="col-md-5">
+                <div class="simpleBox numberBox">
+                  <label for="">[@s.text name="${customLabel}.indicatorI1.totalOicrs" /]</label><br />
+                  <span class="animated infinite bounce">${(((total)!0)?number?string(",##0"))!0}</span>
+                </div>
+                <div id="chart14" class="chartBox simpleBox" style="height: 250px;">
+                   <ul class="chartData" style="display:none">
+                    <li>
+                      <span></span>
+                      [#list (reportSynthesisStudiesByRepIndStageStudyDTOs)![] as data]
+                        [#if data.repIndStageStudy.name?contains("Level")]    
+                            <span>${data.repIndStageStudy.name}</span>
+                            <span class="json">{"role":"annotation"}</span> 
+                        [/#if]                    
+                      [/#list] 
+                    </li>
+                    <li>
+                      <span></span>
+                      [#list (reportSynthesisStudiesByRepIndStageStudyDTOs)![] as data]
+                        [#if data.repIndStageStudy.name?contains("Level")]
+                          <span class="number">${data.projectStudies?size}</span>
+                          <span>${data.projectStudies?size}</span>
+                        [/#if]  
+                      [/#list]
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              
+              [#-- Chart 15 - OICRs by FP --]
+              <div class="col-md-7">
+                 <div id="chart15" class="chartBox simpleBox" style="height: 294px;">
+                  <ul class="chartData" style="display:none">
+                    <li>
+                      <span>[@s.text name="" /]</span>
+                      <span>[@s.text name="" /]</span>
+                      <span class="json">{"role":"style"}</span>
+                      <span class="json">{"role":"annotation"}</span>
+                    </li>
+                                        
+                    [#list (reportSynthesisStudiesByCrpProgramDTOs)![] as data]
+                      <li>
+                          <span>${(data.crpProgram.acronym)!}</span>
+                          <span class="number">${data.projectStudies?size}</span>
+                          <span>${(data.crpProgram.color)!}</span>
+                          <span>${data.projectStudies?size}</span>
+                      </li> 
+                    [/#list]
+                  </ul>
+                </div> 
+              </div>
+            </div>
+
             [#-- Table 3: List of Outcome/Impact Case Reports --]
             <div class="form-group">
               [#-- Word Document Tag --]
@@ -97,22 +153,29 @@
 [#macro listOfOutcomeImpactCaseReports name list=[]  isPMU=false expanded=false ]
 
 
-  <div class="form-group viewMoreSyntesisTable-block">
-    [@customForm.helpLabel name="${customLabel}.help" showIcon=false editable=editable/]
+  <div class="form-group tableOICRs-block">
+    [#if isPMU][@customForm.helpLabel name="${customLabel}.help" showIcon=false editable=editable/][/#if]
     <table class="annual-report-table table-border">
       <thead>
         <tr>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.outcomeTitle" /] </th>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.maturityLevel" /] </th>
-          <th class="text-center"> [@s.text name="${customLabel}.${name}.status" /] </th>
+          [#-- Removed for AR 2020 --]
+          [#--<th class="text-center"> [@s.text name="${customLabel}.${name}.status" /] </th>--]
           [#if expanded]
           <th> [@s.text name="${customLabel}.${name}.srfTargets" /] </th>
           <th> [@s.text name="${customLabel}.${name}.subIdos" /] </th>
-          <th></th>
+          [#--<th></th>--]
           [/#if]
           [#if !expanded]
             <th class="col-md-1 text-center no-sort">[@s.text name="${customLabel}.${name}.missingFields" /]</th>
-            <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
+            [#if PMU]
+              <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] 
+              <br>
+              <button type="button" class="selectAllCheckStudies" id="selectAllStudies" style="color: #1da5ce; font-style: italic; font-weight: 500; background-color: #F9F9F9; border-bottom: none; outline: none">Select All</button>
+              [#--  <span class="selectAllCheckStudies">[@customForm.checkmark id="selectAllStudies" name="selectAllStudies" value="false" checked=false editable=editable centered=true/]</span>  --]
+              </th>
+            [/#if]
           [/#if]
         </tr>
       </thead>
@@ -150,16 +213,23 @@
                 </div>              
                 [/#if]
                 [#-- OICR Contributions --]
-                [#if !expanded] [@oicrContributions element=item /] [/#if]
-                
-                <a href="${url}" target="_blank" class="pull-right">[@s.text name="${customLabel}.${name}.linkToOicr" /] <span class="glyphicon glyphicon-new-window"></span></a>
+                [#if !expanded] [@oicrContributions element=item /] [/#if]                
+                <div class="container-links">
+                  <div data-toggle="tooltip" title="[@s.text name="${customLabel}.${name}.linkToMARLOOicr" /]">
+                    <a href="${url}" target="_blank" class="pull-right"> <span class="fa fa-external-link"></span></a>
+                  </div>
+                  <div data-toggle="tooltip" title="[@s.text name="${customLabel}.${name}.linkToPublicOicr" /]">
+                    <a href="${summaryPDF}" target="_blank" class="pull-right"> <span class="fa fa-file-pdf-o pdfIcon file"></span></a>
+                  </div>
+                </div>
               </td>
               <td>[@utils.tableText value=(item.projectExpectedStudyInfo.repIndStageStudy.name)!"" /]</td>
-              <td class="text-center">[@utils.tableText value=(item.projectExpectedStudyInfo.evidenceTag.name)!"" /]</td>
+              [#-- Removed for AR 2020 --]
+              [#--<td class="text-center">[@utils.tableText value=(item.projectExpectedStudyInfo.evidenceTag.name)!"" /]</td>--]
              [#if expanded]
               <td>[@utils.tableList list=(item.srfTargets)![] displayFieldName="srfSloIndicator.title" /]</td>
               <td>[@utils.tableList list=(item.subIdos)![] displayFieldName="srfSubIdo.description" /]</td>
-              <td> <a href="${summaryPDF}" target="_blank"><img src="${baseUrlCdn}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" /></a>  </td>
+              [#--<td> <a href="${summaryPDF}" target="_blank"><img src="${baseUrlCdn}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" /></a>  </td>--]
              [/#if]
              [#if !expanded]
                <td class="text-center">
@@ -171,10 +241,14 @@
               [/#if] 
              [/#if]  
               </td>
-             [#if !expanded]
+             [#if !expanded && PMU]
               <td class="text-center">
                 [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.studiesIds?seq_contains(item.id))!true) /]
-                [@customForm.checkmark id="study-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.studiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/] 
+                [#local canBeRemoved = (action.canBeRemovedFromAR(item.id, actualPhase.id)!false)]
+                <div data-toggle="tooltip" [#if !canBeRemoved && isChecked]title="[@s.text name="annualReport2018.oicr.table3.cannotBeRemoved" /]"[/#if]>
+                  [@customForm.checkmark id="study-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.studiesValue" value="${(item.id)!''}" checked=isChecked editable=(editable&&canBeRemoved) centered=true/] 
+                </div>
+                <div style="display: none">${isChecked?string('1','0')}</div>
               </td>
              [/#if]
             </tr>
@@ -226,9 +300,10 @@
                     <tbody>
                       [#list policiesContributions as policy]
                         [#local policyUrl][@s.url namespace="/projects" action="${(crpSession)!}/policy"][@s.param name='policyID']${policy.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                        [#local policyInReporting = (action.isPolicyIncludedInReport(policy.id, actualPhase.id)!false)]
                         <tr>
                           <th scope="row" class="col-md-1">${policy.id}</th>
-                          <td>${(policy.projectPolicyInfo.title)!'Untitled'}</td>
+                          <td>[#if policyInReporting]<span class="label label-primary" title="[@s.text name="annualReport2018.oicr.table3.contributionIncludedInARDocument" /]"><span class="glyphicon glyphicon-check" ></span> Report</span> [/#if]${(policy.projectPolicyInfo.title)!'Untitled'}</td>
                            [#--<td>${(p.projectPolicyInfo.policyType.name?capitalize)!'none'}</td>--]
                           <td class="col-md-2 text-center"> <a href="${policyUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
                         </tr>
@@ -253,9 +328,10 @@
                   <tbody>
                     [#list innovationsContributions as innovation]
                       [#local innovationUrl][@s.url namespace="/projects" action="${(crpSession)!}/innovation"][@s.param name='innovationID']${innovation.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                      [#local innovationInReporting = (action.isInnovationIncludedInReport(innovation.id, actualPhase.id)!false)]
                       <tr>
                         <th scope="row" class="col-md-1">${innovation.id}</th>
-                        <td>${(innovation.projectInnovationInfo.title)!'Untitled'}</td>
+                        <td>[#if innovationInReporting]<span class="label label-primary" title="[@s.text name="annualReport2018.oicr.table3.contributionIncludedInARDocument" /]"><span class="glyphicon glyphicon-check" ></span> Report</span> [/#if]${(innovation.projectInnovationInfo.title)!'Untitled'}</td>
                         [#--<td>${(i.innovationInfo.innovationType.name?capitalize)!'none'}</td>
                         <td class="col-md-6">${(i.projectInnovationInfo.title)!'Untitled'}</td>--]
                         <td class="col-md-2 text-center"> <a href="${innovationUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>

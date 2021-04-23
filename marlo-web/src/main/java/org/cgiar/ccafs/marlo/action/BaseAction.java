@@ -2245,16 +2245,16 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return true if the project contribute two or more flagships
    */
   public boolean getCountProjectFlagships(long projectID) {
-    if (!this.isCenterGlobalUnit()) {
+    if ((!this.isCenterGlobalUnit()) && projectID != 0) {
       Project project = this.projectManager.getProjectById(projectID);
       if (project != null) {
-        if (project.getProjectFocuses() != null) {
+        if (project.getProjectFocuses() != null && !project.getProjectFocuses().isEmpty()) {
           List<ProjectFocus> projectFocuses = new ArrayList<>(project.getProjectFocuses().stream()
-            .filter(pf -> pf.isActive() && pf.getPhase().equals(this.getActualPhase())
+            .filter(pf -> pf.isActive() && pf.getPhase().equals(this.getActualPhase()) && pf.getCrpProgram() != null
               && pf.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
               && pf.getCrpProgram().getResearchArea() == null)
             .collect(Collectors.toList()));
-          if (projectFocuses != null) {
+          if (projectFocuses != null && !projectFocuses.isEmpty()) {
             if (projectFocuses.size() >= 2) {
               return true;
             }
@@ -5630,7 +5630,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           return false;
         }
 
-        if (sectionStatus.getMissingFields().length() != 0) {
+        if (sectionStatus.getMissingFields() == null || sectionStatus.getMissingFields().length() != 0) {
           return false;
         }
       } else {
@@ -5946,6 +5946,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_PLANNING_ACTIVE).toString());
   }
 
+  /**
+   * This method verifies if the logged user has the role "PMU" assigned
+   * 
+   * @return true if the user is PMU, false otherwise
+   */
   public boolean isPMU() {
     String roles = this.getRoles();
     if (roles.contains("PMU")) {

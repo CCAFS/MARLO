@@ -11,11 +11,11 @@
     { 'slug': 'crpProgress',          'name': 'annualReport2018.menu.crpProgress',          'action': 'crpProgress',        'active': true, 'subName': 'annualReport2018.menu.crpProgress.subName' },
     { 'slug': 'flagshipProgress',     'name': 'annualReport2018.menu.flagshipProgress',     'action': 'flagshipProgress',   'active': true,
       'items': [
-        { 'slug': 'policies',             'name': 'annualReport2018.menu.policies',           'action': 'policies',             'active': true     },
-        { 'slug': 'oicr',                 'name': 'annualReport2018.menu.oicr',               'action': 'oicr',                 'active': true     },
-        { 'slug': 'innovations',          'name': 'annualReport2018.menu.innovations',        'action': 'innovations',          'active': true     },
+        { 'slug': 'policies',             'name': 'annualReport2018.menu.policies',           'action': 'policies',             'active': true, 'onlyPMU': !PMU     },
+        { 'slug': 'oicr',                 'name': 'annualReport2018.menu.oicr',               'action': 'oicr',                 'active': true, 'onlyPMU': !PMU     },
+        { 'slug': 'innovations',          'name': 'annualReport2018.menu.innovations',        'action': 'innovations',          'active': true, 'onlyPMU': !PMU     },
         { 'slug': 'outomesMilestones',    'name': 'annualReport2018.menu.outomesMilestones',  'action': 'outomesMilestones',    'active': true     },
-        { 'slug': 'publications',         'name': 'annualReport2018.menu.publications',       'action': 'publications',         'active': true }  
+        { 'slug': 'publications',         'name': 'annualReport2018.menu.publications',       'action': 'publications',         'active': true, 'onlyPMU': !PMU }  
       ]
     },
     { 'slug': 'ccDimensions',         'name': 'annualReport2018.menu.ccDimensions',         'action': 'ccDimensions',       'active': true, 'subName': '(Table 7: CapDev)'}
@@ -121,7 +121,7 @@
 <div class="text-center">
   [#assign documentLink][@s.url namespace="/summaries" action="${crpSession}/AnnualReportSummary2018"][@s.param name='phaseID']${actualPhase.id}[/@s.param][/@s.url][/#assign]
   <a class="btn btn-default" href="${documentLink}" target="_blank">
-   <img  src="${baseUrlCdn}/global/images/icons/file-doc.png" alt="" /> Generate DOC file <br /> [#-- <small> (Beta version, this is still under development)</small> --]
+   <img  src="${baseUrlCdn}/global/images/icons/file-doc.png" alt="" /> Generate DOC file <br /> <small></small>
   </a>
 </div>
 [/#if]

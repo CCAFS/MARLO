@@ -18,10 +18,12 @@ package org.cgiar.ccafs.marlo.validation.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.PolicyMilestone;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyGeographicScope;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicySubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
@@ -153,19 +155,27 @@ public class ProjectPolicyValidator extends BaseValidator {
      * }
      */
 
-    // Validate Narrative
-    /*
-     * if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndStageProcess() != null
-     * && projectPolicy.getProjectPolicyInfo().getRepIndStageProcess().getId() == 3) {
-     * if (!(this
-     * .wordCount(projectPolicy.getProjectPolicyInfo(action.getActualPhase()).getNarrativeEvidence()) <= 200)) {
-     * action.addMessage(action.getText("Narrative of Evidence"));
-     * action.addMissingField("policy.narrative");
-     * action.getInvalidFields().put("input-policy.projectPolicyInfo.narrativeEvidence",
-     * InvalidFieldsMessages.EMPTYFIELD);
-     * }
-     * }
-     */
+    // Validate Evidences or narrative evidences when level 1 is selected
+
+    if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndStageProcess() != null
+      && projectPolicy.getProjectPolicyInfo().getRepIndStageProcess().getId() == 3) {
+
+      // Validate Evidences
+      if (projectPolicy.getEvidences() == null || projectPolicy.getEvidences().isEmpty()) {
+        if (!(this.isValidString(projectPolicy.getProjectPolicyInfo(action.getActualPhase()).getNarrativeEvidence()))) {
+          action.addMessage(action.getText("Narrative of Evidence"));
+          action.addMissingField("policy.narrative");
+          action.getInvalidFields().put("input-policy.projectPolicyInfo.narrativeEvidence",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+        // action.addMessage(action.getText("Evidences List"));
+        // action.addMissingField("policy.evidence");
+        // action.getInvalidFields().put("list-policy.evidences",
+        // action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"expectedStudyList"}));
+      }
+    }
+
     // Validate Maturity Process
     if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndStageProcess() != null)
 
@@ -226,6 +236,20 @@ public class ProjectPolicyValidator extends BaseValidator {
       action.addMissingField("policy.subIdos");
       action.getInvalidFields().put("list-policy.subIdos",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
+    } else {
+      // Validate primary selection
+      int count = 0;
+      for (ProjectPolicySubIdo subido : projectPolicy.getSubIdos()) {
+        if (subido.getPrimary() != null && subido.getPrimary() == true) {
+          count++;
+        }
+      }
+      if (count == 0) {
+        action.addMessage(action.getText("subIdos"));
+        action.addMissingField("policy.subIdos");
+        action.getInvalidFields().put("list-policy.subIdos",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
+      }
     }
 
     // Validate Milestones
@@ -238,6 +262,27 @@ public class ProjectPolicyValidator extends BaseValidator {
       action.addMissingField("policy.milestones");
       action.getInvalidFields().put("list-policy.milestones",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"milestones"}));
+    }
+
+    if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()) != null
+      && projectPolicy.getProjectPolicyInfo().getHasMilestones() != null
+      && projectPolicy.getProjectPolicyInfo().getHasMilestones() == true && projectPolicy.getMilestones() != null
+      && !projectPolicy.getMilestones().isEmpty()) {
+      int countPrimaries = 0;
+      for (PolicyMilestone policyMilestone : projectPolicy.getMilestones()) {
+        if (policyMilestone != null && policyMilestone.getCrpMilestone() != null
+          && policyMilestone.getCrpMilestone().getId() != null && policyMilestone.getPrimary() != null
+          && policyMilestone.getPrimary().booleanValue() == true) {
+          countPrimaries++;
+        }
+      }
+
+      if (countPrimaries != 1) {
+        action.addMessage(action.getText("milestoneList"));
+        action.addMissingField("policy.milestones");
+        action.getInvalidFields().put("list-policy.milestones",
+          action.getText(InvalidFieldsMessages.WRONGVALUE, new String[] {"milestones"}));
+      }
     }
 
     // Validate Cross Cutting

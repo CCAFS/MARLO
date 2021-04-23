@@ -3,16 +3,16 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ "datatables.net", "datatables.net-bs", "components-font-awesome" ] /]
+[#assign pageLibs = [ "datatables.net", "datatables.net-bs", "font-awesome" ] /]
 [#assign customJS = [
   "https://www.gstatic.com/charts/loader.js", 
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20200310",
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js"
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210421a"
 ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20190621"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210225"] /]
 
 [#assign breadCrumb = [
   {"label":"${currentSection}",   "nameSpace":"",             "action":""},
@@ -61,7 +61,7 @@
                 [#-- Total of CRP Innovations --]
                 <div id="" class="simpleBox numberBox">
                   <label for="">[@s.text name="${customLabel}.indicatorC1.totalInnovations" /]</label><br />
-                  <span>${(total)!}</span>
+                  <span class="totalInnovationsNumber">${(total)!}</span>
                 </div>
               </div>
             </div>
@@ -162,7 +162,7 @@
 [#macro innovationsTable name list=[] expanded=false]
 
 
-  <div class="form-group viewMoreSyntesisTable-block">
+  <div class="form-group tableNoPaginator-block">
     <table class="table table-bordered">
       <thead>
         <tr>
@@ -178,18 +178,25 @@
             <th class="text-center"> Top five contributing partners</th>
             <th class="text-center"> [@s.text name="${customLabel}.${name}.geoScope" /] </th>
             <th class="text-center col-md-1"> [@s.text name="${customLabel}.${name}.evidence" /] </th>
-            <th class="text-center"></th>
+            [#--<th class="text-center"></th>--]
           [/#if]
           [#if !expanded]
             <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.missingFields" /] </th>
-            <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
+            [#if PMU]
+              <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] 
+              <br>
+              <button type="button" class="selectAllCheckInnovations" id="selectAllInnovations" style="color: #1da5ce; font-style: italic; font-weight: 500; background-color: #F9F9F9; border-bottom: none; outline: none">Select All</button>
+              [#--  <span class="selectAllCheckInnovations">[@customForm.checkmark id="selectAllInnovations" name="selectAllInnovations" value="false" checked=false editable=editable centered=true/]</span>  --]
+              </th>
+            [/#if]
           [/#if]
         </tr>
       </thead>
       <tbody>
         [#if list?has_content]
           [#list list as item]
-          [#local url][@s.url namespace="/projects" action="${(crpSession)!}/innovation"][@s.param name='innovationID']${item.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+          [#local marloUrl][@s.url namespace="/projects" action="${(crpSession)!}/innovation"][@s.param name='innovationID']${item.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+          [#local publicUrl][@s.url namespace="/summaries" action='${(crpSession)!}/projectInnovationSummary'][@s.param name='innovationID']${item.id?c}[/@s.param][@s.param name='phaseID']${(actualPhase.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
           [#local isStageFour = (item.projectInnovationInfo.repIndStageInnovation.id == 4)!false]
           <tr>
             [#-- 1. Title of innovation--]
@@ -210,8 +217,15 @@
                 [#local oicrUrl][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${item.projectInnovationInfo.projectExpectedStudy.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
                 <span>[@s.text name="${customLabel}.${name}.linkToOicr" /] <a href="${oicrUrl}" target="_blank">${(item.projectInnovationInfo.projectExpectedStudy.composedName)!'Untitled'}</span></a>
               [/#if]
-              [#-- [#if !expanded] [@oicrPopup element=item isStageFour=true /] [/#if] --]
-              <a href="${url}" target="_blank" class="pull-right">[@s.text name="${customLabel}.${name}.linkToInnovation" /] <span class="glyphicon glyphicon-new-window"></span></a>
+              [#if !expanded] [@oicrPopup element=item isStageFour=isStageFour/] [/#if]
+              <div class="container-links">
+                <div data-toggle="tooltip" title="[@s.text name="${customLabel}.${name}.linkToMARLOInnovation" /]">
+                  <a href="${marloUrl}" target="_blank" class="pull-right"> <span class="fa fa-external-link"></span></a>
+                </div>
+                <div data-toggle="tooltip" title="[@s.text name="${customLabel}.${name}.linkToPublicInnovation" /]">
+                  <a href="${publicUrl}" target="_blank" class="pull-right"> <span class="fa fa-file-pdf-o pdfIcon file"></span></a>
+                </div>
+              </div>
             </td>
             [#-- 3. Description of Innovation  --]
             [#if expanded]
@@ -243,13 +257,15 @@
               </td>
               [#-- 10. Evidence for Innovation --]
               <td class="text-center">
-                [#if isStageFour && ((item.projectInnovationInfo.projectExpectedStudy?has_content)!false)]
+                [#if isStageFour]
+                 [#list (item.studies)![] as item]
                   [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(item.projectInnovationInfo.projectExpectedStudy.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
                   <p>
-                    <a href="${summaryPDF}" class="btn btn-default btn-xs" target="_blank" style="text-decoration: none;" title="${(item.projectInnovationInfo.projectExpectedStudy.composedName)!''}">
-                      <img src="${baseUrlCdn}/global/images/pdf.png" height="20"  /> ${(item.projectInnovationInfo.projectExpectedStudy.composedIdentifier)!''}
+                    <a href="${summaryPDF}" class="btn btn-default btn-xs" target="_blank" style="text-decoration: none;" title="${(item.projectExpectedStudy.composedName)!''}">
+                      <img src="${baseUrlCdn}/global/images/pdf.png" height="20"  /> ${(item.projectExpectedStudy.composedIdentifier)!''}
                     </a>
                   </p>
+                  [/#list]
                 [#else]                
                   [#local innovationEvidence = (item.projectInnovationInfo.evidenceLink)!""/]
                   [#if innovationEvidence?has_content]
@@ -259,25 +275,34 @@
                   [/#if]
                 [/#if]
               </td>
-              <td class="text-center">
+              [#--<td class="text-center">
                 <a href="[@s.url namespace="/summaries" action='${(crpSession)!}/projectInnovationSummary'][@s.param name='innovationID']${item.id?c}[/@s.param][@s.param name='phaseID']${(item.projectInnovationInfo.phase.id)!''}[/@s.param][/@s.url]" target="__BLANK">
                   <img src="${baseUrlCdn}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
                 </a>
-              </td>
+              </td>--]
             [/#if]
             [#if !expanded]
+              [#-- 11. Innovation Completion--]
               <td class="text-center">
-              [#assign isInnovationComplete = action.isInnovationComplete(item.id, actualPhase.id)!false /]
-              [#if  isInnovationComplete]
-                <span class="glyphicon glyphicon-ok-sign mf-icon check" title="Complete"></span> 
+                [#assign isInnovationComplete = action.isInnovationComplete(item.id, actualPhase.id)!false /]
+                [#if  isInnovationComplete]
+                  <span class="glyphicon glyphicon-ok-sign mf-icon check" title="Complete"></span> 
                 [#else]
                   <span class="glyphicon glyphicon-exclamation-sign mf-icon" title="Incomplete"></span> 
-              [/#if]   
+                [/#if]
               </td>
-              <td class="text-center">
-              [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.innovationsIds?seq_contains(item.id))!true) /]
-              [@customForm.checkmark id="innovation-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.innovationsValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/] 
-            </td>
+              [#-- 12. Included in AR? --]
+              [#if PMU]
+                <td class="text-center">
+                  [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.innovationsIds?seq_contains(item.id))!true) /]
+                  [#--local canBeAddedToAR = ((action.canBeAddedToAR(item.id, actualPhase.id))!false)]
+                  <div data-toggle="tooltip" [#if !canBeAddedToAR]title="[@s.text name="annualReport2018.innovations.table4.cannotBeAddedToAR" /]"[/#if]>
+                    [@customForm.checkmark id="innovation-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.innovationsValue" value="${(item.id)!''}" checked=isChecked editable=(editable&&canBeAddedToAR) centered=true/]
+                  </div>--]
+                  [@customForm.checkmark id="innovation-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.innovationsValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/] 
+                  <div style="display: none">${isChecked?string('1','0')}</div>
+                </td>
+              [/#if]
             [/#if]
           </tr>
           [/#list]
@@ -291,13 +316,54 @@
   </div>
 [/#macro]
 
-[#macro oicrPopup element isStageFour=false]
-  [#local totalContributions = 0 ]
-  [#if element.projectInnovationInfo.projectExpectedStudy?has_content && isStageFour]
-  <br />
-  [#local oicrUrl][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${element.projectInnovationInfo.projectExpectedStudy.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
-  <span>OICR associated: </span><a href="${oicrUrl}" target="_blank">${(element.projectInnovationInfo.projectExpectedStudy.composedName)!'Untitled'}</span></a>  </td>
-  [#local totalContributions = 1 ]
-    
+[#macro oicrPopup element tiny=false isStageFour=false]
+  [#local totalContributions = (element.studies?size)!0 ]
+  
+  [#if element.studies?has_content && isStageFour]
+    <br /> 
+    <button type="button" class="innovationsOicrsButton btn btn-default btn-xs" data-toggle="modal" data-target="#innovationsOicrs-${element.id}">
+      <span class="icon-20 project"></span> <strong>${totalContributions}</strong> [#if !tiny][@s.text name="${customLabel}.table4.linkToOicrs" /][/#if]
+    </button>
+    <!-- Modal -->
+    <div class="modal fade" id="innovationsOicrs-${element.id}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">
+              [@s.text name="${customLabel}.table4.innovationsOicrs" /]
+            </h4>
+          </div>
+          <div class="modal-body">
+            <div class="">            
+              [#-- OICRs --]
+              <h4 class="simpleTitle">[@s.text name="${customLabel}.table4.innovationsOicrs.oicrs" /]</h4>
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th id="ids">[@s.text name="${customLabel}.table4.innovationsOicrs.id" /]</th>
+                      <th id="policyTitles">[@s.text name="${customLabel}.table4.innovationsOicrs.oicrName" /]</th>
+                      <th id="policyMaturityLevel">[@s.text name="${customLabel}.table4.innovationsOicrs.maturityLevel" /]</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    [#list element.studies as oicr]
+                      [#local oicrUrl][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${oicr.projectExpectedStudy.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                      <tr>
+                        <th scope="row" class="col-md-1">${oicr.projectExpectedStudy.id}</th>
+                        <td>${(oicr.projectExpectedStudy.composedName)!'Untitled'}</td>
+                        <td>${(oicr.projectExpectedStudy.projectExpectedStudyInfo.repIndStageStudy.name)!'Undefined'}</td>
+                        <td class="col-md-2 text-center"> <a href="${oicrUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
+                      </tr>
+                      [/#list]
+                  </tbody>
+                </table>           
+            </div>
+          </div>
+          <div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div>
+        </div>
+      </div>
+    </div>
   [/#if]
 [/#macro]

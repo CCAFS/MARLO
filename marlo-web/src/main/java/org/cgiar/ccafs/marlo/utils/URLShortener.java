@@ -22,6 +22,9 @@ public class URLShortener {
    * @return the text with tiny urllinks
    */
   public String detectAndShortenLinks(String text) {
+    if (text.length() > 0 && text.contains("\\?usp=sharing")) {
+      text = text.replaceAll("\\?usp=sharing", "");
+    }
     String url = "", referenceText = text;
     if (text.length() > 0 && text.contains("http")) {
       String textPart = null;
@@ -63,7 +66,7 @@ public class URLShortener {
           }
 
           if (text.charAt(i) == ' ') {
-            finalUrl = i - 1;
+            finalUrl = i;
           }
 
           if ((i + 1) == text.length()) {
@@ -75,6 +78,7 @@ public class URLShortener {
           if (finalUrl > 0) {
 
             url = text.substring(startUrl, finalUrl);
+            url = url.trim();
             if (url.length() > LENGTH_LINK) {
               String shortURL = null;
               try {
@@ -159,6 +163,7 @@ public class URLShortener {
           if (finalUrl > 0) {
 
             url = text.substring(startUrl, finalUrl);
+            url = url.trim();
             if (url.length() > number) {
               String shortURL = null;
               try {

@@ -1316,11 +1316,6 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
 
-      if (innovation.getProjectInnovationInfo().getLeadOrganization() != null) {
-        if (innovation.getProjectInnovationInfo().getLeadOrganization().getId() == -1) {
-          innovation.getProjectInnovationInfo().setLeadOrganization(null);
-        }
-      }
 
       if (innovation.getProjectInnovationInfo().getRepIndInnovationType() != null
         && innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() != null
@@ -1337,11 +1332,19 @@ public class ProjectInnovationAction extends BaseAction {
         innovation.getProjectInnovationInfo().setInnovationNumber(null);
       }
 
-      if (clearLead == null || clearLead == false) {
+      // NOTE -> FOR SOME REASON "CLEAR LEAD" MEANS "NOT A CLEAR LEAD", SO WE HAVE TO REVERSE THE CONDITIONAL
+      if (/* NO */clearLead == null || /* NO */clearLead == false) {
         innovation.getProjectInnovationInfo().setClearLead(false);
+        if (innovation.getProjectInnovationInfo().getLeadOrganization() != null) {
+          if (innovation.getProjectInnovationInfo().getLeadOrganization().getId() == -1) {
+            innovation.getProjectInnovationInfo().setLeadOrganization(null);
+          }
+        }
       } else {
         innovation.getProjectInnovationInfo().setClearLead(true);
+        innovation.getProjectInnovationInfo().setLeadOrganization(null);
       }
+
       // End
 
       projectInnovationInfoManager.saveProjectInnovationInfo(innovation.getProjectInnovationInfo());
@@ -1712,6 +1715,15 @@ public class ProjectInnovationAction extends BaseAction {
           projectInnovationOrganizationManager.deleteProjectInnovationOrganization(innovationOrganization.getId());
         }
       }
+
+      // Delete innovations organizations when stage is different to 4
+      if (projectInnovation.getProjectInnovationInfo(this.getActualPhase()) != null
+        && projectInnovation.getProjectInnovationInfo(this.getActualPhase()).getRepIndStageInnovation() != null
+        && projectInnovation.getProjectInnovationInfo(this.getActualPhase()).getRepIndStageInnovation().getId() != 4) {
+        for (ProjectInnovationOrganization innovationOrganization : organizationPrev) {
+          projectInnovationOrganizationManager.deleteProjectInnovationOrganization(innovationOrganization.getId());
+        }
+      }
     }
 
     // Save form Information
@@ -1863,6 +1875,21 @@ public class ProjectInnovationAction extends BaseAction {
           // This is to add studyInnovationSave to generate correct
           // auditlog.
           this.innovation.getProjectExpectedStudyInnovations().add(studyInnovationSave);
+        }
+      }
+    }
+
+    // For Stage different to 4, delete previous expect studies milestones information
+    if (projectInnovation.getProjectInnovationInfo() != null
+      && projectInnovation.getProjectInnovationInfo().getRepIndStageInnovation() != null
+      && projectInnovation.getProjectInnovationInfo().getRepIndStageInnovation().getId() != null
+      && projectInnovation.getProjectInnovationInfo().getRepIndStageInnovation().getId() != 4
+      && projectInnovation.getStudies() != null && !projectInnovation.getStudies().isEmpty()) {
+      for (ProjectExpectedStudyInnovation studies : projectInnovation.getStudies()) {
+        if (studies != null && studies.getId() != null) {
+          if (projectExpectedStudyInnovationManager.getProjectExpectedStudyInnovationById(studies.getId()) != null) {
+            projectExpectedStudyInnovationManager.deleteProjectExpectedStudyInnovation(studies.getId());
+          }
         }
       }
     }

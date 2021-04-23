@@ -204,7 +204,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
           }
 
 
-          if (baseAction.isSubmit(projectId) && !baseAction.getActualPhase().getUpkeep()) {
+          if (baseAction.isSubmit(projectId) && !baseAction.getActualPhase().getUpkeep() && !baseAction.isPMU()) {
             canEdit = false;
 
           }

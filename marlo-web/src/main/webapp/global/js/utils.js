@@ -770,9 +770,9 @@ function getKeyByValue(obj,value) {
 function postMessageToSlack(messageJson) {
   var xmlhttp = new XMLHttpRequest();
   // Webhook URLs for Your Workspace #marlo-notifications
-  var channelToken = "T0L2KT42Z/BTHFGL30U/uBl8mIsLfEos0Ytm8ppiriax";
+  var channelToken = "T0L2KT42Z/BTHFGL30U/iYg9pidxAjc1BpsXadJJwkjt";
   if(production) {
-    channelToken = "T0L2KT42Z/BTHFGL30U/uBl8mIsLfEos0Ytm8ppiriax";
+    channelToken = "T0L2KT42Z/BTHFGL30U/iYg9pidxAjc1BpsXadJJwkjt";
   }
 
   var webhook_url = 'https://hooks.slack.com/services/' + channelToken;

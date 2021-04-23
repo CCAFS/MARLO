@@ -1,9 +1,11 @@
 /************* 1. GENERAL ***************/
-@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,800); @import url("custom.pickadate.css"); @import url("custom.bootstrap.css"); @import url("customLogin.css?20201120"); @import url("customInputsFlat.css"); @import url("customTrumbowyg.css"); /* END IMPORTS*/
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,800); @import url("custom.pickadate.css"); @import url("custom.bootstrap.css"); @import url("customLogin.css?20201120"); @import url("customInputsFlat.css?20210412B"); @import url("customTrumbowyg.css"); /* END IMPORTS*/
 .mce-widget.mce-tooltip {
   display: none !important;
 }
-
+#evidenceTypes th,#evidenceTypes td{
+font-size: 1.2em !important;
+}
 table {
   width: 100%;
 }
@@ -27,7 +29,7 @@ label {
 
 .input-sm {
   padding: 4px 10px;
-  height: 27px;
+  height: 26px;
   font-size: 13px;
 }
 
@@ -230,7 +232,7 @@ div.disabled {
 }
 
 .red {
-  color: red;
+  color: red !important;
   font-weight: bold;
   font-size: 1.2em;
   padding: 0.15em;
@@ -429,13 +431,14 @@ h2.successTitle {
 }
 
 h6.checked-true, p.checked-true {
-  background: url(../../global/images/checked-true.png) no-repeat 0;
-  padding: 3px 0 3px 23px;
+  /* background: url(../../global/images/grayCheckbox.png) no-repeat 0; */
+  /* padding: 3px 0 3px 23px; */
+  padding-top: 7px;
 }
 
 h6.checked-false, p.checked-false {
-  background: url(../../global/images/checked-false.png) no-repeat 0;
-  padding: 1px 0 1px 23px;
+  /* background: url(../../global/images/checked-false.png) no-repeat 0; */
+  padding-top: 7px;
 }
 
 h6.subTitle {
@@ -1998,7 +2001,7 @@ a.currentReportingSection li, a.currentSection li {
   display: block;
   text-decoration: none;
   color: #5E5E5E;
-  padding: 5px 19px 5px 10px !important;
+  padding: 5px 25px 5px 10px !important;
   /* border-left: 5px solid; */
 }
 
@@ -2515,7 +2518,7 @@ h3.contentSubTitle {
   width: 18px;
 }
 
-.helpMessage3 p {
+.helpMessage3 p , .helpMessage4 p{
   padding: 1px;
   margin-bottom: 0px;
 }
@@ -4240,9 +4243,9 @@ span.indicatorsFound {
   background-color: #5b80c3;
 }
 
-#metadata-output {
+#metadata-output, .metadata-output-persistent {
   color: #777;
-  padding: 7px 4px;
+  padding: 5px 4px;
   font-style: italic;
 }
 
@@ -5695,6 +5698,7 @@ h4.testEnvironment {
   color: #FFFFFF;
   background: #8EA786;
   border-bottom: 3px solid #7E9377;
+  outline: none;
 }
 
 .button-save:[disabled], 
@@ -7088,4 +7092,36 @@ li.currentSection#bi::before{
   font-size: 5px;
   padding: 0.3em 2.5em 0.3em 2.5em;
   border-radius: 0em 0em 0.3em 0.3em;
+}
+
+.slo-contribution-section{
+  border: 1px solid #D1D1D1;
+  padding: 9px 22px 9px 22px;
+  margin: 2px 0px 5px 0;
+  border-radius: 4px;
+  position: relative;
+  transition: box-shadow 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  background: #fff;
+}
+
+.crpProgressflagships {
+  position: fixed;
+  width: 34%;
+  top: 95px;
+  z-index: 9999;
+  left: 0;
+  transition: all 0.5s ease;
+}
+
+.crpProgressflagships.collapsing {
+  -webkit-transition: none;
+  transition: none;
+  display: none;
+}
+
+@media (max-width: 1500px) {
+  .crpProgressflagships {
+    width: 25%;
+    left: 28px;
+  }
 }

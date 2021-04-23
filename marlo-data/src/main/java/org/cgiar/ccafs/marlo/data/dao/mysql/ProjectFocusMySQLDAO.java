@@ -21,8 +21,9 @@ import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 @Named
@@ -64,6 +65,17 @@ public class ProjectFocusMySQLDAO extends AbstractMarloDAO<ProjectFocus, Long> i
   @Override
   public List<ProjectFocus> findAll() {
     String query = "from " + ProjectFocus.class.getName() + " where is_active=1";
+    List<ProjectFocus> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
+
+  }
+
+  @Override
+  public List<ProjectFocus> findByProjectId(long id) {
+    String query = "from " + ProjectFocus.class.getName() + " where is_active=1 and project_id = " + id;
     List<ProjectFocus> list = super.findAll(query);
     if (list.size() > 0) {
       return list;

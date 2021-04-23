@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectImpacts;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -88,8 +89,7 @@ public class ProjectImpactsMySQLDAO extends AbstractMarloDAO<ProjectImpacts, Lon
     query.append("FROM project_impacts AS pi ");
     query.append("INNER JOIN projects_info AS pin ");
     query.append("ON pi.project_id = pin.project_id ");
-    query.append("WHERE pi.is_active = 1 AND pin.id_phase = " + phase.getId());
-
+    query.append("WHERE pi.is_active = 1 AND pi.year = " + phase.getYear() + " AND pin.id_phase = " + phase.getId());
     List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
     List<ProjectImpacts> projectImpacts = new ArrayList<>();
 
@@ -104,6 +104,16 @@ public class ProjectImpactsMySQLDAO extends AbstractMarloDAO<ProjectImpacts, Lon
       return projectImpacts;
     }
     return null;
+  }
+
+  @Override
+  public List<ProjectImpacts> getProjectImpactsByYear(int year) {
+    String query = "from " + ProjectImpacts.class.getName() + " where is_active=1 and year =" + year;
+    List<ProjectImpacts> list = super.findAll(query);
+    if (list.isEmpty()) {
+      return list;
+    }
+    return Collections.emptyList();
   }
 
   @Override

@@ -16,37 +16,60 @@
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.Deliverables;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableAffiliationManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableAffiliationsNotMappedManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableAltmetricInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableDisseminationManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableMetadataElementManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableMetadataExternalSourcesManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverablePublicationMetadataManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableUserManager;
+import org.cgiar.ccafs.marlo.data.manager.ExternalSourceAuthorManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.MetadataElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableAffiliation;
+import org.cgiar.ccafs.marlo.data.model.DeliverableAffiliationsNotMapped;
+import org.cgiar.ccafs.marlo.data.model.DeliverableAltmetricInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
+import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataExternalSources;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
+import org.cgiar.ccafs.marlo.data.model.ExternalSourceAuthor;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.MetadataElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Publication;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.DeliverableUserDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewPublicationDTO;
+import org.cgiar.ccafs.marlo.rest.dto.NewPublicationOtherDTO;
 import org.cgiar.ccafs.marlo.rest.dto.PublicationDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
 import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
 import org.cgiar.ccafs.marlo.rest.mappers.DeliverablesMapper;
 import org.cgiar.ccafs.marlo.rest.mappers.PublicationsMapper;
+import org.cgiar.ccafs.marlo.rest.services.deliverables.model.PublicationAuthorWOS;
+import org.cgiar.ccafs.marlo.rest.services.deliverables.model.PublicationInstitutionWOS;
+import org.cgiar.ccafs.marlo.rest.services.deliverables.model.PublicationWOS;
+import org.cgiar.ccafs.marlo.utils.doi.DOIService;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -61,6 +84,10 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonParser;
 import com.ibm.icu.util.Calendar;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.http.HttpStatus;
@@ -79,10 +106,17 @@ public class DeliverablesItem<T> {
   private DeliverableDisseminationManager deliverableDisseminationManager;
   private DeliverableMetadataElementManager deliverableMetadataElementManager;
   private DeliverableUserManager deliverableUserManager;
+  private DeliverableMetadataExternalSourcesManager deliverableMetadataExternalSourcesManager;
+  private DeliverableAffiliationManager deliverableAffiliationManager;
+  private DeliverableAffiliationsNotMappedManager deliverableAffiliationsNotMappedManager;
+  private InstitutionManager institutionManager;
+  private ExternalSourceAuthorManager externalSourceAuthorManager;
+  private DeliverableAltmetricInfoManager deliverableAltmetricInfoManager;
 
 
   private DeliverablesMapper deliverablesMapper;
   private PublicationsMapper publicationsMapper;
+
 
   @Inject
   public DeliverablesItem(PhaseManager phaseManager, GlobalUnitManager globalUnitManager,
@@ -91,7 +125,12 @@ public class DeliverablesItem<T> {
     DeliverablePublicationMetadataManager deliverablePubMetadataManager,
     DeliverableMetadataElementManager deliverableMetadataElementManager, DeliverableUserManager deliverableUserManager,
     DeliverableDisseminationManager deliverableDisseminationManager, DeliverablesMapper deliverablesMapper,
-    PublicationsMapper publicationsMapper) {
+    PublicationsMapper publicationsMapper,
+    DeliverableMetadataExternalSourcesManager deliverableMetadataExternalSourcesManager,
+    DeliverableAffiliationManager deliverableAffiliationManager,
+    DeliverableAffiliationsNotMappedManager deliverableAffiliationsNotMappedManager,
+    InstitutionManager institutionManager, ExternalSourceAuthorManager externalSourceAuthorManager,
+    DeliverableAltmetricInfoManager deliverableAltmetricInfoManager) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.metadataElementManager = metadataElementManager;
@@ -104,6 +143,12 @@ public class DeliverablesItem<T> {
     this.deliverableDisseminationManager = deliverableDisseminationManager;
     this.deliverablesMapper = deliverablesMapper;
     this.publicationsMapper = publicationsMapper;
+    this.deliverableMetadataExternalSourcesManager = deliverableMetadataExternalSourcesManager;
+    this.deliverableAffiliationManager = deliverableAffiliationManager;
+    this.deliverableAffiliationsNotMappedManager = deliverableAffiliationsNotMappedManager;
+    this.institutionManager = institutionManager;
+    this.externalSourceAuthorManager = externalSourceAuthorManager;
+    this.deliverableAltmetricInfoManager = deliverableAltmetricInfoManager;
   }
 
   public Long createDeliverable(NewPublicationDTO deliverableDTO, String entityAcronym, User user) {
@@ -146,6 +191,7 @@ public class DeliverablesItem<T> {
         deliverableInfo.setYear(deliverable.getPhase().getYear());
         deliverableInfo.setDeliverableType(deliverableType);
         deliverableInfo.setPhase(phase);
+
         deliverableInfo.setStatus(APConstants.CLARISA_PUBLICATIONS_STATUS);
         deliverableInfo.setModificationJustification(APConstants.MESSAGE_MODIFICATION_JUSTIFICATION
           + sdf.format(new Date(Calendar.getInstance().getTimeInMillis())));
@@ -158,6 +204,13 @@ public class DeliverablesItem<T> {
         DeliverableDissemination deliverableDissemination = new DeliverableDissemination();
         deliverableDissemination.setIsOpenAccess(deliverableDTO.getIsOpenAccess());
         deliverableDissemination.setDeliverable(deliverable);
+        deliverableDissemination.setArticleUrl(deliverableDTO.getArticleURL());
+        deliverableDissemination.setDisseminationChannel("other");
+        deliverableDissemination.setDisseminationUrl("Not Defined");
+        if ((deliverableDTO.getDoi() == null || deliverableDTO.getDoi().equals(""))
+          && deliverableDTO.getArticleURL() != null && !deliverableDTO.getArticleURL().isEmpty()) {
+          deliverableDissemination.setHasDOI(true);
+        }
         deliverableDissemination.setPhase(phase);
         deliverableDisseminationManager.saveDeliverableDissemination(deliverableDissemination);
 
@@ -169,6 +222,7 @@ public class DeliverablesItem<T> {
         deliverablePublicationMetadata.setPages(deliverableDTO.getNpages());
         deliverablePublicationMetadata.setVolume(deliverableDTO.getVolume());
         deliverablePublicationMetadata.setIsiPublication(deliverableDTO.isISIJournal());
+
 
         deliverablePublicationMetadata.setPhase(phase);
         // save deliverablePublicationMetadata
@@ -201,7 +255,8 @@ public class DeliverablesItem<T> {
             metadataElements.stream().filter(me -> me.getEcondedName().equals(APConstants.METADATAELEMENTDOI))
               .collect(Collectors.toList()).get(0);
           deliverableMetadataElementDoi.setMetadataElement(metadataElementDoi);
-          deliverableMetadataElementDoi.setElementValue(deliverableDTO.getDoi() == null ? "" : deliverableDTO.getDoi());
+          deliverableMetadataElementDoi
+            .setElementValue(deliverableDTO.getDoi() == null ? "" : DOIService.tryGetDoiName(deliverableDTO.getDoi()));
           deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementDoi);
 
           // deliverable metadataelement Title
@@ -276,6 +331,196 @@ public class DeliverablesItem<T> {
           deliverableUser.setPhase(phase);
           deliverableUserManager.saveDeliverableUser(deliverableUser);
         }
+
+        // web of science integration
+        if (deliverableDTO.getDoi() != null) {
+          try {
+            JsonElement json = this.getServiceWOS(
+              "http://clarisa.wos.api.mel.cgiar.org/?link=" + DOIService.tryGetDoiName(deliverableDTO.getDoi()));
+            System.out.println(json.toString());
+
+            PublicationWOS publication = new Gson().fromJson(json, PublicationWOS.class);
+            if (publication != null) {
+              // save deliverable metadata external sources WOS and GARDIAN
+              final Long deliverableID = deliverable.getId();
+              DeliverableMetadataExternalSources deliverableMetadataExternalSources =
+                deliverable.getDeliverableMetadataExternalSources().stream()
+                  .filter(c -> c.getDeliverable().getId().equals(deliverableID) && c.getPhase().getId().equals(phase))
+                  .findFirst().orElse(null);
+              if (deliverableMetadataExternalSources == null) {
+                deliverableMetadataExternalSources = new DeliverableMetadataExternalSources();
+                deliverableMetadataExternalSources.setDeliverable(deliverable);
+                deliverableMetadataExternalSources.setDoi(publication.getDoi());
+
+                deliverableMetadataExternalSources.setIsiStatus(this.getBooleanString(publication.getIs_isi()));
+                deliverableMetadataExternalSources.setJournalName(publication.getJournal_name());
+                deliverableMetadataExternalSources.setTitle(publication.getTitle());
+                deliverableMetadataExternalSources.setOpenAccessStatus(this.getBooleanString(publication.getIs_oa()));
+                deliverableMetadataExternalSources.setOpenAccessLink(publication.getOa_link());
+                deliverableMetadataExternalSources.setPublicationType(publication.getPublication_type());
+                deliverableMetadataExternalSources.setPublicationYear(publication.getPublication_year() != null
+                  ? Integer.valueOf(publication.getPublication_year()) : null);
+                deliverableMetadataExternalSources.setSource(publication.getSource());
+                deliverableMetadataExternalSources.setUrl(publication.getDoi());
+                deliverableMetadataExternalSources.setPages(publication.getStart_end_pages());
+                deliverableMetadataExternalSources.setPhase(phase);
+                deliverableMetadataExternalSources.setCreatedBy(user);
+                deliverableMetadataExternalSources.setVolume(publication.getVolume());
+                if (publication.getGardian() != null) {
+                  deliverableMetadataExternalSources
+                    .setGardianAccessibility(publication.getGardian().getAccessibility());
+                  deliverableMetadataExternalSources.setGardianFindability(publication.getGardian().getFindability());
+                  deliverableMetadataExternalSources
+                    .setGardianInteroperability(publication.getGardian().getInteroperability());
+                  deliverableMetadataExternalSources.setGardianReusability(publication.getGardian().getReusability());
+                }
+                deliverableMetadataExternalSources = deliverableMetadataExternalSourcesManager
+                  .saveDeliverableMetadataExternalSources(deliverableMetadataExternalSources);
+                // deliverableMetadataExternalSourcesManager.replicate(deliverableMetadataExternalSources, phase);
+
+                // save institutions with a percentage above APCONSTANT percentage acceptance in deliverable affiliation
+                // save institutions with a percentage below APCONSTANT percentage acceptance in deliverable affiliation
+                // not mapped
+                for (PublicationInstitutionWOS institution : publication.getOrganizations()) {
+                  if (institution.getConfidant() != null
+                    && institution.getConfidant().longValue() >= APConstants.ACCEPTATION_PERCENTAGE) {
+                    DeliverableAffiliation deliverableAffiliation = new DeliverableAffiliation();
+                    deliverableAffiliation.setCreatedBy(user);
+                    Institution institutionAffiliation =
+                      institutionManager.getInstitutionById(institution.getClarisa_id());
+                    deliverableAffiliation.setInstitution(institutionAffiliation);
+                    deliverableAffiliation.setInstitutionMatchConfidence(institution.getConfidant().intValue());
+                    deliverableAffiliation.setDeliverableMetadataExternalSources(deliverableMetadataExternalSources);
+                    deliverableAffiliation.setInstitutionNameWebOfScience(institution.getName());
+                    deliverableAffiliation.setPhase(phase);
+                    deliverableAffiliation.setDeliverable(deliverable);
+                    deliverableAffiliation =
+                      deliverableAffiliationManager.saveDeliverableAffiliation(deliverableAffiliation);
+                    // deliverableAffiliationManager.replicate(deliverableAffiliation, phase);
+                  }
+                  if (institution.getConfidant() != null
+                    && (institution.getConfidant().longValue() < APConstants.ACCEPTATION_PERCENTAGE
+                      || institution.getConfidant() == null)) {
+                    DeliverableAffiliationsNotMapped deliverableAffiliationsNotMapped =
+                      new DeliverableAffiliationsNotMapped();
+                    deliverableAffiliationsNotMapped.setCountry(institution.getCountry());
+                    deliverableAffiliationsNotMapped
+                      .setDeliverableMetadataExternalSources(deliverableMetadataExternalSources);
+                    deliverableAffiliationsNotMapped
+                      .setInstitutionMatchConfidence(institution.getConfidant().intValue());
+                    deliverableAffiliationsNotMapped.setName(institution.getName());
+                    deliverableAffiliationsNotMapped.setFullAddress(institution.getFull_address());
+                    deliverableAffiliationsNotMapped.setPossibleInstitution(institution.getClarisa_id() != null
+                      ? institutionManager.getInstitutionById(institution.getClarisa_id()) : null);
+                    deliverableAffiliationsNotMapped = deliverableAffiliationsNotMappedManager
+                      .saveDeliverableAffiliationsNotMapped(deliverableAffiliationsNotMapped);
+                    // deliverableAffiliationsNotMappedManager.replicate(deliverableAffiliationsNotMapped, phase);
+                  }
+                }
+                // save authors of WOS external sources authors
+
+
+                if (publication.getAuthors() != null) {
+                  for (PublicationAuthorWOS author : publication.getAuthors()) {
+                    ExternalSourceAuthor externalSourceAuthor = new ExternalSourceAuthor();
+                    externalSourceAuthor.setDeliverableMetadataExternalSources(deliverableMetadataExternalSources);
+                    externalSourceAuthor.setCreatedBy(user);
+                    externalSourceAuthor.setFullName(author.getFull_name());
+                    externalSourceAuthor = externalSourceAuthorManager.saveExternalSourceAuthor(externalSourceAuthor);
+                    // externalSourceAuthorManager.replicate(externalSourceAuthor, phase);
+                  }
+                }
+                // save altmetrics information in deliverable altmetrics
+                if (publication.getAltmetric() != null) {
+                  DeliverableAltmetricInfo altmetrics = deliverable.getDeliverableAltmetricInfo(phase);
+                  if (altmetrics == null) {
+                    altmetrics = new DeliverableAltmetricInfo();
+                  }
+                  altmetrics.setDeliverable(deliverable);
+                  altmetrics.setAltmetricId(publication.getAltmetric().getAltmetric_id());
+                  altmetrics.setAltmetricJid(publication.getAltmetric().getAltmetric_jid());
+                  String authors = "";
+                  boolean init = true;
+                  for (String data : publication.getAltmetric().getAuthors()) {
+                    if (init) {
+                      authors += data;
+                      init = false;
+                    } else {
+                      authors += ";" + data;
+                    }
+                  }
+                  altmetrics.setAuthors(authors);
+                  altmetrics.setCitedByBlogs(publication.getAltmetric().getCited_by_posts_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_posts_count()) : null);
+                  altmetrics.setCitedByDelicious(publication.getAltmetric().getCited_by_delicious_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_delicious_count()) : null);
+                  altmetrics.setCitedByFacebookPages(publication.getAltmetric().getCited_by_fbwalls_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_fbwalls_count()) : null);
+                  altmetrics.setCitedByGooglePlusUsers(publication.getAltmetric().getCited_by_gplus_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_gplus_count()) : null);
+                  altmetrics.setCitedByForumUsers(publication.getAltmetric().getCited_by_forum_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_forum_count()) : null);
+                  altmetrics.setCitedByLinkedinUsers(publication.getAltmetric().getCited_by_linkedin_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_linkedin_count()) : null);
+                  altmetrics.setCitedByNewsOutlets(publication.getAltmetric().getCited_by_msm_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_msm_count()) : null);
+                  altmetrics
+                    .setCitedByPeerReviewSites(publication.getAltmetric().getCited_by_peer_review_sites_count() != null
+                      ? Integer.valueOf(publication.getAltmetric().getCited_by_peer_review_sites_count()) : null);
+                  altmetrics.setCitedByPinterestUsers(publication.getAltmetric().getCited_by_pinners_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_pinners_count()) : null);
+                  altmetrics.setCitedByPolicies(publication.getAltmetric().getCited_by_policies_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_policies_count()) : null);
+                  altmetrics.setCitedByRedditUsers(publication.getAltmetric().getCited_by_rdts_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_rdts_count()) : null);
+                  altmetrics
+                    .setCitedByResearchHighlightPlatforms(publication.getAltmetric().getCited_by_rh_count() != null
+                      ? Integer.valueOf(publication.getAltmetric().getCited_by_rh_count()) : null);
+                  altmetrics.setCitedByStackExchangeResources(publication.getAltmetric().getCited_by_qs_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_qs_count()) : null);
+                  altmetrics.setCitedByTwitterUsers(publication.getAltmetric().getCited_by_tweeters_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_tweeters_count()) : null);
+                  altmetrics.setCitedByWeiboUsers(publication.getAltmetric().getCited_by_weibo_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_weibo_count()) : null);
+                  altmetrics.setCitedByWikipediaPages(publication.getAltmetric().getCited_by_wikipedia_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_wikipedia_count()) : null);
+                  altmetrics.setCitedByYoutubeChannels(publication.getAltmetric().getCited_by_videos_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_videos_count()) : null);
+                  altmetrics.setType(publication.getAltmetric().getType());
+                  altmetrics.setTitle(publication.getAltmetric().getTitle());
+                  altmetrics.setPhase(phase);
+                  altmetrics.setModifiedBy(user);
+                  altmetrics.setDoi(publication.getAltmetric().getDoi());
+                  altmetrics.setUrl(publication.getAltmetric().getUrl());
+                  altmetrics.setUri(publication.getAltmetric().getUri());
+                  altmetrics.setScore(publication.getAltmetric().getScore());
+                  altmetrics.setJournal(publication.getJournal_name());
+                  altmetrics.setHandle(publication.getAltmetric().getHandle());
+                  altmetrics.setDetailsUrl(deliverableDTO.getDoi());
+                  altmetrics.setAddedOn(publication.getAltmetric().getAdded_on() != null
+                    ? new Date(Long.parseLong(publication.getAltmetric().getAdded_on())) : null);
+                  altmetrics.setPublishedOn(publication.getAltmetric().getPublished_on() != null
+                    ? new Date(Long.parseLong(publication.getAltmetric().getPublished_on())) : null);
+                  altmetrics.setIsOpenAccess(String.valueOf(publication.getAltmetric().isIs_oa()));
+                  altmetrics.setLastSync(new Date(Calendar.getInstance().getTimeInMillis()));
+                  altmetrics.setLastUpdated(publication.getAltmetric().getLast_updated() != null
+                    ? new Date(Long.parseLong(publication.getAltmetric().getLast_updated())) : null);
+                  altmetrics.setImageSmall(publication.getAltmetric().getImages() != null
+                    ? publication.getAltmetric().getImages().getSmall() : null);
+                  altmetrics.setImageMedium(publication.getAltmetric().getImages() != null
+                    ? publication.getAltmetric().getImages().getMedium() : null);
+                  altmetrics.setImageLarge(publication.getAltmetric().getImages() != null
+                    ? publication.getAltmetric().getImages().getLarge() : null);
+                  altmetrics = deliverableAltmetricInfoManager.saveDeliverableAltmetricInfo(altmetrics);
+                  // deliverableAltmetricInfoManager.replicate(altmetrics, phase);
+                }
+              }
+            }
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        }
+
       } else {
         fieldErrors.add(new FieldErrorDTO("createDeliverable", "phase", "Error while creating a publication "));
         throw new MARLOFieldValidationException("Field Validation errors", "",
@@ -293,6 +538,368 @@ public class DeliverablesItem<T> {
           .collect(Collectors.toList()));
     }
 
+    return deliverablesID;
+  }
+
+  public Long createDeliverableOther(NewPublicationOtherDTO deliverableDTO, String entityAcronym, User user) {
+    Long deliverablesID = null;
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    Deliverable deliverable = new Deliverable();
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
+    if (globalUnitEntity == null) {
+      fieldErrors.add(new FieldErrorDTO("createDeliverableOther", "GlobalUnitEntity",
+        entityAcronym + " is an invalid CGIAR entity acronym"));
+    }
+    Phase phase = this.phaseManager.findAll().stream()
+      .filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(entityAcronym)
+        && c.getYear() == deliverableDTO.getPhase().getYear()
+        && c.getName().equalsIgnoreCase(deliverableDTO.getPhase().getName()))
+      .findFirst().get();
+
+    if (phase == null) {
+      fieldErrors.add(
+        new FieldErrorDTO("createDeliverableOther", "phase", deliverable.getPhase().getYear() + " is an invalid year"));
+    }
+    DeliverableType deliverableType = deliverableTypeManager.getDeliverableTypeById(deliverableDTO.getType());
+    if (deliverableType == null) {
+      fieldErrors.add(new FieldErrorDTO("createDeliverableOther", "DeliverableType",
+        deliverableDTO.getType() + " is an invalid publication Type"));
+    }
+
+    if (fieldErrors.size() == 0 || fieldErrors.isEmpty()) {
+      // create deliverable
+      deliverable.setCrp(globalUnitEntity);
+      deliverable.setPhase(phase);
+      deliverable.setIsPublication(true);
+      deliverable = deliverableManager.saveDeliverable(deliverable);
+      deliverablesID = deliverable.getId();
+      if (deliverablesID != null) {
+
+        // create deliverable info
+        deliverable = deliverableManager.getDeliverableById(deliverablesID);
+        DeliverableInfo deliverableInfo = new DeliverableInfo();
+        deliverableInfo.setDeliverable(deliverable);
+        deliverableInfo.setTitle(deliverableDTO.getTitle());
+
+        deliverableInfo.setYear(deliverable.getPhase().getYear());
+        deliverableInfo.setDeliverableType(deliverableType);
+        deliverableInfo.setPhase(phase);
+        deliverableInfo.setStatus(APConstants.CLARISA_PUBLICATIONS_STATUS);
+        deliverableInfo.setModificationJustification(APConstants.MESSAGE_MODIFICATION_JUSTIFICATION
+          + sdf.format(new Date(Calendar.getInstance().getTimeInMillis())));
+
+        // save deliverableinfo
+
+        deliverableInfoManager.saveDeliverableInfo(deliverableInfo);
+        // create deliverable dissemination data
+
+        DeliverableDissemination deliverableDissemination = new DeliverableDissemination();
+        deliverableDissemination.setIsOpenAccess(deliverableDTO.getIsOpenAccess());
+        deliverableDissemination.setDeliverable(deliverable);
+        deliverableDissemination.setArticleUrl(deliverableDTO.getArticleURL());
+        deliverableDissemination.setDisseminationChannel("other");
+        deliverableDissemination.setDisseminationUrl("Not Defined");
+        if ((deliverableDTO.getDoi() == null || deliverableDTO.getDoi().equals(""))
+          && deliverableDTO.getArticleURL() != null && !deliverableDTO.getArticleURL().isEmpty()) {
+          deliverableDissemination.setHasDOI(true);
+        }
+        deliverableDissemination.setPhase(phase);
+        deliverableDisseminationManager.saveDeliverableDissemination(deliverableDissemination);
+
+        // creatte deliverable publication metadata
+        DeliverablePublicationMetadata deliverablePublicationMetadata = new DeliverablePublicationMetadata();
+        deliverablePublicationMetadata.setDeliverable(deliverable);
+
+
+        deliverablePublicationMetadata.setPhase(phase);
+        // save deliverablePublicationMetadata
+
+        deliverablePubMetadataManager.saveDeliverablePublicationMetadata(deliverablePublicationMetadata);
+        // get element ID from
+
+        // econded_name to get Handle and DOI and create
+        List<MetadataElement> metadataElements = new ArrayList<MetadataElement>(metadataElementManager.findAll());
+        if (metadataElements != null) {
+
+
+          // deliverable metadataelement handle
+          DeliverableMetadataElement deliverableMetadataElementHandle = new DeliverableMetadataElement();
+          deliverableMetadataElementHandle.setDeliverable(deliverable);
+          deliverableMetadataElementHandle.setPhase(phase);
+          MetadataElement metadataElementHandle =
+            metadataElements.stream().filter(me -> me.getEcondedName().equals(APConstants.METADATAELEMENTHANDLE))
+              .collect(Collectors.toList()).get(0);
+          deliverableMetadataElementHandle.setMetadataElement(metadataElementHandle);
+          deliverableMetadataElementHandle
+            .setElementValue(deliverableDTO.getHandle() == null ? "" : deliverableDTO.getHandle());
+          deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementHandle);
+
+          // deliverable metadataelement DOI
+          DeliverableMetadataElement deliverableMetadataElementDoi = new DeliverableMetadataElement();
+          deliverableMetadataElementDoi.setDeliverable(deliverable);
+          deliverableMetadataElementDoi.setPhase(phase);
+          MetadataElement metadataElementDoi =
+            metadataElements.stream().filter(me -> me.getEcondedName().equals(APConstants.METADATAELEMENTDOI))
+              .collect(Collectors.toList()).get(0);
+          deliverableMetadataElementDoi.setMetadataElement(metadataElementDoi);
+          deliverableMetadataElementDoi.setElementValue(deliverableDTO.getDoi() == null ? "" : deliverableDTO.getDoi());
+          deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementDoi);
+
+          // deliverable metadataelement Title
+          DeliverableMetadataElement deliverableMetadataElementTitle = new DeliverableMetadataElement();
+          deliverableMetadataElementTitle.setDeliverable(deliverable);
+          deliverableMetadataElementTitle.setPhase(phase);
+          MetadataElement metadataElementTitle =
+            metadataElements.stream().filter(me -> me.getEcondedName().equals(APConstants.METADATAELEMENTTITLE))
+              .collect(Collectors.toList()).get(0);
+          deliverableMetadataElementTitle.setMetadataElement(metadataElementTitle);
+          deliverableMetadataElementTitle
+            .setElementValue(deliverableDTO.getTitle() == null ? "" : deliverableDTO.getTitle());
+          deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementTitle);
+
+          // deliverable metadataelement Citation
+          DeliverableMetadataElement deliverableMetadataElementCitation = new DeliverableMetadataElement();
+          deliverableMetadataElementCitation.setDeliverable(deliverable);
+          deliverableMetadataElementCitation.setPhase(phase);
+          MetadataElement metadataElementCitation =
+            metadataElements.stream().filter(me -> me.getEcondedName().equals(APConstants.METADATAELEMENTCITATION))
+              .collect(Collectors.toList()).get(0);
+          deliverableMetadataElementCitation.setMetadataElement(metadataElementCitation);
+          String authors = "";
+
+
+          // deliverable metadataelement Publication
+          DeliverableMetadataElement deliverableMetadataElementPublication = new DeliverableMetadataElement();
+          deliverableMetadataElementPublication.setDeliverable(deliverable);
+          deliverableMetadataElementPublication.setPhase(phase);
+          MetadataElement metadataElementPublication =
+            metadataElements.stream().filter(me -> me.getEcondedName().equals(APConstants.METADATAELEMENTPUBLICATION))
+              .collect(Collectors.toList()).get(0);
+          deliverableMetadataElementPublication.setMetadataElement(metadataElementPublication);
+          deliverableMetadataElementPublication.setElementValue(String.valueOf(deliverableDTO.getYear()));
+          deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementPublication);
+
+
+          // changes for authors 2019-09-03 apply to a field to include all authors in a single row
+          // setdeliverables author
+          DeliverableMetadataElement deliverableMetadataElementAuthors = new DeliverableMetadataElement();
+          deliverableMetadataElementAuthors.setDeliverable(deliverable);
+          deliverableMetadataElementAuthors.setPhase(phase);
+          MetadataElement metadataElementAuthors =
+            metadataElements.stream().filter(me -> me.getEcondedName().equals(APConstants.METADATAELEMENTAUTHORS))
+              .collect(Collectors.toList()).get(0);
+          deliverableMetadataElementAuthors.setMetadataElement(metadataElementAuthors);
+          deliverableMetadataElementAuthors.setElementValue(String.valueOf(deliverableDTO.getAuthors()));
+          deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementAuthors);
+        }
+
+        for (DeliverableUserDTO deliverableUserDTO : deliverableDTO.getAuthorlist()) {
+          DeliverableUser deliverableUser = new DeliverableUser();
+          deliverableUser.setFirstName(deliverableUserDTO.getFirstName());
+          deliverableUser.setLastName(deliverableUserDTO.getLastName());
+          deliverableUser.setDeliverable(deliverable);
+          deliverableUser.setPhase(phase);
+          deliverableUserManager.saveDeliverableUser(deliverableUser);
+        }
+
+        // web of science integration
+        if (deliverableDTO.getDoi() != null) {
+          try {
+            JsonElement json = this.getServiceWOS(
+              "http://clarisa.wos.api.mel.cgiar.org/?link=" + DOIService.tryGetDoiName(deliverableDTO.getDoi()));
+            System.out.println(json.toString());
+
+            PublicationWOS publication = new Gson().fromJson(json, PublicationWOS.class);
+            if (publication != null) {
+              // save deliverable metadata external sources WOS and GARDIAN
+              final Long deliverableID = deliverable.getId();
+              DeliverableMetadataExternalSources deliverableMetadataExternalSources =
+                deliverable.getDeliverableMetadataExternalSources().stream()
+                  .filter(c -> c.getDeliverable().getId().equals(deliverableID)).findFirst().orElse(null);
+              if (deliverableMetadataExternalSources == null) {
+                deliverableMetadataExternalSources = new DeliverableMetadataExternalSources();
+                deliverableMetadataExternalSources.setDeliverable(deliverable);
+                deliverableMetadataExternalSources.setDoi(publication.getDoi());
+                deliverableMetadataExternalSources.setIsiStatus(this.getBooleanString(publication.getIs_isi()));
+                deliverableMetadataExternalSources.setJournalName(publication.getJournal_name());
+                deliverableMetadataExternalSources.setTitle(publication.getTitle());
+                deliverableMetadataExternalSources.setOpenAccessStatus(this.getBooleanString(publication.getIs_oa()));
+                deliverableMetadataExternalSources.setOpenAccessLink(publication.getOa_link());
+                deliverableMetadataExternalSources.setPublicationType(publication.getPublication_type());
+                deliverableMetadataExternalSources.setPublicationYear(publication.getPublication_year() != null
+                  ? Integer.valueOf(publication.getPublication_year()) : null);
+                deliverableMetadataExternalSources.setSource(publication.getSource());
+                deliverableMetadataExternalSources.setUrl(publication.getDoi());
+                deliverableMetadataExternalSources.setPages(publication.getStart_end_pages());
+                deliverableMetadataExternalSources.setPhase(phase);
+                deliverableMetadataExternalSources.setCreatedBy(user);
+                deliverableMetadataExternalSources.setVolume(publication.getVolume());
+                if (publication.getGardian() != null) {
+                  deliverableMetadataExternalSources
+                    .setGardianAccessibility(publication.getGardian().getAccessibility());
+                  deliverableMetadataExternalSources.setGardianFindability(publication.getGardian().getFindability());
+                  deliverableMetadataExternalSources
+                    .setGardianInteroperability(publication.getGardian().getInteroperability());
+                  deliverableMetadataExternalSources.setGardianReusability(publication.getGardian().getReusability());
+                }
+                deliverableMetadataExternalSources = deliverableMetadataExternalSourcesManager
+                  .saveDeliverableMetadataExternalSources(deliverableMetadataExternalSources);
+                // deliverableMetadataExternalSourcesManager.replicate(deliverableMetadataExternalSources, phase);
+
+                // save institutions with a percentage above APCONSTANT percentage acceptance in deliverable affiliation
+                // save institutions with a percentage below APCONSTANT percentage acceptance in deliverable affiliation
+                // not mapped
+                for (PublicationInstitutionWOS institution : publication.getOrganizations()) {
+                  if (institution.getConfidant() != null
+                    && institution.getConfidant().longValue() >= APConstants.ACCEPTATION_PERCENTAGE) {
+                    DeliverableAffiliation deliverableAffiliation = new DeliverableAffiliation();
+                    deliverableAffiliation.setCreatedBy(user);
+                    Institution institutionAffiliation =
+                      institutionManager.getInstitutionById(institution.getClarisa_id());
+                    deliverableAffiliation.setInstitution(institutionAffiliation);
+                    deliverableAffiliation.setInstitutionMatchConfidence(institution.getConfidant().intValue());
+                    deliverableAffiliation.setDeliverableMetadataExternalSources(deliverableMetadataExternalSources);
+                    deliverableAffiliation.setInstitutionNameWebOfScience(institution.getName());
+                    deliverableAffiliation.setPhase(phase);
+                    deliverableAffiliation.setDeliverable(deliverable);
+                    deliverableAffiliation =
+                      deliverableAffiliationManager.saveDeliverableAffiliation(deliverableAffiliation);
+                    // deliverableAffiliationManager.replicate(deliverableAffiliation, phase);
+                  }
+                  if (institution.getConfidant() != null
+                    && (institution.getConfidant().longValue() < APConstants.ACCEPTATION_PERCENTAGE
+                      || institution.getConfidant() == null)) {
+                    DeliverableAffiliationsNotMapped deliverableAffiliationsNotMapped =
+                      new DeliverableAffiliationsNotMapped();
+                    deliverableAffiliationsNotMapped.setCountry(institution.getCountry());
+                    deliverableAffiliationsNotMapped
+                      .setDeliverableMetadataExternalSources(deliverableMetadataExternalSources);
+                    deliverableAffiliationsNotMapped
+                      .setInstitutionMatchConfidence(institution.getConfidant().intValue());
+                    deliverableAffiliationsNotMapped.setName(institution.getName());
+                    deliverableAffiliationsNotMapped.setFullAddress(institution.getFull_address());
+                    deliverableAffiliationsNotMapped.setPossibleInstitution(institution.getClarisa_id() != null
+                      ? institutionManager.getInstitutionById(institution.getClarisa_id()) : null);
+                    deliverableAffiliationsNotMapped = deliverableAffiliationsNotMappedManager
+                      .saveDeliverableAffiliationsNotMapped(deliverableAffiliationsNotMapped);
+                    // deliverableAffiliationsNotMappedManager.replicate(deliverableAffiliationsNotMapped, phase);
+                  }
+                }
+                // save authors of WOS external sources authors
+
+
+                if (publication.getAuthors() != null) {
+                  for (PublicationAuthorWOS author : publication.getAuthors()) {
+                    ExternalSourceAuthor externalSourceAuthor = new ExternalSourceAuthor();
+                    externalSourceAuthor.setDeliverableMetadataExternalSources(deliverableMetadataExternalSources);
+                    externalSourceAuthor.setCreatedBy(user);
+                    externalSourceAuthor.setFullName(author.getFull_name());
+                    externalSourceAuthor = externalSourceAuthorManager.saveExternalSourceAuthor(externalSourceAuthor);
+                    // externalSourceAuthorManager.replicate(externalSourceAuthor, phase);
+                  }
+                }
+                // save altmetrics information in deliverable altmetrics
+                if (publication.getAltmetric() != null) {
+                  DeliverableAltmetricInfo altmetrics = deliverable.getDeliverableAltmetricInfo(phase);
+                  if (altmetrics == null) {
+                    altmetrics = new DeliverableAltmetricInfo();
+                  }
+                  altmetrics.setDeliverable(deliverable);
+                  altmetrics.setAltmetricId(publication.getAltmetric().getAltmetric_id());
+                  altmetrics.setAltmetricJid(publication.getAltmetric().getAltmetric_jid());
+                  String authors = "";
+                  boolean init = true;
+                  if (publication.getAltmetric().getAuthors() != null) {
+                    for (String data : publication.getAltmetric().getAuthors()) {
+                      if (init) {
+                        authors += data;
+                        init = false;
+                      } else {
+                        authors += ";" + data;
+                      }
+                    }
+                  }
+
+                  altmetrics.setAuthors(authors);
+                  altmetrics.setCitedByBlogs(publication.getAltmetric().getCited_by_posts_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_posts_count()) : null);
+                  altmetrics.setCitedByDelicious(publication.getAltmetric().getCited_by_delicious_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_delicious_count()) : null);
+                  altmetrics.setCitedByFacebookPages(publication.getAltmetric().getCited_by_fbwalls_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_fbwalls_count()) : null);
+                  altmetrics.setCitedByGooglePlusUsers(publication.getAltmetric().getCited_by_gplus_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_gplus_count()) : null);
+                  altmetrics.setCitedByForumUsers(publication.getAltmetric().getCited_by_forum_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_forum_count()) : null);
+                  altmetrics.setCitedByLinkedinUsers(publication.getAltmetric().getCited_by_linkedin_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_linkedin_count()) : null);
+                  altmetrics.setCitedByNewsOutlets(publication.getAltmetric().getCited_by_msm_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_msm_count()) : null);
+                  altmetrics
+                    .setCitedByPeerReviewSites(publication.getAltmetric().getCited_by_peer_review_sites_count() != null
+                      ? Integer.valueOf(publication.getAltmetric().getCited_by_peer_review_sites_count()) : null);
+                  altmetrics.setCitedByPinterestUsers(publication.getAltmetric().getCited_by_pinners_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_pinners_count()) : null);
+                  altmetrics.setCitedByPolicies(publication.getAltmetric().getCited_by_policies_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_policies_count()) : null);
+                  altmetrics.setCitedByRedditUsers(publication.getAltmetric().getCited_by_rdts_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_rdts_count()) : null);
+                  altmetrics
+                    .setCitedByResearchHighlightPlatforms(publication.getAltmetric().getCited_by_rh_count() != null
+                      ? Integer.valueOf(publication.getAltmetric().getCited_by_rh_count()) : null);
+                  altmetrics.setCitedByStackExchangeResources(publication.getAltmetric().getCited_by_qs_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_qs_count()) : null);
+                  altmetrics.setCitedByTwitterUsers(publication.getAltmetric().getCited_by_tweeters_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_tweeters_count()) : null);
+                  altmetrics.setCitedByWeiboUsers(publication.getAltmetric().getCited_by_weibo_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_weibo_count()) : null);
+                  altmetrics.setCitedByWikipediaPages(publication.getAltmetric().getCited_by_wikipedia_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_wikipedia_count()) : null);
+                  altmetrics.setCitedByYoutubeChannels(publication.getAltmetric().getCited_by_videos_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_videos_count()) : null);
+                  altmetrics.setType(publication.getAltmetric().getType());
+                  altmetrics.setTitle(publication.getAltmetric().getTitle());
+                  altmetrics.setPhase(phase);
+                  altmetrics.setModifiedBy(user);
+                  altmetrics.setDoi(publication.getAltmetric().getDoi());
+                  altmetrics.setUrl(publication.getAltmetric().getUrl());
+                  altmetrics.setUri(publication.getAltmetric().getUri());
+                  altmetrics.setScore(publication.getAltmetric().getScore());
+                  altmetrics.setJournal(publication.getJournal_name());
+                  altmetrics.setHandle(publication.getAltmetric().getHandle());
+                  altmetrics.setDetailsUrl(deliverableDTO.getDoi());
+                  altmetrics.setAddedOn(publication.getAltmetric().getAdded_on() != null
+                    ? new Date(Long.parseLong(publication.getAltmetric().getAdded_on())) : null);
+                  altmetrics.setPublishedOn(publication.getAltmetric().getPublished_on() != null
+                    ? new Date(Long.parseLong(publication.getAltmetric().getPublished_on())) : null);
+                  altmetrics.setIsOpenAccess(String.valueOf(publication.getAltmetric().isIs_oa()));
+                  altmetrics.setLastSync(new Date(Calendar.getInstance().getTimeInMillis()));
+                  altmetrics.setLastUpdated(publication.getAltmetric().getLast_updated() != null
+                    ? new Date(Long.parseLong(publication.getAltmetric().getLast_updated())) : null);
+                  altmetrics.setImageSmall(publication.getAltmetric().getImages() != null
+                    ? publication.getAltmetric().getImages().getSmall() : null);
+                  altmetrics.setImageMedium(publication.getAltmetric().getImages() != null
+                    ? publication.getAltmetric().getImages().getMedium() : null);
+                  altmetrics.setImageLarge(publication.getAltmetric().getImages() != null
+                    ? publication.getAltmetric().getImages().getLarge() : null);
+                  altmetrics = deliverableAltmetricInfoManager.saveDeliverableAltmetricInfo(altmetrics);
+                  // deliverableAltmetricInfoManager.replicate(altmetrics, phase);
+                }
+              }
+            }
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        }
+      }
+    } else {
+      // validators
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
+    }
     return deliverablesID;
   }
 
@@ -478,15 +1085,18 @@ public class DeliverablesItem<T> {
       try {
         List<Publication> fullPublicationsList = new ArrayList<Publication>();
 
-        List<Deliverable> deliverableList = deliverableManager.getPublicationsByPhase(phase.getId());
+        List<Deliverable> deliverableList = deliverableManager.getDeliverablesByParameters(phase, true, false, false);
         for (Deliverable deliverable : deliverableList) {
           // if there is no project associated to the deliverable it means it is a prp
-          if (deliverable.getProject() == null) {
-            Publication publication = new Publication();
-            publication.setId(deliverable.getId());
-            DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(phase);
-            // getting deliverable Info
-            if (deliverableInfo != null) {
+          // if (deliverable.getProject() == null) {
+          Publication publication = new Publication();
+          publication.setId(deliverable.getId());
+          DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(phase);
+          // getting deliverable Info
+          if (deliverableInfo != null) {
+            if (deliverableInfo.getYear() != -1
+              && (deliverableInfo.getYear() == repoyear || (deliverableInfo.getNewExpectedYear() != null
+                ? deliverableInfo.getNewExpectedYear().intValue() : -1) == repoyear)) {
               publication.setVolume(deliverableInfo.getTitle());
               publication.setYear(deliverableInfo.getYear());
               publication.setPhase(phase);
@@ -504,7 +1114,8 @@ public class DeliverablesItem<T> {
                 }
               }
               publication.setIsOpenAccess(
-                deliverable.getDissemination() != null ? (deliverable.getDissemination().getIsOpenAccess()) : false);
+                deliverable.getDissemination() != null ? (deliverable.getDissemination().getIsOpenAccess() != null
+                  ? deliverable.getDissemination().getIsOpenAccess() : false) : false);
               // getting deliverablepublicationMetadata
               Deliverable d = deliverableManager.getDeliverableById(deliverable.getId());
 
@@ -559,9 +1170,12 @@ public class DeliverablesItem<T> {
                 newdeliverableUserList.add(deliverableUser);
               }
               publication.setAuthorlist(newdeliverableUserList);
-              fullPublicationsList.add(publication);
+              if (deliverableManager.isDeliverableExcluded(deliverable.getId(), phase.getId())) {
+                fullPublicationsList.add(publication);
+              }
             }
           }
+
         }
         if (fullPublicationsList.size() > 0) {
 
@@ -598,6 +1212,20 @@ public class DeliverablesItem<T> {
     return deliverablesListDTO;
   }
 
+  public String getBooleanString(String data) {
+    String result = null;
+    if (data != null) {
+      if (StringUtils.equalsIgnoreCase(data, "yes")) {
+        result = "true";
+      } else if (StringUtils.equalsIgnoreCase(data, "no")) {
+        result = "false";
+      } else if (StringUtils.equalsIgnoreCase(data, "n/a")) {
+        result = "N/A";
+      }
+    }
+    return result;
+  }
+
   private Map<String, DeliverableMetadataElement>
     getMetadataElements(List<DeliverableMetadataElement> deliverableMetadataElements) {
     Map<String, DeliverableMetadataElement> map = new TreeMap<>(Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
@@ -609,6 +1237,22 @@ public class DeliverablesItem<T> {
     }
 
     return map;
+  }
+
+  public JsonElement getServiceWOS(String url) throws MalformedURLException, IOException {
+    URL clarisaUrl = new URL(url);
+
+    URLConnection conn = clarisaUrl.openConnection();
+    conn.setRequestProperty("Authorization", "3174h8-c40e68-5ge392-218caa-a664b3");
+    JsonElement element = null;
+    try (InputStreamReader reader = new InputStreamReader(conn.getInputStream())) {
+      element = new JsonParser().parse(reader);
+    } catch (FileNotFoundException fnfe) {
+      element = JsonNull.INSTANCE;
+    } catch (IOException ioe) {
+      element = JsonNull.INSTANCE;
+    }
+    return element;
   }
 
   public Long putDeliverableById(Long idDeliverable, NewPublicationDTO newPublicationDTO, String CGIARentityAcronym,
@@ -717,10 +1361,17 @@ public class DeliverablesItem<T> {
         }
         deliverableDissemination.setIsOpenAccess(newPublicationDTO.getIsOpenAccess());
         deliverableDissemination.setDeliverable(deliverable);
+        deliverableDissemination.setDisseminationUrl("Not Defined");
+        deliverableDissemination.setDisseminationChannel("other");
+        deliverableDissemination.setArticleUrl(newPublicationDTO.getArticleURL());
+        if ((newPublicationDTO.getDoi() == null || newPublicationDTO.getDoi().equals(""))
+          && newPublicationDTO.getArticleURL() != null && !newPublicationDTO.getArticleURL().isEmpty()) {
+          deliverableDissemination.setHasDOI(true);
+        }
         deliverableDissemination.setPhase(phase);
         deliverableDisseminationManager.saveDeliverableDissemination(deliverableDissemination);
 
-        // creatte deliverable publication metadata
+        // create deliverable publication metadata
         DeliverablePublicationMetadata deliverablePublicationMetadata = deliverable.getDeliverablePublicationMetadatas()
           .stream().filter(m -> m.getPhase().getId() == phaseID).findFirst().orElse(null);
         if (deliverablePublicationMetadata == null) {
@@ -755,8 +1406,8 @@ public class DeliverablesItem<T> {
             metadataElements.get(APConstants.METADATAELEMENTDOI);
           deliverableMetadataElementDoi.setDeliverable(deliverable);
           deliverableMetadataElementDoi.setPhase(phase);
-          deliverableMetadataElementDoi
-            .setElementValue(newPublicationDTO.getDoi() == null ? "" : newPublicationDTO.getDoi());
+          deliverableMetadataElementDoi.setElementValue(
+            newPublicationDTO.getDoi() == null ? "" : DOIService.tryGetDoiName(newPublicationDTO.getDoi()));
           deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementDoi);
 
           // deliverable metadataelement Title
@@ -849,6 +1500,753 @@ public class DeliverablesItem<T> {
           }
         }
 
+        // web of science integration
+        if (newPublicationDTO.getDoi() != null) {
+          try {
+            JsonElement json = this.getServiceWOS(
+              "http://clarisa.wos.api.mel.cgiar.org/?link=" + DOIService.tryGetDoiName(newPublicationDTO.getDoi()));
+            System.out.println(json.toString());
+
+            PublicationWOS publication = new Gson().fromJson(json, PublicationWOS.class);
+            if (publication != null) {
+              // save deliverable metadata external sources WOS and GARDIAN
+              final Long deliverableID = deliverable.getId();
+              DeliverableMetadataExternalSources deliverableMetadataExternalSources =
+                deliverable.getDeliverableMetadataExternalSources().stream()
+                  .filter(c -> c.getDeliverable().getId().equals(deliverableID)).findFirst().orElse(null);
+              if (deliverableMetadataExternalSources == null) {
+                deliverableMetadataExternalSources = new DeliverableMetadataExternalSources();
+              }
+              deliverableMetadataExternalSources.setDeliverable(deliverable);
+              deliverableMetadataExternalSources.setDoi(publication.getDoi());
+              deliverableMetadataExternalSources.setIsiStatus(this.getBooleanString(publication.getIs_isi()));
+              deliverableMetadataExternalSources.setJournalName(publication.getJournal_name());
+              deliverableMetadataExternalSources.setTitle(publication.getTitle());
+              deliverableMetadataExternalSources.setOpenAccessStatus(this.getBooleanString(publication.getIs_oa()));
+              deliverableMetadataExternalSources.setOpenAccessLink(publication.getOa_link());
+              deliverableMetadataExternalSources.setPublicationType(publication.getPublication_type());
+              deliverableMetadataExternalSources.setPublicationYear(
+                publication.getPublication_year() != null ? Integer.valueOf(publication.getPublication_year()) : null);
+              deliverableMetadataExternalSources.setSource(publication.getSource());
+              deliverableMetadataExternalSources.setUrl(publication.getDoi());
+              deliverableMetadataExternalSources.setPages(publication.getStart_end_pages());
+              deliverableMetadataExternalSources.setPhase(phase);
+              deliverableMetadataExternalSources.setCreatedBy(user);
+              deliverableMetadataExternalSources.setVolume(publication.getVolume());
+              if (publication.getGardian() != null) {
+                deliverableMetadataExternalSources.setGardianAccessibility(publication.getGardian().getAccessibility());
+                deliverableMetadataExternalSources.setGardianFindability(publication.getGardian().getFindability());
+                deliverableMetadataExternalSources
+                  .setGardianInteroperability(publication.getGardian().getInteroperability());
+                deliverableMetadataExternalSources.setGardianReusability(publication.getGardian().getReusability());
+              }
+              deliverableMetadataExternalSources = deliverableMetadataExternalSourcesManager
+                .saveDeliverableMetadataExternalSources(deliverableMetadataExternalSources);
+              // deliverableMetadataExternalSourcesManager.replicate(deliverableMetadataExternalSources, phase);
+
+              // save institutions with a percentage above APCONSTANT percentage acceptance in deliverable affiliation
+              for (PublicationInstitutionWOS institution : publication.getOrganizations()) {
+                if (institution.getConfidant() != null
+                  && institution.getConfidant().longValue() >= APConstants.ACCEPTATION_PERCENTAGE) {
+                  // Save or update the Affiliations
+                  final Long institutionID = institution.getClarisa_id();
+
+                  List<DeliverableAffiliation> deliverableAffiliations =
+                    deliverableAffiliationManager.findByPhaseAndDeliverable(phase, deliverable);
+                  DeliverableAffiliation deliverableAffiliation =
+                    deliverableAffiliations != null ? deliverableAffiliations.stream()
+                      .filter(c -> c.isActive() && c.getInstitution().getId().longValue() == institutionID).findFirst()
+                      .orElse(null) : null;
+                  /*
+                   * deliverableMetadataExternalSources.getDeliverableAffiliations().stream()
+                   * .filter(c -> c.isActive() && c.getInstitution().getId().longValue() == institutionID).findFirst()
+                   * .orElse(null);
+                   */
+
+                  if (deliverableAffiliation == null) {
+                    deliverableAffiliation = new DeliverableAffiliation();
+                    deliverableAffiliation.setCreatedBy(user);
+                  } else {
+                    deliverableAffiliation.setModifiedBy(user);
+                  }
+                  Institution institutionAffiliation =
+                    institutionManager.getInstitutionById(institution.getClarisa_id());
+                  deliverableAffiliation.setInstitution(institutionAffiliation);
+                  deliverableAffiliation.setInstitutionMatchConfidence(institution.getConfidant().intValue());
+                  deliverableAffiliation.setDeliverableMetadataExternalSources(deliverableMetadataExternalSources);
+                  deliverableAffiliation.setInstitutionNameWebOfScience(institution.getName());
+                  deliverableAffiliation.setPhase(phase);
+                  deliverableAffiliation.setDeliverable(deliverable);
+                  deliverableAffiliation =
+                    deliverableAffiliationManager.saveDeliverableAffiliation(deliverableAffiliation);
+                  // deliverableAffiliationManager.replicate(deliverableAffiliation, phase);
+                }
+                // save institutions with a percentage below APCONSTANT percentage acceptance in deliverable
+                // affiliation not mapped
+                if (institution.getConfidant() != null
+                  && (institution.getConfidant().longValue() < APConstants.ACCEPTATION_PERCENTAGE
+                    || institution.getConfidant() == null)) {
+                  DeliverableAffiliationsNotMapped deliverableAffiliationsNotMapped =
+                    new DeliverableAffiliationsNotMapped();
+                  deliverableAffiliationsNotMapped.setCountry(institution.getCountry());
+                  deliverableAffiliationsNotMapped
+                    .setDeliverableMetadataExternalSources(deliverableMetadataExternalSources);
+                  deliverableAffiliationsNotMapped.setInstitutionMatchConfidence(institution.getConfidant().intValue());
+                  deliverableAffiliationsNotMapped.setName(institution.getName());
+                  deliverableAffiliationsNotMapped.setFullAddress(institution.getFull_address());
+                  deliverableAffiliationsNotMapped.setPossibleInstitution(institution.getClarisa_id() != null
+                    ? institutionManager.getInstitutionById(institution.getClarisa_id()) : null);
+                  deliverableAffiliationsNotMapped = deliverableAffiliationsNotMappedManager
+                    .saveDeliverableAffiliationsNotMapped(deliverableAffiliationsNotMapped);
+                  // deliverableAffiliationsNotMappedManager.replicate(deliverableAffiliationsNotMapped, phase);
+                }
+              }
+
+              // Delete Affiliations that are not listed from WOS service
+              List<DeliverableAffiliation> deliverableAffiliations =
+                deliverableAffiliationManager.findByPhaseAndDeliverable(phase, deliverable);
+              if (deliverableAffiliations == null) {
+                deliverableAffiliations = new ArrayList<DeliverableAffiliation>();
+              }
+              List<DeliverableAffiliation> affiliationsDelete = new ArrayList<DeliverableAffiliation>();
+              for (DeliverableAffiliation affiliation : deliverableAffiliations.stream().filter(c -> c.isActive())
+                .collect(Collectors.toList())) {
+                boolean delete = true;
+                for (PublicationInstitutionWOS institutionsWOS : publication.getOrganizations()) {
+                  if (institutionsWOS.getClarisa_id() != null
+                    && affiliation.getInstitution().getId().longValue() == institutionsWOS.getClarisa_id().longValue()
+                    && institutionsWOS.getConfidant() >= APConstants.ACCEPTATION_PERCENTAGE) {
+                    delete = false;
+                  }
+                }
+                if (delete) {
+                  affiliationsDelete.add(affiliation);
+                }
+              }
+              final Long deliverableMetadataExternalSourcesID = deliverableMetadataExternalSources.getId();
+              // Delete Affiliations Not mapped that probably will be mapped
+              ;
+              List<DeliverableAffiliationsNotMapped> affiliationsNotMappedDelete =
+                new ArrayList<DeliverableAffiliationsNotMapped>();
+              for (DeliverableAffiliationsNotMapped affiliationsNotMapped : deliverableAffiliationsNotMappedManager
+                .findAll().stream().filter(c -> c != null && c.isActive() && c.getDeliverableMetadataExternalSources()
+                  .getId().longValue() == deliverableMetadataExternalSourcesID.longValue())
+                .collect(Collectors.toList())) {
+                boolean delete = true;
+                for (PublicationInstitutionWOS institutionsWOS : publication.getOrganizations()) {
+                  if (affiliationsNotMapped.getPossibleInstitution() != null
+                    && affiliationsNotMapped.getName().equals(institutionsWOS.getName())
+                    && institutionsWOS.getConfidant() < APConstants.ACCEPTATION_PERCENTAGE) {
+                    delete = false;
+                  }
+                }
+                if (delete) {
+                  affiliationsNotMappedDelete.add(affiliationsNotMapped);
+                }
+              }
+              for (DeliverableAffiliation dataDelete : affiliationsDelete) {
+                deliverableAffiliationManager.deleteDeliverableAffiliation(dataDelete.getId());
+                // deliverableAffiliationManager.replicate(dataDelete, phase);
+              }
+
+              for (DeliverableAffiliationsNotMapped dataDelete : affiliationsNotMappedDelete) {
+                deliverableAffiliationsNotMappedManager.deleteDeliverableAffiliationsNotMapped(dataDelete.getId());
+                // deliverableAffiliationsNotMappedManager.replicate(dataDelete, phase);
+              }
+
+              // delete all authors and insert again
+              externalSourceAuthorManager.deleteAllAuthorsFromPhase(deliverable, phase);
+              // save authors of WOS external sources authors
+              if (publication.getAuthors() != null) {
+                for (PublicationAuthorWOS author : publication.getAuthors()) {
+                  ExternalSourceAuthor externalSourceAuthor = new ExternalSourceAuthor();
+                  externalSourceAuthor.setDeliverableMetadataExternalSources(deliverableMetadataExternalSources);
+                  externalSourceAuthor.setCreatedBy(user);
+                  externalSourceAuthor.setFullName(author.getFull_name());
+                  externalSourceAuthor = externalSourceAuthorManager.saveExternalSourceAuthor(externalSourceAuthor);
+                  // externalSourceAuthorManager.replicate(externalSourceAuthor, phase);
+                }
+              }
+              // save altmetrics information in deliverable altmetrics
+              if (publication.getAltmetric() != null) {
+                DeliverableAltmetricInfo altmetrics = deliverable.getDeliverableAltmetricInfo(phase);
+                if (altmetrics == null) {
+                  altmetrics = new DeliverableAltmetricInfo();
+                }
+                altmetrics.setDeliverable(deliverable);
+                altmetrics.setAltmetricId(publication.getAltmetric().getAltmetric_id());
+                altmetrics.setAltmetricJid(publication.getAltmetric().getAltmetric_jid());
+                String authors = "";
+                boolean init = true;
+                for (String data : publication.getAltmetric().getAuthors()) {
+                  if (init) {
+                    authors += data;
+                    init = false;
+                  } else {
+                    authors += ";" + data;
+                  }
+                }
+                altmetrics.setAuthors(authors);
+                altmetrics.setCitedByBlogs(publication.getAltmetric().getCited_by_posts_count() != null
+                  ? Integer.valueOf(publication.getAltmetric().getCited_by_posts_count()) : null);
+                altmetrics.setCitedByDelicious(publication.getAltmetric().getCited_by_delicious_count() != null
+                  ? Integer.valueOf(publication.getAltmetric().getCited_by_delicious_count()) : null);
+                altmetrics.setCitedByFacebookPages(publication.getAltmetric().getCited_by_fbwalls_count() != null
+                  ? Integer.valueOf(publication.getAltmetric().getCited_by_fbwalls_count()) : null);
+                altmetrics.setCitedByGooglePlusUsers(publication.getAltmetric().getCited_by_gplus_count() != null
+                  ? Integer.valueOf(publication.getAltmetric().getCited_by_gplus_count()) : null);
+                altmetrics.setCitedByForumUsers(publication.getAltmetric().getCited_by_forum_count() != null
+                  ? Integer.valueOf(publication.getAltmetric().getCited_by_forum_count()) : null);
+                altmetrics.setCitedByLinkedinUsers(publication.getAltmetric().getCited_by_linkedin_count() != null
+                  ? Integer.valueOf(publication.getAltmetric().getCited_by_linkedin_count()) : null);
+                altmetrics.setCitedByNewsOutlets(publication.getAltmetric().getCited_by_msm_count() != null
+                  ? Integer.valueOf(publication.getAltmetric().getCited_by_msm_count()) : null);
+                altmetrics
+                  .setCitedByPeerReviewSites(publication.getAltmetric().getCited_by_peer_review_sites_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_peer_review_sites_count()) : null);
+                altmetrics.setCitedByPinterestUsers(publication.getAltmetric().getCited_by_pinners_count() != null
+                  ? Integer.valueOf(publication.getAltmetric().getCited_by_pinners_count()) : null);
+                altmetrics.setCitedByPolicies(publication.getAltmetric().getCited_by_policies_count() != null
+                  ? Integer.valueOf(publication.getAltmetric().getCited_by_policies_count()) : null);
+                altmetrics.setCitedByRedditUsers(publication.getAltmetric().getCited_by_rdts_count() != null
+                  ? Integer.valueOf(publication.getAltmetric().getCited_by_rdts_count()) : null);
+                altmetrics
+                  .setCitedByResearchHighlightPlatforms(publication.getAltmetric().getCited_by_rh_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_rh_count()) : null);
+                altmetrics.setCitedByStackExchangeResources(publication.getAltmetric().getCited_by_qs_count() != null
+                  ? Integer.valueOf(publication.getAltmetric().getCited_by_qs_count()) : null);
+                altmetrics.setCitedByTwitterUsers(publication.getAltmetric().getCited_by_tweeters_count() != null
+                  ? Integer.valueOf(publication.getAltmetric().getCited_by_tweeters_count()) : null);
+                altmetrics.setCitedByWeiboUsers(publication.getAltmetric().getCited_by_weibo_count() != null
+                  ? Integer.valueOf(publication.getAltmetric().getCited_by_weibo_count()) : null);
+                altmetrics.setCitedByWikipediaPages(publication.getAltmetric().getCited_by_wikipedia_count() != null
+                  ? Integer.valueOf(publication.getAltmetric().getCited_by_wikipedia_count()) : null);
+                altmetrics.setCitedByYoutubeChannels(publication.getAltmetric().getCited_by_videos_count() != null
+                  ? Integer.valueOf(publication.getAltmetric().getCited_by_videos_count()) : null);
+                altmetrics.setType(publication.getAltmetric().getType());
+                altmetrics.setTitle(publication.getAltmetric().getTitle());
+                altmetrics.setPhase(phase);
+                altmetrics.setModifiedBy(user);
+                altmetrics.setDoi(publication.getAltmetric().getDoi());
+                altmetrics.setUrl(publication.getAltmetric().getUrl());
+                altmetrics.setUri(publication.getAltmetric().getUri());
+                altmetrics.setScore(publication.getAltmetric().getScore());
+                altmetrics.setJournal(publication.getJournal_name());
+                altmetrics.setHandle(publication.getAltmetric().getHandle());
+                altmetrics.setDetailsUrl(newPublicationDTO.getDoi());
+                altmetrics.setAddedOn(publication.getAltmetric().getAdded_on() != null
+                  ? new Date(Long.parseLong(publication.getAltmetric().getAdded_on())) : null);
+                altmetrics.setPublishedOn(publication.getAltmetric().getPublished_on() != null
+                  ? new Date(Long.parseLong(publication.getAltmetric().getPublished_on())) : null);
+                altmetrics.setIsOpenAccess(String.valueOf(publication.getAltmetric().isIs_oa()));
+                altmetrics.setLastSync(new Date(Calendar.getInstance().getTimeInMillis()));
+                altmetrics.setLastUpdated(publication.getAltmetric().getLast_updated() != null
+                  ? new Date(Long.parseLong(publication.getAltmetric().getLast_updated())) : null);
+                altmetrics.setImageSmall(publication.getAltmetric().getImages() != null
+                  ? publication.getAltmetric().getImages().getSmall() : null);
+                altmetrics.setImageMedium(publication.getAltmetric().getImages() != null
+                  ? publication.getAltmetric().getImages().getMedium() : null);
+                altmetrics.setImageLarge(publication.getAltmetric().getImages() != null
+                  ? publication.getAltmetric().getImages().getLarge() : null);
+                altmetrics = deliverableAltmetricInfoManager.saveDeliverableAltmetricInfo(altmetrics);
+                // deliverableAltmetricInfoManager.replicate(altmetrics, phase);
+              }
+
+            }
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        }
+
+      } else {
+        fieldErrors.add(new FieldErrorDTO("putDeliverable", "phase", "Error while creating a publication "));
+        throw new MARLOFieldValidationException("Field Validation errors", "",
+          fieldErrors.stream()
+            .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+            .collect(Collectors.toList()));
+      }
+
+
+    } else
+
+    {
+      // validators
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
+    }
+
+    return idDeliverableDB;
+  }
+
+  public Long putDeliverableOtherById(Long idDeliverable, NewPublicationOtherDTO newPublicationDTO,
+    String CGIARentityAcronym, User user) {
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    DeliverableInfo deliverableInfo = null;
+    Long idDeliverableDB = null;
+    Phase phase = null;
+
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+
+    String strippedEntityAcronym = StringUtils.stripToNull(CGIARentityAcronym);
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(strippedEntityAcronym);
+    if (globalUnitEntity == null) {
+      fieldErrors.add(new FieldErrorDTO("putDeliverable", "GlobalUnitEntity",
+        CGIARentityAcronym + " is not a valid CGIAR entity acronym"));
+    } else {
+      if (!globalUnitEntity.isActive()) {
+        fieldErrors.add(new FieldErrorDTO("putDeliverable", "GlobalUnitEntity",
+          "The Global Unit with acronym " + CGIARentityAcronym + " is not active."));
+      }
+    }
+
+    Set<CrpUser> lstUser = user.getCrpUsers();
+    if (!lstUser.stream()
+      .anyMatch(crp -> StringUtils.equalsIgnoreCase(crp.getCrp().getAcronym(), strippedEntityAcronym))) {
+      fieldErrors.add(new FieldErrorDTO("putDeliverable", "GlobalUnitEntity", "CGIAR entity not autorized"));
+    }
+
+    if (newPublicationDTO.getPhase() == null) {
+      fieldErrors.add(new FieldErrorDTO("putDeliverable", "PhaseEntity", "Phase must not be null"));
+    } else {
+      String strippedPhaseName = StringUtils.stripToNull(newPublicationDTO.getPhase().getName());
+      if (strippedPhaseName == null || newPublicationDTO.getPhase().getYear() == null
+      // DANGER! Magic number ahead
+        || newPublicationDTO.getPhase().getYear() < 2015) {
+        fieldErrors.add(new FieldErrorDTO("putDeliverable", "PhaseEntity", "Phase is invalid"));
+      } else {
+        phase = phaseManager.findAll().stream()
+          .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), strippedEntityAcronym)
+            && p.getYear() == newPublicationDTO.getPhase().getYear()
+            && StringUtils.equalsIgnoreCase(p.getName(), strippedPhaseName))
+          .findFirst().orElse(null);
+
+        if (phase == null) {
+          fieldErrors.add(new FieldErrorDTO("putDeliverable", "phase", newPublicationDTO.getPhase().getName() + ' '
+            + newPublicationDTO.getPhase().getYear() + " is an invalid phase"));
+        }
+      }
+    }
+
+    Deliverable deliverable = deliverableManager.getDeliverableById(idDeliverable);
+    if (deliverable == null || deliverable.isActive() == false) {
+      fieldErrors.add(
+        new FieldErrorDTO("putDeliverable", "DeliverableEntity", idDeliverable + " is an invalid id of a Deliverable"));
+    } else {
+      if (phase != null) {
+        deliverableInfo = deliverable.getDeliverableInfo(phase);
+        if (deliverableInfo == null) {
+          fieldErrors.add(new FieldErrorDTO("putDeliverable", "DeliverableEntity",
+            "The Deliverable with id " + idDeliverable + " do not correspond to the phase entered"));
+        } else {
+          if (globalUnitEntity != null && deliverableInfo.getPhase().getCrp().getId() != globalUnitEntity.getId()) {
+            fieldErrors.add(new FieldErrorDTO("putDeliverable", "DeliverableEntity",
+              "The Deliverable with id " + idDeliverable + " do not correspond to the CRP entered"));
+          }
+        }
+      }
+    }
+    DeliverableType deliverableType = deliverableTypeManager.getDeliverableTypeById(newPublicationDTO.getType());
+    if (deliverableType == null) {
+      fieldErrors.add(new FieldErrorDTO("putDeliverable", "DeliverableType",
+        newPublicationDTO.getType() + " is an invalid publication Type"));
+    }
+
+    if (fieldErrors.isEmpty()) {
+      // create deliverable
+      deliverable.setCrp(globalUnitEntity);
+      deliverable.setPhase(phase);
+      deliverable.setIsPublication(true);
+      // save deliverables
+      deliverable = deliverableManager.saveDeliverable(deliverable);
+      idDeliverableDB = deliverable.getId();
+
+      if (idDeliverableDB != null) {
+        // create deliverable info
+        deliverable = deliverableManager.getDeliverableById(idDeliverableDB);
+        deliverableInfo = deliverable.getDeliverableInfo();
+        deliverableInfo.setDeliverable(deliverable);
+        deliverableInfo.setTitle(newPublicationDTO.getTitle());
+        deliverableInfo.setYear(deliverable.getPhase().getYear());
+        deliverableInfo.setDeliverableType(deliverableType);
+        deliverableInfo.setPhase(phase);
+        deliverableInfo.setStatus(APConstants.CLARISA_PUBLICATIONS_STATUS);
+        deliverableInfo.setModificationJustification(APConstants.MESSAGE_MODIFICATION_JUSTIFICATION
+          + sdf.format(new Date(Calendar.getInstance().getTimeInMillis())));
+        // save deliverableinfo
+        deliverableInfoManager.saveDeliverableInfo(deliverableInfo);
+
+        // create deliverable dissemination data ???
+        final long phaseID = phase.getId();
+        DeliverableDissemination deliverableDissemination = deliverable.getDeliverableDisseminations().stream()
+          .filter(c -> c.getPhase().getId().longValue() == phaseID).findFirst().orElse(null);
+
+        if (deliverableDissemination == null) {
+          deliverableDissemination = new DeliverableDissemination();
+        }
+        deliverableDissemination.setIsOpenAccess(newPublicationDTO.getIsOpenAccess());
+        deliverableDissemination.setDeliverable(deliverable);
+        deliverableDissemination.setArticleUrl(newPublicationDTO.getArticleURL());
+        deliverableDissemination.setDisseminationChannel("other");
+        deliverableDissemination.setDisseminationUrl("Not Defined");
+        if ((newPublicationDTO.getDoi() == null || newPublicationDTO.getDoi().equals(""))
+          && newPublicationDTO.getArticleURL() != null && !newPublicationDTO.getArticleURL().isEmpty()) {
+          deliverableDissemination.setHasDOI(true);
+        }
+        deliverableDissemination.setPhase(phase);
+        deliverableDisseminationManager.saveDeliverableDissemination(deliverableDissemination);
+
+        // creatte deliverable publication metadata
+        DeliverablePublicationMetadata deliverablePublicationMetadata = deliverable.getDeliverablePublicationMetadatas()
+          .stream().filter(m -> m.getPhase().getId() == phaseID).findFirst().orElse(null);
+        if (deliverablePublicationMetadata == null) {
+          deliverablePublicationMetadata = new DeliverablePublicationMetadata();
+        }
+        deliverablePublicationMetadata.setDeliverable(deliverable);
+        deliverablePublicationMetadata.setPhase(phase);
+        deliverablePubMetadataManager.saveDeliverablePublicationMetadata(deliverablePublicationMetadata);
+
+        // get element ID from econded_name to get Handle and DOI and create
+        Long phaseId = phase.getId();
+        List<DeliverableMetadataElement> phaseMetadata = deliverable.getDeliverableMetadataElements().stream()
+          .filter(m -> m.getPhase().getId() == phaseId).collect(Collectors.toList());
+        Map<String, DeliverableMetadataElement> metadataElements = this.getMetadataElements(phaseMetadata);
+        if (metadataElements != null && !metadataElements.isEmpty()) {
+          // deliverable metadataelement handle
+          DeliverableMetadataElement deliverableMetadataElementHandle =
+            metadataElements.get(APConstants.METADATAELEMENTHANDLE);
+          deliverableMetadataElementHandle.setDeliverable(deliverable);
+          deliverableMetadataElementHandle.setPhase(phase);
+          deliverableMetadataElementHandle
+            .setElementValue(newPublicationDTO.getHandle() == null ? "" : newPublicationDTO.getHandle());
+          deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementHandle);
+
+          // deliverable metadataelement DOI
+          DeliverableMetadataElement deliverableMetadataElementDoi =
+            metadataElements.get(APConstants.METADATAELEMENTDOI);
+          deliverableMetadataElementDoi.setDeliverable(deliverable);
+          deliverableMetadataElementDoi.setPhase(phase);
+          deliverableMetadataElementDoi.setElementValue(
+            newPublicationDTO.getDoi() == null ? "" : DOIService.tryGetDoiName(newPublicationDTO.getDoi()));
+          deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementDoi);
+
+          // deliverable metadataelement Title
+          DeliverableMetadataElement deliverableMetadataElementTitle =
+            metadataElements.get(APConstants.METADATAELEMENTTITLE);
+          deliverableMetadataElementTitle.setDeliverable(deliverable);
+          deliverableMetadataElementTitle.setPhase(phase);
+          deliverableMetadataElementTitle
+            .setElementValue(newPublicationDTO.getTitle() == null ? "" : newPublicationDTO.getTitle());
+          deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementTitle);
+
+
+          // deliverable metadataelement Publication
+          DeliverableMetadataElement deliverableMetadataElementPublication =
+            metadataElements.get(APConstants.METADATAELEMENTPUBLICATION);
+          deliverableMetadataElementPublication.setDeliverable(deliverable);
+          deliverableMetadataElementPublication.setPhase(phase);
+          deliverableMetadataElementPublication.setElementValue(String.valueOf(newPublicationDTO.getYear()));
+          deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementPublication);
+
+          // changes for authors 2019-09-03 apply to a field to include all authors in a single row
+          // setdeliverables author
+          DeliverableMetadataElement deliverableMetadataElementAuthors =
+            metadataElements.get(APConstants.METADATAELEMENTAUTHORS);
+          deliverableMetadataElementAuthors.setDeliverable(deliverable);
+          deliverableMetadataElementAuthors.setPhase(phase);
+          deliverableMetadataElementAuthors.setElementValue(String.valueOf(newPublicationDTO.getAuthors()));
+          deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementAuthors);
+        }
+
+
+        for (DeliverableUserDTO deliverableUserDTO : newPublicationDTO.getAuthorlist()) {
+          boolean found = false;
+          for (DeliverableUser authorsList : deliverable.getDeliverableUsers().stream().filter(c -> c.isActive())
+            .collect(Collectors.toList())) {
+            if (deliverableUserDTO.getFirstName().toUpperCase().equals(authorsList.getFirstName().toUpperCase())
+              && deliverableUserDTO.getLastName().toUpperCase().equals(authorsList.getLastName().toUpperCase())) {
+              found = true;
+            }
+          }
+          if (!found) {
+            DeliverableUser deliverableUser = new DeliverableUser();
+            deliverableUser.setFirstName(deliverableUserDTO.getFirstName());
+            deliverableUser.setLastName(deliverableUserDTO.getLastName());
+            deliverableUser.setDeliverable(deliverable);
+            deliverableUser.setPhase(phase);
+            deliverableUserManager.saveDeliverableUser(deliverableUser);
+          }
+        }
+        for (DeliverableUser authorsList : deliverable.getDeliverableUsers().stream().filter(c -> c.isActive())
+          .collect(Collectors.toList())) {
+          boolean found = true;
+          for (DeliverableUserDTO deliverableUserDTO : newPublicationDTO.getAuthorlist()) {
+            if (deliverableUserDTO.getFirstName().toUpperCase().equals(authorsList.getFirstName().toUpperCase())
+              && deliverableUserDTO.getLastName().toUpperCase().equals(authorsList.getLastName().toUpperCase())) {
+              found = false;
+            }
+          }
+          if (found) {
+            deliverableUserManager.deleteDeliverableUser(authorsList.getId());
+          }
+        }
+
+        // web of science integration
+        if (newPublicationDTO.getDoi() != null) {
+          try {
+            JsonElement json = this.getServiceWOS(
+              "http://clarisa.wos.api.mel.cgiar.org/?link=" + DOIService.tryGetDoiName(newPublicationDTO.getDoi()));
+            System.out.println(json.toString());
+
+            PublicationWOS publication = new Gson().fromJson(json, PublicationWOS.class);
+            if (publication != null) {
+              // save deliverable metadata external sources WOS and GARDIAN
+              final Long deliverableID = deliverable.getId();
+              DeliverableMetadataExternalSources deliverableMetadataExternalSources =
+                deliverable.getDeliverableMetadataExternalSources().stream()
+                  .filter(c -> c.getDeliverable().getId().equals(deliverableID)).findFirst().orElse(null);
+              if (deliverableMetadataExternalSources != null) {
+                deliverableMetadataExternalSources.setDeliverable(deliverable);
+                deliverableMetadataExternalSources.setDoi(publication.getDoi());
+                deliverableMetadataExternalSources.setIsiStatus(this.getBooleanString(publication.getIs_isi()));
+                deliverableMetadataExternalSources.setJournalName(publication.getJournal_name());
+                deliverableMetadataExternalSources.setTitle(publication.getTitle());
+                deliverableMetadataExternalSources.setOpenAccessStatus(this.getBooleanString(publication.getIs_oa()));
+                deliverableMetadataExternalSources.setOpenAccessLink(publication.getOa_link());
+                deliverableMetadataExternalSources.setPublicationType(publication.getPublication_type());
+                deliverableMetadataExternalSources.setPublicationYear(publication.getPublication_year() != null
+                  ? Integer.valueOf(publication.getPublication_year()) : null);
+                deliverableMetadataExternalSources.setSource(publication.getSource());
+                deliverableMetadataExternalSources.setUrl(publication.getDoi());
+                deliverableMetadataExternalSources.setPages(publication.getStart_end_pages());
+                deliverableMetadataExternalSources.setPhase(phase);
+                deliverableMetadataExternalSources.setCreatedBy(user);
+                deliverableMetadataExternalSources.setVolume(publication.getVolume());
+                if (publication.getGardian() != null) {
+                  deliverableMetadataExternalSources
+                    .setGardianAccessibility(publication.getGardian().getAccessibility());
+                  deliverableMetadataExternalSources.setGardianFindability(publication.getGardian().getFindability());
+                  deliverableMetadataExternalSources
+                    .setGardianInteroperability(publication.getGardian().getInteroperability());
+                  deliverableMetadataExternalSources.setGardianReusability(publication.getGardian().getReusability());
+                }
+                deliverableMetadataExternalSources = deliverableMetadataExternalSourcesManager
+                  .saveDeliverableMetadataExternalSources(deliverableMetadataExternalSources);
+                // deliverableMetadataExternalSourcesManager.replicate(deliverableMetadataExternalSources, phase);
+
+                // save institutions with a percentage above APCONSTANT percentage acceptance in deliverable affiliation
+                for (PublicationInstitutionWOS institution : publication.getOrganizations()) {
+                  if (institution.getConfidant() != null
+                    && institution.getConfidant().longValue() >= APConstants.ACCEPTATION_PERCENTAGE) {
+                    // Save or update the Affiliations
+                    final Long institutionID = institution.getClarisa_id();
+                    List<DeliverableAffiliation> deliverableAffiliations =
+                      deliverableAffiliationManager.findByPhaseAndDeliverable(phase, deliverable);
+                    DeliverableAffiliation deliverableAffiliation =
+                      deliverableAffiliations != null ? deliverableAffiliations.stream()
+                        .filter(c -> c.isActive() && c.getInstitution().getId().longValue() == institutionID)
+                        .findFirst().orElse(null) : null;
+                    if (deliverableAffiliation == null) {
+                      deliverableAffiliation = new DeliverableAffiliation();
+                      deliverableAffiliation.setCreatedBy(user);
+                    } else {
+                      deliverableAffiliation.setModifiedBy(user);
+                    }
+                    Institution institutionAffiliation =
+                      institutionManager.getInstitutionById(institution.getClarisa_id());
+                    deliverableAffiliation.setInstitution(institutionAffiliation);
+                    deliverableAffiliation.setInstitutionMatchConfidence(institution.getConfidant().intValue());
+                    deliverableAffiliation.setDeliverableMetadataExternalSources(deliverableMetadataExternalSources);
+                    deliverableAffiliation.setInstitutionNameWebOfScience(institution.getName());
+                    deliverableAffiliation.setPhase(phase);
+                    deliverableAffiliation.setDeliverable(deliverable);
+                    deliverableAffiliation =
+                      deliverableAffiliationManager.saveDeliverableAffiliation(deliverableAffiliation);
+                    // deliverableAffiliationManager.replicate(deliverableAffiliation, phase);
+                  }
+                  // save institutions with a percentage below APCONSTANT percentage acceptance in deliverable
+                  // affiliation not mapped
+                  if (institution.getConfidant() != null
+                    && (institution.getConfidant().longValue() < APConstants.ACCEPTATION_PERCENTAGE
+                      || institution.getConfidant() == null)) {
+                    DeliverableAffiliationsNotMapped deliverableAffiliationsNotMapped =
+                      new DeliverableAffiliationsNotMapped();
+                    deliverableAffiliationsNotMapped.setCountry(institution.getCountry());
+                    deliverableAffiliationsNotMapped
+                      .setDeliverableMetadataExternalSources(deliverableMetadataExternalSources);
+                    deliverableAffiliationsNotMapped
+                      .setInstitutionMatchConfidence(institution.getConfidant().intValue());
+                    deliverableAffiliationsNotMapped.setName(institution.getName());
+                    deliverableAffiliationsNotMapped.setFullAddress(institution.getFull_address());
+                    deliverableAffiliationsNotMapped.setPossibleInstitution(institution.getClarisa_id() != null
+                      ? institutionManager.getInstitutionById(institution.getClarisa_id()) : null);
+                    deliverableAffiliationsNotMapped = deliverableAffiliationsNotMappedManager
+                      .saveDeliverableAffiliationsNotMapped(deliverableAffiliationsNotMapped);
+                    // deliverableAffiliationsNotMappedManager.replicate(deliverableAffiliationsNotMapped, phase);
+                  }
+                }
+
+                // Delete Affiliations that are not listed from WOS service
+                List<DeliverableAffiliation> deliverableAffiliations =
+                  deliverableAffiliationManager.findByPhaseAndDeliverable(phase, deliverable);
+                if (deliverableAffiliations == null) {
+                  deliverableAffiliations = new ArrayList<DeliverableAffiliation>();
+                }
+                List<DeliverableAffiliation> affiliationsDelete = new ArrayList<DeliverableAffiliation>();
+                for (DeliverableAffiliation affiliation : deliverableAffiliations.stream().filter(c -> c.isActive())
+                  .collect(Collectors.toList())) {
+                  boolean delete = true;
+                  for (PublicationInstitutionWOS institutionsWOS : publication.getOrganizations()) {
+                    if (institutionsWOS.getClarisa_id() != null
+                      && affiliation.getInstitution().getId().longValue() == institutionsWOS.getClarisa_id().longValue()
+                      && institutionsWOS.getConfidant() >= APConstants.ACCEPTATION_PERCENTAGE) {
+                      delete = false;
+                    }
+                  }
+                  if (delete) {
+                    affiliationsDelete.add(affiliation);
+                  }
+                }
+
+                // Delete Affiliations Not mapped that probably will be mapped
+                final Long deliverableMetadataExternalSourcesID = deliverableMetadataExternalSources.getId();
+                List<DeliverableAffiliationsNotMapped> affiliationsNotMappedDelete =
+                  new ArrayList<DeliverableAffiliationsNotMapped>();
+
+                for (DeliverableAffiliationsNotMapped affiliationsNotMapped : deliverableAffiliationsNotMappedManager
+                  .findAll().stream()
+                  .filter(
+                    c -> c != null && c.isActive()
+                      && c.getDeliverableMetadataExternalSources().getId()
+                        .longValue() == deliverableMetadataExternalSourcesID.longValue())
+                  .collect(Collectors.toList())) {
+                  boolean delete = true;
+                  for (PublicationInstitutionWOS institutionsWOS : publication.getOrganizations()) {
+                    if (affiliationsNotMapped.getPossibleInstitution() != null
+                      && affiliationsNotMapped.getName().equals(institutionsWOS.getName())
+                      && institutionsWOS.getConfidant() < APConstants.ACCEPTATION_PERCENTAGE) {
+                      delete = false;
+                    }
+                  }
+                  if (delete) {
+                    affiliationsNotMappedDelete.add(affiliationsNotMapped);
+                  }
+                }
+                for (DeliverableAffiliation dataDelete : affiliationsDelete) {
+                  deliverableAffiliationManager.deleteDeliverableAffiliation(dataDelete.getId());
+                  // deliverableAffiliationManager.replicate(dataDelete, phase);
+                }
+
+                for (DeliverableAffiliationsNotMapped dataDelete : affiliationsNotMappedDelete) {
+                  deliverableAffiliationsNotMappedManager.deleteDeliverableAffiliationsNotMapped(dataDelete.getId());
+                  // deliverableAffiliationsNotMappedManager.replicate(dataDelete, phase);
+                }
+
+                // delete all authors and insert again
+                externalSourceAuthorManager.deleteAllAuthorsFromPhase(deliverable, phase);
+                // save authors of WOS external sources authors
+                if (publication.getAuthors() != null) {
+                  for (PublicationAuthorWOS author : publication.getAuthors()) {
+                    ExternalSourceAuthor externalSourceAuthor = new ExternalSourceAuthor();
+                    externalSourceAuthor.setDeliverableMetadataExternalSources(deliverableMetadataExternalSources);
+                    externalSourceAuthor.setCreatedBy(user);
+                    externalSourceAuthor.setFullName(author.getFull_name());
+                    externalSourceAuthor = externalSourceAuthorManager.saveExternalSourceAuthor(externalSourceAuthor);
+                    // externalSourceAuthorManager.replicate(externalSourceAuthor, phase);
+                  }
+                }
+                // save altmetrics information in deliverable altmetrics
+                if (publication.getAltmetric() != null) {
+                  DeliverableAltmetricInfo altmetrics = deliverable.getDeliverableAltmetricInfo(phase);
+                  if (altmetrics == null) {
+                    altmetrics = new DeliverableAltmetricInfo();
+                  }
+                  altmetrics.setDeliverable(deliverable);
+                  altmetrics.setAltmetricId(publication.getAltmetric().getAltmetric_id());
+                  altmetrics.setAltmetricJid(publication.getAltmetric().getAltmetric_jid());
+                  String authors = "";
+                  boolean init = true;
+                  for (String data : publication.getAltmetric().getAuthors()) {
+                    if (init) {
+                      authors += data;
+                      init = false;
+                    } else {
+                      authors += ";" + data;
+                    }
+                  }
+                  altmetrics.setAuthors(authors);
+                  altmetrics.setCitedByBlogs(publication.getAltmetric().getCited_by_posts_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_posts_count()) : null);
+                  altmetrics.setCitedByDelicious(publication.getAltmetric().getCited_by_delicious_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_delicious_count()) : null);
+                  altmetrics.setCitedByFacebookPages(publication.getAltmetric().getCited_by_fbwalls_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_fbwalls_count()) : null);
+                  altmetrics.setCitedByGooglePlusUsers(publication.getAltmetric().getCited_by_gplus_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_gplus_count()) : null);
+                  altmetrics.setCitedByForumUsers(publication.getAltmetric().getCited_by_forum_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_forum_count()) : null);
+                  altmetrics.setCitedByLinkedinUsers(publication.getAltmetric().getCited_by_linkedin_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_linkedin_count()) : null);
+                  altmetrics.setCitedByNewsOutlets(publication.getAltmetric().getCited_by_msm_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_msm_count()) : null);
+                  altmetrics
+                    .setCitedByPeerReviewSites(publication.getAltmetric().getCited_by_peer_review_sites_count() != null
+                      ? Integer.valueOf(publication.getAltmetric().getCited_by_peer_review_sites_count()) : null);
+                  altmetrics.setCitedByPinterestUsers(publication.getAltmetric().getCited_by_pinners_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_pinners_count()) : null);
+                  altmetrics.setCitedByPolicies(publication.getAltmetric().getCited_by_policies_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_policies_count()) : null);
+                  altmetrics.setCitedByRedditUsers(publication.getAltmetric().getCited_by_rdts_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_rdts_count()) : null);
+                  altmetrics
+                    .setCitedByResearchHighlightPlatforms(publication.getAltmetric().getCited_by_rh_count() != null
+                      ? Integer.valueOf(publication.getAltmetric().getCited_by_rh_count()) : null);
+                  altmetrics.setCitedByStackExchangeResources(publication.getAltmetric().getCited_by_qs_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_qs_count()) : null);
+                  altmetrics.setCitedByTwitterUsers(publication.getAltmetric().getCited_by_tweeters_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_tweeters_count()) : null);
+                  altmetrics.setCitedByWeiboUsers(publication.getAltmetric().getCited_by_weibo_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_weibo_count()) : null);
+                  altmetrics.setCitedByWikipediaPages(publication.getAltmetric().getCited_by_wikipedia_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_wikipedia_count()) : null);
+                  altmetrics.setCitedByYoutubeChannels(publication.getAltmetric().getCited_by_videos_count() != null
+                    ? Integer.valueOf(publication.getAltmetric().getCited_by_videos_count()) : null);
+                  altmetrics.setType(publication.getAltmetric().getType());
+                  altmetrics.setTitle(publication.getAltmetric().getTitle());
+                  altmetrics.setPhase(phase);
+                  altmetrics.setModifiedBy(user);
+                  altmetrics.setDoi(publication.getAltmetric().getDoi());
+                  altmetrics.setUrl(publication.getAltmetric().getUrl());
+                  altmetrics.setUri(publication.getAltmetric().getUri());
+                  altmetrics.setScore(publication.getAltmetric().getScore());
+                  altmetrics.setJournal(publication.getJournal_name());
+                  altmetrics.setHandle(publication.getAltmetric().getHandle());
+                  altmetrics.setDetailsUrl(newPublicationDTO.getDoi());
+                  altmetrics.setAddedOn(publication.getAltmetric().getAdded_on() != null
+                    ? new Date(Long.parseLong(publication.getAltmetric().getAdded_on())) : null);
+                  altmetrics.setPublishedOn(publication.getAltmetric().getPublished_on() != null
+                    ? new Date(Long.parseLong(publication.getAltmetric().getPublished_on())) : null);
+                  altmetrics.setIsOpenAccess(String.valueOf(publication.getAltmetric().isIs_oa()));
+                  altmetrics.setLastSync(new Date(Calendar.getInstance().getTimeInMillis()));
+                  altmetrics.setLastUpdated(publication.getAltmetric().getLast_updated() != null
+                    ? new Date(Long.parseLong(publication.getAltmetric().getLast_updated())) : null);
+                  altmetrics.setImageSmall(publication.getAltmetric().getImages() != null
+                    ? publication.getAltmetric().getImages().getSmall() : null);
+                  altmetrics.setImageMedium(publication.getAltmetric().getImages() != null
+                    ? publication.getAltmetric().getImages().getMedium() : null);
+                  altmetrics.setImageLarge(publication.getAltmetric().getImages() != null
+                    ? publication.getAltmetric().getImages().getLarge() : null);
+                  altmetrics = deliverableAltmetricInfoManager.saveDeliverableAltmetricInfo(altmetrics);
+                  // deliverableAltmetricInfoManager.replicate(altmetrics, phase);
+                }
+              }
+            }
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        }
+
       } else {
         fieldErrors.add(new FieldErrorDTO("putDeliverable", "phase", "Error while creating a publication "));
         throw new MARLOFieldValidationException("Field Validation errors", "",
@@ -867,6 +2265,7 @@ public class DeliverablesItem<T> {
     }
 
     return idDeliverableDB;
+
   }
 
 }

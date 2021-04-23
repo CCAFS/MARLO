@@ -123,10 +123,10 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
       .filter(pc -> pc.isActive() && pc.getPhase().equals(phase)).collect(Collectors.toList()));
   }
 
-
   public List<ProjectInnovationCountry> getCountries() {
     return this.countries;
   }
+
 
   public List<ProjectInnovationCountry> getCountries(Phase phase) {
     return new ArrayList<>(this.getProjectInnovationCountries().stream()
@@ -189,7 +189,6 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     return projectInnovationCenters;
   }
 
-
   public Set<ProjectInnovationContributingOrganization> getProjectInnovationContributingOrganization() {
     return this.projectInnovationContributingOrganization;
   }
@@ -203,6 +202,7 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   public Set<ProjectInnovationCrp> getProjectInnovationCrps() {
     return this.projectInnovationCrps;
   }
+
 
   public List<ProjectInnovationCrp> getProjectInnovationCrps(Phase phase) {
     return new ArrayList<>(this.getProjectInnovationCrps().stream()
@@ -249,11 +249,11 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     return this.projectInnovationOrganizations;
   }
 
-
   public List<ProjectInnovationOrganization> getProjectInnovationOrganizations(Phase phase) {
     return new ArrayList<>(this.getProjectInnovationOrganizations().stream()
       .filter(pc -> pc.isActive() && pc.getPhase().equals(phase)).collect(Collectors.toList()));
   }
+
 
   public Set<ProjectInnovationRegion> getProjectInnovationRegions() {
     return this.projectInnovationRegions;
@@ -290,6 +290,13 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
 
   public List<ProjectExpectedStudyInnovation> getStudies() {
     return studies;
+  }
+
+  public List<ProjectExpectedStudyInnovation> getStudies(Phase phase) {
+    return new ArrayList<>(this.getProjectExpectedStudyInnovations().stream()
+      .filter(pp -> pp.isActive() && pp.getPhase().equals(phase) && pp.getProjectExpectedStudy() != null
+        && pp.getProjectExpectedStudy().getProjectExpectedStudyInfo(phase) != null)
+      .collect(Collectors.toList()));
   }
 
   public List<ProjectInnovationSubIdo> getSubIdos() {

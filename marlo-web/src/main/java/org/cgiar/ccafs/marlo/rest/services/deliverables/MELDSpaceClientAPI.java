@@ -29,6 +29,7 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -50,8 +51,7 @@ public class MELDSpaceClientAPI extends MetadataClientApi {
     xmlReaderConnectionUtil = new RestConnectionUtil();
     coverterAtrributes = new HashMap<String, String>();
     coverterAtrributes.put("description.abstract", "description");
-    coverterAtrributes.put("date.issued", "publicationDate");
-    coverterAtrributes.put("language.iso", "language");
+    coverterAtrributes.put("date", "publicationDate");
     coverterAtrributes.put("subject", "keywords");
     coverterAtrributes.put("identifier.citation", "citation");
     coverterAtrributes.put("identifier.uri", "handle");
@@ -60,6 +60,8 @@ public class MELDSpaceClientAPI extends MetadataClientApi {
   @Override
   public MetadataModel getMetadata(String link) {
     MetadataModel metadataModel = null;
+    List<Element> subjectElement = new ArrayList<>();
+    List<Element> agrovocElement = new ArrayList<>();
     JSONObject jo = new JSONObject();
     this.setDefaultEmptyValues(jo);
     try {
@@ -79,6 +81,28 @@ public class MELDSpaceClientAPI extends MetadataClientApi {
             String authorInfo[] = value.getStringValue().split(": ");
             authorMap.put(authorInfo[0].trim(), authorInfo[1].trim());
           }
+        } else if (keyValue.contains("subject")) {
+          if (keyValue.equals("subject.agrovoc")) {
+            agrovocElement.add(element);
+          } else {
+            subjectElement.add(element);
+          }
+        }
+      }
+
+      if (!agrovocElement.isEmpty()) {
+        for (Element pos : subjectElement) {
+          elements.remove(pos);
+        }
+
+        for (Element element : agrovocElement) {
+          Element value = element.element("value");
+          if (jo.has("keywords") && jo.get("keywords") != null && jo.get("keywords") != "") {
+            jo.put("keywords", jo.get("keywords") + "," + value.getStringValue());
+          } else {
+            jo.put("keywords", value.getStringValue());
+          }
+          elements.remove(element);
         }
       }
 
@@ -127,6 +151,8 @@ public class MELDSpaceClientAPI extends MetadataClientApi {
           if (value.getStringValue() != null && value.getStringValue().contains("doi")) {
             jo.put("doi", value.getStringValue());
           }
+        } else if (keyValue.equals("subject")) {
+
         } else {
           if (jo.has(keyValue) && jo.get(keyValue) != null && jo.get(keyValue) != "") {
             jo.put(keyValue, jo.get(keyValue) + "," + value.getStringValue());
@@ -138,6 +164,13 @@ public class MELDSpaceClientAPI extends MetadataClientApi {
       }
 
       this.setDoi(jo);
+      // date trick
+      if (jo.has("publicationDate") && StringUtils.isBlank(jo.get("publicationDate").toString())) {
+        Object value = jo.remove("publicationDate");
+        if (jo.has("date") && StringUtils.isNotBlank(jo.get("date").toString())) {
+          jo.put("publicationDate", jo.get("date").toString());
+        }
+      }
 
       GsonBuilder gsonBuilder = new GsonBuilder();
       gsonBuilder.registerTypeAdapter(Date.class, new DateTypeAdapter());

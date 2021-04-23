@@ -1,0 +1,10 @@
+insert into nexus (name) values ('Agro-ecological transition');
+insert into nexus (name) values ('Climate and nutrition sensitive breeding');
+insert into nexus (name) values ('Cocoa and Coffee');
+insert into nexus (name) values ('Digital innovations for pest and disease surveillance');
+insert into nexus (name) values ('Evidence-based food systems transformation in Hubs');
+insert into nexus (name) values ('Food Safety and Trace Metals');
+insert into nexus (name) values ('Gender and Social Inclusion');
+insert into nexus (name) values ('Low Emissions Systems');
+insert into nexus (name) values ('Security and Peacebuilding: Climate, environment and livelihoods for peace');
+insert into nexus (name) values ('Sustainable Finance');

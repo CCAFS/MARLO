@@ -17,6 +17,8 @@ package org.cgiar.ccafs.marlo.rest.mappers;
 
 import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
+import org.cgiar.ccafs.marlo.data.model.ProgressTargetCaseGeographicCountry;
+import org.cgiar.ccafs.marlo.data.model.ProgressTargetCaseGeographicRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
@@ -60,6 +62,19 @@ public interface LocationMapper {
     @Mapping(source = "locElement", target = "parentRegion")})
   public abstract RegionDTO locElementToRegionDTO(LocElement regElement);
 
+  @Mappings({@Mapping(source = "locElement.isoNumeric", target = "code"),
+    @Mapping(source = "locElement.isoAlpha2", target = "isoAlpha2"),
+    @Mapping(source = "locElement.name", target = "name"),
+    @Mapping(source = "locElement.locElement", target = "regionDTO")})
+  public abstract CountryDTO progressTargetCaseGeographicCountryToCountryDTO(
+    ProgressTargetCaseGeographicCountry progressTargetCaseGeographicCountry);
+
+  @Mappings({@Mapping(source = "locElement.isoNumeric", target = "UM49Code"),
+    @Mapping(source = "locElement.name", target = "name"),
+    @Mapping(source = "locElement.locElement", target = "parentRegion")})
+  public abstract RegionDTO progressTargetCaseGeographicRegionToRegionDTO(
+    ProgressTargetCaseGeographicRegion progressTargetCaseGeographicRegion);
+
   @Mappings({@Mapping(source = "projectExpectedStudyCountry.locElement.isoNumeric", target = "code"),
     @Mapping(source = "projectExpectedStudyCountry.locElement.isoAlpha2", target = "isoAlpha2"),
     @Mapping(source = "projectExpectedStudyCountry.locElement.name", target = "name"),
@@ -97,12 +112,12 @@ public interface LocationMapper {
     @Mapping(source = "locElement.name", target = "name")})
   public abstract ProjectPageRegionsDTO projectLocationToProjectPageRegionsDTO(ProjectLocation projectLocation);
 
+
   @Mappings({@Mapping(source = "projectPolicyCountry.locElement.isoNumeric", target = "code"),
     @Mapping(source = "projectPolicyCountry.locElement.isoAlpha2", target = "isoAlpha2"),
     @Mapping(source = "projectPolicyCountry.locElement.name", target = "name"),
     @Mapping(source = "projectPolicyCountry.locElement.locElement", target = "regionDTO")})
   public abstract CountryDTO projectPolicyCountryToCountryDTO(ProjectPolicyCountry projectPolicyCountry);
-
 
   @Mappings({@Mapping(source = "projectPolicyRegion.locElement.isoNumeric", target = "UM49Code"),
     @Mapping(source = "locElement.name", target = "name"),

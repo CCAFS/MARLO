@@ -143,7 +143,7 @@ public class PartnershipValidator extends BaseValidator {
       if (reportSynthesis.getReportSynthesisKeyPartnership().getCollaborations() == null
         || reportSynthesis.getReportSynthesisKeyPartnership().getCollaborations().isEmpty()) {
 
-        if (!action.isPMU()) {
+        if (!this.isPMU(this.getLiaisonInstitution(action, reportSynthesis.getId()))) {
           action.addMessage(action.getText("CGIAR Collaborations"));
           action.addMissingField("reportSynthesis.reportSynthesisKeyPartnership.collaborations");
           action.getInvalidFields().put("list-reportSynthesis.reportSynthesisKeyPartnership.collaborations",
@@ -270,13 +270,15 @@ public class PartnershipValidator extends BaseValidator {
     }
 
     // Validate Value added
-    if (!(this.isValidString(collaboration.getValueAdded()))) {
-      action.addMessage(
-        action.getText("reportSynthesis.reportSynthesisKeyPartnership.collaborations[" + i + "].valueAdded"));
-      action.getInvalidFields().put(
-        "input-reportSynthesis.reportSynthesisKeyPartnership.collaborations[" + i + "].valueAdded",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
+    /*
+     * if (!(this.isValidString(collaboration.getValueAdded()))) {
+     * action.addMessage(
+     * action.getText("reportSynthesis.reportSynthesisKeyPartnership.collaborations[" + i + "].valueAdded"));
+     * action.getInvalidFields().put(
+     * "input-reportSynthesis.reportSynthesisKeyPartnership.collaborations[" + i + "].valueAdded",
+     * InvalidFieldsMessages.EMPTYFIELD);
+     * }
+     */
   }
 
   private void validateExternal(BaseAction action, ReportSynthesisKeyPartnershipExternal external, int i) {

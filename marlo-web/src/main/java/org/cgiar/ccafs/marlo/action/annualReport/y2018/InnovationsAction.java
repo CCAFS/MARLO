@@ -21,13 +21,17 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndInnovationTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
@@ -38,6 +42,8 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationRegion;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressInnovation;
@@ -55,6 +61,7 @@ import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -86,9 +93,13 @@ public class InnovationsAction extends BaseAction {
   private ProjectManager projectManager;
   private ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager;
   private ReportSynthesisFlagshipProgressInnovationManager reportSynthesisFlagshipProgressInnovationManager;
+  private ReportSynthesisFlagshipProgressStudyManager reportSynthesisFlagshipProgressStudyManager;
   private RepIndStageInnovationManager repIndStageInnovationManager;
   private RepIndInnovationTypeManager repIndInnovationTypeManager;
   private SectionStatusManager sectionStatusManager;
+  private ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager;
+  private ProjectInnovationCountryManager projectInnovationCountryManager;
+  private ProjectInnovationRegionManager projectInnovationRegionManager;
 
 
   // Variables
@@ -115,7 +126,11 @@ public class InnovationsAction extends BaseAction {
     ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
     ReportSynthesisFlagshipProgressInnovationManager reportSynthesisFlagshipProgressInnovationManager,
     RepIndStageInnovationManager repIndStageInnovationManager, RepIndInnovationTypeManager repIndInnovationTypeManager,
-    SectionStatusManager sectionStatusManager) {
+    SectionStatusManager sectionStatusManager,
+    ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager,
+    ReportSynthesisFlagshipProgressStudyManager reportSynthesisFlagshipProgressStudyManager,
+    ProjectInnovationCountryManager projectInnovationCountryManager,
+    ProjectInnovationRegionManager projectInnovationRegionManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -132,8 +147,110 @@ public class InnovationsAction extends BaseAction {
     this.repIndStageInnovationManager = repIndStageInnovationManager;
     this.repIndInnovationTypeManager = repIndInnovationTypeManager;
     this.sectionStatusManager = sectionStatusManager;
+    this.projectExpectedStudyInnovationManager = projectExpectedStudyInnovationManager;
+    this.reportSynthesisFlagshipProgressStudyManager = reportSynthesisFlagshipProgressStudyManager;
+    this.projectInnovationCountryManager = projectInnovationCountryManager;
+    this.projectInnovationRegionManager = projectInnovationRegionManager;
   }
 
+
+  /**
+   * @return true if the innovation has a OICR on the AR document or if the innovation has no OICR
+   */
+  public boolean canBeAddedToAR(long innovationId, long phaseId) {
+    boolean editable = false;
+
+    if (innovationId > 0) {
+      List<Long> projectExpectedStudiesInnovationIds = projectExpectedStudyInnovationManager.findAll().stream()
+        .filter(pesi -> pesi != null && pesi.getId() != null && pesi.getPhase() != null
+          && pesi.getPhase().getId() != null && pesi.getPhase().getId().longValue() == phaseId
+          && pesi.getProjectInnovation() != null && pesi.getProjectInnovation().getId() != null
+          && pesi.getProjectInnovation().getId().longValue() == innovationId && pesi.getProjectExpectedStudy() != null
+          && pesi.getProjectExpectedStudy().getId() != null)
+        .map(pesi -> pesi.getProjectExpectedStudy().getId()).collect(Collectors.toList());
+
+      // does not have any expected studies linked, no problem.
+      if (projectExpectedStudiesInnovationIds.isEmpty()) {
+        editable = true;
+        return editable;
+      }
+
+      List<Long> expectedStudiesExcludedFromAR = reportSynthesisFlagshipProgressStudyManager.findAll().stream()
+        .filter(s -> s != null && s.isActive() && s.getReportSynthesisFlagshipProgress() != null
+          && s.getReportSynthesisFlagshipProgress().getId() != null
+          && s.getReportSynthesisFlagshipProgress().getId().equals(synthesisID) && s.getProjectExpectedStudy() != null
+          && s.getProjectExpectedStudy().getId() != null
+          && projectExpectedStudiesInnovationIds.contains(s.getProjectExpectedStudy().getId()))
+        .map(s -> s.getProjectExpectedStudy().getId()).collect(Collectors.toList());
+
+      // if all the expected studies linked to the innovation are excluded from the AR Document, the innovation should
+      // NOT be allowed to be included on the AR Document.
+      editable = projectExpectedStudiesInnovationIds.size() != expectedStudiesExcludedFromAR.size();
+    }
+
+    return editable;
+  }
+
+  public void convertEvidencesLinkstoList() {
+    if (projectInnovations != null && !projectInnovations.isEmpty()) {
+      for (ProjectInnovation innovation : projectInnovations) {
+        if (innovation.getProjectInnovationInfo(this.getActualPhase()) != null
+          && innovation.getProjectInnovationInfo(this.getActualPhase()).getEvidenceLink() != null
+          && !innovation.getProjectInnovationInfo(this.getActualPhase()).getEvidenceLink().isEmpty()
+          && innovation.getProjectInnovationInfo(this.getActualPhase()).getEvidenceLink().contains("; ")) {
+          List<String> evidencesLinks = new ArrayList<>(
+            Arrays.asList(innovation.getProjectInnovationInfo(this.getActualPhase()).getEvidenceLink().split("; ")));
+          if (!evidencesLinks.isEmpty()) {
+            innovation.getProjectInnovationInfo(this.getActualPhase()).setEvidencesLink(evidencesLinks);
+          }
+        }
+      }
+    }
+  }
+
+  /*
+   * Fill Countries and Regions information to projectInnovations list
+   */
+  public void fillGeographicInformation() {
+    if (projectInnovations != null && !projectInnovations.isEmpty()) {
+      List<ProjectInnovationCountry> countries = new ArrayList<>();
+      List<ProjectInnovationRegion> regions = new ArrayList<>();
+
+      for (ProjectInnovation innovation : projectInnovations) {
+
+        if (innovation.getId() != null) {
+
+          // Fill Policy Countries
+          if ((innovation.getCountries() != null && innovation.getCountries().isEmpty())
+            || innovation.getCountries() == null) {
+            if (projectInnovationCountryManager.getInnovationCountrybyPhase(innovation.getId(),
+              this.getActualPhase().getId()) != null) {
+              countries = projectInnovationCountryManager.getInnovationCountrybyPhase(innovation.getId(),
+                this.getActualPhase().getId());
+            }
+
+            if (countries != null && !countries.isEmpty()) {
+              innovation.setCountries(countries);
+            }
+          }
+
+          // Fill Policy Regions
+          if ((innovation.getRegions() != null && innovation.getRegions().isEmpty())
+            || innovation.getRegions() == null) {
+            if (projectInnovationRegionManager.getInnovationRegionbyPhase(innovation.getId(),
+              this.getActualPhase().getId()) != null) {
+              regions = projectInnovationRegionManager.getInnovationRegionbyPhase(innovation.getId(),
+                this.getActualPhase().getId());
+            }
+
+            if (regions != null && !regions.isEmpty()) {
+              innovation.setRegions(regions);
+            }
+          }
+        }
+      }
+    }
+  }
 
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
@@ -238,9 +355,11 @@ public class InnovationsAction extends BaseAction {
     return innovationsByStageDTO;
   }
 
+
   public List<ReportSynthesisInnovationsByTypeDTO> getInnovationsByTypeDTO() {
     return innovationsByTypeDTO;
   }
+
 
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
@@ -281,11 +400,9 @@ public class InnovationsAction extends BaseAction {
     return total;
   }
 
-
   public String getTransaction() {
     return transaction;
   }
-
 
   public boolean isFlagship() {
     boolean isFP = false;
@@ -300,6 +417,7 @@ public class InnovationsAction extends BaseAction {
     }
     return isFP;
   }
+
 
   /**
    * This method get the status of an specific Innovation depending of the
@@ -338,7 +456,6 @@ public class InnovationsAction extends BaseAction {
 
   }
 
-
   @Override
   public String next() {
     String result = this.save();
@@ -348,6 +465,7 @@ public class InnovationsAction extends BaseAction {
       return result;
     }
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -515,6 +633,8 @@ public class InnovationsAction extends BaseAction {
       innovationsByTypeDTO =
         repIndInnovationTypeManager.getInnovationsByTypeDTO(selectedProjectInnovations, actualPhase);
     }
+    this.fillGeographicInformation();
+    // this.convertEvidencesLinkstoList();
 
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), reportSynthesis.getId() + ""};
@@ -532,47 +652,51 @@ public class InnovationsAction extends BaseAction {
   public String save() {
     if (this.hasPermission("canEdit")) {
 
-      ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgressDB =
-        reportSynthesisManager.getReportSynthesisById(synthesisID).getReportSynthesisFlagshipProgress();
+      // Dont save records (check marks in exclusion table) for Flagships
+      if (this.isPMU()) {
 
-      this.flagshipProgressprojectInnovationsNewData(reportSynthesisFlagshipProgressDB);
+        ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgressDB =
+          reportSynthesisManager.getReportSynthesisById(synthesisID).getReportSynthesisFlagshipProgress();
 
-      if (reportSynthesis.getReportSynthesisFlagshipProgress().getPlannedInnovations() == null) {
-        reportSynthesis.getReportSynthesisFlagshipProgress().setPlannedInnovations(new ArrayList<>());
-      }
+        this.flagshipProgressprojectInnovationsNewData(reportSynthesisFlagshipProgressDB);
 
-      reportSynthesisFlagshipProgressDB =
-        reportSynthesisFlagshipProgressManager.saveReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgressDB);
-
-      List<String> relationsName = new ArrayList<>();
-      reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
-
-      /**
-       * The following is required because we need to update something on the @ReportSynthesis if we want a row created
-       * in the auditlog table.
-       */
-      this.setModificationJustification(reportSynthesis);
-
-      reportSynthesisManager.save(reportSynthesis, this.getActionName(), relationsName, actualPhase);
-
-      Path path = this.getAutoSaveFilePath();
-      if (path.toFile().exists()) {
-        path.toFile().delete();
-      }
-
-      this.getActionMessages();
-      if (!this.getInvalidFields().isEmpty()) {
-        this.setActionMessages(null);
-        // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
-        List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
-        for (String key : keys) {
-          this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+        if (reportSynthesis.getReportSynthesisFlagshipProgress().getPlannedInnovations() == null) {
+          reportSynthesis.getReportSynthesisFlagshipProgress().setPlannedInnovations(new ArrayList<>());
         }
 
-      } else {
-        this.addActionMessage("message:" + this.getText("saving.saved"));
-      }
+        reportSynthesisFlagshipProgressDB =
+          reportSynthesisFlagshipProgressManager.saveReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgressDB);
 
+        List<String> relationsName = new ArrayList<>();
+        reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
+
+        /**
+         * The following is required because we need to update something on the @ReportSynthesis if we want a row
+         * created
+         * in the auditlog table.
+         */
+        this.setModificationJustification(reportSynthesis);
+
+        reportSynthesisManager.save(reportSynthesis, this.getActionName(), relationsName, actualPhase);
+
+        Path path = this.getAutoSaveFilePath();
+        if (path.toFile().exists()) {
+          path.toFile().delete();
+        }
+
+        this.getActionMessages();
+        if (!this.getInvalidFields().isEmpty()) {
+          this.setActionMessages(null);
+          // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+          List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+          for (String key : keys) {
+            this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+          }
+
+        } else {
+          this.addActionMessage("message:" + this.getText("saving.saved"));
+        }
+      }
       return SUCCESS;
     } else {
       return NOT_AUTHORIZED;

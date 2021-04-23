@@ -37,13 +37,22 @@ public class NewParticipantsCapDevDTO {
   @ApiModelProperty(notes = "Trainees phd male", position = 50)
   private Long traineesPhdMale;
 
+  @ApiModelProperty(notes = "Link to Evidence", position = 60)
+  private String evidencelink;
+
+
   @ApiModelProperty(notes = "Phase year/section", position = 140)
   private PhaseDTO phase;
+
+
+  public String getEvidencelink() {
+    return evidencelink;
+  }
+
 
   public PhaseDTO getPhase() {
     return phase;
   }
-
 
   public Long getTraineesLongTermFemale() {
     return traineesLongTermFemale;
@@ -72,6 +81,11 @@ public class NewParticipantsCapDevDTO {
 
   public Long getTraineesShortTermMale() {
     return traineesShortTermMale;
+  }
+
+
+  public void setEvidencelink(String evidencelink) {
+    this.evidencelink = evidencelink;
   }
 
 

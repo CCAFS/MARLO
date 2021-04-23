@@ -1,0 +1,10 @@
+update srf_slo_indicator_targets set title  = 'ADOPTION' where id = 1;
+update srf_slo_indicator_targets set title  = 'EXIT POVERTY' where id = 2;
+update srf_slo_indicator_targets set title  = 'YIELD INCREASE' where id = 3;
+update srf_slo_indicator_targets set title  = 'MINIMUM DIETARY REQUIREMENTS' where id = 4;
+update srf_slo_indicator_targets set title  = 'MICRONUTRIENT DEFICIENCIES' where id = 5;
+update srf_slo_indicator_targets set title  = 'WOMEN’S NUTRITION' where id = 6;
+update srf_slo_indicator_targets set title  = 'WATER AND NUTRIENT EFFICIENCY' where id = 7;
+update srf_slo_indicator_targets set title  = 'REDUCED GREENHOUSE GAS EMISSION' where id = 8;
+update srf_slo_indicator_targets set title  = 'ECOSYSTEM RESTORED' where id = 9;
+update srf_slo_indicator_targets set title  = 'PREVENTION OF DEFORESTATION' where id = 10;

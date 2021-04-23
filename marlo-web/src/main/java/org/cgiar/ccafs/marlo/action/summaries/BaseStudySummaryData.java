@@ -70,7 +70,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
     masterReport.getParameterValues().put("i8nStudiesRNoData", this.getText("summaries.study.noData"));
     masterReport.getParameterValues().put("i8nStudiesRCaseStudy", this.getText("summaries.study"));
     masterReport.getParameterValues().put("i8nCaseStudiesRStudyProjects",
-      this.getText("summaries.study.studyProjects"));
+      this.getText("summaries.study.studyContributingProjects"));
     masterReport.getParameterValues().put("i8nCaseStudiesRPartI", this.getText("summaries.study.partI"));
     masterReport.getParameterValues().put("i8nStudiesRType", this.getText("study.type"));
     masterReport.getParameterValues().put("i8nStudiesRStatus", this.getText("study.status"));
@@ -545,11 +545,17 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         Set<String> studyProjectSet = new HashSet<>();
         if (projectExpectedStudyInfo.getProjectExpectedStudy().getProject() != null) {
           studyProjectSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● P"
-            + projectExpectedStudyInfo.getProjectExpectedStudy().getProject().getId());
+            + projectExpectedStudyInfo.getProjectExpectedStudy().getProject().getId() + " - " + projectExpectedStudyInfo
+              .getProjectExpectedStudy().getProject().getProjecInfoPhase(this.getSelectedPhase()).getTitle());
         }
-        if (studyProjectList != null && studyProjectList.size() > 0) {
+        if (studyProjectList != null && !studyProjectList.isEmpty()) {
           for (ExpectedStudyProject studyProject : studyProjectList) {
-            studyProjectSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● P" + studyProject.getProject().getId());
+            if (studyProject.getProject() != null
+              && studyProject.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
+              && studyProject.getProject().getProjecInfoPhase(this.getSelectedPhase()).getTitle() != null) {
+              studyProjectSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● P" + studyProject.getProject().getId() + " - "
+                + studyProject.getProject().getProjecInfoPhase(this.getSelectedPhase()).getTitle());
+            }
           }
         }
         if (studyProjectSet != null && !studyProjectSet.isEmpty()) {

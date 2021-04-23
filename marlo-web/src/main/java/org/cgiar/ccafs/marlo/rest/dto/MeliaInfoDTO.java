@@ -32,11 +32,17 @@ public class MeliaInfoDTO {
   @ApiModelProperty(notes = "Expected study type code", position = 3)
   private StudyTypeDTO studyType;
 
+  @ApiModelProperty(notes = "Expected study commissioning", position = 5)
+  private String commissioningStudy;
+
+
   @ApiModelProperty(notes = "Expected study status", position = 4)
   private MilestoneStatusDTO status;
 
+
   @ApiModelProperty(notes = "Description Study", position = 5)
   private String description;
+
 
   @ApiModelProperty(notes = "Melia Publications Links", position = 6)
   private String publications;
@@ -44,6 +50,9 @@ public class MeliaInfoDTO {
   @ApiModelProperty(notes = "Scope comments", position = 7)
   private String scopeComments;
 
+  public String getCommissioningStudy() {
+    return commissioningStudy;
+  }
 
   public String getDescription() {
     return description;
@@ -77,6 +86,11 @@ public class MeliaInfoDTO {
 
   public Long getYear() {
     return year;
+  }
+
+
+  public void setCommissioningStudy(String commissioningStudy) {
+    this.commissioningStudy = commissioningStudy;
   }
 
 

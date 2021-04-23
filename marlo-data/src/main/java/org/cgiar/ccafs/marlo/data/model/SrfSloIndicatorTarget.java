@@ -4,7 +4,9 @@ package org.cgiar.ccafs.marlo.data.model;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
@@ -14,134 +16,192 @@ import com.google.gson.annotations.Expose;
  */
 public class SrfSloIndicatorTarget extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
 
-	private static final long serialVersionUID = -8975527941728871240L;
+  private static final long serialVersionUID = -8975527941728871240L;
 
-	@Expose
-	private SrfSloIndicator srfSloIndicator;
+  @Expose
+  private SrfSloIndicator srfSloIndicator;
 
-	@Expose
-	private String narrative;
+  @Expose
+  private String narrative;
 
-	@Expose
-	private BigDecimal value;
+  @Expose
+  private BigDecimal value;
 
-	@Expose
-	private int year;
+  @Expose
+  private int year;
 
-	@Expose
-	private String targetsIndicator;
+  @Expose
+  private String targetsIndicator;
 
-	@Expose
-	private SrfTargetUnit srfTargetUnit;
+  @Expose
+  private SrfTargetUnit srfTargetUnit;
 
-	private Set<ReportSynthesisCrpProgressTarget> reportSynthesisCrpProgressTargets = new HashSet<ReportSynthesisCrpProgressTarget>(
-			0);
+  @Expose
+  private Boolean hasEvidence;
 
-	public SrfSloIndicatorTarget() {
-	}
+  @Expose
+  private String smoCode;
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (this.getClass() != obj.getClass()) {
-			return false;
-		}
-		SrfSloIndicatorTarget other = (SrfSloIndicatorTarget) obj;
-		if (this.getId() == null) {
-			if (other.getId() != null) {
-				return false;
-			}
-		} else if (!this.getId().equals(other.getId())) {
-			return false;
-		}
-		return true;
-	}
+  @Expose
+  private String title;
 
-	public String getComposedName() {
-		return "SLO " + this.getSrfSloIndicator().getSrfSlo().getId() + " Target - " + this.narrative;
-	}
+  private List<ReportSynthesisSrfProgressTargetCases> targetCases = new ArrayList<>();
+  private Set<ReportSynthesisSrfProgressTargetCases> ReportSynthesisSrfProgressTargetCases = new HashSet<>();
 
-	@Override
-	public String getLogDeatil() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("Id : ").append(this.getId());
-		return sb.toString();
-	}
 
-	public String getNarrative() {
-		return this.narrative;
-	}
+  private Set<ReportSynthesisCrpProgressTarget> reportSynthesisCrpProgressTargets =
+    new HashSet<ReportSynthesisCrpProgressTarget>(0);
 
-	public Set<ReportSynthesisCrpProgressTarget> getReportSynthesisCrpProgressTargets() {
-		return this.reportSynthesisCrpProgressTargets;
-	}
+  public SrfSloIndicatorTarget() {
+  }
 
-	public SrfSloIndicator getSrfSloIndicator() {
-		return this.srfSloIndicator;
-	}
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    SrfSloIndicatorTarget other = (SrfSloIndicatorTarget) obj;
+    if (this.getId() == null) {
+      if (other.getId() != null) {
+        return false;
+      }
+    } else if (!this.getId().equals(other.getId())) {
+      return false;
+    }
+    return true;
+  }
 
-	public SrfTargetUnit getSrfTargetUnit() {
-		return this.srfTargetUnit;
-	}
+  public String getComposedName() {
+    return "SLO " + this.getSrfSloIndicator().getSrfSlo().getId() + " Target - " + this.narrative;
+  }
 
-	public String getTargetsIndicator() {
-		return this.targetsIndicator;
-	}
+  public Boolean getHasEvidence() {
+    return hasEvidence;
+  }
 
-	public BigDecimal getValue() {
-		return this.value;
-	}
+  @Override
+  public String getLogDeatil() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("Id : ").append(this.getId());
+    return sb.toString();
+  }
 
-	public int getYear() {
-		return this.year;
-	}
+  public String getNarrative() {
+    return this.narrative;
+  }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
-		return result;
-	}
+  public Set<ReportSynthesisCrpProgressTarget> getReportSynthesisCrpProgressTargets() {
+    return this.reportSynthesisCrpProgressTargets;
+  }
 
-	public void setNarrative(String narrative) {
-		this.narrative = narrative;
-	}
+  public Set<ReportSynthesisSrfProgressTargetCases> getReportSynthesisSrfProgressTargetCases() {
+    return ReportSynthesisSrfProgressTargetCases;
+  }
 
-	public void setReportSynthesisCrpProgressTargets(
-			Set<ReportSynthesisCrpProgressTarget> reportSynthesisCrpProgressTargets) {
-		this.reportSynthesisCrpProgressTargets = reportSynthesisCrpProgressTargets;
-	}
+  public String getSmoCode() {
+    return smoCode;
+  }
 
-	public void setSrfSloIndicator(SrfSloIndicator srfSloIndicator) {
-		this.srfSloIndicator = srfSloIndicator;
-	}
+  public SrfSloIndicator getSrfSloIndicator() {
+    return this.srfSloIndicator;
+  }
 
-	public void setSrfTargetUnit(SrfTargetUnit srfTargetUnit) {
-		this.srfTargetUnit = srfTargetUnit;
-	}
+  public SrfTargetUnit getSrfTargetUnit() {
+    return this.srfTargetUnit;
+  }
 
-	public void setTargetsIndicator(String targetsIndicator) {
-		this.targetsIndicator = targetsIndicator;
-	}
+  public List<ReportSynthesisSrfProgressTargetCases> getTargetCases() {
+    return targetCases;
+  }
 
-	public void setValue(BigDecimal value) {
-		this.value = value;
-	}
+  public String getTargetsIndicator() {
+    return this.targetsIndicator;
+  }
 
-	public void setYear(int year) {
-		this.year = year;
-	}
+  public String getTitle() {
+    return title;
+  }
 
-	@Override
-	public String toString() {
-		return "SrfSloIndicatorTarget [id=" + this.getId() + ", narrative=" + this.narrative + ", value=" + this.value
-				+ ", year=" + this.year + "]";
-	}
+  public BigDecimal getValue() {
+    return this.value;
+  }
+
+  public int getYear() {
+    return this.year;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
+    return result;
+  }
+
+  public void setHasEvidence(Boolean hasEvidence) {
+    this.hasEvidence = hasEvidence;
+  }
+
+  public void setNarrative(String narrative) {
+    this.narrative = narrative;
+  }
+
+  public void
+    setReportSynthesisCrpProgressTargets(Set<ReportSynthesisCrpProgressTarget> reportSynthesisCrpProgressTargets) {
+    this.reportSynthesisCrpProgressTargets = reportSynthesisCrpProgressTargets;
+  }
+
+  public void setReportSynthesisSrfProgressTargetCases(
+    Set<ReportSynthesisSrfProgressTargetCases> reportSynthesisSrfProgressTargetCases) {
+    ReportSynthesisSrfProgressTargetCases = reportSynthesisSrfProgressTargetCases;
+  }
+
+
+  public void setSmoCode(String smoCode) {
+    this.smoCode = smoCode;
+  }
+
+
+  public void setSrfSloIndicator(SrfSloIndicator srfSloIndicator) {
+    this.srfSloIndicator = srfSloIndicator;
+  }
+
+
+  public void setSrfTargetUnit(SrfTargetUnit srfTargetUnit) {
+    this.srfTargetUnit = srfTargetUnit;
+  }
+
+
+  public void setTargetCases(List<ReportSynthesisSrfProgressTargetCases> targetCases) {
+    this.targetCases = targetCases;
+  }
+
+  public void setTargetsIndicator(String targetsIndicator) {
+    this.targetsIndicator = targetsIndicator;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
+  public void setValue(BigDecimal value) {
+    this.value = value;
+  }
+
+  public void setYear(int year) {
+    this.year = year;
+  }
+
+  @Override
+  public String toString() {
+    return "SrfSloIndicatorTarget [id=" + this.getId() + ", narrative=" + this.narrative + ", value=" + this.value
+      + ", year=" + this.year + "]";
+  }
 
 }
