@@ -53,6 +53,14 @@ public interface ProjectPartnerLocationManager {
 
 
   /**
+   * This method gets a list of projectPartnerLocation that are active
+   * 
+   * @param phase_id - phase identifier
+   * @return a list from ProjectPartnerLocation by giving phase id if no exist records
+   */
+  public List<ProjectPartnerLocation> findAllByPhase(Long phase_id);
+
+  /**
    * This method gets a projectPartnerLocation object by a given projectPartnerLocation identifier.
    * 
    * @param projectPartnerLocationID is the projectPartnerLocation identifier.

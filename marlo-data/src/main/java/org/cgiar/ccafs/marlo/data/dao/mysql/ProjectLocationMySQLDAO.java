@@ -74,6 +74,13 @@ public class ProjectLocationMySQLDAO extends AbstractMarloDAO<ProjectLocation, L
   }
 
   @Override
+  public List<ProjectLocation> findAllByPhase(Long phaseId) {
+    String query =
+      "from " + ProjectLocation.class.getName() + "  where id_phase=" + phaseId + " " + "and is_active = 1";
+    return super.findAll(query);
+  }
+
+  @Override
   public List<Map<String, Object>> getParentLocations(long projectId, String parentField) {
     String query = "select DISTINCT " + parentField + " from project_locations where project_id=" + projectId
       + " and is_active = 1 and " + parentField + " is not null";
@@ -90,6 +97,7 @@ public class ProjectLocationMySQLDAO extends AbstractMarloDAO<ProjectLocation, L
     }
     return null;
   }
+
 
   @Override
   public ProjectLocation save(ProjectLocation projectLocation) {

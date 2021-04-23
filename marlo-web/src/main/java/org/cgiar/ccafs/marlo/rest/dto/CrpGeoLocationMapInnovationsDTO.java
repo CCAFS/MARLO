@@ -25,7 +25,8 @@ public class CrpGeoLocationMapInnovationsDTO {
   private long id;
   private String title;
   private String type;
-  private String projectId;
+  private long project;
+  private String project_title;
   private int year;
   private String stage;
   private String link;
@@ -38,8 +39,13 @@ public class CrpGeoLocationMapInnovationsDTO {
     return link;
   }
 
-  public String getProjectId() {
-    return projectId;
+
+  public long getProject() {
+    return project;
+  }
+
+  public String getProject_title() {
+    return project_title;
   }
 
   public String getStage() {
@@ -58,16 +64,24 @@ public class CrpGeoLocationMapInnovationsDTO {
     return year;
   }
 
+
   public void setId(long id) {
     this.id = id;
   }
+
 
   public void setLink(String link) {
     this.link = link;
   }
 
-  public void setProjectId(String projectId) {
-    this.projectId = projectId;
+
+  public void setProject(long project) {
+    this.project = project;
+  }
+
+
+  public void setProject_title(String project_title) {
+    this.project_title = project_title;
   }
 
   public void setStage(String stage) {

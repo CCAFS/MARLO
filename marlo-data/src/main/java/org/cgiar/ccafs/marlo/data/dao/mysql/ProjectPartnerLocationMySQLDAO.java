@@ -70,6 +70,15 @@ public class ProjectPartnerLocationMySQLDAO extends AbstractMarloDAO<ProjectPart
   }
 
   @Override
+  public List<ProjectPartnerLocation> findAllByPhase(Long phase_id) {
+    String queryString = "SELECT ppl FROM ProjectPartnerLocation as ppl INNER JOIN ppl.projectPartner as pp "
+      + "INNER JOIN pp.phase as ph WHERE ppl.active = TRUE " + "AND ph.id = :phaseid";
+    List<ProjectPartnerLocation> projectPartnerLocations =
+      this.getSessionFactory().getCurrentSession().createQuery(queryString).setParameter("phaseid", phase_id).list();
+    return projectPartnerLocations;
+  }
+
+  @Override
   public ProjectPartnerLocation save(ProjectPartnerLocation projectPartnerLocation) {
     if (projectPartnerLocation.getId() == null) {
       super.saveEntity(projectPartnerLocation);

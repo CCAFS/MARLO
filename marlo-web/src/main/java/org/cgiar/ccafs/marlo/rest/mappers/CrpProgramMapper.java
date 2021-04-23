@@ -17,8 +17,11 @@ package org.cgiar.ccafs.marlo.rest.mappers;
 
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.rest.dto.CrpProgramDTO;
+import org.cgiar.ccafs.marlo.rest.dto.DefaultFieldStringDTO;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -28,4 +31,9 @@ import org.mapstruct.Mapper;
 public interface CrpProgramMapper {
 
   public abstract CrpProgramDTO crpProgramToCrpProgramDTO(CrpProgram crpProgram);
+
+  @Mappings({@Mapping(source = "acronym", target = "id"), @Mapping(source = "name", target = "name")})
+  public abstract DefaultFieldStringDTO crpProgramToDefaultFieldStringDTO(CrpProgram crpProgram);
+
+
 }

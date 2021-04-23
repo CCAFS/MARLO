@@ -61,6 +61,14 @@ public interface FundingSourceLocationsManager {
 
 
   /**
+   * This will return all fundingSourceLocations of phase id giving, preventing N+1 issues
+   * 
+   * @param phaseid - Phase identifier
+   * @return
+   */
+  public List<FundingSourceLocation> findAllByPhase(Long phaseid);
+
+  /**
    * This method gets a fundingSourceLocations object by a given fundingSourceLocations identifier.
    * 
    * @param fundingSourceLocationsID is the fundingSourceLocations identifier.
