@@ -408,10 +408,12 @@ public class OutcomesMilestonesAction extends BaseAction {
   public String getMilestoneExtendedYear(Long milestoneID) {
     String extendedYear = null;
     if (milestoneID != null && milestoneID != -1) {
-      CrpMilestone currentMilestone = crpMilestoneManager.getCrpMilestoneById(milestoneID);
-      if (currentMilestone != null && currentMilestone.getMilestonesStatus() != null && ProjectStatusEnum.Extended
-        .getStatusId().equals(String.valueOf(currentMilestone.getMilestonesStatus().getId()))) {
-        extendedYear = String.valueOf(currentMilestone.getExtendedYear());
+      CrpMilestone milestone = crpMilestoneManager.getCrpMilestoneById(milestoneID);
+      milestone = crpMilestoneManager.getCrpMilestoneByPhase(milestone.getComposeID(),
+        milestone.getCrpProgramOutcome().getPhase().getNext().getId());
+      if (milestone != null && milestone.getMilestonesStatus() != null
+        && ProjectStatusEnum.Extended.getStatusId().equals(String.valueOf(milestone.getMilestonesStatus().getId()))) {
+        extendedYear = String.valueOf(milestone.getExtendedYear());
       }
     }
 
