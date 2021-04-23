@@ -38,7 +38,7 @@ public class PublicationDTO {
   @ApiModelProperty(notes = "Is open access")
   private Boolean isOpenAccess;
   @ApiModelProperty(notes = "Is this journal article an ISI publication?")
-  private boolean isISIJournal;
+  private Boolean isISIJournal;
   @ApiModelProperty(notes = "Digital object identifier")
   private String doi;
   @ApiModelProperty(notes = "Handle URL")
@@ -79,6 +79,10 @@ public class PublicationDTO {
     return id;
   }
 
+  public Boolean getIsISIJournal() {
+    return isISIJournal;
+  }
+
   public Boolean getIsOpenAccess() {
     return isOpenAccess;
   }
@@ -107,13 +111,11 @@ public class PublicationDTO {
     return volume;
   }
 
+
   public int getYear() {
     return year;
   }
 
-  public boolean isISIJournal() {
-    return isISIJournal;
-  }
 
   public void setArticleURL(String articleURL) {
     this.articleURL = articleURL;
@@ -139,7 +141,11 @@ public class PublicationDTO {
     this.id = id;
   }
 
-  public void setISIJournal(boolean isISIJournal) {
+  public void setISIJournal(Boolean isISIJournal) {
+    this.isISIJournal = isISIJournal;
+  }
+
+  public void setIsISIJournal(Boolean isISIJournal) {
     this.isISIJournal = isISIJournal;
   }
 
