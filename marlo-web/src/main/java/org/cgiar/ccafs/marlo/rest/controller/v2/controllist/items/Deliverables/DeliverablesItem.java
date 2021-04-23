@@ -221,7 +221,7 @@ public class DeliverablesItem<T> {
         deliverablePublicationMetadata.setJournal(deliverableDTO.getJournal());
         deliverablePublicationMetadata.setPages(deliverableDTO.getNpages());
         deliverablePublicationMetadata.setVolume(deliverableDTO.getVolume());
-        deliverablePublicationMetadata.setIsiPublication(deliverableDTO.isISIJournal());
+        deliverablePublicationMetadata.setIsiPublication(deliverableDTO.getIsISIJournal());
 
 
         deliverablePublicationMetadata.setPhase(phase);
@@ -1382,7 +1382,7 @@ public class DeliverablesItem<T> {
         deliverablePublicationMetadata.setJournal(newPublicationDTO.getJournal());
         deliverablePublicationMetadata.setPages(newPublicationDTO.getNpages());
         deliverablePublicationMetadata.setVolume(newPublicationDTO.getVolume());
-        deliverablePublicationMetadata.setIsiPublication(newPublicationDTO.isISIJournal());
+        deliverablePublicationMetadata.setIsiPublication(newPublicationDTO.getIsISIJournal());
         deliverablePublicationMetadata.setPhase(phase);
         deliverablePubMetadataManager.saveDeliverablePublicationMetadata(deliverablePublicationMetadata);
 
