@@ -548,10 +548,14 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             + projectExpectedStudyInfo.getProjectExpectedStudy().getProject().getId() + " - " + projectExpectedStudyInfo
               .getProjectExpectedStudy().getProject().getProjecInfoPhase(this.getSelectedPhase()).getTitle());
         }
-        if (studyProjectList != null && studyProjectList.size() > 0) {
+        if (studyProjectList != null && !studyProjectList.isEmpty()) {
           for (ExpectedStudyProject studyProject : studyProjectList) {
-            studyProjectSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● P" + studyProject.getProject().getId() + " - "
-              + studyProject.getProject().getProjecInfoPhase(this.getSelectedPhase()).getTitle());
+            if (studyProject.getProject() != null
+              && studyProject.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
+              && studyProject.getProject().getProjecInfoPhase(this.getSelectedPhase()).getTitle() != null) {
+              studyProjectSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● P" + studyProject.getProject().getId() + " - "
+                + studyProject.getProject().getProjecInfoPhase(this.getSelectedPhase()).getTitle());
+            }
           }
         }
         if (studyProjectSet != null && !studyProjectSet.isEmpty()) {
