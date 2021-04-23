@@ -2,7 +2,7 @@ var $tableViewMore;
 var tableDatatableViewmore, tableDataProgressTableViewmore, tableDatatableTableGrey, tableInnovations, tablePolicies, tableOICRs;
 var pageName;
 var googleChartsLoaded = false;
-
+var isActive = false;
 
 function getContributionListComponentValue(contributionData){
 
@@ -99,16 +99,13 @@ function getTargetCasesBySLO(){
         }
       });
     }
-  
-
 }
-
 
 function contributionListComponentInsertHTML(data,id){
   var count = 0;
   var activeFP = false;
 
-  $(`.flagshipBtn-${id}`).on('click',changeButtonText);
+  $(`.flagshipBtn-${id}`).on('click', changeButtonText);
 
   data.sources.forEach((item,index) => {
     if (item.contribution.length == 0) {
@@ -121,7 +118,7 @@ function contributionListComponentInsertHTML(data,id){
       }
     } else {
       $('.insertHtmlSlo-tabs-'+id).append(`<li role="presentation" class="${!activeFP?'active':''}" ><a href="#${item.id}-${id}-tab" aria-controls="${item.id}-${id}-tab" role="tab" data-toggle="tab">${item.id}</a></li>`);
-      $('.insertHtmlSlo-tabpanel-'+id).append(`<div role="tabpanel" class="tab-pane ${!activeFP?'active':''}" id="${item.id}-${id}-tab" style="overflow-y: scroll; max-height: 700px;"></div>`);
+      $('.insertHtmlSlo-tabpanel-'+id).append(`<div role="tabpanel" class="tab-pane ${!activeFP?'active':''}" id="${item.id}-${id}-tab" style="overflow-y: scroll; max-height: 510px;"></div>`);
       activeFP = true;
     }
     item.contribution.forEach(contributionData => {
@@ -143,7 +140,8 @@ $(document).ready(function() {
   // Set data tables
   if($.fn.DataTable) {
     $tableViewMore = $('.viewMoreSyntesis-block table');
-    tableDatatableViewmore = $tableViewMore.DataTable({
+    if ($('.totalParticipantsNumber').html() != 0 && $('.totalParticipantFormalTrainingNumber').html() != 0) {
+      tableDatatableViewmore = $tableViewMore.DataTable({
         "paging": false,
         "searching": false,
         "info": false,
@@ -157,12 +155,13 @@ $(document).ready(function() {
               ]
           }
         ]
-    });
+      });
+    }
 
     $progressTableViewMore = $('.viewMoreSyntesisTable-block table');
     tableDataProgressTableViewmore = $progressTableViewMore.DataTable({
-        "paging": true,
-        "searching": true,
+        "paging": false,
+        "searching": false,
         "info": true,
         aoColumnDefs: [
           {
@@ -178,7 +177,7 @@ $(document).ready(function() {
     if ($('.totalInnovationsNumber').html() != 0) {
       tableInnovations = $tableInnovationsHTML.DataTable({
         "paging": false,
-        "searching": true,
+        "searching": false,
         "info": true,
         aoColumnDefs: [
           {
@@ -194,7 +193,7 @@ $(document).ready(function() {
     $tablePoliciesHTML = $('.tablePolicies-block table');
     tablePolicies = $tablePoliciesHTML.DataTable({
       "paging": false,
-      "searching": true,
+      "searching": false,
       "info": true,
       aoColumnDefs: [
         {
@@ -209,7 +208,7 @@ $(document).ready(function() {
     $tableOICRsHTML = $('.tableOICRs-block table');
     tableOICRs = $tableOICRsHTML.DataTable({
       "paging": false,
-      "searching": true,
+      "searching": false,
       "info": true,
       aoColumnDefs: [
         {
@@ -224,7 +223,7 @@ $(document).ready(function() {
     $TablePRP = $('.viewMoreSyntesisTablePRP-block table');
     tableDatatableTablePRP = $TablePRP.DataTable({
         "paging": false,
-        "searching": true,
+        "searching": false,
         "info": true,
         aoColumnDefs: [
           {
@@ -239,7 +238,7 @@ $(document).ready(function() {
     $TableGrey = $('.viewMoreSyntesisTableGrey-block table');
     tableDatatableTableGrey = $TableGrey.DataTable({
         "paging": false,
-        "searching": true,
+        "searching": false,
         "info": true,
         aoColumnDefs: [
           {
@@ -354,7 +353,7 @@ $(document).ready(function() {
   selectIndividualPolicies();
   selectIndividualInnovations();
   selectIndividualStudies();
-  disabledUncheckedCheckmarkColor();
+  appearDisappearFlagshipsTable(isActive, 0);
 });
 
 function updateALltexareas(){
@@ -406,10 +405,12 @@ function setStatusByBack() {
 }
 
 function selectDeselectAll() {
-  if (this.checked == true) {
+  if ($(this).hasClass('checked')) {
     $('input[id^="deliverable-"]').prop('checked', true);
+    $(this).removeClass('checked');
   } else {
     $('input[id^="deliverable-"]').prop('checked', false);
+    $(this).addClass('checked');
   }
 }
 
@@ -422,10 +423,12 @@ function selectIndividual() {
 }
 
 function selectDeselectAllGrey() {
-  if (this.checked == true) {
+  if ($(this).hasClass('checked')) {
     $('input[id^="deliverableGrey"]').prop('checked', true);
+    $(this).removeClass('checked');
   } else {
     $('input[id^="deliverableGrey"]').prop('checked', false);
+    $(this).addClass('checked');
   }
 }
 
@@ -438,10 +441,12 @@ function selectIndividualGrey() {
 }
 
 function selectDeselectAllPolicies() {
-  if (this.checked == true) {
+  if ($(this).hasClass('checked')) {
     $('input[id^="policy-"]').prop('checked', true);
+    $(this).removeClass('checked');
   } else {
     $('input[id^="policy-"]').prop('checked', false);
+    $(this).addClass('checked');
   }
 }
 
@@ -454,10 +459,12 @@ function selectIndividualPolicies() {
 }
 
 function selectDeselectAllInnovations() {
-  if (this.checked == true) {
+  if ($(this).hasClass('checked')) {
     $('input[id^="innovation-"]').prop('checked', true);
+    $(this).removeClass('checked');
   } else {
     $('input[id^="innovation-"]').prop('checked', false);
+    $(this).addClass('checked');
   }
 }
 
@@ -470,10 +477,12 @@ function selectIndividualInnovations() {
 }
 
 function selectDeselectAllStudies() {
-  if (this.checked == true) {
+  if ($(this).hasClass('checked')) {
     $('input[id^="study-"]').prop('checked', true);
+    $(this).removeClass('checked');
   } else {
     $('input[id^="study-"]').prop('checked', false);
+    $(this).addClass('checked');
   }
 }
 
@@ -483,14 +492,6 @@ function selectIndividualStudies() {
   } else {
     $('#selectAllStudies').prop('checked', false);
   }
-}
-
-function disabledUncheckedCheckmarkColor() {
-  $('input[id^="disabled-"]').each((index, item) => {
-    if ($(item).prop('checked') == false) {
-      $(item).closest('.inputContainer').find('.checkmark').css('border', '2px solid #ff0000');
-    }
-  });
 }
 
 function setCheckboxValueTohide() {
@@ -571,8 +572,8 @@ function createGoogleChart(chartID, type, options) {
       var data = new google.visualization.arrayToDataTable(
         getChartDataArray($chart)
       );
-      console.log(data);
-      if ($('.totalInnovationsNumber').html() == 0) {
+      console.log(data, data.Vf.length);
+      if (!data.Vf.length) {
         $chart.append(
           '<p  class="text-center"> ' + options.title + " <br>  No data </p>"
         );
@@ -620,10 +621,46 @@ function updateAllIndexesContribution() {
 }
 
 function changeButtonText() {
+  var className = $(this).attr('class');
+  var theNum = className.match(/\d/g).join('');
+
   if ($(this).text() == 'Show flagships information') {
     $(this).text('Hide flagships information');
+    $(`.highlightedTitle-${theNum}`).css('background', '#71b2ff');
+    $(`.highlightedTitle-${theNum}`).css('color', 'white');
+    isActive = true;
   } else {
     $(this).text('Show flagships information');
+    $(`.highlightedTitle-${theNum}`).css('background', 'none');
+    $(`.highlightedTitle-${theNum}`).css('color', '#5f5e5e');
+    isActive = false;
+  }
+
+  if (isActive) {
+    $('button[class*="flagshipBtn"]').not(this).prop('ariaExpanded', "false");
+    $('button[class*="flagshipBtn"]').not(this).addClass('collapsed');
+    $('div[class*="crpProgressflagships"]').removeClass('in');
+    $('button[class*="flagshipBtn"]').not(this).text('Show flagships information');
+    $('span[class*="highlightedTitle"]').not($(`.highlightedTitle-${theNum}`)).css('background', 'none');
+    $(`span[class*="highlightedTitle"]`).not($(`.highlightedTitle-${theNum}`)).css('color', '#5f5e5e');
+  } 
+
+  appearDisappearFlagshipsTable(isActive, theNum);
+}
+
+function appearDisappearFlagshipsTable(isActive, theNum) {
+  window.onscroll = function () {
+    let yScroll = window.scrollY;
+
+    if (isActive) {
+      if (yScroll <= 1444) {
+        $(`#collapseExample-${theNum-1}`).css('opacity', 0);
+        $(`#collapseExample-${theNum-1}`).removeClass('in');
+      } else {
+        $(`#collapseExample-${theNum-1}`).css('opacity', 1);
+        $(`#collapseExample-${theNum-1}`).addClass('in');
+      }
+    }
   }
 }
 

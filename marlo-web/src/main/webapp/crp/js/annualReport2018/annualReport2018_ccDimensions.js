@@ -15,7 +15,7 @@ $(document).ready(function() {
 
 function loadCapdev() {
   // Redraw table
-  tableDatatableViewmore.draw();
+  // tableDatatableViewmore.draw();
   // Numeric fields
   $('.numericInput').numericInput();
   // Set charts

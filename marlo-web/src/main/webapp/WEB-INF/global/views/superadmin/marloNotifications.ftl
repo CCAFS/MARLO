@@ -46,7 +46,7 @@
           </div>
           <hr />
           <ul>
-            <li><strong>Message #1:</strong> This message is to inform you that in 2 minutes we will restart the server, please save your changes. Thank you</li>
+            <li><strong>Message #1:</strong> This message is to inform you that in 2 minutes we will restart the server, please save your changes. MARLO will available again in 6 minutes. Thank you</li>
             <li><strong>Message #2:</strong> [@s.text name="systemMessage.serverReset" /]</li>
             <li><strong>Message #3:</strong> This message is to inform you that in 2 minutes we will restart the server, Please save what you are doing  (if needed) since you will have to log in again. Sorry for the inconvenience.</li>
 
