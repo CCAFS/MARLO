@@ -450,13 +450,13 @@ function expandAllOutcomes(){
     });
 
   if(expandAllOutcomesbol){
-    $(".btn-expand-all-outcomes ").html("Collapse all outcomes");
-    $(".btn-expand-Outcome").html("Collapse Outcome");
+    $(".btn-expand-all-outcomes ").html("Collapse all indicators");
+    $(".btn-expand-Outcome").html("Collapse indicators");
     console.log("collapse");
     expandAllOutcomesbol = false;
   }else{
-    $(".btn-expand-all-outcomes ").html("Expand all outcomes");
-    $(".btn-expand-Outcome").html("Expand Outcome");
+    $(".btn-expand-all-outcomes ").html("Expand all indicators");
+    $(".btn-expand-Outcome").html("Expand indicators");
     console.log("Expand");
     expandAllOutcomesbol = true;
   }
