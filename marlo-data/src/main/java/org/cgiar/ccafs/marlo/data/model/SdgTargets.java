@@ -32,6 +32,7 @@ public class SdgTargets implements java.io.Serializable {
   private String target_code;
   private String target;
   private Sdg sdg;
+  private String showName;
   private Set<ProjectExpectedStudySdgTarget> projectExpectedStudySdgTargets =
     new HashSet<ProjectExpectedStudySdgTarget>(0);
   private List<ProjectExpectedStudySdgTarget> studySdgTargets;
@@ -88,6 +89,11 @@ public class SdgTargets implements java.io.Serializable {
     return sdg;
   }
 
+  public String getShowName() {
+    return showName;
+  }
+
+
   public List<ProjectExpectedStudySdgTarget> getStudySdgTargets() {
     return studySdgTargets;
   }
@@ -110,7 +116,6 @@ public class SdgTargets implements java.io.Serializable {
     return target_code;
   }
 
-
   public void setId(Long id) {
     this.id = id;
   }
@@ -123,9 +128,14 @@ public class SdgTargets implements java.io.Serializable {
     this.sdg = sdg;
   }
 
+  public void setShowName(String showName) {
+    this.showName = showName;
+  }
+
   public void setStudySdgTargets(List<ProjectExpectedStudySdgTarget> studySdgTargets) {
     this.studySdgTargets = studySdgTargets;
   }
+
 
   public void setTarget(String target) {
     this.target = target;

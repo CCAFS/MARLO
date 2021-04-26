@@ -333,7 +333,7 @@
           [@customForm.elementsListComponent name="${customName}.leverOutcomes" elementType="leverOutcome" elementList=element.leverOutcomes label="study.leverOutcomes"  listName="leverOutcomeList" keyFieldName="id" displayFieldName="showName"/]
        
           [#-- Sdg Targets  --]
-          [@customForm.elementsListComponent name="${customName}.sdgTargets" elementType="sdgTargets" elementList=element.sdgTargets label="study.sdgTargets"  listName="sdgTargetList" keyFieldName="id" displayFieldName="composedName"/]
+          [@customForm.elementsListComponent name="${customName}.sdgTargets" elementType="sdgTargets" elementList=element.sdgTargets label="study.sdgTargets"  listName="sdgTargetList" keyFieldName="id" displayFieldName="showName"/]
         </div>
       [/#if]
       
