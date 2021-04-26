@@ -125,7 +125,7 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestoneManagerImpl
     Phase phase = phaseManager.getPhaseById(crpProgramOutcome.getPhase().getId());
     if (StringUtils.equalsIgnoreCase(phase.getDescription(), APConstants.REPORTING)) {
       // in theory should always happen
-      phase = phase.getNext();
+      phase = phase.getNext().getNext();
     }
 
     crpMilestone = crpMilestoneManager.getCrpMilestoneByPhase(crpMilestone.getComposeID(), phase.getId());
