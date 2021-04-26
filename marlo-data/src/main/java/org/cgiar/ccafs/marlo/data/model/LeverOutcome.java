@@ -44,12 +44,32 @@ public class LeverOutcome extends MarloBaseEntity implements java.io.Serializabl
 
   private Set<LeverOutcome> leverOutcomeTypes = new HashSet<>(0);
 
+  private String showName;
+
   private Set<ProjectExpectedStudyLeverOutcome> projectExpectedStudyLeverOutcomes =
     new HashSet<ProjectExpectedStudyLeverOutcome>(0);
 
   private List<ProjectExpectedStudyLeverOutcome> studyLeverOutcomes;
 
   public LeverOutcome() {
+  }
+
+  public String getComposedName() {
+    String composedName = "";
+    if (this.getId() == null || this.getId() == -1) {
+      return "";
+    } else {
+      if (this.getIndicator() != null && !this.getIndicator().isEmpty()) {
+        composedName.concat(this.getIndicator() + " ");
+      }
+      if (this.getName() != null && !this.getName().isEmpty()) {
+        composedName.concat(this.getName() + " ");
+      }
+      if (this.getDescription() != null && !this.getDescription().isEmpty()) {
+        composedName.concat(this.getDescription() + " ");
+      }
+    }
+    return composedName;
   }
 
   public String getDescription() {
@@ -99,6 +119,10 @@ public class LeverOutcome extends MarloBaseEntity implements java.io.Serializabl
     return projectExpectedStudyLeverOutcomes;
   }
 
+  public String getShowName() {
+    return showName;
+  }
+
   public List<ProjectExpectedStudyLeverOutcome> getStudyLeverOutcomes() {
     return studyLeverOutcomes;
   }
@@ -123,19 +147,19 @@ public class LeverOutcome extends MarloBaseEntity implements java.io.Serializabl
     this.indicator = indicator;
   }
 
+
   public void setLeverOutcomeCategory(LeverOutcome leverOutcomeCategory) {
     this.leverOutcomeCategory = leverOutcomeCategory;
   }
+
 
   public void setLeverOutcomeTypes(Set<LeverOutcome> leverOutcomeTypes) {
     this.leverOutcomeTypes = leverOutcomeTypes;
   }
 
-
   @Override
   public void setModifiedBy(User modifiedBy) {
   }
-
 
   public void setName(String name) {
     this.name = name;
@@ -146,26 +170,13 @@ public class LeverOutcome extends MarloBaseEntity implements java.io.Serializabl
     this.projectExpectedStudyLeverOutcomes = projectExpectedStudyLeverOutcomes;
   }
 
+  public void setShowName(String showName) {
+    this.showName = showName;
+  }
+
   public void setStudyLeverOutcomes(List<ProjectExpectedStudyLeverOutcome> studyLeverOutcomes) {
     this.studyLeverOutcomes = studyLeverOutcomes;
   }
-  
-  public String getComposedName() {
-    String composedName = "";
-    if (this.getId() == null || this.getId() == -1) {
-      return "";
-    }else {
-      if(this.getIndicator() != null && !this.getIndicator().isEmpty()) {
-        composedName.concat(this.getIndicator() + " ");
-      }
-      if(this.getName() != null && !this.getName().isEmpty()) {
-        composedName.concat(this.getName() + " ");
-      }
-      if(this.getDescription() != null && !this.getDescription().isEmpty()) {
-        composedName.concat(this.getDescription() + " ");
-      }
-    }
-    return composedName;
-  }
+
 
 }
