@@ -32,7 +32,7 @@
     
 <section class="container">
   [#if !reportingActive]
-    <div class="borderBox text-center">Annual Report is availbale only at Reporting cycle</div>
+    <div class="borderBox text-center">Annual Report is available only at Reporting cycle</div>
   [#else]
     [#-- Program (Flagships and PMU) --]
     [#include "/WEB-INF/crp/views/annualReport2018/submenu-AR2018.ftl" /]
@@ -223,8 +223,9 @@
     </div>
   </div>
 
-  <div class="btn-addEvidence bigAddButton text-center" style="display:${element.hasEvidence?string('none', 'block')}"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add contribution</div>
-    
+  [#if editable]
+    <div class="btn-addEvidence bigAddButton text-center" style="display:${(element.hasEvidence)?string('none', 'block')}"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add contribution</div>
+  [/#if]
     
     
   </div>
@@ -297,7 +298,9 @@
     [#-- <span class="elementId">Id: ${(element.id)!"New"}</span>--]
   </div>
 
-  <div class="btn-removeEvidence removeElement sm" title="Remove Evidence"></div>
+  [#if editable]
+    <div class="btn-removeEvidence removeElement sm" title="Remove Evidence"></div>
+  [/#if]
   [#if !PMU] [@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/][/#if]
   [@arMacros.deliverableGeographicScope name="${ccname}" element=element /]
   <hr>
