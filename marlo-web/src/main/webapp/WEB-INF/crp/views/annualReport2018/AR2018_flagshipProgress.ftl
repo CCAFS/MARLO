@@ -26,7 +26,7 @@
     
 <section class="container">
   [#if !reportingActive]
-    <div class="borderBox text-center">Annual Report is availbale only at Reporting cycle</div>
+    <div class="borderBox text-center">Annual Report is available only at Reporting cycle</div>
   [#else]
     [#-- Program (Flagships and PMU) --]
     [#include "/WEB-INF/crp/views/annualReport2018/submenu-AR2018.ftl" /]
@@ -101,7 +101,7 @@
               [#if !PMU]
                 </br>
                   [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
-                  [@customForm.textArea name="${customName}.relevanceCovid" i18nkey="${customLabel}.relevanceCovid" help="${customLabel}.relevanceCovid.help" className="limitWords-300" helpIcon=false required=true editable=editable allowTextEditor=false /]
+                  [@customForm.textArea name="${customName}.relevanceCovid" i18nkey="${customLabel}.relevanceCovid" help="${customLabel}.relevanceCovid.help" className="limitWords-300" helpIcon=false required=true editable=editable allowTextEditor=true /]
                 </br>
               [/#if]             
             </div>
