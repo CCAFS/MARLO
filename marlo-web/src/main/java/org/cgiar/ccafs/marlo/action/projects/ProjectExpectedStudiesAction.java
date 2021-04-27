@@ -1023,9 +1023,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
           // Expected Study Lever Outcomes List
           if (this.expectedStudy.getProjectExpectedStudyLeverOutcomes() != null) {
-            this.expectedStudy
-              .setLeverOutcomes(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyLeverOutcomes().stream()
-                .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+            this.expectedStudy.setLeverOutcomes(new ArrayList<>(this.expectedStudy
+              .getProjectExpectedStudyLeverOutcomes().stream().filter(o -> o.getPhase().getId().equals(phase.getId()))
+              .sorted((i1, i2) -> i1.getId().compareTo(i2.getId())).collect(Collectors.toList())));
           }
 
           // Expected Study SDG Targets List
@@ -1040,16 +1040,16 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           // Lever Outcomes
           leverOutcomeList = leverOutcomeManager.findAll();
           if (leverOutcomeList != null && !leverOutcomeList.isEmpty()) {
-            leverOutcomeList =
-              leverOutcomeList.stream().filter(l -> l.getDescription() != null).collect(Collectors.toList());
+            leverOutcomeList = leverOutcomeList.stream().filter(l -> l.getDescription() != null)
+              .sorted((i1, i2) -> i1.getId().compareTo(i2.getId())).collect(Collectors.toList());
 
             for (LeverOutcome leverOutcome : leverOutcomeList) {
               String showName = "";
-              if (leverOutcome.getDescription() != null && !leverOutcome.getDescription().isEmpty()) {
-                showName = leverOutcome.getDescription();
-              }
               if (leverOutcome.getIndicator() != null && !leverOutcome.getIndicator().isEmpty()) {
-                showName += " -  Lever " + leverOutcome.getIndicator();
+                showName = "Lever " + leverOutcome.getIndicator();
+              }
+              if (leverOutcome.getDescription() != null && !leverOutcome.getDescription().isEmpty()) {
+                showName += " - " + leverOutcome.getDescription();
               }
               leverOutcome.setShowName(showName);
             }
