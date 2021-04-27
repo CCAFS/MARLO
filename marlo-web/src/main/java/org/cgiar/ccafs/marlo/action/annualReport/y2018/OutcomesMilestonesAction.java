@@ -178,6 +178,39 @@ public class OutcomesMilestonesAction extends BaseAction {
   }
 
 
+  public void fillMilestoneReason() {
+
+    List<ReportSynthesisFlagshipProgressOutcome> outcomeList =
+      reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList();
+
+    // Set rep ind milestone reason value for each milestone object of report synthesis flagships progress outcomes
+    // milestones list
+    if (outcomeList != null && !outcomeList.isEmpty()) {
+      for (ReportSynthesisFlagshipProgressOutcome outcome : outcomeList) {
+
+        // get milestones list
+        if (outcome.getMilestones() != null && !outcome.getMilestones().isEmpty()) {
+          for (ReportSynthesisFlagshipProgressOutcomeMilestone milestone : outcome.getMilestones()) {
+            if (milestone != null && milestone.getId() != null && milestone.getReason() == null) {
+              ReportSynthesisFlagshipProgressOutcomeMilestone progressMilestone =
+                reportSynthesisFlagshipProgressOutcomeMilestoneManager
+                  .getReportSynthesisFlagshipProgressOutcomeMilestoneById(milestone.getId());
+
+              if (progressMilestone != null && progressMilestone.getReason() != null) {
+
+                // Assign 'rep ind milestone reason' value to each milestone
+                milestone.setReason(progressMilestone.getReason());
+              }
+            }
+          }
+        }
+      }
+      reportSynthesis.getReportSynthesisFlagshipProgress().setOutcomeList(outcomeList);
+
+    }
+  }
+
+
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null && c.isActive()
@@ -203,7 +236,6 @@ public class OutcomesMilestonesAction extends BaseAction {
   public List<CgiarCrossCuttingMarker> getCgiarCrossCuttingMarkers() {
     return cgiarCrossCuttingMarkers;
   }
-
 
   public List<ProjectMilestone> getContributions(long milestoneID) {
     List<ProjectMilestone> milestones = new ArrayList<>();
@@ -422,6 +454,7 @@ public class OutcomesMilestonesAction extends BaseAction {
     return extendedYear;
   }
 
+
   public CrpMilestone getNextPOWBMilestone(final String milestoneComposedId) {
     CrpMilestone nextYearMilestone = null;
     String stripped = StringUtils.stripToNull(milestoneComposedId);
@@ -466,7 +499,6 @@ public class OutcomesMilestonesAction extends BaseAction {
     return reportSynthesisOutcome;
   }
 
-
   public List<CrpProgramOutcome> getOutcomes() {
     return outcomes;
   }
@@ -508,10 +540,6 @@ public class OutcomesMilestonesAction extends BaseAction {
     return reasons;
   }
 
-  public ReportSynthesis getReportSynthesis() {
-    return reportSynthesis;
-  }
-
   /*
    * public ReportSynthesisFlagshipProgressMilestone getReportSynthesisFlagshipProgressProgram(Long crpMilestoneID,
    * Long crpProgramID) {
@@ -527,6 +555,10 @@ public class OutcomesMilestonesAction extends BaseAction {
    * }
    */
 
+  public ReportSynthesis getReportSynthesis() {
+    return reportSynthesis;
+  }
+
   public Long getSynthesisID() {
     return synthesisID;
   }
@@ -534,6 +566,10 @@ public class OutcomesMilestonesAction extends BaseAction {
   public String getTransaction() {
     return transaction;
   }
+
+  // public ReportSynthesisFlagshipProgressMilestone getReportSynthesisFlagshipProgressMilestone(Long crpMilestoneID) {
+  // return reportSynthesis.getReportSynthesisFlagshipProgress().getMilestones().get(this.getIndex(crpMilestoneID));
+  // }
 
   public boolean isFlagship() {
     boolean isFP = false;
@@ -549,10 +585,6 @@ public class OutcomesMilestonesAction extends BaseAction {
 
     return isFP;
   }
-
-  // public ReportSynthesisFlagshipProgressMilestone getReportSynthesisFlagshipProgressMilestone(Long crpMilestoneID) {
-  // return reportSynthesis.getReportSynthesisFlagshipProgress().getMilestones().get(this.getIndex(crpMilestoneID));
-  // }
 
   @Override
   public boolean isPMU() {
@@ -1030,6 +1062,8 @@ public class OutcomesMilestonesAction extends BaseAction {
     if (this.isPMU()) {
       this.loadTablePMU();
     }
+
+    this.fillMilestoneReason();
 
     // ADD PMU as liasion Institution too
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
