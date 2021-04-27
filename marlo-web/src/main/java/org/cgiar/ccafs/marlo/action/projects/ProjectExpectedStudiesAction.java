@@ -1023,9 +1023,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
           // Expected Study Lever Outcomes List
           if (this.expectedStudy.getProjectExpectedStudyLeverOutcomes() != null) {
-            this.expectedStudy
-              .setLeverOutcomes(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyLeverOutcomes().stream()
-                .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+            this.expectedStudy.setLeverOutcomes(new ArrayList<>(this.expectedStudy
+              .getProjectExpectedStudyLeverOutcomes().stream().filter(o -> o.getPhase().getId().equals(phase.getId()))
+              .sorted((i1, i2) -> i1.getId().compareTo(i2.getId())).collect(Collectors.toList())));
           }
 
           // Expected Study SDG Targets List
@@ -1040,16 +1040,16 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           // Lever Outcomes
           leverOutcomeList = leverOutcomeManager.findAll();
           if (leverOutcomeList != null && !leverOutcomeList.isEmpty()) {
-            leverOutcomeList =
-              leverOutcomeList.stream().filter(l -> l.getDescription() != null).collect(Collectors.toList());
+            leverOutcomeList = leverOutcomeList.stream().filter(l -> l.getDescription() != null)
+              .sorted((i1, i2) -> i1.getId().compareTo(i2.getId())).collect(Collectors.toList());
 
             for (LeverOutcome leverOutcome : leverOutcomeList) {
               String showName = "";
-              if (leverOutcome.getDescription() != null && !leverOutcome.getDescription().isEmpty()) {
-                showName = leverOutcome.getDescription();
-              }
               if (leverOutcome.getIndicator() != null && !leverOutcome.getIndicator().isEmpty()) {
-                showName += " -  Lever " + leverOutcome.getIndicator();
+                showName = "Lever " + leverOutcome.getIndicator();
+              }
+              if (leverOutcome.getDescription() != null && !leverOutcome.getDescription().isEmpty()) {
+                showName += " - " + leverOutcome.getDescription();
               }
               leverOutcome.setShowName(showName);
             }
@@ -2484,18 +2484,17 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
     // Search and deleted form Information
     if (projectExpectedStudy.getProjectExpectedStudySdgTargets() != null
-      && projectExpectedStudy.getProjectExpectedStudySdgTargets().size() > 0) {
+      && !projectExpectedStudy.getProjectExpectedStudySdgTargets().isEmpty()) {
       List<ProjectExpectedStudySdgTarget> sdgTargetPrev =
         new ArrayList<>(projectExpectedStudy.getProjectExpectedStudySdgTargets().stream()
           .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectExpectedStudySdgTarget studySdgTarget : sdgTargetPrev) {
         if (this.expectedStudy.getSdgTargets() == null
-          || !this.expectedStudy.getSdgTargets().contains(studySdgTarget)) {
+          || !this.expectedStudy.getSdgTargets().contains(studySdgTarget) && studySdgTarget.getId() != null) {
           this.projectExpectedStudySdgTargetManager.deleteProjectExpectedStudySdgTarget(studySdgTarget.getId());
         }
       }
-
 
       // Delete prev studies policies if the question is not
       if (expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()) != null
@@ -2515,14 +2514,19 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           studySdgTargetSave.setProjectExpectedStudy(projectExpectedStudy);
           studySdgTargetSave.setPhase(phase);
 
-          SdgTargets sdgTarget = this.sdgTargetsManager.getSDGTargetsById(studySdgTarget.getSdgTarget().getId());
+          SdgTargets sdgTarget = new SdgTargets();
+          if (studySdgTarget.getSdgTarget() != null && studySdgTarget.getSdgTarget().getId() != null) {
+            sdgTarget = this.sdgTargetsManager.getSDGTargetsById(studySdgTarget.getSdgTarget().getId());
+          }
 
-          studySdgTargetSave.setSdgTarget(sdgTarget);
+          if (sdgTarget != null) {
+            studySdgTargetSave.setSdgTarget(sdgTarget);
 
-          this.projectExpectedStudySdgTargetManager.saveProjectExpectedStudySdgTarget(studySdgTargetSave);
-          // This is to add studyLinkSave to generate correct
-          // auditlog.
-          this.expectedStudy.getProjectExpectedStudySdgTargets().add(studySdgTargetSave);
+            this.projectExpectedStudySdgTargetManager.saveProjectExpectedStudySdgTarget(studySdgTargetSave);
+            // This is to add studyLinkSave to generate correct
+            // auditlog.
+            this.expectedStudy.getProjectExpectedStudySdgTargets().add(studySdgTargetSave);
+          }
         }
       }
     }
@@ -2538,7 +2542,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
     // Search and deleted form Information
     if (projectExpectedStudy.getProjectExpectedStudySrfTargets() != null
-      && projectExpectedStudy.getProjectExpectedStudySrfTargets().size() > 0) {
+      && !projectExpectedStudy.getProjectExpectedStudySrfTargets().isEmpty()) {
 
       List<ProjectExpectedStudySrfTarget> targetPrev =
         new ArrayList<>(projectExpectedStudy.getProjectExpectedStudySrfTargets().stream()
@@ -2565,9 +2569,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
 
     // Save form Information
-    if (this.expectedStudy.getSrfTargets() != null) {
+    if (this.expectedStudy.getSrfTargets() != null && !this.expectedStudy.getSrfTargets().isEmpty()) {
       for (ProjectExpectedStudySrfTarget studytarget : this.expectedStudy.getSrfTargets()) {
-        if (studytarget.getId() == null) {
+        if (studytarget != null && studytarget.getId() == null) {
           ProjectExpectedStudySrfTarget studytargetSave = new ProjectExpectedStudySrfTarget();
           studytargetSave.setProjectExpectedStudy(projectExpectedStudy);
           studytargetSave.setPhase(phase);
