@@ -436,7 +436,10 @@ public class PublicationAction extends BaseAction {
 
     for (DeliverableType category : categories) {
       if (category != null && category.getId() != null) {
-        subCategories.addAll(deliverableTypeManager.getSubDeliverableType(category.getId()));
+        List<DeliverableType> subCategoryList = deliverableTypeManager.getSubDeliverableType(category.getId());
+        if (subCategoryList != null) {
+          subCategories.addAll(subCategoryList);
+        }
       }
     }
 
