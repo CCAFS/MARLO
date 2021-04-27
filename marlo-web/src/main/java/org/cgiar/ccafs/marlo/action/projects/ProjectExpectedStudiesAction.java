@@ -1039,9 +1039,36 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
           // Lever Outcomes
           leverOutcomeList = leverOutcomeManager.findAll();
+          if (leverOutcomeList != null && !leverOutcomeList.isEmpty()) {
+            leverOutcomeList =
+              leverOutcomeList.stream().filter(l -> l.getDescription() != null).collect(Collectors.toList());
+
+            for (LeverOutcome leverOutcome : leverOutcomeList) {
+              String showName = "";
+              if (leverOutcome.getDescription() != null && !leverOutcome.getDescription().isEmpty()) {
+                showName = leverOutcome.getDescription();
+              }
+              if (leverOutcome.getIndicator() != null && !leverOutcome.getIndicator().isEmpty()) {
+                showName += " -  Lever " + leverOutcome.getIndicator();
+              }
+              leverOutcome.setShowName(showName);
+            }
+
+          }
+
 
           // SGD Targets
           sdgTargetList = sdgTargetsManager.findAll();
+          for (SdgTargets sdgTarget : sdgTargetList) {
+            String showName = "";
+            if (sdgTarget.getTarget_code() != null && !sdgTarget.getTarget_code().isEmpty()) {
+              showName = sdgTarget.getTarget_code();
+            }
+            if (sdgTarget.getTarget() != null && !sdgTarget.getTarget().isEmpty()) {
+              showName += " -  " + sdgTarget.getTarget();
+            }
+            sdgTarget.setShowName(showName);
+          }
         }
       }
 
