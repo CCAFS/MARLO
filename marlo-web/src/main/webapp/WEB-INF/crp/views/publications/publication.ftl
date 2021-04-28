@@ -95,7 +95,7 @@
             [#-- Subtype & year of completition --]
             <div class="form-group row">
               <div class="col-md-6">
-                [@customForm.select name="${customName}.deliverableInfo.deliverableType.id" i18nkey="publication.subType" label="" listName="deliverableSubTypes" keyFieldName="id"  displayFieldName="name" required=true  className=" form-control input-sm subTypeSelect" editable=editable/]
+                [@customForm.select name="${customName}.deliverableInfo.deliverableType.id" i18nkey="publication.subType" label="" listName="deliverableSubTypes" keyFieldName="id"  displayFieldName="name" required=true  className=" form-control input-sm subTypeSelectSupplementary" editable=editable/]
               </div>
               <div class="col-md-6">
                 [@customForm.input name="${customName}.deliverableInfo.year" i18nkey="publication.year" required=true className="" editable=false /]
