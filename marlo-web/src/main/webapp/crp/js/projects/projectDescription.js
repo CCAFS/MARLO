@@ -383,8 +383,8 @@ function date(start,end) {
   var dateFormat = "yy-mm-dd";
   var from = $(start).datepicker({
       dateFormat: dateFormat,
-      minDate: MIN_DATE,
-      maxDate: MAX_DATE,
+      minDate: '2021-01-01',
+      maxDate: '2023-12-31',
       changeMonth: true,
       numberOfMonths: 1,
       changeYear: true,
@@ -403,8 +403,8 @@ function date(start,end) {
 
   var to = $(end).datepicker({
       dateFormat: dateFormat,
-      minDate: MIN_DATE,
-      maxDate: MAX_DATE,
+      minDate: '2021-01-01',
+      maxDate: '2023-12-31',
       changeMonth: true,
       numberOfMonths: 1,
       changeYear: true,
