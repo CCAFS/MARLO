@@ -1264,11 +1264,6 @@ public class PartnershipsAction extends BaseAction {
 
           externalSave.setReportSynthesisKeyPartnership(keyPartnershipDB);
           externalSave.setDescription(external.getDescription());
-          if (external.getOther() != null) {
-            externalSave.setOther(external.getOther());
-          } else {
-            externalSave.setOther(null);
-          }
 
           // Save File
           if (external.getFile() != null) {
@@ -1278,7 +1273,6 @@ public class PartnershipsAction extends BaseAction {
               externalSave.setFile(external.getFile());
             }
           }
-
 
           externalSave =
             reportSynthesisKeyPartnershipExternalManager.saveReportSynthesisKeyPartnershipExternal(externalSave);
@@ -1296,11 +1290,6 @@ public class PartnershipsAction extends BaseAction {
           this.saveKeyExternalPartnershipInstitutions(externalSave, external);
 
           externalSave.setDescription(external.getDescription());
-          if (external.getOther() != null) {
-            externalSave.setOther(external.getOther());
-          } else {
-            externalSave.setOther(null);
-          }
 
           // Save File
           if (external.getFile() != null) {
@@ -1456,6 +1445,42 @@ public class PartnershipsAction extends BaseAction {
 
         }
       }
+
+      boolean hasOther = false;
+      if (external.getMainAreas() != null) {
+        for (ReportSynthesisKeyPartnershipExternalMainArea area : external.getMainAreas()) {
+          RepIndPartnershipMainArea mainArea =
+            repIndPartnershipMainAreaManager.getRepIndPartnershipMainAreaById(area.getPartnerArea().getId());
+          if (area.getId() == null) {
+            ReportSynthesisKeyPartnershipExternalMainArea areaSave =
+              new ReportSynthesisKeyPartnershipExternalMainArea();
+
+            areaSave.setReportSynthesisKeyPartnershipExternal(externalDB);
+            areaSave.setPartnerArea(mainArea);
+
+            if (mainArea != null && mainArea.getId() != null && mainArea.getId().equals(APConstants.OTHER_MAIN_AREA)) {
+              hasOther = true;
+            }
+
+            reportSynthesisKeyPartnershipExternalMainAreaManager
+              .saveReportSynthesisKeyPartnershipExternalMainArea(areaSave);
+          } else {
+            if (mainArea != null && mainArea.getId() != null && mainArea.getId().equals(APConstants.OTHER_MAIN_AREA)) {
+              hasOther = true;
+            }
+          }
+        }
+      }
+
+      if (hasOther) {
+        if (external.getOther() != null) {
+          externalDB.setOther(external.getOther());
+        } else {
+          externalDB.setOther(null);
+        }
+      } else {
+        externalDB.setOther(null);
+      }
     }
   }
 
@@ -1464,43 +1489,35 @@ public class PartnershipsAction extends BaseAction {
     this.crpManager = crpManager;
   }
 
-
   public void setEvidencePartners(List<Institution> evidencePartners) {
     this.evidencePartners = evidencePartners;
   }
 
-
   public void setExternalPartnerships(List<ReportSynthesisKeyPartnershipExternal> externalPartnerships) {
     this.externalPartnerships = externalPartnerships;
   }
-
 
   public void
     setFlagshipExternalCollaborations(List<ReportSynthesisKeyPartnershipCollaboration> flagshipExternalCollaborations) {
     this.flagshipExternalCollaborations = flagshipExternalCollaborations;
   }
 
-
   public void
     setFlagshipExternalPartnerships(List<ReportSynthesisKeyPartnershipExternal> flagshipExternalPartnerships) {
     this.flagshipExternalPartnerships = flagshipExternalPartnerships;
   }
 
-
   public void setFlagshipPlannedList(List<ReportSynthesisExternalPartnershipDTO> flagshipPlannedList) {
     this.flagshipPlannedList = flagshipPlannedList;
   }
-
 
   public void setGlobalUnits(List<GlobalUnit> globalUnits) {
     this.globalUnits = globalUnits;
   }
 
-
   public void setIndexTab(int indexTab) {
     this.indexTab = indexTab;
   }
-
 
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
@@ -1526,7 +1543,6 @@ public class PartnershipsAction extends BaseAction {
     this.mainAreasSel = mainAreasSel;
   }
 
-
   public void setPartners(List<Institution> partners) {
     this.partners = partners;
   }
@@ -1550,7 +1566,6 @@ public class PartnershipsAction extends BaseAction {
   public void setSynthesisID(Long synthesisID) {
     this.synthesisID = synthesisID;
   }
-
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;
