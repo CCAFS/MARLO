@@ -7,10 +7,10 @@
     { 'slug': 'outputs',          'name': 'impactPathway.menu.hrefOutputs',         'action': 'outputsList',      'active': true }
   ]/]
 [#else]
-  [#assign items= [
-    { 'slug': 'outcomes',           'name': 'impactPathway.menu.hrefOutcomes',          'action': 'outcomes',           'active': true  },
-    { 'slug': 'clusterActivities',  'name': 'impactPathway.menu.hrefCOA',               'action': 'clusterActivities',  'active': true  }
-  ]/]
+    [#assign items= [
+      { 'slug': 'outcomes',           'name': 'impactPathway.menu.hrefOutcomes',          'action': 'outcomes',           'active': true  },
+      { 'slug': 'clusterActivities',  'name': 'impactPathway.menu.hrefCOA',               'action': 'clusterActivities',  'active': true , 'show': !aiccra }
+    ]/]
 [/#if]
 
 [#assign menus= [
