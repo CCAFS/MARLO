@@ -205,10 +205,10 @@
             [/#if]
             
             [#-- Cluster of Activities --]
-            [#if !((project.projectInfo.administrative)!false) && !phaseOne && isCrpProject ]
+            [#if !((project.projectInfo.administrative)!false) && !phaseOne && isCrpProject && !aiccra]
             <div class="panel tertiary">
               <div class="panel-head ${customForm.changedField('project.clusterActivities')}"> 
-                <label for="">[@s.text name="projectDescription.clusterActivities"][@s.param][@s.text name="global.clusterOfActivities" /][/@s.param] [/@s.text]:[@customForm.req required=editable  && action.hasPermission("activities") /]</label>
+                <label for="">[@s.text name="projectDescription.clusterActivities"][@s.param][@s.text name="global.clusterOfActivities" /][/@s.param] [/@s.text]:[@customForm.req required=!aiccra  && action.hasPermission("activities") /]</label>
               </div>
               <div id="projectsList" class="panel-body" listname="project.clusterActivities">
                 [#-- Loading --]
