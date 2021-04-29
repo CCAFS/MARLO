@@ -49,7 +49,11 @@
         <tr>
         [#-- ID --]
         <td class="text-center">
+        [#if action.isAiccra()]
+          <a href="${projectUrl}"> C${project.id}</a>
+        [#else]
           <a href="${projectUrl}"> P${project.id}</a>
+        [/#if]
           [#if centerGlobalUnit && isCrpProject ]
             <span class="badge globalUnitTag"> ${(project.projectInfo.phase.crp.acronym)!} </span>
           [/#if]
@@ -222,7 +226,11 @@
         <tr>
         [#-- ID --]
         <td class="projectId">
+        [#if action.isAiccra()]
+          <a href="${projectUrl}"> C${project.id}</a>
+        [#else]
           <a href="${projectUrl}"> P${project.id}</a>
+        [/#if]
         </td>
           [#-- Project Title --]
           <td class="left">
@@ -314,7 +322,11 @@
         <tr>
           [#-- ID --]
           <td class="projectId">
+          [#if action.isAiccra()]
+            <a href="${projectUrl}"> C${project.id}</a>
+          [#else]
             <a href="${projectUrl}"> P${project.id}</a>
+          [/#if]        
           </td>
           [#-- Project Title --]
           <td class="left"> 
@@ -362,7 +374,11 @@
         <tr>
         [#-- ID --]
         <td class="projectId">
+        [#if action.isAiccra()]
+          <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='projectID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"> C${project.id}</a>
+        [#else]
           <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='projectID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"> P${project.id}</a>
+        [/#if]
         </td>
           [#-- Project Title --]
           <td class="left"> 

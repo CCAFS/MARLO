@@ -69,7 +69,11 @@
           [#if hasAvailableProgramID]
             <div class="outcomes-list" listname="outcomes">
              <div class="cont-btn-min"> 
-              <button   type="button" class="btn-expand-all-outcomes btn btn-link">Collapse all outcomes<i class="fas fa-expand-arrows-alt"></i></button>
+              [#if action.isAiccra()]
+                <button type="button" class="btn-expand-all-outcomes btn btn-link">Collapse all indicators<i class="fas fa-expand-arrows-alt"></i></button>
+              [#else]
+                <button type="button" class="btn-expand-all-outcomes btn btn-link">Collapse all outcomes<i class="fas fa-expand-arrows-alt"></i></button>
+              [/#if]
              </div>
             [#if outcomes?has_content]
               [#list outcomes as outcome]
