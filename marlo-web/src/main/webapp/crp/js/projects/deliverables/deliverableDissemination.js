@@ -16,6 +16,7 @@ function init() {
   })
   $('.typeSelect').change(validateRequiredTagToCategory);
   $('.subTypeSelect').change(validateRequiredTagToCategory);
+  $('.subTypeSelectSupplementary').change(validateRequiredTagToCategory);
   $('.subTypeSelect').change(validateEmptyAuthors);
   // $('.typeSelect ').on("click",   validateRequiredTagToCategory);
   // Setting ID to Date-picker input
@@ -53,10 +54,11 @@ function init() {
 }
 
 function validateRequiredTagToCategory() {
-  if ($('.subTypeSelect ').val() == 63) {
+  if ($('.subTypeSelect ').val() == 63 || $('.subTypeSelectSupplementary').val() == 63) {
     console.log('%cThere is Articles and Books and Journal Article (peer reviewed)', 'background: #222; color: #37ff73');
     // $('.conditionalRequire').find('.requiredTag').show('slow');
     // $('.isOtherUrlTohide').show('slow');
+    hideOrShowCheckBoxIsOtherUrl(true);
     if ($('.isOtherUrlFiel').val() == 'true') {
       $('.conditionalRequire').find('.requiredTag').hide('slow');
     } else {
@@ -71,6 +73,7 @@ function validateRequiredTagToCategory() {
     $('.isOtherUrlFiel').val(false);
     $('input.isOtherUrl').prop('checked', false);
     $('.other-url').find('input').val('');
+    hideOrShowCheckBoxIsOtherUrl(false);
 
 
     // if ($('.isOtherUrlFiel').val() == 'true') {
@@ -407,7 +410,7 @@ function updateReadOnly() {
       $(".ifIsReadOnly .metadataElement-handle .input input").prop('readonly', false);
       $(".ifIsReadOnly .metadataElement-doi .input input").prop('readonly', false);
       // $('.isOtherUrlTohide').show("slow"); 
-      if (($('.subTypeSelect ').val() == 63)) {
+      if (($('.subTypeSelect ').val() == 63) || ($('.subTypeSelectSupplementary').val() == 63)) {
         hideOrShowCheckBoxIsOtherUrl(true);
       }
     }
