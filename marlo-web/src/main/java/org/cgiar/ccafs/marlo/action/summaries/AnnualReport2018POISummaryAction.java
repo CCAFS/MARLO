@@ -2071,10 +2071,10 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       } catch (Exception e) {
 
       }
-      POIField[] sData = {new POIField(leadFP, ParagraphAlignment.LEFT, false),
-        new POIField(description, ParagraphAlignment.LEFT, false),
-        new POIField(keyPartners, ParagraphAlignment.LEFT, false),
-        new POIField(mainArea, ParagraphAlignment.LEFT, false)};
+      POIField[] sData =
+        {new POIField(leadFP, ParagraphAlignment.LEFT, false), new POIField(description, ParagraphAlignment.LEFT, true),
+          new POIField(keyPartners, ParagraphAlignment.LEFT, false),
+          new POIField(mainArea, ParagraphAlignment.LEFT, false)};
       data = Arrays.asList(sData);
       datas.add(data);
     }
