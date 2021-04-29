@@ -789,10 +789,10 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           for (ReportSynthesisSrfProgressTargetCases targetCase : sloTarget.getTargetCases()) {
             if (targetCase != null) {
 
-              if (targetCase.getBriefSummary() != null && !targetCase.getBriefSummary().isEmpty()) {
+              if (targetCase.getBriefSummary() != null) {
                 briefSummaries = targetCase.getBriefSummary();
               }
-              if (targetCase.getAdditionalContribution() != null && !targetCase.getAdditionalContribution().isEmpty()) {
+              if (targetCase.getAdditionalContribution() != null) {
                 additionalContribution = targetCase.getAdditionalContribution();
               }
 
