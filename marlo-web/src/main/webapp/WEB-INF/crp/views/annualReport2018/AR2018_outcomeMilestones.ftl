@@ -216,8 +216,8 @@
                   <td> ${milestone.composedName} [#if allowPopups] <div class="pull-right">[@milestoneContributions element=milestone tiny=true /] [/#if]</div></td>
                   [#-- Milestone Status --]
                   <td class="text-center"> 
-                    [#local reportedMilestone= (action.getMilestone((reportedOutcome.id)!-1 , milestone.id))! ]
-                    [@utils.tableText value=(reportedMilestone.crpMilestone.milestonesStatus.name)!"" emptyText="global.prefilledByFlagship" /]
+                    [#local milestoneNextYearStatus=(action.getCurrentMilestoneStatus(milestone.id))!]
+                    [@utils.tableText value=(milestoneNextYearStatus.name)!"" emptyText="global.prefilledByFlagship" /]
                   </td>
                   [#if !allowPopups]
                     [#-- Milestone Evidence --]
