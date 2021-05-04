@@ -279,7 +279,7 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
         "projectCollaborators", "projectCoordinators", "submitted"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, Integer.class, Integer.class, Integer.class, Integer.class, Long.class,
-        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, String.class, String.class, Long.class, Long.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class},
       0);
@@ -853,9 +853,9 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
         submitted = "No";
       }
 
-      String w1w2 = null;
-      String w3 = null;
-      String bilateral = null;
+      Long w1w2 = null;
+      Long w3 = null;
+      Long bilateral = null;
       String centerfunds = null;
       String w1w2CoFinancing = null;
       // Budget Total
@@ -865,18 +865,18 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
       DecimalFormat myFormatter = new DecimalFormat("###,###");
 
       if (hasW1W2Co) {
-        w1w2 = myFormatter.format(this.getTotalYear(this.getSelectedYear(), 1, project, 3));
+        w1w2 = (long) (this.getTotalYear(this.getSelectedYear(), 1, project, 3));
         w1w2CoFinancing = myFormatter.format(this.getTotalYear(this.getSelectedYear(), 1, project, 2));
         // increment Budget Total with w1w2 cofinancing
         grand_totald += this.getTotalYear(this.getSelectedYear(), 1, project, 3)
           + this.getTotalYear(this.getSelectedYear(), 1, project, 2);
       } else {
-        w1w2 = myFormatter.format(this.getTotalYear(this.getSelectedYear(), 1, project, 1));
+        w1w2 = (long) (this.getTotalYear(this.getSelectedYear(), 1, project, 1));
         // increment Budget Total with w1w2
         grand_totald += this.getTotalYear(this.getSelectedYear(), 1, project, 1);
       }
-      w3 = myFormatter.format(this.getTotalYear(this.getSelectedYear(), 2, project, 1));
-      bilateral = myFormatter.format(this.getTotalYear(this.getSelectedYear(), 3, project, 1));
+      w3 = (long) (this.getTotalYear(this.getSelectedYear(), 2, project, 1));
+      bilateral = (long) (this.getTotalYear(this.getSelectedYear(), 3, project, 1));
       centerfunds = myFormatter.format(this.getTotalYear(this.getSelectedYear(), 4, project, 1));
       // increment Budget Total with w3,bilateral and centerfunds
       grand_totald += this.getTotalYear(this.getSelectedYear(), 2, project, 1)
