@@ -439,6 +439,25 @@ public class FundingSourceListAction extends BaseAction {
             fundingSourceDivisionSave.setDivision(partnerDivision);
             // replication on save
             fundingSourceDivisionManager.saveFundingSourceDivision(fundingSourceDivisionSave);
+          } else {
+            if (fundingSourceDivision.getId() != null) {
+              FundingSourceDivision fundingSourceDivisionTemp = new FundingSourceDivision();
+              FundingSourceDivision fundingSourceDivisionSave = new FundingSourceDivision();
+              fundingSourceDivisionTemp =
+                fundingSourceDivisionManager.getFundingSourceDivisionById(fundingSourceDivision.getId());
+
+              fundingSourceDivisionSave.setFundingSource(fundingSourceCopy);
+              fundingSourceDivisionSave.setPhase(this.getActualPhase());
+              if (fundingSourceDivisionTemp != null && fundingSourceDivisionTemp.getDivision() != null
+                && fundingSourceDivisionTemp.getDivision().getId() != null) {
+                PartnerDivision partnerDivision =
+                  partnerDivisionManager.getPartnerDivisionById(fundingSourceDivisionTemp.getDivision().getId());
+                fundingSourceDivisionSave.setDivision(partnerDivision);
+                
+                fundingSourceDivisionManager.saveFundingSourceDivision(fundingSourceDivisionSave);
+              }
+
+            }
           }
         }
       }
