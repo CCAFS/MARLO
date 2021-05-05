@@ -425,38 +425,55 @@ public class FundingSourceListAction extends BaseAction {
 
       // funding source divisions
       if (fundingSourceToBeCopied.getFundingSourceDivisions() != null) {
-        Set<FundingSourceDivision> fsds = fundingSourceToBeCopied.getFundingSourceDivisions();
-        // ???
-        fsds.removeIf(Objects::isNull);
-        fsds.removeIf(fsd -> !fsd.getPhase().equals(this.getActualPhase()));
-        for (FundingSourceDivision fundingSourceDivision : fsds) {
-          if (fundingSourceDivision.getId() == null || fundingSourceDivision.getId().longValue() == -1) {
-            FundingSourceDivision fundingSourceDivisionSave = new FundingSourceDivision();
-            fundingSourceDivisionSave.setFundingSource(fundingSourceCopy);
-            fundingSourceDivisionSave.setPhase(this.getActualPhase());
-            PartnerDivision partnerDivision =
-              partnerDivisionManager.getPartnerDivisionById(fundingSourceDivision.getDivision().getId());
-            fundingSourceDivisionSave.setDivision(partnerDivision);
-            // replication on save
-            fundingSourceDivisionManager.saveFundingSourceDivision(fundingSourceDivisionSave);
-          } else {
-            if (fundingSourceDivision.getId() != null) {
-              FundingSourceDivision fundingSourceDivisionTemp = new FundingSourceDivision();
-              FundingSourceDivision fundingSourceDivisionSave = new FundingSourceDivision();
-              fundingSourceDivisionTemp =
-                fundingSourceDivisionManager.getFundingSourceDivisionById(fundingSourceDivision.getId());
 
+        List<FundingSourceDivision> fsds = new ArrayList<>();
+        if (fundingSourceDivisionManager.findAll().stream()
+          .filter(fd -> fd != null && fd.getPhase().equals(this.getActualPhase())
+            && fd.getFundingSource().getId().equals(fundingSourceToBeCopied.getId()))
+          .collect(Collectors.toList()) != null) {
+          fsds = fundingSourceDivisionManager.findAll().stream()
+            .filter(fd -> fd != null && fd.getPhase().equals(this.getActualPhase())
+              && fd.getFundingSource().getId().equals(fundingSourceToBeCopied.getId()))
+            .collect(Collectors.toList());
+        }
+
+        if (!fsds.isEmpty()) {
+          // Set<FundingSourceDivision> fsds = fundingSourceToBeCopied.getFundingSourceDivisions();
+          // ???
+          fsds.removeIf(Objects::isNull);
+          fsds.removeIf(fsd -> !fsd.getPhase().equals(this.getActualPhase()));
+          for (FundingSourceDivision fundingSourceDivision : fsds) {
+            if (fundingSourceDivision != null && fundingSourceDivision.getId() == null
+              || fundingSourceDivision.getId().longValue() == -1) {
+              FundingSourceDivision fundingSourceDivisionSave = new FundingSourceDivision();
               fundingSourceDivisionSave.setFundingSource(fundingSourceCopy);
               fundingSourceDivisionSave.setPhase(this.getActualPhase());
-              if (fundingSourceDivisionTemp != null && fundingSourceDivisionTemp.getDivision() != null
-                && fundingSourceDivisionTemp.getDivision().getId() != null) {
-                PartnerDivision partnerDivision =
-                  partnerDivisionManager.getPartnerDivisionById(fundingSourceDivisionTemp.getDivision().getId());
+              PartnerDivision partnerDivision =
+                partnerDivisionManager.getPartnerDivisionById(fundingSourceDivision.getDivision().getId());
+              if (partnerDivision != null) {
                 fundingSourceDivisionSave.setDivision(partnerDivision);
-                
-                fundingSourceDivisionManager.saveFundingSourceDivision(fundingSourceDivisionSave);
               }
+              // replication on save
+              fundingSourceDivisionManager.saveFundingSourceDivision(fundingSourceDivisionSave);
+            } else {
+              if (fundingSourceDivision.getId() != null) {
+                FundingSourceDivision fundingSourceDivisionTemp = new FundingSourceDivision();
+                FundingSourceDivision fundingSourceDivisionSave = new FundingSourceDivision();
+                fundingSourceDivisionTemp =
+                  fundingSourceDivisionManager.getFundingSourceDivisionById(fundingSourceDivision.getId());
 
+                fundingSourceDivisionSave.setFundingSource(fundingSourceCopy);
+                fundingSourceDivisionSave.setPhase(this.getActualPhase());
+                if (fundingSourceDivisionTemp != null && fundingSourceDivisionTemp.getDivision() != null
+                  && fundingSourceDivisionTemp.getDivision().getId() != null) {
+                  PartnerDivision partnerDivision =
+                    partnerDivisionManager.getPartnerDivisionById(fundingSourceDivisionTemp.getDivision().getId());
+                  fundingSourceDivisionSave.setDivision(partnerDivision);
+
+                  fundingSourceDivisionManager.saveFundingSourceDivision(fundingSourceDivisionSave);
+                }
+
+              }
             }
           }
         }
