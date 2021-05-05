@@ -197,6 +197,14 @@
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.FundingSourceBudget" />
     </set>
+    <set name="fundingSourceDivisions" table="funding_source_divisions"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="id_phase" not-null="true" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.FundingSourceDivision" />
+    </set>
     <set name="projectExpectedStudies"
       table="project_expected_studies" inverse="true" lazy="true"
       fetch="select">
