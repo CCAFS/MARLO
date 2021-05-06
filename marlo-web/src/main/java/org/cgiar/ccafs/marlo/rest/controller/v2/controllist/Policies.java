@@ -79,13 +79,7 @@ public class Policies {
     @ApiParam(value = "${Policy.policies.POST.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${Policy.policies.POST.param.policy}",
       required = true) @Valid @RequestBody NewProjectPolicyDTO newProjectPolicyDTO) {
-    Long policyId = null;
-    try {
-      policyId = this.policyItem.createPolicy(newProjectPolicyDTO, CGIAREntity, this.getCurrentUser());
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-
+    Long policyId = this.policyItem.createPolicy(newProjectPolicyDTO, CGIAREntity, this.getCurrentUser());
 
     ResponseEntity<Long> response = new ResponseEntity<Long>(policyId, HttpStatus.OK);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
