@@ -474,7 +474,7 @@
           <th class="text-center"> [@s.text name="${customLabel}.${name}.page" /] </th>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.openAccess" /] </th>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.isi" /] </th>
-          <th class="text-center col-md-1"> [@s.text name="${customLabel}.${name}.identifier" /] </th>
+          <th class="text-center col-md-1"> [@s.text name="${customLabel}.${name}.directLink" /] </th>
           <th class="col-md-1 text-center"> Included in AR </th>
           
         </tr>

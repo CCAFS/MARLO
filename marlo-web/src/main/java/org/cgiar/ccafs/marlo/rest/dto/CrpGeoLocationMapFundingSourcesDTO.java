@@ -24,13 +24,20 @@ public class CrpGeoLocationMapFundingSourcesDTO {
 
   private long id;
   private String title;
+  private String type;
+
 
   public long getId() {
     return id;
   }
 
+
   public String getTitle() {
     return title;
+  }
+
+  public String getType() {
+    return type;
   }
 
   public void setId(long id) {
@@ -39,6 +46,10 @@ public class CrpGeoLocationMapFundingSourcesDTO {
 
   public void setTitle(String title) {
     this.title = title;
+  }
+
+  public void setType(String type) {
+    this.type = type;
   }
 
 }

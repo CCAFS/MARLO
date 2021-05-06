@@ -56,6 +56,14 @@ public interface DeliverableLocationDAO {
 
 
   /**
+   * This method gets a list of deliverableLocation that are active
+   * 
+   * @param phaseId - Phase identifier
+   * @return a list from DeliverableLocation by given phase identifier null if no exist records
+   */
+  public List<DeliverableLocation> findAllByPhase(Long phaseId);
+
+  /**
    * This method gets a deliverableLocation object list by a given deliverable and phase identifier.
    * 
    * @param deliverableID is the deliverable identifier.

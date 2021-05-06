@@ -330,6 +330,10 @@ public class StatusPlannedMilestonesItem<T> {
         if (status.getId().longValue() == 4) {
           reportSynthesisFlagshipProgressOutcomeMilestone
             .setExtendedYear(newStatusPlannedMilestoneDTO.getExtendedYear());
+        } else {
+          reportSynthesisFlagshipProgressOutcomeMilestone
+            .setExtendedYear(newStatusPlannedMilestoneDTO.getExtendedYear() != 0
+              ? newStatusPlannedMilestoneDTO.getExtendedYear() : null);
         }
 
         List<ReportSynthesisFlagshipProgressCrossCuttingMarker> reportSynthesisFlagshipProgressCrossCuttingMarkerList =
@@ -721,6 +725,10 @@ public class StatusPlannedMilestonesItem<T> {
               if (status.getId().longValue() == 4) {
                 reportSynthesisFlagshipProgressOutcomeMilestone
                   .setExtendedYear(newStatusPlannedMilestoneDTO.getExtendedYear());
+              } else {
+                reportSynthesisFlagshipProgressOutcomeMilestone
+                  .setExtendedYear(newStatusPlannedMilestoneDTO.getExtendedYear() != 0
+                    ? newStatusPlannedMilestoneDTO.getExtendedYear() : null);
               }
 
               List<ReportSynthesisFlagshipProgressCrossCuttingMarker> reportSynthesisFlagshipProgressCrossCuttingMarkerList =

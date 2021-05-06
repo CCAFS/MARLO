@@ -1301,7 +1301,12 @@ public class FundingSourceAction extends BaseAction {
       fundingSourceInfoDB.setStartDate(fundingSource.getFundingSourceInfo().getStartDate());
       fundingSourceInfoDB.setEndDate(fundingSource.getFundingSourceInfo().getEndDate());
       fundingSourceInfoDB.setGlobal(fundingSource.getFundingSourceInfo().isGlobal());
-      fundingSourceInfoDB.setHasFileResearch(fundingSource.getFundingSourceInfo().getHasFileResearch());
+
+      if (fundingSourceInfoDB.getHasFileResearch() == null
+        && fundingSource.getFundingSourceInfo().getHasFileResearch() != null) {
+        fundingSourceInfoDB.setHasFileResearch(fundingSource.getFundingSourceInfo().getHasFileResearch());
+      }
+
       fundingSourceInfoDB.setGrantAmount(fundingSource.getFundingSourceInfo().getGrantAmount());
 
       fundingSourceInfoDB.setFinanceCode(fundingSource.getFundingSourceInfo().getFinanceCode().toUpperCase());

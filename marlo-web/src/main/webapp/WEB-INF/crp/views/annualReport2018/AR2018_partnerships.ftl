@@ -308,7 +308,7 @@
       
       [#-- Description --]
       <div class="form-group">
-        [@customForm.input name="${customName}.description" i18nkey="${customLabel}.table7.description" helpIcon=false className="limitWords-30" required=true editable=editable /]
+        [@customForm.textArea name="${customName}.description" i18nkey="${customLabel}.table7.description" helpIcon=false className="limitWords-30" required=true editable=editable allowTextEditor=true /]
       </div>
 
       [#-- Main area of partnership --]

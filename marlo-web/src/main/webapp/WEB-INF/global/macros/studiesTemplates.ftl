@@ -327,13 +327,13 @@
       <br>
         <div class="form-group" simpleBox>      
           [#-- Nexus  --]
-          [@customForm.elementsListComponent name="${customName}.nexus" elementType="nexus" elementList=element.nexus label="study.nexus"  listName="nexusList" keyFieldName="id" displayFieldName="name"/]
+          [@customForm.elementsListComponent name="${customName}.nexus" elementType="nexus" elementList=element.nexus label="study.nexus"  listName="nexusList" keyFieldName="id" displayFieldName="name" required=false/]
        
           [#-- Lever Outcomes  --]
-          [@customForm.elementsListComponent name="${customName}.leverOutcomes" elementType="leverOutcome" elementList=element.leverOutcomes label="study.leverOutcomes"  listName="leverOutcomeList" keyFieldName="id" displayFieldName="composedName"/]
+          [@customForm.elementsListComponent name="${customName}.leverOutcomes" elementType="leverOutcome" elementList=element.leverOutcomes label="study.leverOutcomes"  listName="leverOutcomeList" keyFieldName="id" displayFieldName="showName" required=false/]
        
           [#-- Sdg Targets  --]
-          [@customForm.elementsListComponent name="${customName}.sdgTargets" elementType="sdgTargets" elementList=element.sdgTargets label="study.sdgTargets"  listName="sdgTargetList" keyFieldName="id" displayFieldName="composedName"/]
+          [@customForm.elementsListComponent name="${customName}.sdgTargets" elementType="sdgTarget" elementList=element.sdgTargets label="study.sdgTargets"  listName="sdgTargetList" keyFieldName="id" displayFieldName="showName" required=false/]
         </div>
       [/#if]
       

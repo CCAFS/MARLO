@@ -62,13 +62,22 @@ public class DeliverableLocationMySQLDAO extends AbstractMarloDAO<DeliverableLoc
 
   @Override
   public List<DeliverableLocation> findAll() {
-    String query = "from " + DeliverableLocation.class.getName() + " where is_active=1";
+    String query = "from " + DeliverableLocation.class.getName();
     List<DeliverableLocation> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
     return null;
 
+  }
+
+  @Override
+  public List<DeliverableLocation> findAllByPhase(Long phaseId) {
+    String queryString =
+      "SELECT dl FROM DeliverableLocation as dl " + "INNER JOIN dl.phase as ph WHERE ph.id = :phaseid";
+    List<DeliverableLocation> deliverableLocations =
+      this.getSessionFactory().getCurrentSession().createQuery(queryString).setParameter("phaseid", phaseId).list();
+    return deliverableLocations;
   }
 
   @Override
