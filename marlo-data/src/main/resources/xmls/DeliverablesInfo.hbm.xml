@@ -75,6 +75,9 @@
 		<property name="isLocationGlobal" type="java.lang.Boolean">
 			<column name="is_location_global" />
 		</property>
+		<property name="wosSyncDate" type="timestamp" update="false">
+			<column name="wos_sync_date" length="19"/>
+		</property>
 		<many-to-one name="geographicScope"
 			class="org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope" fetch="select">
 			<column name="geographic_scope_id" />

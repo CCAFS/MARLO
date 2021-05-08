@@ -614,6 +614,18 @@ public class CrpPpaPartnersAction extends BaseAction {
           }
 
         } else {
+          // if liaison exist - Save information to Replicate data to next phases
+          if (crpPpaPartnerManager.getCrpPpaPartnerById(partner.getId()) != null) {
+            CrpPpaPartner partnerDB = crpPpaPartnerManager.getCrpPpaPartnerById(partner.getId());
+            if (partnerDB != null && partnerDB.getId() != null) {
+              partnerDB.setCrp(loggedCrp);
+              Institution institution = institutionManager.getInstitutionById(partner.getInstitution().getId());
+              partnerDB.setInstitution(institution);
+              partnerDB.setPhase(this.getActualPhase());
+              crpPpaPartnerManager.saveCrpPpaPartner(partnerDB);
+            }
+          }
+
           LiaisonInstitution liaisonInstitution = liaisonInstitutionManager
             .getLiasonInstitutionByInstitutionId(partner.getInstitution().getId(), loggedCrp.getId());
 
