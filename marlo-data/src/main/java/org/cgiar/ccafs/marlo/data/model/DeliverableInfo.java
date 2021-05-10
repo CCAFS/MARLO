@@ -3,6 +3,8 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.Date;
+
 import com.google.gson.annotations.Expose;
 
 /**
@@ -43,6 +45,8 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   private RepIndGeographicScope geographicScope;
   @Expose
   private RepIndRegion region;
+  @Expose
+  private Date wosSyncDate;
 
   public DeliverableInfo() {
   }
@@ -147,6 +151,10 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return typeOther;
   }
 
+
+  public Date getWosSyncDate() {
+    return wosSyncDate;
+  }
 
   public int getYear() {
     return year;
@@ -294,6 +302,7 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return false;
   }
 
+
   public boolean requeriedFair() {
     try {
       if (this.getDeliverableType().getFair()) {
@@ -358,10 +367,10 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     this.phase = phase;
   }
 
-
   public void setRegion(RepIndRegion region) {
     this.region = region;
   }
+
 
   public void setStatus(Integer status) {
     this.status = status;
@@ -377,9 +386,12 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     this.title = title;
   }
 
-
   public void setTypeOther(String typeOther) {
     this.typeOther = typeOther;
+  }
+
+  public void setWosSyncDate(Date wosSyncDate) {
+    this.wosSyncDate = wosSyncDate;
   }
 
   public void setYear(int year) {
@@ -402,7 +414,4 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     this.setGeographicScope(update.getGeographicScope());
     this.setRegion(update.getRegion());
   }
-
-
 }
-
