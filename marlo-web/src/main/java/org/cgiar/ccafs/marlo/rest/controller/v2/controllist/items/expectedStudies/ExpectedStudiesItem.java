@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.EvidenceTagManager;
 import org.cgiar.ccafs.marlo.data.manager.GeneralStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
@@ -60,6 +61,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -154,6 +156,7 @@ public class ExpectedStudiesItem<T> {
   private ProjectExpectedStudyQuantificationManager projectExpectedStudyQuantificationManager;
   private ProjectExpectedStudyMilestoneManager projectExpectedStudyMilestoneManager;
   private ProjectExpectedStudyMapper projectExpectedStudyMapper;
+  private GlobalUnitProjectManager globalUnitProjectManager;
 
 
   @Inject
@@ -180,7 +183,7 @@ public class ExpectedStudiesItem<T> {
     ProjectExpectedStudyQuantificationManager projectExpectedStudyQuantificationManager,
     StudyTypeManager studyTypeManager, ProjectManager projectManager, CrpMilestoneManager crpMilestoneManager,
     ProjectExpectedStudyMilestoneManager projectExpectedStudyMilestoneManager,
-    ProjectExpectedStudyMapper projectExpectedStudyMapper) {
+    ProjectExpectedStudyMapper projectExpectedStudyMapper, GlobalUnitProjectManager globalUnitProjectManager) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.repIndStageStudyManager = repIndStageStudyManager;
@@ -216,6 +219,7 @@ public class ExpectedStudiesItem<T> {
     this.projectExpectedStudySubIdoManager = projectExpectedStudySubIdoManager;
     this.srfSloIndicatorTargetManager = srfSloIndicatorTargetManager;
     this.projectExpectedStudyMapper = projectExpectedStudyMapper;
+    this.globalUnitProjectManager = globalUnitProjectManager;
   }
 
   private int countWords(String string) {
@@ -1520,6 +1524,13 @@ public class ExpectedStudiesItem<T> {
       if (project == null) {
         fieldErrors.add(
           new FieldErrorDTO("putExpectedStudy", "Project", newProjectExpectedStudy.getProject() + " is an project ID"));
+      } else {
+        GlobalUnitProject crpProject = globalUnitProjectManager
+          .findByProjectAndGlobalUnitId(newProjectExpectedStudy.getProject(), globalUnitEntity.getId());
+        if (crpProject == null) {
+          fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Project",
+            newProjectExpectedStudy.getProject() + " is an invalid project ID"));
+        }
       }
     } else {
       fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Project", "A projectID can not be null"));
@@ -1530,6 +1541,11 @@ public class ExpectedStudiesItem<T> {
     if (projectExpectedStudy == null) {
       fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "ProjectExpectedStudy",
         idExpectedStudy + " is an invalid ProjectExpectedStudy code"));
+    } else {
+      if (projectExpectedStudy.getProject().getId().longValue() != newProjectExpectedStudy.getProject()) {
+        fieldErrors.add(new FieldErrorDTO("putExpectedStudy", "Project",
+          newProjectExpectedStudy.getProject() + " is an invalid project ID"));
+      }
     }
 
     if (fieldErrors.size() == 0) {
