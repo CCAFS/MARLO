@@ -22,6 +22,7 @@ package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.expectedStudi
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GeneralStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
@@ -40,6 +41,7 @@ import org.cgiar.ccafs.marlo.data.manager.StudyTypeManager;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -98,6 +100,7 @@ public class ExpectedStudiesOtherItem<T> {
   private ProjectExpectedStudyRegionManager projectExpectedStudyRegionManager;
   private ProjectExpectedStudySrfTargetManager projectExpectedStudySrfTargetManager;
   private ProjectExpectedStudySubIdoManager projectExpectedStudySubIdoManager;
+  private GlobalUnitProjectManager globalUnitProjectManager;
 
   private MeliaMapper projectExpectedStudiesOtherMapper;
 
@@ -114,8 +117,8 @@ public class ExpectedStudiesOtherItem<T> {
     ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager,
     ProjectExpectedStudyRegionManager projectExpectedStudyRegionManager,
     ProjectExpectedStudySrfTargetManager projectExpectedStudySrfTargetManager,
-    ProjectExpectedStudySubIdoManager projectExpectedStudySubIdoManager,
-    MeliaMapper projectExpectedStudiesOtherMapper) {
+    ProjectExpectedStudySubIdoManager projectExpectedStudySubIdoManager, MeliaMapper projectExpectedStudiesOtherMapper,
+    GlobalUnitProjectManager globalUnitProjectManager) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.projectManager = projectManager;
@@ -135,6 +138,7 @@ public class ExpectedStudiesOtherItem<T> {
     this.projectExpectedStudySubIdoManager = projectExpectedStudySubIdoManager;
 
     this.projectExpectedStudiesOtherMapper = projectExpectedStudiesOtherMapper;
+    this.globalUnitProjectManager = globalUnitProjectManager;
 
   }
 
@@ -201,6 +205,13 @@ public class ExpectedStudiesOtherItem<T> {
       if (project == null) {
         fieldErrors.add(new FieldErrorDTO("createExpectedStudyOther", "Project",
           newProjectExpectedStudiesOther.getProject() + " is an invalid project ID"));
+      } else {
+        GlobalUnitProject crpProject = globalUnitProjectManager
+          .findByProjectAndGlobalUnitId(newProjectExpectedStudiesOther.getProject(), globalUnitEntity.getId());
+        if (crpProject == null) {
+          fieldErrors.add(new FieldErrorDTO("createExpectedStudyOther", "Project",
+            newProjectExpectedStudiesOther.getProject() + " is an invalid project ID"));
+        }
       }
 
     } else {
@@ -815,6 +826,13 @@ public class ExpectedStudiesOtherItem<T> {
       if (project == null) {
         fieldErrors.add(new FieldErrorDTO("UpdateExpectedStudy", "Project",
           newProjectExpectedStudy.getProject() + " is an project ID"));
+      } else {
+        GlobalUnitProject crpProject = globalUnitProjectManager
+          .findByProjectAndGlobalUnitId(newProjectExpectedStudy.getProject(), globalUnitEntity.getId());
+        if (crpProject == null) {
+          fieldErrors.add(new FieldErrorDTO("UpdateExpectedStudy", "Project",
+            newProjectExpectedStudy.getProject() + " is an invalid project ID"));
+        }
       }
     } else {
       fieldErrors.add(new FieldErrorDTO("UpdateExpectedStudy", "Project", "A projectID can not be null"));
@@ -825,6 +843,12 @@ public class ExpectedStudiesOtherItem<T> {
     if (projectExpectedStudy == null) {
       fieldErrors.add(new FieldErrorDTO("UpdateExpectedStudy", "ProjectExpectedStudy",
         idExpectedStudy + " is an invalid ProjectExpectedStudy code"));
+    } else {
+      if (projectExpectedStudy.getProject().getId().longValue() != newProjectExpectedStudy.getProject()) {
+        fieldErrors.add(new FieldErrorDTO("UpdateExpectedStudy", "Project",
+          newProjectExpectedStudy.getProject() + " is an invalid project ID"));
+      }
+
     }
 
     if (fieldErrors.size() == 0) {
