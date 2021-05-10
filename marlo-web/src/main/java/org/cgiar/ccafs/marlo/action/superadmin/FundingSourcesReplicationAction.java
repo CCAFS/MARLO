@@ -34,6 +34,7 @@ import org.cgiar.ccafs.marlo.data.model.FundingSourceDivision;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
@@ -256,6 +257,22 @@ public class FundingSourcesReplicationAction extends BaseAction {
                 for (FundingSourceLocation FundingSourceLocation : fundingSourceLocations) {
                   fundingSourceLocationsManager.saveFundingSourceLocations(FundingSourceLocation);
                 }
+              }
+            }
+
+            Phase previousPhase = this.phaseManager.findPreviousPhase(phase.getId());
+            // Get missing has research file selection and lead center missing info from previous phase
+            if (fundingSource.getFundingSourceInfo(phase) != null && previousPhase != null) {
+              if (fundingSource.getFundingSourceInfo(phase).getHasFileResearch() == null
+                && fundingSource.getFundingSourceInfo(previousPhase).getHasFileResearch() != null) {
+                Boolean fileResearch = fundingSource.getFundingSourceInfo(previousPhase).getHasFileResearch();
+                fundingSource.getFundingSourceInfo(phase).setHasFileResearch(fileResearch);
+              }
+
+              if (fundingSource.getFundingSourceInfo(phase).getLeadCenter() == null
+                && fundingSource.getFundingSourceInfo(previousPhase).getLeadCenter() != null) {
+                Institution leadCenter = fundingSource.getFundingSourceInfo(previousPhase).getLeadCenter();
+                fundingSource.getFundingSourceInfo(phase).setLeadCenter(leadCenter);
               }
             }
 
