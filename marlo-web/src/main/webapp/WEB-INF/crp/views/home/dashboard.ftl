@@ -5,13 +5,13 @@
 [#assign customJS = [
   "${baseUrlMedia}/js/home/dashboard.js",
   "${baseUrlCdn}/global/js/impactGraphic.js"
-  ] 
+  ]
 /]
 [#assign customCSS = [
   "${baseUrlMedia}/css/home/dashboard.css",
   "${baseUrlCdn}/global/css/customDataTable.css",
   "${baseUrlCdn}/global/css/impactGraphic.css"
-  ] 
+  ]
 /]
 [#assign currentSection = "home" /]
 [#assign breadCrumb = [
@@ -20,6 +20,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/crp/macros/projectsListTemplate.ftl" as projectList /]
+[#import "/WEB-INF/global/macros/deliverableListTemplate.ftl" as deliverablesList /]
 
 [#assign timeline = [
   {"id":"1", "startDate":"11/28/2016", "endDate":"11/30/2016","what":"MARLO opens for Impact Pathway","who":"Flagship Leaders"},
@@ -48,7 +49,7 @@
   [/#if]
     [#-- What do you want to do --]
     <div id="decisionTree">
-    
+
       [#if centerGlobalUnit]
         [#-- CENTER Impact patchway --]
         <div class="flex-container">
@@ -58,16 +59,16 @@
             </a>
           </div>
         </div>
-        
+
         [#-- Projects --]
         <div class="flex-container">
           <div id="startMonitoring" class="option hvr-float">
             <a href="[@s.url action="monitoring/${centerSession}/monitoringOutcomesList"][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
               <p>[@s.text name="dashboard.decisionTree.startMonitoring" /]</p>
-            </a>  
+            </a>
           </div>
         </div>
-        
+
         [#-- Summaries --]
         <div class="flex-container">
           <div id="finalDes" class="option hvr-float"">
@@ -76,9 +77,9 @@
             </a>
           </div>
         </div>
-      
+
       [#else]
-      
+
         [#if !aiccra]
           [#-- Add new Project --]
           <div class="flex-container">
@@ -107,17 +108,17 @@
             </div>
           </div>
         [/#if]
-      
+
       <div class="clearfix"></div>
     </div>
     [/#if]
-    
-    
-    [#-- Shorcuts --]    
+
+
+    [#-- Shorcuts --]
     <div id="shorcuts"  class="col-md-5">
     [#-- if crpSession?contains("CCAFS")  --]
     [#if false ]
-      <div class="homeTitle"><strong>Timeline</strong></div>   
+      <div class="homeTitle"><strong>Timeline</strong></div>
       <div class="borderBox col-md-12">
         <div id="timeline">
         <span class="timelineControl leftControl glyphicon glyphicon-chevron-left"></span>
@@ -127,7 +128,7 @@
             <li><a href="#${time.id}">[#if time.startDate?has_content]${(time.startDate)?date("MM/dd/yyyy")}[/#if]</a></li>
           [/#list]
           </ul>
-          
+
           <div class="borderBox">
             <ul id="issues">
             [#list timeline as time]
@@ -145,12 +146,12 @@
                 [/#if]
               </li>
             [/#list]
-            </ul> 
+            </ul>
           </div>
         </div>
       </div>
       [/#if]
-      
+
         [#if aiccra]
             <p><h3>What is a Cluster?</h3></p><p>A cluster is defined as the group of AICCRA main activities led by each AICCRA Country Leader (Ghana, Mali, Senegal, Ethiopia, Kenya and Zambia), AICCRA Regional Leaders (Western Africa and Eastern & Southern Africa) and AICCRA-CCAFS Flagship Leaders (FP1, FP2 and FP4). In each cluster, participants are involved as leader, coordinators and collaborators with specific budget allocations for each AICCRA main activity with a set of deliverables and contributions towards our performance indicators.</p>
             <img src="${baseUrlCdn}/global/images/aiccra-planning-header.png" width="450">
@@ -161,10 +162,10 @@
             [@s.text name="dashboard.aiccra.instructions" ] [@s.param] <a href="https://docs.google.com/document/d/1hy2yt6E4pJ5orGqHxBSX_ACcr72pPTwaSesQ9P6vHYQ/edit" target="_blank">here</a>.[/@s.param][/@s.text]
             <img src="${baseUrlCdn}/global/images/aiccra-planning.png" width="450">
         [/#if]
-      
-    </div>     
-    
-    [#-- Dashboard --]   
+
+    </div>
+
+    [#-- Dashboard --]
     <div id="dashboardContent" class="col-md-12">
       <div class="homeTitle col-md-12">[#-- <strong>Dashboard</strong> --]</div>
       <div class="col-md-12">
@@ -175,17 +176,21 @@
         </ul>
       [#else]
       <ul class="nav nav-tabs" role="tablist">
-          <li role="presentation" class="active"><a  id="projects" href="#myProjects" aria-controls="myProjects" role="tab" data-toggle="tab">My clusters</a></li>
+          <li role="presentation" class="active"><a  id="projects" href="#myProjects" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.myProjects.title" /]</a></li>
+          <li role="presentation"><a id="deliverables" href="#myDeliverables" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.myDeliverables.title" /]</a></li>
           <li role="presentation" style="display:none;"><a id="impact" href="#impactP" aria-controls="impactP" role="tab" data-toggle="tab">Impact pathway</a></li>
         </ul>
       [/#if]
-      
+
         <div class="tab-content">
           <div role="tabpanel" class="tab-pane fade in active" id="myProjects">
-          
             [@projectList.dashboardProjectsList projects=myProjects canValidate=true canEdit=true namespace="/projects" defaultAction="${(crpSession)!}/description" /]
           </div>
-          
+
+          <div role="tabpanel" class="tab-pane fade" id="myDeliverables">
+            [@deliverablesList.deliverablesSummaryList deliverables=myDeliverables canValidate=true canEdit=true namespace="/deliverables" defaultAction="${(crpSession)!}/description" /]
+          </div>
+
           <div role="tabpanel" class="tab-pane fade" id="impactP">
             <div id="infoRelations" class="panel panel-default">
               <div class="panel-heading"><strong>Relations</strong></div>
@@ -201,13 +206,13 @@
               <span title="View full graph" id="fullscreen" class="glyphicon glyphicon-fullscreen"></span>
             </div>
           </div>
-        </div>  
-      </div>    
+        </div>
+      </div>
     </div>
-    
-    
+
+
     <div id="impactGraphic-content"  style="display:none;" >
-  
+
   [#-- Information panel --]
   <div id="infoRelation" class="panel panel-default">
     <div class="panel-heading"><strong>Relations</strong></div>
@@ -215,7 +220,7 @@
      <ul></ul>
     </div>
   </div>
-  
+
   [#-- Controls --]
   <div id="controls" class="">
     <span id="zoomIn" class="glyphicon glyphicon-zoom-in tool"></span>
@@ -226,15 +231,15 @@
     <span id="panUp" class="glyphicon glyphicon-arrow-up tool "></span>
     <span id="resize" class="glyphicon glyphicon-resize-full  tool"></span>
   </div>
-  
+
   [#-- Download button--]
   <a class="download" href=""><span title="download" id="buttonDownload"><span class="glyphicon glyphicon-download-alt"></span></span></a>
-  
+
   <div id="impactGraphic-fullscreen"></div>
 </div>
   </div>
- 
- 
+
+
 </section>
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
