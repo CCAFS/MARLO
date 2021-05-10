@@ -34,6 +34,7 @@ import org.cgiar.ccafs.marlo.data.model.FundingSourceDivision;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
@@ -192,7 +193,7 @@ public class FundingSourcesReplicationAction extends BaseAction {
 
             // Save Funding Source Budget
             fundingSource.setBudgets(fundingSource.getFundingSourceBudgets().stream()
-              .filter(pb -> pb.isActive() && pb.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+              .filter(pb -> pb.isActive() && pb.getPhase().equals(phase)).collect(Collectors.toList()));
             if (fundingSource.getBudgets() != null) {
               List<FundingSourceBudget> fundingSourceBudgets = fundingSource.getBudgets();
 
@@ -205,7 +206,7 @@ public class FundingSourcesReplicationAction extends BaseAction {
 
             // Save Funding Source Institution
             fundingSource.setInstitutions(new ArrayList<>(fundingSource.getFundingSourceInstitutions().stream()
-              .filter(pb -> pb.isActive() && pb.getPhase() != null && pb.getPhase().equals(this.getActualPhase()))
+              .filter(pb -> pb.isActive() && pb.getPhase() != null && pb.getPhase().equals(phase))
               .collect(Collectors.toList())));
             if (fundingSource.getInstitutions() != null) {
               List<FundingSourceInstitution> fundingSourceInstitutions = fundingSource.getInstitutions();
@@ -219,7 +220,7 @@ public class FundingSourcesReplicationAction extends BaseAction {
 
             // Save Funding Source Divisions
             fundingSource.setDivisions(new ArrayList<>(fundingSource.getFundingSourceDivisions().stream()
-              .filter(pb -> pb.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
+              .filter(pb -> pb.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
             if (fundingSource.getDivisions() != null) {
               List<FundingSourceDivision> fundingSourceDivisions = fundingSource.getDivisions();
 
@@ -233,8 +234,7 @@ public class FundingSourcesReplicationAction extends BaseAction {
             // Save Project Budget
             fundingSource.setProjectBudgetsList(fundingSource.getProjectBudgets().stream()
               .filter(pb -> pb.isActive() && pb.getProject().isActive() && pb.getPhase() != null
-                && pb.getPhase().equals(this.getActualPhase())
-                && pb.getProject().getProjecInfoPhase(this.getActualPhase()) != null)
+                && pb.getPhase().equals(phase) && pb.getProject().getProjecInfoPhase(phase) != null)
               .collect(Collectors.toList()));
             if (fundingSource.getProjectBudgetsList() != null) {
               List<ProjectBudget> projectBudgets = fundingSource.getProjectBudgetsList();
@@ -248,7 +248,7 @@ public class FundingSourcesReplicationAction extends BaseAction {
 
             // Save Funding Source Locations
             fundingSource.setFundingCountry(fundingSource.getFundingSourceLocations().stream()
-              .filter(fl -> fl.isActive() && fl.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+              .filter(fl -> fl.isActive() && fl.getPhase().equals(phase)).collect(Collectors.toList()));
             if (fundingSource.getFundingSourceLocations() != null) {
               List<FundingSourceLocation> fundingSourceLocations = fundingSource.getFundingCountry();
 
@@ -256,6 +256,22 @@ public class FundingSourcesReplicationAction extends BaseAction {
                 for (FundingSourceLocation FundingSourceLocation : fundingSourceLocations) {
                   fundingSourceLocationsManager.saveFundingSourceLocations(FundingSourceLocation);
                 }
+              }
+            }
+
+            Phase previousPhase = this.phaseManager.findPreviousPhase(phase.getId());
+            // Get missing has research file selection and lead center missing info from previous phase
+            if (fundingSource.getFundingSourceInfo(phase) != null && previousPhase != null) {
+              if (fundingSource.getFundingSourceInfo(phase).getHasFileResearch() == null
+                && fundingSource.getFundingSourceInfo(previousPhase).getHasFileResearch() != null) {
+                Boolean fileResearch = fundingSource.getFundingSourceInfo(previousPhase).getHasFileResearch();
+                fundingSource.getFundingSourceInfo(phase).setHasFileResearch(fileResearch);
+              }
+
+              if (fundingSource.getFundingSourceInfo(phase).getLeadCenter() == null
+                && fundingSource.getFundingSourceInfo(previousPhase).getLeadCenter() != null) {
+                Institution leadCenter = fundingSource.getFundingSourceInfo(previousPhase).getLeadCenter();
+                fundingSource.getFundingSourceInfo(phase).setLeadCenter(leadCenter);
               }
             }
 
