@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CgiarCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.PolicyMilestoneManager;
@@ -47,6 +48,7 @@ import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PolicyMilestone;
@@ -132,6 +134,7 @@ public class PolicyItem<T> {
   private PolicyMilestoneManager policyMilestoneManager;
   private CrpMilestoneManager crpMilestoneManager;
   private ProjectExpectedStudyManager projectExpectedStudyManager;
+  private GlobalUnitProjectManager globalUnitProjectManager;
 
   private ProjectInnovationManager projectInnovationManager;
 
@@ -152,7 +155,8 @@ public class PolicyItem<T> {
     PolicyMilestoneManager policyMilestoneManager, CrpMilestoneManager crpMilestoneManager,
     ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager,
     ProjectExpectedStudyManager projectExpectedStudyManager,
-    ProjectPolicyInnovationManager projectPolicyInnovationManager, ProjectInnovationManager projectInnovationManager) {
+    ProjectPolicyInnovationManager projectPolicyInnovationManager, ProjectInnovationManager projectInnovationManager,
+    GlobalUnitProjectManager globalUnitProjectManager) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.projectPolicyManager = projectPolicyManager;
@@ -180,6 +184,7 @@ public class PolicyItem<T> {
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.projectPolicyInnovationManager = projectPolicyInnovationManager;
     this.projectInnovationManager = projectInnovationManager;
+    this.globalUnitProjectManager = globalUnitProjectManager;
   }
 
   public Long createPolicy(NewProjectPolicyDTO newPolicyDTO, String entityAcronym, User user) {
@@ -784,13 +789,41 @@ public class PolicyItem<T> {
           && c.getName().equalsIgnoreCase(newPolicyDTO.getPhase().getName()))
         .findFirst().get();
     if (phase == null) {
-      fieldErrors.add(new FieldErrorDTO("createPolicy", "phase",
+      fieldErrors.add(new FieldErrorDTO("updatePolicy", "phase",
         new NewProjectPolicyDTO().getPhase().getYear() + " is an invalid year"));
     }
 
+    Project project = null;
+    if (newPolicyDTO.getProject() != null) {
+      project = projectManager.getProjectById(newPolicyDTO.getProject());
+      if (project == null) {
+        fieldErrors.add(new FieldErrorDTO("updatePolicy", "Project", newPolicyDTO.getProject() + " is an project ID"));
+      } else {
+        GlobalUnitProject crpProject =
+          globalUnitProjectManager.findByProjectAndGlobalUnitId(newPolicyDTO.getProject(), globalUnitEntity.getId());
+        if (crpProject == null) {
+          fieldErrors
+            .add(new FieldErrorDTO("updatePolicy", "Project", newPolicyDTO.getProject() + " is an invalid project ID"));
+        }
+      }
+    } else {
+      fieldErrors.add(new FieldErrorDTO("updatePolicy", "Project", "A projectID can not be null"));
+    }
+
     ProjectPolicy projectPolicy = null;
-    if (fieldErrors.size() == 0) {
+    if (id != null) {
       projectPolicy = projectPolicyManager.getProjectPolicyById(id.longValue());
+      if (projectPolicy == null) {
+        fieldErrors.add(new FieldErrorDTO("updatePolicy", "policy", id.longValue() + " does not exists"));
+      } else {
+        if (projectPolicy.getProject().getId().longValue() != newPolicyDTO.getProject()) {
+          fieldErrors
+            .add(new FieldErrorDTO("updatePolicy", "Project", newPolicyDTO.getProject() + " is an invalid project ID"));
+        }
+      }
+    }
+    if (fieldErrors.size() == 0) {
+
       ProjectPolicyInfo projectPolicyInfo = null;
       if (projectPolicy.getProjectPolicyInfo(phase) != null) {
         projectPolicyInfo =
