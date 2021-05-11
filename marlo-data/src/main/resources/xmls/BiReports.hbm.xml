@@ -26,10 +26,10 @@
         <property name="embedUrl" type="string">
             <column name="embed_url" />
         </property>
-        <property name="isActive" type="boolean">
+        <property name="isActive" type="java.lang.Boolean">
             <column name="is_active" not-null="true" />
         </property>
-        <property name="hasFilters" type="boolean">
+        <property name="hasFilters" type="java.lang.Boolean">
             <column name="has_filters" not-null="true" />
         </property>
         <many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.GlobalUnit" fetch="select">
