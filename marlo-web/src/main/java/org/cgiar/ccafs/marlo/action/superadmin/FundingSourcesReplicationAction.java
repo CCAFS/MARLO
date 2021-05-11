@@ -262,8 +262,7 @@ public class FundingSourcesReplicationAction extends BaseAction {
             Phase previousPhase = this.phaseManager.findPreviousPhase(phase.getId());
             // Get missing has research file selection and lead center missing info from previous phase
             if (fundingSource.getFundingSourceInfo(phase) != null && previousPhase != null) {
-              if (fundingSource.getFundingSourceInfo(phase).getHasFileResearch() == null
-                && fundingSource.getFundingSourceInfo(previousPhase).getHasFileResearch() != null) {
+              if (fundingSource.getFundingSourceInfo(phase).getHasFileResearch() == null) {
                 Boolean fileResearch = fundingSource.getFundingSourceInfo(previousPhase).getHasFileResearch();
                 fundingSource.getFundingSourceInfo(phase).setHasFileResearch(fileResearch);
               }
