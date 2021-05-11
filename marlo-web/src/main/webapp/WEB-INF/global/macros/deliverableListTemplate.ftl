@@ -138,6 +138,7 @@
     <thead>
       <tr class="subHeader">
         <th id="deliverableEDY">[@s.text name="project.deliverableList.deliverySummaryYear" /]</th>
+        <th id="ids">[@s.text name="projectsList.projectids" /]</th>
         <th id="deliverableTitles" >[@s.text name="project.deliverableList.deliverableSummaryName" /]</th>
       </tr>
     </thead>
@@ -168,6 +169,12 @@
               [/#if]
             [/#if]
 
+          </td>
+          [#-- ID --]
+          <td class="deliverableId">
+            <!-- <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"> -->
+              D${deliverable.id}
+            <!-- </a> -->
           </td>
           [#-- Deliverable Title --]
           <td class="left">
