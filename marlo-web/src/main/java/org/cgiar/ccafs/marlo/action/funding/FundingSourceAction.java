@@ -1197,9 +1197,6 @@ public class FundingSourceAction extends BaseAction {
     this.setBasePermission(this.getText(Permission.PROJECT_FUNDING_SOURCE_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
-      fundingSource.getFundingSourceInfo().setFile(null);
-      fundingSource.getFundingSourceInfo().setFileResearch(null);
-      fundingSource.getFundingSourceInfo().setHasFileResearch(null);
       if (fundingSource.getInstitutions() != null) {
         for (FundingSourceInstitution fundingSourceInstitution : fundingSource.getInstitutions()) {
           fundingSourceInstitution
@@ -1302,8 +1299,7 @@ public class FundingSourceAction extends BaseAction {
       fundingSourceInfoDB.setEndDate(fundingSource.getFundingSourceInfo().getEndDate());
       fundingSourceInfoDB.setGlobal(fundingSource.getFundingSourceInfo().isGlobal());
 
-      if (fundingSourceInfoDB.getHasFileResearch() == null
-        && fundingSource.getFundingSourceInfo().getHasFileResearch() != null) {
+      if (fundingSource.getFundingSourceInfo().getHasFileResearch() != null) {
         fundingSourceInfoDB.setHasFileResearch(fundingSource.getFundingSourceInfo().getHasFileResearch());
       }
 
