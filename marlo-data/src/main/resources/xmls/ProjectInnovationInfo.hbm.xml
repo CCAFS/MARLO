@@ -97,6 +97,9 @@
 		<property name="otherInnovationType" type="string">
 			<column name="other_innovation_type" sql-type="TEXT" />
 		</property>
+		<property name="editableLink" type="string">
+			<column name="editable_link" length="500" />
+		</property>
 		 <property name="hasMilestones" type="boolean">
             <column name="has_milestones" not-null="true" />
         </property>

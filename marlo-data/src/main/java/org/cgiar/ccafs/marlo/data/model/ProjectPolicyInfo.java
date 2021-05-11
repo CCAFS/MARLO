@@ -37,6 +37,9 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
   private String narrativeEvidence;
   @Expose
   private Boolean hasMilestones;
+  @Expose
+  private String editableLink;
+
 
   public ProjectPolicyInfo() {
 
@@ -72,6 +75,10 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
 
   public String getDescription() {
     return description;
+  }
+
+  public String getEditableLink() {
+    return editableLink;
   }
 
   public Boolean getHasMilestones() {
@@ -170,6 +177,10 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
 
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  public void setEditableLink(String editableLink) {
+    this.editableLink = editableLink;
   }
 
   public void setHasMilestones(Boolean hasMilestones) {
