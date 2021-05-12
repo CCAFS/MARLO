@@ -9,10 +9,10 @@
             <generator class="identity" />
         </id>
         <property name="reportName" type="string">
-            <column name="report_name" />
+            <column name="report_name" length="30" />
         </property>
         <property name="reportTitle" type="string">
-            <column name="report_title" />
+            <column name="report_title" length="100" />
         </property>
         <property name="reportDescription" type="string">
             <column name="report_description" />
@@ -31,6 +31,9 @@
         </property>
         <property name="hasFilters" type="java.lang.Boolean">
             <column name="has_filters" not-null="true" />
+        </property>
+        <property name="reportOrder" type="java.lang.Long">
+            <column name="report_order" />
         </property>
         <many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.GlobalUnit" fetch="select">
             <column name="global_unit_id"  />
