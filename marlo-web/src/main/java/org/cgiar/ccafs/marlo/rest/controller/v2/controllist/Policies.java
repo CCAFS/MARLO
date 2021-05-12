@@ -57,11 +57,29 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "Table 2 - CRP Policies")
 public class Policies {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Policies.class);
-    @Autowired
-    private Environment env;
-    private final UserManager userManager;
-    private PolicyItem<ProjectPolicyDTO> policyItem;
+  private static final Logger LOG = LoggerFactory.getLogger(Policies.class);
+  @Autowired
+  private Environment env;
+  private final UserManager userManager;
+  private PolicyItem<ProjectPolicyDTO> policyItem;
+
+
+  @Inject
+  public Policies(PolicyItem<ProjectPolicyDTO> policyItem, UserManager userManager) {
+    this.userManager = userManager;
+    this.policyItem = policyItem;
+  }
+
+  @ApiOperation(tags = {"Table 2 - CRP Policies"}, value = "${Policy.policies.POST.value}",
+    response = ProjectPolicyDTO.class)
+  @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/policies", method = RequestMethod.POST,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Long> createPolicy(
+    @ApiParam(value = "${Policy.policies.POST.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${Policy.policies.POST.param.policy}",
+      required = true) @Valid @RequestBody NewProjectPolicyDTO newProjectPolicyDTO) {
+    Long policyId = this.policyItem.createPolicy(newProjectPolicyDTO, CGIAREntity, this.getCurrentUser());
 
     @Inject
     public Policies(PolicyItem<ProjectPolicyDTO> policyItem, UserManager userManager) {

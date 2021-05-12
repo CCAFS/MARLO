@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CgiarCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.PolicyMilestoneManager;
@@ -48,6 +49,7 @@ import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PolicyMilestone;
@@ -111,82 +113,117 @@ import org.springframework.http.ResponseEntity;
 @Named
 public class PolicyItem<T> {
 
-    private PhaseManager phaseManager;
-    private GlobalUnitManager globalUnitManager;
-    private ProjectPolicyManager projectPolicyManager;
-    private ProjectPolicyCrpManager projectPolicyCrpManager;
-    private ProjectPolicyInfoManager projectPolicyInfoManager;
-    private ProjectPolicyGeographicScopeManager projectPolicyGeographicScopeManager;
-    private ProjectPolicySubIdoManager projectPolicySubIdoManager;
-    private ProjectPolicyCountryManager projectPolicyCountryManager;
-    private ProjectPolicyRegionManager projectPolicyRegionManager;
-    private ProjectPolicyCrossCuttingMarkerManager projectPolicyCrossCuttingMarkerManager;
-    private ProjectPolicyOwnerManager projectPolicyOwnerManager;
-    private ProjectPolicyInnovationManager projectPolicyInnovationManager;
-    private RepIndPolicyInvestimentTypeManager repIndPolicyInvestimentTypeManager;
-    private ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager;
-    private RepIndStageProcessManager repIndStageProcessManager;
-    private RepIndPolicyTypeManager repIndPolicyTypeManager;
-    private ProjectManager projectManager;
-    private SrfSubIdoManager srfSubIdoManager;
-    private RepIndGeographicScopeManager repIndGeographicScopeManager;
-    private LocElementManager locElementManager;
-    private ProjectPolicyMapper projectPolicyMapper;
-    private CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager;
-    private RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager;
-    private PolicyMilestoneManager policyMilestoneManager;
-    private CrpMilestoneManager crpMilestoneManager;
-    private ProjectExpectedStudyManager projectExpectedStudyManager;
-    private ProjectInnovationManager projectInnovationManager;
-    private RestApiAuditlogManager restApiAuditlogManager;
+  private PhaseManager phaseManager;
+  private GlobalUnitManager globalUnitManager;
+  private ProjectPolicyManager projectPolicyManager;
+  private ProjectPolicyCrpManager projectPolicyCrpManager;
+  private ProjectPolicyInfoManager projectPolicyInfoManager;
+  private ProjectPolicyGeographicScopeManager projectPolicyGeographicScopeManager;
+  private ProjectPolicySubIdoManager projectPolicySubIdoManager;
+  private ProjectPolicyCountryManager projectPolicyCountryManager;
+  private ProjectPolicyRegionManager projectPolicyRegionManager;
+  private ProjectPolicyCrossCuttingMarkerManager projectPolicyCrossCuttingMarkerManager;
+  private ProjectPolicyOwnerManager projectPolicyOwnerManager;
+  private ProjectPolicyInnovationManager projectPolicyInnovationManager;
+  private RepIndPolicyInvestimentTypeManager repIndPolicyInvestimentTypeManager;
+  private ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager;
+  private RepIndStageProcessManager repIndStageProcessManager;
+  private RepIndPolicyTypeManager repIndPolicyTypeManager;
+  private ProjectManager projectManager;
+  private SrfSubIdoManager srfSubIdoManager;
+  private RepIndGeographicScopeManager repIndGeographicScopeManager;
+  private LocElementManager locElementManager;
+  private ProjectPolicyMapper projectPolicyMapper;
+  private CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager;
+  private RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager;
+  private PolicyMilestoneManager policyMilestoneManager;
+  private CrpMilestoneManager crpMilestoneManager;
+  private ProjectExpectedStudyManager projectExpectedStudyManager;
+  private GlobalUnitProjectManager globalUnitProjectManager;
 
-    @Inject
-    public PolicyItem(GlobalUnitManager globalUnitManager, PhaseManager phaseManager,
-            ProjectPolicyManager projectPolicyManager, ProjectPolicyGeographicScopeManager projectPolicyGeographicScopeManager,
-            ProjectPolicyCrpManager projectPolicyCrpManager, ProjectPolicyInfoManager projectPolicyInfoManager,
-            ProjectPolicySubIdoManager projectPolicySubIdoManager, ProjectPolicyMapper projectPolicyMapper,
-            RepIndPolicyInvestimentTypeManager repIndPolicyInvestimentTypeManager,
-            RepIndStageProcessManager repIndStageProcessManager, RepIndOrganizationTypeManager repIndOrganizationTypeManager,
-            ProjectManager projectManager, SrfSubIdoManager srfSubIdoManager,
-            RepIndGeographicScopeManager repIndGeographicScopeManager, LocElementManager locElementManager,
-            CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager,
-            RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager,
-            ProjectPolicyCountryManager projectPolicyCountryManager, ProjectPolicyRegionManager projectPolicyRegionManager,
-            ProjectPolicyCrossCuttingMarkerManager projectPolicyCrossCuttingMarkerManager,
-            ProjectPolicyOwnerManager projectPolicyOwnerManager, RepIndPolicyTypeManager repIndPolicyTypeManager,
-            PolicyMilestoneManager policyMilestoneManager, CrpMilestoneManager crpMilestoneManager,
-            ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager,
-            ProjectExpectedStudyManager projectExpectedStudyManager,
-            ProjectPolicyInnovationManager projectPolicyInnovationManager, ProjectInnovationManager projectInnovationManager,
-            RestApiAuditlogManager restApiAuditlogManager) {
-        this.phaseManager = phaseManager;
-        this.globalUnitManager = globalUnitManager;
-        this.projectPolicyManager = projectPolicyManager;
-        this.projectPolicyCrpManager = projectPolicyCrpManager;
-        this.projectPolicyMapper = projectPolicyMapper;
-        this.projectPolicyInfoManager = projectPolicyInfoManager;
-        this.projectPolicyGeographicScopeManager = projectPolicyGeographicScopeManager;
-        this.projectPolicySubIdoManager = projectPolicySubIdoManager;
-        this.repIndPolicyInvestimentTypeManager = repIndPolicyInvestimentTypeManager;
-        this.repIndStageProcessManager = repIndStageProcessManager;
-        this.projectManager = projectManager;
-        this.srfSubIdoManager = srfSubIdoManager;
-        this.repIndGeographicScopeManager = repIndGeographicScopeManager;
-        this.locElementManager = locElementManager;
-        this.cgiarCrossCuttingMarkerManager = cgiarCrossCuttingMarkerManager;
-        this.repIndGenderYouthFocusLevelManager = repIndGenderYouthFocusLevelManager;
-        this.projectPolicyCountryManager = projectPolicyCountryManager;
-        this.projectPolicyRegionManager = projectPolicyRegionManager;
-        this.projectPolicyCrossCuttingMarkerManager = projectPolicyCrossCuttingMarkerManager;
-        this.projectPolicyOwnerManager = projectPolicyOwnerManager;
-        this.repIndPolicyTypeManager = repIndPolicyTypeManager;
-        this.policyMilestoneManager = policyMilestoneManager;
-        this.crpMilestoneManager = crpMilestoneManager;
-        this.projectExpectedStudyPolicyManager = projectExpectedStudyPolicyManager;
-        this.projectExpectedStudyManager = projectExpectedStudyManager;
-        this.projectPolicyInnovationManager = projectPolicyInnovationManager;
-        this.projectInnovationManager = projectInnovationManager;
-        this.restApiAuditlogManager = restApiAuditlogManager;
+  private ProjectInnovationManager projectInnovationManager;
+
+  @Inject
+  public PolicyItem(GlobalUnitManager globalUnitManager, PhaseManager phaseManager,
+    ProjectPolicyManager projectPolicyManager, ProjectPolicyGeographicScopeManager projectPolicyGeographicScopeManager,
+    ProjectPolicyCrpManager projectPolicyCrpManager, ProjectPolicyInfoManager projectPolicyInfoManager,
+    ProjectPolicySubIdoManager projectPolicySubIdoManager, ProjectPolicyMapper projectPolicyMapper,
+    RepIndPolicyInvestimentTypeManager repIndPolicyInvestimentTypeManager,
+    RepIndStageProcessManager repIndStageProcessManager, RepIndOrganizationTypeManager repIndOrganizationTypeManager,
+    ProjectManager projectManager, SrfSubIdoManager srfSubIdoManager,
+    RepIndGeographicScopeManager repIndGeographicScopeManager, LocElementManager locElementManager,
+    CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager,
+    RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager,
+    ProjectPolicyCountryManager projectPolicyCountryManager, ProjectPolicyRegionManager projectPolicyRegionManager,
+    ProjectPolicyCrossCuttingMarkerManager projectPolicyCrossCuttingMarkerManager,
+    ProjectPolicyOwnerManager projectPolicyOwnerManager, RepIndPolicyTypeManager repIndPolicyTypeManager,
+    PolicyMilestoneManager policyMilestoneManager, CrpMilestoneManager crpMilestoneManager,
+    ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager,
+    ProjectExpectedStudyManager projectExpectedStudyManager,
+    ProjectPolicyInnovationManager projectPolicyInnovationManager, ProjectInnovationManager projectInnovationManager,
+    GlobalUnitProjectManager globalUnitProjectManager) {
+    this.phaseManager = phaseManager;
+    this.globalUnitManager = globalUnitManager;
+    this.projectPolicyManager = projectPolicyManager;
+    this.projectPolicyCrpManager = projectPolicyCrpManager;
+    this.projectPolicyMapper = projectPolicyMapper;
+    this.projectPolicyInfoManager = projectPolicyInfoManager;
+    this.projectPolicyGeographicScopeManager = projectPolicyGeographicScopeManager;
+    this.projectPolicySubIdoManager = projectPolicySubIdoManager;
+    this.repIndPolicyInvestimentTypeManager = repIndPolicyInvestimentTypeManager;
+    this.repIndStageProcessManager = repIndStageProcessManager;
+    this.projectManager = projectManager;
+    this.srfSubIdoManager = srfSubIdoManager;
+    this.repIndGeographicScopeManager = repIndGeographicScopeManager;
+    this.locElementManager = locElementManager;
+    this.cgiarCrossCuttingMarkerManager = cgiarCrossCuttingMarkerManager;
+    this.repIndGenderYouthFocusLevelManager = repIndGenderYouthFocusLevelManager;
+    this.projectPolicyCountryManager = projectPolicyCountryManager;
+    this.projectPolicyRegionManager = projectPolicyRegionManager;
+    this.projectPolicyCrossCuttingMarkerManager = projectPolicyCrossCuttingMarkerManager;
+    this.projectPolicyOwnerManager = projectPolicyOwnerManager;
+    this.repIndPolicyTypeManager = repIndPolicyTypeManager;
+    this.policyMilestoneManager = policyMilestoneManager;
+    this.crpMilestoneManager = crpMilestoneManager;
+    this.projectExpectedStudyPolicyManager = projectExpectedStudyPolicyManager;
+    this.projectExpectedStudyManager = projectExpectedStudyManager;
+    this.projectPolicyInnovationManager = projectPolicyInnovationManager;
+    this.projectInnovationManager = projectInnovationManager;
+    this.globalUnitProjectManager = globalUnitProjectManager;
+  }
+
+  public Long createPolicy(NewProjectPolicyDTO newPolicyDTO, String entityAcronym, User user) {
+    Long policyID = null;
+    ProjectPolicy projectPolicy = new ProjectPolicy();
+    ProjectPolicyInfo projectPolicyInfo = new ProjectPolicyInfo();
+    List<ProjectPolicyCrp> projectPolicyCrpList = new ArrayList<ProjectPolicyCrp>();
+    List<ProjectPolicySubIdo> projectPolicySubIdoList = new ArrayList<ProjectPolicySubIdo>();
+    List<ProjectPolicyGeographicScope> projectPolicyGeographicScopeList = new ArrayList<ProjectPolicyGeographicScope>();
+    List<ProjectPolicyCountry> projectPolicyCountryList = new ArrayList<ProjectPolicyCountry>();
+    List<ProjectPolicyRegion> projectPolicyRegionList = new ArrayList<ProjectPolicyRegion>();
+    List<ProjectPolicyCrossCuttingMarker> ProjectPolicyCrossCuttingMarkerList =
+      new ArrayList<ProjectPolicyCrossCuttingMarker>();
+    List<PolicyMilestone> policyMilestones = new ArrayList<>();
+    List<ProjectPolicyInnovation> projectPolicyInnovationsList = new ArrayList<ProjectPolicyInnovation>();
+    List<ProjectPolicyOwner> projectPolicyOwnerList = new ArrayList<ProjectPolicyOwner>();
+
+    String strippedId = null;
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
+    if (globalUnitEntity == null) {
+      fieldErrors.add(new FieldErrorDTO("createInnovation", "GlobalUnitEntity",
+        entityAcronym + " is an invalid CGIAR entity acronym"));
+    }
+    Phase phase =
+      this.phaseManager.findAll().stream()
+        .filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(entityAcronym)
+          && c.getYear() == newPolicyDTO.getPhase().getYear()
+          && c.getName().equalsIgnoreCase(newPolicyDTO.getPhase().getName()))
+        .findFirst().get();
+
+    if (phase == null) {
+      fieldErrors.add(new FieldErrorDTO("createPolicy", "phase",
+        new NewProjectPolicyDTO().getPhase().getYear() + " is an invalid year"));
     }
 
     public Long createPolicy(NewProjectPolicyDTO newPolicyDTO, String entityAcronym, User user) {
@@ -701,70 +738,215 @@ public class PolicyItem<T> {
                 "N/A", user.getId(), null, "", phase.getId());
         restApiAuditlogManager.logApiCall(restApiAuditLog);
 
-        return Optional.ofNullable(projectPolicy).map(this.projectPolicyMapper::projectPolicyToProjectPolicyDTO)
-                .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    return Optional.ofNullable(projectPolicy).map(this.projectPolicyMapper::projectPolicyToProjectPolicyDTO)
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
+
+  public ProjectPolicy getPolicyInfoPhase(ProjectPolicy projectPolicy, Phase phase) {
+    if (projectPolicy != null) {
+      final long projectPolicyID = projectPolicy.getId().longValue();
+      projectPolicy.getProjectPolicyInfo(phase);
+
+      // Setting Geographic Scope
+      projectPolicy.setGeographicScopes(projectPolicyGeographicScopeManager.findAll().stream()
+        .filter(
+          c -> c.getProjectPolicy().getId().longValue() == projectPolicyID && c.getPhase().getId() == phase.getId())
+        .collect(Collectors.toList()));
+      // Setting CRP contributing
+      projectPolicy.setCrps(projectPolicyCrpManager.findAll().stream()
+        .filter(
+          c -> c.getProjectPolicy().getId().longValue() == projectPolicyID && c.getPhase().getId() == phase.getId())
+        .collect(Collectors.toList()));
+      // Setting CrossCuttingMarker
+      projectPolicy.setCrossCuttingMarkers(projectPolicyCrossCuttingMarkerManager.findAll().stream()
+        .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicyID
+          && c.getPhase().getId().longValue() == phase.getId().longValue())
+        .collect(Collectors.toList()));
+      // Setting SubIdos
+      projectPolicy.setSubIdos(projectPolicySubIdoManager.findAll().stream()
+        .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicyID
+          && c.getPhase().getId().longValue() == phase.getId().longValue())
+        .collect(Collectors.toList()));
+      // Setting Milestones
+      projectPolicy.setMilestones(policyMilestoneManager.findAll().stream()
+        .filter(c -> c.getPolicy().getId().longValue() == projectPolicyID && c.getPhase().getId() == phase.getId())
+        .collect(Collectors.toList()));
+      System.out.println(policyMilestoneManager.findAll().stream()
+        .filter(c -> c.getPolicy().getId().longValue() == projectPolicyID && c.getPhase().getId() == phase.getId())
+        .collect(Collectors.toList()));
+      // setting countries
+      projectPolicy.setCountries(projectPolicyCountryManager.findAll().stream()
+        .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicyID
+          && c.getPhase().getId().longValue() == phase.getId().longValue())
+        .collect(Collectors.toList()));
+      // setting regions
+      projectPolicy.setRegions(projectPolicyRegionManager.findAll().stream()
+        .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicyID
+          && c.getPhase().getId().longValue() == phase.getId().longValue())
+        .collect(Collectors.toList()));
+      // setting owners
+      projectPolicy.setOwners(projectPolicyOwnerManager.findAll().stream()
+        .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicyID
+          && c.getPhase().getId().longValue() == phase.getId().longValue())
+        .collect(Collectors.toList()));
+      // setting innvoations
+
+      List<ProjectPolicyInnovation> projectPolicyInnovationList = new ArrayList<ProjectPolicyInnovation>();
+      for (ProjectPolicyInnovation projectPolicyInnovation : projectPolicyInnovationManager.findAll().stream()
+        .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicyID
+          && c.getPhase().getId().longValue() == phase.getId().longValue())
+        .collect(Collectors.toList())) {
+        ProjectInnovation projectInnovation =
+          projectInnovationManager.getProjectInnovationById(projectPolicyInnovation.getProjectInnovation().getId());
+        ProjectInnovationInfo projectInnovationInfo = projectInnovation.getProjectInnovationInfo(phase);
+        projectInnovation.setProjectInnovationInfo(projectInnovationInfo);
+        projectPolicyInnovation.setProjectInnovation(projectInnovation);
+        projectPolicyInnovationList.add(projectPolicyInnovation);
+      }
+      projectPolicy.setInnovations(projectPolicyInnovationList);
+      // setting OCIRs
+      List<ProjectExpectedStudyPolicy> projectExpectedStudyPolicyList = new ArrayList<ProjectExpectedStudyPolicy>();
+      for (ProjectExpectedStudyPolicy projectExpectedStudyPolicy : projectExpectedStudyPolicyManager.findAll().stream()
+        .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicyID
+          && c.getPhase().getId().longValue() == phase.getId().longValue())
+        .collect(Collectors.toList())) {
+        ProjectExpectedStudy projectExpectedStudy = projectExpectedStudyManager
+          .getProjectExpectedStudyById(projectExpectedStudyPolicy.getProjectExpectedStudy().getId());
+        ProjectExpectedStudyInfo info = projectExpectedStudy.getProjectExpectedStudyInfo(phase);
+        projectExpectedStudy.setProjectExpectedStudyInfo(info);
+        projectExpectedStudyPolicy.setProjectExpectedStudy(projectExpectedStudy);
+        projectExpectedStudyPolicyList.add(projectExpectedStudyPolicy);
+      }
+      projectPolicy.setEvidences(projectExpectedStudyPolicyList);
+    }
+    return projectPolicy;
+  }
+
+  /**
+   * Update an Policy by Id and year
+   * 
+   * @param id
+   * @param year
+   * @param phase
+   * @return a NewProjectPolicyDTO with the policy Item
+   */
+
+  public Long putPolicyById(Long id, NewProjectPolicyDTO newPolicyDTO, String entityAcronym, User user) {
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+    List<ProjectPolicyCrp> projectPolicyCrpList = new ArrayList<ProjectPolicyCrp>();
+    List<ProjectPolicySubIdo> projectPolicySubIdoList = new ArrayList<ProjectPolicySubIdo>();
+    List<ProjectPolicyGeographicScope> projectPolicyGeographicScopeList = new ArrayList<ProjectPolicyGeographicScope>();
+    List<ProjectPolicyCountry> projectPolicyCountryList = new ArrayList<ProjectPolicyCountry>();
+    List<ProjectPolicyRegion> projectPolicyRegionList = new ArrayList<ProjectPolicyRegion>();
+    List<ProjectPolicyCrossCuttingMarker> ProjectPolicyCrossCuttingMarkerList =
+      new ArrayList<ProjectPolicyCrossCuttingMarker>();
+    List<ProjectPolicyInnovation> projectPolicyInnovationList = new ArrayList<ProjectPolicyInnovation>();
+    List<PolicyMilestone> policyMilestones = new ArrayList<>();
+    List<ProjectPolicyOwner> projectPolicyOwnerList = new ArrayList<ProjectPolicyOwner>();
+    String strippedId = null;
+    Long policyID = null;
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
+    if (globalUnitEntity == null) {
+      fieldErrors.add(new FieldErrorDTO("createInnovation", "GlobalUnitEntity",
+        entityAcronym + " is an invalid CGIAR entity acronym"));
+    }
+    Phase phase =
+      this.phaseManager.findAll().stream()
+        .filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(entityAcronym)
+          && c.getYear() == newPolicyDTO.getPhase().getYear()
+          && c.getName().equalsIgnoreCase(newPolicyDTO.getPhase().getName()))
+        .findFirst().get();
+    if (phase == null) {
+      fieldErrors.add(new FieldErrorDTO("updatePolicy", "phase",
+        new NewProjectPolicyDTO().getPhase().getYear() + " is an invalid year"));
     }
 
-    public ProjectPolicy getPolicyInfoPhase(ProjectPolicy projectPolicy, Phase phase) {
-        if (projectPolicy != null) {
-            final long projectPolicyID = projectPolicy.getId().longValue();
-            projectPolicy.getProjectPolicyInfo(phase);
+    Project project = null;
+    if (newPolicyDTO.getProject() != null) {
+      project = projectManager.getProjectById(newPolicyDTO.getProject());
+      if (project == null) {
+        fieldErrors.add(new FieldErrorDTO("updatePolicy", "Project", newPolicyDTO.getProject() + " is an project ID"));
+      } else {
+        GlobalUnitProject crpProject =
+          globalUnitProjectManager.findByProjectAndGlobalUnitId(newPolicyDTO.getProject(), globalUnitEntity.getId());
+        if (crpProject == null) {
+          fieldErrors
+            .add(new FieldErrorDTO("updatePolicy", "Project", newPolicyDTO.getProject() + " is an invalid project ID"));
+        }
+      }
+    } else {
+      fieldErrors.add(new FieldErrorDTO("updatePolicy", "Project", "A projectID can not be null"));
+    }
 
-            // Setting Geographic Scope
-            projectPolicy.setGeographicScopes(projectPolicyGeographicScopeManager.findAll().stream()
-                    .filter(
-                            c -> c.getProjectPolicy().getId().longValue() == projectPolicyID && c.getPhase().getId() == phase.getId())
-                    .collect(Collectors.toList()));
-            // Setting CRP contributing
-            projectPolicy.setCrps(projectPolicyCrpManager.findAll().stream()
-                    .filter(
-                            c -> c.getProjectPolicy().getId().longValue() == projectPolicyID && c.getPhase().getId() == phase.getId())
-                    .collect(Collectors.toList()));
-            // Setting CrossCuttingMarker
-            projectPolicy.setCrossCuttingMarkers(projectPolicyCrossCuttingMarkerManager.findAll().stream()
-                    .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicyID
-                    && c.getPhase().getId().longValue() == phase.getId().longValue())
-                    .collect(Collectors.toList()));
-            // Setting SubIdos
-            projectPolicy.setSubIdos(projectPolicySubIdoManager.findAll().stream()
-                    .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicyID
-                    && c.getPhase().getId().longValue() == phase.getId().longValue())
-                    .collect(Collectors.toList()));
-            // Setting Milestones
-            projectPolicy.setMilestones(policyMilestoneManager.findAll().stream()
-                    .filter(c -> c.getPolicy().getId().longValue() == projectPolicyID && c.getPhase().getId() == phase.getId())
-                    .collect(Collectors.toList()));
-            System.out.println(policyMilestoneManager.findAll().stream()
-                    .filter(c -> c.getPolicy().getId().longValue() == projectPolicyID && c.getPhase().getId() == phase.getId())
-                    .collect(Collectors.toList()));
-            // setting countries
-            projectPolicy.setCountries(projectPolicyCountryManager.findAll().stream()
-                    .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicyID
-                    && c.getPhase().getId().longValue() == phase.getId().longValue())
-                    .collect(Collectors.toList()));
-            // setting regions
-            projectPolicy.setRegions(projectPolicyRegionManager.findAll().stream()
-                    .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicyID
-                    && c.getPhase().getId().longValue() == phase.getId().longValue())
-                    .collect(Collectors.toList()));
-            // setting owners
-            projectPolicy.setOwners(projectPolicyOwnerManager.findAll().stream()
-                    .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicyID
-                    && c.getPhase().getId().longValue() == phase.getId().longValue())
-                    .collect(Collectors.toList()));
-            // setting innvoations
+    ProjectPolicy projectPolicy = null;
+    if (id != null) {
+      projectPolicy = projectPolicyManager.getProjectPolicyById(id.longValue());
+      if (projectPolicy == null) {
+        fieldErrors.add(new FieldErrorDTO("updatePolicy", "policy", id.longValue() + " does not exists"));
+      } else {
+        if (projectPolicy.getProject().getId().longValue() != newPolicyDTO.getProject()) {
+          fieldErrors
+            .add(new FieldErrorDTO("updatePolicy", "Project", newPolicyDTO.getProject() + " is an invalid project ID"));
+        }
+      }
+    }
+    if (fieldErrors.size() == 0) {
 
-            List<ProjectPolicyInnovation> projectPolicyInnovationList = new ArrayList<ProjectPolicyInnovation>();
-            for (ProjectPolicyInnovation projectPolicyInnovation : projectPolicyInnovationManager.findAll().stream()
-                    .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicyID
-                    && c.getPhase().getId().longValue() == phase.getId().longValue())
-                    .collect(Collectors.toList())) {
-                ProjectInnovation projectInnovation
-                        = projectInnovationManager.getProjectInnovationById(projectPolicyInnovation.getProjectInnovation().getId());
-                ProjectInnovationInfo projectInnovationInfo = projectInnovation.getProjectInnovationInfo(phase);
-                projectInnovation.setProjectInnovationInfo(projectInnovationInfo);
-                projectPolicyInnovation.setProjectInnovation(projectInnovation);
-                projectPolicyInnovationList.add(projectPolicyInnovation);
+      ProjectPolicyInfo projectPolicyInfo = null;
+      if (projectPolicy.getProjectPolicyInfo(phase) != null) {
+        projectPolicyInfo =
+          projectPolicyInfoManager.getProjectPolicyInfoById(projectPolicy.getProjectPolicyInfo(phase).getId());
+        projectPolicyInfo.setProjectPolicy(projectPolicy);
+        projectPolicyInfo.setPhase(phase);
+        projectPolicyInfo.setYear(newPolicyDTO.getProjectPoliciesInfo().getYear());
+        projectPolicyInfo.setTitle(newPolicyDTO.getProjectPoliciesInfo().getTitle());
+        projectPolicyInfo.setDescription(newPolicyDTO.getProjectPoliciesInfo().getDescription());
+        projectPolicyInfo.setNarrativeEvidence(newPolicyDTO.getProjectPoliciesInfo().getNarrativeEvidence());
+        // policy investiment type
+        if (newPolicyDTO.getProjectPoliciesInfo().getRepIndPolicyInvestimentType() != null) {
+          RepIndPolicyInvestimentType repIndPolicyInvestimentType =
+            this.repIndPolicyInvestimentTypeManager.getRepIndPolicyInvestimentTypeById(
+              newPolicyDTO.getProjectPoliciesInfo().getRepIndPolicyInvestimentType().getCode().longValue());
+          if (repIndPolicyInvestimentType == null) {
+            fieldErrors.add(new FieldErrorDTO("createPolicy", "repIndPolicyInvestimentType",
+              new NewProjectPolicyDTO().getProjectPoliciesInfo().getRepIndPolicyInvestimentType().getCode()
+                + " is an invalid investiment type code"));
+          } else {
+            projectPolicyInfo.setRepIndPolicyInvestimentType(repIndPolicyInvestimentType);
+          }
+        } else {
+          fieldErrors.add(
+            new FieldErrorDTO("createPolicy", "repIndPolicyInvestimentType", "policy investiment type is need it"));
+        }
+        // policy info maturity level
+        if (newPolicyDTO.getProjectPoliciesInfo().getRepIndStageProcess() != null) {
+          RepIndStageProcess repIndStageProcess = repIndStageProcessManager.getRepIndStageProcessById(
+            newPolicyDTO.getProjectPoliciesInfo().getRepIndStageProcess().getCode().longValue());
+          if (repIndStageProcess == null) {
+            fieldErrors.add(new FieldErrorDTO("createPolicy", "repIndStageProcess",
+              new NewProjectPolicyDTO().getProjectPoliciesInfo().getRepIndStageProcess().getCode()
+                + " is an invalid maturity level code"));
+          } else {
+            projectPolicyInfo.setRepIndStageProcess(repIndStageProcess);
+          }
+        } else {
+          fieldErrors.add(new FieldErrorDTO("createPolicy", "repIndStageProcess", "policy maturity level is need it"));
+        }
+        projectPolicy.setProjectPolicyInfo(projectPolicyInfo);
+
+        // validate crp contributing
+        if (newPolicyDTO.getProjectPolicyCrpDTO() != null && newPolicyDTO.getProjectPolicyCrpDTO().size() > 0) {
+          for (CGIAREntityDTO contributingCRP : newPolicyDTO.getProjectPolicyCrpDTO()) {
+            GlobalUnit crp = this.globalUnitManager.findGlobalUnitBySMOCode(contributingCRP.getCode());
+            if (crp == null) {
+              fieldErrors.add(new FieldErrorDTO("createPolicy", "ContributingCGIAREntities",
+                contributingCRP.getCode() + " is an invalid CGIAR entity code"));
+            } else {
+              ProjectPolicyCrp projectPolicyCrp = new ProjectPolicyCrp();
+              projectPolicyCrp.setGlobalUnit(crp);
+              projectPolicyCrp.setPhase(phase);
+              projectPolicyCrp.setProjectPolicy(projectPolicy);
+              projectPolicyCrpList.add(projectPolicyCrp);
             }
             projectPolicy.setInnovations(projectPolicyInnovationList);
             // setting OCIRs

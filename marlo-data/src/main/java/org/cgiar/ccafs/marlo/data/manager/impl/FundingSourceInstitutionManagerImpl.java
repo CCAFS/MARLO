@@ -49,13 +49,6 @@ public class FundingSourceInstitutionManagerImpl implements FundingSourceInstitu
 
   }
 
-  public void cloneFundingSourceInstitution(FundingSourceInstitution fundingSourceInstitutionAdd,
-    FundingSourceInstitution fundingSourceInstitution, Phase phase) {
-    fundingSourceInstitutionAdd.setFundingSource(fundingSourceInstitution.getFundingSource());
-    fundingSourceInstitutionAdd.setInstitution(fundingSourceInstitution.getInstitution());
-    fundingSourceInstitutionAdd.setPhase(phase);
-
-  }
 
   @Override
   public void deleteFundingSourceInstitution(long fundingSourceInstitutionId) {
@@ -136,7 +129,9 @@ public class FundingSourceInstitutionManagerImpl implements FundingSourceInstitu
       .collect(Collectors.toList());
     if (institutions.isEmpty()) {
       FundingSourceInstitution fundingSourceInstitutionAdd = new FundingSourceInstitution();
-      this.cloneFundingSourceInstitution(fundingSourceInstitutionAdd, fundingSourceInstitution, phase);
+      fundingSourceInstitutionAdd.setFundingSource(fundingSourceInstitution.getFundingSource());
+      fundingSourceInstitutionAdd.setInstitution(fundingSourceInstitution.getInstitution());
+      fundingSourceInstitutionAdd.setPhase(phase);
       fundingSourceInstitutionDAO.save(fundingSourceInstitutionAdd);
     }
 

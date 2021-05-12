@@ -747,6 +747,8 @@ public final class APConstants {
 
   public static final String IGNORE_NEWER_YEARS = "ignoreNewer";
 
+  public static final Long OTHER_MAIN_AREA = 6L;
+
   public static String getFilterBy() {
     return FILTER_BY;
   }

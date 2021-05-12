@@ -89,6 +89,9 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   private Boolean hasMilestones;
 
   private List<String> evidencesLink;
+  @Expose
+  private String editableLink;
+
 
   public ProjectInnovationInfo() {
   }
@@ -132,7 +135,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.year = year;
   }
 
-
   public String getAdaptativeResearchNarrative() {
     return adaptativeResearchNarrative;
   }
@@ -141,18 +143,23 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return clearLead;
   }
 
+
   public String getDescriptionStage() {
     return descriptionStage;
+  }
+
+  public String getEditableLink() {
+    return editableLink;
   }
 
   public String getEvidenceLink() {
     return evidenceLink;
   }
 
-
   public List<String> getEvidencesLink() {
     return evidencesLink;
   }
+
 
   public String getGenderExplaniation() {
     return genderExplaniation;
@@ -209,15 +216,14 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return projectExpectedStudy;
   }
 
-
   public ProjectInnovation getProjectInnovation() {
     return projectInnovation;
   }
 
+
   public RepIndDegreeInnovation getRepIndDegreeInnovation() {
     return repIndDegreeInnovation;
   }
-
 
   public RepIndGeographicScope getRepIndGeographicScope() {
     return repIndGeographicScope;
@@ -282,6 +288,11 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
 
   public void setDescriptionStage(String descriptionStage) {
     this.descriptionStage = descriptionStage;
+  }
+
+
+  public void setEditableLink(String editableLink) {
+    this.editableLink = editableLink;
   }
 
 
