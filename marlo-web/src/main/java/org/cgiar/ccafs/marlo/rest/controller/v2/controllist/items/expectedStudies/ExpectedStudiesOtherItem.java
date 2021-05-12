@@ -217,6 +217,12 @@ public class ExpectedStudiesOtherItem<T> {
     } else {
       fieldErrors.add(new FieldErrorDTO("createExpectedStudyOther", "Project", "Please insert a Project ID"));
     }
+
+    if (phase != null && !phase.getEditable()) {
+      fieldErrors
+        .add(new FieldErrorDTO("createExpectedStudyOther", "phase", newProjectExpectedStudiesOther.getPhase().getName()
+          + ' ' + newProjectExpectedStudiesOther.getPhase().getYear() + " is an closed phase"));
+    }
     if (fieldErrors.isEmpty()) {
       ProjectExpectedStudy projectExpectedStudy = new ProjectExpectedStudy();
       List<RepIndGeographicScope> geographicScopeList = new ArrayList<RepIndGeographicScope>();
@@ -849,6 +855,11 @@ public class ExpectedStudiesOtherItem<T> {
           newProjectExpectedStudy.getProject() + " is an invalid project ID"));
       }
 
+    }
+
+    if (phase != null && !phase.getEditable()) {
+      fieldErrors.add(new FieldErrorDTO("UpdateExpectedStudy", "phase", newProjectExpectedStudy.getPhase().getName()
+        + ' ' + newProjectExpectedStudy.getPhase().getYear() + " is an closed phase"));
     }
 
     if (fieldErrors.size() == 0) {

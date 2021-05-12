@@ -190,6 +190,11 @@ public class StatusPlannedMilestonesItem<T> {
             new FieldErrorDTO("createStatusPlannedMilestone", "phase", newStatusPlannedMilestoneDTO.getPhase().getName()
               + ' ' + newStatusPlannedMilestoneDTO.getPhase().getYear() + " is an invalid phase"));
         }
+        if (phase != null && !phase.getEditable()) {
+          fieldErrors.add(
+            new FieldErrorDTO("createStatusPlannedMilestone", "phase", newStatusPlannedMilestoneDTO.getPhase().getName()
+              + ' ' + newStatusPlannedMilestoneDTO.getPhase().getYear() + " is closed phase"));
+        }
       }
     }
 
@@ -641,6 +646,11 @@ public class StatusPlannedMilestonesItem<T> {
           fieldErrors.add(
             new FieldErrorDTO("updateStatusPlannedMilestone", "phase", newStatusPlannedMilestoneDTO.getPhase().getName()
               + ' ' + newStatusPlannedMilestoneDTO.getPhase().getYear() + " is an invalid phase"));
+        }
+        if (phase != null && !phase.getEditable()) {
+          fieldErrors.add(
+            new FieldErrorDTO("updateStatusPlannedMilestone", "phase", newStatusPlannedMilestoneDTO.getPhase().getName()
+              + ' ' + newStatusPlannedMilestoneDTO.getPhase().getYear() + " is closed phase"));
         }
       }
     }
