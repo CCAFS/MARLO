@@ -171,6 +171,10 @@ public class DeliverablesItem<T> {
       fieldErrors
         .add(new FieldErrorDTO("createDeliverable", "phase", deliverable.getPhase().getYear() + " is an invalid year"));
     }
+    if (phase != null && !phase.getEditable()) {
+      fieldErrors.add(new FieldErrorDTO("createDeliverable", "phase", "This phase is closed"));
+    }
+
     if (fieldErrors.size() == 0 || fieldErrors.isEmpty()) {
       // create deliverable
       deliverable.setCrp(globalUnitEntity);
@@ -565,6 +569,10 @@ public class DeliverablesItem<T> {
     if (deliverableType == null) {
       fieldErrors.add(new FieldErrorDTO("createDeliverableOther", "DeliverableType",
         deliverableDTO.getType() + " is an invalid publication Type"));
+    }
+
+    if (phase != null && !phase.getEditable()) {
+      fieldErrors.add(new FieldErrorDTO("createDeliverableOther", "phase", "This is a closed phase"));
     }
 
     if (fieldErrors.size() == 0 || fieldErrors.isEmpty()) {
@@ -1322,6 +1330,9 @@ public class DeliverablesItem<T> {
         }
       }
     }
+    if (phase != null && !phase.getEditable()) {
+      fieldErrors.add(new FieldErrorDTO("putDeliverable", "phase", "this  is an closed phase"));
+    }
 
     if (fieldErrors.isEmpty()) {
       // create deliverable
@@ -1767,9 +1778,9 @@ public class DeliverablesItem<T> {
       }
 
 
-    } else
+    }
 
-    {
+    if (!fieldErrors.isEmpty()) {
       // validators
       throw new MARLOFieldValidationException("Field Validation errors", "",
         fieldErrors.stream()
@@ -1851,6 +1862,10 @@ public class DeliverablesItem<T> {
     if (deliverableType == null) {
       fieldErrors.add(new FieldErrorDTO("putDeliverable", "DeliverableType",
         newPublicationDTO.getType() + " is an invalid publication Type"));
+    }
+
+    if (phase != null && !phase.getEditable()) {
+      fieldErrors.add(new FieldErrorDTO("putDeliverable", "phase", "this  is an closed phase"));
     }
 
     if (fieldErrors.isEmpty()) {
@@ -2256,7 +2271,8 @@ public class DeliverablesItem<T> {
       }
 
 
-    } else {
+    }
+    if (!fieldErrors.isEmpty()) {
       // validators
       throw new MARLOFieldValidationException("Field Validation errors", "",
         fieldErrors.stream()

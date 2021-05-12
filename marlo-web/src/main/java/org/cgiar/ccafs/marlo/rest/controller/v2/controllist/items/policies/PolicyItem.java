@@ -258,6 +258,10 @@ public class PolicyItem<T> {
         fieldErrors.add(
           new FieldErrorDTO("createPolicy", "Project id", newPolicyDTO.getProject() + " is an invalid project id"));
       }
+      if (phase != null && !phase.getEditable()) {
+        fieldErrors.add(new FieldErrorDTO("createPolicy", "phase",
+          new NewProjectPolicyDTO().getPhase().getYear() + " is closed phase"));
+      }
       // validate policy info
       if (fieldErrors.isEmpty()) {
         // validate crp contributing
@@ -821,6 +825,11 @@ public class PolicyItem<T> {
             .add(new FieldErrorDTO("updatePolicy", "Project", newPolicyDTO.getProject() + " is an invalid project ID"));
         }
       }
+    }
+
+    if (phase != null && !phase.getEditable()) {
+      fieldErrors.add(new FieldErrorDTO("updatePolicy", "phase",
+        new NewProjectPolicyDTO().getPhase().getYear() + " is closed phase"));
     }
     if (fieldErrors.size() == 0) {
 
