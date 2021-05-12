@@ -865,8 +865,11 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
                 .filter(fsd -> fsd.getPhase() != null && fsd.getPhase().equals(this.getSelectedPhase()))
                 .collect(Collectors.toList())) {
 
-                if (temp == null || temp.isEmpty() || temp.size() == 0
-                  || !temp.contains(fundingSource.getFundingSourceInfo().getPartnerDivision().getName())) {
+                if ((fundingSource.getFundingSourceInfo() != null
+                  && fundingSource.getFundingSourceInfo().getPartnerDivision() != null
+                  && fundingSource.getFundingSourceInfo().getPartnerDivision().getName() != null)
+                  && (temp == null || temp.isEmpty() || temp.size() == 0
+                    || !temp.contains(fundingSource.getFundingSourceInfo().getPartnerDivision().getName()))) {
                   leadPartner += " (" + fsDiv.getDivision().getName();
                   temp.add(fsDiv.getDivision().getName());
                 } else {

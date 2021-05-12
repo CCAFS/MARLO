@@ -640,611 +640,418 @@ public class InnovationItem<T> {
             fieldErrors.add(new FieldErrorDTO("allInnovation", "phase", repoYear + " is an invalid year"));
         }
 
-        if (!fieldErrors.isEmpty()) {
-            throw new MARLOFieldValidationException("Field Validation errors", "",
-                    fieldErrors.stream()
-                            .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
-                            .collect(Collectors.toList()));
-        } else {
-
-            List<ProjectInnovationInfo> projectInnovationInfoList = phase.getProjectInnovationInfos().stream()
-                    .filter(c -> c.getPhase().getId().equals(phase.getId()) && c.getYear().longValue() == repoYear)
-                    .collect(Collectors.toList());
-            for (ProjectInnovationInfo projectInnovationInfo : projectInnovationInfoList) {
-                ProjectInnovation innovation
-                        = this.projectInnovationManager.getProjectInnovationById(projectInnovationInfo.getProjectInnovation().getId());
-                if (innovation.isActive() && projectInnovationManager.isInnovationExcluded(innovation.getId(), phase.getId())) {
-                    innovation.setProjectInnovationInfo(projectInnovationInfo);
-                    innovation.setCountries(
-                            this.projectInnovationCountryManager.getInnovationCountrybyPhase(innovation.getId(), phase.getId()));
-                    innovation.setRegions(innovation.getProjectInnovationRegions().stream()
-                            .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-                    innovation.setGeographicScopes(innovation.getProjectInnovationGeographicScopes().stream()
-                            .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-                    innovation.setContributingOrganizations(innovation.getProjectInnovationContributingOrganization().stream()
-                            .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-                    innovation.setCrps(innovation.getProjectInnovationCrps().stream()
-                            .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-                    innovation.setOrganizations(innovation.getProjectInnovationOrganizations().stream()
-                            .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-                    innovation.setMilestones(innovation.getProjectInnovationMilestones().stream()
-                            .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-                    innovation.setSubIdos(innovation.getProjectInnovationSubIdos().stream()
-                            .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-                    projectInnovationList.add(innovation);
-                }
-            }
-        }
-        innovationList = projectInnovationList.stream()
-                .map(innovations -> this.innovationMapper.projectInnovationToInnovationARDTO(innovations))
-                .collect(Collectors.toList());
-
-        // Log Action
-        RestApiAuditlog restApiAuditLog = new RestApiAuditlog("findAllInnovationsByGlobalUnit", "Searched CGIAR Entity Acronym" + CGIARentityAcronym + " Year:" + repoYear + " Phase: " + repoPhase, new Date(), 0L, "class org.cgiar.ccafs.marlo.data.model.ProjectInnovation",
-                "N/A", user.getId(), null, "", phase.getId());
-        restApiAuditlogManager.logApiCall(restApiAuditLog);
-
-        return innovationList;
+    ProjectInnovation innovation = this.projectInnovationManager.getProjectInnovationById(idInnovation);
+    if (innovation == null) {
+      fieldErrors
+        .add(new FieldErrorDTO("updateInnovation", "Innovation", +idInnovation + " is an invalid innovation Code"));
+    } else {
+      if (innovation.getProject().getId().longValue() != newInnovationDTO.getProject().getId().longValue()) {
+        fieldErrors.add(new FieldErrorDTO("updateInnovation", "Innovation",
+          newInnovationDTO.getProject().getId() + " is an invalid project ID"));
+      }
     }
+    if (fieldErrors.size() == 0) {
+      innovationID = innovation.getId();
+      // update basic data
+      RepIndStageInnovation RepIndStageInnovation = this.repIndStageInnovationManager
+        .getRepIndStageInnovationById(newInnovationDTO.getStageOfInnovation().getCode());
+      if (RepIndStageInnovation == null) {
+        fieldErrors.add(new FieldErrorDTO("updateInnovation", "Stage of Innovation",
+          newInnovationDTO.getStageOfInnovation() + " is an invalid stage of innovation code"));
+      }
 
-    /**
-     * Find an Innovation by Id and year
-     *
-     * @param id
-     * @param year
-     * @param phase
-     * @return a InnovationDTO with the innovation Item
-     */
-    public ResponseEntity<InnovationDTO> findInnovationById(Long id, String CGIARentityAcronym, Integer repoYear,
-            String repoPhase, User user) {
-        // TODO: Include all security validations
-
-        List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
-        GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
-        ProjectInnovation innovation = this.projectInnovationManager.getProjectInnovationById(id);
-        Phase phase = this.phaseManager.findAll().stream()
-                .filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
-                && c.getYear() >= APConstants.CLARISA_AVALIABLE_INFO_YEAR && c.getYear() == repoYear
-                && c.getName().equalsIgnoreCase(repoPhase))
-                .findFirst().orElse(null);
-
-        Set<CrpUser> lstUser = user.getCrpUsers();
-
-        if (!lstUser.stream().anyMatch(crp -> crp.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym))) {
-            fieldErrors.add(new FieldErrorDTO("findInnovation", "GlobalUnitEntity", "CGIAR entity not autorized"));
+      Institution leadInstitution = null;
+      if (newInnovationDTO.getLeadOrganization() != null) {
+        leadInstitution = this.institutionManager.getInstitutionById(newInnovationDTO.getLeadOrganization().getCode());
+        if (leadInstitution == null) {
+          fieldErrors.add(new FieldErrorDTO("updateInnovation", "Lead institution",
+            newInnovationDTO.getLeadOrganization() + " is an invalid institution id"));
         }
+      }
 
-        if (globalUnitEntity == null) {
-            fieldErrors.add(new FieldErrorDTO("findInnovation", "GlobalUnitEntity",
-                    CGIARentityAcronym + " is not an invalid CGIAR entity acronym"));
+      RepIndInnovationType repIndInnovationType =
+        this.repIndInnovationTypeManager.getRepIndInnovationTypeById(newInnovationDTO.getInnovationType().getCode());
+      if (repIndInnovationType == null) {
+        fieldErrors.add(new FieldErrorDTO("updateInnovation", "Innovation Type",
+          newInnovationDTO.getInnovationType() + " is an invalid innovation type code"));
+      } else {
+        if (newInnovationDTO.getInnovationType().getCode() == 1) {
+          if (newInnovationDTO.getInnovationNumber() == null
+            || (newInnovationDTO.getInnovationNumber() != null && newInnovationDTO.getInnovationNumber() == 0)) {
+            fieldErrors.add(new FieldErrorDTO("updateInnovation", "InnovationNumber",
+              "Number of innovations need to be more than 0"));
+          }
         }
-        if (phase == null) {
-            fieldErrors.add(new FieldErrorDTO("findInnovation", "phase", repoYear + " is an invalid year"));
-        } else {
-            if (innovation == null || innovation.getProjectInnovationInfo(phase) == null) {
-                fieldErrors.add(new FieldErrorDTO("findInnovation", "InnovationId", id + " is an invalid id of an innovation"));
-            }
+      }
+
+      Project project = this.projectManager.getProjectById(newInnovationDTO.getProject().getId());
+
+      if (fieldErrors.isEmpty()) {
+        // CRP/PTF
+        if (project == null) {
+          fieldErrors.add(new FieldErrorDTO("updateInnovation", "Project id",
+            newInnovationDTO.getProject() + " is an invalid project id"));
         }
+        innovation.setProject(project);
 
-        // innovation.setAllbyPhase(phase);
-        if (fieldErrors.isEmpty()) {
-            if (innovation.getProjectInnovationInfo(phase) != null) {
-                if (innovation.getProjectInnovationInfo().getInnovationNumber() == null) {
-                    innovation.getProjectInnovationInfo().setInnovationNumber(new Long(0));
-                }
-                innovation.setCountries(
-                        this.projectInnovationCountryManager.getInnovationCountrybyPhase(innovation.getId(), phase.getId()));
-                innovation.setRegions(innovation.getProjectInnovationRegions().stream()
-                        .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-                innovation.setGeographicScopes(innovation.getProjectInnovationGeographicScopes().stream()
-                        .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-                innovation.setContributingOrganizations(innovation.getProjectInnovationContributingOrganization().stream()
-                        .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-                innovation.setCrps(innovation.getProjectInnovationCrps().stream()
-                        .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-                innovation.setOrganizations(innovation.getProjectInnovationOrganizations().stream()
-                        .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-                innovation.setMilestones(innovation.getProjectInnovationMilestones().stream()
-                        .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-                innovation.setSubIdos(innovation.getProjectInnovationSubIdos().stream()
-                        .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-                List<ProjectExpectedStudyInnovation> projectExpectedStudyInnovationList
-                        = new ArrayList<ProjectExpectedStudyInnovation>();
-                for (ProjectExpectedStudyInnovation projectExpectedStudyInnovation : innovation
-                        .getProjectExpectedStudyInnovations().stream()
-                        .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())) {
-                    ProjectExpectedStudy projectExpectedStudy = projectExpectedStudyManager
-                            .getProjectExpectedStudyById(projectExpectedStudyInnovation.getProjectExpectedStudy().getId());
-                    ProjectExpectedStudyInfo info = projectExpectedStudy.getProjectExpectedStudyInfo(phase);
+        // update data info
+        ProjectInnovationInfo projectInnovationInfo = this.projectInnovationInfoManager
+          .getProjectInnovationInfoById(innovation.getProjectInnovationInfo(phase).getId());
+        projectInnovationInfo.setProjectInnovation(innovation);
+        projectInnovationInfo.setPhase(phase);
+        projectInnovationInfo.setYear((long) newInnovationDTO.getPhase().getYear());
+        projectInnovationInfo.setTitle(newInnovationDTO.getTitle());
+        projectInnovationInfo.setNarrative(newInnovationDTO.getNarrative());
+        projectInnovationInfo.setDescriptionStage(newInnovationDTO.getDescriptionStage());
+        projectInnovationInfo.setRepIndStageInnovation(RepIndStageInnovation);
+        projectInnovationInfo.setLeadOrganization(leadInstitution);
+        projectInnovationInfo.setOtherInnovationType(newInnovationDTO.getOtherInnovationType());
+        projectInnovationInfo.setRepIndInnovationType(repIndInnovationType);
+        projectInnovationInfo.setEvidenceLink(newInnovationDTO.getEvidenceLink());
+        projectInnovationInfo.setClearLead(newInnovationDTO.getEquitativeEffort());
+        projectInnovationInfo
+          .setInnovationNumber(repIndInnovationType.getId() == 1 ? newInnovationDTO.getInnovationNumber() : null);
 
-                    projectExpectedStudy.setProjectExpectedStudyInfo(info);
-                    projectExpectedStudyInnovation.setProjectExpectedStudy(projectExpectedStudy);
 
-                    projectExpectedStudyInnovationList.add(projectExpectedStudyInnovation);
-                }
-                innovation.setStudies(projectExpectedStudyInnovationList);
-                
-                // Log Action
-                RestApiAuditlog restApiAuditLog = new RestApiAuditlog("findAllInnovationsById", "Searched CGIAR Entity Acronym" + CGIARentityAcronym + " ID " + id + " Year:" + repoYear + " Phase: " + repoPhase, new Date(), id, "class org.cgiar.ccafs.marlo.data.model.ProjectInnovation",
-                        "N/A", user.getId(), null, "", phase.getId());
-                restApiAuditlogManager.logApiCall(restApiAuditLog);
-            }
-        }
-        // Validate all fields
-        if (!fieldErrors.isEmpty()) {
-            throw new MARLOFieldValidationException("Field Validation errors", "",
-                    fieldErrors.stream()
-                            .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
-                            .collect(Collectors.toList()));
-        }
-        return Optional.ofNullable(innovation).map(this.innovationMapper::projectInnovationToInnovationDTO)
-                .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-    }
-
-    /**
-     * Update an Innovation by Id and year
-     *
-     * @param id
-     * @param year
-     * @param phase
-     * @return a InnovationDTO with the innovation Item
-     */
-    public Long putInnovationById(Long idInnovation, NewInnovationDTO newInnovationDTO, String CGIARentityAcronym,
-            User user) {
-        Long innovationID = null;
-        List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
-        // relationship list to validate info
-        List<ProjectInnovationOrganization> projectInnovationOrganizationList
-                = new ArrayList<ProjectInnovationOrganization>();
-        List<ProjectInnovationContributingOrganization> projectInnovationContributingOrganizationList
-                = new ArrayList<ProjectInnovationContributingOrganization>();
-        List<ProjectInnovationCrp> projectInnovationCrpList = new ArrayList<ProjectInnovationCrp>();
-        List<ProjectInnovationGeographicScope> projectInnovationGeographicScopeList
-                = new ArrayList<ProjectInnovationGeographicScope>();
-        List<ProjectInnovationRegion> projectInnovationRegionList = new ArrayList<ProjectInnovationRegion>();
-        List<ProjectInnovationCountry> projectInnovationCountryList = new ArrayList<ProjectInnovationCountry>();
-        List<ProjectInnovationMilestone> projectInnovationMilestoneList = new ArrayList<ProjectInnovationMilestone>();
-        List<ProjectInnovationSubIdo> projectInnovationSubIdoList = new ArrayList<ProjectInnovationSubIdo>();
-        GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
-        if (globalUnitEntity == null) {
-            fieldErrors.add(new FieldErrorDTO("updateInnovation", "GlobalUnitEntity",
-                    CGIARentityAcronym + " is an invalid CGIAR entity acronym"));
-        }
-
-        Phase phase = this.phaseManager.findAll().stream()
-                .filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
-                && c.getYear() == newInnovationDTO.getPhase().getYear()
-                && c.getName().equalsIgnoreCase(newInnovationDTO.getPhase().getName()))
-                .findFirst().get();
-
-        ProjectInnovation innovation = this.projectInnovationManager.getProjectInnovationById(idInnovation);
-        if (fieldErrors.size() == 0) {
-            if (innovation != null) {
-                innovationID = innovation.getId();
-
-                // update basic data
-                RepIndStageInnovation RepIndStageInnovation = this.repIndStageInnovationManager
-                        .getRepIndStageInnovationById(newInnovationDTO.getStageOfInnovation().getCode());
-                if (RepIndStageInnovation == null) {
-                    fieldErrors.add(new FieldErrorDTO("updateInnovation", "Stage of Innovation",
-                            newInnovationDTO.getStageOfInnovation() + " is an invalid stage of innovation code"));
-                }
-
-                Institution leadInstitution = null;
-                if (newInnovationDTO.getLeadOrganization() != null) {
-                    leadInstitution
-                            = this.institutionManager.getInstitutionById(newInnovationDTO.getLeadOrganization().getCode());
-                    if (leadInstitution == null) {
-                        fieldErrors.add(new FieldErrorDTO("updateInnovation", "Lead institution",
-                                newInnovationDTO.getLeadOrganization() + " is an invalid institution id"));
-                    }
-                }
-
-                RepIndInnovationType repIndInnovationType
-                        = this.repIndInnovationTypeManager.getRepIndInnovationTypeById(newInnovationDTO.getInnovationType().getCode());
-                if (repIndInnovationType == null) {
-                    fieldErrors.add(new FieldErrorDTO("updateInnovation", "Innovation Type",
-                            newInnovationDTO.getInnovationType() + " is an invalid innovation type code"));
-                } else {
-                    if (newInnovationDTO.getInnovationType().getCode() == 1) {
-                        if (newInnovationDTO.getInnovationNumber() == null
-                                || (newInnovationDTO.getInnovationNumber() != null && newInnovationDTO.getInnovationNumber() == 0)) {
-                            fieldErrors.add(new FieldErrorDTO("updateInnovation", "InnovationNumber",
-                                    "Number of innovations need to be more than 0"));
-                        }
-                    }
-                }
-
-                Project project = this.projectManager.getProjectById(newInnovationDTO.getProject().getId());
-
-                if (fieldErrors.isEmpty()) {
-                    // CRP/PTF
-                    if (project == null) {
-                        fieldErrors.add(new FieldErrorDTO("updateInnovation", "Project id",
-                                newInnovationDTO.getProject() + " is an invalid project id"));
-                    }
-                    innovation.setProject(project);
-
-                    // update data info
-                    ProjectInnovationInfo projectInnovationInfo = this.projectInnovationInfoManager
-                            .getProjectInnovationInfoById(innovation.getProjectInnovationInfo(phase).getId());
-                    projectInnovationInfo.setProjectInnovation(innovation);
-                    projectInnovationInfo.setPhase(phase);
-                    projectInnovationInfo.setYear((long) newInnovationDTO.getPhase().getYear());
-                    projectInnovationInfo.setTitle(newInnovationDTO.getTitle());
-                    projectInnovationInfo.setNarrative(newInnovationDTO.getNarrative());
-                    projectInnovationInfo.setDescriptionStage(newInnovationDTO.getDescriptionStage());
-                    projectInnovationInfo.setRepIndStageInnovation(RepIndStageInnovation);
-                    projectInnovationInfo.setLeadOrganization(leadInstitution);
-                    projectInnovationInfo.setOtherInnovationType(newInnovationDTO.getOtherInnovationType());
-                    projectInnovationInfo.setRepIndInnovationType(repIndInnovationType);
-                    projectInnovationInfo.setEvidenceLink(newInnovationDTO.getEvidenceLink());
-                    projectInnovationInfo.setClearLead(newInnovationDTO.getEquitativeEffort());
-                    projectInnovationInfo
-                            .setInnovationNumber(repIndInnovationType.getId() == 1 ? newInnovationDTO.getInnovationNumber() : null);
-
-                    // let's check Organizations
-                    List<ProjectInnovationOrganization> projectInnovationOrganizationListDB
-                            = innovation.getProjectInnovationOrganizations().stream()
-                                    .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
-                    List<ProjectInnovationOrganization> existingProjectInnovationOrganizationList
-                            = new ArrayList<ProjectInnovationOrganization>();
-                    if (newInnovationDTO.getNextUserOrganizationTypes() != null
-                            && newInnovationDTO.getNextUserOrganizationTypes().size() > 0) {
-                        for (OrganizationTypeDTO id : newInnovationDTO.getNextUserOrganizationTypes()) {
-                            RepIndOrganizationType repIndOrganizationType
-                                    = this.repIndOrganizationTypeManager.getRepIndOrganizationTypeById(id.getCode());
-                            if (repIndOrganizationType == null) {
-                                fieldErrors.add(new FieldErrorDTO("updateInnovation", "NextUserOrganizationType",
-                                        id + " is an invalid institution Next User Organization Type"));
-                            } else {
-                                ProjectInnovationOrganization projectInnovationOrganization
-                                        = this.projectInnovationOrganizationManager.getProjectInnovationOrganizationById(innovation.getId(),
-                                                repIndOrganizationType.getId(), phase.getId());
-                                if (projectInnovationOrganization != null) {
-                                    existingProjectInnovationOrganizationList.add(projectInnovationOrganization);
-                                } else {
-                                    projectInnovationOrganization = new ProjectInnovationOrganization();
-                                    projectInnovationOrganization.setRepIndOrganizationType(repIndOrganizationType);
-                                    projectInnovationOrganization.setPhase(phase);
-                                    projectInnovationOrganizationList.add(projectInnovationOrganization);
-                                    innovation.getProjectInnovationOrganizations().add(projectInnovationOrganization);
-                                }
-                            }
-                        }
-                    }
-
-                    // Check innovation contributing CRP.
-                    List<ProjectInnovationCrp> projectInnovationCrpListDB = innovation.getProjectInnovationCrps().stream()
-                            .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
-                    List<ProjectInnovationCrp> existingProjectInnovationCrpList = new ArrayList<ProjectInnovationCrp>();
-                    if (newInnovationDTO.getContributingCGIAREntities() != null
-                            && newInnovationDTO.getContributingCGIAREntities().size() > 0) {
-                        // search innovationCRPs
-                        for (CGIAREntityDTO globalUnitCode : newInnovationDTO.getContributingCGIAREntities()) {
-                            GlobalUnit crp = this.globalUnitManager.findGlobalUnitBySMOCode(globalUnitCode.getCode());
-                            if (crp == null) {
-                                fieldErrors.add(new FieldErrorDTO("updateInnovation", "ContributingCGIAREntities",
-                                        globalUnitCode.getCode() + " is an invalid CGIAR entity acronym"));
-                            } else {
-                                ProjectInnovationCrp projectInnovationCrp = this.projectInnovationCrpManager
-                                        .getProjectInnovationCrpById(innovation.getId(), crp.getId(), phase.getId());
-                                if (projectInnovationCrp != null) {
-                                    existingProjectInnovationCrpList.add(projectInnovationCrp);
-                                } else {
-                                    projectInnovationCrp = new ProjectInnovationCrp();
-                                    projectInnovationCrp.setPhase(phase);
-                                    projectInnovationCrp.setGlobalUnit(crp);
-                                    projectInnovationCrpList.add(projectInnovationCrp);
-                                    innovation.getProjectInnovationCrps().add(projectInnovationCrp);
-                                }
-                            }
-                        }
-
-                    }
-
-                    // contributing organizations
-                    List<ProjectInnovationContributingOrganization> projectInnovationContributingOrganizationListDB
-                            = innovation.getProjectInnovationContributingOrganization().stream()
-                                    .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
-                    List<ProjectInnovationContributingOrganization> existingProjectInnovationContributingOrganizationList
-                            = new ArrayList<ProjectInnovationContributingOrganization>();
-                    if (newInnovationDTO.getContributingInstitutions() != null
-                            && newInnovationDTO.getContributingInstitutions().size() > 0) {
-                        for (InstitutionDTO id : newInnovationDTO.getContributingInstitutions()) {
-                            Institution addinstitution = this.institutionManager.getInstitutionById(id.getCode());
-                            if (addinstitution == null) {
-                                fieldErrors.add(new FieldErrorDTO("updateInnovation", "ContributingInstitution",
-                                        id.getCode() + " is an invalid institution id"));
-                            } else {
-                                ProjectInnovationContributingOrganization contributingOrganization
-                                        = projectInnovationContributingOrganizationManager.getProjectInnovationContributingOrganizationById(
-                                                innovation.getId(), addinstitution.getId(), phase.getId());
-                                if (contributingOrganization != null) {
-                                    existingProjectInnovationContributingOrganizationList.add(contributingOrganization);
-                                } else {
-                                    contributingOrganization = new ProjectInnovationContributingOrganization();
-                                    contributingOrganization.setPhase(phase);
-                                    contributingOrganization.setInstitution(addinstitution);
-                                    projectInnovationContributingOrganizationList.add(contributingOrganization);
-                                }
-                            }
-                        }
-
-                    }
-
-                    // check innovation Geographic scope
-                    List<ProjectInnovationGeographicScope> projectInnovationGeographicScopeListDB
-                            = innovation.getProjectInnovationGeographicScopes().stream()
-                                    .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
-                    List<ProjectInnovationGeographicScope> existingProjectInnovationGeographicScopeList
-                            = new ArrayList<ProjectInnovationGeographicScope>();
-                    if (newInnovationDTO.getGeographicScopes() != null && newInnovationDTO.getGeographicScopes().size() > 0) {
-                        // search for new GeographicScopes
-                        for (GeographicScopeDTO id : newInnovationDTO.getGeographicScopes()) {
-                            RepIndGeographicScope geoScope
-                                    = this.repIndGeographicScopeManager.getRepIndGeographicScopeById(id.getCode());
-                            if (geoScope == null) {
-                                fieldErrors.add(new FieldErrorDTO("updateInnovation", "GeographicScopes",
-                                        id.getCode() + " is an invalid Geographic Scope code"));
-                            } else {
-                                ProjectInnovationGeographicScope geographicScope = projectInnovationGeographicScopeManager
-                                        .getProjectInnovationGeographicScope(innovation.getId(), geoScope.getId(), phase.getId());
-                                if (geographicScope != null) {
-                                    existingProjectInnovationGeographicScopeList.add(geographicScope);
-                                } else {
-                                    geographicScope = new ProjectInnovationGeographicScope();
-                                    geographicScope.setPhase(phase);
-                                    geographicScope.setRepIndGeographicScope(geoScope);
-                                    projectInnovationGeographicScopeList.add(geographicScope);
-                                    // This is to add innovationGeographicScopeSave to generate
-                                    innovation.getProjectInnovationGeographicScopes().add(geographicScope);
-                                }
-                            }
-                        }
-                    }
-
-                    // check innovations milestones
-                    List<ProjectInnovationMilestone> projectInnovationMilestoneListDB
-                            = innovation.getProjectInnovationMilestones().stream()
-                                    .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
-                    List<ProjectInnovationMilestone> existingProjectInnovationMilestoneList
-                            = new ArrayList<ProjectInnovationMilestone>();
-                    if (newInnovationDTO.getMilestonesCodeList() != null && newInnovationDTO.getMilestonesCodeList().size() > 0) {
-                        for (NewMilestonesDTO milestones : newInnovationDTO.getMilestonesCodeList()) {
-                            if (milestones.getMilestone() != null && milestones.getMilestone().length() > 0
-                                    && milestones.getPrimary() != null) {
-                                // find milestone by composedID and phase
-                                CrpMilestone crpMilestone
-                                        = crpMilestoneManager.getCrpMilestoneByPhase(milestones.getMilestone(), phase.getId());
-                                if (crpMilestone != null) {
-                                    ProjectInnovationMilestone projectInnovationMilestone = projectInnovationMilestoneManager
-                                            .getProjectInnovationMilestoneById(innovation.getId(), crpMilestone.getId(), phase.getId());
-                                    if (projectInnovationMilestone != null) {
-                                        existingProjectInnovationMilestoneList.add(projectInnovationMilestone);
-                                    } else {
-                                        projectInnovationMilestone = new ProjectInnovationMilestone();
-                                        projectInnovationMilestone.setCrpMilestone(crpMilestone);
-                                        projectInnovationMilestone.setPhase(phase);
-                                        projectInnovationMilestone.setPrimary(milestones.getPrimary());
-                                        projectInnovationMilestoneList.add(projectInnovationMilestone);
-                                        // This is to add innovationOrganizationSave to generate
-                                        // correct auditlog.
-                                        innovation.getProjectInnovationMilestones().add(projectInnovationMilestone);
-                                    }
-                                } else {
-                                    fieldErrors.add(new FieldErrorDTO("updateInnovation", "Milestones",
-                                            milestones.getMilestone() + " is an invalid SMO Code"));
-                                }
-                            }
-                        }
-                    }
-
-                    // check innovations subidos
-                    List<ProjectInnovationSubIdo> projectInnovationSubIdoListDB
-                            = innovation.getProjectInnovationSubIdos().stream()
-                                    .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
-                    List<ProjectInnovationSubIdo> existingProjectInnovationSubIdoList = new ArrayList<ProjectInnovationSubIdo>();
-                    if (newInnovationDTO.getSrfSubIdoList() != null && newInnovationDTO.getSrfSubIdoList().size() > 0) {
-                        for (NewSrfSubIdoDTO subIdos : newInnovationDTO.getSrfSubIdoList()) {
-                            if (subIdos.getSubIdo() != null && subIdos.getSubIdo().length() > 0 && subIdos.getPrimary() != null) {
-                                // find SubIdo by composedID and phase
-                                SrfSubIdo srfSubIdo = srfSubIdoManager.getSrfSubIdoByCode(subIdos.getSubIdo());
-                                if (srfSubIdo != null) {
-                                    ProjectInnovationSubIdo projectInnovationSubIdo = projectInnovationSubIdoManager
-                                            .getProjectInnovationSubIdoByPhase(innovation.getId(), srfSubIdo.getId(), phase.getId());
-                                    if (projectInnovationSubIdo != null) {
-                                        projectInnovationSubIdo.setPrimary(subIdos.getPrimary());
-                                        projectInnovationSubIdoList.add(projectInnovationSubIdo);
-                                        existingProjectInnovationSubIdoList.add(projectInnovationSubIdo);
-                                    } else {
-                                        projectInnovationSubIdo = new ProjectInnovationSubIdo();
-                                        projectInnovationSubIdo.setSrfSubIdo(srfSubIdo);
-                                        projectInnovationSubIdo.setPhase(phase);
-                                        projectInnovationSubIdo.setPrimary(subIdos.getPrimary());
-                                        projectInnovationSubIdoList.add(projectInnovationSubIdo);
-                                        // This is to add innovationOrganizationSave to generate
-                                        // correct auditlog.
-                                        innovation.getProjectInnovationSubIdos().add(projectInnovationSubIdo);
-                                    }
-                                } else {
-                                    fieldErrors.add(
-                                            new FieldErrorDTO("updateInnovation", "SubIdos", subIdos.getSubIdo() + " is an invalid SMO Code"));
-                                }
-                            }
-                        }
-                    }
-                    // check innovation regions
-                    List<ProjectInnovationRegion> projectInnovationRegionListDB
-                            = innovation.getProjectInnovationRegions().stream()
-                                    .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
-                    List<ProjectInnovationRegion> existingProjectInnovationRegionList = new ArrayList<ProjectInnovationRegion>();
-                    if (newInnovationDTO.getRegions() != null && newInnovationDTO.getRegions().size() > 0) {
-                        for (RegionDTO id : newInnovationDTO.getRegions()) {
-                            LocElement region = this.locElementManager.getLocElementByNumericISOCode(id.getUM49Code());
-                            if (region == null) {
-                                fieldErrors.add(
-                                        new FieldErrorDTO("createInnovation", "Regions", id.getUM49Code() + " is an invalid Region Code"));
-                            } else if (region.getLocElementType().getId() != APConstants.LOC_ELEMENT_TYPE_REGION) {
-                                fieldErrors.add(new FieldErrorDTO("updateInnovation", "Regions", id + " is not a Region code"));
-                            } else {
-                                ProjectInnovationRegion projectInnovationRegion = projectInnovationRegionManager
-                                        .getProjectInnovationRegionById(innovation.getId(), region.getId(), phase.getId());
-                                if (projectInnovationRegion != null) {
-                                    existingProjectInnovationRegionList.add(projectInnovationRegion);
-                                } else {
-                                    projectInnovationRegion = new ProjectInnovationRegion();
-                                    projectInnovationRegion.setPhase(phase);
-                                    projectInnovationRegion.setLocElement(region);
-                                    projectInnovationRegionList.add(projectInnovationRegion);
-                                    // This is to add innovationRegionSave to generate
-                                    innovation.getProjectInnovationRegions().add(projectInnovationRegion);
-                                }
-                            }
-                        }
-                    }
-                    // check innovations countries
-                    List<ProjectInnovationCountry> projectInnovationCountryListDB
-                            = this.projectInnovationCountryManager.getInnovationCountrybyPhase(innovation.getId(), phase.getId());
-                    List<ProjectInnovationCountry> existingprojectInnovationCountryList
-                            = new ArrayList<ProjectInnovationCountry>();
-                    if (newInnovationDTO.getCountries() != null && newInnovationDTO.getCountries().size() > 0) {
-                        // search for new Countries
-                        for (CountryDTO iso : newInnovationDTO.getCountries()) {
-                            LocElement country = this.locElementManager.getLocElementByNumericISOCode(iso.getCode());
-                            if (country == null) {
-                                fieldErrors.add(new FieldErrorDTO("updateInnovation", "Countries",
-                                        iso.getCode() + " is an invalid country ISO Code"));
-                            } else if (country.getLocElementType().getId() != APConstants.LOC_ELEMENT_TYPE_COUNTRY) {
-                                fieldErrors.add(new FieldErrorDTO("updateInnovation", "Countries", iso + " is not a Country ISO code"));
-                            } else {
-                                ProjectInnovationCountry projectInnovationCountry = projectInnovationCountryManager
-                                        .getInnovationCountrybyPhase(innovation.getId(), country.getId(), phase.getId());
-                                if (projectInnovationCountry == null) {
-                                    projectInnovationCountry = new ProjectInnovationCountry();
-                                    projectInnovationCountry.setPhase(phase);
-                                    projectInnovationCountry.setLocElement(country);
-                                    projectInnovationCountryList.add(projectInnovationCountry);
-                                    innovation.getProjectInnovationCountries().add(projectInnovationCountry);
-                                } else {
-                                    existingprojectInnovationCountryList.add(projectInnovationCountry);
-                                }
-                            }
-                        }
-                    }
-                    if (fieldErrors.isEmpty()) {
-                        // SAVE innovation info
-                        innovation = this.projectInnovationManager.saveProjectInnovation(innovation);
-                        if (innovation != null) {
-                            projectInnovationInfo.setHasMilestones(false);
-                            if (newInnovationDTO.getMilestonesCodeList() != null
-                                    && newInnovationDTO.getMilestonesCodeList().size() > 0) {
-                                projectInnovationInfo.setHasMilestones(true);
-                            }
-                            this.projectInnovationInfoManager.saveProjectInnovationInfo(projectInnovationInfo);
-                            for (ProjectInnovationOrganization projectInnovationOrganization : projectInnovationOrganizationList) {
-                                projectInnovationOrganization.setProjectInnovation(innovation);
-                                this.projectInnovationOrganizationManager
-                                        .saveProjectInnovationOrganization(projectInnovationOrganization);
-                            }
-                            // verify Organization
-                            for (ProjectInnovationOrganization obj : projectInnovationOrganizationListDB) {
-                                if (!existingProjectInnovationOrganizationList.contains(obj)) {
-                                    projectInnovationOrganizationManager.deleteProjectInnovationOrganization(obj.getId());
-                                }
-                            }
-                            for (ProjectInnovationCrp projectInnovationCrp : projectInnovationCrpList) {
-                                projectInnovationCrp.setProjectInnovation(innovation);
-                                this.projectInnovationCrpManager.saveProjectInnovationCrp(projectInnovationCrp);
-                            }
-                            // verify innovationCRPs
-                            for (ProjectInnovationCrp obj : projectInnovationCrpListDB) {
-                                if (!existingProjectInnovationCrpList.contains(obj)) {
-                                    this.projectInnovationCrpManager.deleteProjectInnovationCrp(obj.getId());
-                                }
-                            }
-                            for (ProjectInnovationContributingOrganization contributingOrganization : projectInnovationContributingOrganizationList) {
-                                contributingOrganization.setProjectInnovation(innovation);
-                                this.projectInnovationContributingOrganizationManager
-                                        .saveProjectInnovationContributingOrganization(contributingOrganization);
-                            }
-                            // verify existing ProjectInnovationContributingOrganization
-                            for (ProjectInnovationContributingOrganization obj : projectInnovationContributingOrganizationListDB) {
-                                if (!existingProjectInnovationContributingOrganizationList.contains(obj)) {
-                                    this.projectInnovationContributingOrganizationManager
-                                            .deleteProjectInnovationContributingOrganization(obj.getId());
-                                }
-                            }
-                            for (ProjectInnovationGeographicScope geographicScope : projectInnovationGeographicScopeList) {
-                                geographicScope.setProjectInnovation(innovation);
-                                this.projectInnovationGeographicScopeManager.saveProjectInnovationGeographicScope(geographicScope);
-                            }
-                            // verify existing ProjectInnovationGeographicScope
-                            for (ProjectInnovationGeographicScope obj : projectInnovationGeographicScopeListDB) {
-                                if (!existingProjectInnovationGeographicScopeList.contains(obj)) {
-                                    this.projectInnovationGeographicScopeManager.deleteProjectInnovationGeographicScope(obj.getId());
-                                }
-                            }
-                            for (ProjectInnovationMilestone projectInnovationMilestone : projectInnovationMilestoneList) {
-                                projectInnovationMilestone.setProjectInnovation(innovation);
-                                this.projectInnovationMilestoneManager.saveProjectInnovationMilestone(projectInnovationMilestone);
-                            }
-                            // verify milestones
-                            for (ProjectInnovationMilestone obj : projectInnovationMilestoneListDB) {
-                                if (!existingProjectInnovationMilestoneList.contains(obj)) {
-                                    this.projectInnovationMilestoneManager.deleteProjectInnovationMilestone(obj.getId());
-                                }
-                            }
-
-                            for (ProjectInnovationRegion projectInnovationRegion : projectInnovationRegionList) {
-                                projectInnovationRegion.setProjectInnovation(innovation);
-                                this.projectInnovationRegionManager.saveProjectInnovationRegion(projectInnovationRegion);
-                            }
-                            // verify regions
-                            for (ProjectInnovationRegion obj : projectInnovationRegionListDB) {
-                                if (!existingProjectInnovationRegionList.contains(obj)) {
-                                    this.projectInnovationRegionManager.deleteProjectInnovationRegion(obj.getId());
-                                }
-                            }
-                            for (ProjectInnovationCountry projectInnovationCountry : projectInnovationCountryList) {
-                                projectInnovationCountry.setProjectInnovation(innovation);
-                                this.projectInnovationCountryManager.saveProjectInnovationCountry(projectInnovationCountry);
-                            }
-                            // verify existing countries
-                            for (ProjectInnovationCountry obj : projectInnovationCountryListDB) {
-                                if (!existingprojectInnovationCountryList.contains(obj)) {
-                                    projectInnovationCountryManager.deleteProjectInnovationCountry(obj.getId());
-                                }
-                            }
-                            for (ProjectInnovationSubIdo projectInnovationSubIdo : projectInnovationSubIdoList) {
-                                projectInnovationSubIdo.setProjectInnovation(innovation);
-                                projectInnovationSubIdoManager.saveProjectInnovationSubIdo(projectInnovationSubIdo);
-                            }
-                            // verify existing subIdos
-                            for (ProjectInnovationSubIdo obj : projectInnovationSubIdoListDB) {
-                                if (!existingProjectInnovationSubIdoList.contains(obj)) {
-                                    projectInnovationSubIdoManager.deleteProjectInnovationSubIdo(obj.getId());
-                                }
-                            }
-
-                            // Log Action
-                            try {
-                                ObjectMapper mapper = new ObjectMapper();
-                                String originalJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(newInnovationDTO);
-                                RestApiAuditlog restApiAuditLog = new RestApiAuditlog("updateInnovation", "Updated " + innovation.getId(), new Date(), innovation.getId(), "class org.cgiar.ccafs.marlo.data.model.ProjectInnovation",
-                                        originalJson, user.getId(), null, "", phase.getId());
-                                restApiAuditlogManager.logApiCall(restApiAuditLog);
-                            } catch (Throwable ex) {
-                                Logger.getLogger(InnovationItem.class.getName()).log(Level.SEVERE, null, ex);
-                            }
-
-                        }
-                    }
-                }
-
+        // let's check Organizations
+        List<ProjectInnovationOrganization> projectInnovationOrganizationListDB =
+          innovation.getProjectInnovationOrganizations().stream()
+            .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
+        List<ProjectInnovationOrganization> existingProjectInnovationOrganizationList =
+          new ArrayList<ProjectInnovationOrganization>();
+        if (newInnovationDTO.getNextUserOrganizationTypes() != null
+          && newInnovationDTO.getNextUserOrganizationTypes().size() > 0) {
+          for (OrganizationTypeDTO id : newInnovationDTO.getNextUserOrganizationTypes()) {
+            RepIndOrganizationType repIndOrganizationType =
+              this.repIndOrganizationTypeManager.getRepIndOrganizationTypeById(id.getCode());
+            if (repIndOrganizationType == null) {
+              fieldErrors.add(new FieldErrorDTO("updateInnovation", "NextUserOrganizationType",
+                id + " is an invalid institution Next User Organization Type"));
             } else {
-                fieldErrors
-                        .add(new FieldErrorDTO("updateInnovation", "Innovation", +idInnovation + " is an invalid innovation Code"));
+              ProjectInnovationOrganization projectInnovationOrganization =
+                this.projectInnovationOrganizationManager.getProjectInnovationOrganizationById(innovation.getId(),
+                  repIndOrganizationType.getId(), phase.getId());
+              if (projectInnovationOrganization != null) {
+                existingProjectInnovationOrganizationList.add(projectInnovationOrganization);
+              } else {
+                projectInnovationOrganization = new ProjectInnovationOrganization();
+                projectInnovationOrganization.setRepIndOrganizationType(repIndOrganizationType);
+                projectInnovationOrganization.setPhase(phase);
+                projectInnovationOrganizationList.add(projectInnovationOrganization);
+                innovation.getProjectInnovationOrganizations().add(projectInnovationOrganization);
+              }
+            }
+          }
+        }
+
+        // Check innovation contributing CRP.
+        List<ProjectInnovationCrp> projectInnovationCrpListDB = innovation.getProjectInnovationCrps().stream()
+          .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
+        List<ProjectInnovationCrp> existingProjectInnovationCrpList = new ArrayList<ProjectInnovationCrp>();
+        if (newInnovationDTO.getContributingCGIAREntities() != null
+          && newInnovationDTO.getContributingCGIAREntities().size() > 0) {
+          // search innovationCRPs
+          for (CGIAREntityDTO globalUnitCode : newInnovationDTO.getContributingCGIAREntities()) {
+            GlobalUnit crp = this.globalUnitManager.findGlobalUnitBySMOCode(globalUnitCode.getCode());
+            if (crp == null) {
+              fieldErrors.add(new FieldErrorDTO("updateInnovation", "ContributingCGIAREntities",
+                globalUnitCode.getCode() + " is an invalid CGIAR entity acronym"));
+            } else {
+              ProjectInnovationCrp projectInnovationCrp = this.projectInnovationCrpManager
+                .getProjectInnovationCrpById(innovation.getId(), crp.getId(), phase.getId());
+              if (projectInnovationCrp != null) {
+                existingProjectInnovationCrpList.add(projectInnovationCrp);
+              } else {
+                projectInnovationCrp = new ProjectInnovationCrp();
+                projectInnovationCrp.setPhase(phase);
+                projectInnovationCrp.setGlobalUnit(crp);
+                projectInnovationCrpList.add(projectInnovationCrp);
+                innovation.getProjectInnovationCrps().add(projectInnovationCrp);
+              }
+            }
+          }
+
+        }
+
+        // contributing organizations
+        List<ProjectInnovationContributingOrganization> projectInnovationContributingOrganizationListDB =
+          innovation.getProjectInnovationContributingOrganization().stream()
+            .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
+        List<ProjectInnovationContributingOrganization> existingProjectInnovationContributingOrganizationList =
+          new ArrayList<ProjectInnovationContributingOrganization>();
+        if (newInnovationDTO.getContributingInstitutions() != null
+          && newInnovationDTO.getContributingInstitutions().size() > 0) {
+          for (InstitutionDTO id : newInnovationDTO.getContributingInstitutions()) {
+            Institution addinstitution = this.institutionManager.getInstitutionById(id.getCode());
+            if (addinstitution == null) {
+              fieldErrors.add(new FieldErrorDTO("updateInnovation", "ContributingInstitution",
+                id.getCode() + " is an invalid institution id"));
+            } else {
+              ProjectInnovationContributingOrganization contributingOrganization =
+                projectInnovationContributingOrganizationManager.getProjectInnovationContributingOrganizationById(
+                  innovation.getId(), addinstitution.getId(), phase.getId());
+              if (contributingOrganization != null) {
+                existingProjectInnovationContributingOrganizationList.add(contributingOrganization);
+              } else {
+                contributingOrganization = new ProjectInnovationContributingOrganization();
+                contributingOrganization.setPhase(phase);
+                contributingOrganization.setInstitution(addinstitution);
+                projectInnovationContributingOrganizationList.add(contributingOrganization);
+              }
+            }
+          }
+
+        }
+
+        // check innovation Geographic scope
+        List<ProjectInnovationGeographicScope> projectInnovationGeographicScopeListDB =
+          innovation.getProjectInnovationGeographicScopes().stream()
+            .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
+        List<ProjectInnovationGeographicScope> existingProjectInnovationGeographicScopeList =
+          new ArrayList<ProjectInnovationGeographicScope>();
+        if (newInnovationDTO.getGeographicScopes() != null && newInnovationDTO.getGeographicScopes().size() > 0) {
+          // search for new GeographicScopes
+          for (GeographicScopeDTO id : newInnovationDTO.getGeographicScopes()) {
+            RepIndGeographicScope geoScope =
+              this.repIndGeographicScopeManager.getRepIndGeographicScopeById(id.getCode());
+            if (geoScope == null) {
+              fieldErrors.add(new FieldErrorDTO("updateInnovation", "GeographicScopes",
+                id.getCode() + " is an invalid Geographic Scope code"));
+            } else {
+              ProjectInnovationGeographicScope geographicScope = projectInnovationGeographicScopeManager
+                .getProjectInnovationGeographicScope(innovation.getId(), geoScope.getId(), phase.getId());
+              if (geographicScope != null) {
+                existingProjectInnovationGeographicScopeList.add(geographicScope);
+              } else {
+                geographicScope = new ProjectInnovationGeographicScope();
+                geographicScope.setPhase(phase);
+                geographicScope.setRepIndGeographicScope(geoScope);
+                projectInnovationGeographicScopeList.add(geographicScope);
+                // This is to add innovationGeographicScopeSave to generate
+                innovation.getProjectInnovationGeographicScopes().add(geographicScope);
+              }
+            }
+          }
+        }
+
+        // check innovations milestones
+        List<ProjectInnovationMilestone> projectInnovationMilestoneListDB =
+          innovation.getProjectInnovationMilestones().stream()
+            .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
+        List<ProjectInnovationMilestone> existingProjectInnovationMilestoneList =
+          new ArrayList<ProjectInnovationMilestone>();
+        if (newInnovationDTO.getMilestonesCodeList() != null && newInnovationDTO.getMilestonesCodeList().size() > 0) {
+          for (NewMilestonesDTO milestones : newInnovationDTO.getMilestonesCodeList()) {
+            if (milestones.getMilestone() != null && milestones.getMilestone().length() > 0
+              && milestones.getPrimary() != null) {
+              // find milestone by composedID and phase
+              CrpMilestone crpMilestone =
+                crpMilestoneManager.getCrpMilestoneByPhase(milestones.getMilestone(), phase.getId());
+              if (crpMilestone != null) {
+                ProjectInnovationMilestone projectInnovationMilestone = projectInnovationMilestoneManager
+                  .getProjectInnovationMilestoneById(innovation.getId(), crpMilestone.getId(), phase.getId());
+                if (projectInnovationMilestone != null) {
+                  existingProjectInnovationMilestoneList.add(projectInnovationMilestone);
+                } else {
+                  projectInnovationMilestone = new ProjectInnovationMilestone();
+                  projectInnovationMilestone.setCrpMilestone(crpMilestone);
+                  projectInnovationMilestone.setPhase(phase);
+                  projectInnovationMilestone.setPrimary(milestones.getPrimary());
+                  projectInnovationMilestoneList.add(projectInnovationMilestone);
+                  // This is to add innovationOrganizationSave to generate
+                  // correct auditlog.
+                  innovation.getProjectInnovationMilestones().add(projectInnovationMilestone);
+                }
+              } else {
+                fieldErrors.add(new FieldErrorDTO("updateInnovation", "Milestones",
+                  milestones.getMilestone() + " is an invalid SMO Code"));
+              }
+            }
+          }
+        }
+
+        // check innovations subidos
+        List<ProjectInnovationSubIdo> projectInnovationSubIdoListDB = innovation.getProjectInnovationSubIdos().stream()
+          .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
+        List<ProjectInnovationSubIdo> existingProjectInnovationSubIdoList = new ArrayList<ProjectInnovationSubIdo>();
+        if (newInnovationDTO.getSrfSubIdoList() != null && newInnovationDTO.getSrfSubIdoList().size() > 0) {
+          for (NewSrfSubIdoDTO subIdos : newInnovationDTO.getSrfSubIdoList()) {
+            if (subIdos.getSubIdo() != null && subIdos.getSubIdo().length() > 0 && subIdos.getPrimary() != null) {
+              // find SubIdo by composedID and phase
+              SrfSubIdo srfSubIdo = srfSubIdoManager.getSrfSubIdoByCode(subIdos.getSubIdo());
+              if (srfSubIdo != null) {
+                ProjectInnovationSubIdo projectInnovationSubIdo = projectInnovationSubIdoManager
+                  .getProjectInnovationSubIdoByPhase(innovation.getId(), srfSubIdo.getId(), phase.getId());
+                if (projectInnovationSubIdo != null) {
+                  projectInnovationSubIdo.setPrimary(subIdos.getPrimary());
+                  projectInnovationSubIdoList.add(projectInnovationSubIdo);
+                  existingProjectInnovationSubIdoList.add(projectInnovationSubIdo);
+                } else {
+                  projectInnovationSubIdo = new ProjectInnovationSubIdo();
+                  projectInnovationSubIdo.setSrfSubIdo(srfSubIdo);
+                  projectInnovationSubIdo.setPhase(phase);
+                  projectInnovationSubIdo.setPrimary(subIdos.getPrimary());
+                  projectInnovationSubIdoList.add(projectInnovationSubIdo);
+                  // This is to add innovationOrganizationSave to generate
+                  // correct auditlog.
+                  innovation.getProjectInnovationSubIdos().add(projectInnovationSubIdo);
+                }
+              } else {
+                fieldErrors.add(
+                  new FieldErrorDTO("updateInnovation", "SubIdos", subIdos.getSubIdo() + " is an invalid SMO Code"));
+              }
+            }
+          }
+        }
+        // check innovation regions
+        List<ProjectInnovationRegion> projectInnovationRegionListDB = innovation.getProjectInnovationRegions().stream()
+          .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
+        List<ProjectInnovationRegion> existingProjectInnovationRegionList = new ArrayList<ProjectInnovationRegion>();
+        if (newInnovationDTO.getRegions() != null && newInnovationDTO.getRegions().size() > 0) {
+          for (RegionDTO id : newInnovationDTO.getRegions()) {
+            LocElement region = this.locElementManager.getLocElementByNumericISOCode(id.getUM49Code());
+            if (region == null) {
+              fieldErrors
+                .add(new FieldErrorDTO("createInnovation", "Regions", id.getUM49Code() + " is an invalid Region Code"));
+            } else if (region.getLocElementType().getId() != APConstants.LOC_ELEMENT_TYPE_REGION) {
+              fieldErrors.add(new FieldErrorDTO("updateInnovation", "Regions", id + " is not a Region code"));
+            } else {
+              ProjectInnovationRegion projectInnovationRegion = projectInnovationRegionManager
+                .getProjectInnovationRegionById(innovation.getId(), region.getId(), phase.getId());
+              if (projectInnovationRegion != null) {
+                existingProjectInnovationRegionList.add(projectInnovationRegion);
+              } else {
+                projectInnovationRegion = new ProjectInnovationRegion();
+                projectInnovationRegion.setPhase(phase);
+                projectInnovationRegion.setLocElement(region);
+                projectInnovationRegionList.add(projectInnovationRegion);
+                // This is to add innovationRegionSave to generate
+                innovation.getProjectInnovationRegions().add(projectInnovationRegion);
+              }
+            }
+          }
+        }
+        // check innovations countries
+        List<ProjectInnovationCountry> projectInnovationCountryListDB =
+          this.projectInnovationCountryManager.getInnovationCountrybyPhase(innovation.getId(), phase.getId());
+        List<ProjectInnovationCountry> existingprojectInnovationCountryList = new ArrayList<ProjectInnovationCountry>();
+        if (newInnovationDTO.getCountries() != null && newInnovationDTO.getCountries().size() > 0) {
+          // search for new Countries
+          for (CountryDTO iso : newInnovationDTO.getCountries()) {
+            LocElement country = this.locElementManager.getLocElementByNumericISOCode(iso.getCode());
+            if (country == null) {
+              fieldErrors.add(
+                new FieldErrorDTO("updateInnovation", "Countries", iso.getCode() + " is an invalid country ISO Code"));
+            } else if (country.getLocElementType().getId() != APConstants.LOC_ELEMENT_TYPE_COUNTRY) {
+              fieldErrors.add(new FieldErrorDTO("updateInnovation", "Countries", iso + " is not a Country ISO code"));
+            } else {
+              ProjectInnovationCountry projectInnovationCountry = projectInnovationCountryManager
+                .getInnovationCountrybyPhase(innovation.getId(), country.getId(), phase.getId());
+              if (projectInnovationCountry == null) {
+                projectInnovationCountry = new ProjectInnovationCountry();
+                projectInnovationCountry.setPhase(phase);
+                projectInnovationCountry.setLocElement(country);
+                projectInnovationCountryList.add(projectInnovationCountry);
+                innovation.getProjectInnovationCountries().add(projectInnovationCountry);
+              } else {
+                existingprojectInnovationCountryList.add(projectInnovationCountry);
+              }
+            }
+          }
+        }
+        if (fieldErrors.isEmpty()) {
+          // SAVE innovation info
+          innovation = this.projectInnovationManager.saveProjectInnovation(innovation);
+          if (innovation != null) {
+            projectInnovationInfo.setHasMilestones(false);
+            if (newInnovationDTO.getMilestonesCodeList() != null
+              && newInnovationDTO.getMilestonesCodeList().size() > 0) {
+              projectInnovationInfo.setHasMilestones(true);
+            }
+            this.projectInnovationInfoManager.saveProjectInnovationInfo(projectInnovationInfo);
+            for (ProjectInnovationOrganization projectInnovationOrganization : projectInnovationOrganizationList) {
+              projectInnovationOrganization.setProjectInnovation(innovation);
+              this.projectInnovationOrganizationManager
+                .saveProjectInnovationOrganization(projectInnovationOrganization);
+            }
+            // verify Organization
+            for (ProjectInnovationOrganization obj : projectInnovationOrganizationListDB) {
+              if (!existingProjectInnovationOrganizationList.contains(obj)) {
+                projectInnovationOrganizationManager.deleteProjectInnovationOrganization(obj.getId());
+              }
+            }
+            for (ProjectInnovationCrp projectInnovationCrp : projectInnovationCrpList) {
+              projectInnovationCrp.setProjectInnovation(innovation);
+              this.projectInnovationCrpManager.saveProjectInnovationCrp(projectInnovationCrp);
+            }
+            // verify innovationCRPs
+            for (ProjectInnovationCrp obj : projectInnovationCrpListDB) {
+              if (!existingProjectInnovationCrpList.contains(obj)) {
+                this.projectInnovationCrpManager.deleteProjectInnovationCrp(obj.getId());
+              }
+            }
+            for (ProjectInnovationContributingOrganization contributingOrganization : projectInnovationContributingOrganizationList) {
+              contributingOrganization.setProjectInnovation(innovation);
+              this.projectInnovationContributingOrganizationManager
+                .saveProjectInnovationContributingOrganization(contributingOrganization);
+            }
+            // verify existing ProjectInnovationContributingOrganization
+            for (ProjectInnovationContributingOrganization obj : projectInnovationContributingOrganizationListDB) {
+              if (!existingProjectInnovationContributingOrganizationList.contains(obj)) {
+                this.projectInnovationContributingOrganizationManager
+                  .deleteProjectInnovationContributingOrganization(obj.getId());
+              }
+            }
+            for (ProjectInnovationGeographicScope geographicScope : projectInnovationGeographicScopeList) {
+              geographicScope.setProjectInnovation(innovation);
+              this.projectInnovationGeographicScopeManager.saveProjectInnovationGeographicScope(geographicScope);
+            }
+            // verify existing ProjectInnovationGeographicScope
+            for (ProjectInnovationGeographicScope obj : projectInnovationGeographicScopeListDB) {
+              if (!existingProjectInnovationGeographicScopeList.contains(obj)) {
+                this.projectInnovationGeographicScopeManager.deleteProjectInnovationGeographicScope(obj.getId());
+              }
+            }
+            for (ProjectInnovationMilestone projectInnovationMilestone : projectInnovationMilestoneList) {
+              projectInnovationMilestone.setProjectInnovation(innovation);
+              this.projectInnovationMilestoneManager.saveProjectInnovationMilestone(projectInnovationMilestone);
+            }
+            // verify milestones
+            for (ProjectInnovationMilestone obj : projectInnovationMilestoneListDB) {
+              if (!existingProjectInnovationMilestoneList.contains(obj)) {
+                this.projectInnovationMilestoneManager.deleteProjectInnovationMilestone(obj.getId());
+              }
+            }
+
+            for (ProjectInnovationRegion projectInnovationRegion : projectInnovationRegionList) {
+              projectInnovationRegion.setProjectInnovation(innovation);
+              this.projectInnovationRegionManager.saveProjectInnovationRegion(projectInnovationRegion);
+            }
+            // verify regions
+            for (ProjectInnovationRegion obj : projectInnovationRegionListDB) {
+              if (!existingProjectInnovationRegionList.contains(obj)) {
+                this.projectInnovationRegionManager.deleteProjectInnovationRegion(obj.getId());
+              }
+            }
+            for (ProjectInnovationCountry projectInnovationCountry : projectInnovationCountryList) {
+              projectInnovationCountry.setProjectInnovation(innovation);
+              this.projectInnovationCountryManager.saveProjectInnovationCountry(projectInnovationCountry);
+            }
+            // verify existing countries
+            for (ProjectInnovationCountry obj : projectInnovationCountryListDB) {
+              if (!existingprojectInnovationCountryList.contains(obj)) {
+                projectInnovationCountryManager.deleteProjectInnovationCountry(obj.getId());
+              }
+            }
+            for (ProjectInnovationSubIdo projectInnovationSubIdo : projectInnovationSubIdoList) {
+              projectInnovationSubIdo.setProjectInnovation(innovation);
+              projectInnovationSubIdoManager.saveProjectInnovationSubIdo(projectInnovationSubIdo);
+            }
+            // verify existing subIdos
+            for (ProjectInnovationSubIdo obj : projectInnovationSubIdoListDB) {
+              if (!existingProjectInnovationSubIdoList.contains(obj)) {
+                projectInnovationSubIdoManager.deleteProjectInnovationSubIdo(obj.getId());
+              }
             }
         }
         if (!fieldErrors.isEmpty()) {
@@ -1253,8 +1060,19 @@ public class InnovationItem<T> {
                             .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
                             .collect(Collectors.toList()));
         }
+      }
 
-        return innovationID;
+
     }
+
+    if (!fieldErrors.isEmpty()) {
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
+    }
+
+    return innovationID;
+  }
 
 }

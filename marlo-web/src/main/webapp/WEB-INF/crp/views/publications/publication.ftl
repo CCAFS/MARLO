@@ -6,7 +6,7 @@
   "${baseUrlMedia}/js/publications/publication.js?20190228",
   "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20190228", 
   "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20200511",
-  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20210330B",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20210428A",
   [#-- "${baseUrlCdn}/global/js/autoSave.js",--]
   "${baseUrlCdn}/global/js/fieldsValidation.js?20180529"
 ] /]
@@ -95,7 +95,7 @@
             [#-- Subtype & year of completition --]
             <div class="form-group row">
               <div class="col-md-6">
-                [@customForm.select name="${customName}.deliverableInfo.deliverableType.id" i18nkey="publication.subType" label="" listName="deliverableSubTypes" keyFieldName="id"  displayFieldName="name" required=true  className=" form-control input-sm subTypeSelect" editable=editable/]
+                [@customForm.select name="${customName}.deliverableInfo.deliverableType.id" i18nkey="publication.subType" label="" listName="deliverableSubTypes" keyFieldName="id"  displayFieldName="name" required=true  className=" form-control input-sm subTypeSelectSupplementary" editable=editable/]
               </div>
               <div class="col-md-6">
                 [@customForm.input name="${customName}.deliverableInfo.year" i18nkey="publication.year" required=true className="" editable=false /]

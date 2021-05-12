@@ -128,7 +128,12 @@ public class MELDSpaceClientAPI extends MetadataClientApi {
           } else {
             author.setOrcidId("No ORCID");
           }
-          authors.add(author);
+
+          if (keyValue.equals("creator")) {
+            authors.add(0, author);
+          } else {
+            authors.add(author);
+          }
         } else if (keyValue.equals("identifier.status")) {
           if (value.getStringValue().equals("Open Access")) {
             jo.put("openAccess", "true");

@@ -216,8 +216,8 @@
                   <td> ${milestone.composedName} [#if allowPopups] <div class="pull-right">[@milestoneContributions element=milestone tiny=true /] [/#if]</div></td>
                   [#-- Milestone Status --]
                   <td class="text-center"> 
-                    [#local reportedMilestone= (action.getMilestone((reportedOutcome.id)!-1 , milestone.id))! ]
-                    [@utils.tableText value=(reportedMilestone.crpMilestone.milestonesStatus.name)!"" emptyText="global.prefilledByFlagship" /]
+                    [#local milestoneNextYearStatus=(action.getCurrentMilestoneStatus(milestone.id))!]
+                    [@utils.tableText value=(milestoneNextYearStatus.name)!"" emptyText="global.prefilledByFlagship" /]
                   </td>
                   [#if !allowPopups]
                     [#-- Milestone Evidence --]
@@ -486,13 +486,13 @@
     <div class="form-group milestonesEvidence" style="width: 100%; display:${((milestoneStatus == 4) || (milestoneStatus == 5) || (milestoneStatus == 6))?string('block', 'none')}">
       [#-- Extendend, cancelled or changed milestones - Main reason --]
       <div class="form-group">
-        [@customForm.select name="${customName}.reason.id" label=""  i18nkey="${customLabel}.milestoneMainReason" listName="reasons" keyFieldName="id"  displayFieldName="name"   required=true  className="milestoneMainReasonSelect" editable=editable/]
+        [@customForm.select name="${customName}.reason.id"  value="${(annualReportElement.reason.id)!}"label=""  i18nkey="${customLabel}.milestoneMainReason" listName="reasons" keyFieldName="id"  displayFieldName="name"   required=true  className="milestoneMainReasonSelect" editable=editable/]
       </div>
       
       [#-- Extendend, cancelled or changed milestones - Other reason --]
       [#local showOther = (annualReportElement.reason.id == 7)!false /]
       <div class="form-group otherBlock" style="display:${showOther?string('block', 'none')}">
-        [@customForm.input name="${customName}.otherReason" i18nkey="${customLabel}.milestoneOtherReason" display=true required=true className="input-sm" editable=editable /]
+        [@customForm.input name="${customName}.otherReason" value="${(annualReportElement.otherReason)!}" i18nkey="${customLabel}.milestoneOtherReason" display=true required=true className="input-sm" editable=editable /]
       </div>
     </div>
     

@@ -3,6 +3,8 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.Date;
+
 import com.google.gson.annotations.Expose;
 
 /**
@@ -43,6 +45,10 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   private RepIndGeographicScope geographicScope;
   @Expose
   private RepIndRegion region;
+  @Expose
+  private Date wosSyncDate;
+  @Expose
+  private String editableLink;
 
   public DeliverableInfo() {
   }
@@ -54,7 +60,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   public CrpClusterKeyOutput getCrpClusterKeyOutput() {
     return crpClusterKeyOutput;
   }
-
 
   public CrpProgramOutcome getCrpProgramOutcome() {
     return crpProgramOutcome;
@@ -74,6 +79,10 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   }
 
 
+  public String getEditableLink() {
+    return editableLink;
+  }
+
   public RepIndGeographicScope getGeographicScope() {
     return geographicScope;
   }
@@ -83,13 +92,13 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return isLocationGlobal;
   }
 
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
-
 
   public Integer getNewExpectedYear() {
     return newExpectedYear;
@@ -110,10 +119,10 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return status;
   }
 
+
   public String getStatusDescription() {
     return statusDescription;
   }
-
 
   public String getStatusName(Phase phase) {
 
@@ -145,6 +154,11 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
 
   public String getTypeOther() {
     return typeOther;
+  }
+
+
+  public Date getWosSyncDate() {
+    return wosSyncDate;
   }
 
 
@@ -339,6 +353,11 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   }
 
 
+  public void setEditableLink(String editableLink) {
+    this.editableLink = editableLink;
+  }
+
+
   public void setGeographicScope(RepIndGeographicScope geographicScope) {
     this.geographicScope = geographicScope;
   }
@@ -358,10 +377,10 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     this.phase = phase;
   }
 
-
   public void setRegion(RepIndRegion region) {
     this.region = region;
   }
+
 
   public void setStatus(Integer status) {
     this.status = status;
@@ -377,9 +396,12 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     this.title = title;
   }
 
-
   public void setTypeOther(String typeOther) {
     this.typeOther = typeOther;
+  }
+
+  public void setWosSyncDate(Date wosSyncDate) {
+    this.wosSyncDate = wosSyncDate;
   }
 
   public void setYear(int year) {
@@ -402,7 +424,4 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     this.setGeographicScope(update.getGeographicScope());
     this.setRegion(update.getRegion());
   }
-
-
 }
-
