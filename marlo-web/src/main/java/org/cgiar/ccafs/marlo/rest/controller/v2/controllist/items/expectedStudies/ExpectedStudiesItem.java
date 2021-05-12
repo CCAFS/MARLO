@@ -163,6 +163,7 @@ public class ExpectedStudiesItem<T> {
   private ProjectExpectedStudyMilestoneManager projectExpectedStudyMilestoneManager;
   private ProjectExpectedStudyMapper projectExpectedStudyMapper;
   private GlobalUnitProjectManager globalUnitProjectManager;
+  private RestApiAuditlogManager restApiAuditlogManager;
 
 
   @Inject
@@ -189,7 +190,8 @@ public class ExpectedStudiesItem<T> {
     ProjectExpectedStudyQuantificationManager projectExpectedStudyQuantificationManager,
     StudyTypeManager studyTypeManager, ProjectManager projectManager, CrpMilestoneManager crpMilestoneManager,
     ProjectExpectedStudyMilestoneManager projectExpectedStudyMilestoneManager,
-    ProjectExpectedStudyMapper projectExpectedStudyMapper, GlobalUnitProjectManager globalUnitProjectManager) {
+    ProjectExpectedStudyMapper projectExpectedStudyMapper, GlobalUnitProjectManager globalUnitProjectManager,
+    RestApiAuditlogManager restApiAuditlogManager) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.repIndStageStudyManager = repIndStageStudyManager;
@@ -226,6 +228,7 @@ public class ExpectedStudiesItem<T> {
     this.srfSloIndicatorTargetManager = srfSloIndicatorTargetManager;
     this.projectExpectedStudyMapper = projectExpectedStudyMapper;
     this.globalUnitProjectManager = globalUnitProjectManager;
+    this.restApiAuditlogManager = restApiAuditlogManager;
   }
 
   private int countWords(String string) {
