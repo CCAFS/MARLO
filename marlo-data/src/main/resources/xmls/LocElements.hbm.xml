@@ -34,6 +34,9 @@
 		<property name="isoAlpha2" type="string">
 			<column name="iso_alpha_2" length="45" />
 		</property>
+		<property name="isoAlpha3" type="string">
+			<column name="iso_alpha_3" length="10" />
+		</property>
 		<property name="isSiteIntegration" type="java.lang.Boolean">
 			<column name="is_site_integration" />
 		</property>
