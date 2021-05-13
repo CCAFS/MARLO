@@ -298,20 +298,24 @@ public class OutcomesMilestonesAction extends BaseAction {
     }
   }
 
-  public GeneralStatus getCurrentMilestoneStatus(Long milestoneID) {
-    GeneralStatus milestoneStatus = null;
-    if (milestoneID != null && milestoneID != -1) {
-      CrpMilestone milestone = crpMilestoneManager.getCrpMilestoneById(milestoneID);
-      milestone = crpMilestoneManager.getCrpMilestoneByPhase(milestone.getComposeID(),
-        milestone.getCrpProgramOutcome().getPhase().getNext().getNext().getId());
-      if (milestone != null && milestone.getMilestonesStatus() != null
-        && milestone.getMilestonesStatus().getId() != null) {
-        milestoneStatus = generalStatusManager.getGeneralStatusById(milestone.getMilestonesStatus().getId());
-      }
-    }
-
-    return milestoneStatus;
-  }
+  /*
+   * public GeneralStatus getCurrentMilestoneStatus(Long flagshipProgressOutcomeMilestoneId) {
+   * GeneralStatus milestoneStatus = null;
+   * if (flagshipProgressOutcomeMilestoneId != null && flagshipProgressOutcomeMilestoneId != -1) {
+   * ReportSynthesisFlagshipProgressOutcomeMilestone fpom = reportSynthesisFlagshipProgressOutcomeMilestoneManager
+   * .getReportSynthesisFlagshipProgressOutcomeMilestoneById(flagshipProgressOutcomeMilestoneId);
+   * Long milestoneID = null;
+   * CrpMilestone milestone = crpMilestoneManager.getCrpMilestoneById(milestoneID);
+   * milestone = crpMilestoneManager.getCrpMilestoneByPhase(milestone.getComposeID(),
+   * milestone.getCrpProgramOutcome().getPhase().getNext().getNext().getId());
+   * if (milestone != null && milestone.getMilestonesStatus() != null
+   * && milestone.getMilestonesStatus().getId() != null) {
+   * milestoneStatus = generalStatusManager.getGeneralStatusById(milestone.getMilestonesStatus().getId());
+   * }
+   * }
+   * return milestoneStatus;
+   * }
+   */
 
   public List<CrpProgram> getFlagships() {
     return flagships;
@@ -381,6 +385,7 @@ public class OutcomesMilestonesAction extends BaseAction {
    */
   public ReportSynthesisFlagshipProgressOutcomeMilestone getMilestone(Long outcomeID, long milestoneID) {
     ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisMilestone = null;
+    CrpMilestone annualReportMilestone = crpMilestoneManager.getCrpMilestoneById(milestoneID);
     if (outcomeID != null && outcomeID != -1) {
       reportSynthesisMilestone =
         reportSynthesisFlagshipProgressOutcomeMilestoneManager.getMilestoneId(outcomeID, milestoneID);
@@ -388,10 +393,15 @@ public class OutcomesMilestonesAction extends BaseAction {
         ReportSynthesisFlagshipProgressOutcome reportSynthesisOutcome =
           reportSynthesisFlagshipProgressOutcomeManager.getReportSynthesisFlagshipProgressOutcomeById(outcomeID);
         reportSynthesisMilestone = new ReportSynthesisFlagshipProgressOutcomeMilestone();
-        CrpMilestone annualReportMilestone = crpMilestoneManager.getCrpMilestoneById(milestoneID);
         if (annualReportMilestone != null) {
           reportSynthesisMilestone.setReportSynthesisFlagshipProgressOutcome(reportSynthesisOutcome);
           reportSynthesisMilestone.setCrpMilestone(annualReportMilestone);
+
+          reportSynthesisMilestone.setMilestonesStatus(annualReportMilestone.getMilestonesStatus());
+
+          reportSynthesisMilestone.setExtendedYear(
+            annualReportMilestone.getExtendedYear() != null && annualReportMilestone.getExtendedYear() != -1
+              ? annualReportMilestone.getExtendedYear() : null);
 
           reportSynthesisMilestone = reportSynthesisFlagshipProgressOutcomeMilestoneManager
             .saveReportSynthesisFlagshipProgressOutcomeMilestone(reportSynthesisMilestone);
@@ -432,6 +442,17 @@ public class OutcomesMilestonesAction extends BaseAction {
             markers.add(newMarker);
           }
           reportSynthesisMilestone.setMarkers(markers);
+        }
+      } else {
+        if (annualReportMilestone != null) {
+          if (reportSynthesisMilestone.getMilestonesStatus() == null
+            || reportSynthesisMilestone.getMilestonesStatus().getId() == -1) {
+            reportSynthesisMilestone.setMilestonesStatus(annualReportMilestone.getMilestonesStatus());
+          }
+
+          if (reportSynthesisMilestone.getExtendedYear() == null || reportSynthesisMilestone.getExtendedYear() == -1) {
+            reportSynthesisMilestone.setExtendedYear(annualReportMilestone.getExtendedYear());
+          }
         }
       }
     }
@@ -836,49 +857,28 @@ public class OutcomesMilestonesAction extends BaseAction {
                 reportSynthesisFlagshipProgressOutcome.getReportSynthesisFlagshipProgressOutcomeMilestones().stream()
                   .filter(c -> c.isActive()).collect(Collectors.toList());
 
-              // Setting the Milestone Status Changed in POWB
+              // Setting the Milestone Status: Selecting the loaded one if not null, else taken from the impact pathways
               for (ReportSynthesisFlagshipProgressOutcomeMilestone milestone : milestones) {
-                if (milestone.getCrpMilestone().getId() != null) {
+                if (milestone != null && milestone.getCrpMilestone() != null
+                  && milestone.getCrpMilestone().getId() != null) {
                   CrpMilestone crpMilestone =
                     crpMilestoneManager.getCrpMilestoneById(milestone.getCrpMilestone().getId());
-                  if (crpMilestone.getMilestonesStatus() != null && crpMilestone.getMilestonesStatus().getId() != -1) {
-                    if (crpMilestone.getMilestonesStatus().getId() != 1
-                      || crpMilestone.getMilestonesStatus().getId() != 2) {
-                      milestone.setMilestonesStatus(crpMilestone.getMilestonesStatus());
+                  if (milestone.getMilestonesStatus() == null) {
+                    if (crpMilestone.getMilestonesStatus() != null
+                      && crpMilestone.getMilestonesStatus().getId() != -1) {
+                      if (crpMilestone.getMilestonesStatus().getId() != 1
+                        || crpMilestone.getMilestonesStatus().getId() != 2) {
+                        milestone.setMilestonesStatus(crpMilestone.getMilestonesStatus());
+                      }
+                    }
+                  }
+
+                  if (milestone.getExtendedYear() == null || milestone.getExtendedYear() == -1) {
+                    if (crpMilestone.getExtendedYear() != null && crpMilestone.getExtendedYear() != -1) {
+                      milestone.setExtendedYear(crpMilestone.getExtendedYear());
                     }
                   }
                 }
-                /*
-                 * CrpMilestone crpMilestone =
-                 * crpMilestoneManager.getCrpMilestoneById(milestone.getCrpMilestone().getId());
-                 * List<ReportSynthesisFlagshipProgressCrossCuttingMarker> synthesisMarkets = new ArrayList<>();
-                 * List<ReportSynthesisFlagshipProgressCrossCuttingMarker> synthesisMarketsTemp = new ArrayList<>();
-                 * List<ReportSynthesisFlagshipProgressCrossCuttingMarker> synthesisMarketsNew = new ArrayList<>();
-                 * synthesisMarkets = milestone.getMarkers();
-                 * if (milestone.getMarkers() != null) {
-                 * if (crpMilestone != null) {
-                 * // Gender
-                 * synthesisMarketsTemp = synthesisMarkets.stream()
-                 * .filter(
-                 * sm -> sm.getMarker() != null && sm.getMarker().getId() != null && sm.getMarker().getId() == 1)
-                 * .collect(Collectors.toList());
-                 * if (synthesisMarketsTemp == null && crpMilestone.getGenderFocusLevel() != null) {
-                 * ReportSynthesisFlagshipProgressCrossCuttingMarker rs =
-                 * new ReportSynthesisFlagshipProgressCrossCuttingMarker();
-                 * rs.setMarker(cgiarCrossCuttingMarkerManager.getCgiarCrossCuttingMarkerById(1));
-                 * rs.setReportSynthesisFlagshipProgressOutcomeMilestone(
-                 * reportSynthesisFlagshipProgressOutcomeMilestoneManager
-                 * .getReportSynthesisFlagshipProgressOutcomeMilestoneById(milestone.getId()));
-                 * rs.setFocus(focusLevelManager
-                 * .getRepIndGenderYouthFocusLevelById(crpMilestone.getGenderFocusLevel().getId()));
-                 * synthesisMarketsNew.add(rs);
-                 * }
-                 * if (synthesisMarketsNew != null) {
-                 * milestone.setMarkers(synthesisMarketsNew);
-                 * }
-                 * }
-                 * }
-                 */
               }
 
               reportSynthesisFlagshipProgressOutcome.setMilestones(milestones);
@@ -893,9 +893,9 @@ public class OutcomesMilestonesAction extends BaseAction {
               .sort((p1, p2) -> p1.getCrpProgramOutcome().getId().compareTo(p2.getCrpProgramOutcome().getId()));
           }
         } else {
-          List<ReportSynthesisFlagshipProgressOutcome> reportOutcomes = new ArrayList<>(
+          List<ReportSynthesisFlagshipProgressOutcome> reportOutcomes =
             reportSynthesis.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressOutcomes().stream()
-              .filter(c -> c.isActive()).collect(Collectors.toList()));
+              .filter(c -> c.isActive()).collect(Collectors.toList());
 
           reportSynthesis.getReportSynthesisFlagshipProgress().setOutcomeList(reportOutcomes);
         }
