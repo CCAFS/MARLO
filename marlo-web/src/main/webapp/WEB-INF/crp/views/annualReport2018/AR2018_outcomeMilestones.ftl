@@ -348,7 +348,7 @@
   [#local annualReportElement= (action.getMilestone(reportedOutcomeID,element.id))! ]
   [#local customName = "${name}[${index}]" /]
   [#local milestoneNextPOWB = action.getNextPOWBMilestone(element.composeID) /]
-  [#local milestoneAnnualReportStatus = (action.getCurrentMilestoneStatus(element.id))!]
+  [#--local milestoneAnnualReportStatus = (action.getCurrentMilestoneStatus(element.id))!--]
   <div id="powbMilestone-${isTemplate?string('template', index)}" class="synthesisMilestone simpleBox" style="display:${isTemplate?string('none','block')}"> 
     [#-- Index  Outcome ${reportedOutcomeID}, Milestone ${element.id} --]
     [#-- <div class="leftHead gray sm"><span class="index">${index+1}</span></div> --]
@@ -447,7 +447,7 @@
       [#-- Word Document Tag --]
       [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
       <label>[@s.text name="${customLabel}.milestoneStatus" /]:[@customForm.req required=editable  /]</label><br />
-      [#local milestoneStatus = (milestoneAnnualReportStatus.id)!-1 /]
+      [#local milestoneStatus = (annualReportElement.milestonesStatus.id)!-1 /]
       [#if milestoneStatus == 2]
         [#local milestoneStatus = 3 /]
       [/#if]
@@ -468,7 +468,7 @@
     [#-- New year if extended --]
     <div class="row form-group extendedYearBlock" style="display:${(milestoneStatus == 4)?string('block', 'none')}">
       <div class="col-md-3">
-        [#local milestoneExtendedYear = (action.getMilestoneExtendedYear(element.id))!"-NULL"]
+        [#local milestoneExtendedYear = (annualReportElement.extendedYear)!"-NULL"]
         [@customForm.select name="${customName}.extendedYear" label=""  i18nkey="${customLabel}.year" listName="allPhaseYearsGreater" required=true value=milestoneExtendedYear  className="" editable=editable/]
       </div>
     </div>
