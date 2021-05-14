@@ -144,6 +144,36 @@ public class StatusPlannedOutcomes {
 
 
   @ApiOperation(tags = {"Table 5 - Status of Planned Outcomes and Milestones"},
+    value = "${StatusPlannedOutcomes.milestones.GET.id.value}", response = StatusPlannedMilestonesDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/statusMilestones", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<StatusPlannedMilestonesDTO> findStatusPlannedMilestone(
+    @ApiParam(value = "${StatusPlannedOutcomes.milestones.GET.id.param.CGIAR}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${StatusPlannedOutcomes.milestones.GET.id.param.outcome}",
+      required = true) @RequestParam String outcomeID,
+    @ApiParam(value = "${StatusPlannedOutcomes.milestones.GET.id.param.milestone}",
+      required = true) @RequestParam String milestoneID,
+    @ApiParam(value = "${StatusPlannedOutcomes.milestones.GET.id.param.year}",
+      required = true) @RequestParam Integer year,
+    @ApiParam(value = "${StatusPlannedOutcomes.milestones.GET.id.param.phase}",
+      required = true) @RequestParam String phase) {
+    ResponseEntity<StatusPlannedMilestonesDTO> response = null;
+    try {
+      response = this.statusPlannedMilestonesItem.findStatusPlannedMilestone(outcomeID, milestoneID, CGIAREntity, year,
+        phase, this.getCurrentUser());
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    if (response != null && response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("StatusPlannedOutcomes.milestones.GET.id.404"));
+    }
+    return response;
+  }
+
+  @ApiOperation(tags = {"Table 5 - Status of Planned Outcomes and Milestones"},
     value = "${StatusPlannedOutcomes.outcomes.GET.id.value}", response = StatusPlannedOutcomesDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIAREntity}/statusOutcomes/{outcomeID}", method = RequestMethod.GET,

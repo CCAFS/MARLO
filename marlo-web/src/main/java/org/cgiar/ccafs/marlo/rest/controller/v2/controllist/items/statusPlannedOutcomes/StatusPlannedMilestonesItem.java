@@ -19,6 +19,7 @@
 
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.statusPlannedOutcomes;
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CgiarCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
@@ -53,13 +54,16 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMi
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.NewCrosscuttingMarkersSynthesisDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewStatusPlannedMilestoneDTO;
+import org.cgiar.ccafs.marlo.rest.dto.StatusPlannedMilestonesDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
 import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
+import org.cgiar.ccafs.marlo.rest.mappers.StatusPlannedMilestonesMapper;
 import org.cgiar.ccafs.marlo.rest.mappers.StatusPlannedOutcomesMapper;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -67,6 +71,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @Named
 public class StatusPlannedMilestonesItem<T> {
@@ -86,6 +92,7 @@ public class StatusPlannedMilestonesItem<T> {
   private CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager;
   private RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager;
   private RepIndMilestoneReasonManager repIndMilestoneReasonManager;
+  private StatusPlannedMilestonesMapper statusPlannedMilestonesMapper;
 
   @Inject
   public StatusPlannedMilestonesItem(GlobalUnitManager globalUnitManager, PhaseManager phaseManager,
@@ -98,8 +105,8 @@ public class StatusPlannedMilestonesItem<T> {
     LiaisonInstitutionManager liaisonInstitutionManager, GeneralStatusManager generalStatusManager,
     CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager,
     RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager,
-    RepIndMilestoneReasonManager repIndMilestoneReasonManager,
-    StatusPlannedOutcomesMapper statusPlannedOutcomesMapper) {
+    RepIndMilestoneReasonManager repIndMilestoneReasonManager, StatusPlannedOutcomesMapper statusPlannedOutcomesMapper,
+    StatusPlannedMilestonesMapper statusPlannedMilestonesMapper) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.crpProgramManager = crpProgramManager;
@@ -117,6 +124,7 @@ public class StatusPlannedMilestonesItem<T> {
     this.reportSynthesisFlagshipProgressCrossCuttingMarkerManager =
       reportSynthesisFlagshipProgressCrossCuttingMarkerManager;
     this.repIndMilestoneReasonManager = repIndMilestoneReasonManager;
+    this.statusPlannedMilestonesMapper = statusPlannedMilestonesMapper;
   }
 
   private int countWords(String string) {
@@ -565,6 +573,128 @@ public class StatusPlannedMilestonesItem<T> {
     return plannedMilestoneStatusID;
   }
 
+  public ResponseEntity<StatusPlannedMilestonesDTO> findStatusPlannedMilestone(String outcomeID, String milestoneID,
+    String CGIARentityAcronym, Integer repoYear, String repoPhase, User user) {
+    ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone = null;
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+    String strippedId = null;
+    LiaisonInstitution liaisonInstitution = null;
+    CrpProgramOutcome crpProgramOutcome = null;
+    CrpMilestone milestone = null;
+    ReportSynthesisFlagshipProgressOutcome reportSynthesisFlagshipProgressOutcome = null;
+    String strippedEntityAcronym = StringUtils.stripToNull(CGIARentityAcronym);
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(strippedEntityAcronym);
+    if (globalUnitEntity == null) {
+      fieldErrors.add(new FieldErrorDTO("findStatusPlannedMilestoneById", "GlobalUnitEntity",
+        CGIARentityAcronym + " is not a valid CGIAR entity acronym"));
+    } else {
+      if (!globalUnitEntity.isActive()) {
+        fieldErrors.add(new FieldErrorDTO("findStatusPlannedMilestoneById", "GlobalUnitEntity",
+          "The Global Unit with acronym " + CGIARentityAcronym + " is not active."));
+      }
+    }
+
+    String strippedRepoPhase = StringUtils.stripToNull(repoPhase);
+    Phase phase = this.phaseManager.findAll().stream()
+      .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), strippedEntityAcronym)
+        && p.getYear() >= APConstants.CLARISA_AVALIABLE_INFO_YEAR && p.getYear() == repoYear
+        && StringUtils.equalsIgnoreCase(p.getName(), strippedRepoPhase) && p.isActive())
+      .findFirst().orElse(null);
+    if (phase == null) {
+      fieldErrors.add(new FieldErrorDTO("findStatusPlannedMilestoneById", "phase",
+        repoPhase + ' ' + repoYear + " is an invalid phase"));
+    }
+
+    Set<CrpUser> lstUser = user.getCrpUsers();
+    if (!lstUser.stream()
+      .anyMatch(crp -> StringUtils.equalsIgnoreCase(crp.getCrp().getAcronym(), CGIARentityAcronym))) {
+      fieldErrors
+        .add(new FieldErrorDTO("findStatusPlannedMilestoneById", "GlobalUnitEntity", "CGIAR entity not autorized"));
+    }
+
+    strippedId = StringUtils.stripToNull(outcomeID);
+    if (strippedId != null && phase != null) {
+      crpProgramOutcome = crpProgramOutcomeManager.getCrpProgramOutcome(strippedId, phase);
+      if (crpProgramOutcome == null) {
+        fieldErrors.add(new FieldErrorDTO("findStatusPlannedMilestoneById", "Outcome",
+          strippedId + " is an invalid CRP Outcome code"));
+      }
+    } else {
+      fieldErrors.add(new FieldErrorDTO("findStatusPlannedMilestoneById", "CrpProgramOutcomeEntity",
+        "A CRP Program Outcome with composed ID " + strippedId + " do not exist for the given phase."));
+    }
+
+    if (globalUnitEntity != null && crpProgramOutcome != null) {
+      liaisonInstitution = liaisonInstitutionManager.findByAcronymAndCrp(crpProgramOutcome.getCrpProgram().getAcronym(),
+        globalUnitEntity.getId());
+      if (liaisonInstitution == null) {
+        fieldErrors.add(new FieldErrorDTO("findStatusPlannedMilestoneById", "LiaisonInstitutionEntity",
+          "A Liaison Institution with the acronym " + crpProgramOutcome.getCrpProgram().getAcronym()
+            + " could not be found for " + CGIARentityAcronym));
+      }
+    } else {
+      fieldErrors.add(new FieldErrorDTO("findStatusPlannedMilestoneById", "LiaisonInstitutionEntity",
+        "A Liaison Institution can not be found if either the CRP or the Flagship/Module is invalid"));
+    }
+
+    if (crpProgramOutcome != null && phase != null) {
+      milestone = crpMilestoneManager.getCrpMilestoneByPhase(milestoneID, phase.getId().longValue());
+      if (milestone == null) {
+        fieldErrors.add(new FieldErrorDTO("findStatusPlannedMilestoneById", "CrpMilestone",
+          "CRP milestone with compose ID " + milestoneID + " do not exist for the given phase"));
+      }
+    }
+
+    if (fieldErrors.isEmpty()) {
+      ReportSynthesis reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
+      if (reportSynthesis != null) {
+        ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress =
+          reportSynthesisFlagshipProgressManager.getReportSynthesisFlagshipProgressById(reportSynthesis.getId());
+        if (reportSynthesisFlagshipProgress != null) {
+          reportSynthesisFlagshipProgressOutcome = reportSynthesisFlagshipProgressOutcomeManager
+            .getOutcomeId(reportSynthesisFlagshipProgress.getId(), crpProgramOutcome.getId());
+          // validate Synthesis FlagshipProgress Outcome
+          if (reportSynthesisFlagshipProgressOutcome != null) {
+            reportSynthesisFlagshipProgressOutcomeMilestone =
+              reportSynthesisFlagshipProgressOutcome.getReportSynthesisFlagshipProgressOutcomeMilestones().stream()
+                .filter(c -> c.isActive() && c.getCrpMilestone().getComposeID().equals(milestoneID)).findFirst()
+                .orElse(null);
+            if (reportSynthesisFlagshipProgressOutcomeMilestone == null) {
+              fieldErrors.add(new FieldErrorDTO("findStatusPlannedMilestoneById", "Milestone status",
+                "Milestone status with compose ID " + milestoneID + " do not exist for the given phase"));
+            } else {
+              List<ReportSynthesisFlagshipProgressCrossCuttingMarker> markersList =
+                new ArrayList<ReportSynthesisFlagshipProgressCrossCuttingMarker>();
+              reportSynthesisFlagshipProgressOutcomeMilestone = reportSynthesisFlagshipProgressOutcomeMilestoneManager
+                .getReportSynthesisFlagshipProgressOutcomeMilestoneById(
+                  reportSynthesisFlagshipProgressOutcomeMilestone.getId());
+              for (ReportSynthesisFlagshipProgressCrossCuttingMarker marker : reportSynthesisFlagshipProgressOutcomeMilestone
+                .getReportSynthesisFlagshipProgressCrossCuttingMarkers().stream().filter(c -> c.isActive())
+                .collect(Collectors.toList())) {
+                marker = reportSynthesisFlagshipProgressCrossCuttingMarkerManager
+                  .getReportSynthesisFlagshipProgressCrossCuttingMarkerById(marker.getId());
+                markersList.add(marker);
+              }
+              reportSynthesisFlagshipProgressOutcomeMilestone.setMarkers(markersList);
+            }
+          }
+        }
+      }
+    }
+
+    if (!fieldErrors.isEmpty()) {
+      fieldErrors.stream().forEach(f -> System.out.println(f.getMessage()));
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
+    }
+    return Optional.ofNullable(reportSynthesisFlagshipProgressOutcomeMilestone)
+      .map(
+        this.statusPlannedMilestonesMapper::reportSynthesisFlagshipProgressOutcomeMilestoneToStatusPlannedMilestonesDTO)
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
+
   public Long updateStatusPlannedMilestone(NewStatusPlannedMilestoneDTO newStatusPlannedMilestoneDTO,
     String CGIARentityAcronym, User user) {
     Long plannedMilestoneStatusID = null;
@@ -830,4 +960,5 @@ public class StatusPlannedMilestonesItem<T> {
 
     return plannedMilestoneStatusID;
   }
+
 }
