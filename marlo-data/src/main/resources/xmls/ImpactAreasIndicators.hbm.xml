@@ -10,6 +10,15 @@
     <property name="indicatorStatement" type="string">
       <column name="indicatorStatement" sql-type="TEXT" />
     </property>
+     <property name="targetYear" type="long">
+      <column name="target_year" sql-type="int" />
+    </property>
+     <property name="targetUnit" type="string">
+      <column name="target_unit" sql-type="TEXT" />
+    </property>
+     <property name="targetValue" type="string">
+      <column name="target_value" sql-type="TEXT" />
+    </property>
     <many-to-one name="impactArea"
       class="org.cgiar.ccafs.marlo.data.model.ImpactArea" fetch="select">
       <column name="st_impact_areas_id" />
