@@ -44,6 +44,10 @@
         <property name="otherReason" type="string">
             <column name="other_reason" sql-type="TEXT" />
         </property>
+        <many-to-one name="milestonesStatus"
+					class="org.cgiar.ccafs.marlo.data.model.GeneralStatus" fetch="select">
+					<column name="milestones_status" />
+				</many-to-one>
         <set name="reportSynthesisFlagshipProgressCrossCuttingMarkers" table="report_synthesis_flagship_progress_cross" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="report_synthesis_flagship_progress_outcome_milestone_id" />

@@ -140,7 +140,7 @@
     [/#if]
     [#if errorField==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]
     <div class="selectList">   
-      [#if value=="-NULL"]
+      [#if value?string=="-NULL"]
         [#assign customValue][@s.property value="${name}" /][/#assign]
       [#else]
         [#assign customValue]${value}[/#assign]
