@@ -49,6 +49,15 @@
           
           <h3 class="headTitle">[@s.text name="project.activities.title" /]</h3>
           
+          [#-- Activity Title --]
+          [#if action.isAiccra()]
+          [#--  
+            <div class="form-group">
+              [@customForm.select name="" label=""  i18nkey="project.activities.title" listName="activityTitles" keyFieldName="id"  displayFieldName="title"  multiple=false required=true editable=editable/]
+            </div>
+          --]
+          [/#if]
+          
           <div class="activitiesOG-content simpleBox" listname="project.openProjectActivities">
           <h4 class="subTitle headTitle">[@s.text name="project.activities.onGoing" /]</h4>
           <hr />
