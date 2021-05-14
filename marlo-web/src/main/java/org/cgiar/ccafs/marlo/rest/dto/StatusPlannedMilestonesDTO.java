@@ -21,6 +21,7 @@ package org.cgiar.ccafs.marlo.rest.dto;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 
 public class StatusPlannedMilestonesDTO {
@@ -28,22 +29,30 @@ public class StatusPlannedMilestonesDTO {
   @ApiModelProperty(notes = "Milestone Identifier", position = 1)
   private MilestoneDTO milestone;
 
-  @ApiModelProperty(notes = "Milestone Status", position = 2)
-  private MilestoneStatusDTO status;
 
-  @ApiModelProperty(notes = "Milestone Status Evidence Justification", position = 3)
+  @ApiModelProperty(notes = "Reported Milestone Status", position = 3)
+  private MilestoneStatusDTO reportedStatus;
+
+  @ApiModelProperty(notes = "Reported Milestone extended year", position = 4)
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  private Integer reportedExtendedYear;
+
+  @ApiModelProperty(notes = "Milestone Status Evidence Justification", position = 5)
   private String evidence;
 
-  @ApiModelProperty(notes = "Milestone Status Evidence links", position = 4)
+
+  @ApiModelProperty(notes = "Milestone Status Evidence links", position = 6)
   private String evidenceLink;
 
-  @ApiModelProperty(notes = "Milestone Cross Cutting Markers", position = 5)
+
+  @ApiModelProperty(notes = "Milestone Cross Cutting Markers", position = 7)
   private List<CrosscuttingMarkersJustificationDTO> crossCuttingMarkerList;
 
-  @ApiModelProperty(notes = "Main reason for Milestone Status", position = 6)
+  @ApiModelProperty(notes = "Main reason for Milestone Status", position = 8)
   public MilestoneReasonDTO reason;
 
-  @ApiModelProperty(notes = "If main reason = 7. Other, please state", position = 7)
+
+  @ApiModelProperty(notes = "If main reason = 7. Other, please state", position = 9)
   public String otherReason;
 
 
@@ -51,9 +60,11 @@ public class StatusPlannedMilestonesDTO {
     return crossCuttingMarkerList;
   }
 
+
   public String getEvidence() {
     return evidence;
   }
+
 
   public String getEvidenceLink() {
     return evidenceLink;
@@ -67,12 +78,18 @@ public class StatusPlannedMilestonesDTO {
     return otherReason;
   }
 
+
   public MilestoneReasonDTO getReason() {
     return reason;
   }
 
-  public MilestoneStatusDTO getStatus() {
-    return status;
+  public Integer getReportedExtendedYear() {
+    return reportedExtendedYear;
+  }
+
+
+  public MilestoneStatusDTO getReportedStatus() {
+    return reportedStatus;
   }
 
 
@@ -84,9 +101,11 @@ public class StatusPlannedMilestonesDTO {
     this.evidence = evidence;
   }
 
+
   public void setEvidenceLink(String evidenceLink) {
     this.evidenceLink = evidenceLink;
   }
+
 
   public void setMilestone(MilestoneDTO milestone) {
     this.milestone = milestone;
@@ -100,8 +119,15 @@ public class StatusPlannedMilestonesDTO {
     this.reason = reason;
   }
 
-  public void setStatus(MilestoneStatusDTO status) {
-    this.status = status;
+
+  public void setReportedExtendedYear(Integer reportedExtendedYear) {
+    this.reportedExtendedYear = reportedExtendedYear;
   }
+
+
+  public void setReportedStatus(MilestoneStatusDTO reportedStatus) {
+    this.reportedStatus = reportedStatus;
+  }
+
 
 }

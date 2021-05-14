@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
@@ -38,14 +39,24 @@ public class MilestoneDTO {
   @ApiModelProperty(notes = "Milestone target year")
   private Integer year;
 
+  @ApiModelProperty(notes = "Milestone Extended year")
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  private Integer extendedYear;
+
   @ApiModelProperty(notes = "Target unit")
   private TargetUnitDTO targetUnitDTO;
+
 
   @ApiModelProperty(notes = "Target Unit value")
   private BigDecimal value;
 
+
   @ApiModelProperty(notes = "Outcome of the milestone")
   private OutcomeDTO outcomeDTO;
+
+  public Integer getExtendedYear() {
+    return extendedYear;
+  }
 
   public String getId() {
     return id;
@@ -69,6 +80,10 @@ public class MilestoneDTO {
 
   public Integer getYear() {
     return this.year;
+  }
+
+  public void setExtendedYear(Integer extendedYear) {
+    this.extendedYear = extendedYear;
   }
 
   public void setId(String id) {
