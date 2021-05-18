@@ -419,7 +419,10 @@ function impact_areas_indicators() {
 					'<tr>' + '<td >' + item['indicatorId'] + '</td>' + '<td>'
 					+ item['indicatorStatement'] + '</td>'+ '<td>'
 					+ item['impactAreaId'] + '</td>' +'<td>'
-					+ item['impactAreaName'] + '</td>' + '</tr>')
+					+ item['impactAreaName'] + '</td>' +'<td>'
+					+ item['targetYear'] + '</td>' + '<td>'
+					+ item['targetUnit'] + '</td>' + '<td>'
+					+ item['value'] + '</td>' + '</tr>')
 			});
 setTimeout(() => {
 	updateDataTable("impact_areas_indicators");
