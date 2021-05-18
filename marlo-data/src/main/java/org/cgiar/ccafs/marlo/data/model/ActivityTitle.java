@@ -17,6 +17,9 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.google.gson.annotations.Expose;
 
 public class ActivityTitle extends MarloBaseEntity implements java.io.Serializable, IAuditLog {
@@ -26,6 +29,9 @@ public class ActivityTitle extends MarloBaseEntity implements java.io.Serializab
 
   @Expose
   private String title;
+
+  private Set<Activity> activities = new HashSet<Activity>(0);
+
 
   @Override
   public boolean equals(Object obj) {
@@ -45,6 +51,11 @@ public class ActivityTitle extends MarloBaseEntity implements java.io.Serializab
       return false;
     }
     return true;
+  }
+
+
+  public Set<Activity> getActivities() {
+    return activities;
   }
 
 
@@ -83,11 +94,14 @@ public class ActivityTitle extends MarloBaseEntity implements java.io.Serializab
     return result;
   }
 
-
   @Override
   public boolean isActive() {
     // TODO Auto-generated method stub
     return true;
+  }
+
+  public void setActivities(Set<Activity> activities) {
+    this.activities = activities;
   }
 
   @Override
