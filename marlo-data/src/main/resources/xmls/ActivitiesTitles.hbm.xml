@@ -11,5 +11,13 @@
     <property name="title" type="string">
       <column name="title" not-null="true" />
     </property>
+    <set name="activities" order-by="id" table="activities"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="title_id" not-null="true" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.Activity" />
+    </set>
   </class>
 </hibernate-mapping>
