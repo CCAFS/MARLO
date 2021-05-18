@@ -42,8 +42,9 @@ public abstract class StatusPlannedMilestonesMapper {
 
   @Mappings({@Mapping(source = "crpMilestone", target = "milestone"),
     @Mapping(source = "markers", target = "crossCuttingMarkerList"),
-    @Mapping(source = "crpMilestone.milestonesStatus", target = "status")})
+    @Mapping(source = "milestonesStatus", target = "reportedStatus"),
+    @Mapping(source = "extendedYear", target = "reportedExtendedYear")})
   public abstract StatusPlannedMilestonesDTO
-    ReportSynthesisFlagshipProgressOutcomeMilestoneToStatusPlannedMilestonesDTO(
+    reportSynthesisFlagshipProgressOutcomeMilestoneToStatusPlannedMilestonesDTO(
       ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone);
 }
