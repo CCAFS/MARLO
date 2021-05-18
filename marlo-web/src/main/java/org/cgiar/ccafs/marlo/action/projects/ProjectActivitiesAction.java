@@ -516,17 +516,19 @@ public class ProjectActivitiesAction extends BaseAction {
           }
 
           // Set Activity Title
-          ActivityTitle title;
-          if (activityUI.getActivityTitle() != null && activityUI.getActivityTitle().getId() != null
-            && activityTitleManager.getActivityTitleById(activityUI.getActivityTitle().getId()) != null) {
-            title = activityTitleManager.getActivityTitleById(activityUI.getActivityTitle().getId());
-            if (title != null) {
-              activityUI.setActivityTitle(title);
+          if (this.isAiccra()) {
+            ActivityTitle title;
+            if (activityUI.getActivityTitle() != null && activityUI.getActivityTitle().getId() != null
+              && activityTitleManager.getActivityTitleById(activityUI.getActivityTitle().getId()) != null) {
+              title = activityTitleManager.getActivityTitleById(activityUI.getActivityTitle().getId());
+              if (title != null) {
+                activityUI.setActivityTitle(title);
+              } else {
+                activityUI.setActivityTitle(null);
+              }
             } else {
               activityUI.setActivityTitle(null);
             }
-          } else {
-            activityUI.setActivityTitle(null);
           }
 
           // Save new activity and deliverable activities
@@ -557,11 +559,13 @@ public class ProjectActivitiesAction extends BaseAction {
           } else {
             activityUpdate.setProjectPartnerPerson(null);
           }
-          if (activityUI.getActivityTitle() != null && activityUI.getActivityTitle().getId().longValue() != -1) {
-            ActivityTitle title = activityTitleManager.getActivityTitleById(activityUI.getActivityTitle().getId());
-            activityUpdate.setActivityTitle(title);
-          } else {
-            activityUpdate.setActivityTitle(null);
+          if (this.isAiccra()) {
+            if (activityUI.getActivityTitle() != null && activityUI.getActivityTitle().getId().longValue() != -1) {
+              ActivityTitle title = activityTitleManager.getActivityTitleById(activityUI.getActivityTitle().getId());
+              activityUpdate.setActivityTitle(title);
+            } else {
+              activityUpdate.setActivityTitle(null);
+            }
           }
           // Set deliverables here to add inside saveActivity
           activityUpdate.setDeliverables(activityUI.getDeliverables());
