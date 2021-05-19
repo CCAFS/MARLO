@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.ActivityManager;
+import org.cgiar.ccafs.marlo.data.manager.ActivityTitleManager;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
@@ -25,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
+import org.cgiar.ccafs.marlo.data.model.ActivityTitle;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -73,6 +75,7 @@ public class ProjectActivitiesAction extends BaseAction {
   private HistoryComparator historyComparator;
   private GlobalUnit loggedCrp;
   private List<ProjectPartnerPerson> partnerPersons;
+  private List<ActivityTitle> activityTitles;
   private Project project;
   private long projectID;
   private Map<String, String> status;
@@ -86,13 +89,14 @@ public class ProjectActivitiesAction extends BaseAction {
   private ProjectPartnerManager projectPartnerManager;
   private ProjectManager projectManager;
   private ProjectPartnerPersonManager projectPartnerPersonManager;
+  private ActivityTitleManager activityTitleManager;
 
   @Inject
   public ProjectActivitiesAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     ProjectPartnerPersonManager projectPartnerPersonManager, ActivityManager activityManager,
     DeliverableManager deliverableManager, AuditLogManager auditLogManager,
     ProjectActivitiesValidator activitiesValidator, HistoryComparator historyComparator,
-    ProjectPartnerManager projectPartnerManager) {
+    ProjectPartnerManager projectPartnerManager, ActivityTitleManager activityTitleManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -103,6 +107,7 @@ public class ProjectActivitiesAction extends BaseAction {
     this.historyComparator = historyComparator;
     this.activitiesValidator = activitiesValidator;
     this.projectPartnerManager = projectPartnerManager;
+    this.activityTitleManager = activityTitleManager;
   }
 
   public void activitiesPreviousData(Project projectBD) {
@@ -167,6 +172,10 @@ public class ProjectActivitiesAction extends BaseAction {
     }
   }
 
+  public List<ActivityTitle> getActivityTitles() {
+    return activityTitles;
+  }
+
   private Path getAutoSaveFilePath() {
     String composedClassName = project.getClass().getSimpleName();
     // get the action name and replace / for _
@@ -178,13 +187,13 @@ public class ProjectActivitiesAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+
   public int getIndexActivities(long id) {
     Activity activity = new Activity();
     activity.setId(id);
     return project.getProjectActivities().indexOf(activity);
 
   }
-
 
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
@@ -194,10 +203,10 @@ public class ProjectActivitiesAction extends BaseAction {
     return partnerPersons;
   }
 
+
   public Project getProject() {
     return project;
   }
-
 
   public long getProjectID() {
     return projectID;
@@ -370,6 +379,14 @@ public class ProjectActivitiesAction extends BaseAction {
           partnerPersons.add(partnerPerson);
         }
       }
+
+      activityTitles = new ArrayList<>();
+
+      if (this.isAiccra()) {
+        if (activityTitleManager.findAll() != null && !activityTitleManager.findAll().isEmpty()) {
+          activityTitles = activityTitleManager.findAll();
+        }
+      }
     }
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
@@ -388,6 +405,10 @@ public class ProjectActivitiesAction extends BaseAction {
 
       if (partnerPersons != null) {
         partnerPersons.clear();
+      }
+
+      if (activityTitles != null) {
+        activityTitles.clear();
       }
 
       if (project.getProjectDeliverables() != null) {
@@ -409,9 +430,8 @@ public class ProjectActivitiesAction extends BaseAction {
         }
       }
     }
-
-
   }
+
 
   @Override
   public String save() {
@@ -474,7 +494,6 @@ public class ProjectActivitiesAction extends BaseAction {
     }
   }
 
-
   public void saveActivitiesNewData() {
 
     for (Activity activityUI : project.getProjectActivities()) {
@@ -495,6 +514,23 @@ public class ProjectActivitiesAction extends BaseAction {
           } catch (Exception e) {
             activityUI.setProjectPartnerPerson(null);
           }
+
+          // Set Activity Title
+          if (this.isAiccra()) {
+            ActivityTitle title;
+            if (activityUI.getActivityTitle() != null && activityUI.getActivityTitle().getId() != null
+              && activityTitleManager.getActivityTitleById(activityUI.getActivityTitle().getId()) != null) {
+              title = activityTitleManager.getActivityTitleById(activityUI.getActivityTitle().getId());
+              if (title != null) {
+                activityUI.setActivityTitle(title);
+              } else {
+                activityUI.setActivityTitle(null);
+              }
+            } else {
+              activityUI.setActivityTitle(null);
+            }
+          }
+
           // Save new activity and deliverable activities
           activityUI = activityManager.saveActivity(activityUI);
           // This is to add Activity to generate correct auditlog.
@@ -523,6 +559,14 @@ public class ProjectActivitiesAction extends BaseAction {
           } else {
             activityUpdate.setProjectPartnerPerson(null);
           }
+          if (this.isAiccra()) {
+            if (activityUI.getActivityTitle() != null && activityUI.getActivityTitle().getId().longValue() != -1) {
+              ActivityTitle title = activityTitleManager.getActivityTitleById(activityUI.getActivityTitle().getId());
+              activityUpdate.setActivityTitle(title);
+            } else {
+              activityUpdate.setActivityTitle(null);
+            }
+          }
           // Set deliverables here to add inside saveActivity
           activityUpdate.setDeliverables(activityUI.getDeliverables());
 
@@ -536,6 +580,11 @@ public class ProjectActivitiesAction extends BaseAction {
 
     }
 
+  }
+
+
+  public void setActivityTitles(List<ActivityTitle> activityTitles) {
+    this.activityTitles = activityTitles;
   }
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
@@ -559,7 +608,6 @@ public class ProjectActivitiesAction extends BaseAction {
   public void setStatus(Map<String, String> status) {
     this.status = status;
   }
-
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;

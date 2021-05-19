@@ -245,27 +245,29 @@
       </div>
       
       [#-- 3. Link to Common Results Reporting Indicator #I3 --]
-      [#if isOutcomeCaseStudy]
-      <div class="form-group">
-        [#-- Does this outcome reflect a contribution of the CGIAR in influencing or modifying policies/ strategies / laws/ regulations/ budgets/ investments or  curricula?  --]
+      [#if !action.isAiccra()]
+        [#if isOutcomeCaseStudy]
         <div class="form-group">
-          
-          <label for="">[@s.text name="study.reportingIndicatorThree" /]:[@customForm.req required=editable /][@customForm.helpLabel name="study.reportingIndicatorThree.help" showIcon=false editable=editable/]</label>
-          [#assign studyIndicatorThree = "studyIndicatorThree"]
-          [#assign showPolicyIndicator = (element.projectExpectedStudyInfo.isContribution?string)!"" /]
-          [@customForm.radioFlat id="${studyIndicatorThree}-yes" name="${name}.projectExpectedStudyInfo.isContribution" label="Yes" value="true" checked=(showPolicyIndicator == "true") cssClass="radioType-${studyIndicatorThree}" cssClassLabel="radio-label-yes" editable=editable /]
-          [@customForm.radioFlat id="${studyIndicatorThree}-no" name="${name}.projectExpectedStudyInfo.isContribution" label="No" value="false" checked=(showPolicyIndicator == "false") cssClass="radioType-${studyIndicatorThree}" cssClassLabel="radio-label-no" editable=editable /]
-        </div>        
-        [#-- Disaggregates for CGIAR Indicator   --]
-        <div class="form-group simpleBox block-${studyIndicatorThree}" style="display:${(showPolicyIndicator == "true")?string('block','none')}">
-          [@customForm.elementsListComponent name="${customName}.policies" elementType="projectPolicy" elementList=element.policies label="study.policies"  listName="policyList" keyFieldName="id" displayFieldName="composedNameAlternative"/]
-          [#-- Note --]
-          <div class="note">[@s.text name="study.policies.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/policies'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">clicking here</a>[/@][/@]</div>
-          [#local policiesGuideSheetURL = "https://drive.google.com/file/d/1GYLsseeZOOXF9zXNtpUtE1xeh2gx3Vw2/view" /]
-          <small class="pull-right"><a href="${policiesGuideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> #I1 Policies -  Guideline </a> </small>
-          <br>
+          [#-- Does this outcome reflect a contribution of the CGIAR in influencing or modifying policies/ strategies / laws/ regulations/ budgets/ investments or  curricula?  --]
+          <div class="form-group">
+            
+            <label for="">[@s.text name="study.reportingIndicatorThree" /]:[@customForm.req required=editable /][@customForm.helpLabel name="study.reportingIndicatorThree.help" showIcon=false editable=editable/]</label>
+            [#assign studyIndicatorThree = "studyIndicatorThree"]
+            [#assign showPolicyIndicator = (element.projectExpectedStudyInfo.isContribution?string)!"" /]
+            [@customForm.radioFlat id="${studyIndicatorThree}-yes" name="${name}.projectExpectedStudyInfo.isContribution" label="Yes" value="true" checked=(showPolicyIndicator == "true") cssClass="radioType-${studyIndicatorThree}" cssClassLabel="radio-label-yes" editable=editable /]
+            [@customForm.radioFlat id="${studyIndicatorThree}-no" name="${name}.projectExpectedStudyInfo.isContribution" label="No" value="false" checked=(showPolicyIndicator == "false") cssClass="radioType-${studyIndicatorThree}" cssClassLabel="radio-label-no" editable=editable /]
+          </div>        
+          [#-- Disaggregates for CGIAR Indicator   --]
+          <div class="form-group simpleBox block-${studyIndicatorThree}" style="display:${(showPolicyIndicator == "true")?string('block','none')}">
+            [@customForm.elementsListComponent name="${customName}.policies" elementType="projectPolicy" elementList=element.policies label="study.policies"  listName="policyList" keyFieldName="id" displayFieldName="composedNameAlternative"/]
+            [#-- Note --]
+            <div class="note">[@s.text name="study.policies.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/policies'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">clicking here</a>[/@][/@]</div>
+            [#local policiesGuideSheetURL = "https://drive.google.com/file/d/1GYLsseeZOOXF9zXNtpUtE1xeh2gx3Vw2/view" /]
+            <small class="pull-right"><a href="${policiesGuideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> #I1 Policies -  Guideline </a> </small>
+            <br>
+          </div>
         </div>
-      </div>
+        [/#if]
       [/#if]
       
       [#-- 4.  Maturity of change reported (tick-box)  --]
@@ -353,10 +355,12 @@
           <label for="">[@s.text name="study.${isOutcomeCaseStudy?string('keyContributors','keyContributorsOther')}" /]:</label>
         [/#if]
         [#-- CRPs --]
-        [#if isOutcomeCaseStudy]
-        <div class="form-group simpleBox">
-          [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="study.keyContributors.crps"  listName="crps" keyFieldName="id" displayFieldName="composedName" required=false /]
-        </div>
+        [#if !action.isAiccra()]
+          [#if isOutcomeCaseStudy]
+          <div class="form-group simpleBox">
+            [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="study.keyContributors.crps"  listName="crps" keyFieldName="id" displayFieldName="composedName" required=false /]
+          </div>
+          [/#if]
         [/#if]
         [#-- Centers --]
         [#if isOutcomeCaseStudy]
@@ -366,13 +370,15 @@
         </div>
         [/#if]
         [#-- Flagships --]
-        [#if isOutcomeCaseStudy || !fromProject]
-        <div class="form-group simpleBox stageProcessOne">
-          [#if !fromProject && editable]
-            <p class="note">To the [@s.text name="programManagement.flagship.title"/](s) selected, the system grants permission to edit this ${(element.projectExpectedStudyInfo.studyType.name)!'study'} to their [@s.text name="CrpProgram.leaders"/] and [@s.text name="CrpProgram.managers"/]</p>
+        [#if !action.isAiccra()]
+          [#if isOutcomeCaseStudy || !fromProject]
+          <div class="form-group simpleBox stageProcessOne">
+            [#if !fromProject && editable]
+              <p class="note">To the [@s.text name="programManagement.flagship.title"/](s) selected, the system grants permission to edit this ${(element.projectExpectedStudyInfo.studyType.name)!'study'} to their [@s.text name="CrpProgram.leaders"/] and [@s.text name="CrpProgram.managers"/]</p>
+            [/#if]
+            [@customForm.elementsListComponent name="${customName}.flagships" elementType="crpProgram" id="FP" elementList=element.flagships label="study.keyContributors.flagships"  listName="flagshipList" keyFieldName="id" displayFieldName="composedName" required=false /]
+          </div>
           [/#if]
-          [@customForm.elementsListComponent name="${customName}.flagships" elementType="crpProgram" id="FP" elementList=element.flagships label="study.keyContributors.flagships"  listName="flagshipList" keyFieldName="id" displayFieldName="composedName" required=false /]
-        </div>
         [/#if]
         [#-- Regions --]
         [#if (isOutcomeCaseStudy || !fromProject) && regionList?has_content]

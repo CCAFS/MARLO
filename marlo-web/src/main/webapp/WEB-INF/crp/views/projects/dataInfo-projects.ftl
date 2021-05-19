@@ -1,11 +1,19 @@
 [#ftl]
 <div id="top-quote">
   [#if project?has_content]
-    <div id="projectID-quote" class="quote-id" title="[#if (project.projectInfo.title?has_content)!false]${(project.projectInfo.title)!}[/#if]">
-      <a href="[@s.url namespace="/projects" action='${crpSession}/description'][@s.param name='projectID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-        <p><span>&nbsp${project.id}</span></p>
-      </a>
-    </div>
+    [#if action.isAiccra()]
+      <div id="clusterID-quote" class="quote-id" title="[#if (project.projectInfo.title?has_content)!false]${(project.projectInfo.title)!}[/#if]">
+        <a href="[@s.url namespace="/projects" action='${crpSession}/description'][@s.param name='projectID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+          <p><span>&nbsp${project.id}</span></p>
+        </a>
+      </div>
+    [#else]
+      <div id="projectID-quote" class="quote-id" title="[#if (project.projectInfo.title?has_content)!false]${(project.projectInfo.title)!}[/#if]">
+        <a href="[@s.url namespace="/projects" action='${crpSession}/description'][@s.param name='projectID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+          <p><span>&nbsp${project.id}</span></p>
+        </a>
+      </div>
+    [/#if]
   [/#if]
   [#if deliverable?has_content]
     <div class= "aux-quote"><b> - </b></div>

@@ -17,6 +17,10 @@
 			class="org.cgiar.ccafs.marlo.data.model.Project" fetch="select">
 			<column name="project_id" not-null="true" />
 		</many-to-one>
+		<many-to-one name="activityTitle"
+			class="org.cgiar.ccafs.marlo.data.model.ActivityTitle" fetch="select">
+			<column name="title_id" not-null="true" />
+		</many-to-one>
 		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
 			fetch="select">
 			<column name="modified_by" />

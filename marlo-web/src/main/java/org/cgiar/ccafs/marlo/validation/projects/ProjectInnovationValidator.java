@@ -143,24 +143,26 @@ public class ProjectInnovationValidator extends BaseValidator {
     }
 
     // Validate SubIdos
-    if (projectInnovation.getSubIdos() == null || projectInnovation.getSubIdos().isEmpty()) {
-      action.addMessage(action.getText("subIdos"));
-      action.addMissingField("innovation.subIdos");
-      action.getInvalidFields().put("list-innovation.subIdos",
-        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
-    } else {
-      // Validate primary Sub-IDOS
-      int count = 0;
-      for (ProjectInnovationSubIdo subido : projectInnovation.getSubIdos()) {
-        if (subido.getPrimary() != null && subido.getPrimary() == true) {
-          count++;
-        }
-      }
-      if (count == 0) {
+    if (!action.isAiccra()) {
+      if (projectInnovation.getSubIdos() == null || projectInnovation.getSubIdos().isEmpty()) {
         action.addMessage(action.getText("subIdos"));
         action.addMissingField("innovation.subIdos");
         action.getInvalidFields().put("list-innovation.subIdos",
           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
+      } else {
+        // Validate primary Sub-IDOS
+        int count = 0;
+        for (ProjectInnovationSubIdo subido : projectInnovation.getSubIdos()) {
+          if (subido.getPrimary() != null && subido.getPrimary() == true) {
+            count++;
+          }
+        }
+        if (count == 0) {
+          action.addMessage(action.getText("subIdos"));
+          action.addMissingField("innovation.subIdos");
+          action.getInvalidFields().put("list-innovation.subIdos",
+            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
+        }
       }
     }
 

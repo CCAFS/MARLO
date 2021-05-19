@@ -103,11 +103,12 @@ public class ProjectActivitiesValidator extends BaseValidator {
     List<String> params = new ArrayList<>();
     params.add(String.valueOf(activity.getId()));
 
-    if (!(this.isValidString(activity.getTitle()) && this.wordCount(activity.getTitle()) <= 30)) {
-      action.addMessage(action.getText("activity.title", params));
-      action.getInvalidFields().put("input-project." + listName + "[" + index + "].title",
-        InvalidFieldsMessages.EMPTYFIELD);
-
+    if (!action.isAiccra()) {
+      if (!(this.isValidString(activity.getTitle()) && this.wordCount(activity.getTitle()) <= 30)) {
+        action.addMessage(action.getText("activity.title", params));
+        action.getInvalidFields().put("input-project." + listName + "[" + index + "].title",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
     }
 
     if (!(this.isValidString(activity.getDescription()) && this.wordCount(activity.getDescription()) <= 150)) {
@@ -137,6 +138,19 @@ public class ProjectActivitiesValidator extends BaseValidator {
       action.addMessage(action.getText("activity.leader", params));
       action.getInvalidFields().put("input-project." + listName + "[" + index + "].projectPartnerPerson.id",
         InvalidFieldsMessages.EMPTYFIELD);
+    }
+    if (action.isAiccra()) {
+      if (activity.getActivityTitle() != null) {
+        if (activity.getActivityTitle().getId().intValue() == -1) {
+          action.addMessage(action.getText("activity.title", params));
+          action.getInvalidFields().put("input-project." + listName + "[" + index + "].activityTitle.id",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+      } else {
+        action.addMessage(action.getText("activity.title", params));
+        action.getInvalidFields().put("input-project." + listName + "[" + index + "].activityTitle.id",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
     }
 
     if (activity.getActivityStatus() != null) {
