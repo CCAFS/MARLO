@@ -47,8 +47,7 @@
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
            
           
-          <h3 class="headTitle">[@s.text name="project.activities.title" /]</h3>
-          
+          <h3 class="headTitle">[@s.text name="project.activities.title" /]</h3>                   
           <div class="activitiesOG-content simpleBox" listname="project.openProjectActivities">
           <h4 class="subTitle headTitle">[@s.text name="project.activities.onGoing" /]</h4>
           <hr />
@@ -140,11 +139,17 @@
     <div class="blockContent" style="display:none">
       [#-- Title --]
       <div class="form-group">
-        [@customForm.input name="${customName}.title" value="${(element.title)!'New Activity'}" type="text" i18nkey="project.activities.inputTitle"  placeholder="" className="activityTitle limitWords-30" required=true editable=editable && isActive /]
+        [@customForm.input name="${customName}.title" value="${(element.title)!'New Activity'}" type="text" i18nkey="project.activities.inputTitle"  placeholder="" className="activityTitle limitWords-30" required=true editable=false /]
         <input class="activityId" type="hidden" name="${customName}.id" value="${(element.id)!-1}" />
         <input class="activityId" type="hidden" name="${customName}.composeID" value="${(element.composeID)!}" />
         <span class="index hidden">${index}</span>
       </div>
+      [#-- Activity Title --]
+      [#if action.isAiccra()]           
+        <div class="form-group">
+          [@customForm.select name="${customName}.activityTitle.id" label=""  i18nkey="project.activities.inputTitle" listName="activityTitles" keyFieldName="id"  displayFieldName="title"  multiple=false required=true editable=editable && isActive/]
+        </div>
+      [/#if]
       [#-- Description --]
       <div class="form-group">
         [@customForm.textArea  name="${customName}.description" i18nkey="project.activities.inputDescription" value="${(element.description)!}" required=true className="limitWords-150 activityDescription" editable=editable /]

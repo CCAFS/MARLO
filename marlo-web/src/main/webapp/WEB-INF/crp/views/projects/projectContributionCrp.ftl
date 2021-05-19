@@ -86,12 +86,21 @@
             <div class="form-group">
               <div class="row form-group" style="display:${showOutcomeValue?string('block', 'none')}">
                 <div class="col-md-5">
+                [#if !action.isAiccra()]
                   [#if editable]
                     [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive/]
                   [#else]
                     <label for="">[@s.text name="projectOutcome.expectedValue" /]:</label>
                     <div class="input"><p>${(projectOutcome.expectedValue)!'Prefilled if available'}</p></div>
+                  [/#if]               
+                [#else]
+                  [#if editable]
+                    [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive && editExpectedValue/]
+                  [#else]
+                    <label for="">[@s.text name="projectOutcome.expectedValue" /]:</label>
+                    <div class="input"><p>${(projectOutcome.expectedValue)!'Prefilled if available'}</p></div>
                   [/#if]
+                [/#if]
                 </div>
                 <div class="col-md-7">
                   <div class="select">

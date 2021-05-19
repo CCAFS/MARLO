@@ -1055,7 +1055,16 @@ span.logType.saved {
   background-image: url(../../global/images/project-icon.png);
 }
 
+#clusterID-quote {
+  background-image: url(../../global/images/cluster-icon.png);
+}
+
 #projectID-quote p {
+  line-height: 29px;
+  margin: 0;
+}
+
+#clusterID-quote p {
   line-height: 29px;
   margin: 0;
 }

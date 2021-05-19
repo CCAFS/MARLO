@@ -345,24 +345,27 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
         }
 
         // Validate Is Contribution Radio Button (Yes/No)
-        if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getIsContribution() == null) {
+        if (!action.isAiccra()) {
+          if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
+            .getIsContribution() == null) {
 
-          action.addMessage(action.getText("Involve a contribution of the CGIAR"));
-          action.addMissingField("study.reportingIndicatorThree");
-          action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.isContribution",
-            InvalidFieldsMessages.EMPTYFIELD);
+            action.addMessage(action.getText("Involve a contribution of the CGIAR"));
+            action.addMissingField("study.reportingIndicatorThree");
+            action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.isContribution",
+              InvalidFieldsMessages.EMPTYFIELD);
 
-          // this.validateHidden(projectExpectedStudy, action);
+            // this.validateHidden(projectExpectedStudy, action);
 
-        } else {
-          if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getIsContribution()) {
+          } else {
+            if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getIsContribution()) {
 
-            // Validate Policies
-            if (projectExpectedStudy.getPolicies() == null || projectExpectedStudy.getPolicies().isEmpty()) {
-              action.addMessage(action.getText("policyList"));
-              action.addMissingField("policy.policies");
-              action.getInvalidFields().put("list-expectedStudy.policies",
-                action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"policyList"}));
+              // Validate Policies
+              if (projectExpectedStudy.getPolicies() == null || projectExpectedStudy.getPolicies().isEmpty()) {
+                action.addMessage(action.getText("policyList"));
+                action.addMissingField("policy.policies");
+                action.getInvalidFields().put("list-expectedStudy.policies",
+                  action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"policyList"}));
+              }
             }
           }
         }

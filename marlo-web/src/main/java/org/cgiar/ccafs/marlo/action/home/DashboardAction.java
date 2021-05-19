@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -49,7 +50,6 @@ public class DashboardAction extends BaseAction {
   private PhaseManager phaseManager;
 
   private List<Project> myProjects;
-
 
   private ProjectManager projectManager;
 
@@ -176,8 +176,11 @@ public class DashboardAction extends BaseAction {
 
     }
 
-
-    // }
+    myDeliverables = new ArrayList<>();
+    
+    myProjects.forEach((project) -> {
+        myDeliverables.addAll(project.getCurrentDeliverables(phase));
+      });
 
 
   }
@@ -191,5 +194,24 @@ public class DashboardAction extends BaseAction {
     this.myProjects = myProjects;
   }
 
+    private List<Deliverable> myDeliverables = new ArrayList<>();
+
+    /**
+     * Get the value of myDeliverables
+     *
+     * @return the value of myDeliverables
+     */
+    public List<Deliverable> getMyDeliverables() {
+        return myDeliverables;
+    }
+
+    /**
+     * Set the value of myDeliverables
+     *
+     * @param myDeliverables new value of myDeliverables
+     */
+    public void setMyDeliverables(List<Deliverable> myDeliverables) {
+        this.myDeliverables = myDeliverables;
+    }
 
 }

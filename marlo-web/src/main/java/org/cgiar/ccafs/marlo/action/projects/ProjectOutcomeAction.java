@@ -105,6 +105,7 @@ public class ProjectOutcomeAction extends BaseAction {
   private ProjectOutcomeValidator projectOutcomeValidator;
   private String transaction;
   private ProjectOutcome projectOutcomeDB;
+  private boolean editExpectedValue;
 
   @Inject
   public ProjectOutcomeAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
@@ -126,6 +127,30 @@ public class ProjectOutcomeAction extends BaseAction {
     this.projectNextuserManager = projectNextuserManager;
     this.projectOutcomeValidator = projectOutcomeValidator;
     this.projectOutcomeIndicatorManager = projectOutcomeIndicatorManager;
+  }
+
+  public void canBeEditedExpectedValue() {
+    editExpectedValue = false;
+    // Modify the editExpectedValue value for AICCRA
+    if (this.isAiccra()) {
+      if (!this.isAdmin()) {
+        if (projectOutcome != null) {
+          if (projectOutcome.getExpectedValue() == null) {
+            // Null expected value
+            editExpectedValue = true;
+          } else {
+            // Not null Expected value
+            editExpectedValue = false;
+          }
+        } else {
+          // Null project outcome
+          editExpectedValue = false;
+        }
+      } else {
+        // User is admin
+        editExpectedValue = true;
+      }
+    }
   }
 
   @Override
@@ -161,6 +186,7 @@ public class ProjectOutcomeAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+
   public String getBaseLineFileURL(String outcomeID) {
     return config.getDownloadURL() + "/" + this.getBaseLineFileUrlPath(outcomeID).replace('\\', '/');
   }
@@ -170,7 +196,6 @@ public class ProjectOutcomeAction extends BaseAction {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + outcomeID + File.separator + "baseLine"
       + File.separator;
   }
-
 
   public int getIndexCommunication(int year) {
 
@@ -189,6 +214,7 @@ public class ProjectOutcomeAction extends BaseAction {
     return this.getIndexCommunication(year);
 
   }
+
 
   public int getIndexIndicator(Long indicatorID) {
 
@@ -224,7 +250,6 @@ public class ProjectOutcomeAction extends BaseAction {
     return this.getIndexMilestone(milestoneId, year);
   }
 
-
   public ProjectOutcomeIndicator getIndicator(Long indicatorID) {
     for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcome.getIndicators()) {
       if (projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId().longValue() == indicatorID) {
@@ -237,6 +262,7 @@ public class ProjectOutcomeAction extends BaseAction {
     return projectOutcomeIndicator;
 
   }
+
 
   public ProjectMilestone getMilestone(long milestoneId, int year) {
     ProjectMilestone projectMilestone = new ProjectMilestone();
@@ -258,10 +284,10 @@ public class ProjectOutcomeAction extends BaseAction {
 
   }
 
-
   public List<CrpMilestone> getMilestones() {
     return milestones;
   }
+
 
   public List<CrpMilestone> getMilestonesbyYear(int year) {
     List<CrpMilestone> milestoneList =
@@ -279,7 +305,6 @@ public class ProjectOutcomeAction extends BaseAction {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
@@ -291,7 +316,6 @@ public class ProjectOutcomeAction extends BaseAction {
   public long getProjectOutcomeID() {
     return projectOutcomeID;
   }
-
 
   /**
    * Return the absolute path where the work plan is or should be located.
@@ -309,7 +333,6 @@ public class ProjectOutcomeAction extends BaseAction {
       + "outcome" + File.separator;
   }
 
-
   public String getSummaryURL() {
     return config.getDownloadURL() + "/" + this.getSummaryPath().replace('\\', '/');
   }
@@ -322,6 +345,11 @@ public class ProjectOutcomeAction extends BaseAction {
   public String getTransaction() {
     return transaction;
   }
+
+  public boolean isEditExpectedValue() {
+    return editExpectedValue;
+  }
+
 
   public ProjectCommunication loadProjectCommunication(int year) {
 
@@ -347,7 +375,6 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -504,7 +531,7 @@ public class ProjectOutcomeAction extends BaseAction {
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
 
     projectOutcomeDB = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
-
+    this.canBeEditedExpectedValue();
     this.setBasePermission(this.getText(Permission.PROJECT_CONTRIBRUTIONCRP_BASE_PERMISSION, params));
     if (this.isHttpPost())
 
@@ -604,6 +631,7 @@ public class ProjectOutcomeAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
   }
+
 
   public void saveCommunications(ProjectOutcome projectOutcomeDB) {
 
@@ -731,7 +759,6 @@ public class ProjectOutcomeAction extends BaseAction {
       }
     }
   }
-
 
   private void saveMilestones(ProjectOutcome projectOutcomeDB) {
 
@@ -862,6 +889,7 @@ public class ProjectOutcomeAction extends BaseAction {
     }
   }
 
+
   private ProjectOutcome saveProjectOutcome() {
 
 
@@ -932,6 +960,10 @@ public class ProjectOutcomeAction extends BaseAction {
 
     return projectOutcomeDB;
 
+  }
+
+  public void setEditExpectedValue(boolean editExpectedValue) {
+    this.editExpectedValue = editExpectedValue;
   }
 
   public void setMilestones(List<CrpMilestone> milestones) {

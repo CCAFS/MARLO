@@ -6,9 +6,9 @@
       <tr class="header">
         <th colspan="5">General Information</th>
         [#if !reportingActive && !centerGlobalUnit]
-          <th colspan="1">[@s.text name="projectsList.projectBudget"] [@s.param]${(crpSession?upper_case)!}[/@s.param] [/@s.text] ${currentCycleYear}</th> 
+          <th colspan="1">[@s.text name="projectsList.projectBudget"] [@s.param]${(crpSession?upper_case)!}[/@s.param] [/@s.text] ${currentCycleYear}</th>
         [/#if]
-        <th colspan="3">Actions</th> 
+        <th colspan="3">Actions</th>
       </tr>
       <tr class="subHeader">
         <th id="ids">[@s.text name="projectsList.projectids" /]</th>
@@ -20,7 +20,7 @@
             [@s.text name="projectsList.projectPrograms" /]
           [#else]
             [#if action.hasProgramnsRegions()]
-              [@s.text name="projectsList.projectFlagshipsRegions" /] 
+              [@s.text name="projectsList.projectFlagshipsRegions" /]
             [#else]
                [@s.text name="projectsList.projectFlagships" /]
             [/#if]
@@ -85,10 +85,10 @@
             [#assign pLeader =  (project.getLeader(action.getActualPhase()))! ]
             [#assign pLeaderPerson =  (project.getLeaderPersonDB(action.getActualPhase()))! ]
           [/#if]
-          <td class=""> 
+          <td class="">
             [#if pLeader?has_content]${(pLeader.institution.acronym)!pLeader.institution.name}[#else][@s.text name="projectsList.title.none" /][/#if]
           </td>
-          <td class=""> 
+          <td class="">
             [#if pLeaderPerson?has_content] ${(pLeaderPerson.user.composedName)!}[#else][@s.text name="projectsList.title.none" /][/#if]
           </td>
           [#-- Flagship / Regions / Programs --]
@@ -115,14 +115,14 @@
                 [/#if]
               [/#list]
             [/#if]
-            
+
             [#if tagsNumber < 1]
               [@s.text name="projectsList.none" /]
             [/#if]
           </td>
           [#if !reportingActive && !centerGlobalUnit]
           [#-- Budget W1/W2 --]
-          <td class=""> 
+          <td class="">
             [#if project.getCoreBudget(currentCycleYear,action.getActualPhase())?has_content]
                <nobr> US$ <span id="">${((project.coreBudget)!0)?string(",##0.00")}</span></nobr>
             [#else]
@@ -130,17 +130,17 @@
             [/#if]
           </td>
           [#-- Budget W3/ Bilateral --]
-          [#-- <td class="budget"> 
+          [#-- <td class="budget">
             [#if project.getW3Budget(currentCycleYear,action.getActualPhase())?has_content]
-              <nobr>US$ <span id="">${((project.w3Budget)!0)?string(",##0.00")}</span></nobr> 
+              <nobr>US$ <span id="">${((project.w3Budget)!0)?string(",##0.00")}</span></nobr>
             [#else]
               [@s.text name="projectsList.none" /]
             [/#if]
           </td> --]
           [#-- Budget Bilateral --]
-          [#-- <td class="budget"> 
+          [#-- <td class="budget">
             [#if project.getBilateralBudget(currentCycleYear,action.getActualPhase())?has_content]
-              <nobr>US$ <span id="">${((project.bilateralBudget)!0)?string(",##0.00")}</span></nobr> 
+              <nobr>US$ <span id="">${((project.bilateralBudget)!0)?string(",##0.00")}</span></nobr>
             [#else]
               [@s.text name="projectsList.none" /]
             [/#if]
@@ -150,7 +150,7 @@
           <td>
             [#assign currentCycleYear= currentCycleYear /]
             [#assign submission = action.isProjectSubmitted(project.id) /]
-            
+
             [#-- CRP Project --]
             [#if isCrpProject]
               [#if !project.projectInfo.isProjectEditLeader()]
@@ -161,35 +161,35 @@
                 [#else]
                   <strong title="Submitted">Submitted</strong>
                 [/#if]
-                
+
                 [#-- Status --]
                 [#if reportingActive]
                   <p>${(project.projectInfo.statusName)!}</p>
                 [/#if]
               [/#if]
             [/#if]
-            
+
           </td>
-          
+
           [#-- Summary PDF download --]
-          <td>        
+          <td>
             [#if action.getActualPhase().crp.id != 29]
               <a href="[@s.url namespace="/projects" action='${(crpSession)!}/reportingSummary'][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='cycle']${action.getCurrentCycle()}[/@s.param][@s.param name='year']${action.getCurrentCycleYear()}[/@s.param][/@s.url]" target="__BLANK">
                 <img src="${baseUrlCdn}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
-              </a>          
+              </a>
             [/#if]
           </td>
           [#-- Delete Project--]
           <td>
             [#if canEdit && isProjectNew && action.deletePermission(project.id) && action.getActualPhase().editable && project.projectInfo.phase.id=action.getActualPhase().id]
               <a id="removeProject-${project.id}" class="removeProject" href="#" title="">
-                <img src="${baseUrlCdn}/global/images/trash.png" title="[@s.text name="projectsList.deleteProject" /]" /> 
+                <img src="${baseUrlCdn}/global/images/trash.png" title="[@s.text name="projectsList.deleteProject" /]" />
               </a>
             [#else]
               <img src="${baseUrlCdn}/global/images/trash_disable.png" title="[@s.text name="projectsList.cantDeleteProject" /]" />
             [/#if]
           </td>
-        </tr>  
+        </tr>
       [/#list]
     [/#if]
     </tbody>
@@ -208,7 +208,7 @@
         [#--  <th id="projectType">[@s.text name="projectsList.projectType" /]</th>--]
         <th id="projectFlagships">
           [#if action.hasProgramnsRegions()]
-            [@s.text name="projectsList.projectFlagshipsRegions" /] 
+            [@s.text name="projectsList.projectFlagshipsRegions" /]
           [#else]
              [@s.text name="projectsList.projectFlagships" /]
           [/#if]
@@ -246,10 +246,10 @@
             [/#if]
           </td>
           [#-- Project Leader --]
-          <td class=""> 
+          <td class="">
             [#if project.getLeader(action.getActualPhase())?has_content]${(project.getLeader(action.getActualPhase()).institution.acronym)!project.getLeader(action.getActualPhase()).institution.name}[#else][@s.text name="projectsList.title.none" /][/#if]
           </td>
-              <td class=""> 
+              <td class="">
             [#if project.getLeaderPersonDB(action.getActualPhase())?has_content] ${(project.getLeaderPersonDB(action.getActualPhase()).user.composedName)!}[#else][@s.text name="projectsList.title.none" /][/#if]
           </td>
           [#-- Flagship / Regions --]
@@ -260,7 +260,7 @@
             [#else]
               [@s.text name="projectsList.none" /]
             [/#if]
-          [#else] 
+          [#else]
             [#local li = (project.projectInfo.liaisonInstitution)!{} ]
             <span class="programTag" style="border-color:#444">
               [#if (li.crpProgram??)!false]
@@ -275,7 +275,7 @@
           </td>
           [#-- Project Action Status --]
           <td>
-            <strong>${(project.projectInfo.statusName)!}</strong> 
+            <strong>${(project.projectInfo.statusName)!}</strong>
           </td>
           [#-- Summary PDF download --]
           <td>
@@ -285,17 +285,17 @@
               </a>
             [/#if]
           </td>
-          [#-- Delete Project--] 
+          [#-- Delete Project--]
           <td>
             [#if canEdit && isProjectNew && action.deletePermission(project.id) ]
               <a id="removeProject-${project.id}" class="removeProject" href="#" title="">
-                <img src="${baseUrlCdn}/global/images/trash.png" title="[@s.text name="projectsList.deleteProject" /]" /> 
+                <img src="${baseUrlCdn}/global/images/trash.png" title="[@s.text name="projectsList.deleteProject" /]" />
               </a>
             [#else]
               <img src="${baseUrlCdn}/global/images/trash_disable.png" title="[@s.text name="projectsList.cantDeleteProject" /]" />
             [/#if]
           </td>
-        </tr>  
+        </tr>
       [/#list]
     [/#if]
     </tbody>
@@ -304,7 +304,7 @@
 
 [#macro evaluationProjects projects={} owned=true canValidate=false canEdit=false isPlanning=false namespace="/" defaultAction="evaluation"]
   <table class="evaluationProjects" id="projects">
-    <thead> 
+    <thead>
       <tr class="subHeader">
         <th class="idsCol">[@s.text name="projectsList.projectids" /]</th>
         <th class="projectTitlesCol" >[@s.text name="projectsList.projectTitles" /]</th>
@@ -326,12 +326,12 @@
             <a href="${projectUrl}"> C${project.id}</a>
           [#else]
             <a href="${projectUrl}"> P${project.id}</a>
-          [/#if]        
+          [/#if]
           </td>
           [#-- Project Title --]
-          <td class="left"> 
+          <td class="left">
             [#if project.projectInfo.title?has_content]
-              <a href="${projectUrl}" title="${project.projectInfo.title}">[@utilities.wordCutter string=project.projectInfo.title maxPos=120 /]</a>  
+              <a href="${projectUrl}" title="${project.projectInfo.title}">[@utilities.wordCutter string=project.projectInfo.title maxPos=120 /]</a>
             [#else]
               <a href="${projectUrl}">[@s.text name="projectsList.title.none" /]</a>
             [/#if]
@@ -349,7 +349,7 @@
           <td><p class="center">${project.projectInfo.statusEvaluation}</p></td>
           [#-- Total Score --]
           <td><p class="totalScore">${project.projectInfo.totalScoreEvaluation}</p></td>
-        </tr>  
+        </tr>
       [/#list]
     [/#if]
     </tbody>
@@ -381,7 +381,7 @@
         [/#if]
         </td>
           [#-- Project Title --]
-          <td class="left"> 
+          <td class="left">
             [#if (project.projectInfo.title?has_content)!false]
               <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='projectID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" >
               [#if project.projectInfo.title?length < 120] ${project.projectInfo.title}</a> [#else] [@utilities.wordCutter string=project.projectInfo.title maxPos=120 /]...</a> [/#if]
@@ -391,12 +391,12 @@
               </a>
             [/#if]
           </td>
-          [#-- Project Type 
+          [#-- Project Type
           <td>
             [@s.text name="project.type.${(project.type?lower_case)!'none'}" /]
           </td>
           --]
-        </tr>  
+        </tr>
       [/#list]
     [/#if]
     </tbody>
@@ -426,7 +426,7 @@
           <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='projectID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"> P${deliverable.id}</a>
         </td>
           [#-- Project Title --]
-          <td class="left"> 
+          <td class="left">
             [#if project.title?has_content]
               <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='projectID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" title="${project.title}">
               [#if project.title?length < 120] ${project.title}</a> [#else] [@utilities.wordCutter string=project.title maxPos=120 /]...</a> [/#if]
@@ -440,7 +440,7 @@
           <td>
             [@s.text name="project.type.${(project.type?lower_case)!'none'}" /]
           </td>
-        </tr>  
+        </tr>
       [/#list]
     [/#if]
     </tbody>
