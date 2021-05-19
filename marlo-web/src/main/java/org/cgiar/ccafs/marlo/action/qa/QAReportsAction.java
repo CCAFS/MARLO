@@ -37,6 +37,8 @@ public class QAReportsAction extends BaseAction {
   // Managers and mappers
   private QATokenAuthManager qATokenManager;
 
+  private String qaUrl;
+
   // Front
   private QATokenAuth qATokenAuth;
 
@@ -51,6 +53,9 @@ public class QAReportsAction extends BaseAction {
     return qATokenAuth;
   }
 
+  public String getQaUrl() {
+    return qaUrl;
+  }
 
   @Override
   public void prepare() {
@@ -58,11 +63,17 @@ public class QAReportsAction extends BaseAction {
       this.getCurrentUser().getFirstName() + " " + this.getCurrentUser().getLastName(),
       this.getCurrentUser().getUsername(), this.getCurrentUser().getEmail(), this.getCurrentGlobalUnit().getSmoCode(),
       this.getCurrentUser().getId().toString());
-  }
 
+    this.qaUrl = (config.isProduction()) ? "https://qa.cgiar.org/" : "http://qatest.ciat.cgiar.org/";
+  }
 
   public void setqATokenAuth(QATokenAuth qATokenAuth) {
     this.qATokenAuth = qATokenAuth;
+  }
+
+
+  public void setQaUrl(String qaUrl) {
+    this.qaUrl = qaUrl;
   }
 
 
