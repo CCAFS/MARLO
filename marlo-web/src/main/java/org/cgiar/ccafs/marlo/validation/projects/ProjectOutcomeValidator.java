@@ -420,7 +420,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
     if (action.isPlanningActive()) {
       if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
-        && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 100)) {
+        && this.wordCount(projectOutcomeIndicator.getNarrative()) > 100)) {
         action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
         action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
           InvalidFieldsMessages.EMPTYFIELD);
@@ -435,7 +435,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
     if (action.isReportingActive()) {
       if (!(this.isValidString(projectOutcomeIndicator.getAchievedNarrative())
-        && this.wordCount(projectOutcomeIndicator.getAchievedNarrative()) <= 100)) {
+        && this.wordCount(projectOutcomeIndicator.getAchievedNarrative()) > 100)) {
         action.addMessage(action.getText("projectOutcomeIndicator.requeried.achievedNarrative", params));
         action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].achievedNarrative",
           InvalidFieldsMessages.EMPTYFIELD);
