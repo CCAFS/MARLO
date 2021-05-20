@@ -406,11 +406,15 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
     for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcomePrev.getProjectOutcomeIndicators().stream()
       .filter(c -> c.isActive()).collect(Collectors.toList())) {
       if (projectOutcome.getIndicators() == null || projectOutcome.getIndicators().stream()
-        .filter(c -> c != null && c.getCrpProgramOutcomeIndicator() != null
+        .filter(c -> c != null && c.getCrpProgramOutcomeIndicator() != null && projectOutcomeIndicator != null
+          && projectOutcomeIndicator.getId() != null && projectOutcomeIndicator.getCrpProgramOutcomeIndicator() != null
+          && projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getComposeID() != null
           && c.getCrpProgramOutcomeIndicator().getComposeID()
             .equals(projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getComposeID()))
         .collect(Collectors.toList()).isEmpty()) {
-        projectOutcomeIndicatorDAO.deleteProjectOutcomeIndicator(projectOutcomeIndicator.getId());
+        if (projectOutcomeIndicatorDAO.existProjectOutcomeIndicator(projectOutcomeIndicator.getId())) {
+          projectOutcomeIndicatorDAO.deleteProjectOutcomeIndicator(projectOutcomeIndicator.getId());
+        }
 
       }
     }
