@@ -3442,6 +3442,26 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+  public ProjectOutcome getProjectOutcomeRelationImpact(long phaseId, long projectId, long outcomeId) {
+    ProjectOutcome projectOutcome = new ProjectOutcome();
+    Phase phase = phaseManager.getPhaseById(phaseId);
+    List<ProjectOutcome> projectOutcomes = new ArrayList<>();
+    if (phase != null) {
+      projectOutcomes = projectOutcomeManager.getProjectOutcomeByPhase(phase);
+      if (projectOutcomes != null && !projectOutcomes.isEmpty()) {
+        projectOutcomes = projectOutcomes.stream()
+          .filter(po -> po.getProject() != null && po.getProject().getId().equals(projectId)
+            && po.getCrpProgramOutcome() != null && po.getCrpProgramOutcome().getId().equals(outcomeId))
+          .collect(Collectors.toList());
+        if (projectOutcomes != null && !projectOutcomes.isEmpty()) {
+          projectOutcome = projectOutcomes.get(0);
+        }
+      }
+
+    }
+    return projectOutcome;
+  }
+
   public SectionStatus getProjectOutcomeStatus(long projectOutcomeID) {
     ProjectOutcome projectOutcome = this.projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
 
