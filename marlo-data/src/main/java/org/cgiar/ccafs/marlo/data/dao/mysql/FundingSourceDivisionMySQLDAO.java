@@ -40,9 +40,9 @@ public class FundingSourceDivisionMySQLDAO extends AbstractMarloDAO<FundingSourc
   @Override
   public void deleteFundingSourceDivision(long fundingSourceDivisionId) {
     FundingSourceDivision fundingSourceDivision = this.find(fundingSourceDivisionId);
-    super.delete(fundingSourceDivision);
-
-
+    if (fundingSourceDivision != null && fundingSourceDivision.getId() != null) {
+      super.delete(fundingSourceDivision);
+    }
   }
 
 
