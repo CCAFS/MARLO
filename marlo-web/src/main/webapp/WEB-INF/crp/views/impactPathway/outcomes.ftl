@@ -229,7 +229,11 @@
     <ul class="nav nav-tabs to-minimize-outcome" role="tablist">
       <li role="presentation" class="active"><a href="#milestones-tab-${index}" aria-controls="messages" role="tab" data-toggle="tab">Milestones <span class="badge">${(outcome.milestones?size)!'0'}</span></a></li>
       [#if action.hasSpecificities('crp_baseline_indicators') && (selectedProgram.baseLine)!false]
-      <li role="presentation"><a href="#baseline-tab-${index}" aria-controls="profile" role="tab" data-toggle="tab">Baseline Indicators <span class="badge">${(outcome.indicators?size)!'0'}</span></a></li>
+        [#if action.isAiccra()]
+          <li role="presentation"><a href="#baseline-tab-${index}" aria-controls="profile" role="tab" data-toggle="tab">Progress to Target Indicators <span class="badge">${(outcome.indicators?size)!'0'}</span></a></li>
+        [#else]
+          <li role="presentation"><a href="#baseline-tab-${index}" aria-controls="profile" role="tab" data-toggle="tab">Baseline Indicators <span class="badge">${(outcome.indicators?size)!'0'}</span></a></li>
+        [/#if]
       [/#if]
       <li role="presentation" ><a href="#subIdos-tab-${index}" aria-controls="home" role="tab" data-toggle="tab">Sub-IDOs <span class="badge">${(outcome.subIdos?size)!'0'}</span></a></li>
      </ul>

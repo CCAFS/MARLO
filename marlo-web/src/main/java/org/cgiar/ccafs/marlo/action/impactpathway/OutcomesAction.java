@@ -813,8 +813,8 @@ public class OutcomesAction extends BaseAction {
       programOutcomeIncoming.setCrpProgram(this.getSelectedProgram());
       crpProgramOutcome.copyFields(programOutcomeIncoming);
 
-      //crpProgramOutcome.setModifiedBy(this.getCurrentUser());
-      //crpProgramOutcome.setActiveSince(new Date(Calendar.getInstance().getTimeInMillis()));
+      // crpProgramOutcome.setModifiedBy(this.getCurrentUser());
+      // crpProgramOutcome.setActiveSince(new Date(Calendar.getInstance().getTimeInMillis()));
 
       crpProgramOutcome = crpProgramOutcomeManager.saveCrpProgramOutcome(crpProgramOutcome);
 
@@ -825,7 +825,7 @@ public class OutcomesAction extends BaseAction {
       }
 
       // @CrpProgramOutcomeIndicator has not been touched since 2018, we assume this is no longer needed
-      // this.saveIndicators(crpProgramOutcomeDB, crpProgramOutcomeDetached);
+      this.saveIndicators(crpProgramOutcome, programOutcomeIncoming);
       crpProgramOutcomeManager.replicate(crpProgramOutcome, nextPhase);
       // update milestones of outcome
       this.saveMilestones(crpProgramOutcome, programOutcomeIncoming);
@@ -834,7 +834,6 @@ public class OutcomesAction extends BaseAction {
     }
   }
 
-  @Deprecated
   public void saveIndicators(CrpProgramOutcome crpProgramOutcomeDB, CrpProgramOutcome crpProgramOutcomeDetached) {
     /*
      * Delete Indicators
@@ -986,8 +985,8 @@ public class OutcomesAction extends BaseAction {
 
         milestone.copyFields(incomingMilestone);
 
-        //milestone.setActiveSince(new Date(Calendar.getInstance().getTimeInMillis()));
-        //milestone.setModifiedBy(this.getCurrentUser());
+        // milestone.setActiveSince(new Date(Calendar.getInstance().getTimeInMillis()));
+        // milestone.setModifiedBy(this.getCurrentUser());
 
         milestone.setPhaseCreated(this.getActualPhase());
         milestone.setCrpProgramOutcome(programOutcomeOld);

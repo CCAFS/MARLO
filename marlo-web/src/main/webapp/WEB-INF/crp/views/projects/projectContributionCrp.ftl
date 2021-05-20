@@ -164,7 +164,11 @@
                   </div>
                   [#-- Indicators --]
                   [#list projectOutcome.crpProgramOutcome.indicators as  indicator   ]
+                  [#if action.isAiccra()]
+                    [@baselineAiccraIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  /]
+                  [#else]
                     [@baselineIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  /]
+                  [/#if]
                   [/#list]
                 </div>
               </div>
@@ -460,6 +464,45 @@
       <div class="form-group">
         [@customForm.textArea name="${customName}.achievedNarrative" i18nkey="projectOutcomeBaseline.achievedNarrative" required=true className="limitWords-100" editable=editable /]
       </div>
+    [/#if]
+  </div>
+[/#macro]
+
+[#macro baselineAiccraIndicatorMacro element name index isTemplate=false]
+  <div id="baselineIndicator-${isTemplate?string('template', index)}" class="baselineIndicator simpleBox" style="display:${isTemplate?string('none','block')}">
+    [#local indexIndicator = action.getIndexIndicator(element.id) /]
+    [#local projectOutcomeIndicator  = action.getIndicator(element.id) /]
+    [#local customName = "${name}[${indexIndicator}]" /]
+    <div class="leftHead gray sm">
+      <span class="index">${index+1}</span>
+    </div>
+    <div class="form-group grayBox">
+      <strong>${element.indicator}</strong>
+    </div>
+    <input type="hidden" name="${customName}.id" value="${(projectOutcomeIndicator.id)!}" >
+    <input type="hidden" name="${customName}.crpProgramOutcomeIndicator.id" value="${(projectOutcomeIndicator.crpProgramOutcomeIndicator.id)!}" >
+    [#if index==0 || index==3]
+      <div class="form-group row">
+        <div class="col-md-3">
+          [@customForm.input name="${customName}.value" i18nkey="projectOutcomeBaseline.expectedValue" className="targetValue" placeholder="Numeric Value" value="${(projectOutcomeIndicator.value)!}" required=true editable=editable && !reportingActive /]
+        </div>
+        <div class="col-md-3">
+          [#if reportingActive]
+            [@customForm.input name="${customName}.valueReporting" i18nkey="projectOutcomeBaseline.achievedValue" className="targetValue" placeholder="Numeric Value" required=true editable=editable /]
+          [/#if]
+        </div>
+        <div class="col-md-3"></div>
+      </div>
+    [/#if]
+    [#if index != 0]
+      <div class="form-group">
+        [@customForm.textArea name="${customName}.narrative" i18nkey="projectOutcomeBaseline.expectedNarrative" value="${(projectOutcomeIndicator.narrative)!}" required=true className="limitWords-100" editable=editable && !reportingActive /]
+      </div>
+      [#if reportingActive]
+        <div class="form-group">
+          [@customForm.textArea name="${customName}.achievedNarrative" i18nkey="projectOutcomeBaseline.achievedNarrative" required=true className="limitWords-100" editable=editable /]
+        </div>
+      [/#if]
     [/#if]
   </div>
 [/#macro]
