@@ -70,7 +70,7 @@
         [#--  Reports Content --]
         <div class="summariesContent col-md-12" style="min-height:550px;">
           <div class="">
-            [#list (biReports)![] as report]
+            [#list (biReports)?sort_by("reportOrder")![] as report]
                 <div id="BIreport-${report.id}-contentOptions" class="" style="display:[#if report?index !=0]none[/#if];">
                   <div id="dashboardContainer-${report.id}" class="dashboardContainer-${report.id}"></div>
                   <input type="hidden" id="reportName-${report.id}" name="reportName" value=${report.reportName} />
