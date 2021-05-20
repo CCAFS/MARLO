@@ -396,6 +396,8 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
    * @param projectOutcome project outcome modified
    */
   private void updateProjectIndicators(ProjectOutcome projectOutcomePrev, ProjectOutcome projectOutcome) {
+    Phase currentPhase = phaseMySQLDAO.find(projectOutcome.getPhase().getId());
+
     if (projectOutcome.getIndicators() == null) {
       projectOutcome.setIndicators(new ArrayList<ProjectOutcomeIndicator>());
     }
@@ -403,21 +405,48 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
       projectOutcomeIndicator.setCrpProgramOutcomeIndicator(
         crpProgramOutcomeIndicatorDAO.find(projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId()));
     }
-    for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcomePrev.getProjectOutcomeIndicators().stream()
-      .filter(c -> c.isActive()).collect(Collectors.toList())) {
-      if (projectOutcome.getIndicators() == null || projectOutcome.getIndicators().stream()
-        .filter(c -> c != null && c.getCrpProgramOutcomeIndicator() != null && projectOutcomeIndicator != null
-          && projectOutcomeIndicator.getId() != null && projectOutcomeIndicator.getCrpProgramOutcomeIndicator() != null
-          && projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getComposeID() != null
-          && c.getCrpProgramOutcomeIndicator().getComposeID()
-            .equals(projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getComposeID()))
-        .collect(Collectors.toList()).isEmpty()) {
-        if (projectOutcomeIndicatorDAO.existProjectOutcomeIndicator(projectOutcomeIndicator.getId())) {
-          projectOutcomeIndicatorDAO.deleteProjectOutcomeIndicator(projectOutcomeIndicator.getId());
-        }
 
+    if (currentPhase.getCrp() != null && currentPhase.getCrp().getAcronym() != null
+      && currentPhase.getCrp().getAcronym().equals("AICCRA")) {
+
+      // AICCRA global unit
+      for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcomePrev.getProjectOutcomeIndicators().stream()
+        .filter(c -> c.isActive()).collect(Collectors.toList())) {
+        if (projectOutcome.getIndicators() == null || projectOutcome.getIndicators().stream()
+          .filter(c -> c != null && c.getCrpProgramOutcomeIndicator() != null && projectOutcomeIndicator != null
+            && projectOutcomeIndicator.getId() != null
+            && projectOutcomeIndicator.getCrpProgramOutcomeIndicator() != null
+          /*
+           * && projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getComposeID() != null
+           * && c.getCrpProgramOutcomeIndicator().getComposeID()
+           * .equals(projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getComposeID())
+           */
+          ).collect(Collectors.toList()).isEmpty()) {
+          if (projectOutcomeIndicatorDAO.existProjectOutcomeIndicator(projectOutcomeIndicator.getId())) {
+            projectOutcomeIndicatorDAO.deleteProjectOutcomeIndicator(projectOutcomeIndicator.getId());
+          }
+        }
+      }
+    } else {
+      // Others global units - Different to AICCRA
+      for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcomePrev.getProjectOutcomeIndicators().stream()
+        .filter(c -> c.isActive()).collect(Collectors.toList())) {
+        if (projectOutcome.getIndicators() == null || projectOutcome.getIndicators().stream()
+          .filter(c -> c != null && c.getCrpProgramOutcomeIndicator() != null && projectOutcomeIndicator != null
+            && projectOutcomeIndicator.getId() != null
+            && projectOutcomeIndicator.getCrpProgramOutcomeIndicator() != null
+            && projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getComposeID() != null
+            && c.getCrpProgramOutcomeIndicator().getComposeID()
+              .equals(projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getComposeID()))
+          .collect(Collectors.toList()).isEmpty()) {
+          if (projectOutcomeIndicatorDAO.existProjectOutcomeIndicator(projectOutcomeIndicator.getId())) {
+            projectOutcomeIndicatorDAO.deleteProjectOutcomeIndicator(projectOutcomeIndicator.getId());
+          }
+        }
       }
     }
+
+
     if (projectOutcome.getIndicators() != null) {
       for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcome.getIndicators()) {
         if (projectOutcomeIndicator != null) {
