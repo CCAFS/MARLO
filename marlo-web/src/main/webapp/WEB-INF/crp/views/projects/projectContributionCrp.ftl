@@ -95,7 +95,7 @@
                   [/#if]               
                 [#else]
                   [#if editable]
-                    [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive && editExpectedValue/]
+                    [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive && editOutcomeExpectedValue/]
                   [#else]
                     <label for="">[@s.text name="projectOutcome.expectedValue" /]:</label>
                     <div class="input"><p>${(projectOutcome.expectedValue)!'Prefilled if available'}</p></div>
@@ -355,7 +355,7 @@
         
         <div class="row form-group milestoneTargetValue" style="display:${showMilestoneValue?string('block', 'none')}">
           <div class="col-md-4">
-            [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.expectedValue" type="text"  placeholder="" className="targetValue" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && editExpectedValue && !reportingActive && (milestoneYear gte currentCycleYear)!true /]
+            [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.expectedValue" type="text"  placeholder="" className="targetValue" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && editMilestoneExpectedValue && !reportingActive && (milestoneYear gte currentCycleYear)!true /]
           </div>
           <div class="col-md-4">
             <div class="select">
