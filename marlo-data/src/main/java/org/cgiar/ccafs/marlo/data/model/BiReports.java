@@ -28,10 +28,10 @@ public class BiReports extends MarloBaseEntity implements java.io.Serializable, 
 
   @Expose
   private String reportName;
-  
+
   @Expose
   private String reportTitle;
-  
+
   @Expose
   private String reportDescription;
 
@@ -56,21 +56,20 @@ public class BiReports extends MarloBaseEntity implements java.io.Serializable, 
   @Expose
   private Boolean hasRlsSecurity;
 
+  @Expose
+  private Long reportOrder;
 
   public GlobalUnit getCrp() {
     return crp;
   }
 
-
   public String getDatasetId() {
     return datasetId;
   }
 
-
   public String getEmbedUrl() {
     return embedUrl;
   }
-
 
   public Boolean getHasFilters() {
     return hasFilters;
@@ -86,6 +85,7 @@ public class BiReports extends MarloBaseEntity implements java.io.Serializable, 
     return isActive;
   }
 
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -95,6 +95,7 @@ public class BiReports extends MarloBaseEntity implements java.io.Serializable, 
 
     return sb.toString();
   }
+
 
   @Override
   public String getModificationJustification() {
@@ -109,6 +110,9 @@ public class BiReports extends MarloBaseEntity implements java.io.Serializable, 
     return u;
   }
 
+  public String getReportDescription() {
+    return reportDescription;
+  }
 
   public String getReportId() {
     return reportId;
@@ -119,14 +123,14 @@ public class BiReports extends MarloBaseEntity implements java.io.Serializable, 
     return reportName;
   }
 
+
+  public Long getReportOrder() {
+    return reportOrder;
+  }
+
   public String getReportTitle() {
     return reportTitle;
   }
-
-  public String getReportDescription() {
-    return reportDescription;
-  }
-
 
   @Override
   public boolean isActive() {
@@ -171,6 +175,11 @@ public class BiReports extends MarloBaseEntity implements java.io.Serializable, 
   }
 
 
+  public void setReportDescription(String reportDescription) {
+    this.reportDescription = reportDescription;
+  }
+
+
   public void setReportId(String reportId) {
     this.reportId = reportId;
   }
@@ -179,13 +188,13 @@ public class BiReports extends MarloBaseEntity implements java.io.Serializable, 
   public void setReportName(String reportName) {
     this.reportName = reportName;
   }
-  
-  public void setReportTitle(String reportTitle) {
-    this.reportTitle = reportTitle;
+
+  public void setReportOrder(Long reportOrder) {
+    this.reportOrder = reportOrder;
   }
 
-  public void setReportDescription(String reportDescription) {
-    this.reportDescription = reportDescription;
+  public void setReportTitle(String reportTitle) {
+    this.reportTitle = reportTitle;
   }
 
 

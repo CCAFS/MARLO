@@ -60,5 +60,8 @@
 		 <property name="hasMilestones" type="boolean">
             <column name="has_milestones" not-null="true" />
         </property>
+    <property name="editableLink" type="string">
+			<column name="editable_link" length="500" />
+		</property>
 	</class>
 </hibernate-mapping>
