@@ -22,10 +22,12 @@ package org.cgiar.ccafs.marlo.rest.mappers;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.rest.dto.CrpGeoLocationMapDeliverablesDTO;
+import org.cgiar.ccafs.marlo.rest.dto.CrpGeoLocationMapFundingSourceBudgetDTO;
 import org.cgiar.ccafs.marlo.rest.dto.CrpGeoLocationMapFundingSourcesDTO;
 import org.cgiar.ccafs.marlo.rest.dto.CrpGeoLocationMapInnovationsDTO;
 import org.cgiar.ccafs.marlo.rest.dto.CrpGeoLocationMapOICRDTO;
@@ -49,9 +51,18 @@ public interface CrpGeoLocationMapMapper {
     deliverableToCrpGeoLocationMapDeliverablesDTO(Deliverable deliverable);
 
   @Mappings({@Mapping(source = "fundingSourceInfo.title", target = "title"),
-    @Mapping(source = "fundingSourceInfo.budgetType.name", target = "type"), @Mapping(source = "id", target = "id")})
+    @Mapping(source = "fundingSourceInfo.budgetType.name", target = "type"), @Mapping(source = "id", target = "id"),
+    @Mapping(source = "fundingSourceInfo.directDonor.name", target = "directDonor"),
+    @Mapping(source = "fundingSourceInfo.originalDonor.name", target = "originalDonor"),
+    @Mapping(source = "fundingSourceInfo.grantAmount", target = "totalBudget"),
+    @Mapping(source = "projectBudgetsList", target = "budgetList")})
   public abstract CrpGeoLocationMapFundingSourcesDTO
     fundingSourceToCrpGeoLocationMapFundingSourcesDTO(FundingSource fundingSource);
+
+  @Mappings({@Mapping(source = "year", target = "year"), @Mapping(source = "amount", target = "amount"),
+    @Mapping(source = "fundingSource.id", target = "fundingSourceId")})
+  public abstract CrpGeoLocationMapFundingSourceBudgetDTO
+    projectBudgetToCrpGeoLocationMapFundingSourceBudgetDTO(ProjectBudget projectBudget);
 
   @Mappings({@Mapping(source = "projectExpectedStudyInfo.title", target = "title"),
     @Mapping(source = "projectExpectedStudyInfo.year", target = "year"),
@@ -76,6 +87,7 @@ public interface CrpGeoLocationMapMapper {
     @Mapping(source = "institution.websiteLink", target = "website")})
   public abstract CrpGeoLocationMapPartnersDTO
     projectPartnersToCrpGeoLocationMapPartnersDTO(ProjectPartner projectPartner);
+
 
   @Mappings({@Mapping(source = "id", target = "id"), @Mapping(source = "projectInfo.title", target = "title"),
     @Mapping(source = "project.flagships", target = "flagships"),
