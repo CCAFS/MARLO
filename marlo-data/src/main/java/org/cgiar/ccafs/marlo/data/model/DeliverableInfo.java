@@ -47,6 +47,8 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   private RepIndRegion region;
   @Expose
   private Date wosSyncDate;
+  @Expose
+  private String editableLink;
 
   public DeliverableInfo() {
   }
@@ -58,7 +60,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   public CrpClusterKeyOutput getCrpClusterKeyOutput() {
     return crpClusterKeyOutput;
   }
-
 
   public CrpProgramOutcome getCrpProgramOutcome() {
     return crpProgramOutcome;
@@ -78,6 +79,10 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   }
 
 
+  public String getEditableLink() {
+    return editableLink;
+  }
+
   public RepIndGeographicScope getGeographicScope() {
     return geographicScope;
   }
@@ -87,13 +92,13 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return isLocationGlobal;
   }
 
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
-
 
   public Integer getNewExpectedYear() {
     return newExpectedYear;
@@ -114,10 +119,10 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return status;
   }
 
+
   public String getStatusDescription() {
     return statusDescription;
   }
-
 
   public String getStatusName(Phase phase) {
 
@@ -155,6 +160,7 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   public Date getWosSyncDate() {
     return wosSyncDate;
   }
+
 
   public int getYear() {
     return year;
@@ -302,7 +308,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return false;
   }
 
-
   public boolean requeriedFair() {
     try {
       if (this.getDeliverableType().getFair()) {
@@ -345,6 +350,11 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
 
   public void setDescription(String description) {
     this.description = description;
+  }
+
+
+  public void setEditableLink(String editableLink) {
+    this.editableLink = editableLink;
   }
 
 
