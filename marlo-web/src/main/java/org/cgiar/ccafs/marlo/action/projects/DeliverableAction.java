@@ -1226,7 +1226,8 @@ public class DeliverableAction extends BaseAction {
         if (deliverable.getDeliverableUserPartnerships() != null) {
 
           List<DeliverableUserPartnership> deList = deliverable.getDeliverableUserPartnerships().stream()
-            .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
+            .filter(dp -> dp != null && dp.getInstitution() != null && dp.getInstitution().getId() != null
+              && dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
               && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
             .collect(Collectors.toList());
 
@@ -1255,7 +1256,8 @@ public class DeliverableAction extends BaseAction {
         if (deliverable.getDeliverableUserPartnerships() != null) {
 
           List<DeliverableUserPartnership> deList = deliverable.getDeliverableUserPartnerships().stream()
-            .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
+            .filter(dp -> dp != null && dp.getInstitution() != null && dp.getInstitution().getId() != null
+              && dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
               && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_OTHER))
             .collect(Collectors.toList());
 

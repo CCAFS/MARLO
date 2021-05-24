@@ -2683,7 +2683,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
         for (Deliverable deliverable : deliverables) {
           deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(this.getActualPhase()));
-          if (deliverable.getProject() != null
+          if (deliverable.isActive() && deliverable.getProject() != null
             && deliverable.getProject().getId().longValue() == projectID.longValue()) {
             if (deliverable.getDeliverableInfo() != null) {
               if (this.isReportingActive() || this.isUpKeepActive()) {
