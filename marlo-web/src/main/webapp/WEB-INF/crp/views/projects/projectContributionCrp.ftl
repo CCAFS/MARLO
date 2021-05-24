@@ -95,7 +95,7 @@
                   [/#if]               
                 [#else]
                   [#if editable]
-                    [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive && editOutcomeExpectedValue/]
+                    [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive/]
                   [#else]
                     <label for="">[@s.text name="projectOutcome.expectedValue" /]:</label>
                     <div class="input"><p>${(projectOutcome.expectedValue)!'Prefilled if available'}</p></div>
@@ -152,7 +152,7 @@
                         
             [#-- Baseline Indicators --]
             [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcome.crpProgramOutcome.crpProgram.baseLine)!false) && ((projectOutcome.crpProgramOutcome.indicators?has_content)!false)]
-              <h5 class="sectionSubTitle">Baseline Indicators</h5>
+              <h5 class="sectionSubTitle">Progress to Targets</h5>
               <div class="form-group">
                 <div class="" id="baseline">
                   <div class="form-group text-right">
