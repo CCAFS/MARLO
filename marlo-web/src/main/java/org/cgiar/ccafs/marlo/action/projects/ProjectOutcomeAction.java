@@ -105,7 +105,8 @@ public class ProjectOutcomeAction extends BaseAction {
   private ProjectOutcomeValidator projectOutcomeValidator;
   private String transaction;
   private ProjectOutcome projectOutcomeDB;
-  private boolean editExpectedValue;
+  private boolean editOutcomeExpectedValue;
+  private boolean editMilestoneExpectedValue;
 
   @Inject
   public ProjectOutcomeAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
@@ -129,26 +130,56 @@ public class ProjectOutcomeAction extends BaseAction {
     this.projectOutcomeIndicatorManager = projectOutcomeIndicatorManager;
   }
 
-  public void canBeEditedExpectedValue() {
-    editExpectedValue = false;
+  public void canBeEditedMilestoneExpectedValue() {
+    editMilestoneExpectedValue = false;
+    // Modify the editExpectedValue value for AICCRA
+    if (this.isAiccra()) {
+      if (!this.isAdmin()) {
+        if (projectOutcome != null && projectOutcome.getMilestones() != null) {
+
+          for (ProjectMilestone milestone : projectOutcome.getMilestones()) {
+            if (milestone.getExpectedValue() == null
+              || (milestone.getExpectedValue() != null && milestone.getExpectedValue() == 0.0)) {
+              // Null expected value
+              editMilestoneExpectedValue = true;
+            } else {
+              // Not null Expected value
+              editMilestoneExpectedValue = false;
+            }
+          }
+
+        } else {
+          // Null project outcome
+          editMilestoneExpectedValue = false;
+        }
+      } else {
+        // User is admin
+        editMilestoneExpectedValue = true;
+      }
+    }
+  }
+
+  public void canBeEditedOutcomeExpectedValue() {
+    editOutcomeExpectedValue = false;
     // Modify the editExpectedValue value for AICCRA
     if (this.isAiccra()) {
       if (!this.isAdmin()) {
         if (projectOutcome != null) {
-          if (projectOutcome.getExpectedValue() == null) {
+          if (projectOutcome.getExpectedValue() == null
+            || (projectOutcome.getExpectedValue() != null && projectOutcome.getExpectedValue() == 0.0)) {
             // Null expected value
-            editExpectedValue = true;
+            editOutcomeExpectedValue = true;
           } else {
             // Not null Expected value
-            editExpectedValue = false;
+            editOutcomeExpectedValue = false;
           }
         } else {
           // Null project outcome
-          editExpectedValue = false;
+          editOutcomeExpectedValue = false;
         }
       } else {
         // User is admin
-        editExpectedValue = true;
+        editOutcomeExpectedValue = true;
       }
     }
   }
@@ -186,7 +217,6 @@ public class ProjectOutcomeAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-
   public String getBaseLineFileURL(String outcomeID) {
     return config.getDownloadURL() + "/" + this.getBaseLineFileUrlPath(outcomeID).replace('\\', '/');
   }
@@ -196,6 +226,7 @@ public class ProjectOutcomeAction extends BaseAction {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + outcomeID + File.separator + "baseLine"
       + File.separator;
   }
+
 
   public int getIndexCommunication(int year) {
 
@@ -214,7 +245,6 @@ public class ProjectOutcomeAction extends BaseAction {
     return this.getIndexCommunication(year);
 
   }
-
 
   public int getIndexIndicator(Long indicatorID) {
 
@@ -263,7 +293,6 @@ public class ProjectOutcomeAction extends BaseAction {
 
   }
 
-
   public ProjectMilestone getMilestone(long milestoneId, int year) {
     ProjectMilestone projectMilestone = new ProjectMilestone();
     if (projectOutcome.getMilestones() != null) {
@@ -284,6 +313,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
   }
 
+
   public List<CrpMilestone> getMilestones() {
     return milestones;
   }
@@ -295,15 +325,14 @@ public class ProjectOutcomeAction extends BaseAction {
     return milestoneList;
   }
 
-
   public List<CrpMilestone> getMilestonesProject() {
     return milestonesProject;
   }
 
-
   public Project getProject() {
     return project;
   }
+
 
   public long getProjectID() {
     return projectID;
@@ -313,9 +342,11 @@ public class ProjectOutcomeAction extends BaseAction {
     return projectOutcome;
   }
 
+
   public long getProjectOutcomeID() {
     return projectOutcomeID;
   }
+
 
   /**
    * Return the absolute path where the work plan is or should be located.
@@ -326,6 +357,7 @@ public class ProjectOutcomeAction extends BaseAction {
   private String getSummaryAbsolutePath() {
     return config.getUploadsBaseFolder() + File.separator + this.getSummaryPath() + File.separator;
   }
+
 
   private String getSummaryPath() {
 
@@ -341,15 +373,48 @@ public class ProjectOutcomeAction extends BaseAction {
     return targetUnits;
   }
 
-
   public String getTransaction() {
     return transaction;
   }
 
-  public boolean isEditExpectedValue() {
-    return editExpectedValue;
+  public boolean isEditMilestoneExpectedValue() {
+    return editMilestoneExpectedValue;
   }
 
+  public boolean isEditOutcomeExpectedValue() {
+    return editOutcomeExpectedValue;
+  }
+
+  public boolean isExpectedValueEditable(Long milestoneId) {
+    boolean editable = false;
+    if (milestoneId != null && milestoneId != 0) {
+      // Modify the editExpectedValue value for AICCRA
+      if (this.isAiccra()) {
+        if (!this.isAdmin()) {
+          ProjectMilestone projectMilestone = new ProjectMilestone();
+          if (projectMilestoneManager.getProjectMilestoneById(milestoneId) != null) {
+            projectMilestone = projectMilestoneManager.getProjectMilestoneById(milestoneId);
+
+            if (projectMilestone.getExpectedValue() == null
+              || (projectMilestone.getExpectedValue() != null && projectMilestone.getExpectedValue() == 0.0)) {
+              // Null expected value
+              editable = true;
+            } else {
+              // Not null Expected value
+              editable = false;
+            }
+          }
+
+        } else {
+          // User is admin
+          editable = true;
+        }
+      }
+    } else {
+      editable = true;
+    }
+    return editable;
+  }
 
   public ProjectCommunication loadProjectCommunication(int year) {
 
@@ -366,6 +431,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
   }
 
+
   public List<ProjectMilestone> loadProjectMilestones(int year) {
 
     List<ProjectMilestone> projectMilestones =
@@ -375,6 +441,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -531,7 +598,8 @@ public class ProjectOutcomeAction extends BaseAction {
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
 
     projectOutcomeDB = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
-    this.canBeEditedExpectedValue();
+    this.canBeEditedOutcomeExpectedValue();
+    this.canBeEditedMilestoneExpectedValue();
     this.setBasePermission(this.getText(Permission.PROJECT_CONTRIBRUTIONCRP_BASE_PERMISSION, params));
     if (this.isHttpPost())
 
@@ -562,7 +630,6 @@ public class ProjectOutcomeAction extends BaseAction {
     }
 
   }
-
 
   @Override
   public String save() {
@@ -631,7 +698,6 @@ public class ProjectOutcomeAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
   }
-
 
   public void saveCommunications(ProjectOutcome projectOutcomeDB) {
 
@@ -706,6 +772,7 @@ public class ProjectOutcomeAction extends BaseAction {
     }
   }
 
+
   public void saveIndicators(ProjectOutcome projectOutcomeDB) {
 
     for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcomeDB.getProjectOutcomeIndicators().stream()
@@ -759,6 +826,7 @@ public class ProjectOutcomeAction extends BaseAction {
       }
     }
   }
+
 
   private void saveMilestones(ProjectOutcome projectOutcomeDB) {
 
@@ -838,7 +906,6 @@ public class ProjectOutcomeAction extends BaseAction {
     }
   }
 
-
   public void saveNextUsers(ProjectOutcome projectOutcomeDB) {
 
     for (ProjectNextuser projectNextuser : projectOutcomeDB.getProjectNextusers().stream().filter(c -> c.isActive())
@@ -888,7 +955,6 @@ public class ProjectOutcomeAction extends BaseAction {
       }
     }
   }
-
 
   private ProjectOutcome saveProjectOutcome() {
 
@@ -962,8 +1028,14 @@ public class ProjectOutcomeAction extends BaseAction {
 
   }
 
-  public void setEditExpectedValue(boolean editExpectedValue) {
-    this.editExpectedValue = editExpectedValue;
+
+  public void setEditMilestoneExpectedValue(boolean editMilestoneExpectedValue) {
+    this.editMilestoneExpectedValue = editMilestoneExpectedValue;
+  }
+
+
+  public void setEditOutcomeExpectedValue(boolean editOutcomeExpectedValue) {
+    this.editOutcomeExpectedValue = editOutcomeExpectedValue;
   }
 
   public void setMilestones(List<CrpMilestone> milestones) {
