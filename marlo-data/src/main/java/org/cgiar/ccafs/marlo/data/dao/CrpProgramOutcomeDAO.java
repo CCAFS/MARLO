@@ -65,6 +65,15 @@ public interface CrpProgramOutcomeDAO {
   public List<CrpProgramOutcome> getAllCrpProgramOutcomesByComposedIdFromPhase(String composedId, long phaseId);
 
   /**
+   * This method finds all CrpProgramOutcomes from the given phase
+   * 
+   * @param composedId the composed id of the original outcome
+   * @param phaseId the id of the phase
+   * @return a CrpProgramOutcome list.
+   */
+  public List<CrpProgramOutcome> getAllCrpProgramOutcomesByPhase(long phaseId);
+
+  /**
    * This method finds a CrpProgramOutcome by composeId and phase
    * 
    * @param composedId
