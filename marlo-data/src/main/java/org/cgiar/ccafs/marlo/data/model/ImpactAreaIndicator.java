@@ -27,16 +27,24 @@ public class ImpactAreaIndicator extends MarloAuditableEntity implements java.io
 
   private String indicatorStatement;
   private ImpactArea impactArea;
+  private Long targetYear;
+  private String targetUnit;
+  private String targetValue;
+
 
   public ImpactAreaIndicator() {
     super();
   }
 
 
-  public ImpactAreaIndicator(String indicatorStatement, ImpactArea impactArea) {
+  public ImpactAreaIndicator(String indicatorStatement, ImpactArea impactArea, Long targetYear, String targetUnit,
+    String targetValue) {
     super();
     this.indicatorStatement = indicatorStatement;
     this.impactArea = impactArea;
+    this.targetYear = targetYear;
+    this.targetUnit = targetUnit;
+    this.targetValue = targetValue;
   }
 
 
@@ -50,6 +58,21 @@ public class ImpactAreaIndicator extends MarloAuditableEntity implements java.io
   }
 
 
+  public String getTargetUnit() {
+    return targetUnit;
+  }
+
+
+  public String getTargetValue() {
+    return targetValue;
+  }
+
+
+  public Long getTargetYear() {
+    return targetYear;
+  }
+
+
   public void setImpactArea(ImpactArea impactArea) {
     this.impactArea = impactArea;
   }
@@ -57,6 +80,21 @@ public class ImpactAreaIndicator extends MarloAuditableEntity implements java.io
 
   public void setIndicatorStatement(String indicatorStatement) {
     this.indicatorStatement = indicatorStatement;
+  }
+
+
+  public void setTargetUnit(String targetUnit) {
+    this.targetUnit = targetUnit;
+  }
+
+
+  public void setTargetValue(String targetValue) {
+    this.targetValue = targetValue;
+  }
+
+
+  public void setTargetYear(Long targetYear) {
+    this.targetYear = targetYear;
   }
 
 }

@@ -81,12 +81,9 @@ public class ProgressTowards {
     @ApiParam(value = "${ProgressTowards.progresstowardsSRF.POST.param.progresstowardsSRF}",
       required = true) @Valid @RequestBody NewSrfProgressTowardsTargetDTO newSrfProgressTowardsTargetDTO) {
     Long progressTowardsId = null;
-    try {
-      progressTowardsId = this.progressTowardsItem.createProgressTowards(newSrfProgressTowardsTargetDTO, CGIAREntity,
-        this.getCurrentUser());
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+
+    progressTowardsId = this.progressTowardsItem.createProgressTowards(newSrfProgressTowardsTargetDTO, CGIAREntity,
+      this.getCurrentUser());
 
 
     ResponseEntity<Long> response = new ResponseEntity<Long>(progressTowardsId, HttpStatus.OK);
