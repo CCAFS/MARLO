@@ -95,7 +95,7 @@
                   [/#if]               
                 [#else]
                   [#if editable]
-                    [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive/]
+                    [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive && editOutcomeExpectedValue/]
                   [#else]
                     <label for="">[@s.text name="projectOutcome.expectedValue" /]:</label>
                     <div class="input"><p>${(projectOutcome.expectedValue)!'Prefilled if available'}</p></div>
@@ -355,7 +355,7 @@
         
         <div class="row form-group milestoneTargetValue" style="display:${showMilestoneValue?string('block', 'none')}">
           <div class="col-md-4">
-            [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.expectedValue" type="text"  placeholder="" className="targetValue" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && (editMilestoneExpectedValue || isTemplate) && !reportingActive && (milestoneYear gte currentCycleYear)!true /]
+            [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.expectedValue" type="text"  placeholder="" className="targetValue" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && (isTemplate) && !reportingActive && (milestoneYear gte currentCycleYear)!true /]
           </div>
           <div class="col-md-4">
             <div class="select">
@@ -367,11 +367,11 @@
             </div>
           </div>
           [#-- REPORTING BLOCK --]
-          [#if reportingActive]
+          
           <div class="col-md-4">
             [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) /]
           </div>
-          [/#if]
+       
         </div>
         
         <div class="form-group">
