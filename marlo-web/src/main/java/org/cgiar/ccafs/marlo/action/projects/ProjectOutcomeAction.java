@@ -131,35 +131,31 @@ public class ProjectOutcomeAction extends BaseAction {
   }
 
   public void canBeEditedMilestoneExpectedValue() {
-    if (true) {
-      editMilestoneExpectedValue = false;
-      // Modify the editExpectedValue value for AICCRA
-      if (this.isAiccra()) {
-        if (!this.isAdmin()) {
-          if (projectOutcome != null && projectOutcome.getMilestones() != null) {
+    editMilestoneExpectedValue = false;
+    // Modify the editExpectedValue value for AICCRA
+    if (this.isAiccra()) {
+      if (!this.isAdmin()) {
+        if (projectOutcome != null && projectOutcome.getMilestones() != null) {
 
-            for (ProjectMilestone milestone : projectOutcome.getMilestones()) {
-              if (milestone.getExpectedValue() == null
-                || (milestone.getExpectedValue() != null && milestone.getExpectedValue() == 0.0)) {
-                // Null expected value
-                editMilestoneExpectedValue = true;
-              } else {
-                // Not null Expected value
-                editMilestoneExpectedValue = false;
-              }
+          for (ProjectMilestone milestone : projectOutcome.getMilestones()) {
+            if (milestone.getExpectedValue() == null
+              || (milestone.getExpectedValue() != null && milestone.getExpectedValue() == 0.0)) {
+              // Null expected value
+              editMilestoneExpectedValue = true;
+            } else {
+              // Not null Expected value
+              editMilestoneExpectedValue = false;
             }
-
-          } else {
-            // Null project outcome
-            editMilestoneExpectedValue = false;
           }
+
         } else {
-          // User is admin
-          editMilestoneExpectedValue = true;
+          // Null project outcome
+          editMilestoneExpectedValue = false;
         }
+      } else {
+        // User is admin
+        editMilestoneExpectedValue = true;
       }
-    } else {
-      editMilestoneExpectedValue = false;
     }
   }
 
@@ -221,7 +217,6 @@ public class ProjectOutcomeAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-
   public String getBaseLineFileURL(String outcomeID) {
     return config.getDownloadURL() + "/" + this.getBaseLineFileUrlPath(outcomeID).replace('\\', '/');
   }
@@ -231,6 +226,7 @@ public class ProjectOutcomeAction extends BaseAction {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + outcomeID + File.separator + "baseLine"
       + File.separator;
   }
+
 
   public int getIndexCommunication(int year) {
 
@@ -250,7 +246,6 @@ public class ProjectOutcomeAction extends BaseAction {
 
   }
 
-
   public int getIndexIndicator(Long indicatorID) {
 
     ProjectOutcomeIndicator projectOutcomeIndicator = this.getIndicator(indicatorID);
@@ -264,6 +259,7 @@ public class ProjectOutcomeAction extends BaseAction {
     }
     return -1;
   }
+
 
   public int getIndexMilestone(long milestoneId, int year) {
 
@@ -297,7 +293,6 @@ public class ProjectOutcomeAction extends BaseAction {
 
   }
 
-
   public ProjectMilestone getMilestone(long milestoneId, int year) {
     ProjectMilestone projectMilestone = new ProjectMilestone();
     if (projectOutcome.getMilestones() != null) {
@@ -323,6 +318,7 @@ public class ProjectOutcomeAction extends BaseAction {
     return milestones;
   }
 
+
   public List<CrpMilestone> getMilestonesbyYear(int year) {
     List<CrpMilestone> milestoneList =
       milestones.stream().filter(c -> c.getYear() >= year).collect(Collectors.toList());
@@ -333,15 +329,14 @@ public class ProjectOutcomeAction extends BaseAction {
     return milestonesProject;
   }
 
-
   public Project getProject() {
     return project;
   }
 
+
   public long getProjectID() {
     return projectID;
   }
-
 
   public ProjectOutcome getProjectOutcome() {
     return projectOutcome;
@@ -362,6 +357,7 @@ public class ProjectOutcomeAction extends BaseAction {
   private String getSummaryAbsolutePath() {
     return config.getUploadsBaseFolder() + File.separator + this.getSummaryPath() + File.separator;
   }
+
 
   private String getSummaryPath() {
 
@@ -387,6 +383,37 @@ public class ProjectOutcomeAction extends BaseAction {
 
   public boolean isEditOutcomeExpectedValue() {
     return editOutcomeExpectedValue;
+  }
+
+  public boolean isExpectedValueEditable(Long milestoneId) {
+    boolean editable = false;
+    if (milestoneId != null && milestoneId != 0) {
+      // Modify the editExpectedValue value for AICCRA
+      if (this.isAiccra()) {
+        if (!this.isAdmin()) {
+          ProjectMilestone projectMilestone = new ProjectMilestone();
+          if (projectMilestoneManager.getProjectMilestoneById(milestoneId) != null) {
+            projectMilestone = projectMilestoneManager.getProjectMilestoneById(milestoneId);
+
+            if (projectMilestone.getExpectedValue() == null
+              || (projectMilestone.getExpectedValue() != null && projectMilestone.getExpectedValue() == 0.0)) {
+              // Null expected value
+              editable = true;
+            } else {
+              // Not null Expected value
+              editable = false;
+            }
+          }
+
+        } else {
+          // User is admin
+          editable = true;
+        }
+      }
+    } else {
+      editable = true;
+    }
+    return editable;
   }
 
   public ProjectCommunication loadProjectCommunication(int year) {
