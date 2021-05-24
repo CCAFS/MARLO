@@ -86,6 +86,16 @@ public class CrpProgramOutcomeMySQLDAO extends AbstractMarloDAO<CrpProgramOutcom
   }
 
   @Override
+  public List<CrpProgramOutcome> getAllCrpProgramOutcomesByPhase(long phaseId) {
+    String query =
+      "select distinct cpo from CrpProgramOutcome cpo " + "where active=true " + "and phase.id >= :phaseId";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("phaseId", phaseId);
+    List<CrpProgramOutcome> resultList = super.findAll(createQuery);
+    return resultList;
+  }
+
+  @Override
   public CrpProgramOutcome getCrpProgramOutcome(String composedId, Phase phase) {
 
     String query = "select distinct pp from CrpProgramOutcome  pp "

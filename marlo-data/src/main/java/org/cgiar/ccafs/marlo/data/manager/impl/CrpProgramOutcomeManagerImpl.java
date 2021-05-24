@@ -209,6 +209,11 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
   }
 
   @Override
+  public List<CrpProgramOutcome> getAllCrpProgramOutcomesByPhase(long phaseId) {
+    return crpProgramOutcomeDAO.getAllCrpProgramOutcomesByPhase(phaseId);
+  }
+
+  @Override
   public CrpProgramOutcome getCrpProgramOutcome(String composedId, Phase phase) {
     return crpProgramOutcomeDAO.getCrpProgramOutcome(composedId, phase);
   }
