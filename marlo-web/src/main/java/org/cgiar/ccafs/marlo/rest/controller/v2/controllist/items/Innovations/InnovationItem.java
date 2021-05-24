@@ -218,6 +218,11 @@ public class InnovationItem<T> {
       fieldErrors.add(new FieldErrorDTO("createInnovation", "phase",
         new NewInnovationDTO().getPhase().getYear() + " is an invalid year"));
     }
+    if (phase != null && !phase.getEditable()) {
+      fieldErrors.add(new FieldErrorDTO("createInnovation", "phase",
+        new NewInnovationDTO().getPhase().getYear() + " is a closed phase"));
+    }
+
 
     RepIndStageInnovation RepIndStageInnovation =
       this.repIndStageInnovationManager.getRepIndStageInnovationById(newInnovationDTO.getStageOfInnovation().getCode());
@@ -805,6 +810,15 @@ public class InnovationItem<T> {
           newInnovationDTO.getProject().getId() + " is an invalid project ID"));
       }
     }
+    if (phase == null) {
+      fieldErrors.add(new FieldErrorDTO("updateInnovation", "phase",
+        new NewInnovationDTO().getPhase().getYear() + " is an invalid year"));
+    }
+    if (phase != null && !phase.getEditable()) {
+      fieldErrors.add(new FieldErrorDTO("updateInnovation", "phase",
+        new NewInnovationDTO().getPhase().getYear() + " is a closed phase"));
+    }
+
     if (fieldErrors.size() == 0) {
       innovationID = innovation.getId();
       // update basic data

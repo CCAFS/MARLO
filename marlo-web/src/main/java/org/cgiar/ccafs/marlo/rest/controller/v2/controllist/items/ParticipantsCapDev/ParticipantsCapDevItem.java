@@ -115,8 +115,14 @@ public class ParticipantsCapDevItem<T> {
         fieldErrors
           .add(new FieldErrorDTO("createParticipantsCapDev", "phase", newParticipantsCapDevDTO.getPhase().getYear()
             + " / " + newParticipantsCapDevDTO.getPhase().getName() + " is an invalid year or name phase"));
-      } else {
+      }
+      if (phase != null && !phase.getEditable()) {
+        fieldErrors
+          .add(new FieldErrorDTO("createParticipantsCapDev", "phase", newParticipantsCapDevDTO.getPhase().getYear()
+            + " / " + newParticipantsCapDevDTO.getPhase().getName() + " is a closed phase"));
+      }
 
+      if (fieldErrors.isEmpty()) {
         LiaisonInstitution liaisonInstitution =
           this.liaisonInstitutionManager.findByAcronymAndCrp(APConstants.CLARISA_ACRONYM_PMU, globalUnitEntity.getId());
 
@@ -379,10 +385,20 @@ public class ParticipantsCapDevItem<T> {
         cGIAREntity + " is an invalid CGIAR entity acronym"));
     }
 
+    Phase phaseObj = this.phaseManager.findAll().stream()
+      .filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(cGIAREntity)
+        && c.getYear() == newParticipantsCapDevDTO.getPhase().getYear()
+        && c.getName().equalsIgnoreCase(newParticipantsCapDevDTO.getPhase().getName()))
+      .findFirst().orElse(null);
+    if (phaseObj != null && !phaseObj.getEditable()) {
+      fieldErrors.add(new FieldErrorDTO("saveParticipantsCapDev", "phase", newParticipantsCapDevDTO.getPhase().getYear()
+        + " / " + newParticipantsCapDevDTO.getPhase().getName() + " is a closed phase"));
+    }
+
     ReportSynthesisCrossCuttingDimension reportSynthesisCrossCuttingDimension = null;
 
     if (this.valuesMinorsToZero(newParticipantsCapDevDTO)) {
-      fieldErrors.add(new FieldErrorDTO("createParticipantsCapDev", "ParticipantsCapDevDTO",
+      fieldErrors.add(new FieldErrorDTO("saveParticipantsCapDev", "ParticipantsCapDevDTO",
         "One or more of the values are minors to zero"));
     } else {
 

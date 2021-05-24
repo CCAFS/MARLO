@@ -31,7 +31,9 @@ public interface ImpactAreasIndicatorMapper {
 
   @Mappings({@Mapping(source = "id", target = "indicatorId"),
     @Mapping(source = "impactArea.id", target = "impactAreaId"),
-    @Mapping(source = "impactArea.name", target = "impactAreaName")})
+    @Mapping(source = "impactArea.name", target = "impactAreaName"),
+    @Mapping(source = "targetYear", target = "targetYear"), @Mapping(source = "targetUnit", target = "targetUnit"),
+    @Mapping(source = "targetValue", target = "value")})
   public abstract ImpactAreasIndicatorsDTO
     impactAreasIndicatorsToImpactAreasIndicatorsDTO(ImpactAreaIndicator impactAreaIndicator);
 

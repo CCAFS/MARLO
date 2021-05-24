@@ -166,6 +166,11 @@ public class KeyExternalPartnershipItem<T> {
             new FieldErrorDTO("createKeyExternalPartnership", "phase", newKeyExternalPartnershipDTO.getPhase().getName()
               + ' ' + newKeyExternalPartnershipDTO.getPhase().getYear() + " is an invalid phase"));
         }
+        if (phase != null && !phase.getEditable()) {
+          fieldErrors.add(
+            new FieldErrorDTO("createKeyExternalPartnership", "phase", newKeyExternalPartnershipDTO.getPhase().getName()
+              + ' ' + newKeyExternalPartnershipDTO.getPhase().getYear() + " is a closed phase"));
+        }
       }
     }
 
@@ -643,6 +648,11 @@ public class KeyExternalPartnershipItem<T> {
           fieldErrors.add(
             new FieldErrorDTO("putKeyExternalPartnership", "phase", newKeyExternalPartnershipDTO.getPhase().getName()
               + ' ' + newKeyExternalPartnershipDTO.getPhase().getYear() + " is an invalid phase"));
+        }
+        if (phase != null && !phase.getEditable()) {
+          fieldErrors.add(
+            new FieldErrorDTO("putKeyExternalPartnership", "phase", newKeyExternalPartnershipDTO.getPhase().getName()
+              + ' ' + newKeyExternalPartnershipDTO.getPhase().getYear() + " is a closed phase"));
         }
       }
     }

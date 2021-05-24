@@ -42,6 +42,15 @@ public class ImpactAreasIndicatorsDTO {
   @ApiModelProperty(notes = "Impact Area Name", position = 4)
   public String impactAreaName;
 
+  @ApiModelProperty(notes = "Impact Area Indicator target year", position = 5)
+  public Long targetYear;
+
+  @ApiModelProperty(notes = "Impact Area Indicator target Unit", position = 6)
+  public String targetUnit;
+
+  @ApiModelProperty(notes = "Impact Area Indicator target value", position = 7)
+  public String value;
+
 
   public long getImpactAreaId() {
     return impactAreaId;
@@ -62,13 +71,31 @@ public class ImpactAreasIndicatorsDTO {
     return indicatorStatement;
   }
 
+
+  public String getTargetUnit() {
+    return targetUnit;
+  }
+
+
+  public Long getTargetYear() {
+    return targetYear;
+  }
+
+
+  public String getValue() {
+    return value;
+  }
+
+
   public void setImpactAreaId(long impactAreaId) {
     this.impactAreaId = impactAreaId;
   }
 
+
   public void setImpactAreaName(String impactAreaName) {
     this.impactAreaName = impactAreaName;
   }
+
 
   public void setIndicatorId(long indicatorId) {
     this.indicatorId = indicatorId;
@@ -76,5 +103,17 @@ public class ImpactAreasIndicatorsDTO {
 
   public void setIndicatorStatement(String indicatorStatement) {
     this.indicatorStatement = indicatorStatement;
+  }
+
+  public void setTargetUnit(String targetUnit) {
+    this.targetUnit = targetUnit;
+  }
+
+  public void setTargetYear(Long targetYear) {
+    this.targetYear = targetYear;
+  }
+
+  public void setValue(String value) {
+    this.value = value;
   }
 }

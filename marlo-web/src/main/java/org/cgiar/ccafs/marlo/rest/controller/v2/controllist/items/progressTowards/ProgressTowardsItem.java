@@ -199,7 +199,11 @@ public class ProgressTowardsItem<T> {
     // fieldErrors.add(new FieldErrorDTO("createProgressTowards", "FlagshipEntity",
     // "CRP Program SMO code can not be null nor empty."));
     // }
-
+    if (phase != null && !phase.getEditable()) {
+      fieldErrors
+        .add(new FieldErrorDTO("createProgressTowards", "phase", newSrfProgressTowardsTargetDTO.getPhase().getName()
+          + ' ' + newSrfProgressTowardsTargetDTO.getPhase().getYear() + " is a closed phase"));
+    }
     if (fieldErrors.isEmpty()) {
       ReportSynthesis reportSynthesis = null;
       ReportSynthesisSrfProgress reportSynthesisSrfProgress = null;
@@ -784,7 +788,11 @@ public class ProgressTowardsItem<T> {
         idProgressTowards + " is an invalid Report Synthesis Srf Progress Target Code"));
     }
 
-
+    if (phase != null && !phase.getEditable()) {
+      fieldErrors
+        .add(new FieldErrorDTO("putProgressTowards", "phase", newSrfProgressTowardsTargetDTO.getPhase().getName() + ' '
+          + newSrfProgressTowardsTargetDTO.getPhase().getYear() + " is a closed phase"));
+    }
     if (fieldErrors.isEmpty()) {
 
       idProgressTowardsDB = reportSynthesisSrfProgressTarget.getId();
