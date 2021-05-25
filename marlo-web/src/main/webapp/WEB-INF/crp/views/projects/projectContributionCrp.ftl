@@ -516,7 +516,7 @@
     </div>
     <input type="hidden" name="${customName}.id" value="${(projectOutcomeIndicator.id)!}" >
     <input type="hidden" name="${customName}.crpProgramOutcomeIndicator.id" value="${(projectOutcomeIndicator.crpProgramOutcomeIndicator.id)!}" >
-    [#if index==0 || index==3]
+    [#if index==0]
       <div class="form-group row">
         <div class="col-md-3">
           [@customForm.input name="${customName}.value" i18nkey="projectOutcomeBaseline.expectedValue" className="targetValue" placeholder="Numeric Value" value="${(projectOutcomeIndicator.value)!}" required=true editable=editable && !reportingActive /]

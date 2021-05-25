@@ -162,7 +162,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
             }
           }
         }
-        if (i == 0 || i == 3) {
+        if (i == 0) {
           if (projectOutcomeIndicator.getValue() == null || projectOutcomeIndicator.getValue().longValue() < 0) {
             action.addMessage(action.getText("projectOutcomeIndicator.value"));
             action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].value",
@@ -203,7 +203,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
             }
           }
         }
-        if (i == 0 || i == 3) {
+        if (i == 0) {
           if (projectOutcomeIndicator.getValue() == null || projectOutcomeIndicator.getValue().longValue() < 0) {
             action.addMessage(action.getText("projectOutcomeIndicator.value"));
             action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].value",
@@ -219,7 +219,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
                 InvalidFieldsMessages.EMPTYFIELD);
             }
           }
-          if (i == 0 || i == 3) {
+          if (i == 0) {
             if (projectOutcomeIndicator.getValueReporting() == null
               || projectOutcomeIndicator.getValueReporting().longValue() < 0) {
               action.addMessage(action.getText("projectOutcomeIndicator.valueReporting"));
@@ -244,7 +244,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
             }
           }
         }
-        if (i == 0 || i == 3) {
+        if (i == 0) {
           if (projectOutcomeIndicator.getValue() == null || projectOutcomeIndicator.getValue().longValue() < 0) {
             action.addMessage(action.getText("projectOutcomeIndicator.value"));
             action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].value",
@@ -260,7 +260,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
                 InvalidFieldsMessages.EMPTYFIELD);
             }
           }
-          if (i == 0 || i == 3) {
+          if (i == 0) {
             if (projectOutcomeIndicator.getValueReporting() == null
               || projectOutcomeIndicator.getValueReporting().longValue() < 0) {
               action.addMessage(action.getText("projectOutcomeIndicator.valueReporting"));
@@ -285,7 +285,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
             }
           }
         }
-        if (i == 0 || i == 3) {
+        if (i == 0) {
           if (projectOutcomeIndicator.getValue() == null || projectOutcomeIndicator.getValue().longValue() < 0) {
             action.addMessage(action.getText("projectOutcomeIndicator.value"));
             action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].value",
@@ -301,7 +301,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
                 InvalidFieldsMessages.EMPTYFIELD);
             }
           }
-          if (i == 0 || i == 3) {
+          if (i == 0) {
             if (projectOutcomeIndicator.getValueReporting() == null
               || projectOutcomeIndicator.getValueReporting().longValue() < 0) {
               action.addMessage(action.getText("projectOutcomeIndicator.valueReporting"));
@@ -327,7 +327,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
             }
           }
         }
-        if (i == 0 || i == 3) {
+        if (i == 0) {
           if (projectOutcomeIndicator.getValue() == null || projectOutcomeIndicator.getValue().longValue() < 0) {
             action.addMessage(action.getText("projectOutcomeIndicator.value"));
             action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].value",
@@ -343,7 +343,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
                 InvalidFieldsMessages.EMPTYFIELD);
             }
           }
-          if (i == 0 || i == 3) {
+          if (i == 0) {
             if (projectOutcomeIndicator.getValueReporting() == null
               || projectOutcomeIndicator.getValueReporting().longValue() < 0) {
               action.addMessage(action.getText("projectOutcomeIndicator.valueReporting"));
