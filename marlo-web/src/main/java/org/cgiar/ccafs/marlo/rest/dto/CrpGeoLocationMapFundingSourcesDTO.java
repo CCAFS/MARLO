@@ -19,12 +19,27 @@
 
 package org.cgiar.ccafs.marlo.rest.dto;
 
+import java.util.List;
 
 public class CrpGeoLocationMapFundingSourcesDTO {
 
   private long id;
   private String title;
   private String type;
+  private long totalBudget;
+  private String directDonor;
+  private String originalDonor;
+  private List<CrpGeoLocationMapFundingSourceBudgetDTO> budgetList;
+
+
+  public List<CrpGeoLocationMapFundingSourceBudgetDTO> getBudgetList() {
+    return budgetList;
+  }
+
+
+  public String getDirectDonor() {
+    return directDonor;
+  }
 
 
   public long getId() {
@@ -32,20 +47,50 @@ public class CrpGeoLocationMapFundingSourcesDTO {
   }
 
 
+  public String getOriginalDonor() {
+    return originalDonor;
+  }
+
+
   public String getTitle() {
     return title;
   }
+
+
+  public long getTotalBudget() {
+    return totalBudget;
+  }
+
 
   public String getType() {
     return type;
   }
 
+
+  public void setBudgetList(List<CrpGeoLocationMapFundingSourceBudgetDTO> budgetList) {
+    this.budgetList = budgetList;
+  }
+
+
+  public void setDirectDonor(String directDonor) {
+    this.directDonor = directDonor;
+  }
+
+
   public void setId(long id) {
     this.id = id;
   }
 
+  public void setOriginalDonor(String originalDonor) {
+    this.originalDonor = originalDonor;
+  }
+
   public void setTitle(String title) {
     this.title = title;
+  }
+
+  public void setTotalBudget(long totalBudget) {
+    this.totalBudget = totalBudget;
   }
 
   public void setType(String type) {

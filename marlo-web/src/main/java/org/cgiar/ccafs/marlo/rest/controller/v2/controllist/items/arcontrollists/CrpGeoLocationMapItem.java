@@ -41,6 +41,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableLocation;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.FundingSourceInfo;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
 import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -48,6 +49,7 @@ import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
@@ -59,6 +61,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
 import org.cgiar.ccafs.marlo.rest.dto.CrpGeoLocationMapDTO;
 import org.cgiar.ccafs.marlo.rest.dto.CrpGeoLocationMapDeliverablesDTO;
+import org.cgiar.ccafs.marlo.rest.dto.CrpGeoLocationMapFundingSourceBudgetDTO;
 import org.cgiar.ccafs.marlo.rest.dto.CrpGeoLocationMapFundingSourcesDTO;
 import org.cgiar.ccafs.marlo.rest.dto.CrpGeoLocationMapInnovationsDTO;
 import org.cgiar.ccafs.marlo.rest.dto.CrpGeoLocationMapOICRDTO;
@@ -336,16 +339,49 @@ public class CrpGeoLocationMapItem<T> {
         // funding sources
         fundingSources = new ArrayList<FundingSource>();
         for (FundingSourceLocation fundingSourceLocation : lfundingSourceLocation.stream()
-          .filter(c -> c.getLocElement().getId().equals(locElement.getId())).collect(Collectors.toList())) {
+          .filter(c -> c.isActive() && c.getLocElement().getId().equals(locElement.getId()))
+          .collect(Collectors.toList())) {
           FundingSource fundingSource =
             fundingSourceManager.getFundingSourceById(fundingSourceLocation.getFundingSource().getId());
-          fundingSource.getFundingSourceInfo(phase);
+          FundingSourceInfo fundingSourceInfo = fundingSource.getFundingSourceInfo(phase);
+          List<ProjectBudget> budgets = fundingSource.getProjectBudgets().stream()
+            .filter(c -> c != null && c.getPhase() != null && c.getYear() <= repoYear && c.isActive()
+              && c.getPhase().getId().equals(phase.getId()))
+            .collect(Collectors.toList());
+          Double amount = fundingSource.getFundingSourceBudgets().stream()
+            .filter(
+              c -> c != null && c.isActive() && c.getPhase().getId().equals(phase.getId()) && c.getYear() == repoYear)
+            .mapToDouble(c -> c.getBudget()).findFirst().orElse(0);
+          fundingSourceInfo.setGrantAmount(amount);
+          fundingSource.setFundingSourceInfo(fundingSourceInfo);
+          fundingSource.setProjectBudgetsList(budgets != null
+            ? budgets.stream().sorted(Comparator.comparingInt(ProjectBudget::getYear)).collect(Collectors.toList())
+            : new ArrayList<ProjectBudget>());
           fundingSources.add(fundingSource);
         }
-        List<CrpGeoLocationMapFundingSourcesDTO> crpGeoLocationMapFundingSourcesDTO = fundingSources.stream()
+        List<CrpGeoLocationMapFundingSourcesDTO> crpGeoLocationMapFundingSourcesListDTO = fundingSources.stream()
           .map(p -> this.crpGeoLocationMapMapper.fundingSourceToCrpGeoLocationMapFundingSourcesDTO(p))
           .collect(Collectors.toList());
-        geoLocation.setFundingSources(crpGeoLocationMapFundingSourcesDTO);
+
+        List<CrpGeoLocationMapFundingSourcesDTO> crpGeoLocationMapFundingSourcesList2 =
+          new ArrayList<CrpGeoLocationMapFundingSourcesDTO>();
+        if (crpGeoLocationMapFundingSourcesListDTO != null) {
+          for (CrpGeoLocationMapFundingSourcesDTO crpGeoLocationMapFundingSources : crpGeoLocationMapFundingSourcesListDTO) {
+            crpGeoLocationMapFundingSources
+              .setBudgetList(crpGeoLocationMapFundingSources
+                .getBudgetList().stream().collect(
+                  Collectors.groupingBy(d -> d.getYear()))
+                .entrySet().stream()
+                .map(e -> e.getValue().stream()
+                  .reduce((f1, f2) -> new CrpGeoLocationMapFundingSourceBudgetDTO(f1.getFundingSourceId(), f1.getYear(),
+                    f1.getAmount() + f2.getAmount())))
+                .map(f -> f.get()).collect(Collectors.toList()));
+            crpGeoLocationMapFundingSourcesList2.add(crpGeoLocationMapFundingSources);
+          }
+        }
+        // realizamos la sumatoria por año
+
+        geoLocation.setFundingSources(crpGeoLocationMapFundingSourcesList2);
         if (geoLocation.getPartners().size() > 0 || geoLocation.getProjects().size() > 0
           || geoLocation.getExpectedStudies().size() > 0 || geoLocation.getInnovations().size() > 0
           || geoLocation.getFundingSources().size() > 0 || geoLocation.getDeliverables().size() > 0) {
