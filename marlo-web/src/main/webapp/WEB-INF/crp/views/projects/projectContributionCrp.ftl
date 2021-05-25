@@ -370,12 +370,14 @@
       </div>
        --]
       [#-- DAC Markers --]
-      <div class="form-group row">
-        <div class="col-md-3"><strong>Gender</strong> <br /> ${(element.genderFocusLevel.powbName)!prefilled} </div>
-        <div class="col-md-3"><strong>Youth</strong> <br /> ${(element.youthFocusLevel.powbName)!prefilled}</div>
-        <div class="col-md-3"><strong>CapDev</strong> <br /> ${(element.capdevFocusLevel.powbName)!prefilled}</div>
-        <div class="col-md-3"><strong>Climate Change</strong> <br /> ${(element.climateFocusLevel.powbName)!prefilled}</div>
-      </div>
+      [#if !action.isAiccra()]
+        <div class="form-group row">
+          <div class="col-md-3"><strong>Gender</strong> <br /> ${(element.genderFocusLevel.powbName)!prefilled} </div>
+          <div class="col-md-3"><strong>Youth</strong> <br /> ${(element.youthFocusLevel.powbName)!prefilled}</div>
+          <div class="col-md-3"><strong>CapDev</strong> <br /> ${(element.capdevFocusLevel.powbName)!prefilled}</div>
+          <div class="col-md-3"><strong>Climate Change</strong> <br /> ${(element.climateFocusLevel.powbName)!prefilled}</div>
+        </div>
+      [/#if]
     </div>
     
     <div role="tabpanel" class="tab-pane [#if milestoneYear == currentCycleYear]active[/#if]" id="milestoneYear${index}-${milestoneYear}">
