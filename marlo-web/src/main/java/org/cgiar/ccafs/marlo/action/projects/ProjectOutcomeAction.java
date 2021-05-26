@@ -130,6 +130,42 @@ public class ProjectOutcomeAction extends BaseAction {
     this.projectOutcomeIndicatorManager = projectOutcomeIndicatorManager;
   }
 
+  public void AddAllCrpMilestones() {
+    if (projectOutcome != null && milestonesProject != null) {
+      List<ProjectMilestone> projectMilestones = new ArrayList<>();
+      for (CrpMilestone crpMilestone : milestones) {
+        ProjectMilestone projectMilestone = new ProjectMilestone();
+        projectMilestone.setCrpMilestone(crpMilestone);
+        projectMilestone.setProjectOutcome(projectOutcome);
+
+        if (crpMilestone.getExtendedYear() != null) {
+          projectMilestone.setYear(crpMilestone.getExtendedYear());
+        } else if (crpMilestone.getYear() != null) {
+          projectMilestone.setYear(crpMilestone.getYear());
+        }
+
+
+        if (projectOutcome.getMilestones() != null && !projectOutcome.getMilestones().isEmpty()) {
+
+          if (projectOutcome.getMilestones().stream()
+            .filter(m -> m.getCrpMilestone().getId().equals(crpMilestone.getId())
+              && m.getProjectOutcome().getId().equals(projectOutcome.getId())) == null) {
+            // If not exist previously this project Milestone then it is added to the list
+            projectMilestone = projectMilestoneManager.saveProjectMilestone(projectMilestone);
+            projectMilestones.add(projectMilestone);
+          }
+        } else {
+          projectMilestone = projectMilestoneManager.saveProjectMilestone(projectMilestone);
+          projectMilestones.add(projectMilestone);
+        }
+      }
+
+      if (projectMilestones != null && !projectMilestones.isEmpty()) {
+        projectOutcome.setMilestones(projectMilestones);
+      }
+    }
+  }
+
   public void canBeEditedMilestoneExpectedValue() {
     editMilestoneExpectedValue = false;
     // Modify the editExpectedValue value for AICCRA
@@ -217,6 +253,7 @@ public class ProjectOutcomeAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+
   public String getBaseLineFileURL(String outcomeID) {
     return config.getDownloadURL() + "/" + this.getBaseLineFileUrlPath(outcomeID).replace('\\', '/');
   }
@@ -226,7 +263,6 @@ public class ProjectOutcomeAction extends BaseAction {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + outcomeID + File.separator + "baseLine"
       + File.separator;
   }
-
 
   public int getIndexCommunication(int year) {
 
@@ -246,6 +282,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
   }
 
+
   public int getIndexIndicator(Long indicatorID) {
 
     ProjectOutcomeIndicator projectOutcomeIndicator = this.getIndicator(indicatorID);
@@ -259,7 +296,6 @@ public class ProjectOutcomeAction extends BaseAction {
     }
     return -1;
   }
-
 
   public int getIndexMilestone(long milestoneId, int year) {
 
@@ -293,6 +329,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
   }
 
+
   public ProjectMilestone getMilestone(long milestoneId, int year) {
     ProjectMilestone projectMilestone = new ProjectMilestone();
     if (projectOutcome.getMilestones() != null) {
@@ -318,7 +355,6 @@ public class ProjectOutcomeAction extends BaseAction {
     return milestones;
   }
 
-
   public List<CrpMilestone> getMilestonesbyYear(int year) {
     List<CrpMilestone> milestoneList =
       milestones.stream().filter(c -> c.getYear() >= year).collect(Collectors.toList());
@@ -329,14 +365,15 @@ public class ProjectOutcomeAction extends BaseAction {
     return milestonesProject;
   }
 
+
   public Project getProject() {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
+
 
   public ProjectOutcome getProjectOutcome() {
     return projectOutcome;
@@ -357,7 +394,6 @@ public class ProjectOutcomeAction extends BaseAction {
   private String getSummaryAbsolutePath() {
     return config.getUploadsBaseFolder() + File.separator + this.getSummaryPath() + File.separator;
   }
-
 
   private String getSummaryPath() {
 
@@ -416,6 +452,7 @@ public class ProjectOutcomeAction extends BaseAction {
     return editable;
   }
 
+
   public ProjectCommunication loadProjectCommunication(int year) {
 
     List<ProjectCommunication> projectCommunications =
@@ -441,7 +478,6 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -587,6 +623,11 @@ public class ProjectOutcomeAction extends BaseAction {
         .collect(Collectors.toList());
       milestones.sort(Comparator.comparing(CrpMilestone::getYear));
     }
+
+    if (this.isAiccra()) {
+      // this.AddAllCrpMilestones();
+    }
+
     /*
      * Loading basic List
      */
