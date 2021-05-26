@@ -23,8 +23,10 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
+import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -34,12 +36,14 @@ import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
+import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -67,6 +71,7 @@ public class ProjectOutcomeListAction extends BaseAction {
   private SectionStatusManager sectionStatusManager;
   private GlobalUnitProjectManager globalUnitProjectManager;
   private ProjectLp6ContributionManager projectLp6ContributionManager;
+  private ProjectMilestoneManager projectMilestoneManager;
 
   // Front-end
   private long projectID;
@@ -75,6 +80,7 @@ public class ProjectOutcomeListAction extends BaseAction {
   private Project project;
   private long outcomeId;
   private List<CrpProgramOutcome> outcomes;
+  private List<CrpMilestone> milestones;
   private ProjectLp6Contribution projectLp6Contribution;
   private Map<String, Object> status;
   private boolean contributionValue;
@@ -86,7 +92,7 @@ public class ProjectOutcomeListAction extends BaseAction {
   public ProjectOutcomeListAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     CrpProgramOutcomeManager crpProgramOutcomeManager, SectionStatusManager sectionStatusManager,
     ProjectOutcomeManager projectOutcomeManager, GlobalUnitProjectManager globalUnitProjectManager,
-    ProjectLp6ContributionManager projectLp6ContributionManager) {
+    ProjectLp6ContributionManager projectLp6ContributionManager, ProjectMilestoneManager projectMilestoneManager) {
     super(config);
     this.projectManager = projectManager;
     this.sectionStatusManager = sectionStatusManager;
@@ -95,6 +101,63 @@ public class ProjectOutcomeListAction extends BaseAction {
     this.projectOutcomeManager = projectOutcomeManager;
     this.globalUnitProjectManager = globalUnitProjectManager;
     this.projectLp6ContributionManager = projectLp6ContributionManager;
+    this.projectMilestoneManager = projectMilestoneManager;
+  }
+
+  public void AddAllCrpMilestones(ProjectOutcome projectOutcome) {
+    if (projectOutcome != null && projectOutcome.getCrpProgramOutcome() != null
+      && projectOutcome.getCrpProgramOutcome().getCrpMilestones() != null
+      && !projectOutcome.getCrpProgramOutcome().getCrpMilestones().isEmpty()) {
+      // Fill Milestones list
+      milestones = projectOutcome.getCrpProgramOutcome().getCrpMilestones().stream().filter(c -> c.isActive())
+        .collect(Collectors.toList());
+    }
+
+    if (projectOutcome != null && milestones != null) {
+      milestones.sort(Comparator.comparing(CrpMilestone::getYear));
+      List<ProjectMilestone> projectMilestones = new ArrayList<>();
+      for (CrpMilestone crpMilestone : milestones) {
+        ProjectMilestone projectMilestone = new ProjectMilestone();
+        projectMilestone.setCrpMilestone(crpMilestone);
+        projectMilestone.setProjectOutcome(projectOutcome);
+
+        if (crpMilestone.getExtendedYear() != null) {
+          projectMilestone.setYear(crpMilestone.getExtendedYear());
+        } else if (crpMilestone.getYear() != null) {
+          projectMilestone.setYear(crpMilestone.getYear());
+        }
+
+
+        if (projectOutcome.getMilestones() != null && !projectOutcome.getMilestones().isEmpty()) {
+
+          boolean exist = false;
+          for (ProjectMilestone prevProjectMilestone : projectOutcome.getMilestones()) {
+            if (prevProjectMilestone.getCrpMilestone() != null && prevProjectMilestone.getCrpMilestone() != null
+              && crpMilestone != null && crpMilestone.getId() != null
+              && prevProjectMilestone.getCrpMilestone().getId().equals(crpMilestone.getId())
+              && prevProjectMilestone.getProjectOutcome() != null
+              && prevProjectMilestone.getProjectOutcome().getId() != null
+              && prevProjectMilestone.getProjectOutcome().getId().equals(projectOutcome.getId())) {
+              exist = true;
+            }
+          }
+
+          if (exist == false) {
+            // If not exist previously this project Milestone then it is added to the list
+            projectMilestone = projectMilestoneManager.saveProjectMilestone(projectMilestone);
+            projectMilestones.add(projectMilestone);
+          }
+
+        } else {
+          projectMilestone = projectMilestoneManager.saveProjectMilestone(projectMilestone);
+          projectMilestones.add(projectMilestone);
+        }
+      }
+
+      if (projectMilestones != null && !projectMilestones.isEmpty()) {
+        projectOutcome.setMilestones(projectMilestones);
+      }
+    }
   }
 
   public String addProjectOutcome() {
@@ -103,8 +166,12 @@ public class ProjectOutcomeListAction extends BaseAction {
       projectOutcome.setPhase(this.getActualPhase());
       projectOutcome.setProject(project);
       projectOutcome.setCrpProgramOutcome(crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeId));
-      projectOutcomeManager.saveProjectOutcome(projectOutcome);
+      projectOutcome = projectOutcomeManager.saveProjectOutcome(projectOutcome);
       projectOutcomeID = projectOutcome.getId().longValue();
+
+      if (this.isAiccra()) {
+        this.AddAllCrpMilestones(projectOutcome);
+      }
 
       return SUCCESS;
     } else {
@@ -137,7 +204,6 @@ public class ProjectOutcomeListAction extends BaseAction {
   public Long getPhaseID() {
     return phaseID;
   }
-
 
   public Project getProject() {
     return project;

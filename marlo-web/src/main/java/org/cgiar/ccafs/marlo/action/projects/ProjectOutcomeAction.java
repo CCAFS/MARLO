@@ -131,7 +131,7 @@ public class ProjectOutcomeAction extends BaseAction {
   }
 
   public void AddAllCrpMilestones() {
-    if (projectOutcome != null && milestonesProject != null) {
+    if (projectOutcome != null && milestones != null) {
       List<ProjectMilestone> projectMilestones = new ArrayList<>();
       for (CrpMilestone crpMilestone : milestones) {
         ProjectMilestone projectMilestone = new ProjectMilestone();
@@ -147,13 +147,24 @@ public class ProjectOutcomeAction extends BaseAction {
 
         if (projectOutcome.getMilestones() != null && !projectOutcome.getMilestones().isEmpty()) {
 
-          if (projectOutcome.getMilestones().stream()
-            .filter(m -> m.getCrpMilestone().getId().equals(crpMilestone.getId())
-              && m.getProjectOutcome().getId().equals(projectOutcome.getId())) == null) {
+          boolean exist = false;
+          for (ProjectMilestone prevProjectMilestone : projectOutcome.getMilestones()) {
+            if (prevProjectMilestone.getCrpMilestone() != null && prevProjectMilestone.getCrpMilestone() != null
+              && crpMilestone != null && crpMilestone.getId() != null
+              && prevProjectMilestone.getCrpMilestone().getId().equals(crpMilestone.getId())
+              && prevProjectMilestone.getProjectOutcome() != null
+              && prevProjectMilestone.getProjectOutcome().getId() != null
+              && prevProjectMilestone.getProjectOutcome().getId().equals(projectOutcome.getId())) {
+              exist = true;
+            }
+          }
+
+          if (exist == false) {
             // If not exist previously this project Milestone then it is added to the list
             projectMilestone = projectMilestoneManager.saveProjectMilestone(projectMilestone);
             projectMilestones.add(projectMilestone);
           }
+
         } else {
           projectMilestone = projectMilestoneManager.saveProjectMilestone(projectMilestone);
           projectMilestones.add(projectMilestone);
@@ -625,7 +636,7 @@ public class ProjectOutcomeAction extends BaseAction {
     }
 
     if (this.isAiccra()) {
-      // this.AddAllCrpMilestones();
+      this.AddAllCrpMilestones();
     }
 
     /*
