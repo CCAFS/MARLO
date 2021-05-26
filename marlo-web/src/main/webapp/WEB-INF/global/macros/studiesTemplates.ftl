@@ -294,7 +294,7 @@
         [/#if]
         [#-- Sub IDOs (maxLimit=3) --]
         <div class="form-group simpleBox">
-          [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="study.stratgicResultsLink.subIDOs"  listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description" hasPrimary=true/]
+          [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="study.stratgicResultsLink.subIDOs"  listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="composedName" hasPrimary=true/]
         </div> 
         
         [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]      
