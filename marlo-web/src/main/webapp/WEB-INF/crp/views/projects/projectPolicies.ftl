@@ -112,7 +112,7 @@
               [@utils.tableText value=(item.projectPolicyInfo.repIndPolicyInvestimentType.name)!"" /]
             </td>
             <td class="text-center">
-              <a title='[@utils.tableList list=(item.subIdos)![] displayFieldName="srfSubIdo.description" /]' class="btn btn-default btn-xs">${(item.subIdos?size)!'0'}</a>
+              <a title='[@utils.tableList list=(item.subIdos)![] displayFieldName="srfSubIdo.composedName" /]' class="btn btn-default btn-xs">${(item.subIdos?size)!'0'}</a>
             </td>
             <td class="">
               [@utils.tableText value=(item.projectPolicyInfo.repIndStageProcess.name)!"" /]
