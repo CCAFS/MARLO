@@ -254,7 +254,7 @@ function updateReportHeight(contentId, report, models) {
     pages[0].hasLayout(models.LayoutType.MobilePortrait).then(function (hasLayout) {
       pages.forEach(page => {
         if (page.isActive) {
-          $("#dashboardContainer-" + reportId).css("height", (page.defaultSize.height + 100) + 'px');
+          $("#dashboardContainer-" + reportId).css("height", (page.defaultSize.height));
         }
       });
     })
