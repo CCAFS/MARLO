@@ -153,40 +153,42 @@ public class ProjectOutcomeValidator extends BaseValidator {
         List<String> params = new ArrayList<>();
         params.add(String.valueOf(i + 1));
         if (action.isPlanningActive()) {
-          if (i != 0) {
-            if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
-              && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 100)) {
-              action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
-              action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
-                InvalidFieldsMessages.EMPTYFIELD);
-            }
-          }
-        }
-        if (i == 0) {
-          if (projectOutcomeIndicator.getValue() == null || projectOutcomeIndicator.getValue().longValue() < 0) {
-            action.addMessage(action.getText("projectOutcomeIndicator.value"));
-            action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].value",
+          if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
+            && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 100)) {
+            action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
+            action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
               InvalidFieldsMessages.EMPTYFIELD);
           }
         }
+        /*
+         * if (i == 0) {
+         * if (projectOutcomeIndicator.getValue() == null || projectOutcomeIndicator.getValue().longValue() < 0) {
+         * action.addMessage(action.getText("projectOutcomeIndicator.value"));
+         * action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].value",
+         * InvalidFieldsMessages.EMPTYFIELD);
+         * }
+         * }
+         */
         if (action.isReportingActive()) {
-          if (i != 0) {
-            if (!(this.isValidString(projectOutcomeIndicator.getAchievedNarrative())
-              && this.wordCount(projectOutcomeIndicator.getAchievedNarrative()) <= 100)) {
-              action.addMessage(action.getText("projectOutcomeIndicator.requeried.achievedNarrative", params));
-              action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].achievedNarrative",
-                InvalidFieldsMessages.EMPTYFIELD);
-            }
+
+          if (!(this.isValidString(projectOutcomeIndicator.getAchievedNarrative())
+            && this.wordCount(projectOutcomeIndicator.getAchievedNarrative()) <= 100)) {
+            action.addMessage(action.getText("projectOutcomeIndicator.requeried.achievedNarrative", params));
+            action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].achievedNarrative",
+              InvalidFieldsMessages.EMPTYFIELD);
           }
-          if (i == 0 || i == 3) {
-            if (projectOutcomeIndicator.getValueReporting() == null
-              || projectOutcomeIndicator.getValueReporting().longValue() < 0) {
-              action.addMessage(action.getText("projectOutcomeIndicator.valueReporting"));
-              action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].valueReporting",
-                InvalidFieldsMessages.EMPTYFIELD);
-            }
-          }
+
+
+          /*
+           * if (projectOutcomeIndicator.getValueReporting() == null
+           * || projectOutcomeIndicator.getValueReporting().longValue() < 0) {
+           * action.addMessage(action.getText("projectOutcomeIndicator.valueReporting"));
+           * action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].valueReporting",
+           * InvalidFieldsMessages.EMPTYFIELD);
+           * }
+           */
         }
+
       }
 
       // PDO 2
@@ -203,29 +205,14 @@ public class ProjectOutcomeValidator extends BaseValidator {
             }
           }
         }
-        if (i == 0) {
-          if (projectOutcomeIndicator.getValue() == null || projectOutcomeIndicator.getValue().longValue() < 0) {
-            action.addMessage(action.getText("projectOutcomeIndicator.value"));
-            action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].value",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
-        }
+
         if (action.isReportingActive()) {
-          if (i != 0) {
-            if (!(this.isValidString(projectOutcomeIndicator.getAchievedNarrative())
-              && this.wordCount(projectOutcomeIndicator.getAchievedNarrative()) <= 100)) {
-              action.addMessage(action.getText("projectOutcomeIndicator.requeried.achievedNarrative", params));
-              action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].achievedNarrative",
-                InvalidFieldsMessages.EMPTYFIELD);
-            }
-          }
-          if (i == 0) {
-            if (projectOutcomeIndicator.getValueReporting() == null
-              || projectOutcomeIndicator.getValueReporting().longValue() < 0) {
-              action.addMessage(action.getText("projectOutcomeIndicator.valueReporting"));
-              action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].valueReporting",
-                InvalidFieldsMessages.EMPTYFIELD);
-            }
+
+          if (!(this.isValidString(projectOutcomeIndicator.getAchievedNarrative())
+            && this.wordCount(projectOutcomeIndicator.getAchievedNarrative()) <= 100)) {
+            action.addMessage(action.getText("projectOutcomeIndicator.requeried.achievedNarrative", params));
+            action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].achievedNarrative",
+              InvalidFieldsMessages.EMPTYFIELD);
           }
         }
       }
@@ -235,38 +222,23 @@ public class ProjectOutcomeValidator extends BaseValidator {
         List<String> params = new ArrayList<>();
         params.add(String.valueOf(i + 1));
         if (action.isPlanningActive()) {
-          if (i != 0) {
-            if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
-              && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 100)) {
-              action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
-              action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
-                InvalidFieldsMessages.EMPTYFIELD);
-            }
-          }
-        }
-        if (i == 0) {
-          if (projectOutcomeIndicator.getValue() == null || projectOutcomeIndicator.getValue().longValue() < 0) {
-            action.addMessage(action.getText("projectOutcomeIndicator.value"));
-            action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].value",
+
+          if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
+            && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 100)) {
+            action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
+            action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
               InvalidFieldsMessages.EMPTYFIELD);
           }
         }
+
+
         if (action.isReportingActive()) {
-          if (i != 0) {
-            if (!(this.isValidString(projectOutcomeIndicator.getAchievedNarrative())
-              && this.wordCount(projectOutcomeIndicator.getAchievedNarrative()) <= 100)) {
-              action.addMessage(action.getText("projectOutcomeIndicator.requeried.achievedNarrative", params));
-              action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].achievedNarrative",
-                InvalidFieldsMessages.EMPTYFIELD);
-            }
-          }
-          if (i == 0) {
-            if (projectOutcomeIndicator.getValueReporting() == null
-              || projectOutcomeIndicator.getValueReporting().longValue() < 0) {
-              action.addMessage(action.getText("projectOutcomeIndicator.valueReporting"));
-              action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].valueReporting",
-                InvalidFieldsMessages.EMPTYFIELD);
-            }
+
+          if (!(this.isValidString(projectOutcomeIndicator.getAchievedNarrative())
+            && this.wordCount(projectOutcomeIndicator.getAchievedNarrative()) <= 100)) {
+            action.addMessage(action.getText("projectOutcomeIndicator.requeried.achievedNarrative", params));
+            action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].achievedNarrative",
+              InvalidFieldsMessages.EMPTYFIELD);
           }
         }
       }
@@ -276,38 +248,22 @@ public class ProjectOutcomeValidator extends BaseValidator {
         List<String> params = new ArrayList<>();
         params.add(String.valueOf(i + 1));
         if (action.isPlanningActive()) {
-          if (i != 0) {
-            if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
-              && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 100)) {
-              action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
-              action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
-                InvalidFieldsMessages.EMPTYFIELD);
-            }
-          }
-        }
-        if (i == 0) {
-          if (projectOutcomeIndicator.getValue() == null || projectOutcomeIndicator.getValue().longValue() < 0) {
-            action.addMessage(action.getText("projectOutcomeIndicator.value"));
-            action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].value",
+
+          if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
+            && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 100)) {
+            action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
+            action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
               InvalidFieldsMessages.EMPTYFIELD);
           }
         }
+
+
         if (action.isReportingActive()) {
-          if (i != 0) {
-            if (!(this.isValidString(projectOutcomeIndicator.getAchievedNarrative())
-              && this.wordCount(projectOutcomeIndicator.getAchievedNarrative()) <= 100)) {
-              action.addMessage(action.getText("projectOutcomeIndicator.requeried.achievedNarrative", params));
-              action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].achievedNarrative",
-                InvalidFieldsMessages.EMPTYFIELD);
-            }
-          }
-          if (i == 0) {
-            if (projectOutcomeIndicator.getValueReporting() == null
-              || projectOutcomeIndicator.getValueReporting().longValue() < 0) {
-              action.addMessage(action.getText("projectOutcomeIndicator.valueReporting"));
-              action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].valueReporting",
-                InvalidFieldsMessages.EMPTYFIELD);
-            }
+          if (!(this.isValidString(projectOutcomeIndicator.getAchievedNarrative())
+            && this.wordCount(projectOutcomeIndicator.getAchievedNarrative()) <= 100)) {
+            action.addMessage(action.getText("projectOutcomeIndicator.requeried.achievedNarrative", params));
+            action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].achievedNarrative",
+              InvalidFieldsMessages.EMPTYFIELD);
           }
         }
       }
@@ -318,38 +274,21 @@ public class ProjectOutcomeValidator extends BaseValidator {
         List<String> params = new ArrayList<>();
         params.add(String.valueOf(i + 1));
         if (action.isPlanningActive()) {
-          if (i != 0) {
-            if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
-              && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 100)) {
-              action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
-              action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
-                InvalidFieldsMessages.EMPTYFIELD);
-            }
-          }
-        }
-        if (i == 0) {
-          if (projectOutcomeIndicator.getValue() == null || projectOutcomeIndicator.getValue().longValue() < 0) {
-            action.addMessage(action.getText("projectOutcomeIndicator.value"));
-            action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].value",
+
+          if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
+            && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 100)) {
+            action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
+            action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
               InvalidFieldsMessages.EMPTYFIELD);
           }
         }
+
         if (action.isReportingActive()) {
-          if (i != 0) {
-            if (!(this.isValidString(projectOutcomeIndicator.getAchievedNarrative())
-              && this.wordCount(projectOutcomeIndicator.getAchievedNarrative()) <= 100)) {
-              action.addMessage(action.getText("projectOutcomeIndicator.requeried.achievedNarrative", params));
-              action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].achievedNarrative",
-                InvalidFieldsMessages.EMPTYFIELD);
-            }
-          }
-          if (i == 0) {
-            if (projectOutcomeIndicator.getValueReporting() == null
-              || projectOutcomeIndicator.getValueReporting().longValue() < 0) {
-              action.addMessage(action.getText("projectOutcomeIndicator.valueReporting"));
-              action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].valueReporting",
-                InvalidFieldsMessages.EMPTYFIELD);
-            }
+          if (!(this.isValidString(projectOutcomeIndicator.getAchievedNarrative())
+            && this.wordCount(projectOutcomeIndicator.getAchievedNarrative()) <= 100)) {
+            action.addMessage(action.getText("projectOutcomeIndicator.requeried.achievedNarrative", params));
+            action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].achievedNarrative",
+              InvalidFieldsMessages.EMPTYFIELD);
           }
         }
       }
