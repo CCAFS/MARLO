@@ -403,75 +403,7 @@ public class ProgressTargetQuestionsPOISummaryAction extends BaseSummariesAction
     List<List<POIField>> datas = new ArrayList<>();
     List<POIField> data;
 
-    PowbSynthesis powbSynthesisP =
-      powbSynthesisManager.findSynthesis(this.getActualPhase().getId(), pmuInstitution.getId());
-
-
-    List<PowbFinancialPlannedBudget> budgets = powb2019Data.getTable3(powbSynthesisP);
-
-    if (budgets != null && !budgets.isEmpty()) {
-
-      int count = 0;
-      for (PowbFinancialPlannedBudget powbFinancialPlannedBudget : budgets) {
-
-        Double carry = 0.0, w1w2 = 0.0, w3Bilateral = 0.0, center = 0.0, total = 0.0;
-        String category = "", comments = "";
-
-
-        if (powbFinancialPlannedBudget.getLiaisonInstitution() != null) {
-          category = powbFinancialPlannedBudget.getLiaisonInstitution().getAcronym();
-        } else if (powbFinancialPlannedBudget.getPowbExpenditureArea() != null) {
-          category = powbFinancialPlannedBudget.getPowbExpenditureArea().getExpenditureArea();
-        } else if (powbFinancialPlannedBudget.getTitle() != null) {
-          category = powbFinancialPlannedBudget.getTitle();
-        }
-
-        if (powbFinancialPlannedBudget != null) {
-          w1w2 = powbFinancialPlannedBudget.getW1w2() != null ? powbFinancialPlannedBudget.getW1w2() : 0.0;
-          carry = powbFinancialPlannedBudget.getCarry() != null ? powbFinancialPlannedBudget.getCarry() : 0.0;
-          w3Bilateral =
-            powbFinancialPlannedBudget.getW3Bilateral() != null ? powbFinancialPlannedBudget.getW3Bilateral() : 0.0;
-          center =
-            powbFinancialPlannedBudget.getCenterFunds() != null ? powbFinancialPlannedBudget.getCenterFunds() : 0.0;
-          total = powbFinancialPlannedBudget.getTotalPlannedBudget() != null
-            ? powbFinancialPlannedBudget.getTotalPlannedBudget() : 0.0;
-          comments = powbFinancialPlannedBudget.getComments() == null
-            || powbFinancialPlannedBudget.getComments().trim().isEmpty() ? " "
-              : powbFinancialPlannedBudget.getComments();
-        }
-
-        totalCarry += carry;
-        totalw1w2 += w1w2;
-        totalw3Bilateral += w3Bilateral;
-        totalCenter += center;
-        grandTotal += total;
-        count++;
-
-        if (this.isEntityPlatform()) {
-          POIField[] sData = {new POIField(category, ParagraphAlignment.LEFT, false),
-            new POIField(currencyFormat.format(round(w1w2, 2)), ParagraphAlignment.CENTER, false),
-            new POIField(currencyFormat.format(round(w3Bilateral, 2)), ParagraphAlignment.CENTER, false),
-            new POIField(currencyFormat.format(round(center, 2)), ParagraphAlignment.CENTER, false),
-            new POIField(currencyFormat.format(round(total, 2)), ParagraphAlignment.CENTER, false),
-            new POIField(comments, ParagraphAlignment.CENTER, false)};
-
-          data = Arrays.asList(sData);
-          datas.add(data);
-
-        } else if (this.isEntityCRP()) {
-
-          POIField[] sData = {new POIField(category, ParagraphAlignment.LEFT, true, blackColor),
-            new POIField(currencyFormat.format(round(w1w2, 2)), ParagraphAlignment.CENTER, false),
-            new POIField(currencyFormat.format(round(w3Bilateral, 2)), ParagraphAlignment.CENTER, false),
-            new POIField(currencyFormat.format(round(center, 2)), ParagraphAlignment.CENTER, false),
-            new POIField(currencyFormat.format(round(total, 2)), ParagraphAlignment.CENTER, false),
-            new POIField(comments, ParagraphAlignment.CENTER, false)};
-
-          data = Arrays.asList(sData);
-          datas.add(data);
-        }
-      }
-    }
+    PowbSynthesis powbSynthesisP = null;
 
     String totaltext = "";
     if (this.isEntityCRP()) {
