@@ -516,7 +516,8 @@
     </div>
     <input type="hidden" name="${customName}.id" value="${(projectOutcomeIndicator.id)!}" >
     <input type="hidden" name="${customName}.crpProgramOutcomeIndicator.id" value="${(projectOutcomeIndicator.crpProgramOutcomeIndicator.id)!}" >
-    [#if index==0]
+    
+    [#-- [#if index==0]
       <div class="form-group row">
         <div class="col-md-3">
           [@customForm.input name="${customName}.value" i18nkey="projectOutcomeBaseline.expectedValue" className="targetValue" placeholder="Numeric Value" value="${(projectOutcomeIndicator.value)!}" required=true editable=editable && !reportingActive /]
@@ -529,7 +530,8 @@
         <div class="col-md-3"></div>
       </div>
     [/#if]
-    [#if index != 0]
+    --]
+    
       <div class="form-group">
         [@customForm.textArea name="${customName}.narrative" i18nkey="projectOutcomeBaseline.expectedNarrative" value="${(projectOutcomeIndicator.narrative)!}" required=true className="limitWords-100" editable=editable && !reportingActive /]
       </div>
@@ -538,7 +540,6 @@
           [@customForm.textArea name="${customName}.achievedNarrative" i18nkey="projectOutcomeBaseline.achievedNarrative" required=true className="limitWords-100" editable=editable /]
         </div>
       [/#if]
-    [/#if]
   </div>
 [/#macro]
 
