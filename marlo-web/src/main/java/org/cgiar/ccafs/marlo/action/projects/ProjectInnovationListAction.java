@@ -179,10 +179,10 @@ public class ProjectInnovationListAction extends BaseAction {
         ProjectInnovation projectInnovationBD = projectInnovationManager.getProjectInnovationById(this.innovationID);
 
         // project_expected_study_innovations
-        for (ProjectExpectedStudyInnovation pesi : projectInnovationBD.getProjectExpectedStudyInnovations().stream()
+        /*for (ProjectExpectedStudyInnovation pesi : projectInnovationBD.getProjectExpectedStudyInnovations().stream()
           .filter(i -> i.getPhase().getId().equals(this.getPhaseID())).collect(Collectors.toList())) {
           projectExpectedStudyInnovationManager.deleteProjectExpectedStudyInnovation(pesi.getId());
-        }
+        }*/
 
         // project_innovation_centers
         /*for (ProjectInnovationCenter pic : projectInnovationBD.getProjectInnovationCenters().stream()
