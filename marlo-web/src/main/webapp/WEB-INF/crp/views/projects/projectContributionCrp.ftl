@@ -339,11 +339,11 @@
     [#-- Remove Button --]
     [#-- 
     [#if editable && (!reportingActive || isNewAtReporting) && (milestoneYear gte currentCycleYear)!true]<div class="removeElement removeIcon removeProjectMilestone" title="Remove"></div>[/#if]
+    --]
     <div class="leftHead sm">
       <span class="index">${index+1}</span>
       <span class="elementId">[@s.text name="projectOutcomeMilestone.projectMilestoneTarget" /]</span>
     </div>
-    --]
 
     [#local showMilestoneValue = element.srfTargetUnit??  && element.srfTargetUnit.id?? && (element.srfTargetUnit.id != -1) /]
     [#local prefilled]<p style="opacity:0.6">[@s.text name="form.values.fieldEmpty" /]</p>[/#local]
