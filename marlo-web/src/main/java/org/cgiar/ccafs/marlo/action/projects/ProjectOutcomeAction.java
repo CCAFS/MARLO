@@ -636,7 +636,6 @@ public class ProjectOutcomeAction extends BaseAction {
     }
 
     if (this.isAiccra()) {
-      milestones.sort(Comparator.comparing(CrpMilestone::getId));
       this.addAllCrpMilestones();
     }
 
