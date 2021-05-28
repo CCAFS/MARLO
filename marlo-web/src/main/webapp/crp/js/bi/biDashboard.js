@@ -240,15 +240,25 @@ function removeNavPanel(contentId) {
       console.log(errors);
     });
 
-  //  Update height of iframe container depending on dashboard page height
+  // Update height of iframe container depending on dashboard page height
+  updateReportHeight(contentId, report, models);
 
+  report.on("buttonClicked", function () {
+    updateReportHeight(contentId, report,models);
+  });
+}
+
+function updateReportHeight(contentId, report, models) {
   var reportId = contentId.split('BIreport-')[1];
   report.getPages().then(function (pages) {
     pages[0].hasLayout(models.LayoutType.MobilePortrait).then(function (hasLayout) {
-      $("#dashboardContainer-" + reportId).css("height", (pages[0].defaultSize.height + 100) + 'px');
+      pages.forEach(page => {
+        if (page.isActive) {
+          $("#dashboardContainer-" + reportId).css("height", (page.defaultSize.height));
+        }
+      });
     })
   });
-
 }
 
 function selectBIReport(e) {
