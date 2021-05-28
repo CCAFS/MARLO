@@ -22,7 +22,9 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
+import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Institution;
@@ -31,6 +33,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -39,7 +42,9 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.NoPhaseException;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -70,17 +75,76 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
   private GlobalUnit loggedCrp;
   private GlobalUnitProjectManager globalUnitProjectManager;
   private final LiaisonUserManager liaisonUserManager;
+  private ProjectMilestoneManager projectMilestoneManager;
 
   @Inject
   public EditProjectOutcomeInterceptor(ProjectOutcomeManager projectOutcomeManager, ProjectManager projectManager,
     PhaseManager phaseManager, GlobalUnitManager crpManager, GlobalUnitProjectManager globalUnitProjectManager,
-    LiaisonUserManager liaisonUserManager) {
+    LiaisonUserManager liaisonUserManager, ProjectMilestoneManager projectMilestoneManager) {
     this.projectOutcomeManager = projectOutcomeManager;
     this.projectManager = projectManager;
     this.phaseManager = phaseManager;
     this.crpManager = crpManager;
     this.globalUnitProjectManager = globalUnitProjectManager;
     this.liaisonUserManager = liaisonUserManager;
+    this.projectMilestoneManager = projectMilestoneManager;
+  }
+
+  public void addAllCrpMilestones(ProjectOutcome projectOutcome) {
+    List<CrpMilestone> milestones = new ArrayList<>();
+    if (projectOutcome != null && projectOutcome.getCrpProgramOutcome() != null
+      && projectOutcome.getCrpProgramOutcome().getCrpMilestones() != null
+      && !projectOutcome.getCrpProgramOutcome().getCrpMilestones().isEmpty()) {
+      // Fill Milestones list
+      milestones = projectOutcome.getCrpProgramOutcome().getCrpMilestones().stream().filter(c -> c.isActive())
+        .collect(Collectors.toList());
+    }
+
+    if (projectOutcome != null && milestones != null) {
+      milestones.sort(Comparator.comparing(CrpMilestone::getYear));
+      List<ProjectMilestone> projectMilestones = new ArrayList<>();
+      for (CrpMilestone crpMilestone : milestones) {
+        ProjectMilestone projectMilestone = new ProjectMilestone();
+        projectMilestone.setCrpMilestone(crpMilestone);
+        projectMilestone.setProjectOutcome(projectOutcome);
+
+        if (crpMilestone.getExtendedYear() != null) {
+          projectMilestone.setYear(crpMilestone.getExtendedYear());
+        } else if (crpMilestone.getYear() != null) {
+          projectMilestone.setYear(crpMilestone.getYear());
+        }
+
+
+        if (projectOutcome.getMilestones() != null && !projectOutcome.getMilestones().isEmpty()) {
+
+          boolean exist = false;
+          for (ProjectMilestone prevProjectMilestone : projectOutcome.getMilestones()) {
+            if (prevProjectMilestone.getCrpMilestone() != null && prevProjectMilestone.getCrpMilestone() != null
+              && crpMilestone != null && crpMilestone.getId() != null
+              && prevProjectMilestone.getCrpMilestone().getId().equals(crpMilestone.getId())
+              && prevProjectMilestone.getProjectOutcome() != null
+              && prevProjectMilestone.getProjectOutcome().getId() != null
+              && prevProjectMilestone.getProjectOutcome().getId().equals(projectOutcome.getId())) {
+              exist = true;
+            }
+          }
+
+          if (exist == false) {
+            // If not exist previously this project Milestone then it is added to the list
+            projectMilestone = projectMilestoneManager.saveProjectMilestone(projectMilestone);
+            projectMilestones.add(projectMilestone);
+          }
+
+        } else {
+          projectMilestone = projectMilestoneManager.saveProjectMilestone(projectMilestone);
+          projectMilestones.add(projectMilestone);
+        }
+      }
+
+      if (projectMilestones != null && !projectMilestones.isEmpty()) {
+        projectOutcome.setMilestones(projectMilestones);
+      }
+    }
   }
 
   @Override
@@ -141,6 +205,11 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
     Project theProject = projectManager.getProjectById(project.getProject().getId());
+
+    BaseAction action = (BaseAction) invocation.getAction();
+    if (action.isAiccra() && outcome != null) {
+      this.addAllCrpMilestones(outcome);
+    }
 
     // Get The Crp/Center/Platform where the project was created
     GlobalUnitProject globalUnitProject =
