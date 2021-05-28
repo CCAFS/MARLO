@@ -130,7 +130,7 @@ public class ProjectOutcomeAction extends BaseAction {
     this.projectOutcomeIndicatorManager = projectOutcomeIndicatorManager;
   }
 
-  public void AddAllCrpMilestones() {
+  public void addAllCrpMilestones() {
     if (projectOutcome != null && milestones != null) {
       List<ProjectMilestone> projectMilestones = new ArrayList<>();
       for (CrpMilestone crpMilestone : milestones) {
@@ -636,7 +636,8 @@ public class ProjectOutcomeAction extends BaseAction {
     }
 
     if (this.isAiccra()) {
-      this.AddAllCrpMilestones();
+      milestones.sort(Comparator.comparing(CrpMilestone::getId));
+      this.addAllCrpMilestones();
     }
 
     /*

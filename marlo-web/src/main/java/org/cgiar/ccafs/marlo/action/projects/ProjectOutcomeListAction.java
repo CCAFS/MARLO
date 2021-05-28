@@ -104,7 +104,7 @@ public class ProjectOutcomeListAction extends BaseAction {
     this.projectMilestoneManager = projectMilestoneManager;
   }
 
-  public void AddAllCrpMilestones(ProjectOutcome projectOutcome) {
+  public void addAllCrpMilestones(ProjectOutcome projectOutcome) {
     if (projectOutcome != null && projectOutcome.getCrpProgramOutcome() != null
       && projectOutcome.getCrpProgramOutcome().getCrpMilestones() != null
       && !projectOutcome.getCrpProgramOutcome().getCrpMilestones().isEmpty()) {
@@ -170,7 +170,7 @@ public class ProjectOutcomeListAction extends BaseAction {
       projectOutcomeID = projectOutcome.getId().longValue();
 
       if (this.isAiccra()) {
-        this.AddAllCrpMilestones(projectOutcome);
+        this.addAllCrpMilestones(projectOutcome);
       }
 
       return SUCCESS;
