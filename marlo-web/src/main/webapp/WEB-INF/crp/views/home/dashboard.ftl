@@ -188,7 +188,7 @@
           </div>
 
           <div role="tabpanel" class="tab-pane fade" id="myDeliverables">
-            [@deliverablesList.deliverablesSummaryList deliverables=myDeliverables canValidate=true canEdit=true namespace="/deliverables" defaultAction="${(crpSession)!}/description" /]
+            [@deliverablesList.deliverablesSummaryList deliverables=myDeliverables canValidate=true canEdit=true namespace="/projects" defaultAction="${(crpSession)!}/deliverable" /]
           </div>
 
           <div role="tabpanel" class="tab-pane fade" id="impactP">
