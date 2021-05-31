@@ -235,32 +235,37 @@
           <li role="presentation"><a href="#baseline-tab-${index}" aria-controls="profile" role="tab" data-toggle="tab">Baseline Indicators <span class="badge">${(outcome.indicators?size)!'0'}</span></a></li>
         [/#if]
       [/#if]
-      <li role="presentation" ><a href="#subIdos-tab-${index}" aria-controls="home" role="tab" data-toggle="tab">Sub-IDOs <span class="badge">${(outcome.subIdos?size)!'0'}</span></a></li>
+      [#if !action.isAiccra()]
+        <li role="presentation" ><a href="#subIdos-tab-${index}" aria-controls="home" role="tab" data-toggle="tab">Sub-IDOs <span class="badge">${(outcome.subIdos?size)!'0'}</span></a></li>
+      [/#if]
      </ul>
   
     <!-- Tab panes -->
     <div class="tab-content impactpathwayTabContent  to-minimize-outcome">
-      [#-- Outcome Sub-IDOs List --]
-      <div role="tabpanel" class="tab-pane fade " id="subIdos-tab-${index}">
-      
-        [#-- <h5 class="sectionSubTitle">[@s.text name="outcome.subIDOs.sectionTitle"/] <p class="contributioRem pull-right">Contribution <span class="value">0%</span></p></h5>--]
-        <div class="subIdos-list" listname="${outcomeCustomName}.subIdos">
-        [#if outcome.subIdos?has_content]
-          [#list outcome.subIdos as subIdo]
-            [@subIDOMacro subIdo=subIdo name="${outcomeCustomName}.subIdos" index=subIdo_index /]
-          [/#list]
-        [#else]
-          [@subIDOMacro subIdo={} name="${outcomeCustomName}.subIdos" index=0 /]
-          [#-- <p class="message text-center">[@s.text name="outcome.subIDOs.section.notSubIDOs.span"/]</p> --]
-        [/#if]
+    
+      [#if !action.isAiccra()]
+        [#-- Outcome Sub-IDOs List --]
+        <div role="tabpanel" class="tab-pane fade " id="subIdos-tab-${index}">
+        
+          [#-- <h5 class="sectionSubTitle">[@s.text name="outcome.subIDOs.sectionTitle"/] <p class="contributioRem pull-right">Contribution <span class="value">0%</span></p></h5>--]
+          <div class="subIdos-list" listname="${outcomeCustomName}.subIdos">
+            [#if outcome.subIdos?has_content]
+              [#list outcome.subIdos as subIdo]
+                [@subIDOMacro subIdo=subIdo name="${outcomeCustomName}.subIdos" index=subIdo_index /]
+              [/#list]
+            [#else]
+              [@subIDOMacro subIdo={} name="${outcomeCustomName}.subIdos" index=0 /]
+              [#-- <p class="message text-center">[@s.text name="outcome.subIDOs.section.notSubIDOs.span"/]</p> --]
+            [/#if]
+          </div>
+          [#-- Add Sub-IDO Button --]
+          [#if editable]
+            <div class="text-right">
+              <div class="addSubIdo button-blue text-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addSubIDO"/]</div>
+            </div>
+          [/#if]
         </div>
-        [#-- Add Sub-IDO Button --]
-        [#if editable]
-        <div class="text-right">
-          <div class="addSubIdo button-blue text-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addSubIDO"/]</div>
-        </div>
-        [/#if]
-      </div>
+      [/#if]
       
       [#-- Baseline indicators --]
       [#if action.hasSpecificities('crp_baseline_indicators') && (selectedProgram.baseLine)!false]
