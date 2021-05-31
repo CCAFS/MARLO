@@ -290,7 +290,7 @@
           <label for="">[@s.text name="study.stratgicResultsLink" /]:[@customForm.req required=editable /]
             [@customForm.helpLabel name="study.stratgicResultsLink.help" showIcon=false editable=editable/]
           </label>
-        [#else]
+        [#elseif !action.isAiccra()]
           <label for="">[@s.text name="study.relevantTo" /]:[@customForm.req required=editable /]
           </label> 
         [/#if]
