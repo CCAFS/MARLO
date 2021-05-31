@@ -133,7 +133,7 @@
   </table>
 [/#macro]
 
-[#macro deliverablesSummaryList deliverables={} owned=true canValidate=false canEdit=false isReportingActive=false namespace="/" defaultAction="deliverableList" currentTable=true]
+[#macro deliverablesSummaryList deliverables={} owned=true canValidate=false canEdit=false isReportingActive=false namespace="/projects" defaultAction="deliverableList" currentTable=true]
   <table class="projectsList" id="deliverables">
     <thead>
       <tr class="subHeader">
@@ -157,6 +157,7 @@
         <tr>
           [#-- Deliverable Year --]
           <td class="text-center">
+
             [#if deliverable.deliverableInfo.year== -1]
               None
             [#else]
@@ -172,9 +173,9 @@
           </td>
           [#-- ID --]
           <td class="deliverableId">
-            <!-- <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"> -->
+            <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
               D${deliverable.id}
-            <!-- </a> -->
+            </a>
           </td>
           [#-- Deliverable Title --]
           <td class="left">
@@ -187,9 +188,9 @@
             [#-- New Tag --]
             [#if isDeliverableNew]<span class="label label-info">New</span>[/#if]
 
-            <!-- <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"> -->
+            <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
               [@utilities.wordCutter string=deliverable.deliverableInfo.title maxPos=160 /]
-            <!-- </a> -->
+            </a>
           </td>
         </tr>
       [/#list]

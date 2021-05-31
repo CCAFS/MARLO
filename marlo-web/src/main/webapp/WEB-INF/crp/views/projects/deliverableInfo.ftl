@@ -1,15 +1,15 @@
 [#ftl]
 <div class="simpleBox">
-  [#-- Title input --] 
+  [#-- Title input --]
   <div class="form-group">
     [@customForm.input name="deliverable.deliverableInfo.title" value="${(deliverable.deliverableInfo.title)!}" type="text" i18nkey="project.deliverable.generalInformation.title"  placeholder="" className="limitWords-25" required=true editable=editable /]
   </div>
-  
-  [#-- Description input on Planning only --] 
+
+  [#-- Description input on Planning only --]
   <div class="form-group">
     [@customForm.textArea name="deliverable.deliverableInfo.description" value="${(deliverable.deliverableInfo.description)!}" i18nkey="project.deliverable.generalInformation.description"  placeholder="" className="limitWords-100" required=true editable=editable /]
-  </div> 
-  [#-- Type and subtype inputs --] 
+  </div>
+  [#-- Type and subtype inputs --]
   <div class="form-group row">
     <div class="col-md-6 ">
       [@customForm.select name="deliverable.deliverableInfo.deliverableType.deliverableCategory.id" label=""  i18nkey="project.deliverable.generalInformation.type" listName="deliverableTypeParent" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm typeSelect" editable=editable/]
@@ -29,15 +29,15 @@
           [#list action.getDeliverablesSubTypes(mt.id) as st]
             <tr>
               [#if st_index == 0]<th rowspan="${action.getDeliverablesSubTypes(mt.id).size()}" class="text-center"> ${mt.name} </th>[/#if]
-              <td> 
-                ${st.name} 
+              <td>
+                ${st.name}
                 [#if ((st.description?has_content)!false) && (st.description != st.name)]<br /> (<i><small>${st.description}</small></i>)[/#if]
                 [#if mt.fair || st.fair]<span class="label label-info pull-right">FAIR</span>[/#if]
               </td>
             </tr>
           [/#list]
         [/#list]
-        [/#if]  
+        [/#if]
       </table>
     </div> <!-- End dialog-->
 
@@ -48,12 +48,12 @@
     </div>
     <div class="clearfix"></div>
   </div>
-  
-  
+
+
   <div class="clearfix"></div>
   [#-- Status and year expected selects --]
   <div class="${reportingActive?string('fieldFocus','simpleBox')}">
-    
+
     <div class="form-group row">
       [#--  [#assign canViewNewExpectedYear = action.candEditExpectedYear(deliverable.id) /]  --]
       [#assign hasExpectedYear = ((deliverable.deliverableInfo.newExpectedYear != -1))!false /]
@@ -62,7 +62,7 @@
       <div class="col-md-4">
         [@customForm.select name="deliverable.deliverableInfo.status" label=""   i18nkey="project.deliverable.generalInformation.status" listName="status"  multiple=false required=true header=false className="status isNew-${isDeliverableNew?string}" editable=editable || editStatus/]
       </div>
-      
+
       [#-- Deliverable Year --]
       <div id="deliverableYear" class="col-md-4 form-group">
         [#--  [#assign canNotEditYear = (deliverable.deliverableInfo.status == 4)!false || !action.candEditYear(deliverable.id)/]  --]
@@ -87,7 +87,7 @@
           </div>
         [/#if]
       </div>
-      
+
       [#-- New Expected Year - Extended = 4 or exist--]
       <div id="newExpectedYear" class="col-md-4" style="display:${(isStatusExtended)?string('block','none')}">
         [#assign startExpectedYear = ((deliverable.deliverableInfo.year)!currentCycleYear)  ]
@@ -101,10 +101,10 @@
             <input type="hidden" class="yearNewExpected" name="deliverable.deliverableInfo.newExpectedYear" value="${(deliverable.deliverableInfo.newExpectedYear)!}" />
           </div>
         [/#if]
-      </div> 
+      </div>
       <div class="clearfix"></div>
     </div>
-    
+
     [#-- Status justification textArea --]
     [#if !isDeliverableNew]
       [#assign justificationRequired = ((deliverable.deliverableInfo.status == 4)  || (deliverable.deliverableInfo.status == 5))!false ]
@@ -121,11 +121,11 @@
       </div>
       <div class="clearfix"></div>
     [/#if]
-    
+
     <hr />
     [#-- New deliverable at reporting --]
     [#if isDeliverableNew && editable && (reportingActive)]<i class="text-center">The status of this deliverable should be 'Complete' due is new</i> <br />[/#if]
-    
+
     [#-- Deliverable field status --]
     [#if isDeliverableComplete]
       <span class="icon-20 icon-check" title="Complete"></span> Required fields Completed
@@ -133,7 +133,7 @@
       <span class="icon-20 icon-uncheck" title=""></span> There are required fields still incompleted
     [/#if]
   </div>
-  
+
   [#-- Key Outputs select --]
   [#if !project.projectInfo.administrative && !phaseOne && !isCenterProject ]
     [#if !(keyOutputs?has_content) && editable]
@@ -143,7 +143,7 @@
       [@customForm.select name="deliverable.deliverableInfo.crpClusterKeyOutput.id" label=""  i18nkey="project.deliverable.generalInformation.keyOutput" listName="keyOutputs" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="keyOutput" editable=editable/]
     </div>
   [/#if]
-  
+
   [#-- Contribution to LP6 --]
   [#if action.hasSpecificities('crp_lp6_active') && reportingActive && ((action.getProjectLp6ContributionValue(project.id, actualPhase.id))!false) ]
     <div class="form-group">
@@ -152,17 +152,17 @@
       [@customForm.radioFlat id="lp6Contribution-no" name="deliverable.contribution" label="No" value="false" checked=!((action.getHasLp6ContributionDeliverable(deliverable.id,actualPhase.id))!true) cssClassLabel="radio-label-no" editable=editable /]
     </div>
   [/#if]
-  
+
   [#-- Funding Source --]
   [#if !phaseOne]
   <div class="panel tertiary">
    <div class="panel-head"><label for=""> [@customForm.text name="project.deliverable.fundingSource" readText=!editable /]:[@customForm.req required=editable /]</label></div>
-    <div id="fundingSourceList" class="panel-body" listname="deliverable.fundingSources"> 
+    <div id="fundingSourceList" class="panel-body" listname="deliverable.fundingSources">
       <ul class="list">
       [#if deliverable.fundingSources?has_content]
         [#list deliverable.fundingSources as element]
           <li class="fundingSources clearfix">
-            [#if editable]<div class="removeFundingSource removeIcon" title="Remove funding source"></div>[/#if] 
+            [#if editable]<div class="removeFundingSource removeIcon" title="Remove funding source"></div>[/#if]
             <input class="id" type="hidden" name="deliverable.fundingSources[${element_index}].id" value="${(element.id)!}" />
             <input class="fId" type="hidden" name="deliverable.fundingSources[${element_index}].fundingSource.id" value="${(element.fundingSource.id)!}" />
             <span class="name">
@@ -172,21 +172,21 @@
             <div class="clearfix"></div>
           </li>
         [/#list]
-        <p style="display:none;" class="emptyText"> [@s.text name="project.deliverable.fundingSource.empty" /]</p>   
+        <p style="display:none;" class="emptyText"> [@s.text name="project.deliverable.fundingSource.empty" /]</p>
       [#else]
-        <p class="emptyText"> [@s.text name="project.deliverable.fundingSource.empty" /]</p> 
+        <p class="emptyText"> [@s.text name="project.deliverable.fundingSource.empty" /]</p>
       [/#if]
       </ul>
       [#if editable ]
         [@customForm.select name="deliverable.fundingSource.id" label=""  showTitle=false  i18nkey="" listName="fundingSources" keyFieldName="id"  displayFieldName="composedName"  header=true required=true  className="fundingSource" editable=editable/]
-      
+
         [#if !fundingSources?has_content]
           <div class="note"> [@s.text name="deliverable.fundingSourceListEmpty" /]  </div>
         [/#if]
-      [/#if] 
+      [/#if]
     </div>
   </div>
-  
+
   [#-- Funding source List --]
   <div style="display:none">
     [#if fundingSources?has_content]
@@ -198,7 +198,7 @@
       [/#list]
     [/#if]
   </div>
-  
+
   [/#if]
 </div>
 
@@ -218,7 +218,7 @@
 
 [#-- Partners --]
 [#--if !action.isAiccra() --]
-<h3 class="headTitle">[@s.text name="Partners contributing to this deliverable" /]</h3>  
+<h3 class="headTitle">[@s.text name="Partners contributing to this deliverable" /]</h3>
 <div id="deliverable-partnerships-new" class="form-group simpleBox">
   [#-- Partner who is responsible --]
   <label for="">[@customForm.text name="project.deliverable.indicateResponsablePartner" readText=!editable/]:[@customForm.req required=editable /]</label>
@@ -236,18 +236,18 @@
       <p class="simpleBox emptyText center"> [@s.text name="project.deliverable.partnership.emptyText" /] </p>
     [/#list]
   </div>
-  
+
   [#if editable && canEdit]
     <div class="text-right">
       <div class="button-blue addPartnerItem"><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="form.buttons.addPartner" /]</div>
     </div>
   [/#if]
-  
+
   [#if editable]
     <div class="partnerListMsj note">
       [@s.text name="project.deliverable.generalInformation.partnerNotList" /]
-      <a href="[@s.url namespace="/${currentSection}" action='${(crpSession)!}/partners'] [@s.param name="projectID"]${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"> 
-        [@s.text name="project.deliverable.generalInformation.partnersLink" /] 
+      <a href="[@s.url namespace="/${currentSection}" action='${(crpSession)!}/partners'] [@s.param name="projectID"]${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+        [@s.text name="project.deliverable.generalInformation.partnersLink" /]
       </a>
     </div>
   [/#if]
