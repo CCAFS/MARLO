@@ -295,9 +295,11 @@
           </label> 
         [/#if]
         [#-- Sub IDOs (maxLimit=3) --]
-        <div class="form-group simpleBox">
-          [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="study.stratgicResultsLink.subIDOs"  listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description" hasPrimary=true/]
-        </div> 
+        [#if !action.isAiccra()]
+          <div class="form-group simpleBox">
+            [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="study.stratgicResultsLink.subIDOs"  listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description" hasPrimary=true/]
+          </div> 
+        [/#if]
         
         [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]      
         [#-- <div class="form-group simpleBox">

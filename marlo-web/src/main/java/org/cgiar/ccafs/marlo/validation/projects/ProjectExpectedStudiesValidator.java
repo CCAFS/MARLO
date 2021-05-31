@@ -133,26 +133,28 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
 
 
     // Validate Sub-Idos
-    if (projectExpectedStudy.getSubIdos() == null || projectExpectedStudy.getSubIdos().isEmpty()) {
-      action.addMessage(action.getText("subIdos"));
-      action.addMissingField("study.stratgicResultsLink.subIDOs");
-      action.getInvalidFields().put("list-expectedStudy.subIdos",
-        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
-    } else {
-      // Validate primary sub-IDO
-      if (projectExpectedStudy.getSubIdos().size() > 1) {
-        int count = 0;
-        for (ProjectExpectedStudySubIdo studySubIdo : projectExpectedStudy.getSubIdos()) {
-          if (studySubIdo.getPrimary() != null && studySubIdo.getPrimary()) {
-            count++;
+    if (!action.isAiccra()) {
+      if (projectExpectedStudy.getSubIdos() == null || projectExpectedStudy.getSubIdos().isEmpty()) {
+        action.addMessage(action.getText("subIdos"));
+        action.addMissingField("study.stratgicResultsLink.subIDOs");
+        action.getInvalidFields().put("list-expectedStudy.subIdos",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
+      } else {
+        // Validate primary sub-IDO
+        if (projectExpectedStudy.getSubIdos().size() > 1) {
+          int count = 0;
+          for (ProjectExpectedStudySubIdo studySubIdo : projectExpectedStudy.getSubIdos()) {
+            if (studySubIdo.getPrimary() != null && studySubIdo.getPrimary()) {
+              count++;
+            }
           }
-        }
 
-        if (count == 0) {
-          action.addMessage(action.getText("subIdos"));
-          action.addMissingField("study.stratgicResultsLink.subIDOs");
-          action.getInvalidFields().put("list-expectedStudy.subIdos",
-            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
+          if (count == 0) {
+            action.addMessage(action.getText("subIdos"));
+            action.addMissingField("study.stratgicResultsLink.subIDOs");
+            action.getInvalidFields().put("list-expectedStudy.subIdos",
+              action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
+          }
         }
       }
     }
