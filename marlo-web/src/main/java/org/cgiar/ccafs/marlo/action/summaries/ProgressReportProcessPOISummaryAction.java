@@ -1261,7 +1261,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
       CTDocument1 doc = document.getDocument();
       CTBody body = doc.getBody();
 
-      poiSummary.pageRightHeader(document, this.getText("summaries.powb2019.headerCRP"));
+      poiSummary.pageLeftHeader(document, this.getText("summaries.powb2019.headerCRP"));
 
       // Get datetime
       ZonedDateTime timezone = ZonedDateTime.now();
@@ -1283,7 +1283,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
         this.getText("summaries.powb2019.subTitle2") + " " + this.getCurrentCycleYear());
       poiSummary.textLineBreak(document, 11);
       // poiSummary.addLineSeparator(document.createParagraph());
-      document.createParagraph().setPageBreak(true);
+      // document.createParagraph().setPageBreak(true);
 
       // Second page - table of contents
       // document.createTOC();
@@ -2132,31 +2132,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
     if (this.isPMU()) {
       this.tocList(this.getActualPhase().getId());
     }
-    // ADD PMU as liasion Institutio too
 
-    /*
-     * liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
-     * .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym().equals("PMU"))
-     * .collect(Collectors.toList()));
-     * try {
-     * powbSynthesisID =
-     * Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.POWB_SYNTHESIS_ID)));
-     * powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
-     * if (!powbSynthesis.getPhase().equals(this.getActualPhase())) {
-     * powbSynthesis = powbSynthesisManager.findSynthesis(this.getActualPhase().getId(), liaisonInstitutionID);
-     * if (powbSynthesis == null) {
-     * powbSynthesis = this.createPowbSynthesis(this.getActualPhase().getId(), liaisonInstitutionID);
-     * }
-     * powbSynthesisID = powbSynthesis.getId();
-     * }
-     * } catch (Exception e) {
-     * powbSynthesis = powbSynthesisManager.findSynthesis(this.getActualPhase().getId(), liaisonInstitutionID);
-     * if (powbSynthesis == null) {
-     * powbSynthesis = this.createPowbSynthesis(this.getActualPhase().getId(), liaisonInstitutionID);
-     * }
-     * powbSynthesisID = powbSynthesis.getId();
-     * }
-     */
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
     LOG.info(
