@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.config.MarloLocalizedTextProvider;
 import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
@@ -68,6 +69,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -96,9 +98,12 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.opensymphony.xwork2.LocalizedTextProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
@@ -107,6 +112,7 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.XWPFStyle;
 import org.apache.poi.xwpf.usermodel.XWPFStyles;
+import org.apache.struts2.ServletActionContext;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDecimalNumber;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDocument1;
@@ -124,7 +130,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class ProgressTargetQuestionsPOISummaryAction extends BaseSummariesAction implements Summary {
+public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction implements Summary {
 
 
   private static final long serialVersionUID = 2828551630719082089L;
@@ -166,6 +172,7 @@ public class ProgressTargetQuestionsPOISummaryAction extends BaseSummariesAction
     styles.addStyle(style);
   }
 
+
   public static double round(double value, int places) {
     if (places < 0) {
       throw new IllegalArgumentException();
@@ -175,6 +182,8 @@ public class ProgressTargetQuestionsPOISummaryAction extends BaseSummariesAction
     bd = bd.setScale(places, RoundingMode.HALF_UP);
     return bd.doubleValue();
   }
+
+  private final LocalizedTextProvider localizedTextProvider;
 
   private LiaisonInstitution liaisonInstitution;
   private GlobalUnitManager crpManager;
@@ -190,6 +199,9 @@ public class ProgressTargetQuestionsPOISummaryAction extends BaseSummariesAction
   private UserManager userManager;
   private Long liaisonInstitutionID;
   private POWB2019Data<POWBPOISummary2019Action> powb2019Data;
+  private long projectID;
+  private Project project;
+  private ProjectInfo projectInfo;
 
 
   // Managers
@@ -234,8 +246,8 @@ public class ProgressTargetQuestionsPOISummaryAction extends BaseSummariesAction
   // DOC bytes
   private byte[] bytesDOC;
 
-  public ProgressTargetQuestionsPOISummaryAction(APConfig config, GlobalUnitManager crpManager,
-    PhaseManager phaseManager, PowbExpectedCrpProgressManager powbExpectedCrpProgressManager,
+  public ProgressReportProcessPOISummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
+    PowbExpectedCrpProgressManager powbExpectedCrpProgressManager,
     ProjectExpectedStudyManager projectExpectedStudyManager, PowbSynthesisManager powbSynthesisManager,
     PowbExpenditureAreasManager powbExpenditureAreasManager, LiaisonInstitutionManager liaisonInstitutionManager,
     PowbCrpStaffingCategoriesManager powbCrpStaffingCategoriesManager, ProjectManager projectManager,
@@ -247,7 +259,8 @@ public class ProgressTargetQuestionsPOISummaryAction extends BaseSummariesAction
     ProjectExpectedStudyRegionManager projectExpectedStudyRegionManager,
     ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager,
     ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager, ProjectOutcomeManager projectOutcomeManager,
-    CrpMilestoneManager crpMilestoneManager, CrpProgramOutcomeManager crpProgramOutcomeManager) {
+    CrpMilestoneManager crpMilestoneManager, CrpProgramOutcomeManager crpProgramOutcomeManager,
+    LocalizedTextProvider localizedTextProvider) {
     super(config, crpManager, phaseManager, projectManager);
     document = new XWPFDocument();
     poiSummary = new POISummary();
@@ -272,6 +285,8 @@ public class ProgressTargetQuestionsPOISummaryAction extends BaseSummariesAction
     this.projectOutcomeManager = projectOutcomeManager;
     this.crpMilestoneManager = crpMilestoneManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
+    this.localizedTextProvider = localizedTextProvider;
+
   }
 
   private void addAdjustmentDescription() {
@@ -351,6 +366,7 @@ public class ProgressTargetQuestionsPOISummaryAction extends BaseSummariesAction
     }
 
   }
+
 
   private void createTable3() {
     Boolean bold = false;
@@ -432,6 +448,7 @@ public class ProgressTargetQuestionsPOISummaryAction extends BaseSummariesAction
 
     poiSummary.textTable(document, headers, datas, false, text);
   }
+
 
   private void createTableA2() {
 
@@ -684,6 +701,7 @@ public class ProgressTargetQuestionsPOISummaryAction extends BaseSummariesAction
     poiSummary.textTable(document, headers, datas, false, text);
   }
 
+
   private void createTableB2() {
     Boolean bold = false;
     String blackColor = "000000";
@@ -878,6 +896,7 @@ public class ProgressTargetQuestionsPOISummaryAction extends BaseSummariesAction
     poiSummary.textTable(document, headers, datas, false, text);
   }
 
+
   private void createTableC2() {
     Boolean bold = false;
     String blackColor = "000000";
@@ -955,6 +974,7 @@ public class ProgressTargetQuestionsPOISummaryAction extends BaseSummariesAction
 
     poiSummary.textTable(document, headers, datas, false, text);
   }
+
 
   private void createTableIndicators() {
 
@@ -1520,6 +1540,7 @@ public class ProgressTargetQuestionsPOISummaryAction extends BaseSummariesAction
     return fileName.toString();
   }
 
+
   public List<LiaisonInstitution> getFlagships() {
     List<LiaisonInstitution> flagshipsList = this.getLoggedCrp().getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null
@@ -1635,7 +1656,6 @@ public class ProgressTargetQuestionsPOISummaryAction extends BaseSummariesAction
     return inputStream;
   }
 
-
   /**
    * POWB 2019 New Planned Budgets
    */
@@ -1649,7 +1669,6 @@ public class ProgressTargetQuestionsPOISummaryAction extends BaseSummariesAction
     }
   }
 
-
   public List<PowbExpenditureAreas> getPlannedBudgetAreas() {
     List<PowbExpenditureAreas> plannedBudgetAreasList = powbExpenditureAreasManager.findAll().stream()
       .filter(e -> e.isActive() && !e.getIsExpenditure()).collect(Collectors.toList());
@@ -1659,7 +1678,6 @@ public class ProgressTargetQuestionsPOISummaryAction extends BaseSummariesAction
       return new ArrayList<>();
     }
   }
-
 
   /**
    * get the PMU institution
@@ -1776,7 +1794,6 @@ public class ProgressTargetQuestionsPOISummaryAction extends BaseSummariesAction
     }
   }
 
-
   // Method to download link file
   public String getPowbPath(LiaisonInstitution liaisonInstitution, String actionName) {
     return config.getDownloadURL() + "/" + this.getPowbSourceFolder(liaisonInstitution, actionName).replace('\\', '/');
@@ -1790,6 +1807,20 @@ public class ProgressTargetQuestionsPOISummaryAction extends BaseSummariesAction
       .concat(File.separator);
   }
 
+
+  public Project getProject() {
+    return project;
+  }
+
+
+  public long getProjectID() {
+    return projectID;
+  }
+
+  public ProjectInfo getProjectInfo() {
+    return projectInfo;
+  }
+
   public boolean isPMU(LiaisonInstitution institution) {
     boolean isFP = false;
     if (liaisonInstitution != null) {
@@ -1799,6 +1830,7 @@ public class ProgressTargetQuestionsPOISummaryAction extends BaseSummariesAction
     }
     return isFP;
   }
+
 
   public void loadFlagShipBudgetInfo(CrpProgram crpProgram) {
     List<ProjectFocus> projects =
@@ -1865,6 +1897,7 @@ public class ProgressTargetQuestionsPOISummaryAction extends BaseSummariesAction
     }
   }
 
+
   public void loadPMU(PowbExpenditureAreas liaisonInstitution) {
 
     Set<Project> myProjects = new HashSet();
@@ -1918,6 +1951,47 @@ public class ProgressTargetQuestionsPOISummaryAction extends BaseSummariesAction
     }
   }
 
+  public void loadProvider(Map<String, Object> session) {
+    String language = APConstants.CUSTOM_LAGUAGE;
+    String pathFile = APConstants.PATH_CUSTOM_FILES;
+    if (session.containsKey(APConstants.CRP_LANGUAGE)) {
+      language = (String) session.get(APConstants.CRP_LANGUAGE);
+    }
+
+    Locale locale = new Locale(language);
+
+    /**
+     * This is yuck to have to cast the interface to a custom implementation but I can't see a nice way to remove custom
+     * properties bundles (the reason we are doing this is the scenario where a user navigates between CRPs. If we don't
+     * reset the properties bundles then the user will potentially get the properties loaded from another CRP if that
+     * property has not been defined by that CRP or Center.
+     */
+    ((MarloLocalizedTextProvider) this.localizedTextProvider).resetResourceBundles();
+
+    this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
+
+
+    try {
+      ServletActionContext.getContext().setLocale(locale);
+    } catch (Exception e) {
+
+    }
+
+    if (session.containsKey(APConstants.SESSION_CRP)) {
+
+      if (session.containsKey(APConstants.CRP_CUSTOM_FILE)) {
+        pathFile = pathFile + session.get(APConstants.CRP_CUSTOM_FILE);
+        this.localizedTextProvider.addDefaultResourceBundle(pathFile);
+      } else if (session.containsKey(APConstants.CENTER_CUSTOM_FILE)) {
+        pathFile = pathFile + session.get(APConstants.CENTER_CUSTOM_FILE);
+        this.localizedTextProvider.addDefaultResourceBundle(pathFile);
+      } else {
+
+        this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
+      }
+    }
+  }
+
   public void loadTablePMU() {
     flagships = this.getLoggedCrp().getCrpPrograms().stream()
       .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
@@ -1956,6 +2030,8 @@ public class ProgressTargetQuestionsPOISummaryAction extends BaseSummariesAction
 
   @Override
   public void prepare() {
+    this.loadProvider(this.getSession());
+
     // Get current CRP
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
@@ -1963,6 +2039,24 @@ public class ProgressTargetQuestionsPOISummaryAction extends BaseSummariesAction
     this.setGeneralParameters();
     if (this.getSelectedPhase() == null) {
       this.setSelectedPhase(this.getActualPhase());
+    }
+
+    // Set projectID
+    try {
+      this
+        .setProjectID(Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID))));
+      this.setCrpSession(this.getLoggedCrp().getAcronym());
+    } catch (Exception e) {
+      LOG.error("Failed to get " + APConstants.PROJECT_REQUEST_ID + " parameter. Exception: " + e.getMessage());
+    }
+    // Get project from DB
+    try {
+      this.setProject(projectManager.getProjectById(this.getProjectID()));
+    } catch (Exception e) {
+      LOG.error("Failed to get project. Exception: " + e.getMessage());
+    }
+    if (this.getSelectedPhase() != null && project.getProjecInfoPhase(this.getSelectedPhase()) != null) {
+      this.setProjectInfo(project.getProjecInfoPhase(this.getSelectedPhase()));
     }
 
     powbSynthesisList =
@@ -2072,6 +2166,18 @@ public class ProgressTargetQuestionsPOISummaryAction extends BaseSummariesAction
 
   public void setInputStream(InputStream inputStream) {
     this.inputStream = inputStream;
+  }
+
+  public void setProject(Project project) {
+    this.project = project;
+  }
+
+  public void setProjectID(long projectID) {
+    this.projectID = projectID;
+  }
+
+  public void setProjectInfo(ProjectInfo projectInfo) {
+    this.projectInfo = projectInfo;
   }
 
   /**
