@@ -6,8 +6,8 @@
   "${baseUrlMedia}/js/projects/deliverables/deliverableList.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js"
   [#-- "${baseUrlCdn}/global/js/autoSave.js" --]
-  ] 
-/] 
+  ]
+/]
 [#assign customCSS = [
   "${baseUrlCdn}/global/css/customDataTable.css",
   "${baseUrlMedia}/css/projects/projectDeliverable.css"] /]
@@ -30,10 +30,10 @@
   <div class="helpMessage infoText">
     <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
     <p class="col-md-10">[#if reportingActive] [@s.text name="project.deliverableList.help2" /] [#else] [@s.text name="project.deliverableList.help1" /] [/#if] </p>
-  </div> 
+  </div>
   <div style="display:none" class="viewMore closed"></div>
 </div>
-    
+
 <section class="container">
     <div class="row">
       [#-- Project Menu --]
@@ -42,14 +42,14 @@
       </div>
       [#-- Project Section Content --]
       <div class="col-md-9">
-      
+
       [#-- Section Messages --]
         [#include "/WEB-INF/crp/views/projects/messages-projects.ftl" /]
-        
+
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
-           
+
           <h3 class="headTitle">[@s.text name="project.deliverableList.title" /]</h3>
-          
+
           [#if reportingActive]
             [#--  FAIR LEGEND --]
             <div class="form-group col-md-12 legendContent">
@@ -91,17 +91,17 @@
           <div id="diagramPopup" style="display:none; text-align:center;">
             <img src="${baseUrlCdn}/global/images/FAIR_Principles_in_MARLO_20170919.png" alt="" width="100%" />
           </div>
-          
+
           [#-- Current table --]
           <div class="">
             <h3 class="subTitle headTitle">Deliverables</h3>
             [#if reportingActive]
              <p class="note">[@s.text name="project.deliverableList.focusDeliverablesMessage"][@s.param]${currentCycleYear}[/@s.param][@s.param]<span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>[/@s.param][/@s.text]</p>
             [/#if]
-            <hr /> 
+            <hr />
             [@deliverableList.deliverablesList deliverables=(project.getCurrentDeliverables(actualPhase))![] canValidate=true canEdit=candit  isReportingActive=reportingActive namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]
           </div>
-          
+
           [#-- Add Deliverable Button --]
           [#if canEdit && action.hasPermission("addDeliverable")]
           <div class="buttons">
@@ -113,19 +113,19 @@
           </div>
           <div class="clearfix"></div>
           [/#if]
-          
+
           [#-- Previous Extended table (Modal) --]
           <div class="">
             <h3 class="subTitle headTitle">Previous deliverables</h3>
             <hr />
             [@deliverableList.deliverablesList deliverables=(project.getPreviousDeliverables(actualPhase))![] canValidate=true canEdit=candit isReportingActive=reportingActive namespace="/projects" defaultAction="${(crpSession)!}/deliverable" currentTable=false /]
           </div>
-          
+
           <input type="hidden" name="projectID" value="${projectID}" />
-        [/@s.form] 
+        [/@s.form]
       </div>
-    </div>  
+    </div>
 </section>
 
-  
+
 [#include "/WEB-INF/global/pages/footer.ftl"]
