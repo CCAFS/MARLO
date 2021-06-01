@@ -184,11 +184,15 @@
 
         <div class="tab-content">
           <div role="tabpanel" class="tab-pane fade in active" id="myProjects">
-            [@projectList.dashboardProjectsList projects=myProjects canValidate=true canEdit=true namespace="/projects" defaultAction="${(crpSession)!}/description" /]
+            [#if !action.isAiccra()]
+                [@projectList.dashboardProjectsList projects=myProjects canValidate=true canEdit=true namespace="/projects" defaultAction="${(crpSession)!}/description" /]
+            [#else]
+              [@projectList.dashboardProjectsList projects=myProjects canValidate=true canEdit=true namespace="/clusters" defaultAction="${(crpSession)!}/description" /]
+            [/#if]
           </div>
 
           <div role="tabpanel" class="tab-pane fade" id="myDeliverables">
-            [@deliverablesList.deliverablesSummaryList deliverables=myDeliverables canValidate=true canEdit=true namespace="/projects" defaultAction="${(crpSession)!}/deliverable" /]
+            [@deliverablesList.deliverablesSummaryList deliverables=myDeliverables canValidate=true canEdit=true namespace="/clusters" defaultAction="${(crpSession)!}/deliverable" /]
           </div>
 
           <div role="tabpanel" class="tab-pane fade" id="impactP">

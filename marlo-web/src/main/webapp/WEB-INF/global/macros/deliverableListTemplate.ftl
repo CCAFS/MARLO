@@ -133,7 +133,7 @@
   </table>
 [/#macro]
 
-[#macro deliverablesSummaryList deliverables={} owned=true canValidate=false canEdit=false isReportingActive=false namespace="/projects" defaultAction="deliverableList" currentTable=true]
+[#macro deliverablesSummaryList deliverables={} owned=true canValidate=false canEdit=false isReportingActive=false namespace="/clusters" defaultAction="deliverableList" currentTable=true]
   <table class="projectsList" id="deliverables">
     <thead>
       <tr class="subHeader">

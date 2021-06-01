@@ -11,15 +11,25 @@
 [#assign customCSS = [
   "${baseUrlCdn}/global/css/customDataTable.css",
   "${baseUrlMedia}/css/projects/projectDeliverable.css"] /]
-[#assign currentSection = "projects" /]
+
 [#assign currentStage = "deliverableList" /]
 [#assign isListSection = true /]
 
-[#assign breadCrumb = [
-  {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
-  {"text":"P${project.id}", "nameSpace":"/projects", "action":"${crpSession}/description", "param": "projectID=${project.id?c}&edit=true&phaseID=${(actualPhase.id)!}"},
-  {"label":"deliverableList", "nameSpace":"/projects", "action":""}
-]/]
+[#if !action.isAiccra()]
+  [#assign currentSection = "projects" /]
+  [#assign breadCrumb = [
+    {"label":"projectsList", "nameSpace":"${currentSection}", "action":"${(crpSession)!}/projectsList"},
+    {"text":"P${project.id}", "nameSpace":"${currentSection}", "action":"${crpSession}/description", "param": "projectID=${project.id?c}&edit=true&phaseID=${(actualPhase.id)!}"},
+    {"label":"deliverableList", "nameSpace":"${currentSection}", "action":""}
+  ]/]
+[#else]
+  [#assign currentSection = "clusters" /]
+  [#assign breadCrumb = [
+    {"label":"projectsList", "nameSpace":"${currentSection}", "action":"${(crpSession)!}/projectsList"},
+    {"text":"C${project.id}", "nameSpace":"${currentSection}", "action":"${crpSession}/description", "param": "projectID=${project.id?c}&edit=true&phaseID=${(actualPhase.id)!}"},
+    {"label":"deliverableList", "nameSpace":"${currentSection}", "action":""}
+  ]/]
+[/#if]
 
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
@@ -99,7 +109,11 @@
              <p class="note">[@s.text name="project.deliverableList.focusDeliverablesMessage"][@s.param]${currentCycleYear}[/@s.param][@s.param]<span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>[/@s.param][/@s.text]</p>
             [/#if]
             <hr />
-            [@deliverableList.deliverablesList deliverables=(project.getCurrentDeliverables(actualPhase))![] canValidate=true canEdit=candit  isReportingActive=reportingActive namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]
+            [#if !action.isAiccra()]
+              [@deliverableList.deliverablesList deliverables=(project.getCurrentDeliverables(actualPhase))![] canValidate=true canEdit=candit  isReportingActive=reportingActive namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]
+            [#else]
+              [@deliverableList.deliverablesList deliverables=(project.getCurrentDeliverables(actualPhase))![] canValidate=true canEdit=candit  isReportingActive=reportingActive namespace="/clusters" defaultAction="${(crpSession)!}/deliverable"/]
+            [/#if]
           </div>
 
           [#-- Add Deliverable Button --]
