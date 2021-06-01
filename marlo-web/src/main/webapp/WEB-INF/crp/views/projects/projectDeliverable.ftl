@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2","font-awesome","dropzone","blueimp-file-upload","jsUri", "flag-icon-css", "pickadate"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20210310",
-  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20210310", 
+  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20210310",
   "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20200205",
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
   [#--  "${baseUrlCdn}/global/js/autoSave.js",--]
@@ -15,12 +15,25 @@
 [#assign currentStage = "deliverableList" /]
 [#assign hideJustification = true /]
 
-[#assign breadCrumb = [
-  {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
-  {"text":"P${project.id}", "nameSpace":"/projects", "action":"${crpSession}/description", "param": "projectID=${project.id?c}&edit=true&phaseID=${(actualPhase.id)!}"},
-  {"label":"deliverableList", "nameSpace":"/projects", "action":"${(crpSession)!}/deliverableList" ,"param":"projectID=${projectID}"},
-  {"label":"deliverableInformation", "nameSpace":"/projects", "action":""}
-]/]
+[#if !action.isAiccra()]
+  [#assign currentSection = "projects" /]
+  [#assign breadCrumb = [
+    {"label":"projectsList", "nameSpace":"${currentSection}", "action":"${(crpSession)!}/projectsList"},
+    {"text":"P${project.id}", "nameSpace":"${currentSection}", "action":"${crpSession}/description", "param": "projectID=${project.id?c}&edit=true&phaseID=${(actualPhase.id)!}"},
+    {"label":"deliverableList", "nameSpace":"${currentSection}", "action":"${(crpSession)!}/deliverableList" ,"param":"projectID=${projectID}"},
+    {"label":"deliverableInformation", "nameSpace":"${currentSection}", "action":""}
+  ]/]
+[#else]
+  [#assign currentSection = "clusters" /]
+  [#assign breadCrumb = [
+    {"label":"projectsList", "nameSpace":"${currentSection}", "action":"${(crpSession)!}/projectsList"},
+    {"text":"C${project.id}", "nameSpace":"${currentSection}", "action":"${crpSession}/description", "param": "projectID=${project.id?c}&edit=true&phaseID=${(actualPhase.id)!}"},
+    {"label":"deliverableList", "nameSpace":"${currentSection}", "action":"${(crpSession)!}/deliverableList" ,"param":"projectID=${projectID}"},
+    {"label":"deliverableInformation", "nameSpace":"${currentSection}", "action":""}
+  ]/]
+[/#if]
+
+
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
@@ -33,10 +46,10 @@
   <div class="helpMessage infoText">
     <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
     <p class="col-md-10">[#if reportingActive] [@s.text name="project.deliverable.help2" /] [#else] [@s.text name="project.deliverable.help1" /] [/#if] </p>
-  </div> 
+  </div>
   <div style="display:none" class="viewMore closed"></div>
 </div>
-    
+
 [#if !((deliverable.deliverableInfo.id??)!false)]
   [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
 [#else]
@@ -50,9 +63,9 @@
       <div class="col-md-9">
         [#-- Section Messages --]
         [#include "/WEB-INF/crp/views/projects/messages-deliverables.ftl" /]
-        
+
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
-          
+
           <div class="form-group">
             <br />
             [#-- Back --]
@@ -65,63 +78,63 @@
             [#-- FAIR Compliant Mini --]
             <div class="fairComplian-block" style="display:${deliverable.deliverableInfo.requeriedFair()?string('block','none')}">
               <div class="pull-right">
-                [#-- Findable --] 
+                [#-- Findable --]
                 <div class="fairCompliant mini findable [#attempt][#if action.isF(deliverable.id)??][#if action.isF(deliverable.id)] achieved [#else] not-achieved [/#if][/#if][#recover][/#attempt]"><div class="sign">F</div></div>
-                [#-- Accessible --] 
+                [#-- Accessible --]
                 <div class="fairCompliant mini accessible [#attempt][#if action.isA(deliverable.id)??][#if action.isA(deliverable.id)] achieved [#else] not-achieved [/#if][/#if][#recover][/#attempt]"><div class="sign">A</div></div>
-                [#-- Interoperable --] 
+                [#-- Interoperable --]
                 <div class="fairCompliant mini interoperable [#attempt][#if action.isI(deliverable.id)??][#if action.isI(deliverable.id)] achieved [#else] not-achieved [/#if][/#if][#recover][/#attempt]"><div class="sign">I</div></div>
-                [#-- Reusable --] 
-                <div class="fairCompliant mini reusable [#attempt][#if action.isR(deliverable.id)??][#if action.isR(deliverable.id)] achieved [#else] not-achieved [/#if][/#if][#recover][/#attempt]"><div class="sign">R</div></div> 
+                [#-- Reusable --]
+                <div class="fairCompliant mini reusable [#attempt][#if action.isR(deliverable.id)??][#if action.isR(deliverable.id)] achieved [#else] not-achieved [/#if][/#if][#recover][/#attempt]"><div class="sign">R</div></div>
               </div>
             </div>
-            
+
           </div>
           [#-- Is deliverable complete --]
           [#assign isDeliverableComplete = action.isDeliverableComplete(deliverable.id, actualPhase.id) /]
-          
+
           [#-- Is deliverable new --]
           [#assign isDeliverableNew = action.isDeliverableNew(deliverable.id) /]
-          
+
           <input id="indexTab" name="indexTab" type="hidden" value="${(indexTab)!0}">
           <div class="deliverableTabs">
-            [#--  Deliverable Menu  --] 
-            <ul class="nav nav-tabs" role="tablist"> 
+            [#--  Deliverable Menu  --]
+            <ul class="nav nav-tabs" role="tablist">
                 <li role="presentation" class="[#if indexTab==1 || indexTab==0]active[/#if]"><a index="1" href="#deliverable-mainInformation" aria-controls="info" role="tab" data-toggle="tab">[@s.text name="project.deliverable.generalInformation.titleTab" /]</a></li>
-                
+
                 [#if (reportingActive || actualPhase.upkeep) && action.hasSpecificities("crp_has_disemination") ]
                 <li role="presentation" class="[#if indexTab==2]active[/#if]"><a index="2" href="#deliverable-disseminationMetadata" aria-controls="metadata" role="tab" data-toggle="tab">Dissemination & Metadata</a></li>
-                
+
                 [#assign isRequiredQuality = deliverable.deliverableInfo.requeriedFair() || ((action.hasDeliverableRule(deliverable.deliverableInfo, deliverableComplianceCheck))!false) /]
                 <li role="presentation" class="[#if indexTab==3]active[/#if]" style="display:${isRequiredQuality?string('block','none')};"><a index="3" href="#deliverable-qualityCheck" aria-controls="quality" role="tab" data-toggle="tab">Quality check</a></li>
-                
-                [#--  
+
+                [#--
                 [#assign isRequiredDataSharing = (deliverable.dissemination.alreadyDisseminated)!false /]
                 <li role="presentation" class="dataSharing [#if indexTab==4]active[/#if]" style="display:${isRequiredDataSharing?string('none','block')};"><a index="4" href="#deliverable-dataSharing" aria-controls="datasharing" role="tab" data-toggle="tab">Data Sharing</a></li>
                  --]
                 [/#if]
-               
+
             </ul>
             <div class="tab-content ">
-              [#-- Deliverable Information --] 
+              [#-- Deliverable Information --]
               <div id="deliverable-mainInformation" role="tabpanel" class="tab-pane fade [#if indexTab==1 || indexTab==0]in active[/#if]">
                 [#include "/WEB-INF/crp/views/projects/deliverableInfo.ftl" /]
               </div>
               [#if (reportingActive || actualPhase.upkeep) && action.hasSpecificities("crp_has_disemination") ]
-              [#-- Deliverable disseminationMetadata --] 
+              [#-- Deliverable disseminationMetadata --]
               <div id="deliverable-disseminationMetadata" role="tabpanel" class="tab-pane fade [#if indexTab==2]in active[/#if]">
                 [#-- Is this deliverable already disseminated? --]
                 [@deliverableMacros.alreadyDisseminatedMacro /]
-                
+
                 [#-- Is this deliverable Open Access? --]
                 [@deliverableMacros.isOpenaccessMacro /]
-                
+
                 [#-- Have you adopted a license?  --]
                 [@deliverableMacros.deliverableLicenseMacro /]
-                
+
                 [#--  Does this deliverable involve Participants and Trainees? --]
                 [@deliverableMacros.deliverableParticipantsMacro /]
-                
+
                 [#-- Metadata (included publications) --]
                 <h3 class="headTitle">[@s.text name="project.deliverable.dissemination.metadataSubtitle" /]</h3>
                 <div class="simpleBox">
@@ -136,29 +149,29 @@
                   [@deliverableMacros.complianceCheck /]
                 </div>
                 <div class="fairComplian-block" style="display:${deliverable.deliverableInfo.requeriedFair()?string('block','none')}">
-                  [#-- Fair Compliant --] 
+                  [#-- Fair Compliant --]
                   [@deliverableMacros.fairCompliant /]
                 </div>
               </div>
-              [#-- Deliverable dataSharing 
+              [#-- Deliverable dataSharing
               <div id="deliverable-dataSharing" role="tabpanel" class="tab-pane fade [#if indexTab==4]in active[/#if]">
                 [#include "/WEB-INF/crp/views/projects/deliverableDataSharing.ftl" /]
               </div>
-              --] 
+              --]
               [/#if]
             </div>
            </div>
           [#-- Section Buttons & hidden inputs--]
           [#include "/WEB-INF/crp/views/projects/buttons-deliverables.ftl" /]
-          
-          [/@s.form] 
+
+          [/@s.form]
       </div>
-    </div>  
+    </div>
 </section>
 [/#if]
 
 [#-- ----------------------------------- Deliverable Type Rules ------------------------------------------------]
-[#--  Publication Metadata 
+[#--  Publication Metadata
       49 -> Articles and Books --]
 [@setDeliverableRule element=deliverable ruleName=(deliverablePublicationMetadata)!'' /]
 
@@ -167,7 +180,7 @@
 [@setDeliverableRule element=deliverable ruleName=(deliverableComputerLicense)!'' /]
 
 [#--  DataLicense
-      52 -> Data portal/Tool/Model code/Computer software 
+      52 -> Data portal/Tool/Model code/Computer software
       74 -> Maps/Geospatial data --]
 [@setDeliverableRule element=deliverable ruleName=(deliverableDataLicense)!'' /]
 
@@ -205,10 +218,10 @@
 
 [#-- File Input template --]
 <div id="fileInputTemplate" class="fileInput" style="display:none">
-  <img class="removeInput" src="${baseUrlCdn}/global/images/icon-remove.png" alt="Remove"> 
+  <img class="removeInput" src="${baseUrlCdn}/global/images/icon-remove.png" alt="Remove">
   <input name="filesUploaded" type="file" />
 </div>
- 
+
 [#-- File uploaded template --]
 <ul>
   <li id="deliverableFileTemplate" class="fileUploaded" style="display:none">
@@ -234,7 +247,7 @@
 </ul>
 
 [#-- Remove deliverable files modal  template --]
-<div id="removeDeliverableFiles" style="display:none" title="Modal title"></div> 
+<div id="removeDeliverableFiles" style="display:none" title="Modal title"></div>
 
 [#-- Deliverable Partner Template --]
 [@deliverableMacros.deliverablePartnerMacro element={} name="deliverable.otherPartnerships" index=-1 defaultType=2 isTemplate=true /]
@@ -245,12 +258,12 @@
     <div class="institution-${partner.institution.id}">
       [#assign usersList = (action.getUserList(partner.institution.id))![]]
       <div class="users-1">
-        [#list usersList as user] 
+        [#list usersList as user]
           [@deliverableMacros.deliverableUserMacro element={} user=user index=user_index name="deliverable.responsiblePartnership[0].partnershipPersons" isUserChecked=false isResponsable=true /]
         [/#list]
       </div>
       <div class="users-2">
-        [#list usersList as user] 
+        [#list usersList as user]
           [@deliverableMacros.deliverableUserMacro element={} user=user index=user_index name="deliverable.otherPartnerships[-1].partnershipPersons" isUserChecked=false isResponsable=false /]
         [/#list]
       </div>
