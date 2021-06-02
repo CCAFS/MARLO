@@ -88,6 +88,12 @@
               <div class="col-md-6">
                 [@customForm.select name="project.projectInfo.liaisonInstitution.id" className="liaisonInstitutionSelect" i18nkey="project.liaisonInstitution"  disabled=!editable  listName="liaisonInstitutions" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable && action.hasPermission("managementLiaison") /]
               </div>
+              [#-- Cluster Types --]
+              [#if action.isAiccra()]  
+                <div class="col-md-6">
+                  [@customForm.select name="project.projectInfo.clusterType.id" className="clusterType" i18nkey="project.clusterType"  disabled=!editable  listName="clusterTypes" keyFieldName="id"  displayFieldName="name" required=true editable=editable /]
+                </div>  
+              [/#if]    
               [#if action.hasSpecificities('previous_project_id_field_active') ]
                 <div class="col-md-3">
                   [@customForm.input name="project.projectInfo.previousProjectId" i18nkey="project.previousId" required=false className="previousID" editable=editable && action.hasPermission("title") /]
