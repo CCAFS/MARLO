@@ -107,6 +107,16 @@ public class ProjectDescriptionValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
+    if (project.getProjecInfoPhase(action.getActualPhase()).getClusterType() != null) {
+      if (project.getProjecInfoPhase(action.getActualPhase()).getClusterType().getId() == -1) {
+        action.addMessage(action.getText("project.clusterType"));
+        action.getInvalidFields().put("input-project.projectInfo.clusterType.id", InvalidFieldsMessages.EMPTYFIELD);
+      }
+    } else {
+      action.addMessage(action.getText("project.clusterType"));
+      action.getInvalidFields().put("input-project.projectInfo.clusterType.id", InvalidFieldsMessages.EMPTYFIELD);
+    }
+
     if (project.getProjecInfoPhase(action.getActualPhase()).getStartDate() == null) {
       action.addMessage(action.getText("project.startDate"));
       action.getInvalidFields().put("input-project.projectInfo.startDate", InvalidFieldsMessages.EMPTYFIELD);
