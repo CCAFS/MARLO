@@ -835,6 +835,7 @@ public class ProjectDescriptionAction extends BaseAction {
       project.getProjectInfo().setCrossCuttingNa(null);
       project.getProjectInfo().setCrossCuttingGender(null);
       project.getProjectInfo().setCrossCuttingYouth(null);
+      project.getProjectInfo().setClusterType(null);
     }
 
   }
@@ -1097,7 +1098,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
       if (this.isAiccra()) {
         if (projectDB.getProjectInfo().getClusterType() != null) {
-          project.getProjectInfo().setClusterType(projectDB.getProjectInfo().getClusterType());
+          // project.getProjectInfo().setClusterType(projectDB.getProjectInfo().getClusterType());
         }
       }
 

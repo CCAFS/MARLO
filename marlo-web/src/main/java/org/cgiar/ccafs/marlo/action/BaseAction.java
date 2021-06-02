@@ -4403,6 +4403,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return haveBudget;
   }
 
+  public Boolean hasClusterType(long projectID) {
+    Project project = this.projectManager.getProjectById(projectID);
+    if (project.getProjecInfoPhase(this.getActualPhase()) != null
+      && project.getProjecInfoPhase(this.getActualPhase()).getClusterType() != null
+      && project.getProjecInfoPhase(this.getActualPhase()).getClusterType().getId() != null) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   public Boolean hasDeliverableRule(DeliverableInfo deliverableInfo, String rule) {
     if (deliverableInfo != null && deliverableInfo.getDeliverableType() != null
       && deliverableInfo.getDeliverableType().getId() != null && deliverableInfo.getDeliverableType().getId() != -1) {
@@ -4797,6 +4808,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.hasPermission(this.generatePermission(Permission.CAP_DEV_FULL_PERMISSION, params));
   }
 
+
   public boolean isCenterGlobalUnit() {
     if (this.getCurrentCrp() != null) {
       if (this.getCurrentCrp().getGlobalUnitType().getId().intValue() == 4) {
@@ -4805,7 +4817,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return false;
   }
-
 
   /**
    * ************************ CENTER METHOD ********************* verify if the
