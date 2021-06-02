@@ -121,6 +121,14 @@ public class APConfig {
   @Value("${clarisa.mapDatabase.path}")
   private String CLARISA_MAP_DATABASE_PATH;
 
+  @Value("${clarisa.urlSubmissionTools}")
+  private String URL_SUBMISSION_TOOLS;
+
+  @Value("${clarisa.submissionToolsUser}")
+  private String SUBMISSION_TOOLS_USER;
+
+  @Value("${clarisa.submissionToolsPassword}")
+  private String SUBMISSION_TOOLS_PASSWORD;
 
   // Path to get the base URL of media hosted in the CDN
   @Value("${cdn.url}")
@@ -617,6 +625,22 @@ public class APConfig {
     return PUSH_SECRETE_KEY;
   }
 
+  public String getSubmissionToolsPassword() {
+    if (SUBMISSION_TOOLS_PASSWORD == null) {
+      LOG.error("there is not a submission tools password configured.");
+      return null;
+    }
+    return SUBMISSION_TOOLS_PASSWORD;
+  }
+
+  public String getSubmissionToolsUser() {
+    if (SUBMISSION_TOOLS_USER == null) {
+      LOG.error("there is not a submission tools user configured.");
+      return null;
+    }
+    return SUBMISSION_TOOLS_USER;
+  }
+
   /**
    * Get the base folder where the uploaded files should be saved
    *
@@ -631,6 +655,14 @@ public class APConfig {
     }
 
     return UPLOADS_BASE_FOLDER;
+  }
+
+  public String getUrlSubmissionTools() {
+    if (URL_SUBMISSION_TOOLS == null) {
+      LOG.error("there is not a submission tools URL configured.");
+      return null;
+    }
+    return URL_SUBMISSION_TOOLS;
   }
 
   /**
