@@ -79,7 +79,7 @@
 
             [#-- Project Title --]
             <div class="form-group">
-              [@customForm.textArea name="project.projectInfo.title" i18nkey="project.title" required=true className="project-title limitWords-30" editable=editable && action.hasPermission("title") /]
+              [@customForm.textArea name="project.projectInfo.title" i18nkey="project.title" required=true className="project-title limitWords-30" editable=action.isAdmin() && action.hasPermission("title") /]
             </div>
 
             [#if isCrpProject]
