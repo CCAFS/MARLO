@@ -57,7 +57,17 @@
                 <tbody>
                   [#list projects as p]
                     [#if action.isAiccra()]
+                    [#--  
                       [#local projectUrl][@s.url namespace="/projects" action="${(crpSession)!}/description"][@s.param name='projectID']${p.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                      --]
+                      [#local existRelation = (action.hasProjectOutcomeRelationImpact(action.getActualPhase().id, p.id, element.id))!/]
+
+                      [#if existRelation]
+                        [#local projectOutcome = (action.getProjectOutcomeRelationImpact(action.getActualPhase().id, p.id, element.id))!/]
+                        [#local projectUrl][@s.url namespace="/projects" action="${(crpSession)!}/contributionCrp"][@s.param name='projectOutcomeID']${projectOutcome.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                      [#else]
+                        [#local projectUrl][@s.url namespace="/projects" action="${(crpSession)!}/description"][@s.param name='projectID']${p.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                      [/#if]
                     [#--  
                       [#local projectOutcome = (action.getProjectOutcomeRelationImpact(action.getActualPhase().id, p.id, element.id))!/]
                       [#local projectUrl][@s.url namespace="/projects" action="${(crpSession)!}/contributionCrp"][@s.param name='projectOutcomeID']${projectOutcome.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
