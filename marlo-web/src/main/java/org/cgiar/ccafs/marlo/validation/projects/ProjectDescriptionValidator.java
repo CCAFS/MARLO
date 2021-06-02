@@ -133,7 +133,7 @@ public class ProjectDescriptionValidator extends BaseValidator {
       }
 
 
-      if (!action.isCenterGlobalUnit()) {
+      if (!action.isCenterGlobalUnit() && !action.isAiccra()) {
         if (project.getClusterActivities() != null) {
           if (project.getClusterActivities().size() == 0) {
             action.addMessage(action.getText("projectDescription.clusterActivities"));
