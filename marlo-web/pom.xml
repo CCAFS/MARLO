@@ -73,8 +73,8 @@
 			<artifactId>struts2-junit-plugin</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.cgiar.ciat</groupId>
-			<artifactId>ad-auth</artifactId>
+			<groupId>org.cgiar.ciat.auth</groupId>
+			<artifactId>adauth</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.pentaho</groupId>
