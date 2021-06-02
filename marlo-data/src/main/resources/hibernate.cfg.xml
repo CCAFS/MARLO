@@ -477,5 +477,6 @@
     <mapping resource="xmls/DeliverableAffiliations.hbm.xml" />
     <mapping resource="xmls/DeliverableAltmetricInfo.hbm.xml" />
     <mapping resource="xmls/ActivitiesTitles.hbm.xml" />
+    <mapping resource="xmls/ClusterTypes.hbm.xml" />
   </session-factory>
 </hibernate-configuration>

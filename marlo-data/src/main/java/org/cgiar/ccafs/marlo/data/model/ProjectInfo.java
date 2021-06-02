@@ -23,6 +23,8 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
   private LiaisonInstitution liaisonInstitutionCenter;
   @Expose
   private Phase phase;
+  @Expose
+  private ClusterType clusterType;
   private Project project;
   @Expose
   private String title;
@@ -174,6 +176,10 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     }
 
     return allYears;
+  }
+
+  public ClusterType getClusterType() {
+    return clusterType;
   }
 
   public Boolean getCrossCuttingCapacity() {
@@ -370,6 +376,10 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     this.administrative = administrative;
   }
 
+  public void setClusterType(ClusterType clusterType) {
+    this.clusterType = clusterType;
+  }
+
   public void setCofinancing(boolean cofinancing) {
     this.cofinancing = cofinancing;
   }
@@ -517,6 +527,7 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     this.setActiveSince(update.getActiveSince());
     this.setActivitiesCSV(update.getActivitiesCSV());
     this.setActivitiesCSVFile(update.getActivitiesCSVFile());
+    this.setClusterType(update.getClusterType());
   }
 
 }

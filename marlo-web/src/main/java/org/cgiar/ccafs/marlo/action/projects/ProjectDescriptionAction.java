@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.ClusterTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterOfActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
@@ -37,6 +38,7 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.impl.CenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
+import org.cgiar.ccafs.marlo.data.model.ClusterType;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -113,7 +115,7 @@ public class ProjectDescriptionAction extends BaseAction {
   private ProjectClusterActivityManager projectClusterActivityManager;
 
   private CrpClusterOfActivityManager crpClusterOfActivityManager;
-
+  private ClusterTypeManager clusterTypeManager;
   private GlobalUnitProjectManager globalUnitProjectManager;
   private ProjectCenterOutcomeManager projectCenterOutcomeManager;
 
@@ -128,6 +130,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
   private List<CrpProgram> centerPrograms;
   private List<CrpProgram> regionPrograms;
+  private List<ClusterType> clusterTypes;
   // Front-end
   private long projectID;
   private GlobalUnit loggedCrp;
@@ -172,7 +175,8 @@ public class ProjectDescriptionAction extends BaseAction {
     CrpClusterOfActivityManager crpClusterOfActivityManager, LocElementTypeManager locationManager,
     ProjectScopeManager projectLocationManager, HistoryComparator historyComparator,
     ProjectInfoManager projectInfoManagerManager, GlobalUnitProjectManager globalUnitProjectManager,
-    CenterOutcomeManager centerOutcomeManager, ProjectCenterOutcomeManager projectCenterOutcomeManager) {
+    CenterOutcomeManager centerOutcomeManager, ProjectCenterOutcomeManager projectCenterOutcomeManager,
+    ClusterTypeManager clusterTypeManager) {
     super(config);
     this.projectManager = projectManager;
     this.projectInfoManagerManager = projectInfoManagerManager;
@@ -196,6 +200,7 @@ public class ProjectDescriptionAction extends BaseAction {
     this.globalUnitProjectManager = globalUnitProjectManager;
     this.projectCenterOutcomeManager = projectCenterOutcomeManager;
     this.centerOutcomeManager = centerOutcomeManager;
+    this.clusterTypeManager = clusterTypeManager;
   }
 
   /**
@@ -304,6 +309,10 @@ public class ProjectDescriptionAction extends BaseAction {
     return clusterofActivites;
   }
 
+  public List<ClusterType> getClusterTypes() {
+    return clusterTypes;
+  }
+
   public File getFile() {
     return file;
   }
@@ -347,14 +356,15 @@ public class ProjectDescriptionAction extends BaseAction {
     return liaisonInstitutions;
   }
 
+
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
-
   public List<CrpProgram> getProgramFlagships() {
     return programFlagships;
   }
+
 
   public Project getProject() {
     return project;
@@ -370,19 +380,19 @@ public class ProjectDescriptionAction extends BaseAction {
     return projectScales;
   }
 
-
   public Map<String, String> getProjectStatuses() {
     return projectStatuses;
   }
+
 
   public Map<String, String> getProjectTypes() {
     return projectTypes;
   }
 
-
   public List<CrpProgram> getRegionFlagships() {
     return regionFlagships;
   }
+
 
   public List<CrpProgram> getRegionPrograms() {
     return regionPrograms;
@@ -782,6 +792,11 @@ public class ProjectDescriptionAction extends BaseAction {
       projectStatuses.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
     }
 
+    if (this.isAiccra()) {
+      clusterTypes = new ArrayList<>();
+      clusterTypes = clusterTypeManager.findAll();
+    }
+
 
     // add project scales
 
@@ -823,7 +838,6 @@ public class ProjectDescriptionAction extends BaseAction {
     }
 
   }
-
 
   @Override
   public String save() {
@@ -1081,6 +1095,12 @@ public class ProjectDescriptionAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_SCOPES_RELATION);
       relationsName.add(APConstants.PROJECT_INFO_RELATION);
 
+      if (this.isAiccra()) {
+        if (projectDB.getProjectInfo().getClusterType() != null) {
+          project.getProjectInfo().setClusterType(projectDB.getProjectInfo().getClusterType());
+        }
+      }
+
       project.getProjectInfo().setPhase(this.getActualPhase());
       project.getProjectInfo().setProject(project);
       project.getProjectInfo().setReporting(projectDB.getProjectInfo().getReporting());
@@ -1166,14 +1186,15 @@ public class ProjectDescriptionAction extends BaseAction {
 
   }
 
+
   public void setAllOwners(List<LiaisonUser> allOwners) {
     this.allOwners = allOwners;
   }
 
-
   public void setCenterOutcomes(List<CenterOutcome> centerOutcomes) {
     this.centerOutcomes = centerOutcomes;
   }
+
 
   public void setCenterPrograms(List<CrpProgram> centerPrograms) {
     this.centerPrograms = centerPrograms;
@@ -1182,6 +1203,10 @@ public class ProjectDescriptionAction extends BaseAction {
 
   public void setClusterofActivites(List<CrpClusterOfActivity> clusterofActivites) {
     this.clusterofActivites = clusterofActivites;
+  }
+
+  public void setClusterTypes(List<ClusterType> clusterTypes) {
+    this.clusterTypes = clusterTypes;
   }
 
 
@@ -1197,6 +1222,7 @@ public class ProjectDescriptionAction extends BaseAction {
   public void setFileFileName(String fileFileName) {
     this.fileFileName = fileFileName;
   }
+
 
   public void setFileReporting(File fileReporting) {
     this.fileReporting = fileReporting;
@@ -1221,7 +1247,6 @@ public class ProjectDescriptionAction extends BaseAction {
   public void setProgramFlagships(List<CrpProgram> programFlagships) {
     this.programFlagships = programFlagships;
   }
-
 
   public void setProject(Project project) {
     this.project = project;
@@ -1263,6 +1288,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
   @Override
   public void validate() {
+    this.setInvalidFields(new HashMap<>());
     // if is saving call the validator to check for the missing fields
     if (save) {
       validator.validate(this, project, true);
