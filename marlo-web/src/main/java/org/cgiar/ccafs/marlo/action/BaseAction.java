@@ -3448,16 +3448,20 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     List<ProjectOutcome> projectOutcomes = new ArrayList<>();
     if (phase != null) {
       projectOutcomes = projectOutcomeManager.getProjectOutcomeByPhase(phase);
-      if (projectOutcomes != null && !projectOutcomes.isEmpty()) {
-        projectOutcomes = projectOutcomes.stream()
-          .filter(po -> po.getProject() != null && po.getProject().getId().equals(projectId)
-            && po.getCrpProgramOutcome() != null && po.getCrpProgramOutcome().getId().equals(outcomeId))
-          .collect(Collectors.toList());
+      try {
         if (projectOutcomes != null && !projectOutcomes.isEmpty()) {
-          projectOutcome = projectOutcomes.get(0);
-        }
-      }
+          projectOutcomes = projectOutcomes.stream()
+            .filter(po -> po.getProject() != null && po.getProject().getId().equals(projectId)
+              && po.getCrpProgramOutcome() != null && po.getCrpProgramOutcome().getId().equals(outcomeId))
+            .collect(Collectors.toList());
 
+          if (projectOutcomes != null && !projectOutcomes.isEmpty() && projectOutcomes.get(0) != null) {
+            projectOutcome = projectOutcomes.get(0);
+          }
+        }
+      } catch (Exception e) {
+
+      }
     }
     return projectOutcome;
   }
@@ -4670,6 +4674,30 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     } catch (Exception e) {
       return false;
     }
+  }
+
+  public boolean hasProjectOutcomeRelationImpact(long phaseId, long projectId, long outcomeId) {
+    boolean existRelation = false;
+    Phase phase = phaseManager.getPhaseById(phaseId);
+    List<ProjectOutcome> projectOutcomes = new ArrayList<>();
+    if (phase != null) {
+      projectOutcomes = projectOutcomeManager.getProjectOutcomeByPhase(phase);
+      try {
+        if (projectOutcomes != null && !projectOutcomes.isEmpty()) {
+          projectOutcomes = projectOutcomes.stream()
+            .filter(po -> po.getProject() != null && po.getProject().getId().equals(projectId)
+              && po.getCrpProgramOutcome() != null && po.getCrpProgramOutcome().getId().equals(outcomeId))
+            .collect(Collectors.toList());
+
+          if (projectOutcomes != null && !projectOutcomes.isEmpty() && projectOutcomes.get(0) != null) {
+            existRelation = true;
+          }
+        }
+      } catch (Exception e) {
+        existRelation = false;
+      }
+    }
+    return existRelation;
   }
 
   public boolean hasSpecificities(String specificity) {
