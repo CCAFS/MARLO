@@ -49,7 +49,9 @@ import org.cgiar.ccafs.marlo.data.model.PowbTocListDTO;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.ProjectOutcomeIndicator;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.POIField;
 import org.cgiar.ccafs.marlo.utils.POISummary;
@@ -79,8 +81,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import javax.imageio.ImageIO;
 
 import com.opensymphony.xwork2.LocalizedTextProvider;
 import org.apache.commons.lang3.StringUtils;
@@ -195,10 +195,8 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
   private final LocalizedTextProvider localizedTextProvider;
   private LiaisonInstitution liaisonInstitution;
   private GlobalUnitManager crpManager;
-  private List<LiaisonInstitution> liaisonInstitutions;
-  private List<ProjectOutcome> projectOutcomeList;
+  private List<ProjectOutcome> projectOutcomes;
   private List<Project> projectList;
-  private List<CrpProgramOutcome> outcomeList;
   private CrpProgramManager crpProgramManager;
   private List<PowbTocListDTO> tocList;
   private GlobalUnit loggedCrp;
@@ -290,7 +288,6 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
     this.localizedTextProvider = localizedTextProvider;
   }
 
-
   private void createCoverTable() {
     Boolean bold = true;
     String blackColor = "000000";
@@ -329,8 +326,8 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
         leader = project.getLeaderPerson(this.getSelectedPhase()).getUser().getComposedName();
       }
       // Cluster Type
-      if (projectInfo.getLiaisonInstitution() != null && projectInfo.getLiaisonInstitution().getAcronym() != null) {
-        type = projectInfo.getLiaisonInstitution().getAcronym();
+      if (projectInfo.getClusterType() != null && projectInfo.getClusterType().getName() != null) {
+        type = projectInfo.getClusterType().getName();
       }
 
       bold = false;
@@ -405,16 +402,16 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
     String fp = null, subIDO = null, outcomes = null, milestone = null, powbIndFollowingMilestone = null, lastFP = "",
       lastSubIdo = "", indicator = "";
 
-    if (outcomeList != null && !outcomeList.isEmpty()) {
-      for (CrpProgramOutcome crpOutcome : outcomeList) {
+    if (projectOutcomes != null && !projectOutcomes.isEmpty()) {
+      for (ProjectOutcome projectOutcome : projectOutcomes) {
 
         // Outcomes
 
-        if (crpOutcome.getDescription() != null) {
-          indicator = crpOutcome.getDescription();
+        if (projectOutcome.getCrpProgramOutcome() != null) {
+          indicator = projectOutcome.getCrpProgramOutcome().getComposedName();
         }
-        if (crpOutcome.getMilestones() != null && !crpOutcome.getMilestones().isEmpty()) {
-          for (CrpMilestone crpMilestone : crpOutcome.getMilestones()) {
+        if (projectOutcome.getMilestones() != null && !projectOutcome.getMilestones().isEmpty()) {
+          for (ProjectMilestone projectMilestone : projectOutcome.getMilestones()) {
 
 
           }
@@ -569,17 +566,71 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
       /* Create a landscape text Section */
       XWPFParagraph para = document.createParagraph();
 
-      this.createCoverTable();
+      // this.createCoverTable();
       File imageFile1 = new File("/../../../../../../../marlo-web/src/main/webapp/global/images/crps/AICCRA.png");
       if (imageFile1 != null) {
-        BufferedImage bimg1 = ImageIO.read(imageFile1);
-        int width1 = bimg1.getWidth();
-        int height1 = bimg1.getHeight();
-        String imgFile1 = imageFile1.getName();
-        int imgFormat1 = getImageFormat(imgFile1);
-        run.addPicture(new FileInputStream(imageFile1), imgFormat1, imgFile1, width1, height1);
+        BufferedImage bimg1 = null;
+        // bimg1 = ImageIO.read(imageFile1);
+        if (bimg1 != null) {
+          int width1 = bimg1.getWidth();
+          int height1 = bimg1.getHeight();
+          String imgFile1 = imageFile1.getName();
+          int imgFormat1 = getImageFormat(imgFile1);
+          run.addPicture(new FileInputStream(imageFile1), imgFormat1, imgFile1, width1, height1);
+        }
       }
       poiSummary.textLineBreak(document, 1);
+
+
+      // Project ID
+      paragraph = document.createParagraph();
+      run = paragraph.createRun();
+      run.setText(this.getText("summaries.progressReport2020.coverTable.Title1") + ":");
+      run.setBold(true);
+      run.setFontSize(16);
+      run.setFontFamily("Calibri");
+      run.setColor("4472C4");
+      paragraph.setStyle("heading 2");
+
+      if (projectInfo.getProject().getId() != null) {
+        poiSummary.textParagraphFontCalibri(document.createParagraph(), projectInfo.getProject().getId() + "");
+      }
+
+      // Project Lead
+      paragraph = document.createParagraph();
+      run = paragraph.createRun();
+      run.setText(this.getText("summaries.progressReport2020.coverTable.Title2") + ":");
+      run.setBold(true);
+      run.setFontSize(16);
+      run.setFontFamily("Calibri");
+      run.setColor("4472C4");
+      paragraph.setStyle("heading 2");
+      String leader = "";
+      if (project.getLeaderPerson(this.getSelectedPhase()) != null
+        && project.getLeaderPerson(this.getSelectedPhase()).getUser() != null) {
+        leader = project.getLeaderPerson(this.getSelectedPhase()).getUser().getComposedName();
+      }
+      if (projectInfo.getProject().getId() != null) {
+        poiSummary.textParagraphFontCalibri(document.createParagraph(), leader);
+      }
+
+      // Project type
+      paragraph = document.createParagraph();
+      run = paragraph.createRun();
+      run.setText(this.getText("summaries.progressReport2020.coverTable.Title3") + ":");
+      run.setBold(true);
+      run.setFontSize(16);
+      run.setFontFamily("Calibri");
+      run.setColor("4472C4");
+      paragraph.setStyle("heading 2");
+      String type = "";
+      // Cluster Type
+      if (projectInfo.getClusterType() != null && projectInfo.getClusterType().getName() != null) {
+        type = projectInfo.getClusterType().getName();
+      }
+      if (projectInfo.getProject().getId() != null) {
+        poiSummary.textParagraphFontCalibri(document.createParagraph(), type);
+      }
 
       // Project Title
       paragraph = document.createParagraph();
@@ -609,6 +660,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
         poiSummary.textParagraphFontCalibri(document.createParagraph(), projectInfo.getSummary());
       }
 
+
       // Project Contribution to Performance Indicators
       paragraph = document.createParagraph();
       run = paragraph.createRun();
@@ -618,6 +670,66 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
       run.setFontFamily("Calibri");
       run.setColor("4472C4");
       paragraph.setStyle("heading 2");
+
+
+      if (projectOutcomes != null && !projectOutcomes.isEmpty()) {
+        for (ProjectOutcome projectOutcome : projectOutcomes) {
+
+          // Outcomes
+
+          if (projectOutcome.getCrpProgramOutcome() != null
+            && projectOutcome.getCrpProgramOutcome().getComposedName() != null) {
+            poiSummary.textParagraphFontCalibri(document.createParagraph(),
+              projectOutcome.getCrpProgramOutcome().getComposedName());
+
+            if (projectOutcome.getExpectedValue() != null) {
+              paragraph = document.createParagraph();
+              run = paragraph.createRun();
+              run.setText("Expected Value" + ":");
+              poiSummary.textParagraphFontCalibri(document.createParagraph(), projectOutcome.getExpectedValue() + "");
+            }
+
+            // Indicators
+            if (projectOutcome.getIndicators() != null && !projectOutcome.getIndicators().isEmpty()) {
+              for (ProjectOutcomeIndicator indicator : projectOutcome.getIndicators()) {
+                if (indicator.getCrpProgramOutcomeIndicator() != null
+                  && indicator.getCrpProgramOutcomeIndicator().getIndicator() != null) {
+                  poiSummary.textParagraphFontCalibri(document.createParagraph(),
+                    indicator.getCrpProgramOutcomeIndicator().getIndicator());
+                }
+                if (indicator.getNarrative() != null) {
+                  poiSummary.textParagraphFontCalibri(document.createParagraph(), indicator.getNarrative());
+                }
+              }
+            }
+          }
+
+          if (projectOutcome.getMilestones() != null && !projectOutcome.getMilestones().isEmpty()) {
+            for (ProjectMilestone projectMilestone : projectOutcome.getMilestones()) {
+
+
+            }
+          }
+
+
+        }
+      }
+
+      // Project Outcome
+
+      paragraph = document.createParagraph();
+      run = paragraph.createRun();
+      run.setText(this.getText("summaries.progressReport2020.projectDescription") + ":");
+      run.setBold(true);
+      run.setFontSize(16);
+      run.setFontFamily("Calibri");
+      run.setColor("4472C4");
+      paragraph.setStyle("heading 2");
+
+      if (projectInfo.getSummary() != null) {
+        poiSummary.textParagraphFontCalibri(document.createParagraph(), projectInfo.getSummary());
+      }
+
 
       // narrative section
       paragraph = document.createParagraph();
@@ -716,6 +828,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
       fileName.append(this.getCurrentCycleYear() + "_");
     }
     fileName.append(this.getLoggedCrp().getAcronym());
+    fileName.append("_Project_" + projectID);
     fileName.append("_ReportProcessSummary_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".docx");
@@ -844,19 +957,9 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
     if (this.getSelectedPhase() != null && project.getProjecInfoPhase(this.getSelectedPhase()) != null) {
       this.setProjectInfo(project.getProjecInfoPhase(this.getSelectedPhase()));
     }
+    projectOutcomes = project.getProjectOutcomes().stream()
+      .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())).collect(Collectors.toList());
 
-    projectOutcomeList = projectOutcomeManager.getProjectOutcomeByPhase(this.getActualPhase());
-
-    outcomeList = crpProgramOutcomeManager.getAllCrpProgramOutcomesByPhase(this.getSelectedPhase().getId());
-
-    // Set Milestones
-    if (outcomeList != null && !outcomeList.isEmpty()) {
-      for (CrpProgramOutcome outcome : outcomeList) {
-        outcome.setMilestones(outcome.getCrpMilestones().stream()
-          .filter(c -> c.isActive() && c.getYear().intValue() == this.getActualPhase().getYear())
-          .collect(Collectors.toList()));
-      }
-    }
 
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
