@@ -898,6 +898,11 @@ public class ProjectDescriptionAction extends BaseAction {
         && project.getProjectInfo().getLiaisonInstitution().getId() == -1) {
         project.getProjectInfo().setLiaisonInstitution(null);
       }
+      // no cluster type selected
+      if (project.getProjectInfo().getClusterType() != null
+        && project.getProjectInfo().getClusterType().getId() == -1) {
+        project.getProjectInfo().setClusterType(null);
+      }
 
       // Saving the flaghsips
       if (project.getFlagshipValue() != null && project.getFlagshipValue().length() > 0) {
