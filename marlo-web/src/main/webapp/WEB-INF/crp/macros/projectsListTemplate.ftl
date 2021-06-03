@@ -164,7 +164,7 @@
                 <p>Pre-setting</p>
               [#else]
                 [#if !submission]
-                  [#if !reportingActive]<p title="Ready for project leader completion">Ready for PL</p>[/#if]
+                  [#if !reportingActive]<p title="Ready for project leader completion">Ready for CL</p>[/#if]
                 [#else]
                   <strong title="Submitted">Submitted</strong>
                 [/#if]
