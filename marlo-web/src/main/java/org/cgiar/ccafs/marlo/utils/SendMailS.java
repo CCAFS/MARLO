@@ -14,6 +14,7 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.utils;
 
+import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.EmailLogManager;
 import org.cgiar.ccafs.marlo.data.model.EmailLog;
 
@@ -44,7 +45,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Named
-public class SendMailS {
+public class SendMailS extends BaseAction {
+
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 7833194831832715444L;
 
   // LOG
   private static final Logger LOG = LoggerFactory.getLogger(SendMailS.class);
@@ -78,7 +84,11 @@ public class SendMailS {
    */
   public void send(String toEmail, String ccEmail, String bbcEmail, String subject, String messageContent,
     byte[] attachment, String attachmentMimeType, String fileName, boolean isHtml) {
-
+    if (this.sendEmailJustToSupport()) {
+      toEmail = this.config.getEmailNotification();
+      ccEmail = null;
+      bbcEmail = null;
+    }
     // Get a Properties object
     Properties properties = System.getProperties();
 

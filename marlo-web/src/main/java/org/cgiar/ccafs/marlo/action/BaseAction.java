@@ -6847,6 +6847,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+  public boolean sendEmailJustToSupport() {
+    try {
+      CustomParameter sendEmailSupport = this.customParameterManager
+        .getCustomParameterByParameterKeyAndGlobalUnitId(APConstants.CRP_EMAIL_SUPPORT_TEAM, this.getCrpID());
+      return Boolean.parseBoolean(sendEmailSupport.getValue());
+
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
   public void setActualPhase(Phase phase) {
     this.getSession().put(APConstants.CURRENT_PHASE, phase);
   }
