@@ -136,6 +136,7 @@ public final class APConstants {
 
   public static final String IS_EXPECTED_DELIVERABLE_REPORT_All_YEARS_VISIBLE =
     "is_expected_deliverable_report_all_years_visible";
+  public static final String CRP_EMAIL_SUPPORT_TEAM = "crp_email_support_team";
 
 
   // Email parameters to copy to FL FM CL
