@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.BudgetTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CenterOutputsOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.ClusterTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterOfActivityManager;
@@ -93,6 +94,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterProjectOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
 import org.cgiar.ccafs.marlo.data.model.CenterSubmission;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
+import org.cgiar.ccafs.marlo.data.model.ClusterType;
 import org.cgiar.ccafs.marlo.data.model.CrpCategoryEnum;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
@@ -294,6 +296,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   protected APConfig config;
   @Inject
   private PhaseManager phaseManager;
+  @Inject
+  private ClusterTypeManager clusterTypeManager;
   private CenterOutputsOutcomeManager centerOutputsOutcomeManager;
 
   @Inject
@@ -3018,6 +3022,22 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return Locale.ENGLISH;
   }
 
+  public ClusterType getManagementClusterType() {
+    ClusterType clusterType = new ClusterType();
+
+    List<ClusterType> clusterTypes = new ArrayList<>();
+    clusterTypes = clusterTypeManager.findAll();
+    if (clusterTypes != null && !clusterTypes.isEmpty()) {
+      if (clusterTypes.stream().filter(c -> c.getName().contains("Management")).collect(Collectors.toList()) != null
+        && !clusterTypes.stream().filter(c -> c.getName().contains("Management")).collect(Collectors.toList())
+          .isEmpty()) {
+        clusterType =
+          clusterTypes.stream().filter(c -> c.getName().contains("Management")).collect(Collectors.toList()).get(0);
+      }
+    }
+    return clusterType;
+  }
+
   /**
    * get all active messages of MARLO messages table
    *
@@ -4836,7 +4856,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.hasPermission(this.generatePermission(Permission.CAP_DEV_FULL_PERMISSION, params));
   }
 
-
   public boolean isCenterGlobalUnit() {
     if (this.getCurrentCrp() != null) {
       if (this.getCurrentCrp().getGlobalUnitType().getId().intValue() == 4) {
@@ -4845,6 +4864,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return false;
   }
+
 
   /**
    * ************************ CENTER METHOD ********************* verify if the
@@ -5972,6 +5992,21 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
     return true;
+  }
+
+  public boolean isManagementCluster(long id) {
+    boolean isManagement = false;
+    Project project = projectManager.getProjectById(id);
+    if (project != null) {
+      project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
+      if (project.getProjectInfo() != null && project.getProjectInfo().getClusterType() != null
+        && project.getProjectInfo().getClusterType().getId() != null) {
+        if (project.getProjectInfo().getClusterType().getId().equals(this.getManagementClusterType().getId())) {
+          isManagement = true;
+        }
+      }
+    }
+    return isManagement;
   }
 
   /**
