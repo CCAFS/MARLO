@@ -341,15 +341,24 @@ public class OutcomesAction extends BaseAction {
     Calendar calendarEnd = Calendar.getInstance();
     calendarEnd.set(Calendar.YEAR, END_YEAR);
 
-    while (calendarStart.get(Calendar.YEAR) <= calendarEnd.get(Calendar.YEAR)) {
+    if (this.isAiccra()) {
 
       // Adding the year to the list.
-      // if (calendarStart.get(Calendar.YEAR) >= this.getActualPhase().getYear()) {
-      targetYears.add(calendarStart.get(Calendar.YEAR));
-      // }
+      targetYears.add(2021);
+      targetYears.add(2022);
+      targetYears.add(2023);
 
-      // Adding a year (365 days) to the start date.
-      calendarStart.add(Calendar.YEAR, 1);
+    } else {
+      while (calendarStart.get(Calendar.YEAR) <= calendarEnd.get(Calendar.YEAR)) {
+
+        // Adding the year to the list.
+        // if (calendarStart.get(Calendar.YEAR) >= this.getActualPhase().getYear()) {
+        targetYears.add(calendarStart.get(Calendar.YEAR));
+        // }
+
+        // Adding a year (365 days) to the start date.
+        calendarStart.add(Calendar.YEAR, 1);
+      }
     }
 
     return targetYears;
