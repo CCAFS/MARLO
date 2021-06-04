@@ -18,6 +18,7 @@
 [#assign isCrpProject = (action.isProjectCrpOrPlatform(project.id))!false ]
 [#assign isCenterProject = (action.isProjectCenter(project.id))!false ]
 [#assign isNewCenterTypeProject = (action.isNewCenterType(project.id))!false ]
+[#assign isManagementCluster = (action.isManagementCluster(project.id))!false ]
 
 [#if !action.isAiccra()]
   [#assign currentSection = "projects" /]
@@ -89,7 +90,8 @@
                 [@customForm.select name="project.projectInfo.liaisonInstitution.id" className="liaisonInstitutionSelect" i18nkey="project.liaisonInstitution"  disabled=!editable  listName="liaisonInstitutions" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable && action.hasPermission("managementLiaison") /]
               </div>
               [#-- Cluster Types --]
-              [#if action.isAiccra()]  
+              [#if action.isAiccra() && !isManagementCluster]  
+             
                 <div class="col-md-6">
                   [@customForm.select name="project.projectInfo.clusterType.id" className="clusterType" i18nkey="project.clusterType"  disabled=!editable  listName="clusterTypes" keyFieldName="id"  displayFieldName="name" required=true editable=editable /]
                 </div>  
