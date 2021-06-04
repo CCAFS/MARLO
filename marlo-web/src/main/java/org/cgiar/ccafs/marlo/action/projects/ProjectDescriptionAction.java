@@ -795,6 +795,10 @@ public class ProjectDescriptionAction extends BaseAction {
     if (this.isAiccra()) {
       clusterTypes = new ArrayList<>();
       clusterTypes = clusterTypeManager.findAll();
+      if (clusterTypes != null && !clusterTypes.isEmpty()) {
+        clusterTypes =
+          clusterTypes.stream().filter(c -> c != this.getManagementClusterType()).collect(Collectors.toList());
+      }
     }
 
 

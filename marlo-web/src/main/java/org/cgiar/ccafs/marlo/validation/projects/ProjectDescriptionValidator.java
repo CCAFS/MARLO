@@ -106,15 +106,19 @@ public class ProjectDescriptionValidator extends BaseValidator {
       action.getInvalidFields().put("input-project.projectInfo.liaisonInstitution.id",
         InvalidFieldsMessages.EMPTYFIELD);
     }
-
-    if (project.getProjecInfoPhase(action.getActualPhase()).getClusterType() != null) {
-      if (project.getProjecInfoPhase(action.getActualPhase()).getClusterType().getId() == -1) {
+    if (action.getManagementClusterType() != null
+      && project.getProjecInfoPhase(action.getActualPhase()).getClusterType() != null
+      && (project.getProjecInfoPhase(action.getActualPhase()).getClusterType().getId() != action
+        .getManagementClusterType().getId())) {
+      if (project.getProjecInfoPhase(action.getActualPhase()).getClusterType() != null) {
+        if (project.getProjecInfoPhase(action.getActualPhase()).getClusterType().getId() == -1) {
+          action.addMessage(action.getText("project.clusterType"));
+          action.getInvalidFields().put("input-project.projectInfo.clusterType.id", InvalidFieldsMessages.EMPTYFIELD);
+        }
+      } else {
         action.addMessage(action.getText("project.clusterType"));
         action.getInvalidFields().put("input-project.projectInfo.clusterType.id", InvalidFieldsMessages.EMPTYFIELD);
       }
-    } else {
-      action.addMessage(action.getText("project.clusterType"));
-      action.getInvalidFields().put("input-project.projectInfo.clusterType.id", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (project.getProjecInfoPhase(action.getActualPhase()).getStartDate() == null) {

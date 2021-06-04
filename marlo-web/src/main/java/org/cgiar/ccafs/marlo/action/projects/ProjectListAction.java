@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.ClusterTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
@@ -85,6 +86,7 @@ public class ProjectListAction extends BaseAction {
   private GlobalUnitProjectManager globalUnitProjectManager;
   private PhaseManager phaseManager;
   private ProjectPhaseManager projectPhaseManager;
+  private ClusterTypeManager clusterTypeManager;
 
   private LiaisonUserManager liaisonUserManager;
   private LiaisonInstitutionManager liaisonInstitutionManager;
@@ -103,7 +105,8 @@ public class ProjectListAction extends BaseAction {
     LiaisonUserManager liaisonUserManager, LiaisonInstitutionManager liaisonInstitutionManager,
     ProjectPhaseManager projectPhaseManager, PhaseManager phaseManager, ProjectInfoManager projectInfoManager,
     ProjectBudgetManager projectBudgetManager, GlobalUnitProjectManager globalUnitProjectManager,
-    SectionStatusManager sectionStatusManager, ProjectPartnerManager projectPartnerManager) {
+    SectionStatusManager sectionStatusManager, ProjectPartnerManager projectPartnerManager,
+    ClusterTypeManager clusterTypeManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -116,6 +119,7 @@ public class ProjectListAction extends BaseAction {
     this.projectBudgetManager = projectBudgetManager;
     this.globalUnitProjectManager = globalUnitProjectManager;
     this.projectPartnerManager = projectPartnerManager;
+    this.clusterTypeManager = clusterTypeManager;
   }
 
   public String addAdminProject() {
@@ -241,6 +245,9 @@ public class ProjectListAction extends BaseAction {
     projectInfo.setAdministrative(new Boolean(admin));
     projectInfo.setPhase(phase);
     projectInfo.setProject(project);
+    if (type == APConstants.PROJECT_CORE) {
+      projectInfo.setClusterType(this.getManagementClusterType());
+    }
     projectInfoManager.saveProjectInfo(projectInfo);
     SectionStatus status = null;
     if (status == null) {
@@ -345,6 +352,9 @@ public class ProjectListAction extends BaseAction {
       projectInfo.setLiaisonInstitution(liaisonInstitution);
       projectInfo.setScale(0);
       projectInfo.setCofinancing(false);
+      if (this.isAiccra() && type == APConstants.PROJECT_CORE) {
+        projectInfo.setClusterType(this.getManagementClusterType());
+      }
 
       if (this.isCenterGlobalUnit()) {
         projectInfo.setProjectEditLeader(true);
