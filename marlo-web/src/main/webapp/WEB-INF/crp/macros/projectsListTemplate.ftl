@@ -64,9 +64,9 @@
             [#if isProjectNew]<span class="label label-info">[@s.text name="global.new" /]</span>[/#if]
             [#if project.projectInfo.administrative]<span class="label label-primary">[@s.text name="project.management" /]</span>[/#if]
             [#if hasClusterType]
-              [#if (project.projectInfo.clusterType.id) == 1]<span class="label label-success">[@s.text name="project.countryProject" /]</span>[/#if]
-              [#if (project.projectInfo.clusterType.id) == 2]<span class="label label-default">[@s.text name="project.flagshipProject" /]</span>[/#if]
-              [#if (project.projectInfo.clusterType.id) == 4]<span class="label label-warning">[@s.text name="project.regionalProject" /]</span>[/#if]
+              [#if (project.projectInfo.clusterType.id) == 1]<span class="label label-default">[@s.text name="project.countryProject" /]</span>[/#if]
+              [#if (project.projectInfo.clusterType.id) == 2]<span class="label label-warning">[@s.text name="project.flagshipProject" /]</span>[/#if]
+              [#if (project.projectInfo.clusterType.id) == 4]<span class="label label-success">[@s.text name="project.regionalProject" /]</span>[/#if]
             [/#if]
             [#if project.projectInfo.title?has_content]
               <a href="${projectUrl}" title="${(project.projectInfo.title)!}">[@utilities.wordCutter string=(project.projectInfo.title)!'' maxPos=120 /]</a>
