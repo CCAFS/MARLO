@@ -932,6 +932,7 @@ public class ProjectOutcomeAction extends BaseAction {
                 } else {
                   projectMilestoneDB.setExpectedUnit(projectMilestone.getExpectedUnit());
                   projectMilestoneDB.setExpectedValue(projectMilestone.getExpectedValue());
+                  projectMilestoneDB.setAchievedValue(projectMilestone.getAchievedValue());
                 }
               }
 
@@ -945,7 +946,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
             projectMilestoneDB.setCrpMilestone(projectMilestone.getCrpMilestone());
-
+            projectMilestoneDB.setAchievedValue(projectMilestone.getAchievedValue());
             projectMilestoneDB = projectMilestoneManager.saveProjectMilestone(projectMilestoneDB);
             // This add projectMilestone to generate correct auditlog.
             projectOutcome.getProjectMilestones().add(projectMilestoneDB);
