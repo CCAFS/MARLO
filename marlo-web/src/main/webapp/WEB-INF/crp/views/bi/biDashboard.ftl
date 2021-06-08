@@ -2,7 +2,7 @@
 [#assign title = "MARLO BI" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["powerbi-client"] /]
-[#assign customJS = ["${baseUrlMedia}/js/bi/biDashboard.js?20210511a", "${baseUrlCdn}/global/bower_components/powerbi-client/dist/powerbi.min.js" ] /]
+[#assign customJS = ["${baseUrlMedia}/js/bi/biDashboard.js?20210527b", "${baseUrlCdn}/global/bower_components/powerbi-client/dist/powerbi.min.js" ] /]
 [#assign customCSS = [
   "${baseUrl}/crp/css/bi/biDashboard.css"
   ] 

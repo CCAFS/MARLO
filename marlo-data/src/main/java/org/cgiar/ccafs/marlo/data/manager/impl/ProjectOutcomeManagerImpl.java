@@ -92,6 +92,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
             projectMilestone.getCrpMilestone().getComposeID(), projectOutcomeAdd.getCrpProgramOutcome()));
 
           projectMilestoneAdd.setAchievedValue(projectMilestone.getAchievedValue());
+
           if (projectMilestone.getExpectedUnit() != null) {
             if (projectMilestone.getExpectedUnit().getId() == null
               || projectMilestone.getExpectedUnit().getId().longValue() == -1) {
@@ -106,14 +107,11 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
           projectMilestoneAdd.setProjectOutcome(projectOutcomeAdd);
           projectMilestoneAdd.setYear(projectMilestone.getYear());
           if (projectMilestoneAdd.getCrpMilestone() != null) {
-            if (projectMilestoneAdd.getCrpMilestone().getYear() >= projectOutcome.getPhase().getYear()) {
-              projectMilestoneDAO.save(projectMilestoneAdd);
-            }
-
+            // if (projectMilestoneAdd.getCrpMilestone().getYear() >= projectOutcome.getPhase().getYear()) {
+            projectMilestoneDAO.save(projectMilestoneAdd);
+            // }
           }
-
         }
-
       }
     }
   }
