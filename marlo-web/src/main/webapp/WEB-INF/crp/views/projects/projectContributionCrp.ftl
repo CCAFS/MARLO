@@ -219,36 +219,15 @@
               </div>
             </div>
           </div>
-          [/#if]
-          
-          [#-- Next Users --]
-          [#-- For A4NH CRP, nextusers aren't required --]
-          [#if action.hasSpecificities('crp_next_users')]
-          <h4 class="headTitle">(Next) Users </h4>
-          <div class="nextUsersBlock borderBox">
-            <div class="nextUsersList">
-              [#if projectOutcome.nextUsers?has_content]
-                [#list projectOutcome.nextUsers as nextUser]
-                  [@nextUserMacro element=nextUser name="projectOutcome.nextUsers" index=nextUser_index /]
-                [/#list]
-              [#else]
-                [@nextUserMacro element={} name="projectOutcome.nextUsers" index=0 /]
-              [/#if]
-            </div>
-            [#if editable && !reportingActive]
-              <div class="addNextUser bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>[@s.text name="form.buttons.addNextUser"/]</div>
-            [/#if]
-          </div>
-          [/#if]
-          
-          
+          [/#if]          
+                    
           [#if action.isAiccra()]
           <h4 class="headTitle">Progress to Targets</h4>
           <div class="nextUsersBlock borderBox">
             <div class="nextUsersList">
             [#-- Baseline Indicators --]
             [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcome.crpProgramOutcome.crpProgram.baseLine)!false) && ((projectOutcome.crpProgramOutcome.indicators?has_content)!false)]
-              <h5 class="sectionSubTitle">Progress to Targets</h5>
+              <h5 class="sectionSubTitle">Progress to Key Performance Indicator</h5>
               <div class="form-group">
                 <div class="" id="baseline">
                   <div class="form-group text-right">
@@ -273,6 +252,26 @@
           </div>
           [/#if]
           
+          [#-- Next Users --]
+          [#-- For A4NH CRP, nextusers aren't required --]
+          [#if action.hasSpecificities('crp_next_users')]
+          <h4 class="headTitle">(Next) Users </h4>
+          <div class="nextUsersBlock borderBox">
+            <div class="nextUsersList">
+              [#if projectOutcome.nextUsers?has_content]
+                [#list projectOutcome.nextUsers as nextUser]
+                  [@nextUserMacro element=nextUser name="projectOutcome.nextUsers" index=nextUser_index /]
+                [/#list]
+              [#else]
+                [@nextUserMacro element={} name="projectOutcome.nextUsers" index=0 /]
+              [/#if]
+            </div>
+            [#if editable && !reportingActive]
+              <div class="addNextUser bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>[@s.text name="form.buttons.addNextUser"/]</div>
+            [/#if]
+          </div>
+          [/#if]
+                    
           [#-- Lessons and progress --]
           [#if !action.isProjectNew(project.id) && action.isReportingActive()]
           <div id="lessons" class="borderBox">
@@ -404,11 +403,15 @@
             </div>
           </div>
           [#-- REPORTING BLOCK --]
-          
-          <div class="col-md-4">
-            [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) /]
-          </div>
-       
+          [#if action.isUpKeepActive() && action.isAiccra()]
+            <div class="col-md-4">
+              [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.upkeepAchievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) /]
+            </div>
+          [#else]
+            <div class="col-md-4">
+              [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.upkeepAchievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) /]
+            </div>
+          [/#if]
         </div>
         
         <div class="form-group">
