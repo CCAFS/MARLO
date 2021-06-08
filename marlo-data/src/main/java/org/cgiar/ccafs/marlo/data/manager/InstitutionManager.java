@@ -60,6 +60,8 @@ public interface InstitutionManager {
    */
   public List<Institution> findPPAInstitutions(long crpID);
 
+  public List<Institution> getAllInstitutionsSimple();
+
   /**
    * This method gets a institution object by a given institution identifier.
    * 

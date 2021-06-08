@@ -77,7 +77,7 @@ public class InitiativesItem<T> {
       try {
         // getting token
         JsonElement json = this.getSubmissionElement(url + "initiatives");
-        System.out.println(json.toString());
+
 
         response = new Gson().fromJson(json, Response.class);
         if (response.getResponse() != null) {

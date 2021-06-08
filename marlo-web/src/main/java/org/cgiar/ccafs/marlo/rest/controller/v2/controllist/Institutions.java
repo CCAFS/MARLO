@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.institutions.I
 import org.cgiar.ccafs.marlo.rest.dto.CountryOfficeRequestDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionRequestDTO;
+import org.cgiar.ccafs.marlo.rest.dto.InstitutionSimpleDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewCountryOfficeRequestDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewInstitutionDTO;
@@ -44,7 +45,6 @@ import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -262,10 +262,19 @@ public class Institutions {
   @ApiOperation(tags = {"Table 4 - CRP Innovations", "Table 3 - Outcome/ Impact Case Reports"},
     value = "${Institutions.institutions.all.value}", response = InstitutionDTO.class, responseContainer = "List")
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-  @Cacheable(cacheNames = "allInstitutionsCache", condition = "#id>1")
   @RequestMapping(value = "/institutions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<InstitutionDTO>> getAllInstitutions() {
     ResponseEntity<List<InstitutionDTO>> resp = this.institutionItem.getAllInstitutions();
+    return resp;
+  }
+
+  @ApiOperation(tags = {"Table 4 - CRP Innovations", "Table 3 - Outcome/ Impact Case Reports"},
+    value = "${Institutions.institutions.all.value}", response = InstitutionDTO.class, responseContainer = "List")
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/institutionsSimple", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<List<InstitutionSimpleDTO>> getAllInstitutionsSimple() {
+    ResponseEntity<List<InstitutionSimpleDTO>> resp = this.institutionItem.getAllInstitutionsSimple();
     return resp;
   }
 
