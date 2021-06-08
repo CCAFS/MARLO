@@ -157,7 +157,7 @@
     </a>
   </div>
   --]
-[#else]
+[#elseif !action.isAiccra()]
   [#-- Mini-graph --]
   <div id="graphicWrapper" class="hidden-print" style="">
     <p class="text-center"><b>Impact Pathway Graph</b></p>
