@@ -1105,9 +1105,12 @@ public class ProjectDescriptionAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_SCOPES_RELATION);
       relationsName.add(APConstants.PROJECT_INFO_RELATION);
 
-      if (this.isAiccra()) {
-        if (projectDB.getProjectInfo().getClusterType() != null) {
-          // project.getProjectInfo().setClusterType(projectDB.getProjectInfo().getClusterType());
+      if (project.getProjectInfo().getType() != null && project.getProjectInfo().getType() == APConstants.PROJECT_CORE
+        && this.getManagementClusterType() != null) {
+        ClusterType managementClusterType =
+          clusterTypeManager.getClusterTypeById(this.getManagementClusterType().getId());
+        if (managementClusterType != null) {
+          project.getProjectInfo().setClusterType(managementClusterType);
         }
       }
 
