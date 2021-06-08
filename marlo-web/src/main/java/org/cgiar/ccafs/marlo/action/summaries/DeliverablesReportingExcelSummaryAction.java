@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrossCuttingScoringManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableAltmetricInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableGeographicRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableGeographicScopeManager;
@@ -33,6 +34,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepositoryChannelManager;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableAltmetricInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
@@ -108,6 +110,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
   private static Logger LOG = LoggerFactory.getLogger(DeliverablesReportingExcelSummaryAction.class);
   private final CrpProgramManager programManager;
   private final DeliverableManager deliverableManager;
+  private final DeliverableAltmetricInfoManager deliverableAltmetricInfoManager;
   private final GenderTypeManager genderTypeManager;
   private final RepositoryChannelManager repositoryChannelManager;
   private final ResourceManager resourceManager;
@@ -141,7 +144,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
     DeliverableGeographicScopeManager deliverableGeographicScopeManager,
     DeliverableGeographicRegionManager deliverableGeographicRegionManager,
     DeliverableLocationManager deliverableLocationManager, CrpPpaPartnerManager crpPpaPartnerManager,
-    DeliverableInfoManager deliverableInfoManager) {
+    DeliverableInfoManager deliverableInfoManager, DeliverableAltmetricInfoManager deliverableAltmetricInfoManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.genderTypeManager = genderTypeManager;
     this.crpPpaPartnerManager = crpPpaPartnerManager;
@@ -155,6 +158,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
     this.deliverableGeographicRegionManager = deliverableGeographicRegionManager;
     this.deliverableLocationManager = deliverableLocationManager;
     this.deliverableInfoManager = deliverableInfoManager;
+    this.deliverableAltmetricInfoManager = deliverableAltmetricInfoManager;
   }
 
   /**
@@ -257,7 +261,10 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
     masterReport.getParameterValues().put("i8nClimate", this.getText("deliverable.climateChange"));
     masterReport.getParameterValues().put("i8nJustification", this.getText("deliverable.justification"));
     masterReport.getParameterValues().put("i8nDeliverableDescription", this.getText("deliverable.description"));
-    masterReport.getParameterValues().put("i8nProjectLeadPartner", this.getText("summaries.deliverable.leadPartner"));
+    // Altmetric data
+    masterReport.getParameterValues().put("i8nAltmetricInfo", this.getText("summaries.deliverable.altmetricInfo"));
+    masterReport.getParameterValues().put("i8nAltmetricScore",
+      this.getText("annualReport2018.publications.fullGreyList.altmetricScore"));
 
     /*
      * Reporting
@@ -402,7 +409,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         "deliv_license_modifications", "volume", "issue", "pages", "journal", "journal_indicators", "acknowledge",
         "fl_contrib", "project_ID", "project_title", "flagships", "regions", "others_responsibles", "newExceptedFlag",
         "phaseID", "gender", "youth", "cap", "geographicScope", "region", "country", "status", "isComplete",
-        "individual", "ppaResponsible", "managingResponsible", "climate", "justification", "description", "articleURL"},
+        "individual", "ppaResponsible", "managingResponsible", "climate", "justification", "description", "articleURL",
+        "altmetricScore"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, Integer.class, String.class,
         String.class, String.class, String.class, Integer.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
@@ -411,7 +419,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, Long.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class},
+        String.class, String.class, String.class, Double.class},
       0);
     if (!deliverableManager.findAll().isEmpty()) {
       List<Deliverable> deliverables = new ArrayList<>();
@@ -1789,6 +1797,18 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           country = "<Not Defined>";
         }
 
+        Double altmetricScore = null;
+        DeliverableAltmetricInfo dai =
+          this.deliverableAltmetricInfoManager.findByPhaseAndDeliverable(this.getSelectedPhase(), deliverable);
+        if (dai != null) {
+          if (StringUtils.isNotBlank(dai.getScore())) {
+            try {
+              altmetricScore = Double.parseDouble(dai.getScore());
+            } catch (NumberFormatException nfe) {
+            }
+          }
+        }
+
 
         model.addRow(new Object[] {deliverable.getId(), title, delivType, delivSubType, delivStatus, delivYear,
           keyOutput, outcomes, leader, fundingSources, delivNewYear, delivNewYearJustification,
@@ -1798,7 +1818,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           disseminated, restrictedAccess, delivLicenseModifications, volume, issue, pages, journal, journalIndicator,
           acknowledge, flContrib, projectID, projectTitle, flagships, regions, othersResponsibles, newExceptedFlag,
           phaseID, gender, youth, cap, geographicScope, region, country, status, isComplete, individual, ppaResponsible,
-          managingResponsible, climate, justification, description, articleURL});
+          managingResponsible, climate, justification, description, articleURL, altmetricScore});
       }
     }
     return model;
@@ -1812,13 +1832,13 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         "citationMetadata", "HandleMetadata", "DOIMetadata", "creator_authors", "F", "A", "I", "R",
         "deliv_license_modifications", "volume", "issue", "pages", "journal", "journal_indicators", "acknowledge",
         "fl_contrib", "flagships", "regions", "added_by", "phaseID", "gender", "youth", "cap", "keyOutput", "outcomes",
-        "geographicScope", "region", "country", "fundingSources", "articleURL"},
+        "geographicScope", "region", "country", "fundingSources", "articleURL", "altmetricScore"},
       new Class[] {Long.class, String.class, String.class, Integer.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, Long.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class, Double.class},
       0);
 
 
@@ -2499,12 +2519,24 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           country = null;
         }
 
+        Double altmetricScore = null;
+        DeliverableAltmetricInfo dai =
+          this.deliverableAltmetricInfoManager.findByPhaseAndDeliverable(this.getSelectedPhase(), deliverable);
+        if (dai != null) {
+          if (StringUtils.isNotBlank(dai.getScore())) {
+            try {
+              altmetricScore = Double.parseDouble(dai.getScore());
+            } catch (NumberFormatException nfe) {
+            }
+          }
+        }
+
         model.addRow(new Object[] {publicationId, title, publicationSubType, delivYear, leader,
           delivDisseminationChannel, delivDisseminationUrl, delivOpenAccess, delivLicense, titleMetadata,
           descriptionMetadata, dateMetadata, languageMetadata, countryMetadata, keywordsMetadata, citationMetadata,
           HandleMetadata, DOIMetadata, creatorAuthors, F, A, I, R, delivLicenseModifications, volume, issue, pages,
           journal, journalIndicators, acknowledge, flContrib, flagships, regions, addedBy, phaseID, gender, youth, cap,
-          keyOutput, outcomes, geographicScope, region, country, fundingSources, articleURL});
+          keyOutput, outcomes, geographicScope, region, country, fundingSources, articleURL, altmetricScore});
       }
     }
     return model;

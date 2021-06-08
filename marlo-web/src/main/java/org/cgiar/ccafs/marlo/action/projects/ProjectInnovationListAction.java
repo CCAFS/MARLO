@@ -179,96 +179,97 @@ public class ProjectInnovationListAction extends BaseAction {
         ProjectInnovation projectInnovationBD = projectInnovationManager.getProjectInnovationById(this.innovationID);
 
         // project_expected_study_innovations
-        for (ProjectExpectedStudyInnovation pesi : projectInnovationBD.getProjectExpectedStudyInnovations().stream()
+        /*for (ProjectExpectedStudyInnovation pesi : projectInnovationBD.getProjectExpectedStudyInnovations().stream()
           .filter(i -> i.getPhase().getId().equals(this.getPhaseID())).collect(Collectors.toList())) {
           projectExpectedStudyInnovationManager.deleteProjectExpectedStudyInnovation(pesi.getId());
-        }
+        }*/
 
         // project_innovation_centers
-        for (ProjectInnovationCenter pic : projectInnovationBD.getProjectInnovationCenters().stream()
+        /*for (ProjectInnovationCenter pic : projectInnovationBD.getProjectInnovationCenters().stream()
           .filter(i -> i.getPhase().getId().equals(this.getPhaseID())).collect(Collectors.toList())) {
           projectInnovationCenterManager.deleteProjectInnovationCenter(pic.getId());
-        }
+        }*/
 
         // project_innovation_contributing_organizations
-        for (ProjectInnovationContributingOrganization pico : projectInnovationBD
+        /*for (ProjectInnovationContributingOrganization pico : projectInnovationBD
           .getProjectInnovationContributingOrganization().stream()
           .filter(i -> i.getPhase().getId().equals(this.getPhaseID())).collect(Collectors.toList())) {
           projectInnovationContributingOrganizationManager
             .deleteProjectInnovationContributingOrganization(pico.getId());
-        }
+        }*/
 
         // project_innovation_countries
-        for (ProjectInnovationCountry pic : projectInnovationBD.getProjectInnovationCountries().stream()
+        /*for (ProjectInnovationCountry pic : projectInnovationBD.getProjectInnovationCountries().stream()
           .filter(i -> i.getPhase().getId().equals(this.getPhaseID())).collect(Collectors.toList())) {
           projectInnovationCountryManager.deleteProjectInnovationCountry(pic.getId());
-        }
+        }*/
 
         // project_innovation_crps
-        for (ProjectInnovationCrp pic : projectInnovationBD.getProjectInnovationCrps().stream()
+        /*for (ProjectInnovationCrp pic : projectInnovationBD.getProjectInnovationCrps().stream()
           .filter(i -> i.getPhase().getId().equals(this.getPhaseID())).collect(Collectors.toList())) {
           projectInnovationCrpManager.deleteProjectInnovationCrp(pic.getId());
-        }
+        }*/
 
         // project_innovation_deliverables
-        for (ProjectInnovationDeliverable pid : projectInnovationBD.getProjectInnovationDeliverables().stream()
+        /*for (ProjectInnovationDeliverable pid : projectInnovationBD.getProjectInnovationDeliverables().stream()
           .filter(i -> i.getPhase().getId().equals(this.getPhaseID())).collect(Collectors.toList())) {
           projectInnovationDeliverableManager.deleteProjectInnovationDeliverable(pid.getId());
-        }
+        }*/
 
         // project_innovation_geographic_scopes
-        for (ProjectInnovationGeographicScope pigs : projectInnovationBD.getProjectInnovationGeographicScopes().stream()
+        /*for (ProjectInnovationGeographicScope pigs : projectInnovationBD.getProjectInnovationGeographicScopes().stream()
           .filter(i -> i.getPhase().getId().equals(this.getPhaseID())).collect(Collectors.toList())) {
           projectInnovationGeographicScopeManager.deleteProjectInnovationGeographicScope(pigs.getId());
-        }
+        }*/
 
         // project_innovation_info (remove from this phase onwards)
-        for (ProjectInnovationInfo pii : projectInnovationBD.getProjectInnovationInfos().stream()
+        /*for (ProjectInnovationInfo pii : projectInnovationBD.getProjectInnovationInfos().stream()
           .filter(info -> info.getPhase().getId() >= this.getPhaseID()).collect(Collectors.toList())) {
           projectInnovationInfoManager.deleteProjectInnovationInfo(pii.getId());
-        }
+        }*/
 
         // project_innovation_milestones
-        for (ProjectInnovationMilestone pim : projectInnovationBD.getProjectInnovationMilestones().stream()
+        /*for (ProjectInnovationMilestone pim : projectInnovationBD.getProjectInnovationMilestones().stream()
           .filter(i -> i.getPhase().getId().equals(this.getPhaseID())).collect(Collectors.toList())) {
           projectInnovationMilestoneManager.deleteProjectInnovationMilestone(pim.getId());
-        }
+        }*/
 
         // project_innovation_organizations
-        for (ProjectInnovationOrganization pio : projectInnovationBD.getProjectInnovationOrganizations().stream()
+        /*for (ProjectInnovationOrganization pio : projectInnovationBD.getProjectInnovationOrganizations().stream()
           .filter(i -> i.getPhase().getId().equals(this.getPhaseID())).collect(Collectors.toList())) {
           projectInnovationOrganizationManager.deleteProjectInnovationOrganization(pio.getId());
-        }
+        }*/
+        
         // project_innovation_regions
-        for (ProjectInnovationRegion pir : projectInnovationBD.getProjectInnovationRegions().stream()
+        /*for (ProjectInnovationRegion pir : projectInnovationBD.getProjectInnovationRegions().stream()
           .filter(i -> i.getPhase().getId().equals(this.getPhaseID())).collect(Collectors.toList())) {
           projectInnovationRegionManager.deleteProjectInnovationRegion(pir.getId());
-        }
+        }*/
 
         // project_innovation_shared
-        for (ProjectInnovationShared pis : projectInnovationBD.getProjectInnovationShareds().stream()
+        /*for (ProjectInnovationShared pis : projectInnovationBD.getProjectInnovationShareds().stream()
           .filter(i -> i.getPhase().getId().equals(this.getPhaseID())).collect(Collectors.toList())) {
           projectInnovationSharedManager.deleteProjectInnovationShared(pis.getId());
-        }
+        }*/
 
         // project_innovation_sub_idos
-        for (ProjectInnovationSubIdo pisi : projectInnovationBD.getProjectInnovationSubIdos().stream()
+        /*for (ProjectInnovationSubIdo pisi : projectInnovationBD.getProjectInnovationSubIdos().stream()
           .filter(i -> i.getPhase().getId().equals(this.getPhaseID())).collect(Collectors.toList())) {
           projectInnovationSubIdoManager.deleteProjectInnovationSubIdo(pisi.getId());
-        }
+        }*/
 
         // project_policy_innovations (2020: it is now not being used)
-        List<ProjectPolicyInnovation> policyInnovations = projectPolicyInnovationManager.findAll().stream()
+        /*List<ProjectPolicyInnovation> policyInnovations = projectPolicyInnovationManager.findAll().stream()
           .filter(p -> p.getProjectInnovation() != null
             && p.getProjectInnovation().getId().equals(projectInnovationBD.getId())
             && p.getPhase().getId().equals(this.getPhaseID()))
           .collect(Collectors.toList());
         for (ProjectPolicyInnovation ppi : policyInnovations) {
           projectPolicyInnovationManager.deleteProjectPolicyInnovation(ppi.getId());
-        }
+        }*/
 
         // report_synthesis_cross_cutting_dimension_innovations (2020: it is now not being used)
-        List<ReportSynthesisCrossCuttingDimensionInnovation> dimensionInnovations =
+        /*List<ReportSynthesisCrossCuttingDimensionInnovation> dimensionInnovations =
           reportSynthesisCrossCuttingDimensionInnovationManager.findAll().stream()
             .filter(di -> di.getReportSynthesisCrossCuttingDimension() != null
               && di.getReportSynthesisCrossCuttingDimension().getReportSynthesis() != null
@@ -284,9 +285,10 @@ public class ProjectInnovationListAction extends BaseAction {
         for (ReportSynthesisCrossCuttingDimensionInnovation rsccdi : dimensionInnovations) {
           reportSynthesisCrossCuttingDimensionInnovationManager
             .deleteReportSynthesisCrossCuttingDimensionInnovation(rsccdi.getId());
-        }
+        }*/
+        
         // report_synthesis_flagship_progress_innovations
-        List<ReportSynthesisFlagshipProgressInnovation> progressInnovations =
+        /*List<ReportSynthesisFlagshipProgressInnovation> progressInnovations =
           reportSynthesisFlagshipProgressInnovationManager.findAll().stream()
             .filter(pi -> pi.getReportSynthesisFlagshipProgress() != null
               && pi.getReportSynthesisFlagshipProgress().getReportSynthesis() != null
@@ -302,7 +304,7 @@ public class ProjectInnovationListAction extends BaseAction {
         for (ReportSynthesisFlagshipProgressInnovation rsfpi : progressInnovations) {
           reportSynthesisFlagshipProgressInnovationManager
             .deleteReportSynthesisFlagshipProgressInnovation(rsfpi.getId());
-        }
+        }*/
 
         // section_status
         for (SectionStatus sectionStatus : projectInnovationBD.getSectionStatuses()) {
@@ -312,14 +314,14 @@ public class ProjectInnovationListAction extends BaseAction {
         projectInnovation.setModificationJustification(justification);
 
         // we need to find the first info in order to know if the innovation has to be "deleted"
-        ProjectInnovationInfo initialInfo = projectInnovation.getProjectInnovationInfos().stream()
+        /*ProjectInnovationInfo initialInfo = projectInnovation.getProjectInnovationInfos().stream()
           .sorted((infoOne, infoTwo) -> infoOne.getPhase().getId().compareTo(infoTwo.getPhase().getId())).findFirst()
           // orElse should NEVER happen, I hope...
           .orElse(null);
         // if the innovation was created in this phase, the ACTUAL innovation should be "deleted"
-        if (initialInfo != null && this.getPhaseID().equals(initialInfo.getPhase().getId())) {
+        if (initialInfo != null && this.getPhaseID().equals(initialInfo.getPhase().getId())) {*/
           projectInnovationManager.deleteProjectInnovation(projectInnovationBD.getId());
-        }
+        //}
       }
     }
     return SUCCESS;
