@@ -35,6 +35,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.Institutions;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionRequestDTO;
+import org.cgiar.ccafs.marlo.rest.dto.InstitutionSimpleDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewInstitutionDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
 import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
@@ -265,9 +266,18 @@ public class InstitutionItem<T> {
    * @return a List of institutions.
    */
   public ResponseEntity<List<InstitutionDTO>> getAllInstitutions() {
-    List<Institution> institutions = this.institutionManager.findAll();
+    List<Institution> institutions = this.institutionManager.getAllInstitutionsSimple();
     List<InstitutionDTO> institutionDTOs = institutions.stream()
       .map(institution -> this.institutionMapper.institutionToInstitutionDTO(institution)).collect(Collectors.toList());
+    return Optional.ofNullable(institutionDTOs).map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+      .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
+
+  public ResponseEntity<List<InstitutionSimpleDTO>> getAllInstitutionsSimple() {
+    List<Institution> institutions = this.institutionManager.getAllInstitutionsSimple();
+    List<InstitutionSimpleDTO> institutionDTOs =
+      institutions.stream().map(institution -> this.institutionMapper.institutionToInstitutionSimpleDTO(institution))
+        .collect(Collectors.toList());
     return Optional.ofNullable(institutionDTOs).map(result -> new ResponseEntity<>(result, HttpStatus.OK))
       .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }

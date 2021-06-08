@@ -90,6 +90,32 @@ public class InstitutionMySQLDAO extends AbstractMarloDAO<Institution, Long> imp
   }
 
   @Override
+  public List<Institution> getAllInstitutionsSimple() {
+    String sqlquery =
+      "Select inst.id, inst.name, inst.acronym, inst.website_link,insttypes.name as type,loc.name as hqLocation,"
+        + "loc.iso_alpha_2 as hqLocationISOalpha2 from institutions inst "
+        + "INNER JOIN institution_types insttypes ON insttypes.id=inst.institution_type_id "
+        + "INNER JOIN institutions_locations instloc ON instloc.institution_id=inst.id and instloc.is_headquater=1 "
+        + "INNER JOIN loc_elements loc ON loc.id=instloc.loc_element_id";
+    List<Institution> institutions = new ArrayList<>();
+
+    List<Map<String, Object>> queryValue = super.findCustomQuery(sqlquery);
+    Institution data = null;
+    for (Map<String, Object> map : queryValue) {
+      data = new Institution();
+      data.setName(map.get("name").toString());
+      data.setAcronym(map.get("acronym") != null ? map.get("acronym").toString() : "");
+      data.setId(Long.parseLong(map.get("id").toString()));
+      data.setWebsiteLink(map.get("website_link") != null ? map.get("website_link").toString() : "");
+      data.setType(map.get("type").toString());
+      data.setHqLocation(map.get("hqLocation").toString());
+      data.setHqLocationISOalpha2(map.get("hqLocationISOalpha2").toString());
+      institutions.add(data);
+    }
+    return institutions;
+  }
+
+  @Override
   public Institution save(Institution institution) {
 
     if (institution.getId() == null) {
