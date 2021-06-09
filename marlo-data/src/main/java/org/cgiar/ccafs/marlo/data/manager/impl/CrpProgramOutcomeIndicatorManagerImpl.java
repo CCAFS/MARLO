@@ -22,12 +22,11 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import org.apache.commons.lang3.StringUtils;
 
 
 /**
@@ -75,29 +74,74 @@ public class CrpProgramOutcomeIndicatorManagerImpl implements CrpProgramOutcomeI
     return crpProgramOutcomeIndicatorDAO.find(crpProgramOutcomeIndicatorID);
   }
 
+  @Override
+  public List<CrpProgramOutcomeIndicator> getCrpProgramOutcomeIndicatorByOutcomeAndIndicator(String indicator,
+    CrpProgramOutcome crpProgramOutcome) {
+    return crpProgramOutcomeIndicatorDAO.getCrpProgramOutcomeIndicatorByOutcomeAndIndicator(indicator,
+      crpProgramOutcome);
+
+  }
 
   public CrpProgramOutcomeIndicator getCrpProgramOutcomeIndicatorByPhase(String composedID, long phaseID) {
     return crpProgramOutcomeIndicatorDAO.getCrpProgramOutcomeIndicatorByPhase(composedID, phaseID);
   }
 
   @Override
-  public void replicate(CrpProgramOutcomeIndicator originalCrpOutcomeIndicator, Phase initialPhase) {
-    String outcomeIndicatorComposedId = originalCrpOutcomeIndicator.getComposeID();
-    String outcomeComposedId = StringUtils.substringBeforeLast(outcomeIndicatorComposedId, "-");
+  public void remove(CrpProgramOutcomeIndicator originalCrpOutcomeIndicator, Phase initialPhase) {
+    if (originalCrpOutcomeIndicator.getCrpProgramOutcome() != null
+      && originalCrpOutcomeIndicator.getCrpProgramOutcome().getComposeID() != null) {
 
-    List<CrpProgramOutcome> outcomes =
-      crpProgramOutcomeManager.getAllCrpProgramOutcomesByComposedIdFromPhase(outcomeComposedId, initialPhase.getId());
+      List<CrpProgramOutcome> outcomes = crpProgramOutcomeManager.getAllCrpProgramOutcomesByComposedIdFromPhase(
+        originalCrpOutcomeIndicator.getCrpProgramOutcome().getComposeID(), initialPhase.getId());
 
-    for (CrpProgramOutcome crpProgramOutcome : outcomes) {
-      CrpProgramOutcomeIndicator outcomeIndicator =
-        this.getCrpProgramOutcomeIndicatorByPhase(outcomeIndicatorComposedId, crpProgramOutcome.getPhase().getId());
-      if (outcomeIndicator == null) {
-        outcomeIndicator = new CrpProgramOutcomeIndicator();
+      for (CrpProgramOutcome crpProgramOutcome : outcomes) {
+
+        if (this.getCrpProgramOutcomeIndicatorByOutcomeAndIndicator(originalCrpOutcomeIndicator.getIndicator(),
+          crpProgramOutcome) != null
+          || (!this.getCrpProgramOutcomeIndicatorByOutcomeAndIndicator(originalCrpOutcomeIndicator.getIndicator(),
+            crpProgramOutcome).isEmpty())) {
+          List<CrpProgramOutcomeIndicator> indicators =
+            new ArrayList<>(this.getCrpProgramOutcomeIndicatorByOutcomeAndIndicator(
+              originalCrpOutcomeIndicator.getIndicator(), crpProgramOutcome));
+
+          for (CrpProgramOutcomeIndicator indicator : indicators) {
+            if (indicator.getId() != null) {
+              this.deleteCrpProgramOutcomeIndicator(indicator.getId());
+            }
+          }
+        }
+
       }
+    }
+  }
 
-      outcomeIndicator.copyFields(originalCrpOutcomeIndicator);
-      outcomeIndicator.setCrpProgramOutcome(crpProgramOutcome);
-      this.saveCrpProgramOutcomeIndicator(outcomeIndicator);
+  @Override
+  public void replicate(CrpProgramOutcomeIndicator originalCrpOutcomeIndicator, Phase initialPhase) {
+    if (originalCrpOutcomeIndicator.getCrpProgramOutcome() != null
+      && originalCrpOutcomeIndicator.getCrpProgramOutcome().getComposeID() != null) {
+
+      List<CrpProgramOutcome> outcomes = crpProgramOutcomeManager.getAllCrpProgramOutcomesByComposedIdFromPhase(
+        originalCrpOutcomeIndicator.getCrpProgramOutcome().getComposeID(), initialPhase.getId());
+
+      for (CrpProgramOutcome crpProgramOutcome : outcomes) {
+        CrpProgramOutcomeIndicator outcomeIndicator = new CrpProgramOutcomeIndicator();
+        if (originalCrpOutcomeIndicator.getId() != null) {
+          if (this.getCrpProgramOutcomeIndicatorById(originalCrpOutcomeIndicator.getId()) != null) {
+            originalCrpOutcomeIndicator = this.getCrpProgramOutcomeIndicatorById(originalCrpOutcomeIndicator.getId());
+          } else {
+            outcomeIndicator = new CrpProgramOutcomeIndicator();
+          }
+        }
+
+        if (this.getCrpProgramOutcomeIndicatorByOutcomeAndIndicator(originalCrpOutcomeIndicator.getIndicator(),
+          crpProgramOutcome) == null
+          || (this.getCrpProgramOutcomeIndicatorByOutcomeAndIndicator(originalCrpOutcomeIndicator.getIndicator(),
+            crpProgramOutcome).isEmpty())) {
+          outcomeIndicator.copyFields(originalCrpOutcomeIndicator);
+          outcomeIndicator.setCrpProgramOutcome(crpProgramOutcome);
+          this.saveCrpProgramOutcomeIndicator(outcomeIndicator);
+        }
+      }
     }
   }
 
