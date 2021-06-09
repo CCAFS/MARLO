@@ -387,6 +387,13 @@ public class ProjectActivitiesAction extends BaseAction {
           activityTitles = activityTitleManager.findAll();
         }
       }
+      
+          deliverablesMissingActivity = new ArrayList<>();
+    
+          project.getCurrentDeliverables(project.getCurrentPhase()).stream().filter((deliverable) -> (deliverable.getDeliverableActivities().isEmpty())).forEachOrdered((_item) -> {
+              deliverablesMissingActivity.add(_item);
+        });
+
     }
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
@@ -619,5 +626,26 @@ public class ProjectActivitiesAction extends BaseAction {
       activitiesValidator.validate(this, project, true);
     }
   }
+
+    private List<Deliverable> deliverablesMissingActivity = new ArrayList<>();
+
+    /**
+     * Get the value of deliverablesMissingActivity
+     *
+     * @return the value of deliverablesMissingActivity
+     */
+    public List<Deliverable> getDeliverablesMissingActivity() {
+        return deliverablesMissingActivity;
+    }
+
+    /**
+     * Set the value of deliverablesMissingActivity
+     *
+     * @param deliverablesMissingActivity new value of
+ deliverablesMissingActivity
+     */
+    public void setDeliverablesMissingActivity(List<Deliverable> deliverablesMissingActivity) {
+        this.deliverablesMissingActivity = deliverablesMissingActivity;
+    }
 
 }

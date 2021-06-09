@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -58,6 +59,8 @@ public interface CrpProgramOutcomeIndicatorManager {
    */
   public CrpProgramOutcomeIndicator getCrpProgramOutcomeIndicatorById(long crpProgramOutcomeIndicatorID);
 
+  public void replicate(CrpProgramOutcomeIndicator crpProgramOutcomeIndicator, Phase initialPhase);
+
   /**
    * This method saves the information of the given crpProgramOutcomeIndicator
    * 
@@ -70,6 +73,5 @@ public interface CrpProgramOutcomeIndicatorManager {
    */
   public CrpProgramOutcomeIndicator
     saveCrpProgramOutcomeIndicator(CrpProgramOutcomeIndicator crpProgramOutcomeIndicator);
-
 
 }

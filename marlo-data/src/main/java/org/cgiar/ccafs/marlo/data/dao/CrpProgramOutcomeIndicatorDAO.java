@@ -58,6 +58,7 @@ public interface CrpProgramOutcomeIndicatorDAO {
   public CrpProgramOutcomeIndicator getCrpProgramOutcomeIndicator(String composedId,
     CrpProgramOutcome crpProgramOutcome);
 
+  public CrpProgramOutcomeIndicator getCrpProgramOutcomeIndicatorByPhase(String composedID, long phaseID);
 
   /**
    * This method saves the information of the given crpProgramOutcomeIndicator

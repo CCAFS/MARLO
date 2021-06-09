@@ -5,20 +5,31 @@
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectContributionsCrpList.js?20180131_2",
   "${baseUrlCdn}/global/js/fieldsValidation.js"
-  ] 
+  ]
 /]
 [#assign customCSS = [
   "${baseUrlMedia}/css/projects/projectContributionsCrpList.css",
   "${baseUrlMedia}/css/projects/projectsContributionToLP6.css"
   ] /]
-[#assign currentSection = "projects" /]
 [#assign currentStage = "contributionsCrpList" /]
 [#assign isListSection = true /]
-[#assign breadCrumb = [
-  {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
-  {"text":"P${project.id}", "nameSpace":"/projects", "action":"${crpSession}/description", "param": "projectID=${project.id?c}&edit=true&phaseID=${(actualPhase.id)!}"},
-  {"label":"projectContributionsCrpList", "nameSpace":"/projects", "action":""}
-] /]
+
+
+[#if !action.isAiccra()]
+  [#assign currentSection = "projects" /]
+  [#assign breadCrumb = [
+    {"label":"projectsList", "nameSpace":"${currentSection}", "action":"${(crpSession)!}/projectsList"},
+    {"text":"P${project.id}", "nameSpace":"${currentSection}", "action":"${crpSession}/description", "param": "projectID=${project.id?c}&edit=true&phaseID=${(actualPhase.id)!}"},
+    {"label":"projectContributionsCrpList", "nameSpace":"${currentSection}", "action":""}
+  ] /]
+[#else]
+  [#assign currentSection = "clusters" /]
+  [#assign breadCrumb = [
+    {"label":"projectsList", "nameSpace":"${currentSection}", "action":"${(crpSession)!}/projectsList"},
+    {"text":"C${project.id}", "nameSpace":"${currentSection}", "action":"${crpSession}/description", "param": "projectID=${project.id?c}&edit=true&phaseID=${(actualPhase.id)!}"},
+    {"label":"projectContributionsCrpList", "nameSpace":"${currentSection}", "action":""}
+  ] /]
+[/#if]
 
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
@@ -33,7 +44,7 @@
   <div class="helpMessage infoText">
     <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
     <p class="col-md-10"> [@s.text name="projectContributionsCrpList.help" /] </p>
-  </div> 
+  </div>
   <div style="display:none" class="viewMore closed"></div>
 </div>
 
@@ -50,8 +61,8 @@
       <div class="col-md-9">
         [#-- Section Messages --]
         [#include "/WEB-INF/crp/views/projects/messages-projects.ftl" /]
-          
-          <h3 class="headTitle">[@s.text name="projectContributionsCrpList.title" /]</h3>  
+
+          <h3 class="headTitle">[@s.text name="projectContributionsCrpList.title" /]</h3>
           <div id="projectContributionsCrpList" class="borderBox">
             [#-- Your project contributes to the flagships --]
             <div class="form-group">
@@ -61,9 +72,9 @@
                 <div class="clearfix"></div>
               </p>
             </div>
-            
+
             [#if reportingActive && canEdit] <p class="note">[@s.text name="projectContributionsCrpList.reportingHelp"/]</p>[/#if]
-            
+
             [#-- Project Outcomes List --]
             <table id="projectOutcomesList" class="table table-striped table-hover ">
               <thead>
@@ -79,20 +90,20 @@
               [#if project.outcomes?has_content]
                 [#list project.outcomes as projectOutcome]
                   [@outcomeContributionMacro projectOutcome=projectOutcome name="" index=projectOutcome_index  /]
-                [/#list] 
+                [/#list]
               [/#if]
-              </tbody> 
+              </tbody>
             </table>
-            
+
             [#if !project.outcomes?has_content]
               <p class="emptyMessage text-center">[@s.text name="projectContributionsCrpList.contributionsEmpty"/]</p>
             [/#if]
-            
+
             [#-- Add a new Outcomes --]
             [#if canEdit]
               <div class="addNewOutcome">
                 <div class="outcomesListBlock">
-                  <span id="outcomesSelectedIds" style="display:none">[#if project.outcomes?has_content][#list project.outcomes as e]${e.crpProgramOutcome.id}[#if e_has_next],[/#if][/#list][/#if]</span>  
+                  <span id="outcomesSelectedIds" style="display:none">[#if project.outcomes?has_content][#list project.outcomes as e]${e.crpProgramOutcome.id}[#if e_has_next],[/#if][/#list][/#if]</span>
                   [@customForm.select name="outcomeId" label="" disabled=!canEdit i18nkey="projectContributionsCrpList.selectOutcome" listName="outcomes" keyFieldName="id" displayFieldName="name" className="" /]
                 </div>
                 <div class="addOutcomeBlock">
@@ -101,11 +112,11 @@
                   </a>
                 </div>
               </div>
-            [/#if] 
-          </div> 
+            [/#if]
+          </div>
       [@contributionToLP6 /]
       </div>
-    </div>  
+    </div>
 </section>
 [/#if]
 
@@ -118,7 +129,7 @@
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
 [#macro outcomeContributionMacro projectOutcome name index isTemplate=false ]
-  [#local projectOutcomeID =  projectOutcome.id /] 
+  [#local projectOutcomeID =  projectOutcome.id /]
   [#local projectOutcomeUrl = "${baseUrl}/projects/${crpSession}/contributionCrp.do?projectOutcomeID=${projectOutcomeID}&edit=true&phaseID=${(actualPhase.id)!}" /]
   [#local hasDraft = (action.getAutoSaveFilePath(projectOutcome.class.simpleName, "contributionCrp", projectOutcome.id))!false /]
   <tr class="projectOutcome">
@@ -137,22 +148,22 @@
         [#else]
             [#assign isThisComplete = false /]
         [/#if]
-      
+
         [#-- Draft Tag --]
         [#if hasDraft]<strong class="text-info">[DRAFT]</strong>[/#if]
-        
+
         [#-- Report --]
         [#if reportingActive && !isThisComplete]
           <span class="label label-primary" title="Required for reporting"><span class="glyphicon glyphicon-flash" ></span> Report</span>
         [/#if]
-        
+
         <a href="${projectOutcomeUrl}">
           ${projectOutcome.crpProgramOutcome.description}
           [#if action.hasSpecificities('crp_ip_outcome_indicator')]
             [#if (projectOutcome.crpProgramOutcome.indicator?has_content)!false]<i class="indicatorText"><br /><strong>Indicator: </strong>${(projectOutcome.crpProgramOutcome.indicator)!'No Indicator'}</i>[/#if]
           [/#if]
         </a>
-        
+
       </td>
       <td>
         [#if !isTemplate][@popUps.relationsMacro element=projectOutcome labelText=false /]</div>[/#if]
@@ -163,7 +174,7 @@
           [#if !((action.getProjectOutcomeStatus(projectOutcome.id)).missingFields)?has_content]
             <span class="icon-20 icon-check" title="Complete"></span>
           [#else]
-            <span class="icon-20 icon-uncheck" title=""></span> 
+            <span class="icon-20 icon-uncheck" title=""></span>
           [/#if]
         [#else]
             <span class="icon-20 icon-uncheck" title=""></span>
@@ -217,14 +228,14 @@
         </div>
       </div>
     </div>
-  </div> 
+  </div>
 [/#macro]
 
-[#macro contributionToLP6 template=false] 
+[#macro contributionToLP6 template=false]
 [#assign isContributing = ((action.getProjectLp6ContributionValue(project.id, actualPhase.id))!false) ]
 [#if action.hasSpecificities('crp_lp6_active') && reportingActive]
   <div id="projectContributionToLP6" class="borderBox project-${project.id} phase-${actualPhase.id}">
-  
+
    [#-- <a class="btn lp6-pdf btn-link" role="button" data-toggle="popover" data-trigger="focus" title="[@s.text name="projects.LP6Contribution.disabledPDF"/]"><img src="${baseUrlCdn}/global/images/pdf.png" height="25"/>[[@s.text name="projects.LP6Contribution.explanatoryPDF" /]]</a>--]
    <h4>[@s.text name="projects.LP6Contribution.title" /]</h4>
    <p class="note lp6-contribution-note"><small>[@s.text name="projects.LP6Contribution.infoText"/] (<span class="lp6-view-more" data-toggle="modal" data-target=".lp6info-modal">view more</span>)</small></p>
