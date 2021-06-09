@@ -859,9 +859,10 @@ public class OutcomesAction extends BaseAction {
     }
 
     /*
-     * Save Milestones
+     * Save indicators
      */
     if (crpProgramOutcomeDetached.getIndicators() != null) {
+      Phase nextPhase = this.getActualPhase().getNext();
       for (CrpProgramOutcomeIndicator crpProgramOutcomeIndicatorDetached : crpProgramOutcomeDetached.getIndicators()) {
         CrpProgramOutcomeIndicator crpProgramOutcomeIndicatorDB = null;
         if (crpProgramOutcomeIndicatorDetached.getId() == null) {
@@ -877,6 +878,7 @@ public class OutcomesAction extends BaseAction {
 
         crpProgramOutcomeIndicatorDB =
           crpProgramOutcomeIndicatorManager.saveCrpProgramOutcomeIndicator(crpProgramOutcomeIndicatorDB);
+        crpProgramOutcomeIndicatorManager.replicate(crpProgramOutcomeIndicatorDB, nextPhase);
       }
     }
   }
