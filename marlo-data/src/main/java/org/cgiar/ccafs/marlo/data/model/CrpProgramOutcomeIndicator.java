@@ -32,6 +32,14 @@ public class CrpProgramOutcomeIndicator extends MarloAuditableEntity implements 
   }
 
 
+  public void copyFields(CrpProgramOutcomeIndicator other) {
+    this.setActive(other.isActive());
+    this.setComposeID(other.getComposeID());
+    this.setCrpProgramOutcome(other.getCrpProgramOutcome());
+    this.setActiveSince(other.getActiveSince());
+    this.setIndicator(other.getIndicator());
+  }
+
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -52,6 +60,7 @@ public class CrpProgramOutcomeIndicator extends MarloAuditableEntity implements 
     return true;
   }
 
+
   public String getComposeID() {
     return composeID;
   }
@@ -66,13 +75,13 @@ public class CrpProgramOutcomeIndicator extends MarloAuditableEntity implements 
     return indicator;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
+
 
   @Override
   public int hashCode() {
@@ -86,7 +95,6 @@ public class CrpProgramOutcomeIndicator extends MarloAuditableEntity implements 
   public void setComposeID(String composeID) {
     this.composeID = composeID;
   }
-
 
   public void setCrpProgramOutcome(CrpProgramOutcome crpProgramOutcome) {
     this.crpProgramOutcome = crpProgramOutcome;

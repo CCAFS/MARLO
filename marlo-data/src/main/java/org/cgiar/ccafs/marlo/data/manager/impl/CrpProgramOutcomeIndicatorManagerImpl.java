@@ -17,12 +17,17 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.CrpProgramOutcomeIndicatorDAO;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeIndicatorManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.apache.commons.lang3.StringUtils;
 
 
 /**
@@ -34,11 +39,13 @@ public class CrpProgramOutcomeIndicatorManagerImpl implements CrpProgramOutcomeI
 
   private CrpProgramOutcomeIndicatorDAO crpProgramOutcomeIndicatorDAO;
   // Managers
-
+  private CrpProgramOutcomeManager crpProgramOutcomeManager;
 
   @Inject
-  public CrpProgramOutcomeIndicatorManagerImpl(CrpProgramOutcomeIndicatorDAO crpProgramOutcomeIndicatorDAO) {
+  public CrpProgramOutcomeIndicatorManagerImpl(CrpProgramOutcomeIndicatorDAO crpProgramOutcomeIndicatorDAO,
+    CrpProgramOutcomeManager crpProgramOutcomeManager) {
     this.crpProgramOutcomeIndicatorDAO = crpProgramOutcomeIndicatorDAO;
+    this.crpProgramOutcomeManager = crpProgramOutcomeManager;
 
 
   }
@@ -68,12 +75,37 @@ public class CrpProgramOutcomeIndicatorManagerImpl implements CrpProgramOutcomeI
     return crpProgramOutcomeIndicatorDAO.find(crpProgramOutcomeIndicatorID);
   }
 
+
+  public CrpProgramOutcomeIndicator getCrpProgramOutcomeIndicatorByPhase(String composedID, long phaseID) {
+    return crpProgramOutcomeIndicatorDAO.getCrpProgramOutcomeIndicatorByPhase(composedID, phaseID);
+  }
+
+  @Override
+  public void replicate(CrpProgramOutcomeIndicator originalCrpOutcomeIndicator, Phase initialPhase) {
+    String outcomeIndicatorComposedId = originalCrpOutcomeIndicator.getComposeID();
+    String outcomeComposedId = StringUtils.substringBeforeLast(outcomeIndicatorComposedId, "-");
+
+    List<CrpProgramOutcome> outcomes =
+      crpProgramOutcomeManager.getAllCrpProgramOutcomesByComposedIdFromPhase(outcomeComposedId, initialPhase.getId());
+
+    for (CrpProgramOutcome crpProgramOutcome : outcomes) {
+      CrpProgramOutcomeIndicator outcomeIndicator =
+        this.getCrpProgramOutcomeIndicatorByPhase(outcomeIndicatorComposedId, crpProgramOutcome.getPhase().getId());
+      if (outcomeIndicator == null) {
+        outcomeIndicator = new CrpProgramOutcomeIndicator();
+      }
+
+      outcomeIndicator.copyFields(originalCrpOutcomeIndicator);
+      outcomeIndicator.setCrpProgramOutcome(crpProgramOutcome);
+      this.saveCrpProgramOutcomeIndicator(outcomeIndicator);
+    }
+  }
+
   @Override
   public CrpProgramOutcomeIndicator
     saveCrpProgramOutcomeIndicator(CrpProgramOutcomeIndicator crpProgramOutcomeIndicator) {
 
     return crpProgramOutcomeIndicatorDAO.save(crpProgramOutcomeIndicator);
   }
-
 
 }
