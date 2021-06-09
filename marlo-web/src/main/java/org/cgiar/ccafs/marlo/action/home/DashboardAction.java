@@ -182,12 +182,6 @@ public class DashboardAction extends BaseAction {
         myDeliverables.addAll(project.getCurrentDeliverables(phase));
       });
 
-    deliverablesMissingActivityCount = 0;
-    
-    myDeliverables.stream().filter((deliverable) -> (deliverable.getDeliverableActivities().isEmpty())).forEachOrdered((_item) -> {
-        deliverablesMissingActivityCount++;
-      });
-    
   }
 
 
@@ -217,27 +211,6 @@ public class DashboardAction extends BaseAction {
      */
     public void setMyDeliverables(List<Deliverable> myDeliverables) {
         this.myDeliverables = myDeliverables;
-    }
-
-    private int deliverablesMissingActivityCount = 0;
-
-    /**
-     * Get the value of deliverablesMissingActivityCount
-     *
-     * @return the value of deliverablesMissingActivityCount
-     */
-    public int getDeliverablesMissingActivityCount() {
-        return deliverablesMissingActivityCount;
-    }
-
-    /**
-     * Set the value of deliverablesMissingActivityCount
-     *
-     * @param deliverablesMissingActivityCount new value of
-     * deliverablesMissingActivityCount
-     */
-    public void setDeliverablesMissingActivityCount(int deliverablesMissingActivityCount) {
-        this.deliverablesMissingActivityCount = deliverablesMissingActivityCount;
     }
 
 }
