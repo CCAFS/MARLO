@@ -35,7 +35,7 @@ public class CrpProgramOutcomeIndicator extends MarloAuditableEntity implements 
   public void copyFields(CrpProgramOutcomeIndicator other) {
     this.setActive(other.isActive());
     this.setComposeID(other.getComposeID());
-    this.setCrpProgramOutcome(other.getCrpProgramOutcome());
+    // this.setCrpProgramOutcome(other.getCrpProgramOutcome());
     this.setActiveSince(other.getActiveSince());
     this.setIndicator(other.getIndicator());
   }

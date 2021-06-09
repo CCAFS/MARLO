@@ -847,14 +847,18 @@ public class OutcomesAction extends BaseAction {
     /*
      * Delete Indicators
      */
+    Phase nextPhase = this.getActualPhase().getNext();
+
     for (CrpProgramOutcomeIndicator crpProgramOutcomeIndicator : crpProgramOutcomeDB.getCrpProgramOutcomeIndicators()
       .stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
       if (crpProgramOutcomeDetached.getIndicators() != null) {
         if (!crpProgramOutcomeDetached.getIndicators().contains(crpProgramOutcomeIndicator)) {
           crpProgramOutcomeIndicatorManager.deleteCrpProgramOutcomeIndicator(crpProgramOutcomeIndicator.getId());
+          crpProgramOutcomeIndicatorManager.remove(crpProgramOutcomeIndicator, nextPhase);
         }
       } else {
         crpProgramOutcomeIndicatorManager.deleteCrpProgramOutcomeIndicator(crpProgramOutcomeIndicator.getId());
+        crpProgramOutcomeIndicatorManager.remove(crpProgramOutcomeIndicator, nextPhase);
       }
     }
 
@@ -862,7 +866,6 @@ public class OutcomesAction extends BaseAction {
      * Save indicators
      */
     if (crpProgramOutcomeDetached.getIndicators() != null) {
-      Phase nextPhase = this.getActualPhase().getNext();
       for (CrpProgramOutcomeIndicator crpProgramOutcomeIndicatorDetached : crpProgramOutcomeDetached.getIndicators()) {
         CrpProgramOutcomeIndicator crpProgramOutcomeIndicatorDB = null;
         if (crpProgramOutcomeIndicatorDetached.getId() == null) {
