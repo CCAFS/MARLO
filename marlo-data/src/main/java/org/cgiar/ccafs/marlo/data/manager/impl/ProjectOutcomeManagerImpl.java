@@ -459,8 +459,8 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
             .collect(Collectors.toList()).isEmpty()) {
 
             ProjectOutcomeIndicator projectOutcomeIndicatorAdd = new ProjectOutcomeIndicator();
-            projectOutcomeIndicatorAdd.setCrpProgramOutcomeIndicator(crpProgramOutcomeIndicatorDAO
-              .getCrpProgramOutcomeIndicator(projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getComposeID(),
+            projectOutcomeIndicatorAdd
+              .setCrpProgramOutcomeIndicator(crpProgramOutcomeIndicatorDAO.getCrpProgramOutcomeIndicatorPhase(0,
                 this.getProjectOutcomeById(projectOutcomePrev.getId()).getCrpProgramOutcome()));
 
             projectOutcomeIndicatorAdd.setValue(projectOutcomeIndicator.getValue());

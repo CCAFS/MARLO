@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -140,6 +141,35 @@ public class CrpProgramOutcomeIndicatorMySQLDAO extends AbstractMarloDAO<CrpProg
     } else {
       return null;
     }
+  }
+
+  @Override
+  public CrpProgramOutcomeIndicator getCrpProgramOutcomeIndicatorPhase(long phaseID,
+    CrpProgramOutcome crpProgramOutcome) {
+    String query = "from " + CrpProgramOutcomeIndicator.class.getName()
+      + " where is_active=1 and crp_program_outcome_id = " + crpProgramOutcome.getId();
+    List<CrpProgramOutcomeIndicator> list = super.findAll(query);
+    if (phaseID != 0) {
+      if (!list.isEmpty()) {
+        if (list.stream()
+          .filter(o -> o.getCrpProgramOutcome() != null && o.getCrpProgramOutcome().getPhase() != null
+            && o.getCrpProgramOutcome().getPhase().getId() != null
+            && o.getCrpProgramOutcome().getPhase().getId().equals(phaseID))
+          .collect(Collectors.toList()) != null) {
+          list = list.stream()
+            .filter(o -> o.getCrpProgramOutcome() != null && o.getCrpProgramOutcome().getPhase() != null
+              && o.getCrpProgramOutcome().getPhase().getId() != null
+              && o.getCrpProgramOutcome().getPhase().getId().equals(phaseID))
+            .collect(Collectors.toList());
+        }
+      }
+    }
+    if (!list.isEmpty() && list.get(0) != null) {
+      return list.get(0);
+    }
+
+    return null;
+
   }
 
   @Override
