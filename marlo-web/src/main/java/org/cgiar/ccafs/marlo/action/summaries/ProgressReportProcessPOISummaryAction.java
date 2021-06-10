@@ -739,14 +739,14 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                 deliverables =
                   deliverableManager.getDeliverablesByProjectAndPhase(this.getSelectedPhase().getId(), projectID);
                 if (deliverables != null && !deliverables.isEmpty()) {
-                  /*
-                   * deliverables = deliverables.stream()
-                   * .filter(d -> d.isActive() && d.getDeliverableInfo(this.getSelectedPhase()).isActive()
-                   * && d.getDeliverableInfo(this.getSelectedPhase()).getCrpClusterKeyOutput() != null
-                   * && d.getDeliverableInfo(this.getSelectedPhase()).getCrpClusterKeyOutput().getId()
-                   * .equals(projectOutcome.getCrpProgramOutcome().getId()))
-                   * .collect(Collectors.toList());
-                   */
+
+                  deliverables = deliverables.stream()
+                    .filter(d -> d.isActive() && d.getDeliverableInfo(this.getSelectedPhase()).isActive()
+                      && d.getDeliverableInfo(this.getSelectedPhase()).getCrpProgramOutcome() != null
+                      && d.getDeliverableInfo(this.getSelectedPhase()).getCrpProgramOutcome().getId()
+                        .equals(projectOutcome.getCrpProgramOutcome().getId()))
+                    .collect(Collectors.toList());
+
                   this.createDeliverablesTable(deliverables);
                 }
               }
