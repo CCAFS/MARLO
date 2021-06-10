@@ -22,7 +22,8 @@ public class CrpProgramOutcomeIndicator extends MarloAuditableEntity implements 
   private String indicator;
   @Expose
   private String composeID;
-
+  @Expose
+  private Phase phase;
 
   public CrpProgramOutcomeIndicator() {
   }
@@ -83,6 +84,11 @@ public class CrpProgramOutcomeIndicator extends MarloAuditableEntity implements 
   }
 
 
+  public Phase getPhase() {
+    return phase;
+  }
+
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -90,7 +96,6 @@ public class CrpProgramOutcomeIndicator extends MarloAuditableEntity implements 
     result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
     return result;
   }
-
 
   public void setComposeID(String composeID) {
     this.composeID = composeID;
@@ -102,6 +107,11 @@ public class CrpProgramOutcomeIndicator extends MarloAuditableEntity implements 
 
   public void setIndicator(String indicator) {
     this.indicator = indicator;
+  }
+
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
 }

@@ -106,6 +106,22 @@
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome" />
     </set>
+    <set name="projectOutcomeIndicators" table="project_outcome_indicators" inverse="true"
+      lazy="true" fetch="select">
+      <key>
+        <column name="id_phase" not-null="true" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectOutcomeIndicator" />
+    </set>
+    <set name="programOutcomeIndicators" table="crp_program_outcome_indicator" inverse="true"
+      lazy="true" fetch="select">
+      <key>
+        <column name="id_phase" not-null="true" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator" />
+    </set>
     <set name="clusters" table="crp_cluster_of_activities"
       inverse="true" lazy="true" fetch="select">
       <key>
