@@ -32,7 +32,8 @@ public class ProjectOutcomeIndicator extends MarloAuditableEntity implements jav
   private Double valueReporting;
   @Expose
   private String achievedNarrative;
-
+  @Expose
+  private Phase phase;
 
   public ProjectOutcomeIndicator() {
   }
@@ -83,6 +84,11 @@ public class ProjectOutcomeIndicator extends MarloAuditableEntity implements jav
   }
 
 
+  public Phase getPhase() {
+    return phase;
+  }
+
+
   public ProjectOutcome getProjectOutcome() {
     return projectOutcome;
   }
@@ -122,15 +128,18 @@ public class ProjectOutcomeIndicator extends MarloAuditableEntity implements jav
   }
 
 
+  public void setPhase(Phase phase) {
+    this.phase = phase;
+  }
+
+
   public void setProjectOutcome(ProjectOutcome projectOutcome) {
     this.projectOutcome = projectOutcome;
   }
 
-
   public void setValue(Double value) {
     this.value = value;
   }
-
 
   public void setValueReporting(Double valueReporting) {
     this.valueReporting = valueReporting;

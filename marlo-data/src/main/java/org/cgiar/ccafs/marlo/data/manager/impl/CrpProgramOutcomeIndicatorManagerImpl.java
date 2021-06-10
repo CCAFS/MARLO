@@ -139,6 +139,11 @@ public class CrpProgramOutcomeIndicatorManagerImpl implements CrpProgramOutcomeI
             crpProgramOutcome).isEmpty())) {
           outcomeIndicator.copyFields(originalCrpOutcomeIndicator);
           outcomeIndicator.setCrpProgramOutcome(crpProgramOutcome);
+          if (crpProgramOutcome.getId() != null
+            && crpProgramOutcomeManager.getCrpProgramOutcomeById(crpProgramOutcome.getId()) != null) {
+            crpProgramOutcome = crpProgramOutcomeManager.getCrpProgramOutcomeById(crpProgramOutcome.getId());
+          }
+          outcomeIndicator.setPhase(crpProgramOutcome.getPhase());
           this.saveCrpProgramOutcomeIndicator(outcomeIndicator);
         }
       }
