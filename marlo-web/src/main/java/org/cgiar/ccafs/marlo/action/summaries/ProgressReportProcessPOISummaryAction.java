@@ -643,7 +643,8 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                     indicator.getCrpProgramOutcomeIndicator().getIndicator() + ":");
                 }
                 if (indicator.getNarrative() != null) {
-                  poiSummary.textParagraphFontCalibri(document.createParagraph(), indicator.getNarrative());
+                  poiSummary.textParagraphFontCalibriUnderline(document.createParagraph(),
+                    indicator.getNarrative() + " . " + " \n ");
                 }
               }
             }
