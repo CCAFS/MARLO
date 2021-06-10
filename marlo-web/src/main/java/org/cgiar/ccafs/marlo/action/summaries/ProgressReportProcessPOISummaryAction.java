@@ -50,7 +50,6 @@ import org.cgiar.ccafs.marlo.data.model.PowbTocListDTO;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
-import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcomeIndicator;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -751,17 +750,8 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                 }
               }
             }
-            poiSummary.textLineBreak(document, 1);
+            poiSummary.textLineBreak(document, 3);
           }
-
-          if (projectOutcome.getMilestones() != null && !projectOutcome.getMilestones().isEmpty()) {
-            for (ProjectMilestone projectMilestone : projectOutcome.getMilestones()) {
-
-
-            }
-          }
-
-
         }
       }
 
