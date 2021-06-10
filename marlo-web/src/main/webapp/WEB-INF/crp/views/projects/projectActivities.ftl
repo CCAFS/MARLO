@@ -76,6 +76,7 @@
             <div class="pull-right">
               [@popUps.deliverablesMissingActivities deliverables=deliverablesMissingActivity /]
             </div>
+            <br>
           [/#if]
 
           <div class="activitiesOG-content simpleBox" listname="project.openProjectActivities">
