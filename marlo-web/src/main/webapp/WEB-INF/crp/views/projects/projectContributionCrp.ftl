@@ -409,7 +409,7 @@
             </div>
           [#else]
             <div class="col-md-4">
-              [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.upkeepAchievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) /]
+              [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) /]
             </div>
           [/#if]
         </div>
