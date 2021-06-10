@@ -2295,6 +2295,8 @@ public class POISummary {
       table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(13350));
     } else if (tableType.contains("Powb")) {
       table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(13700));
+    } else if (tableType.contains("Progress")) {
+      table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(9400));
     } else {
       table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(12000));
     }
@@ -2702,6 +2704,8 @@ public class POISummary {
       table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(13350));
     } else if (tableType.contains("Powb")) {
       table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(13700));
+    } else if (tableType.contains("Progress")) {
+      table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(1000));
     } else {
       table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(12000));
     }
