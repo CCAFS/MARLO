@@ -138,6 +138,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
         projectIndicatorAdd.setValue(projectIndicator.getValue());
         projectIndicatorAdd.setProjectOutcome(projectOutcomeAdd);
         projectIndicatorAdd.setNarrative(projectIndicator.getNarrative());
+        projectIndicatorAdd.setPhase(projectIndicator.getPhase());
         projectOutcomeIndicatorDAO.save(projectIndicatorAdd);
 
       }
@@ -401,10 +402,11 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
       projectOutcome.setIndicators(new ArrayList<ProjectOutcomeIndicator>());
     }
     for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcome.getIndicators()) {
-      if (projectOutcomeIndicator.getCrpProgramOutcomeIndicator() != null
+      if (projectOutcomeIndicator != null && projectOutcomeIndicator.getCrpProgramOutcomeIndicator() != null
         && projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId() != null) {
         projectOutcomeIndicator.setCrpProgramOutcomeIndicator(
           crpProgramOutcomeIndicatorDAO.find(projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId()));
+        projectOutcomeIndicator.setPhase(projectOutcomeIndicator.getPhase());
       }
     }
 
@@ -469,6 +471,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
             projectOutcomeIndicatorAdd.setValue(projectOutcomeIndicator.getValue());
             projectOutcomeIndicatorAdd.setNarrative(projectOutcomeIndicator.getNarrative());
             projectOutcomeIndicatorAdd.setProjectOutcome(projectOutcomePrev);
+            projectOutcomeIndicatorAdd.setPhase(projectOutcomeIndicator.getPhase());
 
             projectOutcomeIndicatorAdd = projectOutcomeIndicatorDAO.save(projectOutcomeIndicatorAdd);
 
@@ -478,7 +481,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
                 .equals(projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getComposeID()))
               .collect(Collectors.toList()).get(0);
 
-
+            indicator.setPhase(projectOutcomeIndicator.getPhase());
             indicator.setValue(projectOutcomeIndicator.getValue());
             indicator.setNarrative(projectOutcomeIndicator.getNarrative());
 

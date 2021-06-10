@@ -631,6 +631,9 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
             // Indicators
             projectOutcome.getCrpProgramOutcome().setIndicators(projectOutcome.getCrpProgramOutcome()
               .getCrpProgramOutcomeIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+            projectOutcome.setIndicators(projectOutcome.getProjectOutcomeIndicators().stream().filter(c -> c.isActive())
+              .collect(Collectors.toList()));
+
             if (projectOutcome.getCrpProgramOutcome() != null
               && projectOutcome.getCrpProgramOutcome().getIndicators() != null
               && !projectOutcome.getCrpProgramOutcome().getIndicators().isEmpty()) {
