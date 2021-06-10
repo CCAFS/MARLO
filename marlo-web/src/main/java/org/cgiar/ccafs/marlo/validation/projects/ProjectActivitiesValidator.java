@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.validation.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
@@ -87,6 +88,20 @@ public class ProjectActivitiesValidator extends BaseValidator {
         i++;
       }
     }
+
+    // Missing Deliverables activities
+    List<Deliverable> deliverablesMissingActivity = new ArrayList<>();
+
+    project.getCurrentDeliverables(project.getCurrentPhase()).stream()
+      .filter((deliverable) -> (deliverable.getDeliverableActivities().isEmpty())).forEachOrdered((_item) -> {
+        deliverablesMissingActivity.add(_item);
+      });
+
+    if (deliverablesMissingActivity != null && !deliverablesMissingActivity.isEmpty()) {
+      action.addMessage(action.getText("Missing deliverables activities", ""));
+      action.getInvalidFields().put("Missing deliverables activities", "Missing deliverables activities");
+    }
+
 
     if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));
@@ -159,7 +174,7 @@ public class ProjectActivitiesValidator extends BaseValidator {
           && activityTitleIds.contains(activity.getActivityTitle().getId())) {
           action.addMessage(action.getText("activity.title", params));
           action.getInvalidFields().put("input-project." + listName + "[" + index + "].activityTitle.id",
-            InvalidFieldsMessages.EMPTYFIELD);
+            InvalidFieldsMessages.WRONGVALUE);
         } else {
           activityTitleIds.add(activity.getActivityTitle().getId());
         }
