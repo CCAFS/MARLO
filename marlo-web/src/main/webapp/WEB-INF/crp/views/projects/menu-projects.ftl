@@ -178,6 +178,18 @@
   </div>
 [/#if]
 
+  [#-- AICCRA Doc report --]
+  [#if !config.production && action.isAiccra() && action.canAccessSuperAdmin()]
+    <br><br>
+    <div class="text-center">
+      [#assign documentLink][@s.url namespace="/projects" action="${crpSession}/progressReportProcessSummary"][@s.param name='projectID']${projectID}[/@s.param][@s.param name='phaseID']${actualPhase.id}[/@s.param][/@s.url][/#assign]
+      <a class="btn btn-default" href="${documentLink}" target="_blank">
+       <img src="${baseUrlCdn}/global/images/icons/file-doc.png" alt="" /> Generate Progress Summary
+       [@utils.underConstruction title="global.underConstruction" width="20px" height="20px" /]
+      </a>
+    </div>
+  [/#if]
+
 [#-- Discard Changes Popup --]
 [#include "/WEB-INF/global/macros/discardChangesPopup.ftl"]
 

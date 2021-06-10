@@ -379,12 +379,11 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
     String blackColor = "000000";
 
     Boolean bold = true;
-    POIField[] sHeader =
-      {new POIField(this.getText("summaries.powb2019.tablea1.title1"), ParagraphAlignment.CENTER, bold, blackColor),
-        new POIField(this.getText("summaries.powb2019.tablea1.title2"), ParagraphAlignment.CENTER, bold, blackColor),
-        new POIField(this.getText("summaries.powb2019.tablea1.title3"), ParagraphAlignment.CENTER, bold, blackColor),
-        new POIField(this.getText("summaries.powb2019.tablea1.title4"), ParagraphAlignment.CENTER, bold, blackColor),
-        new POIField(this.getText("summaries.powb2019.tablea1.title5"), ParagraphAlignment.CENTER, bold, blackColor)};
+    POIField[] sHeader = {new POIField(this.getText("indicator test"), ParagraphAlignment.CENTER, bold, blackColor),
+      new POIField(this.getText("test 1"), ParagraphAlignment.CENTER, bold, blackColor),
+      new POIField(this.getText("test 2"), ParagraphAlignment.CENTER, bold, blackColor),
+      new POIField(this.getText("test 3"), ParagraphAlignment.CENTER, bold, blackColor),
+      new POIField(this.getText("test 4"), ParagraphAlignment.CENTER, bold, blackColor)};
 
     bold = false;
     POIField[] sHeader2 = {new POIField("", ParagraphAlignment.LEFT, bold, blackColor),
@@ -394,9 +393,9 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
       new POIField("", ParagraphAlignment.CENTER, bold, blackColor)};
 
     List<POIField> header = Arrays.asList(sHeader);
-    List<POIField> header2 = Arrays.asList(sHeader2);
+    // List<POIField> header2 = Arrays.asList(sHeader2);
     headers.add(header);
-    headers.add(header2);
+    // headers.add(header2);
 
     List<List<POIField>> datas = new ArrayList<>();
     List<POIField> data;
@@ -507,7 +506,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
 
 
       // Project ID
-      // paragraph = document.createParagraph();
+      paragraph = document.createParagraph();
       run = paragraph.createRun();
       run.setText(this.getText("summaries.progressReport2020.coverTable.Title1") + ":");
       run.setBold(false);
@@ -595,12 +594,13 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
       // Project Contribution to Performance Indicators
       paragraph = document.createParagraph();
       run = paragraph.createRun();
-      run.setText(this.getText("summaries.progressReport2020.contributionIndicators") + ":");
+      run.setText(this.getText("summaries.progressReport2020.contributionIndicators"));
       run.setBold(false);
       run.setFontSize(14);
       run.setFontFamily("Verdana");
       run.setColor("00AF50");
       paragraph.setStyle("heading 2");
+      poiSummary.textLineBreak(document, 1);
 
 
       if (projectOutcomes != null && !projectOutcomes.isEmpty()) {
@@ -629,19 +629,18 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
             }
 
             // Indicators
-            projectOutcome.getCrpProgramOutcome().setIndicators(projectOutcome.getCrpProgramOutcome()
-              .getCrpProgramOutcomeIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-            projectOutcome.setIndicators(projectOutcome.getProjectOutcomeIndicators().stream().filter(c -> c.isActive())
+            projectOutcome.setIndicators(projectOutcomeIndicatorManager.findAll().stream().filter(i -> i.isActive()
+              && i.getProjectOutcome() != null && i.getProjectOutcome().getId().equals(projectOutcome.getId()))
               .collect(Collectors.toList()));
 
-            if (projectOutcome.getCrpProgramOutcome() != null
-              && projectOutcome.getCrpProgramOutcome().getIndicators() != null
-              && !projectOutcome.getCrpProgramOutcome().getIndicators().isEmpty()) {
+
+            if (projectOutcome.getIndicators() != null && !projectOutcome.getIndicators().isEmpty()) {
               for (ProjectOutcomeIndicator indicator : projectOutcome.getIndicators()) {
                 if (indicator.getCrpProgramOutcomeIndicator() != null
                   && indicator.getCrpProgramOutcomeIndicator().getIndicator() != null) {
+                  poiSummary.textLineBreak(document, 1);
                   poiSummary.textParagraphFontCalibri(document.createParagraph(),
-                    indicator.getCrpProgramOutcomeIndicator().getIndicator());
+                    indicator.getCrpProgramOutcomeIndicator().getIndicator() + ":");
                 }
                 if (indicator.getNarrative() != null) {
                   poiSummary.textParagraphFontCalibri(document.createParagraph(), indicator.getNarrative());
