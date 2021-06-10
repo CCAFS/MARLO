@@ -878,6 +878,7 @@ public class OutcomesAction extends BaseAction {
 
         crpProgramOutcomeIndicatorDB.setCrpProgramOutcome(crpProgramOutcomeDB);
         crpProgramOutcomeIndicatorDB.setIndicator(crpProgramOutcomeIndicatorDetached.getIndicator());
+        crpProgramOutcomeIndicatorDB.setPhase(this.getActualPhase());
 
         crpProgramOutcomeIndicatorDB =
           crpProgramOutcomeIndicatorManager.saveCrpProgramOutcomeIndicator(crpProgramOutcomeIndicatorDB);

@@ -401,8 +401,11 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
       projectOutcome.setIndicators(new ArrayList<ProjectOutcomeIndicator>());
     }
     for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcome.getIndicators()) {
-      projectOutcomeIndicator.setCrpProgramOutcomeIndicator(
-        crpProgramOutcomeIndicatorDAO.find(projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId()));
+      if (projectOutcomeIndicator.getCrpProgramOutcomeIndicator() != null
+        && projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId() != null) {
+        projectOutcomeIndicator.setCrpProgramOutcomeIndicator(
+          crpProgramOutcomeIndicatorDAO.find(projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId()));
+      }
     }
 
     if (currentPhase.getCrp() != null && currentPhase.getCrp().getAcronym() != null
