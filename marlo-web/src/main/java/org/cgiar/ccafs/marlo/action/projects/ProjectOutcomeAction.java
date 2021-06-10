@@ -591,9 +591,21 @@ public class ProjectOutcomeAction extends BaseAction {
         }
         projectOutcome.setNextUsers(
           projectOutcome.getProjectNextusers().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-
+        /*
+         * if (projectOutcome.getProjectOutcomeIndicators().stream()
+         * .filter(
+         * c -> c.isActive() && c.getPhase() != null && c.getPhase().getId().equals(this.getActualPhase().getId()))
+         * .collect(Collectors.toList()) != null
+         * && !projectOutcome.getProjectOutcomeIndicators().stream()
+         * .filter(c -> c.isActive() && c.getPhase().getId().equals(this.getActualPhase().getId()))
+         * .collect(Collectors.toList()).isEmpty()) {
+         * projectOutcome.setIndicators(projectOutcome.getProjectOutcomeIndicators().stream().filter(c -> c.isActive())
+         * .collect(Collectors.toList()));
+         * } else {
+         */
         projectOutcome.setIndicators(
           projectOutcome.getProjectOutcomeIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        // }
         if (this.isLessonsActive()) {
           this.loadLessonsOutcome(loggedCrp, projectOutcome);
         }
@@ -845,6 +857,7 @@ public class ProjectOutcomeAction extends BaseAction {
           if (projectOutcomeIndicator.getId() == null) {
             // Create new entity
             projectOutcomeIndicator.setProjectOutcome(projectOutcomeDB);
+            projectOutcomeIndicator.setPhase(this.getActualPhase());
 
             projectOutcomeIndicatorManager.saveProjectOutcomeIndicator(projectOutcomeIndicator);
             // This add projectOutcomeIndicator to generate correct auditlog.
@@ -860,6 +873,8 @@ public class ProjectOutcomeAction extends BaseAction {
             // update existing fields
             projectOutcomeIndicatorDB.setNarrative(projectOutcomeIndicator.getNarrative());
             projectOutcomeIndicatorDB.setValue(projectOutcomeIndicator.getValue());
+            projectOutcomeIndicator.setPhase(this.getActualPhase());
+
             if (this.isReportingActive()) {
               projectOutcomeIndicatorDB.setValueReporting(projectOutcomeIndicator.getValueReporting());
               projectOutcomeIndicatorDB.setAchievedNarrative(projectOutcomeIndicator.getAchievedNarrative());
