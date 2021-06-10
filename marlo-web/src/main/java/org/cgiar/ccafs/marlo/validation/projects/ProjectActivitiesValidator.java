@@ -43,6 +43,7 @@ import com.ibm.icu.util.Calendar;
 public class ProjectActivitiesValidator extends BaseValidator {
 
   private final GlobalUnitManager crpManager;
+  List<Long> activityTitleIds;
 
   @Inject
   public ProjectActivitiesValidator(GlobalUnitManager crpManager) {
@@ -71,6 +72,7 @@ public class ProjectActivitiesValidator extends BaseValidator {
 
     if (project.getProjectActivities() != null) {
       int i = 0;
+      activityTitleIds = new ArrayList<>();
       for (Activity activity : project.getProjectActivities()) {
 
         if (activity != null && activity.getActivityStatus() != null) {
@@ -150,6 +152,17 @@ public class ProjectActivitiesValidator extends BaseValidator {
         action.addMessage(action.getText("activity.title", params));
         action.getInvalidFields().put("input-project." + listName + "[" + index + "].activityTitle.id",
           InvalidFieldsMessages.EMPTYFIELD);
+      }
+
+      if (activity.getActivityTitle() != null && activity.getActivityTitle().getId() != null) {
+        if (activityTitleIds != null && !activityTitleIds.isEmpty()
+          && activityTitleIds.contains(activity.getActivityTitle().getId())) {
+          action.addMessage(action.getText("activity.title", params));
+          action.getInvalidFields().put("input-project." + listName + "[" + index + "].activityTitle.id",
+            InvalidFieldsMessages.EMPTYFIELD);
+        } else {
+          activityTitleIds.add(activity.getActivityTitle().getId());
+        }
       }
     }
 

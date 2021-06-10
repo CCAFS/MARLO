@@ -1871,6 +1871,17 @@ public class POISummary {
     paragraphRun.setFontSize(11);
   }
 
+  public void textParagraphFontCalibriUnderline(XWPFParagraph paragraph, String text) {
+    paragraph.setAlignment(ParagraphAlignment.BOTH);
+    XWPFRun paragraphRun = paragraph.createRun();
+    this.addParagraphTextBreak(paragraphRun, text);
+    paragraphRun.setColor(TEXT_FONT_COLOR);
+    paragraphRun.setBold(false);
+    paragraphRun.setFontFamily("Calibri");
+    paragraphRun.setFontSize(11);
+    paragraphRun.setUnderline(paragraphRun.getUnderline());
+  }
+
   public void textParagraphItalicLightBlue(XWPFParagraph paragraph, String text) {
     paragraph.setAlignment(ParagraphAlignment.BOTH);
     XWPFRun paragraphRun = paragraph.createRun();
