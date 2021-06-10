@@ -1879,7 +1879,7 @@ public class POISummary {
     paragraphRun.setBold(false);
     paragraphRun.setFontFamily("Calibri");
     paragraphRun.setFontSize(11);
-    paragraphRun.setUnderline(paragraphRun.getUnderline());
+    paragraphRun.setUnderline(UnderlinePatterns.SINGLE);
   }
 
   public void textParagraphItalicLightBlue(XWPFParagraph paragraph, String text) {

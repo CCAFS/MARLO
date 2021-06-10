@@ -221,7 +221,7 @@
           </div>
           [/#if]          
                     
-          [#if action.isAiccra()]
+          [#if action.isAiccra() && projectOutcome.crpProgramOutcome.indicators?size != 0]
           <h4 class="headTitle">Progress to Targets</h4>
           <div class="nextUsersBlock borderBox">
             <div class="nextUsersList">
