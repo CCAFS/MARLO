@@ -19,14 +19,17 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.DeliverableInfoDAO;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,15 +46,17 @@ public class DeliverableInfoManagerImpl implements DeliverableInfoManager {
   private PhaseDAO phaseDAO;
   private DeliverableInfoDAO deliverableInfoDAO;
   private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
+  private CrpProgramOutcomeManager crpProgramOutcomeManager;
   // Managers
 
 
   @Inject
   public DeliverableInfoManagerImpl(DeliverableInfoDAO deliverableInfoDAO, PhaseDAO phaseDAO,
-    CrpClusterKeyOutputManager crpClusterKeyOutputManager) {
+    CrpClusterKeyOutputManager crpClusterKeyOutputManager, CrpProgramOutcomeManager crpProgramOutcomeManager) {
     this.deliverableInfoDAO = deliverableInfoDAO;
     this.phaseDAO = phaseDAO;
     this.crpClusterKeyOutputManager = crpClusterKeyOutputManager;
+    this.crpProgramOutcomeManager = crpProgramOutcomeManager;
   }
 
   @Override
@@ -154,12 +159,24 @@ public class DeliverableInfoManagerImpl implements DeliverableInfoManager {
 
       }
     }
+    CrpProgramOutcome programOutcomePhase = null;
+
+    if (deliverableInfo.getCrpProgramOutcome() != null && deliverableInfo.getCrpProgramOutcome().getId() != -1
+      && deliverableInfo.getCrpProgramOutcome().getComposeID() != null) {
+      List<CrpProgramOutcome> programOutcomes = new ArrayList<>();
+      programOutcomes = crpProgramOutcomeManager.getAllCrpProgramOutcomesByComposedIdFromPhase(
+        deliverableInfo.getCrpProgramOutcome().getComposeID(), phase.getId());
+      if (programOutcomes != null && !programOutcomes.isEmpty() && programOutcomes.get(0) != null) {
+        programOutcomePhase = programOutcomes.get(0);
+      }
+    }
 
 
     if (!deliverableInfos.isEmpty()) {
       for (DeliverableInfo deliverableInfoPhase : deliverableInfos) {
         deliverableInfoPhase.updateDeliverableInfo(deliverableInfo);
         deliverableInfoPhase.setCrpClusterKeyOutput(keyOutputPhase);
+        deliverableInfoPhase.setCrpProgramOutcome(programOutcomePhase);
         deliverableInfoDAO.save(deliverableInfoPhase);
       }
     } else {
@@ -167,6 +184,7 @@ public class DeliverableInfoManagerImpl implements DeliverableInfoManager {
       deliverableInfoAdd.setDeliverable(deliverableInfo.getDeliverable());
       deliverableInfoAdd.updateDeliverableInfo(deliverableInfo);
       deliverableInfoAdd.setCrpClusterKeyOutput(keyOutputPhase);
+      deliverableInfoAdd.setCrpProgramOutcome(programOutcomePhase);
       deliverableInfoAdd.setDeliverableType(deliverableInfo.getDeliverableType());
       deliverableInfoAdd.setPhase(phase);
       deliverableInfoDAO.save(deliverableInfoAdd);

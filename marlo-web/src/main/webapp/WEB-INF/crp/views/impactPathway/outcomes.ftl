@@ -2,18 +2,18 @@
 [#assign title = "Impact Pathway - Outcomes" /]
 [#assign currentSectionString = "program-${actionName?replace('/','-')}-${crpProgramID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom"] /]
-[#assign customJS = [ 
-  "${baseUrlMedia}/js/impactPathway/programSubmit.js", 
-  "${baseUrlMedia}/js/impactPathway/outcomes.js?20201709", 
+[#assign customJS = [
+  "${baseUrlMedia}/js/impactPathway/programSubmit.js",
+  "${baseUrlMedia}/js/impactPathway/outcomes.js?20201709",
   [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
   "${baseUrlCdn}/global/js/impactGraphic.js",
-  "${baseUrlCdn}/global/js/fieldsValidation.js" 
-  ] 
+  "${baseUrlCdn}/global/js/fieldsValidation.js"
+  ]
 /]
-[#assign customCSS = [ 
+[#assign customCSS = [
   "${baseUrlMedia}/css/impactPathway/outcomes.css?20202209",
-  "${baseUrlCdn}/global/css/impactGraphic.css" 
-  ] 
+  "${baseUrlCdn}/global/css/impactGraphic.css"
+  ]
 /]
 [#assign currentSection = "impactPathway" /]
 [#assign currentStage = "outcomes" /]
@@ -35,12 +35,12 @@
   <div style="display:none;" class="helpMessage infoText">
     <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
     <p class="col-md-10"> [@s.text name="outcomes.help" /] </p>
-  </div> 
+  </div>
   <div style="display:none" class="viewMore closed"></div>
 </div>
 
 <section class="marlo-content">
-  <div class="container"> 
+  <div class="container">
     [#if programs?has_content]
     <div class="row">
       <div class="col-md-3">
@@ -49,14 +49,14 @@
       <div class="col-md-9">
         [#-- Sub Menu --]
         [#include "/WEB-INF/crp/views/impactPathway/submenu-impactPathway.ftl" /]
-        
+
         [#-- Section Messages --]
         [#include "/WEB-INF/crp/views/impactPathway/messages-impactPathway.ftl" /]
-        
-        [@s.form action=actionName enctype="multipart/form-data" ]  
+
+        [@s.form action=actionName enctype="multipart/form-data" ]
         [#-- Outcomes List --]
         <h4 class="sectionTitle">[@s.text name="outcomes.title"][@s.param]${(selectedProgram.acronym)!}[/@s.param] [/@s.text]</h4>
-          
+
           [#-- Check if the programID is Valid --]
           [#assign hasAvailableProgramID = false ]
           [#list programs as program]
@@ -65,10 +65,10 @@
               [#break]
             [/#if]
           [/#list]
-          
+
           [#if hasAvailableProgramID]
             <div class="outcomes-list" listname="outcomes">
-             <div class="cont-btn-min"> 
+             <div class="cont-btn-min">
               [#if action.isAiccra()]
                 <button type="button" class="btn-expand-all-outcomes btn btn-link">Collapse all indicators<i class="fas fa-expand-arrows-alt"></i></button>
               [#else]
@@ -90,12 +90,12 @@
           [#else]
             <p>Please select a [@s.text name="global.flagship" /]</p>
           [/#if]
-          
-          
-            
+
+
+
           [#-- Section Buttons--]
           [#include "/WEB-INF/crp/views/impactPathway/buttons-impactPathway.ftl" /]
-          
+
         [/@s.form]
     </div>
     [#else]
@@ -103,16 +103,16 @@
     [/#if]
   </div>
 </div>
-  
-  
-  
+
+
+
 </section>
 
 [#-- PopUp to select SubIDOs --]
 <div id="subIDOs-graphic" style="overflow:auto; display:none;" >
   <div class="graphic-container" >
   <div class="filterPanel panel-default">
-    <div class="panel-heading"> 
+    <div class="panel-heading">
       <form id="filterForm"  role="form">
         <label class="checkbox-inline">Filter By:</label>
         <label class="checkbox-inline">
@@ -123,9 +123,9 @@
         </label>
       </form>
     </div>
-  </div>        
+  </div>
   [#list srfIdos as ido]
-    <div class="idoWrapper ${ido.isCrossCutting?string("crossCutting","ido")} ">    
+    <div class="idoWrapper ${ido.isCrossCutting?string("crossCutting","ido")} ">
       <div class="IDO${ido.isCrossCutting?string("-CrossCutting","")}"><strong>${ido.isCrossCutting?string("CrossCutting:","")} ${ido.description}</strong></div>
       <div class="subIdoWrapper">
         [#list ido.subIdos as subIdo]
@@ -135,17 +135,17 @@
       </div>
     </div>
   [/#list]
-  </div>      
+  </div>
 </div>
 
 [#-- Add other target unit --]
-<div id="dialog-targetUnit" class="text-center" style="display:none" title="New Target Unit">  
+<div id="dialog-targetUnit" class="text-center" style="display:none" title="New Target Unit">
   <div class="form-group text-center">
     <label for="targetUnitName">Insert the new Target Unit</label>
     <input type="text" class="form-control" id="targetUnitName" placeholder="">
   </div>
 </div>
-      
+
 [#-- Outcome Template --]
 [@outcomeMacro outcome={} name="outcomes" index=-1 isTemplate=true /]
 
@@ -182,15 +182,15 @@
     [#elseif editable]
       <div class="removeElement disable" title="[@s.text name="global.CrpProgramOutcome"/] can not be deleted"></div>
     [/#if]
-    
+
     [#if !isTemplate]
       <div class="pull-right">
         [@popUps.relationsMacro element=outcome /]
       </div>
     [/#if]
-    
+
     <br />
-    <div class="cont-btn-min"> 
+    <div class="cont-btn-min">
      <button   type="button" class="btn-expand-Outcome btn btn-link">Collapse Outcome<i class="fas fa-expand-arrows-alt"></i></button>
     </div>
     [#-- Outcome Statement --]
@@ -203,7 +203,7 @@
       [@customForm.textArea name="${outcomeCustomName}.indicator"  i18nkey="outcome.inidicator" required=false className="outcome-inidicator limitWords-100" editable=editable /]
     </div>
     [/#if]
-    
+
     <div class="row form-group target-block to-minimize-outcome">
       [#-- Target Year --]
       <div class="col-md-4">[@customForm.input name="${outcomeCustomName}.year" value="${(outcome.year)!2023}" type="text" i18nkey="outcome.targetYear"  placeholder="outcome.inputTargetYear.placeholder" className="targetYear outcomeYear" required=true editable=editable /]</div>
@@ -222,7 +222,7 @@
       <div class="col-md-4 targetValue-block" style="display:${showTargetValue?string('block', 'none')}">
         [@customForm.input name="${outcomeCustomName}.value" i18nkey="outcome.targetValue" help="outcomes.addNewTargetUnit"  placeholder="outcome.inputTargetValue.placeholder" className="targetValue" required=true editable=editable /]
       </div>
-      
+
     </div>
 
     <!-- Nav tabs -->
@@ -239,14 +239,14 @@
         <li role="presentation" ><a href="#subIdos-tab-${index}" aria-controls="home" role="tab" data-toggle="tab">Sub-IDOs <span class="badge">${(outcome.subIdos?size)!'0'}</span></a></li>
       [/#if]
      </ul>
-  
+
     <!-- Tab panes -->
     <div class="tab-content impactpathwayTabContent  to-minimize-outcome">
-    
+
       [#if !action.isAiccra()]
         [#-- Outcome Sub-IDOs List --]
         <div role="tabpanel" class="tab-pane fade " id="subIdos-tab-${index}">
-        
+
           [#-- <h5 class="sectionSubTitle">[@s.text name="outcome.subIDOs.sectionTitle"/] <p class="contributioRem pull-right">Contribution <span class="value">0%</span></p></h5>--]
           <div class="subIdos-list" listname="${outcomeCustomName}.subIdos">
             [#if outcome.subIdos?has_content]
@@ -266,11 +266,11 @@
           [/#if]
         </div>
       [/#if]
-      
+
       [#-- Baseline indicators --]
       [#if action.hasSpecificities('crp_baseline_indicators') && (selectedProgram.baseLine)!false]
       <div role="tabpanel" class="tab-pane fade" id="baseline-tab-${index}">
-        
+
         [#-- Upload a PDF with baseline instructions --]
         <div class="form-group fileUploadContainer">
           <label>[@customForm.text name="outcome.baselineInstructions" readText=!editable /]:</label>
@@ -280,16 +280,16 @@
             [#-- Input File --]
             [#if editable]
             <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="upload" type="file" name="file" data-url="${baseUrl}/uploadBaseLine.do"></div>
-            
+
             [/#if]
             [#-- Uploaded File --]
             <p class="fileUploaded textMessage checked" style="display:${hasFile?string('block','none')}">
               <span class="contentResult">[#if outcome.file??]
               ${action.getBaseLineFileURL((outcome.id?string)!-1)}
                 <a target="_blank" href="${action.getBaseLineFileURL((outcome.id?string)!-1)}/${(outcome.file.fileName)!}">${(outcome.file.fileName)!('No file name')} </a>
-                [/#if]</span> 
+                [/#if]</span>
               [#if editable]<span class="removeIcon"> </span> [/#if]
-            </p> 
+            </p>
           [#else]
             <p><i>[@customForm.text name="outcome.baselineInstructionsUnavailbale" readText=!editable /] </i></p>
           [/#if]
@@ -298,7 +298,7 @@
         [#-- Baseline indicators list --]
         <h5 class="sectionSubTitle">[@s.text name="outcome.baselineIndicators" /]:</h5>
         <div class="baselineIndicators-list"">
-        
+
         [#if outcome.indicators?has_content]
           [#list outcome.indicators as baselineIndicator]
             [@baselineIndicatorMacro indicator=baselineIndicator name="${outcomeCustomName}.indicators" index=baselineIndicator_index /]
@@ -315,15 +315,15 @@
         [/#if]
       </div>
       [/#if]
-      
+
       [#-- Outcome Milestones List --]
       <div role="tabpanel" class="tab-pane fade in active" id="milestones-tab-${index}">
-      
+
         [#--<h5 class="sectionSubTitle">[@s.text name="outcome.milestone.sectionTitle"/]</h5>--]
         <div class="milestones-list" listname="${outcomeCustomName}.milestones">
-        
+
         [#if outcome.milestones?has_content]
-           <div class="cont-btn-min"> 
+           <div class="cont-btn-min">
              <button   type="button" class="btn-expand-all btn btn-link">Collapse all<i class="fas fa-expand-arrows-alt"></i></button>
            </div>
           [#list outcome.milestones as milestone]
@@ -344,7 +344,7 @@
     </div>
 
     <br />
-    
+
   </div>
 [/#macro]
 
@@ -359,7 +359,7 @@
     [#local milestoneYear =  milestone.extendedYear ]
   [/#if --]
   [#local reqMilestonesFields = (milestoneYear == actualPhase.year)!false /]
-  
+
   [#local isMilestoneNew =  true ]
   [#if !isTemplate]
     [#local isMilestoneNew =  milestone.isNew(actualPhase.id) ]
@@ -371,7 +371,7 @@
     [#elseif editableMilestone]
       <div class="removeElement sm disable" title="[@s.text name="global.CrpMilestone"/] can not be deleted"></div>
     [/#if]
-    
+
     [#-- SLO Title --]
     <div class="blockTitle opened">
       <div class="leftHead ${reqMilestonesFields?string('green', '')} sm">
@@ -383,33 +383,33 @@
      ${(milestone.title)!""}
       <!-- <small>(Alerts: 5) </small> -->
     </div>
-    
+
     <div class="blockContent" style="display:block">
       <div id="milestone-${isTemplate?string('template', index)}" class="milestone borderBox-no-border isNew-${isMilestoneNew?string}" style="display:${isTemplate?string('none','block')}">
-   
 
 
-   
-        
+
+
+
         <input type="hidden" class="mileStoneId" name="${milestoneCustomName}.id" value="${(milestone.id)!}"/>
         <input type="hidden" class="mileStoneComposeId" name="${milestoneCustomName}.composeID" value="${(milestone.composeID)!}"/>
-    
+
         <div class="pull-right">
           [@popUps.relationsMacro element=(milestone)!{} /]
         </div>
-       
+
         [#-- Milestone Statement --]
         <div class="form-group">
           [@customForm.textArea name="${milestoneCustomName}.title" i18nkey="outcome.milestone.statement" required=true className="milestone-statement limitWords-100" editable=editableMilestone /]
         </div>
-        
-        <div class="form-group row to-minimize"> 
+
+        <div class="form-group row to-minimize">
           [#-- Year --]
           <div class="col-md-4">
             [@customForm.select name="${milestoneCustomName}.year" value="${(milestone.year)!-1}"  i18nkey="outcome.milestone.inputTargetYear" listName="milestoneYears"  required=true  className=" targetYear milestoneYear" editable=editableMilestone /]
            </div>
           [#--  Status  --]
-          <div class="col-md-4"> 
+          <div class="col-md-4">
             [@customForm.select name="${milestoneCustomName}.milestonesStatus.id" forcedValue="${(milestone.milestonesStatus.name)!}" i18nkey="outcome.milestone.inputStatus" listName="generalStatuses" keyFieldName="id" displayFieldName="name" required=true  className="milestoneStatus" editable=editable /]
           </div>
           [#-- Extended Year --]
@@ -418,7 +418,7 @@
            [#if !editableMilestone][#if (milestone.extendedYear != -1)!false ]${(milestone.extendedYear)!}[/#if][/#if]
           </div>
         </div>
-        
+
         <div class="row form-group target-block to-minimize">
           [#-- Target Unit --]
           [#if targetUnitList?has_content]
@@ -432,7 +432,7 @@
             [@customForm.input name="${milestoneCustomName}.value" type="text"  i18nkey="outcome.milestone.inputTargetValue" placeholder="outcome.milestone.inputTargetValue.placeholder" className="targetValue" required=true editable=editableMilestone /]
           </div>
         </div>
-        
+
         [#-- POWB 2019 REQUIREMENTS --]
         <div class="form-group to-minimize">
           <div class="row">
@@ -453,14 +453,14 @@
               [/#if]
             </div>
           </div>
-          
+
           [#if globalUnitType != 3]
             <div class="row form-group">
               [#-- For medium/high please select the main risk --]
               [#local showRisk = (milestone.powbIndAssesmentRisk.id >= 2)!false ]
               <div class="col-md-6 milestoneRisk" style="display:${showRisk?string('block', 'none')}">
                 [@customForm.select name="${milestoneCustomName}.powbIndMilestoneRisk.id"  i18nkey="outcome.milestone.powbIndMilestoneRisk" className="risksOptions" keyFieldName="id" displayFieldName="name" listName="milestoneRisks" editable=editable required=reqMilestonesFields /]
-              </div>        
+              </div>
               [#-- Other Risk --]
               [#local showOtherRiskField = (milestone.powbIndMilestoneRisk.id == 7)!false ]
               <div class="col-md-6 milestoneOtherRiskField" style="display:${showOtherRiskField?string('block', 'none')}">
@@ -468,7 +468,7 @@
               </div>
             </div>
           [/#if]
-          
+
           [#-- Means of verification --]
           <div class="form-group">
             [@customForm.textArea name="${milestoneCustomName}.powbMilestoneVerification" i18nkey="outcome.milestone.powbMilestoneVerification" required=true className="milestone-powbMilestoneVerification" editable=editable required=reqMilestonesFields /]
@@ -492,7 +492,7 @@
           </div>
         </div>
       </div>
-    
+
     </div>
   </div>
   <!-- //MILESTONE NORMAL -->
@@ -517,7 +517,7 @@
       <div class="removeSubIdo removeElement sm" title="Remove Sub IDO"></div>
     [#elseif editable]
       <div class="removeElement sm disable" title="[@s.text name="global.SrfSubIdo"/] can not be deleted"></div>
-    [/#if] 
+    [/#if]
     [#-- Primary Option --]
     <div class="">
       [@customForm.radioFlat id="${subIDOCustomName}.primary" name="${subIDOCustomName}.primary" label="Set this Sub-IDO as primary" disabled=false editable=editable value="true" checked=(subIdo.primary)!false cssClass="setPrimaryRadio" cssClassLabel="radio-label-yes" inline=false /]
@@ -539,7 +539,7 @@
       <div class="contributionBlock">[@customForm.input name="${subIDOCustomName}.contribution" type="text" i18nkey="outcome.subIDOs.inputContribution.label" placeholder="% of contribution" className="contribution" required=true editable=editable /]</div>
       <div class="clearfix"></div>
     </div>
-    <hr /> 
+    <hr />
     [#-- Assumptions List --]
     <div class="row" style="position: relative;">
       <div class="col-md-9">
@@ -569,10 +569,10 @@
     <div class="removeAssumption removeIcon" title="Remove assumption"></div>
     [/#if]
     <input type="hidden" class="assumptionId" name="${assumptionCustomName}.id" value="${(assumption.id)!}"/>
-    [#if !editable] 
+    [#if !editable]
       [#if assumption.description?has_content]
         <div class="input"><p> <strong>${index+1}.</strong> ${(assumption.description)!}</p></div>
-      [/#if] 
+      [/#if]
     [#else]
       [@customForm.input name="${assumptionCustomName}.description" type="text" showTitle=false placeholder="" className="statement limitWords-100" required=true editable=editable /]
     [/#if]
@@ -591,15 +591,15 @@
     [#if editable]<div class="removeBaselineIndicator removeElement sm" title="Remove Indicators"></div>[/#if]
     [#-- Hidden inputs --]
     <input type="hidden" class="baselineIndicatorId" name="${customName}.id" value="${(indicator.id)!}"/>
-  
+
     <input type="hidden"  name="${customName}.composeID" value="${(indicator.composeID)!}"/>
-    
-    [#if editable] 
+
+    [#if editable]
       [@customForm.input name="${customName}.indicator" value=indicator.title i18nkey="baselineIndicator.title" type="text" showTitle=true placeholder="" className="statement limitWords-50" required=true editable=editable /]
     [#else]
       [#if indicator.indicator?has_content]
         <div class="input"><p>${(indicator.indicator)!}</p></div>
-      [/#if] 
+      [/#if]
     [/#if]
     <div class="clearfix"></div>
   </div>
