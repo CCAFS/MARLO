@@ -11,7 +11,7 @@
  * GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
- ****************************************************************
+ * ***************************************************************
  */
 package org.cgiar.ccafs.marlo.validation.projects;
 
@@ -392,7 +392,6 @@ public class DeliverableValidator extends BaseValidator {
 
         }
     }
-  
 
     private void validateDeliverableInfo(DeliverableInfo deliverableInfo, Deliverable deliverable, Project project,
             BaseAction action) {
@@ -465,23 +464,41 @@ public class DeliverableValidator extends BaseValidator {
                     InvalidFieldsMessages.EMPTYFIELD);
         }
 
+        if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrpProgramOutcome().getId() == -1) {
+
+            if (action.isAiccra()) {
+                action.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
+                action.getInvalidFields().put("input-deliverable.deliverableInfo.crpProgramOutcome.id",
+                        InvalidFieldsMessages.EMPTYFIELD);
+            }
+
+            deliverable.getDeliverableInfo(action.getActualPhase()).setCrpProgramOutcome(null);
+
+        }
+
         if (!action.isCenterGlobalUnit()) {
             if (!(project.getProjecInfoPhase(action.getActualPhase()).getAdministrative() != null
                     && project.getProjecInfoPhase(action.getActualPhase()).getAdministrative().booleanValue() == true)) {
                 if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrpClusterKeyOutput() != null
                         && deliverable.getDeliverableInfo(action.getActualPhase()).getCrpClusterKeyOutput().getId() != null) {
                     if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrpClusterKeyOutput().getId() == -1) {
-                        action.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
-                        action.getInvalidFields().put("input-deliverable.deliverableInfo.crpClusterKeyOutput.id",
-                                InvalidFieldsMessages.EMPTYFIELD);
+
+                        if (!action.isAiccra()) {
+                            action.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
+                            action.getInvalidFields().put("input-deliverable.deliverableInfo.crpClusterKeyOutput.id",
+                                    InvalidFieldsMessages.EMPTYFIELD);
+                        }
 
                         deliverable.getDeliverableInfo(action.getActualPhase()).setCrpClusterKeyOutput(null);
 
                     }
                 } else {
-                    action.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
-                    action.getInvalidFields().put("input-deliverable.deliverableInfo.crpClusterKeyOutput.id",
-                            InvalidFieldsMessages.EMPTYFIELD);
+
+                    if (!action.isAiccra()) {
+                        action.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
+                        action.getInvalidFields().put("input-deliverable.deliverableInfo.crpClusterKeyOutput.id",
+                                InvalidFieldsMessages.EMPTYFIELD);
+                    }
                     deliverable.getDeliverableInfo(action.getActualPhase()).setCrpClusterKeyOutput(null);
                 }
             }

@@ -136,11 +136,26 @@
 
   [#-- Key Outputs select --]
   [#if !project.projectInfo.administrative && !phaseOne && !isCenterProject ]
-    [#if !(keyOutputs?has_content) && editable]
-      <p class="note">The Performance Indicators list come from the Project Indicators you choose in ‘[@s.text name="projects.menu.contributionsCrpList" /]’, once the project is contributing, this deliverable can be mapped to a specific Performance indicator.</p>
-    [/#if]
     <div class="form-group">
-      [@customForm.select name="deliverable.deliverableInfo.crpClusterKeyOutput.id" label=""  i18nkey="project.deliverable.generalInformation.keyOutput" listName="keyOutputs" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="keyOutput" editable=editable/]
+      [#if action.isAiccra()]
+        [@customForm.select name="deliverable.deliverableInfo.crpProgramOutcome.id" label=""  i18nkey="project.deliverable.generalInformation.keyOutput" listName="programOutcomes" keyFieldName="id"  displayFieldName="description"  multiple=false required=true  className="CrpProgramOutcome" editable=editable/]
+        <div class="note left">
+          <div id="popup" class="helpMessage3">
+            <p>
+              <a href="[@s.url namespace=namespace action="${crpSession}/contributionsCrpList"][@s.param name='projectID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+                <p><span class="glyphicon glyphicon-info-sign"></span>  [@s.text name="project.deliverable.generalInformation.keyOutputNotice" /]</p>
+              </a>
+            </p>
+          </div>
+        </div>
+      [#else]
+        [#if !(keyOutcomes?has_content) && editable]
+          <p class="note">The Performance Indicators list come from the Project Indicators you choose in ‘[@s.text name="projects.menu.contributionsCrpList" /]’, once the project is contributing, this deliverable can be mapped to a specific Performance indicator.</p>
+        [/#if]
+        <div class="form-group">
+          [@customForm.select name="deliverable.deliverableInfo.crpClusterKeyOutput.id" label=""  i18nkey="project.deliverable.generalInformation.keyOutput" listName="keyOutcomes" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="keyOutput" editable=editable/]
+        </div>
+      [/#if]
     </div>
   [/#if]
 

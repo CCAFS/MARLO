@@ -133,7 +133,7 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
     if (composeID != null) {
       return composeID;
     } else {
-      if (this.getId() != null) {
+      if (this.getId() != null && this.getCrpProgram() != null && this.getCrpProgram().getId() != null) {
         return this.getId() + "-" + this.getCrpProgram().getId();
       }
     }
