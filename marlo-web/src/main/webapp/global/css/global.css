@@ -2452,6 +2452,10 @@ h3.contentSubTitle {
   zoom: 1; background: #d9edf7;
 }
 
+.infoText2 {
+  zoom: 1; background: #fff7cf;
+}
+
 .helpMessage img {
   float: left;
   padding: 5px;
