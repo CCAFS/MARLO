@@ -58,6 +58,7 @@ import org.cgiar.ccafs.marlo.utils.POISummary;
 import org.cgiar.ccafs.marlo.utils.POWB2019Data;
 import org.cgiar.ccafs.marlo.utils.ReadWordFile;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -80,6 +81,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import javax.imageio.ImageIO;
 
 import com.opensymphony.xwork2.LocalizedTextProvider;
 import org.apache.commons.lang3.StringUtils;
@@ -583,16 +586,32 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
       /* Create a landscape text Section */
 
       XWPFParagraph para = document.createParagraph();
-      // marlo-web/src/main/webapp/global/images/crps/AICCRA.png
-      try {
-        String imgFile = "/AICCRA.png";
-        FileInputStream is = new FileInputStream(imgFile);
-        run.addBreak();
-        run.addPicture(is, XWPFDocument.PICTURE_TYPE_JPEG, imgFile, Units.toEMU(200), Units.toEMU(200)); // 200x200
-                                                                                                         // pixels
-        is.close();
-      } catch (Exception e) {
+      String imageURL = this.getBaseUrl() + "/global/images/crps/AICCRA.png";
 
+      try {
+
+        File imageFile = new File(imageURL);
+
+        // Read image file
+        BufferedImage bimg1 = ImageIO.read(imageFile);
+        int width = bimg1.getWidth();
+        int height = bimg1.getHeight();
+
+        // get image file name
+        String imgFile = imageFile.getName();
+
+        // get image format
+        int imgFormat = getImageFormat(imgFile);
+
+        // get the text value to display from calling function
+        String p1 = "logo";
+
+        // adding image and text parameters with the help of below function
+        run.setText(p1);
+        run.addBreak();
+        run.addPicture(new FileInputStream(imageFile), imgFormat, imgFile, Units.toEMU(width), Units.toEMU(height));
+      } catch (Exception e) {
+        System.out.println(e);
       }
 
       // poiSummary.textLineBreak(document, 1);
