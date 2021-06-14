@@ -66,7 +66,7 @@
             <div class="container helpText viewMore-block">
               <div class="helpMessage infoText2 col-md-8">
                 [#-- <div  class="removeHelp"><span class="glyphicon glyphicon-remove"></span></div> --]
-                <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-info-big.png" />
+                <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-transparent-warning.png" />
                 <p class="col-md-8">
                   [@s.text name="deliverable.missing.activity.alert" ][@s.param]${deliverablesMissingActivity?size}[/@s.param] [/@s.text]
                 </p>
