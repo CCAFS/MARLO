@@ -61,6 +61,8 @@ public interface DeliverableActivityManager {
    */
   public DeliverableActivity findByDeliverableAndActivitie(long deliverableId, long activityId);
 
+  public List<DeliverableActivity> getDeliverableActivitiesByDeliverableID(long deliverableID);
+
   /**
    * This method gets a deliverableActivity object by a given deliverableActivity identifier.
    * 

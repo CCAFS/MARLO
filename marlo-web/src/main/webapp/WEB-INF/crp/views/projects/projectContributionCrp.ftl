@@ -189,7 +189,7 @@
                   [@milestoneMacro element=milestone name="projectOutcome.milestones" index=milestone_index /]
                 [/#list]
               [#else]
-                <p class="emptyMessage text-center">There is not a milestone added.</p>
+                <p class="emptyMessage text-center">There is not a Intermediate Target added.</p>
               [/#if]
             </div>
             [#-- Select a milestone  --]
@@ -357,7 +357,7 @@
       [#-- Milestone Year --]
       <div class="row">
         <div class="col-md-6">
-          <strong>Milestone for <span class="crpMilestoneYear">${(element.year)!} [#if hasExtendedYear] Extended to ${(element.extendedYear)!}[/#if]  </span> </strong> 
+          <strong>Intermediate Target for <span class="crpMilestoneYear">${(element.year)!} [#if hasExtendedYear] Extended to ${(element.extendedYear)!}[/#if]  </span> </strong> 
         </div>
       </div>
       [#--  Title --]
