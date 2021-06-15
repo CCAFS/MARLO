@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.rest.dto.CountryOfficeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.CountryOfficeRequestDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionRequestDTO;
+import org.cgiar.ccafs.marlo.rest.dto.InstitutionSimpleDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewCountryOfficeRequestDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewInstitutionDTO;
 
@@ -79,6 +80,8 @@ public abstract class InstitutionMapper {
     @Mapping(source = "institutionsLocations", target = "countryOfficeDTO")})
   public abstract InstitutionDTO institutionToInstitutionDTO(Institution institution);
 
+  @Mappings({@Mapping(source = "id", target = "code"), @Mapping(source = "type", target = "institutionType")})
+  public abstract InstitutionSimpleDTO institutionToInstitutionSimpleDTO(Institution institution);
 
   @Mappings({@Mapping(source = "locElement", target = "locElement"), @Mapping(source = "globalUnit", target = "crp"),
     @Mapping(source = "user", target = "createdBy"), @Mapping(source = "user", target = "modifiedBy"),
@@ -91,6 +94,7 @@ public abstract class InstitutionMapper {
   public abstract PartnerRequest NewCountryOfficeRequestDTOToPartnerRequest(
     NewCountryOfficeRequestDTO newCountryOfficeRequestDTO, GlobalUnit globalUnit, LocElement locElement,
     Institution institution, User user);
+
 
   @Mappings({@Mapping(source = "locElement", target = "locElement"),
     @Mapping(source = "institutionType", target = "institutionType"),
@@ -111,11 +115,11 @@ public abstract class InstitutionMapper {
     @Mapping(source = "institution", target = "institutionDTO"), @Mapping(source = "acepted", target = "isAcepted")})
   public abstract CountryOfficeRequestDTO PartnerRequestToCountryOfficeRequestDTO(PartnerRequest PartnerRequest);
 
-
   @Mappings({@Mapping(source = "locElement", target = "countryDTO"),
     @Mapping(source = "institution", target = "institutionDTO"),
     @Mapping(source = "institutionType", target = "institutionTypeDTO")})
   public abstract InstitutionRequestDTO partnerRequestToInstitutionRequestDTO(PartnerRequest PartnerRequest);
+
 
   @Mappings({@Mapping(source = "institution.id", target = "code"),
     @Mapping(source = "institution.name", target = "name"),
