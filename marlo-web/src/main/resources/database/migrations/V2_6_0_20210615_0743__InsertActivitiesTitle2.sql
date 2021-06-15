@@ -1,0 +1,1 @@
+insert into activities_titles (title) values ('2.2.2 Enhance the capacity of public institutions and private firms to provide climate service delivery models');

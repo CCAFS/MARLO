@@ -169,12 +169,14 @@
 
     <div class="blockContent" style="display:none">
       [#-- Title --]
+      [#if !action.isAiccra()]
       <div class="form-group">
         [@customForm.input name="${customName}.title" value="${(element.title)!'New Activity'}" type="text" i18nkey="project.activities.inputTitle"  placeholder="" className="activityTitle limitWords-30" required=true editable=false /]
         <input class="activityId" type="hidden" name="${customName}.id" value="${(element.id)!-1}" />
         <input class="activityId" type="hidden" name="${customName}.composeID" value="${(element.composeID)!}" />
         <span class="index hidden">${index}</span>
       </div>
+      [/#if]
       [#-- Activity Title --]
       [#if action.isAiccra()]
         <div class="form-group">
