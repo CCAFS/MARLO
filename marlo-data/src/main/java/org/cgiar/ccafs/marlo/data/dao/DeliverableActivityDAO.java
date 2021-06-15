@@ -63,6 +63,8 @@ public interface DeliverableActivityDAO {
    */
   public DeliverableActivity findByDeliverableAndActivitie(long deliverableId, long activityId);
 
+  public List<DeliverableActivity> getDeliverableActivitiesByDeliverableID(long deliverableID);
+
 
   /**
    * This method saves the information of the given deliverableActivity
