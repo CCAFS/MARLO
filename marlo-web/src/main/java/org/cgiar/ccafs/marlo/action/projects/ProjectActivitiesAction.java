@@ -91,6 +91,8 @@ public class ProjectActivitiesAction extends BaseAction {
   private ProjectPartnerPersonManager projectPartnerPersonManager;
   private ActivityTitleManager activityTitleManager;
 
+  private List<Deliverable> deliverablesMissingActivity = new ArrayList<>();
+
   @Inject
   public ProjectActivitiesAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     ProjectPartnerPersonManager projectPartnerPersonManager, ActivityManager activityManager,
@@ -121,6 +123,7 @@ public class ProjectActivitiesAction extends BaseAction {
     }
   }
 
+
   @Override
   public String cancel() {
 
@@ -144,7 +147,6 @@ public class ProjectActivitiesAction extends BaseAction {
 
     return SUCCESS;
   }
-
 
   public List<Activity> getActivities(boolean open) {
 
@@ -176,6 +178,7 @@ public class ProjectActivitiesAction extends BaseAction {
     return activityTitles;
   }
 
+
   private Path getAutoSaveFilePath() {
     String composedClassName = project.getClass().getSimpleName();
     // get the action name and replace / for _
@@ -187,6 +190,14 @@ public class ProjectActivitiesAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+  /**
+   * Get the value of deliverablesMissingActivity
+   *
+   * @return the value of deliverablesMissingActivity
+   */
+  public List<Deliverable> getDeliverablesMissingActivity() {
+    return deliverablesMissingActivity;
+  }
 
   public int getIndexActivities(long id) {
     Activity activity = new Activity();
@@ -195,6 +206,7 @@ public class ProjectActivitiesAction extends BaseAction {
 
   }
 
+
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
@@ -202,7 +214,6 @@ public class ProjectActivitiesAction extends BaseAction {
   public List<ProjectPartnerPerson> getPartnerPersons() {
     return partnerPersons;
   }
-
 
   public Project getProject() {
     return project;
@@ -215,6 +226,7 @@ public class ProjectActivitiesAction extends BaseAction {
   public Map<String, String> getStatus() {
     return status;
   }
+
 
   public String getTransaction() {
     return transaction;
@@ -385,13 +397,17 @@ public class ProjectActivitiesAction extends BaseAction {
       if (this.isAiccra()) {
         if (activityTitleManager.findAll() != null && !activityTitleManager.findAll().isEmpty()) {
           activityTitles = activityTitleManager.findAll();
+          if (activityTitles != null && activityTitles.isEmpty()) {
+            activityTitles.sort((a1, a2) -> a1.getTitle().compareTo(a2.getTitle()));
+          }
         }
       }
-      
-          deliverablesMissingActivity = new ArrayList<>();
-    
-          project.getCurrentDeliverables(project.getCurrentPhase()).stream().filter((deliverable) -> (deliverable.getDeliverableActivities().isEmpty())).forEachOrdered((_item) -> {
-              deliverablesMissingActivity.add(_item);
+
+      deliverablesMissingActivity = new ArrayList<>();
+
+      project.getCurrentDeliverables(project.getCurrentPhase()).stream()
+        .filter((deliverable) -> (deliverable.getDeliverableActivities().isEmpty())).forEachOrdered((_item) -> {
+          deliverablesMissingActivity.add(_item);
         });
 
     }
@@ -594,10 +610,20 @@ public class ProjectActivitiesAction extends BaseAction {
     this.activityTitles = activityTitles;
   }
 
+  /**
+   * Set the value of deliverablesMissingActivity
+   *
+   * @param deliverablesMissingActivity new value of
+   *        deliverablesMissingActivity
+   */
+  public void setDeliverablesMissingActivity(List<Deliverable> deliverablesMissingActivity) {
+    this.deliverablesMissingActivity = deliverablesMissingActivity;
+  }
+
+
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
-
 
   public void setPartnerPersons(List<ProjectPartnerPerson> partnerPersons) {
     this.partnerPersons = partnerPersons;
@@ -606,7 +632,6 @@ public class ProjectActivitiesAction extends BaseAction {
   public void setProject(Project project) {
     this.project = project;
   }
-
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
@@ -626,26 +651,5 @@ public class ProjectActivitiesAction extends BaseAction {
       activitiesValidator.validate(this, project, true);
     }
   }
-
-    private List<Deliverable> deliverablesMissingActivity = new ArrayList<>();
-
-    /**
-     * Get the value of deliverablesMissingActivity
-     *
-     * @return the value of deliverablesMissingActivity
-     */
-    public List<Deliverable> getDeliverablesMissingActivity() {
-        return deliverablesMissingActivity;
-    }
-
-    /**
-     * Set the value of deliverablesMissingActivity
-     *
-     * @param deliverablesMissingActivity new value of
- deliverablesMissingActivity
-     */
-    public void setDeliverablesMissingActivity(List<Deliverable> deliverablesMissingActivity) {
-        this.deliverablesMissingActivity = deliverablesMissingActivity;
-    }
 
 }
