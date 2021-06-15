@@ -19,14 +19,17 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.DeliverableActivityDAO;
 import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
 
+import java.util.Collections;
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 @Named
-public class DeliverableActivityMySQLDAO extends AbstractMarloDAO<DeliverableActivity, Long> implements DeliverableActivityDAO {
+public class DeliverableActivityMySQLDAO extends AbstractMarloDAO<DeliverableActivity, Long>
+  implements DeliverableActivityDAO {
 
 
   @Inject
@@ -77,6 +80,17 @@ public class DeliverableActivityMySQLDAO extends AbstractMarloDAO<DeliverableAct
       return list.get(0);
     }
     return null;
+  }
+
+  @Override
+  public List<DeliverableActivity> getDeliverableActivitiesByDeliverableID(long deliverableID) {
+    String query =
+      "from " + DeliverableActivity.class.getName() + " where is_active=1 and deliverable_id = " + deliverableID;
+    List<DeliverableActivity> list = super.findAll(query);
+    if (!list.isEmpty()) {
+      return list;
+    }
+    return Collections.emptyList();
   }
 
   @Override
