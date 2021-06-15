@@ -227,7 +227,7 @@
 
     <!-- Nav tabs -->
     <ul class="nav nav-tabs to-minimize-outcome" role="tablist">
-      <li role="presentation" class="active"><a href="#milestones-tab-${index}" aria-controls="messages" role="tab" data-toggle="tab">Milestones <span class="badge">${(outcome.milestones?size)!'0'}</span></a></li>
+      <li role="presentation" class="active"><a href="#milestones-tab-${index}" aria-controls="messages" role="tab" data-toggle="tab">Intermediate Targets <span class="badge">${(outcome.milestones?size)!'0'}</span></a></li>
       [#if action.hasSpecificities('crp_baseline_indicators') && (selectedProgram.baseLine)!false]
         [#if action.isAiccra()]
           <li role="presentation"><a href="#baseline-tab-${index}" aria-controls="profile" role="tab" data-toggle="tab">Progress to Target Indicators <span class="badge">${(outcome.indicators?size)!'0'}</span></a></li>
