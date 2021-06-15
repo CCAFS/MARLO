@@ -59,6 +59,12 @@ public class InstitutionManagerImpl implements InstitutionManager {
   }
 
   @Override
+  public List<Institution> getAllInstitutionsSimple() {
+
+    return institutionDao.getAllInstitutionsSimple();
+  }
+
+  @Override
   public Institution getInstitutionById(long institutionId) {
     return institutionDao.find(institutionId);
   }

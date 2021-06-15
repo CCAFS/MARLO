@@ -73,9 +73,15 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
   private List<InstitutionLocation> locations;
   private Set<GlobalUnit> globalUnits = new HashSet<GlobalUnit>(0);
 
+  // fields not mapped in hibernate
+  private String type;
+  private String hqLocation;
+  private String hqLocationISOalpha2;
+
 
   public Institution() {
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -95,6 +101,7 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
     }
     return true;
   }
+
 
   public String getAcronym() {
     return this.acronym;
@@ -123,7 +130,6 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
   public Set<Institution> getBranches() {
     return branches;
   }
-
 
   public String getComposedName() {
     if (this.getAcronym() != null) {
@@ -174,6 +180,15 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
     return globalUnits;
   }
 
+
+  public String getHqLocation() {
+    return hqLocation;
+  }
+
+  public String getHqLocationISOalpha2() {
+    return hqLocationISOalpha2;
+  }
+
   public Set<InstitutionLocation> getInstitutionsLocations() {
     return institutionsLocations;
   }
@@ -183,8 +198,38 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
     return institutionType;
   }
 
+
   public Set<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
+  }
+
+
+  public List<InstitutionLocation> getLocations() {
+    return locations;
+  }
+
+  @Override
+  public String getLogDeatil() {
+    StringBuilder sb = new StringBuilder();
+
+    sb.append("Id : ").append(this.getId());
+
+
+    return sb.toString();
+  }
+
+
+  @Override
+  public String getModificationJustification() {
+
+    return "";
+  }
+
+  @Override
+  public User getModifiedBy() {
+    User u = new User();
+    u.setId(new Long(3));
+    return null;
   }
 
   /*
@@ -209,35 +254,6 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
    * }
    */
 
-  public List<InstitutionLocation> getLocations() {
-    return locations;
-  }
-
-  @Override
-  public String getLogDeatil() {
-    StringBuilder sb = new StringBuilder();
-
-    sb.append("Id : ").append(this.getId());
-
-
-    return sb.toString();
-  }
-
-  @Override
-  public String getModificationJustification() {
-
-    return "";
-  }
-
-
-  @Override
-  public User getModifiedBy() {
-    User u = new User();
-    u.setId(new Long(3));
-    return null;
-  }
-
-
   public String getName() {
     return this.name;
   }
@@ -245,7 +261,6 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
   public Long getProgramId() {
     return this.programId;
   }
-
 
   public Set<ProjectBudget> getProjectBudgets() {
     return projectBudgets;
@@ -261,10 +276,15 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
     return projectPartners;
   }
 
+  public String getType() {
+    return type;
+  }
+
 
   public String getWebsiteLink() {
     return this.websiteLink;
   }
+
 
   @Override
   public int hashCode() {
@@ -274,10 +294,12 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
     return result;
   }
 
+
   @Override
   public boolean isActive() {
     return true;
   }
+
 
   public boolean isPPA(long crpID, Phase phase) {
     if (this.getCrpPpaPartners().stream()
@@ -304,7 +326,6 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
     this.crpPpaPartners = crpPpaPartners;
   }
 
-
   public void setFundingSourcesDirectDonor(Set<FundingSource> fundingSourcesDirectDonor) {
     this.fundingSourcesDirectDonor = fundingSourcesDirectDonor;
   }
@@ -317,14 +338,23 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
     this.globalUnits = globalUnits;
   }
 
+
+  public void setHqLocation(String hqLocation) {
+    this.hqLocation = hqLocation;
+  }
+
+  public void setHqLocationISOalpha2(String hqLocationISOalpha2) {
+    this.hqLocationISOalpha2 = hqLocationISOalpha2;
+  }
+
   public void setInstitutionsLocations(Set<InstitutionLocation> institutionsLocations) {
     this.institutionsLocations = institutionsLocations;
   }
 
-
   public void setInstitutionType(InstitutionType institutionType) {
     this.institutionType = institutionType;
   }
+
 
   public void setLiaisonInstitutions(Set<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
@@ -357,6 +387,10 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
 
   public void setProjectPartners(Set<ProjectPartner> projectPartners) {
     this.projectPartners = projectPartners;
+  }
+
+  public void setType(String type) {
+    this.type = type;
   }
 
   public void setWebsiteLink(String websiteLink) {

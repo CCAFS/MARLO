@@ -66,6 +66,8 @@ public interface InstitutionDAO {
   public List<Institution> findPPAInstitutions(long crpID);
 
 
+  public List<Institution> getAllInstitutionsSimple();
+
   /**
    * This method saves the information of the given institution
    * 
