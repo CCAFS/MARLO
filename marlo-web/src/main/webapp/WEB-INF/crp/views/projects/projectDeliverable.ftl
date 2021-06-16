@@ -49,6 +49,16 @@
   <div style="display:none" class="viewMore closed"></div>
 </div>
 
+<div class="container helpText viewMore-block">
+  <div class="helpMessage infoText2">
+    <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-transparent-warning.png" />
+    <p class="col-md-10">
+      [@s.text name="deliverable.message" ][/@s.text]
+    </p>
+  </div>
+<div class="viewMore closed"></div>
+</div>
+
 [#if !((deliverable.deliverableInfo.id??)!false)]
   [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
 [#else]
