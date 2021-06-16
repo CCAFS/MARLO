@@ -158,7 +158,7 @@
     --]
     [#if isActive && editable && action.canAccessSuperAdmin()] [#--&& (isTemplate) --]
       <div class="removeLink">
-        <div id="removeActivity" class="removeActivityBtnInList removeElement removeLink" data-toggle="modal" data-target="#removeactivityModal" title="[@s.text name='projectActivities.removeActivity' /]"></div>
+        <div id="removeActivity" class="removeActivityBtnInList removeElement removeLink" data-toggle="modal" data-target="#removeactivityModal" title="[@s.text name='project.activities.removeActivity' /]"></div>
       </div>
     [/#if]
     [#-- Partner Title --]
