@@ -28,6 +28,7 @@
         </div>
       </div>
     </div>
+    [#if !action.isAiccra()]
     [#-- Participating CRPS --]
     <br>
     <div class="row left-margin">
@@ -73,9 +74,10 @@
           </ul>
         </div>
       </div>
+      [/#if]
       [#-- and PLATFORMS --]
       <div class="col-md-4">
-        <label>[@s.text name="login.participating.platforms"/]:</label>
+        <label>[@s.text name="login.platforms"/]:</label>
         <div class="login-logos-container">
           <ul>
             [#attempt] 
