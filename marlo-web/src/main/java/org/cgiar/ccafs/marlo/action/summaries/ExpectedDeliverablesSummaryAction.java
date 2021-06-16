@@ -701,7 +701,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         } else {
           // If is not a ppa, get the crp linked to the partner
           List<ProjectPartner> projectPartners = deliverable
-            .getProject().getProjectPartners().stream().filter(pp -> pp.isActive()
+            .getProject().getProjectPartners().stream().filter(pp -> pp.isActive() && pp.getInstitution() != null
               && pp.getInstitution().equals(partnerResponsible) && pp.getPhase().equals(this.getSelectedPhase()))
             .collect(Collectors.toList());
           if (projectPartners != null && projectPartners.size() > 0) {
@@ -714,7 +714,11 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
               && projectPartner.getProjectPartnerContributions().size() > 0) {
               for (ProjectPartnerContribution projectPartnerContribution : projectPartner
                 .getProjectPartnerContributions().stream().filter(pc -> pc.isActive()).collect(Collectors.toList())) {
-                managingResponsibleList.add(projectPartnerContribution.getProjectPartnerContributor().getInstitution());
+                if (projectPartnerContribution.getProjectPartnerContributor() != null
+                  && projectPartnerContribution.getProjectPartnerContributor().getInstitution() != null) {
+                  managingResponsibleList
+                    .add(projectPartnerContribution.getProjectPartnerContributor().getInstitution());
+                }
               }
             }
           }
@@ -734,7 +738,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
       for (Institution managingInstitution : managingResponsibleList) {
         if (activePPAFilter) {
-          if (managingInstitution.getId().equals(ppaFilter.getInstitution().getId())) {
+          if (ppaFilter.getInstitution() != null
+            && managingInstitution.getId().equals(ppaFilter.getInstitution().getId())) {
             addDeliverableRow = true;
           }
         }
