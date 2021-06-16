@@ -98,8 +98,8 @@ public class ProjectActivitiesValidator extends BaseValidator {
       });
 
     if (deliverablesMissingActivity != null && !deliverablesMissingActivity.isEmpty()) {
-      action.addMessage(action.getText("Missing deliverables activities", ""));
-      action.getInvalidFields().put("Missing deliverables activities", "Missing deliverables activities");
+      action.addMessage(action.getText("missingDeliverableActivity", ""));
+      action.getInvalidFields().put("list-deliverable.missing.activity.alert", InvalidFieldsMessages.EMPTYFIELD);
     }
 
 
