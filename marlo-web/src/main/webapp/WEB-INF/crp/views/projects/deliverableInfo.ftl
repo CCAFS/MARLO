@@ -169,44 +169,46 @@
   [/#if]
 
   [#-- Supporting Activities --]
-  <div class="panel tertiary">
-   <div class="panel-head"><label for=""> [@customForm.text name="project.deliverable.activities" readText=!editable /]:[@customForm.req required=editable /]</label></div>
-    <div id="fundingSourceList" class="panel-body" listname="mappedDeliverableActivitiesCurrentPhase">
-      <ul class="list">
-      [#if mappedDeliverableActivitiesCurrentPhase?has_content]
-        [#list mappedDeliverableActivitiesCurrentPhase as element]
-          <li class="availableActivities clearfix">
-            [#if editable]<div class="removeActivity removeIcon" title="Remove activity"></div>[/#if]
-            <input class="id" type="hidden" name="mappedDeliverableActivitiesCurrentPhase[${element_index}].id" value="${(element.id)!}" />
-            <span class="name">
-              <strong>${(element.id)!} - ${(element.title)!} </strong> <br />
-              <span class="description">${(element.description)!}</span><br />
-            </span>
-            <div class="clearfix"></div>
-          </li>
+  [#if !config.production]
+    <div class="panel tertiary">
+     <div class="panel-head"><label for=""> [@customForm.text name="project.deliverable.activities" readText=!editable /]:[@customForm.req required=editable /]</label></div>
+      <div id="fundingSourceList" class="panel-body" listname="mappedDeliverableActivitiesCurrentPhase">
+        <ul class="list">
+        [#if mappedDeliverableActivitiesCurrentPhase?has_content]
+          [#list mappedDeliverableActivitiesCurrentPhase as element]
+            <li class="availableActivities clearfix">
+              [#if editable]<div class="removeActivity removeIcon" title="Remove activity"></div>[/#if]
+              <input class="id" type="hidden" name="mappedDeliverableActivitiesCurrentPhase[${element_index}].id" value="${(element.id)!}" />
+              <span class="name">
+                <strong>${(element.id)!} - ${(element.title)!} </strong> <br />
+                <span class="description">${(element.description)!}</span><br />
+              </span>
+              <div class="clearfix"></div>
+            </li>
+          [/#list]
+          <p style="display:none;" class="emptyText"> [@s.text name="project.deliverable.activities.empty" /]</p>
+        [#else]
+          <p class="emptyText"> [@s.text name="project.deliverable.activities.empty" /]</p>
+        [/#if]
+        </ul>
+        [#if editable ]
+          [@customForm.select name="deliverable.activity.id" label=""  showTitle=false  i18nkey="" listName="availableActivities" keyFieldName="id"  displayFieldName="title"  header=true required=true  className="activity" editable=editable/]
+        [/#if]
+      </div>
+    </div>
+  
+    [#-- Activities List --]
+    <div style="display:none">
+      [#if availableActivities?has_content]
+        [#list availableActivities as element]
+          <span id="activity-${(element.id)!}">
+            <strong>${(element.id)!} - ${(element.title)!}</strong> <br />
+            <span class="description">${(element.description)!}</span><br />
+          </span>
         [/#list]
-        <p style="display:none;" class="emptyText"> [@s.text name="project.deliverable.activities.empty" /]</p>
-      [#else]
-        <p class="emptyText"> [@s.text name="project.deliverable.activities.empty" /]</p>
-      [/#if]
-      </ul>
-      [#if editable ]
-        [@customForm.select name="deliverable.activity.id" label=""  showTitle=false  i18nkey="" listName="availableActivities" keyFieldName="id"  displayFieldName="title"  header=true required=true  className="activity" editable=editable/]
       [/#if]
     </div>
-  </div>
-
-  [#-- Activities List --]
-  <div style="display:none">
-    [#if availableActivities?has_content]
-      [#list availableActivities as element]
-        <span id="activity-${(element.id)!}">
-          <strong>${(element.id)!} - ${(element.title)!}</strong> <br />
-          <span class="description">${(element.description)!}</span><br />
-        </span>
-      [/#list]
-    [/#if]
-  </div>
+  [/#if]
 
   [#-- Funding Source --]
   [#if !phaseOne]
