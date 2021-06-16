@@ -33,7 +33,11 @@
     <br>
     <div class="row left-margin">
       <div class="col-md-12 col-center">
-        <label>[@s.text name="login.participating.crps"/]:</label>
+        [#if !action.isAiccra()]
+        <label>[@s.text name="login.participating.platforms"/]:</label>
+        [#else]
+        <label>[@s.text name="login.platforms"/]:</label>
+        [/#if]
         <div class="login-logos-container">
           <ul>
           [#attempt] 
