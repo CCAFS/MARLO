@@ -44,6 +44,16 @@
   <div style="display:none" class="viewMore closed"></div>
 </div>
 
+<div class="container helpText viewMore-block">
+  <div class="helpMessage infoText">
+    <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-transparent-warning.png" />
+    <p class="col-md-10">
+      [@s.text name="deliverable.message"][/@s.text]
+    </p>
+  </div>
+<div class="viewMore closed"></div>
+</div>
+
 <section class="container">
     <div class="row">
       [#-- Project Menu --]
