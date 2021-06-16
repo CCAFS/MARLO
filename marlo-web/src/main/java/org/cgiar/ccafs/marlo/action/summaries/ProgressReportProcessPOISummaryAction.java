@@ -752,13 +752,13 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                     indicator.getCrpProgramOutcomeIndicator().getIndicator() + ":");
                 }
                 if (indicator.getNarrative() != null) {
-                  if (!indicator.getNarrative().isEmpty()) {
-                    poiSummary.textParagraphFontCalibriUnderline(document.createParagraph(),
-                      indicator.getNarrative() + " .       " + " \n ");
-                  } else {
-                    poiSummary.textParagraphFontCalibriUnderline(document.createParagraph(),
-                      indicator.getNarrative() + "_________________________________________ ." + " \n ");
-                  }
+                  paragraph = document.createParagraph();
+                  run = paragraph.createRun();
+                  run.setText(indicator.getNarrative());
+                  run.setBold(false);
+                  run.setFontSize(11);
+                  run.setFontFamily("Calibri");
+                  run.setColor("005380");
                 }
 
               }
@@ -866,7 +866,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
       fileName.append(this.getCurrentCycleYear() + "_");
     }
     fileName.append(this.getLoggedCrp().getAcronym());
-    fileName.append("_Project_" + projectID);
+    fileName.append("_Cluster_" + projectID);
     fileName.append("_ReportProcessSummary_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".docx");
