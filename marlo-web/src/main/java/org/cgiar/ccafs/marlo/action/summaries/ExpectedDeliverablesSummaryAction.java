@@ -474,7 +474,9 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
                 allResponsibleList.add(", ");
               }
 
-            } else if (responsibleppp.getDeliverableUserPartnership().getInstitution().getName() != null) {
+            } else if (responsibleppp != null && responsibleppp.getDeliverableUserPartnership() != null
+              && responsibleppp.getDeliverableUserPartnership().getInstitution() != null
+              && responsibleppp.getDeliverableUserPartnership().getInstitution().getName() != null) {
               individual += " (" + responsibleppp.getDeliverableUserPartnership().getInstitution().getName() + "); ";
               allResponsibleList.add(responsibleppp.getDeliverableUserPartnership().getInstitution().getName() + ", ");
             }
@@ -520,7 +522,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
                 // Add institution name to PPA responsible list - if the institutions has not a
                 // acronym
-                if (!ppaResponsibleList.contains(deliverablePartnership.getInstitution().getName() + " ")
+                if (deliverablePartnership.getInstitution() != null
+                  && !ppaResponsibleList.contains(deliverablePartnership.getInstitution().getName() + " ")
                   && !ppaResponsibleList.contains("*" + deliverablePartnership.getInstitution().getName() + " ")
                   && !ppaResponsibleList.contains(deliverablePartnership.getInstitution().getName() + "")
                   && !ppaResponsibleList.contains("*" + deliverablePartnership.getInstitution().getName() + "")) {
@@ -536,7 +539,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
                   && person.getDeliverableUserPartnership().getInstitution() != null
                   && person.getDeliverableUserPartnership().getInstitution().getAcronym() != null) {
 
-                  if (deliverablePartnership.getInstitution().getAcronym() != null
+                  if (deliverablePartnership.getInstitution() != null
+                    && deliverablePartnership.getInstitution().getAcronym() != null
                     && deliverablePartnership.getInstitution().getAcronym().contains("IFPRI") && divisions != null) {
 
                     Long tempID = person.getUser().getId();
@@ -560,7 +564,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
                           if (ppPerson.getUser() != null && ppPerson.getUser().getId().equals(tempID)) {
 
                             if (ppPerson.getPartnerDivision() != null
-                              && ppPerson.getPartnerDivision().getAcronym() != null) {
+                              && ppPerson.getPartnerDivision().getAcronym() != null
+                              && person.getDeliverableUserPartnership().getInstitution() != null) {
                               individual += ppPerson.getComposedName() + "("
                                 + person.getDeliverableUserPartnership().getInstitution().getAcronym() + "/"
                                 + ppPerson.getPartnerDivision().getAcronym();
@@ -588,9 +593,12 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
                     individual += ") ";
                     allResponsibleList.add(", ");
                   } else {
-                    individual += person.getComposedName() + " ("
-                      + person.getDeliverableUserPartnership().getInstitution().getAcronym() + "); ";
-                    allResponsibleList.add(person.getDeliverableUserPartnership().getInstitution().getAcronym() + ", ");
+                    if (person.getDeliverableUserPartnership().getInstitution() != null) {
+                      individual += person.getComposedName() + " ("
+                        + person.getDeliverableUserPartnership().getInstitution().getAcronym() + "); ";
+                      allResponsibleList
+                        .add(person.getDeliverableUserPartnership().getInstitution().getAcronym() + ", ");
+                    }
                   }
                 } else if (person != null && person.getDeliverableUserPartnership() != null
                   && person.getDeliverableUserPartnership().getInstitution() != null
@@ -609,7 +617,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
                   && !ppaResponsibleList.contains("*" + deliverablePartnership.getInstitution().getAcronym() + " ")
                   && !ppaResponsibleList.contains(deliverablePartnership.getInstitution().getAcronym() + "")
                   && !ppaResponsibleList.contains("*" + deliverablePartnership.getInstitution().getAcronym() + "")) {
-                  if (deliverablePartnership.getInstitution().getAcronym().contains("IFPRI") && divisions != null) {
+                  if (deliverablePartnership.getInstitution() != null
+                    && deliverablePartnership.getInstitution().getAcronym().contains("IFPRI") && divisions != null) {
                     ppaResponsibleList.add(deliverablePartnership.getInstitution().getAcronym() + "/" + divisions);
                   } else {
                     ppaResponsibleList.add(deliverablePartnership.getInstitution().getAcronym() + " ");
@@ -617,7 +626,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
                   }
                 }
               } else {
-                if (!ppaResponsibleList.contains(deliverablePartnership.getInstitution().getName() + " ")
+                if (deliverablePartnership.getInstitution() != null
+                  && !ppaResponsibleList.contains(deliverablePartnership.getInstitution().getName() + " ")
                   && !ppaResponsibleList.contains("*" + deliverablePartnership.getInstitution().getName() + " ")
                   && !ppaResponsibleList.contains(deliverablePartnership.getInstitution().getName() + "")
                   && !ppaResponsibleList.contains("*" + deliverablePartnership.getInstitution().getName() + "")) {
