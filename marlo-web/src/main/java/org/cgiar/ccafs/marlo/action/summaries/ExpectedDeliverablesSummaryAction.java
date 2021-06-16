@@ -402,7 +402,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             if (responsible.getInstitution() != null && responsible.getInstitution().getAcronym() != null) {
               ppaResponsibleList.add("*" + responsible.getInstitution().getAcronym() + "");
             } else {
-              if (responsible.getInstitution().getName() != null) {
+              if (responsible.getInstitution() != null && responsible.getInstitution().getName() != null) {
                 ppaResponsibleList.add("*" + responsible.getInstitution().getName() + "");
               }
             }
