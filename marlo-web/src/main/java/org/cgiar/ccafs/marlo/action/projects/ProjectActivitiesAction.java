@@ -546,6 +546,7 @@ public class ProjectActivitiesAction extends BaseAction {
               title = activityTitleManager.getActivityTitleById(activityUI.getActivityTitle().getId());
               if (title != null) {
                 activityUI.setActivityTitle(title);
+                activityUI.setTitle(title.getTitle());
               } else {
                 activityUI.setActivityTitle(null);
               }
@@ -586,6 +587,7 @@ public class ProjectActivitiesAction extends BaseAction {
             if (activityUI.getActivityTitle() != null && activityUI.getActivityTitle().getId().longValue() != -1) {
               ActivityTitle title = activityTitleManager.getActivityTitleById(activityUI.getActivityTitle().getId());
               activityUpdate.setActivityTitle(title);
+              activityUpdate.setTitle(title.getTitle());
             } else {
               activityUpdate.setActivityTitle(null);
             }
