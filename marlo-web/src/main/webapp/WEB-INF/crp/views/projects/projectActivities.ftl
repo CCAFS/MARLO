@@ -163,7 +163,7 @@
     [/#if]
     [#-- Partner Title --]
     <div class="blockTitle closed">
-      [#if element.activityTitle.title?has_content]${(element.activityTitle.title)!'New Activity'}[#else]New Activity[/#if]
+      [#if element.title?has_content]${(element.activityTitle.title)!'New Activity'}[#else]New Activity[/#if]
       <div class="clearfix"></div>
     </div>
 
