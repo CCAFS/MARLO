@@ -28,6 +28,16 @@
       "cycles": [ "Planning", "Reporting" ],
       "allowProjectID": true
     },
+    { "active": true,
+      "available": action.isAiccra(),
+      "title": "Progress Summary", 
+      "description": "summaries.board.report.projectPortfolio.description",
+      "namespace": "/projects",
+      "action": "${crpSession}/progressReportProcessSummary",
+      "formats": [ "PDF" ],
+      "cycles": [ "Planning", "Reporting" ],
+      "allowProjectID": true
+    },
     { "active": !centerGlobalUnit,
       "available": true,
       "title": "summaries.board.report.genderContributionSummary", 
@@ -436,7 +446,11 @@
       [#if report.allowProjectID??]
       <div class="form-group row">
         <div class="col-md-8">
+        [#if !action.isAiccra()]
           [@customForm.select name="projectID"   label=""  i18nkey="Select a project"  listName=""  keyFieldName="id"  displayFieldName="composedName" className="allProjectsSelect" /]
+        [#else]
+          [@customForm.select name="projectID"   label=""  i18nkey="Select a cluster"  listName=""  keyFieldName="id"  displayFieldName="composedName" className="allProjectsSelect" /]
+        [/#if]
         </div>
       </div>
       [/#if]
