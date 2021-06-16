@@ -179,7 +179,7 @@
 [/#if]
 
   [#-- AICCRA Doc report --]
-  [#if !config.production && action.isAiccra() && action.canAccessSuperAdmin()]
+  [#if !config.production && action.isAiccra() && action.canAccessSuperAdmin() && false]
     <br><br>
     <div class="text-center">
       [#assign documentLink][@s.url namespace="/projects" action="${crpSession}/progressReportProcessSummary"][@s.param name='projectID']${projectID}[/@s.param][@s.param name='phaseID']${actualPhase.id}[/@s.param][/@s.url][/#assign]

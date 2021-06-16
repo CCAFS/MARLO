@@ -31,7 +31,7 @@
     { "active": true,
       "available": action.isAiccra(),
       "title": "Progress Summary", 
-      "description": "summaries.board.report.projectPortfolio.description",
+      "description": "Progress Summary Report",
       "namespace": "/projects",
       "action": "${crpSession}/progressReportProcessSummary",
       "formats": [ "PDF" ],
@@ -57,7 +57,7 @@
       "formats": [ "Excel" ],
       "cycles": [ "Planning","Reporting" ]
     },
-    { "active": !centerGlobalUnit && action.hasSpecificities("crp_show_section_impact_covid19"),
+    { "active": !centerGlobalUnit && action.hasSpecificities("crp_show_section_impact_covid19") && !action.isAiccra(),
       "available": true,
       "title": "summaries.board.report.impactCovid19Summary", 
       "description": "summaries.board.report.impactCovid19Summary.description",
@@ -65,7 +65,7 @@
       "action": "${crpSession}/impactCovid19Summary",
       "formats": [ "Excel" ]
     },
-    { "active": !centerGlobalUnit,
+    { "active": !centerGlobalUnit && !action.isAiccra(),
       "available": true,
       "title": "summaries.board.report.outcomeCaseStudies", 
       "description": "summaries.board.report.outcomeCaseStudies.description",
@@ -86,7 +86,7 @@
         }
       ]
     },
-    { "active": !centerGlobalUnit,
+    { "active": !centerGlobalUnit && !action.isAiccra(),
       "available": true,
       "title": "summaries.board.report.policies", 
       "description": "summaries.board.report.policies.description",
@@ -114,7 +114,7 @@
       "cycles": [ "Planning", "Reporting" ],
       "allowProjectID": true
     },
-    { "active": !centerGlobalUnit && action.hasSpecificities("crp_view_highlights"),
+    { "active": !centerGlobalUnit && action.hasSpecificities("crp_view_highlights") && !action.isAiccra(),
       "available": true,
       "title": "summaries.board.report.projectHighlights", 
       "description": "summaries.board.report.projectHighlights.description",
@@ -141,7 +141,7 @@
       "formats": [ "Excel" ],
       "cycles": [ "Planning", "Reporting" ]
     },
-    { "active": action.hasSpecificities('crp_lp6_active'),
+    { "active": action.hasSpecificities('crp_lp6_active') && !action.isAiccra(),
       "available": true,
       "title": "summaries.board.report.contributionToLP6", 
       "description": "",
