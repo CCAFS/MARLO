@@ -401,14 +401,23 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
           disseminationURL = deliverable.getDissemination(this.getSelectedPhase()).getDisseminationUrl();
         }
 
-        POIField[] sData =
-          {new POIField("D" + deliverable.getId() + "", ParagraphAlignment.LEFT, false),
+        if (disseminationURL.isEmpty()) {
+          POIField[] sData = {new POIField("D" + deliverable.getId() + "", ParagraphAlignment.LEFT, false),
+            new POIField(deliverable.getDeliverableInfo().getTitle(), ParagraphAlignment.LEFT, false),
+            new POIField(deliverable.getDeliverableInfo().getStatusName(this.getSelectedPhase()),
+              ParagraphAlignment.LEFT, false),
+            new POIField("<Not defined>", ParagraphAlignment.LEFT, false, "c92804", "")};
+          data = Arrays.asList(sData);
+          datas.add(data);
+        } else {
+          POIField[] sData = {new POIField("D" + deliverable.getId() + "", ParagraphAlignment.LEFT, false),
             new POIField(deliverable.getDeliverableInfo().getTitle(), ParagraphAlignment.LEFT, false),
             new POIField(deliverable.getDeliverableInfo().getStatusName(this.getSelectedPhase()),
               ParagraphAlignment.LEFT, false),
             new POIField(disseminationURL, ParagraphAlignment.LEFT, false, "0000", disseminationURL)};
-        data = Arrays.asList(sData);
-        datas.add(data);
+          data = Arrays.asList(sData);
+          datas.add(data);
+        }
       }
       String text = "Progress";
       poiSummary.textTable(document, headers, datas, false, text);
@@ -729,7 +738,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                 }
 
                 if (projectOutcome.getExpectedValue() == null) {
-                  expected2023 = "No information";
+                  expected2023 = "0";
                 } else {
                   expected2023 = projectOutcome.getExpectedValue() + "";
                 }
@@ -781,7 +790,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                     } else {
                       paragraph = document.createParagraph();
                       run = paragraph.createRun();
-                      run.setText("No information");
+                      run.setText("<No defined>");
                       run.setBold(false);
                       run.setFontSize(11);
                       run.setFontFamily("Calibri");
@@ -789,25 +798,25 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                     }
 
                   }
+                }
+                // Deliverables Table
+                List<Deliverable> deliverables = new ArrayList<>();
+                deliverables =
+                  deliverableManager.getDeliverablesByProjectAndPhase(this.getSelectedPhase().getId(), projectID);
+                if (deliverables != null && !deliverables.isEmpty()) {
 
-                  // Deliverables Table
-                  List<Deliverable> deliverables = new ArrayList<>();
-                  deliverables =
-                    deliverableManager.getDeliverablesByProjectAndPhase(this.getSelectedPhase().getId(), projectID);
+                  deliverables = deliverables.stream()
+                    .filter(d -> d.isActive() && d.getDeliverableInfo(this.getSelectedPhase()).isActive()
+                      && d.getDeliverableInfo(this.getSelectedPhase()).getCrpProgramOutcome() != null
+                      && d.getDeliverableInfo(this.getSelectedPhase()).getCrpProgramOutcome().getId()
+                        .equals(projectOutcome.getCrpProgramOutcome().getId()))
+                    .collect(Collectors.toList());
+
                   if (deliverables != null && !deliverables.isEmpty()) {
-
-                    deliverables = deliverables.stream()
-                      .filter(d -> d.isActive() && d.getDeliverableInfo(this.getSelectedPhase()).isActive()
-                        && d.getDeliverableInfo(this.getSelectedPhase()).getCrpProgramOutcome() != null
-                        && d.getDeliverableInfo(this.getSelectedPhase()).getCrpProgramOutcome().getId()
-                          .equals(projectOutcome.getCrpProgramOutcome().getId()))
-                      .collect(Collectors.toList());
-
-                    if (deliverables != null && !deliverables.isEmpty()) {
-                      poiSummary.textParagraphFontCalibri(document.createParagraph(),
-                        this.getText("summaries.progressReport2020.deliverableStatus") + ":");
-                      this.createDeliverablesTable(deliverables);
-                    }
+                    poiSummary.textLineBreak(document, 1);
+                    poiSummary.textParagraphFontCalibri(document.createParagraph(),
+                      this.getText("summaries.progressReport2020.deliverableStatus") + ":");
+                    this.createDeliverablesTable(deliverables);
                   }
                 }
                 poiSummary.textLineBreak(document, 3);
