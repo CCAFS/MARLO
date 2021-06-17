@@ -60,6 +60,8 @@ public class DashboardAction extends BaseAction {
   private GlobalUnit loggedCrp;
 
 
+  private List<Deliverable> myDeliverables = new ArrayList<>();
+
   @Inject
   public DashboardAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     PhaseManager phaseManager) {
@@ -73,10 +75,20 @@ public class DashboardAction extends BaseAction {
     return loggedCrp;
   }
 
+
+  /**
+   * Get the value of myDeliverables
+   *
+   * @return the value of myDeliverables
+   */
+  public List<Deliverable> getMyDeliverables() {
+    return myDeliverables;
+  }
+
+
   public List<Project> getMyProjects() {
     return myProjects;
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -164,7 +176,6 @@ public class DashboardAction extends BaseAction {
     } else {
       SimpleDateFormat dateFormat = new SimpleDateFormat("y");
 
-      System.out.println(myProjects.size());
       myProjects =
         myProjects.stream()
           .filter(
@@ -172,45 +183,32 @@ public class DashboardAction extends BaseAction {
               && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null || Integer.parseInt(dateFormat
                 .format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this.getCurrentCycleYear()))
           .collect(Collectors.toList());
-      System.out.println(myProjects.size());
 
     }
 
     myDeliverables = new ArrayList<>();
-    
+
     myProjects.forEach((project) -> {
-        myDeliverables.addAll(project.getCurrentDeliverables(phase));
-      });
+      myDeliverables.addAll(project.getCurrentDeliverables(phase));
+    });
 
   }
-
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 
+  /**
+   * Set the value of myDeliverables
+   *
+   * @param myDeliverables new value of myDeliverables
+   */
+  public void setMyDeliverables(List<Deliverable> myDeliverables) {
+    this.myDeliverables = myDeliverables;
+  }
+
   public void setMyProjects(List<Project> myProjects) {
     this.myProjects = myProjects;
   }
-
-    private List<Deliverable> myDeliverables = new ArrayList<>();
-
-    /**
-     * Get the value of myDeliverables
-     *
-     * @return the value of myDeliverables
-     */
-    public List<Deliverable> getMyDeliverables() {
-        return myDeliverables;
-    }
-
-    /**
-     * Set the value of myDeliverables
-     *
-     * @param myDeliverables new value of myDeliverables
-     */
-    public void setMyDeliverables(List<Deliverable> myDeliverables) {
-        this.myDeliverables = myDeliverables;
-    }
 
 }
