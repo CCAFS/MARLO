@@ -233,7 +233,7 @@ public class DeliverableAction extends BaseAction {
   private List<DeliverableType> deliverableTypeParent;
   private DeliverableValidator deliverableValidator;
   private List<FundingSource> fundingSources;
-  private List<Activity> availableActivities;
+  private List<Activity> activities;
   private List<Activity> mappedDeliverableActivitiesCurrentPhase;
   private List<GenderType> genderLevels;
   private List<CrpClusterKeyOutput> keyOutputs;
@@ -500,8 +500,8 @@ public class DeliverableAction extends BaseAction {
 
   }
 
-  public List<Activity> getAvailableActivities() {
-    return availableActivities;
+  public List<Activity> getActivities() {
+    return activities;
   }
 
   public List<CgiarCrossCuttingMarker> getCgiarCrossCuttingMarkers() {
@@ -1505,7 +1505,7 @@ public class DeliverableAction extends BaseAction {
       fundingSources.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
 
       // Add Activities
-      this.availableActivities = new ArrayList<>();
+      this.activities = new ArrayList<>();
       this.mappedDeliverableActivitiesCurrentPhase = new ArrayList<>();
 
       List<String> activitiesPresentMapped = new ArrayList<>();
@@ -1514,18 +1514,18 @@ public class DeliverableAction extends BaseAction {
         activitiesPresentMapped.add(deliverableActivity.getActivity().getId() + "");
       }
 
-      List<DeliverableActivity> activities = new ArrayList<>();
+//      List<DeliverableActivity> activities = new ArrayList<>();
       // deliverableActivityManager.getDeliverableActivitiesByDeliverableID(deliverableID);
 
       for (Activity activity : project.getActivities()) {
 
-        if (activity.isActive() && !availableActivities.contains(activity)
+        if (activity.isActive() && !this.activities.contains(activity)
           && activity.getPhase().getId().compareTo(this.getActualPhase().getId()) == 0) {
 
           if (activitiesPresentMapped.contains(activity.getId() + "")) {
             this.mappedDeliverableActivitiesCurrentPhase.add(activity);
           } else {
-            this.availableActivities.add(activity);
+            this.activities.add(activity);
           }
         }
       }
@@ -2803,8 +2803,8 @@ public class DeliverableAction extends BaseAction {
     this.answers = answers;
   }
 
-  public void setAvailableActivities(List<Activity> availableActivities) {
-    this.availableActivities = availableActivities;
+  public void setActivities(List<Activity> activities) {
+    this.activities = activities;
   }
 
   public void setCgiarCrossCuttingMarkers(List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers) {
