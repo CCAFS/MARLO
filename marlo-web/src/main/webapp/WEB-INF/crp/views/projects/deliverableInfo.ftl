@@ -139,14 +139,10 @@
     <div class="form-group">
       [#if action.isAiccra()]
         [@customForm.select name="deliverable.deliverableInfo.crpProgramOutcome.id" label=""  i18nkey="project.deliverable.generalInformation.keyOutput" listName="programOutcomes" keyFieldName="id"  displayFieldName="description"  multiple=false required=true  className="CrpProgramOutcome" editable=editable/]
-        <div class="note center">
-          <div id="popup">
-            <p>
-              <a href="[@s.url namespace=namespace action="${crpSession}/contributionsCrpList"][@s.param name='projectID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-                <p>[@s.text name="project.deliverable.generalInformation.keyOutputNotice" /]</p>
-              </a>
-            </p>
-          </div>
+        <div class="note left">
+          <a href="[@s.url namespace=namespace action="${crpSession}/contributionsCrpList"][@s.param name='projectID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+            <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="project.deliverable.generalInformation.keyOutputNotice" /]
+          </a>
         </div>
       [#else]
         [#if !(keyOutcomes?has_content) && editable]
@@ -171,17 +167,17 @@
   [#-- Supporting Activities --]
   [#if !config.production]
     <div class="panel tertiary">
-     <div class="panel-head"><label for=""> [@customForm.text name="project.deliverable.activities" readText=!editable /]:[@customForm.req required=editable /]</label></div>
-      <div id="fundingSourceList" class="panel-body" listname="mappedDeliverableActivitiesCurrentPhase">
+    <div class="panel-head"><label for=""> [@customForm.text name="project.deliverable.activities" readText=!editable /]:[@customForm.req required=editable /]</label></div>
+      <div id="activityList" class="panel-body" listname="mappedDeliverableActivitiesCurrentPhase">
         <ul class="list">
         [#if mappedDeliverableActivitiesCurrentPhase?has_content]
           [#list mappedDeliverableActivitiesCurrentPhase as element]
-            <li class="availableActivities clearfix">
+            <li id="activitiesTemplate" class="activities clearfix">
               [#if editable]<div class="removeActivity removeIcon" title="Remove activity"></div>[/#if]
               <input class="id" type="hidden" name="mappedDeliverableActivitiesCurrentPhase[${element_index}].id" value="${(element.id)!}" />
+              <input class="aId" type="hidden" name="mappedDeliverableActivitiesCurrentPhase[${element_index}].id" value="${(element.id)!}" />
               <span class="name">
-                <strong>${(element.id)!} - ${(element.title)!} </strong> <br />
-                <span class="description">${(element.description)!}</span><br />
+                ${(element.title)!} <br />
               </span>
               <div class="clearfix"></div>
             </li>
@@ -192,18 +188,21 @@
         [/#if]
         </ul>
         [#if editable ]
-          [@customForm.select name="deliverable.activity.id" label=""  showTitle=false  i18nkey="" listName="availableActivities" keyFieldName="id"  displayFieldName="title"  header=true required=true  className="activity" editable=editable/]
+          [@customForm.select name="deliverable.deliverableActivity.id" label="" showTitle=false  i18nkey="" listName="activities" keyFieldName="id"  displayFieldName="title"  header=true required=true  className="activity" editable=true/]
+
+          [#if !activities?has_content]
+            <div class="note"> [@s.text name="project.deliverable.activities.empty" /]  </div>
+          [/#if]
         [/#if]
       </div>
     </div>
-  
+
     [#-- Activities List --]
     <div style="display:none">
-      [#if availableActivities?has_content]
-        [#list availableActivities as element]
+      [#if activities?has_content]
+        [#list activities as element]
           <span id="activity-${(element.id)!}">
-            <strong>${(element.id)!} - ${(element.title)!}</strong> <br />
-            <span class="description">${(element.description)!}</span><br />
+            ${(element.title)!} <br />
           </span>
         [/#list]
       [/#if]
