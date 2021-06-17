@@ -34,9 +34,21 @@
       "description": "Progress Summary Report",
       "namespace": "/projects",
       "action": "${crpSession}/progressReportProcessSummary",
-      "formats": [ "PDF" ],
+      "formats": [ "Word" ],
       "cycles": [ "Planning", "Reporting" ],
-      "allowProjectID": true
+      "allowProjectID": true,
+         "components" : [
+        { 
+          "type" :  "radio",
+          "label":  "Type of report",
+          "name":   "showAllYears",
+          "data" : [ 
+            { "label": "Selected Cluster",  "value": "false"},
+            { "label": "All Clusters",      "value": "true"}
+           
+          ] 
+        }
+      ]
     },
     { "active": !centerGlobalUnit,
       "available": true,
