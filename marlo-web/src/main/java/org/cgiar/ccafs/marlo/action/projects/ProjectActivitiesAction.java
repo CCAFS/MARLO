@@ -438,21 +438,21 @@ public class ProjectActivitiesAction extends BaseAction {
         project.getProjectDeliverables().clear();
       }
     }
-
-    if (this.isHttpPost()) {
-      if (!this.isDraft()) {
-        activitiesValidator.validate(this, project, true);
-        if (!this.getInvalidFields().isEmpty()) {
-          this.setActionMessages(null);
-          // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
-          List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
-          for (String key : keys) {
-            this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
-          }
-
-        }
-      }
-    }
+    /*
+     * if (this.isHttpPost()) {
+     * if (!this.isDraft()) {
+     * activitiesValidator.validate(this, project, true);
+     * if (!this.getInvalidFields().isEmpty()) {
+     * this.setActionMessages(null);
+     * // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+     * List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+     * for (String key : keys) {
+     * this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+     * }
+     * }
+     * }
+     * }
+     */
   }
 
 
