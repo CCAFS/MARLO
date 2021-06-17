@@ -144,6 +144,11 @@ function validateThisSection() {
     validateService = "/validateProjectSection.do";
   }
 
+  if(isClusterSection()) {
+    sectionData.projectID = $('input[name="projectID"]').val();
+    validateService = "/validateProjectSection.do";
+  }
+
   // Validate impact pathway
   if(isImpactPathwaySection()) {
     sectionData.crpProgramID = $('input[name="crpProgramID"]').val();
