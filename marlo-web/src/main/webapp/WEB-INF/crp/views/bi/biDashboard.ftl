@@ -2,7 +2,7 @@
 [#assign title = "MARLO BI" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["powerbi-client"] /]
-[#assign customJS = ["${baseUrlMedia}/js/bi/biDashboard.js?20201410_1109", "${baseUrlCdn}/global/bower_components/powerbi-client/dist/powerbi.min.js" ] /]
+[#assign customJS = ["${baseUrlMedia}/js/bi/biDashboard.js?20210527b", "${baseUrlCdn}/global/bower_components/powerbi-client/dist/powerbi.min.js" ] /]
 [#assign customCSS = [
   "${baseUrl}/crp/css/bi/biDashboard.css"
   ] 
@@ -44,9 +44,9 @@
           [#--  Reports Tabs --] 
           <div id="repportsMenu" class="reportsButtons">
             <div class="menuList col-md-12" style="padding:0">
-            [#list (biReports)![] as report]
-                <div id="BIreport-${report.id}" report-title="${report.reportTitle}" class="button-bg reportSection [#if report?index == 0]current[/#if]">
-                  <a index="${report?index+1}" class="BIreport-${report.id}" href="">[@s.text name=report.reportName /]</a>
+            [#list (biReports)?sort_by("reportOrder")![] as report]
+                <div id="BIreport-${report.id}" report-title="${report.reportTitle}"  has-filters="${report.hasFilters?c}" class="button-bg reportSection [#if report?index == 0]current[/#if]">
+                <a index="${report?index+1}" class="BIreport-${report.id}" href="">[@s.text name=report.reportName /]</a>
                 </div>
             [/#list]
             </div>
@@ -70,7 +70,7 @@
         [#--  Reports Content --]
         <div class="summariesContent col-md-12" style="min-height:550px;">
           <div class="">
-            [#list (biReports)![] as report]
+            [#list (biReports)?sort_by("reportOrder")![] as report]
                 <div id="BIreport-${report.id}-contentOptions" class="" style="display:[#if report?index !=0]none[/#if];">
                   <div id="dashboardContainer-${report.id}" class="dashboardContainer-${report.id}"></div>
                   <input type="hidden" id="reportName-${report.id}" name="reportName" value=${report.reportName} />
