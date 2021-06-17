@@ -5,9 +5,14 @@ function init() {
 }
 
 function addEvents() {
-  $('.reportSection').each(function (index) {
+  var idReport = $('.reportSection').children().first().attr('class');
+  executePetition(idReport);
+  $('.reportSection').on('click', function () {
     var idReport = $(this).children().first().attr('class');
-    executePetition(idReport);
+    var inputsContainer = $('#' + idReport + '-contentOptions');
+    if (!($(inputsContainer).hasClass('loaded'))) {
+      executePetition(idReport);
+    }
   });
   $('.reportSection a, .reportSection span').on('click', selectBIReport);
   // $('.selectedReportBIContainer').on('click', function () {
@@ -88,6 +93,12 @@ function embedPBI(embedToken, embededURL, dashboardId, contentId) {
   // Get models. models contains enums that can be used.
   var models = window['powerbi-client'].models;
   var permissions = models.Permissions.All;
+  var hasFilters = $("div[class$='current']").attr("has-filters");
+  if (hasFilters == 'true') {
+    hasFilters = true;
+  } else {
+    hasFilters = false;
+  }
 
   // Embed configuration used to describe the what and how to embed.
   // This object is used when calling powerbi.embed.
@@ -102,7 +113,7 @@ function embedPBI(embedToken, embededURL, dashboardId, contentId) {
     id: dashboardId,
     permissions: permissions,
     settings: {
-      filterPaneEnabled: true,
+      filterPaneEnabled: hasFilters,
       navContentPaneEnabled: true
     }
   };
@@ -111,12 +122,14 @@ function embedPBI(embedToken, embededURL, dashboardId, contentId) {
   //$embedContainer =
   var $dashboardContainer = $("#" + contentId + '-contentOptions').children().first();
   var dashboard = powerbi.embed($dashboardContainer.get(0), config);
+  var $dashboard = $("#" + contentId + '-contentOptions');
 
   // Dashboard.off removes a given event handler if it exists.
   dashboard.off("loaded");
 
   // Dashboard.on will add an event handler which prints to Log window.
   dashboard.on("loaded", function () {
+    $dashboard.addClass('loaded');
     removeNavPanel(contentId);
     //removeFilterPanel(contentId);
   });
@@ -173,7 +186,7 @@ function removeFilterPanel(contentId) {
   };
   //Get a reference to the embedded report HTML element
   var embedContainer = $("#" + contentId + '-contentOptions').children().first()[0];
-  $('.dashboardContainer').height(250)
+  $('.dashboardContainer').height(250);
 
   // Get a reference to the embedded report.
   report = powerbi.get(embedContainer);
@@ -227,15 +240,25 @@ function removeNavPanel(contentId) {
       console.log(errors);
     });
 
-  //  Update height of iframe container depending on dashboard page height
+  // Update height of iframe container depending on dashboard page height
+  updateReportHeight(contentId, report, models);
 
+  report.on("buttonClicked", function () {
+    updateReportHeight(contentId, report,models);
+  });
+}
+
+function updateReportHeight(contentId, report, models) {
   var reportId = contentId.split('BIreport-')[1];
   report.getPages().then(function (pages) {
     pages[0].hasLayout(models.LayoutType.MobilePortrait).then(function (hasLayout) {
-      $("#dashboardContainer-" + reportId).css("height", (pages[0].defaultSize.height + 100) + 'px');
+      pages.forEach(page => {
+        if (page.isActive) {
+          $("#dashboardContainer-" + reportId).css("height", (page.defaultSize.height));
+        }
+      });
     })
   });
-
 }
 
 function selectBIReport(e) {
@@ -246,6 +269,6 @@ function selectBIReport(e) {
   $section.addClass('current');
   $content.siblings().hide();
   setReportTitle();
-  reportsMenuToggle()
+  reportsMenuToggle();
   $content.fadeIn();
 }
