@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectDescription.js",
-  "${baseUrlCdn}/global/js/autoSave.js",
+  "${baseUrlCdn}/global/js/autoSave.js?20210616",
   "${baseUrlCdn}/global/js/fieldsValidation.js"
   ]
 /]
