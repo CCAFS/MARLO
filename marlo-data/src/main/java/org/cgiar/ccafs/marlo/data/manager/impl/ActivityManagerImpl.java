@@ -80,6 +80,7 @@ public class ActivityManagerImpl implements ActivityManager {
     activityAdd.setProjectPartnerPerson(this.getPartnerPerson(phase, activity.getProjectPartnerPerson()));
     activityAdd.setStartDate(activity.getStartDate());
     activityAdd.setTitle(activity.getTitle());
+    activityAdd.setActivityTitle(activity.getActivityTitle());
   }
 
   /**
