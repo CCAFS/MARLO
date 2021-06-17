@@ -92,7 +92,7 @@ public class ProjectActivitiesValidator extends BaseValidator {
     // Missing Deliverables activities
     List<Deliverable> deliverablesMissingActivity = new ArrayList<>();
 
-    project.getCurrentDeliverables(project.getCurrentPhase()).stream()
+    project.getCurrentDeliverables(action.getActualPhase()).stream()
       .filter((deliverable) -> (deliverable.getDeliverableActivities().isEmpty())).forEachOrdered((_item) -> {
         deliverablesMissingActivity.add(_item);
       });

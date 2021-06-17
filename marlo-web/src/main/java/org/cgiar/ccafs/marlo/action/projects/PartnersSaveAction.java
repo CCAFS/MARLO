@@ -155,7 +155,6 @@ public class PartnersSaveAction extends BaseAction {
 
   public void addPowbSynthesisMessage(StringBuilder message, PartnerRequest partnerRequest,
     PartnerRequest partnerRequestModifications) {
-    System.out.println(powbSynthesisID);
     PowbSynthesis powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
     String sourceMessage = "" + context + " PowbSynthesis: (" + powbSynthesisID + ") - "
       + powbSynthesis.getLiaisonInstitution().getComposedName();
@@ -175,7 +174,6 @@ public class PartnersSaveAction extends BaseAction {
 
   public void addReportSynthesisMessage(StringBuilder message, PartnerRequest partnerRequest,
     PartnerRequest partnerRequestModifications) {
-    System.out.println(synthesisID);
     ReportSynthesis reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
     String sourceMessage = "" + context + " Report Synthesis: (" + synthesisID + ") - "
       + reportSynthesis.getLiaisonInstitution().getComposedName();
@@ -410,7 +408,6 @@ public class PartnersSaveAction extends BaseAction {
     }
     message.append(" </br>");
 
-    System.out.println("pageRequestName" + synthesisID);
     switch (pageRequestName) {
       case "projects":
         this.addProjectMessage(message, partnerRequest, partnerRequestModifications);
