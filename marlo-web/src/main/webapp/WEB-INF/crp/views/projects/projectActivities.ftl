@@ -4,8 +4,10 @@
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/fieldsValidation.js",
-  "${baseUrlMedia}/js/projects/projectActivities.js?20210208"] /]
- [#-- ,  "${baseUrlCdn}/global/js/autoSave.js" --]
+  "${baseUrlMedia}/js/projects/projectActivities.js?20210208",  
+  "${baseUrlCdn}/global/js/autoSave.js?20210616" 
+  ] 
+/]
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectActivities.css"] /]
 [#assign currentStage = "activities" /]
 [#assign hideJustification = true /]

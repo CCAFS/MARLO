@@ -273,6 +273,11 @@ function isProjectSection() {
   return url.includes("/projects/");
 }
 
+function isClusterSection() {
+  var url = window.location.href;
+  return url.includes("/clusters/");
+}
+
 function isImpactPathwaySection() {
   var url = window.location.href;
   return url.includes("/impactPathway/");
