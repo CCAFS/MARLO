@@ -56,6 +56,8 @@ public class BiReports extends MarloBaseEntity implements java.io.Serializable, 
   @Expose
   private Boolean hasRlsSecurity;
 
+  @Expose
+  private Long reportOrder;
 
   public GlobalUnit getCrp() {
     return crp;
@@ -119,6 +121,11 @@ public class BiReports extends MarloBaseEntity implements java.io.Serializable, 
     return reportName;
   }
 
+
+  public Long getReportOrder() {
+    return reportOrder;
+  }
+
   public String getReportTitle() {
     return reportTitle;
   }
@@ -179,7 +186,11 @@ public class BiReports extends MarloBaseEntity implements java.io.Serializable, 
   public void setReportName(String reportName) {
     this.reportName = reportName;
   }
-  
+
+  public void setReportOrder(Long reportOrder) {
+    this.reportOrder = reportOrder;
+  }
+
   public void setReportTitle(String reportTitle) {
     this.reportTitle = reportTitle;
   }

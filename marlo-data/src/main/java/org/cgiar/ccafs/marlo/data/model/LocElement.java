@@ -40,6 +40,9 @@ public class LocElement extends MarloAuditableEntity implements java.io.Serializ
   private String isoAlpha2;
 
   @Expose
+  private String isoAlpha3;
+
+  @Expose
   private Long isoNumeric;
 
   @Expose
@@ -110,7 +113,6 @@ public class LocElement extends MarloAuditableEntity implements java.io.Serializ
     return this.getName();
   }
 
-
   public GlobalUnit getCrp() {
     return crp;
   }
@@ -118,6 +120,7 @@ public class LocElement extends MarloAuditableEntity implements java.io.Serializ
   public Set<CrpProgramCountry> getCrpProgramCountries() {
     return crpProgramCountries;
   }
+
 
   public Set<CrpsSiteIntegration> getCrpsSitesIntegrations() {
     return this.crpsSitesIntegrations;
@@ -139,19 +142,23 @@ public class LocElement extends MarloAuditableEntity implements java.io.Serializ
     return institutions;
   }
 
-
   public String getIsoAlpha2() {
     return isoAlpha2;
   }
+
+  public String getIsoAlpha3() {
+    return isoAlpha3;
+  }
+
 
   public Long getIsoNumeric() {
     return isoNumeric;
   }
 
-
   public Boolean getIsSiteIntegration() {
     return this.isSiteIntegration;
   }
+
 
   public LocElement getLocElement() {
     return locElement;
@@ -196,10 +203,10 @@ public class LocElement extends MarloAuditableEntity implements java.io.Serializ
     this.crp = crp;
   }
 
-
   public void setCrpProgramCountries(Set<CrpProgramCountry> crpProgramCountries) {
     this.crpProgramCountries = crpProgramCountries;
   }
+
 
   public void setCrpsSitesIntegrations(Set<CrpsSiteIntegration> crpsSitesIntegrations) {
     this.crpsSitesIntegrations = crpsSitesIntegrations;
@@ -209,10 +216,10 @@ public class LocElement extends MarloAuditableEntity implements java.io.Serializ
     this.fundingSourceLocations = fundingSourceLocations;
   }
 
-
   public void setFundingSources(List<FundingSource> fundingSources) {
     this.fundingSources = fundingSources;
   }
+
 
   public void setInstitutionLocations(Set<InstitutionLocation> institutionLocations) {
     this.institutionLocations = institutionLocations;
@@ -224,6 +231,10 @@ public class LocElement extends MarloAuditableEntity implements java.io.Serializ
 
   public void setIsoAlpha2(String isoAlpha2) {
     this.isoAlpha2 = isoAlpha2;
+  }
+
+  public void setIsoAlpha3(String isoAlpha3) {
+    this.isoAlpha3 = isoAlpha3;
   }
 
   public void setIsoNumeric(Long isoNumeric) {
