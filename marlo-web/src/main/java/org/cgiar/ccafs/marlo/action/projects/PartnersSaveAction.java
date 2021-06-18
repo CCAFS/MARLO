@@ -166,7 +166,12 @@ public class PartnersSaveAction extends BaseAction {
   public void addProjectMessage(StringBuilder message, PartnerRequest partnerRequest,
     PartnerRequest partnerRequestModifications) {
     ProjectInfo projectInfo = projectManager.getProjectById(projectID).getProjecInfoPhase(this.getActualPhase());
-    String sourceMessage = "" + context + " Project: (" + projectID + ") - " + projectInfo.getTitle();
+    String sourceMessage = "";
+    if (this.isAiccra()) {
+      sourceMessage = "" + context + " Cluster: (" + projectID + ") - " + projectInfo.getTitle();
+    } else {
+      sourceMessage = "" + context + " Project: (" + projectID + ") - " + projectInfo.getTitle();
+    }
     message.append(sourceMessage);
     partnerRequest.setRequestSource(sourceMessage);
     partnerRequestModifications.setRequestSource(sourceMessage);
