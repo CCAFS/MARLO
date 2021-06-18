@@ -38,7 +38,7 @@
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data" ] 
         
-        <h4 class="sectionTitle">[@s.text name="programManagement.activity.title" /]</h4>
+        <h4 class="sectionTitle">[@s.text name="activityManagement.activity.title" /]</h4>
         <div class="usersBlock borderBox clearfix" listname="loggedCrp.programManagmenTeam">
           [#-- PMU Users List --]
           <div class="users items-list simpleBox">
@@ -61,58 +61,31 @@
           <span class="usersType" style="display:none">crpUser</span>
           <span class="usersRole" style="display:none">${pmuRol}</span>
         </div>
-         
-        
-        <h4 class="sectionTitle">[@s.text name="programManagement.title" /]</h4>
-        <div class="usersBlock borderBox clearfix" listname="loggedCrp.programManagmenTeam">
-          [#-- PMU Users List --]
-          <div class="users items-list simpleBox">
-            <ul>
-            [#if loggedCrp.programManagmenTeam?has_content]
-              [#list loggedCrp.programManagmenTeam as item]
-                [@userItem element=item index=item_index name="loggedCrp.programManagmenTeam" userRole=pmuRol /]
-              [/#list]
-            [/#if]
-            </ul>
-            <p class="text-center usersMessage" style="display:${(loggedCrp.programManagmenTeam?has_content)?string('none','block')}">[@s.text name="programManagement.notUsers.span" /]</p>
-          </div>
-          [#-- Add Person--]
-          [#if editable] 
-          <div class="text-right">
-            <div class="searchUser button-blue"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> [@s.text name="form.buttons.searchUser" /]</div>
-          </div>
-          [/#if]
-          [#-- Hidden Parameters --]
-          <span class="usersType" style="display:none">crpUser</span>
-          <span class="usersRole" style="display:none">${pmuRol}</span>
-        </div>
-        
+                 
         <h4 class="sectionTitle">[@s.text name="programManagement.flagship.title" /]</h4>
-        <div class="program-block"  listname="flagshipsPrograms">
+        <div class="program-block"  listname="activities">
           [#-- Flagships List --]
-          <div class="flagships items-list">
-            <ul class="flagships-list" >
-            [#if flagshipsPrograms?has_content]
-              [#list flagshipsPrograms as item]
-                [@programItem element=item index=item_index name="flagshipsPrograms"/]
-              [/#list]
-            [/#if]
-            </ul>
-            <p class="text-center programMessage" style="display:${(flagshipsPrograms?has_content)?string('none','block')}">[@s.text name="programManagement.flagship.notFlagship.span" /]</p>
-          </div>
           
           <div class="flagships items-list">
             <ul class="flagships-list" >
             [#if activities?has_content]
               [#list activities as item]
-                [@activityItem2 element=item name="activity"/]
+                [@activityItem2 element=item index=item.id name="activity"/]
               [/#list]
             [/#if]
             </ul>
             <p class="text-center programMessage" style="display:${(flagshipsPrograms?has_content)?string('none','block')}">[@s.text name="programManagement.flagship.notFlagship.span" /]</p>
           </div>
         </div>
-        
+         [#-- Add Flagship--]
+          [#if editable] 
+          <div class="text-center">
+            <div class="addProgram bigAddButton"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addFlagshipProgram" /]</div>
+            <span class="type-input" style="display:none">1</span>
+            <span class="inputName-input" style="display:none">flagshipsPrograms</span>
+          </div>
+          [/#if]
+        </div>
 
         [#-- confirm popup --]
         <div id="dialog-confirm"  style="display:none;">
@@ -134,6 +107,9 @@
 
 [#-- Program template --]
 [@programItem element={} index=0 name="" template=true /]
+
+[#-- Program template --]
+[@activityItem2 element={} index=0 name="" template=true /]
 
 <ul style="display:none">
   [#-- User template --]
@@ -270,9 +246,9 @@
   </li>
 [/#macro]
 
-[#macro activityItem2 element name template=false]
-  [#local customName = "${name}[${element.id}]" /]
-  <li id="program-${template?string('template',element.id)}" class="program borderBox" style="display:${template?string('none','block')}">
+[#macro activityItem2 element index name template=false]
+  [#local customName = "${name}[${index}]" /]
+  <li id="program-${template?string('template',index)}" class="program borderBox" style="display:${template?string('none','block')}">
     [#-- Remove Button  --]
     [#if editable]
       [#if template || action.canBeDeleted(element.id, element.class.name)!false]
@@ -281,7 +257,7 @@
     [/#if]
     <div class="leftHead">
       [#assign globalFlagship][@s.text name="global.flagship${isCenter?string('Center','')}"/][/#assign]
-      <span class="index">${element.id}</span>
+      <span class="index">${index}</span>
       <span class="elementId">${(element.title)!}</span>
     </div>
     <br />
@@ -292,6 +268,6 @@
       </div>
     </div>
     [#-- Hidden inputs  --]
-    <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
+    <input class="id" type="hidden" name="${customName}.id" value="${(index)!}"/>
   </li>
 [/#macro]
