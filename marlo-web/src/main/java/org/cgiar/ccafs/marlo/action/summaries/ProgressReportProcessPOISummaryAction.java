@@ -96,6 +96,7 @@ import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.XWPFStyle;
 import org.apache.poi.xwpf.usermodel.XWPFStyles;
 import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.dispatcher.Parameter;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDecimalNumber;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDocument1;
@@ -209,6 +210,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
   private POWB2019Data<POWBPOISummary2019Action> powb2019Data;
   private long projectID;
   private Project project;
+  private List<Project> projects;
 
 
   private ProjectInfo projectInfo;
@@ -248,6 +250,8 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
 
   // DOC bytes
   private byte[] bytesDOC;
+
+  private String showAllYears;
 
 
   public ProgressReportProcessPOISummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
@@ -397,14 +401,23 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
           disseminationURL = deliverable.getDissemination(this.getSelectedPhase()).getDisseminationUrl();
         }
 
-        POIField[] sData =
-          {new POIField("D" + deliverable.getId() + "", ParagraphAlignment.LEFT, false),
+        if (disseminationURL.isEmpty()) {
+          POIField[] sData = {new POIField("D" + deliverable.getId() + "", ParagraphAlignment.LEFT, false),
+            new POIField(deliverable.getDeliverableInfo().getTitle(), ParagraphAlignment.LEFT, false),
+            new POIField(deliverable.getDeliverableInfo().getStatusName(this.getSelectedPhase()),
+              ParagraphAlignment.LEFT, false),
+            new POIField("<Not defined>", ParagraphAlignment.LEFT, false, "c92804", "")};
+          data = Arrays.asList(sData);
+          datas.add(data);
+        } else {
+          POIField[] sData = {new POIField("D" + deliverable.getId() + "", ParagraphAlignment.LEFT, false),
             new POIField(deliverable.getDeliverableInfo().getTitle(), ParagraphAlignment.LEFT, false),
             new POIField(deliverable.getDeliverableInfo().getStatusName(this.getSelectedPhase()),
               ParagraphAlignment.LEFT, false),
             new POIField(disseminationURL, ParagraphAlignment.LEFT, false, "0000", disseminationURL)};
-        data = Arrays.asList(sData);
-        datas.add(data);
+          data = Arrays.asList(sData);
+          datas.add(data);
+        }
       }
       String text = "Progress";
       poiSummary.textTable(document, headers, datas, false, text);
@@ -539,270 +552,322 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
       return NOT_FOUND;
     }
 
-    try {
-      /* Create a portrait text Section */
-      CTDocument1 doc = document.getDocument();
-      CTBody body = doc.getBody();
-      if (projectInfo.getTitle() != null) {
-        poiSummary.pageLeftHeader(document, projectInfo.getTitle());
-      }
-      poiSummary.pageLeftHeader(document, this.getText("summaries.progressReport2020.header1"));
-
-      // Get datetime
-      ZonedDateTime timezone = ZonedDateTime.now();
-      DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
-      String zone = timezone.getOffset() + "";
-      if (zone.equals("Z")) {
-        zone = "+0";
-      }
-      String currentDate = timezone.format(format) + "(GMT" + zone + ")";
-      // poiSummary.pageFooter(document, "This report was generated on " + currentDate);
-
-      this.createPageFooter();
-
-      // first page
-
-      // poiSummary.addLineSeparator(document.createParagraph());
-      // document.createParagraph().setPageBreak(true);
-
-      // Second page - table of contents
-      // document.createTOC();
-
-      // Toc section
-      // addCustomHeadingStyle(document, "heading 1", 1);
-      // addCustomHeadingStyle(document, "heading 2", 2);
-
-      // Body content
-      XWPFParagraph paragraph = document.createParagraph();
-      /*
-       * CTP ctP = paragraph.getCTP();
-       * CTSimpleField toc = ctP.addNewFldSimple();
-       * toc.setInstr("TOC \\h");
-       * toc.setDirty(STOnOff.TRUE);
-       */
-      this.createCoverTable();
-      XWPFRun run = paragraph.createRun();
-      // run.addBreak(BreakType.PAGE);
-
-
-      // contents pages
-      /* Create a landscape text Section */
-
-      XWPFParagraph para = document.createParagraph();
-      String imageURL = this.getBaseUrl() + "/global/images/crps/AICCRA.png";
+    projects = new ArrayList<>();
+    if (showAllYears.equals("true")) {
+      String[] statuses = null;
+      projects =
+        projectManager.getActiveProjectsByPhase(this.getSelectedPhase(), this.getSelectedPhase().getYear(), statuses);
+    } else {
 
       try {
 
-        File imageFile = new File(imageURL);
+        projects.add(project);
 
-        // Read image file
-        BufferedImage bimg1 = ImageIO.read(imageFile);
-        int width = bimg1.getWidth();
-        int height = bimg1.getHeight();
-
-        // get image file name
-        String imgFile = imageFile.getName();
-
-        // get image format
-        int imgFormat = getImageFormat(imgFile);
-
-        // get the text value to display from calling function
-        String p1 = "logo";
-
-        // adding image and text parameters with the help of below function
-        run.setText(p1);
-        run.addBreak();
-        run.addPicture(new FileInputStream(imageFile), imgFormat, imgFile, Units.toEMU(width), Units.toEMU(height));
       } catch (Exception e) {
-        System.out.println(e);
+        LOG.error("Failed to get " + APConstants.PROJECT_REQUEST_ID + " parameter. Exception: " + e.getMessage());
+        showAllYears = "false";
+
       }
+    }
 
+    if (projects != null && !projects.isEmpty()) {
+      boolean uniqueCreation = false;
+      for (Project p : projects) {
 
-      // Project Title
-      paragraph = document.createParagraph();
-      run = paragraph.createRun();
-      run.setText(this.getText("summaries.progressReport2020.projectTitle") + ":");
-      run.setBold(false);
-      run.setFontSize(14);
-      run.setFontFamily("Verdana");
-      run.setColor("00AF50");
-      paragraph.setStyle("heading 2");
+        this.setProjectID(p.getId());
+        this.setProject(p);
 
-      if (projectInfo.getTitle() != null) {
-        poiSummary.textParagraphFontCalibri(document.createParagraph(), projectInfo.getTitle());
-      }
-      poiSummary.textLineBreak(document, 1);
+        if (this.getSelectedPhase() != null && project.getProjecInfoPhase(this.getSelectedPhase()) != null) {
+          this.setProjectInfo(project.getProjecInfoPhase(this.getSelectedPhase()));
+        }
+        projectOutcomes = project.getProjectOutcomes().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())).collect(Collectors.toList());
+        if (this.getSelectedPhase() != null && project.getProjecInfoPhase(this.getSelectedPhase()) != null) {
+          this.setProjectInfo(project.getProjecInfoPhase(this.getSelectedPhase()));
+        }
 
-      // Project Description
-      paragraph = document.createParagraph();
-      run = paragraph.createRun();
-      run.setText(this.getText("summaries.progressReport2020.projectDescription") + ":");
-      run.setBold(false);
-      run.setFontSize(14);
-      run.setFontFamily("Verdana");
-      run.setColor("00AF50");
-      paragraph.setStyle("heading 2");
+        try {
+          /* Create a portrait text Section */
+          CTDocument1 doc = document.getDocument();
+          CTBody body = doc.getBody();
+          if (uniqueCreation == false) {
+            if (showAllYears.equals("true")) {
 
-      if (projectInfo.getSummary() != null) {
-        poiSummary.textParagraphFontCalibriAligmentLeft(document.createParagraph(), projectInfo.getSummary());
-      }
-      poiSummary.textLineBreak(document, 1);
+              poiSummary.pageLeftHeader(document, "All Clusters for " + this.getSelectedPhase().getComposedName());
 
-
-      document.createParagraph().setPageBreak(true);
-
-      // Project Contribution to Performance Indicators
-      paragraph = document.createParagraph();
-      run = paragraph.createRun();
-      run.setText(this.getText("summaries.progressReport2020.contributionIndicators"));
-      run.setBold(false);
-      run.setFontSize(14);
-      run.setFontFamily("Verdana");
-      run.setColor("00AF50");
-      paragraph.setStyle("heading 2");
-      poiSummary.textLineBreak(document, 1);
-
-
-      if (projectOutcomes != null && !projectOutcomes.isEmpty()) {
-        for (ProjectOutcome projectOutcome : projectOutcomes) {
-          if (projectOutcome.getCrpProgramOutcome() != null
-            && projectOutcome.getCrpProgramOutcome().getComposedName() != null) {
-            paragraph = document.createParagraph();
-            run = paragraph.createRun();
-            run.setText(projectOutcome.getCrpProgramOutcome().getComposedName());
-            run.setBold(false);
-            run.setFontSize(11);
-            run.setFontFamily("Verdana");
-            run.setColor("00AF50");
-            paragraph.setStyle("heading 2");
-
-            String overall2023 = "", expected2023 = "", expected2021 = "", progress2021 = "";
-            if (projectOutcome.getCrpProgramOutcome().getValue() != null) {
-              overall2023 = projectOutcome.getCrpProgramOutcome().getValue() + "";
-            }
-
-            if (projectOutcome.getExpectedValue() == null) {
-              expected2023 = "No information";
             } else {
-              expected2023 = projectOutcome.getExpectedValue() + "";
-            }
-
-            if (projectOutcome.getMilestones() != null && !projectOutcome.getMilestones().isEmpty()) {
-              int expected = 0;
-              for (ProjectMilestone milestone : projectOutcome.getMilestones()) {
-                if (milestone.getExpectedValue() != null) {
-                  expected += milestone.getExpectedValue();
-                }
-              }
-              expected2021 = expected + "";
-            }
-
-            if (projectOutcome.getMilestones() != null && !projectOutcome.getMilestones().isEmpty()) {
-              int achieved = 0;
-              for (ProjectMilestone milestone : projectOutcome.getMilestones()) {
-                if (milestone.getAchievedValue() != null) {
-                  achieved += milestone.getAchievedValue();
-                }
-              }
-              progress2021 = achieved + "";
-            }
-
-            this.createTableIndicators(overall2023, expected2023, expected2021, progress2021);
-
-            // Indicators
-            projectOutcome.setIndicators(projectOutcomeIndicatorManager.findAll().stream().filter(i -> i.isActive()
-              && i.getProjectOutcome() != null && i.getProjectOutcome().getId().equals(projectOutcome.getId()))
-              .collect(Collectors.toList()));
-
-
-            if (projectOutcome.getIndicators() != null && !projectOutcome.getIndicators().isEmpty()) {
-              for (ProjectOutcomeIndicator indicator : projectOutcome.getIndicators()) {
-                if (indicator.getCrpProgramOutcomeIndicator() != null
-                  && indicator.getCrpProgramOutcomeIndicator().getIndicator() != null) {
-                  poiSummary.textLineBreak(document, 1);
-                  poiSummary.textParagraphFontCalibri(document.createParagraph(),
-                    indicator.getCrpProgramOutcomeIndicator().getIndicator() + ":");
-                }
-                if (indicator.getNarrative() != null && !indicator.getNarrative().isEmpty()) {
-                  paragraph = document.createParagraph();
-                  run = paragraph.createRun();
-                  run.setText(indicator.getNarrative());
-                  run.setBold(false);
-                  run.setFontSize(11);
-                  run.setFontFamily("Calibri");
-                  run.setColor("005380");
-                } else {
-                  paragraph = document.createParagraph();
-                  run = paragraph.createRun();
-                  run.setText("No information");
-                  run.setBold(false);
-                  run.setFontSize(11);
-                  run.setFontFamily("Calibri");
-                  run.setColor("c92804");
-                }
-
-              }
-
-              // Deliverables Table
-              List<Deliverable> deliverables = new ArrayList<>();
-              deliverables =
-                deliverableManager.getDeliverablesByProjectAndPhase(this.getSelectedPhase().getId(), projectID);
-              if (deliverables != null && !deliverables.isEmpty()) {
-
-                deliverables = deliverables.stream()
-                  .filter(d -> d.isActive() && d.getDeliverableInfo(this.getSelectedPhase()).isActive()
-                    && d.getDeliverableInfo(this.getSelectedPhase()).getCrpProgramOutcome() != null
-                    && d.getDeliverableInfo(this.getSelectedPhase()).getCrpProgramOutcome().getId()
-                      .equals(projectOutcome.getCrpProgramOutcome().getId()))
-                  .collect(Collectors.toList());
-
-                if (deliverables != null && !deliverables.isEmpty()) {
-                  poiSummary.textParagraphFontCalibri(document.createParagraph(),
-                    this.getText("summaries.progressReport2020.deliverableStatus") + ":");
-                  this.createDeliverablesTable(deliverables);
-                }
+              if (projectInfo.getTitle() != null) {
+                poiSummary.pageLeftHeader(document, projectInfo.getTitle());
               }
             }
-            poiSummary.textLineBreak(document, 3);
+            poiSummary.pageLeftHeader(document, this.getText("summaries.progressReport2020.header1"));
+
+            // Get datetime
+            ZonedDateTime timezone = ZonedDateTime.now();
+            DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
+            String zone = timezone.getOffset() + "";
+            if (zone.equals("Z")) {
+              zone = "+0";
+            }
+            String currentDate = timezone.format(format) + "(GMT" + zone + ")";
+            // poiSummary.pageFooter(document, "This report was generated on " + currentDate);
+
+            this.createPageFooter();
+            uniqueCreation = true;
           }
+
+          // first page
+
+          // poiSummary.addLineSeparator(document.createParagraph());
+          // document.createParagraph().setPageBreak(true);
+
+          // Second page - table of contents
+          // document.createTOC();
+
+          // Toc section
+          // addCustomHeadingStyle(document, "heading 1", 1);
+          // addCustomHeadingStyle(document, "heading 2", 2);
+
+          // Body content
+          XWPFParagraph paragraph = document.createParagraph();
+          /*
+           * CTP ctP = paragraph.getCTP();
+           * CTSimpleField toc = ctP.addNewFldSimple();
+           * toc.setInstr("TOC \\h");
+           * toc.setDirty(STOnOff.TRUE);
+           */
+          this.createCoverTable();
+          XWPFRun run = paragraph.createRun();
+          // run.addBreak(BreakType.PAGE);
+
+
+          // contents pages
+          /* Create a landscape text Section */
+
+          XWPFParagraph para = document.createParagraph();
+          String imageURL = this.getBaseUrl() + "/global/images/crps/AICCRA.png";
+
+          try {
+
+            File imageFile = new File(imageURL);
+
+            // Read image file
+            BufferedImage bimg1 = ImageIO.read(imageFile);
+            int width = bimg1.getWidth();
+            int height = bimg1.getHeight();
+
+            // get image file name
+            String imgFile = imageFile.getName();
+
+            // get image format
+            int imgFormat = getImageFormat(imgFile);
+
+            // get the text value to display from calling function
+            String p1 = "logo";
+
+            // adding image and text parameters with the help of below function
+            run.setText(p1);
+            run.addBreak();
+            run.addPicture(new FileInputStream(imageFile), imgFormat, imgFile, Units.toEMU(width), Units.toEMU(height));
+          } catch (Exception e) {
+            System.out.println(e);
+          }
+
+
+          // Project Title
+          paragraph = document.createParagraph();
+          run = paragraph.createRun();
+          run.setText(this.getText("summaries.progressReport2020.projectTitle") + ":");
+          run.setBold(false);
+          run.setFontSize(14);
+          run.setFontFamily("Verdana");
+          run.setColor("00AF50");
+          paragraph.setStyle("heading 2");
+
+          if (projectInfo.getTitle() != null) {
+            poiSummary.textParagraphFontCalibri(document.createParagraph(), projectInfo.getTitle());
+          }
+          poiSummary.textLineBreak(document, 1);
+
+          // Project Description
+          paragraph = document.createParagraph();
+          run = paragraph.createRun();
+          run.setText(this.getText("summaries.progressReport2020.projectDescription") + ":");
+          run.setBold(false);
+          run.setFontSize(14);
+          run.setFontFamily("Verdana");
+          run.setColor("00AF50");
+          paragraph.setStyle("heading 2");
+
+          if (projectInfo.getSummary() != null) {
+            poiSummary.textParagraphFontCalibriAligmentLeft(document.createParagraph(), projectInfo.getSummary());
+          }
+          poiSummary.textLineBreak(document, 5);
+
+
+          // document.createParagraph().setPageBreak(true);
+
+          // Project Contribution to Performance Indicators
+          paragraph = document.createParagraph();
+          run = paragraph.createRun();
+          run.setText(this.getText("summaries.progressReport2020.contributionIndicators"));
+          run.setBold(false);
+          run.setFontSize(14);
+          run.setFontFamily("Verdana");
+          run.setColor("00AF50");
+          paragraph.setStyle("heading 2");
+          poiSummary.textLineBreak(document, 1);
+
+
+          if (projectOutcomes != null && !projectOutcomes.isEmpty()) {
+            for (ProjectOutcome projectOutcome : projectOutcomes) {
+              if (projectOutcome.getCrpProgramOutcome() != null
+                && projectOutcome.getCrpProgramOutcome().getComposedName() != null) {
+                paragraph = document.createParagraph();
+                run = paragraph.createRun();
+                run.setText(projectOutcome.getCrpProgramOutcome().getComposedName());
+                run.setBold(false);
+                run.setFontSize(11);
+                run.setFontFamily("Verdana");
+                run.setColor("00AF50");
+                paragraph.setStyle("heading 2");
+
+                String overall2023 = "", expected2023 = "", expected2021 = "", progress2021 = "";
+                if (projectOutcome.getCrpProgramOutcome().getValue() != null) {
+                  overall2023 = projectOutcome.getCrpProgramOutcome().getValue() + "";
+                }
+
+                if (projectOutcome.getExpectedValue() == null) {
+                  expected2023 = "0";
+                } else {
+                  expected2023 = projectOutcome.getExpectedValue() + "";
+                }
+
+                if (projectOutcome.getMilestones() != null && !projectOutcome.getMilestones().isEmpty()) {
+                  int expected = 0;
+                  for (ProjectMilestone milestone : projectOutcome.getMilestones()) {
+                    if (milestone.getExpectedValue() != null) {
+                      expected += milestone.getExpectedValue();
+                    }
+                  }
+                  expected2021 = expected + "";
+                }
+
+                if (projectOutcome.getMilestones() != null && !projectOutcome.getMilestones().isEmpty()) {
+                  int achieved = 0;
+                  for (ProjectMilestone milestone : projectOutcome.getMilestones()) {
+                    if (milestone.getAchievedValue() != null) {
+                      achieved += milestone.getAchievedValue();
+                    }
+                  }
+                  progress2021 = achieved + "";
+                }
+
+                this.createTableIndicators(overall2023, expected2023, expected2021, progress2021);
+
+                // Indicators
+                projectOutcome.setIndicators(projectOutcomeIndicatorManager.findAll().stream().filter(i -> i.isActive()
+                  && i.getProjectOutcome() != null && i.getProjectOutcome().getId().equals(projectOutcome.getId()))
+                  .collect(Collectors.toList()));
+
+
+                if (projectOutcome.getIndicators() != null && !projectOutcome.getIndicators().isEmpty()) {
+                  for (ProjectOutcomeIndicator indicator : projectOutcome.getIndicators()) {
+                    if (indicator.getCrpProgramOutcomeIndicator() != null
+                      && indicator.getCrpProgramOutcomeIndicator().getIndicator() != null) {
+                      poiSummary.textLineBreak(document, 1);
+                      poiSummary.textParagraphFontCalibri(document.createParagraph(),
+                        indicator.getCrpProgramOutcomeIndicator().getIndicator() + ":");
+                    }
+                    if (indicator.getNarrative() != null && !indicator.getNarrative().isEmpty()) {
+                      paragraph = document.createParagraph();
+                      run = paragraph.createRun();
+                      run.setText(indicator.getNarrative());
+                      run.setBold(false);
+                      run.setFontSize(11);
+                      run.setFontFamily("Calibri");
+                      run.setColor("005380");
+                    } else {
+                      paragraph = document.createParagraph();
+                      run = paragraph.createRun();
+                      run.setText("<No defined>");
+                      run.setBold(false);
+                      run.setFontSize(11);
+                      run.setFontFamily("Calibri");
+                      run.setColor("c92804");
+                    }
+
+                  }
+                }
+                // Deliverables Table
+                List<Deliverable> deliverables = new ArrayList<>();
+                deliverables =
+                  deliverableManager.getDeliverablesByProjectAndPhase(this.getSelectedPhase().getId(), projectID);
+                if (deliverables != null && !deliverables.isEmpty()) {
+
+                  deliverables = deliverables.stream()
+                    .filter(d -> d.isActive() && d.getDeliverableInfo(this.getSelectedPhase()).isActive()
+                      && d.getDeliverableInfo(this.getSelectedPhase()).getCrpProgramOutcome() != null
+                      && d.getDeliverableInfo(this.getSelectedPhase()).getCrpProgramOutcome().getId()
+                        .equals(projectOutcome.getCrpProgramOutcome().getId()))
+                    .collect(Collectors.toList());
+
+                  if (deliverables != null && !deliverables.isEmpty()) {
+                    poiSummary.textLineBreak(document, 1);
+                    poiSummary.textParagraphFontCalibri(document.createParagraph(),
+                      this.getText("summaries.progressReport2020.deliverableStatus") + ":");
+                    this.createDeliverablesTable(deliverables);
+                  }
+                }
+                poiSummary.textLineBreak(document, 3);
+              }
+            }
+          }
+
+          // Project Outcome
+
+          run.addTab();
+
+          poiSummary.textLineBreak(document, 1);
+
+          /* Create a portrait text Section */
+          /*
+           * para = document.createParagraph();
+           * CTSectPr sectionTable = body.getSectPr();
+           * CTPageSz pageSizeTable = sectionTable.addNewPgSz();
+           * CTP ctpTable = para.getCTP();
+           * CTPPr brTable = ctpTable.addNewPPr();
+           * brTable.setSectPr(sectionTable);
+           * standard Letter page size
+           * pageSizeTable.setOrient(STPageOrientation.PORTRAIT);
+           * pageSizeTable.setW(BigInteger.valueOf(842 * 20));
+           * pageSizeTable.setH(BigInteger.valueOf(595 * 20));
+           */
+
+          // Tables
+          /*
+           * para = document.createParagraph();
+           * run = paragraph.createRun();
+           * run.setText("TABLES");
+           * run.setBold(true);
+           * run.setFontSize(14);
+           * run.setFontFamily("Verdana");
+           * run.setColor("00AF50");
+           * paragraph.setStyle("heading 1");
+           * poiSummary.textLineBreak(document, 1);
+           */
+
+          // this.createTablePerformanceIndicators();
+          document.createParagraph().setPageBreak(true);
+
+
+        } catch (Exception e) {
+          LOG.error("Error generating Progress Summary " + e.getMessage());
+          throw e;
         }
       }
-
-      // Project Outcome
-
-      run.addTab();
-
-      poiSummary.textLineBreak(document, 1);
-
-      /* Create a portrait text Section */
-      /*
-       * para = document.createParagraph();
-       * CTSectPr sectionTable = body.getSectPr();
-       * CTPageSz pageSizeTable = sectionTable.addNewPgSz();
-       * CTP ctpTable = para.getCTP();
-       * CTPPr brTable = ctpTable.addNewPPr();
-       * brTable.setSectPr(sectionTable);
-       * standard Letter page size
-       * pageSizeTable.setOrient(STPageOrientation.PORTRAIT);
-       * pageSizeTable.setW(BigInteger.valueOf(842 * 20));
-       * pageSizeTable.setH(BigInteger.valueOf(595 * 20));
-       */
-
-      // Tables
-      /*
-       * para = document.createParagraph();
-       * run = paragraph.createRun();
-       * run.setText("TABLES");
-       * run.setBold(true);
-       * run.setFontSize(14);
-       * run.setFontFamily("Verdana");
-       * run.setColor("00AF50");
-       * paragraph.setStyle("heading 1");
-       * poiSummary.textLineBreak(document, 1);
-       */
-
-      // this.createTablePerformanceIndicators();
-      document.createParagraph().setPageBreak(true);
+    }
+    try {
 
       ByteArrayOutputStream os = new ByteArrayOutputStream();
       document.write(os);
@@ -815,18 +880,18 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
        */
       ReadWordFile readWordFile = new ReadWordFile();
       readWordFile.startReadDocument();
+
+      // Calculate time of generation
+      long stopTime = System.currentTimeMillis();
+      stopTime = stopTime - startTime;
+      LOG.info("Downloaded successfully: " + this.getFileName() + ". User: "
+        + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: "
+        + this.getSelectedCycle() + ". Time to generate: " + stopTime + "ms.");
+      return SUCCESS;
     } catch (Exception e) {
-      LOG.error("Error generating POWB Summary " + e.getMessage());
+      LOG.error("Error generating Progress Summary " + e.getMessage());
       throw e;
     }
-
-    // Calculate time of generation
-    long stopTime = System.currentTimeMillis();
-    stopTime = stopTime - startTime;
-    LOG.info("Downloaded successfully: " + this.getFileName() + ". User: "
-      + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: "
-      + this.getSelectedCycle() + ". Time to generate: " + stopTime + "ms.");
-    return SUCCESS;
   }
 
   @Override
@@ -848,8 +913,15 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
       fileName.append(this.getCurrentCycleYear() + "_");
     }
     fileName.append(this.getLoggedCrp().getAcronym());
-    fileName.append("_Cluster_" + projectID);
-    fileName.append("_ReportProcessSummary_");
+
+    if (showAllYears.equals("true")) {
+      fileName.append("_ReportProcessSummary_");
+      fileName.append("AllClusters_");
+    } else {
+      fileName.append("_Cluster_" + projectID);
+      fileName.append("_ReportProcessSummary_");
+    }
+
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".docx");
     return fileName.toString();
@@ -904,6 +976,10 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
 
   public ProjectInfo getProjectInfo() {
     return projectInfo;
+  }
+
+  public String getShowAllYears() {
+    return showAllYears;
   }
 
   public void loadProvider(Map<String, Object> session) {
@@ -965,8 +1041,14 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
       this
         .setProjectID(Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID))));
       this.setCrpSession(this.getLoggedCrp().getAcronym());
+
+      Map<String, Parameter> parameters = this.getParameters();
+      showAllYears = StringUtils.trim(parameters.get(APConstants.SUMMARY_DELIVERABLE_ALL_YEARS).getMultipleValues()[0]);
+
     } catch (Exception e) {
       LOG.error("Failed to get " + APConstants.PROJECT_REQUEST_ID + " parameter. Exception: " + e.getMessage());
+      showAllYears = "false";
+
     }
     // Get project from DB
     try {
@@ -1004,4 +1086,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
     this.projectInfo = projectInfo;
   }
 
+  public void setShowAllYears(String showAllYears) {
+    this.showAllYears = showAllYears;
+  }
 }
