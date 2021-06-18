@@ -124,15 +124,20 @@ ul.nav li a {
   /* display: none; */
 }
 
-.setFullScreen,
+.setFullScreen {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  box-shadow: 1px 1px 1px rgba(0,0,0,0.1);
+}
+
 .selectedReportBI {
   display: flex;
   align-items: center;
-  /* justify-content: space-around;
-  border: 1px solid #ccc;
-  border-radius: 2px;
-  box-shadow: 1px 1px 1px rgba(0,0,0,0.1); */
 }
+
 .setFullScreen p,
 .selectedReportBI p {
   margin: 0;
