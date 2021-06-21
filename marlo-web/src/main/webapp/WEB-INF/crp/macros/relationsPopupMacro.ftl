@@ -2,7 +2,11 @@
 [#macro relationsMacro element labelText=true ]
   [#local className = ((element.class.name)?split('.')?last)!''/]
   [#local composedID = "${className}-${(element.id)!}"]
-  [#local deliverablesProject = (action.getDeliverableRelationsProject(element.id, element.class.name,(element.project.id)!-1))! /]
+  [#if (action.isAiccra())]
+    [#local deliverablesProject = (action.getAiccraDeliverableRelationsProject(element)) /]
+  [#else]
+    [#local deliverablesProject = (action.getDeliverableRelationsProject(element.id, element.class.name,(element.project.id)!-1))! /]
+  [/#if]
   [#local deliverablesImpact = (action.getDeliverableRelationsImpact(element.id, element.class.name))! /]
   [#local deliverablesPartner = (action.getDeliverablesLedByPartner(element.id))! /]
 
