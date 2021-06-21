@@ -8,7 +8,7 @@
   "${baseUrlCdn}/global/js/autoSave.js?20210616" 
   ] 
 /]
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectActivities.css"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectActivities.css?20210621a"] /]
 [#assign currentStage = "activities" /]
 [#assign hideJustification = true /]
 
@@ -184,7 +184,7 @@
       [#-- Activity Title --]
       [#if action.isAiccra()]
         <div class="form-group">
-          [@customForm.select name="${customName}.activityTitle.id" label=""  i18nkey="project.activities.inputTitle" listName="activityTitles" keyFieldName="id"  displayFieldName="title"  multiple=false required=true editable=action.canAccessSuperAdmin() && isActive/]
+          [@customForm.select name="${customName}.activityTitle.id" label=""  i18nkey="project.activities.inputTitle" listName="activityTitles" keyFieldName="id" displayFieldName="title" className="activityTitle" multiple=false required=true editable=action.canAccessSuperAdmin() && isActive/]
         </div>
       [/#if]
       [#-- Description --]
