@@ -204,8 +204,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     masterReport.getParameterValues().put("i8nRegion", this.getText("deliverable.region"));
     masterReport.getParameterValues().put("i8nNewDeliverable",
       this.getText("summaries.board.report.expectedDeliverables.isNewDeliverable"));
-    masterReport.getParameterValues().put("i8nArticleURL",
-      this.getText("summaries.board.report.expectedDeliverables.articleURL"));
+    masterReport.getParameterValues().put("i8nArticleURL", this.getText("project.deliverable.articleURL"));
 
     return masterReport;
   }
@@ -660,7 +659,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         if (deliverable.getDeliverableInfo(this.getSelectedPhase()) != null
           && deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType() != null
           && deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getId() == 63) {
-          if (deliverableDissemination.getArticleUrl() != null) {
+          if (StringUtils.isNotBlank(deliverableDissemination.getArticleUrl())) {
             articleURL = deliverableDissemination.getArticleUrl();
           } else {
             articleURL = "<Not Defined>";
@@ -671,6 +670,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       } else {
         articleURL = "<Not Applicable>";
       }
+
+      articleURL = StringUtils.strip(articleURL);
 
       LinkedHashSet<Institution> managingResponsibleList = new LinkedHashSet<>();
       List<String> listPpa = new ArrayList<>();
