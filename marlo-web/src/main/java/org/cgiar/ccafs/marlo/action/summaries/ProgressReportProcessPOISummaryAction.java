@@ -776,7 +776,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                     if (indicator.getCrpProgramOutcomeIndicator() != null
                       && indicator.getCrpProgramOutcomeIndicator().getIndicator() != null) {
                       poiSummary.textLineBreak(document, 1);
-                      poiSummary.textParagraphFontCalibri(document.createParagraph(),
+                      poiSummary.textParagraphFontBoldCalibri(document.createParagraph(),
                         indicator.getCrpProgramOutcomeIndicator().getIndicator() + ":");
                     }
                     if (indicator.getNarrative() != null && !indicator.getNarrative().isEmpty()) {
@@ -786,11 +786,11 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                       run.setBold(false);
                       run.setFontSize(11);
                       run.setFontFamily("Calibri");
-                      run.setColor("005380");
+                      run.setColor("000000");
                     } else {
                       paragraph = document.createParagraph();
                       run = paragraph.createRun();
-                      run.setText("<No defined>");
+                      run.setText("<Not defined>");
                       run.setBold(false);
                       run.setFontSize(11);
                       run.setFontFamily("Calibri");
