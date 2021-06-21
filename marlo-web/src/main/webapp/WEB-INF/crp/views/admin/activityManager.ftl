@@ -4,7 +4,7 @@
 [#assign pageLibs = ["vanilla-color-picker","intro.js"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/usersManagement.js", 
-  "${baseUrlMedia}/js/admin/management.js" ,
+  "${baseUrlMedia}/js/admin/activity.js" ,
   "${baseUrlCdn}/global/js/fieldsValidation.js"
   ] 
 /]
@@ -13,7 +13,7 @@
 
 [#assign breadCrumb = [
   {"label":"admin", "nameSpace":"", "action":"adminManagement"},
-  {"label":"management", "nameSpace":"", "action":""}
+  {"label":"activities", "nameSpace":"", "action":""}
 ]/]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
@@ -70,11 +70,11 @@
             <ul class="flagships-list" >
             [#if activities?has_content]
               [#list activities as item]
-                [@activityItem2 element=item index=item.id name="activity"/]
+                [@activityItem2 element=item index=item.id name="activities"/]
               [/#list]
             [/#if]
             </ul>
-            <p class="text-center programMessage" style="display:${(flagshipsPrograms?has_content)?string('none','block')}">[@s.text name="programManagement.flagship.notFlagship.span" /]</p>
+            <p class="text-center programMessage" style="display:${(activities?has_content)?string('none','block')}">[@s.text name="programManagement.flagship.notFlagship.span" /]</p>
           </div>
         </div>
          [#-- Add Flagship--]
@@ -82,7 +82,7 @@
           <div class="text-center">
             <div class="addProgram bigAddButton"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addFlagshipProgram" /]</div>
             <span class="type-input" style="display:none">1</span>
-            <span class="inputName-input" style="display:none">flagshipsPrograms</span>
+            <span class="inputName-input" style="display:none">activities</span>
           </div>
           [/#if]
         </div>
@@ -104,9 +104,6 @@
 [#-- Search users Interface --]
 [#import "/WEB-INF/global/macros/usersPopup.ftl" as usersForm/]
 [@usersForm.searchUsers/]
-
-[#-- Program template --]
-[@programItem element={} index=0 name="" template=true /]
 
 [#-- Program template --]
 [@activityItem2 element={} index=0 name="" template=true /]
@@ -158,93 +155,6 @@
   </li>
 [/#macro]
 
-[#macro programItem element index name template=false]
-  [#local customName = "${name}[${index}]" /]
-  <li id="program-${template?string('template',index)}" class="program borderBox" style="display:${template?string('none','block')}">
-    [#-- Remove Button  --]
-    [#if editable]
-      [#if template || action.canBeDeleted(element.id, element.class.name)!false]
-      <div class="remove-programItem removeElement" title="Remove program"></div>
-      [/#if]
-    [/#if]
-    <div class="leftHead">
-      [#assign globalFlagship][@s.text name="global.flagship${isCenter?string('Center','')}"/][/#assign]
-      <span class="index">${index+1}</span>
-      <span class="elementId">${(element.researchArea.acronym)!}  ${(element.composedName)!globalFlagship}</span>
-    </div>
-    <br />
-    [#-- Program Acronym & Name --]
-    <div class="form-group"> 
-      <div class="row">
-        <div class="col-sm-2">[@customForm.input name="${customName}.acronym" type="text"  i18nkey="CrpProgram.inputAcronym" placeholder="CrpProgram.inputAcronym.placeholder" className="acronym" required=true editable=editable /]</div>
-        <div class="col-sm-9">[@customForm.input name="${customName}.name" type="text"  i18nkey="CrpProgram.inputName" placeholder="CrpProgram.inputName.placeholder" className="name" required=true editable=editable /]</div>
-        <div title="[@s.text name="CrpProgram.colorHelp" /]" class="col-sm-1">
-          <label  for="">Color:</label>
-          <div class="color-picker" style="background:${(element.color)!};"><input type="hidden" name="${customName}.color" value="${(element.color)!}"></div>
-        </div>
-      </div>
-    </div>
-    [#-- Hidden inputs  --]
-    <input class="type" type="hidden" name="${customName}.programType" value="${(element.programType)!'-1'}"/>
-    <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
-    [#-- Leaders  --]
-    <label for="">[@s.text name="CrpProgram.leaders"/]</label>
-    <div class="usersBlock leaders simpleBox" listname="flagshipsPrograms[${index}].leaders">
-      [#-- Leaders List --]
-      <div class="items-list" >
-        <ul>
-        [#if element.leaders?has_content]
-          [#list element.leaders as leader]
-            [@userItem element=leader index=leader_index name="${customName}.leaders" userRole=fplRole.id /]
-          [/#list]
-        [/#if]
-        </ul>
-        <p class="text-center usersMessage" style="display:${(element.leaders?has_content)?string('none','block')}">[@s.text name="CrpProgram.notLeaders.span"/]</p>
-      </div>
-      [#-- Add person Button --]
-      [#if editable]
-      <div class="text-center">
-        <div class="searchUser button-green"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addFlagshipLeader" /]</div>
-      </div>
-      [/#if]
-      [#-- Hidden Parameters --]
-      <span class="usersType" style="display:none">programUser</span>
-      <span class="usersRole" style="display:none">${fplRole.id}</span> 
-    </div>
-    
-    [#-- Managers  --]
-    <div class="form-group">
-      <label for="">[@s.text name="CrpProgram.managers"/]</label>
-      <div class="usersBlock managers simpleBox" listname="flagshipsPrograms[${index}].managers">
-        [#-- Managers List --]
-        <div class="items-list" >
-          <ul>
-          [#if element.managers?has_content]
-            [#list element.managers as leader]
-              [@userItem element=leader index=leader_index name="${customName}.managers" userRole=fpmRole.id /]
-            [/#list]
-          [/#if]
-          </ul>
-          <p class="text-center usersMessage" style="display:${(element.managers?has_content)?string('none','block')}">[@s.text name="CrpProgram.notManagers.span"/]</p>
-        </div>
-        [#-- Add person Button --]
-        [#if editable]
-        <div class="text-center">
-          <div class="searchUser button-green"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> 
-          [@s.text name="form.buttons.addFlagshipManager" ]
-            [@s.param ]mkyong[/@s.param]
-          [/@s.text]
-          </div>
-        </div>
-        [/#if]
-        [#-- Hidden Parameters --]
-        <span class="usersType" style="display:none">programUser</span>
-        <span class="usersRole" style="display:none">${fpmRole.id}</span> 
-      </div>
-    </div>
-    
-  </li>
-[/#macro]
 
 [#macro activityItem2 element index name template=false]
   [#local customName = "${name}[${index}]" /]
@@ -252,7 +162,7 @@
     [#-- Remove Button  --]
     [#if editable]
       [#if template || action.canBeDeleted(element.id, element.class.name)!false]
-      <div class="remove-programItem removeElement" title="Remove program"></div>
+      <div class="remove-activityItem2 removeElement" title="Remove activity"></div>
       [/#if]
     [/#if]
     <div class="leftHead">
@@ -264,10 +174,12 @@
     [#-- Program Acronym & Name --]
     <div class="form-group"> 
       <div class="row">
-        <div class="col-sm-9">[@customForm.input name="${customName}.title" type="text"  i18nkey="CrpProgram.inputName" placeholder="CrpProgram.inputName.placeholder" className="name" required=true editable=editable /]</div>
+        <div class="col-sm-9">[@customForm.input name="${customName}.title" type="text"  i18nkey="CrpProgram.inputName" placeholder="CrpProgram.inputName.placeholder" className="title" required=true editable=editable /]</div>
       </div>
     </div>
     [#-- Hidden inputs  --]
     <input class="id" type="hidden" name="${customName}.id" value="${(index)!}"/>
+    
+    
   </li>
 [/#macro]
