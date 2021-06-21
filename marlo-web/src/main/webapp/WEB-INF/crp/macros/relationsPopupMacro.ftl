@@ -68,16 +68,16 @@
 
                       [#if existRelation]
                         [#local projectOutcome = (action.getProjectOutcomeRelationImpact(action.getActualPhase().id, p.id, element.id))!/]
-                        [#local projectUrl][@s.url namespace="/projects" action="${(crpSession)!}/contributionCrp"][@s.param name='projectOutcomeID']${projectOutcome.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                        [#local projectUrl][@s.url namespace="/clusters" action="${(crpSession)!}/contributionCrp"][@s.param name='projectOutcomeID']${projectOutcome.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
                       [#else]
-                        [#local projectUrl][@s.url namespace="/projects" action="${(crpSession)!}/description"][@s.param name='projectID']${p.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                        [#local projectUrl][@s.url namespace="/clusters" action="${(crpSession)!}/description"][@s.param name='projectID']${p.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
                       [/#if]
                     [#--
                       [#local projectOutcome = (action.getProjectOutcomeRelationImpact(action.getActualPhase().id, p.id, element.id))!/]
                       [#local projectUrl][@s.url namespace="/projects" action="${(crpSession)!}/contributionCrp"][@s.param name='projectOutcomeID']${projectOutcome.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
                     --]
                     [#else]
-                      [#local projectUrl][@s.url namespace="/projects" action="${(crpSession)!}/description"][@s.param name='projectID']${p.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                      [#local projectUrl][@s.url namespace="/clusters" action="${(crpSession)!}/description"][@s.param name='projectID']${p.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
                     [/#if]
                     <tr>
                       <th scope="row">P${p.id}</th>
@@ -134,13 +134,17 @@
                 </thead>
                 <tbody>
                   [#list deliverables as d]
-                    [#local deliverableUrl][@s.url namespace="/projects" action="${(crpSession)!}/deliverable"][@s.param name='deliverableID']${d.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
-                    <tr>
-                      <th scope="row">D${d.id}</th>
-                      <td class="col-md-6">${(d.deliverableInfo.title)!'Untitled'}</td>
-                      <td>${(d.deliverableInfo.deliverableType.name?capitalize)!'none'}</td>
-                      <td> <a href="${deliverableUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
-                    </tr>
+                    [#if action.isAiccra()]
+                      [#local deliverableUrl][@s.url namespace="/clusters" action="${(crpSession)!}/deliverable"][@s.param name='deliverableID']${d.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                    [#else]
+                      [#local deliverableUrl][@s.url namespace="/projects" action="${(crpSession)!}/deliverable"][@s.param name='deliverableID']${d.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                    [/#if]
+                      <tr>
+                        <th scope="row">D${d.id}</th>
+                        <td class="col-md-6">${(d.deliverableInfo.title)!'Untitled'}</td>
+                        <td>${(d.deliverableInfo.deliverableType.name?capitalize)!'none'}</td>
+                        <td> <a href="${deliverableUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
+                      </tr>
                     [/#list]
                 </tbody>
               </table>
