@@ -40,35 +40,15 @@
         
         <h4 class="sectionTitle">[@s.text name="activityManagement.activity.title" /]</h4>
         <div class="usersBlock borderBox clearfix" listname="loggedCrp.programManagmenTeam">
-          [#-- PMU Users List --]
-          <div class="users items-list simpleBox">
-            <ul>
-            [#if activities?has_content]
-              [#list activities as item]
-                [@activityItem element=item name="" /]
-              [/#list]
-            [/#if]
-            </ul>
-            <p class="text-center usersMessage" style="display:${(loggedCrp.programManagmenTeam?has_content)?string('none','block')}">[@s.text name="programManagement.notUsers.span" /]</p>
-          </div>
-          [#-- Add Person--]
-          [#if editable] 
-          <div class="text-right">
-            <div class="searchUser button-blue"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> [@s.text name="form.buttons.searchUser" /]</div>
-          </div>
-          [/#if]
-          [#-- Hidden Parameters --]
-          <span class="usersType" style="display:none">crpUser</span>
-          <span class="usersRole" style="display:none">${pmuRol}</span>
-        </div>
+       
                  
-        <h4 class="sectionTitle">[@s.text name="programManagement.flagship.title" /]</h4>
         <div class="program-block"  listname="activities">
           [#-- Flagships List --]
           
           <div class="flagships items-list">
             <ul class="flagships-list" >
             [#if activities?has_content]
+            <br>
               [#list activities as item]
                 [@activityItem2 element=item index=item.id name="activities"/]
               [/#list]
@@ -77,6 +57,7 @@
             <p class="text-center programMessage" style="display:${(activities?has_content)?string('none','block')}">[@s.text name="programManagement.flagship.notFlagship.span" /]</p>
           </div>
         </div>
+        
          [#-- Add Flagship--]
           [#if editable] 
           <div class="text-center">
@@ -84,9 +65,11 @@
             <span class="type-input" style="display:none">1</span>
             <span class="inputName-input" style="display:none">activities</span>
           </div>
+          <br>
           [/#if]
         </div>
-
+        </div>
+        
         [#-- confirm popup --]
         <div id="dialog-confirm"  style="display:none;">
           <p><span class="glyphicon glyphicon-warning-sign" style="float:left; margin:0 7px 20px 0;"></span><strong> Are you sure?</strong></p>
