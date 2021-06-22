@@ -1,0 +1,1 @@
+alter table loc_elements add iso_alpha_3 varchar(10);

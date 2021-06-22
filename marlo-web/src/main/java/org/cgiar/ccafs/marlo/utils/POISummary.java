@@ -1861,6 +1861,16 @@ public class POISummary {
     paragraphRun.setFontSize(11);
   }
 
+  public void textParagraphFontBoldCalibri(XWPFParagraph paragraph, String text) {
+    paragraph.setAlignment(ParagraphAlignment.BOTH);
+    XWPFRun paragraphRun = paragraph.createRun();
+    this.addParagraphTextBreak(paragraphRun, text);
+    paragraphRun.setColor(TEXT_FONT_COLOR);
+    paragraphRun.setBold(true);
+    paragraphRun.setFontFamily("Calibri");
+    paragraphRun.setFontSize(11);
+  }
+
   public void textParagraphFontCalibri(XWPFParagraph paragraph, String text) {
     paragraph.setAlignment(ParagraphAlignment.BOTH);
     XWPFRun paragraphRun = paragraph.createRun();

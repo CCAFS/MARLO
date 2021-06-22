@@ -165,7 +165,7 @@
   [/#if]
 
   [#-- Supporting Activities --]
-  [#if !config.production]
+  [#if false]
     <div class="panel tertiary">
     <div class="panel-head"><label for=""> [@customForm.text name="project.deliverable.activities" readText=!editable /]:[@customForm.req required=editable /]</label></div>
       <div id="activityList" class="panel-body" listname="mappedDeliverableActivitiesCurrentPhase">
@@ -188,7 +188,7 @@
         [/#if]
         </ul>
         [#if editable ]
-          [@customForm.select name="deliverable.deliverableActivity.id" label="" showTitle=false  i18nkey="" listName="activities" keyFieldName="id"  displayFieldName="title"  header=true required=true  className="activity" editable=true/]
+          [@customForm.select name="deliverable.deliverableActivity.id" label="" showTitle=false  i18nkey="" listName="activities" keyFieldName="id"  displayFieldName="title"  header=true required=false  className="activity" editable=true/]
 
           [#if !activities?has_content]
             <div class="note"> [@s.text name="project.deliverable.activities.empty" /]  </div>

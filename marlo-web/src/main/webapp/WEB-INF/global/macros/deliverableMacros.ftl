@@ -554,14 +554,14 @@
 
 [#macro deliverableMetadataMacro flagshipslistName="programs" crpsListName="crps" allowFlagships=true]
   <div class="form-group">
-    [@metadataField title="title" encodedName="dc.title" type="input" require=false/]
+    [@metadataField title="title" encodedName="dc.title" type="input" require=true/]
   </div>
   <div class="form-group">
     [@metadataField title="description" encodedName="dc.description.abstract" type="textArea" require=false/]
   </div>
   <div class="form-group row">
     <div class="col-md-6">
-      [@metadataField title="publicationDate" encodedName="dc.date" type="input" require=false/]
+      [@metadataField title="publicationDate" encodedName="dc.date" type="input" require=true/]
     </div>
     <div class="col-md-6">
       [@metadataField title="language" encodedName="dc.language" type="input" require=false/]

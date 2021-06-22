@@ -29,6 +29,7 @@ function init() {
   $(".activityTitle").on("change", changeTitle);
   $(".activityTitle").on("keyup", changeTitle);
   $(".removeDeliverable").on("click", removeDeliverable);
+  // $('select.activityTitle').on("change", updateActivityList);
 
   // Missing fields in activities
   $("form .projectActivity").each(function(i,e) {
@@ -74,6 +75,20 @@ function init() {
 }
 
 /** FUNCTIONS * */
+// Detect activity title change
+// function updateActivityList() {
+//   console.log("acti");
+//   var activityTitles = $(`li[id^='select2-projectprojectActivities']`);
+//   activityTitles.each( function (index, activityTitle) {
+//     if (($(activityTitle).attr('aria-selected')) == 'true') {
+//       $(activityTitle).hide();
+//       console.log(index, activityTitle);
+//     } else {
+//       $(activityTitle).show();
+//       console.log(index, activityTitle);
+//     }
+//   })
+// }
 // change title
 function getAndSaveLocallyTitle() {
   $('#activityName').html($(this).parents('.projectActivity').find('.blockTitle').text().trimStart().trimEnd() );

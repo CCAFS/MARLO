@@ -18,12 +18,12 @@ function addEvents() {
   // $('.selectedReportBIContainer').on('click', function () {
   //   reportsMenuToggle();
   // });
-  $('.selectedReportBIContainer').hover(function () {
-    $('#repportsMenu').slideDown("fast");
-    $('.reportsButtonsIcon').addClass("glyphicon-chevron-down");
-  }, function () {
-    reportsMenuToggle();
-  });
+  // $('.selectedReportBIContainer').hover(function () {
+  //   $('#repportsMenu').slideDown("fast");
+  //   $('.reportsButtonsIcon').addClass("glyphicon-chevron-down");
+  // }, function () {
+  //   reportsMenuToggle();
+  // });
 
   $('.setFullScreen').on('click', function () {
     fullScreenDashboard();
@@ -269,6 +269,6 @@ function selectBIReport(e) {
   $section.addClass('current');
   $content.siblings().hide();
   setReportTitle();
-  reportsMenuToggle();
+  // reportsMenuToggle();
   $content.fadeIn();
 }

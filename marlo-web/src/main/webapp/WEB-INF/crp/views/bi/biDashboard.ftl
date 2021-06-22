@@ -2,9 +2,9 @@
 [#assign title = "MARLO BI" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["powerbi-client"] /]
-[#assign customJS = ["${baseUrlMedia}/js/bi/biDashboard.js?20210527b", "${baseUrlCdn}/global/bower_components/powerbi-client/dist/powerbi.min.js" ] /]
+[#assign customJS = ["${baseUrlMedia}/js/bi/biDashboard.js?20210618a", "${baseUrlCdn}/global/bower_components/powerbi-client/dist/powerbi.min.js" ] /]
 [#assign customCSS = [
-  "${baseUrl}/crp/css/bi/biDashboard.css"
+  "${baseUrl}/crp/css/bi/biDashboard.css?20210618b"
   ] 
 /]
 [#assign currentSection = "bi" /] 
@@ -31,41 +31,39 @@
 
     <section class="container containerBI">  
       [#if biReports?has_content]
-      
-        [#--  Reports header  --]
-       <div class="headTitle-row-container">
-
+      <div class="headContainer">
         <div class='selectedReportBIContainer col-md-2'>
-          <span class="selectedReportBI col-md btn button-bg" style="max-width:200px">
-              [#--  <p class="menu-item-title">[@s.text name="biDashboard.menu.title"/] </p>  --]
-              <p class="menu-item-title">Dashboards</p>
-            <span class="glyphicon reportsButtonsIcon glyphicon-chevron-up" style="color: #1da5ce"></span>
-          </span>
-          [#--  Reports Tabs --] 
-          <div id="repportsMenu" class="reportsButtons">
-            <div class="menuList col-md-12" style="padding:0">
-            [#list (biReports)?sort_by("reportOrder")![] as report]
-                <div id="BIreport-${report.id}" report-title="${report.reportTitle}"  has-filters="${report.hasFilters?c}" class="button-bg reportSection [#if report?index == 0]current[/#if]">
-                <a index="${report?index+1}" class="BIreport-${report.id}" href="">[@s.text name=report.reportName /]</a>
-                </div>
-            [/#list]
+            <span class="selectedReportBI col-md button-bg" style="max-width:200px">
+                [#--  <p class="menu-item-title">[@s.text name="biDashboard.menu.title"/] </p>  --]
+                <p class="menu-item-title">Dashboards:</p>
+              [#--  <span class="glyphicon reportsButtonsIcon glyphicon-chevron-up" style="color: #1da5ce"></span>  --]
+            </span>
+            [#--  Reports Tabs --] 
+            <div id="repportsMenu" class="reportsButtons">
+              <div class="menuList col-md-12" style="padding:0">
+              [#list (biReports)?sort_by("reportOrder")![] as report]
+                  <div id="BIreport-${report.id}" report-title="${report.reportTitle}"  has-filters="${report.hasFilters?c}" class="button-bg reportSection [#if report?index == 0]current[/#if]">
+                  <a index="${report?index+1}" class="BIreport-${report.id}" href="">[@s.text name=report.reportName /]</a>
+                  </div>
+              [/#list]
+              </div>
             </div>
+            [#--  Reports Tabs --] 
+        
           </div>
-          [#--  Reports Tabs --] 
-      
-        </div>
-
-
-        <h3 class="headTitle text-left col-md-8">
-        </h3>
-        <span class="setFullScreen col-md-1 btn button-bg">
-            <p class="menu-item-title">Fullscreen</p>
-            <span class="glyphicon reportsButtonsIcon glyphicon-fullscreen" style="color: #1da5ce"></span>
-        </span>
-       </div>
-        [#--  Reports header  --]
-
-
+        
+          [#--  Reports header  --]
+         <div class="headTitle-row-container">
+  
+          <h3 class="headTitle text-left col-md-8">
+          </h3>
+          <span class="setFullScreen col-md-1 btn button-bg">
+              <p class="menu-item-title">Fullscreen</p>
+              <span class="glyphicon reportsButtonsIconFS glyphicon-fullscreen" style="color: #1da5ce"></span>
+          </span>
+         </div>
+          [#--  Reports header  --]
+      </div>
 
         [#--  Reports Content --]
         <div class="summariesContent col-md-12" style="min-height:550px;">

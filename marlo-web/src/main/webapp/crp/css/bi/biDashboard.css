@@ -65,7 +65,7 @@ ul.nav li a {
   border-radius: 3px;
   position: relative;
   text-align: center;
-  margin-bottom: 2px;
+  margin: 5px 5px 5px 0;
   background-color: white;
   /* text-align: center; */
 }
@@ -96,7 +96,7 @@ ul.nav li a {
 
 .headTitle-row-container {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   margin-bottom: 1em;
 }
 
@@ -116,16 +116,15 @@ ul.nav li a {
 }
 
 .reportsButtons {
-  position: absolute;
+  /* position: absolute;
   z-index: 99;
-  width: 83%;
+  width: 83%; */
 }
 #repportsMenu {
-  display: none;
+  /* display: none; */
 }
 
-.setFullScreen,
-.selectedReportBI {
+.setFullScreen {
   display: flex;
   align-items: center;
   justify-content: space-around;
@@ -133,8 +132,36 @@ ul.nav li a {
   border-radius: 2px;
   box-shadow: 1px 1px 1px rgba(0,0,0,0.1);
 }
+
+.selectedReportBI {
+  display: flex;
+  align-items: center;
+}
+
 .setFullScreen p,
 .selectedReportBI p {
   margin: 0;
   font-size: 16px;
+}
+
+.headContainer {
+  display: flex;
+  flex-flow: column;
+}
+
+.setFullScreen {
+  margin: 0 15px;
+}
+
+.reportsButtonsIconFS {
+  margin-left: 5px;
+}
+
+.menuList {
+  display: flex;
+  flex-flow: row wrap;
+}
+
+.col-md-2 {
+  width: 100% !important;
 }
