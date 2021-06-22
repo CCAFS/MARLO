@@ -42,7 +42,6 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
-import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
@@ -808,9 +807,8 @@ public class CrpActivityAction extends BaseAction {
         loggedCrp.getProgramManagmenTeam().clear();
         loggedCrp.setProgramManagmenTeam(null);
       }
-      if (flagshipsPrograms != null) {
-        flagshipsPrograms.clear();
-        flagshipsPrograms = (null);
+      if (activities != null) {
+        activities.clear();
       }
 
 
@@ -1008,9 +1006,7 @@ public class CrpActivityAction extends BaseAction {
     if (this.hasPermission("*")) {
       this.setUsersToActive(new ArrayList<>());
 
-      this.savePmuRoleData();
-      this.saveProgramsData();
-
+      this.saveActivities();
 
       CustomParameter parameter = null;
       if (parameters.size() == 0) {
@@ -1071,119 +1067,22 @@ public class CrpActivityAction extends BaseAction {
 
   }
 
-  private void savePmuRoleData() {
-    Role rolePreview = roleManager.getRoleById(pmuRol);
-    // Removing users roles
-    int i = 0;
-    for (UserRole userRole : rolePreview.getUserRoles()) {
-      if (loggedCrp.getProgramManagmenTeam() != null) {
-        if (!loggedCrp.getProgramManagmenTeam().contains(userRole)) {
+  private void saveActivities() {
+    if (activities != null && activities.isEmpty()) {
+      for (ActivityTitle activity : activities) {
+        if (activity.getId() != null) {
 
-          List<LiaisonUser> liaisonUsers = liaisonUserManager.findAll().stream()
-            .filter(c -> c.getUser().getId().longValue() == userRole.getUser().getId().longValue()
-              && c.getLiaisonInstitution().getId().longValue() == cuId)
-            .collect(Collectors.toList());
-          if (liaisonUsers.isEmpty()) {
-
-            userRoleManager.deleteUserRole(userRole.getId());
-          } else {
-            boolean deletePmu = true;
-            for (LiaisonUser liaisonUser : liaisonUsers) {
-              if (liaisonUser.getProjects().stream()
-                .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase()) && c.getStatus() != null
-                  && (c.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                    || c.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))
-                .collect(Collectors.toList()).isEmpty()) {
-                liaisonUserManager.deleteLiaisonUser(liaisonUser.getId());
-
-              } else {
-                deletePmu = false;
-                HashMap<String, String> error = new HashMap<>();
-                this.getInvalidFields().put("input-loggedCrp.programManagmenTeam[" + i + "].id",
-                  "PMU, can not be deleted");
-
-              }
-
-
-            }
-            if (deletePmu) {
-
-              this.notifyRoleProgramManagementUnassigned(userRole.getUser(), userRole.getRole());
-              userRoleManager.deleteUserRole(userRole.getId());
-
+          ActivityTitle activityDB = new ActivityTitle();
+          activityDB = activityTitleManager.getActivityTitleById(activity.getId());
+          if (activityDB != null) {
+            if (activity.getTitle() != null) {
+              activityTitleManager.saveActivityTitle(activity);
             }
           }
-          this.checkCrpUserByRole(userRole.getUser());
-        }
 
-      } else {
-
-        List<LiaisonUser> liaisonUsers = liaisonUserManager.findAll().stream()
-          .filter(c -> c.getUser().getId().longValue() == userRole.getUser().getId().longValue()
-            && c.getLiaisonInstitution().getId().longValue() == cuId)
-          .collect(Collectors.toList());
-        if (liaisonUsers.isEmpty()) {
-
-          userRoleManager.deleteUserRole(userRole.getId());
-        } else {
-          boolean deletePmu = true;
-          for (LiaisonUser liaisonUser : liaisonUsers) {
-            if (liaisonUser.getProjects().stream()
-              .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase()) && c.getStatus() != null
-                && (c.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                  || c.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))
-              .collect(Collectors.toList()).isEmpty()) {
-              liaisonUserManager.deleteLiaisonUser(liaisonUser.getId());
-
-            } else {
-              deletePmu = false;
-              HashMap<String, String> error = new HashMap<>();
-              this.getInvalidFields().put("input-loggedCrp.programManagmenTeam[" + i + "].id",
-                "PMU, can not be deleted");
-
-            }
-
-
-          }
-          if (deletePmu) {
-
-            this.notifyRoleProgramManagementUnassigned(userRole.getUser(), userRole.getRole());
-            userRoleManager.deleteUserRole(userRole.getId());
-
-          }
-        }
-        this.checkCrpUserByRole(userRole.getUser());
-
-      }
-      i++;
-    }
-    // Add new Users roles
-    if ((loggedCrp.getProgramManagmenTeam() != null)) {
-      for (UserRole userRole : loggedCrp.getProgramManagmenTeam()) {
-        if (userRole.getId() == null) {
-          if (rolePreview.getUserRoles().stream().filter(ur -> ur.getUser().equals(userRole.getUser()))
-            .collect(Collectors.toList()).isEmpty()) {
-            userRoleManager.saveUserRole(userRole);
-            userRole.setUser(userManager.getUser(userRole.getUser().getId()));
-
-            this.addCrpUser(userRole.getUser());
-            this.notifyNewUserCreated(userRole.getUser());
-            // Notifiy user been assigned to Program Management
-            this.notifyRoleProgramManagementAssigned(userRole.getUser(), userRole.getRole());
-
-            LiaisonInstitution cuLiasonInstitution;
-
-            cuLiasonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(cuId);
-            LiaisonUser liaisonUser = new LiaisonUser();
-            liaisonUser.setCrp(loggedCrp);
-            liaisonUser.setLiaisonInstitution(cuLiasonInstitution);
-            liaisonUser.setUser(userRole.getUser());
-            liaisonUserManager.saveLiaisonUser(liaisonUser);
-          }
         }
       }
     }
-
   }
 
 
@@ -1290,27 +1189,21 @@ public class CrpActivityAction extends BaseAction {
     Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
     if (save) {
       HashMap<String, String> error = new HashMap<>();
-      if (loggedCrp.getProgramManagmenTeam() == null || loggedCrp.getProgramManagmenTeam().isEmpty()) {
 
-        error.put("list-loggedCrp.programManagmenTeam", InvalidFieldsMessages.EMPTYUSERLIST);
-        // invalidFields.add(gson.toJson(gson));
-      }
-      if (flagshipsPrograms == null || flagshipsPrograms.isEmpty()) {
+      if (activities == null || activities.isEmpty()) {
 
-        error.put("list-flagshipsPrograms", this.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Flagships"}));
+        error.put("list-activities", this.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Activities"}));
         // invalidFields.add(gson.toJson(gson));
       } else {
         int index = 0;
-        for (CrpProgram crpProgram : flagshipsPrograms) {
-          if (crpProgram.getLeaders() == null || crpProgram.getLeaders().isEmpty()) {
-            error.put("list-flagshipsPrograms[" + index + "].leaders",
-              this.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Flagship Leaders"}));
+        for (ActivityTitle activity : activities) {
+          if (activity == null) {
+            error.put("list-activities[" + index + "].leaders",
+              this.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Activities"}));
           }
           index++;
         }
       }
-
-
       this.setInvalidFields(error);
     }
   }
