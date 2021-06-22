@@ -946,6 +946,22 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                 }
             }
             if (clazz == ProjectOutcome.class) {
+                if (isAiccra()) {
+                    boolean canDelete = true;
+                    ProjectOutcome projectOutcome = this.projectOutcomeManager.getProjectOutcomeById(id);
+
+                    for (Deliverable deliverable : projectOutcome.getProject().getCurrentDeliverables(getActualPhase())) {
+                        if (deliverable.getDeliverableInfo() != null
+                                && deliverable.getDeliverableInfo().getCrpProgramOutcome() != null
+                                && deliverable.getDeliverableInfo().getCrpProgramOutcome().getId().compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0) {
+                            
+                            canDelete = false;
+                            break;
+                        }
+                    }
+                    
+                    return canDelete;
+                } else {
 
                 ProjectOutcome projectOutcome = this.projectOutcomeManager.getProjectOutcomeById(id);
                 List<CrpProgramOutcome> crpProgramOutcomes = new ArrayList<>();
@@ -980,6 +996,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                 } else {
                     canDelete = true;
                 }
+            }
             }
 
             if (clazz == CrpClusterKeyOutputOutcome.class) {
