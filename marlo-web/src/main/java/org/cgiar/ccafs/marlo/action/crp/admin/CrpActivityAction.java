@@ -1068,7 +1068,7 @@ public class CrpActivityAction extends BaseAction {
   }
 
   private void saveActivities() {
-    if (activities != null && activities.isEmpty()) {
+    if (activities != null && !activities.isEmpty()) {
       for (ActivityTitle activity : activities) {
         if (activity.getId() != null) {
 
@@ -1080,6 +1080,11 @@ public class CrpActivityAction extends BaseAction {
             }
           }
 
+        } else {
+          // Create new activity
+          ActivityTitle activityNew = new ActivityTitle();
+          activityNew.setTitle(activity.getTitle());
+          activityTitleManager.saveActivityTitle(activityNew);
         }
       }
     }
