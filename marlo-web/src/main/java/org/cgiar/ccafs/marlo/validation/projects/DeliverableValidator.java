@@ -100,6 +100,43 @@ public class DeliverableValidator extends BaseValidator {
 
     boolean validate = false;
 
+    if (action.isAiccra()) {
+      if (deliverable.getMetadataElements() != null) {
+        for (DeliverableMetadataElement deliverableMetadataElement : deliverable.getMetadataElements()) {
+          if (deliverableMetadataElement != null) {
+            if (deliverableMetadataElement.getMetadataElement().getId() != null) {
+
+              // Validate metadata title
+              if (deliverableMetadataElement.getMetadataElement().getId() != null
+                && 1 == deliverableMetadataElement.getMetadataElement().getId()) {
+                if ((deliverableMetadataElement.getElementValue() != null
+                  && deliverableMetadataElement.getElementValue().isEmpty())
+                  || deliverableMetadataElement.getElementValue() == null) {
+                  action.addMessage(action.getText("project.deliverable.metadata.v.title"));
+                  action.getInvalidFields().put("input-deliverable.metadataElements[0].elementValue",
+                    InvalidFieldsMessages.EMPTYFIELD);
+                }
+              }
+
+              // Validate metadata publication date
+              if (deliverableMetadataElement.getMetadataElement().getId() != null
+                && 17 == deliverableMetadataElement.getMetadataElement().getId()) {
+                if ((deliverableMetadataElement.getElementValue() != null
+                  && deliverableMetadataElement.getElementValue().isEmpty())
+                  || deliverableMetadataElement.getElementValue() == null) {
+                  action.addMessage(action.getText("project.deliverable.metadata.v.publicationDate"));
+                  action.getInvalidFields().put("input-deliverable.metadataElements[16].elementValue",
+                    InvalidFieldsMessages.EMPTYFIELD);
+                }
+              }
+            }
+          }
+        }
+      }
+
+
+    }
+
     if (action.isPlanningActive()) {
       if (deliverable.getDeliverableInfo().getStatus() != null
         && deliverable.getDeliverableInfo().getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
@@ -268,43 +305,6 @@ public class DeliverableValidator extends BaseValidator {
             action.getInvalidFields().put("list-deliverable.fundingSources",
               action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Funding Sources"}));
           }
-        }
-
-        if (action.isAiccra()) {
-          if (deliverable.getMetadataElements() != null) {
-            for (DeliverableMetadataElement deliverableMetadataElement : deliverable.getMetadataElements()) {
-              if (deliverableMetadataElement != null) {
-                if (deliverableMetadataElement.getMetadataElement().getId() != null) {
-
-                  // Validate metadata title
-                  if (deliverableMetadataElement.getMetadataElement().getId() != null
-                    && 1 == deliverableMetadataElement.getMetadataElement().getId()) {
-                    if ((deliverableMetadataElement.getElementValue() != null
-                      && deliverableMetadataElement.getElementValue().isEmpty())
-                      || deliverableMetadataElement.getElementValue() == null) {
-                      action.addMessage(action.getText("project.deliverable.metadata.v.title"));
-                      action.getInvalidFields().put("input-deliverable.metadataElements[0].elementValue",
-                        InvalidFieldsMessages.EMPTYFIELD);
-                    }
-                  }
-
-                  // Validate metadata publication date
-                  if (deliverableMetadataElement.getMetadataElement().getId() != null
-                    && 17 == deliverableMetadataElement.getMetadataElement().getId()) {
-                    if ((deliverableMetadataElement.getElementValue() != null
-                      && deliverableMetadataElement.getElementValue().isEmpty())
-                      || deliverableMetadataElement.getElementValue() == null) {
-                      action.addMessage(action.getText("project.deliverable.metadata.v.publicationDate"));
-                      action.getInvalidFields().put("input-deliverable.metadataElements[16].elementValue",
-                        InvalidFieldsMessages.EMPTYFIELD);
-                    }
-                  }
-                }
-              }
-            }
-          }
-
-
         }
 
         if ((action.isReportingActive())) {
