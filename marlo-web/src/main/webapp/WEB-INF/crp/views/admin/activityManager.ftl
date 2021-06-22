@@ -151,7 +151,7 @@
     <div class="leftHead">
       [#assign globalFlagship][@s.text name="global.flagship${isCenter?string('Center','')}"/][/#assign]
       <span class="index">${index}</span>
-      <span class="elementId">${(element.title?substring(0, 30))!}...</span>
+      <span class="elementId">[#if  element.title?has_content && element.title?length < 80]${element.title}[#else]${(element.title?substring(0, 79))!} ...[/#if]</span>
     </div>
     <br />
     [#-- Program Acronym & Name --]
