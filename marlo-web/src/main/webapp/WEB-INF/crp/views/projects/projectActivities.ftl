@@ -4,11 +4,12 @@
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/fieldsValidation.js",
-  "${baseUrlMedia}/js/projects/projectActivities.js?20210208",  
-  "${baseUrlCdn}/global/js/autoSave.js?20210616" 
+  "${baseUrlMedia}/js/projects/projectActivities.js?20210208"
   ] 
 /]
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectActivities.css"] /]
+[#-- ,  
+  "${baseUrlCdn}/global/js/autoSave.js?20210616"  --]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectActivities.css?20210621a"] /]
 [#assign currentStage = "activities" /]
 [#assign hideJustification = true /]
 
@@ -69,9 +70,9 @@
               <div class="helpMessage infoText2 col-md-8">
                 [#-- <div  class="removeHelp"><span class="glyphicon glyphicon-remove"></span></div> --]
                 <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-transparent-warning.png" />
-                <p class="col-md-8">
+                
                   [@s.text name="deliverable.missing.activity.alert" ][@s.param]${deliverablesMissingActivity?size}[/@s.param] [/@s.text]
-                </p>
+                
               </div>
               <div class="viewMore closed"></div>
             </div>
@@ -184,7 +185,7 @@
       [#-- Activity Title --]
       [#if action.isAiccra()]
         <div class="form-group">
-          [@customForm.select name="${customName}.activityTitle.id" label=""  i18nkey="project.activities.inputTitle" listName="activityTitles" keyFieldName="id"  displayFieldName="title"  multiple=false required=true editable=action.canAccessSuperAdmin() && isActive/]
+          [@customForm.select name="${customName}.activityTitle.id" label=""  i18nkey="project.activities.inputTitle" listName="activityTitles" keyFieldName="id" displayFieldName="title" className="activityTitle" multiple=false required=true editable=action.canAccessSuperAdmin() && isActive/]
         </div>
       [/#if]
       [#-- Description --]
