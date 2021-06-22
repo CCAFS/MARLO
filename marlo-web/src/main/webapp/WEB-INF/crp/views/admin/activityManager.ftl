@@ -24,7 +24,7 @@
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
     <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
-    <p class="col-md-10"> [@s.text name="CrpProgram.help" /] </p>
+    <p class="col-md-10"> [@s.text name="activities.help" /] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
 </div>
@@ -140,7 +140,7 @@
 
 
 [#macro activityItem2 element index name template=false]
-  [#local customName = "${name}[${index}]" /]
+  [#local customName = "${name}[${index-1}]" /]
   <li id="program-${template?string('template',index)}" class="program borderBox" style="display:${template?string('none','block')}">
     [#-- Remove Button  --]
     [#if editable]
@@ -151,7 +151,7 @@
     <div class="leftHead">
       [#assign globalFlagship][@s.text name="global.flagship${isCenter?string('Center','')}"/][/#assign]
       <span class="index">${index}</span>
-      <span class="elementId">${(element.title)!}</span>
+      <span class="elementId">${(element.title?substring(0, 30))!}...</span>
     </div>
     <br />
     [#-- Program Acronym & Name --]
