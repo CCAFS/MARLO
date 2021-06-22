@@ -1080,6 +1080,11 @@ public class CrpActivityAction extends BaseAction {
             }
           }
 
+        } else {
+          // Create new activity
+          ActivityTitle activityNew = new ActivityTitle();
+          activityNew.setTitle(activity.getTitle());
+          activityTitleManager.saveActivityTitle(activityNew);
         }
       }
     }
