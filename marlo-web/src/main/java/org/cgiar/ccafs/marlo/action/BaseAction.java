@@ -11,11 +11,10 @@
  * GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
- ****************************************************************
+ * ***************************************************************
  */
 package org.cgiar.ccafs.marlo.action;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
@@ -2683,69 +2682,64 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             }
 
             if (clazz == ProjectOutcome.class) {
-                deliverables = new ArrayList<>();
-                ProjectOutcome projectOutcome = this.projectOutcomeManager.getProjectOutcomeById(id);
-                List<CrpClusterKeyOutputOutcome> keyOutputOutcomes = projectOutcome.getCrpProgramOutcome()
-                        .getCrpClusterKeyOutputOutcomes().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-                for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : keyOutputOutcomes) {
+                if (isAiccra()) {
+                    deliverables = new ArrayList<>();
+                    ProjectOutcome projectOutcome = this.projectOutcomeManager.getProjectOutcomeById(id);
 
-                    deliverables.addAll(this.getDeliverableRelationsImpact(
-                            crpClusterKeyOutputOutcome.getCrpClusterKeyOutput().getId(), CrpClusterKeyOutput.class.getName()));
-                }
-                HashSet<Deliverable> deList = new HashSet<>();
+                    for (Deliverable deliverable : projectOutcome.getProject().getCurrentDeliverables(getActualPhase())) {
+                        if (deliverable.getDeliverableInfo() != null
+                                && deliverable.getDeliverableInfo().getCrpProgramOutcome() != null
+                                && deliverable.getDeliverableInfo().getCrpProgramOutcome().getId().compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0) {
+                            deliverables.add(deliverable);
+                        }
+                    }
+                } else {
+                    deliverables = new ArrayList<>();
+                    ProjectOutcome projectOutcome = this.projectOutcomeManager.getProjectOutcomeById(id);
+                    List<CrpClusterKeyOutputOutcome> keyOutputOutcomes = projectOutcome.getCrpProgramOutcome()
+                            .getCrpClusterKeyOutputOutcomes().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+                    for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : keyOutputOutcomes) {
 
-                for (Deliverable deliverable : deliverables) {
-                    deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(this.getActualPhase()));
-                    if (deliverable.isActive() && deliverable.getProject() != null
-                            && deliverable.getProject().getId().longValue() == projectID.longValue()) {
-                        if (deliverable.getDeliverableInfo() != null) {
-                            if (this.isReportingActive() || this.isUpKeepActive()) {
-                                if (deliverable.getDeliverableInfo().isRequiredToComplete()) {
-                                    deList.add(deliverable);
-                                }
-                            } else {
-                                if (deliverable.isActive() && deliverable.getDeliverableInfo().getNewExpectedYear() != null
-                                        && deliverable.getDeliverableInfo().getNewExpectedYear() >= this.getActualPhase().getYear()
-                                        && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-                                        && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-                                        .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-                                    deList.add(deliverable);
-                                }
-                                if (deliverable.isActive()
-                                        && deliverable.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear()
-                                        && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-                                        && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-                                        .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
-                                    deList.add(deliverable);
+                        deliverables.addAll(this.getDeliverableRelationsImpact(
+                                crpClusterKeyOutputOutcome.getCrpClusterKeyOutput().getId(), CrpClusterKeyOutput.class.getName()));
+                    }
+                    HashSet<Deliverable> deList = new HashSet<>();
+
+                    for (Deliverable deliverable : deliverables) {
+                        deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(this.getActualPhase()));
+                        if (deliverable.isActive() && deliverable.getProject() != null
+                                && deliverable.getProject().getId().longValue() == projectID.longValue()) {
+                            if (deliverable.getDeliverableInfo() != null) {
+                                if (this.isReportingActive() || this.isUpKeepActive()) {
+                                    if (deliverable.getDeliverableInfo().isRequiredToComplete()) {
+                                        deList.add(deliverable);
+                                    }
+                                } else {
+                                    if (deliverable.isActive() && deliverable.getDeliverableInfo().getNewExpectedYear() != null
+                                            && deliverable.getDeliverableInfo().getNewExpectedYear() >= this.getActualPhase().getYear()
+                                            && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+                                            && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+                                            .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+                                        deList.add(deliverable);
+                                    }
+                                    if (deliverable.isActive()
+                                            && deliverable.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear()
+                                            && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+                                            && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+                                            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+                                        deList.add(deliverable);
+                                    }
                                 }
                             }
+
                         }
-
                     }
-                }
-                deliverables.clear();
-                deliverables.addAll(deList);
+                    deliverables.clear();
+                    deliverables.addAll(deList);
 
+                }
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-
-        }
-        return deliverables;
-
-    }
-
-    public List<Deliverable> getAiccraDeliverableRelationsProject(ProjectOutcome projectOutcome) {
-
-        List<Deliverable> deliverables = new ArrayList<>();
-
-        try {
-            projectOutcome.getProject().getCurrentDeliverables(getActualPhase()).stream().filter((deliverable) -> (deliverable.getDeliverableInfo() != null
-                    && deliverable.getDeliverableInfo().getCrpProgramOutcome() != null
-                    && deliverable.getDeliverableInfo().getCrpProgramOutcome().getId().compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0)).forEachOrdered((deliverable) -> {
-                        deliverables.add(deliverable);
-            });
         } catch (Exception e) {
             e.printStackTrace();
 
