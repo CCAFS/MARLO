@@ -270,6 +270,43 @@ public class DeliverableValidator extends BaseValidator {
           }
         }
 
+        if (action.isAiccra()) {
+          if (deliverable.getMetadataElements() != null) {
+            for (DeliverableMetadataElement deliverableMetadataElement : deliverable.getMetadataElements()) {
+              if (deliverableMetadataElement != null) {
+                if (deliverableMetadataElement.getMetadataElement().getId() != null) {
+
+                  // Validate metadata title
+                  if (deliverableMetadataElement.getMetadataElement().getId() != null
+                    && 1 == deliverableMetadataElement.getMetadataElement().getId()) {
+                    if ((deliverableMetadataElement.getElementValue() != null
+                      && deliverableMetadataElement.getElementValue().isEmpty())
+                      || deliverableMetadataElement.getElementValue() == null) {
+                      action.addMessage(action.getText("project.deliverable.metadata.v.title"));
+                      action.getInvalidFields().put("input-deliverable.metadataElements[0].elementValue",
+                        InvalidFieldsMessages.EMPTYFIELD);
+                    }
+                  }
+
+                  // Validate metadata publication date
+                  if (deliverableMetadataElement.getMetadataElement().getId() != null
+                    && 17 == deliverableMetadataElement.getMetadataElement().getId()) {
+                    if ((deliverableMetadataElement.getElementValue() != null
+                      && deliverableMetadataElement.getElementValue().isEmpty())
+                      || deliverableMetadataElement.getElementValue() == null) {
+                      action.addMessage(action.getText("project.deliverable.metadata.v.publicationDate"));
+                      action.getInvalidFields().put("input-deliverable.metadataElements[16].elementValue",
+                        InvalidFieldsMessages.EMPTYFIELD);
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+
+        }
+
         if ((action.isReportingActive())) {
 
           if (action.isReportingActive() && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() != null
