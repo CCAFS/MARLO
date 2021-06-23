@@ -75,7 +75,7 @@ function attachEvents() {
 
     // Alert PopUp
     noty({
-        text: 'Please be aware you may have outcomes and/or cluster of activities associated to this program.',
+        text: 'Are you sure you want to delete this activity?',
         type: 'confirm',
         dismissQueue: true,
         layout: 'center',
