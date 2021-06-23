@@ -1014,10 +1014,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           for (Project project : projects) {
             project.setProjectActivities(
               project.getActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-            if (project.getProjectActivities() != null && project.getProjectActivities().stream()
-              .filter(a -> a.getActivityTitle() != null && a.getActivityTitle().getId().equals(id))
-              .collect(Collectors.toList()) != null) {
-              return false;
+            if (project.getProjectActivities() != null) {
+              for (Activity activity : project.getProjectActivities()) {
+                if (activity != null && activity.getActivityTitle() != null
+                  && activity.getActivityTitle().getId() != null) {
+                  if (activity.getActivityTitle().getId().equals(id)) {
+                    return false;
+                  }
+                }
+              }
             }
           }
         }
