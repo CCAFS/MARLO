@@ -39,7 +39,7 @@
         [@s.form action=actionName enctype="multipart/form-data" ] 
         
         <h4 class="sectionTitle">[@s.text name="activityManagement.activity.title" /]</h4>
-        <div class="usersBlock borderBox clearfix" listname="loggedCrp.programManagmenTeam">
+        <div class="usersBlock borderBox clearfix">
        
                  
         <div class="program-block"  listname="activities">
@@ -61,7 +61,7 @@
          [#-- Add Flagship--]
           [#if editable] 
           <div class="text-center">
-            <div class="addProgram bigAddButton"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addFlagshipProgram" /]</div>
+            <div class="addProgram bigAddButton"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addActivity" /]</div>
             <span class="type-input" style="display:none">1</span>
             <span class="inputName-input" style="display:none">activities</span>
           </div>
