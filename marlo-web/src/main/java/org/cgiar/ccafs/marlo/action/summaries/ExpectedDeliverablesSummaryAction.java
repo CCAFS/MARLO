@@ -536,7 +536,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
                 if (person.getDeliverableUserPartnership() != null
                   && person.getDeliverableUserPartnership().getInstitution() != null
-                  && person.getDeliverableUserPartnership().getInstitution().getAcronym() != null) {
+                  && StringUtils.isNotBlank(person.getDeliverableUserPartnership().getInstitution().getAcronym())) {
 
                   if (deliverablePartnership.getInstitution() != null
                     && deliverablePartnership.getInstitution().getAcronym() != null
@@ -602,8 +602,10 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
                 } else if (person != null && person.getDeliverableUserPartnership() != null
                   && person.getDeliverableUserPartnership().getInstitution() != null
                   && person.getDeliverableUserPartnership().getInstitution().getName() != null) {
-                  individual += "(" + person.getDeliverableUserPartnership().getInstitution().getName() + "); ";
-                  allResponsibleList.add(person.getDeliverableUserPartnership().getInstitution().getName() + ", ");
+                  individual += StringUtils.strip(person.getComposedName()) + " ("
+                    + StringUtils.strip(person.getDeliverableUserPartnership().getInstitution().getName()) + "); ";
+                  allResponsibleList
+                    .add(StringUtils.strip(person.getDeliverableUserPartnership().getInstitution().getName()) + ", ");
                 }
               }
             }
@@ -978,7 +980,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           delivNewYear = deliverableInfo.getNewExpectedYear() != null && deliverableInfo.getNewExpectedYear() != -1
             ? deliverableInfo.getNewExpectedYear().toString() : null;
         } else {
-          delivNewYear = "&lt;Not Applicable&gt;";
+          delivNewYear = "<Not Applicable>";
         }
 
         Long projectID = null;
