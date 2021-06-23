@@ -320,12 +320,17 @@ public class SendEmails {
         users.add(user);
         // Send UserManual.pdf
         String contentType = "application/pdf";
-        String fileName = APConstants.MARLO_PDF_MANUAL_NAME;
+        String fileName;
+        if (action.isAiccra()) {
+          fileName = APConstants.AICCRA_PDF_MANUAL_NAME;
+        } else {
+          fileName = APConstants.MARLO_PDF_MANUAL_NAME;
+        }
         byte[] buffer = null;
         InputStream inputStream = null;
 
         try {
-          inputStream = action.getClass().getResourceAsStream("/manual/" + APConstants.MARLO_PDF_MANUAL_NAME);
+          inputStream = action.getClass().getResourceAsStream("/manual/" + fileName);
           buffer = readFully(inputStream);
         } catch (FileNotFoundException e) {
           // TODO Auto-generated catch block

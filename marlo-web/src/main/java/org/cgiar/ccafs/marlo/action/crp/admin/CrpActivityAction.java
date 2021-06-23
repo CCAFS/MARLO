@@ -273,12 +273,17 @@ public class CrpActivityAction extends BaseAction {
       this.getUsersToActive().add(mapUser);
       // Send UserManual.pdf
       String contentType = "application/pdf";
-      String fileName = APConstants.MARLO_PDF_MANUAL_NAME;
+      String fileName;
+      if (this.isAiccra()) {
+        fileName = APConstants.AICCRA_PDF_MANUAL_NAME;
+      } else {
+        fileName = APConstants.MARLO_PDF_MANUAL_NAME;
+      }
       byte[] buffer = null;
       InputStream inputStream = null;
 
       try {
-        inputStream = this.getClass().getResourceAsStream("/manual/" + APConstants.MARLO_PDF_MANUAL_NAME);
+        inputStream = this.getClass().getResourceAsStream("/manual/" + fileName);
         buffer = readFully(inputStream);
       } catch (FileNotFoundException e) {
         // TODO Auto-generated catch block
