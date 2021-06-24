@@ -50,7 +50,7 @@
             [#if activities?has_content]
             <br>
               [#list activities as item]
-                [@activityItem2 element=item index=item.id name="activities"/]
+                [@activityItem2 element=item index=item_index name="activities"/]
               [/#list]
             [/#if]
             </ul>
@@ -65,7 +65,7 @@
             <span class="type-input" style="display:none">1</span>
             <span class="inputName-input" style="display:none">activities</span>
           </div>
-          <br>
+          <br>         
           [/#if]
         </div>
         </div>
@@ -140,7 +140,7 @@
 
 
 [#macro activityItem2 element index name template=false]
-  [#local customName = "${name}[${index-1}]" /]
+  [#local customName = "${name}[${index}]" /]
   <li id="program-${template?string('template',index)}" class="program borderBox" style="display:${template?string('none','block')}">
     [#-- Remove Button  --]
     [#if editable]
@@ -150,8 +150,8 @@
     [/#if]
     <div class="leftHead">
       [#assign globalFlagship][@s.text name="global.flagship${isCenter?string('Center','')}"/][/#assign]
-      <span class="index">${index}</span>
-      <span class="elementId">[#if  element.title?has_content && element.title?length < 80]${element.title}[#else]${(element.title?substring(0, 79))!} ...[/#if]</span>
+      <span class="index">${index+1}</span>
+      <span class="elementId">[#if element.title?has_content && element.title?length < 80]${(element.title)!}[#else]${(element.title?substring(0, 79))!} ...[/#if]</span>
     </div>
     <br />
     [#-- Program Acronym & Name --]
@@ -161,8 +161,6 @@
       </div>
     </div>
     [#-- Hidden inputs  --]
-    <input class="id" type="hidden" name="${customName}.id" value="${(index)!}"/>
-    
-    
+    <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
   </li>
 [/#macro]
