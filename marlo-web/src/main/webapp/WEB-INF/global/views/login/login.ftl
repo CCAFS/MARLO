@@ -1,5 +1,5 @@
 [#ftl]
-[#assign title = "Welcome to MARLO" /]
+[#assign title = "Welcome to AICCRA" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = ["${baseUrlCdn}/global/js/login/login.js?20201113"] /]
 [#assign currentSection = "home" /]
