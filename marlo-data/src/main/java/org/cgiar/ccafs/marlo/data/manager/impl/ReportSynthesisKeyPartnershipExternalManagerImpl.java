@@ -135,7 +135,10 @@ public class ReportSynthesisKeyPartnershipExternalManagerImpl implements ReportS
 
     }
 
-    ReportSynthesis reportSynthesisPMU = reportSynthesisManager.findSynthesis(phase.getId(), pmu.getId());
+    ReportSynthesis reportSynthesisPMU = null;
+    if (pmu != null && pmu.getId() != null) {
+      reportSynthesisManager.findSynthesis(phase.getId(), pmu.getId());
+    }
 
     if (reportSynthesisPMU != null) {
 

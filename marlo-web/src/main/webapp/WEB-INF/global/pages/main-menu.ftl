@@ -41,8 +41,8 @@
   [#-- MONITORING OUTCOMES - CENTER --]
   { 'slug': 'outcomes',       'name': 'menu.outcomes',      'namespace': '/monitoring',       'action': '${(crpSession)!}/monitoringOutcomesList',                      'visible': logged && centerGlobalUnit, 'active': true },
   [#-- PROJECTS - ALL --]
-  { 'slug': 'projects',       'name': 'menu.projects',      'namespace': '/projects',       'action': '${(crpSession)!}/projectsList',                      'visible': !aiccra, 'active': true },
-  { 'slug': 'projects',       'name': 'menu.projects',      'namespace': '/clusters',       'action': '${(crpSession)!}/projectsList',                      'visible': aiccra, 'active': true },
+  { 'slug': 'projects',       'name': 'menu.projects',      'namespace': '/projects',       'action': '${(crpSession)!}/projectsList',                      'visible': logged && !aiccra, 'active': true },
+  { 'slug': 'projects',       'name': 'menu.projects',      'namespace': '/clusters',       'action': '${(crpSession)!}/projectsList',                      'visible': logged && aiccra, 'active': true },
   [#-- FUNDING SOURCES - ALL --]
   { 'slug': 'fundingSources', 'name': 'menu.fundingSources',      'namespace': '/fundingSources',       'action': '${(crpSession)!}/fundingSourcesList',    'visible': logged, 'active': true },
   [#-- ADDITIONAL REPORTING - CRP --]
