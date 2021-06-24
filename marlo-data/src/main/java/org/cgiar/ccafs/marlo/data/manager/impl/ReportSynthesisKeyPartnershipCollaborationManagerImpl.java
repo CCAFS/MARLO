@@ -133,11 +133,11 @@ public class ReportSynthesisKeyPartnershipCollaborationManagerImpl
     }
 
 
-    ReportSynthesis reportSynthesisPMU = reportSynthesisManager.findSynthesis(phase.getId(), pmu.getId());
-
+    ReportSynthesis reportSynthesisPMU = null;
+    if (pmu != null && pmu.getId() != null) {
+      reportSynthesisPMU = reportSynthesisManager.findSynthesis(phase.getId(), pmu.getId());
+    }
     if (reportSynthesisPMU != null) {
-
-
       List<ReportSynthesisKeyPartnershipCollaboration> excludeColaborations = new ArrayList<>();
 
       // check if the PMU exclude some CGIAR collaborations

@@ -382,9 +382,10 @@ public class ReportSynthesisMeliaManagerImpl implements ReportSynthesisMeliaMana
       studiesWord.add(dtoAdd.getProjectExpectedStudy());
     }
 
-
-    ReportSynthesis reportSynthesisPMU =
-      reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionPMU.getId());
+    ReportSynthesis reportSynthesisPMU = null;
+    if (liaisonInstitutionPMU != null && liaisonInstitutionPMU.getId() != null) {
+      reportSynthesisPMU = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionPMU.getId());
+    }
 
     if (reportSynthesisPMU != null) {
 
@@ -404,7 +405,6 @@ public class ReportSynthesisMeliaManagerImpl implements ReportSynthesisMeliaMana
         // Remove for the list the key external partnership the the PMU exclude it.
         studiesWord.removeAll(pmuStudies);
       }
-
     }
 
 
