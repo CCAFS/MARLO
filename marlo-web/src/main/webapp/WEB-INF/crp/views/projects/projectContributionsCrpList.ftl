@@ -183,7 +183,7 @@
       [#-- Remove Contribution--]
       <td class="text-center">
         [#if ((action.hasPermission("delete"))!true) && action.canBeDeleted((projectOutcome.id)!-1,(projectOutcome.class.name)!"" ) && !action.isCenterGlobalUnit() ]
-          <a id="removeOutcome-${projectOutcomeID}" class="removeOutcome" href="${baseUrl}/projects/${crpSession}/removeProjectOuctome.do?projectID=${projectID}&outcomeId=${projectOutcomeID}&phaseID=${(actualPhase.id)!}" title="">
+          <a id="removeOutcome-${projectOutcomeID}" onclick="return confirm('Are you sure you want to delete this?');" class="removeOutcome" href="${baseUrl}/projects/${crpSession}/removeProjectOuctome.do?projectID=${projectID}&outcomeId=${projectOutcomeID}&phaseID=${(actualPhase.id)!}" title="">
             <img src="${baseUrlCdn}/global/images/trash.png" />
           </a>
         [#else]
