@@ -185,7 +185,9 @@ public class SendMailS extends BaseAction {
         subject = "TEST " + subject;
         messageContent = testingHeader.toString() + messageContent;
         // if (toEmail != null) {
-        msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(bbcEmail, false));
+        if (bbcEmail != null) {
+          msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(bbcEmail, false));
+        }
         // msgbackup.setRecipients(Message.RecipientType.TO,
         // InternetAddress.parse(bbcEmail, false));
         LOG.info("   - TO: " + bbcEmail);
