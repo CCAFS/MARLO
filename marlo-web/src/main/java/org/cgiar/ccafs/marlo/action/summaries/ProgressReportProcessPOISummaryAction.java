@@ -701,9 +701,6 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
           run.setColor("000000");
           paragraph.setStyle("headingTitle 1");
 
-          if (projectInfo.getTitle() != null) {
-            poiSummary.textParagraphFontCalibri(document.createParagraph(), projectInfo.getTitle());
-          }
           poiSummary.textLineBreak(document, 1);
 
           // Project Description
