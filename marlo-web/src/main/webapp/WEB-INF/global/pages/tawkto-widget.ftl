@@ -5,7 +5,7 @@
 
 <script type="text/javascript">
   [#-- MARLO Develop ID as default --]
-  [#assign tawktoSiteId = "60b4e60a6699c7280da9e26c"]
+  [#assign tawktoSiteId = "57864c4b7e9d57372d381198"]
   [#if config.production]
     [#-- MARLO Production Public Key --]
     [#assign tawktoSiteId = "582f0c81f9976a1964b0c240"]
@@ -55,11 +55,7 @@
   (function() {
     var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
     s1.async = true;
-    [#if config.production]
     s1.src = 'https://embed.tawk.to/${tawktoSiteId}/default';
-    [#else]
-    s1.src = 'https://embed.tawk.to/${tawktoSiteId}/1f71a56e8';
-    [/#if]
     s1.charset = 'UTF-8';
     s1.setAttribute('crossorigin', '*');
     s0.parentNode.insertBefore(s1, s0);
