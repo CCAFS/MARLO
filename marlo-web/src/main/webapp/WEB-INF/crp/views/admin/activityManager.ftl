@@ -39,7 +39,7 @@
         [@s.form action=actionName enctype="multipart/form-data" ] 
         
         <h4 class="sectionTitle">[@s.text name="activityManagement.activity.title" /]</h4>
-        <div class="usersBlock borderBox clearfix" listname="loggedCrp.programManagmenTeam">
+        <div class="usersBlock borderBox clearfix">
        
                  
         <div class="program-block"  listname="activities">
@@ -50,7 +50,7 @@
             [#if activities?has_content]
             <br>
               [#list activities as item]
-                [@activityItem2 element=item index=item.id name="activities"/]
+                [@activityItem2 element=item index=item_index name="activities"/]
               [/#list]
             [/#if]
             </ul>
@@ -61,11 +61,11 @@
          [#-- Add Flagship--]
           [#if editable] 
           <div class="text-center">
-            <div class="addProgram bigAddButton"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addFlagshipProgram" /]</div>
+            <div class="addProgram bigAddButton"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addActivity" /][@utils.underConstruction title="global.underConstruction" width="20px" height="20px" /]</div>
             <span class="type-input" style="display:none">1</span>
             <span class="inputName-input" style="display:none">activities</span>
           </div>
-          <br>
+          <br>         
           [/#if]
         </div>
         </div>
@@ -140,7 +140,7 @@
 
 
 [#macro activityItem2 element index name template=false]
-  [#local customName = "${name}[${index-1}]" /]
+  [#local customName = "${name}[${index}]" /]
   <li id="program-${template?string('template',index)}" class="program borderBox" style="display:${template?string('none','block')}">
     [#-- Remove Button  --]
     [#if editable]
@@ -150,8 +150,8 @@
     [/#if]
     <div class="leftHead">
       [#assign globalFlagship][@s.text name="global.flagship${isCenter?string('Center','')}"/][/#assign]
-      <span class="index">${index}</span>
-      <span class="elementId">${(element.title?substring(0, 30))!}...</span>
+      <span class="index">${index+1}</span>
+      <span class="elementId">[#if element.title?has_content && element.title?length < 80]${(element.title)!}[#else]${(element.title?substring(0, 79))!} ...[/#if]</span>
     </div>
     <br />
     [#-- Program Acronym & Name --]
@@ -161,8 +161,6 @@
       </div>
     </div>
     [#-- Hidden inputs  --]
-    <input class="id" type="hidden" name="${customName}.id" value="${(index)!}"/>
-    
-    
+    <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
   </li>
 [/#macro]
