@@ -104,9 +104,11 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTOnOff;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSimpleField;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTString;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTStyle;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STHdrFtr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STOnOff;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STStyleType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -406,7 +408,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
             new POIField(deliverable.getDeliverableInfo().getTitle(), ParagraphAlignment.LEFT, false),
             new POIField(deliverable.getDeliverableInfo().getStatusName(this.getSelectedPhase()),
               ParagraphAlignment.LEFT, false),
-            new POIField("<Not defined>", ParagraphAlignment.LEFT, false, "c92804", "")};
+            new POIField("<Not provided yet>", ParagraphAlignment.LEFT, false, "c92804", "")};
           data = Arrays.asList(sData);
           datas.add(data);
         } else {
@@ -547,6 +549,9 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
 
   @Override
   public String execute() throws Exception {
+    // Toc section
+    addCustomHeadingStyle(document, "headingTitle 1", 1);
+    addCustomHeadingStyle(document, "headingTitle 2", 2);
 
     if (this.getSelectedPhase() == null) {
       return NOT_FOUND;
@@ -593,14 +598,15 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
           if (uniqueCreation == false) {
             if (showAllYears.equals("true")) {
 
-              poiSummary.pageLeftHeader(document, "All Clusters for " + this.getSelectedPhase().getComposedName());
+              // poiSummary.pageLeftHeader(document, "All Clusters for " + this.getSelectedPhase().getComposedName());
 
             } else {
               if (projectInfo.getTitle() != null) {
                 poiSummary.pageLeftHeader(document, projectInfo.getTitle());
               }
             }
-            poiSummary.pageLeftHeader(document, this.getText("summaries.progressReport2020.header1"));
+            poiSummary.pageLeftHeader(document,
+              this.getText("summaries.progressReport2020.header1") + " " + this.getSelectedPhase().getYear());
 
             // Get datetime
             ZonedDateTime timezone = ZonedDateTime.now();
@@ -613,6 +619,20 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
             // poiSummary.pageFooter(document, "This report was generated on " + currentDate);
 
             this.createPageFooter();
+
+            if (showAllYears.equals("true")) {
+              // Table of contents
+              document.createTOC();
+
+              XWPFParagraph paragraph = document.createParagraph();
+              CTP ctP = paragraph.getCTP();
+              CTSimpleField toc = ctP.addNewFldSimple();
+              toc.setInstr("TOC \\h");
+              toc.setDirty(STOnOff.TRUE);
+              XWPFRun run = paragraph.createRun();
+              document.createParagraph().setPageBreak(true);
+            }
+
             uniqueCreation = true;
           }
 
@@ -621,21 +641,9 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
           // poiSummary.addLineSeparator(document.createParagraph());
           // document.createParagraph().setPageBreak(true);
 
-          // Second page - table of contents
-          // document.createTOC();
-
-          // Toc section
-          // addCustomHeadingStyle(document, "heading 1", 1);
-          // addCustomHeadingStyle(document, "heading 2", 2);
-
           // Body content
           XWPFParagraph paragraph = document.createParagraph();
-          /*
-           * CTP ctP = paragraph.getCTP();
-           * CTSimpleField toc = ctP.addNewFldSimple();
-           * toc.setInstr("TOC \\h");
-           * toc.setDirty(STOnOff.TRUE);
-           */
+
           this.createCoverTable();
           XWPFRun run = paragraph.createRun();
           // run.addBreak(BreakType.PAGE);
@@ -682,7 +690,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
           run.setFontSize(14);
           run.setFontFamily("Verdana");
           run.setColor("00AF50");
-          paragraph.setStyle("heading 2");
+          paragraph.setStyle("headingTitle 1");
 
           if (projectInfo.getTitle() != null) {
             poiSummary.textParagraphFontCalibri(document.createParagraph(), projectInfo.getTitle());
