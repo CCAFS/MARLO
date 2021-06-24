@@ -1,5 +1,5 @@
 [#ftl]
-[#assign title = "Welcome to MARLO" /]
+[#assign title = "Welcome to AICCRA" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["jQuery-Timelinr","cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
