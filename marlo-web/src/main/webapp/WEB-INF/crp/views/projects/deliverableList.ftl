@@ -49,6 +49,10 @@
     <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-transparent-warning.png" />
     <p class="col-md-10">
       [@s.text name="deliverable.message"][/@s.text]
+      <div class="form-group">
+            <label for="">[@s.text name="Download Template" /]:</label>
+              <a href="${baseUrlCdn}/global/documents/AICCRA_dissemination_templates_2021.xlsx" download><img src="${baseUrlCdn}/global/images/download-excel.png" height="35"/></a>
+      </div>
     </p>
   </div>
 <div class="viewMore closed"></div>
