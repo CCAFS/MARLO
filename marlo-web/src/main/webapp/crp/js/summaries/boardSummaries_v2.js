@@ -34,9 +34,20 @@ function attachEvents() {
   // Update project List
   // $('[name="cycle"], [name="year"]').on('change', changePhaseParameters);
     $('[name="phaseID"]').on('change', changePhaseParameters);
+
+  // Show or hide select a cluster
+  $('#AICCRA_progressReportProcessSummary #1-showAllYears-false').on('click', hideShowClusterSelect);
+  $('#AICCRA_progressReportProcessSummary #1-showAllYears-true').on('click', hideShowClusterSelect);
 }
 
 // ************************************************ Functions *******************************************************//
+function hideShowClusterSelect() {
+  if ($(this).attr('value') == 'true') {
+    $('#AICCRA_progressReportProcessSummary').children().eq(1).hide('slow');
+  } else {
+    $('#AICCRA_progressReportProcessSummary').children().eq(1).show('slow');
+  }
+}
 
 function changePhaseParameters(){
   var $parent = $(this).parents('.summariesFiles');
