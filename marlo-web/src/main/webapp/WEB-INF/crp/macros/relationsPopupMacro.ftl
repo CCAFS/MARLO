@@ -139,7 +139,7 @@
                       <tr>
                         <th scope="row">D${d.id}</th>
                         <td class="col-md-6">${(d.deliverableInfo.title)!'Untitled'}</td>
-                        <td>${(d.deliverableInfo.deliverableType.name?capitalize)!'none'}</td>
+                        <td>${(d.deliverableInfo.deliverableType.name?capitalize)!'-'}</td>
                         <td>${(d.deliverableInfo.year)!'none'}</td>
                         <td> <a href="${deliverableUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
                       </tr>
@@ -355,6 +355,7 @@
                   <tr>
                     <th id="ids">[@s.text name="projectsList.projectids" /]</th>
                     <th id="delverableTitles" >[@s.text name="project.deliverableList.deliverableName" /]</th>
+                    <th id="delverableTitles" >[@s.text name="project.deliverableList.year" /]</th>
                     <th></th>
                   </tr>
                 </thead>
@@ -364,6 +365,7 @@
                     <tr>
                       <th class="deliverableId" scope="row">D${d.id}</th>
                       <td class="col-md-12">${(d.deliverableInfo.title)!'Untitled'}</td>
+                      <td class="col-md-12">${(d.deliverableInfo.year)!'-'}</td>
                       [#--<td>${(e.studyInfo.studyType.name?capitalize)!'none'}</td>--]
                       <td> <a href="${deliverableUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
                     </tr>
