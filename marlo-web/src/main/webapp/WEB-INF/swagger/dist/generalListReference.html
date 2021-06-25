@@ -127,7 +127,8 @@
         <a href="#section3-item3" > <button type="button" class="subCollapsible">Impact Areas Indicators <span class="getColor">GET</span></button></a>
         <a href="#section3-item4" > <button type="button" class="subCollapsible">Sustainable Development Goals  <span class="getColor">GET</span></button></a>
         <a href="#section3-item5" > <button type="button" class="subCollapsible">SDG Targets <span class="getColor">GET</span></button></a>
-        <a href="#section3-item6" > <button type="button" class="subCollapsible">SDG Indicators<span class="getColor">GET</span></button></a>
+        <a href="#section3-item6" > <button type="button" class="subCollapsible">SDG Indicators <span class="getColor">GET</span></button></a>
+        <a href="#section3-item7" > <button type="button" class="subCollapsible">All Initiatives <span class="getColor">GET</span></button></a>
       </div>
       <a href="#section4"> <button type="button" class="collapsible" href="#section4">Institutions
           management</button></a>
@@ -1467,6 +1468,125 @@
             </div>
           </div>
         </div>
+         <!-- Method 3.7 -->
+        <div class="bshadow" data-aos="fade-up">
+          <div class="container">
+            <div class="row">
+              <div class="col-12">
+                <h2 class="title">methods</h2>
+                <div class="bshadow" data-aos="fade-up" id="section3-item7">
+                  <div class="getColorbackground contEndpoint">
+                    <button type="button" class="btn getColorbackground">GET</button> <span
+                      class="endpointTitle">/allInitiatives</span>
+                  </div>
+                  <div class="parameters">
+                  <h3>Functionality</h3>
+                    <div>Test funtionality</div>
+                    <h3>Parameters</h3>
+                    <div>No parameters</div>
+                    <table style="width: 70%">
+                      <thead>
+                        <tr>
+                          <th></th>     
+                        </tr>
+                      </thead>
+                      <tbody>        
+                        <tr>
+                          <td colspan="2">
+                            <div>
+                              <p><span><Strong>Request URL: </Strong></span></p>
+                              <div class="URLendpoint">
+                                <div class="fragCode">
+                                  <p><span class="endpoint"></span>/allInitiatives</p>
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="container-c">
+                    <div class="row">
+                      <div class="col-12" style="margin-bottom: 20px;">
+                        <button onclick="all_initiatives()" type="button"  data-toggle="modal" data-target="#exampleRequestModal13" class="btn getColorbackgroundExample btn-lg btn-block">Display control list</button>
+                      </div>
+                      <div class="col-12">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="greenCode">200</span>: <span class="blueCode">OK</span> </p>
+                          </div>
+                          <pre><code>
+<span class="yellowCode">[</span>
+  <span class="yellowCode">{</span>
+    <span class="blueCode">"initvStgId"</span><span class="WhiteCode"> : "long",</span>
+    <span class="blueCode">"currentStage"</span><span class="WhiteCode"> : "String",</span>
+    <span class="blueCode">"currentStageName"</span><span class="WhiteCode"> : "String,"</span>   
+    <span class="blueCode">"currentStageId"</span><span class="WhiteCode"> : "long,"</span>
+    <span class="blueCode">"initiativeName"</span><span class="WhiteCode"> : "String,"</span>
+    <span class="blueCode">"initvStageIsActive"</span><span class="WhiteCode"> : "long,"</span>
+    <span class="blueCode">"initvStageStatus"</span><span class="WhiteCode"> : "String,"</span>
+    <span class="blueCode">"activeStageId"</span><span class="WhiteCode"> : "long,"</span>
+    <span class="blueCode">"activeStageName"</span><span class="WhiteCode"> : "String,"</span>
+    <span class="blueCode">"userInitiative"</span><span class="WhiteCode"> : "String,"</span>
+    <span class="blueCode">"userInitiativeRole"</span><span class="WhiteCode"> : "String"</span>
+    <span class="blueCode">"concept :"</span><span class="WhiteCode">{</span>
+       <span class="blueCode">"name"</span><span class="yellowCode"> : "String,"</span>
+       <span class="blueCode">"action_area_id"</span><span class="WhiteCode"> : "long,"</span>
+       <span class="blueCode">"action_area_description"</span><span class="WhiteCode"> : "String"</span>
+    <span class="yellowCode">}</span>
+  <span class="yellowCode">}</span>
+<span class="yellowCode">]</span>
+                          </code></pre> 
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">400</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Bad Request</span>
+                            </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">401</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Unauthorized</span>
+                          </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">403</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Forbidden</span>
+                          </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">404</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Not Found</span>
+                          </code></pre>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="section" id="section4">
         <h1 class="title" data-aos="fade-up">Institutions Management</h1>
@@ -1606,11 +1726,6 @@
           <h4 style="margin-top: 15px;">Loading...</h4>
         </div>
       </div>
-
-
-
-
-
 
       </div>
       <div  class="modal-footer">
@@ -1949,13 +2064,53 @@
   </div>
 </div>
 
+<!-- Initiatives Modal  -->
+<div class="modal fade" id="exampleRequestModal13" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-xl">
+    <div class="modal-content">      
+      <div class="modal-body" >
+        <table class="table dataTable" id=all_initiatives >
+          <thead class="thead-dark">
+            <tr id="#list-print-columns-name">              
+              <td>Initiative ID</td>
+              <td>Name</td>
+              <td>Current Stage ID</td>             
+              <td>Current Stage</td>
+              <td>Status</td>
+              <td>Active Stage ID</td>
+              <td>Active Stage</td>
+              <td>Concept Name</td>
+              <td>Action Area ID</td>
+              <td>Action Area</td>
+            </tr>
+          </thead>
+          <tbody id="list-print-all_initiatives">
+          </tbody>
+        </table>
+        <div class="text-center">
+          <div class="spinner-general" id="spinner_all_initiatives">
+            <div class="spinner-border   text-success" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+            <h4 style="margin-top: 15px;">Loading...</h4>
+          </div>
+        </div>
+      </div>
+      <div  class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
+        <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 <!-- 
 <p>This is a paragraph.</p>
 
 <button>Toggle slideUp() and slideDown()</button> -->
 <script src="conf/endpoint.conf.js"></script>
-<script src="js/request.js?20210518"></script>
+<script src="js/request.js?20210617"></script>
 <script>
   var coll = document.getElementsByClassName("collap");
   var i;
