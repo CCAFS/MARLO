@@ -482,6 +482,10 @@ public class DeliverableAction extends BaseAction {
     return acceptationPercentage;
   }
 
+  public List<Activity> getActivities() {
+    return activities;
+  }
+
   public List<DeliverableQualityAnswer> getAnswers() {
     return answers;
   }
@@ -498,10 +502,6 @@ public class DeliverableAction extends BaseAction {
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
 
-  }
-
-  public List<Activity> getActivities() {
-    return activities;
   }
 
   public List<CgiarCrossCuttingMarker> getCgiarCrossCuttingMarkers() {
@@ -1514,7 +1514,7 @@ public class DeliverableAction extends BaseAction {
         activitiesPresentMapped.add(deliverableActivity.getActivity().getId() + "");
       }
 
-//      List<DeliverableActivity> activities = new ArrayList<>();
+      // List<DeliverableActivity> activities = new ArrayList<>();
       // deliverableActivityManager.getDeliverableActivitiesByDeliverableID(deliverableID);
 
       for (Activity activity : project.getActivities()) {
@@ -2799,12 +2799,12 @@ public class DeliverableAction extends BaseAction {
     this.acceptationPercentage = acceptationPercentage;
   }
 
-  public void setAnswers(List<DeliverableQualityAnswer> answers) {
-    this.answers = answers;
-  }
-
   public void setActivities(List<Activity> activities) {
     this.activities = activities;
+  }
+
+  public void setAnswers(List<DeliverableQualityAnswer> answers) {
+    this.answers = answers;
   }
 
   public void setCgiarCrossCuttingMarkers(List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers) {

@@ -652,13 +652,6 @@
 			</result>
 		</action>
 
-		<action name="{crp}/downloadDisseminationTemplate"
-		  method="downloadFile"
-			class="org.cgiar.ccafs.marlo.action.projects.DeliverableAction">
-			<result name="success" type="redirectAction">
-			</result>
-		</action>
-
 		<action name="{crp}/removeProjectOuctome"
 			method="deleteProjectOutcome"
 			class="org.cgiar.ccafs.marlo.action.projects.ProjectOutcomeListAction">
