@@ -369,7 +369,9 @@ function updateReadOnly() {
   let channel = $(".disseminationChannel").val();
   // if is sync
   if ($('.deliverableDisseminationUrl ').prop('readonly')) {
-    $('.isOtherUrlTohide').show("slow");
+    if (($('.subTypeSelect ').val() == 63) || ($('.subTypeSelectSupplementary').val() == 63)) {
+      $('.isOtherUrlTohide').show("slow");
+    }
     console.log("solo lectura");
     $('#output-dissemination').empty().append("Found metadata successfully in " + channel)
     $('#output-dissemination').show();
@@ -1217,13 +1219,13 @@ function getMetadata(channel, url) {
     },
     success: function (metadata) {
       metadata = metadata.metadata;
-      if (!(metadata.doi != null && metadata.doi != undefined && metadata.doi != "")) {
+      if (!(metadata.doi != null && metadata.doi != undefined && metadata.doi != "") && ($('.subTypeSelect ').val() == 63) || ($('.subTypeSelectSupplementary').val() == 63)) {
         $('.other-url input').val(metadata.otherUrl);
         $('.isOtherUrlTohide').show('slow');
         $('.other-url').show('slow');
         $('.isOtherUrlFiel').val(true);
         $('input.isOtherUrl').prop('checked', true);
-      }
+      } 
       if (jQuery.isEmptyObject(metadata)) {
         $('#output-dissemination').html("Metadata empty");
       } else {
