@@ -45,6 +45,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -362,6 +363,7 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
 
     // Center
     loggedCenter = this.getLoggedCrp().getAcronym();
+
     // Project
     if (projectPolicyInfo.getProjectPolicy().getProject() != null) {
       Project policyProject = projectPolicyInfo.getProjectPolicy().getProject();
@@ -427,7 +429,7 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
         hasMilestones = "No";
       }
     } else {
-      hasMilestones = "&lt;Not Defined&gt;";
+      hasMilestones = "&lt;Not Provided&gt;";
     }
 
     // List<ProjectInnovationMilestone> projectInnovationMilestoneList = new ArrayList<>();
@@ -447,7 +449,7 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
 
       milestones = String.join("", milestonesSet);
     } else {
-      milestones = "No milestones associated";
+      milestones = "&lt;Not Provided&gt;";
     }
 
     // Sub Idos
@@ -470,7 +472,7 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
 
       subIdos = String.join("", subIdosSet);
     } else {
-      subIdos = "&lt;Not Defined&gt;";
+      subIdos = "&lt;Not Provided&gt;";
     }
 
 
@@ -548,7 +550,8 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
     if (projectPolicyInfo.getRepIndPolicyInvestimentType() != null
       && projectPolicyInfo.getRepIndPolicyInvestimentType().getId().longValue() == 3L) {
       if (projectPolicyInfo.getAmount() != null) {
-        policyAmount = "$" + String.valueOf(projectPolicyInfo.getAmount());
+        NumberFormat formatter = NumberFormat.getCurrencyInstance();
+        policyAmount = "USD " + formatter.format(projectPolicyInfo.getAmount());
       }
     } else {
       policyAmount = "&lt;Not Applicable&gt;";
@@ -560,7 +563,7 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
       if (StringUtils.isNotBlank(projectPolicyInfo.getNarrativeEvidence())) {
         descriptionStage = StringUtils.strip(projectPolicyInfo.getNarrativeEvidence());
       } else {
-        descriptionStage = "&lt;Not Defined&gt;";
+        descriptionStage = "&lt;Not Provided&gt;";
       }
     } else {
       descriptionStage = "&lt;Not Applicable&gt;";
@@ -589,6 +592,8 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
       }
 
       deliverables = String.join("", deliverablesSet);
+    } else {
+      deliverables = "&lt;Not Provided&gt;";
     }
 
     if (projectPolicyInfo.getProjectPolicy().getProjectPolicyCenters() != null) {
@@ -598,7 +603,8 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
           .collect(Collectors.toList())));
     }
 
-    if (projectPolicyInfo.getProjectPolicy().getCenters() != null) {
+    if (projectPolicyInfo.getProjectPolicy().getCenters() != null
+      && !projectPolicyInfo.getProjectPolicy().getCenters().isEmpty()) {
       Set<String> centerSet = new HashSet<>();
 
       for (ProjectPolicyCenter center : projectPolicyInfo.getProjectPolicy().getCenters()) {
@@ -608,6 +614,8 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
       }
 
       centers = String.join("", centerSet);
+    } else {
+      centers = "&lt;Not Provided&gt;";
     }
 
     // Contributions CRPS/Platforms
@@ -621,9 +629,11 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
       }
 
       crps = String.join("", crpsSet);
+    } else {
+      crps = "&lt;Not Provided&gt;";
     }
 
-    // Gender Relevance
+    // Cross cutting Relevance (not used)
     if (projectPolicyInfo.getProjectPolicy().getProjectPolicyCrossCuttingMarkers() != null
       && !projectPolicyInfo.getProjectPolicy().getProjectPolicyCrossCuttingMarkers().isEmpty()) {
       for (ProjectPolicyCrossCuttingMarker crossCuttingMarker : projectPolicyInfo.getProjectPolicy()
