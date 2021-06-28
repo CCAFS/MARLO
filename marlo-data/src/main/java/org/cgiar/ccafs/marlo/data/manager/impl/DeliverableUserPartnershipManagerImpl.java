@@ -144,26 +144,28 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
     DeliverableUserPartnership deliverableUserPartnership) {
     Phase phase = phaseDAO.find(next.getId());
 
-    List<DeliverableUserPartnership> deliverableUserPartnerships =
-      phase.getDeliverableUserPartnerships().stream()
+    if (deliverableUserPartnership != null && deliverableUserPartnership.getInstitution() != null
+      && deliverableUserPartnership.getDeliverablePartnerType() != null) {
+      List<DeliverableUserPartnership> deliverableUserPartnerships = phase.getDeliverableUserPartnerships().stream()
         .filter(c -> c.isActive() && c.getDeliverable().getId().longValue() == deliverableID
           && c.getInstitution().getId().equals(deliverableUserPartnership.getInstitution().getId()) && c
             .getDeliverablePartnerType().getId().equals(deliverableUserPartnership.getDeliverablePartnerType().getId()))
         .collect(Collectors.toList());
 
-    for (DeliverableUserPartnership deliverableUserPartnershipDB : deliverableUserPartnerships) {
+      for (DeliverableUserPartnership deliverableUserPartnershipDB : deliverableUserPartnerships) {
 
-      if (deliverableUserPartnershipDB.getDeliverableUserPartnershipPersons() != null) {
-        List<DeliverableUserPartnershipPerson> deliverableUserPartnershipPersons =
-          new ArrayList<>(deliverableUserPartnershipDB.getDeliverableUserPartnershipPersons().stream()
-            .filter(dup -> dup.isActive()).collect(Collectors.toList()));
-        for (DeliverableUserPartnershipPerson deliverableUserPartnershipPerson : deliverableUserPartnershipPersons) {
-          deliverableUserPartnershipPersonDAO
-            .deleteDeliverableUserPartnershipPerson(deliverableUserPartnershipPerson.getId());
+        if (deliverableUserPartnershipDB.getDeliverableUserPartnershipPersons() != null) {
+          List<DeliverableUserPartnershipPerson> deliverableUserPartnershipPersons =
+            new ArrayList<>(deliverableUserPartnershipDB.getDeliverableUserPartnershipPersons().stream()
+              .filter(dup -> dup.isActive()).collect(Collectors.toList()));
+          for (DeliverableUserPartnershipPerson deliverableUserPartnershipPerson : deliverableUserPartnershipPersons) {
+            deliverableUserPartnershipPersonDAO
+              .deleteDeliverableUserPartnershipPerson(deliverableUserPartnershipPerson.getId());
+          }
         }
-      }
 
-      deliverableUserPartnershipDAO.deleteDeliverableUserPartnership(deliverableUserPartnershipDB.getId());
+        deliverableUserPartnershipDAO.deleteDeliverableUserPartnership(deliverableUserPartnershipDB.getId());
+      }
     }
 
     if (phase.getNext() != null) {
