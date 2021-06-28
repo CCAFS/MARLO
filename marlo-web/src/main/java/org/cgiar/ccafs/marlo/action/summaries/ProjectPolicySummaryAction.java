@@ -356,6 +356,12 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
 
     // Id
     id = projectPolicyID;
+
+    // phaseID
+    phaseID = this.getSelectedPhase().getId().toString();
+
+    // Center
+    loggedCenter = this.getLoggedCrp().getAcronym();
     // Project
     if (projectPolicyInfo.getProjectPolicy().getProject() != null) {
       Project policyProject = projectPolicyInfo.getProjectPolicy().getProject();
@@ -396,9 +402,9 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
     if (studyPolicies != null && !studyPolicies.isEmpty()) {
       for (ProjectExpectedStudyPolicy studyPolicy : studyPolicies) {
         String url = this.getExpectedStudyDirectLink(loggedCenter, studyPolicy.getId(), phaseID);
-        projectExpectedStudies += "<br>&nbsp;&nbsp;&nbsp;&nbsp; ● <a href=\"" + url + "\">"
-          + studyPolicy.getProjectExpectedStudy().getId() + "</a> - "
-          + studyPolicy.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()).getTitle();
+        projectExpectedStudies += "<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + studyPolicy.getProjectExpectedStudy().getId()
+          + " - " + studyPolicy.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()).getTitle()
+          + " <font color=\"blue\">(" + url + ")</font>";
       }
 
       projectExpectedStudies = StringUtils.trim(projectExpectedStudies);
@@ -467,11 +473,6 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
       subIdos = "&lt;Not Defined&gt;";
     }
 
-    // phaseID
-    phaseID = this.getSelectedPhase().getId().toString();
-
-    // Center
-    loggedCenter = this.getLoggedCrp().getAcronym();
 
     // Geographic Scope
     List<ProjectPolicyGeographicScope> projectPolicyGeographicScopes = projectPolicyGeographicScopeManager.findAll()
@@ -580,9 +581,10 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
             this.getInnovationDirectLink(loggedCenter, projectPolicyInnovation.getProjectInnovation().getId(), phaseID,
               projectPolicyInfo.getProjectPolicy().getProject().getId());
 
-          deliverablesSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● <a href=\"" + url + "\">" + "I"
-            + projectPolicyInnovation.getProjectInnovation().getId() + "</a> - "
-            + projectPolicyInnovation.getProjectInnovation().getProjectInnovationInfo().getTitle());
+          deliverablesSet
+            .add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● I" + projectPolicyInnovation.getProjectInnovation().getId() + " - "
+              + projectPolicyInnovation.getProjectInnovation().getProjectInnovationInfo().getTitle()
+              + " <font color=\"blue\">(" + url + ")</font>");
         }
       }
 
