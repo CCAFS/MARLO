@@ -266,7 +266,7 @@ public class InstitutionItem<T> {
    * @return a List of institutions.
    */
   public ResponseEntity<List<InstitutionDTO>> getAllInstitutions() {
-    List<Institution> institutions = this.institutionManager.getAllInstitutionsSimple();
+    List<Institution> institutions = this.institutionManager.findAll();
     List<InstitutionDTO> institutionDTOs = institutions.stream()
       .map(institution -> this.institutionMapper.institutionToInstitutionDTO(institution)).collect(Collectors.toList());
     return Optional.ofNullable(institutionDTOs).map(result -> new ResponseEntity<>(result, HttpStatus.OK))

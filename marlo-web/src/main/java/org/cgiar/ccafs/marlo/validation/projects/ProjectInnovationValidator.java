@@ -91,15 +91,18 @@ public class ProjectInnovationValidator extends BaseValidator {
       }
     }
 
-    // Validate Narrative
-    if (!(this.wordCount(projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getNarrative()) <= 75)) {
-      if (struts) {
-        action.addMessage(action.getText("projectInnovations.narrative"));
-        action.addMissingField("projectInnovations.narrative");
-        action.getInvalidFields().put("input-innovation.projectPolicyInfo.narrativeEvidence",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
-    }
+    // Validate Narrative (removed. marked on front as optional)
+    /*
+     * if (!(this.wordCount(projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getNarrative()) <= 75))
+     * {
+     * if (struts) {
+     * action.addMessage(action.getText("projectInnovations.narrative"));
+     * action.addMissingField("projectInnovations.narrative");
+     * action.getInvalidFields().put("input-innovation.projectPolicyInfo.narrativeEvidence",
+     * InvalidFieldsMessages.EMPTYFIELD);
+     * }
+     * }
+     */
 
     // validate Milestones
     if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()) != null
