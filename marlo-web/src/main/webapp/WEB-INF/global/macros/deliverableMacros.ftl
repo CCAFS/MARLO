@@ -563,10 +563,13 @@
     <div class="col-md-6">
       [@metadataField title="publicationDate" encodedName="dc.date" type="input" require=true/]
     </div>
+    [#if !action.isAiccra()]
     <div class="col-md-6">
       [@metadataField title="language" encodedName="dc.language" type="input" require=false/]
     </div>
+    [/#if]
   </div>
+  [#if !action.isAiccra()]
   <div class="form-group row">
     <div class="col-md-6">
       [@metadataField title="countries" encodedName="cg:coverage.country" type="input" require=false/]
@@ -575,6 +578,7 @@
       [@metadataField title="keywords" encodedName="marlo.keywords" type="input" require=false/]
     </div>
   </div>
+  [/#if]
   <div class="form-group"> 
     [@metadataField title="citation" encodedName="dc.identifier.citation" type="textArea" require=false/]
   </div>
