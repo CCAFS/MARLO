@@ -31,6 +31,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -93,7 +94,13 @@ public class ProjectActivitiesValidator extends BaseValidator {
     List<Deliverable> deliverablesMissingActivity = new ArrayList<>();
 
     project.getCurrentDeliverables(action.getActualPhase()).stream()
-      .filter((deliverable) -> (deliverable.getDeliverableActivities().isEmpty())).forEachOrdered((_item) -> {
+      .filter((deliverable) -> (deliverable.getDeliverableActivities().isEmpty()
+        || deliverable.getDeliverableActivities().stream().filter(da -> da.isActive()).collect(Collectors.toList())
+          .isEmpty()
+        || deliverable.getDeliverableActivities().stream()
+          .filter(da -> da.getPhase().getId().equals(action.getActualPhase().getId()) && da.isActive())
+          .collect(Collectors.toList()).isEmpty()))
+      .forEachOrdered((_item) -> {
         deliverablesMissingActivity.add(_item);
       });
 
