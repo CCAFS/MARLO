@@ -405,8 +405,14 @@ public class ProjectActivitiesAction extends BaseAction {
 
       deliverablesMissingActivity = new ArrayList<>();
 
-      project.getCurrentDeliverables(project.getCurrentPhase()).stream()
-        .filter((deliverable) -> (deliverable.getDeliverableActivities().isEmpty())).forEachOrdered((_item) -> {
+      project.getCurrentDeliverables(this.getActualPhase()).stream()
+        .filter((deliverable) -> (deliverable.getDeliverableActivities().isEmpty()
+          || deliverable.getDeliverableActivities().stream().filter(da -> da.isActive()).collect(Collectors.toList())
+            .isEmpty()
+          || deliverable.getDeliverableActivities().stream()
+            .filter(da -> da.getPhase().getId().equals(this.getActualPhase().getId()) && da.isActive())
+            .collect(Collectors.toList()).isEmpty()))
+        .forEachOrdered((_item) -> {
           deliverablesMissingActivity.add(_item);
         });
 
