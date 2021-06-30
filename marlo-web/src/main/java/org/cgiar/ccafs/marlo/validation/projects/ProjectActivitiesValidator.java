@@ -93,16 +93,24 @@ public class ProjectActivitiesValidator extends BaseValidator {
     // Missing Deliverables activities
     List<Deliverable> deliverablesMissingActivity = new ArrayList<>();
 
-    project.getCurrentDeliverables(action.getActualPhase()).stream()
-      .filter((deliverable) -> (deliverable.getDeliverableActivities().isEmpty()
-        || deliverable.getDeliverableActivities().stream().filter(da -> da.isActive()).collect(Collectors.toList())
-          .isEmpty()
-        || deliverable.getDeliverableActivities().stream()
-          .filter(da -> da.getPhase().getId().equals(action.getActualPhase().getId()) && da.isActive())
-          .collect(Collectors.toList()).isEmpty()))
+    project
+      .getCurrentDeliverables(
+        action.getActualPhase())
+      .stream()
+      .filter(
+        (deliverable) -> (deliverable.getDeliverableActivities().isEmpty()
+          || deliverable.getDeliverableActivities().stream().filter(
+            da -> da.isActive()).collect(
+              Collectors.toList())
+            .isEmpty()
+          || deliverable.getDeliverableActivities().stream()
+            .filter(da -> da.getPhase().getId().equals(action.getActualPhase().getId()) && da.getActivity().isActive()
+              && da.isActive())
+            .collect(Collectors.toList()).isEmpty()))
       .forEachOrdered((_item) -> {
         deliverablesMissingActivity.add(_item);
       });
+
 
     if (deliverablesMissingActivity != null && !deliverablesMissingActivity.isEmpty()) {
       action.addMessage(action.getText("missingDeliverableActivity", "deliverable.missing.activity"));
