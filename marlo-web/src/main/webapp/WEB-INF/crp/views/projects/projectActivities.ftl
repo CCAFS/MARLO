@@ -176,16 +176,17 @@
       [#if !action.isAiccra()]
       <div class="form-group">
         [@customForm.input name="${customName}.title" value="${(element.activityTitle.title)!'New Activity'}" type="text" i18nkey="project.activities.inputTitle"  placeholder="" className="activityTitle limitWords-30" required=true editable=false /]
+      </div>
+      [/#if]
         <input class="activityId" type="hidden" name="${customName}.id" value="${(element.id)!-1}" />
         <input class="activityId" type="hidden" name="${customName}.composeID" value="${(element.composeID)!}" />
         <span class="index hidden">${index}</span>
-      </div>
-      [/#if]
+     
       
       [#-- Activity Title --]
       [#if action.isAiccra()]
         <div class="form-group">
-          [@customForm.select name="${customName}.activityTitle.id" label=""  i18nkey="project.activities.inputTitle" listName="activityTitles" keyFieldName="id" displayFieldName="title" className="activityTitle" multiple=false required=true editable=action.canAccessSuperAdmin() && isActive/]
+          [@customForm.select name="${customName}.activityTitle.id" label=""  i18nkey="project.activities.inputTitle" listName="activityTitles" keyFieldName="id" displayFieldName="title" multiple=false required=true editable=action.canAccessSuperAdmin() && isActive/]
         </div>
       [/#if]
       [#-- Description --]
