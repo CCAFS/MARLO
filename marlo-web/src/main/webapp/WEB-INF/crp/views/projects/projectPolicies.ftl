@@ -85,6 +85,7 @@
         <th class="maturity">Level of Maturity</th>
         <th class="">Geographic Scope</th>
         <th class="">Year</th>
+        <th id="projectDownload" class="no-sort"></th>
         [#if currentTable]
         <th class="no-sort"></th>
         <th class="no-sort"></th>
@@ -122,6 +123,12 @@
             </td>
             <td>
               [@utils.tableText value=(item.projectPolicyInfo.year)!"" /]
+            </td>
+            [#-- Summary PDF download --]
+            <td class="text-center">
+              <a href="[@s.url namespace="/summaries" action='${(crpSession)!}/projectPolicySummary'][@s.param name='policyID']${item.id?c}[/@s.param][@s.param name='phaseID']${(item.projectPolicyInfo.phase.id)!''}[/@s.param][/@s.url]" target="__BLANK">
+                <img src="${baseUrlCdn}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
+              </a>            
             </td>
             [#-- Missing fields --]
             [#if currentTable]
