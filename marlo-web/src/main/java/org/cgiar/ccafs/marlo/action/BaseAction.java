@@ -188,6 +188,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -4771,7 +4772,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
-
   /**
    * ************************ CENTER METHOD ********************* verify if the
    * cap-dev is complete
@@ -4849,6 +4849,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     return true;
   }
+
 
   public boolean isCompleteCrpIndicator(long liaisonIntitution) {
     List<SectionStatus> sectionStatus = null;
@@ -5665,6 +5666,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.editStatus;
   }
 
+  public <T> boolean isEmpty(Collection<T> collection) {
+    return collection == null || collection.isEmpty();
+  }
+
   public boolean isEntityCenter() {
     if (this.getCurrentCrp() != null) {
       if (this.getCurrentCrp().getGlobalUnitType().getId().intValue() == 4) {
@@ -5916,6 +5921,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     return false;
 
+  }
+
+  public <T> boolean isNotEmpty(Collection<T> collection) {
+    return !this.isEmpty(collection);
   }
 
   public boolean isOtherUrl() {
