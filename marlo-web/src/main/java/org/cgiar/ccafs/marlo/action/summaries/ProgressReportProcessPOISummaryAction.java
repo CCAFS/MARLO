@@ -744,7 +744,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                 run.setFontSize(11);
                 run.setFontFamily("Verdana");
                 run.setColor("00AF50");
-                paragraph.setStyle("heading 2");
+                paragraph.setStyle("headingTitle 2");
 
                 String overall2023 = "", expected2023 = "", expected2021 = "", progress2021 = "";
                 if (projectOutcome.getCrpProgramOutcome().getValue() != null) {
