@@ -351,7 +351,7 @@
     <div class="form-group grayBox">
       [#if showMilestoneValue]
         <div class="form-group pull-right">
-          <strong>Target Value:</strong> ${(element.value)!}
+          <strong>Expected Target (All clusters):</strong> ${(element.value)!}
         </div>
       [/#if]
       [#-- Milestone Year --]
