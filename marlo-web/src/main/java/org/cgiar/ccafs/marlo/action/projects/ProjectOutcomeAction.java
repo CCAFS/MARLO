@@ -483,9 +483,7 @@ public class ProjectOutcomeAction extends BaseAction {
     milestonesProject.addAll(crpMilestones);
     milestonesProject.sort(Comparator.comparing(CrpMilestone::getYear));
     // Collections.sort(milestonesProject, (m1, m2) -> m1.getIndex().compareTo(m2.getIndex()));
-    if (projectOutcome != null)
-
-    {
+    if (projectOutcome != null) {
       crpProgramOutcome =
         crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcome.getCrpProgramOutcome().getId());
 
@@ -508,9 +506,7 @@ public class ProjectOutcomeAction extends BaseAction {
     projectOutcomeDB = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
 
     this.setBasePermission(this.getText(Permission.PROJECT_CONTRIBRUTIONCRP_BASE_PERMISSION, params));
-    if (this.isHttpPost())
-
-    {
+    if (this.isHttpPost()) {
       /**
        * This might seem very strange what is going on here, but this is due to issue #1124. The Struts2 Prepare
        * interceptor will set the values on the projectOutcome entity during save, but if we leave the values here and
@@ -736,20 +732,19 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
   private void saveMilestones(ProjectOutcome projectOutcomeDB) {
+    if (projectOutcome.getMilestones() == null) {
+      projectOutcome.setMilestones(new ArrayList<>());
+    }
 
     for (ProjectMilestone projectMilestone : projectOutcomeDB.getProjectMilestones().stream().filter(c -> c.isActive())
       .collect(Collectors.toList())) {
-
-      if (projectOutcome.getMilestones() == null) {
-        projectOutcome.setMilestones(new ArrayList<>());
-      }
       if (!projectOutcome.getMilestones().contains(projectMilestone)) {
         projectMilestoneManager.deleteProjectMilestone(projectMilestone.getId());
 
       }
     }
 
-    if (projectOutcome.getMilestones() != null) {
+    if (this.isNotEmpty(projectOutcome.getMilestones())) {
       for (ProjectMilestone projectMilestone : projectOutcome.getMilestones()) {
         if (projectMilestone != null) {
           // Add new entity
@@ -763,9 +758,15 @@ public class ProjectOutcomeAction extends BaseAction {
                 projectMilestone.setExpectedUnit(null);
               }
             }
-            projectMilestoneManager.saveProjectMilestone(projectMilestone);
+            projectMilestone = projectMilestoneManager.saveProjectMilestone(projectMilestone);
             // This add projectMilestone to generate correct auditlog.
             projectOutcome.getProjectMilestones().add(projectMilestone);
+            // We should add this new milestone to the managed entity also
+            if (this.isEmpty(this.projectOutcomeDB.getMilestones())) {
+              this.projectOutcomeDB.setMilestones(new ArrayList<>());
+            }
+
+            this.projectOutcomeDB.getMilestones().add(projectMilestone);
           } else {
             // Update existing entity.
             ProjectMilestone projectMilestoneDB =
@@ -835,9 +836,15 @@ public class ProjectOutcomeAction extends BaseAction {
             // Create new entity
             projectNextuser.setProjectOutcome(projectOutcomeDB);
 
-            projectNextuserManager.saveProjectNextuser(projectNextuser);
+            projectNextuser = projectNextuserManager.saveProjectNextuser(projectNextuser);
             // This add projectNextuser to generate correct auditlog.
             projectOutcome.getProjectNextusers().add(projectNextuser);
+            // We should add this new milestone to the managed entity also
+            if (this.isEmpty(this.projectOutcomeDB.getNextUsers())) {
+              this.projectOutcomeDB.setNextUsers(new ArrayList<>());
+            }
+
+            this.projectOutcomeDB.getNextUsers().add(projectNextuser);
 
           } else {
             // Update existing entity
