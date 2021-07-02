@@ -5666,6 +5666,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.editStatus;
   }
 
+  /**
+   * Convenience method to check if a Collection is not "empty". Empty in this context means that: 1. The Collection is
+   * not null and 2. The Collection is not empty.
+   * 
+   * @param <T> the Collection type
+   * @param collection the Collection to be checked
+   * @return true if empty, false if it is not
+   * @see #isNotEmpty(Collection) for checking for non-empty Collections
+   */
   public <T> boolean isEmpty(Collection<T> collection) {
     return collection == null || collection.isEmpty();
   }
@@ -5923,6 +5932,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+  /**
+   * Works like {@link #isEmpty(Collection)}, but checks for non-empty Collections. The implementation is just:
+   * <code>return !this.isEmpty(Collection)</code>
+   * 
+   * @param <T> the Collection type
+   * @param collection the Collection to be checked
+   * @return true if not empty, false if it is
+   */
   public <T> boolean isNotEmpty(Collection<T> collection) {
     return !this.isEmpty(collection);
   }
