@@ -561,8 +561,42 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
     projects = new ArrayList<>();
     if (showAllYears.equals("true")) {
       String[] statuses = null;
-      projects =
-        projectManager.getActiveProjectsByPhase(this.getSelectedPhase(), this.getSelectedPhase().getYear(), statuses);
+      // Add country clusters
+      projects.addAll(projectManager
+        .getActiveProjectsByPhase(this.getSelectedPhase(), this.getSelectedPhase().getYear(), statuses).stream()
+        .filter(p -> p.getProjecInfoPhase(this.getSelectedPhase()).getClusterType() != null
+          && p.getProjecInfoPhase(this.getSelectedPhase()).getClusterType().getId().equals(1L))
+        .collect(Collectors.toList()));
+
+      // Add regional clusters
+      projects.addAll(projectManager
+        .getActiveProjectsByPhase(this.getSelectedPhase(), this.getSelectedPhase().getYear(), statuses).stream()
+        .filter(p -> p.getProjecInfoPhase(this.getSelectedPhase()).getClusterType() != null
+          && p.getProjecInfoPhase(this.getSelectedPhase()).getClusterType().getId().equals(4L))
+        .collect(Collectors.toList()));
+
+      // Add flagships clusters
+      projects.addAll(projectManager
+        .getActiveProjectsByPhase(this.getSelectedPhase(), this.getSelectedPhase().getYear(), statuses).stream()
+        .filter(p -> p.getProjecInfoPhase(this.getSelectedPhase()).getClusterType() != null
+          && p.getProjecInfoPhase(this.getSelectedPhase()).getClusterType().getId().equals(2L))
+        .collect(Collectors.toList()));
+
+      // Add management clustes
+      projects.addAll(projectManager
+        .getActiveProjectsByPhase(this.getSelectedPhase(), this.getSelectedPhase().getYear(), statuses).stream()
+        .filter(p -> p.getProjecInfoPhase(this.getSelectedPhase()).getClusterType() != null
+          && p.getProjecInfoPhase(this.getSelectedPhase()).getClusterType().getId().equals(3L))
+        .collect(Collectors.toList()));
+
+      try {
+        // Add no type clusters
+      } catch (Exception e) {
+        projects.addAll(
+          projectManager.getActiveProjectsByPhase(this.getSelectedPhase(), this.getSelectedPhase().getYear(), statuses)
+            .stream().filter(p -> p.getProjecInfoPhase(this.getSelectedPhase()).getClusterType() == null)
+            .collect(Collectors.toList()));
+      }
     } else {
 
       try {
