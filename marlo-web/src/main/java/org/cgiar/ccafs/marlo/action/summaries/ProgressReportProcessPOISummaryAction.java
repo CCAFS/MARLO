@@ -76,6 +76,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -734,6 +735,8 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
 
 
           if (projectOutcomes != null && !projectOutcomes.isEmpty()) {
+            Collections.sort(projectOutcomes, (o1, o2) -> o1.getCrpProgramOutcome().getComposedName()
+              .compareTo(o2.getCrpProgramOutcome().getComposedName()));
             for (ProjectOutcome projectOutcome : projectOutcomes) {
               if (projectOutcome.getCrpProgramOutcome() != null
                 && projectOutcome.getCrpProgramOutcome().getComposedName() != null) {
