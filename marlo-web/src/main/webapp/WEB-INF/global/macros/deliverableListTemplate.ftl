@@ -189,7 +189,7 @@
             [#if isDeliverableNew]<span class="label label-info">New</span>[/#if]
 
             <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-              [@utilities.wordCutter string=deliverable.deliverableInfo.title maxPos=160 /]
+              [@utilities.wordCutter string=(deliverable.deliverableInfo.title)! maxPos=160 /]
             </a>
           </td>
         </tr>
