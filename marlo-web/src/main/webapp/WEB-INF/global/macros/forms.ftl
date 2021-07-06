@@ -3,6 +3,7 @@
 
 [#macro input name value="-NULL" type="text" i18nkey="" disabled=false required=false errorField="" help="" helpIcon=true display=true className="" paramText="" readOnly=false showTitle=true editable=true placeholder="" inputGroupText="" maxlength=""]
   <div class="input ${changedField(name)}" style="display:${display?string('block','none')};">
+    [#local cleanText = value?replace('"', '&quot;')]
     [#assign labelTitle][#if i18nkey==""][@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text][#else][@s.text name="${i18nkey}"][@s.param]${paramText}[/@s.param][/@s.text][/#if][/#assign]
     [#if showTitle]
       <label for="${name}" class="${editable?string('editable', 'readOnly')}">${labelTitle}:[@req required=required && editable /]</label>
@@ -11,7 +12,7 @@
     [/#if]
     [#if errorField==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]
     [#-- Get Custom Value --]
-    [#assign customValue][#if value=="-NULL"][@s.property value="${name?string}"/][#else]${value}[/#if][/#assign]
+    [#assign customValue][#if value=="-NULL"][@s.property value="${name?string}"/][#else]${cleanText}[/#if][/#assign]
     [#if editable]
       [#-- Condition to add input group to field --]
       [#if inputGroupText != ""]<div class="input-group"><span class="input-group-addon">${inputGroupText}</span>[/#if]
