@@ -186,7 +186,7 @@
       [#-- Activity Title --]
       [#if action.isAiccra()]
         <div class="form-group">
-          [@customForm.select name="${customName}.activityTitle.id" label=""  i18nkey="project.activities.inputTitle" listName="activityTitles" keyFieldName="id" displayFieldName="title" multiple=false required=true editable=action.canAccessSuperAdmin() && isActive/]
+          [@customForm.select name="${customName}.activityTitle.id" label="" className="activityTitle" i18nkey="project.activities.inputTitle" listName="activityTitles" keyFieldName="id" displayFieldName="title" multiple=false required=true editable=action.canAccessSuperAdmin() && isActive/]
         </div>
       [/#if]
       [#-- Description --]
