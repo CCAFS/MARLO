@@ -620,8 +620,193 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
         if (this.getSelectedPhase() != null && project.getProjecInfoPhase(this.getSelectedPhase()) != null) {
           this.setProjectInfo(project.getProjecInfoPhase(this.getSelectedPhase()));
         }
-        projectOutcomes = project.getProjectOutcomes().stream()
-          .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())).collect(Collectors.toList());
+
+        List<String> indicatorsList = new ArrayList<>();
+        indicatorsList.add("PDO Indicator 1");
+        indicatorsList.add("PDO Indicator 2");
+        indicatorsList.add("PDO Indicator 3");
+        indicatorsList.add("IPI 1.1");
+        indicatorsList.add("IPI 1.2");
+        indicatorsList.add("IPI 1.3");
+        indicatorsList.add("IPI 1.4");
+        indicatorsList.add("IPI 2.1");
+        indicatorsList.add("IPI 2.2");
+        indicatorsList.add("IPI 2.3");
+        indicatorsList.add("IPI 2.4");
+        indicatorsList.add("IPI 3.1");
+        indicatorsList.add("IPI 3.2");
+        indicatorsList.add("IPI 3.3");
+        indicatorsList.add("IPI 3.4");
+        indicatorsList.add("IPI 3.5");
+
+        // TODO: change the if conditions to a for statement
+
+
+        // PDO 1
+        try {
+          projectOutcomes.addAll(project.getProjectOutcomes().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())
+              && c.getCrpProgramOutcome() != null && c.getCrpProgramOutcome().getComposedName() != null
+              && c.getCrpProgramOutcome().getComposedName().contains("PDO Indicator 1"))
+            .collect(Collectors.toList()));
+        } catch (Exception e) {
+        }
+
+        // PDO 2
+        try {
+          projectOutcomes.addAll(project.getProjectOutcomes().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())
+              && c.getCrpProgramOutcome() != null && c.getCrpProgramOutcome().getComposedName() != null
+              && c.getCrpProgramOutcome().getComposedName().contains("PDO Indicator 2"))
+            .collect(Collectors.toList()));
+        } catch (Exception e) {
+        }
+
+        // PDO 2
+        try {
+          projectOutcomes.addAll(project.getProjectOutcomes().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())
+              && c.getCrpProgramOutcome() != null && c.getCrpProgramOutcome().getComposedName() != null
+              && c.getCrpProgramOutcome().getComposedName().contains("PDO Indicator 3"))
+            .collect(Collectors.toList()));
+        } catch (Exception e) {
+        }
+
+        // IPI 1.1
+        try {
+          projectOutcomes.addAll(project.getProjectOutcomes().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())
+              && c.getCrpProgramOutcome() != null && c.getCrpProgramOutcome().getComposedName() != null
+              && c.getCrpProgramOutcome().getComposedName().contains("IPI 1.1"))
+            .collect(Collectors.toList()));
+        } catch (Exception e) {
+        }
+
+        // IPI 1.2
+        try {
+          projectOutcomes.addAll(project.getProjectOutcomes().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())
+              && c.getCrpProgramOutcome() != null && c.getCrpProgramOutcome().getComposedName() != null
+              && c.getCrpProgramOutcome().getComposedName().contains("IPI 1.2"))
+            .collect(Collectors.toList()));
+        } catch (Exception e) {
+        }
+
+        // IPI 1.3
+        try {
+          projectOutcomes.addAll(project.getProjectOutcomes().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())
+              && c.getCrpProgramOutcome() != null && c.getCrpProgramOutcome().getComposedName() != null
+              && c.getCrpProgramOutcome().getComposedName().contains("IPI 1.3"))
+            .collect(Collectors.toList()));
+        } catch (Exception e) {
+        }
+
+        // IPI 1.4
+        try {
+          projectOutcomes.addAll(project.getProjectOutcomes().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())
+              && c.getCrpProgramOutcome() != null && c.getCrpProgramOutcome().getComposedName() != null
+              && c.getCrpProgramOutcome().getComposedName().contains("IPI 1.4"))
+            .collect(Collectors.toList()));
+        } catch (Exception e) {
+        }
+
+        // IPI 2.1
+        try {
+          projectOutcomes.addAll(project.getProjectOutcomes().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())
+              && c.getCrpProgramOutcome() != null && c.getCrpProgramOutcome().getComposedName() != null
+              && c.getCrpProgramOutcome().getComposedName().contains("IPI 2.1"))
+            .collect(Collectors.toList()));
+        } catch (Exception e) {
+        }
+
+        // IPI 2.2
+        try {
+          projectOutcomes.addAll(project.getProjectOutcomes().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())
+              && c.getCrpProgramOutcome() != null && c.getCrpProgramOutcome().getComposedName() != null
+              && c.getCrpProgramOutcome().getComposedName().contains("IPI 2.2"))
+            .collect(Collectors.toList()));
+        } catch (Exception e) {
+        }
+
+        // IPI 2.3
+        try {
+          projectOutcomes.addAll(project.getProjectOutcomes().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())
+              && c.getCrpProgramOutcome() != null && c.getCrpProgramOutcome().getComposedName() != null
+              && c.getCrpProgramOutcome().getComposedName().contains("IPI 2.3"))
+            .collect(Collectors.toList()));
+        } catch (Exception e) {
+        }
+
+        // IPI 2.4
+        try {
+          projectOutcomes.addAll(project.getProjectOutcomes().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())
+              && c.getCrpProgramOutcome() != null && c.getCrpProgramOutcome().getComposedName() != null
+              && c.getCrpProgramOutcome().getComposedName().contains("IPI 2.4"))
+            .collect(Collectors.toList()));
+        } catch (Exception e) {
+        }
+
+        // IPI 3.1
+        try {
+          projectOutcomes.addAll(project.getProjectOutcomes().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())
+              && c.getCrpProgramOutcome() != null && c.getCrpProgramOutcome().getComposedName() != null
+              && c.getCrpProgramOutcome().getComposedName().contains("IPI 3.1"))
+            .collect(Collectors.toList()));
+        } catch (Exception e) {
+        }
+
+        // IPI 3.2
+        try {
+          projectOutcomes.addAll(project.getProjectOutcomes().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())
+              && c.getCrpProgramOutcome() != null && c.getCrpProgramOutcome().getComposedName() != null
+              && c.getCrpProgramOutcome().getComposedName().contains("IPI 3.2"))
+            .collect(Collectors.toList()));
+        } catch (Exception e) {
+        }
+
+        // IPI 3.3
+        try {
+          projectOutcomes.addAll(project.getProjectOutcomes().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())
+              && c.getCrpProgramOutcome() != null && c.getCrpProgramOutcome().getComposedName() != null
+              && c.getCrpProgramOutcome().getComposedName().contains("IPI 3.3"))
+            .collect(Collectors.toList()));
+        } catch (Exception e) {
+        }
+
+        // IPI 3.4
+        try {
+          projectOutcomes.addAll(project.getProjectOutcomes().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())
+              && c.getCrpProgramOutcome() != null && c.getCrpProgramOutcome().getComposedName() != null
+              && c.getCrpProgramOutcome().getComposedName().contains("IPI 3.4"))
+            .collect(Collectors.toList()));
+        } catch (Exception e) {
+        }
+
+        // IPI 3.5
+        try {
+          projectOutcomes.addAll(project.getProjectOutcomes().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())
+              && c.getCrpProgramOutcome() != null && c.getCrpProgramOutcome().getComposedName() != null
+              && c.getCrpProgramOutcome().getComposedName().contains("IPI 3.5"))
+            .collect(Collectors.toList()));
+        } catch (Exception e) {
+        }
+        /*
+         * projectOutcomes = project.getProjectOutcomes().stream()
+         * .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())).collect(Collectors.toList());
+         */
+
+
         if (this.getSelectedPhase() != null && project.getProjecInfoPhase(this.getSelectedPhase()) != null) {
           this.setProjectInfo(project.getProjecInfoPhase(this.getSelectedPhase()));
         }
