@@ -91,7 +91,11 @@
               [#assign usersList = (action.getUsersByRole(role.id))![] /]
               [#if role.description?substring(0, 3) != "API"]
                 [#if usersList?has_content]
-                  <li role="" class="[#if role?is_first]active[/#if]"><a href="#role-${role.id}" aria-controls="home" role="tab" data-toggle="tab" title="${role.description} (${usersList?size})">${role.acronymDimanic}</a></li>
+                [#if action.isAiccra()]
+                  <li role="" class="[#if role?is_first]active[/#if]"><a href="#role-${role.id}" aria-controls="home" role="tab" data-toggle="tab" title="${role.description} (${usersList?size})">${role.aiccraAcronymDimanic}</a></li>
+                [#else] 
+                   <li role="" class="[#if role?is_first]active[/#if]"><a href="#role-${role.id}" aria-controls="home" role="tab" data-toggle="tab" title="${role.description} (${usersList?size})">${role.acronymDimanic}</a></li>
+                [/#if]
                 [/#if]
               [/#if]
             [/#list]
@@ -103,7 +107,11 @@
               [#assign usersList = (action.getUsersByRole(role.id))![] /]
               [#if usersList?has_content]
                 <div role="tabpanel" class="tab-pane [#if role?is_first]active[/#if]" id="role-${role.id}">
+                [#if action.isAiccra()]
+                  <h4 class="sectionSubTitle ">${role.aiccraAcronymDimanic}</h4>
+                [#else]
                   <h4 class="sectionSubTitle ">${role.description}</h4>
+                [/#if ]
                   <table class="display table table-striped table-hover usersTable" width="100%">
                     <thead>
                       <tr>
