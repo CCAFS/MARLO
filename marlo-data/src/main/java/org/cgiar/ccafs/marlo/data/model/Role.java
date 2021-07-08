@@ -98,6 +98,34 @@ public class Role extends MarloBaseEntity implements java.io.Serializable {
 
   }
 
+  public String getAiccraAcronymDimanic() {
+    String acronym = this.getAcronym();
+
+
+    if (this.getCrp() != null && this.getCrp().getAcronym() != null && this.getCrp().getAcronym().equals("AICCRA")) {
+      switch (this.getAcronym()) {
+        case "PL":
+          acronym = "Cluster Leader";
+          break;
+        case "PC":
+          acronym = "Cluster Coordinator";
+          break;
+        case "PMU":
+          acronym = "Secretariat";
+          break;
+        case "CP":
+          acronym = "Contact Point";
+          break;
+        case "G":
+          acronym = "Guest";
+          break;
+      }
+    }
+
+    return acronym;
+
+  }
+
   public GlobalUnit getCrp() {
     return crp;
   }
