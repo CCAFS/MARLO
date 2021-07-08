@@ -76,7 +76,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -641,7 +640,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
 
         // TODO: change the if conditions to a for statement
 
-
+        projectOutcomes = new ArrayList<>();
         // PDO 1
         try {
           projectOutcomes.addAll(project.getProjectOutcomes().stream()
@@ -753,6 +752,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
         }
 
         // IPI 3.1
+
         try {
           projectOutcomes.addAll(project.getProjectOutcomes().stream()
             .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())
@@ -761,7 +761,6 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
             .collect(Collectors.toList()));
         } catch (Exception e) {
         }
-
         // IPI 3.2
         try {
           projectOutcomes.addAll(project.getProjectOutcomes().stream()
@@ -771,7 +770,6 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
             .collect(Collectors.toList()));
         } catch (Exception e) {
         }
-
         // IPI 3.3
         try {
           projectOutcomes.addAll(project.getProjectOutcomes().stream()
@@ -781,7 +779,6 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
             .collect(Collectors.toList()));
         } catch (Exception e) {
         }
-
         // IPI 3.4
         try {
           projectOutcomes.addAll(project.getProjectOutcomes().stream()
@@ -791,7 +788,6 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
             .collect(Collectors.toList()));
         } catch (Exception e) {
         }
-
         // IPI 3.5
         try {
           projectOutcomes.addAll(project.getProjectOutcomes().stream()
@@ -801,6 +797,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
             .collect(Collectors.toList()));
         } catch (Exception e) {
         }
+
         /*
          * projectOutcomes = project.getProjectOutcomes().stream()
          * .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())).collect(Collectors.toList());
@@ -954,8 +951,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
 
 
           if (projectOutcomes != null && !projectOutcomes.isEmpty()) {
-            Collections.sort(projectOutcomes, (o1, o2) -> o1.getCrpProgramOutcome().getComposedName()
-              .compareTo(o2.getCrpProgramOutcome().getComposedName()));
+
             for (ProjectOutcome projectOutcome : projectOutcomes) {
               if (projectOutcome.getCrpProgramOutcome() != null
                 && projectOutcome.getCrpProgramOutcome().getComposedName() != null) {
@@ -1295,9 +1291,10 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
     if (this.getSelectedPhase() != null && project.getProjecInfoPhase(this.getSelectedPhase()) != null) {
       this.setProjectInfo(project.getProjecInfoPhase(this.getSelectedPhase()));
     }
-    projectOutcomes = project.getProjectOutcomes().stream()
-      .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())).collect(Collectors.toList());
-
+    /*
+     * projectOutcomes = project.getProjectOutcomes().stream()
+     * .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())).collect(Collectors.toList());
+     */
 
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
