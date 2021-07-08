@@ -431,10 +431,9 @@ public class DeliverableValidator extends BaseValidator {
           " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
       }
 
-      this.saveMissingFields(deliverable, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-        action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.DELIVERABLES.getStatus(), action);
-
     }
+    this.saveMissingFields(deliverable, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
+      action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.DELIVERABLES.getStatus(), action);
   }
 
   private void validateDeliverableInfo(DeliverableInfo deliverableInfo, Deliverable deliverable, Project project,
