@@ -84,8 +84,13 @@ public class DeliverableAffiliationsNotMappedManagerImpl implements DeliverableA
   @Override
   public void replicate(DeliverableAffiliationsNotMapped originalDeliverableAffiliationsNotMapped, Phase initialPhase) {
     Phase current = initialPhase;
-    Institution institution = this.institutionManager
-      .getInstitutionById(originalDeliverableAffiliationsNotMapped.getPossibleInstitution().getId());
+    Institution institution = new Institution();
+    if (originalDeliverableAffiliationsNotMapped != null
+      && originalDeliverableAffiliationsNotMapped.getPossibleInstitution() != null
+      && originalDeliverableAffiliationsNotMapped.getPossibleInstitution().getId() != null) {
+      institution = this.institutionManager
+        .getInstitutionById(originalDeliverableAffiliationsNotMapped.getPossibleInstitution().getId());
+    }
 
     while (current != null) {
       DeliverableAffiliationsNotMapped deliverableAffiliationNotMapped = null;
