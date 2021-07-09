@@ -37,6 +37,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyGeographicScopeMan
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
@@ -231,6 +232,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
   private ProjectExpectedStudyRegionManager projectExpectedStudyRegionManager;
   private ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager;
   private ProjectOutcomeManager projectOutcomeManager;
+  private ProjectMilestoneManager projectMilestoneManager;
   private CrpMilestoneManager crpMilestoneManager;
   private ClusterTypeManager clusterTypeManager;
   private DeliverableManager deliverableManager;
@@ -271,7 +273,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
     ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager, ProjectOutcomeManager projectOutcomeManager,
     CrpMilestoneManager crpMilestoneManager, CrpProgramOutcomeManager crpProgramOutcomeManager,
     LocalizedTextProvider localizedTextProvider, ClusterTypeManager clusterTypeManager,
-    DeliverableManager deliverableManager) {
+    DeliverableManager deliverableManager, ProjectMilestoneManager projectMilestoneManager) {
     super(config, crpManager, phaseManager, projectManager);
     document = new XWPFDocument();
     poiSummary = new POISummary();
@@ -299,6 +301,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
     this.localizedTextProvider = localizedTextProvider;
     this.clusterTypeManager = clusterTypeManager;
     this.deliverableManager = deliverableManager;
+    this.projectMilestoneManager = projectMilestoneManager;
   }
 
   private void createCoverTable() {
@@ -403,7 +406,16 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
           disseminationURL = deliverable.getDissemination(this.getSelectedPhase()).getDisseminationUrl();
         }
 
-        if (disseminationURL.isEmpty()) {
+        if (deliverable.getDissemination(this.getSelectedPhase()).getConfidential() != null
+          && deliverable.getDissemination(this.getSelectedPhase()).getConfidential()) {
+          POIField[] sData = {new POIField("D" + deliverable.getId() + "", ParagraphAlignment.LEFT, false),
+            new POIField(deliverable.getDeliverableInfo().getTitle(), ParagraphAlignment.LEFT, false),
+            new POIField(deliverable.getDeliverableInfo().getStatusName(this.getSelectedPhase()),
+              ParagraphAlignment.LEFT, false),
+            new POIField("<Confindential Link Provided>", ParagraphAlignment.LEFT, false, "c92804", "")};
+          data = Arrays.asList(sData);
+          datas.add(data);
+        } else if (disseminationURL.isEmpty()) {
           POIField[] sData = {new POIField("D" + deliverable.getId() + "", ParagraphAlignment.LEFT, false),
             new POIField(deliverable.getDeliverableInfo().getTitle(), ParagraphAlignment.LEFT, false),
             new POIField(deliverable.getDeliverableInfo().getStatusName(this.getSelectedPhase()),
@@ -974,28 +986,48 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                 } else {
                   expected2023 = projectOutcome.getExpectedValue() + "";
                 }
-
-                if (projectOutcome.getMilestones() != null && !projectOutcome.getMilestones().isEmpty()) {
-                  int expected = 0;
-                  for (ProjectMilestone milestone : projectOutcome.getMilestones()) {
-                    if (milestone.getExpectedValue() != null) {
-                      expected += milestone.getExpectedValue();
+                List<ProjectMilestone> projectMilestones = new ArrayList<>();
+                projectMilestones = projectMilestoneManager.findAll().stream()
+                  .filter(m -> m.isActive() && m.getYear() == this.getSelectedPhase().getYear()
+                    && m.getProjectOutcome() != null && m.getProjectOutcome().isActive()
+                    && m.getProjectOutcome().getId() != null
+                    && m.getProjectOutcome().getId().equals(projectOutcome.getId()))
+                  .collect(Collectors.toList());
+                if (projectMilestones != null && !projectMilestones.isEmpty()) {
+                  projectOutcome.setMilestones(projectMilestones);
+                  projectMilestones = projectOutcome.getMilestones().stream()
+                    .filter(c -> c != null && c.getYear() == this.getSelectedPhase().getYear())
+                    .collect(Collectors.toList());
+                  for (ProjectMilestone milestone : projectMilestones) {
+                    if (milestone.getExpectedValue() == null) {
+                      expected2021 = "0";
+                    } else {
+                      expected2021 = milestone.getExpectedValue() + "";
+                    }
+                    if (milestone.getAchievedValue() == null) {
+                      progress2021 = "0";
+                    } else {
+                      progress2021 = milestone.getAchievedValue() + "";
                     }
                   }
-                  expected2021 = expected + "";
                 }
-
-                if (projectOutcome.getMilestones() != null && !projectOutcome.getMilestones().isEmpty()) {
-                  int achieved = 0;
-                  for (ProjectMilestone milestone : projectOutcome.getMilestones()) {
-                    if (milestone.getAchievedValue() != null) {
-                      achieved += milestone.getAchievedValue();
-                    }
-                  }
-                  progress2021 = achieved + "";
-                }
-
                 this.createTableIndicators(overall2023, expected2023, expected2021, progress2021);
+
+
+                // Project Milestone narrative
+                if (projectOutcome.getNarrativeTarget() != null) {
+                  poiSummary.textLineBreak(document, 1);
+                  poiSummary.textParagraphFontBoldCalibri(document.createParagraph(),
+                    this.getText("summaries.progressReport2020.projectOutcome.narrativeTarget") + ":");
+
+                  paragraph = document.createParagraph();
+                  run = paragraph.createRun();
+                  run.setText(projectOutcome.getNarrativeTarget());
+                  run.setBold(false);
+                  run.setFontSize(11);
+                  run.setFontFamily("Calibri");
+                  run.setColor("000000");
+                }
 
                 // Indicators
                 projectOutcome.setIndicators(projectOutcomeIndicatorManager.findAll().stream().filter(i -> i.isActive()
@@ -1004,6 +1036,9 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
 
 
                 if (projectOutcome.getIndicators() != null && !projectOutcome.getIndicators().isEmpty()) {
+                  poiSummary.textLineBreak(document, 2);
+                  poiSummary.textParagraphFontBoldCalibri(document.createParagraph(),
+                    "Progress to Key Performance Indicator");
                   for (ProjectOutcomeIndicator indicator : projectOutcome.getIndicators()) {
                     if (indicator.getCrpProgramOutcomeIndicator() != null
                       && indicator.getCrpProgramOutcomeIndicator().getIndicator() != null) {
