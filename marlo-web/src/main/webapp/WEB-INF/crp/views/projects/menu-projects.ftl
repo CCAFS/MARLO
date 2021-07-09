@@ -144,7 +144,11 @@
 [#if !centerGlobalUnit]
   [#-- Submition message --]
   [#if !submission && completed && !canSubmit]
-    <p class="text-center" style="display:block">The Cluster can be submitted now by the cluster leader.</p>
+    [#if action.isAiccra()]
+      <p class="text-center" style="display:block">You complete your Progress report, you can access the information through the Summaries section.</p>
+    [#else]
+      <p class="text-center" style="display:block">The Project can be submitted now by the project leader.</p>
+    [/#if]
   [/#if]
   
   [#-- Check button --]
