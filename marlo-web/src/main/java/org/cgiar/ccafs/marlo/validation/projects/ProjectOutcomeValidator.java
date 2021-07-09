@@ -322,6 +322,16 @@ public class ProjectOutcomeValidator extends BaseValidator {
             action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].expectedValue",
               InvalidFieldsMessages.EMPTYFIELD);
           }
+          if (projectMilestone.getAchievedValue() == null
+            || !this.isValidNumber(String.valueOf(projectMilestone.getAchievedValue()))) {
+            action.addMessage(action.getText("projectOutcomeMilestone.requeried.achievedValue", params));
+            action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].achievedValue",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+          if (projectMilestone.getAchievedValue() != null && projectMilestone.getAchievedValue() < 0) {
+            action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].achievedValue",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
         }
 
         if (!action.isReportingActive()) {
