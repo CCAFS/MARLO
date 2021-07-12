@@ -412,7 +412,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
             new POIField(deliverable.getDeliverableInfo().getTitle(), ParagraphAlignment.LEFT, false),
             new POIField(deliverable.getDeliverableInfo().getStatusName(this.getSelectedPhase()),
               ParagraphAlignment.LEFT, false),
-            new POIField("<Confindential Link Provided>", ParagraphAlignment.LEFT, false, "c92804", "")};
+            new POIField("<Confidential Link Provided>", ParagraphAlignment.LEFT, false, "c92804", "")};
           data = Arrays.asList(sData);
           datas.add(data);
         } else if (disseminationURL.isEmpty()) {
