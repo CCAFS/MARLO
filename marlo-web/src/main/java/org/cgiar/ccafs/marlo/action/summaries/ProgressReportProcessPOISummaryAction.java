@@ -979,10 +979,12 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                 String overall2023 = "", expected2023 = "", expected2021 = "", progress2021 = "";
                 if (projectOutcome.getCrpProgramOutcome().getValue() != null) {
                   overall2023 = projectOutcome.getCrpProgramOutcome().getValue() + "";
+                } else {
+                  overall2023 = "<Not provided>";
                 }
 
                 if (projectOutcome.getExpectedValue() == null) {
-                  expected2023 = "0";
+                  expected2023 = "<Not provided>";
                 } else {
                   expected2023 = projectOutcome.getExpectedValue() + "";
                 }
@@ -1000,12 +1002,12 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                     .collect(Collectors.toList());
                   for (ProjectMilestone milestone : projectMilestones) {
                     if (milestone.getExpectedValue() == null) {
-                      expected2021 = "0";
+                      expected2021 = "<Not provided>";
                     } else {
                       expected2021 = milestone.getExpectedValue() + "";
                     }
                     if (milestone.getAchievedValue() == null) {
-                      progress2021 = "0";
+                      progress2021 = "<Not provided>";
                     } else {
                       progress2021 = milestone.getAchievedValue() + "";
                     }
