@@ -572,8 +572,8 @@ function createGoogleChart(chartID, type, options) {
       var data = new google.visualization.arrayToDataTable(
         getChartDataArray($chart)
       );
-      console.log(data, data.Vf.length);
-      if (!data.Vf.length) {
+      console.log(data, data.bf.length);
+      if (!data.bf.length) {
         $chart.append(
           '<p  class="text-center"> ' + options.title + " <br>  No data </p>"
         );
