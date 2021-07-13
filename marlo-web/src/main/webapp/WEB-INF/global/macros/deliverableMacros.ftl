@@ -793,7 +793,7 @@
     <hr />
     
     <div class="col-md-4">
-    [#list (answers)![] as answer] 
+    [#list (answersDataDic)![] as answer] 
       <div class="radio radio-block">
       [#if editable]
         <label><input type="radio" class="dataDictionary" name="deliverable.qualityCheck.dataDictionary.id" value="${(answer.id)!}" [#if deliverable.qualityCheck?? && deliverable.qualityCheck.dataDictionary?? && deliverable.qualityCheck.dataDictionary.id==answer.id] checked="checked"[/#if]>${(answer.name)!}</label>
