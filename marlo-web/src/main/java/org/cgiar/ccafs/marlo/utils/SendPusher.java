@@ -58,6 +58,7 @@ public class SendPusher {
   public boolean sendPush(String channel, String event, HashMap<String, String> message) {
     Pusher pusher = new Pusher(appId, apiKey, apiSecret);
     pusher.setEncrypted(true);
+    pusher.setCluster("us2");
     Result result = pusher.trigger(channel, event, message);
     return result.getStatus().compareTo(Status.SUCCESS) == 0;
 
