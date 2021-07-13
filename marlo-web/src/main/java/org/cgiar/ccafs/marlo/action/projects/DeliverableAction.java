@@ -222,6 +222,7 @@ public class DeliverableAction extends BaseAction {
 
   // Variables
   private List<DeliverableQualityAnswer> answers;
+  private List<DeliverableQualityAnswer> answersDataDic;
   private List<RepositoryChannel> repositoryChannels;
   private ArrayList<GlobalUnit> crps;
   private ArrayList<CrpProgram> programs;
@@ -489,6 +490,11 @@ public class DeliverableAction extends BaseAction {
   public List<DeliverableQualityAnswer> getAnswers() {
     return answers;
   }
+
+  public List<DeliverableQualityAnswer> getAnswersDataDic() {
+    return answersDataDic;
+  }
+
 
   private Path getAutoSaveFilePath() {
 
@@ -1545,6 +1551,20 @@ public class DeliverableAction extends BaseAction {
         }
         answers = new ArrayList<>(
           deliverableQualityAnswerManager.findAll().stream().filter(qa -> qa.isActive()).collect(Collectors.toList()));
+
+        answersDataDic = new ArrayList<>();
+        DeliverableQualityAnswer answer2 = new DeliverableQualityAnswer();
+        answer2.setActive(true);
+        answer2.setName("Yes");
+        answer2.setId(2L);
+        answersDataDic.add(answer2);
+
+        DeliverableQualityAnswer answer3 = new DeliverableQualityAnswer();
+        answer3.setActive(true);
+        answer3.setName("No");
+        answer3.setId(3L);
+        answersDataDic.add(answer3);
+
         repositoryChannels = repositoryChannelManager.findAll();
         if (repositoryChannels != null && repositoryChannels.size() > 0) {
           repositoryChannels.sort((rc1, rc2) -> rc1.getShortName().compareTo(rc2.getShortName()));
@@ -2805,6 +2825,10 @@ public class DeliverableAction extends BaseAction {
 
   public void setAnswers(List<DeliverableQualityAnswer> answers) {
     this.answers = answers;
+  }
+
+  public void setAnswersDataDic(List<DeliverableQualityAnswer> answersDataDic) {
+    this.answersDataDic = answersDataDic;
   }
 
   public void setCgiarCrossCuttingMarkers(List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers) {
