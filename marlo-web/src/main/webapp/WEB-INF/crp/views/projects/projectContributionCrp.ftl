@@ -193,7 +193,8 @@
               [/#if]
             </div>
             [#-- Select a milestone  --]
-            [#if editable]
+            [#if false][#-- Change false to editable to enable the component --]
+            
             <div class="milestonesYearSelect"> 
               <div class="pull-left"> <span class="glyphicon glyphicon-plus"></span>  &nbsp</div>
               <span class="milestonesSelectedIds" style="display:none">[#if milestonesProject?has_content][#list milestonesProject as e]${(e.id)!}[#if e_has_next],[/#if][/#list][/#if]</span>
