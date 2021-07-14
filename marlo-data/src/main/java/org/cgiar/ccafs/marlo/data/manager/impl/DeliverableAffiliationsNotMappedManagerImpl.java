@@ -105,6 +105,9 @@ public class DeliverableAffiliationsNotMappedManagerImpl implements DeliverableA
             && dmes.getDeliverableMetadataExternalSources().getId() != null
             && dmes.getDeliverableMetadataExternalSources().getId().equals(externalSources.getId())
             && dmes.getPossibleInstitution() != null && dmes.getPossibleInstitution().getId() != null
+            && originalDeliverableAffiliationsNotMapped != null
+            && originalDeliverableAffiliationsNotMapped.getPossibleInstitution() != null
+            && originalDeliverableAffiliationsNotMapped.getPossibleInstitution().getId() != null
             && dmes.getPossibleInstitution().getId()
               .equals(originalDeliverableAffiliationsNotMapped.getPossibleInstitution().getId()))
           .findFirst().orElse(null);
