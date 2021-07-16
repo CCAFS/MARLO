@@ -52,6 +52,14 @@ public interface ProjectPolicyRegionManager {
   public List<ProjectPolicyRegion> findAll();
 
 
+  /**
+   * This method gets a list of projectPolicyRegion by a given projectPolicy identifier.
+   * 
+   * @param policyId is the projectPolicy identifier.
+   * @return a list of projectPolicyRegion objects.
+   */
+  public List<ProjectPolicyRegion> getAllPolicyRegionsByPolicy(Long policyId);
+
   public List<ProjectPolicyRegion> getPolicyRegionbyPhase(long policyID, long phaseID);
 
   /**
@@ -73,6 +81,4 @@ public interface ProjectPolicyRegionManager {
    *         or -1 is some error occurred.
    */
   public ProjectPolicyRegion saveProjectPolicyRegion(ProjectPolicyRegion projectPolicyRegion);
-
-
 }

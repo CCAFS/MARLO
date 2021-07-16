@@ -53,6 +53,14 @@ public interface ProjectPolicyGeographicScopeManager {
 
 
   /**
+   * This method gets a list of projectPolicyGeographicScope by a given projectPolicy identifier.
+   * 
+   * @param policyId is the projectPolicy identifier.
+   * @return a list of projectPolicyGeographicScope objects.
+   */
+  public List<ProjectPolicyGeographicScope> getAllPolicyGeographicScopesByPolicy(Long policyId);
+
+  /**
    * This method gets a projectPolicyGeographicScope object by a given projectPolicyGeographicScope identifier.
    * 
    * @param projectPolicyGeographicScopeID is the projectPolicyGeographicScope identifier.
@@ -60,9 +68,9 @@ public interface ProjectPolicyGeographicScopeManager {
    */
   public ProjectPolicyGeographicScope getProjectPolicyGeographicScopeById(long projectPolicyGeographicScopeID);
 
+
   public ProjectPolicyGeographicScope getProjectPolicyGeographicScopeByPhase(long projectPolicyID,
     long geographicScopeID, long phaseID);
-
 
   /**
    * This method saves the information of the given projectPolicyGeographicScope
@@ -76,5 +84,4 @@ public interface ProjectPolicyGeographicScopeManager {
    */
   public ProjectPolicyGeographicScope
     saveProjectPolicyGeographicScope(ProjectPolicyGeographicScope projectPolicyGeographicScope);
-
 }
