@@ -24,6 +24,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.collections4.ListUtils;
+
 /**
  * @author Christian Garcia
  */
@@ -78,6 +80,16 @@ public class PhaseManagerImpl implements PhaseManager {
   }
 
   @Override
+  public Phase getLastCrpPhase(long globalUnitId) {
+    Phase lastPhase = ListUtils.emptyIfNull(this.findAll()).stream()
+      .filter(
+        phase -> phase != null && phase.getId() != null && phase.getCrp() != null && phase.getCrp().getId() != null
+          && phase.getCrp().getId().longValue() == globalUnitId && phase.getNext() == null)
+      .findFirst().orElse(null);
+    return lastPhase;
+  }
+
+  @Override
   public Phase getPhaseById(long phaseID) {
 
     return phaseDAO.find(phaseID);
@@ -88,6 +100,4 @@ public class PhaseManagerImpl implements PhaseManager {
 
     return phaseDAO.save(phase);
   }
-
-
 }
