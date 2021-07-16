@@ -52,6 +52,14 @@ public interface ProjectPolicyCenterManager {
 
 
   /**
+   * This method gets a list of projectPolicyCenter by a given projectPolicy identifier.
+   * 
+   * @param policyId is the projectPolicy identifier.
+   * @return a list of projectPolicyCenter objects.
+   */
+  public List<ProjectPolicyCenter> getAllPolicyCentersByPolicy(Long policyId);
+
+  /**
    * This method gets a projectPolicyCenter object by a given projectPolicyCenter identifier.
    * 
    * @param projectPolicyCenterID is the projectPolicyCenter identifier.

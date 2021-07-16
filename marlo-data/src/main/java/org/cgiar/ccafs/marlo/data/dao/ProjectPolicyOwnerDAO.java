@@ -55,6 +55,14 @@ public interface ProjectPolicyOwnerDAO {
   public List<ProjectPolicyOwner> findAll();
 
 
+  /**
+   * This method gets a list of projectPolicyOwner by a given projectPolicy identifier.
+   * 
+   * @param policyId is the projectPolicy identifier.
+   * @return a list of projectPolicyOwner objects.
+   */
+  public List<ProjectPolicyOwner> getAllPolicyOwnersByPolicy(long policyId);
+
   public ProjectPolicyOwner getProjectPolicyOwnerById(long projectPolicyID, long policyTypID, long phaseID);
 
   /**

@@ -53,6 +53,14 @@ public interface ProjectPolicyCrossCuttingMarkerManager {
 
 
   /**
+   * This method gets a list of projectPolicyCrossCuttingMarker by a given projectPolicy identifier.
+   * 
+   * @param policyId is the projectPolicyCrossCuttingMarker identifier.
+   * @return a list of projectPolicyCrossCuttingMarker objects.
+   */
+  public List<ProjectPolicyCrossCuttingMarker> getAllPolicyCrossCuttingMarkersByPolicy(Long policyId);
+
+  /**
    * @param policyID
    * @param cgiarCrossCuttingMarkerID
    * @param phaseID
@@ -81,6 +89,4 @@ public interface ProjectPolicyCrossCuttingMarkerManager {
    */
   public ProjectPolicyCrossCuttingMarker
     saveProjectPolicyCrossCuttingMarker(ProjectPolicyCrossCuttingMarker projectPolicyCrossCuttingMarker);
-
-
 }

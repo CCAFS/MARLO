@@ -53,6 +53,14 @@ public interface ProjectPolicyInfoManager {
 
 
   /**
+   * This method gets a list of projectPolicyInfo by a given projectPolicy identifier.
+   * 
+   * @param policyId is the projectPolicy identifier.
+   * @return a list of projectPolicyInfo objects.
+   */
+  public List<ProjectPolicyInfo> getAllPolicyInfosByPolicy(Long policyId);
+
+  /**
    * This method gets a projectPolicyInfo object by a given projectPolicyInfo identifier.
    * 
    * @param projectPolicyInfoID is the projectPolicyInfo identifier.
@@ -69,6 +77,5 @@ public interface ProjectPolicyInfoManager {
    *         or -1 is some error occurred.
    */
   public ProjectPolicyInfo saveProjectPolicyInfo(ProjectPolicyInfo projectPolicyInfo);
-
 
 }

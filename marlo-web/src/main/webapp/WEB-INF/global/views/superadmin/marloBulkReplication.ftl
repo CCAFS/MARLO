@@ -64,6 +64,10 @@
                   { "actionName": "deliverableBulkSynchronization",
                     "i18nkey": "marloBulkReplication.deliverableSync",
                     "service": "getDeliverablesByPhase"
+                  },
+                  { "actionName": "projectPoliciesReplication",
+                    "i18nkey": "marloBulkReplication.projectsPoliciesReplication",
+                    "service": "getProjectPoliciesByPhase"
                   }
                 ] /]
                 <label for="entityID">Entity:</label>

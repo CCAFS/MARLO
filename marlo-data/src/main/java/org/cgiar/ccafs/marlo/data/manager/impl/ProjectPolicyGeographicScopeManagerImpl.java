@@ -108,6 +108,11 @@ public class ProjectPolicyGeographicScopeManagerImpl implements ProjectPolicyGeo
   }
 
   @Override
+  public List<ProjectPolicyGeographicScope> getAllPolicyGeographicScopesByPolicy(Long policyId) {
+    return this.projectPolicyGeographicScopeDAO.getAllPolicyGeographicScopesByPolicy(policyId.longValue());
+  }
+
+  @Override
   public ProjectPolicyGeographicScope getProjectPolicyGeographicScopeById(long projectPolicyGeographicScopeID) {
 
     return projectPolicyGeographicScopeDAO.find(projectPolicyGeographicScopeID);
@@ -170,6 +175,5 @@ public class ProjectPolicyGeographicScopeManagerImpl implements ProjectPolicyGeo
       this.saveProjectPolicyGeographicScopePhase(phase.getNext(), policyID, projectPolicyGeographicScope);
     }
   }
-
 
 }

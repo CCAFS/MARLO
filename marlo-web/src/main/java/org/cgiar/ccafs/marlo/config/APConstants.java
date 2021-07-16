@@ -798,6 +798,10 @@ public final class APConstants {
   public static final String WOS_LINK = "wosLink";
   public static final Integer ACCEPTATION_PERCENTAGE = 75;
 
+  public static final String REPLICATION_SELECTED_PHASE_ID = "selectedPhaseID";
+
+  public static final int ALLIANCE_CENTER_ID = 45;
+
   // deliverables import clarisa value
   public static final long IMPORT_DELIVERABLE_VALUE = 63;
 
