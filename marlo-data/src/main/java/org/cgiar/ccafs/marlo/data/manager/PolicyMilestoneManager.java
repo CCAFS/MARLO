@@ -64,6 +64,14 @@ public interface PolicyMilestoneManager {
 
 
   /**
+   * This method gets a list of policyMilestone by a given projectPolicy identifier.
+   * 
+   * @param policyId is the projectPolicy identifier.
+   * @return a list of policyMilestone objects.
+   */
+  public List<PolicyMilestone> getAllPolicyMilestonesByPolicy(Long policyId);
+
+  /**
    * This method gets a policyMilestone object by a given policyMilestone identifier.
    * 
    * @param policyMilestoneID is the policyMilestone identifier.
@@ -80,6 +88,4 @@ public interface PolicyMilestoneManager {
    *         or -1 is some error occurred.
    */
   public PolicyMilestone savePolicyMilestone(PolicyMilestone policyMilestone);
-
-
 }

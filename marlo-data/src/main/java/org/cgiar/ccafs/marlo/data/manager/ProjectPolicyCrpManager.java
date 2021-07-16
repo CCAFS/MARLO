@@ -53,6 +53,14 @@ public interface ProjectPolicyCrpManager {
 
 
   /**
+   * This method gets a list of projectPolicyCrp by a given projectPolicy identifier.
+   * 
+   * @param policyId is the projectPolicy identifier.
+   * @return a list of projectPolicyCenter objects.
+   */
+  public List<ProjectPolicyCrp> getAllPolicyCrpsByPolicy(Long policyId);
+
+  /**
    * This method gets a projectPolicyCrp object by a given projectPolicyCrp identifier.
    * 
    * @param projectPolicyCrpID is the projectPolicyCrp identifier.
@@ -79,5 +87,4 @@ public interface ProjectPolicyCrpManager {
    *         or -1 is some error occurred.
    */
   public ProjectPolicyCrp saveProjectPolicyCrp(ProjectPolicyCrp projectPolicyCrp);
-
 }
