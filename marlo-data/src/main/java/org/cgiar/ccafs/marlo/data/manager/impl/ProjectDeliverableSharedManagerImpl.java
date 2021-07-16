@@ -40,7 +40,8 @@ public class ProjectDeliverableSharedManagerImpl implements ProjectDeliverableSh
   private PhaseDAO phaseDAO;
 
   @Inject
-  public ProjectDeliverableSharedManagerImpl(ProjectDeliverableSharedDAO projectDeliverableSharedDAO, PhaseDAO phaseDAO) {
+  public ProjectDeliverableSharedManagerImpl(ProjectDeliverableSharedDAO projectDeliverableSharedDAO,
+    PhaseDAO phaseDAO) {
     this.projectDeliverableSharedDAO = projectDeliverableSharedDAO;
     this.phaseDAO = phaseDAO;
   }
@@ -48,13 +49,14 @@ public class ProjectDeliverableSharedManagerImpl implements ProjectDeliverableSh
   @Override
   public void deleteProjectDeliverableShared(long projectDeliverableSharedId) {
 
-    ProjectDeliverableShared projectDeliverableShared = this.getProjectDeliverableSharedById(projectDeliverableSharedId);
+    ProjectDeliverableShared projectDeliverableShared =
+      this.getProjectDeliverableSharedById(projectDeliverableSharedId);
 
     // Conditions to Project Innovation Works In AR phase and Upkeep Phase
     if (projectDeliverableShared.getPhase().getDescription().equals(APConstants.PLANNING)
       && projectDeliverableShared.getPhase().getNext() != null) {
       this.deleteProjectDeliverableSharedPhase(projectDeliverableShared.getPhase().getNext(),
-        projectDeliverableShared.getProjectInnovation().getId(), projectDeliverableShared);
+        projectDeliverableShared.getDeliverable().getId(), projectDeliverableShared);
     }
 
     if (projectDeliverableShared.getPhase().getDescription().equals(APConstants.REPORTING)) {
@@ -62,7 +64,7 @@ public class ProjectDeliverableSharedManagerImpl implements ProjectDeliverableSh
         && projectDeliverableShared.getPhase().getNext().getNext() != null) {
         Phase upkeepPhase = projectDeliverableShared.getPhase().getNext().getNext();
         if (upkeepPhase != null) {
-          this.deleteProjectDeliverableSharedPhase(upkeepPhase, projectDeliverableShared.getProjectInnovation().getId(),
+          this.deleteProjectDeliverableSharedPhase(upkeepPhase, projectDeliverableShared.getDeliverable().getId(),
             projectDeliverableShared);
         }
       }
@@ -76,7 +78,7 @@ public class ProjectDeliverableSharedManagerImpl implements ProjectDeliverableSh
     Phase phase = phaseDAO.find(next.getId());
 
     List<ProjectDeliverableShared> projectDeliverableShareds = phase.getProjectDeliverableShareds().stream()
-      .filter(c -> c.isActive() && c.getProjectInnovation().getId().longValue() == innovationID
+      .filter(c -> c.isActive() && c.getDeliverable().getId().longValue() == innovationID
         && c.getProject().getId().equals(projectDeliverableShared.getProject().getId()))
       .collect(Collectors.toList());
     for (ProjectDeliverableShared projectDeliverableSharedDB : projectDeliverableShareds) {
@@ -115,7 +117,7 @@ public class ProjectDeliverableSharedManagerImpl implements ProjectDeliverableSh
 
     // Conditions to Project Innovation Works In AR phase and Upkeep Phase
     if (currentPhase.getDescription().equals(APConstants.PLANNING) && currentPhase.getNext() != null) {
-      this.saveProjectDeliverableSharedPhase(currentPhase.getNext(), shared.getProjectInnovation().getId(),
+      this.saveProjectDeliverableSharedPhase(currentPhase.getNext(), shared.getDeliverable().getId(),
         projectDeliverableShared);
     }
 
@@ -123,7 +125,7 @@ public class ProjectDeliverableSharedManagerImpl implements ProjectDeliverableSh
       if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
         Phase upkeepPhase = currentPhase.getNext().getNext();
         if (upkeepPhase != null) {
-          this.saveProjectDeliverableSharedPhase(upkeepPhase, shared.getProjectInnovation().getId(),
+          this.saveProjectDeliverableSharedPhase(upkeepPhase, shared.getDeliverable().getId(),
             projectDeliverableShared);
         }
       }
@@ -138,13 +140,13 @@ public class ProjectDeliverableSharedManagerImpl implements ProjectDeliverableSh
     Phase phase = phaseDAO.find(next.getId());
 
     List<ProjectDeliverableShared> projectDeliverableShareds = phase.getProjectDeliverableShareds().stream()
-      .filter(c -> c.isActive() && c.getProjectInnovation().getId().longValue() == innovationID
+      .filter(c -> c.isActive() && c.getDeliverable().getId().longValue() == innovationID
         && c.getProject().getId().equals(projectDeliverableShared.getProject().getId()))
       .collect(Collectors.toList());
 
     if (projectDeliverableShareds.isEmpty()) {
       ProjectDeliverableShared projectDeliverableSharedAdd = new ProjectDeliverableShared();
-      projectDeliverableSharedAdd.setProjectInnovation(projectDeliverableShared.getProjectInnovation());
+      projectDeliverableSharedAdd.setDeliverable(projectDeliverableShared.getDeliverable());
       projectDeliverableSharedAdd.setPhase(phase);
       projectDeliverableSharedAdd.setProject(projectDeliverableShared.getProject());
       projectDeliverableSharedDAO.save(projectDeliverableSharedAdd);
