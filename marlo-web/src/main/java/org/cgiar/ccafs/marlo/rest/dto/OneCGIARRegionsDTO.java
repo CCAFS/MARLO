@@ -19,6 +19,8 @@
 
 package org.cgiar.ccafs.marlo.rest.dto;
 
+import java.util.List;
+
 import io.swagger.annotations.ApiModelProperty;
 
 public class OneCGIARRegionsDTO {
@@ -31,6 +33,14 @@ public class OneCGIARRegionsDTO {
 
   @ApiModelProperty(notes = "Region Type Object", position = 3)
   private OneCGIARRegionTypeDTO regionType;
+
+  @ApiModelProperty(notes = "Region Countries", position = 4)
+  private List<CountryDTO> countries;
+
+
+  public List<CountryDTO> getCountries() {
+    return countries;
+  }
 
 
   public Long getId() {
@@ -45,6 +55,11 @@ public class OneCGIARRegionsDTO {
 
   public OneCGIARRegionTypeDTO getRegionType() {
     return regionType;
+  }
+
+
+  public void setCountries(List<CountryDTO> countries) {
+    this.countries = countries;
   }
 
 

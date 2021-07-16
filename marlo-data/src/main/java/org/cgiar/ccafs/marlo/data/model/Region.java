@@ -20,6 +20,9 @@
 package org.cgiar.ccafs.marlo.data.model;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class Region extends MarloBaseEntity implements Serializable {
 
@@ -31,21 +34,43 @@ public class Region extends MarloBaseEntity implements Serializable {
 
   private String name;
   private RegionType regionType;
+  private Set<LocElementRegion> regionCountries = new HashSet<LocElementRegion>(0);
+  private List<LocElement> countries;
+
 
   public Region() {
     super();
   }
 
+
+  public List<LocElement> getCountries() {
+    return countries;
+  }
+
+
   public String getName() {
     return name;
+  }
+
+
+  public Set<LocElementRegion> getRegionCountries() {
+    return regionCountries;
   }
 
   public RegionType getRegionType() {
     return regionType;
   }
 
+  public void setCountries(List<LocElement> countries) {
+    this.countries = countries;
+  }
+
   public void setName(String name) {
     this.name = name;
+  }
+
+  public void setRegionCountries(Set<LocElementRegion> regionCountries) {
+    this.regionCountries = regionCountries;
   }
 
   public void setRegionType(RegionType regionType) {
