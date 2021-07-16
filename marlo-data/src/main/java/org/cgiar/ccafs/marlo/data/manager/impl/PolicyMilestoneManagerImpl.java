@@ -105,6 +105,11 @@ public class PolicyMilestoneManagerImpl implements PolicyMilestoneManager {
   }
 
   @Override
+  public List<PolicyMilestone> getAllPolicyMilestonesByPolicy(Long policyId) {
+    return this.policyMilestoneDAO.getAllPolicyMilestonesByPolicy(policyId.longValue());
+  }
+
+  @Override
   public PolicyMilestone getPolicyMilestoneById(long policyMilestoneID) {
 
     return policyMilestoneDAO.find(policyMilestoneID);

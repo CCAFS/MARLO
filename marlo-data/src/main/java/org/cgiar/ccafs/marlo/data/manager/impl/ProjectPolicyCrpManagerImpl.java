@@ -106,11 +106,16 @@ public class ProjectPolicyCrpManagerImpl implements ProjectPolicyCrpManager {
   }
 
   @Override
+  public List<ProjectPolicyCrp> getAllPolicyCrpsByPolicy(Long policyId) {
+    return this.projectPolicyCrpDAO.getAllPolicyCrpsByPolicy(policyId.longValue());
+  }
+
+
+  @Override
   public ProjectPolicyCrp getProjectPolicyCrpById(long projectPolicyCrpID) {
 
     return projectPolicyCrpDAO.find(projectPolicyCrpID);
   }
-
 
   @Override
   public ProjectPolicyCrp getProjectPolicyCrpByPhase(long policyID, long crpID, long phaseID) {
@@ -163,6 +168,5 @@ public class ProjectPolicyCrpManagerImpl implements ProjectPolicyCrpManager {
 
     return crp;
   }
-
 
 }

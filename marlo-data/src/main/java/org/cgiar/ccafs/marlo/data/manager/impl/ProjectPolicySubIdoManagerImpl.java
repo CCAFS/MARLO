@@ -13,6 +13,7 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager.impl;
+
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectPolicySubIdoDAO;
@@ -67,7 +68,7 @@ public class ProjectPolicySubIdoManagerImpl implements ProjectPolicySubIdoManage
             projectPolicySubIdo);
         }
       }
-  }
+    }
 
     projectPolicySubIdoDAO.deleteProjectPolicySubIdo(projectPolicySubIdoId);
   }
@@ -101,6 +102,11 @@ public class ProjectPolicySubIdoManagerImpl implements ProjectPolicySubIdoManage
 
     return projectPolicySubIdoDAO.findAll();
 
+  }
+
+  @Override
+  public List<ProjectPolicySubIdo> getAllPolicySubIdosByPolicy(Long policyId) {
+    return this.projectPolicySubIdoDAO.getAllPolicySubIdosByPolicy(policyId.longValue());
   }
 
   @Override
@@ -161,6 +167,4 @@ public class ProjectPolicySubIdoManagerImpl implements ProjectPolicySubIdoManage
 
     return subIdo;
   }
-
-
 }
