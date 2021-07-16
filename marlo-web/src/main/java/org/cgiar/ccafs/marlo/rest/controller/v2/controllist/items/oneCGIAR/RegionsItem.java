@@ -19,7 +19,10 @@
 
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR;
 
+import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.RegionsManager;
+import org.cgiar.ccafs.marlo.data.model.LocElement;
+import org.cgiar.ccafs.marlo.data.model.LocElementRegion;
 import org.cgiar.ccafs.marlo.data.model.Region;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.OneCGIARRegionsDTO;
@@ -48,25 +51,41 @@ public class RegionsItem<T> {
   private static final Logger LOG = LoggerFactory.getLogger(Region.class);
   @Autowired
   private Environment env;
-  private RegionsManager regionsManager;private region
+  private RegionsManager regionsManager;
+  private LocElementManager locElementManager;
   private RegionsMapper regionsMapper;
 
   @Inject
-  public RegionsItem(RegionsManager regionsManager, RegionsMapper regionsMapper) {
+  public RegionsItem(RegionsManager regionsManager, RegionsMapper regionsMapper, LocElementManager locElementManager) {
     super();
     this.regionsManager = regionsManager;
     this.regionsMapper = regionsMapper;
+    this.locElementManager = locElementManager;
   }
 
   public ResponseEntity<List<OneCGIARRegionsDTO>> getAll() {
-    List<Region> regionList = regionsManager.findAll();
+    List<Region> regionList = new ArrayList<Region>();
+    List<Region> regions = regionsManager.findAll();
+    List<LocElement> regionCountries;
+    if (regionList != null) {
+      for (Region region : regions) {
+        regionCountries = new ArrayList<LocElement>();
+        for (LocElementRegion locElementRegion : region.getRegionCountries().stream().collect(Collectors.toList())) {
+          LocElement loc = locElementManager.getLocElementById(locElementRegion.getLocElement().getId());
+          if (loc != null) {
+            loc.setLocElement(null);
+            regionCountries.add(loc);
+          }
+        }
+        region.setCountries(regionCountries);
+        regionList.add(region);
+      }
+    }
     List<OneCGIARRegionsDTO> regionsDTO = regionList.stream()
       .map(region -> this.regionsMapper.regionsToOneCGIARRegionsDTO(region)).collect(Collectors.toList());
-    List<OneCGIARRegionsDTO> regions = new ArrayList<OneCGIARRegionsDTO>();
-    for (OneCGIARRegionsDTO region : regionsDTO) {
 
-    }
-    return Optional.ofNullable(regions).map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+
+    return Optional.ofNullable(regionsDTO).map(result -> new ResponseEntity<>(result, HttpStatus.OK))
       .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 

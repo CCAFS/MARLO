@@ -16,5 +16,14 @@
         <column name="region_type_id" />  
       </many-to-one>
       
+        <set name="regionCountries" table="loc_elements_regions"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="region_id" not-null="true" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.LocElementRegion" />
+    </set>
+      
   </class>
 </hibernate-mapping>

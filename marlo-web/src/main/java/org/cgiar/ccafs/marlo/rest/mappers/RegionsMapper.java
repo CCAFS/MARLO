@@ -24,8 +24,9 @@ import org.cgiar.ccafs.marlo.rest.dto.OneCGIARRegionsDTO;
 
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "jsr330", uses = {RegionTypeMapper.class})
+@Mapper(componentModel = "jsr330", uses = {RegionTypeMapper.class, LocationMapper.class})
 public interface RegionsMapper {
+
 
   public abstract OneCGIARRegionsDTO regionsToOneCGIARRegionsDTO(Region region);
 
