@@ -482,5 +482,6 @@
     <mapping resource="xmls/ProjectExpectedStudyNexus.hbm.xml" />
     <mapping resource="xmls/ProjectExpectedStudyLeverOutcomes.hbm.xml" />
     <mapping resource="xmls/ProjectExpectedStudySdgTargets.hbm.xml" />
+    <mapping resource="xmls/ProjectDeliverableShared.hbm.xml" />
   </session-factory>
 </hibernate-configuration>

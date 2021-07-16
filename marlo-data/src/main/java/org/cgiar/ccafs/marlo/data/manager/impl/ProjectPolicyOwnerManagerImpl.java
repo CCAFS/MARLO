@@ -104,6 +104,11 @@ public class ProjectPolicyOwnerManagerImpl implements ProjectPolicyOwnerManager 
   }
 
   @Override
+  public List<ProjectPolicyOwner> getAllPolicyOwnersByPolicy(Long policyId) {
+    return this.projectPolicyOwnerDAO.getAllPolicyOwnersByPolicy(policyId.longValue());
+  }
+
+  @Override
   public ProjectPolicyOwner getProjectPolicyOwnerById(long projectPolicyOwnerID) {
 
     return projectPolicyOwnerDAO.find(projectPolicyOwnerID);
@@ -162,6 +167,4 @@ public class ProjectPolicyOwnerManagerImpl implements ProjectPolicyOwnerManager 
 
     return owner;
   }
-
-
 }

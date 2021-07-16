@@ -106,6 +106,11 @@ public class ProjectPolicyCountryManagerImpl implements ProjectPolicyCountryMana
   }
 
   @Override
+  public List<ProjectPolicyCountry> getAllPolicyCountriesByPolicy(Long policyId) {
+    return this.projectPolicyCountryDAO.getAllPolicyCountriesByPolicy(policyId.longValue());
+  }
+
+  @Override
   public List<ProjectPolicyCountry> getPolicyCountrybyPhase(long policyID, long phaseID) {
     return projectPolicyCountryDAO.getPolicyCountrybyPhase(policyID, phaseID);
   }
@@ -121,6 +126,7 @@ public class ProjectPolicyCountryManagerImpl implements ProjectPolicyCountryMana
 
     return projectPolicyCountryDAO.getProjectPolicyCountryByPhase(projectPolicyID, countryID, phaseID);
   }
+
 
   @Override
   public ProjectPolicyCountry saveProjectPolicyCountry(ProjectPolicyCountry projectPolicyCountry) {
@@ -147,7 +153,6 @@ public class ProjectPolicyCountryManagerImpl implements ProjectPolicyCountryMana
     return country;
   }
 
-
   public void saveProjectPolicyCountryPhase(Phase next, long policyID, ProjectPolicyCountry projectPolicyCountry) {
     Phase phase = phaseDAO.find(next.getId());
 
@@ -170,6 +175,4 @@ public class ProjectPolicyCountryManagerImpl implements ProjectPolicyCountryMana
       this.saveProjectPolicyCountryPhase(phase.getNext(), policyID, projectPolicyCountry);
     }
   }
-
-
 }

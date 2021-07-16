@@ -66,6 +66,14 @@ public interface PolicyMilestoneDAO {
 
 
   /**
+   * This method gets a list of policyMilestone by a given projectPolicy identifier.
+   * 
+   * @param policyId is the projectPolicy identifier.
+   * @return a list of policyMilestone objects.
+   */
+  public List<PolicyMilestone> getAllPolicyMilestonesByPolicy(long policyId);
+
+  /**
    * This method saves the information of the given policyMilestone
    * 
    * @param policyMilestone - is the policyMilestone object with the new information to be added/updated.

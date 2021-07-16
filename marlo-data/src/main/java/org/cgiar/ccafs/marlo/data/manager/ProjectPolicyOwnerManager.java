@@ -53,6 +53,14 @@ public interface ProjectPolicyOwnerManager {
 
 
   /**
+   * This method gets a list of projectPolicyOwner by a given projectPolicy identifier.
+   * 
+   * @param policyId is the projectPolicy identifier.
+   * @return a list of projectPolicyOwner objects.
+   */
+  public List<ProjectPolicyOwner> getAllPolicyOwnersByPolicy(Long policyId);
+
+  /**
    * This method gets a projectPolicyOwner object by a given projectPolicyOwner identifier.
    * 
    * @param projectPolicyOwnerID is the projectPolicyOwner identifier.
@@ -71,6 +79,4 @@ public interface ProjectPolicyOwnerManager {
    *         or -1 is some error occurred.
    */
   public ProjectPolicyOwner saveProjectPolicyOwner(ProjectPolicyOwner projectPolicyOwner);
-
-
 }

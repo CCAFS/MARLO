@@ -52,6 +52,15 @@ public interface ProjectPolicyCountryManager {
   public List<ProjectPolicyCountry> findAll();
 
   /**
+   * This method gets a list of projectPolicyCountry by a given projectPolicy identifier.
+   * 
+   * @param projectPolicyCenterID is the projectPolicyCenter identifier.
+   * @return a list of projectPolicyCountry objects.
+   */
+  public List<ProjectPolicyCountry> getAllPolicyCountriesByPolicy(Long policyId);
+
+
+  /**
    * This method gets a projectPolicyCountry object list by a given policy and phase identifier.
    * 
    * @param policyID is the policy identifier.
@@ -59,7 +68,6 @@ public interface ProjectPolicyCountryManager {
    * @return a projectPolicyCountry object list.
    */
   public List<ProjectPolicyCountry> getPolicyCountrybyPhase(long policyID, long phaseID);
-
 
   /**
    * This method gets a projectPolicyCountry object by a given projectPolicyCountry identifier.
@@ -80,6 +88,5 @@ public interface ProjectPolicyCountryManager {
    *         or -1 is some error occurred.
    */
   public ProjectPolicyCountry saveProjectPolicyCountry(ProjectPolicyCountry projectPolicyCountry);
-
 
 }

@@ -53,6 +53,14 @@ public interface ProjectPolicySubIdoManager {
 
 
   /**
+   * This method gets a list of projectPolicySubIdo by a given projectPolicy identifier.
+   * 
+   * @param policyId is the projectPolicy identifier.
+   * @return a list of projectPolicySubIdo objects.
+   */
+  public List<ProjectPolicySubIdo> getAllPolicySubIdosByPolicy(Long policyId);
+
+  /**
    * This method gets a projectPolicySubIdo object by a given projectPolicySubIdo identifier.
    * 
    * @param projectPolicySubIdoID is the projectPolicySubIdo identifier.
@@ -60,8 +68,8 @@ public interface ProjectPolicySubIdoManager {
    */
   public ProjectPolicySubIdo getProjectPolicySubIdoById(long projectPolicySubIdoID);
 
-  public ProjectPolicySubIdo getProjectPolicySubIdoByPhase(long projectPolicyID, long SubIdoID, long phaseID);
 
+  public ProjectPolicySubIdo getProjectPolicySubIdoByPhase(long projectPolicyID, long SubIdoID, long phaseID);
 
   /**
    * This method saves the information of the given projectPolicySubIdo
@@ -72,5 +80,4 @@ public interface ProjectPolicySubIdoManager {
    *         or -1 is some error occurred.
    */
   public ProjectPolicySubIdo saveProjectPolicySubIdo(ProjectPolicySubIdo projectPolicySubIdo);
-
 }
