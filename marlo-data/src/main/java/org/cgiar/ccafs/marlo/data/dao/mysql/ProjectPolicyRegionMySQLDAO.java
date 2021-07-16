@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -72,6 +73,19 @@ public class ProjectPolicyRegionMySQLDAO extends AbstractMarloDAO<ProjectPolicyR
   }
 
   @Override
+  public List<ProjectPolicyRegion> getAllPolicyRegionsByPolicy(long policyId) {
+    String query =
+      "select ppr from ProjectPolicyRegion ppr where ppr.projectPolicy.id = :policyId order by ppr.phase.id";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("policyId", policyId);
+
+    List<ProjectPolicyRegion> result = super.findAll(createQuery);
+
+    return result;
+  }
+
+  @Override
   public List<ProjectPolicyRegion> getPolicyRegionbyPhase(long policyID, long phaseID) {
     StringBuilder query = new StringBuilder();
     query.append("SELECT project_policy_regions.id as contryId FROM project_policies ");
@@ -115,6 +129,4 @@ public class ProjectPolicyRegionMySQLDAO extends AbstractMarloDAO<ProjectPolicyR
     }
     return projectPolicyRegion;
   }
-
-
 }

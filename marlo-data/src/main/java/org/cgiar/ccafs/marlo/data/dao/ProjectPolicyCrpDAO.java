@@ -56,6 +56,14 @@ public interface ProjectPolicyCrpDAO {
 
 
   /**
+   * This method gets a list of projectPolicyCrp by a given projectPolicy identifier.
+   * 
+   * @param policyId is the projectPolicy identifier.
+   * @return a list of projectPolicyCenter objects.
+   */
+  public List<ProjectPolicyCrp> getAllPolicyCrpsByPolicy(long policyId);
+
+  /**
    * This method get the information of a projectPolicyCrp
    * 
    * @param policyID - policy identifier
