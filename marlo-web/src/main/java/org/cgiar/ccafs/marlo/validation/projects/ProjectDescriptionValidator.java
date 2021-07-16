@@ -95,16 +95,27 @@ public class ProjectDescriptionValidator extends BaseValidator {
       action.getInvalidFields().put("input-project.projectInfo.summary", InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    if (project.getProjecInfoPhase(action.getActualPhase()).getLiaisonInstitution() != null) {
-      if (project.getProjecInfoPhase(action.getActualPhase()).getLiaisonInstitution().getId() == -1) {
+    if (action.getCurrentCrp() != null && action.getCurrentCrp().getId() != null
+      && action.getCurrentCrp().getId().intValue() != APConstants.ALLIANCE_CENTER_ID) {
+      // is not alliance
+      if (project.getProjecInfoPhase(action.getActualPhase()).getLiaisonInstitution() != null) {
+        if (project.getProjecInfoPhase(action.getActualPhase()).getLiaisonInstitution().getId() == -1) {
+          action.addMessage(action.getText("project.liaisonInstitution"));
+          action.getInvalidFields().put("input-project.projectInfo.liaisonInstitution.id",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+      } else {
         action.addMessage(action.getText("project.liaisonInstitution"));
         action.getInvalidFields().put("input-project.projectInfo.liaisonInstitution.id",
           InvalidFieldsMessages.EMPTYFIELD);
       }
     } else {
-      action.addMessage(action.getText("project.liaisonInstitution"));
-      action.getInvalidFields().put("input-project.projectInfo.liaisonInstitution.id",
-        InvalidFieldsMessages.EMPTYFIELD);
+      // is alliance
+      if (action.isEmpty(project.getFlagships())) {
+        action.addMessage(action.getText("project.liaisonInstitution"));
+        action.getInvalidFields().put("input-project.projectInfo.liaisonInstitution.id",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
     }
 
     if (project.getProjecInfoPhase(action.getActualPhase()).getStartDate() == null) {
@@ -133,7 +144,8 @@ public class ProjectDescriptionValidator extends BaseValidator {
       }
 
 
-      if (!action.isCenterGlobalUnit()) {
+      if (!action.isCenterGlobalUnit() && (action.getCurrentCrp() != null && action.getCurrentCrp().getId() != null
+        && action.getCurrentCrp().getId().intValue() != APConstants.ALLIANCE_CENTER_ID)) {
         if (project.getClusterActivities() != null) {
           if (project.getClusterActivities().size() == 0) {
             action.addMessage(action.getText("projectDescription.clusterActivities"));
