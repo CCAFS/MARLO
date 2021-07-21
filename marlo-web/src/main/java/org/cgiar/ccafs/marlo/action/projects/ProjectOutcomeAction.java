@@ -1091,6 +1091,12 @@ public class ProjectOutcomeAction extends BaseAction {
     projectOutcomeDB.setCrpProgramOutcome(crpProgramOutcome);
     projectOutcomeDB.setProject(project);
     projectOutcomeDB.setPhase(this.getActualPhase());
+    if (projectOutcome.getOrder() != null) {
+      projectOutcomeDB.setOrder(projectOutcome.getOrder());
+    } else {
+      projectOutcomeDB.setOrder((double) 1);
+    }
+
     projectOutcomeDB = projectOutcomeManager.saveProjectOutcome(projectOutcomeDB);
 
     return projectOutcomeDB;
