@@ -385,7 +385,9 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
   @Override
   public ProjectOutcome saveProjectOutcome(ProjectOutcome projectOutcome, String section, List<String> relationsName,
     Phase phase) {
-
+    if (projectOutcome.getOrder() == null) {
+      projectOutcome.setOrder((double) 0);
+    }
     return projectOutcomeDAO.save(projectOutcome, section, relationsName, phase);
   }
 
