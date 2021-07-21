@@ -67,6 +67,11 @@ public class ProjectPolicyInfoManagerImpl implements ProjectPolicyInfoManager {
   }
 
   @Override
+  public List<ProjectPolicyInfo> getAllPolicyInfosByPolicy(Long policyId) {
+    return this.projectPolicyInfoDAO.getAllPolicyInfosByPolicy(policyId.longValue());
+  }
+
+  @Override
   public ProjectPolicyInfo getProjectPolicyInfoById(long projectPolicyInfoID) {
 
     return projectPolicyInfoDAO.find(projectPolicyInfoID);
@@ -128,6 +133,5 @@ public class ProjectPolicyInfoManagerImpl implements ProjectPolicyInfoManager {
 
     return sourceInfo;
   }
-
 
 }

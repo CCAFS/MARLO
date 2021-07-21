@@ -24,6 +24,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -69,6 +70,19 @@ public class ProjectPolicyGeographicScopeMySQLDAO extends AbstractMarloDAO<Proje
   }
 
   @Override
+  public List<ProjectPolicyGeographicScope> getAllPolicyGeographicScopesByPolicy(long policyId) {
+    String query =
+      "select ppgs from ProjectPolicyGeographicScope ppgs where ppgs.projectPolicy.id = :policyId order by ppgs.phase.id";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("policyId", policyId);
+
+    List<ProjectPolicyGeographicScope> result = super.findAll(createQuery);
+
+    return result;
+  }
+
+  @Override
   public ProjectPolicyGeographicScope getProjectPolicyGeographicScopeByPhase(long projectPolicyID,
     long geographicScopeID, long phaseID) {
     String query = "from " + ProjectPolicyGeographicScope.class.getName() + " WHERE project_policy_id="
@@ -88,9 +102,7 @@ public class ProjectPolicyGeographicScopeMySQLDAO extends AbstractMarloDAO<Proje
       projectPolicyGeographicScope = super.update(projectPolicyGeographicScope);
     }
 
-
     return projectPolicyGeographicScope;
   }
-
 
 }

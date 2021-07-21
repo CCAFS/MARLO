@@ -56,6 +56,14 @@ public interface ProjectPolicyInfoDAO {
 
 
   /**
+   * This method gets a list of projectPolicyInfo by a given projectPolicy identifier.
+   * 
+   * @param policyId is the projectPolicy identifier.
+   * @return a list of projectPolicyInfo objects.
+   */
+  public List<ProjectPolicyInfo> getAllPolicyInfosByPolicy(long policyId);
+
+  /**
    * This method saves the information of the given projectPolicyInfo
    * 
    * @param projectPolicyInfo - is the projectPolicyInfo object with the new information to be added/updated.
