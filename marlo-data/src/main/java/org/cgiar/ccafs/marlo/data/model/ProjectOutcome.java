@@ -28,6 +28,8 @@ public class ProjectOutcome extends MarloAuditableEntity implements java.io.Seri
   @Expose
   private Double expectedValue;
   @Expose
+  private Double order;
+  @Expose
   private SrfTargetUnit expectedUnit;
   @Expose
   private Double achievedValue;
@@ -131,10 +133,14 @@ public class ProjectOutcome extends MarloAuditableEntity implements java.io.Seri
   }
 
 
+  public Double getOrder() {
+    return order;
+  }
+
+
   public Phase getPhase() {
     return phase;
   }
-
 
   public Project getProject() {
     return project;
@@ -143,6 +149,7 @@ public class ProjectOutcome extends MarloAuditableEntity implements java.io.Seri
   public Set<ProjectCommunication> getProjectCommunications() {
     return projectCommunications;
   }
+
 
   public ProjectComponentLesson getProjectComponentLesson() {
     return projectComponentLesson;
@@ -183,10 +190,10 @@ public class ProjectOutcome extends MarloAuditableEntity implements java.io.Seri
     this.achievedUnit = achievedUnit;
   }
 
-
   public void setAchievedValue(Double achievedValue) {
     this.achievedValue = achievedValue;
   }
+
 
   public void setCommunications(List<ProjectCommunication> communications) {
     this.communications = communications;
@@ -202,10 +209,10 @@ public class ProjectOutcome extends MarloAuditableEntity implements java.io.Seri
     this.expectedUnit = expectedUnit;
   }
 
-
   public void setExpectedValue(Double expectedValue) {
     this.expectedValue = expectedValue;
   }
+
 
   public void setIndicators(List<ProjectOutcomeIndicator> indicators) {
     this.indicators = indicators;
@@ -221,14 +228,16 @@ public class ProjectOutcome extends MarloAuditableEntity implements java.io.Seri
     this.narrativeAchieved = narrativeAchieved;
   }
 
-
   public void setNarrativeTarget(String narrativeTarget) {
     this.narrativeTarget = narrativeTarget;
   }
 
-
   public void setNextUsers(List<ProjectNextuser> nextUsers) {
     this.nextUsers = nextUsers;
+  }
+
+  public void setOrder(Double order) {
+    this.order = order;
   }
 
 
