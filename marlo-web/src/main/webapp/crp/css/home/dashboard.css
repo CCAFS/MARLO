@@ -143,6 +143,10 @@
     margin-bottom: 0;
 }
 
+#myDeliverables {
+    padding: 15px;
+}
+
 #buttonShowAll {
     position: absolute;
     /* right: 2%; */
