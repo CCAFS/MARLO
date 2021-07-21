@@ -24,6 +24,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -82,6 +83,18 @@ public class PolicyMilestoneMySQLDAO extends AbstractMarloDAO<PolicyMilestone, L
   }
 
   @Override
+  public List<PolicyMilestone> getAllPolicyMilestonesByPolicy(long policyId) {
+    String query = "select pm from PolicyMilestone pm where pm.policy.id = :policyId order by pm.phase.id";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("policyId", policyId);
+
+    List<PolicyMilestone> result = super.findAll(createQuery);
+
+    return result;
+  }
+
+  @Override
   public PolicyMilestone save(PolicyMilestone policyMilestone) {
     if (policyMilestone.getId() == null) {
       super.saveEntity(policyMilestone);
@@ -92,6 +105,4 @@ public class PolicyMilestoneMySQLDAO extends AbstractMarloDAO<PolicyMilestone, L
 
     return policyMilestone;
   }
-
-
 }

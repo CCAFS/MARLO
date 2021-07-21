@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -69,6 +70,19 @@ public class ProjectPolicyCrossCuttingMarkerMySQLDAO extends AbstractMarloDAO<Pr
     }
     return null;
 
+  }
+
+  @Override
+  public List<ProjectPolicyCrossCuttingMarker> getAllPolicyCrossCuttingMarkersByPolicy(long policyId) {
+    String query =
+      "select ppccm from ProjectPolicyCrossCuttingMarker ppccm where ppccm.projectPolicy.id = :policyId order by ppccm.phase.id";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("policyId", policyId);
+
+    List<ProjectPolicyCrossCuttingMarker> result = super.findAll(createQuery);
+
+    return result;
   }
 
   @Override

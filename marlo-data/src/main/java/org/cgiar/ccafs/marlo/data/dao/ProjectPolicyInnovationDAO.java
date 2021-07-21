@@ -55,6 +55,14 @@ public interface ProjectPolicyInnovationDAO {
   public List<ProjectPolicyInnovation> findAll();
 
 
+  /**
+   * This method gets a list of projectPolicyInnovation by a given projectPolicy identifier.
+   * 
+   * @param policyId is the projectPolicy identifier.
+   * @return a list of projectPolicyInnovation objects.
+   */
+  public List<ProjectPolicyInnovation> getAllPolicyInnovationsByPolicy(long policyId);
+
   public ProjectPolicyInnovation getProjectPolicyInnovationByPhase(Long projectPolicyID, Long projectInnovationID,
     Long phaseID);
 

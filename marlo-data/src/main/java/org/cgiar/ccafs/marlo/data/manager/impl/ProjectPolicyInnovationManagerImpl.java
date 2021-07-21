@@ -105,6 +105,11 @@ public class ProjectPolicyInnovationManagerImpl implements ProjectPolicyInnovati
   }
 
   @Override
+  public List<ProjectPolicyInnovation> getAllPolicyInnovationsByPolicy(Long policyId) {
+    return projectPolicyInnovationDAO.getAllPolicyInnovationsByPolicy(policyId.longValue());
+  }
+
+  @Override
   public ProjectPolicyInnovation getProjectPolicyInnovationById(long projectPolicyInnovationID) {
 
     return projectPolicyInnovationDAO.find(projectPolicyInnovationID);

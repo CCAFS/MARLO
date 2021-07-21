@@ -55,6 +55,14 @@ public interface ProjectPolicyGeographicScopeDAO {
   public List<ProjectPolicyGeographicScope> findAll();
 
   /**
+   * This method gets a list of projectPolicyGeographicScope by a given projectPolicy identifier.
+   * 
+   * @param policyId is the projectPolicy identifier.
+   * @return a list of projectPolicyGeographicScope objects.
+   */
+  public List<ProjectPolicyGeographicScope> getAllPolicyGeographicScopesByPolicy(long policyId);
+
+  /**
    * This method gets a projectPolicyGeographicScope that are active
    * 
    * @param projectPolicyID identifier

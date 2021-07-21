@@ -5667,8 +5667,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   /**
-   * Convenience method to check if a Collection is not "empty". Empty in this context means that: 1. The Collection is
-   * not null and 2. The Collection is not empty.
+   * Convenience method to check if a Collection is "empty". Empty in this context means that: 1. The Collection is
+   * null or 2. The Collection is empty (Collection.size() == 0).
    * 
    * @param <T> the Collection type
    * @param collection the Collection to be checked

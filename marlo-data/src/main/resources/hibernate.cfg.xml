@@ -481,7 +481,7 @@
     <mapping resource="xmls/ProjectExpectedStudyNexus.hbm.xml" />
     <mapping resource="xmls/ProjectExpectedStudyLeverOutcomes.hbm.xml" />
     <mapping resource="xmls/ProjectExpectedStudySdgTargets.hbm.xml" />
-    
+    <mapping resource="xmls/ProjectDeliverableShared.hbm.xml" />
     <!-- One CGIAR data -->    
     <mapping resource="xmls/RegionType.hbm.xml" />
     <mapping resource="xmls/Regions.hbm.xml" />

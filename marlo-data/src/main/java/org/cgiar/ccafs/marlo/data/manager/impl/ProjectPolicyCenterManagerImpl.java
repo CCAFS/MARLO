@@ -104,6 +104,11 @@ public class ProjectPolicyCenterManagerImpl implements ProjectPolicyCenterManage
 
 
   @Override
+  public List<ProjectPolicyCenter> getAllPolicyCentersByPolicy(Long policyId) {
+    return this.projectPolicyCenterDAO.getAllPolicyCentersByPolicy(policyId.longValue());
+  }
+
+  @Override
   public ProjectPolicyCenter getProjectPolicyCenterById(long projectPolicyCenterID) {
     return projectPolicyCenterDAO.find(projectPolicyCenterID);
   }
@@ -152,6 +157,4 @@ public class ProjectPolicyCenterManagerImpl implements ProjectPolicyCenterManage
     }
     return center;
   }
-
-
 }

@@ -27,6 +27,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 
@@ -69,6 +70,19 @@ public class ProjectPolicyCenterMySQLDAO extends AbstractMarloDAO<ProjectPolicyC
       return list;
     }
     return null;
+  }
+
+  @Override
+  public List<ProjectPolicyCenter> getAllPolicyCentersByPolicy(long policyId) {
+    String query =
+      "select ppc from ProjectPolicyCenter ppc where ppc.projectPolicy.id = :policyId order by ppc.phase.id";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("policyId", policyId);
+
+    List<ProjectPolicyCenter> result = super.findAll(createQuery);
+
+    return result;
   }
 
   @Override

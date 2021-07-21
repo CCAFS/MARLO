@@ -56,6 +56,14 @@ public interface ProjectPolicySubIdoDAO {
 
 
   /**
+   * This method gets a list of projectPolicySubIdo by a given projectPolicy identifier.
+   * 
+   * @param policyId is the projectPolicy identifier.
+   * @return a list of projectPolicySubIdo objects.
+   */
+  public List<ProjectPolicySubIdo> getAllPolicySubIdosByPolicy(long policyId);
+
+  /**
    * This method gets a projectPolicySubIdo that are active
    * 
    * @return a ProjectPolicySubIdo object, null if no exist records
