@@ -716,6 +716,7 @@ public class ProjectOutcomeAction extends BaseAction {
       // projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
       projectOutcome.setPhase(this.getActualPhase());
       projectOutcome.setModificationJustification(this.getJustification());
+      projectOutcome.setOrder((double) 0);
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_OUTCOMES_MILESTONE_RELATION);
