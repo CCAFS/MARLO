@@ -312,7 +312,7 @@
    [#if !config.production]
      <h3 class="headTitle">[@s.text name="deliverable.sharedProjects.title" /]</h3>
      <div class="borderBox">
-      [@customForm.elementsListComponent name="deliverable.sharedProjects" elementType="project" elementList=(deliverable.sharedDeliverables)![] label="deliverable.sharedDeliverables"  listName="myProjects" keyFieldName="id" displayFieldName="composedName" required=false /]
+      [@customForm.elementsListComponent name="deliverable.sharedDeliverables" elementType="project" elementList=(deliverable.sharedDeliverables)![] label="deliverable.sharedProjects"  listName="myProjects" keyFieldName="id" displayFieldName="composedName" required=false /]
      </div>
    [/#if]
   
