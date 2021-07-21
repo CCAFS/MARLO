@@ -26,6 +26,9 @@
         <property name="expectedValue" type="java.lang.Double">
             <column name="expected_value" precision="20" />
         </property>
+        <property name="order" type="java.lang.Double">
+            <column name="order" precision="20" />
+        </property>
   
         
         
