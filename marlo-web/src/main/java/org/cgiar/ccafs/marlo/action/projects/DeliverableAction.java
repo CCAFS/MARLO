@@ -1267,14 +1267,18 @@ public class DeliverableAction extends BaseAction {
 
         // Shows the projects to create a shared link with their
         this.myProjects = new ArrayList<>();
-        for (ProjectPhase projectPhase : this.getActualPhase().getProjectPhases()) {
-          if (projectPhase.getProject().getProjecInfoPhase(this.getActualPhase()) != null) {
-            this.myProjects.add(projectPhase.getProject());
-          }
+        try {
+          for (ProjectPhase projectPhase : this.getActualPhase().getProjectPhases()) {
+            if (projectPhase.getProject().getProjecInfoPhase(this.getActualPhase()) != null) {
+              this.myProjects.add(projectPhase.getProject());
+            }
 
-          if (this.project != null) {
-            this.myProjects.remove(this.project);
+            if (this.project != null) {
+              this.myProjects.remove(this.project);
+            }
           }
+        } catch (Exception e) {
+          logger.error("unable to get projectPhases", e);
         }
 
         if (this.myProjects != null && !this.myProjects.isEmpty()) {

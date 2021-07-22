@@ -388,7 +388,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
   public ProjectOutcome saveProjectOutcome(ProjectOutcome projectOutcome, String section, List<String> relationsName,
     Phase phase) {
     if (projectOutcome.getOrder() == null) {
-      projectOutcome.setOrder((double) 0);
+      projectOutcome.setOrder((double) 1);
     }
     return projectOutcomeDAO.save(projectOutcome, section, relationsName, phase);
   }
