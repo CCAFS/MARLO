@@ -24,6 +24,8 @@ public class ProjectMilestone extends MarloAuditableEntity implements java.io.Se
   @Expose
   private Double expectedValue;
   @Expose
+  private Double settedValue;
+  @Expose
   private SrfTargetUnit expectedUnit;
 
   @Expose
@@ -107,6 +109,11 @@ public class ProjectMilestone extends MarloAuditableEntity implements java.io.Se
   }
 
 
+  public Double getSettedValue() {
+    return settedValue;
+  }
+
+
   public int getYear() {
     return year;
   }
@@ -145,15 +152,19 @@ public class ProjectMilestone extends MarloAuditableEntity implements java.io.Se
     this.narrativeAchieved = narrativeAchieved;
   }
 
-
   public void setNarrativeTarget(String narrativeTarget) {
     this.narrativeTarget = narrativeTarget;
   }
 
-
   public void setProjectOutcome(ProjectOutcome projectOutcome) {
     this.projectOutcome = projectOutcome;
   }
+
+
+  public void setSettedValue(Double settedValue) {
+    this.settedValue = settedValue;
+  }
+
 
   public void setYear(int year) {
     this.year = year;
