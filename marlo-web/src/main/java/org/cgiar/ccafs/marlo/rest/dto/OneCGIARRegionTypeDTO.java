@@ -13,62 +13,54 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
+/**************
+ * @author Diego Perez - CIAT/CCAFS
+ **************/
+
 package org.cgiar.ccafs.marlo.rest.dto;
 
-import javax.validation.constraints.NotNull;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 
-/**
- * @author Hermes Jiménez - CIAT/CCAFS
- */
-public class CountryDTO {
+public class OneCGIARRegionTypeDTO {
 
-  @ApiModelProperty(notes = "The ISO country code")
-  @NotNull
-  private Long code;
+  @ApiModelProperty(notes = "The Generated Region Type id", position = 1)
+  private Long id;
 
-  @ApiModelProperty(notes = "The ISO Alpha 2 letters code")
-  private String isoAlpha2;
-
-  @ApiModelProperty(notes = "Country Name")
+  @ApiModelProperty(notes = "Region Type name", position = 2)
   private String name;
 
-  @ApiModelProperty(notes = "Region")
-  @JsonInclude(JsonInclude.Include.NON_NULL)
-  private RegionDTO regionDTO;
+  @ApiModelProperty(notes = "Region Type Description", position = 3)
+  private String description;
 
-  public Long getCode() {
-    return this.code;
+
+  public String getDescription() {
+    return description;
   }
 
-  public String getIsoAlpha2() {
-    return this.isoAlpha2;
+
+  public Long getId() {
+    return id;
   }
+
 
   public String getName() {
-    return this.name;
+    return name;
   }
 
-  public RegionDTO getRegionDTO() {
-    return this.regionDTO;
+
+  public void setDescription(String description) {
+    this.description = description;
   }
 
-  public void setCode(Long code) {
-    this.code = code;
+
+  public void setId(Long id) {
+    this.id = id;
   }
 
-  public void setIsoAlpha2(String isoAlpha2) {
-    this.isoAlpha2 = isoAlpha2;
-  }
 
   public void setName(String name) {
     this.name = name;
   }
 
-  public void setRegionDTO(RegionDTO regionDTO) {
-    this.regionDTO = regionDTO;
-  }
 
 }
