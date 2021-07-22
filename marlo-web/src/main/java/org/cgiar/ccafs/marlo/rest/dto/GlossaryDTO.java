@@ -13,62 +13,55 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
+/**************
+ * @author Diego Perez - CIAT/CCAFS
+ **************/
+
 package org.cgiar.ccafs.marlo.rest.dto;
 
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 
-/**
- * @author Hermes Jiménez - CIAT/CCAFS
- */
-public class CountryDTO {
+public class GlossaryDTO {
 
-  @ApiModelProperty(notes = "The ISO country code")
+
+  @ApiModelProperty(notes = "Application Glossary", position = 1)
   @NotNull
-  private Long code;
+  private String applicationName;
 
-  @ApiModelProperty(notes = "The ISO Alpha 2 letters code")
-  private String isoAlpha2;
+  @ApiModelProperty(notes = "Item name", position = 2)
+  private String title;
+  @ApiModelProperty(notes = "Item definition", position = 3)
+  private String definition;
 
-  @ApiModelProperty(notes = "Country Name")
-  private String name;
 
-  @ApiModelProperty(notes = "Region")
-  @JsonInclude(JsonInclude.Include.NON_NULL)
-  private RegionDTO regionDTO;
-
-  public Long getCode() {
-    return this.code;
+  public String getApplicationName() {
+    return applicationName;
   }
 
-  public String getIsoAlpha2() {
-    return this.isoAlpha2;
+
+  public String getDefinition() {
+    return definition;
   }
 
-  public String getName() {
-    return this.name;
+
+  public String getTitle() {
+    return title;
   }
 
-  public RegionDTO getRegionDTO() {
-    return this.regionDTO;
+  public void setApplicationName(String applicationName) {
+    this.applicationName = applicationName;
   }
 
-  public void setCode(Long code) {
-    this.code = code;
+
+  public void setDefinition(String definition) {
+    this.definition = definition;
   }
 
-  public void setIsoAlpha2(String isoAlpha2) {
-    this.isoAlpha2 = isoAlpha2;
+  public void setTitle(String title) {
+    this.title = title;
   }
 
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public void setRegionDTO(RegionDTO regionDTO) {
-    this.regionDTO = regionDTO;
-  }
 
 }

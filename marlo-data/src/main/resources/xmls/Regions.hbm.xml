@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="org.cgiar.ccafs.marlo.data.model.Region" table="regions" optimistic-lock="none">
+      <id name="id" type="java.lang.Long">
+        <column name="id" />
+        <generator class="identity" />
+      </id>
+      <property name="name" type="string">
+        <column name="name" sql-type="TEXT" />
+      </property>
+   
+      <many-to-one name="regionType" class="org.cgiar.ccafs.marlo.data.model.RegionType" fetch="select">
+        <column name="region_type_id" />  
+      </many-to-one>
+      
+        <set name="regionCountries" table="loc_elements_regions"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="region_id" not-null="true" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.LocElementRegion" />
+    </set>
+      
+  </class>
+</hibernate-mapping>
