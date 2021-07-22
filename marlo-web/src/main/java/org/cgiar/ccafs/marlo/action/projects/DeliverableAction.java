@@ -114,7 +114,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectLp6ContributionDeliverable;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
-import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.RepIndFillingType;
 import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
@@ -1267,20 +1266,20 @@ public class DeliverableAction extends BaseAction {
 
         // Shows the projects to create a shared link with their
         this.myProjects = new ArrayList<>();
-        try {
-          for (ProjectPhase projectPhase : this.getActualPhase().getProjectPhases()) {
-            if (projectPhase.getProject().getProjecInfoPhase(this.getActualPhase()) != null) {
-              this.myProjects.add(projectPhase.getProject());
-            }
-
-            if (this.project != null) {
-              this.myProjects.remove(this.project);
-            }
-          }
-        } catch (Exception e) {
-          logger.error("unable to get projectPhases", e);
-        }
-
+        /*
+         * try {
+         * for (ProjectPhase projectPhase : this.getActualPhase().getProjectPhases()) {
+         * if (projectPhase.getProject().getProjecInfoPhase(this.getActualPhase()) != null) {
+         * this.myProjects.add(projectPhase.getProject());
+         * }
+         * if (this.project != null) {
+         * this.myProjects.remove(this.project);
+         * }
+         * }
+         * } catch (Exception e) {
+         * logger.error("unable to get projectPhases", e);
+         * }
+         */
         if (this.myProjects != null && !this.myProjects.isEmpty()) {
           this.myProjects.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
         }
