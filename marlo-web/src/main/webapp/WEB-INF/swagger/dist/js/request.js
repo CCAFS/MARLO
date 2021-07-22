@@ -516,6 +516,12 @@ function un_regions() {
 	});
 }
 
+function mqapClean(){
+	$('#doiInput').val('');
+	cleanModal();
+	destroyTable("publicationMQAP");
+}
+
 function mqap() {
 	let text=$('#doiInput').val();
 	console.log(text);
