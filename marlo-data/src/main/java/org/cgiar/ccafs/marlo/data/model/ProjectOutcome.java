@@ -134,7 +134,7 @@ public class ProjectOutcome extends MarloAuditableEntity implements java.io.Seri
 
 
   public Double getOrder() {
-    if (this.order == null) {
+    if (order == null) {
       return (double) 1;
     } else {
       return order;
