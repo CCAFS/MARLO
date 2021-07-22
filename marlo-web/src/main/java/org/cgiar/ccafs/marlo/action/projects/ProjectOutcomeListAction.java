@@ -165,6 +165,7 @@ public class ProjectOutcomeListAction extends BaseAction {
       ProjectOutcome projectOutcome = new ProjectOutcome();
       projectOutcome.setPhase(this.getActualPhase());
       projectOutcome.setProject(project);
+      projectOutcome.setOrder((double) 1);
       projectOutcome.setCrpProgramOutcome(crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeId));
       projectOutcome = projectOutcomeManager.saveProjectOutcome(projectOutcome);
       projectOutcomeID = projectOutcome.getId().longValue();

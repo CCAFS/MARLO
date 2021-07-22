@@ -360,7 +360,9 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
 
   @Override
   public ProjectOutcome saveProjectOutcome(ProjectOutcome projectOutcome) {
-
+    if (projectOutcome.getOrder() == null) {
+      projectOutcome.setOrder((double) 1);
+    }
     ProjectOutcome resultProjectOutcome = projectOutcomeDAO.save(projectOutcome);
 
     Phase currentPhase = phaseMySQLDAO.find(projectOutcome.getPhase().getId());
