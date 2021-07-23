@@ -50,7 +50,7 @@
           [#-- Back --]
           <small class="pull-right">
             <a href="[@s.url action='${crpSession}/contributionsCrpList'][@s.param name="projectID" value=project.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-              <span class="glyphicon glyphicon-circle-arrow-left"></span> Back to the project contributions
+              <span class="glyphicon glyphicon-circle-arrow-left"></span> Back to the clusters contributions
             </a>
           </small>
           
@@ -66,8 +66,12 @@
             <div class="clearfix"></div>
             [#if showOutcomeValue]
             <div class="form-group">
+            [#if !action.isAiccra()]
               <div class="col-md-4"><strong>Target Value:</strong> ${projectOutcome.crpProgramOutcome.value} </div>
-              <div class="col-md-6"><strong>Target Unit:</strong> ${projectOutcome.crpProgramOutcome.srfTargetUnit.name}</div>
+            [#else]
+              <div class="col-md-4"><strong>AICCRA Target Value:</strong> ${projectOutcome.crpProgramOutcome.value} </div>
+            [/#if]
+            <div class="col-md-6"><strong>Target Unit:</strong> ${projectOutcome.crpProgramOutcome.srfTargetUnit.name}</div>
             </div>
             [/#if]
             <div class="clearfix"></div>
@@ -102,6 +106,7 @@
                   [/#if]
                 [/#if]
                 </div>
+                [#if !action.isAiccra()]
                 <div class="col-md-7">
                   <div class="select">
                     <label for="">[@s.text name="projectOutcome.expectedUnit" /]:</label>
@@ -113,6 +118,7 @@
                     </div> 
                   </div>
                 </div>
+                [/#if]
               </div>
               <div class="form-group">
                 [@customForm.textArea name="projectOutcome.narrativeTarget" required=true className="limitWords-100" editable=editable && (!reportingActive || (!(projectOutcome.narrativeTarget?has_content)!false))/]
@@ -342,7 +348,7 @@
     --]
     <div class="leftHead sm">
       <span class="index">${index+1}</span>
-      <span class="elementId">[@s.text name="projectOutcomeMilestone.projectMilestoneTarget" /]</span>
+      <span class="elementId">[@s.text name="projectOutcomeMilestone.projectMilestoneTarget" /] ${(element.year)!}</span>
     </div>
 
     [#local showMilestoneValue = element.srfTargetUnit??  && element.srfTargetUnit.id?? && (element.srfTargetUnit.id != -1) /]
@@ -352,15 +358,17 @@
     <div class="form-group grayBox">
       [#if showMilestoneValue]
         <div class="form-group pull-right">
-          <strong>Expected Target (All clusters):</strong> ${(element.value)!}
+          <strong>AICCRA Target to ${(element.year)!}:</strong> ${(element.value)!}
         </div>
       [/#if]
       [#-- Milestone Year --]
       <div class="row">
         <div class="col-md-6">
-          <strong>Intermediate Target for <span class="crpMilestoneYear">${(element.year)!} [#if hasExtendedYear] Extended to ${(element.extendedYear)!}[/#if]  </span> </strong> 
+          <strong>Cluster contribution to this indicator in <span class="crpMilestoneYear">${(element.year)!} [#if hasExtendedYear] Extended to ${(element.extendedYear)!}[/#if]  </span> </strong> 
         </div>
       </div>
+      
+ 
       [#--  Title --]
       <div class="form-group">
         <span class="title">${(element.title)!}</span>
@@ -399,6 +407,7 @@
             [@customForm.input name="${customName}.settedValue" i18nkey="projectOutcomeMilestone.settedValue" type="text"  placeholder="" className="targetValue" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && !reportingActive && (milestoneYear gte currentCycleYear)!true /]
           </div>
           --]
+          [#--  
           <div class="col-md-4">
             <div class="select">
               <label for="">[@s.text name="projectOutcomeMilestone.expectedUnit" /]:</label>
@@ -408,6 +417,7 @@
               </div> 
             </div>
           </div>
+          --]
           [#-- REPORTING BLOCK --]
           [#if action.isUpKeepActive() && action.isAiccra()]
             <div class="col-md-4">
@@ -421,7 +431,7 @@
         </div>
         
         <div class="form-group">
-          [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative" required=isYearRequired(milestoneYear) className="limitWords-100" editable=(editable || isTemplate) && !reportingActive && (milestoneYear gte currentCycleYear)!true /]
+          [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative2021" required=isYearRequired(milestoneYear) className="limitWords-100" editable=(editable || isTemplate) && !reportingActive && (milestoneYear gte currentCycleYear)!true /]
         </div>
         [#-- REPORTING BLOCK --]
         [#if reportingActive]
