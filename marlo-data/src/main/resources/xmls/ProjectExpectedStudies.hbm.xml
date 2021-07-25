@@ -178,6 +178,14 @@
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLeverOutcome" />
     </set>
+    <set name="projectExpectedStudyLevers" table="project_expected_study_levers"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="expected_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLever" />
+    </set>
     <set name="projectExpectedStudySdgTargets" table="project_expected_study_sdg_targets"
       inverse="true" lazy="true" fetch="select">
       <key>
