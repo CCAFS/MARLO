@@ -16,8 +16,8 @@
 
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
-import org.cgiar.ccafs.marlo.data.dao.LeverOutcomeDAO;
-import org.cgiar.ccafs.marlo.data.model.LeverOutcome;
+import org.cgiar.ccafs.marlo.data.dao.AllianceLeverOutcomeDAO;
+import org.cgiar.ccafs.marlo.data.model.AllianceLeverOutcome;
 
 import java.util.List;
 
@@ -27,24 +27,25 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class LeverOutcomeMySQLDAO extends AbstractMarloDAO<LeverOutcome, Long> implements LeverOutcomeDAO {
+public class AllianceLeverOutcomeMySQLDAO extends AbstractMarloDAO<AllianceLeverOutcome, Long>
+  implements AllianceLeverOutcomeDAO {
 
 
   @Inject
-  public LeverOutcomeMySQLDAO(SessionFactory sessionFactory) {
+  public AllianceLeverOutcomeMySQLDAO(SessionFactory sessionFactory) {
     super(sessionFactory);
   }
 
   @Override
-  public void deleteLeverOutcome(long leverOutcomeId) {
-    LeverOutcome leverOutcome = this.find(leverOutcomeId);
-    this.delete(leverOutcome);
+  public void deleteAllianceLeverOutcome(long allianceLeverOutcomeId) {
+    AllianceLeverOutcome allianceLeverOutcome = this.find(allianceLeverOutcomeId);
+    this.delete(allianceLeverOutcome);
   }
 
   @Override
-  public boolean existLeverOutcome(long leverOutcomeID) {
-    LeverOutcome leverOutcome = this.find(leverOutcomeID);
-    if (leverOutcome == null) {
+  public boolean existAllianceLeverOutcome(long allianceLeverOutcomeID) {
+    AllianceLeverOutcome allianceLeverOutcome = this.find(allianceLeverOutcomeID);
+    if (allianceLeverOutcome == null) {
       return false;
     }
     return true;
@@ -52,15 +53,15 @@ public class LeverOutcomeMySQLDAO extends AbstractMarloDAO<LeverOutcome, Long> i
   }
 
   @Override
-  public LeverOutcome find(long id) {
-    return super.find(LeverOutcome.class, id);
+  public AllianceLeverOutcome find(long id) {
+    return super.find(AllianceLeverOutcome.class, id);
 
   }
 
   @Override
-  public List<LeverOutcome> findAll() {
-    String query = "from " + LeverOutcome.class.getName();
-    List<LeverOutcome> list = super.findAll(query);
+  public List<AllianceLeverOutcome> findAll() {
+    String query = "from " + AllianceLeverOutcome.class.getName();
+    List<AllianceLeverOutcome> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,13 +70,13 @@ public class LeverOutcomeMySQLDAO extends AbstractMarloDAO<LeverOutcome, Long> i
   }
 
   @Override
-  public LeverOutcome save(LeverOutcome leverOutcome) {
-    if (leverOutcome.getId() == null) {
-      super.saveEntity(leverOutcome);
+  public AllianceLeverOutcome save(AllianceLeverOutcome allianceLeverOutcome) {
+    if (allianceLeverOutcome.getId() == null) {
+      super.saveEntity(allianceLeverOutcome);
     } else {
-      leverOutcome = super.update(leverOutcome);
+      allianceLeverOutcome = super.update(allianceLeverOutcome);
     }
-    return leverOutcome;
+    return allianceLeverOutcome;
   }
 
 
