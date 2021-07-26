@@ -197,6 +197,11 @@ public class ProjectInnovationManagerImpl implements ProjectInnovationManager {
   }
 
   @Override
+  public List<ProjectInnovation> getInnovationsByPhase(Phase phase) {
+    return this.projectInnovationDAO.getInnovationsByPhase(phase);
+  }
+
+  @Override
   public ProjectInnovation getProjectInnovationById(long projectInnovationID) {
 
     return projectInnovationDAO.find(projectInnovationID);
@@ -325,6 +330,4 @@ public class ProjectInnovationManagerImpl implements ProjectInnovationManager {
     List<String> relationsName, Phase phase) {
     return projectInnovationDAO.save(projectInnovation, section, relationsName, phase);
   }
-
-
 }

@@ -56,6 +56,13 @@ public interface ProjectInnovationDAO {
   public List<ProjectInnovation> findAll();
 
 
+  /**
+   * This method gets a list of projectInnovations that are active by a given phase
+   * 
+   * @return a list from ProjectInnovation null if no exist records
+   */
+  public List<ProjectInnovation> getInnovationsByPhase(Phase phase);
+
   public Boolean isInnovationExcluded(Long innovationId, Long phaseId);
 
   /**
