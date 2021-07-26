@@ -2099,6 +2099,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           studyLeverOutcomeSave.setLeverOutcome(leverOutcome);
 
           this.projectExpectedStudyLeverOutcomeManager.saveProjectExpectedStudyLeverOutcome(studyLeverOutcomeSave);
+          this.projectExpectedStudyLeverOutcomeManager.replicate(studyLeverOutcomeSave, phase.getNext());
           // This is to add studyLinkSave to generate correct
           // auditlog.
           this.expectedStudy.getProjectExpectedStudyLeverOutcomes().add(studyLeverOutcomeSave);
@@ -2140,6 +2141,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           studyLeverSave.setAllianceLever(allianceLever);
 
           this.projectExpectedStudyLeverManager.saveProjectExpectedStudyLever(studyLeverSave);
+          this.projectExpectedStudyLeverManager.replicate(studyLeverSave, phase.getNext());
           // This is to add studyLinkSave to generate correct
           // auditlog.
           this.expectedStudy.getProjectExpectedStudyLevers().add(studyLeverSave);
@@ -2338,6 +2340,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           nexusSave.setNexus(nexus);
 
           this.projectExpectedStudyNexusManager.saveProjectExpectedStudyNexus(nexusSave);
+          this.projectExpectedStudyNexusManager.replicate(nexusSave, phase.getNext());
           // This is to add studyLinkSave to generate correct
           // auditlog.
           this.expectedStudy.getProjectExpectedStudyNexus().add(nexusSave);
@@ -2612,6 +2615,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             studySdgTargetSave.setSdgTarget(sdgTarget);
 
             this.projectExpectedStudySdgTargetManager.saveProjectExpectedStudySdgTarget(studySdgTargetSave);
+            this.projectExpectedStudySdgTargetManager.replicate(studySdgTargetSave, phase.getNext());
             // This is to add studyLinkSave to generate correct
             // auditlog.
             this.expectedStudy.getProjectExpectedStudySdgTargets().add(studySdgTargetSave);
