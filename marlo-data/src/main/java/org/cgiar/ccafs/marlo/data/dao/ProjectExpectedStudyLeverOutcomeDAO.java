@@ -64,6 +64,17 @@ public interface ProjectExpectedStudyLeverOutcomeDAO {
   public List<ProjectExpectedStudyLeverOutcome> getAllStudyLeverOutcomesByStudy(long studyId);
 
   /**
+   * Gets a ProjectExpectedStudyLeverOutcome by a study id, a lever outcome id and a phase id
+   * 
+   * @param studyId the ProjectExpectedStudy id
+   * @param leverOutcomeId the AllianceLeverOutcome id
+   * @param idPhase the Phase id
+   * @return a ProjectExpectedStudyLeverOutcome if found; else null
+   */
+  public ProjectExpectedStudyLeverOutcome getStudyLeverOutcomeByStudyLeverOutcomeAndPhase(long studyId,
+    long leverOutcomeId, long idPhase);
+
+  /**
    * This method saves the information of the given projectExpectedStudyLeverOutcome
    * 
    * @param projectExpectedStudyLeverOutcome - is the projectExpectedStudyLeverOutcome object with the new information
