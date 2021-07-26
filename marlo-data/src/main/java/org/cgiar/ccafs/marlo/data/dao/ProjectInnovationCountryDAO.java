@@ -56,6 +56,14 @@ public interface ProjectInnovationCountryDAO {
 
 
   /**
+   * This method gets a list of projectInnovationCountry by a given projectInnovation identifier.
+   * 
+   * @param innovationId is the projectInnovation identifier.
+   * @return a list of projectInnovationCountry objects.
+   */
+  public List<ProjectInnovationCountry> getAllInnovationCountriesByInnovation(long innovationId);
+
+  /**
    * This method gets a projectInnovationCountry object list by a given innovation and phase identifier.
    * 
    * @param innovationID is the innovation identifier.
