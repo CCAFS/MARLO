@@ -53,6 +53,14 @@ public interface ProjectExpectedStudyInnovationManager {
 
 
   /**
+   * This method gets a list of projectExpectedStudyInnovation by a given projectInnovation identifier.
+   * 
+   * @param innovationId is the projectInnovation identifier.
+   * @return a list of projectExpectedStudyInnovation objects.
+   */
+  public List<ProjectExpectedStudyInnovation> getAllStudyInnovationsByInnovation(Long innovationId);
+
+  /**
    * This method gets a list of projectExpectedStudyInnovation by a given projectExpectedStudy identifier.
    * 
    * @param studyId is the projectExpectedStudy identifier.
