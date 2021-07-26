@@ -78,8 +78,8 @@ public class ProjectInnovationContributingOrganizationManagerImpl
     projectInnovationContributingOrganizationDAO
       .deleteProjectInnovationContributingOrganization(projectInnovationContributingOrganizationId);
   }
-  
-   public void deleteProjectInnovationContributingOrganizationPhase(Phase next, long innovationID,
+
+  public void deleteProjectInnovationContributingOrganizationPhase(Phase next, long innovationID,
     ProjectInnovationContributingOrganization projectInnovationContributingOrganization) {
     Phase phase = phaseDAO.find(next.getId());
 
@@ -115,11 +115,19 @@ public class ProjectInnovationContributingOrganizationManagerImpl
   }
 
   @Override
+  public List<ProjectInnovationContributingOrganization>
+    getAllInnovationContributingOrganizationsByInnovation(Long innovationId) {
+    return this.projectInnovationContributingOrganizationDAO
+      .getAllInnovationContributingOrganizationsByInnovation(innovationId.longValue());
+  }
+
+  @Override
   public ProjectInnovationContributingOrganization
     getProjectInnovationContributingOrganizationById(long projectInnovationContributingOrganizationID) {
 
     return projectInnovationContributingOrganizationDAO.find(projectInnovationContributingOrganizationID);
   }
+
 
   @Override
   public ProjectInnovationContributingOrganization
@@ -129,8 +137,7 @@ public class ProjectInnovationContributingOrganizationManagerImpl
       .getProjectInnovationContributingOrganization(projectInnovationId, institutionId, phaseId);
   }
 
-
-   @Override
+  @Override
   public ProjectInnovationContributingOrganization saveProjectInnovationContributingOrganization(
     ProjectInnovationContributingOrganization projectInnovationContributingOrganization) {
 
@@ -181,6 +188,4 @@ public class ProjectInnovationContributingOrganizationManagerImpl
       this.saveProjectInnovationContributingPhase(phase.getNext(), innovationid, projectInnovationContributing);
     }
   }
-
-
 }
