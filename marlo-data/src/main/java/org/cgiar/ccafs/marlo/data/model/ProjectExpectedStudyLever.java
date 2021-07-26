@@ -23,6 +23,13 @@ public class ProjectExpectedStudyLever extends MarloBaseEntity implements java.i
   }
 
 
+  public void copyFields(ProjectExpectedStudyLever other) {
+    this.setAllianceLever(other.getAllianceLever());
+    this.setPhase(other.getPhase());
+    this.setProjectExpectedStudy(other.getProjectExpectedStudy());
+  }
+
+
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -44,7 +51,6 @@ public class ProjectExpectedStudyLever extends MarloBaseEntity implements java.i
     }
     return true;
   }
-
 
   public AllianceLever getAllianceLever() {
     return allianceLever;

@@ -17,6 +17,9 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudyLeverDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyLeverManager;
+import org.cgiar.ccafs.marlo.data.model.AllianceLever;
+import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLever;
 
 import java.util.List;
@@ -70,6 +73,42 @@ public class ProjectExpectedStudyLeverManagerImpl implements ProjectExpectedStud
   public ProjectExpectedStudyLever getProjectExpectedStudyLeverById(long projectExpectedStudyLeverID) {
 
     return projectExpectedStudyLeverDAO.find(projectExpectedStudyLeverID);
+  }
+
+  @Override
+  public ProjectExpectedStudyLever getStudyLeverByStudyLeverAndPhase(ProjectExpectedStudy study, AllianceLever lever,
+    Phase phase) {
+    if (study != null && lever != null && phase != null) {
+      return this.projectExpectedStudyLeverDAO.getStudyLeverByStudyLeverAndPhase(study.getId().longValue(),
+        lever.getId().longValue(), phase.getId().longValue());
+    }
+
+    return null;
+  }
+
+  @Override
+  public void replicate(ProjectExpectedStudyLever originalProjectExpectedStudyLever, Phase initialPhase) {
+    Phase current = initialPhase;
+
+    while (current != null && originalProjectExpectedStudyLever != null
+      && originalProjectExpectedStudyLever.getProjectExpectedStudy() != null
+      && originalProjectExpectedStudyLever.getAllianceLever() != null
+      && originalProjectExpectedStudyLever.getPhase() != null) {
+      ProjectExpectedStudyLever studyLever =
+        this.getStudyLeverByStudyLeverAndPhase(originalProjectExpectedStudyLever.getProjectExpectedStudy(),
+          originalProjectExpectedStudyLever.getAllianceLever(), originalProjectExpectedStudyLever.getPhase());
+      if (studyLever == null) {
+        studyLever = new ProjectExpectedStudyLever();
+      }
+
+      studyLever.copyFields(originalProjectExpectedStudyLever);
+      studyLever.setPhase(current);
+
+      studyLever = this.projectExpectedStudyLeverDAO.save(studyLever);
+
+      // LOG.debug(current.toString());
+      current = current.getNext();
+    }
   }
 
   @Override
