@@ -62,6 +62,11 @@ public class ProjectExpectedStudyLeverManagerImpl implements ProjectExpectedStud
   }
 
   @Override
+  public List<ProjectExpectedStudyLever> getAllStudyLeversByStudy(Long studyId) {
+    return this.projectExpectedStudyLeverDAO.getAllStudyLeversByStudy(studyId.longValue());
+  }
+
+  @Override
   public ProjectExpectedStudyLever getProjectExpectedStudyLeverById(long projectExpectedStudyLeverID) {
 
     return projectExpectedStudyLeverDAO.find(projectExpectedStudyLeverID);
@@ -72,6 +77,4 @@ public class ProjectExpectedStudyLeverManagerImpl implements ProjectExpectedStud
 
     return projectExpectedStudyLeverDAO.save(projectExpectedStudyLever);
   }
-
-
 }

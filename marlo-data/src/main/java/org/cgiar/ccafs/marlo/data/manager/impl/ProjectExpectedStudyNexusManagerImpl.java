@@ -62,6 +62,11 @@ public class ProjectExpectedStudyNexusManagerImpl implements ProjectExpectedStud
   }
 
   @Override
+  public List<ProjectExpectedStudyNexus> getAllStudyNexussByStudy(Long studyId) {
+    return this.projectExpectedStudyNexusDAO.getAllStudyNexussByStudy(studyId.longValue());
+  }
+
+  @Override
   public ProjectExpectedStudyNexus getProjectExpectedStudyNexusById(long projectExpectedStudyNexusID) {
 
     return projectExpectedStudyNexusDAO.find(projectExpectedStudyNexusID);
@@ -72,6 +77,4 @@ public class ProjectExpectedStudyNexusManagerImpl implements ProjectExpectedStud
 
     return projectExpectedStudyNexusDAO.save(projectExpectedStudyNexus);
   }
-
-
 }

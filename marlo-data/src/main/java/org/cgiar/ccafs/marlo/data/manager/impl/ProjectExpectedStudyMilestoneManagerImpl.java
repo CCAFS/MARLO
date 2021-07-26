@@ -105,6 +105,11 @@ public class ProjectExpectedStudyMilestoneManagerImpl implements ProjectExpected
   }
 
   @Override
+  public List<ProjectExpectedStudyMilestone> getAllStudyMilestonesByStudy(Long studyId) {
+    return this.projectExpectedStudyMilestoneDAO.getAllStudyMilestonesByStudy(studyId.longValue());
+  }
+
+  @Override
   public ProjectExpectedStudyMilestone getProjectExpectedStudyMilestoneById(long projectExpectedStudyMilestoneID) {
 
     return projectExpectedStudyMilestoneDAO.find(projectExpectedStudyMilestoneID);
@@ -163,5 +168,4 @@ public class ProjectExpectedStudyMilestoneManagerImpl implements ProjectExpected
     }
     return innovationMilestone;
   }
-
 }

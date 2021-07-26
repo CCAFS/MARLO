@@ -115,6 +115,11 @@ public class ProjectExpectedStudyFlagshipManagerImpl implements ProjectExpectedS
   }
 
   @Override
+  public List<ProjectExpectedStudyFlagship> getAllStudyFlagshipsByStudy(Long studyId) {
+    return this.projectExpectedStudyFlagshipDAO.getAllStudyFlagshipsByStudy(studyId.longValue());
+  }
+
+  @Override
   public ProjectExpectedStudyFlagship getProjectExpectedStudyFlagshipById(long projectExpectedStudyFlagshipID) {
 
     return projectExpectedStudyFlagshipDAO.find(projectExpectedStudyFlagshipID);
@@ -170,6 +175,4 @@ public class ProjectExpectedStudyFlagshipManagerImpl implements ProjectExpectedS
 
     return flagship;
   }
-
-
 }

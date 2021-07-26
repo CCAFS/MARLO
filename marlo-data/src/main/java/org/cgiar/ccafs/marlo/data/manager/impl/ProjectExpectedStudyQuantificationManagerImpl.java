@@ -119,6 +119,11 @@ public class ProjectExpectedStudyQuantificationManagerImpl implements ProjectExp
   }
 
   @Override
+  public List<ProjectExpectedStudyQuantification> getAllStudyQuantificationsByStudy(Long studyId) {
+    return this.projectExpectedStudyQuantificationDAO.getAllStudyQuantificationsByStudy(studyId.longValue());
+  }
+
+  @Override
   public ProjectExpectedStudyQuantification
     getProjectExpectedStudyQuantificationById(long projectExpectedStudyQuantificationID) {
 
@@ -219,6 +224,4 @@ public class ProjectExpectedStudyQuantificationManagerImpl implements ProjectExp
 
     return projectExpectedStudyQuantificationResult;
   }
-
-
 }
