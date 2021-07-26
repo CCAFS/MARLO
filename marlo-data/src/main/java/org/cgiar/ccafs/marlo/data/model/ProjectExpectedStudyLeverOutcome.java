@@ -23,6 +23,13 @@ public class ProjectExpectedStudyLeverOutcome extends MarloBaseEntity implements
   }
 
 
+  public void copyFields(ProjectExpectedStudyLeverOutcome other) {
+    this.setLeverOutcome(other.getLeverOutcome());
+    this.setPhase(other.getPhase());
+    this.setProjectExpectedStudy(other.getProjectExpectedStudy());
+  }
+
+
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -44,7 +51,6 @@ public class ProjectExpectedStudyLeverOutcome extends MarloBaseEntity implements
     }
     return true;
   }
-
 
   public AllianceLeverOutcome getLeverOutcome() {
     return leverOutcome;
