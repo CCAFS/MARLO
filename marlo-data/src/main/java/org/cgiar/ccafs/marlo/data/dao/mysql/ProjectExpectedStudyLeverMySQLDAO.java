@@ -24,6 +24,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -70,6 +71,19 @@ public class ProjectExpectedStudyLeverMySQLDAO extends AbstractMarloDAO<ProjectE
   }
 
   @Override
+  public List<ProjectExpectedStudyLever> getAllStudyLeversByStudy(long studyId) {
+    String query =
+      "select peslever from ProjectExpectedStudyLever peslever where peslever.projectExpectedStudy.id = :studyId order by peslever.phase.id";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("studyId", studyId);
+
+    List<ProjectExpectedStudyLever> result = super.findAll(createQuery);
+
+    return result;
+  }
+
+  @Override
   public ProjectExpectedStudyLever save(ProjectExpectedStudyLever projectExpectedStudyLever) {
     if (projectExpectedStudyLever.getId() == null) {
       super.saveEntity(projectExpectedStudyLever);
@@ -80,6 +94,4 @@ public class ProjectExpectedStudyLeverMySQLDAO extends AbstractMarloDAO<ProjectE
 
     return projectExpectedStudyLever;
   }
-
-
 }
