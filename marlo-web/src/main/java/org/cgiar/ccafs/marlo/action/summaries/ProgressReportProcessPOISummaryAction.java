@@ -1041,12 +1041,21 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                   poiSummary.textParagraphFontBoldCalibriSize(document.createParagraph(),
                     "Progress to Key Performance Indicator", 13);
 
+                  /*
+                   * CTAbstractNum cTAbstractNum = CTAbstractNum.Factory.newInstance();
+                   * cTAbstractNum.setAbstractNumId(BigInteger.valueOf(0));
+                   * XWPFAbstractNum abstractNum = new XWPFAbstractNum(cTAbstractNum);
+                   * XWPFNumbering numbering = document.createNumbering();
+                   * BigInteger abstractNumID = numbering.addAbstractNum(abstractNum);
+                   * BigInteger numID = numbering.addNum(abstractNumID);
+                   */
+
                   for (ProjectOutcomeIndicator indicator : projectOutcome.getIndicators()) {
                     if (indicator.getCrpProgramOutcomeIndicator() != null
                       && indicator.getCrpProgramOutcomeIndicator().getIndicator() != null) {
                       poiSummary.textLineBreak(document, 1);
                       poiSummary.textParagraphFontBoldCalibri(document.createParagraph(),
-                        indicator.getCrpProgramOutcomeIndicator().getIndicator() + ":");
+                        indicator.getCrpProgramOutcomeIndicator().getIndicator().trim() + ":");
                     }
                     if (indicator.getNarrative() != null && !indicator.getNarrative().isEmpty()) {
                       paragraph = document.createParagraph();
@@ -1056,6 +1065,8 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                       run.setFontSize(11);
                       run.setFontFamily("Calibri");
                       run.setColor("000000");
+                      // paragraph.setNumID(numID);
+
                     } else {
                       paragraph = document.createParagraph();
                       run = paragraph.createRun();
