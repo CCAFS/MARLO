@@ -68,6 +68,10 @@
                   { "actionName": "projectPoliciesReplication",
                     "i18nkey": "marloBulkReplication.projectsPoliciesReplication",
                     "service": "getProjectPoliciesByPhase"
+                  },
+                  { "actionName": "projectExpectedStudiesReplication",
+                    "i18nkey": "marloBulkReplication.projectsExpectedStudiesReplication",
+                    "service": "getProjectExpectedStudiesByPhase"
                   }
                 ] /]
                 <label for="entityID">Entity:</label>
