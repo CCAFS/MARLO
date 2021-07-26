@@ -199,7 +199,8 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
   private void replicateProjectExpectedStudyCenters(long studyId, Phase lastCrpPhase) {
     List<ProjectExpectedStudyCenter> studyCenters =
       this.projectExpectedStudyCenterManager.getAllStudyCentersByStudy(studyId);
-    studyCenters.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null);
+    studyCenters
+      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getInstitution() == null);
     if (this.isNotEmpty(studyCenters)) {
       ProjectExpectedStudyCenter lastStudyCenter = studyCenters.get(studyCenters.size() - 1);
 
@@ -227,7 +228,8 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
   private void replicateProjectExpectedStudyCountries(long studyId, Phase lastCrpPhase) {
     List<ProjectExpectedStudyCountry> studyCountries =
       this.projectExpectedStudyCountryManager.getAllStudyCountriesByStudy(studyId);
-    studyCountries.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null);
+    studyCountries
+      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getLocElement() == null);
     if (this.isNotEmpty(studyCountries)) {
       ProjectExpectedStudyCountry lastStudyCountry = studyCountries.get(studyCountries.size() - 1);
 
@@ -254,7 +256,7 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
    */
   private void replicateProjectExpectedStudyCrps(long studyId, Phase lastCrpPhase) {
     List<ProjectExpectedStudyCrp> studyCrps = this.projectExpectedStudyCrpManager.getAllStudyCrpsByStudy(studyId);
-    studyCrps.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null);
+    studyCrps.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getGlobalUnit() == null);
     if (this.isNotEmpty(studyCrps)) {
       ProjectExpectedStudyCrp lastStudyCrp = studyCrps.get(studyCrps.size() - 1);
 
@@ -282,7 +284,8 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
   private void replicateProjectExpectedStudyFlagships(long studyId, Phase lastCrpPhase) {
     List<ProjectExpectedStudyFlagship> studyFlagships =
       this.projectExpectedStudyFlagshipManager.getAllStudyFlagshipsByStudy(studyId);
-    studyFlagships.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null);
+    studyFlagships
+      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getCrpProgram() == null);
     if (this.isNotEmpty(studyFlagships)) {
       ProjectExpectedStudyFlagship lastStudyFlagship = studyFlagships.get(studyFlagships.size() - 1);
 
@@ -310,7 +313,8 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
   private void replicateProjectExpectedStudyGeographicScopes(long studyId, Phase lastCrpPhase) {
     List<ProjectExpectedStudyGeographicScope> studyGeoScopes =
       this.projectExpectedStudyGeographicScopeManager.getAllStudyGeoScopesByStudy(studyId);
-    studyGeoScopes.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null);
+    studyGeoScopes.removeIf(
+      pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getRepIndGeographicScope() == null);
     if (this.isNotEmpty(studyGeoScopes)) {
       ProjectExpectedStudyGeographicScope lastStudyGeoScope = studyGeoScopes.get(studyGeoScopes.size() - 1);
 
@@ -365,7 +369,8 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
   private void replicateProjectExpectedStudyInnovations(long studyId, Phase lastCrpPhase) {
     List<ProjectExpectedStudyInnovation> studyInnnovations =
       this.projectExpectedStudyInnovationManager.getAllStudyInnovationsByStudy(studyId);
-    studyInnnovations.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null);
+    studyInnnovations
+      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getProjectInnovation() == null);
     if (this.isNotEmpty(studyInnnovations)) {
       ProjectExpectedStudyInnovation lastStudyInnovation = studyInnnovations.get(studyInnnovations.size() - 1);
 
@@ -393,7 +398,8 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
   private void replicateProjectExpectedStudyInstitutions(long studyId, Phase lastCrpPhase) {
     List<ProjectExpectedStudyInstitution> studyInstitutions =
       this.projectExpectedStudyInstitutionManager.getAllStudyInstitutionsByStudy(studyId);
-    studyInstitutions.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null);
+    studyInstitutions
+      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getInstitution() == null);
     if (this.isNotEmpty(studyInstitutions)) {
       ProjectExpectedStudyInstitution lastStudyInstitution = studyInstitutions.get(studyInstitutions.size() - 1);
 
@@ -421,7 +427,8 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
   private void replicateProjectExpectedStudyLeverOutcomes(long studyId, Phase lastCrpPhase) {
     List<ProjectExpectedStudyLeverOutcome> studyLeverOutcomes =
       this.projectExpectedStudyLeverOutcomeManager.getAllStudyLeverOutcomesByStudy(studyId);
-    studyLeverOutcomes.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null);
+    studyLeverOutcomes
+      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getLeverOutcome() == null);
     if (this.isNotEmpty(studyLeverOutcomes)) {
       ProjectExpectedStudyLeverOutcome lastStudyLeverOutcome = studyLeverOutcomes.get(studyLeverOutcomes.size() - 1);
 
@@ -449,7 +456,8 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
   private void replicateProjectExpectedStudyLevers(long studyId, Phase lastCrpPhase) {
     List<ProjectExpectedStudyLever> studyLevers =
       this.projectExpectedStudyLeverManager.getAllStudyLeversByStudy(studyId);
-    studyLevers.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null);
+    studyLevers
+      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getAllianceLever() == null);
     if (this.isNotEmpty(studyLevers)) {
       ProjectExpectedStudyLever lastStudyLever = studyLevers.get(studyLevers.size() - 1);
 
@@ -476,7 +484,8 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
    */
   private void replicateProjectExpectedStudyLinks(long studyId, Phase lastCrpPhase) {
     List<ProjectExpectedStudyLink> studyLinks = this.projectExpectedStudyLinkManager.getAllStudyLinksByStudy(studyId);
-    studyLinks.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null);
+    studyLinks
+      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || StringUtils.isBlank(pc.getLink()));
     if (this.isNotEmpty(studyLinks)) {
       ProjectExpectedStudyLink lastStudyLink = studyLinks.get(studyLinks.size() - 1);
 
@@ -504,7 +513,8 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
   private void replicateProjectExpectedStudyMilestones(long studyId, Phase lastCrpPhase) {
     List<ProjectExpectedStudyMilestone> studyMilestones =
       this.projectExpectedStudyMilestoneManager.getAllStudyMilestonesByStudy(studyId);
-    studyMilestones.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null);
+    studyMilestones
+      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getCrpMilestone() == null);
     if (this.isNotEmpty(studyMilestones)) {
       ProjectExpectedStudyMilestone lastStudyMilestone = studyMilestones.get(studyMilestones.size() - 1);
 
@@ -532,7 +542,7 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
   private void replicateProjectExpectedStudyNexuses(long studyId, Phase lastCrpPhase) {
     List<ProjectExpectedStudyNexus> studyNexuses =
       this.projectExpectedStudyNexusManager.getAllStudyNexussByStudy(studyId);
-    studyNexuses.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null);
+    studyNexuses.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getNexus() == null);
     if (this.isNotEmpty(studyNexuses)) {
       ProjectExpectedStudyNexus lastStudyNexus = studyNexuses.get(studyNexuses.size() - 1);
 
@@ -590,7 +600,7 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
   private void replicateProjectExpectedStudyProjects(long studyId, Phase lastCrpPhase) {
     List<ExpectedStudyProject> studyProjects =
       this.projectExpectedStudyProjectManager.getAllStudyProjectsByStudy(studyId);
-    studyProjects.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null);
+    studyProjects.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getProject() == null);
     if (this.isNotEmpty(studyProjects)) {
       ExpectedStudyProject lastStudyProject = studyProjects.get(studyProjects.size() - 1);
 
@@ -648,7 +658,8 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
   private void replicateProjectExpectedStudyRegions(long studyId, Phase lastCrpPhase) {
     List<ProjectExpectedStudyRegion> studyRegions =
       this.projectExpectedStudyRegionManager.getAllStudyRegionsByStudy(studyId);
-    studyRegions.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null);
+    studyRegions
+      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getLocElement() == null);
     if (this.isNotEmpty(studyRegions)) {
       ProjectExpectedStudyRegion lastStudyRegion = studyRegions.get(studyRegions.size() - 1);
 
@@ -676,7 +687,8 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
   private void replicateProjectExpectedStudySdgTargets(long studyId, Phase lastCrpPhase) {
     List<ProjectExpectedStudySdgTarget> studySdgTargets =
       this.projectExpectedStudySdgTargetManager.getAllStudySdgTargetsByStudy(studyId);
-    studySdgTargets.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null);
+    studySdgTargets
+      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getSdgTarget() == null);
     if (this.isNotEmpty(studySdgTargets)) {
       ProjectExpectedStudySdgTarget lastStudySdgTarget = studySdgTargets.get(studySdgTargets.size() - 1);
 
@@ -704,7 +716,8 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
   private void replicateProjectExpectedStudySrfTargets(long studyId, Phase lastCrpPhase) {
     List<ProjectExpectedStudySrfTarget> studySrfTargets =
       this.projectExpectedStudySrfTargetManager.getAllStudySrfTargetsByStudy(studyId);
-    studySrfTargets.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null);
+    studySrfTargets
+      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getSrfSloIndicator() == null);
     if (this.isNotEmpty(studySrfTargets)) {
       ProjectExpectedStudySrfTarget lastStudySrfTarget = studySrfTargets.get(studySrfTargets.size() - 1);
 
@@ -732,7 +745,7 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
   private void replicateProjectExpectedStudySubIdos(long studyId, Phase lastCrpPhase) {
     List<ProjectExpectedStudySubIdo> studySubIdos =
       this.projectExpectedStudySubIdoManager.getAllStudySubIdosByStudy(studyId);
-    studySubIdos.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null);
+    studySubIdos.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getSrfSubIdo() == null);
     if (this.isNotEmpty(studySubIdos)) {
       ProjectExpectedStudySubIdo lastStudySubIdo = studySubIdos.get(studySubIdos.size() - 1);
 
