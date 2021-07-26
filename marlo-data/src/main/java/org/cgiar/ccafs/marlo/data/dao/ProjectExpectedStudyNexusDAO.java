@@ -64,6 +64,16 @@ public interface ProjectExpectedStudyNexusDAO {
   public List<ProjectExpectedStudyNexus> getAllStudyNexussByStudy(long studyId);
 
   /**
+   * Gets a ProjectExpectedStudyNexus by a study id, a nexus id and a phase id
+   * 
+   * @param studyId the ProjectExpectedStudy id
+   * @param nexusId the Nexus id
+   * @param idPhase the Phase id
+   * @return a ProjectExpectedStudyNexus if found; else null
+   */
+  public ProjectExpectedStudyNexus getStudyNexusByStudyNexusAndPhase(long studyId, long nexusId, long idPhase);
+
+  /**
    * This method saves the information of the given projectExpectedStudyNexus
    * 
    * @param projectExpectedStudyNexus - is the projectExpectedStudyNexus object with the new information to be

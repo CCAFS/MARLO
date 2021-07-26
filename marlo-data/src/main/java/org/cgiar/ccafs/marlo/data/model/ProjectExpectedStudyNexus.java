@@ -23,6 +23,13 @@ public class ProjectExpectedStudyNexus extends MarloBaseEntity implements java.i
   }
 
 
+  public void copyFields(ProjectExpectedStudyNexus other) {
+    this.setNexus(other.getNexus());
+    this.setPhase(other.getPhase());
+    this.setProjectExpectedStudy(other.getProjectExpectedStudy());
+  }
+
+
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -45,7 +52,6 @@ public class ProjectExpectedStudyNexus extends MarloBaseEntity implements java.i
     return true;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -65,10 +71,10 @@ public class ProjectExpectedStudyNexus extends MarloBaseEntity implements java.i
     return u;
   }
 
+
   public Nexus getNexus() {
     return nexus;
   }
-
 
   public Phase getPhase() {
     return phase;
@@ -106,6 +112,5 @@ public class ProjectExpectedStudyNexus extends MarloBaseEntity implements java.i
   public void setProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy) {
     this.projectExpectedStudy = projectExpectedStudy;
   }
-
 }
 

@@ -14,6 +14,9 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.Nexus;
+import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyNexus;
 
 import java.util.List;
@@ -67,6 +70,25 @@ public interface ProjectExpectedStudyNexusManager {
    * @return a ProjectExpectedStudyNexus object.
    */
   public ProjectExpectedStudyNexus getProjectExpectedStudyNexusById(long projectExpectedStudyNexusID);
+
+  /**
+   * Gets a ProjectExpectedStudyNexus by a study id, a nexus id and a phase id
+   * 
+   * @param study the ProjectExpectedStudy
+   * @param nexus the Nexus
+   * @param phase the Phase
+   * @return a ProjectExpectedStudyNexus if found; else null
+   */
+  public ProjectExpectedStudyNexus getStudyNexusByStudyNexusAndPhase(ProjectExpectedStudy study, Nexus nexus,
+    Phase phase);
+
+  /**
+   * Replicates an studyNexus, starting from the given phase
+   * 
+   * @param originalProjectExpectedStudyNexus studyNexus to be replicated
+   * @param initialPhase initial replication phase
+   */
+  public void replicate(ProjectExpectedStudyNexus originalProjectExpectedStudyNexus, Phase initialPhase);
 
   /**
    * This method saves the information of the given projectExpectedStudyNexus
