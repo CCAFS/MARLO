@@ -53,22 +53,32 @@ public interface ProjectExpectedStudyLeverOutcomeManager {
 
 
   /**
+   * This method gets a list of projectExpectedStudyLeverOutcome by a given projectExpectedStudy identifier.
+   * 
+   * @param studyId is the projectExpectedStudy identifier.
+   * @return a list of projectExpectedStudyLeverOutcome objects.
+   */
+  public List<ProjectExpectedStudyLeverOutcome> getAllStudyLeverOutcomesByStudy(Long studyId);
+
+  /**
    * This method gets a projectExpectedStudyLeverOutcome object by a given projectExpectedStudyLeverOutcome identifier.
    * 
    * @param projectExpectedStudyLeverOutcomeID is the projectExpectedStudyLeverOutcome identifier.
    * @return a ProjectExpectedStudyLeverOutcome object.
    */
-  public ProjectExpectedStudyLeverOutcome getProjectExpectedStudyLeverOutcomeById(long projectExpectedStudyLeverOutcomeID);
+  public ProjectExpectedStudyLeverOutcome
+    getProjectExpectedStudyLeverOutcomeById(long projectExpectedStudyLeverOutcomeID);
 
   /**
    * This method saves the information of the given projectExpectedStudyLeverOutcome
    * 
-   * @param projectExpectedStudyLeverOutcome - is the projectExpectedStudyLeverOutcome object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectExpectedStudyLeverOutcome was
+   * @param projectExpectedStudyLeverOutcome - is the projectExpectedStudyLeverOutcome object with the new information
+   *        to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectExpectedStudyLeverOutcome was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ProjectExpectedStudyLeverOutcome saveProjectExpectedStudyLeverOutcome(ProjectExpectedStudyLeverOutcome projectExpectedStudyLeverOutcome);
-
-
+  public ProjectExpectedStudyLeverOutcome
+    saveProjectExpectedStudyLeverOutcome(ProjectExpectedStudyLeverOutcome projectExpectedStudyLeverOutcome);
 }

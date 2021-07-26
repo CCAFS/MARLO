@@ -63,6 +63,14 @@ public interface ProjectExpectedStudyFlagshipManager {
     Long phaseId);
 
   /**
+   * This method gets a list of projectExpectedStudyFlagship by a given projectExpectedStudy identifier.
+   * 
+   * @param studyId is the projectExpectedStudy identifier.
+   * @return a list of projectExpectedStudyFlagship objects.
+   */
+  public List<ProjectExpectedStudyFlagship> getAllStudyFlagshipsByStudy(Long studyId);
+
+  /**
    * This method gets a projectExpectedStudyFlagship object by a given projectExpectedStudyFlagship identifier.
    * 
    * @param projectExpectedStudyFlagshipID is the projectExpectedStudyFlagship identifier.
@@ -82,6 +90,4 @@ public interface ProjectExpectedStudyFlagshipManager {
    */
   public ProjectExpectedStudyFlagship
     saveProjectExpectedStudyFlagship(ProjectExpectedStudyFlagship projectExpectedStudyFlagship);
-
-
 }

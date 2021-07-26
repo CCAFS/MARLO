@@ -53,6 +53,14 @@ public interface ProjectExpectedStudyGeographicScopeManager {
 
 
   /**
+   * This method gets a list of projectExpectedStudyGeographicScope by a given projectExpectedStudy identifier.
+   * 
+   * @param studyId is the projectExpectedStudy identifier.
+   * @return a list of projectExpectedStudyGeographicScope objects.
+   */
+  public List<ProjectExpectedStudyGeographicScope> getAllStudyGeoScopesByStudy(Long studyId);
+
+  /**
    * This method gets a projectExpectedStudyGeographicScope object by a given projectExpectedStudyGeographicScope
    * identifier.
    * 
@@ -87,6 +95,4 @@ public interface ProjectExpectedStudyGeographicScopeManager {
    */
   public ProjectExpectedStudyGeographicScope
     saveProjectExpectedStudyGeographicScope(ProjectExpectedStudyGeographicScope projectExpectedStudyGeographicScope);
-
-
 }
