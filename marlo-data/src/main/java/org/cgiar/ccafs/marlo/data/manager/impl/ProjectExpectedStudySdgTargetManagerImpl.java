@@ -62,16 +62,20 @@ public class ProjectExpectedStudySdgTargetManagerImpl implements ProjectExpected
   }
 
   @Override
+  public List<ProjectExpectedStudySdgTarget> getAllStudySdgTargetsByStudy(Long studyId) {
+    return this.projectExpectedStudySdgTargetDAO.getAllStudySdgTargetsByStudy(studyId.longValue());
+  }
+
+  @Override
   public ProjectExpectedStudySdgTarget getProjectExpectedStudySdgTargetById(long projectExpectedStudySdgTargetID) {
 
     return projectExpectedStudySdgTargetDAO.find(projectExpectedStudySdgTargetID);
   }
 
   @Override
-  public ProjectExpectedStudySdgTarget saveProjectExpectedStudySdgTarget(ProjectExpectedStudySdgTarget projectExpectedStudySdgTarget) {
+  public ProjectExpectedStudySdgTarget
+    saveProjectExpectedStudySdgTarget(ProjectExpectedStudySdgTarget projectExpectedStudySdgTarget) {
 
     return projectExpectedStudySdgTargetDAO.save(projectExpectedStudySdgTarget);
   }
-
-
 }

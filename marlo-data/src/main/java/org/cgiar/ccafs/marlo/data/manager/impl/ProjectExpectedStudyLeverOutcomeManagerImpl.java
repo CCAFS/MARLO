@@ -36,7 +36,8 @@ public class ProjectExpectedStudyLeverOutcomeManagerImpl implements ProjectExpec
 
 
   @Inject
-  public ProjectExpectedStudyLeverOutcomeManagerImpl(ProjectExpectedStudyLeverOutcomeDAO projectExpectedStudyLeverOutcomeDAO) {
+  public ProjectExpectedStudyLeverOutcomeManagerImpl(
+    ProjectExpectedStudyLeverOutcomeDAO projectExpectedStudyLeverOutcomeDAO) {
     this.projectExpectedStudyLeverOutcomeDAO = projectExpectedStudyLeverOutcomeDAO;
 
 
@@ -51,7 +52,8 @@ public class ProjectExpectedStudyLeverOutcomeManagerImpl implements ProjectExpec
   @Override
   public boolean existProjectExpectedStudyLeverOutcome(long projectExpectedStudyLeverOutcomeID) {
 
-    return projectExpectedStudyLeverOutcomeDAO.existProjectExpectedStudyLeverOutcome(projectExpectedStudyLeverOutcomeID);
+    return projectExpectedStudyLeverOutcomeDAO
+      .existProjectExpectedStudyLeverOutcome(projectExpectedStudyLeverOutcomeID);
   }
 
   @Override
@@ -62,16 +64,21 @@ public class ProjectExpectedStudyLeverOutcomeManagerImpl implements ProjectExpec
   }
 
   @Override
-  public ProjectExpectedStudyLeverOutcome getProjectExpectedStudyLeverOutcomeById(long projectExpectedStudyLeverOutcomeID) {
+  public List<ProjectExpectedStudyLeverOutcome> getAllStudyLeverOutcomesByStudy(Long studyId) {
+    return this.projectExpectedStudyLeverOutcomeDAO.getAllStudyLeverOutcomesByStudy(studyId.longValue());
+  }
+
+  @Override
+  public ProjectExpectedStudyLeverOutcome
+    getProjectExpectedStudyLeverOutcomeById(long projectExpectedStudyLeverOutcomeID) {
 
     return projectExpectedStudyLeverOutcomeDAO.find(projectExpectedStudyLeverOutcomeID);
   }
 
   @Override
-  public ProjectExpectedStudyLeverOutcome saveProjectExpectedStudyLeverOutcome(ProjectExpectedStudyLeverOutcome projectExpectedStudyLeverOutcome) {
+  public ProjectExpectedStudyLeverOutcome
+    saveProjectExpectedStudyLeverOutcome(ProjectExpectedStudyLeverOutcome projectExpectedStudyLeverOutcome) {
 
     return projectExpectedStudyLeverOutcomeDAO.save(projectExpectedStudyLeverOutcome);
   }
-
-
 }

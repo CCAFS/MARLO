@@ -114,6 +114,11 @@ public class ProjectExpectedStudyGeographicScopeManagerImpl implements ProjectEx
   }
 
   @Override
+  public List<ProjectExpectedStudyGeographicScope> getAllStudyGeoScopesByStudy(Long studyId) {
+    return this.projectExpectedStudyGeographicScopeDAO.getAllStudyGeoScopesByStudy(studyId.longValue());
+  }
+
+  @Override
   public ProjectExpectedStudyGeographicScope
     getProjectExpectedStudyGeographicScopeById(long projectExpectedStudyGeographicScopeID) {
 
@@ -182,6 +187,4 @@ public class ProjectExpectedStudyGeographicScopeManagerImpl implements ProjectEx
 
     return scope;
   }
-
-
 }
