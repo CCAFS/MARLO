@@ -24,10 +24,12 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
-public class ProjectInnovationSharedMySQLDAO extends AbstractMarloDAO<ProjectInnovationShared, Long> implements ProjectInnovationSharedDAO {
+public class ProjectInnovationSharedMySQLDAO extends AbstractMarloDAO<ProjectInnovationShared, Long>
+  implements ProjectInnovationSharedDAO {
 
 
   @Inject
@@ -70,6 +72,19 @@ public class ProjectInnovationSharedMySQLDAO extends AbstractMarloDAO<ProjectInn
   }
 
   @Override
+  public List<ProjectInnovationShared> getAllInnovationSharedByInnovation(long innovationId) {
+    String query =
+      "select pis from ProjectInnovationShared pis where pis.projectInnovation.id = :innovationId order by pis.phase.id";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("innovationId", innovationId);
+
+    List<ProjectInnovationShared> result = super.findAll(createQuery);
+
+    return result;
+  }
+
+  @Override
   public ProjectInnovationShared save(ProjectInnovationShared projectInnovationShared) {
     if (projectInnovationShared.getId() == null) {
       super.saveEntity(projectInnovationShared);
@@ -80,6 +95,4 @@ public class ProjectInnovationSharedMySQLDAO extends AbstractMarloDAO<ProjectInn
 
     return projectInnovationShared;
   }
-
-
 }

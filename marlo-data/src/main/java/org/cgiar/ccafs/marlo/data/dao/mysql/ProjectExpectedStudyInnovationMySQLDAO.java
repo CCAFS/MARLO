@@ -71,6 +71,19 @@ public class ProjectExpectedStudyInnovationMySQLDAO extends AbstractMarloDAO<Pro
   }
 
   @Override
+  public List<ProjectExpectedStudyInnovation> getAllStudyInnovationsByInnovation(long innovationId) {
+    String query =
+      "select pesinno from ProjectExpectedStudyInnovation pesinno where pesinno.projectInnovation.id = :innovationId order by pesinno.phase.id";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("innovationId", innovationId);
+
+    List<ProjectExpectedStudyInnovation> result = super.findAll(createQuery);
+
+    return result;
+  }
+
+  @Override
   public List<ProjectExpectedStudyInnovation> getAllStudyInnovationsByStudy(long studyId) {
     String query =
       "select pesinno from ProjectExpectedStudyInnovation pesinno where pesinno.projectExpectedStudy.id = :studyId order by pesinno.phase.id";
