@@ -14,7 +14,10 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySdgTarget;
+import org.cgiar.ccafs.marlo.data.model.SdgTargets;
 
 import java.util.List;
 
@@ -67,6 +70,25 @@ public interface ProjectExpectedStudySdgTargetManager {
    * @return a ProjectExpectedStudySdgTarget object.
    */
   public ProjectExpectedStudySdgTarget getProjectExpectedStudySdgTargetById(long projectExpectedStudySdgTargetID);
+
+  /**
+   * Gets a ProjectExpectedStudySdgTarget by a study, a sdg target and a phase
+   * 
+   * @param study the ProjectExpectedStudy
+   * @param sdgTarget the SdgTargets
+   * @param phase the Phase
+   * @return a ProjectExpectedStudySdgTarget if found; else null
+   */
+  public ProjectExpectedStudySdgTarget getStudySdgTargetByStudySdgTargetAndPhase(ProjectExpectedStudy study,
+    SdgTargets sdgTarget, Phase phase);
+
+  /**
+   * Replicates an studySdgTarget, starting from the given phase
+   * 
+   * @param originalProjectExpectedStudySdgTarget studySdgTarget to be replicated
+   * @param initialPhase initial replication phase
+   */
+  public void replicate(ProjectExpectedStudySdgTarget originalProjectExpectedStudySdgTarget, Phase initialPhase);
 
   /**
    * This method saves the information of the given projectExpectedStudySdgTarget

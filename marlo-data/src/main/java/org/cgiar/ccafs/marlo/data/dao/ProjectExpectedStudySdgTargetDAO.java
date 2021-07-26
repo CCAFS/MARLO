@@ -64,6 +64,17 @@ public interface ProjectExpectedStudySdgTargetDAO {
   public List<ProjectExpectedStudySdgTarget> getAllStudySdgTargetsByStudy(long studyId);
 
   /**
+   * Gets a ProjectExpectedStudySdgTarget by a study id, a sdg target id and a phase id
+   * 
+   * @param studyId the ProjectExpectedStudy id
+   * @param sdgTargetId the SdgTargets id
+   * @param idPhase the Phase id
+   * @return a ProjectExpectedStudySdgTarget if found; else null
+   */
+  public ProjectExpectedStudySdgTarget getStudySdgTargetByStudySdgTargetAndPhase(long studyId, long sdgTargetId,
+    long idPhase);
+
+  /**
    * This method saves the information of the given projectExpectedStudySdgTarget
    * 
    * @param projectExpectedStudySdgTarget - is the projectExpectedStudySdgTarget object with the new information to be
