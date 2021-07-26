@@ -52,13 +52,21 @@ public interface ProjectExpectedStudyCountryManager {
   public List<ProjectExpectedStudyCountry> findAll();
 
   /**
+   * This method gets a list of projectExpectedStudyCountry by a given projectExpectedStudy identifier.
+   * 
+   * @param studyId is the projectExpectedStudy identifier.
+   * @return a list of projectExpectedStudyCountry objects.
+   */
+  public List<ProjectExpectedStudyCountry> getAllStudyCountriesByStudy(Long studyId);
+
+
+  /**
    * This method gets a projectExpectedStudyCountry object by a given projectExpectedStudyCountry identifier.
    * 
    * @param projectExpectedStudyCountryID is the projectExpectedStudyCountry identifier.
    * @return a ProjectExpectedStudyCountry object.
    */
   public ProjectExpectedStudyCountry getProjectExpectedStudyCountryById(long projectExpectedStudyCountryID);
-
 
   /**
    * This method gets a projectExpectedStudyCountry object list by a given expected Study and phase identifier.
@@ -92,6 +100,4 @@ public interface ProjectExpectedStudyCountryManager {
    */
   public ProjectExpectedStudyCountry
     saveProjectExpectedStudyCountry(ProjectExpectedStudyCountry projectExpectedStudyCountry);
-
-
 }

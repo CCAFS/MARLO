@@ -53,6 +53,14 @@ public interface ProjectExpectedStudyLeverManager {
 
 
   /**
+   * This method gets a list of projectExpectedStudyLever by a given projectExpectedStudy identifier.
+   * 
+   * @param studyId is the projectExpectedStudy identifier.
+   * @return a list of projectExpectedStudyLever objects.
+   */
+  public List<ProjectExpectedStudyLever> getAllStudyLeversByStudy(Long studyId);
+
+  /**
    * This method gets a projectExpectedStudyLeverOutcome object by a given projectExpectedStudyLeverOutcome identifier.
    * 
    * @param projectExpectedStudyLeverOutcomeID is the projectExpectedStudyLeverOutcome identifier.
@@ -72,6 +80,4 @@ public interface ProjectExpectedStudyLeverManager {
    */
   public ProjectExpectedStudyLever
     saveProjectExpectedStudyLever(ProjectExpectedStudyLever projectExpectedStudyLeverOutcome);
-
-
 }
