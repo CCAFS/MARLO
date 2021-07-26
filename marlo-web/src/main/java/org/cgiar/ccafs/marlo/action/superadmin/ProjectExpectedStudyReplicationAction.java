@@ -443,6 +443,7 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
 
       for (ProjectExpectedStudyLeverOutcome peslo : studyLeverOutcomes) {
         this.projectExpectedStudyLeverOutcomeManager.saveProjectExpectedStudyLeverOutcome(peslo);
+        this.projectExpectedStudyLeverOutcomeManager.replicate(peslo, lastStudyLeverOutcome.getPhase().getNext());
       }
     }
   }
@@ -472,6 +473,7 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
 
       for (ProjectExpectedStudyLever pesl : studyLevers) {
         this.projectExpectedStudyLeverManager.saveProjectExpectedStudyLever(pesl);
+        this.projectExpectedStudyLeverManager.replicate(pesl, lastStudyLever.getPhase().getNext());
       }
     }
   }
@@ -557,6 +559,7 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
 
       for (ProjectExpectedStudyNexus pesn : studyNexuses) {
         this.projectExpectedStudyNexusManager.saveProjectExpectedStudyNexus(pesn);
+        this.projectExpectedStudyNexusManager.replicate(pesn, lastStudyNexus.getPhase().getNext());
       }
     }
   }
@@ -703,6 +706,7 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
 
       for (ProjectExpectedStudySdgTarget pesst : studySdgTargets) {
         this.projectExpectedStudySdgTargetManager.saveProjectExpectedStudySdgTarget(pesst);
+        this.projectExpectedStudySdgTargetManager.replicate(pesst, lastStudySdgTarget.getPhase().getNext());
       }
     }
   }
