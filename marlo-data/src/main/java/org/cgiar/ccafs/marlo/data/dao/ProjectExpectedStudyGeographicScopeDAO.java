@@ -57,6 +57,14 @@ public interface ProjectExpectedStudyGeographicScopeDAO {
 
 
   /**
+   * This method gets a list of projectExpectedStudyGeographicScope by a given projectExpectedStudy identifier.
+   * 
+   * @param studyId is the projectExpectedStudy identifier.
+   * @return a list of projectExpectedStudyGeographicScope objects.
+   */
+  public List<ProjectExpectedStudyGeographicScope> getAllStudyGeoScopesByStudy(long studyId);
+
+  /**
    * This method gets a projectExpectedStudyGeographicScope object by a given projectExpectedStudy, geographicScope and
    * phase
    * identifier.
@@ -81,5 +89,4 @@ public interface ProjectExpectedStudyGeographicScopeDAO {
    */
   public ProjectExpectedStudyGeographicScope
     save(ProjectExpectedStudyGeographicScope projectExpectedStudyGeographicScope);
-
 }

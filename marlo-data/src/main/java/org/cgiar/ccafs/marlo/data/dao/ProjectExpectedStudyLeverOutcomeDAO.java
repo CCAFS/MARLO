@@ -56,10 +56,20 @@ public interface ProjectExpectedStudyLeverOutcomeDAO {
 
 
   /**
+   * This method gets a list of projectExpectedStudyLeverOutcome by a given projectExpectedStudy identifier.
+   * 
+   * @param studyId is the projectExpectedStudy identifier.
+   * @return a list of projectExpectedStudyLeverOutcome objects.
+   */
+  public List<ProjectExpectedStudyLeverOutcome> getAllStudyLeverOutcomesByStudy(long studyId);
+
+  /**
    * This method saves the information of the given projectExpectedStudyLeverOutcome
    * 
-   * @param projectExpectedStudyLeverOutcome - is the projectExpectedStudyLeverOutcome object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectExpectedStudyLeverOutcome was
+   * @param projectExpectedStudyLeverOutcome - is the projectExpectedStudyLeverOutcome object with the new information
+   *        to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectExpectedStudyLeverOutcome was
    *         updated
    *         or -1 is some error occurred.
    */

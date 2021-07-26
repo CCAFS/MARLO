@@ -57,6 +57,14 @@ public interface ProjectExpectedStudyInfoDAO {
 
 
   /**
+   * This method gets a list of projectExpectedStudyInfo by a given projectExpectedStudy identifier.
+   * 
+   * @param studyId is the projectExpectedStudy identifier.
+   * @return a list of projectExpectedStudyInfo objects.
+   */
+  public List<ProjectExpectedStudyInfo> getAllStudyInfosByStudy(long studyId);
+
+  /**
    * This method gets a list of projectExpectedStudyInfo that are active given a phase identifier
    * 
    * @return a list from ProjectExpectedStudyInfo null if no exist records

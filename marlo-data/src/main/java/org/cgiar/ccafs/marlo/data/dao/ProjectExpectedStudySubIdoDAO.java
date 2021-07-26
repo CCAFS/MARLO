@@ -56,6 +56,14 @@ public interface ProjectExpectedStudySubIdoDAO {
 
 
   /**
+   * This method gets a list of projectExpectedStudySubIdo by a given projectExpectedStudy identifier.
+   * 
+   * @param studyId is the projectExpectedStudy identifier.
+   * @return a list of projectExpectedStudySubIdo objects.
+   */
+  public List<ProjectExpectedStudySubIdo> getAllStudySubIdosByStudy(long studyId);
+
+  /**
    * This method gets a projectExpectedStudySubIdo object by a given projectExpectedStudySubIdo identifier.
    * 
    * @param expectedID is the projectExpectedStudySubIdo identifier.
