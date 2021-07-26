@@ -14,6 +14,9 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.AllianceLever;
+import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLever;
 
 import java.util.List;
@@ -69,6 +72,25 @@ public interface ProjectExpectedStudyLeverManager {
   public ProjectExpectedStudyLever getProjectExpectedStudyLeverById(long projectExpectedStudyLeverOutcomeID);
 
   /**
+   * Gets a ProjectExpectedStudyLever by a study id, a lever id and a phase id
+   * 
+   * @param study the ProjectExpectedStudy
+   * @param lever the AllianceLever
+   * @param phase the Phase
+   * @return a ProjectExpectedStudyLever if found; else null
+   */
+  public ProjectExpectedStudyLever getStudyLeverByStudyLeverAndPhase(ProjectExpectedStudy study, AllianceLever lever,
+    Phase phase);
+
+  /**
+   * Replicates an studyLever, starting from the given phase
+   * 
+   * @param originalProjectExpectedStudyLever studyLever to be replicated
+   * @param initialPhase initial replication phase
+   */
+  public void replicate(ProjectExpectedStudyLever originalProjectExpectedStudyLever, Phase initialPhase);
+
+  /**
    * This method saves the information of the given projectExpectedStudyLeverOutcome
    * 
    * @param projectExpectedStudyLeverOutcome - is the projectExpectedStudyLeverOutcome object with the new information
@@ -80,4 +102,5 @@ public interface ProjectExpectedStudyLeverManager {
    */
   public ProjectExpectedStudyLever
     saveProjectExpectedStudyLever(ProjectExpectedStudyLever projectExpectedStudyLeverOutcome);
+
 }

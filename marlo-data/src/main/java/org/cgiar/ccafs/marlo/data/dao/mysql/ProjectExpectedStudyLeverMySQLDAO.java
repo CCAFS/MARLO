@@ -84,13 +84,28 @@ public class ProjectExpectedStudyLeverMySQLDAO extends AbstractMarloDAO<ProjectE
   }
 
   @Override
+  public ProjectExpectedStudyLever getStudyLeverByStudyLeverAndPhase(long studyId, long leverId, long idPhase) {
+    String query = "select distinct pp from ProjectExpectedStudyLever pp "
+      + "where pp.projectExpectedStudy.id = :studyId and pp.phase.id = :idPhase and pp.allianceLever.id = :leverId";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("studyId", studyId);
+    createQuery.setParameter("idPhase", idPhase);
+    createQuery.setParameter("leverId", leverId);
+
+    Object findSingleResult = super.findSingleResult(ProjectExpectedStudyLever.class, createQuery);
+    ProjectExpectedStudyLever projectExpectedStudyLever = (ProjectExpectedStudyLever) findSingleResult;
+
+    return projectExpectedStudyLever;
+  }
+
+  @Override
   public ProjectExpectedStudyLever save(ProjectExpectedStudyLever projectExpectedStudyLever) {
     if (projectExpectedStudyLever.getId() == null) {
       super.saveEntity(projectExpectedStudyLever);
     } else {
       projectExpectedStudyLever = super.update(projectExpectedStudyLever);
     }
-
 
     return projectExpectedStudyLever;
   }
