@@ -17,6 +17,9 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudyNexusDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyNexusManager;
+import org.cgiar.ccafs.marlo.data.model.Nexus;
+import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyNexus;
 
 import java.util.List;
@@ -70,6 +73,41 @@ public class ProjectExpectedStudyNexusManagerImpl implements ProjectExpectedStud
   public ProjectExpectedStudyNexus getProjectExpectedStudyNexusById(long projectExpectedStudyNexusID) {
 
     return projectExpectedStudyNexusDAO.find(projectExpectedStudyNexusID);
+  }
+
+  @Override
+  public ProjectExpectedStudyNexus getStudyNexusByStudyNexusAndPhase(ProjectExpectedStudy study, Nexus nexus,
+    Phase phase) {
+    if (study != null && nexus != null && phase != null) {
+      return this.projectExpectedStudyNexusDAO.getStudyNexusByStudyNexusAndPhase(study.getId().longValue(),
+        nexus.getId().longValue(), phase.getId().longValue());
+    }
+
+    return null;
+  }
+
+  @Override
+  public void replicate(ProjectExpectedStudyNexus originalProjectExpectedStudyNexus, Phase initialPhase) {
+    Phase current = initialPhase;
+
+    while (current != null && originalProjectExpectedStudyNexus != null
+      && originalProjectExpectedStudyNexus.getProjectExpectedStudy() != null
+      && originalProjectExpectedStudyNexus.getNexus() != null && originalProjectExpectedStudyNexus.getPhase() != null) {
+      ProjectExpectedStudyNexus studyLever =
+        this.getStudyNexusByStudyNexusAndPhase(originalProjectExpectedStudyNexus.getProjectExpectedStudy(),
+          originalProjectExpectedStudyNexus.getNexus(), originalProjectExpectedStudyNexus.getPhase());
+      if (studyLever == null) {
+        studyLever = new ProjectExpectedStudyNexus();
+      }
+
+      studyLever.copyFields(originalProjectExpectedStudyNexus);
+      studyLever.setPhase(current);
+
+      studyLever = this.projectExpectedStudyNexusDAO.save(studyLever);
+
+      // LOG.debug(current.toString());
+      current = current.getNext();
+    }
   }
 
   @Override

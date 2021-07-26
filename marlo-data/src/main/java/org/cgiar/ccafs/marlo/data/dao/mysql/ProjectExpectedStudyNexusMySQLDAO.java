@@ -84,6 +84,22 @@ public class ProjectExpectedStudyNexusMySQLDAO extends AbstractMarloDAO<ProjectE
   }
 
   @Override
+  public ProjectExpectedStudyNexus getStudyNexusByStudyNexusAndPhase(long studyId, long nexusId, long idPhase) {
+    String query = "select distinct pp from ProjectExpectedStudyNexus pp "
+      + "where pp.projectExpectedStudy.id = :studyId and pp.phase.id = :idPhase and pp.nexus.id = :nexusId";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("studyId", studyId);
+    createQuery.setParameter("idPhase", idPhase);
+    createQuery.setParameter("nexusId", nexusId);
+
+    Object findSingleResult = super.findSingleResult(ProjectExpectedStudyNexus.class, createQuery);
+    ProjectExpectedStudyNexus projectExpectedStudyNexus = (ProjectExpectedStudyNexus) findSingleResult;
+
+    return projectExpectedStudyNexus;
+  }
+
+  @Override
   public ProjectExpectedStudyNexus save(ProjectExpectedStudyNexus projectExpectedStudyNexus) {
     if (projectExpectedStudyNexus.getId() == null) {
       super.saveEntity(projectExpectedStudyNexus);
