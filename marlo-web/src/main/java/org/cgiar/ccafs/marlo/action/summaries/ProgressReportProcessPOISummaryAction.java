@@ -311,11 +311,11 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
     bold = true;
 
     POIField[] sHeader = {
-      new POIField(this.getText("summaries.progressReport2020.coverTable.Title1"), ParagraphAlignment.LEFT, bold,
+      new POIField(this.getText("summaries.progressReport2020.coverTable.Title1"), ParagraphAlignment.CENTER, bold,
         blackColor),
-      new POIField(this.getText("summaries.progressReport2020.coverTable.Title2"), ParagraphAlignment.LEFT, bold,
+      new POIField(this.getText("summaries.progressReport2020.coverTable.Title2"), ParagraphAlignment.CENTER, bold,
         blackColor),
-      new POIField(this.getText("summaries.progressReport2020.coverTable.Title3"), ParagraphAlignment.LEFT, bold,
+      new POIField(this.getText("summaries.progressReport2020.coverTable.Title3"), ParagraphAlignment.CENTER, bold,
         blackColor)};
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
@@ -350,8 +350,8 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
       }
 
       bold = false;
-      POIField[] sData = {new POIField("C" + clusterID, ParagraphAlignment.LEFT, false),
-        new POIField(leader, ParagraphAlignment.LEFT, false), new POIField(type, ParagraphAlignment.LEFT, false)
+      POIField[] sData = {new POIField("C" + clusterID, ParagraphAlignment.CENTER, false),
+        new POIField(leader, ParagraphAlignment.LEFT, false), new POIField(type, ParagraphAlignment.CENTER, false)
 
       };
       data = Arrays.asList(sData);
@@ -508,10 +508,10 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
       progress = "0";
     }
 
-    POIField[] sData = {new POIField(overallTarget, ParagraphAlignment.LEFT, false),
-      new POIField(expectedContributionNew, ParagraphAlignment.LEFT, false),
-      new POIField(expectedContributionOld, ParagraphAlignment.LEFT, false),
-      new POIField(progress, ParagraphAlignment.LEFT, false, blackColor)};
+    POIField[] sData = {new POIField(overallTarget, ParagraphAlignment.CENTER, false),
+      new POIField(expectedContributionNew, ParagraphAlignment.CENTER, false),
+      new POIField(expectedContributionOld, ParagraphAlignment.CENTER, false),
+      new POIField(progress, ParagraphAlignment.CENTER, false, blackColor)};
     data = Arrays.asList(sData);
     datas.add(data);
 
@@ -907,9 +907,8 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
             run.addBreak();
             run.addPicture(new FileInputStream(imageFile), imgFormat, imgFile, Units.toEMU(width), Units.toEMU(height));
           } catch (Exception e) {
-            System.out.println(e);
+            // System.out.println(e);
           }
-
 
           // Project Title
           paragraph = document.createParagraph();
@@ -943,7 +942,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
           paragraph.setStyle("heading 2");
 
           if (projectInfo.getSummary() != null) {
-            poiSummary.textParagraphFontCalibriAligmentLeft(document.createParagraph(), projectInfo.getSummary());
+            poiSummary.textParagraphFontCalibriAligmentBoth(document.createParagraph(), projectInfo.getSummary());
           }
           poiSummary.textLineBreak(document, 5);
 
@@ -966,10 +965,10 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
 
             for (ProjectOutcome projectOutcome : projectOutcomes) {
               if (projectOutcome.getCrpProgramOutcome() != null
-                && projectOutcome.getCrpProgramOutcome().getComposedName() != null) {
+                && projectOutcome.getCrpProgramOutcome().getDescription() != null) {
                 paragraph = document.createParagraph();
                 run = paragraph.createRun();
-                run.setText(projectOutcome.getCrpProgramOutcome().getComposedName());
+                run.setText(projectOutcome.getCrpProgramOutcome().getDescription());
                 run.setBold(false);
                 run.setFontSize(11);
                 run.setFontFamily("Verdana");
@@ -978,7 +977,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
 
                 String overall2023 = "", expected2023 = "", expected2021 = "", progress2021 = "";
                 if (projectOutcome.getCrpProgramOutcome().getValue() != null) {
-                  overall2023 = projectOutcome.getCrpProgramOutcome().getValue() + "";
+                  overall2023 = projectOutcome.getCrpProgramOutcome().getValue().intValue() + "";
                 } else {
                   overall2023 = "<Not provided>";
                 }
@@ -986,7 +985,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                 if (projectOutcome.getExpectedValue() == null) {
                   expected2023 = "<Not provided>";
                 } else {
-                  expected2023 = projectOutcome.getExpectedValue() + "";
+                  expected2023 = Math.round(projectOutcome.getExpectedValue()) + "";
                 }
                 List<ProjectMilestone> projectMilestones = new ArrayList<>();
                 projectMilestones = projectMilestoneManager.findAll().stream()
@@ -1004,7 +1003,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                     if (milestone.getExpectedValue() == null) {
                       expected2021 = "<Not provided>";
                     } else {
-                      expected2021 = milestone.getExpectedValue() + "";
+                      expected2021 = Math.round(milestone.getExpectedValue()) + "";
                     }
                     if (milestone.getAchievedValue() == null) {
                       progress2021 = "<Not provided>";
@@ -1176,19 +1175,18 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("(BETA version) ");
+    fileName.append("(BETA version)");
+    fileName.append(" " + this.getLoggedCrp().getAcronym());
+    fileName.append("_ProgressReport");
 
     if (this.getCurrentCycleYear() != 0) {
-      fileName.append(this.getCurrentCycleYear() + "_");
+      fileName.append(this.getCurrentCycleYear());
     }
-    fileName.append(this.getLoggedCrp().getAcronym());
 
     if (showAllYears.equals("true")) {
-      fileName.append("_ReportProcessSummary_");
-      fileName.append("AllClusters_");
+      fileName.append("_AllClusters_");
     } else {
-      fileName.append("_Cluster_" + projectID);
-      fileName.append("_ReportProcessSummary_");
+      fileName.append("_Cluster-" + projectID + "_");
     }
 
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
