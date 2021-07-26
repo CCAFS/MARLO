@@ -19,10 +19,8 @@
 
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 
-import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.RegionTypesItem;
-import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.RegionsItem;
-import org.cgiar.ccafs.marlo.rest.dto.OneCGIARRegionTypeDTO;
-import org.cgiar.ccafs.marlo.rest.dto.OneCGIARRegionsDTO;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.generallists.GlossaryItem;
+import org.cgiar.ccafs.marlo.rest.dto.GlossaryDTO;
 import org.cgiar.ccafs.marlo.rest.errors.NotFoundException;
 import org.cgiar.ccafs.marlo.security.Permission;
 
@@ -33,6 +31,7 @@ import javax.inject.Named;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -41,6 +40,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -48,48 +48,41 @@ import org.springframework.web.bind.annotation.RestController;
 @Configuration
 @PropertySource("classpath:clarisa.properties")
 @RestController
-@Api(tags = "All CGIAR Control Lists")
+@Api(tags = "General Control Lists")
 @Named
-public class OneCGIARControlList {
+public class Glossary {
 
-  private RegionsItem<OneCGIARControlList> regionsItem;
-  private RegionTypesItem<OneCGIARControlList> regionTypesItem;
-
-
+  private GlossaryItem<Glossary> glossaryItem;
   @Autowired
   private Environment env;
 
   @Inject
-  public OneCGIARControlList(RegionsItem<OneCGIARControlList> regionsItem,
-    RegionTypesItem<OneCGIARControlList> regionTypesItem) {
+  public Glossary(GlossaryItem<Glossary> glossaryItem) {
     super();
-    this.regionsItem = regionsItem;
-    this.regionTypesItem = regionTypesItem;
+    this.glossaryItem = glossaryItem;
   }
 
-  @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Regions.all.value}",
-    response = OneCGIARRegionsDTO.class)
+  @ApiOperation(tags = {"General Control Lists"}, value = "${CGIARControlList.Glossary.value}",
+    response = GlossaryDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/allCGIARRegions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<List<OneCGIARRegionsDTO>> findAllCGIARRegions() {
-    ResponseEntity<List<OneCGIARRegionsDTO>> response = this.regionsItem.getAll();
-    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-      throw new NotFoundException("404", this.env.getProperty("CGIARControlList.Regions.code.404"));
-    }
-    return response;
-  }
-
-  @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.RegionTypes.all.value}",
-    response = OneCGIARRegionTypeDTO.class)
-  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/allCGIARRegionsTypes", method = RequestMethod.GET,
+  @RequestMapping(value = "/glossaryById/{code}", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<List<OneCGIARRegionTypeDTO>> findAllCGIARRegionTypes() {
+  public ResponseEntity<GlossaryDTO> findImpactAreaById(
+    @ApiParam(value = "${CGIARControlList.Glossary.param.code}", required = true) @PathVariable Long code) {
 
-    ResponseEntity<List<OneCGIARRegionTypeDTO>> response = this.regionTypesItem.findAll();
+    ResponseEntity<GlossaryDTO> response = this.glossaryItem.findGlossaryById(code);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-      throw new NotFoundException("404", this.env.getProperty("CGIARControlList.RegionTypes.code.404"));
+      throw new NotFoundException("404", this.env.getProperty("CGIARControlList.Glossary.code.404"));
     }
     return response;
   }
+
+  @ApiOperation(tags = {"General Control Lists"}, value = "${CGIARControlList.Glossary.all.value}",
+    response = GlossaryDTO.class, responseContainer = "List")
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/glossary", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<GlossaryDTO> getAllGlossary() {
+    return this.glossaryItem.getAllGlossary();
+  }
+
 }
