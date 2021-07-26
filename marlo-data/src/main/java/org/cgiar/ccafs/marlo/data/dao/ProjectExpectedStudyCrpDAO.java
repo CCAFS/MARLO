@@ -56,6 +56,14 @@ public interface ProjectExpectedStudyCrpDAO {
 
 
   /**
+   * This method gets a list of projectExpectedStudyCrp by a given projectExpectedStudy identifier.
+   * 
+   * @param studyId is the projectExpectedStudy identifier.
+   * @return a list of projectExpectedStudyCrp objects.
+   */
+  public List<ProjectExpectedStudyCrp> getAllStudyCrpsByStudy(long studyId);
+
+  /**
    * This method gets a projectExpectedStudyCrp object by a given projectExpectedStudyCrp identifier.
    * 
    * @param expectedID is the projectExpectedStudyCrp identifier.
@@ -76,5 +84,4 @@ public interface ProjectExpectedStudyCrpDAO {
    *         or -1 is some error occurred.
    */
   public ProjectExpectedStudyCrp save(ProjectExpectedStudyCrp projectExpectedStudyCrp);
-
 }

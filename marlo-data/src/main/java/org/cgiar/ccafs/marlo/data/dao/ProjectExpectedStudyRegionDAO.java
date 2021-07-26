@@ -55,6 +55,14 @@ public interface ProjectExpectedStudyRegionDAO {
   public List<ProjectExpectedStudyRegion> findAll();
 
 
+  /**
+   * This method gets a list of projectExpectedStudyRegion by a given projectExpectedStudy identifier.
+   * 
+   * @param studyId is the projectExpectedStudy identifier.
+   * @return a list of projectExpectedStudyRegion objects.
+   */
+  public List<ProjectExpectedStudyRegion> getAllStudyRegionsByStudy(long studyId);
+
   public List<ProjectExpectedStudyRegion> getProjectExpectedStudyRegionbyPhase(long expectedID, long phaseID);
 
   /**

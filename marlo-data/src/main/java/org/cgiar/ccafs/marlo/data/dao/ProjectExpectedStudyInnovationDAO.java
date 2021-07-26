@@ -55,6 +55,14 @@ public interface ProjectExpectedStudyInnovationDAO {
   public List<ProjectExpectedStudyInnovation> findAll();
 
 
+  /**
+   * This method gets a list of projectExpectedStudyInnovation by a given projectExpectedStudy identifier.
+   * 
+   * @param studyId is the projectExpectedStudy identifier.
+   * @return a list of projectExpectedStudyInnovation objects.
+   */
+  public List<ProjectExpectedStudyInnovation> getAllStudyInnovationsByStudy(long studyId);
+
   public ProjectExpectedStudyInnovation getProjectExpectedStudyInnovationByPhase(Long expectedID,
     Long projectInnovationID, Long phaseID);
 

@@ -56,6 +56,14 @@ public interface ProjectExpectedStudyLeverDAO {
 
 
   /**
+   * This method gets a list of projectExpectedStudyLever by a given projectExpectedStudy identifier.
+   * 
+   * @param studyId is the projectExpectedStudy identifier.
+   * @return a list of projectExpectedStudyLever objects.
+   */
+  public List<ProjectExpectedStudyLever> getAllStudyLeversByStudy(long studyId);
+
+  /**
    * This method saves the information of the given projectExpectedStudyLever
    * 
    * @param projectExpectedStudyLever - is the projectExpectedStudyLever object with the new information to be
