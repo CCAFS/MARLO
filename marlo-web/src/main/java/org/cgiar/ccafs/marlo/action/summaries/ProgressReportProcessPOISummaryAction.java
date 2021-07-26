@@ -1038,8 +1038,9 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
 
                 if (projectOutcome.getIndicators() != null && !projectOutcome.getIndicators().isEmpty()) {
                   poiSummary.textLineBreak(document, 2);
-                  poiSummary.textParagraphFontBoldCalibri(document.createParagraph(),
-                    "Progress to Key Performance Indicator");
+                  poiSummary.textParagraphFontBoldCalibriSize(document.createParagraph(),
+                    "Progress to Key Performance Indicator", 13);
+
                   for (ProjectOutcomeIndicator indicator : projectOutcome.getIndicators()) {
                     if (indicator.getCrpProgramOutcomeIndicator() != null
                       && indicator.getCrpProgramOutcomeIndicator().getIndicator() != null) {
@@ -1186,7 +1187,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
     if (showAllYears.equals("true")) {
       fileName.append("_AllClusters_");
     } else {
-      fileName.append("_Cluster-" + projectID + "_");
+      fileName.append("_Cluster" + projectID + "_");
     }
 
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
