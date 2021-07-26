@@ -674,6 +674,14 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		<action name="getProjectInnovationsByPhase"
+			class="org.cgiar.ccafs.marlo.action.json.superadmin.bulkreplication.ProjectInnovationsByPhaseAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
 
 		<!-- **************************************** JSON CENTER ACTIONS ************************************************** -->
 
