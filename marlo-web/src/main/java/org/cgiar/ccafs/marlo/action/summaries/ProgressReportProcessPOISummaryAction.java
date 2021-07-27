@@ -925,7 +925,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
           run.setText(projectInfo.getTitle());
           run.setBold(false);
           run.setFontSize(11);
-          run.setFontFamily("Verdana");
+          run.setFontFamily("Calibri");
           run.setColor("000000");
           paragraph.setStyle("headingTitle 1");
 
