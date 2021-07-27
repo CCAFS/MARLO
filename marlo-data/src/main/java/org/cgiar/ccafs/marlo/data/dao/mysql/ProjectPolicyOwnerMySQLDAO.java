@@ -24,6 +24,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -70,6 +71,19 @@ public class ProjectPolicyOwnerMySQLDAO extends AbstractMarloDAO<ProjectPolicyOw
   }
 
   @Override
+  public List<ProjectPolicyOwner> getAllPolicyOwnersByPolicy(long policyId) {
+    String query =
+      "select ppo from ProjectPolicyOwner ppo where ppo.projectPolicy.id = :policyId order by ppo.phase.id";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("policyId", policyId);
+
+    List<ProjectPolicyOwner> result = super.findAll(createQuery);
+
+    return result;
+  }
+
+  @Override
   public ProjectPolicyOwner getProjectPolicyOwnerById(long projectPolicyID, long policyTypID, long phaseID) {
     String query = "from " + ProjectPolicyOwner.class.getName() + " WHERE project_policy_id=" + projectPolicyID
       + " AND id_phase=" + phaseID + " AND rep_ind_policy_type_id=" + policyTypID;
@@ -92,6 +106,4 @@ public class ProjectPolicyOwnerMySQLDAO extends AbstractMarloDAO<ProjectPolicyOw
 
     return projectPolicyOwner;
   }
-
-
 }

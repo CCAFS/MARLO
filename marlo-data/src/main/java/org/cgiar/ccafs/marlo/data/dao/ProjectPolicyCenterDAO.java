@@ -58,6 +58,14 @@ public interface ProjectPolicyCenterDAO {
 
 
   /**
+   * This method gets a list of projectPolicyCenter by a given projectPolicy identifier.
+   * 
+   * @param projectPolicyCenterID is the projectPolicyCenter identifier.
+   * @return a list of projectPolicyCenter objects.
+   */
+  public List<ProjectPolicyCenter> getAllPolicyCentersByPolicy(long policyId);
+
+  /**
    * This method saves the information of the given projectPolicyCenter
    * 
    * @param projectPolicyCenter - is the projectPolicyCenter object with the new information to be added/updated.
