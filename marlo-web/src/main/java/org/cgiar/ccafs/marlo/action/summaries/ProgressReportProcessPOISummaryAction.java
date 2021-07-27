@@ -424,10 +424,10 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
           data = Arrays.asList(sData);
           datas.add(data);
         } else {
-          POIField[] sData = {new POIField("D" + deliverable.getId() + "", ParagraphAlignment.LEFT, false),
+          POIField[] sData = {new POIField("D" + deliverable.getId() + "", ParagraphAlignment.CENTER, false),
             new POIField(deliverable.getDeliverableInfo().getTitle(), ParagraphAlignment.LEFT, false),
             new POIField(deliverable.getDeliverableInfo().getStatusName(this.getSelectedPhase()),
-              ParagraphAlignment.LEFT, false),
+              ParagraphAlignment.CENTER, false),
             new POIField(disseminationURL, ParagraphAlignment.LEFT, false, "0000", disseminationURL)};
           data = Arrays.asList(sData);
           datas.add(data);
@@ -1187,8 +1187,8 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("(BETA version)");
-    fileName.append(" " + this.getLoggedCrp().getAcronym());
+    // fileName.append("(BETA version)+" ");
+    fileName.append(this.getLoggedCrp().getAcronym());
     fileName.append("_ProgressReport");
 
     if (this.getCurrentCycleYear() != 0) {
