@@ -102,6 +102,11 @@ public class ProjectInnovationSharedManagerImpl implements ProjectInnovationShar
   }
 
   @Override
+  public List<ProjectInnovationShared> getAllInnovationSharedByInnovation(Long innovationId) {
+    return this.projectInnovationSharedDAO.getAllInnovationSharedByInnovation(innovationId.longValue());
+  }
+
+  @Override
   public ProjectInnovationShared getProjectInnovationSharedById(long projectInnovationSharedID) {
 
     return projectInnovationSharedDAO.find(projectInnovationSharedID);
@@ -155,6 +160,4 @@ public class ProjectInnovationSharedManagerImpl implements ProjectInnovationShar
       this.saveProjectInnovationSharedPhase(phase.getNext(), innovationID, projectInnovationShared);
     }
   }
-
-
 }

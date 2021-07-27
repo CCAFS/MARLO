@@ -52,6 +52,14 @@ public interface ProjectInnovationRegionManager {
   public List<ProjectInnovationRegion> findAll();
 
 
+  /**
+   * This method gets a list of projectInnovationRegion by a given projectInnovation identifier.
+   * 
+   * @param innovationId is the projectInnovation identifier.
+   * @return a list of projectInnovationRegion objects.
+   */
+  public List<ProjectInnovationRegion> getAllInnovationRegionsByInnovation(Long innovationId);
+
   public List<ProjectInnovationRegion> getInnovationRegionbyPhase(long innovationID, long phaseID);
 
   /**
@@ -62,6 +70,7 @@ public interface ProjectInnovationRegionManager {
    */
   public ProjectInnovationRegion getProjectInnovationRegionById(long projectInnovationRegionID);
 
+
   /**
    * This method gets a projectInnovationRegion object by a given projectInnovationRegion identifier.
    * 
@@ -71,7 +80,6 @@ public interface ProjectInnovationRegionManager {
    * @return a ProjectInnovationRegion object.
    */
   public ProjectInnovationRegion getProjectInnovationRegionById(long innovationID, long RegionID, long phaseID);
-
 
   /**
    * This method saves the information of the given projectInnovationRegion

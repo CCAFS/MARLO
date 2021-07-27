@@ -89,6 +89,19 @@ public class ProjectExpectedStudyLinkMySQLDAO extends AbstractMarloDAO<ProjectEx
   }
 
   @Override
+  public List<ProjectExpectedStudyLink> getAllStudyLinksByStudy(long studyId) {
+    String query =
+      "select peslink from ProjectExpectedStudyLink peslink where peslink.projectExpectedStudy.id = :studyId order by peslink.phase.id";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("studyId", studyId);
+
+    List<ProjectExpectedStudyLink> result = super.findAll(createQuery);
+
+    return result;
+  }
+
+  @Override
   public ProjectExpectedStudyLink getProjectExpectedStudyLinkByPhase(Long expectedID, String link, Long phaseID) {
     String query = "from " + ProjectExpectedStudyLink.class.getName() + " where expected_id=" + expectedID
       + " and link='" + link + "' and id_phase=" + phaseID;
@@ -110,6 +123,4 @@ public class ProjectExpectedStudyLinkMySQLDAO extends AbstractMarloDAO<ProjectEx
 
     return projectExpectedStudyLink;
   }
-
-
 }

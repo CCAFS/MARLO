@@ -53,6 +53,15 @@ public interface ProjectExpectedStudyCrpManager {
 
 
   /**
+   * This method gets a list of projectExpectedStudyCrp by a given projectExpectedStudy identifier.
+   * 
+   * @param studyId is the projectExpectedStudy identifier.
+   * @return a list of projectExpectedStudyCrp objects.
+   */
+  public List<ProjectExpectedStudyCrp> getAllStudyCrpsByStudy(Long studyId);
+
+
+  /**
    * This method gets a projectExpectedStudyCrp object by a given projectExpectedStudyCrp identifier.
    * 
    * @param projectExpectedStudyCrpID is the projectExpectedStudyCrp identifier.
@@ -70,7 +79,6 @@ public interface ProjectExpectedStudyCrpManager {
    * @return a ProjectExpectedStudyCrp object.
    */
   public ProjectExpectedStudyCrp getProjectExpectedStudyCrpByPhase(Long expectedID, Long crpID, Long phaseID);
-
 
   /**
    * This method saves the information of the given projectExpectedStudyCrp

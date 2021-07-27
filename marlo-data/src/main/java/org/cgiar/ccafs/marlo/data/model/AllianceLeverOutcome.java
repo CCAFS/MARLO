@@ -25,24 +25,19 @@ import java.util.stream.Collectors;
 
 import com.google.gson.annotations.Expose;
 
-public class LeverOutcome extends MarloBaseEntity implements java.io.Serializable, IAuditLog {
+public class AllianceLeverOutcome extends MarloBaseEntity implements java.io.Serializable, IAuditLog {
 
 
   private static final long serialVersionUID = 2591192504126616140L;
 
   @Expose
-  private LeverOutcome leverOutcomeCategory;
+  private AllianceLever leverCategory;
 
   @Expose
   private String name;
 
   @Expose
-  private String description;
-
-  @Expose
   private String indicator;
-
-  private Set<LeverOutcome> leverOutcomeTypes = new HashSet<>(0);
 
   private String showName;
 
@@ -51,7 +46,7 @@ public class LeverOutcome extends MarloBaseEntity implements java.io.Serializabl
 
   private List<ProjectExpectedStudyLeverOutcome> studyLeverOutcomes;
 
-  public LeverOutcome() {
+  public AllianceLeverOutcome() {
   }
 
   public String getComposedName() {
@@ -65,27 +60,16 @@ public class LeverOutcome extends MarloBaseEntity implements java.io.Serializabl
       if (this.getName() != null && !this.getName().isEmpty()) {
         composedName.concat(this.getName() + " ");
       }
-      if (this.getDescription() != null && !this.getDescription().isEmpty()) {
-        composedName.concat(this.getDescription() + " ");
-      }
     }
     return composedName;
-  }
-
-  public String getDescription() {
-    return this.description;
   }
 
   public String getIndicator() {
     return indicator;
   }
 
-  public LeverOutcome getLeverOutcomeCategory() {
-    return leverOutcomeCategory;
-  }
-
-  public Set<LeverOutcome> getLeverOutcomeTypes() {
-    return leverOutcomeTypes;
+  public AllianceLever getLeverCategory() {
+    return leverCategory;
   }
 
   @Override
@@ -139,22 +123,13 @@ public class LeverOutcome extends MarloBaseEntity implements java.io.Serializabl
     return true;
   }
 
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
   public void setIndicator(String indicator) {
     this.indicator = indicator;
   }
 
 
-  public void setLeverOutcomeCategory(LeverOutcome leverOutcomeCategory) {
-    this.leverOutcomeCategory = leverOutcomeCategory;
-  }
-
-
-  public void setLeverOutcomeTypes(Set<LeverOutcome> leverOutcomeTypes) {
-    this.leverOutcomeTypes = leverOutcomeTypes;
+  public void setLeverCategory(AllianceLever leverCategory) {
+    this.leverCategory = leverCategory;
   }
 
   @Override

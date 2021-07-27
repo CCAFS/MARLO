@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -69,6 +70,19 @@ public class ProjectExpectedStudyCountryMySQLDAO extends AbstractMarloDAO<Projec
     }
     return null;
 
+  }
+
+  @Override
+  public List<ProjectExpectedStudyCountry> getAllStudyCountriesByStudy(long studyId) {
+    String query =
+      "select pescoun from ProjectExpectedStudyCountry pescoun where pescoun.projectExpectedStudy.id = :studyId order by pescoun.phase.id";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("studyId", studyId);
+
+    List<ProjectExpectedStudyCountry> result = super.findAll(createQuery);
+
+    return result;
   }
 
   @Override
@@ -118,6 +132,4 @@ public class ProjectExpectedStudyCountryMySQLDAO extends AbstractMarloDAO<Projec
 
     return projectExpectedStudyCountry;
   }
-
-
 }

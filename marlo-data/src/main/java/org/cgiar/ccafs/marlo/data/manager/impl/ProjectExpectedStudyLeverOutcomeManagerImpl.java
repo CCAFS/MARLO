@@ -17,6 +17,9 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudyLeverOutcomeDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyLeverOutcomeManager;
+import org.cgiar.ccafs.marlo.data.model.AllianceLeverOutcome;
+import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLeverOutcome;
 
 import java.util.List;
@@ -36,7 +39,8 @@ public class ProjectExpectedStudyLeverOutcomeManagerImpl implements ProjectExpec
 
 
   @Inject
-  public ProjectExpectedStudyLeverOutcomeManagerImpl(ProjectExpectedStudyLeverOutcomeDAO projectExpectedStudyLeverOutcomeDAO) {
+  public ProjectExpectedStudyLeverOutcomeManagerImpl(
+    ProjectExpectedStudyLeverOutcomeDAO projectExpectedStudyLeverOutcomeDAO) {
     this.projectExpectedStudyLeverOutcomeDAO = projectExpectedStudyLeverOutcomeDAO;
 
 
@@ -51,7 +55,8 @@ public class ProjectExpectedStudyLeverOutcomeManagerImpl implements ProjectExpec
   @Override
   public boolean existProjectExpectedStudyLeverOutcome(long projectExpectedStudyLeverOutcomeID) {
 
-    return projectExpectedStudyLeverOutcomeDAO.existProjectExpectedStudyLeverOutcome(projectExpectedStudyLeverOutcomeID);
+    return projectExpectedStudyLeverOutcomeDAO
+      .existProjectExpectedStudyLeverOutcome(projectExpectedStudyLeverOutcomeID);
   }
 
   @Override
@@ -62,16 +67,58 @@ public class ProjectExpectedStudyLeverOutcomeManagerImpl implements ProjectExpec
   }
 
   @Override
-  public ProjectExpectedStudyLeverOutcome getProjectExpectedStudyLeverOutcomeById(long projectExpectedStudyLeverOutcomeID) {
+  public List<ProjectExpectedStudyLeverOutcome> getAllStudyLeverOutcomesByStudy(Long studyId) {
+    return this.projectExpectedStudyLeverOutcomeDAO.getAllStudyLeverOutcomesByStudy(studyId.longValue());
+  }
+
+  @Override
+  public ProjectExpectedStudyLeverOutcome
+    getProjectExpectedStudyLeverOutcomeById(long projectExpectedStudyLeverOutcomeID) {
 
     return projectExpectedStudyLeverOutcomeDAO.find(projectExpectedStudyLeverOutcomeID);
   }
 
   @Override
-  public ProjectExpectedStudyLeverOutcome saveProjectExpectedStudyLeverOutcome(ProjectExpectedStudyLeverOutcome projectExpectedStudyLeverOutcome) {
+  public ProjectExpectedStudyLeverOutcome getStudyLeverOutcomeByStudyLeverOutcomeAndPhase(ProjectExpectedStudy study,
+    AllianceLeverOutcome leverOutcome, Phase phase) {
+    if (study != null && leverOutcome != null && phase != null) {
+      return this.projectExpectedStudyLeverOutcomeDAO.getStudyLeverOutcomeByStudyLeverOutcomeAndPhase(study.getId(),
+        leverOutcome.getId(), phase.getId());
+    }
+
+    return null;
+  }
+
+  @Override
+  public void replicate(ProjectExpectedStudyLeverOutcome originalProjectExpectedStudyLeverOutcome, Phase initialPhase) {
+    Phase current = initialPhase;
+
+    while (current != null && originalProjectExpectedStudyLeverOutcome != null
+      && originalProjectExpectedStudyLeverOutcome.getProjectExpectedStudy() != null
+      && originalProjectExpectedStudyLeverOutcome.getLeverOutcome() != null
+      && originalProjectExpectedStudyLeverOutcome.getPhase() != null) {
+      ProjectExpectedStudyLeverOutcome studyLeverOutcome = this.getStudyLeverOutcomeByStudyLeverOutcomeAndPhase(
+        originalProjectExpectedStudyLeverOutcome.getProjectExpectedStudy(),
+        originalProjectExpectedStudyLeverOutcome.getLeverOutcome(),
+        originalProjectExpectedStudyLeverOutcome.getPhase());
+      if (studyLeverOutcome == null) {
+        studyLeverOutcome = new ProjectExpectedStudyLeverOutcome();
+      }
+
+      studyLeverOutcome.copyFields(originalProjectExpectedStudyLeverOutcome);
+      studyLeverOutcome.setPhase(current);
+
+      studyLeverOutcome = this.projectExpectedStudyLeverOutcomeDAO.save(studyLeverOutcome);
+
+      // LOG.debug(current.toString());
+      current = current.getNext();
+    }
+  }
+
+  @Override
+  public ProjectExpectedStudyLeverOutcome
+    saveProjectExpectedStudyLeverOutcome(ProjectExpectedStudyLeverOutcome projectExpectedStudyLeverOutcome) {
 
     return projectExpectedStudyLeverOutcomeDAO.save(projectExpectedStudyLeverOutcome);
   }
-
-
 }

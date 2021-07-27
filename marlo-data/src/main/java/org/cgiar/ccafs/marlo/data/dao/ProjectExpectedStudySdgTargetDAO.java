@@ -56,10 +56,31 @@ public interface ProjectExpectedStudySdgTargetDAO {
 
 
   /**
+   * This method gets a list of projectExpectedStudySdgTarget by a given projectExpectedStudy identifier.
+   * 
+   * @param studyId is the projectExpectedStudy identifier.
+   * @return a list of projectExpectedStudySdgTarget objects.
+   */
+  public List<ProjectExpectedStudySdgTarget> getAllStudySdgTargetsByStudy(long studyId);
+
+  /**
+   * Gets a ProjectExpectedStudySdgTarget by a study id, a sdg target id and a phase id
+   * 
+   * @param studyId the ProjectExpectedStudy id
+   * @param sdgTargetId the SdgTargets id
+   * @param idPhase the Phase id
+   * @return a ProjectExpectedStudySdgTarget if found; else null
+   */
+  public ProjectExpectedStudySdgTarget getStudySdgTargetByStudySdgTargetAndPhase(long studyId, long sdgTargetId,
+    long idPhase);
+
+  /**
    * This method saves the information of the given projectExpectedStudySdgTarget
    * 
-   * @param projectExpectedStudySdgTarget - is the projectExpectedStudySdgTarget object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectExpectedStudySdgTarget was
+   * @param projectExpectedStudySdgTarget - is the projectExpectedStudySdgTarget object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectExpectedStudySdgTarget was
    *         updated
    *         or -1 is some error occurred.
    */

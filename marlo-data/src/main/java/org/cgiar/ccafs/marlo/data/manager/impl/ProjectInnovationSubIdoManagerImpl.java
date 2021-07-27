@@ -102,6 +102,11 @@ public class ProjectInnovationSubIdoManagerImpl implements ProjectInnovationSubI
   }
 
   @Override
+  public List<ProjectInnovationSubIdo> getAllInnovationSubIdosByInnovation(Long innovationId) {
+    return this.projectInnovationSubIdoDAO.getAllInnovationSubIdosByInnovation(innovationId.longValue());
+  }
+
+  @Override
   public ProjectInnovationSubIdo getProjectInnovationSubIdoById(long projectInnovationSubIdoID) {
 
     return projectInnovationSubIdoDAO.find(projectInnovationSubIdoID);
@@ -158,5 +163,4 @@ public class ProjectInnovationSubIdoManagerImpl implements ProjectInnovationSubI
     }
     return innovationMilestone;
   }
-
 }

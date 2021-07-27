@@ -53,6 +53,14 @@ public interface ProjectInnovationOrganizationManager {
 
 
   /**
+   * This method gets a list of projectInnovationOrganization by a given projectInnovation identifier.
+   * 
+   * @param innovationId is the projectInnovation identifier.
+   * @return a list of projectInnovationOrganization objects.
+   */
+  public List<ProjectInnovationOrganization> getAllInnovationOrganizationsByInnovation(Long innovationId);
+
+  /**
    * This method gets a projectInnovationOrganization object by a given projectInnovationOrganization identifier.
    * 
    * @param projectInnovationOrganizationID is the projectInnovationOrganization identifier.
@@ -75,6 +83,4 @@ public interface ProjectInnovationOrganizationManager {
    */
   public ProjectInnovationOrganization
     saveProjectInnovationOrganization(ProjectInnovationOrganization projectInnovationOrganization);
-
-
 }

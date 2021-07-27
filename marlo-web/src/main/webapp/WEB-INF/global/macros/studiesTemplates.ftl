@@ -379,14 +379,20 @@
           <div class="note">[@s.text name="study.ppapartner.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/partners'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
         </div>
         [/#if]
-        [#-- Flagships --]
-        [#if isOutcomeCaseStudy || !fromProject]
-        <div class="form-group simpleBox stageProcessOne">
-          [#if !fromProject && editable]
-            <p class="note">To the [@s.text name="programManagement.flagship.title"/](s) selected, the system grants permission to edit this ${(element.projectExpectedStudyInfo.studyType.name)!'study'} to their [@s.text name="CrpProgram.leaders"/] and [@s.text name="CrpProgram.managers"/]</p>
-          [/#if]
-          [@customForm.elementsListComponent name="${customName}.flagships" elementType="crpProgram" id="FP" elementList=element.flagships label="study.keyContributors.flagships"  listName="flagshipList" keyFieldName="id" displayFieldName="composedName" required=false /]
-        </div>
+        [#-- Flagships or Levers (Alliance) --]
+        [#if (isOutcomeCaseStudy || !fromProject) && !action.hasSpecificities('crp_enable_nexus_lever_sdg_fields')]
+          <div class="form-group simpleBox stageProcessOne">
+            [#if !fromProject && editable]
+              <p class="note">To the [@s.text name="programManagement.flagship.title"/](s) selected, the system grants permission to edit this ${(element.projectExpectedStudyInfo.studyType.name)!'study'} to their [@s.text name="CrpProgram.leaders"/] and [@s.text name="CrpProgram.managers"/]</p>
+            [/#if]
+            [@customForm.elementsListComponent name="${customName}.flagships" elementType="crpProgram" id="FP" elementList=element.flagships label="study.keyContributors.flagships"  listName="flagshipList" keyFieldName="id" displayFieldName="composedName" required=false /]
+          </div>
+        [/#if]
+        [#-- Levers (Alliance) --]
+        [#if isOutcomeCaseStudy && action.hasSpecificities('crp_enable_nexus_lever_sdg_fields')]
+          <div class="form-group simpleBox">
+            [@customForm.elementsListComponent name="${customName}.lever" elementType="lever" elementList=element.levers label="study.keyContributors.flagships"  listName="leverList" keyFieldName="id" displayFieldName="showName" required=false /]
+          </div>
         [/#if]
         [#-- Regions --]
         [#if (isOutcomeCaseStudy || !fromProject) && regionList?has_content]

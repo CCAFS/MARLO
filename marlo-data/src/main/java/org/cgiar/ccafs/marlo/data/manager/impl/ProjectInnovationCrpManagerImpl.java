@@ -106,6 +106,11 @@ public class ProjectInnovationCrpManagerImpl implements ProjectInnovationCrpMana
   }
 
   @Override
+  public List<ProjectInnovationCrp> getAllInnovationCrpsByInnovation(Long innovationId) {
+    return this.projectInnovationCrpDAO.getAllInnovationCrpsByInnovation(innovationId.longValue());
+  }
+
+  @Override
   public ProjectInnovationCrp getProjectInnovationCrpById(long projectInnovationCrpID) {
 
     return projectInnovationCrpDAO.find(projectInnovationCrpID);
@@ -164,5 +169,4 @@ public class ProjectInnovationCrpManagerImpl implements ProjectInnovationCrpMana
 
     return crp;
   }
-
 }

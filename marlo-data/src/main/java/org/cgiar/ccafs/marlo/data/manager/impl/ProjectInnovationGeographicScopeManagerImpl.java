@@ -114,6 +114,12 @@ public class ProjectInnovationGeographicScopeManagerImpl implements ProjectInnov
   }
 
   @Override
+  public List<ProjectInnovationGeographicScope> getAllInnovationGeographicScopesByInnovation(Long innovationId) {
+    return this.projectInnovationGeographicScopeDAO
+      .getAllInnovationGeographicScopesByInnovation(innovationId.longValue());
+  }
+
+  @Override
   public ProjectInnovationGeographicScope getProjectInnovationGeographicScope(long project_innovation_id,
     long rep_ind_geographic_scope_id, long id_phase) {
     return projectInnovationGeographicScopeDAO.getProjectInnovationGeographicScope(project_innovation_id,
@@ -178,6 +184,4 @@ public class ProjectInnovationGeographicScopeManagerImpl implements ProjectInnov
 
     return scope;
   }
-
-
 }

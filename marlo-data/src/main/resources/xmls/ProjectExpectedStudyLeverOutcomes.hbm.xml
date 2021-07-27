@@ -21,7 +21,7 @@
 			<column name="expected_id" />
 		</many-to-one>
 		<many-to-one
-			class="org.cgiar.ccafs.marlo.data.model.LeverOutcome"
+			class="org.cgiar.ccafs.marlo.data.model.AllianceLeverOutcome"
 			embed-xml="true" fetch="select" insert="true" name="leverOutcome"
 			not-found="exception" optimistic-lock="true" unique="false"
 			update="true">
