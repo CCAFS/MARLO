@@ -67,6 +67,14 @@ public interface ProjectExpectedStudyFlagshipDAO {
     Long phaseId);
 
   /**
+   * This method gets a list of projectExpectedStudyFlagship by a given projectExpectedStudy identifier.
+   * 
+   * @param studyId is the projectExpectedStudy identifier.
+   * @return a list of projectExpectedStudyFlagship objects.
+   */
+  public List<ProjectExpectedStudyFlagship> getAllStudyFlagshipsByStudy(long studyId);
+
+  /**
    * This method saves the information of the given projectExpectedStudyFlagship
    * 
    * @param projectExpectedStudyFlagship - is the projectExpectedStudyFlagship object with the new information to be

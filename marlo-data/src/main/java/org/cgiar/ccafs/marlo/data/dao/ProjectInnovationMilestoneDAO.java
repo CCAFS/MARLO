@@ -56,6 +56,14 @@ public interface ProjectInnovationMilestoneDAO {
 
 
   /**
+   * This method gets a list of projectInnovationMilestone by a given projectInnovation identifier.
+   * 
+   * @param innovationId is the projectInnovation identifier.
+   * @return a list of projectInnovationMilestone objects.
+   */
+  public List<ProjectInnovationMilestone> getAllInnovationMilestonesByInnovation(long innovationId);
+
+  /**
    * This method gets a projectInnovationMilestone object by a given projectInnovation,crpMilestone and phase
    * identifier.
    * 

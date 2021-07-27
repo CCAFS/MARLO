@@ -57,6 +57,15 @@ public interface ProjectInnovationContributingOrganizationDAO {
   public List<ProjectInnovationContributingOrganization> findAll();
 
 
+  /**
+   * This method gets a list of projectInnovationContributingOrganization by a given projectInnovation identifier.
+   * 
+   * @param innovationId is the projectInnovation identifier.
+   * @return a list of projectInnovationContributingOrganization objects.
+   */
+  public List<ProjectInnovationContributingOrganization>
+    getAllInnovationContributingOrganizationsByInnovation(long innovationId);
+
   public ProjectInnovationContributingOrganization
     getProjectInnovationContributingOrganization(long projectInnovationId, long institutionId, long phaseId);
 

@@ -54,6 +54,14 @@ public interface ProjectInnovationInfoManager {
 
 
   /**
+   * This method gets a list of projectInnovationInfo by a given projectInnovation identifier.
+   * 
+   * @param innovationId is the projectInnovation identifier.
+   * @return a list of projectInnovationInfo objects.
+   */
+  public List<ProjectInnovationInfo> getAllInnovationInfosByInnovation(Long innovationId);
+
+  /**
    * This method gets a projectInnovationInfo object by a given projectInnovationInfo identifier.
    * 
    * @param projectInnovationInfoID is the projectInnovationInfo identifier.

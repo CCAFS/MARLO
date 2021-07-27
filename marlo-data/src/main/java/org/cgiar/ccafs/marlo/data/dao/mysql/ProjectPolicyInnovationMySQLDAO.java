@@ -71,6 +71,19 @@ public class ProjectPolicyInnovationMySQLDAO extends AbstractMarloDAO<ProjectPol
   }
 
   @Override
+  public List<ProjectPolicyInnovation> getAllPolicyInnovationsByInnovation(long innovationId) {
+    String query =
+      "select ppi from ProjectPolicyInnovation ppi where ppi.projectInnovation.id = :innovationId order by ppi.phase.id";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("innovationId", innovationId);
+
+    List<ProjectPolicyInnovation> result = super.findAll(createQuery);
+
+    return result;
+  }
+
+  @Override
   public List<ProjectPolicyInnovation> getAllPolicyInnovationsByPolicy(long policyId) {
     String query =
       "select ppi from ProjectPolicyInnovation ppi where ppi.projectPolicy.id = :policyId order by ppi.phase.id";
@@ -108,5 +121,4 @@ public class ProjectPolicyInnovationMySQLDAO extends AbstractMarloDAO<ProjectPol
 
     return projectPolicyInnovation;
   }
-
 }

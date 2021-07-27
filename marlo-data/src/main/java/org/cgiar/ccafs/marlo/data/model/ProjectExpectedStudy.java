@@ -118,6 +118,9 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     new HashSet<ProjectExpectedStudyLeverOutcome>(0);
   private List<ProjectExpectedStudyLeverOutcome> leverOutcomes;
 
+  private Set<ProjectExpectedStudyLever> projectExpectedStudyLevers = new HashSet<ProjectExpectedStudyLever>(0);
+  private List<ProjectExpectedStudyLever> levers;
+
   private Set<ProjectExpectedStudySdgTarget> projectExpectedStudySdgTargets =
     new HashSet<ProjectExpectedStudySdgTarget>(0);
   private List<ProjectExpectedStudySdgTarget> sdgTargets;
@@ -270,6 +273,10 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     return leverOutcomes;
   }
 
+  public List<ProjectExpectedStudyLever> getLevers() {
+    return levers;
+  }
+
   public List<ProjectExpectedStudyLink> getLinks() {
     return links;
   }
@@ -363,6 +370,10 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
 
   public Set<ProjectExpectedStudyLeverOutcome> getProjectExpectedStudyLeverOutcomes() {
     return projectExpectedStudyLeverOutcomes;
+  }
+
+  public Set<ProjectExpectedStudyLever> getProjectExpectedStudyLevers() {
+    return projectExpectedStudyLevers;
   }
 
   public Set<ProjectExpectedStudyLink> getProjectExpectedStudyLinks() {
@@ -555,6 +566,10 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     this.leverOutcomes = leverOutcomes;
   }
 
+  public void setLevers(List<ProjectExpectedStudyLever> levers) {
+    this.levers = levers;
+  }
+
   public void setLinks(List<ProjectExpectedStudyLink> links) {
     this.links = links;
   }
@@ -628,6 +643,10 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
   public void
     setProjectExpectedStudyLeverOutcomes(Set<ProjectExpectedStudyLeverOutcome> projectExpectedStudyLeverOutcomes) {
     this.projectExpectedStudyLeverOutcomes = projectExpectedStudyLeverOutcomes;
+  }
+
+  public void setProjectExpectedStudyLevers(Set<ProjectExpectedStudyLever> projectExpectedStudyLevers) {
+    this.projectExpectedStudyLevers = projectExpectedStudyLevers;
   }
 
   public void setProjectExpectedStudyLinks(Set<ProjectExpectedStudyLink> projectExpectedStudyLinks) {

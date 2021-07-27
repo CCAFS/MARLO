@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -69,6 +70,19 @@ public class ProjectInnovationCountryMySQLDAO extends AbstractMarloDAO<ProjectIn
     }
     return null;
 
+  }
+
+  @Override
+  public List<ProjectInnovationCountry> getAllInnovationCountriesByInnovation(long innovationId) {
+    String query =
+      "select picoun from ProjectInnovationCountry picoun where picoun.projectInnovation.id = :innovationId order by picoun.phase.id";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("innovationId", innovationId);
+
+    List<ProjectInnovationCountry> result = super.findAll(createQuery);
+
+    return result;
   }
 
   @Override
@@ -116,6 +130,4 @@ public class ProjectInnovationCountryMySQLDAO extends AbstractMarloDAO<ProjectIn
 
     return projectInnovationCountry;
   }
-
-
 }

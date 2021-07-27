@@ -61,13 +61,21 @@ public interface ProjectExpectedStudyPolicyManager {
   public List<ProjectExpectedStudyPolicy> getAllExpectedStudyPoliciesByPolicy(Long policyId);
 
   /**
+   * This method gets a list of projectExpectedStudyPolicy by a given projectExpectedStudy identifier.
+   * 
+   * @param studyId is the projectExpectedStudy identifier.
+   * @return a list of projectExpectedStudyPolicy objects.
+   */
+  public List<ProjectExpectedStudyPolicy> getAllStudyPoliciesByStudy(Long studyId);
+
+
+  /**
    * This method gets a projectExpectedStudyPolicy object by a given projectExpectedStudyPolicy identifier.
    * 
    * @param projectExpectedStudyPolicyID is the projectExpectedStudyPolicy identifier.
    * @return a ProjectExpectedStudyPolicy object.
    */
   public ProjectExpectedStudyPolicy getProjectExpectedStudyPolicyById(long projectExpectedStudyPolicyID);
-
 
   /**
    * This method gets a projectExpectedStudyPolicy object by a given projectExpectedStudyPolicy identifier.

@@ -24,6 +24,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -70,6 +71,37 @@ public class ProjectExpectedStudyLeverOutcomeMySQLDAO extends AbstractMarloDAO<P
   }
 
   @Override
+  public List<ProjectExpectedStudyLeverOutcome> getAllStudyLeverOutcomesByStudy(long studyId) {
+    String query =
+      "select peslo from ProjectExpectedStudyLeverOutcome peslo where peslo.projectExpectedStudy.id = :studyId order by peslo.phase.id";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("studyId", studyId);
+
+    List<ProjectExpectedStudyLeverOutcome> result = super.findAll(createQuery);
+
+    return result;
+  }
+
+  @Override
+  public ProjectExpectedStudyLeverOutcome getStudyLeverOutcomeByStudyLeverOutcomeAndPhase(long studyId,
+    long leverOutcomeId, long idPhase) {
+    String query = "select distinct pp from ProjectExpectedStudyLeverOutcome pp "
+      + "where pp.projectExpectedStudy.id = :studyId and pp.phase.id = :idPhase and pp.leverOutcome.id = :leverOutcomeId";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("studyId", studyId);
+    createQuery.setParameter("idPhase", idPhase);
+    createQuery.setParameter("leverOutcomeId", leverOutcomeId);
+
+    Object findSingleResult = super.findSingleResult(ProjectExpectedStudyLeverOutcome.class, createQuery);
+    ProjectExpectedStudyLeverOutcome projectExpectedStudyLeverOutcome =
+      (ProjectExpectedStudyLeverOutcome) findSingleResult;
+
+    return projectExpectedStudyLeverOutcome;
+  }
+
+  @Override
   public ProjectExpectedStudyLeverOutcome save(ProjectExpectedStudyLeverOutcome projectExpectedStudyLeverOutcome) {
     if (projectExpectedStudyLeverOutcome.getId() == null) {
       super.saveEntity(projectExpectedStudyLeverOutcome);
@@ -80,6 +112,4 @@ public class ProjectExpectedStudyLeverOutcomeMySQLDAO extends AbstractMarloDAO<P
 
     return projectExpectedStudyLeverOutcome;
   }
-
-
 }

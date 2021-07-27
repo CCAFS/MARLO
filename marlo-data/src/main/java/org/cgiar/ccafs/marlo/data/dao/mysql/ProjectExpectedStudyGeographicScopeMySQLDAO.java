@@ -24,6 +24,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -71,6 +72,19 @@ public class ProjectExpectedStudyGeographicScopeMySQLDAO extends
   }
 
   @Override
+  public List<ProjectExpectedStudyGeographicScope> getAllStudyGeoScopesByStudy(long studyId) {
+    String query =
+      "select pesgs from ProjectExpectedStudyGeographicScope pesgs where pesgs.projectExpectedStudy.id = :studyId order by pesgs.phase.id";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("studyId", studyId);
+
+    List<ProjectExpectedStudyGeographicScope> result = super.findAll(createQuery);
+
+    return result;
+  }
+
+  @Override
   public ProjectExpectedStudyGeographicScope getProjectExpectedStudyGeographicScopeByPhase(Long expectedId,
     Long geographicScopeId, Long phaseId) {
     String query =
@@ -96,6 +110,4 @@ public class ProjectExpectedStudyGeographicScopeMySQLDAO extends
 
     return projectExpectedStudyGeographicScope;
   }
-
-
 }

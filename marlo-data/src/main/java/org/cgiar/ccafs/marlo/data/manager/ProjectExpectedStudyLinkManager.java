@@ -53,6 +53,14 @@ public interface ProjectExpectedStudyLinkManager {
 
 
   /**
+   * This method gets a list of projectExpectedStudyLink by a given projectExpectedStudy identifier.
+   * 
+   * @param studyId is the projectExpectedStudy identifier.
+   * @return a list of projectExpectedStudyLink objects.
+   */
+  public List<ProjectExpectedStudyLink> getAllStudyLinksByStudy(Long studyId);
+
+  /**
    * This method gets a projectExpectedStudyLink object by a given projectExpectedStudyLink identifier.
    * 
    * @param projectExpectedStudyLinkID is the projectExpectedStudyLink identifier.
@@ -81,5 +89,4 @@ public interface ProjectExpectedStudyLinkManager {
    *         or -1 is some error occurred.
    */
   public ProjectExpectedStudyLink saveProjectExpectedStudyLink(ProjectExpectedStudyLink projectExpectedStudyLink);
-
 }

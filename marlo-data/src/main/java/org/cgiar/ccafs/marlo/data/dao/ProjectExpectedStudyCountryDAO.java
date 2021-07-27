@@ -55,6 +55,15 @@ public interface ProjectExpectedStudyCountryDAO {
   public List<ProjectExpectedStudyCountry> findAll();
 
   /**
+   * This method gets a list of projectExpectedStudyCountry by a given projectExpectedStudy identifier.
+   * 
+   * @param studyId is the projectExpectedStudy identifier.
+   * @return a list of projectExpectedStudyCountry objects.
+   */
+  public List<ProjectExpectedStudyCountry> getAllStudyCountriesByStudy(long studyId);
+
+
+  /**
    * This method gets a projectExpectedStudyCountry object list by a given expected Study and phase identifier.
    * 
    * @param expectedID is the expected Study identifier.
@@ -62,7 +71,6 @@ public interface ProjectExpectedStudyCountryDAO {
    * @return a projectExpectedStudyCountry object list.
    */
   public List<ProjectExpectedStudyCountry> getProjectExpectedStudyCountrybyPhase(long expectedID, long phaseID);
-
 
   /**
    * This method gets a projectExpectedStudyCountry object by a given projectExpectedStudy,Country and phase identifier.
