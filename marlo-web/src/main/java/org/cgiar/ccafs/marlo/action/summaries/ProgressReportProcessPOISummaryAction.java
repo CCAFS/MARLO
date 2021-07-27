@@ -43,6 +43,8 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.ClusterType;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
@@ -925,7 +927,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
           run.setText(projectInfo.getTitle());
           run.setBold(false);
           run.setFontSize(11);
-          run.setFontFamily("Verdana");
+          run.setFontFamily("Calibri");
           run.setColor("000000");
           paragraph.setStyle("headingTitle 1");
 
@@ -1035,8 +1037,18 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                   && i.getProjectOutcome() != null && i.getProjectOutcome().getId().equals(projectOutcome.getId()))
                   .collect(Collectors.toList()));
 
+                CrpProgramOutcome crpProgramOutcome =
+                  crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcome.getCrpProgramOutcome().getId());
 
-                if (projectOutcome.getIndicators() != null && !projectOutcome.getIndicators().isEmpty()) {
+                projectOutcome.setCrpProgramOutcome(crpProgramOutcome);
+
+                projectOutcome.getCrpProgramOutcome()
+                  .setIndicators(projectOutcome.getCrpProgramOutcome().getCrpProgramOutcomeIndicators().stream()
+                    .filter(c -> c.isActive()).sorted((d1, d2) -> d1.getIndicator().compareTo((d2.getIndicator())))
+                    .collect(Collectors.toList()));
+
+                if (projectOutcome.getCrpProgramOutcome() != null
+                  && projectOutcome.getCrpProgramOutcome().getIndicators() != null) {
                   poiSummary.textLineBreak(document, 2);
                   poiSummary.textParagraphFontBoldCalibriSize(document.createParagraph(),
                     "Progress to Key Performance Indicator", 13);
@@ -1050,17 +1062,18 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                    * BigInteger numID = numbering.addNum(abstractNumID);
                    */
 
-                  for (ProjectOutcomeIndicator indicator : projectOutcome.getIndicators()) {
-                    if (indicator.getCrpProgramOutcomeIndicator() != null
-                      && indicator.getCrpProgramOutcomeIndicator().getIndicator() != null) {
+                  for (CrpProgramOutcomeIndicator indicator : projectOutcome.getCrpProgramOutcome().getIndicators()) {
+                    if (indicator.getIndicator() != null) {
                       poiSummary.textLineBreak(document, 1);
                       poiSummary.textParagraphFontBoldCalibri(document.createParagraph(),
-                        indicator.getCrpProgramOutcomeIndicator().getIndicator().trim() + ":");
+                        indicator.getIndicator().trim() + ":");
                     }
-                    if (indicator.getNarrative() != null && !indicator.getNarrative().isEmpty()) {
+
+                    ProjectOutcomeIndicator outcomeIndicator = this.getIndicator(indicator.getId(), projectOutcome);
+                    if (outcomeIndicator.getNarrative() != null && !outcomeIndicator.getNarrative().isEmpty()) {
                       paragraph = document.createParagraph();
                       run = paragraph.createRun();
-                      run.setText(indicator.getNarrative());
+                      run.setText(outcomeIndicator.getNarrative());
                       run.setBold(false);
                       run.setFontSize(11);
                       run.setFontFamily("Calibri");
@@ -1206,7 +1219,6 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
     return fileName.toString();
   }
 
-
   public List<LiaisonInstitution> getFlagships() {
     List<LiaisonInstitution> flagshipsList = this.getLoggedCrp().getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null
@@ -1218,6 +1230,20 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
     } else {
       return new ArrayList<>();
     }
+  }
+
+
+  public ProjectOutcomeIndicator getIndicator(Long indicatorID, ProjectOutcome projectOutcome) {
+    for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcome.getIndicators()) {
+      if (projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId().longValue() == indicatorID) {
+        return projectOutcomeIndicator;
+      }
+    }
+    ProjectOutcomeIndicator projectOutcomeIndicator = new ProjectOutcomeIndicator();
+    projectOutcomeIndicator.setCrpProgramOutcomeIndicator(new CrpProgramOutcomeIndicator(indicatorID));
+    projectOutcome.getIndicators().add(projectOutcomeIndicator);
+    return projectOutcomeIndicator;
+
   }
 
 
