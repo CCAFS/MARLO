@@ -659,7 +659,7 @@ public class ProjectOutcomeAction extends BaseAction {
       crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcome.getCrpProgramOutcome().getId()));
     projectOutcome.getCrpProgramOutcome().setIndicators(
       projectOutcome.getCrpProgramOutcome().getCrpProgramOutcomeIndicators().stream().filter(c -> c.isActive())
-        .sorted((d1, d2) -> d1.getIndicator().compareTo((d2.getIndicator()))).collect(Collectors.toList()));;
+        .sorted((d1, d2) -> d1.getIndicator().compareTo((d2.getIndicator()))).collect(Collectors.toList()));
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
 
     projectOutcomeDB = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
