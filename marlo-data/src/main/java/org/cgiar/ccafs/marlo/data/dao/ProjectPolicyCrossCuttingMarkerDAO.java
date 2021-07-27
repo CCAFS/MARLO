@@ -55,6 +55,14 @@ public interface ProjectPolicyCrossCuttingMarkerDAO {
   public List<ProjectPolicyCrossCuttingMarker> findAll();
 
   /**
+   * This method gets a list of projectPolicyCrossCuttingMarker by a given projectPolicy identifier.
+   * 
+   * @param policyId is the projectPolicyCrossCuttingMarker identifier.
+   * @return a list of projectPolicyCrossCuttingMarker objects.
+   */
+  public List<ProjectPolicyCrossCuttingMarker> getAllPolicyCrossCuttingMarkersByPolicy(long policyId);
+
+  /**
    * @param policyID
    * @param cgiarCrossCuttingMarkerID
    * @param phaseID

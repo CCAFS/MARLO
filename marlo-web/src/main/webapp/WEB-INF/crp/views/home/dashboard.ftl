@@ -20,6 +20,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/crp/macros/projectsListTemplate.ftl" as projectList /]
+[#import "/WEB-INF/global/macros/deliverableListTemplate.ftl" as deliverablesList /]
 
 [#assign timeline = [
   {"id":"1", "startDate":"11/28/2016", "endDate":"11/30/2016","what":"MARLO opens for Impact Pathway","who":"Flagship Leaders"},
@@ -153,12 +154,17 @@
       <div class="col-md-12">
         <ul class="nav nav-tabs" role="tablist">
           <li role="presentation" class="active"><a  id="projects" href="#myProjects" aria-controls="myProjects" role="tab" data-toggle="tab">My projects</a></li>
+          <li role="presentation"><a id="deliverables" href="#myDeliverables" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.myDeliverables.title" /]</a></li>
           <li role="presentation" style="display:none;"><a id="impact" href="#impactP" aria-controls="impactP" role="tab" data-toggle="tab">Impact pathway</a></li>
         </ul>
         
         <div class="tab-content">
           <div role="tabpanel" class="tab-pane fade in active" id="myProjects">
             [@projectList.dashboardProjectsList projects=myProjects canValidate=true canEdit=true namespace="/projects" defaultAction="${(crpSession)!}/description" /]
+          </div>
+          
+          <div role="tabpanel" class="tab-pane fade" id="myDeliverables">
+            [@deliverablesList.deliverablesSummaryList deliverables=myDeliverables canValidate=true canEdit=true namespace="/deliverables" defaultAction="${(crpSession)!}/description" /]
           </div>
           
           <div role="tabpanel" class="tab-pane fade" id="impactP">

@@ -107,6 +107,11 @@ public class ProjectPolicyRegionManagerImpl implements ProjectPolicyRegionManage
   }
 
   @Override
+  public List<ProjectPolicyRegion> getAllPolicyRegionsByPolicy(Long policyId) {
+    return this.projectPolicyRegionDAO.getAllPolicyRegionsByPolicy(policyId.longValue());
+  }
+
+  @Override
   public List<ProjectPolicyRegion> getPolicyRegionbyPhase(long policyID, long phaseID) {
     return projectPolicyRegionDAO.getPolicyRegionbyPhase(policyID, phaseID);
   }
@@ -170,6 +175,4 @@ public class ProjectPolicyRegionManagerImpl implements ProjectPolicyRegionManage
       this.saveProjectPolicyRegionPhase(phase.getNext(), policyID, projectPolicyRegion);
     }
   }
-
-
 }

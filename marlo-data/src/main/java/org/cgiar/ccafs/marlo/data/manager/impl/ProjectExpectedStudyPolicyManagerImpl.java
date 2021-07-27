@@ -107,6 +107,11 @@ public class ProjectExpectedStudyPolicyManagerImpl implements ProjectExpectedStu
   }
 
   @Override
+  public List<ProjectExpectedStudyPolicy> getAllExpectedStudyPoliciesByPolicy(Long policyId) {
+    return this.projectExpectedStudyPolicyDAO.getAllExpectedStudyPoliciesByPolicy(policyId.longValue());
+  }
+
+  @Override
   public ProjectExpectedStudyPolicy getProjectExpectedStudyPolicyById(long projectExpectedStudyPolicyID) {
 
     return projectExpectedStudyPolicyDAO.find(projectExpectedStudyPolicyID);
@@ -168,6 +173,4 @@ public class ProjectExpectedStudyPolicyManagerImpl implements ProjectExpectedStu
 
     return projectExpectedStudyPolicyResult;
   }
-
-
 }

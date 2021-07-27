@@ -55,6 +55,14 @@ public interface ProjectPolicyRegionDAO {
   public List<ProjectPolicyRegion> findAll();
 
 
+  /**
+   * This method gets a list of projectPolicyRegion by a given projectPolicy identifier.
+   * 
+   * @param policyId is the projectPolicy identifier.
+   * @return a list of projectPolicyRegion objects.
+   */
+  public List<ProjectPolicyRegion> getAllPolicyRegionsByPolicy(long policyId);
+
   public List<ProjectPolicyRegion> getPolicyRegionbyPhase(long policyID, long phaseID);
 
   public ProjectPolicyRegion getProjectPolicyRegionByPhase(long projectPolicyID, long regionID, long phaseID);
