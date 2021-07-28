@@ -1056,6 +1056,10 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                   /*
                    * CTAbstractNum cTAbstractNum = CTAbstractNum.Factory.newInstance();
                    * cTAbstractNum.setAbstractNumId(BigInteger.valueOf(0));
+                   * ///* Bullet list
+                   * CTLvl cTLvl = cTAbstractNum.addNewLvl();
+                   * cTLvl.addNewNumFmt().setVal(STNumberFormat.BULLET);
+                   * cTLvl.addNewLvlText().setVal("\u2022");
                    * XWPFAbstractNum abstractNum = new XWPFAbstractNum(cTAbstractNum);
                    * XWPFNumbering numbering = document.createNumbering();
                    * BigInteger abstractNumID = numbering.addAbstractNum(abstractNum);
@@ -1200,21 +1204,31 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    // fileName.append("(BETA version)+" ");
-    fileName.append(this.getLoggedCrp().getAcronym());
-    fileName.append("_ProgressReport");
-
-    if (this.getCurrentCycleYear() != 0) {
-      fileName.append(this.getCurrentCycleYear());
-    }
+    // fileName.append(this.getLoggedCrp().getAcronym()+"_");
 
     if (showAllYears.equals("true")) {
-      fileName.append("_AllClusters_");
+      fileName.append("All Clusters - ");
     } else {
-      fileName.append("_Cluster" + projectID + "_");
+      fileName.append("C" + projectID + " ");
+      if (projectInfo != null && projectInfo.getLiaisonInstitution() != null
+        && projectInfo.getLiaisonInstitution().getInstitution() != null
+        && projectInfo.getLiaisonInstitution().getInstitution().getName() != null) {
+        fileName.append(projectInfo.getLiaisonInstitution().getInstitution().getName() + " - ");
+      } else {
+        fileName.append("- ");
+      }
     }
 
-    fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
+    fileName.append("Progress Report_");
+
+    /*
+     * if (this.getCurrentCycleYear() != 0) {
+     * fileName.append(this.getCurrentCycleYear());
+     * }
+     */
+
+    // fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
+    fileName.append(new SimpleDateFormat("yyyyMMdd").format(new Date()));
     fileName.append(".docx");
     return fileName.toString();
   }
