@@ -165,11 +165,10 @@ public class ProjectOutcomeListAction extends BaseAction {
       ProjectOutcome projectOutcome = new ProjectOutcome();
       projectOutcome.setPhase(this.getActualPhase());
       projectOutcome.setProject(project);
-      projectOutcome.setOrder((double) 1);
       projectOutcome.setCrpProgramOutcome(crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeId));
       projectOutcome = projectOutcomeManager.saveProjectOutcome(projectOutcome);
       projectOutcomeID = projectOutcome.getId().longValue();
-
+      projectOutcome.setOrder(this.defineProjectOutcomeOrder(projectOutcome));
       if (this.isAiccra()) {
         this.addAllCrpMilestones(projectOutcome);
       }
@@ -178,6 +177,74 @@ public class ProjectOutcomeListAction extends BaseAction {
     } else {
       return NOT_AUTHORIZED;
     }
+  }
+
+  public double defineProjectOutcomeOrder(ProjectOutcome projectOutcome) {
+    double orderIndex = 1;
+    if (projectOutcome != null && projectOutcome.getCrpProgramOutcome() != null
+      && projectOutcome.getCrpProgramOutcome().getDescription() != null) {
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("Indicator 1")) {
+        orderIndex = 1;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("Indicator 2")) {
+        orderIndex = 2;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("Indicator 3")) {
+        orderIndex = 3;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("1.1")) {
+        orderIndex = 11;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("1.2")) {
+        orderIndex = 12;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("1.3")) {
+        orderIndex = 13;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("1.4")) {
+        orderIndex = 14;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("1.5")) {
+        orderIndex = 15;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("2.1")) {
+        orderIndex = 21;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("2.1")) {
+        orderIndex = 21;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("2.2")) {
+        orderIndex = 22;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("2.3")) {
+        orderIndex = 23;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("2.4")) {
+        orderIndex = 24;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("2.5")) {
+        orderIndex = 25;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("3.1")) {
+        orderIndex = 31;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("3.1")) {
+        orderIndex = 31;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("3.2")) {
+        orderIndex = 32;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("3.3")) {
+        orderIndex = 33;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("3.4")) {
+        orderIndex = 34;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("3.5")) {
+        orderIndex = 35;
+      }
+    }
+    return orderIndex;
   }
 
   public String deleteProjectOutcome() {
