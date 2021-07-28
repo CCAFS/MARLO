@@ -37,12 +37,22 @@ function destroyTable(id) {
 }
 
 function updateDataTable(id) {
+	var isPublicationMQAP = true;
 
-	console.log("segunddo");
+	if (id == "publicationMQAP") {
+		isPublicationMQAP = false;
+	} else {
+		isPublicationMQAP = true;
+	}
+
+	console.log("segundo", isPublicationMQAP);
 
 	// if (!document.querySelector(".dt-buttons")) {
 
 	$("#" + id).DataTable({
+		paging: isPublicationMQAP,
+		searching: isPublicationMQAP,
+		info: isPublicationMQAP,
 		responsive: "true",
 		dom: 'Bfrtilp',
 		destroy: true,
