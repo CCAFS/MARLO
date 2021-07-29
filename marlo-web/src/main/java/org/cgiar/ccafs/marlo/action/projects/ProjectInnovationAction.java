@@ -1325,11 +1325,12 @@ public class ProjectInnovationAction extends BaseAction {
 
       // If innovation type is different to genetic, the value of the field -number of
       // innovation- is set to null
+      // Dperez 2021-07-28 Change all innovations with type different to genetic the default value is 1
 
       if (innovation.getProjectInnovationInfo().getRepIndInnovationType() != null
         && innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() != null
         && innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() != 1) {
-        innovation.getProjectInnovationInfo().setInnovationNumber(null);
+        innovation.getProjectInnovationInfo().setInnovationNumber(new Long(1));
       }
 
       // NOTE -> FOR SOME REASON "CLEAR LEAD" MEANS "NOT A CLEAR LEAD", SO WE HAVE TO REVERSE THE CONDITIONAL
