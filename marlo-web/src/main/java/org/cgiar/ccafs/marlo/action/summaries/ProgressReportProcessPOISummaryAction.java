@@ -989,6 +989,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                 } else {
                   expected2023 = Math.round(projectOutcome.getExpectedValue()) + "";
                 }
+                String milestoneNarrativeTarget = "";
                 List<ProjectMilestone> projectMilestones = new ArrayList<>();
                 projectMilestones = projectMilestoneManager.findAll().stream()
                   .filter(m -> m.isActive() && m.getYear() == this.getSelectedPhase().getYear()
@@ -1012,20 +1013,42 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                     } else {
                       progress2021 = milestone.getAchievedValue() + "";
                     }
+
+                    if (milestone.getNarrativeTarget() != null) {
+                      milestoneNarrativeTarget = milestone.getNarrativeTarget();
+                    }
                   }
                 }
                 this.createTableIndicators(overall2023, expected2023, expected2021, progress2021);
 
 
+                // Project outcome narrative
+                /*
+                 * if (projectOutcome.getNarrativeTarget() != null) {
+                 * poiSummary.textLineBreak(document, 1);
+                 * poiSummary.textParagraphFontBoldCalibri(document.createParagraph(),
+                 * this.getText("summaries.progressReport2020.projectOutcome.narrativeTarget") + ":");
+                 * paragraph = document.createParagraph();
+                 * run = paragraph.createRun();
+                 * run.setText(projectOutcome.getNarrativeTarget());
+                 * run.setBold(false);
+                 * run.setFontSize(11);
+                 * run.setFontFamily("Calibri");
+                 * run.setColor("000000");
+                 * }
+                 */
+
                 // Project Milestone narrative
-                if (projectOutcome.getNarrativeTarget() != null) {
+
+
+                if (milestoneNarrativeTarget != null) {
                   poiSummary.textLineBreak(document, 1);
                   poiSummary.textParagraphFontBoldCalibri(document.createParagraph(),
-                    this.getText("summaries.progressReport2020.projectOutcome.narrativeTarget") + ":");
+                    this.getText("summaries.progressReport2020.projectMilestone.narrativeTarget") + ":");
 
                   paragraph = document.createParagraph();
                   run = paragraph.createRun();
-                  run.setText(projectOutcome.getNarrativeTarget());
+                  run.setText(milestoneNarrativeTarget);
                   run.setBold(false);
                   run.setFontSize(11);
                   run.setFontFamily("Calibri");
