@@ -72,11 +72,17 @@ public class OneCGIARControlList {
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/allCGIARRegions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<OneCGIARRegionsDTO>> findAllCGIARRegions() {
-    ResponseEntity<List<OneCGIARRegionsDTO>> response = this.regionsItem.getAll();
-    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-      throw new NotFoundException("404", this.env.getProperty("CGIARControlList.Regions.code.404"));
+    try {
+      ResponseEntity<List<OneCGIARRegionsDTO>> response = this.regionsItem.getAll();
+      if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+        throw new NotFoundException("404", this.env.getProperty("CGIARControlList.Regions.code.404"));
+      }
+      return response;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
     }
-    return response;
+
   }
 
   @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.RegionTypes.all.value}",
