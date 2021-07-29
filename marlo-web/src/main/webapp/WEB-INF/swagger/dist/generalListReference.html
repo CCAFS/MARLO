@@ -115,6 +115,7 @@
         <a href="#section1-item4" > <button type="button" class="subCollapsible">Official list of Regions <span class="getColor">GET</span></button></a>
         <a href="#section1-item5" > <button type="button" class="subCollapsible">CGIAR Acronyms <span class="getColor">GET</span></button></a>
         <a href="#section1-item6" > <button type="button" class="subCollapsible">CGIAR Regions <span class="getColor">GET</span></button></a>
+        <a href="#section1-item7" > <button type="button" class="subCollapsible">Glossary <span class="getColor">GET</span></button></a>
       </div>
       <a href="#section2" class="collap"> <button type="button" class="collapsible" href="#section2">Institutions</button></a>
       <div class="content">
@@ -667,7 +668,7 @@
                 <div class="bshadow" data-aos="fade-up" id="section1-item6">
                   <div class="getColorbackground contEndpoint">
                     <button type="button" class="btn getColorbackground">GET</button> <span
-                      class="endpointTitle">/CGIARRegions</span>
+                      class="endpointTitle">/allCGIARRegions</span>
                   </div>
                   <div class="parameters">
                     <h3>Functionality</h3>
@@ -687,7 +688,7 @@
                               <p><span><Strong>Request URL: </Strong></span></p>
                               <div class="URLendpoint">
                                 <div class="fragCode">
-                                  <p><span class="endpoint"></span>/CGIARRegions</p>
+                                  <p><span class="endpoint"></span>/allCGIARRegions</p>
                                 </div>
                               </div>
                             </div>
@@ -717,6 +718,103 @@
     <span class="yellowCode">}</span><span class="WhiteCode">,</span>
     <span class="blueCode">"code"</span><span class="WhiteCode"> : </span><span class="yellowCode">[</span>
     <span class="yellowCode">]</span>
+  <span class="yellowCode">}</span>
+<span class="yellowCode">]</span>
+                            </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">400</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Bad Request</span>
+                            </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">401</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Unauthorized</span>
+                          </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">403</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Forbidden</span>
+                          </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">404</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Not Found</span>
+                          </code></pre>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                 <!-- METHOD 7 -->
+                <div class="bshadow" data-aos="fade-up" id="section1-item7">
+                  <div class="getColorbackground contEndpoint">
+                    <button type="button" class="btn getColorbackground">GET</button> <span
+                      class="endpointTitle">/glossary</span>
+                  </div>
+                  <div class="parameters">
+                    <h3>Functionality</h3>
+                    <div>View Glossary of terms</div>
+                    <h3>Parameters</h3>
+                    <div>No parameters</div>
+                    <table style="width: 70%">
+                      <thead>
+                        <tr>
+                          <th></th>     
+                        </tr>
+                      </thead>
+                      <tbody>        
+                        <tr>
+                          <td colspan="2">
+                            <div>
+                              <p><span><Strong>Request URL: </Strong></span></p>
+                              <div class="URLendpoint">
+                                <div class="fragCode">
+                                  <p><span class="endpoint"></span>/glossary</p>
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="container-c">
+                    <div class="row">
+                      <div class="col-12" style="margin-bottom: 20px;">
+                        <button onclick="glossary()" type="button"  data-toggle="modal" data-target="#exampleRequestModal15" class="btn getColorbackgroundExample btn-lg btn-block">Display control list</button>
+                      </div>
+                      <div class="col-12">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="greenCode">200</span>: <span class="blueCode">OK</span> </p>
+                          </div>
+                          <pre><code>
+<span class="yellowCode">[</span>
+  <span class="yellowCode">{</span>
+    <span class="blueCode">"applicationName"</span><span class="WhiteCode"> : "string",</span>
+    <span class="blueCode">"title"</span><span class="WhiteCode"> : "string",</span>
+    <span class="blueCode">"definition"</span><span class="WhiteCode"> : "string"</span>    
   <span class="yellowCode">}</span>
 <span class="yellowCode">]</span>
                             </code></pre>
@@ -2172,7 +2270,7 @@
   <div class="modal-dialog modal-dialog-scrollable modal-xl">
     <div class="modal-content">      
       <div class="modal-body" >
-        <table class="table dataTable" id="CGIAR_Regions" >
+        <table class="table dataTable" id="CGIAR_regions" >
           <thead class="thead-dark">
             <tr id="#list-print-columns-name">
               <td>Code</td>
@@ -2241,13 +2339,46 @@
   </div>
 </div>
 
+<!-- Glossary  -->
+<div class="modal fade" id="exampleRequestModal15" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-xl">
+    <div class="modal-content">      
+      <div class="modal-body" >
+        <table class="table dataTable" id="glossary" >
+          <thead class="thead-dark">
+            <tr id="#list-print-columns-name">
+              <td>Application name</td>
+              <td>Title</td>
+              <td>Definition</td>              
+            </tr>
+          </thead>
+          <tbody id="list-print-glossary">
+          </tbody>
+        </table>
+        <div class="text-center">
+          <div class="spinner-general" id="spinner_glossary">
+            <div class="spinner-border   text-success" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+            <h4 style="margin-top: 15px;">Loading...</h4>
+          </div>
+        </div>
+      </div>
+      <div  class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
+        <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 <!-- 
 <p>This is a paragraph.</p>
 
 <button>Toggle slideUp() and slideDown()</button> -->
 <script src="conf/endpoint.conf.js"></script>
-<script src="js/request.js?20210722"></script>
+<script src="js/request.js?20210729"></script>
 <script>
   var coll = document.getElementsByClassName("collap");
   var i;
