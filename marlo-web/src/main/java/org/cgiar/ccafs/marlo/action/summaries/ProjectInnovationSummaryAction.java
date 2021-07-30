@@ -155,6 +155,8 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       this.getText("projectInnovations.degreeInnovation"));
     masterReport.getParameterValues().put("i8nInnovationRGeographicScope",
       this.getText("projectInnovations.geographicScope"));
+    masterReport.getParameterValues().put("i8nInnovationRInnovationNumber",
+      this.getText("projectInnovations.innovationNumber"));
     masterReport.getParameterValues().put("i8nInnovationRRegion", this.getText("projectInnovations.region"));
     masterReport.getParameterValues().put("i8nInnovationRCountries", this.getText("projectInnovations.countries"));
     masterReport.getParameterValues().put("i8nInnovationROrganizations",
@@ -337,12 +339,12 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         "organizations", "projectExpectedStudy", "descriptionStage", "leadOrganization", "contributingOrganization",
         "adaptativeResearch", "evidenceLink", "deliverables", "crps", "genderFocusLevel", "genderExplaniation",
         "youthFocusLevel", "youthExplaniation", "project", "oicr", "centers", "hasMilestones", "milestones", "subIdos",
-        "deliverableLink", "phaseID", "center", "isNew"},
+        "deliverableLink", "phaseID", "center", "isNew", "innovationNumber"},
       new Class[] {Long.class, Boolean.class, Boolean.class, Boolean.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class},
       0);
     Long id = null;
     String title = null, narrative = null, phaseResearch = null, stageInnovation = null, innovationType = null,
@@ -352,7 +354,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       links = null, deliverables = null, crps = null, genderFocusLevel = null, genderExplaniation = null,
       youthFocusLevel = null, youthExplaniation = null, project = null, oicr = "", centers = "", hasMilestones = "",
       milestones = null, subIdos = null, deliverableLink = "", phaseID = "", loggedCenter = "", deliverableID = "",
-      isNew = null;
+      isNew = null, innovationNumber = null;
     Boolean isRegional = false, isNational = false, isStage4 = false;
     // Id
     id = projectInnovationID;
@@ -460,6 +462,19 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       }
     } else {
       hasMilestones = "<Not Defined>";
+    }
+
+    // Number of individual improved lines/varieties
+    if (projectInnovationInfo.getRepIndInnovationType() != null
+      && projectInnovationInfo.getRepIndInnovationType().getId() != null
+      && projectInnovationInfo.getRepIndInnovationType().getId().longValue() == 1L) {
+      if (projectInnovationInfo.getInnovationNumber() != null) {
+        innovationNumber = String.valueOf(projectInnovationInfo.getInnovationNumber());
+      } else {
+        innovationNumber = "&lt;Not Defined&gt;";
+      }
+    } else {
+      innovationNumber = "&lt;Not Applicable&gt;";
     }
 
     // Milestones
@@ -733,7 +748,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       contributionOfCrp, degreeInnovation, geographicScope, region, countries, organizations, projectExpectedStudies,
       descriptionStage, leadOrganization, contributingOrganization, adaptativeResearch, evidenceLink, deliverables,
       crps, genderFocusLevel, genderExplaniation, youthFocusLevel, youthExplaniation, project, oicr, centers,
-      hasMilestones, milestones, subIdos, deliverableLink, phaseID, loggedCenter, isNew});
+      hasMilestones, milestones, subIdos, deliverableLink, phaseID, loggedCenter, isNew, innovationNumber});
     return model;
   }
 

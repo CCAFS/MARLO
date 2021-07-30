@@ -73,6 +73,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import com.ibm.icu.util.Calendar;
+import org.apache.commons.collections4.SetUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
@@ -342,8 +343,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       }
     }
 
-    for (Deliverable deliverable : phaseDeliverables.stream().sorted((d1, d2) -> d1.getId().compareTo(d2.getId()))
-      .collect(Collectors.toList())) {
+    for (Deliverable deliverable : phaseDeliverables.stream().filter(d -> d != null && d.getId() != null)
+      .sorted((d1, d2) -> d1.getId().compareTo(d2.getId())).collect(Collectors.toList())) {
       if (activePPAFilter) {
         addDeliverableRow = false;
       }
@@ -352,7 +353,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       // Store Institution
       String ppaResponsible = "";
       String divisions = null;
-      List<String> divisionList = new ArrayList<>();
+      Set<String> divisionSet = new HashSet<>();
       Set<String> ppaResponsibleList = new HashSet<>();
       LinkedHashSet<Institution> institutionsResponsibleList = new LinkedHashSet<>();
       List<String> allResponsibleList = new ArrayList<>();
@@ -362,6 +363,12 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       List<DeliverableUserPartnership> partnershipsList = deliverable.getDeliverableUserPartnerships().stream()
         .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getSelectedPhase().getId())
           && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
+        .collect(Collectors.toList());
+
+      // Get partner others
+      List<DeliverableUserPartnership> othersPartnerships = deliverable.getDeliverableUserPartnerships().stream()
+        .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getSelectedPhase().getId())
+          && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_OTHER))
         .collect(Collectors.toList());
 
       DeliverableUserPartnership responsible = null;
@@ -421,6 +428,27 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
           if (projectPartnersList != null) {
             projectPartnersListTemp = projectPartnersList;
+            List<DeliverableUserPartnership> userPartnershipTemp = new ArrayList<>(partnershipsList);
+            userPartnershipTemp.addAll(othersPartnerships);
+
+            List<DeliverableUserPartnershipPerson> userPartnershipPersonsTemp =
+              userPartnershipTemp.stream().filter(dup -> dup != null && dup.getId() != null && dup.isActive())
+                .flatMap(dup -> SetUtils.emptyIfNull(dup.getDeliverableUserPartnershipPersons()).stream())
+                .filter(dupp -> dupp != null && dupp.getId() != null && dupp.isActive() && dupp.getUser() != null
+                  && dupp.getUser().getId() != null)
+                .collect(Collectors.toList());
+
+            for (DeliverableUserPartnershipPerson dupp : userPartnershipPersonsTemp) {
+              for (ProjectPartner pp : projectPartnersList) {
+                divisionSet.addAll(pp.getProjectPartnerPersons().stream()
+                  .filter(ppp -> ppp != null && ppp.getId() != null && ppp.isActive()
+                    && ppp.getPartnerDivision() != null && ppp.getPartnerDivision().getId() != null
+                    && StringUtils.isNotBlank(ppp.getPartnerDivision().getAcronym()) && ppp.getUser() != null
+                    && ppp.getUser().getId() != null && ppp.getUser().getId().equals(dupp.getUser().getId()))
+                  .map(ppp -> StringUtils.trim(ppp.getPartnerDivision().getAcronym())).collect(Collectors.toSet()));
+              }
+            }
+            divisions = String.join(", ", divisionSet);
           }
 
           if (responsibleppp != null && responsibleppp.getUser() != null) {
@@ -453,12 +481,12 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
                       allResponsibleList.add("/" + partnerPerson.getPartnerDivision().getAcronym());
                       managingPartner += "/" + partnerPerson.getPartnerDivision().getAcronym();
                       if (divisions == null || divisions.isEmpty()) {
-                        divisionList.add(partnerPerson.getPartnerDivision().getAcronym());
-                        divisions = partnerPerson.getPartnerDivision().getAcronym();
+                        divisionSet.add(partnerPerson.getPartnerDivision().getAcronym());
+                        // divisions = partnerPerson.getPartnerDivision().getAcronym();
                       } else {
-                        if (!divisionList.contains(partnerPerson.getPartnerDivision().getAcronym())) {
-                          divisions += ", " + partnerPerson.getPartnerDivision().getAcronym();
-                          divisionList.add(partnerPerson.getPartnerDivision().getAcronym());
+                        if (!divisionSet.contains(partnerPerson.getPartnerDivision().getAcronym())) {
+                          // divisions += ", " + partnerPerson.getPartnerDivision().getAcronym();
+                          divisionSet.add(partnerPerson.getPartnerDivision().getAcronym());
                         }
                       }
                     }
@@ -483,11 +511,6 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         }
       }
 
-      // Get partner others
-      List<DeliverableUserPartnership> othersPartnerships = deliverable.getDeliverableUserPartnerships().stream()
-        .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getSelectedPhase().getId())
-          && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_OTHER))
-        .collect(Collectors.toList());
 
       if (othersPartnerships != null) {
 
@@ -497,7 +520,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           }
           if (deliverablePartnership.getDeliverableUserPartnershipPersons() != null) {
 
-            List<DeliverableUserPartnershipPerson> responsibleppp = deliverablePartnership
+            List<DeliverableUserPartnershipPerson> otherResponsiblePpp = deliverablePartnership
               .getDeliverableUserPartnershipPersons().stream().filter(dp -> dp.isActive()).collect(Collectors.toList());
 
             // If the deliverable user partner institution is not in ppaResponsibleList
@@ -531,7 +554,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
               }
             }
 
-            for (DeliverableUserPartnershipPerson person : responsibleppp) {
+            for (DeliverableUserPartnershipPerson person : otherResponsiblePpp) {
               if (person.getUser() != null && person.getUser().getComposedName() != null) {
 
                 if (person.getDeliverableUserPartnership() != null
@@ -574,12 +597,12 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
                               allResponsibleList.add("/" + ppPerson.getPartnerDivision().getAcronym());
 
                               if (divisions == null) {
-                                divisionList.add(ppPerson.getPartnerDivision().getAcronym());
-                                divisions = ppPerson.getPartnerDivision().getAcronym();
+                                divisionSet.add(ppPerson.getPartnerDivision().getAcronym());
+                                // divisions = ppPerson.getPartnerDivision().getAcronym();
                               } else {
-                                if (!divisionList.contains(ppPerson.getPartnerDivision().getAcronym())) {
-                                  divisions += ", " + ppPerson.getPartnerDivision().getAcronym();
-                                  divisionList.add(ppPerson.getPartnerDivision().getAcronym());
+                                if (!divisionSet.contains(ppPerson.getPartnerDivision().getAcronym())) {
+                                  // divisions += ", " + ppPerson.getPartnerDivision().getAcronym();
+                                  divisionSet.add(ppPerson.getPartnerDivision().getAcronym());
                                 }
                               }
                             }
