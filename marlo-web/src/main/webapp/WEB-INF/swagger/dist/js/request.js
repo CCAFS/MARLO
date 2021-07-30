@@ -620,7 +620,7 @@ function glossary(){
 				$('#list-print-glossary').append(
 					'<tr>' + '<td >' + item['applicationName'] + '</td>' 
 					+ '<td>'+ item['title'] + '</td>'
-					+ '<td>'+ item['definition'] + '</td>' 					
+					+ '<td>'+ item['definition'] + '</td>'
 					+ '</tr>')
 			});
 			updateDataTable("glossary");
