@@ -101,26 +101,49 @@
           <h3>CLARISA</h3>
            <p>Additional Services</p>
         </div> 
-        <a href="#section1" class="collap"> <button type="button" class="collapsible">M-QAP Tool</button></a> 
+        <a href="#section1" class="collap"> <button type="button" class="collapsible" >Institutions Management</button></a>
         <div class="content">
-          <a href="#section1-item1" > <button type="button" class="subCollapsible">GetDeliverableWOS <span class="getColor">GET</span></button></a>          
+          <a href="#section1-item1" > <button type="button" class="subCollapsible">Institutions List <span class="getColor"></span></button></a>
         </div>
-        <a href="#section2" class="collap"> <button type="button" class="collapsible" >Institutions Management</button></a>
+        <a href="#section2" class="collap"> <button type="button" class="collapsible">M-QAP Tool</button></a> 
         <div class="content">
-          <a href="#section2-item1" > <button type="button" class="subCollapsible">Institutions List <span class="getColor"></span></button></a>
+          <a href="#section2-item1" > <button type="button" class="subCollapsible">GetDeliverableWOS <span class="getColor">GET</span></button></a>          
         </div>
+        
         
                        
      </div>
      <div class="righBody">
-       <div class="section" id="section1">
+      <div class="section" id="section1">
+        <h1 class="title" data-aos="fade-up">Institutions Management</h1>
+        <div class="bshadow" data-aos="fade-up">
+         <div class="container-c">
+          <div class="row">
+            <div class="col-12">
+            <h2 class="title">Institutions List</h2>
+              <div class="bshadow" data-aos="fade-up" id="section1-item1">
+                <div class="parameters">
+                <div>This is a worldwide list of institutions that have been related to CGIAR activities as funders, leaders, 
+               partners, and/or contributors. This list reflects the information consolidated by some of the CGIAR Management Information Systems 
+               and external sources (i.e. MARLO and MEL). </div>
+                </div>
+                 <iframe id="inst-frame" src="" width="100%" height="1300px">
+     </iframe>     
+              </div>
+              
+            </div>
+          </div>
+         </div>
+        </div>
+     </div>
+       <div class="section" id="section2">
          <h1 class="title" data-aos="fade-up">M-QAP Tool</h1>
          <div class="bshadow" data-aos="fade-up">
             <div class="container-c">
               <div class="row">
                 <div class="col-12">
                  <h2 class="title">methods</h2>
-                 <div class="bshadow" data-aos="fade-up" id="section1-item1">
+                 <div class="bshadow" data-aos="fade-up" id="section2-item1">
                     <div class="getColorbackground contEndpoint">
                       <button type="button" class="btn getColorbackground">GET</button> <span
                       class="endpointTitle">/publicationsWOS</span>
@@ -300,28 +323,7 @@
             </div>
          </div>
      </div>
-     <div class="section" id="section2">
-        <h1 class="title" data-aos="fade-up">Institutions Management</h1>
-        <div class="bshadow" data-aos="fade-up">
-         <div class="container-c">
-          <div class="row">
-            <div class="col-12">
-            <h2 class="title">Institutions List</h2>
-              <div class="bshadow" data-aos="fade-up" id="section2-item1">
-                <div class="parameters">
-                <div>This is a worldwide list of institutions that have been related to CGIAR activities as funders, leaders, 
-               partners, and/or contributors. This list reflects the information consolidated by some of the CGIAR Management Information Systems 
-               and external sources (i.e. MARLO and MEL). </div>
-                </div>
-                 <iframe id="inst-frame" src="" width="100%" height="1300px">
-     </iframe>     
-              </div>
-              
-            </div>
-          </div>
-         </div>
-        </div>
-     </div>
+    
      </div>
      
   </main>
@@ -361,7 +363,7 @@
 
 <button>Toggle slideUp() and slideDown()</button> -->
 <script src="conf/endpoint.conf.js"></script>
-<script src="js/request.js?20210722"></script>
+<script src="js/request.js?20210729"></script>
 <script>
   var coll = document.getElementsByClassName("collap");
   var i;
