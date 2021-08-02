@@ -95,7 +95,7 @@ public class ProjectExpectedStudyNexusManagerImpl implements ProjectExpectedStud
       && originalProjectExpectedStudyNexus.getNexus() != null && originalProjectExpectedStudyNexus.getPhase() != null) {
       ProjectExpectedStudyNexus studyLever =
         this.getStudyNexusByStudyNexusAndPhase(originalProjectExpectedStudyNexus.getProjectExpectedStudy(),
-          originalProjectExpectedStudyNexus.getNexus(), originalProjectExpectedStudyNexus.getPhase());
+          originalProjectExpectedStudyNexus.getNexus(), current);
       if (studyLever == null) {
         studyLever = new ProjectExpectedStudyNexus();
       }

@@ -99,8 +99,7 @@ public class ProjectExpectedStudyLeverOutcomeManagerImpl implements ProjectExpec
       && originalProjectExpectedStudyLeverOutcome.getPhase() != null) {
       ProjectExpectedStudyLeverOutcome studyLeverOutcome = this.getStudyLeverOutcomeByStudyLeverOutcomeAndPhase(
         originalProjectExpectedStudyLeverOutcome.getProjectExpectedStudy(),
-        originalProjectExpectedStudyLeverOutcome.getLeverOutcome(),
-        originalProjectExpectedStudyLeverOutcome.getPhase());
+        originalProjectExpectedStudyLeverOutcome.getLeverOutcome(), current);
       if (studyLeverOutcome == null) {
         studyLeverOutcome = new ProjectExpectedStudyLeverOutcome();
       }

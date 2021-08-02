@@ -1079,7 +1079,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             for (AllianceLeverOutcome leverOutcome : leverOutcomeList) {
               String showName = "";
               if (StringUtils.isNotBlank(leverOutcome.getIndicator())) {
-                showName = "Lever " + StringUtils.trimToEmpty(leverOutcome.getIndicator());
+                showName += "Lever " + StringUtils.trimToEmpty(leverOutcome.getIndicator());
               }
               if (StringUtils.isNotBlank(leverOutcome.getName())) {
                 showName += " - " + StringUtils.trimToEmpty(leverOutcome.getName());
@@ -1098,10 +1098,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             for (AllianceLever lever : leverList) {
               String showName = "";
               if (StringUtils.isNotBlank(lever.getIndicator())) {
-                showName = "Lever " + StringUtils.trimToEmpty(lever.getIndicator());
+                showName += "Lever " + StringUtils.trimToEmpty(lever.getIndicator());
               }
               if (StringUtils.isNotBlank(lever.getName())) {
-                showName = " - " + StringUtils.trimToEmpty(lever.getName());
+                showName += " - " + StringUtils.trimToEmpty(lever.getName());
               }
 
               lever.setShowName(showName);
@@ -2088,21 +2088,27 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     // Save form Information
     if (this.expectedStudy.getLeverOutcomes() != null) {
       for (ProjectExpectedStudyLeverOutcome studyLeverOutcome : this.expectedStudy.getLeverOutcomes()) {
-        if (studyLeverOutcome.getId() == null) {
-          ProjectExpectedStudyLeverOutcome studyLeverOutcomeSave = new ProjectExpectedStudyLeverOutcome();
-          studyLeverOutcomeSave.setProjectExpectedStudy(projectExpectedStudy);
-          studyLeverOutcomeSave.setPhase(phase);
+        if (studyLeverOutcome != null && studyLeverOutcome.getLeverOutcome() != null
+          && studyLeverOutcome.getLeverOutcome().getId() != null) {
+          if (studyLeverOutcome.getId() == null) {
+            ProjectExpectedStudyLeverOutcome studyLeverOutcomeSave = new ProjectExpectedStudyLeverOutcome();
+            studyLeverOutcomeSave.setProjectExpectedStudy(projectExpectedStudy);
+            studyLeverOutcomeSave.setPhase(phase);
 
-          AllianceLeverOutcome leverOutcome =
-            this.leverOutcomeManager.getAllianceLeverOutcomeById(studyLeverOutcome.getLeverOutcome().getId());
+            AllianceLeverOutcome leverOutcome =
+              this.leverOutcomeManager.getAllianceLeverOutcomeById(studyLeverOutcome.getLeverOutcome().getId());
 
-          studyLeverOutcomeSave.setLeverOutcome(leverOutcome);
+            if (leverOutcome != null) {
+              studyLeverOutcomeSave.setLeverOutcome(leverOutcome);
 
-          this.projectExpectedStudyLeverOutcomeManager.saveProjectExpectedStudyLeverOutcome(studyLeverOutcomeSave);
-          this.projectExpectedStudyLeverOutcomeManager.replicate(studyLeverOutcomeSave, phase.getNext());
-          // This is to add studyLinkSave to generate correct
-          // auditlog.
-          this.expectedStudy.getProjectExpectedStudyLeverOutcomes().add(studyLeverOutcomeSave);
+              studyLeverOutcomeSave = this.projectExpectedStudyLeverOutcomeManager
+                .saveProjectExpectedStudyLeverOutcome(studyLeverOutcomeSave);
+              this.projectExpectedStudyLeverOutcomeManager.replicate(studyLeverOutcomeSave, phase.getNext());
+              // This is to add studyLinkSave to generate correct
+              // auditlog.
+              this.expectedStudy.getProjectExpectedStudyLeverOutcomes().add(studyLeverOutcomeSave);
+            }
+          }
         }
       }
     }
@@ -2130,21 +2136,26 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     // Save form Information
     if (this.isNotEmpty(this.expectedStudy.getLevers())) {
       for (ProjectExpectedStudyLever studyLever : this.expectedStudy.getLevers()) {
-        if (studyLever.getId() == null) {
-          ProjectExpectedStudyLever studyLeverSave = new ProjectExpectedStudyLever();
-          studyLeverSave.setProjectExpectedStudy(projectExpectedStudy);
-          studyLeverSave.setPhase(phase);
+        if (studyLever != null && studyLever.getAllianceLever() != null
+          && studyLever.getAllianceLever().getId() != null) {
+          if (studyLever.getId() == null) {
+            ProjectExpectedStudyLever studyLeverSave = new ProjectExpectedStudyLever();
+            studyLeverSave.setProjectExpectedStudy(projectExpectedStudy);
+            studyLeverSave.setPhase(phase);
 
-          AllianceLever allianceLever =
-            this.allianceLeverManager.getAllianceLeverById(studyLever.getAllianceLever().getId());
+            AllianceLever allianceLever =
+              this.allianceLeverManager.getAllianceLeverById(studyLever.getAllianceLever().getId());
 
-          studyLeverSave.setAllianceLever(allianceLever);
+            if (allianceLever != null) {
+              studyLeverSave.setAllianceLever(allianceLever);
 
-          this.projectExpectedStudyLeverManager.saveProjectExpectedStudyLever(studyLeverSave);
-          this.projectExpectedStudyLeverManager.replicate(studyLeverSave, phase.getNext());
-          // This is to add studyLinkSave to generate correct
-          // auditlog.
-          this.expectedStudy.getProjectExpectedStudyLevers().add(studyLeverSave);
+              studyLeverSave = this.projectExpectedStudyLeverManager.saveProjectExpectedStudyLever(studyLeverSave);
+              this.projectExpectedStudyLeverManager.replicate(studyLeverSave, phase.getNext());
+              // This is to add studyLinkSave to generate correct
+              // auditlog.
+              this.expectedStudy.getProjectExpectedStudyLevers().add(studyLeverSave);
+            }
+          }
         }
       }
     }
@@ -2315,35 +2326,29 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           this.projectExpectedStudyNexusManager.deleteProjectExpectedStudyNexus(nexus.getId());
         }
       }
-
-
-      // Delete prev studies policies if the question is not
-      if (expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()) != null
-        && expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getIsContribution() != null
-        && expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getIsContribution() == false) {
-        for (ProjectExpectedStudyNexus nexus : nexusPrev) {
-          this.projectExpectedStudyNexusManager.deleteProjectExpectedStudyNexus(nexus.getId());
-        }
-      }
     }
 
     // Save form Information
     if (this.expectedStudy.getNexus() != null) {
       for (ProjectExpectedStudyNexus studyNexus : this.expectedStudy.getNexus()) {
-        if (studyNexus.getId() == null) {
-          ProjectExpectedStudyNexus nexusSave = new ProjectExpectedStudyNexus();
-          nexusSave.setProjectExpectedStudy(projectExpectedStudy);
-          nexusSave.setPhase(phase);
+        if (studyNexus != null && studyNexus.getNexus() != null && studyNexus.getNexus().getId() != null) {
+          if (studyNexus.getId() == null) {
+            ProjectExpectedStudyNexus nexusSave = new ProjectExpectedStudyNexus();
+            nexusSave.setProjectExpectedStudy(projectExpectedStudy);
+            nexusSave.setPhase(phase);
 
-          Nexus nexus = this.nexusManager.getNexusById(studyNexus.getNexus().getId());
+            Nexus nexus = this.nexusManager.getNexusById(studyNexus.getNexus().getId());
 
-          nexusSave.setNexus(nexus);
+            if (nexus != null) {
+              nexusSave.setNexus(nexus);
 
-          this.projectExpectedStudyNexusManager.saveProjectExpectedStudyNexus(nexusSave);
-          this.projectExpectedStudyNexusManager.replicate(nexusSave, phase.getNext());
-          // This is to add studyLinkSave to generate correct
-          // auditlog.
-          this.expectedStudy.getProjectExpectedStudyNexus().add(nexusSave);
+              nexusSave = this.projectExpectedStudyNexusManager.saveProjectExpectedStudyNexus(nexusSave);
+              this.projectExpectedStudyNexusManager.replicate(nexusSave, phase.getNext());
+              // This is to add studyLinkSave to generate correct
+              // auditlog.
+              this.expectedStudy.getProjectExpectedStudyNexus().add(nexusSave);
+            }
+          }
         }
       }
     }
@@ -2587,38 +2592,30 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           this.projectExpectedStudySdgTargetManager.deleteProjectExpectedStudySdgTarget(studySdgTarget.getId());
         }
       }
-
-      // Delete prev studies policies if the question is not
-      if (expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()) != null
-        && expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getIsContribution() != null
-        && expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getIsContribution() == false) {
-        for (ProjectExpectedStudySdgTarget studySdgTarget : sdgTargetPrev) {
-          this.projectExpectedStudySdgTargetManager.deleteProjectExpectedStudySdgTarget(studySdgTarget.getId());
-        }
-      }
     }
 
     // Save form Information
     if (this.expectedStudy.getSdgTargets() != null) {
       for (ProjectExpectedStudySdgTarget studySdgTarget : this.expectedStudy.getSdgTargets()) {
-        if (studySdgTarget.getId() == null) {
-          ProjectExpectedStudySdgTarget studySdgTargetSave = new ProjectExpectedStudySdgTarget();
-          studySdgTargetSave.setProjectExpectedStudy(projectExpectedStudy);
-          studySdgTargetSave.setPhase(phase);
+        if (studySdgTarget != null && studySdgTarget.getSdgTarget() != null
+          && studySdgTarget.getSdgTarget().getId() != null) {
+          if (studySdgTarget.getId() == null) {
+            ProjectExpectedStudySdgTarget studySdgTargetSave = new ProjectExpectedStudySdgTarget();
+            studySdgTargetSave.setProjectExpectedStudy(projectExpectedStudy);
+            studySdgTargetSave.setPhase(phase);
 
-          SdgTargets sdgTarget = new SdgTargets();
-          if (studySdgTarget.getSdgTarget() != null && studySdgTarget.getSdgTarget().getId() != null) {
-            sdgTarget = this.sdgTargetsManager.getSDGTargetsById(studySdgTarget.getSdgTarget().getId());
-          }
+            SdgTargets sdgTarget = this.sdgTargetsManager.getSDGTargetsById(studySdgTarget.getSdgTarget().getId());
 
-          if (sdgTarget != null) {
-            studySdgTargetSave.setSdgTarget(sdgTarget);
+            if (sdgTarget != null) {
+              studySdgTargetSave.setSdgTarget(sdgTarget);
 
-            this.projectExpectedStudySdgTargetManager.saveProjectExpectedStudySdgTarget(studySdgTargetSave);
-            this.projectExpectedStudySdgTargetManager.replicate(studySdgTargetSave, phase.getNext());
-            // This is to add studyLinkSave to generate correct
-            // auditlog.
-            this.expectedStudy.getProjectExpectedStudySdgTargets().add(studySdgTargetSave);
+              studySdgTargetSave =
+                this.projectExpectedStudySdgTargetManager.saveProjectExpectedStudySdgTarget(studySdgTargetSave);
+              this.projectExpectedStudySdgTargetManager.replicate(studySdgTargetSave, phase.getNext());
+              // This is to add studyLinkSave to generate correct
+              // auditlog.
+              this.expectedStudy.getProjectExpectedStudySdgTargets().add(studySdgTargetSave);
+            }
           }
         }
       }

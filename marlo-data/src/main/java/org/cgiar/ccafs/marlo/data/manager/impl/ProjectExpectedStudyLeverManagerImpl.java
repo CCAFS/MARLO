@@ -96,7 +96,7 @@ public class ProjectExpectedStudyLeverManagerImpl implements ProjectExpectedStud
       && originalProjectExpectedStudyLever.getPhase() != null) {
       ProjectExpectedStudyLever studyLever =
         this.getStudyLeverByStudyLeverAndPhase(originalProjectExpectedStudyLever.getProjectExpectedStudy(),
-          originalProjectExpectedStudyLever.getAllianceLever(), originalProjectExpectedStudyLever.getPhase());
+          originalProjectExpectedStudyLever.getAllianceLever(), current);
       if (studyLever == null) {
         studyLever = new ProjectExpectedStudyLever();
       }
