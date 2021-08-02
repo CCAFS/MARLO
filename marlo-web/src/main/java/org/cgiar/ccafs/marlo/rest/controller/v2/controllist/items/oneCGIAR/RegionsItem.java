@@ -67,7 +67,7 @@ public class RegionsItem<T> {
     List<Region> regionList = new ArrayList<Region>();
     List<Region> regions = regionsManager.findAll();
     List<LocElement> regionCountries;
-    if (regionList != null) {
+    if (regions != null) {
       for (Region region : regions) {
         regionCountries = new ArrayList<LocElement>();
         for (LocElementRegion locElementRegion : region.getRegionCountries().stream().collect(Collectors.toList())) {
