@@ -95,7 +95,7 @@ public class ProjectExpectedStudySdgTargetManagerImpl implements ProjectExpected
       && originalProjectExpectedStudySdgTarget.getPhase() != null) {
       ProjectExpectedStudySdgTarget studySdgTarget =
         this.getStudySdgTargetByStudySdgTargetAndPhase(originalProjectExpectedStudySdgTarget.getProjectExpectedStudy(),
-          originalProjectExpectedStudySdgTarget.getSdgTarget(), originalProjectExpectedStudySdgTarget.getPhase());
+          originalProjectExpectedStudySdgTarget.getSdgTarget(), current);
       if (studySdgTarget == null) {
         studySdgTarget = new ProjectExpectedStudySdgTarget();
       }
