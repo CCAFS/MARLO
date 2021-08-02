@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectDeliverableSharedManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCenterManager;
@@ -60,6 +61,7 @@ import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectDeliverableShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
@@ -101,6 +103,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -111,6 +114,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -118,7 +123,8 @@ import org.apache.commons.lang3.StringUtils;
 public class ProjectInnovationAction extends BaseAction {
 
   private static final long serialVersionUID = 2025842196563364380L;
-
+  // Logger
+  private final Logger logger = LoggerFactory.getLogger(ProjectInnovationAction.class);
   // Managers
   private ProjectInnovationManager projectInnovationManager;
   private GlobalUnitManager globalUnitManager;
@@ -155,6 +161,7 @@ public class ProjectInnovationAction extends BaseAction {
   private SrfIdoManager srfIdoManager;
   private ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager;
   private ProjectExpectedStudyManager projectExpectedStudyManager;
+  private ProjectDeliverableSharedManager projectDeliverableSharedManager;
 
 
   // Variables
@@ -222,7 +229,8 @@ public class ProjectInnovationAction extends BaseAction {
     ProjectInnovationCenterManager projectInnovationCenterManager,
     ProjectInnovationMilestoneManager projectInnovationMilestoneManager, SrfSubIdoManager srfSubIdoManager,
     ProjectInnovationSubIdoManager projectInnovationSubIdoManager, SrfIdoManager srfIdoManager,
-    ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager) {
+    ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager,
+    ProjectDeliverableSharedManager projectDeliverableSharedManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -260,7 +268,7 @@ public class ProjectInnovationAction extends BaseAction {
     this.projectInnovationSubIdoManager = projectInnovationSubIdoManager;
     this.srfIdoManager = srfIdoManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
-
+    this.projectDeliverableSharedManager = projectDeliverableSharedManager;
   }
 
   /**
@@ -1001,6 +1009,29 @@ public class ProjectInnovationAction extends BaseAction {
           deliverableList.add(deliverable);
         }
       }
+      try {
+        // Load Shared deliverables
+        List<ProjectDeliverableShared> deliverableShared = this.projectDeliverableSharedManager
+          .getByProjectAndPhase(project.getId(), this.getActualPhase().getId()) != null
+            ? this.projectDeliverableSharedManager.getByProjectAndPhase(project.getId(), this.getActualPhase().getId())
+              .stream()
+              .filter(px -> px.isActive() && px.getDeliverable().isActive()
+                && px.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null)
+              .collect(Collectors.toList())
+            : Collections.emptyList();
+
+        if (deliverableShared != null && !deliverableShared.isEmpty()) {
+          for (ProjectDeliverableShared deliverableS : deliverableShared) {
+            if (!deliverableList.contains(deliverableS.getDeliverable())) {
+              deliverableList.add(deliverableS.getDeliverable());
+            }
+          }
+        }
+      } catch (Exception e) {
+        logger.error("unable to get shared deliverables", e);
+      }
+
+
       List<Project> projectSharedList = new ArrayList<>();
       if (innovation.getSharedInnovations() != null && innovation.getSharedInnovations().size() > 0) {
         for (ProjectInnovationShared sharedInnovation : innovation.getSharedInnovations()) {
