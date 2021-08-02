@@ -391,7 +391,7 @@
         [#-- Levers (Alliance) --]
         [#if isOutcomeCaseStudy && action.hasSpecificities('crp_enable_nexus_lever_sdg_fields')]
           <div class="form-group simpleBox">
-            [@customForm.elementsListComponent name="${customName}.lever" elementType="lever" elementList=element.levers label="study.keyContributors.flagships"  listName="leverList" keyFieldName="id" displayFieldName="showName" required=false /]
+            [@customForm.elementsListComponent name="${customName}.levers" elementType="allianceLever" elementList=element.levers label="study.keyContributors.flagships"  listName="leverList" keyFieldName="id" displayFieldName="showName" required=false /]
           </div>
         [/#if]
         [#-- Regions --]
