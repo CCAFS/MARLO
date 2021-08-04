@@ -1,7 +1,7 @@
 [#ftl]
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities/]
 
-[#macro deliverablesList deliverables={} owned=true canValidate=false canEdit=false isReportingActive=false namespace="/" defaultAction="" currentTable=true]
+[#macro deliverablesList deliverables={} owned=true canValidate=false canEdit=false isReportingActive=false namespace="/" defaultAction="" currentTable=true projectID=0]
   <table class="deliverableList" id="deliverables">
     <thead>
       <tr class="subHeader">
@@ -9,6 +9,7 @@
         <th id="deliverableTitles" >[@s.text name="project.deliverableList.deliverableName" /]</th>
         <th id="deliverableType">[@s.text name="project.deliverableList.subtype" /]</th>
         <th id="deliverableEDY">[@s.text name="project.deliverableList.deliveryYear" /]</th>
+        <th id="deliverableEDY">[@s.text name="Owner" /]</th>
         [#if isReportingActive]
           <th id="deliverableFC">[@s.text name="project.deliverableList.fairCompliance" /]</th>
         [/#if]
@@ -48,6 +49,8 @@
             [#if toReport]<span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>[/#if]
             [#-- New Tag --]
             [#if isDeliverableNew]<span class="label label-info">New</span>[/#if]
+            [#-- Owner --]
+            [#local isOwner = (deliverable.project.id == projectID)!false]
 
             [#if deliverable.deliverableInfo.title?has_content]
               <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" >
@@ -81,6 +84,10 @@
               [/#if]
             [/#if]
 
+          </td>
+          [#-- Deliverable owner --]
+          <td class="owner text-center">
+            [#if isOwner] <nobr>This Project</nobr>  [#else][#if deliverable.project?has_content]C${deliverable.project.id}[#else]Not defined[/#if][/#if]
           </td>
           [#if isReportingActive]
             [#-- Deliverable FAIR compliance --]
@@ -117,7 +124,7 @@
             </td>
             <td class="text-center">
               [#-- Remove icon --]
-              [#if isDeliverableNew]
+              [#if isDeliverableNew && isOwner]
                 <a id="removeDeliverable-${deliverable.id}" class="removeDeliverable" href="${baseUrl}/projects/${crpSession}/deleteDeliverable.do?deliverableID=${deliverable.id}&phaseID=${(actualPhase.id)!}" title="Remove deliverable">
                   <div class="icon-container"><span class="trash-icon glyphicon glyphicon-trash"></span><div>
                 </a>

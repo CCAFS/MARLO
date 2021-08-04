@@ -43,6 +43,8 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.ClusterType;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
@@ -311,11 +313,11 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
     bold = true;
 
     POIField[] sHeader = {
-      new POIField(this.getText("summaries.progressReport2020.coverTable.Title1"), ParagraphAlignment.LEFT, bold,
+      new POIField(this.getText("summaries.progressReport2020.coverTable.Title1"), ParagraphAlignment.CENTER, bold,
         blackColor),
-      new POIField(this.getText("summaries.progressReport2020.coverTable.Title2"), ParagraphAlignment.LEFT, bold,
+      new POIField(this.getText("summaries.progressReport2020.coverTable.Title2"), ParagraphAlignment.CENTER, bold,
         blackColor),
-      new POIField(this.getText("summaries.progressReport2020.coverTable.Title3"), ParagraphAlignment.LEFT, bold,
+      new POIField(this.getText("summaries.progressReport2020.coverTable.Title3"), ParagraphAlignment.CENTER, bold,
         blackColor)};
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
@@ -350,8 +352,8 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
       }
 
       bold = false;
-      POIField[] sData = {new POIField("C" + clusterID, ParagraphAlignment.LEFT, false),
-        new POIField(leader, ParagraphAlignment.LEFT, false), new POIField(type, ParagraphAlignment.LEFT, false)
+      POIField[] sData = {new POIField("C" + clusterID, ParagraphAlignment.CENTER, false),
+        new POIField(leader, ParagraphAlignment.LEFT, false), new POIField(type, ParagraphAlignment.CENTER, false)
 
       };
       data = Arrays.asList(sData);
@@ -424,10 +426,10 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
           data = Arrays.asList(sData);
           datas.add(data);
         } else {
-          POIField[] sData = {new POIField("D" + deliverable.getId() + "", ParagraphAlignment.LEFT, false),
+          POIField[] sData = {new POIField("D" + deliverable.getId() + "", ParagraphAlignment.CENTER, false),
             new POIField(deliverable.getDeliverableInfo().getTitle(), ParagraphAlignment.LEFT, false),
             new POIField(deliverable.getDeliverableInfo().getStatusName(this.getSelectedPhase()),
-              ParagraphAlignment.LEFT, false),
+              ParagraphAlignment.CENTER, false),
             new POIField(disseminationURL, ParagraphAlignment.LEFT, false, "0000", disseminationURL)};
           data = Arrays.asList(sData);
           datas.add(data);
@@ -508,10 +510,10 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
       progress = "0";
     }
 
-    POIField[] sData = {new POIField(overallTarget, ParagraphAlignment.LEFT, false),
-      new POIField(expectedContributionNew, ParagraphAlignment.LEFT, false),
-      new POIField(expectedContributionOld, ParagraphAlignment.LEFT, false),
-      new POIField(progress, ParagraphAlignment.LEFT, false, blackColor)};
+    POIField[] sData = {new POIField(overallTarget, ParagraphAlignment.CENTER, false),
+      new POIField(expectedContributionNew, ParagraphAlignment.CENTER, false),
+      new POIField(expectedContributionOld, ParagraphAlignment.CENTER, false),
+      new POIField(progress, ParagraphAlignment.CENTER, false, blackColor)};
     data = Arrays.asList(sData);
     datas.add(data);
 
@@ -907,9 +909,8 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
             run.addBreak();
             run.addPicture(new FileInputStream(imageFile), imgFormat, imgFile, Units.toEMU(width), Units.toEMU(height));
           } catch (Exception e) {
-            System.out.println(e);
+            // System.out.println(e);
           }
-
 
           // Project Title
           paragraph = document.createParagraph();
@@ -926,7 +927,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
           run.setText(projectInfo.getTitle());
           run.setBold(false);
           run.setFontSize(11);
-          run.setFontFamily("Verdana");
+          run.setFontFamily("Calibri");
           run.setColor("000000");
           paragraph.setStyle("headingTitle 1");
 
@@ -943,7 +944,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
           paragraph.setStyle("heading 2");
 
           if (projectInfo.getSummary() != null) {
-            poiSummary.textParagraphFontCalibriAligmentLeft(document.createParagraph(), projectInfo.getSummary());
+            poiSummary.textParagraphFontCalibriAligmentBoth(document.createParagraph(), projectInfo.getSummary());
           }
           poiSummary.textLineBreak(document, 5);
 
@@ -966,10 +967,10 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
 
             for (ProjectOutcome projectOutcome : projectOutcomes) {
               if (projectOutcome.getCrpProgramOutcome() != null
-                && projectOutcome.getCrpProgramOutcome().getComposedName() != null) {
+                && projectOutcome.getCrpProgramOutcome().getDescription() != null) {
                 paragraph = document.createParagraph();
                 run = paragraph.createRun();
-                run.setText(projectOutcome.getCrpProgramOutcome().getComposedName());
+                run.setText(projectOutcome.getCrpProgramOutcome().getDescription());
                 run.setBold(false);
                 run.setFontSize(11);
                 run.setFontFamily("Verdana");
@@ -978,7 +979,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
 
                 String overall2023 = "", expected2023 = "", expected2021 = "", progress2021 = "";
                 if (projectOutcome.getCrpProgramOutcome().getValue() != null) {
-                  overall2023 = projectOutcome.getCrpProgramOutcome().getValue() + "";
+                  overall2023 = projectOutcome.getCrpProgramOutcome().getValue().intValue() + "";
                 } else {
                   overall2023 = "<Not provided>";
                 }
@@ -986,8 +987,9 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                 if (projectOutcome.getExpectedValue() == null) {
                   expected2023 = "<Not provided>";
                 } else {
-                  expected2023 = projectOutcome.getExpectedValue() + "";
+                  expected2023 = Math.round(projectOutcome.getExpectedValue()) + "";
                 }
+                String milestoneNarrativeTarget = "";
                 List<ProjectMilestone> projectMilestones = new ArrayList<>();
                 projectMilestones = projectMilestoneManager.findAll().stream()
                   .filter(m -> m.isActive() && m.getYear() == this.getSelectedPhase().getYear()
@@ -1004,27 +1006,49 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                     if (milestone.getExpectedValue() == null) {
                       expected2021 = "<Not provided>";
                     } else {
-                      expected2021 = milestone.getExpectedValue() + "";
+                      expected2021 = Math.round(milestone.getExpectedValue()) + "";
                     }
                     if (milestone.getAchievedValue() == null) {
                       progress2021 = "<Not provided>";
                     } else {
                       progress2021 = milestone.getAchievedValue() + "";
                     }
+
+                    if (milestone.getNarrativeTarget() != null) {
+                      milestoneNarrativeTarget = milestone.getNarrativeTarget();
+                    }
                   }
                 }
                 this.createTableIndicators(overall2023, expected2023, expected2021, progress2021);
 
 
+                // Project outcome narrative
+                /*
+                 * if (projectOutcome.getNarrativeTarget() != null) {
+                 * poiSummary.textLineBreak(document, 1);
+                 * poiSummary.textParagraphFontBoldCalibri(document.createParagraph(),
+                 * this.getText("summaries.progressReport2020.projectOutcome.narrativeTarget") + ":");
+                 * paragraph = document.createParagraph();
+                 * run = paragraph.createRun();
+                 * run.setText(projectOutcome.getNarrativeTarget());
+                 * run.setBold(false);
+                 * run.setFontSize(11);
+                 * run.setFontFamily("Calibri");
+                 * run.setColor("000000");
+                 * }
+                 */
+
                 // Project Milestone narrative
-                if (projectOutcome.getNarrativeTarget() != null) {
+
+
+                if (milestoneNarrativeTarget != null) {
                   poiSummary.textLineBreak(document, 1);
                   poiSummary.textParagraphFontBoldCalibri(document.createParagraph(),
-                    this.getText("summaries.progressReport2020.projectOutcome.narrativeTarget") + ":");
+                    this.getText("summaries.progressReport2020.projectMilestone.narrativeTarget") + ":");
 
                   paragraph = document.createParagraph();
                   run = paragraph.createRun();
-                  run.setText(projectOutcome.getNarrativeTarget());
+                  run.setText(milestoneNarrativeTarget);
                   run.setBold(false);
                   run.setFontSize(11);
                   run.setFontFamily("Calibri");
@@ -1036,26 +1060,53 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                   && i.getProjectOutcome() != null && i.getProjectOutcome().getId().equals(projectOutcome.getId()))
                   .collect(Collectors.toList()));
 
+                CrpProgramOutcome crpProgramOutcome =
+                  crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcome.getCrpProgramOutcome().getId());
 
-                if (projectOutcome.getIndicators() != null && !projectOutcome.getIndicators().isEmpty()) {
+                projectOutcome.setCrpProgramOutcome(crpProgramOutcome);
+
+                projectOutcome.getCrpProgramOutcome()
+                  .setIndicators(projectOutcome.getCrpProgramOutcome().getCrpProgramOutcomeIndicators().stream()
+                    .filter(c -> c.isActive()).sorted((d1, d2) -> d1.getIndicator().compareTo((d2.getIndicator())))
+                    .collect(Collectors.toList()));
+
+                if (projectOutcome.getCrpProgramOutcome() != null
+                  && projectOutcome.getCrpProgramOutcome().getIndicators() != null) {
                   poiSummary.textLineBreak(document, 2);
-                  poiSummary.textParagraphFontBoldCalibri(document.createParagraph(),
-                    "Progress to Key Performance Indicator");
-                  for (ProjectOutcomeIndicator indicator : projectOutcome.getIndicators()) {
-                    if (indicator.getCrpProgramOutcomeIndicator() != null
-                      && indicator.getCrpProgramOutcomeIndicator().getIndicator() != null) {
+                  poiSummary.textParagraphFontBoldCalibriSize(document.createParagraph(),
+                    "Progress to Key Performance Indicator", 13);
+
+                  /*
+                   * CTAbstractNum cTAbstractNum = CTAbstractNum.Factory.newInstance();
+                   * cTAbstractNum.setAbstractNumId(BigInteger.valueOf(0));
+                   * ///* Bullet list
+                   * CTLvl cTLvl = cTAbstractNum.addNewLvl();
+                   * cTLvl.addNewNumFmt().setVal(STNumberFormat.BULLET);
+                   * cTLvl.addNewLvlText().setVal("\u2022");
+                   * XWPFAbstractNum abstractNum = new XWPFAbstractNum(cTAbstractNum);
+                   * XWPFNumbering numbering = document.createNumbering();
+                   * BigInteger abstractNumID = numbering.addAbstractNum(abstractNum);
+                   * BigInteger numID = numbering.addNum(abstractNumID);
+                   */
+
+                  for (CrpProgramOutcomeIndicator indicator : projectOutcome.getCrpProgramOutcome().getIndicators()) {
+                    if (indicator.getIndicator() != null) {
                       poiSummary.textLineBreak(document, 1);
                       poiSummary.textParagraphFontBoldCalibri(document.createParagraph(),
-                        indicator.getCrpProgramOutcomeIndicator().getIndicator() + ":");
+                        indicator.getIndicator().trim() + ":");
                     }
-                    if (indicator.getNarrative() != null && !indicator.getNarrative().isEmpty()) {
+
+                    ProjectOutcomeIndicator outcomeIndicator = this.getIndicator(indicator.getId(), projectOutcome);
+                    if (outcomeIndicator.getNarrative() != null && !outcomeIndicator.getNarrative().isEmpty()) {
                       paragraph = document.createParagraph();
                       run = paragraph.createRun();
-                      run.setText(indicator.getNarrative());
+                      run.setText(outcomeIndicator.getNarrative());
                       run.setBold(false);
                       run.setFontSize(11);
                       run.setFontFamily("Calibri");
                       run.setColor("000000");
+                      // paragraph.setNumID(numID);
+
                     } else {
                       paragraph = document.createParagraph();
                       run = paragraph.createRun();
@@ -1176,26 +1227,34 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("(BETA version) ");
-
-    if (this.getCurrentCycleYear() != 0) {
-      fileName.append(this.getCurrentCycleYear() + "_");
-    }
-    fileName.append(this.getLoggedCrp().getAcronym());
+    // fileName.append(this.getLoggedCrp().getAcronym()+"_");
 
     if (showAllYears.equals("true")) {
-      fileName.append("_ReportProcessSummary_");
-      fileName.append("AllClusters_");
+      fileName.append("All Clusters - ");
     } else {
-      fileName.append("_Cluster_" + projectID);
-      fileName.append("_ReportProcessSummary_");
+      fileName.append("C" + projectID + " ");
+      if (projectInfo != null && projectInfo.getLiaisonInstitution() != null
+        && projectInfo.getLiaisonInstitution().getInstitution() != null
+        && projectInfo.getLiaisonInstitution().getInstitution().getName() != null) {
+        fileName.append(projectInfo.getLiaisonInstitution().getInstitution().getName() + " - ");
+      } else {
+        fileName.append("- ");
+      }
     }
 
-    fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
+    fileName.append("Progress Report_");
+
+    /*
+     * if (this.getCurrentCycleYear() != 0) {
+     * fileName.append(this.getCurrentCycleYear());
+     * }
+     */
+
+    // fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
+    fileName.append(new SimpleDateFormat("yyyyMMdd").format(new Date()));
     fileName.append(".docx");
     return fileName.toString();
   }
-
 
   public List<LiaisonInstitution> getFlagships() {
     List<LiaisonInstitution> flagshipsList = this.getLoggedCrp().getLiaisonInstitutions().stream()
@@ -1208,6 +1267,20 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
     } else {
       return new ArrayList<>();
     }
+  }
+
+
+  public ProjectOutcomeIndicator getIndicator(Long indicatorID, ProjectOutcome projectOutcome) {
+    for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcome.getIndicators()) {
+      if (projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId().longValue() == indicatorID) {
+        return projectOutcomeIndicator;
+      }
+    }
+    ProjectOutcomeIndicator projectOutcomeIndicator = new ProjectOutcomeIndicator();
+    projectOutcomeIndicator.setCrpProgramOutcomeIndicator(new CrpProgramOutcomeIndicator(indicatorID));
+    projectOutcome.getIndicators().add(projectOutcomeIndicator);
+    return projectOutcomeIndicator;
+
   }
 
 

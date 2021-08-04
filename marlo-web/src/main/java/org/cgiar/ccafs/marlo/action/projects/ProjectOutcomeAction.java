@@ -657,8 +657,9 @@ public class ProjectOutcomeAction extends BaseAction {
     targetUnits = srfTargetUnitManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
     projectOutcome.setCrpProgramOutcome(
       crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcome.getCrpProgramOutcome().getId()));
-    projectOutcome.getCrpProgramOutcome().setIndicators(projectOutcome.getCrpProgramOutcome()
-      .getCrpProgramOutcomeIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));;
+    projectOutcome.getCrpProgramOutcome().setIndicators(
+      projectOutcome.getCrpProgramOutcome().getCrpProgramOutcomeIndicators().stream().filter(c -> c.isActive())
+        .sorted((d1, d2) -> d1.getIndicator().compareTo((d2.getIndicator()))).collect(Collectors.toList()));
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
 
     projectOutcomeDB = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
@@ -716,7 +717,7 @@ public class ProjectOutcomeAction extends BaseAction {
       // projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
       projectOutcome.setPhase(this.getActualPhase());
       projectOutcome.setModificationJustification(this.getJustification());
-      projectOutcome.setOrder((double) 0);
+      projectOutcome.setOrder((double) 1);
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_OUTCOMES_MILESTONE_RELATION);
@@ -949,6 +950,7 @@ public class ProjectOutcomeAction extends BaseAction {
                   projectMilestoneDB.setExpectedUnit(projectMilestone.getExpectedUnit());
                   projectMilestoneDB.setExpectedValue(projectMilestone.getExpectedValue());
                   projectMilestoneDB.setAchievedValue(projectMilestone.getAchievedValue());
+                  projectMilestoneDB.setSettedValue(projectMilestone.getSettedValue());
                 }
               }
 
@@ -962,6 +964,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
             projectMilestoneDB.setCrpMilestone(projectMilestone.getCrpMilestone());
+            projectMilestoneDB.setExpectedValue(projectMilestone.getExpectedValue());
             projectMilestoneDB.setAchievedValue(projectMilestone.getAchievedValue());
             projectMilestoneDB = projectMilestoneManager.saveProjectMilestone(projectMilestoneDB);
             // This add projectMilestone to generate correct auditlog.
