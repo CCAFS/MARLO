@@ -125,6 +125,7 @@
                     <th id="ids">[@s.text name="projectsList.projectids" /]</th>
                     <th id="deliverableTitles" >[@s.text name="project.deliverableList.deliverableName" /]</th>
                     <th id="deliverableType">[@s.text name="project.deliverableList.subtype" /]</th>
+                    <th id="deliverableType">[@s.text name="project.deliverableList.status" /]</th>
                     <th id="deliverableYear">[@s.text name="project.deliverableList.year" /]</th>
                     <th></th>
                   </tr>
@@ -140,6 +141,7 @@
                         <th scope="row">D${d.id}</th>
                         <td class="col-md-6">${(d.deliverableInfo.title)!'Untitled'}</td>
                         <td>${(d.deliverableInfo.deliverableType.name?capitalize)!'-'}</td>
+                        <td>${(d.deliverableInfo.getStatusName(action.getActualPhase()))!'None'}</td>
                         <td>${(d.deliverableInfo.year)!'none'}</td>
                         <td> <a href="${deliverableUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
                       </tr>

@@ -51,6 +51,8 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -59,7 +61,8 @@ public class DeliverableListAction extends BaseAction {
 
 
   private static final long serialVersionUID = -823169163612346982L;
-
+  // Logger
+  private final Logger logger = LoggerFactory.getLogger(DeliverableListAction.class);
 
   // Managers
   private GlobalUnitManager crpManager;
@@ -388,21 +391,25 @@ public class DeliverableListAction extends BaseAction {
       .collect(Collectors.toList());
 
     // Load Shared deliverables
-    List<ProjectDeliverableShared> deliverableShared =
-      this.projectDeliverableSharedManager.getByProjectAndPhase(project.getId(), this.getActualPhase().getId()) != null
-        ? this.projectDeliverableSharedManager.getByProjectAndPhase(project.getId(), this.getActualPhase().getId())
-          .stream()
-          .filter(px -> px.isActive() && px.getDeliverable().isActive()
-            && px.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null)
-          .collect(Collectors.toList())
-        : Collections.emptyList();
+    try {
+      List<ProjectDeliverableShared> deliverableShared = this.projectDeliverableSharedManager
+        .getByProjectAndPhase(project.getId(), this.getActualPhase().getId()) != null
+          ? this.projectDeliverableSharedManager.getByProjectAndPhase(project.getId(), this.getActualPhase().getId())
+            .stream()
+            .filter(px -> px.isActive() && px.getDeliverable().isActive()
+              && px.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null)
+            .collect(Collectors.toList())
+          : Collections.emptyList();
 
-    if (deliverableShared != null && !deliverableShared.isEmpty()) {
-      for (ProjectDeliverableShared deliverableS : deliverableShared) {
-        if (!currentDeliverableList.contains(deliverableS.getDeliverable())) {
-          currentDeliverableList.add(deliverableS.getDeliverable());
+      if (deliverableShared != null && !deliverableShared.isEmpty()) {
+        for (ProjectDeliverableShared deliverableS : deliverableShared) {
+          if (!currentDeliverableList.contains(deliverableS.getDeliverable())) {
+            currentDeliverableList.add(deliverableS.getDeliverable());
+          }
         }
       }
+    } catch (Exception e) {
+      logger.error("unable to get shared deliverables", e);
     }
 
     if (currentDeliverableList != null && !currentDeliverableList.isEmpty()) {

@@ -1871,7 +1871,27 @@ public class POISummary {
     paragraphRun.setFontSize(11);
   }
 
+  public void textParagraphFontBoldCalibriSize(XWPFParagraph paragraph, String text, int size) {
+    paragraph.setAlignment(ParagraphAlignment.BOTH);
+    XWPFRun paragraphRun = paragraph.createRun();
+    this.addParagraphTextBreak(paragraphRun, text);
+    paragraphRun.setColor(TEXT_FONT_COLOR);
+    paragraphRun.setBold(true);
+    paragraphRun.setFontFamily("Calibri");
+    paragraphRun.setFontSize(size);
+  }
+
   public void textParagraphFontCalibri(XWPFParagraph paragraph, String text) {
+    paragraph.setAlignment(ParagraphAlignment.BOTH);
+    XWPFRun paragraphRun = paragraph.createRun();
+    this.addParagraphTextBreak(paragraphRun, text);
+    paragraphRun.setColor(TEXT_FONT_COLOR);
+    paragraphRun.setBold(false);
+    paragraphRun.setFontFamily("Calibri");
+    paragraphRun.setFontSize(11);
+  }
+
+  public void textParagraphFontCalibriAligmentBoth(XWPFParagraph paragraph, String text) {
     paragraph.setAlignment(ParagraphAlignment.BOTH);
     XWPFRun paragraphRun = paragraph.createRun();
     this.addParagraphTextBreak(paragraphRun, text);

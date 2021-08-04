@@ -105,6 +105,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
           projectMilestoneAdd.setNarrativeTarget(projectMilestone.getNarrativeTarget());
           projectMilestoneAdd.setProjectOutcome(projectOutcomeAdd);
           projectMilestoneAdd.setYear(projectMilestone.getYear());
+          projectMilestoneAdd.setSettedValue(projectMilestone.getSettedValue());
           if (projectMilestoneAdd.getCrpMilestone() != null) {
             // if (projectMilestoneAdd.getCrpMilestone().getYear() >= projectOutcome.getPhase().getYear()) {
             projectMilestoneDAO.save(projectMilestoneAdd);
@@ -360,7 +361,9 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
 
   @Override
   public ProjectOutcome saveProjectOutcome(ProjectOutcome projectOutcome) {
-
+    if (projectOutcome.getOrder() == null) {
+      projectOutcome.setOrder((double) 1);
+    }
     ProjectOutcome resultProjectOutcome = projectOutcomeDAO.save(projectOutcome);
 
     Phase currentPhase = phaseMySQLDAO.find(projectOutcome.getPhase().getId());
@@ -386,7 +389,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
   public ProjectOutcome saveProjectOutcome(ProjectOutcome projectOutcome, String section, List<String> relationsName,
     Phase phase) {
     if (projectOutcome.getOrder() == null) {
-      projectOutcome.setOrder((double) 0);
+      projectOutcome.setOrder((double) 1);
     }
     return projectOutcomeDAO.save(projectOutcome, section, relationsName, phase);
   }
@@ -553,6 +556,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
             projectMilestoneAdd.setAchievedValue(projectMilestone.getAchievedValue());
             projectMilestoneAdd.setNarrativeAchieved(projectMilestone.getNarrativeAchieved());
             projectMilestoneAdd.setNarrativeTarget(projectMilestone.getNarrativeTarget());
+            projectMilestoneAdd.setSettedValue(projectMilestone.getSettedValue());
             projectMilestoneAdd.setProjectOutcome(projectOutcomePrev);
             projectMilestoneAdd.setYear(projectMilestone.getYear());
             projectMilestoneAdd.setActive(projectMilestone.isActive());
@@ -578,6 +582,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
             milestone.setNarrativeAchieved(projectMilestone.getNarrativeAchieved());
             milestone.setNarrativeTarget(projectMilestone.getNarrativeTarget());
             milestone.setYear(projectMilestone.getYear());
+            milestone.setSettedValue(projectMilestone.getSettedValue());
 
             projectMilestoneDAO.save(milestone);
 
