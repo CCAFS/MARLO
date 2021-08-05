@@ -53,6 +53,14 @@ public interface ProjectInnovationSubIdoManager {
 
 
   /**
+   * This method gets a list of projectInnovationSubIdo by a given projectInnovation identifier.
+   * 
+   * @param innovationId is the projectInnovation identifier.
+   * @return a list of projectInnovationSubIdo objects.
+   */
+  public List<ProjectInnovationSubIdo> getAllInnovationSubIdosByInnovation(Long innovationId);
+
+  /**
    * This method gets a projectInnovationSubIdo object by a given projectInnovationSubIdo identifier.
    * 
    * @param projectInnovationSubIdoID is the projectInnovationSubIdo identifier.

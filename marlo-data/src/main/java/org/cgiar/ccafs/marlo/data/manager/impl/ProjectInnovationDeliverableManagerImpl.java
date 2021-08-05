@@ -110,6 +110,11 @@ public class ProjectInnovationDeliverableManagerImpl implements ProjectInnovatio
   }
 
   @Override
+  public List<ProjectInnovationDeliverable> getAllInnovationDeliverablesByInnovation(Long innovationId) {
+    return this.projectInnovationDeliverableDAO.getAllInnovationDeliverablesByInnovation(innovationId.longValue());
+  }
+
+  @Override
   public ProjectInnovationDeliverable getProjectInnovationDeliverableById(long projectInnovationDeliverableID) {
 
     return projectInnovationDeliverableDAO.find(projectInnovationDeliverableID);
@@ -164,6 +169,4 @@ public class ProjectInnovationDeliverableManagerImpl implements ProjectInnovatio
 
     return deliverable;
   }
-
-
 }

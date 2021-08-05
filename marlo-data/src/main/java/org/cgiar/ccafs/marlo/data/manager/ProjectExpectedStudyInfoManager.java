@@ -54,6 +54,14 @@ public interface ProjectExpectedStudyInfoManager {
 
 
   /**
+   * This method gets a list of projectExpectedStudyInfo by a given projectExpectedStudy identifier.
+   * 
+   * @param studyId is the projectExpectedStudy identifier.
+   * @return a list of projectExpectedStudyInfo objects.
+   */
+  public List<ProjectExpectedStudyInfo> getAllStudyInfosByStudy(Long studyId);
+
+  /**
    * This method gets a projectExpectedStudyInfo object by a given projectExpectedStudyInfo identifier.
    * 
    * @param projectExpectedStudyInfoID is the projectExpectedStudyInfo identifier.

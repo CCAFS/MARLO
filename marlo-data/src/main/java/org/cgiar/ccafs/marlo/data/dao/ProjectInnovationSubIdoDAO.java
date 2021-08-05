@@ -56,6 +56,14 @@ public interface ProjectInnovationSubIdoDAO {
 
 
   /**
+   * This method gets a list of projectInnovationSubIdo by a given projectInnovation identifier.
+   * 
+   * @param innovationId is the projectInnovation identifier.
+   * @return a list of projectInnovationSubIdo objects.
+   */
+  public List<ProjectInnovationSubIdo> getAllInnovationSubIdosByInnovation(long innovationId);
+
+  /**
    * This method gets a projectInnovationSubIdo object by a given projectInnovation,SubIdo and Phase identifier.
    * 
    * @param innovationID is the projectInnovation identifier.

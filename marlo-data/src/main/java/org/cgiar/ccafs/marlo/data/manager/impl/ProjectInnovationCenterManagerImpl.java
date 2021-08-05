@@ -101,6 +101,11 @@ public class ProjectInnovationCenterManagerImpl implements ProjectInnovationCent
   }
 
   @Override
+  public List<ProjectInnovationCenter> getAllInnovationCentersByInnovation(Long innovationId) {
+    return this.projectInnovationCenterDAO.getAllInnovationCentersByInnovation(innovationId.longValue());
+  }
+
+  @Override
   public ProjectInnovationCenter getProjectInnovationCenterById(long projectInnovationCenterID) {
     return projectInnovationCenterDAO.find(projectInnovationCenterID);
   }
@@ -153,5 +158,4 @@ public class ProjectInnovationCenterManagerImpl implements ProjectInnovationCent
     }
     return center;
   }
-
 }

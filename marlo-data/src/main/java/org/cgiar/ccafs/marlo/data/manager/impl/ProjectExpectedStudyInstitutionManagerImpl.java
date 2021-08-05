@@ -110,6 +110,11 @@ public class ProjectExpectedStudyInstitutionManagerImpl implements ProjectExpect
 
 
   @Override
+  public List<ProjectExpectedStudyInstitution> getAllStudyInstitutionsByStudy(Long studyId) {
+    return this.projectExpectedStudyInstitutionDAO.getAllStudyInstitutionsByStudy(studyId.longValue());
+  }
+
+  @Override
   public ProjectExpectedStudyInstitution
     getProjectExpectedStudyInstitutionById(long projectExpectedStudyInstitutionID) {
 
@@ -178,6 +183,4 @@ public class ProjectExpectedStudyInstitutionManagerImpl implements ProjectExpect
 
     return institution;
   }
-
-
 }

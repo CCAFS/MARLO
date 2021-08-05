@@ -56,6 +56,14 @@ public interface ProjectExpectedStudySrfTargetDAO {
 
 
   /**
+   * This method gets a list of projectExpectedStudySrfTarget by a given projectExpectedStudy identifier.
+   * 
+   * @param studyId is the projectExpectedStudy identifier.
+   * @return a list of projectExpectedStudySrfTarget objects.
+   */
+  public List<ProjectExpectedStudySrfTarget> getAllStudySrfTargetsByStudy(long studyId);
+
+  /**
    * This method gets a projectExpectedStudySrfTarget object by a given projectExpectedStudy,srfSloIndicator and phase
    * identifier.
    * 
@@ -78,5 +86,4 @@ public interface ProjectExpectedStudySrfTargetDAO {
    *         or -1 is some error occurred.
    */
   public ProjectExpectedStudySrfTarget save(ProjectExpectedStudySrfTarget projectExpectedStudySrfTarget);
-
 }

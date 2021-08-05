@@ -84,6 +84,19 @@ public class ProjectExpectedStudyPolicyMySQLDAO extends AbstractMarloDAO<Project
   }
 
   @Override
+  public List<ProjectExpectedStudyPolicy> getAllStudyPoliciesByStudy(long studyId) {
+    String query =
+      "select pesp from ProjectExpectedStudyPolicy pesp where pesp.projectExpectedStudy.id = :studyId order by pesp.phase.id";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("studyId", studyId);
+
+    List<ProjectExpectedStudyPolicy> result = super.findAll(createQuery);
+
+    return result;
+  }
+
+  @Override
   public ProjectExpectedStudyPolicy getProjectExpectedStudyPolicyByPhase(Long expectedID, Long policyID, Long phaseID) {
     String query = "from " + ProjectExpectedStudyPolicy.class.getName() + " where expected_id=" + expectedID
       + " and project_policy_id=" + policyID + " and id_phase=" + phaseID;

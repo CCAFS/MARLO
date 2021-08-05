@@ -108,11 +108,16 @@ public class ProjectExpectedStudyRegionManagerImpl implements ProjectExpectedStu
   }
 
   @Override
+  public List<ProjectExpectedStudyRegion> getAllStudyRegionsByStudy(Long studyId) {
+    return this.projectExpectedStudyRegionDAO.getAllStudyRegionsByStudy(studyId.longValue());
+  }
+
+
+  @Override
   public ProjectExpectedStudyRegion getProjectExpectedStudyRegionById(long projectExpectedStudyRegionID) {
 
     return projectExpectedStudyRegionDAO.find(projectExpectedStudyRegionID);
   }
-
 
   @Override
   public List<ProjectExpectedStudyRegion> getProjectExpectedStudyRegionbyPhase(long expectedID, long phaseID) {
@@ -175,6 +180,4 @@ public class ProjectExpectedStudyRegionManagerImpl implements ProjectExpectedStu
 
     return region;
   }
-
-
 }

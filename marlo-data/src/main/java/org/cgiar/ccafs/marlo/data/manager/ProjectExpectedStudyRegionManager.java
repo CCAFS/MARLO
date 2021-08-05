@@ -53,6 +53,14 @@ public interface ProjectExpectedStudyRegionManager {
 
 
   /**
+   * This method gets a list of projectExpectedStudyRegion by a given projectExpectedStudy identifier.
+   * 
+   * @param studyId is the projectExpectedStudy identifier.
+   * @return a list of projectExpectedStudyRegion objects.
+   */
+  public List<ProjectExpectedStudyRegion> getAllStudyRegionsByStudy(Long studyId);
+
+  /**
    * This method gets a projectExpectedStudyRegion object by a given projectExpectedStudyRegion identifier.
    * 
    * @param projectExpectedStudyRegionID is the projectExpectedStudyRegion identifier.
@@ -84,5 +92,4 @@ public interface ProjectExpectedStudyRegionManager {
    */
   public ProjectExpectedStudyRegion
     saveProjectExpectedStudyRegion(ProjectExpectedStudyRegion projectExpectedStudyRegion);
-
 }

@@ -53,13 +53,21 @@ public interface ProjectExpectedStudySubIdoManager {
 
 
   /**
+   * This method gets a list of projectExpectedStudySubIdo by a given projectExpectedStudy identifier.
+   * 
+   * @param studyId is the projectExpectedStudy identifier.
+   * @return a list of projectExpectedStudySubIdo objects.
+   */
+  public List<ProjectExpectedStudySubIdo> getAllStudySubIdosByStudy(Long studyId);
+
+
+  /**
    * This method gets a projectExpectedStudySubIdo object by a given projectExpectedStudySubIdo identifier.
    * 
    * @param projectExpectedStudySubIdoID is the projectExpectedStudySubIdo identifier.
    * @return a ProjectExpectedStudySubIdo object.
    */
   public ProjectExpectedStudySubIdo getProjectExpectedStudySubIdoById(long projectExpectedStudySubIdoID);
-
 
   /**
    * This method gets a projectExpectedStudySubIdo object by a given projectExpectedStudySubIdo identifier.

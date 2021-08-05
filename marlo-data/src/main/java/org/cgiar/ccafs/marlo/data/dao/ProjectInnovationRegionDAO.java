@@ -55,6 +55,14 @@ public interface ProjectInnovationRegionDAO {
   public List<ProjectInnovationRegion> findAll();
 
 
+  /**
+   * This method gets a list of projectInnovationRegion by a given projectInnovation identifier.
+   * 
+   * @param innovationId is the projectInnovation identifier.
+   * @return a list of projectInnovationRegion objects.
+   */
+  public List<ProjectInnovationRegion> getAllInnovationRegionsByInnovation(long innovationId);
+
   List<ProjectInnovationRegion> getInnovationRegionbyPhase(long innovationID, long phaseID);
 
   public ProjectInnovationRegion getProjectInnovationRegionById(long innovationID, long RegionID, long phaseID);

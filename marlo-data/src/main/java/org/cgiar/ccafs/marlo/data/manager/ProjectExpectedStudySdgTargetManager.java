@@ -14,7 +14,10 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySdgTarget;
+import org.cgiar.ccafs.marlo.data.model.SdgTargets;
 
 import java.util.List;
 
@@ -53,6 +56,14 @@ public interface ProjectExpectedStudySdgTargetManager {
 
 
   /**
+   * This method gets a list of projectExpectedStudySdgTarget by a given projectExpectedStudy identifier.
+   * 
+   * @param studyId is the projectExpectedStudy identifier.
+   * @return a list of projectExpectedStudySdgTarget objects.
+   */
+  public List<ProjectExpectedStudySdgTarget> getAllStudySdgTargetsByStudy(Long studyId);
+
+  /**
    * This method gets a projectExpectedStudySdgTarget object by a given projectExpectedStudySdgTarget identifier.
    * 
    * @param projectExpectedStudySdgTargetID is the projectExpectedStudySdgTarget identifier.
@@ -61,14 +72,34 @@ public interface ProjectExpectedStudySdgTargetManager {
   public ProjectExpectedStudySdgTarget getProjectExpectedStudySdgTargetById(long projectExpectedStudySdgTargetID);
 
   /**
+   * Gets a ProjectExpectedStudySdgTarget by a study, a sdg target and a phase
+   * 
+   * @param study the ProjectExpectedStudy
+   * @param sdgTarget the SdgTargets
+   * @param phase the Phase
+   * @return a ProjectExpectedStudySdgTarget if found; else null
+   */
+  public ProjectExpectedStudySdgTarget getStudySdgTargetByStudySdgTargetAndPhase(ProjectExpectedStudy study,
+    SdgTargets sdgTarget, Phase phase);
+
+  /**
+   * Replicates an studySdgTarget, starting from the given phase
+   * 
+   * @param originalProjectExpectedStudySdgTarget studySdgTarget to be replicated
+   * @param initialPhase initial replication phase
+   */
+  public void replicate(ProjectExpectedStudySdgTarget originalProjectExpectedStudySdgTarget, Phase initialPhase);
+
+  /**
    * This method saves the information of the given projectExpectedStudySdgTarget
    * 
-   * @param projectExpectedStudySdgTarget - is the projectExpectedStudySdgTarget object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectExpectedStudySdgTarget was
+   * @param projectExpectedStudySdgTarget - is the projectExpectedStudySdgTarget object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectExpectedStudySdgTarget was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ProjectExpectedStudySdgTarget saveProjectExpectedStudySdgTarget(ProjectExpectedStudySdgTarget projectExpectedStudySdgTarget);
-
-
+  public ProjectExpectedStudySdgTarget
+    saveProjectExpectedStudySdgTarget(ProjectExpectedStudySdgTarget projectExpectedStudySdgTarget);
 }

@@ -58,6 +58,14 @@ public interface ProjectInnovationInfoDAO {
 
 
   /**
+   * This method gets a list of projectInnovationInfo by a given projectInnovation identifier.
+   * 
+   * @param innovationId is the projectInnovation identifier.
+   * @return a list of projectInnovationInfo objects.
+   */
+  public List<ProjectInnovationInfo> getAllInnovationInfosByInnovation(long innovationId);
+
+  /**
    * This method gets a list of ProjectInnovationInfo that are active by a given StageInnovation and phase
    * 
    * @return a list from ProjectInnovationInfo null if no exist records

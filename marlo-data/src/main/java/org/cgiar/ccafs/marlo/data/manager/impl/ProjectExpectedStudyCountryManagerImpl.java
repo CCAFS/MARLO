@@ -108,6 +108,11 @@ public class ProjectExpectedStudyCountryManagerImpl implements ProjectExpectedSt
   }
 
   @Override
+  public List<ProjectExpectedStudyCountry> getAllStudyCountriesByStudy(Long studyId) {
+    return this.projectExpectedStudyCountryDAO.getAllStudyCountriesByStudy(studyId.longValue());
+  }
+
+  @Override
   public ProjectExpectedStudyCountry getProjectExpectedStudyCountryById(long projectExpectedStudyCountryID) {
 
     return projectExpectedStudyCountryDAO.find(projectExpectedStudyCountryID);
@@ -175,6 +180,4 @@ public class ProjectExpectedStudyCountryManagerImpl implements ProjectExpectedSt
 
     return country;
   }
-
-
 }
