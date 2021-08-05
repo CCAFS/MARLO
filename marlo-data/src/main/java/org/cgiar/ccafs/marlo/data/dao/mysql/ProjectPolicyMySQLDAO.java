@@ -82,7 +82,7 @@ public class ProjectPolicyMySQLDAO extends AbstractMarloDAO<ProjectPolicy, Long>
     query.append("project_policies AS pp ");
     query.append("INNER JOIN project_policy_info AS ppi ON pp.id = ppi.project_policy_id ");
     query.append("WHERE pp.is_active = 1 AND ");
-    query.append("ppi.`id_phase` =" + phase.getId());
+    query.append("ppi.id_phase =" + phase.getId());
 
     List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
     List<ProjectPolicy> projectPolicies = new ArrayList<>();
