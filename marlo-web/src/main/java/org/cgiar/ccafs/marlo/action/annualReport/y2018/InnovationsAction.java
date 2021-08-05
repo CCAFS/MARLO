@@ -71,6 +71,7 @@ import javax.inject.Inject;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -152,7 +153,6 @@ public class InnovationsAction extends BaseAction {
     this.projectInnovationCountryManager = projectInnovationCountryManager;
     this.projectInnovationRegionManager = projectInnovationRegionManager;
   }
-
 
   /**
    * @return true if the innovation has a OICR on the AR document or if the innovation has no OICR
@@ -585,6 +585,14 @@ public class InnovationsAction extends BaseAction {
           reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
         }
 
+        if (CollectionUtils.emptyIfNull(this.reportSynthesisFlagshipProgressInnovationManager.findAll()).stream()
+          .filter(p -> p != null && p.getId() != null && p.getProjectInnovation() != null
+            && p.getReportSynthesisFlagshipProgress() != null && p.getReportSynthesisFlagshipProgress().getId() != null
+            && p.getReportSynthesisFlagshipProgress().getId()
+              .equals(this.reportSynthesis.getReportSynthesisFlagshipProgress().getId()))
+          .count() == 0L) {
+          this.removeAllFromAR();
+        }
 
         reportSynthesis.getReportSynthesisFlagshipProgress().setProjectInnovations(new ArrayList<>());
         if (reportSynthesis.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressInnovations() != null
@@ -612,6 +620,8 @@ public class InnovationsAction extends BaseAction {
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym() != null && c.getAcronym().equals("PMU"))
       .collect(Collectors.toList()));
+
+
     /** Graphs and Tables */
     List<ProjectInnovation> selectedProjectInnovations = new ArrayList<ProjectInnovation>();
     if (projectInnovations != null && !projectInnovations.isEmpty()) {
@@ -646,6 +656,13 @@ public class InnovationsAction extends BaseAction {
       }
     }
 
+  }
+
+  private void removeAllFromAR() {
+    for (ProjectInnovation innovation : this.projectInnovations) {
+      this.reportSynthesisFlagshipProgressInnovationManager.toAnnualReport(innovation,
+        this.reportSynthesis.getReportSynthesisFlagshipProgress(), this.getCurrentUser(), true);
+    }
   }
 
   @Override
