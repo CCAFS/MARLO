@@ -41,6 +41,7 @@ import org.cgiar.ccafs.marlo.data.model.RepIndTypeActivity;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.utils.doi.DOIService;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
+import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;

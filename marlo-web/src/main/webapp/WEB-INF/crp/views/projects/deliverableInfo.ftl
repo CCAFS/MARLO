@@ -165,19 +165,18 @@
   [/#if]
 
   [#-- Supporting Activities --]
-  [#if false]
+  [#if !config.production]
     <div class="panel tertiary">
     <div class="panel-head"><label for=""> [@customForm.text name="project.deliverable.activities" readText=!editable /]:[@customForm.req required=editable /]</label></div>
       <div id="activityList" class="panel-body" listname="mappedDeliverableActivitiesCurrentPhase">
         <ul class="list">
         [#if mappedDeliverableActivitiesCurrentPhase?has_content]
           [#list mappedDeliverableActivitiesCurrentPhase as element]
-            <li id="activitiesTemplate" class="activities clearfix">
+            <li id="activities" class="activities clearfix">
               [#if editable]<div class="removeActivity removeIcon" title="Remove activity"></div>[/#if]
-              <input class="id" type="hidden" name="mappedDeliverableActivitiesCurrentPhase[${element_index}].id" value="${(element.id)!}" />
               <input class="aId" type="hidden" name="mappedDeliverableActivitiesCurrentPhase[${element_index}].id" value="${(element.id)!}" />
-              <span class="name">
-                ${(element.title)!} <br />
+              <span id="activity-${(element.id)!}" class="name">
+                ${(element.title)!}<br />
               </span>
               <div class="clearfix"></div>
             </li>

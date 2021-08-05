@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.ActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CgiarCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
@@ -173,6 +174,7 @@ public class DeliverableAction extends BaseAction {
   private final Logger logger = LoggerFactory.getLogger(DeliverableAction.class);
 
   // Managers
+  private ActivityManager activityManager;
   private AuditLogManager auditLogManager;
   private GlobalUnitManager crpManager;
   private DeliverableDataSharingFileManager deliverableDataSharingFileManager;
@@ -301,7 +303,7 @@ public class DeliverableAction extends BaseAction {
     RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager,
     CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager,
     DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager,
-    RepIndTrainingTermManager repIndTrainingTermManager,
+    RepIndTrainingTermManager repIndTrainingTermManager, ActivityManager activityManager,
     DeliverableGeographicScopeManager deliverableGeographicScopeManager,
     DeliverableUserPartnershipManager deliverableUserPartnershipManager,
     DeliverablePartnerTypeManager deliverablePartnerTypeManager, UserManager userManager,
@@ -309,6 +311,7 @@ public class DeliverableAction extends BaseAction {
     CrpProgramOutcomeManager crpProgramOutcomeManager, DeliverableActivityManager deliverableActivityManager,
     ProjectDeliverableSharedManager projectDeliverableSharedManager) {
     super(config);
+    this.activityManager = activityManager;
     this.deliverableManager = deliverableManager;
     this.deliverableTypeManager = deliverableTypeManager;
     this.crpManager = crpManager;
@@ -1817,6 +1820,7 @@ public class DeliverableAction extends BaseAction {
         if (deliverable.getQualityCheck() != null) {
           this.saveQualityCheck();
         }
+        this.saveDeliverableActivities(deliverableDB);
         this.saveDissemination();
         this.saveMetadata();
         this.saveCrps();
@@ -2608,6 +2612,34 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+    private void saveDeliverableActivities(Deliverable deliverableDB) {
+
+        List<String> newActivityIDs = new ArrayList<>();
+
+        for (DeliverableActivity da : deliverable.getDeliverableActivities()) {
+            if (da.getPhase().getId().compareTo(this.getActualPhase().getId()) == 0){
+                if (!newActivityIDs.contains(da.getActivity().getId() + "")) {
+                    newActivityIDs.add(da.getActivity().getId() + "");
+                }
+            }
+        }
+
+        for (DeliverableActivity da : deliverableDB.getDeliverableActivities()) {
+            if (da.getPhase().getId().compareTo(this.getActualPhase().getId()) == 0
+                    && !newActivityIDs.contains(da.getActivity().getId() + "")) {
+                deliverableActivityManager.deleteDeliverableActivity(da.getId());
+            }
+        }
+
+        for (DeliverableActivity da : deliverable.getDeliverableActivities()) {
+            if (da.getPhase().getId().compareTo(this.getActualPhase().getId()) == 0){
+                if (da.getId() == null) {
+                    deliverableActivityManager.saveDeliverableActivity(da);
+                }
+            }
+        }
+    }
+
   private void saveParticipant() {
     if (deliverable.getDeliverableParticipant() != null
       && deliverable.getDeliverableParticipant().getHasParticipants() != null) {
@@ -3252,7 +3284,42 @@ public class DeliverableAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      deliverableValidator.validate(this, deliverable, true);
+            List<String> newActivities = new ArrayList<>();
+
+            for (Activity activity : mappedDeliverableActivitiesCurrentPhase) {
+                if (!newActivities.contains(activity.getId() + "")) {
+                    newActivities.add(activity.getId() + "");
+                }
+            }
+
+            mappedDeliverableActivitiesCurrentPhase.clear();
+
+            List<DeliverableActivity> finalList = new ArrayList<>();
+            List<String> existingActivities = new ArrayList<>();
+            for (DeliverableActivity deliverableActivity : deliverable.getDeliverableActivities()) {
+                if (deliverableActivity.getPhase().getId().compareTo(this.getActualPhase().getId()) == 0
+                        && newActivities.contains(deliverableActivity.getActivity().getId() + "")) {
+                    finalList.add(deliverableActivity);
+                    existingActivities.add(deliverableActivity.getActivity().getId() + "");
+                }
+            }
+
+            for (String newOne : newActivities) {
+                if (!existingActivities.contains(newOne)) {
+                    DeliverableActivity newDeliverable = new DeliverableActivity();
+                    newDeliverable.setPhase(this.getActualPhase());
+                    newDeliverable.setDeliverable(deliverable);
+                    newDeliverable.setActivity(activityManager.getActivityById(Integer.parseInt(newOne)));
+                    finalList.add(newDeliverable);
+                }
+            }
+
+            deliverable.getDeliverableActivities().clear();
+            for (DeliverableActivity d : finalList) {
+                deliverable.getDeliverableActivities().add(d);
+            }
+
+            deliverableValidator.validate(this, deliverable, true);
     }
   }
 
