@@ -209,7 +209,8 @@
 <ul style="display:none">
   <li id="activitiesTemplate" class="activities clearfix" style="display:none;">
     <div class="removeActivity removeIcon" title="Remove activity"></div>
-    <input class="aId" type="hidden" name="mappedDeliverableActivitiesCurrentPhase[-1].id" value="" />
+    <input class="id" type="hidden" name="deliverable.activities[-1].id" value="" />
+    <input class="aId" type="hidden" name="deliverable.activities[-1].activity.id" value="" />
     <span class="name"></span>
     <div class="clearfix"></div>
   </li>
