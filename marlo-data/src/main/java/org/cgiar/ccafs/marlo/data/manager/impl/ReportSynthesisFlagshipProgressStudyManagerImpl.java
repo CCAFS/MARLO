@@ -17,7 +17,10 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.ReportSynthesisFlagshipProgressStudyDAO;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressStudyManager;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressStudy;
+import org.cgiar.ccafs.marlo.data.model.User;
 
 import java.util.List;
 
@@ -36,7 +39,8 @@ public class ReportSynthesisFlagshipProgressStudyManagerImpl implements ReportSy
 
 
   @Inject
-  public ReportSynthesisFlagshipProgressStudyManagerImpl(ReportSynthesisFlagshipProgressStudyDAO reportSynthesisFlagshipProgressStudyDAO) {
+  public ReportSynthesisFlagshipProgressStudyManagerImpl(
+    ReportSynthesisFlagshipProgressStudyDAO reportSynthesisFlagshipProgressStudyDAO) {
     this.reportSynthesisFlagshipProgressStudyDAO = reportSynthesisFlagshipProgressStudyDAO;
 
 
@@ -45,13 +49,15 @@ public class ReportSynthesisFlagshipProgressStudyManagerImpl implements ReportSy
   @Override
   public void deleteReportSynthesisFlagshipProgressStudy(long reportSynthesisFlagshipProgressStudyId) {
 
-    reportSynthesisFlagshipProgressStudyDAO.deleteReportSynthesisFlagshipProgressStudy(reportSynthesisFlagshipProgressStudyId);
+    reportSynthesisFlagshipProgressStudyDAO
+      .deleteReportSynthesisFlagshipProgressStudy(reportSynthesisFlagshipProgressStudyId);
   }
 
   @Override
   public boolean existReportSynthesisFlagshipProgressStudy(long reportSynthesisFlagshipProgressStudyID) {
 
-    return reportSynthesisFlagshipProgressStudyDAO.existReportSynthesisFlagshipProgressStudy(reportSynthesisFlagshipProgressStudyID);
+    return reportSynthesisFlagshipProgressStudyDAO
+      .existReportSynthesisFlagshipProgressStudy(reportSynthesisFlagshipProgressStudyID);
   }
 
   @Override
@@ -62,16 +68,68 @@ public class ReportSynthesisFlagshipProgressStudyManagerImpl implements ReportSy
   }
 
   @Override
-  public ReportSynthesisFlagshipProgressStudy getReportSynthesisFlagshipProgressStudyById(long reportSynthesisFlagshipProgressStudyID) {
+  public ReportSynthesisFlagshipProgressStudy
+    getReportSynthesisFlagshipProgressStudyById(long reportSynthesisFlagshipProgressStudyID) {
 
     return reportSynthesisFlagshipProgressStudyDAO.find(reportSynthesisFlagshipProgressStudyID);
   }
 
   @Override
-  public ReportSynthesisFlagshipProgressStudy saveReportSynthesisFlagshipProgressStudy(ReportSynthesisFlagshipProgressStudy reportSynthesisFlagshipProgressStudy) {
+  public ReportSynthesisFlagshipProgressStudy
+    getReportSynthesisFlagshipProgressStudyByStudyAndFlagshipProgress(Long studyId, Long flagshipProgressId) {
+    return this.reportSynthesisFlagshipProgressStudyDAO
+      .getReportSynthesisFlagshipProgressStudyByStudyAndFlagshipProgress(studyId.longValue(),
+        flagshipProgressId.longValue());
+  }
+
+  @Override
+  public ReportSynthesisFlagshipProgressStudy saveReportSynthesisFlagshipProgressStudy(
+    ReportSynthesisFlagshipProgressStudy reportSynthesisFlagshipProgressStudy) {
 
     return reportSynthesisFlagshipProgressStudyDAO.save(reportSynthesisFlagshipProgressStudy);
   }
 
+  @Override
+  public ReportSynthesisFlagshipProgressStudy toAnnualReport(ProjectExpectedStudy projectExpectedStudy,
+    ReportSynthesisFlagshipProgress flagshipProgress, User user, boolean remove) {
+    ReportSynthesisFlagshipProgressStudy progressStudy = null;
 
+    if (projectExpectedStudy != null && projectExpectedStudy.getId() != null && flagshipProgress != null
+      && flagshipProgress.getId() != null && user != null && user.getId() != null) {
+
+      progressStudy = this.getReportSynthesisFlagshipProgressStudyByStudyAndFlagshipProgress(
+        projectExpectedStudy.getId(), flagshipProgress.getId());
+
+      if (progressStudy == null) {
+        // is not added to ar
+        if (remove) {
+          // we need to add it to ar. if we do not need to add it to ar, there is no need to create one.
+          progressStudy = new ReportSynthesisFlagshipProgressStudy();
+          progressStudy.setCreatedBy(user);
+          progressStudy.setReportSynthesisFlagshipProgress(flagshipProgress);
+          progressStudy.setProjectExpectedStudy(projectExpectedStudy);
+        }
+      }
+
+      if (progressStudy != null) {
+        progressStudy.setModifiedBy(user);
+        progressStudy.setActive(remove);
+      }
+
+      progressStudy = this.saveReportSynthesisFlagshipProgressStudy(progressStudy);
+    }
+
+    return progressStudy;
+  }
+
+  @Override
+  public ReportSynthesisFlagshipProgressStudy toAnnualReport(ReportSynthesisFlagshipProgressStudy progressStudy,
+    boolean remove) {
+    if (progressStudy != null && progressStudy.getId() != null) {
+      progressStudy.setActive(remove);
+      progressStudy = this.saveReportSynthesisFlagshipProgressStudy(progressStudy);
+    }
+
+    return progressStudy;
+  }
 }
