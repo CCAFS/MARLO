@@ -37,12 +37,22 @@ function destroyTable(id) {
 }
 
 function updateDataTable(id) {
+	var isPublicationMQAP = true;
 
-	console.log("segunddo");
+	if (id == "publicationMQAP") {
+		isPublicationMQAP = false;
+	} else {
+		isPublicationMQAP = true;
+	}
+
+	console.log("segundo", isPublicationMQAP);
 
 	// if (!document.querySelector(".dt-buttons")) {
 
 	$("#" + id).DataTable({
+		paging: isPublicationMQAP,
+		searching: isPublicationMQAP,
+		info: isPublicationMQAP,
 		responsive: "true",
 		dom: 'Bfrtilp',
 		destroy: true,
@@ -361,6 +371,50 @@ setTimeout(() => {
 	});
 }
 
+function all_initiatives() {
+	$.ajax({
+		url: config.endpoint + '/allInitiatives',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"all_initiatives");
+			destroyTable("all_initiatives");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"all_initiatives");
+			console.log(data);
+			let nameColumns = ['Code', 'Name','Current Stage ID','Current Stage', 'Status','Active Stage ID','Active Stage', 'Concept Name','Action Area ID', 'Action Area' ]			
+
+			$.each(data, function (index, item) {				
+				$('#list-print-all_initiatives').append(
+					'<tr>' + '<td >' + item['initvStgId'] + '</td>' 
+					+ '<td >' + item['initiativeName'] + '</td>' 
+					+ '<td >' + item['currentStageId'] + '</td>' 
+					+ '<td >' + item['currentStage'] + '</td>' 
+					+ '<td>'+ item['initvStageStatus'] + '</td>'
+					+ '<td>'+ item['activeStageId'] + '</td>'
+					+ '<td>'+ item['activeStageName'] + '</td>'
+					+ '<td>'+ (item['concept']== null? '': item['concept'].name) + '</td>'
+					+ '<td>'+ (item['concept']== null? '': item['concept'].action_area_id) + '</td>' 
+					+ '<td>'+ (item['concept']== null? '': item['concept'].action_area_description) + '</td>' 
+					+ '</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("all_initiatives");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
 function impact_areas() {
 	$.ajax({
 		url: config.endpoint + '/impact-areas',
@@ -472,6 +526,149 @@ function un_regions() {
 	});
 }
 
+function mqapClean(){
+	$('#doiInput').val('');
+	cleanModal();
+	destroyTable("publicationMQAP");
+}
+
+function mqap() {
+	let text=$('#doiInput').val();
+	console.log(text);
+	$.ajax({
+		 
+		url: config.endpoint + '/publicationsWOS?url='+text,
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			// manageSpinner(true,"publicationMQAP");
+			destroyTable("publicationMQAP");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			// manageSpinner(false,"publicationMQAP");
+			let nameColumns = ['Field', 'Value']
+
+			// $.each(nameColumns, function (index, name) {
+			// $('#list-print-columns-name').append('<th >' + name + '</th>')
+			// });
+			console.log(data.title);
+			/*
+			 * $.each(data, function (key, item) {
+			 * 
+			 */
+			let mapped='';
+			let notmaped='';
+			 $.each(data.organizations, function (index, item) {
+				 if(item['confidant']>=80){
+					 mapped +='\n'+item['fullName'];
+				 }else{
+					 notmaped +='\n'+item['fullName'];
+				 }
+			 });
+			 let authorslist='';
+			 $.each(data.authors, function (index, item) {
+				 authorslist+='\n'+item['full_name']
+			 });
+			 
+			  $('#print-publicationMQAP').append(` 
+				<tr><td>Publication type</td><td>${data.publicationType}</td></tr>
+				<tr><td>Title</td><td>${data.title}</td></tr>
+				<tr><td>Volume</td><td>${validateNull(data.volume)}</td></tr>
+				<tr><td>Pages</td><td>${validateNull(data.pages)}</td></tr>
+				<tr><td>Is ISI?</td><td>${data.is_isi}</td></tr>
+				<tr><td>DOI</td><td>${data.doi}</td></tr>
+				<tr><td>Is open access?</td><td>${data.is_oa}</td></tr>
+				<tr><td>Open access link</td><td>${data.oa_link}</td></tr>
+				<tr><td>Source</td><td>${data.source}</td></tr>
+				<tr><td>Publication year</td><td>${data.publicationYear}</td></tr>
+				<tr><td>Authors</td><td>${authorslist}</td></tr>
+				<tr><td>Institutions Mapped</td><td>${mapped}</td></tr>
+				<tr><td>Institutions Not Mapped</td><td>${notmaped}</td></tr>
+				`)							 	
+			/* }); */
+			updateDataTable("publicationMQAP");
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
+function glossary(){
+	$.ajax({
+		url: config.endpoint + '/glossary',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"glossary");
+			destroyTable("glossary");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"glossary");
+			let nameColumns = ['Term', 'Definition']
+
+		
+			$.each(data, function (index, item) {
+				$('#list-print-glossary').append(
+					'<tr>' + '<td>'+ item['term'] + '</td>'
+					+ '<td>'+ item['definition'] + '</td>'
+					+ '</tr>')
+			});
+			updateDataTable("glossary");
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+function CGIARRegions(){
+	$.ajax({
+		url: config.endpoint + '/allCGIARRegions',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"CGIAR_regions");
+			destroyTable("CGIAR_regions");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"CGIAR_regions");
+			let nameColumns = ['id', 'Name']
+
+			// $.each(nameColumns, function (index, name) {
+			// $('#list-print-columns-name').append('<th >' + name + '</th>')
+			// });
+
+			$.each(data, function (index, item) {
+				$('#list-print-CGIAR-regions').append(
+					'<tr>' + '<td >' + item['id'] + '</td>' 
+					+ '<td>'+ item['name'] + '</td>'
+					+ '<td>'+ item['regionType'].name + '</td>' 
+					+ '<td>'+ getCountries(item['countries']) + '</td>' 
+					+ '</tr>')
+			});
+			updateDataTable("CGIAR_regions");
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
 function institutions() {
 	$
 		.ajax({
@@ -535,6 +732,19 @@ function institutions() {
 				console.log(e);
 			}
 		});
+}
+
+function getCountries(countryDTO) {
+	let resultado = "";
+	$.each(countryDTO, function (index, item) {
+		if(index==0){
+			resultado += `<span data-toggle="tooltip" data-placement="top" class="pointer" title="${item.name}">${item.isoAlpha2}</span>`;	
+		}else{
+			resultado += `<span data-toggle="tooltip" data-placement="top" class="pointer" title="${item.name}">,${item.isoAlpha2}</span>`;	
+		}
+				
+	});
+	return resultado;
 }
 
 function getHeadquarter(countryOfficeDTO) {
