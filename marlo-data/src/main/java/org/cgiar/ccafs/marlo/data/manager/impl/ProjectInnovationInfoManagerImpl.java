@@ -68,6 +68,11 @@ public class ProjectInnovationInfoManagerImpl implements ProjectInnovationInfoMa
   }
 
   @Override
+  public List<ProjectInnovationInfo> getAllInnovationInfosByInnovation(Long innovationId) {
+    return this.projectInnovationInfoDAO.getAllInnovationInfosByInnovation(innovationId.longValue());
+  }
+
+  @Override
   public ProjectInnovationInfo getProjectInnovationInfoById(long projectInnovationInfoID) {
 
     return projectInnovationInfoDAO.find(projectInnovationInfoID);
@@ -133,6 +138,4 @@ public class ProjectInnovationInfoManagerImpl implements ProjectInnovationInfoMa
 
     return sourceInfo;
   }
-
-
 }

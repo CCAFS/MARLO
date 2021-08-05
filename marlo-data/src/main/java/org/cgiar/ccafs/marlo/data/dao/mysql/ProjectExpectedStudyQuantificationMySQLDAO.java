@@ -24,6 +24,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -74,6 +75,19 @@ public class ProjectExpectedStudyQuantificationMySQLDAO
   }
 
   @Override
+  public List<ProjectExpectedStudyQuantification> getAllStudyQuantificationsByStudy(long studyId) {
+    String query =
+      "select pesq from ProjectExpectedStudyQuantification pesq where pesq.projectExpectedStudy.id = :studyId order by pesq.phase.id";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("studyId", studyId);
+
+    List<ProjectExpectedStudyQuantification> result = super.findAll(createQuery);
+
+    return result;
+  }
+
+  @Override
   public ProjectExpectedStudyQuantification getProjectExpectedStudyQuantificationByPhase(Long expectedID,
     String typeQuantification, Long number, String targetUnit, Long phaseID) {
     String query = "from " + ProjectExpectedStudyQuantification.class.getName() + " where expected_id=" + expectedID
@@ -99,6 +113,4 @@ public class ProjectExpectedStudyQuantificationMySQLDAO
 
     return projectExpectedStudyQuantification;
   }
-
-
 }

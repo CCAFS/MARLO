@@ -24,6 +24,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -70,6 +71,36 @@ public class ProjectExpectedStudySdgTargetMySQLDAO extends AbstractMarloDAO<Proj
   }
 
   @Override
+  public List<ProjectExpectedStudySdgTarget> getAllStudySdgTargetsByStudy(long studyId) {
+    String query =
+      "select pessdg from ProjectExpectedStudySdgTarget pessdg where pessdg.projectExpectedStudy.id = :studyId order by pessdg.phase.id";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("studyId", studyId);
+
+    List<ProjectExpectedStudySdgTarget> result = super.findAll(createQuery);
+
+    return result;
+  }
+
+  @Override
+  public ProjectExpectedStudySdgTarget getStudySdgTargetByStudySdgTargetAndPhase(long studyId, long sdgTargetId,
+    long idPhase) {
+    String query = "select distinct pp from ProjectExpectedStudySdgTarget pp "
+      + "where pp.projectExpectedStudy.id = :studyId and pp.phase.id = :idPhase and pp.sdgTarget.id = :sdgTargetId";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("studyId", studyId);
+    createQuery.setParameter("idPhase", idPhase);
+    createQuery.setParameter("sdgTargetId", sdgTargetId);
+
+    Object findSingleResult = super.findSingleResult(ProjectExpectedStudySdgTarget.class, createQuery);
+    ProjectExpectedStudySdgTarget projectExpectedStudySdgTarget = (ProjectExpectedStudySdgTarget) findSingleResult;
+
+    return projectExpectedStudySdgTarget;
+  }
+
+  @Override
   public ProjectExpectedStudySdgTarget save(ProjectExpectedStudySdgTarget projectExpectedStudySdgTarget) {
     if (projectExpectedStudySdgTarget.getId() == null) {
       super.saveEntity(projectExpectedStudySdgTarget);
@@ -80,6 +111,4 @@ public class ProjectExpectedStudySdgTargetMySQLDAO extends AbstractMarloDAO<Proj
 
     return projectExpectedStudySdgTarget;
   }
-
-
 }

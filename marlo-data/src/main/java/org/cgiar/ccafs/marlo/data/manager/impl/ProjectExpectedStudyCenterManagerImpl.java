@@ -99,6 +99,11 @@ public class ProjectExpectedStudyCenterManagerImpl implements ProjectExpectedStu
   }
 
   @Override
+  public List<ProjectExpectedStudyCenter> getAllStudyCentersByStudy(Long studyId) {
+    return this.projectExpectedStudyCenterDAO.getAllStudyCentersByStudy(studyId.longValue());
+  }
+
+  @Override
   public ProjectExpectedStudyCenter getProjectExpectedStudyCenterById(long projectExpectedStudyCenterID) {
     return projectExpectedStudyCenterDAO.find(projectExpectedStudyCenterID);
   }

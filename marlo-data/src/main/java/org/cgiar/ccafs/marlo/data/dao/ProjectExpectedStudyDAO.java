@@ -59,6 +59,13 @@ public interface ProjectExpectedStudyDAO {
 
 
   /**
+   * This method gets a list of ALL projectExpectedStudy that are active up to a given phase
+   * 
+   * @return a list of ProjectExpectedStudy null if no exist records
+   */
+  public List<ProjectExpectedStudy> getAllStudiesByPhase(long phaseId);
+
+  /**
    * This method gets a list of projectExpectedStudy that are active by a given organizationType and phase
    * 
    * @return a list from ProjectExpectedStudy null if no exist records
@@ -67,9 +74,10 @@ public interface ProjectExpectedStudyDAO {
     Phase phase);
 
   /**
-   * This method gets a list of projectExpectedStudy that are active by a given phase
+   * This method gets a list of projectExpectedStudy with type 1 (OICRs) that are active by a given phase and created on
+   * the phase's year
    * 
-   * @return a list from ProjectExpectedStudy null if no exist records
+   * @return a list of ProjectExpectedStudy null if no exist records
    */
   public List<ProjectExpectedStudy> getStudiesByPhase(Phase phase);
 

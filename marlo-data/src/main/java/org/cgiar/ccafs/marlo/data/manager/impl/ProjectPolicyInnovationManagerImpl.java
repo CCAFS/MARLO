@@ -105,6 +105,11 @@ public class ProjectPolicyInnovationManagerImpl implements ProjectPolicyInnovati
   }
 
   @Override
+  public List<ProjectPolicyInnovation> getAllPolicyInnovationsByInnovation(Long innovationId) {
+    return this.projectPolicyInnovationDAO.getAllPolicyInnovationsByInnovation(innovationId.longValue());
+  }
+
+  @Override
   public List<ProjectPolicyInnovation> getAllPolicyInnovationsByPolicy(Long policyId) {
     return projectPolicyInnovationDAO.getAllPolicyInnovationsByPolicy(policyId.longValue());
   }
@@ -170,6 +175,4 @@ public class ProjectPolicyInnovationManagerImpl implements ProjectPolicyInnovati
 
     return innovation;
   }
-
-
 }
