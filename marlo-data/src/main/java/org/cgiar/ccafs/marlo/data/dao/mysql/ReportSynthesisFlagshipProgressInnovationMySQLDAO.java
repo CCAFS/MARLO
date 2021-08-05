@@ -24,10 +24,13 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
-public class ReportSynthesisFlagshipProgressInnovationMySQLDAO extends AbstractMarloDAO<ReportSynthesisFlagshipProgressInnovation, Long> implements ReportSynthesisFlagshipProgressInnovationDAO {
+public class ReportSynthesisFlagshipProgressInnovationMySQLDAO
+  extends AbstractMarloDAO<ReportSynthesisFlagshipProgressInnovation, Long>
+  implements ReportSynthesisFlagshipProgressInnovationDAO {
 
 
   @Inject
@@ -37,14 +40,16 @@ public class ReportSynthesisFlagshipProgressInnovationMySQLDAO extends AbstractM
 
   @Override
   public void deleteReportSynthesisFlagshipProgressInnovation(long reportSynthesisFlagshipProgressInnovationId) {
-    ReportSynthesisFlagshipProgressInnovation reportSynthesisFlagshipProgressInnovation = this.find(reportSynthesisFlagshipProgressInnovationId);
+    ReportSynthesisFlagshipProgressInnovation reportSynthesisFlagshipProgressInnovation =
+      this.find(reportSynthesisFlagshipProgressInnovationId);
     reportSynthesisFlagshipProgressInnovation.setActive(false);
     this.update(reportSynthesisFlagshipProgressInnovation);
   }
 
   @Override
   public boolean existReportSynthesisFlagshipProgressInnovation(long reportSynthesisFlagshipProgressInnovationID) {
-    ReportSynthesisFlagshipProgressInnovation reportSynthesisFlagshipProgressInnovation = this.find(reportSynthesisFlagshipProgressInnovationID);
+    ReportSynthesisFlagshipProgressInnovation reportSynthesisFlagshipProgressInnovation =
+      this.find(reportSynthesisFlagshipProgressInnovationID);
     if (reportSynthesisFlagshipProgressInnovation == null) {
       return false;
     }
@@ -70,7 +75,25 @@ public class ReportSynthesisFlagshipProgressInnovationMySQLDAO extends AbstractM
   }
 
   @Override
-  public ReportSynthesisFlagshipProgressInnovation save(ReportSynthesisFlagshipProgressInnovation reportSynthesisFlagshipProgressInnovation) {
+  public ReportSynthesisFlagshipProgressInnovation
+    getReportSynthesisFlagshipProgressInnovationByInnovationAndFlagshipProgress(long innovationId,
+      long flagshipProgressId) {
+    String query =
+      "select rsfpi from ReportSynthesisFlagshipProgressInnovation rsfpi where rsfpi.projectInnovation.id = :innovationId "
+        + "and rsfpi.reportSynthesisFlagshipProgress.id = :flagshipProgressId";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("innovationId", innovationId);
+    createQuery.setParameter("flagshipProgressId", flagshipProgressId);
+
+    List<ReportSynthesisFlagshipProgressInnovation> resultList = super.findAll(createQuery);
+
+    return (resultList != null && !resultList.isEmpty()) ? resultList.get(0) : null;
+  }
+
+  @Override
+  public ReportSynthesisFlagshipProgressInnovation
+    save(ReportSynthesisFlagshipProgressInnovation reportSynthesisFlagshipProgressInnovation) {
     if (reportSynthesisFlagshipProgressInnovation.getId() == null) {
       super.saveEntity(reportSynthesisFlagshipProgressInnovation);
     } else {

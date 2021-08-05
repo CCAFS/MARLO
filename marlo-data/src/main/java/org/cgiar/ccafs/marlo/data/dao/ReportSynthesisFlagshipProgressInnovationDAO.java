@@ -32,7 +32,8 @@ public interface ReportSynthesisFlagshipProgressInnovationDAO {
   public void deleteReportSynthesisFlagshipProgressInnovation(long reportSynthesisFlagshipProgressInnovationId);
 
   /**
-   * This method validate if the reportSynthesisFlagshipProgressInnovation identify with the given id exists in the system.
+   * This method validate if the reportSynthesisFlagshipProgressInnovation identify with the given id exists in the
+   * system.
    * 
    * @param reportSynthesisFlagshipProgressInnovationID is a reportSynthesisFlagshipProgressInnovation identifier.
    * @return true if the reportSynthesisFlagshipProgressInnovation exists, false otherwise.
@@ -40,7 +41,8 @@ public interface ReportSynthesisFlagshipProgressInnovationDAO {
   public boolean existReportSynthesisFlagshipProgressInnovation(long reportSynthesisFlagshipProgressInnovationID);
 
   /**
-   * This method gets a reportSynthesisFlagshipProgressInnovation object by a given reportSynthesisFlagshipProgressInnovation identifier.
+   * This method gets a reportSynthesisFlagshipProgressInnovation object by a given
+   * reportSynthesisFlagshipProgressInnovation identifier.
    * 
    * @param reportSynthesisFlagshipProgressInnovationID is the reportSynthesisFlagshipProgressInnovation identifier.
    * @return a ReportSynthesisFlagshipProgressInnovation object.
@@ -54,14 +56,27 @@ public interface ReportSynthesisFlagshipProgressInnovationDAO {
    */
   public List<ReportSynthesisFlagshipProgressInnovation> findAll();
 
+  /**
+   * This method gets a reportSynthesisFlagshipProgressInnovation object by a given projectInnovation id and a phase id
+   *
+   * @param innovationId the ProjectInnovation identifier
+   * @param flagshipProgressId the ReportSynthesisFlagshipProgress identifier
+   * @return a ReportSynthesisFlagshipProgressInnovation object.
+   */
+  public ReportSynthesisFlagshipProgressInnovation
+    getReportSynthesisFlagshipProgressInnovationByInnovationAndFlagshipProgress(long innovationId,
+      long flagshipProgressId);
 
   /**
    * This method saves the information of the given reportSynthesisFlagshipProgressInnovation
    * 
-   * @param reportSynthesisFlagshipProgressInnovation - is the reportSynthesisFlagshipProgressInnovation object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the reportSynthesisFlagshipProgressInnovation was
+   * @param reportSynthesisFlagshipProgressInnovation - is the reportSynthesisFlagshipProgressInnovation object with the
+   *        new information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         reportSynthesisFlagshipProgressInnovation was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ReportSynthesisFlagshipProgressInnovation save(ReportSynthesisFlagshipProgressInnovation reportSynthesisFlagshipProgressInnovation);
+  public ReportSynthesisFlagshipProgressInnovation
+    save(ReportSynthesisFlagshipProgressInnovation reportSynthesisFlagshipProgressInnovation);
 }
