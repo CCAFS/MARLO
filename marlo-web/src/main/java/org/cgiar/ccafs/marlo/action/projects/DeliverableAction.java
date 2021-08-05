@@ -1148,10 +1148,6 @@ public class DeliverableAction extends BaseAction {
           }
         }
 
-        for (DeliverableActivity deliverableActivity : deliverable.getActivities()) {
-          deliverableActivity.setActivity(activityManager.getActivityById(deliverableActivity.getActivity().getId()));
-        }
-
         deliverable.setGenderLevels(deliverable.getDeliverableGenderLevels().stream()
           .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
 
@@ -1600,15 +1596,6 @@ public class DeliverableAction extends BaseAction {
 
       // Add Activities
       this.activities = new ArrayList<>();
-
-      List<String> activitiesPresentMapped = new ArrayList<>();
-
-      for (DeliverableActivity deliverableActivity : deliverable.getDeliverableActivities()) {
-        activitiesPresentMapped.add(deliverableActivity.getActivity().getId() + "");
-      }
-
-      // List<DeliverableActivity> activities = new ArrayList<>();
-      // deliverableActivityManager.getDeliverableActivitiesByDeliverableID(deliverableID);
 
       for (Activity activity : project.getActivities()) {
         if (activity.isActive() && !this.activities.contains(activity)
