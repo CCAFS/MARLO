@@ -255,6 +255,74 @@ public class ProjectOutcomeAction extends BaseAction {
     return SUCCESS;
   }
 
+  public double defineProjectOutcomeOrder(ProjectOutcome projectOutcome) {
+    double orderIndex = 1;
+    if (projectOutcome != null && projectOutcome.getCrpProgramOutcome() != null
+      && projectOutcome.getCrpProgramOutcome().getDescription() != null) {
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("Indicator 1")) {
+        orderIndex = 1;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("Indicator 2")) {
+        orderIndex = 2;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("Indicator 3")) {
+        orderIndex = 3;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("1.1")) {
+        orderIndex = 11;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("1.2")) {
+        orderIndex = 12;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("1.3")) {
+        orderIndex = 13;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("1.4")) {
+        orderIndex = 14;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("1.5")) {
+        orderIndex = 15;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("2.1")) {
+        orderIndex = 21;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("2.1")) {
+        orderIndex = 21;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("2.2")) {
+        orderIndex = 22;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("2.3")) {
+        orderIndex = 23;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("2.4")) {
+        orderIndex = 24;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("2.5")) {
+        orderIndex = 25;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("3.1")) {
+        orderIndex = 31;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("3.1")) {
+        orderIndex = 31;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("3.2")) {
+        orderIndex = 32;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("3.3")) {
+        orderIndex = 33;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("3.4")) {
+        orderIndex = 34;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("3.5")) {
+        orderIndex = 35;
+      }
+    }
+    return orderIndex;
+  }
+
   private Path getAutoSaveFilePath() {
     String composedClassName = projectOutcome.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -268,7 +336,6 @@ public class ProjectOutcomeAction extends BaseAction {
   public String getBaseLineFileURL(String outcomeID) {
     return config.getDownloadURL() + "/" + this.getBaseLineFileUrlPath(outcomeID).replace('\\', '/');
   }
-
 
   public String getBaseLineFileUrlPath(String outcomeID) {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + outcomeID + File.separator + "baseLine"
@@ -292,7 +359,6 @@ public class ProjectOutcomeAction extends BaseAction {
     return this.getIndexCommunication(year);
 
   }
-
 
   public int getIndexIndicator(Long indicatorID) {
 
@@ -361,7 +427,6 @@ public class ProjectOutcomeAction extends BaseAction {
 
   }
 
-
   public List<CrpMilestone> getMilestones() {
     return milestones;
   }
@@ -375,7 +440,6 @@ public class ProjectOutcomeAction extends BaseAction {
   public List<CrpMilestone> getMilestonesProject() {
     return milestonesProject;
   }
-
 
   public Project getProject() {
     return project;
@@ -394,7 +458,6 @@ public class ProjectOutcomeAction extends BaseAction {
   public long getProjectOutcomeID() {
     return projectOutcomeID;
   }
-
 
   /**
    * Return the absolute path where the work plan is or should be located.
@@ -478,7 +541,6 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
   }
-
 
   public List<ProjectMilestone> loadProjectMilestones(int year) {
 
@@ -717,7 +779,7 @@ public class ProjectOutcomeAction extends BaseAction {
       // projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
       projectOutcome.setPhase(this.getActualPhase());
       projectOutcome.setModificationJustification(this.getJustification());
-      projectOutcome.setOrder((double) 1);
+      projectOutcome.setOrder(this.defineProjectOutcomeOrder(projectOutcome));
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_OUTCOMES_MILESTONE_RELATION);
@@ -895,7 +957,6 @@ public class ProjectOutcomeAction extends BaseAction {
       }
     }
   }
-
 
   private void saveMilestones(ProjectOutcome projectOutcomeDB) {
 
@@ -1097,7 +1158,7 @@ public class ProjectOutcomeAction extends BaseAction {
     if (projectOutcome.getOrder() != null) {
       projectOutcomeDB.setOrder(projectOutcome.getOrder());
     } else {
-      projectOutcomeDB.setOrder((double) 1);
+      projectOutcomeDB.setOrder(this.defineProjectOutcomeOrder(projectOutcomeDB));
     }
 
     projectOutcomeDB = projectOutcomeManager.saveProjectOutcome(projectOutcomeDB);
@@ -1105,7 +1166,6 @@ public class ProjectOutcomeAction extends BaseAction {
     return projectOutcomeDB;
 
   }
-
 
   public void setEditMilestoneExpectedValue(boolean editMilestoneExpectedValue) {
     this.editMilestoneExpectedValue = editMilestoneExpectedValue;

@@ -177,7 +177,11 @@
               <input class="id" type="hidden" name="deliverable.activities[${element_index}].id" value="${(element.id)!}" />
               <input class="aId" type="hidden" name="deliverable.activities[${element_index}].activity.id" value="${(element.activity.id)!}" />
               <span class="name">
+              [#if element.activity.activityTitle?has_content]
                 ${(element.activity.activityTitle.title)!}<br />
+              [#else]
+                No Title selected
+              [/#if]
               </span>
               <div class="clearfix"></div>
             </li>
@@ -207,7 +211,7 @@
         [/#list]
       [/#if]
     </div>
-  [/#if]
+[/#if]
 
   [#-- Funding Source --]
   [#if !phaseOne]

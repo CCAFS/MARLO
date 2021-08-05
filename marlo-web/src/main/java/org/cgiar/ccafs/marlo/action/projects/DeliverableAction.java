@@ -1131,7 +1131,9 @@ public class DeliverableAction extends BaseAction {
           .collect(Collectors.toList()));
 
         deliverable.setActivities(deliverable.getDeliverableActivities().stream()
-          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+          .filter(da -> da.isActive() && da.getPhase() != null && da.getPhase().equals(this.getActualPhase())
+            && da.getActivity().getProject() != null && da.getActivity().getProject().getId() != null
+            && da.getActivity().getProject().getId().equals(project.getId()))
           .collect(Collectors.toList()));
 
         for (DeliverableFundingSource deliverableFundingSource : deliverable.getFundingSources()) {
