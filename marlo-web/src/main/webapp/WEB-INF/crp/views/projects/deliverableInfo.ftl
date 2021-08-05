@@ -165,7 +165,6 @@
   [/#if]
 
   [#-- Deliverable Activities --]
-  [#if !config.production]
     <div class="panel tertiary">
     <div class="panel-head"><label for=""> [@customForm.text name="project.deliverable.activities" readText=!editable /]:[@customForm.req required=editable /]</label></div>
       <div id="activityList" class="panel-body" listname="deliverable.activities">
@@ -207,7 +206,6 @@
         [/#list]
       [/#if]
     </div>
-  [/#if]
 
   [#-- Funding Source --]
   [#if !phaseOne]
