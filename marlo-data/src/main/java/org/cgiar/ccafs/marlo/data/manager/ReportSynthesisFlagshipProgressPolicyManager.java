@@ -88,26 +88,26 @@ public interface ReportSynthesisFlagshipProgressPolicyManager {
 
   /**
    * Adds or removes a projectPolicy from the Annual Report (arPhase). If a ReportSynthesisFlagshipProgressPolicy
-   * exists, we check if is active and depending on the {@code add} flag, we activate it / deactivate it. If it does not
-   * exist and {@code add} is {@code true}, we create a new ReportSynthesisFlagshipProgressPolicy.
+   * exists, we check if is active and depending on the {@code remove} flag, we activate it / deactivate it. If it does
+   * not exist and {@code remove} is {@code true}, we create a new ReportSynthesisFlagshipProgressPolicy.
    * 
    * @param projectPolicy the ProjectPolicy to be added to the AR Phase
    * @param flagshipProgress the ReportSynthesisFlagshipProgress to be linked to this project policy
    * @param user the User adding the policy to the Annual report
-   * @param add if we want to add or remove from the Annual Report
+   * @param remove if we want to add or remove from the Annual Report
    * @return a ReportSynthesisFlagshipProgressPolicy object
    */
   public ReportSynthesisFlagshipProgressPolicy toAnnualReport(ProjectPolicy projectPolicy,
-    ReportSynthesisFlagshipProgress flagshipProgress, User user, boolean add);
+    ReportSynthesisFlagshipProgress flagshipProgress, User user, boolean remove);
 
   /**
    * Adds or removes a ReportSynthesisFlagshipProgressPolicy from the Annual Report (arPhase) according to the
-   * {@code add} parameter
+   * {@code remove} parameter
    * 
    * @param progressPolicy the ReportSynthesisFlagshipProgressPolicy to be added or removed
-   * @param add if we want to add or remove from the Annual Report
+   * @param remove if we want to add or remove from the Annual Report
    * @return a ReportSynthesisFlagshipProgressPolicy object
    */
   public ReportSynthesisFlagshipProgressPolicy toAnnualReport(ReportSynthesisFlagshipProgressPolicy progressPolicy,
-    boolean add);
+    boolean remove);
 }

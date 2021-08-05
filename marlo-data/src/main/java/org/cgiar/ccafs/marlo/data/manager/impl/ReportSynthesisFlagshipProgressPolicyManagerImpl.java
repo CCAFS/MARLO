@@ -91,7 +91,7 @@ public class ReportSynthesisFlagshipProgressPolicyManagerImpl implements ReportS
 
   @Override
   public ReportSynthesisFlagshipProgressPolicy toAnnualReport(ProjectPolicy projectPolicy,
-    ReportSynthesisFlagshipProgress flagshipProgress, User user, boolean add) {
+    ReportSynthesisFlagshipProgress flagshipProgress, User user, boolean remove) {
     ReportSynthesisFlagshipProgressPolicy progressPolicy = null;
 
     if (projectPolicy != null && projectPolicy.getId() != null && flagshipProgress != null
@@ -102,7 +102,7 @@ public class ReportSynthesisFlagshipProgressPolicyManagerImpl implements ReportS
 
       if (progressPolicy == null) {
         // is not added to ar
-        if (add) {
+        if (remove) {
           // we need to add it to ar. if we do not need to add it to ar, there is no need to create one.
           progressPolicy = new ReportSynthesisFlagshipProgressPolicy();
           progressPolicy.setCreatedBy(user);
@@ -113,7 +113,7 @@ public class ReportSynthesisFlagshipProgressPolicyManagerImpl implements ReportS
 
       if (progressPolicy != null) {
         progressPolicy.setModifiedBy(user);
-        progressPolicy.setActive(add);
+        progressPolicy.setActive(remove);
       }
 
       progressPolicy = this.saveReportSynthesisFlagshipProgressPolicy(progressPolicy);
@@ -124,9 +124,9 @@ public class ReportSynthesisFlagshipProgressPolicyManagerImpl implements ReportS
 
   @Override
   public ReportSynthesisFlagshipProgressPolicy toAnnualReport(ReportSynthesisFlagshipProgressPolicy progressPolicy,
-    boolean add) {
+    boolean remove) {
     if (progressPolicy != null && progressPolicy.getId() != null) {
-      progressPolicy.setActive(add);
+      progressPolicy.setActive(remove);
       progressPolicy = this.saveReportSynthesisFlagshipProgressPolicy(progressPolicy);
     }
 
