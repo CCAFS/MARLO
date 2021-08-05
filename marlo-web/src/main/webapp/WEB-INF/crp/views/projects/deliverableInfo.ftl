@@ -165,6 +165,7 @@
   [/#if]
 
   [#-- Deliverable Activities --]
+  [#if !config.production]
     <div class="panel tertiary">
     <div class="panel-head"><label for=""> [@customForm.text name="project.deliverable.activities" readText=!editable /]:[@customForm.req required=editable /]</label></div>
       <div id="activityList" class="panel-body" listname="deliverable.activities">
@@ -176,7 +177,11 @@
               <input class="id" type="hidden" name="deliverable.activities[${element_index}].id" value="${(element.id)!}" />
               <input class="aId" type="hidden" name="deliverable.activities[${element_index}].activity.id" value="${(element.activity.id)!}" />
               <span class="name">
+              [#if element.activity.activityTitle?has_content]
                 ${(element.activity.activityTitle.title)!}<br />
+              [#else]
+                No Title selected
+              [/#if]
               </span>
               <div class="clearfix"></div>
             </li>
@@ -206,6 +211,7 @@
         [/#list]
       [/#if]
     </div>
+[/#if]
 
   [#-- Funding Source --]
   [#if !phaseOne]

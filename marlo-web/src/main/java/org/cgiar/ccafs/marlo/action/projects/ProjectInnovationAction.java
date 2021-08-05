@@ -1031,6 +1031,20 @@ public class ProjectInnovationAction extends BaseAction {
         logger.error("unable to get shared deliverables", e);
       }
 
+      if (deliverableList != null && !deliverableList.isEmpty()) {
+        for (Deliverable deliverableElement : deliverableList) {
+
+          if (deliverableElement.getProject() != null && deliverableElement.getProject().getId() != null
+            && !deliverableElement.getProject().getId().equals(projectID)) {
+            deliverableElement.setTagTitle("<span class=\"label label-info\">[@s.text name=\"global.new\" /]</span> "
+              + "D" + deliverableElement.getId() + ") "
+              + deliverableElement.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getName());
+          } else {
+            deliverableElement.setTagTitle("D" + deliverableElement.getId() + ") "
+              + deliverableElement.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getName());
+          }
+        }
+      }
 
       List<Project> projectSharedList = new ArrayList<>();
       if (innovation.getSharedInnovations() != null && innovation.getSharedInnovations().size() > 0) {
