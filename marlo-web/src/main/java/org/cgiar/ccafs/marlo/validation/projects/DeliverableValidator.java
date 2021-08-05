@@ -298,6 +298,13 @@ public class DeliverableValidator extends BaseValidator {
               action.getInvalidFields().put("input-deliverable.responsiblePartnership",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
+
+            if (deliverable.getActivities() == null || deliverable.getActivities().isEmpty()) {
+              action.addMessage(action.getText("project.deliverable.activity"));
+              action.getInvalidFields().put("list-deliverable.activities",
+                action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"activities"}));
+            }
+
           }
 
           if (deliverable.getFundingSources() == null || deliverable.getFundingSources().isEmpty()) {

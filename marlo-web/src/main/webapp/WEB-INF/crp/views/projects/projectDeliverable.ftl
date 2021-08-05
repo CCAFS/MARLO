@@ -204,6 +204,18 @@
   <input type="hidden" id="hasDeliverableRule-${ruleName}" value="${deliverableRuleValue}" />
   <input type="hidden" id="getDeliverableTypesByRule-${ruleName}" value="${deliverableTypesValues}" />
 [/#macro]
+
+[#-- Activities list template --]
+<ul style="display:none">
+  <li id="activitiesTemplate" class="activities clearfix" style="display:none;">
+    <div class="removeActivity removeIcon" title="Remove activity"></div>
+    <input class="id" type="hidden" name="deliverable.activities[-1].id" value="" />
+    <input class="aId" type="hidden" name="deliverable.activities[-1].activity.id" value="" />
+    <span class="name"></span>
+    <div class="clearfix"></div>
+  </li>
+</ul>
+
 [#-- Funding Source list template --]
 <ul style="display:none">
   <li id="fsourceTemplate" class="fundingSources clearfix" style="display:none;">
