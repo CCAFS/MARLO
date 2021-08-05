@@ -19,26 +19,15 @@
 
 package org.cgiar.ccafs.marlo.rest.dto;
 
-import javax.validation.constraints.NotNull;
-
 import io.swagger.annotations.ApiModelProperty;
 
 public class GlossaryDTO {
 
 
-  @ApiModelProperty(notes = "Application Glossary", position = 1)
-  @NotNull
-  private String applicationName;
-
-  @ApiModelProperty(notes = "Item name", position = 2)
-  private String title;
-  @ApiModelProperty(notes = "Item definition", position = 3)
+  @ApiModelProperty(notes = "Item Term", position = 1)
+  private String term;
+  @ApiModelProperty(notes = "Item definition", position = 2)
   private String definition;
-
-
-  public String getApplicationName() {
-    return applicationName;
-  }
 
 
   public String getDefinition() {
@@ -46,12 +35,8 @@ public class GlossaryDTO {
   }
 
 
-  public String getTitle() {
-    return title;
-  }
-
-  public void setApplicationName(String applicationName) {
-    this.applicationName = applicationName;
+  public String getTerm() {
+    return term;
   }
 
 
@@ -59,8 +44,9 @@ public class GlossaryDTO {
     this.definition = definition;
   }
 
-  public void setTitle(String title) {
-    this.title = title;
+
+  public void setTerm(String term) {
+    this.term = term;
   }
 
 

@@ -23,10 +23,14 @@ import org.cgiar.ccafs.marlo.data.model.Glossary;
 import org.cgiar.ccafs.marlo.rest.dto.GlossaryDTO;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "jsr330")
 public interface GlossaryMapper {
 
+
+  @Mappings({@Mapping(source = "title", target = "term")})
   public abstract GlossaryDTO glossaryToGlossaryDTO(Glossary glossary);
 
 }
