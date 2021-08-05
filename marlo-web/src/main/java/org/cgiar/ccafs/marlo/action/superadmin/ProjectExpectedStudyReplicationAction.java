@@ -39,9 +39,17 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySdgTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySrfTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySubIdoManager;
+import org.cgiar.ccafs.marlo.data.model.AllianceLever;
+import org.cgiar.ccafs.marlo.data.model.AllianceLeverOutcome;
+import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.LocElement;
+import org.cgiar.ccafs.marlo.data.model.Nexus;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCenter;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
@@ -62,11 +70,18 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySdgTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
+import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
+import org.cgiar.ccafs.marlo.data.model.SdgTargets;
+import org.cgiar.ccafs.marlo.data.model.SrfSloIndicator;
+import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -194,26 +209,29 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
    * Replicates the ProjectExpectedStudyCenters associated to the studyId
    * 
    * @param studyId the study identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectExpectedStudyCenters(long studyId, Phase lastCrpPhase) {
+  private void replicateProjectExpectedStudyCenters(long studyId, Phase selectedPhase) {
+    LOG.info("Starting ProjectExpectedStudyCenters replication...");
     List<ProjectExpectedStudyCenter> studyCenters =
       this.projectExpectedStudyCenterManager.getAllStudyCentersByStudy(studyId);
-    studyCenters
-      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getInstitution() == null);
-    if (this.isNotEmpty(studyCenters)) {
-      ProjectExpectedStudyCenter lastStudyCenter = studyCenters.get(studyCenters.size() - 1);
+    studyCenters.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getInstitution() == null
+      || !pc.getPhase().equals(selectedPhase));
 
-      if (lastStudyCenter.getPhase() == lastCrpPhase) {
-        // the study centers got replicated all the way to the last phase, we do not have to do anything else
-        studyCenters = Collections.emptyList();
-      } else {
-        // the study center replication stopped some place before the last phase, let's replicate everything from that
-        // point onwards
-        studyCenters.removeIf(pc -> !pc.getPhase().equals(lastStudyCenter.getPhase()));
-      }
+    if (this.isNotEmpty(studyCenters)) {
+      Map<Institution, ProjectExpectedStudyCenter> uniqueInstitutions = new HashMap<>(studyCenters.size());
 
       for (ProjectExpectedStudyCenter pesc : studyCenters) {
+        Institution institution = pesc.getInstitution();
+
+        if (uniqueInstitutions.containsKey(institution)) {
+          LOG.info("The institution {} is duplicated", institution.getId());
+        } else {
+          uniqueInstitutions.put(institution, pesc);
+        }
+      }
+
+      for (ProjectExpectedStudyCenter pesc : uniqueInstitutions.values()) {
         this.projectExpectedStudyCenterManager.saveProjectExpectedStudyCenter(pesc);
       }
     }
@@ -223,26 +241,29 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
    * Replicates the ProjectExpectedStudyCountries associated to the studyId
    * 
    * @param studyId the study identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectExpectedStudyCountries(long studyId, Phase lastCrpPhase) {
+  private void replicateProjectExpectedStudyCountries(long studyId, Phase selectedPhase) {
+    LOG.info("Starting ProjectExpectedStudyCountry replication...");
     List<ProjectExpectedStudyCountry> studyCountries =
       this.projectExpectedStudyCountryManager.getAllStudyCountriesByStudy(studyId);
-    studyCountries
-      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getLocElement() == null);
-    if (this.isNotEmpty(studyCountries)) {
-      ProjectExpectedStudyCountry lastStudyCountry = studyCountries.get(studyCountries.size() - 1);
+    studyCountries.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null
+      || pc.getLocElement() == null || !pc.getPhase().equals(selectedPhase));
 
-      if (lastStudyCountry.getPhase() == lastCrpPhase) {
-        // the study countries got replicated all the way to the last phase, we do not have to do anything else
-        studyCountries = Collections.emptyList();
-      } else {
-        // the study country replication stopped some place before the last phase, let's replicate everything from that
-        // point onwards
-        studyCountries.removeIf(pc -> !pc.getPhase().equals(lastStudyCountry.getPhase()));
-      }
+    if (this.isNotEmpty(studyCountries)) {
+      Map<LocElement, ProjectExpectedStudyCountry> uniqueCountries = new HashMap<>(studyCountries.size());
 
       for (ProjectExpectedStudyCountry pesc : studyCountries) {
+        LocElement locElement = pesc.getLocElement();
+
+        if (uniqueCountries.containsKey(locElement)) {
+          LOG.info("The country {} is duplicated", locElement.getId());
+        } else {
+          uniqueCountries.put(locElement, pesc);
+        }
+      }
+
+      for (ProjectExpectedStudyCountry pesc : uniqueCountries.values()) {
         this.projectExpectedStudyCountryManager.saveProjectExpectedStudyCountry(pesc);
       }
     }
@@ -252,24 +273,28 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
    * Replicates the ProjectExpectedStudyCrps associated to the studyId
    * 
    * @param studyId the study identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectExpectedStudyCrps(long studyId, Phase lastCrpPhase) {
+  private void replicateProjectExpectedStudyCrps(long studyId, Phase selectedPhase) {
+    LOG.info("Starting ProjectExpectedStudyCrp replication...");
     List<ProjectExpectedStudyCrp> studyCrps = this.projectExpectedStudyCrpManager.getAllStudyCrpsByStudy(studyId);
-    studyCrps.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getGlobalUnit() == null);
-    if (this.isNotEmpty(studyCrps)) {
-      ProjectExpectedStudyCrp lastStudyCrp = studyCrps.get(studyCrps.size() - 1);
+    studyCrps.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getGlobalUnit() == null
+      || !pc.getPhase().equals(selectedPhase));
 
-      if (lastStudyCrp.getPhase() == lastCrpPhase) {
-        // the study crps got replicated all the way to the last phase, we do not have to do anything else
-        studyCrps = Collections.emptyList();
-      } else {
-        // the study crp replication stopped some place before the last phase, let's replicate everything from that
-        // point onwards
-        studyCrps.removeIf(pc -> !pc.getPhase().equals(lastStudyCrp.getPhase()));
-      }
+    if (this.isNotEmpty(studyCrps)) {
+      Map<GlobalUnit, ProjectExpectedStudyCrp> uniqueCrps = new HashMap<>(studyCrps.size());
 
       for (ProjectExpectedStudyCrp pesc : studyCrps) {
+        GlobalUnit globalUnit = pesc.getGlobalUnit();
+
+        if (uniqueCrps.containsKey(globalUnit)) {
+          LOG.info("The CRP/Platform {} is duplicated", globalUnit.getId());
+        } else {
+          uniqueCrps.put(globalUnit, pesc);
+        }
+      }
+
+      for (ProjectExpectedStudyCrp pesc : uniqueCrps.values()) {
         this.projectExpectedStudyCrpManager.saveProjectExpectedStudyCrp(pesc);
       }
     }
@@ -279,26 +304,29 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
    * Replicates the ProjectExpectedStudyCrps associated to the studyId
    * 
    * @param studyId the study identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectExpectedStudyFlagships(long studyId, Phase lastCrpPhase) {
+  private void replicateProjectExpectedStudyFlagships(long studyId, Phase selectedPhase) {
+    LOG.info("Starting ProjectExpectedStudyFlagship replication...");
     List<ProjectExpectedStudyFlagship> studyFlagships =
       this.projectExpectedStudyFlagshipManager.getAllStudyFlagshipsByStudy(studyId);
-    studyFlagships
-      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getCrpProgram() == null);
-    if (this.isNotEmpty(studyFlagships)) {
-      ProjectExpectedStudyFlagship lastStudyFlagship = studyFlagships.get(studyFlagships.size() - 1);
+    studyFlagships.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null
+      || pc.getCrpProgram() == null || !pc.getPhase().equals(selectedPhase));
 
-      if (lastStudyFlagship.getPhase() == lastCrpPhase) {
-        // the study flagships got replicated all the way to the last phase, we do not have to do anything else
-        studyFlagships = Collections.emptyList();
-      } else {
-        // the study flagship replication stopped some place before the last phase, let's replicate everything from that
-        // point onwards
-        studyFlagships.removeIf(pc -> !pc.getPhase().equals(lastStudyFlagship.getPhase()));
-      }
+    if (this.isNotEmpty(studyFlagships)) {
+      Map<CrpProgram, ProjectExpectedStudyFlagship> uniqueCrpPrograms = new HashMap<>(studyFlagships.size());
 
       for (ProjectExpectedStudyFlagship pesf : studyFlagships) {
+        CrpProgram crpProgram = pesf.getCrpProgram();
+
+        if (uniqueCrpPrograms.containsKey(crpProgram)) {
+          LOG.info("The flagship {} is duplicated", crpProgram.getId());
+        } else {
+          uniqueCrpPrograms.put(crpProgram, pesf);
+        }
+      }
+
+      for (ProjectExpectedStudyFlagship pesf : uniqueCrpPrograms.values()) {
         this.projectExpectedStudyFlagshipManager.saveProjectExpectedStudyFlagship(pesf);
       }
     }
@@ -308,26 +336,30 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
    * Replicates the ProjectExpectedStudyGeographicScopes associated to the studyId
    * 
    * @param studyId the study identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectExpectedStudyGeographicScopes(long studyId, Phase lastCrpPhase) {
+  private void replicateProjectExpectedStudyGeographicScopes(long studyId, Phase selectedPhase) {
+    LOG.info("Starting ProjectExpectedStudyGeographicScope replication...");
     List<ProjectExpectedStudyGeographicScope> studyGeoScopes =
       this.projectExpectedStudyGeographicScopeManager.getAllStudyGeoScopesByStudy(studyId);
-    studyGeoScopes.removeIf(
-      pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getRepIndGeographicScope() == null);
-    if (this.isNotEmpty(studyGeoScopes)) {
-      ProjectExpectedStudyGeographicScope lastStudyGeoScope = studyGeoScopes.get(studyGeoScopes.size() - 1);
+    studyGeoScopes.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null
+      || pc.getRepIndGeographicScope() == null || !pc.getPhase().equals(selectedPhase));
 
-      if (lastStudyGeoScope.getPhase() == lastCrpPhase) {
-        // the study geoscopes got replicated all the way to the last phase, we do not have to do anything else
-        studyGeoScopes = Collections.emptyList();
-      } else {
-        // the study geoscope replication stopped some place before the last phase, let's replicate everything from that
-        // point onwards
-        studyGeoScopes.removeIf(pc -> !pc.getPhase().equals(lastStudyGeoScope.getPhase()));
-      }
+    if (this.isNotEmpty(studyGeoScopes)) {
+      Map<RepIndGeographicScope, ProjectExpectedStudyGeographicScope> uniqueGeoScopes =
+        new HashMap<>(studyGeoScopes.size());
 
       for (ProjectExpectedStudyGeographicScope pesgs : studyGeoScopes) {
+        RepIndGeographicScope repIndGeographicScope = pesgs.getRepIndGeographicScope();
+
+        if (uniqueGeoScopes.containsKey(repIndGeographicScope)) {
+          LOG.info("The geoscope {} is duplicated", repIndGeographicScope.getId());
+        } else {
+          uniqueGeoScopes.put(repIndGeographicScope, pesgs);
+        }
+      }
+
+      for (ProjectExpectedStudyGeographicScope pesgs : uniqueGeoScopes.values()) {
         this.projectExpectedStudyGeographicScopeManager.saveProjectExpectedStudyGeographicScope(pesgs);
       }
     }
@@ -337,26 +369,18 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
    * Replicates the ProjectExpectedStudyInfos associated to the studyId
    * 
    * @param studyId the study identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectExpectedStudyInfos(long studyId, Phase lastCrpPhase) {
+  private void replicateProjectExpectedStudyInfos(long studyId, Phase selectedPhase) {
+    LOG.info("Starting ProjectExpectedStudyInfo replication...");
     List<ProjectExpectedStudyInfo> studyInfos = this.projectExpectedStudyInfoManager.getAllStudyInfosByStudy(studyId);
-    studyInfos.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null);
+    studyInfos.removeIf(
+      pc -> pc == null || pc.getId() == null || pc.getPhase() == null || !pc.getPhase().equals(selectedPhase));
+
     if (this.isNotEmpty(studyInfos)) {
-      ProjectExpectedStudyInfo lastStudyInfo = studyInfos.get(studyInfos.size() - 1);
+      ProjectExpectedStudyInfo projectExpectedStudyInfo = studyInfos.get(studyInfos.size() - 1);
 
-      if (lastStudyInfo.getPhase() == lastCrpPhase) {
-        // the study infos got replicated all the way to the last phase, we do not have to do anything else
-        studyInfos = Collections.emptyList();
-      } else {
-        // the study info replication stopped some place before the last phase, let's replicate everything from that
-        // point onwards
-        studyInfos.removeIf(pc -> !pc.getPhase().equals(lastStudyInfo.getPhase()));
-      }
-
-      for (ProjectExpectedStudyInfo pesi : studyInfos) {
-        this.projectExpectedStudyInfoManager.saveProjectExpectedStudyInfo(pesi);
-      }
+      this.projectExpectedStudyInfoManager.saveProjectExpectedStudyInfo(projectExpectedStudyInfo);
     }
   }
 
@@ -364,26 +388,30 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
    * Replicates the ProjectExpectedStudyInfos associated to the studyId
    * 
    * @param studyId the study identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectExpectedStudyInnovations(long studyId, Phase lastCrpPhase) {
+  private void replicateProjectExpectedStudyInnovations(long studyId, Phase selectedPhase) {
+    LOG.info("Starting ProjectExpectedStudyInnovation replication...");
     List<ProjectExpectedStudyInnovation> studyInnnovations =
       this.projectExpectedStudyInnovationManager.getAllStudyInnovationsByStudy(studyId);
-    studyInnnovations
-      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getProjectInnovation() == null);
-    if (this.isNotEmpty(studyInnnovations)) {
-      ProjectExpectedStudyInnovation lastStudyInnovation = studyInnnovations.get(studyInnnovations.size() - 1);
+    studyInnnovations.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null
+      || pc.getProjectInnovation() == null || !pc.getPhase().equals(selectedPhase));
 
-      if (lastStudyInnovation.getPhase() == lastCrpPhase) {
-        // the study innovations got replicated all the way to the last phase, we do not have to do anything else
-        studyInnnovations = Collections.emptyList();
-      } else {
-        // the study innovation replication stopped some place before the last phase, let's replicate everything from
-        // that point onwards
-        studyInnnovations.removeIf(pc -> !pc.getPhase().equals(lastStudyInnovation.getPhase()));
-      }
+    if (this.isNotEmpty(studyInnnovations)) {
+      Map<ProjectInnovation, ProjectExpectedStudyInnovation> uniqueInnovations =
+        new HashMap<>(studyInnnovations.size());
 
       for (ProjectExpectedStudyInnovation pesi : studyInnnovations) {
+        ProjectInnovation projectInnovation = pesi.getProjectInnovation();
+
+        if (uniqueInnovations.containsKey(projectInnovation)) {
+          LOG.info("The innovation {} is duplicated", projectInnovation.getId());
+        } else {
+          uniqueInnovations.put(projectInnovation, pesi);
+        }
+      }
+
+      for (ProjectExpectedStudyInnovation pesi : uniqueInnovations.values()) {
         this.projectExpectedStudyInnovationManager.saveProjectExpectedStudyInnovation(pesi);
       }
     }
@@ -393,26 +421,29 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
    * Replicates the ProjectExpectedStudyInstitutions associated to the studyId
    * 
    * @param studyId the study identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectExpectedStudyInstitutions(long studyId, Phase lastCrpPhase) {
+  private void replicateProjectExpectedStudyInstitutions(long studyId, Phase selectedPhase) {
+    LOG.info("Starting ProjectExpectedStudyInstitution replication...");
     List<ProjectExpectedStudyInstitution> studyInstitutions =
       this.projectExpectedStudyInstitutionManager.getAllStudyInstitutionsByStudy(studyId);
-    studyInstitutions
-      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getInstitution() == null);
-    if (this.isNotEmpty(studyInstitutions)) {
-      ProjectExpectedStudyInstitution lastStudyInstitution = studyInstitutions.get(studyInstitutions.size() - 1);
+    studyInstitutions.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null
+      || pc.getInstitution() == null || !pc.getPhase().equals(selectedPhase));
 
-      if (lastStudyInstitution.getPhase() == lastCrpPhase) {
-        // the study institutions got replicated all the way to the last phase, we do not have to do anything else
-        studyInstitutions = Collections.emptyList();
-      } else {
-        // the study institution replication stopped some place before the last phase, let's replicate everything from
-        // that point onwards
-        studyInstitutions.removeIf(pc -> !pc.getPhase().equals(lastStudyInstitution.getPhase()));
-      }
+    if (this.isNotEmpty(studyInstitutions)) {
+      Map<Institution, ProjectExpectedStudyInstitution> uniqueInstitutions = new HashMap<>(studyInstitutions.size());
 
       for (ProjectExpectedStudyInstitution pesi : studyInstitutions) {
+        Institution institution = pesi.getInstitution();
+
+        if (uniqueInstitutions.containsKey(institution)) {
+          LOG.info("The institution {} is duplicated", institution.getId());
+        } else {
+          uniqueInstitutions.put(institution, pesi);
+        }
+      }
+
+      for (ProjectExpectedStudyInstitution pesi : uniqueInstitutions.values()) {
         this.projectExpectedStudyInstitutionManager.saveProjectExpectedStudyInstitution(pesi);
       }
     }
@@ -422,28 +453,32 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
    * Replicates the ProjectExpectedStudyLeverOutcomes associated to the studyId
    * 
    * @param studyId the study identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectExpectedStudyLeverOutcomes(long studyId, Phase lastCrpPhase) {
+  private void replicateProjectExpectedStudyLeverOutcomes(long studyId, Phase selectedPhase) {
+    LOG.info("Starting ProjectExpectedStudyLeverOutcome replication...");
     List<ProjectExpectedStudyLeverOutcome> studyLeverOutcomes =
       this.projectExpectedStudyLeverOutcomeManager.getAllStudyLeverOutcomesByStudy(studyId);
-    studyLeverOutcomes
-      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getLeverOutcome() == null);
-    if (this.isNotEmpty(studyLeverOutcomes)) {
-      ProjectExpectedStudyLeverOutcome lastStudyLeverOutcome = studyLeverOutcomes.get(studyLeverOutcomes.size() - 1);
+    studyLeverOutcomes.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null
+      || pc.getLeverOutcome() == null || !pc.getPhase().equals(selectedPhase));
 
-      if (lastStudyLeverOutcome.getPhase() == lastCrpPhase) {
-        // the study lever outcomes got replicated all the way to the last phase, we do not have to do anything else
-        studyLeverOutcomes = Collections.emptyList();
-      } else {
-        // the study lever outcome replication stopped some place before the last phase, let's replicate everything from
-        // that point onwards
-        studyLeverOutcomes.removeIf(pc -> !pc.getPhase().equals(lastStudyLeverOutcome.getPhase()));
-      }
+    if (this.isNotEmpty(studyLeverOutcomes)) {
+      Map<AllianceLeverOutcome, ProjectExpectedStudyLeverOutcome> uniqueLeverOutcomes =
+        new HashMap<>(studyLeverOutcomes.size());
 
       for (ProjectExpectedStudyLeverOutcome peslo : studyLeverOutcomes) {
-        this.projectExpectedStudyLeverOutcomeManager.saveProjectExpectedStudyLeverOutcome(peslo);
-        this.projectExpectedStudyLeverOutcomeManager.replicate(peslo, lastStudyLeverOutcome.getPhase().getNext());
+        AllianceLeverOutcome allianceLeverOutcome = peslo.getLeverOutcome();
+
+        if (uniqueLeverOutcomes.containsKey(allianceLeverOutcome)) {
+          LOG.info("The lever outcome {} is duplicated", allianceLeverOutcome.getId());
+        } else {
+          uniqueLeverOutcomes.put(allianceLeverOutcome, peslo);
+        }
+      }
+
+      for (ProjectExpectedStudyLeverOutcome peslo : uniqueLeverOutcomes.values()) {
+        peslo = this.projectExpectedStudyLeverOutcomeManager.saveProjectExpectedStudyLeverOutcome(peslo);
+        this.projectExpectedStudyLeverOutcomeManager.replicate(peslo, peslo.getPhase().getNext());
       }
     }
   }
@@ -452,28 +487,31 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
    * Replicates the ProjectExpectedStudyLevers associated to the studyId
    * 
    * @param studyId the study identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectExpectedStudyLevers(long studyId, Phase lastCrpPhase) {
+  private void replicateProjectExpectedStudyLevers(long studyId, Phase selectedPhase) {
+    LOG.info("Starting ProjectExpectedStudyLever replication...");
     List<ProjectExpectedStudyLever> studyLevers =
       this.projectExpectedStudyLeverManager.getAllStudyLeversByStudy(studyId);
-    studyLevers
-      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getAllianceLever() == null);
-    if (this.isNotEmpty(studyLevers)) {
-      ProjectExpectedStudyLever lastStudyLever = studyLevers.get(studyLevers.size() - 1);
+    studyLevers.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null
+      || pc.getAllianceLever() == null || !pc.getPhase().equals(selectedPhase));
 
-      if (lastStudyLever.getPhase() == lastCrpPhase) {
-        // the study levers got replicated all the way to the last phase, we do not have to do anything else
-        studyLevers = Collections.emptyList();
-      } else {
-        // the study lever replication stopped some place before the last phase, let's replicate everything from
-        // that point onwards
-        studyLevers.removeIf(pc -> !pc.getPhase().equals(lastStudyLever.getPhase()));
-      }
+    if (this.isNotEmpty(studyLevers)) {
+      Map<AllianceLever, ProjectExpectedStudyLever> uniqueLevers = new HashMap<>(studyLevers.size());
 
       for (ProjectExpectedStudyLever pesl : studyLevers) {
-        this.projectExpectedStudyLeverManager.saveProjectExpectedStudyLever(pesl);
-        this.projectExpectedStudyLeverManager.replicate(pesl, lastStudyLever.getPhase().getNext());
+        AllianceLever allianceLever = pesl.getAllianceLever();
+
+        if (uniqueLevers.containsKey(allianceLever)) {
+          LOG.info("The lever {} is duplicated", allianceLever.getId());
+        } else {
+          uniqueLevers.put(allianceLever, pesl);
+        }
+      }
+
+      for (ProjectExpectedStudyLever pesl : uniqueLevers.values()) {
+        pesl = this.projectExpectedStudyLeverManager.saveProjectExpectedStudyLever(pesl);
+        this.projectExpectedStudyLeverManager.replicate(pesl, pesl.getPhase().getNext());
       }
     }
   }
@@ -482,24 +520,15 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
    * Replicates the ProjectExpectedStudyLinks associated to the studyId
    * 
    * @param studyId the study identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectExpectedStudyLinks(long studyId, Phase lastCrpPhase) {
+  private void replicateProjectExpectedStudyLinks(long studyId, Phase selectedPhase) {
+    LOG.info("Starting ProjectExpectedStudyLink replication...");
     List<ProjectExpectedStudyLink> studyLinks = this.projectExpectedStudyLinkManager.getAllStudyLinksByStudy(studyId);
-    studyLinks
-      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || StringUtils.isBlank(pc.getLink()));
+    studyLinks.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null
+      || StringUtils.isBlank(pc.getLink()) || !pc.getPhase().equals(selectedPhase));
+
     if (this.isNotEmpty(studyLinks)) {
-      ProjectExpectedStudyLink lastStudyLink = studyLinks.get(studyLinks.size() - 1);
-
-      if (lastStudyLink.getPhase() == lastCrpPhase) {
-        // the study links got replicated all the way to the last phase, we do not have to do anything else
-        studyLinks = Collections.emptyList();
-      } else {
-        // the study link replication stopped some place before the last phase, let's replicate everything from
-        // that point onwards
-        studyLinks.removeIf(pc -> !pc.getPhase().equals(lastStudyLink.getPhase()));
-      }
-
       for (ProjectExpectedStudyLink pesl : studyLinks) {
         this.projectExpectedStudyLinkManager.saveProjectExpectedStudyLink(pesl);
       }
@@ -510,26 +539,29 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
    * Replicates the ProjectExpectedStudyMilestones associated to the studyId
    * 
    * @param studyId the study identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectExpectedStudyMilestones(long studyId, Phase lastCrpPhase) {
+  private void replicateProjectExpectedStudyMilestones(long studyId, Phase selectedPhase) {
+    LOG.info("Starting ProjectExpectedStudyMilestone replication...");
     List<ProjectExpectedStudyMilestone> studyMilestones =
       this.projectExpectedStudyMilestoneManager.getAllStudyMilestonesByStudy(studyId);
-    studyMilestones
-      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getCrpMilestone() == null);
-    if (this.isNotEmpty(studyMilestones)) {
-      ProjectExpectedStudyMilestone lastStudyMilestone = studyMilestones.get(studyMilestones.size() - 1);
+    studyMilestones.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null
+      || pc.getCrpMilestone() == null || !pc.getPhase().equals(selectedPhase));
 
-      if (lastStudyMilestone.getPhase() == lastCrpPhase) {
-        // the study milestones got replicated all the way to the last phase, we do not have to do anything else
-        studyMilestones = Collections.emptyList();
-      } else {
-        // the study milestone replication stopped some place before the last phase, let's replicate everything from
-        // that point onwards
-        studyMilestones.removeIf(pc -> !pc.getPhase().equals(lastStudyMilestone.getPhase()));
-      }
+    if (this.isNotEmpty(studyMilestones)) {
+      Map<CrpMilestone, ProjectExpectedStudyMilestone> uniqueMilestones = new HashMap<>(studyMilestones.size());
 
       for (ProjectExpectedStudyMilestone pesm : studyMilestones) {
+        CrpMilestone crpMilestone = pesm.getCrpMilestone();
+
+        if (uniqueMilestones.containsKey(crpMilestone)) {
+          LOG.info("The milestone {} is duplicated", crpMilestone.getId());
+        } else {
+          uniqueMilestones.put(crpMilestone, pesm);
+        }
+      }
+
+      for (ProjectExpectedStudyMilestone pesm : uniqueMilestones.values()) {
         this.projectExpectedStudyMilestoneManager.saveProjectExpectedStudyMilestone(pesm);
       }
     }
@@ -539,27 +571,31 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
    * Replicates the ProjectExpectedStudyNexuses associated to the studyId
    * 
    * @param studyId the study identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectExpectedStudyNexuses(long studyId, Phase lastCrpPhase) {
+  private void replicateProjectExpectedStudyNexuses(long studyId, Phase selectedPhase) {
+    LOG.info("Starting ProjectExpectedStudyNexus replication...");
     List<ProjectExpectedStudyNexus> studyNexuses =
       this.projectExpectedStudyNexusManager.getAllStudyNexussByStudy(studyId);
-    studyNexuses.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getNexus() == null);
-    if (this.isNotEmpty(studyNexuses)) {
-      ProjectExpectedStudyNexus lastStudyNexus = studyNexuses.get(studyNexuses.size() - 1);
+    studyNexuses.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getNexus() == null
+      || !pc.getPhase().equals(selectedPhase));
 
-      if (lastStudyNexus.getPhase() == lastCrpPhase) {
-        // the study nexuses got replicated all the way to the last phase, we do not have to do anything else
-        studyNexuses = Collections.emptyList();
-      } else {
-        // the study nexus replication stopped some place before the last phase, let's replicate everything from
-        // that point onwards
-        studyNexuses.removeIf(pc -> !pc.getPhase().equals(lastStudyNexus.getPhase()));
-      }
+    if (this.isNotEmpty(studyNexuses)) {
+      Map<Nexus, ProjectExpectedStudyNexus> uniqueNexus = new HashMap<>(studyNexuses.size());
 
       for (ProjectExpectedStudyNexus pesn : studyNexuses) {
-        this.projectExpectedStudyNexusManager.saveProjectExpectedStudyNexus(pesn);
-        this.projectExpectedStudyNexusManager.replicate(pesn, lastStudyNexus.getPhase().getNext());
+        Nexus nexus = pesn.getNexus();
+
+        if (uniqueNexus.containsKey(nexus)) {
+          LOG.info("The nexus {} is duplicated", nexus.getId());
+        } else {
+          uniqueNexus.put(nexus, pesn);
+        }
+      }
+
+      for (ProjectExpectedStudyNexus pesn : uniqueNexus.values()) {
+        pesn = this.projectExpectedStudyNexusManager.saveProjectExpectedStudyNexus(pesn);
+        this.projectExpectedStudyNexusManager.replicate(pesn, pesn.getPhase().getNext());
       }
     }
   }
@@ -568,27 +604,29 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
    * Replicates the ProjectExpectedStudyPolicy associated to the studyId
    * 
    * @param studyId the study identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectExpectedStudyPolicies(long studyId, Phase lastCrpPhase) {
+  private void replicateProjectExpectedStudyPolicies(long studyId, Phase selectedPhase) {
+    LOG.info("Starting ProjectExpectedStudyNexus replication...");
     List<ProjectExpectedStudyPolicy> expectedStudyPolicies =
       this.projectExpectedStudyPolicyManager.getAllStudyPoliciesByStudy(studyId);
-    expectedStudyPolicies
-      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getProjectPolicy() == null);
-    if (this.isNotEmpty(expectedStudyPolicies)) {
-      ProjectExpectedStudyPolicy lastExpectedStudyPolicy = expectedStudyPolicies.get(expectedStudyPolicies.size() - 1);
+    expectedStudyPolicies.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null
+      || pc.getProjectPolicy() == null || !pc.getPhase().equals(selectedPhase));
 
-      if (lastExpectedStudyPolicy.getPhase() == lastCrpPhase) {
-        // the expected policies got replicated all the way to the last phase, let's replicate everything from the
-        // selected phase on front
-        expectedStudyPolicies = Collections.emptyList();
-      } else {
-        // the expected policy replication stopped some place before the last phase, let's replicate everything from
-        // that point onwards
-        expectedStudyPolicies.removeIf(pc -> !pc.getPhase().equals(lastExpectedStudyPolicy.getPhase()));
-      }
+    if (this.isNotEmpty(expectedStudyPolicies)) {
+      Map<ProjectPolicy, ProjectExpectedStudyPolicy> uniquePolicies = new HashMap<>(expectedStudyPolicies.size());
 
       for (ProjectExpectedStudyPolicy pesp : expectedStudyPolicies) {
+        ProjectPolicy projectPolicy = pesp.getProjectPolicy();
+
+        if (uniquePolicies.containsKey(projectPolicy)) {
+          LOG.info("The policy {} is duplicated", projectPolicy.getId());
+        } else {
+          uniquePolicies.put(projectPolicy, pesp);
+        }
+      }
+
+      for (ProjectExpectedStudyPolicy pesp : uniquePolicies.values()) {
         this.projectExpectedStudyPolicyManager.saveProjectExpectedStudyPolicy(pesp);
       }
     }
@@ -598,25 +636,29 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
    * Replicates the ExpectedStudyProjects associated to the studyId
    * 
    * @param studyId the study identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectExpectedStudyProjects(long studyId, Phase lastCrpPhase) {
+  private void replicateProjectExpectedStudyProjects(long studyId, Phase selectedPhase) {
+    LOG.info("Starting ExpectedStudyProject replication...");
     List<ExpectedStudyProject> studyProjects =
       this.projectExpectedStudyProjectManager.getAllStudyProjectsByStudy(studyId);
-    studyProjects.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getProject() == null);
-    if (this.isNotEmpty(studyProjects)) {
-      ExpectedStudyProject lastStudyProject = studyProjects.get(studyProjects.size() - 1);
+    studyProjects.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getProject() == null
+      || !pc.getPhase().equals(selectedPhase));
 
-      if (lastStudyProject.getPhase() == lastCrpPhase) {
-        // the study projects got replicated all the way to the last phase, we do not have to do anything else
-        studyProjects = Collections.emptyList();
-      } else {
-        // the study project replication stopped some place before the last phase, let's replicate everything from that
-        // point onwards
-        studyProjects.removeIf(pc -> !pc.getPhase().equals(lastStudyProject.getPhase()));
-      }
+    if (this.isNotEmpty(studyProjects)) {
+      Map<Project, ExpectedStudyProject> uniquePolicies = new HashMap<>(studyProjects.size());
 
       for (ExpectedStudyProject esp : studyProjects) {
+        Project project = esp.getProject();
+
+        if (uniquePolicies.containsKey(project)) {
+          LOG.info("The project {} is duplicated", project.getId());
+        } else {
+          uniquePolicies.put(project, esp);
+        }
+      }
+
+      for (ExpectedStudyProject esp : uniquePolicies.values()) {
         this.projectExpectedStudyProjectManager.saveExpectedStudyProject(esp);
       }
     }
@@ -626,26 +668,16 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
    * Replicates the ProjectExpectedStudyQuantifications associated to the studyId
    * 
    * @param studyId the study identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectExpectedStudyQuantifications(long studyId, Phase lastCrpPhase) {
+  private void replicateProjectExpectedStudyQuantifications(long studyId, Phase selectedPhase) {
+    LOG.info("Starting ProjectExpectedStudyQuantification replication...");
     List<ProjectExpectedStudyQuantification> studyQuantifications =
       this.projectExpectedStudyQuantificationManager.getAllStudyQuantificationsByStudy(studyId);
-    studyQuantifications.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null);
+    studyQuantifications.removeIf(
+      pc -> pc == null || pc.getId() == null || pc.getPhase() == null || !pc.getPhase().equals(selectedPhase));
+
     if (this.isNotEmpty(studyQuantifications)) {
-      ProjectExpectedStudyQuantification lastStudyQuantification =
-        studyQuantifications.get(studyQuantifications.size() - 1);
-
-      if (lastStudyQuantification.getPhase() == lastCrpPhase) {
-        // the expected policies got replicated all the way to the last phase, let's replicate everything from the
-        // selected phase on front
-        studyQuantifications = Collections.emptyList();
-      } else {
-        // the expected policy replication stopped some place before the last phase, let's replicate everything from
-        // that point onwards
-        studyQuantifications.removeIf(pc -> !pc.getPhase().equals(lastStudyQuantification.getPhase()));
-      }
-
       for (ProjectExpectedStudyQuantification pesq : studyQuantifications) {
         this.projectExpectedStudyQuantificationManager.saveProjectExpectedStudyQuantification(pesq);
       }
@@ -656,26 +688,29 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
    * Replicates the ProjectExpectedStudyRegions associated to the studyId
    * 
    * @param studyId the study identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectExpectedStudyRegions(long studyId, Phase lastCrpPhase) {
+  private void replicateProjectExpectedStudyRegions(long studyId, Phase selectedPhase) {
+    LOG.info("Starting ProjectExpectedStudyRegion replication...");
     List<ProjectExpectedStudyRegion> studyRegions =
       this.projectExpectedStudyRegionManager.getAllStudyRegionsByStudy(studyId);
-    studyRegions
-      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getLocElement() == null);
-    if (this.isNotEmpty(studyRegions)) {
-      ProjectExpectedStudyRegion lastStudyRegion = studyRegions.get(studyRegions.size() - 1);
+    studyRegions.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getLocElement() == null
+      || !pc.getPhase().equals(selectedPhase));
 
-      if (lastStudyRegion.getPhase() == lastCrpPhase) {
-        // the study projects got replicated all the way to the last phase, we do not have to do anything else
-        studyRegions = Collections.emptyList();
-      } else {
-        // the study project replication stopped some place before the last phase, let's replicate everything from that
-        // point onwards
-        studyRegions.removeIf(pc -> !pc.getPhase().equals(lastStudyRegion.getPhase()));
-      }
+    if (this.isNotEmpty(studyRegions)) {
+      Map<LocElement, ProjectExpectedStudyRegion> uniqueRegions = new HashMap<>(studyRegions.size());
 
       for (ProjectExpectedStudyRegion pesr : studyRegions) {
+        LocElement locElement = pesr.getLocElement();
+
+        if (uniqueRegions.containsKey(locElement)) {
+          LOG.info("The region {} is duplicated", locElement.getId());
+        } else {
+          uniqueRegions.put(locElement, pesr);
+        }
+      }
+
+      for (ProjectExpectedStudyRegion pesr : uniqueRegions.values()) {
         this.projectExpectedStudyRegionManager.saveProjectExpectedStudyRegion(pesr);
       }
     }
@@ -685,28 +720,31 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
    * Replicates the ProjectExpectedStudySdgTargets associated to the studyId
    * 
    * @param studyId the study identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectExpectedStudySdgTargets(long studyId, Phase lastCrpPhase) {
+  private void replicateProjectExpectedStudySdgTargets(long studyId, Phase selectedPhase) {
+    LOG.info("Starting ProjectExpectedStudySdgTarget replication...");
     List<ProjectExpectedStudySdgTarget> studySdgTargets =
       this.projectExpectedStudySdgTargetManager.getAllStudySdgTargetsByStudy(studyId);
-    studySdgTargets
-      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getSdgTarget() == null);
-    if (this.isNotEmpty(studySdgTargets)) {
-      ProjectExpectedStudySdgTarget lastStudySdgTarget = studySdgTargets.get(studySdgTargets.size() - 1);
+    studySdgTargets.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null
+      || pc.getSdgTarget() == null || !pc.getPhase().equals(selectedPhase));
 
-      if (lastStudySdgTarget.getPhase() == lastCrpPhase) {
-        // the study sdg targets got replicated all the way to the last phase, we do not have to do anything else
-        studySdgTargets = Collections.emptyList();
-      } else {
-        // the study sdg target replication stopped some place before the last phase, let's replicate everything from
-        // that point onwards
-        studySdgTargets.removeIf(pc -> !pc.getPhase().equals(lastStudySdgTarget.getPhase()));
-      }
+    if (this.isNotEmpty(studySdgTargets)) {
+      Map<SdgTargets, ProjectExpectedStudySdgTarget> uniqueSdgTargets = new HashMap<>(studySdgTargets.size());
 
       for (ProjectExpectedStudySdgTarget pesst : studySdgTargets) {
-        this.projectExpectedStudySdgTargetManager.saveProjectExpectedStudySdgTarget(pesst);
-        this.projectExpectedStudySdgTargetManager.replicate(pesst, lastStudySdgTarget.getPhase().getNext());
+        SdgTargets sdgTargets = pesst.getSdgTarget();
+
+        if (uniqueSdgTargets.containsKey(sdgTargets)) {
+          LOG.info("The sdg target {} is duplicated", sdgTargets.getId());
+        } else {
+          uniqueSdgTargets.put(sdgTargets, pesst);
+        }
+      }
+
+      for (ProjectExpectedStudySdgTarget pesst : uniqueSdgTargets.values()) {
+        pesst = this.projectExpectedStudySdgTargetManager.saveProjectExpectedStudySdgTarget(pesst);
+        this.projectExpectedStudySdgTargetManager.replicate(pesst, pesst.getPhase().getNext());
       }
     }
   }
@@ -715,26 +753,30 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
    * Replicates the ProjectExpectedStudySrfTargets associated to the studyId
    * 
    * @param studyId the study identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectExpectedStudySrfTargets(long studyId, Phase lastCrpPhase) {
+  private void replicateProjectExpectedStudySrfTargets(long studyId, Phase selectedPhase) {
+    LOG.info("Starting ProjectExpectedStudySrfTarget replication...");
     List<ProjectExpectedStudySrfTarget> studySrfTargets =
       this.projectExpectedStudySrfTargetManager.getAllStudySrfTargetsByStudy(studyId);
-    studySrfTargets
-      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getSrfSloIndicator() == null);
-    if (this.isNotEmpty(studySrfTargets)) {
-      ProjectExpectedStudySrfTarget lastStudySrfTarget = studySrfTargets.get(studySrfTargets.size() - 1);
+    studySrfTargets.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null
+      || pc.getSrfSloIndicator() == null || !pc.getPhase().equals(selectedPhase));
 
-      if (lastStudySrfTarget.getPhase() == lastCrpPhase) {
-        // the study srf targets got replicated all the way to the last phase, we do not have to do anything else
-        studySrfTargets = Collections.emptyList();
-      } else {
-        // the study srf target replication stopped some place before the last phase, let's replicate everything from
-        // that point onwards
-        studySrfTargets.removeIf(pc -> !pc.getPhase().equals(lastStudySrfTarget.getPhase()));
-      }
+    if (this.isNotEmpty(studySrfTargets)) {
+      Map<SrfSloIndicator, ProjectExpectedStudySrfTarget> uniqueSrfSloIndicators =
+        new HashMap<>(studySrfTargets.size());
 
       for (ProjectExpectedStudySrfTarget pesst : studySrfTargets) {
+        SrfSloIndicator srfSloIndicator = pesst.getSrfSloIndicator();
+
+        if (uniqueSrfSloIndicators.containsKey(srfSloIndicator)) {
+          LOG.info("The srf slo indicator {} is duplicated", srfSloIndicator.getId());
+        } else {
+          uniqueSrfSloIndicators.put(srfSloIndicator, pesst);
+        }
+      }
+
+      for (ProjectExpectedStudySrfTarget pesst : uniqueSrfSloIndicators.values()) {
         this.projectExpectedStudySrfTargetManager.saveProjectExpectedStudySrfTarget(pesst);
       }
     }
@@ -744,25 +786,29 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
    * Replicates the ProjectExpectedStudySubIdos associated to the studyId
    * 
    * @param studyId the study identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectExpectedStudySubIdos(long studyId, Phase lastCrpPhase) {
+  private void replicateProjectExpectedStudySubIdos(long studyId, Phase selectedPhase) {
+    LOG.info("Starting ProjectExpectedStudySubIdo replication...");
     List<ProjectExpectedStudySubIdo> studySubIdos =
       this.projectExpectedStudySubIdoManager.getAllStudySubIdosByStudy(studyId);
-    studySubIdos.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getSrfSubIdo() == null);
-    if (this.isNotEmpty(studySubIdos)) {
-      ProjectExpectedStudySubIdo lastStudySubIdo = studySubIdos.get(studySubIdos.size() - 1);
+    studySubIdos.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getSrfSubIdo() == null
+      || !pc.getPhase().equals(selectedPhase));
 
-      if (lastStudySubIdo.getPhase() == lastCrpPhase) {
-        // the study sub idos got replicated all the way to the last phase, we do not have to do anything else
-        studySubIdos = Collections.emptyList();
-      } else {
-        // the study sub ido replication stopped some place before the last phase, let's replicate everything from
-        // that point onwards
-        studySubIdos.removeIf(pc -> !pc.getPhase().equals(lastStudySubIdo.getPhase()));
-      }
+    if (this.isNotEmpty(studySubIdos)) {
+      Map<SrfSubIdo, ProjectExpectedStudySubIdo> uniqueSrfSubIdos = new HashMap<>(studySubIdos.size());
 
       for (ProjectExpectedStudySubIdo pessi : studySubIdos) {
+        SrfSubIdo srfSloIndicator = pessi.getSrfSubIdo();
+
+        if (uniqueSrfSubIdos.containsKey(srfSloIndicator)) {
+          LOG.info("The srf sub ido {} is duplicated", srfSloIndicator.getId());
+        } else {
+          uniqueSrfSubIdos.put(srfSloIndicator, pessi);
+        }
+      }
+
+      for (ProjectExpectedStudySubIdo pessi : uniqueSrfSubIdos.values()) {
         this.projectExpectedStudySubIdoManager.saveProjectExpectedStudySubIdo(pessi);
       }
     }
@@ -777,33 +823,33 @@ public class ProjectExpectedStudyReplicationAction extends BaseAction {
       if (this.isNotEmpty(ids)) {
         LOG.debug("Start replication for phase: " + selectedPhaseID);
         selectedPhase = this.phaseManager.getPhaseById(selectedPhaseID);
-        Phase lastCrpPhase = this.phaseManager.getLastCrpPhase(this.selectedPhase.getCrp().getId());
+        // Phase lastCrpPhase = this.phaseManager.getLastCrpPhase(this.selectedPhase.getCrp().getId());
         ProjectExpectedStudy currentStudy = null;
         for (String id : ids) {
           LOG.debug("Replicating study: " + id);
           long studyIdLong = Long.parseLong(id);
           currentStudy = this.projectExpectedStudyManager.getProjectExpectedStudyById(studyIdLong);
           if (currentStudy != null) {
-            this.replicateProjectExpectedStudyInfos(studyIdLong, lastCrpPhase);
-            this.replicateProjectExpectedStudyProjects(studyIdLong, lastCrpPhase);
-            this.replicateProjectExpectedStudyCenters(studyIdLong, lastCrpPhase);
-            this.replicateProjectExpectedStudyGeographicScopes(studyIdLong, lastCrpPhase);
-            this.replicateProjectExpectedStudyRegions(studyIdLong, lastCrpPhase);
-            this.replicateProjectExpectedStudyCountries(studyIdLong, lastCrpPhase);
-            this.replicateProjectExpectedStudyCrps(studyIdLong, lastCrpPhase);
-            this.replicateProjectExpectedStudyFlagships(studyIdLong, lastCrpPhase);
-            this.replicateProjectExpectedStudyInnovations(studyIdLong, lastCrpPhase);
-            this.replicateProjectExpectedStudyInstitutions(studyIdLong, lastCrpPhase);
-            this.replicateProjectExpectedStudyLevers(studyIdLong, lastCrpPhase);
-            this.replicateProjectExpectedStudyLeverOutcomes(studyIdLong, lastCrpPhase);
-            this.replicateProjectExpectedStudyLinks(studyIdLong, lastCrpPhase);
-            this.replicateProjectExpectedStudyMilestones(studyIdLong, lastCrpPhase);
-            this.replicateProjectExpectedStudyNexuses(studyIdLong, lastCrpPhase);
-            this.replicateProjectExpectedStudyPolicies(studyIdLong, lastCrpPhase);
-            this.replicateProjectExpectedStudyQuantifications(studyIdLong, lastCrpPhase);
-            this.replicateProjectExpectedStudySdgTargets(studyIdLong, lastCrpPhase);
-            this.replicateProjectExpectedStudySrfTargets(studyIdLong, lastCrpPhase);
-            this.replicateProjectExpectedStudySubIdos(studyIdLong, lastCrpPhase);
+            this.replicateProjectExpectedStudyInfos(studyIdLong, selectedPhase);
+            this.replicateProjectExpectedStudyProjects(studyIdLong, selectedPhase);
+            this.replicateProjectExpectedStudyCenters(studyIdLong, selectedPhase);
+            this.replicateProjectExpectedStudyGeographicScopes(studyIdLong, selectedPhase);
+            this.replicateProjectExpectedStudyRegions(studyIdLong, selectedPhase);
+            this.replicateProjectExpectedStudyCountries(studyIdLong, selectedPhase);
+            this.replicateProjectExpectedStudyCrps(studyIdLong, selectedPhase);
+            this.replicateProjectExpectedStudyFlagships(studyIdLong, selectedPhase);
+            this.replicateProjectExpectedStudyInnovations(studyIdLong, selectedPhase);
+            this.replicateProjectExpectedStudyInstitutions(studyIdLong, selectedPhase);
+            this.replicateProjectExpectedStudyLevers(studyIdLong, selectedPhase);
+            this.replicateProjectExpectedStudyLeverOutcomes(studyIdLong, selectedPhase);
+            this.replicateProjectExpectedStudyLinks(studyIdLong, selectedPhase);
+            this.replicateProjectExpectedStudyMilestones(studyIdLong, selectedPhase);
+            this.replicateProjectExpectedStudyNexuses(studyIdLong, selectedPhase);
+            this.replicateProjectExpectedStudyPolicies(studyIdLong, selectedPhase);
+            this.replicateProjectExpectedStudyQuantifications(studyIdLong, selectedPhase);
+            this.replicateProjectExpectedStudySdgTargets(studyIdLong, selectedPhase);
+            this.replicateProjectExpectedStudySrfTargets(studyIdLong, selectedPhase);
+            this.replicateProjectExpectedStudySubIdos(studyIdLong, selectedPhase);
           }
         }
       } else {
