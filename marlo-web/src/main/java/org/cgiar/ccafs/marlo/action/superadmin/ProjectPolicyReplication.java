@@ -31,10 +31,16 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyOwnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicySubIdoManager;
+import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
+import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PolicyMilestone;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCenter;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCountry;
@@ -46,11 +52,15 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPolicyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyOwner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicySubIdo;
+import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
+import org.cgiar.ccafs.marlo.data.model.RepIndPolicyType;
+import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -151,30 +161,29 @@ public class ProjectPolicyReplication extends BaseAction {
    * Replicates the ProjectExpectedStudyPolicy associated to the policyId
    * 
    * @param policyId the policy identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectExpectedStudyPolicies(long policyId, Phase lastCrpPhase) {
+  private void replicateProjectExpectedStudyPolicies(long policyId, Phase selectedPhase) {
+    LOG.info("Starting ProjectExpectedStudyPolicy replication...");
     List<ProjectExpectedStudyPolicy> expectedStudyPolicies =
       this.projectExpectedStudyPolicyManager.getAllExpectedStudyPoliciesByPolicy(policyId);
-    expectedStudyPolicies.removeIf(
-      pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getProjectExpectedStudy() == null);
-    if (this.isNotEmpty(expectedStudyPolicies)) {
-      ProjectExpectedStudyPolicy lastExpectedStudyPolicy = expectedStudyPolicies.get(expectedStudyPolicies.size() - 1);
+    expectedStudyPolicies.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null
+      || pc.getProjectExpectedStudy() == null || !pc.getPhase().equals(selectedPhase));
 
-      if (lastExpectedStudyPolicy.getPhase() == lastCrpPhase) {
-        // the expected policies got replicated all the way to the last phase, let's replicate everything from the
-        // selected
-        // phase on front
-        // expectedStudyPolicies.removeIf(pc -> !pc.getPhase().equals(this.selectedPhase));
-        expectedStudyPolicies = Collections.emptyList();
-      } else {
-        // the expected policy replication stopped some place before the last phase, let's replicate everything from
-        // that
-        // point onwards
-        expectedStudyPolicies.removeIf(pc -> !pc.getPhase().equals(lastExpectedStudyPolicy.getPhase()));
-      }
+    if (this.isNotEmpty(expectedStudyPolicies)) {
+      Map<ProjectExpectedStudy, ProjectExpectedStudyPolicy> uniqueStudies = new HashMap<>(expectedStudyPolicies.size());
 
       for (ProjectExpectedStudyPolicy pesp : expectedStudyPolicies) {
+        ProjectExpectedStudy projectExpectedStudy = pesp.getProjectExpectedStudy();
+
+        if (uniqueStudies.containsKey(projectExpectedStudy)) {
+          LOG.info("The study {} is duplicated", projectExpectedStudy.getId());
+        } else {
+          uniqueStudies.put(projectExpectedStudy, pesp);
+        }
+      }
+
+      for (ProjectExpectedStudyPolicy pesp : uniqueStudies.values()) {
         this.projectExpectedStudyPolicyManager.saveProjectExpectedStudyPolicy(pesp);
       }
     }
@@ -184,27 +193,28 @@ public class ProjectPolicyReplication extends BaseAction {
    * Replicates the ProjectPolicyCenters associated to the policyId
    * 
    * @param policyId the policy identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectPolicyCenters(long policyId, Phase lastCrpPhase) {
+  private void replicateProjectPolicyCenters(long policyId, Phase selectedPhase) {
+    LOG.info("Starting ProjectPolicyCenter replication...");
     List<ProjectPolicyCenter> policyCenters = this.projectPolicyCenterManager.getAllPolicyCentersByPolicy(policyId);
-    policyCenters
-      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getInstitution() == null);
-    if (this.isNotEmpty(policyCenters)) {
-      ProjectPolicyCenter lastPolicyCenter = policyCenters.get(policyCenters.size() - 1);
+    policyCenters.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null
+      || pc.getInstitution() == null || !pc.getPhase().equals(selectedPhase));
 
-      if (lastPolicyCenter.getPhase() == lastCrpPhase) {
-        // the policy centers got replicated all the way to the last phase, let's replicate everything from the selected
-        // phase on front
-        // policyCenters.removeIf(pc -> !pc.getPhase().equals(this.selectedPhase));
-        policyCenters = Collections.emptyList();
-      } else {
-        // the policy center replication stopped some place before the last phase, let's replicate everything from that
-        // point onwards
-        policyCenters.removeIf(pc -> !pc.getPhase().equals(lastPolicyCenter.getPhase()));
+    if (this.isNotEmpty(policyCenters)) {
+      Map<Institution, ProjectPolicyCenter> uniqueCenters = new HashMap<>(policyCenters.size());
+
+      for (ProjectPolicyCenter ppc : policyCenters) {
+        Institution institution = ppc.getInstitution();
+
+        if (uniqueCenters.containsKey(institution)) {
+          LOG.info("The institution {} is duplicated", institution.getId());
+        } else {
+          uniqueCenters.put(institution, ppc);
+        }
       }
 
-      for (ProjectPolicyCenter pc : policyCenters) {
+      for (ProjectPolicyCenter pc : uniqueCenters.values()) {
         this.projectPolicyCenterManager.saveProjectPolicyCenter(pc);
       }
     }
@@ -214,30 +224,30 @@ public class ProjectPolicyReplication extends BaseAction {
    * Replicates the ProjectPolicyCountries associated to the policyId
    * 
    * @param policyId the policy identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectPolicyCountries(long policyId, Phase lastCrpPhase) {
+  private void replicateProjectPolicyCountries(long policyId, Phase selectedPhase) {
+    LOG.info("Starting ProjectPolicyCountry replication...");
     List<ProjectPolicyCountry> policyCountries =
       this.projectPolicyCountryManager.getAllPolicyCountriesByPolicy(policyId);
-    policyCountries
-      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getLocElement() == null);
-    if (this.isNotEmpty(policyCountries)) {
-      ProjectPolicyCountry lastPolicyCountry = policyCountries.get(policyCountries.size() - 1);
+    policyCountries.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null
+      || pc.getLocElement() == null || !pc.getPhase().equals(selectedPhase));
 
-      if (lastPolicyCountry.getPhase() == lastCrpPhase) {
-        // the policy countries got replicated all the way to the last phase, let's replicate everything from the
-        // selected
-        // phase on front
-        // policyCountries.removeIf(pc -> !pc.getPhase().equals(this.selectedPhase));
-        policyCountries = Collections.emptyList();
-      } else {
-        // the policy country replication stopped some place before the last phase, let's replicate everything from that
-        // point onwards
-        policyCountries.removeIf(pc -> !pc.getPhase().equals(lastPolicyCountry.getPhase()));
+    if (this.isNotEmpty(policyCountries)) {
+      Map<LocElement, ProjectPolicyCountry> uniqueCountries = new HashMap<>(policyCountries.size());
+
+      for (ProjectPolicyCountry ppc : policyCountries) {
+        LocElement locElement = ppc.getLocElement();
+
+        if (uniqueCountries.containsKey(locElement)) {
+          LOG.info("The country {} is duplicated", locElement.getId());
+        } else {
+          uniqueCountries.put(locElement, ppc);
+        }
       }
 
-      for (ProjectPolicyCountry pc : policyCountries) {
-        this.projectPolicyCountryManager.saveProjectPolicyCountry(pc);
+      for (ProjectPolicyCountry ppc : uniqueCountries.values()) {
+        this.projectPolicyCountryManager.saveProjectPolicyCountry(ppc);
       }
     }
   }
@@ -246,30 +256,31 @@ public class ProjectPolicyReplication extends BaseAction {
    * Replicates the ProjectPolicyCrossCuttingMarker associated to the policyId
    * 
    * @param policyId the policy identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectPolicyCrossCuttingMarkers(long policyId, Phase lastCrpPhase) {
+  private void replicateProjectPolicyCrossCuttingMarkers(long policyId, Phase selectedPhase) {
+    LOG.info("Starting ProjectPolicyCrossCuttingMarker replication...");
     List<ProjectPolicyCrossCuttingMarker> policyCrossCuttingMarkers =
       this.projectPolicyCrossCuttingMarkerManager.getAllPolicyCrossCuttingMarkersByPolicy(policyId);
-    policyCrossCuttingMarkers.removeIf(
-      pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getCgiarCrossCuttingMarker() == null);
-    if (this.isNotEmpty(policyCrossCuttingMarkers)) {
-      ProjectPolicyCrossCuttingMarker lastPolicyCrossCuttingMarker =
-        policyCrossCuttingMarkers.get(policyCrossCuttingMarkers.size() - 1);
+    policyCrossCuttingMarkers.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null
+      || pc.getCgiarCrossCuttingMarker() == null || !pc.getPhase().equals(selectedPhase));
 
-      if (lastPolicyCrossCuttingMarker.getPhase() == lastCrpPhase) {
-        // the policy markers got replicated all the way to the last phase, let's replicate everything from the selected
-        // phase on front
-        // policyCrossCuttingMarkers.removeIf(pc -> !pc.getPhase().equals(this.selectedPhase));
-        policyCrossCuttingMarkers = Collections.emptyList();
-      } else {
-        // the policy marker replication stopped some place before the last phase, let's replicate everything from that
-        // point onwards
-        policyCrossCuttingMarkers.removeIf(pc -> !pc.getPhase().equals(lastPolicyCrossCuttingMarker.getPhase()));
+    if (this.isNotEmpty(policyCrossCuttingMarkers)) {
+      Map<CgiarCrossCuttingMarker, ProjectPolicyCrossCuttingMarker> uniqueMarkers =
+        new HashMap<>(policyCrossCuttingMarkers.size());
+
+      for (ProjectPolicyCrossCuttingMarker ppccm : policyCrossCuttingMarkers) {
+        CgiarCrossCuttingMarker cgiarCrossCuttingMarker = ppccm.getCgiarCrossCuttingMarker();
+
+        if (uniqueMarkers.containsKey(cgiarCrossCuttingMarker)) {
+          LOG.info("The cross-cutting marker {} is duplicated", cgiarCrossCuttingMarker.getId());
+        } else {
+          uniqueMarkers.put(cgiarCrossCuttingMarker, ppccm);
+        }
       }
 
-      for (ProjectPolicyCrossCuttingMarker pccm : policyCrossCuttingMarkers) {
-        this.projectPolicyCrossCuttingMarkerManager.saveProjectPolicyCrossCuttingMarker(pccm);
+      for (ProjectPolicyCrossCuttingMarker ppccm : uniqueMarkers.values()) {
+        this.projectPolicyCrossCuttingMarkerManager.saveProjectPolicyCrossCuttingMarker(ppccm);
       }
     }
   }
@@ -278,27 +289,29 @@ public class ProjectPolicyReplication extends BaseAction {
    * Replicates the ProjectPolicyCrp associated to the policyId
    * 
    * @param policyId the policy identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectPolicyCrps(long policyId, Phase lastCrpPhase) {
+  private void replicateProjectPolicyCrps(long policyId, Phase selectedPhase) {
+    LOG.info("Starting ProjectPolicyCrp replication...");
     List<ProjectPolicyCrp> policyCrps = this.projectPolicyCrpManager.getAllPolicyCrpsByPolicy(policyId);
-    policyCrps.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getGlobalUnit() == null);
-    if (this.isNotEmpty(policyCrps)) {
-      ProjectPolicyCrp lastPolicyCrp = policyCrps.get(policyCrps.size() - 1);
+    policyCrps.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getGlobalUnit() == null
+      || !pc.getPhase().equals(selectedPhase));
 
-      if (lastPolicyCrp.getPhase() == lastCrpPhase) {
-        // the policy crps got replicated all the way to the last phase, let's replicate everything from the selected
-        // phase on front
-        // policyCrps.removeIf(pc -> !pc.getPhase().equals(this.selectedPhase));
-        policyCrps = Collections.emptyList();
-      } else {
-        // the policy crp replication stopped some place before the last phase, let's replicate everything from that
-        // point onwards
-        policyCrps.removeIf(pc -> !pc.getPhase().equals(lastPolicyCrp.getPhase()));
+    if (this.isNotEmpty(policyCrps)) {
+      Map<GlobalUnit, ProjectPolicyCrp> uniqueCrps = new HashMap<>(policyCrps.size());
+
+      for (ProjectPolicyCrp ppc : policyCrps) {
+        GlobalUnit globalUnit = ppc.getGlobalUnit();
+
+        if (uniqueCrps.containsKey(globalUnit)) {
+          LOG.info("The CRP/Platform {} is duplicated", globalUnit.getId());
+        } else {
+          uniqueCrps.put(globalUnit, ppc);
+        }
       }
 
-      for (ProjectPolicyCrp pc : policyCrps) {
-        this.projectPolicyCrpManager.saveProjectPolicyCrp(pc);
+      for (ProjectPolicyCrp ppc : uniqueCrps.values()) {
+        this.projectPolicyCrpManager.saveProjectPolicyCrp(ppc);
       }
     }
   }
@@ -307,31 +320,30 @@ public class ProjectPolicyReplication extends BaseAction {
    * Replicates the ProjectPolicyGeographicScope associated to the policyId
    * 
    * @param policyId the policy identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectPolicyGeoScopes(long policyId, Phase lastCrpPhase) {
+  private void replicateProjectPolicyGeoScopes(long policyId, Phase selectedPhase) {
+    LOG.info("Starting ProjectPolicyGeographicScope replication...");
     List<ProjectPolicyGeographicScope> policyGeoScopes =
       this.projectPolicyGeographicScopeManager.getAllPolicyGeographicScopesByPolicy(policyId);
-    policyGeoScopes.removeIf(
-      pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getRepIndGeographicScope() == null);
-    if (this.isNotEmpty(policyGeoScopes)) {
-      ProjectPolicyGeographicScope lastPolicyGeoScope = policyGeoScopes.get(policyGeoScopes.size() - 1);
+    policyGeoScopes.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null
+      || pc.getRepIndGeographicScope() == null || !pc.getPhase().equals(selectedPhase));
 
-      if (lastPolicyGeoScope.getPhase() == lastCrpPhase) {
-        // the policy geoscopes got replicated all the way to the last phase, let's replicate everything from the
-        // selected
-        // phase on front
-        // policyGeoScopes.removeIf(pc -> !pc.getPhase().equals(this.selectedPhase));
-        policyGeoScopes = Collections.emptyList();
-      } else {
-        // the policy geoscope replication stopped some place before the last phase, let's replicate everything from
-        // that
-        // point onwards
-        policyGeoScopes.removeIf(pc -> !pc.getPhase().equals(lastPolicyGeoScope.getPhase()));
+    if (this.isNotEmpty(policyGeoScopes)) {
+      Map<RepIndGeographicScope, ProjectPolicyGeographicScope> uniqueGeoScopes = new HashMap<>(policyGeoScopes.size());
+
+      for (ProjectPolicyGeographicScope ppgs : policyGeoScopes) {
+        RepIndGeographicScope repIndGeographicScope = ppgs.getRepIndGeographicScope();
+
+        if (uniqueGeoScopes.containsKey(repIndGeographicScope)) {
+          LOG.info("The geoscope {} is duplicated", repIndGeographicScope.getId());
+        } else {
+          uniqueGeoScopes.put(repIndGeographicScope, ppgs);
+        }
       }
 
-      for (ProjectPolicyGeographicScope pgs : policyGeoScopes) {
-        this.projectPolicyGeographicScopeManager.saveProjectPolicyGeographicScope(pgs);
+      for (ProjectPolicyGeographicScope ppgs : uniqueGeoScopes.values()) {
+        this.projectPolicyGeographicScopeManager.saveProjectPolicyGeographicScope(ppgs);
       }
     }
   }
@@ -340,28 +352,18 @@ public class ProjectPolicyReplication extends BaseAction {
    * Replicates the ProjectPolicyInfo associated to the policyId
    * 
    * @param policyId the policy identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectPolicyInfos(long policyId, Phase lastCrpPhase) {
+  private void replicateProjectPolicyInfos(long policyId, Phase selectedPhase) {
+    LOG.info("Starting ProjectPolicyInfo replication...");
     List<ProjectPolicyInfo> policyInfos = this.projectPolicyInfoManager.getAllPolicyInfosByPolicy(policyId);
-    policyInfos.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null);
+    policyInfos.removeIf(
+      pc -> pc == null || pc.getId() == null || pc.getPhase() == null || !pc.getPhase().equals(selectedPhase));
+
     if (this.isNotEmpty(policyInfos)) {
-      ProjectPolicyInfo lastPolicyInfo = policyInfos.get(policyInfos.size() - 1);
+      ProjectPolicyInfo projectPolicyInfo = policyInfos.get(policyInfos.size() - 1);
 
-      if (lastPolicyInfo.getPhase() == lastCrpPhase) {
-        // the policy infos got replicated all the way to the last phase, let's replicate everything from the selected
-        // phase on front
-        // policyInfos.removeIf(pc -> !pc.getPhase().equals(this.selectedPhase));
-        policyInfos = Collections.emptyList();
-      } else {
-        // the policy info replication stopped some place before the last phase, let's replicate everything from that
-        // point onwards
-        policyInfos.removeIf(pc -> !pc.getPhase().equals(lastPolicyInfo.getPhase()));
-      }
-
-      for (ProjectPolicyInfo pi : policyInfos) {
-        this.projectPolicyInfoManager.saveProjectPolicyInfo(pi);
-      }
+      this.projectPolicyInfoManager.saveProjectPolicyInfo(projectPolicyInfo);
     }
   }
 
@@ -369,28 +371,29 @@ public class ProjectPolicyReplication extends BaseAction {
    * Replicates the ProjectPolicyInnovation associated to the policyId
    * 
    * @param policyId the policy identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectPolicyInnovations(long policyId, Phase lastCrpPhase) {
+  private void replicateProjectPolicyInnovations(long policyId, Phase selectedPhase) {
+    LOG.info("Starting ProjectPolicyInnovation replication...");
     List<ProjectPolicyInnovation> policyInnovations =
       this.projectPolicyInnovationManager.getAllPolicyInnovationsByPolicy(policyId);
-    policyInnovations
-      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getProjectInnovation() == null);
-    if (this.isNotEmpty(policyInnovations)) {
-      ProjectPolicyInnovation lastPolicyInnovation = policyInnovations.get(policyInnovations.size() - 1);
+    policyInnovations.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null
+      || pc.getProjectInnovation() == null || !pc.getPhase().equals(selectedPhase));
 
-      if (lastPolicyInnovation.getPhase() == lastCrpPhase) {
-        // the policy innovations got replicated all the way to the last phase, let's replicate everything from the
-        // selected phase on front
-        // policyInnovations.removeIf(pc -> !pc.getPhase().equals(this.selectedPhase));
-        policyInnovations = Collections.emptyList();
-      } else {
-        // the policy innovation replication stopped some place before the last phase, let's replicate everything from
-        // that point onwards
-        policyInnovations.removeIf(pc -> !pc.getPhase().equals(lastPolicyInnovation.getPhase()));
+    if (this.isNotEmpty(policyInnovations)) {
+      Map<ProjectInnovation, ProjectPolicyInnovation> uniqueInnovations = new HashMap<>(policyInnovations.size());
+
+      for (ProjectPolicyInnovation ppi : policyInnovations) {
+        ProjectInnovation projectInnovation = ppi.getProjectInnovation();
+
+        if (uniqueInnovations.containsKey(projectInnovation)) {
+          LOG.info("The innovation {} is duplicated", projectInnovation.getId());
+        } else {
+          uniqueInnovations.put(projectInnovation, ppi);
+        }
       }
 
-      for (ProjectPolicyInnovation pi : policyInnovations) {
+      for (ProjectPolicyInnovation pi : uniqueInnovations.values()) {
         this.projectPolicyInnovationManager.saveProjectPolicyInnovation(pi);
       }
     }
@@ -400,29 +403,28 @@ public class ProjectPolicyReplication extends BaseAction {
    * Replicates the PolicyMilestone associated to the policyId
    * 
    * @param policyId the policy identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectPolicyMilestones(long policyId, Phase lastCrpPhase) {
+  private void replicateProjectPolicyMilestones(long policyId, Phase selectedPhase) {
+    LOG.info("Starting PolicyMilestone replication...");
     List<PolicyMilestone> policyMilestones = this.policyMilestoneManager.getAllPolicyMilestonesByPolicy(policyId);
-    policyMilestones
-      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getCrpMilestone() == null);
-    if (this.isNotEmpty(policyMilestones)) {
-      PolicyMilestone lastPolicyMilestone = policyMilestones.get(policyMilestones.size() - 1);
+    policyMilestones.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null
+      || pc.getCrpMilestone() == null || !pc.getPhase().equals(selectedPhase));
 
-      if (lastPolicyMilestone.getPhase() == lastCrpPhase) {
-        // the policy milestones got replicated all the way to the last phase, let's replicate everything from the
-        // selected
-        // phase on front
-        // policyMilestones.removeIf(pc -> !pc.getPhase().equals(this.selectedPhase));
-        policyMilestones = Collections.emptyList();
-      } else {
-        // the policy milestone replication stopped some place before the last phase, let's replicate everything from
-        // that
-        // point onwards
-        policyMilestones.removeIf(pc -> !pc.getPhase().equals(lastPolicyMilestone.getPhase()));
-      }
+    if (this.isNotEmpty(policyMilestones)) {
+      Map<CrpMilestone, PolicyMilestone> uniqueMilestones = new HashMap<>(policyMilestones.size());
 
       for (PolicyMilestone pm : policyMilestones) {
+        CrpMilestone crpMilestone = pm.getCrpMilestone();
+
+        if (uniqueMilestones.containsKey(crpMilestone)) {
+          LOG.info("The milestone {} is duplicated", crpMilestone.getId());
+        } else {
+          uniqueMilestones.put(crpMilestone, pm);
+        }
+      }
+
+      for (PolicyMilestone pm : uniqueMilestones.values()) {
         this.policyMilestoneManager.savePolicyMilestone(pm);
       }
     }
@@ -432,28 +434,29 @@ public class ProjectPolicyReplication extends BaseAction {
    * Replicates the ProjectPolicyOwner associated to the policyId
    * 
    * @param policyId the policy identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectPolicyOwners(long policyId, Phase lastCrpPhase) {
+  private void replicateProjectPolicyOwners(long policyId, Phase selectedPhase) {
+    LOG.info("Starting ProjectPolicyOwner replication...");
     List<ProjectPolicyOwner> policyOwners = this.projectPolicyOwnerManager.getAllPolicyOwnersByPolicy(policyId);
-    policyOwners
-      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getRepIndPolicyType() == null);
-    if (this.isNotEmpty(policyOwners)) {
-      ProjectPolicyOwner lastPolicyOwner = policyOwners.get(policyOwners.size() - 1);
+    policyOwners.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null
+      || pc.getRepIndPolicyType() == null || !pc.getPhase().equals(selectedPhase));
 
-      if (lastPolicyOwner.getPhase() == lastCrpPhase) {
-        // the policy owners got replicated all the way to the last phase, let's replicate everything from the selected
-        // phase on front
-        // policyOwners.removeIf(pc -> !pc.getPhase().equals(this.selectedPhase));
-        policyOwners = Collections.emptyList();
-      } else {
-        // the policy owner replication stopped some place before the last phase, let's replicate everything from that
-        // point onwards
-        policyOwners.removeIf(pc -> !pc.getPhase().equals(lastPolicyOwner.getPhase()));
+    if (this.isNotEmpty(policyOwners)) {
+      Map<RepIndPolicyType, ProjectPolicyOwner> uniquePolicyOwners = new HashMap<>(policyOwners.size());
+
+      for (ProjectPolicyOwner ppo : policyOwners) {
+        RepIndPolicyType repIndPolicyType = ppo.getRepIndPolicyType();
+
+        if (uniquePolicyOwners.containsKey(repIndPolicyType)) {
+          LOG.info("The policy type {} is duplicated", repIndPolicyType.getId());
+        } else {
+          uniquePolicyOwners.put(repIndPolicyType, ppo);
+        }
       }
 
-      for (ProjectPolicyOwner po : policyOwners) {
-        this.projectPolicyOwnerManager.saveProjectPolicyOwner(po);
+      for (ProjectPolicyOwner ppo : uniquePolicyOwners.values()) {
+        this.projectPolicyOwnerManager.saveProjectPolicyOwner(ppo);
       }
     }
   }
@@ -462,28 +465,29 @@ public class ProjectPolicyReplication extends BaseAction {
    * Replicates the ProjectPolicyRegion associated to the policyId
    * 
    * @param policyId the policy identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectPolicyRegions(long policyId, Phase lastCrpPhase) {
+  private void replicateProjectPolicyRegions(long policyId, Phase selectedPhase) {
+    LOG.info("Starting ProjectPolicyRegion replication...");
     List<ProjectPolicyRegion> policyRegions = this.projectPolicyRegionManager.getAllPolicyRegionsByPolicy(policyId);
-    policyRegions
-      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getLocElement() == null);
-    if (this.isNotEmpty(policyRegions)) {
-      ProjectPolicyRegion lastPolicyRegion = policyRegions.get(policyRegions.size() - 1);
+    policyRegions.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getLocElement() == null
+      || !pc.getPhase().equals(selectedPhase));
 
-      if (lastPolicyRegion.getPhase() == lastCrpPhase) {
-        // the policy regions got replicated all the way to the last phase, let's replicate everything from the selected
-        // phase on front
-        // policyRegions.removeIf(pc -> !pc.getPhase().equals(this.selectedPhase));
-        policyRegions = Collections.emptyList();
-      } else {
-        // the policy region replication stopped some place before the last phase, let's replicate everything from that
-        // point onwards
-        policyRegions.removeIf(pc -> !pc.getPhase().equals(lastPolicyRegion.getPhase()));
+    if (this.isNotEmpty(policyRegions)) {
+      Map<LocElement, ProjectPolicyRegion> uniqueRegions = new HashMap<>(policyRegions.size());
+
+      for (ProjectPolicyRegion ppr : policyRegions) {
+        LocElement locElement = ppr.getLocElement();
+
+        if (uniqueRegions.containsKey(locElement)) {
+          LOG.info("The region {} is duplicated", locElement.getId());
+        } else {
+          uniqueRegions.put(locElement, ppr);
+        }
       }
 
-      for (ProjectPolicyRegion pr : policyRegions) {
-        this.projectPolicyRegionManager.saveProjectPolicyRegion(pr);
+      for (ProjectPolicyRegion ppr : uniqueRegions.values()) {
+        this.projectPolicyRegionManager.saveProjectPolicyRegion(ppr);
       }
     }
   }
@@ -492,28 +496,29 @@ public class ProjectPolicyReplication extends BaseAction {
    * Replicates the ProjectPolicySubIdo associated to the policyId
    * 
    * @param policyId the policy identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectPolicySubIdos(long policyId, Phase lastCrpPhase) {
+  private void replicateProjectPolicySubIdos(long policyId, Phase selectedPhase) {
+    LOG.info("Starting ProjectPolicySubIdo replication...");
     List<ProjectPolicySubIdo> policySubIdos = this.projectPolicySubIdoManager.getAllPolicySubIdosByPolicy(policyId);
-    policySubIdos
-      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getSrfSubIdo() == null);
-    if (this.isNotEmpty(policySubIdos)) {
-      ProjectPolicySubIdo lastPolicySubIdo = policySubIdos.get(policySubIdos.size() - 1);
+    policySubIdos.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getSrfSubIdo() == null
+      || !pc.getPhase().equals(selectedPhase));
 
-      if (lastPolicySubIdo.getPhase() == lastCrpPhase) {
-        // the policy subidos got replicated all the way to the last phase, let's replicate everything from the selected
-        // phase on front
-        // policySubIdos.removeIf(pc -> !pc.getPhase().equals(this.selectedPhase));
-        policySubIdos = Collections.emptyList();
-      } else {
-        // the policy subido replication stopped some place before the last phase, let's replicate everything from that
-        // point onwards
-        policySubIdos.removeIf(pc -> !pc.getPhase().equals(lastPolicySubIdo.getPhase()));
+    if (this.isNotEmpty(policySubIdos)) {
+      Map<SrfSubIdo, ProjectPolicySubIdo> uniqueSubIdos = new HashMap<>(policySubIdos.size());
+
+      for (ProjectPolicySubIdo ppsi : policySubIdos) {
+        SrfSubIdo srfSubIdo = ppsi.getSrfSubIdo();
+
+        if (uniqueSubIdos.containsKey(srfSubIdo)) {
+          LOG.info("The srf sub ido {} is duplicated", srfSubIdo.getId());
+        } else {
+          uniqueSubIdos.put(srfSubIdo, ppsi);
+        }
       }
 
-      for (ProjectPolicySubIdo psi : policySubIdos) {
-        this.projectPolicySubIdoManager.saveProjectPolicySubIdo(psi);
+      for (ProjectPolicySubIdo ppsi : uniqueSubIdos.values()) {
+        this.projectPolicySubIdoManager.saveProjectPolicySubIdo(ppsi);
       }
     }
   }
@@ -527,25 +532,26 @@ public class ProjectPolicyReplication extends BaseAction {
       if (this.isNotEmpty(ids)) {
         LOG.debug("Start replication for phase: " + selectedPhaseID);
         selectedPhase = this.phaseManager.getPhaseById(selectedPhaseID);
-        Phase lastCrpPhase = this.phaseManager.getLastCrpPhase(this.selectedPhase.getCrp().getId());
+        // Phase lastCrpPhase = this.phaseManager.getLastCrpPhase(this.selectedPhase.getCrp().getId());
         ProjectPolicy currentPolicy = null;
         for (String id : ids) {
           LOG.debug("Replicating policy: " + id);
           long policyIdLong = Long.parseLong(id);
           currentPolicy = this.projectPolicyManager.getProjectPolicyById(policyIdLong);
           if (currentPolicy != null) {
-            this.replicateProjectPolicyInfos(policyIdLong, lastCrpPhase);
-            this.replicateProjectPolicyCenters(policyIdLong, lastCrpPhase);
-            this.replicateProjectPolicyCrossCuttingMarkers(policyIdLong, lastCrpPhase);
-            this.replicateProjectPolicyCrps(policyIdLong, lastCrpPhase);
-            this.replicateProjectPolicyGeoScopes(policyIdLong, lastCrpPhase);
-            this.replicateProjectPolicyRegions(policyIdLong, lastCrpPhase);
-            this.replicateProjectPolicyCountries(policyIdLong, lastCrpPhase);
-            this.replicateProjectPolicyInnovations(policyIdLong, lastCrpPhase);
-            this.replicateProjectPolicyMilestones(policyIdLong, lastCrpPhase);
-            this.replicateProjectPolicyOwners(policyIdLong, lastCrpPhase);
-            this.replicateProjectPolicySubIdos(policyIdLong, lastCrpPhase);
-            this.replicateProjectExpectedStudyPolicies(policyIdLong, lastCrpPhase);
+            this.replicateProjectPolicyInfos(policyIdLong, selectedPhase);
+            this.replicateProjectPolicyCenters(policyIdLong, selectedPhase);
+            this.replicateProjectPolicyCrossCuttingMarkers(policyIdLong, selectedPhase);
+            this.replicateProjectPolicyCrps(policyIdLong, selectedPhase);
+            this.replicateProjectPolicyGeoScopes(policyIdLong, selectedPhase);
+            this.replicateProjectPolicyRegions(policyIdLong, selectedPhase);
+            this.replicateProjectPolicyCountries(policyIdLong, selectedPhase);
+            this.replicateProjectPolicyInnovations(policyIdLong, selectedPhase);
+            this.replicateProjectPolicyMilestones(policyIdLong, selectedPhase);
+            this.replicateProjectPolicyOwners(policyIdLong, selectedPhase);
+            this.replicateProjectPolicySubIdos(policyIdLong, selectedPhase);
+
+            this.replicateProjectExpectedStudyPolicies(policyIdLong, selectedPhase);
           }
         }
       } else {
