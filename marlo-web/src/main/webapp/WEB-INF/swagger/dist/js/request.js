@@ -613,13 +613,12 @@ function glossary(){
 			// ********************************************* */
 			// print data
 			manageSpinner(false,"glossary");
-			let nameColumns = ['id', 'Name']
+			let nameColumns = ['Term', 'Definition']
 
 		
 			$.each(data, function (index, item) {
 				$('#list-print-glossary').append(
-					'<tr>' + '<td >' + item['applicationName'] + '</td>' 
-					+ '<td>'+ item['title'] + '</td>'
+					'<tr>' + '<td>'+ item['term'] + '</td>'
 					+ '<td>'+ item['definition'] + '</td>'
 					+ '</tr>')
 			});
