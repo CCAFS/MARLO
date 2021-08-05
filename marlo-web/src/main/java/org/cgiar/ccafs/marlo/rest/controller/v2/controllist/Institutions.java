@@ -269,7 +269,7 @@ public class Institutions {
   }
 
   @ApiOperation(tags = {"Table 4 - CRP Innovations", "Table 3 - Outcome/ Impact Case Reports"},
-    value = "${Institutions.institutions.all.value}", response = InstitutionDTO.class, responseContainer = "List")
+    value = "${Institutions.institutions.all.value}", response = InstitutionSimpleDTO.class, responseContainer = "List")
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/institutionsSimple", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
