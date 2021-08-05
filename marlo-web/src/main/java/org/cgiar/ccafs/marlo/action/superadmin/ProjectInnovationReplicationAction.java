@@ -33,8 +33,14 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSharedManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyInnovationManager;
+import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter;
@@ -49,12 +55,18 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSubIdo;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyInnovation;
+import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
+import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
+import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -163,29 +175,32 @@ public class ProjectInnovationReplicationAction extends BaseAction {
   }
 
   /**
-   * Replicates the ProjectInnovationInfos associated to the innovationId
+   * Replicates the ProjectExpectedStudyInnovations associated to the innovationId
    * 
    * @param innovationId the innovation identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectExpectedStudyInnovations(long innovationId, Phase lastCrpPhase) {
+  private void replicateProjectExpectedStudyInnovations(long innovationId, Phase selectedPhase) {
+    LOG.info("Starting ProjectExpectedStudyInnovation replication...");
     List<ProjectExpectedStudyInnovation> studyInnovations =
       this.projectExpectedStudyInnovationManager.getAllStudyInnovationsByInnovation(innovationId);
-    studyInnovations.removeIf(
-      pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getProjectExpectedStudy() == null);
-    if (this.isNotEmpty(studyInnovations)) {
-      ProjectExpectedStudyInnovation lastStudyInnovation = studyInnovations.get(studyInnovations.size() - 1);
+    studyInnovations.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null
+      || pc.getProjectExpectedStudy() == null || !pc.getPhase().equals(selectedPhase));
 
-      if (lastStudyInnovation.getPhase() == lastCrpPhase) {
-        // the study innovations got replicated all the way to the last phase, we do not have to do anything else
-        studyInnovations = Collections.emptyList();
-      } else {
-        // the study innovation replication stopped some place before the last phase, let's replicate everything from
-        // that point onwards
-        studyInnovations.removeIf(pc -> !pc.getPhase().equals(lastStudyInnovation.getPhase()));
-      }
+    if (this.isNotEmpty(studyInnovations)) {
+      Map<ProjectExpectedStudy, ProjectExpectedStudyInnovation> uniqueStudies = new HashMap<>(studyInnovations.size());
 
       for (ProjectExpectedStudyInnovation pesi : studyInnovations) {
+        ProjectExpectedStudy projectExpectedStudy = pesi.getProjectExpectedStudy();
+
+        if (uniqueStudies.containsKey(projectExpectedStudy)) {
+          LOG.info("The study {} is duplicated", projectExpectedStudy.getId());
+        } else {
+          uniqueStudies.put(projectExpectedStudy, pesi);
+        }
+      }
+
+      for (ProjectExpectedStudyInnovation pesi : uniqueStudies.values()) {
         this.projectExpectedStudyInnovationManager.saveProjectExpectedStudyInnovation(pesi);
       }
     }
@@ -195,26 +210,29 @@ public class ProjectInnovationReplicationAction extends BaseAction {
    * Replicates the ProjectInnovationCenters associated to the innovationId
    * 
    * @param innovationId the innovation identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectInnovationCenters(long innovationId, Phase lastCrpPhase) {
+  private void replicateProjectInnovationCenters(long innovationId, Phase selectedPhase) {
+    LOG.info("Starting ProjectInnovationCenter replication...");
     List<ProjectInnovationCenter> innovationCenters =
       this.projectInnovationCenterManager.getAllInnovationCentersByInnovation(innovationId);
-    innovationCenters
-      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getInstitution() == null);
-    if (this.isNotEmpty(innovationCenters)) {
-      ProjectInnovationCenter lastInnovationCenter = innovationCenters.get(innovationCenters.size() - 1);
+    innovationCenters.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null
+      || pc.getInstitution() == null || !pc.getPhase().equals(selectedPhase));
 
-      if (lastInnovationCenter.getPhase() == lastCrpPhase) {
-        // the innovation centers got replicated all the way to the last phase, we do not have to do anything else
-        innovationCenters = Collections.emptyList();
-      } else {
-        // the innovation center replication stopped some place before the last phase, let's replicate everything from
-        // that point onwards
-        innovationCenters.removeIf(pc -> !pc.getPhase().equals(lastInnovationCenter.getPhase()));
-      }
+    if (this.isNotEmpty(innovationCenters)) {
+      Map<Institution, ProjectInnovationCenter> uniqueCenters = new HashMap<>(innovationCenters.size());
 
       for (ProjectInnovationCenter pic : innovationCenters) {
+        Institution institution = pic.getInstitution();
+
+        if (uniqueCenters.containsKey(institution)) {
+          LOG.info("The institution {} is duplicated", institution.getId());
+        } else {
+          uniqueCenters.put(institution, pic);
+        }
+      }
+
+      for (ProjectInnovationCenter pic : uniqueCenters.values()) {
         this.projectInnovationCenterManager.saveProjectInnovationCenter(pic);
       }
     }
@@ -224,30 +242,31 @@ public class ProjectInnovationReplicationAction extends BaseAction {
    * Replicates the ProjectInnovationContributingOrganizations associated to the innovationId
    * 
    * @param innovationId the innovation identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectInnovationContributingOrganizations(long innovationId, Phase lastCrpPhase) {
+  private void replicateProjectInnovationContributingOrganizations(long innovationId, Phase selectedPhase) {
+    LOG.info("Starting ProjectInnovationContributingOrganization replication...");
     List<ProjectInnovationContributingOrganization> innovationContributingOrganizations =
       this.projectInnovationContributingOrganizationManager
         .getAllInnovationContributingOrganizationsByInnovation(innovationId);
-    innovationContributingOrganizations
-      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getInstitution() == null);
-    if (this.isNotEmpty(innovationContributingOrganizations)) {
-      ProjectInnovationContributingOrganization lastInnovationContributingOrganization =
-        innovationContributingOrganizations.get(innovationContributingOrganizations.size() - 1);
+    innovationContributingOrganizations.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null
+      || pc.getInstitution() == null || !pc.getPhase().equals(selectedPhase));
 
-      if (lastInnovationContributingOrganization.getPhase() == lastCrpPhase) {
-        // the innovation contributing organizations got replicated all the way to the last phase, we do not have to do
-        // anything else
-        innovationContributingOrganizations = Collections.emptyList();
-      } else {
-        // the innovation contributing organization replication stopped some place before the last phase, let's
-        // replicate everything from that point onwards
-        innovationContributingOrganizations
-          .removeIf(pc -> !pc.getPhase().equals(lastInnovationContributingOrganization.getPhase()));
-      }
+    if (this.isNotEmpty(innovationContributingOrganizations)) {
+      Map<Institution, ProjectInnovationContributingOrganization> uniqueContributingOrganizations =
+        new HashMap<>(innovationContributingOrganizations.size());
 
       for (ProjectInnovationContributingOrganization pico : innovationContributingOrganizations) {
+        Institution institution = pico.getInstitution();
+
+        if (uniqueContributingOrganizations.containsKey(institution)) {
+          LOG.info("The institution {} is duplicated", institution.getId());
+        } else {
+          uniqueContributingOrganizations.put(institution, pico);
+        }
+      }
+
+      for (ProjectInnovationContributingOrganization pico : uniqueContributingOrganizations.values()) {
         this.projectInnovationContributingOrganizationManager.saveProjectInnovationContributingOrganization(pico);
       }
     }
@@ -257,26 +276,29 @@ public class ProjectInnovationReplicationAction extends BaseAction {
    * Replicates the ProjectInnovationCountries associated to the innovationId
    * 
    * @param innovationId the innovation identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectInnovationCountries(long innovationId, Phase lastCrpPhase) {
+  private void replicateProjectInnovationCountries(long innovationId, Phase selectedPhase) {
+    LOG.info("Starting ProjectInnovationCountry replication...");
     List<ProjectInnovationCountry> innovationCountries =
       this.projectInnovationCountryManager.getAllInnovationCountriesByInnovation(innovationId);
-    innovationCountries
-      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getLocElement() == null);
-    if (this.isNotEmpty(innovationCountries)) {
-      ProjectInnovationCountry lastInnovationCountry = innovationCountries.get(innovationCountries.size() - 1);
+    innovationCountries.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null
+      || pc.getLocElement() == null || !pc.getPhase().equals(selectedPhase));
 
-      if (lastInnovationCountry.getPhase() == lastCrpPhase) {
-        // the innovation countries got replicated all the way to the last phase, we do not have to do anything else
-        innovationCountries = Collections.emptyList();
-      } else {
-        // the innovation country replication stopped some place before the last phase, let's replicate everything from
-        // that point onwards
-        innovationCountries.removeIf(pc -> !pc.getPhase().equals(lastInnovationCountry.getPhase()));
-      }
+    if (this.isNotEmpty(innovationCountries)) {
+      Map<LocElement, ProjectInnovationCountry> uniqueCountries = new HashMap<>(innovationCountries.size());
 
       for (ProjectInnovationCountry pic : innovationCountries) {
+        LocElement locElement = pic.getLocElement();
+
+        if (uniqueCountries.containsKey(locElement)) {
+          LOG.info("The country {} is duplicated", locElement.getId());
+        } else {
+          uniqueCountries.put(locElement, pic);
+        }
+      }
+
+      for (ProjectInnovationCountry pic : uniqueCountries.values()) {
         this.projectInnovationCountryManager.saveProjectInnovationCountry(pic);
       }
     }
@@ -286,26 +308,29 @@ public class ProjectInnovationReplicationAction extends BaseAction {
    * Replicates the ProjectInnovationCrps associated to the innovationId
    * 
    * @param innovationId the innovation identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectInnovationCrps(long innovationId, Phase lastCrpPhase) {
+  private void replicateProjectInnovationCrps(long innovationId, Phase selectedPhase) {
+    LOG.info("Starting ProjectInnovationCrp replication...");
     List<ProjectInnovationCrp> innovationCrps =
       this.projectInnovationCrpManager.getAllInnovationCrpsByInnovation(innovationId);
-    innovationCrps
-      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getGlobalUnit() == null);
-    if (this.isNotEmpty(innovationCrps)) {
-      ProjectInnovationCrp lastInnovationCrp = innovationCrps.get(innovationCrps.size() - 1);
+    innovationCrps.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null
+      || pc.getGlobalUnit() == null || !pc.getPhase().equals(selectedPhase));
 
-      if (lastInnovationCrp.getPhase() == lastCrpPhase) {
-        // the innovation crps got replicated all the way to the last phase, we do not have to do anything else
-        innovationCrps = Collections.emptyList();
-      } else {
-        // the innovation crp replication stopped some place before the last phase, let's replicate everything from
-        // that point onwards
-        innovationCrps.removeIf(pc -> !pc.getPhase().equals(lastInnovationCrp.getPhase()));
-      }
+    if (this.isNotEmpty(innovationCrps)) {
+      Map<GlobalUnit, ProjectInnovationCrp> uniqueCrps = new HashMap<>(innovationCrps.size());
 
       for (ProjectInnovationCrp pic : innovationCrps) {
+        GlobalUnit globalUnit = pic.getGlobalUnit();
+
+        if (uniqueCrps.containsKey(globalUnit)) {
+          LOG.info("The CRP/Platform {} is duplicated", globalUnit.getId());
+        } else {
+          uniqueCrps.put(globalUnit, pic);
+        }
+      }
+
+      for (ProjectInnovationCrp pic : uniqueCrps.values()) {
         this.projectInnovationCrpManager.saveProjectInnovationCrp(pic);
       }
     }
@@ -315,27 +340,29 @@ public class ProjectInnovationReplicationAction extends BaseAction {
    * Replicates the ProjectInnovationDeliverables associated to the innovationId
    * 
    * @param innovationId the innovation identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectInnovationDeliverables(long innovationId, Phase lastCrpPhase) {
+  private void replicateProjectInnovationDeliverables(long innovationId, Phase selectedPhase) {
+    LOG.info("Starting ProjectInnovationDeliverable replication...");
     List<ProjectInnovationDeliverable> innovationDeliverables =
       this.projectInnovationDeliverableManager.getAllInnovationDeliverablesByInnovation(innovationId);
-    innovationDeliverables
-      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getDeliverable() == null);
-    if (this.isNotEmpty(innovationDeliverables)) {
-      ProjectInnovationDeliverable lastInnovationDeliverable =
-        innovationDeliverables.get(innovationDeliverables.size() - 1);
+    innovationDeliverables.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null
+      || pc.getDeliverable() == null || !pc.getPhase().equals(selectedPhase));
 
-      if (lastInnovationDeliverable.getPhase() == lastCrpPhase) {
-        // the innovation deliverables got replicated all the way to the last phase, we do not have to do anything else
-        innovationDeliverables = Collections.emptyList();
-      } else {
-        // the innovation deliverable replication stopped some place before the last phase, let's replicate everything
-        // from that point onwards
-        innovationDeliverables.removeIf(pc -> !pc.getPhase().equals(lastInnovationDeliverable.getPhase()));
-      }
+    if (this.isNotEmpty(innovationDeliverables)) {
+      Map<Deliverable, ProjectInnovationDeliverable> uniqueDeliverables = new HashMap<>(innovationDeliverables.size());
 
       for (ProjectInnovationDeliverable pid : innovationDeliverables) {
+        Deliverable deliverable = pid.getDeliverable();
+
+        if (uniqueDeliverables.containsKey(deliverable)) {
+          LOG.info("The deliverable {} is duplicated", deliverable.getId());
+        } else {
+          uniqueDeliverables.put(deliverable, pid);
+        }
+      }
+
+      for (ProjectInnovationDeliverable pid : uniqueDeliverables.values()) {
         this.projectInnovationDeliverableManager.saveProjectInnovationDeliverable(pid);
       }
     }
@@ -345,26 +372,30 @@ public class ProjectInnovationReplicationAction extends BaseAction {
    * Replicates the ProjectInnovationGeographicScopes associated to the innovationId
    * 
    * @param innovationId the innovation identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectInnovationGeographicScopes(long innovationId, Phase lastCrpPhase) {
+  private void replicateProjectInnovationGeographicScopes(long innovationId, Phase selectedPhase) {
+    LOG.info("Starting ProjectInnovationGeographicScope replication...");
     List<ProjectInnovationGeographicScope> innovationGeoScopes =
       this.projectInnovationGeographicScopeManager.getAllInnovationGeographicScopesByInnovation(innovationId);
-    innovationGeoScopes.removeIf(
-      pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getRepIndGeographicScope() == null);
-    if (this.isNotEmpty(innovationGeoScopes)) {
-      ProjectInnovationGeographicScope lastInnovationGeoScope = innovationGeoScopes.get(innovationGeoScopes.size() - 1);
+    innovationGeoScopes.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null
+      || pc.getRepIndGeographicScope() == null || !pc.getPhase().equals(selectedPhase));
 
-      if (lastInnovationGeoScope.getPhase() == lastCrpPhase) {
-        // the innovation geoscopes got replicated all the way to the last phase, we do not have to do anything else
-        innovationGeoScopes = Collections.emptyList();
-      } else {
-        // the innovation geoscope replication stopped some place before the last phase, let's replicate everything
-        // from that point onwards
-        innovationGeoScopes.removeIf(pc -> !pc.getPhase().equals(lastInnovationGeoScope.getPhase()));
-      }
+    if (this.isNotEmpty(innovationGeoScopes)) {
+      Map<RepIndGeographicScope, ProjectInnovationGeographicScope> uniqueGeoScopes =
+        new HashMap<>(innovationGeoScopes.size());
 
       for (ProjectInnovationGeographicScope pigs : innovationGeoScopes) {
+        RepIndGeographicScope repIndGeographicScope = pigs.getRepIndGeographicScope();
+
+        if (uniqueGeoScopes.containsKey(repIndGeographicScope)) {
+          LOG.info("The geoscope {} is duplicated", repIndGeographicScope.getId());
+        } else {
+          uniqueGeoScopes.put(repIndGeographicScope, pigs);
+        }
+      }
+
+      for (ProjectInnovationGeographicScope pigs : uniqueGeoScopes.values()) {
         this.projectInnovationGeographicScopeManager.saveProjectInnovationGeographicScope(pigs);
       }
     }
@@ -374,27 +405,19 @@ public class ProjectInnovationReplicationAction extends BaseAction {
    * Replicates the ProjectInnovationInfos associated to the innovationId
    * 
    * @param innovationId the innovation identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectInnovationInfos(long innovationId, Phase lastCrpPhase) {
+  private void replicateProjectInnovationInfos(long innovationId, Phase selectedPhase) {
+    LOG.info("Starting ProjectInnovationInfo replication...");
     List<ProjectInnovationInfo> innovationInfos =
       this.projectInnovationInfoManager.getAllInnovationInfosByInnovation(innovationId);
-    innovationInfos.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null);
+    innovationInfos.removeIf(
+      pc -> pc == null || pc.getId() == null || pc.getPhase() == null || !pc.getPhase().equals(selectedPhase));
+
     if (this.isNotEmpty(innovationInfos)) {
-      ProjectInnovationInfo lastInnovationInfo = innovationInfos.get(innovationInfos.size() - 1);
+      ProjectInnovationInfo projectInnovationInfo = innovationInfos.get(innovationInfos.size() - 1);
 
-      if (lastInnovationInfo.getPhase() == lastCrpPhase) {
-        // the innovation infos got replicated all the way to the last phase, we do not have to do anything else
-        innovationInfos = Collections.emptyList();
-      } else {
-        // the innovation info replication stopped some place before the last phase, let's replicate everything from
-        // that point onwards
-        innovationInfos.removeIf(pc -> !pc.getPhase().equals(lastInnovationInfo.getPhase()));
-      }
-
-      for (ProjectInnovationInfo pii : innovationInfos) {
-        this.projectInnovationInfoManager.saveProjectInnovationInfo(pii);
-      }
+      this.projectInnovationInfoManager.saveProjectInnovationInfo(projectInnovationInfo);
     }
   }
 
@@ -402,26 +425,29 @@ public class ProjectInnovationReplicationAction extends BaseAction {
    * Replicates the ProjectInnovationMilestones associated to the innovationId
    * 
    * @param innovationId the innovation identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectInnovationMilestones(long innovationId, Phase lastCrpPhase) {
+  private void replicateProjectInnovationMilestones(long innovationId, Phase selectedPhase) {
+    LOG.info("Starting ProjectInnovationMilestone replication...");
     List<ProjectInnovationMilestone> innovationMilestones =
       this.projectInnovationMilestoneManager.getAllInnovationMilestonesByInnovation(innovationId);
-    innovationMilestones
-      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getCrpMilestone() == null);
-    if (this.isNotEmpty(innovationMilestones)) {
-      ProjectInnovationMilestone lastInnovationMilestone = innovationMilestones.get(innovationMilestones.size() - 1);
+    innovationMilestones.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null
+      || pc.getCrpMilestone() == null || !pc.getPhase().equals(selectedPhase));
 
-      if (lastInnovationMilestone.getPhase() == lastCrpPhase) {
-        // the innovation milestones got replicated all the way to the last phase, we do not have to do anything else
-        innovationMilestones = Collections.emptyList();
-      } else {
-        // the innovation milestone replication stopped some place before the last phase, let's replicate everything
-        // from that point onwards
-        innovationMilestones.removeIf(pc -> !pc.getPhase().equals(lastInnovationMilestone.getPhase()));
-      }
+    if (this.isNotEmpty(innovationMilestones)) {
+      Map<CrpMilestone, ProjectInnovationMilestone> uniqueMilestones = new HashMap<>(innovationMilestones.size());
 
       for (ProjectInnovationMilestone pim : innovationMilestones) {
+        CrpMilestone crpMilestone = pim.getCrpMilestone();
+
+        if (uniqueMilestones.containsKey(crpMilestone)) {
+          LOG.info("The milestone {} is duplicated", crpMilestone.getId());
+        } else {
+          uniqueMilestones.put(crpMilestone, pim);
+        }
+      }
+
+      for (ProjectInnovationMilestone pim : uniqueMilestones.values()) {
         this.projectInnovationMilestoneManager.saveProjectInnovationMilestone(pim);
       }
     }
@@ -431,27 +457,30 @@ public class ProjectInnovationReplicationAction extends BaseAction {
    * Replicates the ProjectInnovationOrganizations associated to the innovationId
    * 
    * @param innovationId the innovation identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectInnovationOrganizations(long innovationId, Phase lastCrpPhase) {
+  private void replicateProjectInnovationOrganizations(long innovationId, Phase selectedPhase) {
+    LOG.info("Starting ProjectInnovationOrganization replication...");
     List<ProjectInnovationOrganization> innovationOrganizations =
       this.projectInnovationOrganizationManager.getAllInnovationOrganizationsByInnovation(innovationId);
-    innovationOrganizations
-      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getRelationship() == null);
-    if (this.isNotEmpty(innovationOrganizations)) {
-      ProjectInnovationOrganization lastInnovationOrganization =
-        innovationOrganizations.get(innovationOrganizations.size() - 1);
+    innovationOrganizations.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null
+      || pc.getRelationship() == null || !pc.getPhase().equals(selectedPhase));
 
-      if (lastInnovationOrganization.getPhase() == lastCrpPhase) {
-        // the innovation organizations got replicated all the way to the last phase, we do not have to do anything else
-        innovationOrganizations = Collections.emptyList();
-      } else {
-        // the innovation organization replication stopped some place before the last phase, let's replicate everything
-        // from that point onwards
-        innovationOrganizations.removeIf(pc -> !pc.getPhase().equals(lastInnovationOrganization.getPhase()));
-      }
+    if (this.isNotEmpty(innovationOrganizations)) {
+      Map<RepIndOrganizationType, ProjectInnovationOrganization> uniqueRelations =
+        new HashMap<>(innovationOrganizations.size());
 
       for (ProjectInnovationOrganization pio : innovationOrganizations) {
+        RepIndOrganizationType repIndOrganizationType = pio.getRelationship();
+
+        if (uniqueRelations.containsKey(repIndOrganizationType)) {
+          LOG.info("The organization type {} is duplicated", repIndOrganizationType.getId());
+        } else {
+          uniqueRelations.put(repIndOrganizationType, pio);
+        }
+      }
+
+      for (ProjectInnovationOrganization pio : uniqueRelations.values()) {
         this.projectInnovationOrganizationManager.saveProjectInnovationOrganization(pio);
       }
     }
@@ -461,26 +490,29 @@ public class ProjectInnovationReplicationAction extends BaseAction {
    * Replicates the ProjectInnovationRegions associated to the innovationId
    * 
    * @param innovationId the innovation identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectInnovationRegions(long innovationId, Phase lastCrpPhase) {
+  private void replicateProjectInnovationRegions(long innovationId, Phase selectedPhase) {
+    LOG.info("Starting ProjectInnovationRegion replication...");
     List<ProjectInnovationRegion> innovationRegions =
       this.projectInnovationRegionManager.getAllInnovationRegionsByInnovation(innovationId);
-    innovationRegions
-      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getLocElement() == null);
-    if (this.isNotEmpty(innovationRegions)) {
-      ProjectInnovationRegion lastInnovationRegion = innovationRegions.get(innovationRegions.size() - 1);
+    innovationRegions.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null
+      || pc.getLocElement() == null || !pc.getPhase().equals(selectedPhase));
 
-      if (lastInnovationRegion.getPhase() == lastCrpPhase) {
-        // the innovation regions got replicated all the way to the last phase, we do not have to do anything else
-        innovationRegions = Collections.emptyList();
-      } else {
-        // the innovation region replication stopped some place before the last phase, let's replicate everything
-        // from that point onwards
-        innovationRegions.removeIf(pc -> !pc.getPhase().equals(lastInnovationRegion.getPhase()));
-      }
+    if (this.isNotEmpty(innovationRegions)) {
+      Map<LocElement, ProjectInnovationRegion> uniqueRegions = new HashMap<>(innovationRegions.size());
 
       for (ProjectInnovationRegion pir : innovationRegions) {
+        LocElement locElement = pir.getLocElement();
+
+        if (uniqueRegions.containsKey(locElement)) {
+          LOG.info("The region {} is duplicated", locElement.getId());
+        } else {
+          uniqueRegions.put(locElement, pir);
+        }
+      }
+
+      for (ProjectInnovationRegion pir : uniqueRegions.values()) {
         this.projectInnovationRegionManager.saveProjectInnovationRegion(pir);
       }
     }
@@ -490,26 +522,29 @@ public class ProjectInnovationReplicationAction extends BaseAction {
    * Replicates the ProjectInnovationShared associated to the innovationId
    * 
    * @param innovationId the innovation identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectInnovationShared(long innovationId, Phase lastCrpPhase) {
+  private void replicateProjectInnovationShared(long innovationId, Phase selectedPhase) {
+    LOG.info("Starting ProjectInnovationShared replication...");
     List<ProjectInnovationShared> innovationSharedList =
       this.projectInnovationSharedManager.getAllInnovationSharedByInnovation(innovationId);
-    innovationSharedList
-      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getProject() == null);
-    if (this.isNotEmpty(innovationSharedList)) {
-      ProjectInnovationShared lastInnovationShared = innovationSharedList.get(innovationSharedList.size() - 1);
+    innovationSharedList.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null
+      || pc.getProject() == null || !pc.getPhase().equals(selectedPhase));
 
-      if (lastInnovationShared.getPhase() == lastCrpPhase) {
-        // the innovation shared got replicated all the way to the last phase, we do not have to do anything else
-        innovationSharedList = Collections.emptyList();
-      } else {
-        // the innovation shared replication stopped some place before the last phase, let's replicate everything
-        // from that point onwards
-        innovationSharedList.removeIf(pc -> !pc.getPhase().equals(lastInnovationShared.getPhase()));
-      }
+    if (this.isNotEmpty(innovationSharedList)) {
+      Map<Project, ProjectInnovationShared> uniqueSharedProjects = new HashMap<>(innovationSharedList.size());
 
       for (ProjectInnovationShared pis : innovationSharedList) {
+        Project project = pis.getProject();
+
+        if (uniqueSharedProjects.containsKey(project)) {
+          LOG.info("The project {} is duplicated", project.getId());
+        } else {
+          uniqueSharedProjects.put(project, pis);
+        }
+      }
+
+      for (ProjectInnovationShared pis : uniqueSharedProjects.values()) {
         this.projectInnovationSharedManager.saveProjectInnovationShared(pis);
       }
     }
@@ -519,26 +554,29 @@ public class ProjectInnovationReplicationAction extends BaseAction {
    * Replicates the ProjectInnovationSubIdos associated to the innovationId
    * 
    * @param innovationId the innovation identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectInnovationSubIdos(long innovationId, Phase lastCrpPhase) {
+  private void replicateProjectInnovationSubIdos(long innovationId, Phase selectedPhase) {
+    LOG.info("Starting ProjectInnovationSubIdo replication...");
     List<ProjectInnovationSubIdo> innovationSubIdos =
       this.projectInnovationSubIdoManager.getAllInnovationSubIdosByInnovation(innovationId);
-    innovationSubIdos
-      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getSrfSubIdo() == null);
-    if (this.isNotEmpty(innovationSubIdos)) {
-      ProjectInnovationSubIdo lastInnovationSubIdo = innovationSubIdos.get(innovationSubIdos.size() - 1);
+    innovationSubIdos.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null
+      || pc.getSrfSubIdo() == null || !pc.getPhase().equals(selectedPhase));
 
-      if (lastInnovationSubIdo.getPhase() == lastCrpPhase) {
-        // the innovation sub idos got replicated all the way to the last phase, we do not have to do anything else
-        innovationSubIdos = Collections.emptyList();
-      } else {
-        // the innovation sub ido replication stopped some place before the last phase, let's replicate everything
-        // from that point onwards
-        innovationSubIdos.removeIf(pc -> !pc.getPhase().equals(lastInnovationSubIdo.getPhase()));
-      }
+    if (this.isNotEmpty(innovationSubIdos)) {
+      Map<SrfSubIdo, ProjectInnovationSubIdo> uniqueSubIdos = new HashMap<>(innovationSubIdos.size());
 
       for (ProjectInnovationSubIdo pisi : innovationSubIdos) {
+        SrfSubIdo srfSubIdo = pisi.getSrfSubIdo();
+
+        if (uniqueSubIdos.containsKey(srfSubIdo)) {
+          LOG.info("The srf sub ido {} is duplicated", srfSubIdo.getId());
+        } else {
+          uniqueSubIdos.put(srfSubIdo, pisi);
+        }
+      }
+
+      for (ProjectInnovationSubIdo pisi : uniqueSubIdos.values()) {
         this.projectInnovationSubIdoManager.saveProjectInnovationSubIdo(pisi);
       }
     }
@@ -548,26 +586,29 @@ public class ProjectInnovationReplicationAction extends BaseAction {
    * Replicates the ProjectPolicyInnovations associated to the innovationId
    * 
    * @param innovationId the innovation identifier
-   * @param lastCrpPhase the last CRP phase
+   * @param selectedPhase the CRP phase where the info is going to be replicated
    */
-  private void replicateProjectPolicyInnovations(long innovationId, Phase lastCrpPhase) {
-    List<ProjectPolicyInnovation> innovationSubIdos =
+  private void replicateProjectPolicyInnovations(long innovationId, Phase selectedPhase) {
+    LOG.info("Starting ProjectPolicyInnovation replication...");
+    List<ProjectPolicyInnovation> innovationPolicies =
       this.projectPolicyInnovationManager.getAllPolicyInnovationsByInnovation(innovationId);
-    innovationSubIdos
-      .removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null || pc.getProjectPolicy() == null);
-    if (this.isNotEmpty(innovationSubIdos)) {
-      ProjectPolicyInnovation lastInnovationSubIdo = innovationSubIdos.get(innovationSubIdos.size() - 1);
+    innovationPolicies.removeIf(pc -> pc == null || pc.getId() == null || pc.getPhase() == null
+      || pc.getProjectPolicy() == null || !pc.getPhase().equals(selectedPhase));
 
-      if (lastInnovationSubIdo.getPhase() == lastCrpPhase) {
-        // the policy innovations got replicated all the way to the last phase, we do not have to do anything else
-        innovationSubIdos = Collections.emptyList();
-      } else {
-        // the policy innovation replication stopped some place before the last phase, let's replicate everything
-        // from that point onwards
-        innovationSubIdos.removeIf(pc -> !pc.getPhase().equals(lastInnovationSubIdo.getPhase()));
+    if (this.isNotEmpty(innovationPolicies)) {
+      Map<ProjectPolicy, ProjectPolicyInnovation> uniquePolicies = new HashMap<>(innovationPolicies.size());
+
+      for (ProjectPolicyInnovation ppi : innovationPolicies) {
+        ProjectPolicy projectPolicy = ppi.getProjectPolicy();
+
+        if (uniquePolicies.containsKey(projectPolicy)) {
+          LOG.info("The policy {} is duplicated", projectPolicy.getId());
+        } else {
+          uniquePolicies.put(projectPolicy, ppi);
+        }
       }
 
-      for (ProjectPolicyInnovation ppi : innovationSubIdos) {
+      for (ProjectPolicyInnovation ppi : uniquePolicies.values()) {
         this.projectPolicyInnovationManager.saveProjectPolicyInnovation(ppi);
       }
     }
@@ -582,28 +623,28 @@ public class ProjectInnovationReplicationAction extends BaseAction {
       if (this.isNotEmpty(ids)) {
         LOG.debug("Start replication for phase: " + selectedPhaseID);
         selectedPhase = this.phaseManager.getPhaseById(selectedPhaseID);
-        Phase lastCrpPhase = this.phaseManager.getLastCrpPhase(this.selectedPhase.getCrp().getId());
+        // Phase lastCrpPhase = this.phaseManager.getLastCrpPhase(this.selectedPhase.getCrp().getId());
         ProjectInnovation currentInnovation = null;
         for (String id : ids) {
           LOG.debug("Replicating innovation: " + id);
           long innovationIdLong = Long.parseLong(id);
           currentInnovation = this.projectInnovationManager.getProjectInnovationById(innovationIdLong);
           if (currentInnovation != null) {
-            this.replicateProjectInnovationInfos(innovationIdLong, lastCrpPhase);
-            this.replicateProjectInnovationCenters(innovationIdLong, lastCrpPhase);
-            this.replicateProjectInnovationContributingOrganizations(innovationIdLong, lastCrpPhase);
-            this.replicateProjectInnovationCountries(innovationIdLong, lastCrpPhase);
-            this.replicateProjectInnovationCrps(innovationIdLong, lastCrpPhase);
-            this.replicateProjectInnovationDeliverables(innovationIdLong, lastCrpPhase);
-            this.replicateProjectInnovationGeographicScopes(innovationIdLong, lastCrpPhase);
-            this.replicateProjectInnovationMilestones(innovationIdLong, lastCrpPhase);
-            this.replicateProjectInnovationOrganizations(innovationIdLong, lastCrpPhase);
-            this.replicateProjectInnovationRegions(innovationIdLong, lastCrpPhase);
-            this.replicateProjectInnovationShared(innovationIdLong, lastCrpPhase);
-            this.replicateProjectInnovationSubIdos(innovationIdLong, lastCrpPhase);
+            this.replicateProjectInnovationInfos(innovationIdLong, selectedPhase);
+            this.replicateProjectInnovationCenters(innovationIdLong, selectedPhase);
+            this.replicateProjectInnovationContributingOrganizations(innovationIdLong, selectedPhase);
+            this.replicateProjectInnovationCountries(innovationIdLong, selectedPhase);
+            this.replicateProjectInnovationCrps(innovationIdLong, selectedPhase);
+            this.replicateProjectInnovationDeliverables(innovationIdLong, selectedPhase);
+            this.replicateProjectInnovationGeographicScopes(innovationIdLong, selectedPhase);
+            this.replicateProjectInnovationMilestones(innovationIdLong, selectedPhase);
+            this.replicateProjectInnovationOrganizations(innovationIdLong, selectedPhase);
+            this.replicateProjectInnovationRegions(innovationIdLong, selectedPhase);
+            this.replicateProjectInnovationShared(innovationIdLong, selectedPhase);
+            this.replicateProjectInnovationSubIdos(innovationIdLong, selectedPhase);
 
-            this.replicateProjectExpectedStudyInnovations(innovationIdLong, lastCrpPhase);
-            this.replicateProjectPolicyInnovations(innovationIdLong, lastCrpPhase);
+            this.replicateProjectExpectedStudyInnovations(innovationIdLong, selectedPhase);
+            this.replicateProjectPolicyInnovations(innovationIdLong, selectedPhase);
           }
         }
       } else {

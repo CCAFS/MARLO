@@ -79,10 +79,9 @@ public class ProjectInnovationMySQLDAO extends AbstractMarloDAO<ProjectInnovatio
   @Override
   public List<ProjectInnovation> getInnovationsByPhase(Phase phase) {
     String query = "SELECT DISTINCT pi.id AS id FROM ProjectInnovation pi, ProjectInnovationInfo pii "
-      + "where pii.projectInnovation = pi and pi.active = true AND pii.year = :year AND pii.phase.id = :phaseId";
+      + "where pii.projectInnovation = pi and pi.active = true AND pii.phase.id = :phaseId";
 
     Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
-    createQuery.setParameter("year", (long) phase.getYear());
     createQuery.setParameter("phaseId", phase.getId());
     createQuery.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
     createQuery.setFlushMode(FlushMode.COMMIT);
