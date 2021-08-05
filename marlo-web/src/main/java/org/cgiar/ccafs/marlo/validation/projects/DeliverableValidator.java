@@ -41,7 +41,6 @@ import org.cgiar.ccafs.marlo.data.model.RepIndTypeActivity;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.utils.doi.DOIService;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
-import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -299,6 +298,13 @@ public class DeliverableValidator extends BaseValidator {
               action.getInvalidFields().put("input-deliverable.responsiblePartnership",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
+
+            if (deliverable.getActivities() == null || deliverable.getActivities().isEmpty()) {
+              action.addMessage(action.getText("project.deliverable.activity"));
+              action.getInvalidFields().put("list-deliverable.activities",
+                action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"activities"}));
+            }
+
           }
 
           if (deliverable.getFundingSources() == null || deliverable.getFundingSources().isEmpty()) {
