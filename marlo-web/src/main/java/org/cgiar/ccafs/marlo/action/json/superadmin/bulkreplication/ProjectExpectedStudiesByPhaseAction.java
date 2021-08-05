@@ -73,7 +73,7 @@ public class ProjectExpectedStudiesByPhaseAction extends BaseAction {
       selectedPhase = phaseManager.getPhaseById(selectedPhaseID);
       // Get studies by Phase
       List<ProjectExpectedStudy> projectExpectedStudiesByPhase =
-        projectExpectedStudyManager.getStudiesByPhase(selectedPhase);
+        projectExpectedStudyManager.getAllStudiesByPhase(selectedPhase.getId());
 
       if (this.isNotEmpty(projectExpectedStudiesByPhase)) {
         projectExpectedStudiesByPhase.sort((po1, po2) -> po1.getId().compareTo(po2.getId()));
