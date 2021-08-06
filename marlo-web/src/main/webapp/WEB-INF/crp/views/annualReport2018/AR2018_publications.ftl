@@ -10,7 +10,7 @@
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20200310",
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210421A"
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210806a"
   ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210219"] /]
 
@@ -77,7 +77,7 @@
                       [#-- Total number of peer reviewed articles --]
                       <div id="" class="simpleBox numberBox">
                         <label for="">[@s.text name="${customLabel}.indicatorC4.totalArticles" /]</label><br />
-                        <span>${(total)!}</span>
+                        <span class="totalNumber">${(total)!}</span>
                       </div>
                     </div>
                     <div class="col-md-8">
@@ -209,7 +209,7 @@
                         [#-- Total number of Grey Literature --]
                         <div id="" class="simpleBox numberBox">
                           <label for="">[@s.text name="${customLabel}.indicatorC4.totalGrey" /]</label><br />
-                          <span>${(totalGrey)!}</span>
+                          <span class="totalGreyNumber">${(totalGrey)!}</span>
                         </div>
                       </div>
                     </div>
