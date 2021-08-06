@@ -10,7 +10,7 @@
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20200311",
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210421a"
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210806a"
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210225"] /]
 
@@ -59,7 +59,7 @@
               <div class="col-md-5">
                 <div class="simpleBox numberBox">
                   <label for="">[@s.text name="${customLabel}.indicatorI1.totalPolicies" /]</label><br />
-                  <span class="animated infinite bounce">${(((total)!0)?number?string(",##0"))!0}</span>
+                  <span class="totalNumber">${(((total)!0)?number?string(",##0"))!0}</span>
                 </div>
                 [#-- Chart 7 - Level of maturity --][#--
                 <div  class="chartBox simpleBox">
@@ -331,6 +331,7 @@
         </tr>
       [/#list]
     [#else]
+      <div class="totalViewMoreNumber" style="display: none">${(list?has_content)?string('1','0')}</div>
       <tr>
         [#if !expanded]
          [#-- Complete Status
