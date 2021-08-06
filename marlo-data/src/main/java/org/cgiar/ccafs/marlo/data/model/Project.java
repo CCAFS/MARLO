@@ -434,9 +434,9 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
 
 
     if (projectInfo != null) {
-      return "P" + this.getId() + " - " + projectInfo.getTitle();
+      return "C" + this.getId() + " - " + projectInfo.getTitle();
     } else {
-      return "P" + this.getId();
+      return "C" + this.getId();
     }
 
   }

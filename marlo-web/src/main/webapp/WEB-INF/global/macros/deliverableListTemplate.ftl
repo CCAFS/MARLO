@@ -87,7 +87,7 @@
           </td>
           [#-- Deliverable owner --]
           <td class="owner text-center">
-            [#if isOwner] <nobr>This Project</nobr>  [#else][#if deliverable.project?has_content]C${deliverable.project.id}[#else]Not defined[/#if][/#if]
+            [#if isOwner] <nobr>This Cluster</nobr>  [#else][#if deliverable.project?has_content]C${deliverable.project.id}[#else]Not defined[/#if][/#if]
           </td>
           [#if isReportingActive]
             [#-- Deliverable FAIR compliance --]
