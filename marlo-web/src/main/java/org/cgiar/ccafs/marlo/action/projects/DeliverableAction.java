@@ -1130,13 +1130,18 @@ public class DeliverableAction extends BaseAction {
           .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
           .collect(Collectors.toList()));
 
-        deliverable.setActivities(deliverable.getDeliverableActivities().stream()
-          .filter(da -> da.isActive() && da.getPhase() != null
-            && da.getPhase().getId().equals(this.getActualPhase().getId()) && da.getActivity().getPhase() != null
-            && da.getActivity().getPhase().getId().equals(this.getActualPhase().getId())
-            && da.getActivity().getProject() != null && da.getActivity().getProject().getId() != null
-            && da.getActivity().getProject().getId().equals(project.getId()))
-          .collect(Collectors.toList()));
+        List<DeliverableActivity> deliverableActivities = new ArrayList<>();
+        deliverableActivities = deliverableActivityManager.getDeliverableActivitiesByDeliverableID(deliverable.getId());
+        if (deliverableActivities != null && !deliverableActivities.isEmpty()) {
+          deliverableActivities = deliverableActivities.stream()
+            .filter(da -> da.isActive() && da.getPhase() != null
+              && da.getPhase().getId().equals(this.getActualPhase().getId()) && da.getActivity() != null
+              && da.getActivity().isActive() && da.getActivity().getProject() != null
+              && da.getActivity().getProject().getId().equals(project.getId()))
+            .collect(Collectors.toList());
+
+          deliverable.setActivities(deliverableActivities);
+        }
 
         for (DeliverableFundingSource deliverableFundingSource : deliverable.getFundingSources()) {
 
