@@ -4,7 +4,7 @@ var pageName;
 var googleChartsLoaded = false;
 var isActive = false;
 
-function getContributionListComponentValue(contributionData){
+function getContributionListComponentValue(contributionData) {
 
   //Variables
   const {
@@ -12,12 +12,12 @@ function getContributionListComponentValue(contributionData){
     geographicScope,
     summary
   } = contributionData;
-  
+
   //strings
-  let geographicScopeString='';
-  let regionString='';
-  let countriesString='';
-  let countriesStringV2='';
+  let geographicScopeString = '';
+  let regionString = '';
+  let countriesString = '';
+  let countriesStringV2 = '';
 
   geographicScope.forEach(geoData => {
     geographicScopeString += `<p> - ${geoData.name}</p>`;
@@ -43,7 +43,7 @@ function getContributionListComponentValue(contributionData){
   });
 
 
-  geographicScopeString = geographicScopeString == '' ? '<p>  Not available</p>':geographicScopeString;
+  geographicScopeString = geographicScopeString == '' ? '<p>  Not available</p>' : geographicScopeString;
 
 
   return `
@@ -59,55 +59,55 @@ function getContributionListComponentValue(contributionData){
       <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px; margin-top: 10px;">Geographic scope:</p>
       ${geographicScopeString}
      
-      <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px; margin-top: 10px;display: ${regionString==''?'none':'block'};">Regions:</p>
+      <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px; margin-top: 10px;display: ${regionString == '' ? 'none' : 'block'};">Regions:</p>
       ${regionString} 
 
-      <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px; margin-top: 10px;display: ${(countriesString=='' && countriesStringV2=='')?'none':'block'};">Country(ies):</p>
-      ${countriesString||countriesStringV2} 
+      <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px; margin-top: 10px;display: ${(countriesString == '' && countriesStringV2 == '') ? 'none' : 'block'};">Country(ies):</p>
+      ${countriesString || countriesStringV2} 
       
       <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px;">Brief summary of new evidence of CGIAR contribution:</p>
-      <p>${summary||"Not available"}</p>
+      <p>${summary || "Not available"}</p>
    
       <p style="font-weight: 700; margin-bottom: 0px; padding-bottom: 0px;">Expected additional contribution before end of 2022 (if not already fully covered)</p>
-      <p>${additionalContribution||"Not available"}</p>
+      <p>${additionalContribution || "Not available"}</p>
 </div>
   
-  `  
+  `
 }
 
-function getTargetCasesBySLO(){
+function getTargetCasesBySLO() {
 
-    for (let index = 1; index < 11; index++) {
+  for (let index = 1; index < 11; index++) {
 
-      $.ajax({
-        url: baseURL + '/targetCasesBySLO.do',
-        data: {
-          id: index
-        },
-        beforeSend: function () {
-          // console.log("before");
-        },
-        success: function (data) {
+    $.ajax({
+      url: baseURL + '/targetCasesBySLO.do',
+      data: {
+        id: index
+      },
+      beforeSend: function () {
+        // console.log("before");
+      },
+      success: function (data) {
 
-          contributionListComponentInsertHTML(data,index);
-        },
-        error: function (e) {
-          console.log(e);
-        },
-        complete: function () {
-          // console.log("complete"); 
-        }
-      });
-    }
+        contributionListComponentInsertHTML(data, index);
+      },
+      error: function (e) {
+        console.log(e);
+      },
+      complete: function () {
+        // console.log("complete"); 
+      }
+    });
+  }
 }
 
-function contributionListComponentInsertHTML(data,id){
+function contributionListComponentInsertHTML(data, id) {
   var count = 0;
   var activeFP = false;
 
   $(`.flagshipBtn-${id}`).on('click', changeButtonText);
 
-  data.sources.forEach((item,index) => {
+  data.sources.forEach((item, index) => {
     if (item.contribution.length == 0) {
       count += 1;
       if (count == data.sources.length) {
@@ -117,17 +117,17 @@ function contributionListComponentInsertHTML(data,id){
         // $(`.insertHtmlSlo-tabpanel-${id}`).append(`<p class="tb1-Fp-noData"><span class="glyphicon glyphicon-info-sign" style="margin-right: 7px; position: relative; top:3px"></span>No Flagships information</p>`);
       }
     } else {
-      $('.insertHtmlSlo-tabs-'+id).append(`<li role="presentation" class="${!activeFP?'active':''}" ><a href="#${item.id}-${id}-tab" aria-controls="${item.id}-${id}-tab" role="tab" data-toggle="tab">${item.id}</a></li>`);
-      $('.insertHtmlSlo-tabpanel-'+id).append(`<div role="tabpanel" class="tab-pane ${!activeFP?'active':''}" id="${item.id}-${id}-tab" style="overflow-y: scroll; max-height: 510px;"></div>`);
+      $('.insertHtmlSlo-tabs-' + id).append(`<li role="presentation" class="${!activeFP ? 'active' : ''}" ><a href="#${item.id}-${id}-tab" aria-controls="${item.id}-${id}-tab" role="tab" data-toggle="tab">${item.id}</a></li>`);
+      $('.insertHtmlSlo-tabpanel-' + id).append(`<div role="tabpanel" class="tab-pane ${!activeFP ? 'active' : ''}" id="${item.id}-${id}-tab" style="overflow-y: scroll; max-height: 510px;"></div>`);
       activeFP = true;
     }
     item.contribution.forEach(contributionData => {
       $(`#${item.id}-${id}-tab`).append(getContributionListComponentValue(contributionData));
     });
- });
+  });
 }
 
-$(document).ready(function() {
+$(document).ready(function () {
 
   getTargetCasesBySLO();
   // $('.slo-contribution-template').find('textarea').trumbowyg("destroy");
@@ -138,7 +138,9 @@ $(document).ready(function() {
   pageName = actionName.replace(/[^a-z0-9+]+/gi, '_');
 
   // Set data tables
-  if($.fn.DataTable) {
+  if ($.fn.DataTable) {
+    $totalNumber = $('.totalNumber');
+
     $tableViewMore = $('.viewMoreSyntesis-block table');
     if ($('.totalParticipantsNumber').html() != 0 && $('.totalParticipantFormalTrainingNumber').html() != 0) {
       tableDatatableViewmore = $tableViewMore.DataTable({
@@ -149,131 +151,141 @@ $(document).ready(function() {
         "scrollCollapse": true,
         aoColumnDefs: [
           {
-              sType: "natural",
-              aTargets: [
-                0
-              ]
+            sType: "natural",
+            aTargets: [
+              0
+            ]
           }
         ]
       });
     }
 
     $progressTableViewMore = $('.viewMoreSyntesisTable-block table');
-    tableDataProgressTableViewmore = $progressTableViewMore.DataTable({
+    if ($('.totalViewMoreNumber').html() != 0) {
+      tableDataProgressTableViewmore = $progressTableViewMore.DataTable({
         "paging": false,
         "searching": false,
         "info": true,
         aoColumnDefs: [
           {
-              sType: "natural",
-              aTargets: [
-                0
-              ]
+            sType: "natural",
+            aTargets: [
+              0
+            ]
           }
         ]
-    });
+      });
+    }
 
     $tableInnovationsHTML = $('.tableNoPaginator-block table');
-    if ($('.totalInnovationsNumber').html() != 0) {
+    if ($totalNumber.html() != 0) {
       tableInnovations = $tableInnovationsHTML.DataTable({
         "paging": false,
         "searching": false,
         "info": true,
         aoColumnDefs: [
           {
-              sType: "natural",
-              aTargets: [
-                0
-              ]
+            sType: "natural",
+            aTargets: [
+              0
+            ]
           }
         ]
       });
     }
 
     $tablePoliciesHTML = $('.tablePolicies-block table');
-    tablePolicies = $tablePoliciesHTML.DataTable({
-      "paging": false,
-      "searching": false,
-      "info": true,
-      aoColumnDefs: [
-        {
+    if ($totalNumber.html() != 0) {
+      tablePolicies = $tablePoliciesHTML.DataTable({
+        "paging": false,
+        "searching": false,
+        "info": true,
+        aoColumnDefs: [
+          {
             sType: "natural",
             aTargets: [
               0
             ]
-        }
-      ]
-    });
+          }
+        ]
+      });
+    }
 
     $tableOICRsHTML = $('.tableOICRs-block table');
-    tableOICRs = $tableOICRsHTML.DataTable({
-      "paging": false,
-      "searching": false,
-      "info": true,
-      aoColumnDefs: [
-        {
+    if ($totalNumber.html() != 0) {
+      tableOICRs = $tableOICRsHTML.DataTable({
+        "paging": false,
+        "searching": false,
+        "info": true,
+        aoColumnDefs: [
+          {
             sType: "natural",
             aTargets: [
               0
             ]
-        }
-      ]
-    });
+          }
+        ]
+      });
+    }
 
     $TablePRP = $('.viewMoreSyntesisTablePRP-block table');
-    tableDatatableTablePRP = $TablePRP.DataTable({
+    if ($totalNumber.html() != 0) {
+      tableDatatableTablePRP = $TablePRP.DataTable({
         "paging": false,
         "searching": false,
         "info": true,
         aoColumnDefs: [
           {
-              sType: "natural",
-              aTargets: [
-                0
-              ]
+            sType: "natural",
+            aTargets: [
+              0
+            ]
           }
         ]
-    });
+      });
+    }
 
     $TableGrey = $('.viewMoreSyntesisTableGrey-block table');
-    tableDatatableTableGrey = $TableGrey.DataTable({
+    if ($('.totalGreyNumber').html() != 0) {
+      tableDatatableTableGrey = $TableGrey.DataTable({
         "paging": false,
         "searching": false,
         "info": true,
         aoColumnDefs: [
           {
-              sType: "natural",
-              aTargets: [
-                0
-              ]
+            sType: "natural",
+            aTargets: [
+              0
+            ]
           }
         ]
-    });
+      });
+    }
 
     tableDataExport = $('.dataTableExport table').DataTable({
-        "paging": false,
-        "searching": false,
-        "info": true,
-        dom: 'Bfrtip',
-        buttons: [
-          {
-              text: '<i class="fas fa-download"></i> Export CSV Data',
-              extend: 'csv',
-              title: 'Data_export_' + currentSectionString + '_' + getDateString(),
-              autoFilter: true,
-              bom: true, // UTF-8
-              className: 'exportCSV'
-          }
-        ]
+      "paging": false,
+      "searching": false,
+      "info": true,
+      dom: 'Bfrtip',
+      buttons: [
+        {
+          text: '<i class="fas fa-download"></i> Export CSV Data',
+          extend: 'csv',
+          title: 'Data_export_' + currentSectionString + '_' + getDateString(),
+          autoFilter: true,
+          bom: true, // UTF-8
+          className: 'exportCSV'
+        }
+      ]
     });
   }
 
-  $('.urlify').each(function(i,urlifyText) {
+  $('.urlify').each(function (i, urlifyText) {
     var text = $(urlifyText).html();
 
-    if($(urlifyText).find('a').length > 0) {
+    if ($(urlifyText).find('a').length > 0) {
       // Short URLs text
-      $(urlifyText).find('a').each(function(iAnchor,anchor) {
+      $(urlifyText).find('a').each(function (iAnchor, anchor) {
         var anchorText = $(anchor).text();
         $(anchor).text(truncate(anchorText, 45));
       });
@@ -290,7 +302,7 @@ $(document).ready(function() {
   loadTab();
 
   // Save Local storage indexTab
-  $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+  $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
     window.localStorage.setItem(pageName, JSON.stringify({
       "indexTab": $(this).attr("index")
     }));
@@ -298,10 +310,10 @@ $(document).ready(function() {
 
   // checkbox disables field
   console.log("init press");
-  
-  $('.checkboxDiTeArClick').on('click',setCheckboxValueTohide);
-  $('.btn-addEvidence').on('click',addEvidence);
-  $('.btn-removeEvidence').on('click',removeEvidence);
+
+  $('.checkboxDiTeArClick').on('click', setCheckboxValueTohide);
+  $('.btn-addEvidence').on('click', addEvidence);
+  $('.btn-removeEvidence').on('click', removeEvidence);
   $('#selectAll').on('click', selectDeselectAll);
   $('input[id^="deliverable-"]').on('click', selectIndividual);
   $('#selectAllGrey').on('click', selectDeselectAllGrey);
@@ -313,14 +325,14 @@ $(document).ready(function() {
   $('#selectAllStudies').on('click', selectDeselectAllStudies);
   $('input[id^="study-"]').on('click', selectIndividualStudies);
 
-    // Deliverable Geographic Scope
-    $('select.elementType-repIndGeographicScope').on("addElement removeElement", function(event,id,name) {
-      console.log('%cevent setGeographicScope','background: #222; color: #37ff73');
-      setGeographicScope(this);
-    });
-    setGeographicScope($('form select.elementType-repIndGeographicScope')[0]);
-      // valiate checkbox "No DOI provided" value
-   
+  // Deliverable Geographic Scope
+  $('select.elementType-repIndGeographicScope').on("addElement removeElement", function (event, id, name) {
+    console.log('%cevent setGeographicScope', 'background: #222; color: #37ff73');
+    setGeographicScope(this);
+  });
+  setGeographicScope($('form select.elementType-repIndGeographicScope')[0]);
+  // valiate checkbox "No DOI provided" value
+
 
   // $('.TA_summaryEvidence .trumbowyg-editor').bind('DOMSubtreeModified', function(){
   //   console.log('%cmovement','background: #222; color: #fd8484');
@@ -338,7 +350,7 @@ $(document).ready(function() {
   // $('.button-save').on('click',updateALltexareas);
   $(document).keypress(updateALltexareas);
   $(document).click(updateALltexareas);
- 
+
 
   // $('.slo-contribution-section').on("bind",".TA_summaryEvidence .trumbowyg-editor", function() {
   //   //do whatever
@@ -347,16 +359,16 @@ $(document).ready(function() {
 
   setStatusByBack();
   // updateAllIndexesContribution();
-  
-  selectIndividual();
-  selectIndividualGrey();
-  selectIndividualPolicies();
-  selectIndividualInnovations();
-  selectIndividualStudies();
+
+  // selectIndividual();
+  // selectIndividualGrey();
+  // selectIndividualPolicies();
+  // selectIndividualInnovations();
+  // selectIndividualStudies();
   appearDisappearFlagshipsTable(isActive, 0);
 });
 
-function updateALltexareas(){
+function updateALltexareas() {
   $('.sloTargetsList').find('.sloTarget').each(function (i, sloTarget) {
     setTimeout(() => {
       $(sloTarget).find('.evidenceList').find('.slo-contribution-section').each(function (i, evidence) {
@@ -390,7 +402,7 @@ function setStatusByBack() {
         // console.log("now is: "+$(this).val());
 
       }
-    
+
       if ($(checkbox).val() == "true") {
         $(checkbox).parents(".a-slo").find(".to-disabled-box").hide(400);
         $(checkbox).parents(".a-slo").find(".btn-addEvidence").hide(400);
@@ -480,13 +492,16 @@ function selectDeselectAllStudies() {
   if ($(this).hasClass('checked')) {
     $('input[id^="study-"]').prop('checked', true);
     $(this).removeClass('checked');
+    console.log("hasClass", $(this));
   } else {
     $('input[id^="study-"]').prop('checked', false);
     $(this).addClass('checked');
+    console.log("noClass", $(this));
   }
 }
 
 function selectIndividualStudies() {
+  console.log($('input[id^="study-"]').length, $('input[id^="study-"]:checked').length)
   if ($('input[id^="study-"]').length == $('input[id^="study-"]:checked').length) {
     $('#selectAllStudies').prop('checked', true);
   } else {
@@ -512,7 +527,7 @@ function setCheckboxValueTohide() {
     // $(this).parents(".a-slo").find(".disabled-box").hide();
     $(this).parents(".a-slo").find(".to-disabled-box").show(400);
     $(this).parents(".a-slo").find(".btn-addEvidence").show(400);
-    
+
   }
 
 }
@@ -520,7 +535,7 @@ function setCheckboxValueTohide() {
 
 function loadTab() {
   var ls = JSON.parse((window.localStorage.getItem(pageName)));
-  if((ls != null)) {
+  if ((ls != null)) {
     $('.bootstrapTabs li:eq(' + ls.indexTab + ') a').tab('show');
   }
 
@@ -534,12 +549,12 @@ function loadTab() {
  */
 function getChartDataArray(chart) {
   var dataArray = [];
-  $(chart).find('.chartData li').each(function(i,e) {
-    dataArray.push($(e).find('span').map(function() {
+  $(chart).find('.chartData li').each(function (i, e) {
+    dataArray.push($(e).find('span').map(function () {
       var text = $(this).text();
-      if($(this).hasClass('number')) {
+      if ($(this).hasClass('number')) {
         return parseFloat(text);
-      } else if($(this).hasClass('json')) {
+      } else if ($(this).hasClass('json')) {
         return JSON.parse(text);
       } else {
         return text;
@@ -549,11 +564,11 @@ function getChartDataArray(chart) {
   return dataArray;
 }
 
-function createGooglePieChart(chartID,options) {
+function createGooglePieChart(chartID, options) {
   createGoogleChart(chartID, "Pie", options);
 }
 
-function createGoogleBarChart(chartID,options) {
+function createGoogleBarChart(chartID, options) {
   createGoogleChart(chartID, "Bar", options);
 }
 
@@ -573,7 +588,7 @@ function createGoogleChart(chartID, type, options) {
         getChartDataArray($chart)
       );
       console.log(data, data.bf.length);
-      if (!data.bf.length) {
+      if (!data.bf.length || $totalNumber.html() == 0) {
         $chart.append(
           '<p  class="text-center"> ' + options.title + " <br>  No data </p>"
         );
@@ -597,23 +612,23 @@ function createGoogleChart(chartID, type, options) {
 }
 
 function updateAllIndexesContribution() {
-  
 
-    console.log('%cupdateAllIndexesContribution','background: #222; color: #84c3fd');
-    //All sloTargetsList
- 
-  $('.sloTargetsList').find('.sloTarget').each(function(i,sloTarget) {
 
-    $(sloTarget).attr('id', "outcome-"+(i+1));
+  console.log('%cupdateAllIndexesContribution', 'background: #222; color: #84c3fd');
+  //All sloTargetsList
+
+  $('.sloTargetsList').find('.sloTarget').each(function (i, sloTarget) {
+
+    $(sloTarget).attr('id', "outcome-" + (i + 1));
     $(sloTarget).setNameIndexes(1, i);
-    
+
     //  Update slo-contribution
-     $(sloTarget).find('.evidenceList').find('.slo-contribution-section').each(function(i,evidence) {
-      $(evidence).find('.indexSloContribution').html(i+1);
-      $(evidence).attr('id', "milestone-"+(i+1));
+    $(sloTarget).find('.evidenceList').find('.slo-contribution-section').each(function (i, evidence) {
+      $(evidence).find('.indexSloContribution').html(i + 1);
+      $(evidence).attr('id', "milestone-" + (i + 1));
       $(evidence).setNameIndexes(2, i);
-     });
-     
+    });
+
   });
 
   $(document).trigger('updateComponent');
@@ -643,7 +658,7 @@ function changeButtonText() {
     $('button[class*="flagshipBtn"]').not(this).text('Show flagships information');
     $('span[class*="highlightedTitle"]').not($(`.highlightedTitle-${theNum}`)).css('background', 'none');
     $(`span[class*="highlightedTitle"]`).not($(`.highlightedTitle-${theNum}`)).css('color', '#5f5e5e');
-  } 
+  }
 
   appearDisappearFlagshipsTable(isActive, theNum);
 }
@@ -654,21 +669,21 @@ function appearDisappearFlagshipsTable(isActive, theNum) {
 
     if (isActive) {
       if (yScroll <= 1444) {
-        $(`#collapseExample-${theNum-1}`).css('opacity', 0);
-        $(`#collapseExample-${theNum-1}`).removeClass('in');
+        $(`#collapseExample-${theNum - 1}`).css('opacity', 0);
+        $(`#collapseExample-${theNum - 1}`).removeClass('in');
       } else {
-        $(`#collapseExample-${theNum-1}`).css('opacity', 1);
-        $(`#collapseExample-${theNum-1}`).addClass('in');
+        $(`#collapseExample-${theNum - 1}`).css('opacity', 1);
+        $(`#collapseExample-${theNum - 1}`).addClass('in');
       }
     }
   }
 }
 
 function addEvidence() {
-  
-console.log('addEvidence');
 
-  var $list =  $(this).parents(".simpleBox").find(".evidenceList");
+  console.log('addEvidence');
+
+  var $list = $(this).parents(".simpleBox").find(".evidenceList");
   var $item = $('.slo-contribution-template');
   $item = $item.clone(true);
   $($item).removeClass('slo-contribution-template');
@@ -685,35 +700,35 @@ console.log('addEvidence');
   $item.find("select").select2({
     // templateResult: formatState,
     width: '100%'
-});
+  });
 
 
-$item.find('textarea.tumaco').trumbowyg({
-  btns: [
-    [
+  $item.find('textarea.tumaco').trumbowyg({
+    btns: [
+      [
         'link', 'strong', 'em'
-    ]
-  ],
-  plugins: {
-    allowTagsFromPaste: {
-      allowedTags: ['a', 'p', 'br', 'b', 'strong', 'i', 'em']
-    }
-  },
-  urlProtocol: true,
-  autogrow: true,
-  minimalLinks: true,
-  semantic: true
-});
+      ]
+    ],
+    plugins: {
+      allowTagsFromPaste: {
+        allowedTags: ['a', 'p', 'br', 'b', 'strong', 'i', 'em']
+      }
+    },
+    urlProtocol: true,
+    autogrow: true,
+    minimalLinks: true,
+    semantic: true
+  });
 
 }
 
-function removeEvidence(){
+function removeEvidence() {
   console.log('Remove Evidence');
-  var $item =  $(this).parents('.slo-contribution-section');
-    $item.hide(function() {
-      $item.remove();
-      updateAllIndexesContribution();
-    });
+  var $item = $(this).parents('.slo-contribution-section');
+  $item.hide(function () {
+    $item.remove();
+    updateAllIndexesContribution();
+  });
 
-} 
+}
 
