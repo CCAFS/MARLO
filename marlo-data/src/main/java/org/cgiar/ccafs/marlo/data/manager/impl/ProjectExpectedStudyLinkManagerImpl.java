@@ -109,6 +109,11 @@ public class ProjectExpectedStudyLinkManagerImpl implements ProjectExpectedStudy
   }
 
   @Override
+  public List<ProjectExpectedStudyLink> getAllStudyLinksByStudy(Long studyId) {
+    return this.projectExpectedStudyLinkDAO.getAllStudyLinksByStudy(studyId.longValue());
+  }
+
+  @Override
   public ProjectExpectedStudyLink getProjectExpectedStudyLinkById(long projectExpectedStudyLinkID) {
 
     return projectExpectedStudyLinkDAO.find(projectExpectedStudyLinkID);
@@ -184,6 +189,4 @@ public class ProjectExpectedStudyLinkManagerImpl implements ProjectExpectedStudy
 
     return projectExpectedStudyLinkResult;
   }
-
-
 }

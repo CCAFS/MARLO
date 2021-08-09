@@ -105,6 +105,11 @@ public class ProjectExpectedStudyCrpManagerImpl implements ProjectExpectedStudyC
   }
 
   @Override
+  public List<ProjectExpectedStudyCrp> getAllStudyCrpsByStudy(Long studyId) {
+    return this.projectExpectedStudyCrpDAO.getAllStudyCrpsByStudy(studyId.longValue());
+  }
+
+  @Override
   public ProjectExpectedStudyCrp getProjectExpectedStudyCrpById(long projectExpectedStudyCrpID) {
 
     return projectExpectedStudyCrpDAO.find(projectExpectedStudyCrpID);
@@ -163,6 +168,4 @@ public class ProjectExpectedStudyCrpManagerImpl implements ProjectExpectedStudyC
 
     return projectExpectedStudyCrpResult;
   }
-
-
 }

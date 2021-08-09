@@ -107,6 +107,11 @@ public class ProjectExpectedStudySubIdoManagerImpl implements ProjectExpectedStu
   }
 
   @Override
+  public List<ProjectExpectedStudySubIdo> getAllStudySubIdosByStudy(Long studyId) {
+    return this.projectExpectedStudySubIdoDAO.getAllStudySubIdosByStudy(studyId.longValue());
+  }
+
+  @Override
   public ProjectExpectedStudySubIdo getProjectExpectedStudySubIdoById(long projectExpectedStudySubIdoID) {
 
     return projectExpectedStudySubIdoDAO.find(projectExpectedStudySubIdoID);
@@ -167,5 +172,4 @@ public class ProjectExpectedStudySubIdoManagerImpl implements ProjectExpectedStu
 
     return subIdo;
   }
-
 }

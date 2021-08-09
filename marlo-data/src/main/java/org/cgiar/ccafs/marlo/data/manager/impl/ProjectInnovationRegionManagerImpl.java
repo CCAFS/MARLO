@@ -106,6 +106,11 @@ public class ProjectInnovationRegionManagerImpl implements ProjectInnovationRegi
   }
 
   @Override
+  public List<ProjectInnovationRegion> getAllInnovationRegionsByInnovation(Long innovationId) {
+    return this.projectInnovationRegionDAO.getAllInnovationRegionsByInnovation(innovationId.longValue());
+  }
+
+  @Override
   public List<ProjectInnovationRegion> getInnovationRegionbyPhase(long innovationID, long phaseID) {
     return projectInnovationRegionDAO.getInnovationRegionbyPhase(innovationID, phaseID);
   }

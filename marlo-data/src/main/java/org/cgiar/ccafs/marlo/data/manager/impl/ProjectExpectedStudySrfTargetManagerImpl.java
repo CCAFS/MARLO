@@ -109,6 +109,11 @@ public class ProjectExpectedStudySrfTargetManagerImpl implements ProjectExpected
   }
 
   @Override
+  public List<ProjectExpectedStudySrfTarget> getAllStudySrfTargetsByStudy(Long studyId) {
+    return this.projectExpectedStudySrfTargetDAO.getAllStudySrfTargetsByStudy(studyId.longValue());
+  }
+
+  @Override
   public ProjectExpectedStudySrfTarget getProjectExpectedStudySrfTargetById(long projectExpectedStudySrfTargetID) {
 
     return projectExpectedStudySrfTargetDAO.find(projectExpectedStudySrfTargetID);
@@ -172,6 +177,4 @@ public class ProjectExpectedStudySrfTargetManagerImpl implements ProjectExpected
 
     return srfTarget;
   }
-
-
 }

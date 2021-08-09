@@ -109,6 +109,11 @@ public class ProjectInnovationOrganizationManagerImpl implements ProjectInnovati
   }
 
   @Override
+  public List<ProjectInnovationOrganization> getAllInnovationOrganizationsByInnovation(Long innovationId) {
+    return this.projectInnovationOrganizationDAO.getAllInnovationOrganizationsByInnovation(innovationId.longValue());
+  }
+
+  @Override
   public ProjectInnovationOrganization getProjectInnovationOrganizationById(long projectInnovationOrganizationID) {
 
     return projectInnovationOrganizationDAO.find(projectInnovationOrganizationID);
@@ -171,6 +176,4 @@ public class ProjectInnovationOrganizationManagerImpl implements ProjectInnovati
 
     return organization;
   }
-
-
 }

@@ -3,16 +3,16 @@
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <!-- Generated Aug 23, 2016 1:40:35 PM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
-	<class name="org.cgiar.ccafs.marlo.data.model.LeverOutcome"
-		table="lever_outcomes" optimistic-lock="none">
+	<class name="org.cgiar.ccafs.marlo.data.model.AllianceLeverOutcome"
+		table="alliance_lever_outcomes" optimistic-lock="none">
 		
 		<id name="id" type="java.lang.Long">
 			<column name="id" />
 			<generator class="identity" />
 		</id>
 		
-		<many-to-one name="leverOutcomeCategory"
-			class="org.cgiar.ccafs.marlo.data.model.LeverOutcome"
+		<many-to-one name="leverCategory"
+			class="org.cgiar.ccafs.marlo.data.model.AllianceLever"
 			fetch="select">
 			<column name="parent_id" />
 		</many-to-one>
@@ -20,23 +20,11 @@
 		<property name="name" type="string">
 			<column name="name" />
 		</property>
-		
-		<property name="description" type="string">
-			<column name="description"/>
-		</property>
 
 		<property name="indicator" type="string">
 			<column name="indicator"/>
 		</property>
 
-		<set name="leverOutcomeTypes" table="lever_outcomes"
-			inverse="true" lazy="true" fetch="select">
-			<key>
-				<column name="parent_id" />
-			</key>
-			<one-to-many
-				class="org.cgiar.ccafs.marlo.data.model.LeverOutcome" />
-		</set>
     <set fetch="select" inverse="true" lazy="true"
       name="projectExpectedStudyLeverOutcomes" table="project_expected_study_lever_outcomes">
       <key on-delete="noaction">

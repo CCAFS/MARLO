@@ -24,6 +24,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -70,6 +71,35 @@ public class ProjectExpectedStudyNexusMySQLDAO extends AbstractMarloDAO<ProjectE
   }
 
   @Override
+  public List<ProjectExpectedStudyNexus> getAllStudyNexussByStudy(long studyId) {
+    String query =
+      "select pesn from ProjectExpectedStudyNexus pesn where pesn.projectExpectedStudy.id = :studyId order by pesn.phase.id";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("studyId", studyId);
+
+    List<ProjectExpectedStudyNexus> result = super.findAll(createQuery);
+
+    return result;
+  }
+
+  @Override
+  public ProjectExpectedStudyNexus getStudyNexusByStudyNexusAndPhase(long studyId, long nexusId, long idPhase) {
+    String query = "select distinct pp from ProjectExpectedStudyNexus pp "
+      + "where pp.projectExpectedStudy.id = :studyId and pp.phase.id = :idPhase and pp.nexus.id = :nexusId";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("studyId", studyId);
+    createQuery.setParameter("idPhase", idPhase);
+    createQuery.setParameter("nexusId", nexusId);
+
+    Object findSingleResult = super.findSingleResult(ProjectExpectedStudyNexus.class, createQuery);
+    ProjectExpectedStudyNexus projectExpectedStudyNexus = (ProjectExpectedStudyNexus) findSingleResult;
+
+    return projectExpectedStudyNexus;
+  }
+
+  @Override
   public ProjectExpectedStudyNexus save(ProjectExpectedStudyNexus projectExpectedStudyNexus) {
     if (projectExpectedStudyNexus.getId() == null) {
       super.saveEntity(projectExpectedStudyNexus);
@@ -80,6 +110,4 @@ public class ProjectExpectedStudyNexusMySQLDAO extends AbstractMarloDAO<ProjectE
 
     return projectExpectedStudyNexus;
   }
-
-
 }

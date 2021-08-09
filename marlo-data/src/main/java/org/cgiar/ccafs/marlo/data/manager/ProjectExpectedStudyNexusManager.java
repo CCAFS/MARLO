@@ -14,6 +14,9 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.Nexus;
+import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyNexus;
 
 import java.util.List;
@@ -53,6 +56,14 @@ public interface ProjectExpectedStudyNexusManager {
 
 
   /**
+   * This method gets a list of projectExpectedStudyNexus by a given projectExpectedStudy identifier.
+   * 
+   * @param studyId is the projectExpectedStudy identifier.
+   * @return a list of projectExpectedStudyNexus objects.
+   */
+  public List<ProjectExpectedStudyNexus> getAllStudyNexussByStudy(Long studyId);
+
+  /**
    * This method gets a projectExpectedStudyNexus object by a given projectExpectedStudyNexus identifier.
    * 
    * @param projectExpectedStudyNexusID is the projectExpectedStudyNexus identifier.
@@ -61,14 +72,33 @@ public interface ProjectExpectedStudyNexusManager {
   public ProjectExpectedStudyNexus getProjectExpectedStudyNexusById(long projectExpectedStudyNexusID);
 
   /**
+   * Gets a ProjectExpectedStudyNexus by a study id, a nexus id and a phase id
+   * 
+   * @param study the ProjectExpectedStudy
+   * @param nexus the Nexus
+   * @param phase the Phase
+   * @return a ProjectExpectedStudyNexus if found; else null
+   */
+  public ProjectExpectedStudyNexus getStudyNexusByStudyNexusAndPhase(ProjectExpectedStudy study, Nexus nexus,
+    Phase phase);
+
+  /**
+   * Replicates an studyNexus, starting from the given phase
+   * 
+   * @param originalProjectExpectedStudyNexus studyNexus to be replicated
+   * @param initialPhase initial replication phase
+   */
+  public void replicate(ProjectExpectedStudyNexus originalProjectExpectedStudyNexus, Phase initialPhase);
+
+  /**
    * This method saves the information of the given projectExpectedStudyNexus
    * 
-   * @param projectExpectedStudyNexus - is the projectExpectedStudyNexus object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectExpectedStudyNexus was
+   * @param projectExpectedStudyNexus - is the projectExpectedStudyNexus object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectExpectedStudyNexus was
    *         updated
    *         or -1 is some error occurred.
    */
   public ProjectExpectedStudyNexus saveProjectExpectedStudyNexus(ProjectExpectedStudyNexus projectExpectedStudyNexus);
-
-
 }

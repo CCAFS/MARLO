@@ -53,6 +53,15 @@ public interface ProjectExpectedStudySrfTargetManager {
 
 
   /**
+   * This method gets a list of projectExpectedStudySrfTarget by a given projectExpectedStudy identifier.
+   * 
+   * @param studyId is the projectExpectedStudy identifier.
+   * @return a list of projectExpectedStudySrfTarget objects.
+   */
+  public List<ProjectExpectedStudySrfTarget> getAllStudySrfTargetsByStudy(Long studyId);
+
+
+  /**
    * This method gets a projectExpectedStudySrfTarget object by a given projectExpectedStudySrfTarget identifier.
    * 
    * @param projectExpectedStudySrfTargetID is the projectExpectedStudySrfTarget identifier.
@@ -72,7 +81,6 @@ public interface ProjectExpectedStudySrfTargetManager {
    */
   public ProjectExpectedStudySrfTarget getProjectExpectedStudySrfTargetByPhase(Long expectedID, Long srfSloIndicatorID,
     Long PhaseID);
-
 
   /**
    * This method saves the information of the given projectExpectedStudySrfTarget

@@ -55,6 +55,14 @@ public interface ProjectInnovationCrpDAO {
   public List<ProjectInnovationCrp> findAll();
 
 
+  /**
+   * This method gets a list of projectInnovationCrp by a given projectInnovation identifier.
+   * 
+   * @param innovationId is the projectInnovation identifier.
+   * @return a list of projectInnovationCrp objects.
+   */
+  public List<ProjectInnovationCrp> getAllInnovationCrpsByInnovation(long innovationId);
+
   public ProjectInnovationCrp getProjectInnovationCrpById(long innovationid, long globalUnitID, long phaseID);
 
   /**

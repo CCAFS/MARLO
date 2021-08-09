@@ -27,6 +27,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -73,6 +74,19 @@ public class ProjectExpectedStudyInfoMySQLDAO extends AbstractMarloDAO<ProjectEx
   }
 
   @Override
+  public List<ProjectExpectedStudyInfo> getAllStudyInfosByStudy(long studyId) {
+    String query =
+      "select pesinfo from ProjectExpectedStudyInfo pesinfo where pesinfo.projectExpectedStudy.id = :studyId order by pesinfo.phase.id";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("studyId", studyId);
+
+    List<ProjectExpectedStudyInfo> result = super.findAll(createQuery);
+
+    return result;
+  }
+
+  @Override
   public List<ProjectExpectedStudyInfo> getProjectExpectedStudyInfoByPhase(Phase phase) {
     StringBuilder query = new StringBuilder();
     query.append("SELECT DISTINCT  ");
@@ -109,6 +123,4 @@ public class ProjectExpectedStudyInfoMySQLDAO extends AbstractMarloDAO<ProjectEx
 
     return projectExpectedStudyInfo;
   }
-
-
 }

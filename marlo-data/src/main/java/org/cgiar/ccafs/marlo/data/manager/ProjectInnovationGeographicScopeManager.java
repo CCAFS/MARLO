@@ -53,6 +53,14 @@ public interface ProjectInnovationGeographicScopeManager {
 
 
   /**
+   * This method gets a list of projectInnovationGeographicScope by a given projectInnovation identifier.
+   * 
+   * @param innovationId is the projectInnovation identifier.
+   * @return a list of projectInnovationGeographicScope objects.
+   */
+  public List<ProjectInnovationGeographicScope> getAllInnovationGeographicScopesByInnovation(Long innovationId);
+
+  /**
    * This method get the information of the given projectInnovationGeographicScope
    * 
    * @param project_innovation_id identifier
@@ -84,6 +92,4 @@ public interface ProjectInnovationGeographicScopeManager {
    */
   public ProjectInnovationGeographicScope
     saveProjectInnovationGeographicScope(ProjectInnovationGeographicScope projectInnovationGeographicScope);
-
-
 }

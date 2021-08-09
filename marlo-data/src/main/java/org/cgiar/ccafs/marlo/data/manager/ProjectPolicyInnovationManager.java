@@ -53,12 +53,21 @@ public interface ProjectPolicyInnovationManager {
 
 
   /**
+   * This method gets a list of projectPolicyInnovation by a given projectInnovation identifier.
+   * 
+   * @param innovationId is the projectInnovation identifier.
+   * @return a list of projectPolicyInnovation objects.
+   */
+  public List<ProjectPolicyInnovation> getAllPolicyInnovationsByInnovation(Long innovationId);
+
+  /**
    * This method gets a list of projectPolicyInnovation by a given projectPolicy identifier.
    * 
    * @param policyId is the projectPolicy identifier.
    * @return a list of projectPolicyInnovation objects.
    */
   public List<ProjectPolicyInnovation> getAllPolicyInnovationsByPolicy(Long policyId);
+
 
   /**
    * This method gets a projectPolicyInnovation object by a given projectPolicyInnovation identifier.
@@ -67,7 +76,6 @@ public interface ProjectPolicyInnovationManager {
    * @return a ProjectPolicyInnovation object.
    */
   public ProjectPolicyInnovation getProjectPolicyInnovationById(long projectPolicyInnovationID);
-
 
   public ProjectPolicyInnovation getProjectPolicyInnovationByPhase(Long projectPolicyID, Long projectInnovationID,
     Long phaseID);

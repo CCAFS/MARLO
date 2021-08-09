@@ -56,10 +56,20 @@ public interface ProjectInnovationDeliverableDAO {
 
 
   /**
+   * This method gets a list of projectInnovationDeliverable by a given projectInnovation identifier.
+   * 
+   * @param innovationId is the projectInnovation identifier.
+   * @return a list of projectInnovationDeliverable objects.
+   */
+  public List<ProjectInnovationDeliverable> getAllInnovationDeliverablesByInnovation(long innovationId);
+
+  /**
    * This method saves the information of the given projectInnovationDeliverable
    * 
-   * @param projectInnovationDeliverable - is the projectInnovationDeliverable object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectInnovationDeliverable was
+   * @param projectInnovationDeliverable - is the projectInnovationDeliverable object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectInnovationDeliverable was
    *         updated
    *         or -1 is some error occurred.
    */

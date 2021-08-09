@@ -53,6 +53,14 @@ public interface ProjectExpectedStudyQuantificationManager {
 
 
   /**
+   * This method gets a list of projectExpectedStudyQuantification by a given projectExpectedStudy identifier.
+   * 
+   * @param studyId is the projectExpectedStudy identifier.
+   * @return a list of projectExpectedStudyQuantification objects.
+   */
+  public List<ProjectExpectedStudyQuantification> getAllStudyQuantificationsByStudy(Long studyId);
+
+  /**
    * This method gets a projectExpectedStudyQuantification object by a given projectExpectedStudyQuantification
    * identifier.
    * 
@@ -62,9 +70,9 @@ public interface ProjectExpectedStudyQuantificationManager {
   public ProjectExpectedStudyQuantification
     getProjectExpectedStudyQuantificationById(long projectExpectedStudyQuantificationID);
 
+
   public ProjectExpectedStudyQuantification getProjectExpectedStudyQuantificationByPhase(Long expectedID,
     String typeQuantification, Long number, String targetUnit, Long phaseID);
-
 
   /**
    * This method saves the information of the given projectExpectedStudyQuantification
