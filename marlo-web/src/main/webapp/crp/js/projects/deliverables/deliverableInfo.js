@@ -459,6 +459,11 @@ function justificationByStatus(statusId) {
             showNewExpectedComponent(false);
           }
           $('.expectedDisabled').show("slow");
+        } else if(statusId==7) {
+          showExpectedComponent(true);
+          if (($('.yearNewExpected').val() != '-1')) {
+            $('#deliverableYear .overlay').hide();
+          }
         } else {
           showNewExpectedComponent(false);
         }
@@ -483,7 +488,20 @@ function showNewExpectedComponent(state) {
       $yearOverlay.hide();
     }
   }
+}
 
+function showExpectedComponent(state) {
+  var $expectedYearBlock = $('#deliverableYear');
+  var $yearOverlay = $('#newExpectedYear .overlay');
+  if(state) {
+    $expectedYearBlock.show();
+    $yearOverlay.show();
+  } else {
+    $expectedYearBlock.hide();
+    if(isDeliverableNew) {
+      $yearOverlay.hide();
+    }
+  }
 }
 
 function validateDeliverableStatus() {
