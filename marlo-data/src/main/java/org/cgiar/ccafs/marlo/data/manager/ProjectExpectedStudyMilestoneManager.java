@@ -53,6 +53,14 @@ public interface ProjectExpectedStudyMilestoneManager {
 
 
   /**
+   * This method gets a list of projectExpectedStudyMilestone by a given projectExpectedStudy identifier.
+   * 
+   * @param studyId is the projectExpectedStudy identifier.
+   * @return a list of projectExpectedStudyMilestone objects.
+   */
+  public List<ProjectExpectedStudyMilestone> getAllStudyMilestonesByStudy(Long studyId);
+
+  /**
    * This method gets a projectExpectedStudyMilestone object by a given projectExpectedStudyMilestone identifier.
    * 
    * @param projectExpectedStudyMilestoneID is the projectExpectedStudyMilestone identifier.
@@ -83,6 +91,4 @@ public interface ProjectExpectedStudyMilestoneManager {
    */
   public ProjectExpectedStudyMilestone
     saveProjectExpectedStudyMilestone(ProjectExpectedStudyMilestone projectExpectedStudyMilestone);
-
-
 }

@@ -64,6 +64,14 @@ public interface ProjectExpectedStudyPolicyDAO {
   public List<ProjectExpectedStudyPolicy> getAllExpectedStudyPoliciesByPolicy(long policyId);
 
   /**
+   * This method gets a list of projectExpectedStudyPolicy by a given projectExpectedStudy identifier.
+   * 
+   * @param studyId is the projectExpectedStudy identifier.
+   * @return a list of projectExpectedStudyPolicy objects.
+   */
+  public List<ProjectExpectedStudyPolicy> getAllStudyPoliciesByStudy(long studyId);
+
+  /**
    * This method gets a projectExpectedStudyPolicy object by a given projectExpectedStudyPolicy identifier.
    * 
    * @param expectedID is the projectExpectedStudyidentifier.

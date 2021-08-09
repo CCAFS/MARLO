@@ -24,6 +24,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -71,6 +72,21 @@ public class ProjectInnovationContributingOrganizationMySQLDAO
     return null;
   }
 
+  @Override
+  public List<ProjectInnovationContributingOrganization>
+    getAllInnovationContributingOrganizationsByInnovation(long innovationId) {
+    String query =
+      "select pico from ProjectInnovationContributingOrganization pico where pico.projectInnovation.id = :innovationId order by pico.phase.id";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("innovationId", innovationId);
+
+    List<ProjectInnovationContributingOrganization> result = super.findAll(createQuery);
+
+    return result;
+  }
+
+  @Override
   public ProjectInnovationContributingOrganization getProjectInnovationContributingOrganization(long idInnovation,
     long idInstitution, long idPhase) {
     String query =
@@ -94,6 +110,4 @@ public class ProjectInnovationContributingOrganizationMySQLDAO
     }
     return projectInnovationContributingOrganization;
   }
-
-
 }

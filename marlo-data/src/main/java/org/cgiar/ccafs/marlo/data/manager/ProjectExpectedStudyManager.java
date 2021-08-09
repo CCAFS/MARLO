@@ -54,6 +54,12 @@ public interface ProjectExpectedStudyManager {
    */
   public List<ProjectExpectedStudy> findAll();
 
+  /**
+   * This method gets a list of ALL projectExpectedStudy that are active up to a given phase
+   * 
+   * @return a list of ProjectExpectedStudy null if no exist records
+   */
+  public List<ProjectExpectedStudy> getAllStudiesByPhase(Long phaseId);
 
   /**
    * This method gets a projectExpectedStudy object by a given projectExpectedStudy identifier.

@@ -53,12 +53,21 @@ public interface ProjectExpectedStudyInstitutionManager {
 
 
   /**
+   * This method gets a list of projectExpectedStudyInstitution by a given projectExpectedStudy identifier.
+   * 
+   * @param studyId is the projectExpectedStudy identifier.
+   * @return a list of projectExpectedStudyInstitution objects.
+   */
+  public List<ProjectExpectedStudyInstitution> getAllStudyInstitutionsByStudy(Long studyId);
+
+  /**
    * This method gets a projectExpectedStudyInstitution object by a given projectExpectedStudyInstitution identifier.
    * 
    * @param projectExpectedStudyInstitutionID is the projectExpectedStudyInstitution identifier.
    * @return a ProjectExpectedStudyInstitution object.
    */
   public ProjectExpectedStudyInstitution getProjectExpectedStudyInstitutionById(long projectExpectedStudyInstitutionID);
+
 
   /**
    * This method gets a projectExpectedStudyInstitution object by a given projectExpectedStudyInstitution identifier.
@@ -70,7 +79,6 @@ public interface ProjectExpectedStudyInstitutionManager {
    */
   public ProjectExpectedStudyInstitution getProjectExpectedStudyInstitutionByPhase(Long expectedID, Long institutionID,
     Long phaseID);
-
 
   /**
    * This method saves the information of the given projectExpectedStudyInstitution
@@ -84,6 +92,4 @@ public interface ProjectExpectedStudyInstitutionManager {
    */
   public ProjectExpectedStudyInstitution
     saveProjectExpectedStudyInstitution(ProjectExpectedStudyInstitution projectExpectedStudyInstitution);
-
-
 }

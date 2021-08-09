@@ -53,6 +53,14 @@ public interface ProjectInnovationCenterManager {
 
 
   /**
+   * This method gets a list of projectInnovationCenter by a given projectInnovation identifier.
+   * 
+   * @param innovationId is the projectInnovation identifier.
+   * @return a list of projectInnovationCenter objects.
+   */
+  public List<ProjectInnovationCenter> getAllInnovationCentersByInnovation(Long innovationId);
+
+  /**
    * This method gets a projectInnovationCenter object by a given projectInnovationCenter identifier.
    * 
    * @param projectInnovationCenterID is the projectInnovationCenter identifier.
@@ -60,8 +68,8 @@ public interface ProjectInnovationCenterManager {
    */
   public ProjectInnovationCenter getProjectInnovationCenterById(long projectInnovationCenterID);
 
-  public ProjectInnovationCenter getProjectInnovationCenterById(long innovationid, long globalUnitID, long phaseID);
 
+  public ProjectInnovationCenter getProjectInnovationCenterById(long innovationid, long globalUnitID, long phaseID);
 
   /**
    * This method saves the information of the given projectInnovationCenter

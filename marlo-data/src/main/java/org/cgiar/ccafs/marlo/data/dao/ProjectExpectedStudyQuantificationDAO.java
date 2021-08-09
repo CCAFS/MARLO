@@ -56,6 +56,14 @@ public interface ProjectExpectedStudyQuantificationDAO {
   public List<ProjectExpectedStudyQuantification> findAll();
 
 
+  /**
+   * This method gets a list of projectExpectedStudyQuantification by a given projectExpectedStudy identifier.
+   * 
+   * @param studyId is the projectExpectedStudy identifier.
+   * @return a list of projectExpectedStudyQuantification objects.
+   */
+  public List<ProjectExpectedStudyQuantification> getAllStudyQuantificationsByStudy(long studyId);
+
   public ProjectExpectedStudyQuantification getProjectExpectedStudyQuantificationByPhase(Long expectedID,
     String typeQuantification, Long number, String targetUnit, Long phaseID);
 

@@ -56,10 +56,30 @@ public interface ProjectExpectedStudyNexusDAO {
 
 
   /**
+   * This method gets a list of projectExpectedStudyNexus by a given projectExpectedStudy identifier.
+   * 
+   * @param studyId is the projectExpectedStudy identifier.
+   * @return a list of projectExpectedStudyNexus objects.
+   */
+  public List<ProjectExpectedStudyNexus> getAllStudyNexussByStudy(long studyId);
+
+  /**
+   * Gets a ProjectExpectedStudyNexus by a study id, a nexus id and a phase id
+   * 
+   * @param studyId the ProjectExpectedStudy id
+   * @param nexusId the Nexus id
+   * @param idPhase the Phase id
+   * @return a ProjectExpectedStudyNexus if found; else null
+   */
+  public ProjectExpectedStudyNexus getStudyNexusByStudyNexusAndPhase(long studyId, long nexusId, long idPhase);
+
+  /**
    * This method saves the information of the given projectExpectedStudyNexus
    * 
-   * @param projectExpectedStudyNexus - is the projectExpectedStudyNexus object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectExpectedStudyNexus was
+   * @param projectExpectedStudyNexus - is the projectExpectedStudyNexus object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectExpectedStudyNexus was
    *         updated
    *         or -1 is some error occurred.
    */
