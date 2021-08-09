@@ -1006,6 +1006,9 @@ public class ProjectInnovationAction extends BaseAction {
         for (DeliverableInfo deliverableInfo : infos) {
           Deliverable deliverable = deliverableInfo.getDeliverable();
           deliverable.setDeliverableInfo(deliverableInfo);
+
+          deliverable.setTagTitle(deliverable.getComposedName());
+
           deliverableList.add(deliverable);
         }
       }
@@ -1023,27 +1026,27 @@ public class ProjectInnovationAction extends BaseAction {
         if (deliverableShared != null && !deliverableShared.isEmpty()) {
           for (ProjectDeliverableShared deliverableS : deliverableShared) {
             if (!deliverableList.contains(deliverableS.getDeliverable())) {
+
+              if (deliverableS.getDeliverable().getProject() != null
+                && deliverableS.getDeliverable().getProject().getId() != null
+                && !deliverableS.getDeliverable().getProject().getId().equals(projectID)) {
+                DeliverableInfo deliverableInfo =
+                  deliverableS.getDeliverable().getDeliverableInfo(this.getActualPhase());
+                deliverableS.getDeliverable().setDeliverableInfo(deliverableInfo);
+
+                deliverableS.getDeliverable().setTagTitle(
+                  "<span class=\"label label-info\">From C" + deliverableS.getDeliverable().getProject().getId()
+                    + "</span> " + deliverableS.getDeliverable().getComposedName());
+              } else {
+                deliverableS.getDeliverable().setTagTitle(deliverableS.getDeliverable().getComposedName());
+              }
+
               deliverableList.add(deliverableS.getDeliverable());
             }
           }
         }
       } catch (Exception e) {
         logger.error("unable to get shared deliverables", e);
-      }
-
-      if (deliverableList != null && !deliverableList.isEmpty()) {
-        for (Deliverable deliverableElement : deliverableList) {
-
-          if (deliverableElement.getProject() != null && deliverableElement.getProject().getId() != null
-            && !deliverableElement.getProject().getId().equals(projectID)) {
-            deliverableElement.setTagTitle("<span class=\"label label-info\">[@s.text name=\"global.new\" /]</span> "
-              + "D" + deliverableElement.getId() + ") "
-              + deliverableElement.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getName());
-          } else {
-            deliverableElement.setTagTitle("D" + deliverableElement.getId() + ") "
-              + deliverableElement.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getName());
-          }
-        }
       }
 
       List<Project> projectSharedList = new ArrayList<>();
@@ -1069,6 +1072,9 @@ public class ProjectInnovationAction extends BaseAction {
               for (DeliverableInfo deliverableInfo : infos) {
                 Deliverable deliverable = deliverableInfo.getDeliverable();
                 deliverable.setDeliverableInfo(deliverableInfo);
+
+                deliverable.setTagTitle(deliverable.getComposedName());
+
                 deliverableList.add(deliverable);
               }
             }
