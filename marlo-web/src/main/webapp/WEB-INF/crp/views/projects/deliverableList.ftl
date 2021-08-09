@@ -80,7 +80,8 @@
               <div class="form-group col-md-6 fair"><span id="" class="legend-color status-indicator On-going"></span>[@s.text name="project.deliverableList.deliverableStatus.onGoing" /]</div>
               <div class="form-group col-md-6 fair"><span id="" class="legend-color status-indicator Cancelled"></span>[@s.text name="project.deliverableList.deliverableStatus.cancelled" /]</div>
               <div class="form-group col-md-6 fair"><span id="" class="legend-color status-indicator Extended"></span>[@s.text name="project.deliverableList.deliverableStatus.extended" /]</div>
-              <div class="form-group col-md-12 fair"><span id="" class="legend-color status-indicator Ready to be reported on"></span>[@s.text name="project.deliverableList.deliverableStatus.readyToReport" /]</div>
+              <div class="form-group col-md-6 fair"><span id="" class="legend-color status-indicator Ready to be reported on"></span>[@s.text name="project.deliverableList.deliverableStatus.readyToReport" /]</div>
+              <div class="form-group col-md-6 fair"><span id="" class="legend-color status-indicator Partially complete"></span>[@s.text name="project.deliverableList.deliverableStatus.partiallyComplete" /]</div>
             </div>
             <div class="col-md-6 required-explanation">
               <div class="col-md-12 form-group"><b>[@s.text name="project.deliverableList.requiredStatus" /]:</b></div>
