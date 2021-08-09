@@ -22,6 +22,12 @@ public class ProjectExpectedStudySdgTarget extends MarloBaseEntity implements ja
   public ProjectExpectedStudySdgTarget() {
   }
 
+  public void copyFields(ProjectExpectedStudySdgTarget other) {
+    this.setPhase(other.getPhase());
+    this.setProjectExpectedStudy(other.getProjectExpectedStudy());
+    this.setSdgTarget(other.getSdgTarget());
+  }
+
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -103,6 +109,5 @@ public class ProjectExpectedStudySdgTarget extends MarloBaseEntity implements ja
   public void setSdgTarget(SdgTargets sdgTarget) {
     this.sdgTarget = sdgTarget;
   }
-
 }
 

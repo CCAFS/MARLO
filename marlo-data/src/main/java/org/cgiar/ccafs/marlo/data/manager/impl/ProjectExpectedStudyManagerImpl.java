@@ -92,6 +92,10 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
     return projectExpectedStudyDAO.findAll();
   }
 
+  @Override
+  public List<ProjectExpectedStudy> getAllStudiesByPhase(Long phaseId) {
+    return this.projectExpectedStudyDAO.getAllStudiesByPhase(phaseId.longValue());
+  }
 
   /**
    * Method to get the list of studies selected by flagships

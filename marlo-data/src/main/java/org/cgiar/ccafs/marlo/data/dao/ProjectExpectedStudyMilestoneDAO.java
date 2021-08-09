@@ -56,6 +56,14 @@ public interface ProjectExpectedStudyMilestoneDAO {
 
 
   /**
+   * This method gets a list of projectExpectedStudyMilestone by a given projectExpectedStudy identifier.
+   * 
+   * @param studyId is the projectExpectedStudy identifier.
+   * @return a list of projectExpectedStudyMilestone objects.
+   */
+  public List<ProjectExpectedStudyMilestone> getAllStudyMilestonesByStudy(long studyId);
+
+  /**
    * This method gets a projectExpectedStudyMilestone object by a given projectExpectedStudyMilestone identifier.
    * 
    * @param expectedID is the projectExpectedStudy identifier.

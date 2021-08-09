@@ -104,6 +104,11 @@ public class ProjectInnovationMilestoneManagerImpl implements ProjectInnovationM
   }
 
   @Override
+  public List<ProjectInnovationMilestone> getAllInnovationMilestonesByInnovation(Long innovationId) {
+    return this.projectInnovationMilestoneDAO.getAllInnovationMilestonesByInnovation(innovationId.longValue());
+  }
+
+  @Override
   public ProjectInnovationMilestone getProjectInnovationMilestoneById(long projectInnovationMilestoneID) {
 
     return projectInnovationMilestoneDAO.find(projectInnovationMilestoneID);
@@ -162,5 +167,4 @@ public class ProjectInnovationMilestoneManagerImpl implements ProjectInnovationM
     }
     return innovationMilestone;
   }
-
 }

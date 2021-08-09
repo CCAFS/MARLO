@@ -54,6 +54,16 @@ public interface ProjectInnovationContributingOrganizationManager {
 
 
   /**
+   * This method gets a list of projectInnovationContributingOrganization by a given projectInnovation identifier.
+   * 
+   * @param innovationId is the projectInnovation identifier.
+   * @return a list of projectInnovationContributingOrganization objects.
+   */
+  public List<ProjectInnovationContributingOrganization>
+    getAllInnovationContributingOrganizationsByInnovation(Long innovationId);
+
+
+  /**
    * This method gets a projectInnovationContributingOrganization object by a given
    * projectInnovationContributingOrganization identifier.
    * 
@@ -67,7 +77,6 @@ public interface ProjectInnovationContributingOrganizationManager {
   ProjectInnovationContributingOrganization getProjectInnovationContributingOrganizationById(long projectInnovationId,
     long institutionId, long phaseId);
 
-
   /**
    * This method saves the information of the given projectInnovationContributingOrganization
    * 
@@ -80,6 +89,4 @@ public interface ProjectInnovationContributingOrganizationManager {
    */
   public ProjectInnovationContributingOrganization saveProjectInnovationContributingOrganization(
     ProjectInnovationContributingOrganization projectInnovationContributingOrganization);
-
-
 }

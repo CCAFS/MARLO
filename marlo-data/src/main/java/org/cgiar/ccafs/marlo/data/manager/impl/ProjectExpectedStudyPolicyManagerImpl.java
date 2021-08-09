@@ -112,6 +112,11 @@ public class ProjectExpectedStudyPolicyManagerImpl implements ProjectExpectedStu
   }
 
   @Override
+  public List<ProjectExpectedStudyPolicy> getAllStudyPoliciesByStudy(Long studyId) {
+    return this.projectExpectedStudyPolicyDAO.getAllStudyPoliciesByStudy(studyId.longValue());
+  }
+
+  @Override
   public ProjectExpectedStudyPolicy getProjectExpectedStudyPolicyById(long projectExpectedStudyPolicyID) {
 
     return projectExpectedStudyPolicyDAO.find(projectExpectedStudyPolicyID);

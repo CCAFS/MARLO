@@ -53,6 +53,14 @@ public interface ProjectInnovationCrpManager {
 
 
   /**
+   * This method gets a list of projectInnovationCrp by a given projectInnovation identifier.
+   * 
+   * @param innovationId is the projectInnovation identifier.
+   * @return a list of projectInnovationCrp objects.
+   */
+  public List<ProjectInnovationCrp> getAllInnovationCrpsByInnovation(Long innovationId);
+
+  /**
    * This method gets a projectInnovationCrp object by a given projectInnovationCrp identifier.
    * 
    * @param projectInnovationCrpID is the projectInnovationCrp identifier.
@@ -60,8 +68,8 @@ public interface ProjectInnovationCrpManager {
    */
   public ProjectInnovationCrp getProjectInnovationCrpById(long projectInnovationCrpID);
 
-  public ProjectInnovationCrp getProjectInnovationCrpById(long innovationid, long globalUnitID, long phaseID);
 
+  public ProjectInnovationCrp getProjectInnovationCrpById(long innovationid, long globalUnitID, long phaseID);
 
   /**
    * This method saves the information of the given projectInnovationCrp
@@ -72,6 +80,4 @@ public interface ProjectInnovationCrpManager {
    *         or -1 is some error occurred.
    */
   public ProjectInnovationCrp saveProjectInnovationCrp(ProjectInnovationCrp projectInnovationCrp);
-
-
 }

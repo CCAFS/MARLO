@@ -106,6 +106,16 @@ public class ProjectExpectedStudyInnovationManagerImpl implements ProjectExpecte
   }
 
   @Override
+  public List<ProjectExpectedStudyInnovation> getAllStudyInnovationsByInnovation(Long innovationId) {
+    return this.projectExpectedStudyInnovationDAO.getAllStudyInnovationsByInnovation(innovationId.longValue());
+  }
+
+  @Override
+  public List<ProjectExpectedStudyInnovation> getAllStudyInnovationsByStudy(Long studyId) {
+    return this.projectExpectedStudyInnovationDAO.getAllStudyInnovationsByStudy(studyId.longValue());
+  }
+
+  @Override
   public ProjectExpectedStudyInnovation getProjectExpectedStudyInnovationById(long projectExpectedStudyInnovationID) {
 
     return projectExpectedStudyInnovationDAO.find(projectExpectedStudyInnovationID);
@@ -173,6 +183,4 @@ public class ProjectExpectedStudyInnovationManagerImpl implements ProjectExpecte
 
     return projectExpectedStudyInnovationResult;
   }
-
-
 }

@@ -31,6 +31,14 @@ public class RepIndGeographicScope extends MarloBaseEntity implements java.io.Se
     return this.name;
   }
 
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
+    return result;
+  }
+
   public void setDefinition(String definition) {
     this.definition = definition;
   }

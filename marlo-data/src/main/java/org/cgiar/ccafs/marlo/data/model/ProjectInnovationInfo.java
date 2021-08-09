@@ -433,6 +433,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.setClearLead(projectInnovationInfoUpdate.getClearLead());
     this.setLeadOrganization(projectInnovationInfoUpdate.getLeadOrganization());
     this.setHasMilestones(projectInnovationInfoUpdate.getHasMilestones());
+    this.setInnovationNumber(projectInnovationInfoUpdate.getInnovationNumber());
   }
 }
 
