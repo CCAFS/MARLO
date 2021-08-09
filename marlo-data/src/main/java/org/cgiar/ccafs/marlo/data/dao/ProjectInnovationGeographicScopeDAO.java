@@ -55,6 +55,14 @@ public interface ProjectInnovationGeographicScopeDAO {
   public List<ProjectInnovationGeographicScope> findAll();
 
 
+  /**
+   * This method gets a list of projectInnovationGeographicScope by a given projectInnovation identifier.
+   * 
+   * @param innovationId is the projectInnovation identifier.
+   * @return a list of projectInnovationGeographicScope objects.
+   */
+  public List<ProjectInnovationGeographicScope> getAllInnovationGeographicScopesByInnovation(long innovationId);
+
   public ProjectInnovationGeographicScope getProjectInnovationGeographicScope(long project_innovation_id,
     long rep_ind_geographic_scope_id, long id_phase);
 

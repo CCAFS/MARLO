@@ -15,9 +15,9 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
-import org.cgiar.ccafs.marlo.data.dao.LeverOutcomeDAO;
-import org.cgiar.ccafs.marlo.data.manager.LeverOutcomeManager;
-import org.cgiar.ccafs.marlo.data.model.LeverOutcome;
+import org.cgiar.ccafs.marlo.data.dao.AllianceLeverDAO;
+import org.cgiar.ccafs.marlo.data.manager.AllianceLeverManager;
+import org.cgiar.ccafs.marlo.data.model.AllianceLever;
 
 import java.util.List;
 
@@ -28,49 +28,49 @@ import javax.inject.Named;
  * @author CCAFS
  */
 @Named
-public class LeverOutcomeManagerImpl implements LeverOutcomeManager {
+public class AllianceLeverManagerImpl implements AllianceLeverManager {
 
 
-  private LeverOutcomeDAO leverOutcomeDAO;
+  private AllianceLeverDAO allianceLeverDAO;
   // Managers
 
 
   @Inject
-  public LeverOutcomeManagerImpl(LeverOutcomeDAO leverOutcomeDAO) {
-    this.leverOutcomeDAO = leverOutcomeDAO;
+  public AllianceLeverManagerImpl(AllianceLeverDAO allianceLeverDAO) {
+    this.allianceLeverDAO = allianceLeverDAO;
 
 
   }
 
   @Override
-  public void deleteLeverOutcome(long leverOutcomeId) {
+  public void deleteAllianceLever(long allianceLeverId) {
 
-    leverOutcomeDAO.deleteLeverOutcome(leverOutcomeId);
+    allianceLeverDAO.deleteAllianceLever(allianceLeverId);
   }
 
   @Override
-  public boolean existLeverOutcome(long leverOutcomeID) {
+  public boolean existAllianceLever(long allianceLeverID) {
 
-    return leverOutcomeDAO.existLeverOutcome(leverOutcomeID);
+    return allianceLeverDAO.existAllianceLever(allianceLeverID);
   }
 
   @Override
-  public List<LeverOutcome> findAll() {
+  public List<AllianceLever> findAll() {
 
-    return leverOutcomeDAO.findAll();
+    return allianceLeverDAO.findAll();
 
   }
 
   @Override
-  public LeverOutcome getLeverOutcomeById(long leverOutcomeID) {
+  public AllianceLever getAllianceLeverById(long allianceLeverID) {
 
-    return leverOutcomeDAO.find(leverOutcomeID);
+    return allianceLeverDAO.find(allianceLeverID);
   }
 
   @Override
-  public LeverOutcome saveLeverOutcome(LeverOutcome leverOutcome) {
+  public AllianceLever saveAllianceLever(AllianceLever allianceLever) {
 
-    return leverOutcomeDAO.save(leverOutcome);
+    return allianceLeverDAO.save(allianceLever);
   }
 
 
