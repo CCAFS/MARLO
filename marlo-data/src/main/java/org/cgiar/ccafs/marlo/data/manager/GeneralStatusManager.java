@@ -46,11 +46,19 @@ public interface GeneralStatusManager {
 
 
   /**
-   * This method gets a list of generalStatus that are active
+   * This method gets a list of generalStatus that are active for deliverables
+   * 
+   * @param year the phase's year
+   * @return a list from GeneralStatus null if no exist records
+   */
+  public List<GeneralStatus> findAllDeliverables(long year);
+
+  /**
+   * This method gets a list of generalStatus that are active for general use
    * 
    * @return a list from GeneralStatus null if no exist records
    */
-  public List<GeneralStatus> findAll();
+  public List<GeneralStatus> findAllGeneralUse();
 
   /**
    * This method gets a list of generalStatus related to a table
