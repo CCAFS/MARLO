@@ -14,6 +14,7 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.InnovationHomeDTO;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
@@ -54,13 +55,30 @@ public interface ProjectInnovationManager {
   public List<ProjectInnovation> findAll();
 
   /**
+   * This method gets a list of projectInnovations that are active by a given phase
+   * 
+   * @return a list from ProjectInnovation null if no exist records
+   */
+  public List<ProjectInnovation> getInnovationsByPhase(Phase phase);
+
+  /**
+   * Gets a list of all the innovations from a project planned for the phase's year
+   * NOTE: this method is meant to be used by the Home Dashboard table
+   * 
+   * @param phaseId the Phase identifier
+   * @param projectId the Project identifier
+   * @return a list of InnovationHomeDTO or empty
+   */
+  public List<InnovationHomeDTO> getInnovationsByProjectAndPhaseHome(Long phaseId, Long projectId);
+
+
+  /**
    * This method gets a projectInnovation object by a given projectInnovation identifier.
    * 
    * @param projectInnovationID is the projectInnovation identifier.
    * @return a ProjectInnovation object.
    */
   public ProjectInnovation getProjectInnovationById(long projectInnovationID);
-
 
   /**
    * This method gets a list of projectInnovation that are active for an specific liaisonInstitution
@@ -88,6 +106,7 @@ public interface ProjectInnovationManager {
 
   public Boolean isInnovationExcluded(Long innovationId, Long phaseId);
 
+
   /**
    * This method saves the information of the given projectInnovation
    * 
@@ -97,7 +116,6 @@ public interface ProjectInnovationManager {
    *         or -1 is some error occurred.
    */
   public ProjectInnovation saveProjectInnovation(ProjectInnovation projectInnovation);
-
 
   /**
    * This method saves the information of the given projectInnovation
@@ -111,5 +129,4 @@ public interface ProjectInnovationManager {
    */
   public ProjectInnovation saveProjectInnovation(ProjectInnovation projectInnovation, String section,
     List<String> relationsName, Phase phase);
-
 }
