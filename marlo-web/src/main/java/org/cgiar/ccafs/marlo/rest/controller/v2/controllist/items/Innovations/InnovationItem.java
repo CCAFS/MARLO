@@ -283,7 +283,7 @@ public class InnovationItem<T> {
       projectInnovationInfo.setEvidenceLink(newInnovationDTO.getEvidenceLink());
       projectInnovationInfo.setClearLead(newInnovationDTO.getEquitativeEffort());
       projectInnovationInfo
-        .setInnovationNumber(repIndInnovationType.getId() == 1 ? newInnovationDTO.getInnovationNumber() : null);
+        .setInnovationNumber(repIndInnovationType.getId() == 1 ? newInnovationDTO.getInnovationNumber() : 1);
 
 
       // SAVE innovation CRP
@@ -879,7 +879,7 @@ public class InnovationItem<T> {
         projectInnovationInfo.setEvidenceLink(newInnovationDTO.getEvidenceLink());
         projectInnovationInfo.setClearLead(newInnovationDTO.getEquitativeEffort());
         projectInnovationInfo
-          .setInnovationNumber(repIndInnovationType.getId() == 1 ? newInnovationDTO.getInnovationNumber() : null);
+          .setInnovationNumber(repIndInnovationType.getId() == 1 ? newInnovationDTO.getInnovationNumber() : 1);
 
 
         // let's check Organizations

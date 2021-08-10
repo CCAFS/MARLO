@@ -1,4 +1,4 @@
-#dashboardContent {float: left;display: inline-block;width: 58%;margin-left: 2%;}
+#dashboardContent {float: left;display: inline-block;width: 100%;}
 
 #dashboardContent li a{
   background-color: white;
@@ -9,7 +9,7 @@
 
 #dashboardContent li a:hover{
   /* background-color: #69aec8; */
-  color:white;
+  color:#337ab7;
 }
 
 #dashboardContent li.active a{
@@ -144,6 +144,18 @@
 }
 
 #myDeliverables {
+    padding: 15px;
+}
+
+#myPolicies {
+    padding: 15px;
+}
+
+#myStudies {
+    padding: 15px;
+}
+
+#myInnovations {
     padding: 15px;
 }
 
