@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
@@ -38,11 +39,15 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndInnovationTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndOrganizationTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageInnovationManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressInnovationManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -63,6 +68,9 @@ import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.RepIndInnovationType;
 import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageInnovation;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressInnovation;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.CGIAREntityDTO;
@@ -121,6 +129,11 @@ public class InnovationItem<T> {
   private SrfSubIdoManager srfSubIdoManager;
   private ProjectInnovationSubIdoManager projectInnovationSubIdoManager;
   private ProjectExpectedStudyManager projectExpectedStudyManager;
+  // changes to be included to Synthesis
+  private LiaisonInstitutionManager liaisonInstitutionManager;
+  private ReportSynthesisManager reportSynthesisManager;
+  private ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager;
+  private ReportSynthesisFlagshipProgressInnovationManager reportSynthesisFlagshipProgressInnovationManager;
 
 
   // Variables
@@ -145,7 +158,8 @@ public class InnovationItem<T> {
     ProjectInnovationGeographicScopeManager projectInnovationGeographicScopeManager,
     CrpMilestoneManager crpMilestoneManager, ProjectInnovationMilestoneManager projectInnovationMilestoneManager,
     SrfSubIdoManager srfSubIdoManager, ProjectInnovationSubIdoManager projectInnovationSubIdoManager,
-    ProjectExpectedStudyManager projectExpectedStudyManager) {
+    ProjectExpectedStudyManager projectExpectedStudyManager, LiaisonInstitutionManager liaisonInstitutionManager,
+    ReportSynthesisFlagshipProgressInnovationManager reportSynthesisFlagshipProgressInnovationManager) {
     this.projectInnovationManager = projectInnovationManager;
     this.innovationMapper = innovationMapper;
     this.phaseManager = phaseManager;
@@ -170,6 +184,8 @@ public class InnovationItem<T> {
     this.srfSubIdoManager = srfSubIdoManager;
     this.projectInnovationSubIdoManager = projectInnovationSubIdoManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
+    this.reportSynthesisFlagshipProgressInnovationManager = reportSynthesisFlagshipProgressInnovationManager;
+    this.liaisonInstitutionManager = liaisonInstitutionManager;
   }
 
   /**
@@ -497,6 +513,7 @@ public class InnovationItem<T> {
           projectInnovationInfo.setHasMilestones(true);
         }
         this.projectInnovationInfoManager.saveProjectInnovationInfo(projectInnovationInfo);
+        //
 
         for (ProjectInnovationOrganization projectInnovationOrganization : projectInnovationOrganizationList) {
           projectInnovationOrganization.setProjectInnovation(projectInnovation);
@@ -531,6 +548,20 @@ public class InnovationItem<T> {
           projectInnovationSubIdo.setProjectInnovation(projectInnovation);
           projectInnovationSubIdoManager.saveProjectInnovationSubIdo(projectInnovationSubIdo);
         }
+
+        // verify if was included in synthesis
+        LiaisonInstitution liaisonInstitution =
+          this.liaisonInstitutionManager.findByAcronymAndCrp(APConstants.CLARISA_ACRONYM_PMU, globalUnitEntity.getId());
+        ReportSynthesis reportSynthesis =
+          reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
+        ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress =
+          reportSynthesis.getReportSynthesisFlagshipProgress();
+
+        ReportSynthesisFlagshipProgressInnovation reportSynthesisFlagshipProgressInnovation =
+          reportSynthesisFlagshipProgress.getReportSynthesisFlagshipProgressInnovations().stream()
+            .filter(c -> c.isActive()).findFirst().orElse(null);
+        reportSynthesisFlagshipProgressInnovation = reportSynthesisFlagshipProgressInnovationManager
+          .getReportSynthesisFlagshipProgressInnovationById(reportSynthesisFlagshipProgressInnovation.getId());
       }
     }
 
