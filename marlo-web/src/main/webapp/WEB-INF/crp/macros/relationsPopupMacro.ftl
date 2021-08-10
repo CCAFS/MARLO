@@ -139,7 +139,9 @@
                     [/#if]
                       <tr>
                         <th scope="row">D${d.id}</th>
-                        <td class="col-md-6">${(d.deliverableInfo.title)!'Untitled'}</td>
+                        <td class="col-md-6">
+                        [#if (d.tagTitle?has_content)]${(d.tagTitle)!}[/#if]
+                        ${(d.deliverableInfo.title)!'Untitled'}</td>
                         <td>${(d.deliverableInfo.deliverableType.name?capitalize)!'-'}</td>
                         <td>${(d.deliverableInfo.getStatusName(action.getActualPhase()))!'None'}</td>
                         <td>${(d.deliverableInfo.year)!'none'}</td>
