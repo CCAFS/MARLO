@@ -144,9 +144,9 @@
   <table class="projectsList" id="deliverables">
     <thead>
       <tr class="subHeader">
-        <th id="deliverableEDY">[@s.text name="project.deliverableList.deliverySummaryYear" /]</th>
         <th id="ids">[@s.text name="projectsList.projectids" /]</th>
         <th id="deliverableTitles" >[@s.text name="project.deliverableList.deliverableSummaryName" /]</th>
+        <th id="deliverableEDY">[@s.text name="project.deliverableList.deliverySummaryYear" /]</th>
       </tr>
     </thead>
     <tbody>
@@ -162,22 +162,6 @@
         [#local toReport = reportingActive && !isDeliverableComplete ]
 
         <tr>
-          [#-- Deliverable Year --]
-          <td class="text-center">
-
-            [#if deliverable.deliverableInfo.year== -1]
-              None
-            [#else]
-              ${(deliverable.deliverableInfo.year)!'None'}
-              [#if
-                    ((deliverable.deliverableInfo.status == 4 || deliverable.deliverableInfo.status==3)!false )
-                    && ((deliverable.deliverableInfo.newExpectedYear != -1)!false)
-                    ]
-                Extended to ${deliverable.deliverableInfo.newExpectedYear}
-              [/#if]
-            [/#if]
-
-          </td>
           [#-- ID --]
           <td class="deliverableId">
             <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
@@ -198,6 +182,22 @@
             <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
               [@utilities.wordCutter string=(deliverable.deliverableInfo.title)! maxPos=160 /]
             </a>
+          </td>
+           [#-- Deliverable Year --]
+          <td class="text-center">
+
+            [#if deliverable.deliverableInfo.year== -1]
+              None
+            [#else]
+              ${(deliverable.deliverableInfo.year)!'None'}
+              [#if
+                    ((deliverable.deliverableInfo.status == 4 || deliverable.deliverableInfo.status==3)!false )
+                    && ((deliverable.deliverableInfo.newExpectedYear != -1)!false)
+                    ]
+                Extended to ${deliverable.deliverableInfo.newExpectedYear}
+              [/#if]
+            [/#if]
+
           </td>
         </tr>
       [/#list]
