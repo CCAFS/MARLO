@@ -1,4 +1,5 @@
 [#ftl]
+[#import "/WEB-INF/global/macros/utils.ftl" as utilities/]
 [#macro studyMacro element name index=-1 template=false fromProject=true ]
   [#local customName = "${name}"/]
   [#local customId = "study-${template?string('template',index)}" /]
@@ -702,6 +703,72 @@
       [@customForm.textArea name="${customName}.comments" i18nkey="study.quantification.comments" help="study.quantification.comments.help"  placeholder="" className="" required=true editable=editable /]
     </div>
   </div>
+[/#macro]
+
+[#macro studiesList deliverables={} owned=true canValidate=false canEdit=false isReportingActive=false namespace="/clusters" defaultAction="deliverableList" currentTable=true]
+  <table class="projectsList" id="studies">
+    <thead>
+      <tr class="subHeader">
+        <th id="ids">[@s.text name="projectsList.projectids" /]</th>
+        <th id="studiesTitles" >[@s.text name="projectStudies.studiesTitles" /]</th>
+        <th id="studiesEDY">[@s.text name="projectStudies.studiesYear" /]</th>
+      </tr>
+    </thead>
+    <tbody>
+    [#if deliverables?has_content]
+      [#list deliverables as deliverable]
+        [#-- Is New --]
+        [#assign isDeliverableNew = action.isDeliverableNew(deliverable.id) /]
+        [#-- Has draft version (Auto-save) --]
+        [#assign hasDraft = (action.getAutoSaveFilePath(deliverable.class.simpleName, "deliverable", deliverable.id))!false /]
+        [#-- Is Complete --]
+        [#assign isDeliverableComplete = action.isDeliverableComplete(deliverable.id, actualPhase.id) /]
+        [#-- To Report --]
+        [#local toReport = reportingActive && !isDeliverableComplete ]
+
+        <tr>
+          [#-- ID --]
+          <td class="deliverableId">
+            <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+              D${deliverable.id}
+            </a>
+          </td>
+          [#-- Deliverable Title --]
+          <td class="left">
+            [#-- Hidden title to sort correctly by title --]
+            <span class="hidden">${deliverable.deliverableInfo.title!''}</span>
+            [#-- Draft Tag --]
+            [#if hasDraft]<strong class="text-info">[DRAFT]</strong>[/#if]
+            [#-- Report --]
+            [#if toReport]<span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>[/#if]
+            [#-- New Tag --]
+            [#if isDeliverableNew]<span class="label label-info">New</span>[/#if]
+
+            <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+              [@utilities.wordCutter string=(deliverable.deliverableInfo.title)! maxPos=160 /]
+            </a>
+          </td>
+          [#-- Deliverable Year --]
+          <td class="text-center">
+
+            [#if deliverable.deliverableInfo.year== -1]
+              None
+            [#else]
+              ${(deliverable.deliverableInfo.year)!'None'}
+              [#if
+                    ((deliverable.deliverableInfo.status == 4 || deliverable.deliverableInfo.status==3)!false )
+                    && ((deliverable.deliverableInfo.newExpectedYear != -1)!false)
+                    ]
+                Extended to ${deliverable.deliverableInfo.newExpectedYear}
+              [/#if]
+            [/#if]
+
+          </td>
+        </tr>
+      [/#list]
+      [/#if]
+    </tbody>
+  </table>
 [/#macro]
 
 [#function findElementID list id]

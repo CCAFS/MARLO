@@ -110,9 +110,9 @@
     
     
     [#-- Shorcuts --]    
-    <div id="shorcuts"  class="col-md-5">
+   [#-- <div id="shorcuts"  class="col-md-5"> --]  
     [#-- if crpSession?contains("CCAFS")  --]
-    [#if false ]
+    [#-- [#if false ]
       <div class="homeTitle"><strong>Timeline</strong></div>   
       <div class="borderBox col-md-12">
         <div id="timeline">
@@ -146,7 +146,7 @@
         </div>
       </div>
       [/#if]
-    </div>     
+    </div> --]    
     
     [#-- Dashboard --]   
     <div id="dashboardContent" class="col-md-12">
