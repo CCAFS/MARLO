@@ -18,7 +18,9 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectPolicyDAO;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.PolicyHomeDTO;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
+import org.cgiar.ccafs.marlo.utils.ListResultTransformer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +30,8 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.FlushMode;
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -71,6 +75,30 @@ public class ProjectPolicyMySQLDAO extends AbstractMarloDAO<ProjectPolicy, Long>
     }
     return null;
 
+  }
+
+  @Override
+  public List<PolicyHomeDTO> getPoliciesByProjectAndPhaseHome(long phaseId, long projectId) {
+    String query = "select pp.id as policyId, ppi.year as expectedYear, pr.id as projectId, "
+      + "coalesce(ppi.repIndPolicyInvestimentType.name, 'None') as policyType, ppi.title as policyTitle "
+      + "from ProjectPolicy pp, ProjectPolicyInfo ppi, Phase ph, Project pr "
+      + "where ppi.projectPolicy = pp and pp.active = true and "
+      + "pp.project = pr and pr.id = :projectId and pr.active = true and "
+      + "ppi.phase = ph and ph.id = :phaseId and ppi.year = ph.year";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+
+    createQuery.setParameter("phaseId", phaseId);
+    createQuery.setParameter("projectId", projectId);
+
+    createQuery.setResultTransformer(
+      (ListResultTransformer) (tuple, aliases) -> new PolicyHomeDTO(((Number) tuple[0]).longValue(),
+        ((Number) tuple[1]).longValue(), ((Number) tuple[2]).longValue(), (String) tuple[3], (String) tuple[4]));
+    createQuery.setFlushMode(FlushMode.COMMIT);
+
+    List<PolicyHomeDTO> policies = createQuery.list();
+
+    return policies;
   }
 
   @Override
