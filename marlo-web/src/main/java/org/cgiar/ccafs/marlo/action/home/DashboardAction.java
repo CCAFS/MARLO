@@ -17,14 +17,21 @@ package org.cgiar.ccafs.marlo.action.home;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
-import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
+import org.cgiar.ccafs.marlo.data.model.DeliverableHomeDTO;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.InnovationHomeDTO;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.PolicyHomeDTO;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
+import org.cgiar.ccafs.marlo.data.model.StudyHomeDTO;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -43,31 +50,38 @@ import org.apache.shiro.authz.AuthorizationInfo;
  */
 public class DashboardAction extends BaseAction {
 
-
   private static final long serialVersionUID = 6686785556753962379L;
 
-
+  // Managers
   private PhaseManager phaseManager;
-
-  private List<Project> myProjects;
-  private List<Deliverable> myDeliverables = new ArrayList<>();
-
   private ProjectManager projectManager;
-
-
-  // GlobalUnit Manager
   private GlobalUnitManager crpManager;
+  private DeliverableManager deliverableManager;
+  private ProjectExpectedStudyManager projectExpectedStudyManager;
+  private ProjectInnovationManager projectInnovationManager;
+  private ProjectPolicyManager projectPolicyManager;
 
+  // Variables
   private GlobalUnit loggedCrp;
 
+  private List<Project> myProjects;
+  private List<DeliverableHomeDTO> myDeliverables = new ArrayList<>();
+  private List<StudyHomeDTO> myStudies = new ArrayList<>();
+  private List<InnovationHomeDTO> myInnovations = new ArrayList<>();
+  private List<PolicyHomeDTO> myPolicies = new ArrayList<>();
 
   @Inject
   public DashboardAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
-    PhaseManager phaseManager) {
+    PhaseManager phaseManager, DeliverableManager deliverableManager, ProjectPolicyManager projectPolicyManager,
+    ProjectExpectedStudyManager projectExpectedStudyManager, ProjectInnovationManager projectInnovationManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
     this.phaseManager = phaseManager;
+    this.deliverableManager = deliverableManager;
+    this.projectExpectedStudyManager = projectExpectedStudyManager;
+    this.projectInnovationManager = projectInnovationManager;
+    this.projectPolicyManager = projectPolicyManager;
   }
 
   public GlobalUnit getLoggedCrp() {
@@ -79,15 +93,28 @@ public class DashboardAction extends BaseAction {
    *
    * @return the value of myDeliverables
    */
-  public List<Deliverable> getMyDeliverables() {
+  public List<DeliverableHomeDTO> getMyDeliverables() {
     return myDeliverables;
   }
 
+
+  public List<InnovationHomeDTO> getMyInnovations() {
+    return myInnovations;
+  }
+
+
+  public List<PolicyHomeDTO> getMyPolicies() {
+    return myPolicies;
+  }
 
   public List<Project> getMyProjects() {
     return myProjects;
   }
 
+
+  public List<StudyHomeDTO> getMyStudies() {
+    return myStudies;
+  }
 
   @Override
   public void prepare() throws Exception {
@@ -185,31 +212,54 @@ public class DashboardAction extends BaseAction {
     }
 
 
-    myDeliverables = new ArrayList<>();
+    myDeliverables = myProjects.stream().filter(p -> p != null && p.getId() != null)
+      .flatMap(
+        p -> deliverableManager.getDeliverablesByProjectAndPhaseHome(this.getActualPhase().getId(), p.getId()).stream())
+      .collect(Collectors.toList());
 
-    myProjects.forEach((project) -> {
-      myDeliverables.addAll(project.getCurrentDeliverables(this.getActualPhase()));
-    });
+    myStudies = myProjects.stream().filter(p -> p != null && p.getId() != null)
+      .flatMap(p -> projectExpectedStudyManager
+        .getStudiesByProjectAndPhaseHome(this.getActualPhase().getId(), p.getId()).stream())
+      .collect(Collectors.toList());
 
+    myInnovations = myProjects.stream().filter(p -> p != null && p.getId() != null)
+      .flatMap(p -> projectInnovationManager
+        .getInnovationsByProjectAndPhaseHome(this.getActualPhase().getId(), p.getId()).stream())
+      .collect(Collectors.toList());
 
+    myPolicies = myProjects.stream().filter(p -> p != null && p.getId() != null)
+      .flatMap(
+        p -> projectPolicyManager.getPoliciesByProjectAndPhaseHome(this.getActualPhase().getId(), p.getId()).stream())
+      .collect(Collectors.toList());
   }
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 
-
   /**
    * Set the value of myDeliverables
    *
    * @param myDeliverables new value of myDeliverables
    */
-  public void setMyDeliverables(List<Deliverable> myDeliverables) {
+  public void setMyDeliverables(List<DeliverableHomeDTO> myDeliverables) {
     this.myDeliverables = myDeliverables;
+  }
+
+  public void setMyInnovations(List<InnovationHomeDTO> myInnovations) {
+    this.myInnovations = myInnovations;
+  }
+
+  public void setMyPolicies(List<PolicyHomeDTO> myPolicies) {
+    this.myPolicies = myPolicies;
   }
 
   public void setMyProjects(List<Project> myProjects) {
     this.myProjects = myProjects;
+  }
+
+  public void setMyStudies(List<StudyHomeDTO> myStudies) {
+    this.myStudies = myStudies;
   }
 
 }
