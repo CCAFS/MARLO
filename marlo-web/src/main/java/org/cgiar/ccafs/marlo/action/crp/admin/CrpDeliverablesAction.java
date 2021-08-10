@@ -192,7 +192,7 @@ public class CrpDeliverablesAction extends BaseAction {
   }
 
   public void moveDeliverablesProject() {
-    if (phaseID != 0 && deliverableID != 0) {
+    if (deliverableID != 0) {
       Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
       Project project = projectManager.getProjectById(projectID);
 
