@@ -242,7 +242,7 @@
       </div>
       [#if editable]
       <div class="form-group">
-        [@customForm.select name="" label=""  i18nkey="project.activities.deliverableSelect" listName="project.projectDeliverables" keyFieldName="id"  displayFieldName="tagTitle"  multiple=false required=false  className=" deliverableList" disabled=!editable/]
+        [@customForm.select name="" label=""  i18nkey="project.activities.deliverableSelect" listName="project.projectDeliverables" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=false  className=" deliverableList" disabled=!editable/]
       </div>
       [/#if]
     </div>
