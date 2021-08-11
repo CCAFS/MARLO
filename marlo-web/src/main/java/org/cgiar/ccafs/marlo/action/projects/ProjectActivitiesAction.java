@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.ActivityTitleManager;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectDeliverableSharedManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
@@ -90,6 +91,7 @@ public class ProjectActivitiesAction extends BaseAction {
   private ProjectManager projectManager;
   private ProjectPartnerPersonManager projectPartnerPersonManager;
   private ActivityTitleManager activityTitleManager;
+  private ProjectDeliverableSharedManager projectDeliverableSharedManager;
 
   private List<Deliverable> deliverablesMissingActivity = new ArrayList<>();
 
@@ -98,7 +100,8 @@ public class ProjectActivitiesAction extends BaseAction {
     ProjectPartnerPersonManager projectPartnerPersonManager, ActivityManager activityManager,
     DeliverableManager deliverableManager, AuditLogManager auditLogManager,
     ProjectActivitiesValidator activitiesValidator, HistoryComparator historyComparator,
-    ProjectPartnerManager projectPartnerManager, ActivityTitleManager activityTitleManager) {
+    ProjectPartnerManager projectPartnerManager, ActivityTitleManager activityTitleManager,
+    ProjectDeliverableSharedManager projectDeliverableSharedManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -110,6 +113,7 @@ public class ProjectActivitiesAction extends BaseAction {
     this.activitiesValidator = activitiesValidator;
     this.projectPartnerManager = projectPartnerManager;
     this.activityTitleManager = activityTitleManager;
+    this.projectDeliverableSharedManager = projectDeliverableSharedManager;
   }
 
   public void activitiesPreviousData(Project projectBD) {
@@ -367,17 +371,68 @@ public class ProjectActivitiesAction extends BaseAction {
         status.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
       }
       status.remove(ProjectStatusEnum.Extended.getStatusId());
+      List<Deliverable> deliverables = new ArrayList<>();
       if (project.getDeliverables() != null) {
         if (project.getDeliverables().isEmpty()) {
-          project.setProjectDeliverables(new ArrayList<Deliverable>(projectManager.getProjectById(projectID)
-            .getDeliverables().stream().filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null)
-            .collect(Collectors.toList())));
-        } else {
-          project.setProjectDeliverables(new ArrayList<Deliverable>(project.getDeliverables().stream()
+          /*
+           * project.setProjectDeliverables(new ArrayList<Deliverable>(projectManager.getProjectById(projectID)
+           * .getDeliverables().stream().filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) !=
+           * null)
+           * .collect(Collectors.toList())));
+           */
+          deliverables = projectManager.getProjectById(projectID).getDeliverables().stream()
             .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null)
-            .collect(Collectors.toList())));
+            .collect(Collectors.toList());
+        } else {
+          /*
+           * project.setProjectDeliverables(new ArrayList<Deliverable>(project.getDeliverables().stream()
+           * .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null)
+           * .collect(Collectors.toList())));
+           */
+          deliverables = project.getDeliverables().stream()
+            .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null)
+            .collect(Collectors.toList());
         }
       }
+
+      for (Deliverable deliverable : deliverables) {
+        deliverable.setTagTitle(deliverable.getComposedName());
+      }
+      /*
+       * try {
+       * // Load Shared deliverables
+       * List<ProjectDeliverableShared> deliverableShared = this.projectDeliverableSharedManager
+       * .getByProjectAndPhase(project.getId(), this.getActualPhase().getId()) != null
+       * ? this.projectDeliverableSharedManager.getByProjectAndPhase(project.getId(), this.getActualPhase().getId())
+       * .stream()
+       * .filter(px -> px.isActive() && px.getDeliverable().isActive()
+       * && px.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null)
+       * .collect(Collectors.toList())
+       * : Collections.emptyList();
+       * if (deliverableShared != null && !deliverableShared.isEmpty()) {
+       * for (ProjectDeliverableShared deliverableS : deliverableShared) {
+       * if (!deliverables.contains(deliverableS.getDeliverable())) {
+       * if (deliverableS.getDeliverable().getProject() != null
+       * && deliverableS.getDeliverable().getProject().getId() != null
+       * && !deliverableS.getDeliverable().getProject().getId().equals(projectID)) {
+       * DeliverableInfo deliverableInfo =
+       * deliverableS.getDeliverable().getDeliverableInfo(this.getActualPhase());
+       * deliverableS.getDeliverable().setDeliverableInfo(deliverableInfo);
+       * deliverableS.getDeliverable().setTagTitle(
+       * "<span class=\"label label-info\">From C" + deliverableS.getDeliverable().getProject().getId()
+       * + "</span> ");
+       * } else {
+       * deliverableS.getDeliverable().setTagTitle(deliverableS.getDeliverable().getComposedName());
+       * }
+       * deliverables.add(deliverableS.getDeliverable());
+       * }
+       * }
+       * }
+       * } catch (Exception e) {
+       * logger.error("unable to get shared deliverables", e);
+       * }
+       */
+      project.setProjectDeliverables(deliverables);
 
       partnerPersons = new ArrayList<>();
       for (ProjectPartner partner : projectPartnerManager.findAll().stream()
