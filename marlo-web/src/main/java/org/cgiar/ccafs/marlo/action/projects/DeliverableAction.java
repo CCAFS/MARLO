@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.ActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CgiarCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
@@ -54,6 +55,7 @@ import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.MetadataElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PartnerDivisionManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectDeliverableSharedManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionDeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
@@ -114,6 +116,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectLp6ContributionDeliverable;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
+import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.RepIndFillingType;
 import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
@@ -173,6 +176,8 @@ public class DeliverableAction extends BaseAction {
   private final Logger logger = LoggerFactory.getLogger(DeliverableAction.class);
 
   // Managers
+  private PhaseManager phaseManager;
+  private ActivityManager activityManager;
   private AuditLogManager auditLogManager;
   private GlobalUnitManager crpManager;
   private DeliverableDataSharingFileManager deliverableDataSharingFileManager;
@@ -238,7 +243,6 @@ public class DeliverableAction extends BaseAction {
   private DeliverableValidator deliverableValidator;
   private List<FundingSource> fundingSources;
   private List<Activity> activities;
-  private List<Activity> mappedDeliverableActivitiesCurrentPhase;
   private List<GenderType> genderLevels;
   private List<CrpClusterKeyOutput> keyOutputs;
   private GlobalUnit loggedCrp;
@@ -301,14 +305,15 @@ public class DeliverableAction extends BaseAction {
     RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager,
     CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager,
     DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager,
-    RepIndTrainingTermManager repIndTrainingTermManager,
+    RepIndTrainingTermManager repIndTrainingTermManager, ActivityManager activityManager,
     DeliverableGeographicScopeManager deliverableGeographicScopeManager,
     DeliverableUserPartnershipManager deliverableUserPartnershipManager,
     DeliverablePartnerTypeManager deliverablePartnerTypeManager, UserManager userManager,
     DeliverableUserPartnershipPersonManager deliverableUserPartnershipPersonManager,
     CrpProgramOutcomeManager crpProgramOutcomeManager, DeliverableActivityManager deliverableActivityManager,
-    ProjectDeliverableSharedManager projectDeliverableSharedManager) {
+    ProjectDeliverableSharedManager projectDeliverableSharedManager, PhaseManager phaseManager) {
     super(config);
+    this.activityManager = activityManager;
     this.deliverableManager = deliverableManager;
     this.deliverableTypeManager = deliverableTypeManager;
     this.crpManager = crpManager;
@@ -360,6 +365,7 @@ public class DeliverableAction extends BaseAction {
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
     this.deliverableActivityManager = deliverableActivityManager;
     this.projectDeliverableSharedManager = projectDeliverableSharedManager;
+    this.phaseManager = phaseManager;
   }
 
   @Override
@@ -630,10 +636,6 @@ public class DeliverableAction extends BaseAction {
 
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
-  }
-
-  public List<Activity> getMappedDeliverableActivitiesCurrentPhase() {
-    return mappedDeliverableActivitiesCurrentPhase;
   }
 
   public List<Project> getMyProjects() {
@@ -948,6 +950,15 @@ public class DeliverableAction extends BaseAction {
           }
         }
 
+        if (deliverable.getActivities() != null) {
+          for (DeliverableActivity activity : deliverable.getActivities()) {
+            if (activity != null && activity.getActivity() != null) {
+              activity.setActivity(activityManager.getActivityById(activity.getActivity().getId()));
+            }
+
+          }
+        }
+
         if (deliverable.getCrps() != null) {
           for (DeliverableCrp deliverableCrp : deliverable.getCrps()) {
             if (deliverableCrp != null) {
@@ -1119,6 +1130,19 @@ public class DeliverableAction extends BaseAction {
           .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
           .collect(Collectors.toList()));
 
+        List<DeliverableActivity> deliverableActivities = new ArrayList<>();
+        deliverableActivities = deliverableActivityManager.getDeliverableActivitiesByDeliverableID(deliverable.getId());
+        if (deliverableActivities != null && !deliverableActivities.isEmpty()) {
+          deliverableActivities = deliverableActivities.stream()
+            .filter(da -> da.isActive() && da.getPhase() != null
+              && da.getPhase().getId().equals(this.getActualPhase().getId()) && da.getActivity() != null
+              && da.getActivity().isActive() && da.getActivity().getProject() != null
+              && da.getActivity().getProject().getId().equals(project.getId()))
+            .collect(Collectors.toList());
+
+          deliverable.setActivities(deliverableActivities);
+        }
+
         for (DeliverableFundingSource deliverableFundingSource : deliverable.getFundingSources()) {
 
           deliverableFundingSource.setFundingSource(
@@ -1130,6 +1154,7 @@ public class DeliverableAction extends BaseAction {
               deliverableFundingSource.getFundingSource().getFundingSourceInfoLast(this.getActualPhase()));
           }
         }
+
         deliverable.setGenderLevels(deliverable.getDeliverableGenderLevels().stream()
           .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
 
@@ -1266,20 +1291,24 @@ public class DeliverableAction extends BaseAction {
 
         // Shows the projects to create a shared link with their
         this.myProjects = new ArrayList<>();
-        /*
-         * try {
-         * for (ProjectPhase projectPhase : this.getActualPhase().getProjectPhases()) {
-         * if (projectPhase.getProject().getProjecInfoPhase(this.getActualPhase()) != null) {
-         * this.myProjects.add(projectPhase.getProject());
-         * }
-         * if (this.project != null) {
-         * this.myProjects.remove(this.project);
-         * }
-         * }
-         * } catch (Exception e) {
-         * logger.error("unable to get projectPhases", e);
-         * }
-         */
+
+        try {
+          Phase phase = phaseManager.getPhaseById(this.getActualPhase().getId());
+          if (phase != null && phase.getProjectPhases() != null) {
+            for (ProjectPhase projectPhase : phase.getProjectPhases()) {
+              if (projectPhase.getProject().getProjecInfoPhase(this.getActualPhase()) != null) {
+                this.myProjects.add(projectPhase.getProject());
+              }
+              if (this.project != null) {
+                this.myProjects.remove(this.project);
+              }
+            }
+          }
+        } catch (Exception e) {
+          logger.error("unable to get projectPhases", e);
+        }
+
+
         if (this.myProjects != null && !this.myProjects.isEmpty()) {
           this.myProjects.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
         }
@@ -1574,28 +1603,18 @@ public class DeliverableAction extends BaseAction {
 
       // Add Activities
       this.activities = new ArrayList<>();
-      this.mappedDeliverableActivitiesCurrentPhase = new ArrayList<>();
-
-      List<String> activitiesPresentMapped = new ArrayList<>();
-
-      for (DeliverableActivity deliverableActivity : deliverable.getDeliverableActivities()) {
-        activitiesPresentMapped.add(deliverableActivity.getActivity().getId() + "");
-      }
-
-      // List<DeliverableActivity> activities = new ArrayList<>();
-      // deliverableActivityManager.getDeliverableActivitiesByDeliverableID(deliverableID);
 
       for (Activity activity : project.getActivities()) {
-
         if (activity.isActive() && !this.activities.contains(activity)
           && activity.getPhase().getId().compareTo(this.getActualPhase().getId()) == 0) {
-
-          if (activitiesPresentMapped.contains(activity.getId() + "")) {
-            this.mappedDeliverableActivitiesCurrentPhase.add(activity);
-          } else {
-            this.activities.add(activity);
-          }
+          this.activities.add(activity);
         }
+      }
+
+      if (activities != null && !activities.isEmpty()) {
+        activities = activities.stream().filter(c -> c.isActive() && c.getActivityTitle() != null)
+          .sorted((a1, a2) -> a1.getActivityTitle().getTitle().compareTo(a2.getActivityTitle().getTitle()))
+          .collect(Collectors.toList());
       }
 
       String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
@@ -1705,6 +1724,10 @@ public class DeliverableAction extends BaseAction {
           deliverable.getFundingSources().clear();
         }
 
+        if (deliverable.getActivities() != null) {
+          deliverable.getActivities().clear();
+        }
+
         if (deliverable.getGenderLevels() != null) {
           deliverable.getGenderLevels().clear();
         }
@@ -1759,6 +1782,7 @@ public class DeliverableAction extends BaseAction {
 
       Deliverable deliverableManagedState = this.updateDeliverableInfo();
       this.updateDeliverableFundingSources(deliverableManagedState);
+      this.saveDeliverableActivities(deliverableManagedState);
 
       // This gets a DeliverablePartnership responsible entity in managed state.
       // DeliverablePartnership partnershipResponsibleManaged = deliverable.getResponsiblePartner();
@@ -2082,6 +2106,33 @@ public class DeliverableAction extends BaseAction {
         deliverableDataSharingFileManager.saveDeliverableDataSharingFile(dataSharingFile);
       }
 
+    }
+  }
+
+  private void saveDeliverableActivities(Deliverable deliverablePrew) {
+    if (deliverable.getActivities() != null) {
+      if (deliverablePrew.getDeliverableActivities() != null && !deliverablePrew.getDeliverableActivities().isEmpty()) {
+        List<DeliverableActivity> activityPrew = deliverablePrew.getDeliverableActivities().stream()
+          .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList());
+
+        for (DeliverableActivity deliverableActivity : activityPrew) {
+          if (!deliverable.getActivities().contains(deliverableActivity)) {
+            deliverableActivityManager.deleteDeliverableActivity(deliverableActivity.getId());
+          }
+        }
+      }
+
+      for (DeliverableActivity deliverableActivity : deliverable.getActivities()) {
+        if (deliverableActivity.getId() == null || deliverableActivity.getId() == -1) {
+
+          deliverableActivity.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
+          deliverableActivity.setPhase(this.getActualPhase());
+          deliverableActivityManager.saveDeliverableActivity(deliverableActivity);
+          // This add projectFocus to generate correct auditlog.
+          deliverablePrew.getDeliverableActivities().add(deliverableActivity);
+        }
+      }
     }
   }
 
@@ -2988,10 +3039,6 @@ public class DeliverableAction extends BaseAction {
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
-  }
-
-  public void setMappedDeliverableActivitiesCurrentPhase(List<Activity> mappedDeliverableActivitiesCurrentPhase) {
-    this.mappedDeliverableActivitiesCurrentPhase = mappedDeliverableActivitiesCurrentPhase;
   }
 
   public void setMyProjects(List<Project> myProjects) {
