@@ -24,10 +24,10 @@
 			<artifactId>marlo-utils</artifactId>
 		</dependency>
 		<!-- CIAT LDAp Lib dependencies -->
-		<dependency>
-			<groupId>org.cgiar.ciat.auth</groupId>
-			<artifactId>adauth</artifactId>
-		</dependency>
+    <dependency>
+      <groupId>org.cgiar.ciat</groupId>
+      <artifactId>ad-auth</artifactId>
+      </dependency>
 		<!-- Java JSON Library -->
 		<dependency>
 			<groupId>org.json</groupId>
@@ -157,14 +157,15 @@
 			<artifactId>mapstruct-jdk8</artifactId>
 		</dependency>
 	</dependencies>
-
+	
+<!--  
 	<repositories>
 		<repository>
 			<id>Internal project repo</id>
 			<url>file://${basedir}/src/main/resources/libs/</url>
 		</repository>
 	</repositories>
-
+-->
 	<build>
 		<plugins>
 			<plugin>
