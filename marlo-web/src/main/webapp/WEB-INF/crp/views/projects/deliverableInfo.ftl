@@ -165,7 +165,6 @@
   [/#if]
 
   [#-- Deliverable Activities --]
-  [#if !config.production]
     <div class="panel tertiary">
     <div class="panel-head"><label for=""> [@customForm.text name="project.deliverable.activities" readText=!editable /]:[@customForm.req required=editable /]</label></div>
       <div id="activityList" class="panel-body" listname="deliverable.activities">
@@ -211,7 +210,6 @@
         [/#list]
       [/#if]
     </div>
-[/#if]
 
   [#-- Funding Source --]
   [#if !phaseOne]
@@ -313,12 +311,10 @@
   [/#if]
   
    [#-- Projects shared --]
-   [#if !config.production]
      <h3 class="headTitle">[@s.text name="deliverable.sharedProjects.title" /]</h3>
      <div class="borderBox">
       [@customForm.elementsListComponent name="deliverable.sharedDeliverables" elementType="project" elementList=(deliverable.sharedDeliverables)![] label="deliverable.sharedProjects"  listName="myProjects" keyFieldName="id" displayFieldName="composedName" required=false /]
      </div>
-   [/#if]
   
 </div>
 [#-- /if --]
