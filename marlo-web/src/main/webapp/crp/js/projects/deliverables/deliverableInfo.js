@@ -282,7 +282,7 @@ function addActivity(option) {
   }
 
   var $list = $(option).parents(".select").parents("#activityList").find(".list");
-  var $item = $("#fsourceTemplate").clone(true).removeAttr("id");
+  var $item = $("#activitiesTemplate").clone(true).removeAttr("aId");
   var v = $(option).text().length > 80 ? $(option).text().substr(0, 80) + ' ... ' : $(option).text();
 
   // Check if is already selected
@@ -351,7 +351,7 @@ function removeActivity() {
   var $list = $(this).parents('.list');
   var $item = $(this).parents('.activities');
   var value = $item.find(".aId").val();
-  var name = $item.find(".title").val();
+  var name = document.getElementById("activity-" + value).innerHTML;
   console.log(name + "-" + value);
   var $select = $(".activity");
   $item.hide(500, function() {

@@ -332,7 +332,7 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
       Calendar calendarEnd = Calendar.getInstance();
       calendarEnd.set(Calendar.YEAR, 2023);
 
-      while (year < calendarEnd.get(Calendar.YEAR)) {
+      while (year <= calendarEnd.get(Calendar.YEAR)) {
 
         // Adding the year to the list.
         if (allYears.size() > 0) {

@@ -164,20 +164,23 @@
     </div>
   [/#if]
 
-  [#-- Supporting Activities --]
-  [#if false]
+  [#-- Deliverable Activities --]
     <div class="panel tertiary">
     <div class="panel-head"><label for=""> [@customForm.text name="project.deliverable.activities" readText=!editable /]:[@customForm.req required=editable /]</label></div>
-      <div id="activityList" class="panel-body" listname="mappedDeliverableActivitiesCurrentPhase">
+      <div id="activityList" class="panel-body" listname="deliverable.activities">
         <ul class="list">
-        [#if mappedDeliverableActivitiesCurrentPhase?has_content]
-          [#list mappedDeliverableActivitiesCurrentPhase as element]
-            <li id="activitiesTemplate" class="activities clearfix">
+        [#if deliverable.activities?has_content]
+          [#list deliverable.activities as element]
+            <li id="activities" class="activities clearfix">
               [#if editable]<div class="removeActivity removeIcon" title="Remove activity"></div>[/#if]
-              <input class="id" type="hidden" name="mappedDeliverableActivitiesCurrentPhase[${element_index}].id" value="${(element.id)!}" />
-              <input class="aId" type="hidden" name="mappedDeliverableActivitiesCurrentPhase[${element_index}].id" value="${(element.id)!}" />
+              <input class="id" type="hidden" name="deliverable.activities[${element_index}].id" value="${(element.id)!}" />
+              <input class="aId" type="hidden" name="deliverable.activities[${element_index}].activity.id" value="${(element.activity.id)!}" />
               <span class="name">
-                ${(element.title)!} <br />
+              [#if element.activity.activityTitle?has_content]
+                ${(element.activity.activityTitle.title)!}<br />
+              [#else]
+                No Title selected
+              [/#if]
               </span>
               <div class="clearfix"></div>
             </li>
@@ -202,12 +205,11 @@
       [#if activities?has_content]
         [#list activities as element]
           <span id="activity-${(element.id)!}">
-            ${(element.title)!} <br />
+            ${(element.activityTitle.title)!} <br />
           </span>
         [/#list]
       [/#if]
     </div>
-  [/#if]
 
   [#-- Funding Source --]
   [#if !phaseOne]
@@ -309,12 +311,10 @@
   [/#if]
   
    [#-- Projects shared --]
-   [#if !config.production]
      <h3 class="headTitle">[@s.text name="deliverable.sharedProjects.title" /]</h3>
      <div class="borderBox">
       [@customForm.elementsListComponent name="deliverable.sharedDeliverables" elementType="project" elementList=(deliverable.sharedDeliverables)![] label="deliverable.sharedProjects"  listName="myProjects" keyFieldName="id" displayFieldName="composedName" required=false /]
      </div>
-   [/#if]
   
 </div>
 [#-- /if --]
