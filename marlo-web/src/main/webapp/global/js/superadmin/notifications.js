@@ -22,7 +22,7 @@ function attachEvents() {
     $('#systemReset').find('textarea, input').val('');
 
     var slackMessage = {
-        "text": "MARLO Restart Message",
+        "text": "MARLO AICCRA Restart Message",
         "attachments": [
           {
               "color": "#f1c40f",

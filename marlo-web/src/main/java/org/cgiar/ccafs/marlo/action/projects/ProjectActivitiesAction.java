@@ -30,10 +30,8 @@ import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.ActivityTitle;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
-import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.data.model.ProjectDeliverableShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -51,7 +49,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -401,43 +398,40 @@ public class ProjectActivitiesAction extends BaseAction {
       for (Deliverable deliverable : deliverables) {
         deliverable.setTagTitle(deliverable.getComposedName());
       }
-
-      try {
-        // Load Shared deliverables
-        List<ProjectDeliverableShared> deliverableShared = this.projectDeliverableSharedManager
-          .getByProjectAndPhase(project.getId(), this.getActualPhase().getId()) != null
-            ? this.projectDeliverableSharedManager.getByProjectAndPhase(project.getId(), this.getActualPhase().getId())
-              .stream()
-              .filter(px -> px.isActive() && px.getDeliverable().isActive()
-                && px.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null)
-              .collect(Collectors.toList())
-            : Collections.emptyList();
-
-        if (deliverableShared != null && !deliverableShared.isEmpty()) {
-          for (ProjectDeliverableShared deliverableS : deliverableShared) {
-            if (!deliverables.contains(deliverableS.getDeliverable())) {
-
-              if (deliverableS.getDeliverable().getProject() != null
-                && deliverableS.getDeliverable().getProject().getId() != null
-                && !deliverableS.getDeliverable().getProject().getId().equals(projectID)) {
-                DeliverableInfo deliverableInfo =
-                  deliverableS.getDeliverable().getDeliverableInfo(this.getActualPhase());
-                deliverableS.getDeliverable().setDeliverableInfo(deliverableInfo);
-
-                deliverableS.getDeliverable().setTagTitle(
-                  "<span class=\"label label-info\">From C" + deliverableS.getDeliverable().getProject().getId()
-                    + "</span> " + deliverableS.getDeliverable().getComposedName());
-              } else {
-                deliverableS.getDeliverable().setTagTitle(deliverableS.getDeliverable().getComposedName());
-              }
-
-              deliverables.add(deliverableS.getDeliverable());
-            }
-          }
-        }
-      } catch (Exception e) {
-        logger.error("unable to get shared deliverables", e);
-      }
+      /*
+       * try {
+       * // Load Shared deliverables
+       * List<ProjectDeliverableShared> deliverableShared = this.projectDeliverableSharedManager
+       * .getByProjectAndPhase(project.getId(), this.getActualPhase().getId()) != null
+       * ? this.projectDeliverableSharedManager.getByProjectAndPhase(project.getId(), this.getActualPhase().getId())
+       * .stream()
+       * .filter(px -> px.isActive() && px.getDeliverable().isActive()
+       * && px.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null)
+       * .collect(Collectors.toList())
+       * : Collections.emptyList();
+       * if (deliverableShared != null && !deliverableShared.isEmpty()) {
+       * for (ProjectDeliverableShared deliverableS : deliverableShared) {
+       * if (!deliverables.contains(deliverableS.getDeliverable())) {
+       * if (deliverableS.getDeliverable().getProject() != null
+       * && deliverableS.getDeliverable().getProject().getId() != null
+       * && !deliverableS.getDeliverable().getProject().getId().equals(projectID)) {
+       * DeliverableInfo deliverableInfo =
+       * deliverableS.getDeliverable().getDeliverableInfo(this.getActualPhase());
+       * deliverableS.getDeliverable().setDeliverableInfo(deliverableInfo);
+       * deliverableS.getDeliverable().setTagTitle(
+       * "<span class=\"label label-info\">From C" + deliverableS.getDeliverable().getProject().getId()
+       * + "</span> ");
+       * } else {
+       * deliverableS.getDeliverable().setTagTitle(deliverableS.getDeliverable().getComposedName());
+       * }
+       * deliverables.add(deliverableS.getDeliverable());
+       * }
+       * }
+       * }
+       * } catch (Exception e) {
+       * logger.error("unable to get shared deliverables", e);
+       * }
+       */
       project.setProjectDeliverables(deliverables);
 
       partnerPersons = new ArrayList<>();
