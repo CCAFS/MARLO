@@ -34,6 +34,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressStudy;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressStudyDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisStudiesByCrpProgramDTO;
+import org.cgiar.ccafs.marlo.data.model.StudyHomeDTO;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -234,11 +235,11 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
     return flagshipPlannedList;
   }
 
-
   @Override
   public ProjectExpectedStudy getProjectExpectedStudyById(long projectExpectedStudyID) {
     return projectExpectedStudyDAO.find(projectExpectedStudyID);
   }
+
 
   @Override
   public List<ProjectExpectedStudy> getProjectStudiesList(LiaisonInstitution liaisonInstitution, Phase phase) {
@@ -357,16 +358,21 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
     return reportSynthesisStudiesByCrpProgramDTOs;
   }
 
-
   @Override
   public List<ProjectExpectedStudy> getStudiesByOrganizationType(RepIndOrganizationType repIndOrganizationType,
     Phase phase) {
     return projectExpectedStudyDAO.getStudiesByOrganizationType(repIndOrganizationType, phase);
   }
 
+
   @Override
   public List<ProjectExpectedStudy> getStudiesByPhase(Phase phase) {
     return projectExpectedStudyDAO.getStudiesByPhase(phase);
+  }
+
+  @Override
+  public List<StudyHomeDTO> getStudiesByProjectAndPhaseHome(Long phaseId, Long projectId) {
+    return this.projectExpectedStudyDAO.getStudiesByProjectAndPhaseHome(phaseId.longValue(), projectId.longValue());
   }
 
   @Override
