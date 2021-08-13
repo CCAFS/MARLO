@@ -10,7 +10,7 @@
   ] 
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/home/dashboard.css?20210813a",
+  "${baseUrlMedia}/css/home/dashboard.css?20210813b",
   "${baseUrlCdn}/global/css/customDataTable.css",
   "${baseUrlCdn}/global/css/impactGraphic.css"
   ] 
@@ -48,21 +48,23 @@
 
     [#--  Home Graphs  --]
     <div class="homeGraphs col-md-12">
-      <div class="col-md-2 simpleBox">
-        <table id="table" data-toggle="table" data-search="true" data-filter-control="true" data-show-export="true" data-click-to-select="true" data-toolbar="#toolbar">
-          <thead>
-            <caption>CATEGORIES</caption>
-          </thead>
-          <tbody>
-            [#list (byTotalDTOs)![] as data]
-              <tr>
-                <td class="bs-checkbox "><input data-index="0" name="btSelectItem" type="checkbox"></td>
-                <td>${(data.indicatorName)!}</td>
-                <td class="tableIndicatorTotal">${(data.indicatorTotal)!}</td>
-              </tr>
-            [/#list]
-          </tbody>
-        </table>
+      <div class="col-md-2">
+        <div class="tableSimpleBox">
+          <table id="table" data-toggle="table" data-search="true" data-filter-control="true" data-show-export="true" data-click-to-select="true" data-toolbar="#toolbar">
+            <thead>
+              <caption>CATEGORIES</caption>
+            </thead>
+            <tbody>
+              [#list (byTotalDTOs)![] as data]
+                <tr>
+                  <td class="bs-checkbox "><input data-index="0" name="btSelectItem" type="checkbox"></td>
+                  <td>${(data.indicatorName)!}</td>
+                  <td class="tableIndicatorTotal">${(data.indicatorTotal)!}</td>
+                </tr>
+              [/#list]
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <div class="col-md-5">
