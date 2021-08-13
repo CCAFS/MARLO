@@ -239,3 +239,18 @@ span.timelineControl:hover {
     margin: 0;
     color: #8c8c8c;
 }
+
+table {
+    height: 193.5px;
+    font-family: roboto;
+    font-size: 12px;
+    color: black;
+}
+
+.tableIndicatorTotal {
+    height: 38.59px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    color: #777777;
+}

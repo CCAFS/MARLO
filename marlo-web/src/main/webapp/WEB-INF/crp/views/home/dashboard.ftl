@@ -4,7 +4,7 @@
 [#assign pageLibs = ["jQuery-Timelinr","cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
   "https://www.gstatic.com/charts/loader.js",
-  "${baseUrlMedia}/js/home/dashboard.js?20210813a",
+  "${baseUrlMedia}/js/home/dashboard.js?20210813b",
   "${baseUrlCdn}/global/js/impactGraphic.js",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210813a"
   ] 
@@ -45,113 +45,26 @@
 
 <section class="marlo-content">
   <div class="container">
-    [#-- What do you want to do --]
-    [#--  <div class="homeTitle"><b>[@s.text name="dashboard.decisionTree.title" /]</b></div>
-    <div id="decisionTree">  --]
-    
-      [#--  [#if centerGlobalUnit]  --]
-        [#-- CENTER Impact patchway --]
-        [#--  <div class="flex-container">
-          <div id="newImpactPathway" class="option hvr-float">
-            <a href="[@s.url action="impactPathway/${centerSession}/programimpacts"][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-              <p>[@s.text name="dashboard.decisionTree.defineImpact" /]</p>
-            </a>
-          </div>
-        </div>  --]
-        
-        [#-- Projects --]
-        [#--  <div class="flex-container">
-          <div id="startMonitoring" class="option hvr-float">
-            <a href="[@s.url action="monitoring/${centerSession}/monitoringOutcomesList"][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-              <p>[@s.text name="dashboard.decisionTree.startMonitoring" /]</p>
-            </a>  
-          </div>
-        </div>  --]
-        
-        [#-- Summaries --]
-        [#--  <div class="flex-container">
-          <div id="finalDes" class="option hvr-float"">
-            <a href="[@s.url namespace="/projects" action='${crpSession}/projectsList'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-              <p>[@s.text name="dashboard.decisionTree.updateProject" /]</p>
-            </a>
-          </div>
-        </div>
-      
-      [#else]  --]
-      
-        [#-- Add new Project --]
-        [#--  <div class="flex-container">
-        [#assign canAddCoreProject = (action.canAddCoreProject()) && (!crpClosed) && (!reportingActive) && (action.getActualPhase().editable)]
-        [#if canAddCoreProject]<a href="[@s.url namespace="/projects" action='${crpSession}/addNewCoreProject'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[/#if]
-          <div id="newProject" class="hvr-float option ${(!canAddCoreProject)?string('disabled','')}" ${(!canAddCoreProject)?string('title="This link is disabled"','')}>
-            <p>[@s.text name="dashboard.decisionTree.newProject" /]</p>
-          </div>
-        [#if canAddCoreProject]</a>[/#if]
-        </div>  --]
-        
-        [#-- Update an ongoing Project --]
-        [#--  <div class="flex-container">
-        [#assign canUpdateOngoingProjects = !crpClosed && canEditPhase ]
-        [#if canUpdateOngoingProjects]<a href="[@s.url namespace="/projects" action='${crpSession}/projectsList'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"> [/#if]
-          <div id="updatePlanning" class="hvr-float option ${(!canUpdateOngoingProjects)?string('disabled','')}" ${(!canUpdateOngoingProjects)?string('title="This link is disabled"','')}>
-            <p>[@s.text name="dashboard.decisionTree.updateProject" /]</p>
-          </div>
-        [#if canUpdateOngoingProjects]</a>[/#if]
-        </div>  --]
-        
-        [#-- Evaluate Project --]
-        [#--  <div class="flex-container">
-          <div id="reportProject" class="option disabled" title="This link is disabled">
-            <p>[@s.text name="dashboard.decisionTree.evaluateProject" /]</p>
-          </div>
-        </div>
-      
-      [/#if]
-      <div class="clearfix"></div>
-    </div>  --]
-    
-    
-    [#-- Shorcuts --]    
-   [#-- <div id="shorcuts"  class="col-md-5"> --]  
-    [#-- if crpSession?contains("CCAFS")  --]
-    [#-- [#if false ]
-      <div class="homeTitle"><strong>Timeline</strong></div>   
-      <div class="borderBox col-md-12">
-        <div id="timeline">
-        <span class="timelineControl leftControl glyphicon glyphicon-chevron-left"></span>
-        <span class="timelineControl rigthControl control glyphicon glyphicon-chevron-right"></span>
-          <ul id="dates">
-          [#list timeline as time]
-            <li><a href="#${time.id}">[#if time.startDate?has_content]${(time.startDate)?date("MM/dd/yyyy")}[/#if]</a></li>
-          [/#list]
-          </ul>
-          
-          <div class="borderBox">
-            <ul id="issues">
-            [#list timeline as time]
-              <li class="infoActions" id="${time.id}">
-                <span class="startDate hidden">${time.startDate}</span>
-                <span class="endDate hidden">${time.endDate}</span>
-                <h1>[#if time.startDate?has_content]${((time.startDate)?date("MM/dd/yyyy"))?split(",")[0]}[/#if] [#if time.endDate?has_content]- ${((time.endDate)?date("MM/dd/yyyy"))?split(",")[0]}[/#if]</h1>
-                <hr />
-                <label for="">What happen?</label>
-                <p> ${time.what}</p>
-                [#if (time.who?has_content)]
-                <hr />
-                <label for="">Who?</label>
-                <p>${time.who}</p>
-                [/#if]
-              </li>
-            [/#list]
-            </ul> 
-          </div>
-        </div>
-      </div>
-      [/#if]
-    </div> --]
 
     [#--  Home Graphs  --]
     <div class="homeGraphs col-md-12">
+      <div class="col-md-2 simpleBox">
+        <table id="table" data-toggle="table" data-search="true" data-filter-control="true" data-show-export="true" data-click-to-select="true" data-toolbar="#toolbar">
+          <thead>
+            <caption>CATEGORIES</caption>
+          </thead>
+          <tbody>
+            [#list (byTotalDTOs)![] as data]
+              <tr>
+                <td class="bs-checkbox "><input data-index="0" name="btSelectItem" type="checkbox"></td>
+                <td>${(data.indicatorName)!}</td>
+                <td class="tableIndicatorTotal">${(data.indicatorTotal)!}</td>
+              </tr>
+            [/#list]
+          </tbody>
+        </table>
+      </div>
+
       <div class="col-md-5">
         <div id="barChartHome" class="chartBox simpleBox" style="height: 250px;">
           <ul class="chartData" style="display:none">
