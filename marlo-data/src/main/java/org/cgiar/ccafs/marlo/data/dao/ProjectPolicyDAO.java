@@ -17,6 +17,7 @@
 package org.cgiar.ccafs.marlo.data.dao;
 
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.PolicyHomeDTO;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 
 import java.util.List;
@@ -54,6 +55,16 @@ public interface ProjectPolicyDAO {
    * @return a list from ProjectPolicy null if no exist records
    */
   public List<ProjectPolicy> findAll();
+
+  /**
+   * Gets a list of all the policies from a project planned for the phase's year
+   * NOTE: this method is meant to be used by the Home Dashboard table
+   * 
+   * @param phaseId the Phase identifier
+   * @param projectId the Project identifier
+   * @return a list of PolicyHomeDTO or empty
+   */
+  public List<PolicyHomeDTO> getPoliciesByProjectAndPhaseHome(long phaseId, long projectId);
 
   /**
    * This method gets a list of ProjectPolicy that are active by a given phase

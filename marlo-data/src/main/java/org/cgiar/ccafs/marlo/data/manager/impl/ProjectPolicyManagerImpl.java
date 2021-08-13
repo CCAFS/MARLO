@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.PolicyHomeDTO;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
@@ -197,6 +198,11 @@ public class ProjectPolicyManagerImpl implements ProjectPolicyManager {
 
     }
     return flagshipPlannedList;
+  }
+
+  @Override
+  public List<PolicyHomeDTO> getPoliciesByProjectAndPhaseHome(Long phaseId, Long projectId) {
+    return this.projectPolicyDAO.getPoliciesByProjectAndPhaseHome(phaseId.longValue(), projectId.longValue());
   }
 
   @Override
