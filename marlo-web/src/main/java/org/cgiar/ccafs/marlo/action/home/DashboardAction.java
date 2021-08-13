@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.model.DeliverableHomeDTO;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.HomeIndicatorsGraphByTotalDTO;
 import org.cgiar.ccafs.marlo.data.model.InnovationHomeDTO;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PolicyHomeDTO;
@@ -50,216 +51,224 @@ import org.apache.shiro.authz.AuthorizationInfo;
  */
 public class DashboardAction extends BaseAction {
 
-  private static final long serialVersionUID = 6686785556753962379L;
+	private static final long serialVersionUID = 6686785556753962379L;
 
-  // Managers
-  private PhaseManager phaseManager;
-  private ProjectManager projectManager;
-  private GlobalUnitManager crpManager;
-  private DeliverableManager deliverableManager;
-  private ProjectExpectedStudyManager projectExpectedStudyManager;
-  private ProjectInnovationManager projectInnovationManager;
-  private ProjectPolicyManager projectPolicyManager;
+	// Managers
+	private PhaseManager phaseManager;
+	private ProjectManager projectManager;
+	private GlobalUnitManager crpManager;
+	private DeliverableManager deliverableManager;
+	private ProjectExpectedStudyManager projectExpectedStudyManager;
+	private ProjectInnovationManager projectInnovationManager;
+	private ProjectPolicyManager projectPolicyManager;
 
-  // Variables
-  private GlobalUnit loggedCrp;
+	// Variables
+	private GlobalUnit loggedCrp;
+	private String[] indicatorNames = new String[] { "Projects", "Deliverables", "Studies", "Innovations", "Policies" };
+	private String[] indicatorColors = new String[] { "#4B91D7", "#F39C12", "#71CE48", "#8139B6", "#E43A74" };
 
-  private List<Project> myProjects;
-  private List<DeliverableHomeDTO> myDeliverables = new ArrayList<>();
-  private List<StudyHomeDTO> myStudies = new ArrayList<>();
-  private List<InnovationHomeDTO> myInnovations = new ArrayList<>();
-  private List<PolicyHomeDTO> myPolicies = new ArrayList<>();
+	private List<Project> myProjects;
+	private List<DeliverableHomeDTO> myDeliverables = new ArrayList<>();
+	private List<StudyHomeDTO> myStudies = new ArrayList<>();
+	private List<InnovationHomeDTO> myInnovations = new ArrayList<>();
+	private List<PolicyHomeDTO> myPolicies = new ArrayList<>();
+	private List<HomeIndicatorsGraphByTotalDTO> byTotalDTOs = new ArrayList<>();
 
-  @Inject
-  public DashboardAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
-    PhaseManager phaseManager, DeliverableManager deliverableManager, ProjectPolicyManager projectPolicyManager,
-    ProjectExpectedStudyManager projectExpectedStudyManager, ProjectInnovationManager projectInnovationManager) {
-    super(config);
-    this.projectManager = projectManager;
-    this.crpManager = crpManager;
-    this.phaseManager = phaseManager;
-    this.deliverableManager = deliverableManager;
-    this.projectExpectedStudyManager = projectExpectedStudyManager;
-    this.projectInnovationManager = projectInnovationManager;
-    this.projectPolicyManager = projectPolicyManager;
-  }
+	@Inject
+	public DashboardAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
+			PhaseManager phaseManager, DeliverableManager deliverableManager, ProjectPolicyManager projectPolicyManager,
+			ProjectExpectedStudyManager projectExpectedStudyManager,
+			ProjectInnovationManager projectInnovationManager) {
+		super(config);
+		this.projectManager = projectManager;
+		this.crpManager = crpManager;
+		this.phaseManager = phaseManager;
+		this.deliverableManager = deliverableManager;
+		this.projectExpectedStudyManager = projectExpectedStudyManager;
+		this.projectInnovationManager = projectInnovationManager;
+		this.projectPolicyManager = projectPolicyManager;
+	}
 
-  public GlobalUnit getLoggedCrp() {
-    return loggedCrp;
-  }
+	public List<HomeIndicatorsGraphByTotalDTO> getByTotalDTOs() {
+		return byTotalDTOs;
+	}
 
-  /**
-   * Get the value of myDeliverables
-   *
-   * @return the value of myDeliverables
-   */
-  public List<DeliverableHomeDTO> getMyDeliverables() {
-    return myDeliverables;
-  }
+	public GlobalUnit getLoggedCrp() {
+		return loggedCrp;
+	}
 
+	/**
+	 * Get the value of myDeliverables
+	 *
+	 * @return the value of myDeliverables
+	 */
+	public List<DeliverableHomeDTO> getMyDeliverables() {
+		return myDeliverables;
+	}
 
-  public List<InnovationHomeDTO> getMyInnovations() {
-    return myInnovations;
-  }
+	public List<InnovationHomeDTO> getMyInnovations() {
+		return myInnovations;
+	}
 
+	public List<PolicyHomeDTO> getMyPolicies() {
+		return myPolicies;
+	}
 
-  public List<PolicyHomeDTO> getMyPolicies() {
-    return myPolicies;
-  }
+	public List<Project> getMyProjects() {
+		return myProjects;
+	}
 
-  public List<Project> getMyProjects() {
-    return myProjects;
-  }
+	public List<StudyHomeDTO> getMyStudies() {
+		return myStudies;
+	}
 
+	@Override
+	public void prepare() throws Exception {
+		loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+		loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
+		Phase phase = phaseManager.getPhaseById(this.getActualPhase().getId());
 
-  public List<StudyHomeDTO> getMyStudies() {
-    return myStudies;
-  }
+		if (this.isSwitchSession()) {
+			this.clearPermissionsCache();
+		}
 
-  @Override
-  public void prepare() throws Exception {
-    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
-    Phase phase = phaseManager.getPhaseById(this.getActualPhase().getId());
+		// if (projectManager.findAll() != null) {
+		myProjects = new ArrayList<>();
+		if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
 
-    if (this.isSwitchSession()) {
-      this.clearPermissionsCache();
-    }
+			for (ProjectPhase projectPhase : phase.getProjectPhases()) {
+				projectPhase.getProject()
+						.setProjectInfo(projectPhase.getProject().getProjecInfoPhase(this.getActualPhase()));
+				myProjects.add(projectPhase.getProject());
+			}
 
-    // if (projectManager.findAll() != null) {
-    myProjects = new ArrayList<>();
-    if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
+		} else {
 
-      for (ProjectPhase projectPhase : phase.getProjectPhases()) {
-        projectPhase.getProject().setProjectInfo(projectPhase.getProject().getProjecInfoPhase(this.getActualPhase()));
-        myProjects.add(projectPhase.getProject());
-      }
+			List<Project> allProjects = new ArrayList<>();
+			if (phase != null) {
+				/*
+				 * if (phase.getCrp().getGlobalUnitType().getId().equals(
+				 * APConstants.CRP_DASHBOARD_CENTER_IDENTIFICATION)) { for
+				 * (ProjectPhase projectPhase : phase.getProjectPhases()) {
+				 * Project project =
+				 * projectManager.getProjectById(projectPhase.getProject().getId
+				 * ()); if (this.isProjectSubmitted(project.getId())) {
+				 * allProjects.add(project); } } }
+				 */
+				for (ProjectPhase projectPhase : phase.getProjectPhases()) {
+					allProjects.add(projectManager.getProjectById(projectPhase.getProject().getId()));
+				}
+			}
 
+			AuthorizationInfo info = ((APCustomRealm) this.securityContext.getRealm())
+					.getAuthorizationInfo(this.securityContext.getSubject().getPrincipals());
 
-    } else {
+			for (String permission : info.getStringPermissions()) {
+				if (permission.contains("project")) {
+					for (int i = 0; i > permission.split(":").length; i++) {
+						System.out.println(permission.split(":")[i]);
+					}
+				}
+			}
 
-      List<Project> allProjects = new ArrayList<>();
-      if (phase != null) {
-        /*
-         * if (phase.getCrp().getGlobalUnitType().getId().equals(APConstants.CRP_DASHBOARD_CENTER_IDENTIFICATION)) {
-         * for (ProjectPhase projectPhase : phase.getProjectPhases()) {
-         * Project project = projectManager.getProjectById(projectPhase.getProject().getId());
-         * if (this.isProjectSubmitted(project.getId())) {
-         * allProjects.add(project);
-         * }
-         * }
-         * }
-         */
-        for (ProjectPhase projectPhase : phase.getProjectPhases()) {
-          allProjects.add(projectManager.getProjectById(projectPhase.getProject().getId()));
-        }
-      }
+			myProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
+					.filter(p -> p.isActive()).collect(Collectors.toList());
 
+			List<Project> mProjects = new ArrayList<>();
+			mProjects.addAll(myProjects);
 
-      AuthorizationInfo info = ((APCustomRealm) this.securityContext.getRealm())
-        .getAuthorizationInfo(this.securityContext.getSubject().getPrincipals());
+			for (Project project : mProjects) {
+				project.getProjecInfoPhase(this.getActualPhase());
 
+				if (!allProjects.contains(project)) {
+					myProjects.remove(project);
+				}
+			}
 
-      for (String permission : info.getStringPermissions()) {
-        if (permission.contains("project")) {
-          for (int i = 0; i > permission.split(":").length; i++) {
-            System.out.println(permission.split(":")[i]);
-          }
-        }
-      }
+		}
+		// Skip closed projects for Reporting
+		if (this.isPlanningActive()) {
+			if (this.getActualPhase() != null && this.getActualPhase().getId() != null) {
+				List<Project> closedProjects = projectManager.getCompletedProjects(this.getCrpID(),
+						this.getActualPhase().getId());
+				if (closedProjects != null) {
+					// closedProjects.addAll(projectManager.getNoPhaseProjects(this.getCrpID(),
+					// this.getActualPhase()));
+					myProjects.removeAll(closedProjects);
+				}
+				Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
 
+			}
+		} else {
+			SimpleDateFormat dateFormat = new SimpleDateFormat("y");
 
-      myProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
-        .filter(p -> p.isActive()).collect(Collectors.toList());
+			myProjects = myProjects.stream().filter(mp -> mp.isActive()
+					&& mp.getProjecInfoPhase(this.getActualPhase()) != null
+					&& (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null || Integer.parseInt(
+							dateFormat.format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this
+									.getCurrentCycleYear()))
+					.collect(Collectors.toList());
+		}
 
+		myDeliverables = myProjects.stream().filter(p -> p != null && p.getId() != null)
+				.flatMap(p -> deliverableManager
+						.getDeliverablesByProjectAndPhaseHome(this.getActualPhase().getId(), p.getId()).stream())
+				.collect(Collectors.toList());
 
-      List<Project> mProjects = new ArrayList<>();
-      mProjects.addAll(myProjects);
+		myStudies = myProjects.stream().filter(p -> p != null && p.getId() != null)
+				.flatMap(p -> projectExpectedStudyManager
+						.getStudiesByProjectAndPhaseHome(this.getActualPhase().getId(), p.getId()).stream())
+				.collect(Collectors.toList());
 
+		myInnovations = myProjects.stream().filter(p -> p != null && p.getId() != null)
+				.flatMap(p -> projectInnovationManager
+						.getInnovationsByProjectAndPhaseHome(this.getActualPhase().getId(), p.getId()).stream())
+				.collect(Collectors.toList());
 
-      for (Project project : mProjects) {
-        project.getProjecInfoPhase(this.getActualPhase());
+		myPolicies = myProjects.stream().filter(p -> p != null && p.getId() != null)
+				.flatMap(p -> projectPolicyManager
+						.getPoliciesByProjectAndPhaseHome(this.getActualPhase().getId(), p.getId()).stream())
+				.collect(Collectors.toList());
 
-        if (!allProjects.contains(project)) {
-          myProjects.remove(project);
-        }
-      }
+		byTotalDTOs.add(new HomeIndicatorsGraphByTotalDTO(indicatorNames[0], myProjects.size(), indicatorColors[0]));
+		byTotalDTOs
+				.add(new HomeIndicatorsGraphByTotalDTO(indicatorNames[1], myDeliverables.size(), indicatorColors[1]));
+		byTotalDTOs.add(new HomeIndicatorsGraphByTotalDTO(indicatorNames[2], myStudies.size(), indicatorColors[2]));
+		byTotalDTOs.add(new HomeIndicatorsGraphByTotalDTO(indicatorNames[3], myInnovations.size(), indicatorColors[3]));
+		byTotalDTOs.add(new HomeIndicatorsGraphByTotalDTO(indicatorNames[4], myPolicies.size(), indicatorColors[4]));
+	}
 
+	public void setByTotalDTOs(List<HomeIndicatorsGraphByTotalDTO> byTotalDTOs) {
+		this.byTotalDTOs = byTotalDTOs;
+	}
 
-    }
-    // Skip closed projects for Reporting
-    if (this.isPlanningActive()) {
-      if (this.getActualPhase() != null && this.getActualPhase().getId() != null) {
-        List<Project> closedProjects =
-          projectManager.getCompletedProjects(this.getCrpID(), this.getActualPhase().getId());
-        if (closedProjects != null) {
-          // closedProjects.addAll(projectManager.getNoPhaseProjects(this.getCrpID(), this.getActualPhase()));
-          myProjects.removeAll(closedProjects);
-        }
-        Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
+	public void setLoggedCrp(GlobalUnit loggedCrp) {
+		this.loggedCrp = loggedCrp;
+	}
 
-      }
-    } else {
-      SimpleDateFormat dateFormat = new SimpleDateFormat("y");
+	/**
+	 * Set the value of myDeliverables
+	 *
+	 * @param myDeliverables new value of myDeliverables
+	 */
+	public void setMyDeliverables(List<DeliverableHomeDTO> myDeliverables) {
+		this.myDeliverables = myDeliverables;
+	}
 
-      myProjects =
-        myProjects.stream()
-          .filter(
-            mp -> mp.isActive() && mp.getProjecInfoPhase(this.getActualPhase()) != null
-              && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null || Integer.parseInt(dateFormat
-                .format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this.getCurrentCycleYear()))
-          .collect(Collectors.toList());
-    }
+	public void setMyInnovations(List<InnovationHomeDTO> myInnovations) {
+		this.myInnovations = myInnovations;
+	}
 
+	public void setMyPolicies(List<PolicyHomeDTO> myPolicies) {
+		this.myPolicies = myPolicies;
+	}
 
-    myDeliverables = myProjects.stream().filter(p -> p != null && p.getId() != null)
-      .flatMap(
-        p -> deliverableManager.getDeliverablesByProjectAndPhaseHome(this.getActualPhase().getId(), p.getId()).stream())
-      .collect(Collectors.toList());
+	public void setMyProjects(List<Project> myProjects) {
+		this.myProjects = myProjects;
+	}
 
-    myStudies = myProjects.stream().filter(p -> p != null && p.getId() != null)
-      .flatMap(p -> projectExpectedStudyManager
-        .getStudiesByProjectAndPhaseHome(this.getActualPhase().getId(), p.getId()).stream())
-      .collect(Collectors.toList());
-
-    myInnovations = myProjects.stream().filter(p -> p != null && p.getId() != null)
-      .flatMap(p -> projectInnovationManager
-        .getInnovationsByProjectAndPhaseHome(this.getActualPhase().getId(), p.getId()).stream())
-      .collect(Collectors.toList());
-
-    myPolicies = myProjects.stream().filter(p -> p != null && p.getId() != null)
-      .flatMap(
-        p -> projectPolicyManager.getPoliciesByProjectAndPhaseHome(this.getActualPhase().getId(), p.getId()).stream())
-      .collect(Collectors.toList());
-  }
-
-  public void setLoggedCrp(GlobalUnit loggedCrp) {
-    this.loggedCrp = loggedCrp;
-  }
-
-  /**
-   * Set the value of myDeliverables
-   *
-   * @param myDeliverables new value of myDeliverables
-   */
-  public void setMyDeliverables(List<DeliverableHomeDTO> myDeliverables) {
-    this.myDeliverables = myDeliverables;
-  }
-
-  public void setMyInnovations(List<InnovationHomeDTO> myInnovations) {
-    this.myInnovations = myInnovations;
-  }
-
-  public void setMyPolicies(List<PolicyHomeDTO> myPolicies) {
-    this.myPolicies = myPolicies;
-  }
-
-  public void setMyProjects(List<Project> myProjects) {
-    this.myProjects = myProjects;
-  }
-
-  public void setMyStudies(List<StudyHomeDTO> myStudies) {
-    this.myStudies = myStudies;
-  }
+	public void setMyStudies(List<StudyHomeDTO> myStudies) {
+		this.myStudies = myStudies;
+	}
 
 }

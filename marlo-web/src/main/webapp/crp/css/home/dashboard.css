@@ -229,3 +229,13 @@ span.timelineControl {
 span.timelineControl:hover {
     color: #117fa8;
 }
+
+.chartBox {
+    background: url(../../../global/images/saving.gif) no-repeat;
+    background-position: 50%;
+    min-height: 100px;
+    padding: 1em;
+    padding-top: 0;
+    margin: 0;
+    color: #8c8c8c;
+}
