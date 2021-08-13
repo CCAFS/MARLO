@@ -247,10 +247,23 @@ table {
     color: black;
 }
 
+.bs-checkbox {
+    margin-right: 5px;
+}
+
 .tableIndicatorTotal {
     height: 38.59px;
     display: flex;
     align-items: center;
     justify-content: flex-end;
     color: #777777;
+}
+
+.tableSimpleBox {
+    border: 1px solid #E7E7E7;
+    padding: 10px 15px;
+    border-radius: 3px;
+    margin: 2px 0px 5px 0;
+    position: relative;
+    background: #FFF;
 }
