@@ -3,12 +3,14 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["jQuery-Timelinr","cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/home/dashboard.js",
-  "${baseUrlCdn}/global/js/impactGraphic.js"
+  "https://www.gstatic.com/charts/loader.js",
+  "${baseUrlMedia}/js/home/dashboard.js?20210813a",
+  "${baseUrlCdn}/global/js/impactGraphic.js",
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210813a"
   ] 
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/home/dashboard.css",
+  "${baseUrlMedia}/css/home/dashboard.css?20210813a",
   "${baseUrlCdn}/global/css/customDataTable.css",
   "${baseUrlCdn}/global/css/impactGraphic.css"
   ] 
@@ -44,30 +46,30 @@
 <section class="marlo-content">
   <div class="container">
     [#-- What do you want to do --]
-    <div class="homeTitle"><b>[@s.text name="dashboard.decisionTree.title" /]</b></div>
-    <div id="decisionTree">
+    [#--  <div class="homeTitle"><b>[@s.text name="dashboard.decisionTree.title" /]</b></div>
+    <div id="decisionTree">  --]
     
-      [#if centerGlobalUnit]
+      [#--  [#if centerGlobalUnit]  --]
         [#-- CENTER Impact patchway --]
-        <div class="flex-container">
+        [#--  <div class="flex-container">
           <div id="newImpactPathway" class="option hvr-float">
             <a href="[@s.url action="impactPathway/${centerSession}/programimpacts"][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
               <p>[@s.text name="dashboard.decisionTree.defineImpact" /]</p>
             </a>
           </div>
-        </div>
+        </div>  --]
         
         [#-- Projects --]
-        <div class="flex-container">
+        [#--  <div class="flex-container">
           <div id="startMonitoring" class="option hvr-float">
             <a href="[@s.url action="monitoring/${centerSession}/monitoringOutcomesList"][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
               <p>[@s.text name="dashboard.decisionTree.startMonitoring" /]</p>
             </a>  
           </div>
-        </div>
+        </div>  --]
         
         [#-- Summaries --]
-        <div class="flex-container">
+        [#--  <div class="flex-container">
           <div id="finalDes" class="option hvr-float"">
             <a href="[@s.url namespace="/projects" action='${crpSession}/projectsList'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
               <p>[@s.text name="dashboard.decisionTree.updateProject" /]</p>
@@ -75,30 +77,30 @@
           </div>
         </div>
       
-      [#else]
+      [#else]  --]
       
         [#-- Add new Project --]
-        <div class="flex-container">
+        [#--  <div class="flex-container">
         [#assign canAddCoreProject = (action.canAddCoreProject()) && (!crpClosed) && (!reportingActive) && (action.getActualPhase().editable)]
         [#if canAddCoreProject]<a href="[@s.url namespace="/projects" action='${crpSession}/addNewCoreProject'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[/#if]
           <div id="newProject" class="hvr-float option ${(!canAddCoreProject)?string('disabled','')}" ${(!canAddCoreProject)?string('title="This link is disabled"','')}>
             <p>[@s.text name="dashboard.decisionTree.newProject" /]</p>
           </div>
         [#if canAddCoreProject]</a>[/#if]
-        </div>
+        </div>  --]
         
         [#-- Update an ongoing Project --]
-        <div class="flex-container">
+        [#--  <div class="flex-container">
         [#assign canUpdateOngoingProjects = !crpClosed && canEditPhase ]
         [#if canUpdateOngoingProjects]<a href="[@s.url namespace="/projects" action='${crpSession}/projectsList'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"> [/#if]
           <div id="updatePlanning" class="hvr-float option ${(!canUpdateOngoingProjects)?string('disabled','')}" ${(!canUpdateOngoingProjects)?string('title="This link is disabled"','')}>
             <p>[@s.text name="dashboard.decisionTree.updateProject" /]</p>
           </div>
         [#if canUpdateOngoingProjects]</a>[/#if]
-        </div>
+        </div>  --]
         
         [#-- Evaluate Project --]
-        <div class="flex-container">
+        [#--  <div class="flex-container">
           <div id="reportProject" class="option disabled" title="This link is disabled">
             <p>[@s.text name="dashboard.decisionTree.evaluateProject" /]</p>
           </div>
@@ -106,7 +108,7 @@
       
       [/#if]
       <div class="clearfix"></div>
-    </div>
+    </div>  --]
     
     
     [#-- Shorcuts --]    
@@ -146,7 +148,53 @@
         </div>
       </div>
       [/#if]
-    </div> --]    
+    </div> --]
+
+    [#--  Home Graphs  --]
+    <div class="homeGraphs col-md-12">
+      <div class="col-md-5">
+        <div id="barChartHome" class="chartBox simpleBox" style="height: 250px;">
+          <ul class="chartData" style="display:none">
+            <li>
+              <span>[@s.text name="" /]</span>
+              <span>[@s.text name="" /]</span>
+              <span class="json">{"role":"style"}</span>
+              <span class="json">{"role":"annotation"}</span>
+            </li>
+                                
+            [#list (byTotalDTOs)![] as data]
+              <li>
+                <span>${(data.indicatorName)!}</span>
+                <span class="number">${(data.indicatorTotal)!}</span>
+                <span>${(data.indicatorColor)!}</span>
+                <span>${(data.indicatorTotal)!}</span>
+              </li> 
+            [/#list]
+          </ul>
+        </div>
+      </div>
+
+      <div class="col-md-5">
+        <div id="pieChartHome" class="chartBox simpleBox" style="height: 250px;">
+          <ul class="chartData" style="display:none">
+            <li>
+              <span>[@s.text name="" /]</span>
+              <span>[@s.text name="" /]</span>
+              <span class="json">{"role":"annotation"}</span>
+            </li>
+            [#list (byTotalDTOs)![] as data]
+              [#if data.indicatorTotal??]
+              <li>
+                <span>${(data.indicatorName)!}</span>
+                <span class="number">${(data.indicatorTotal)!}</span>
+                <span>${(data.indicatorTotal)!}</span>
+              </li>
+              [/#if]
+            [/#list]
+          </ul>
+        </div>
+      </div>
+    </div>
     
     [#-- Dashboard --]   
     <div id="dashboardContent" class="col-md-12">
