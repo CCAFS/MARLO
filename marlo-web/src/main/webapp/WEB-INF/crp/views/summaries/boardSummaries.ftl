@@ -307,6 +307,18 @@
       "cycles": [ "Planning" ]
     }
   ]}
+  [#-- REPORT BY COUNTRIES --]
+  [#--  { "slug": "reportByCountries", "active": !centerGlobalUnit, "title":"summaries.board.options.reportByCountries", "reportsList": [
+    { "active": !centerGlobalUnit,
+      "available": true,
+      "title": "summaries.board.report.reportByCountriesSummary", 
+      "description": "summaries.board.report.reportByCountriesSummary.description",
+      "namespace": "/projects",
+      "action": "${crpSession}/",
+      "formats": [ "Excel" ],
+      "cycles": [ "Reporting" ]
+    }
+  ]}  --]
 ]/]
 
 
