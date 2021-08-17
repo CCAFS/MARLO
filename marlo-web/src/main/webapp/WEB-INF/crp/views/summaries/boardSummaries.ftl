@@ -254,6 +254,15 @@
   ]},
   [#-- CRP/PTF Level --]
   { "slug": "globalUnitLevel", "active": !centerGlobalUnit, "title":"summaries.board.options.globalUnitLevel", "reportsList": [
+    { "active": !centerGlobalUnit,
+      "available": true,
+      "title": "summaries.board.report.impactPathwaysSummary", 
+      "description": "summaries.board.report.impactPathwaysSummary.description",
+      "namespace": "/projects",
+      "action": "${crpSession}/ImpactPathwaysSummary",
+      "formats": [ "Excel" ],
+      "cycles": [ "Planning","Reporting" ]
+    },
     { "active": true,
       "available": true,
       "title": "summaries.board.report.outcomeMilestoneEvidence", 
