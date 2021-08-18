@@ -17,14 +17,20 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.CrpClusterOfActivityDAO;
+import org.cgiar.ccafs.marlo.data.dto.ImpactPathwaysClusterDTO;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
+import java.math.BigDecimal;
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.hibernate.FlushMode;
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.transform.ResultTransformer;
 
 @Named
 public class CrpClusterOfActivityMySQLDAO extends AbstractMarloDAO<CrpClusterOfActivity, Long>
@@ -82,6 +88,46 @@ public class CrpClusterOfActivityMySQLDAO extends AbstractMarloDAO<CrpClusterOfA
     List<CrpClusterOfActivity> list = super.findAll(query.toString());
     return list;
 
+  }
+
+  @Override
+  public List<ImpactPathwaysClusterDTO> getAllClusterInfoFromPhase(long phaseId) {
+    String query = "select fp.acronym, coa.identifier, coa.description as coa_title, "
+      + "GROUP_CONCAT(CONCAT(leader.last_name,', ', leader.first_name, '\\r\\n<', leader.email, '>') SEPARATOR ';\\r\\n'), "
+      + "kout.key_output, kout.contribution, " + "outc.composed_id, outc.description as cpo_title "
+      + "from crp_cluster_of_activities coa "
+      + "join phases ph on ph.id = coa.id_phase join global_units gu on gu.id = ph.global_unit_id "
+      + "join crp_programs fp on fp.id = coa.crp_program_id "
+      + "left join crp_cluster_activity_leaders coal on coal.cluster_activity_id = coa.id and coal.is_active "
+      + "left join users leader on leader.id = coal.user_id "
+      + "left join crp_cluster_key_outputs kout on kout.cluster_activity_id = coa.id and kout.is_active "
+      + "left join crp_cluster_key_outputs_outcome kouto on kouto.key_output_id = kout.id and kouto.is_active "
+      + "left join crp_program_outcomes outc on outc.id = kouto.outcome_id and outc.is_active "
+      + "where coa.is_active and ph.id = ? "
+      + "GROUP BY fp.acronym, coa.identifier, coa.description, kout.key_output, kout.contribution, outc.composed_id, "
+      + "outc.description " + "order by 1,2";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createSQLQuery(query);
+
+    createQuery.setParameter(0, phaseId);
+    createQuery.setResultTransformer(new ResultTransformer() {
+
+      @Override
+      public List transformList(List collection) {
+        // we return the same list as-it-is because we could not care less about this, as we are not using it.
+        return collection;
+      }
+
+      @Override
+      public Object transformTuple(Object[] tuple, String[] aliases) {
+        return new ImpactPathwaysClusterDTO((String) tuple[0], (String) tuple[1], (String) tuple[2], (String) tuple[3],
+          (String) tuple[4], (tuple[5] == null ? BigDecimal.ZERO.negate() : new BigDecimal((String) tuple[5])),
+          (String) tuple[6], (String) tuple[7]);
+      }
+    });
+    createQuery.setFlushMode(FlushMode.COMMIT);
+
+    List<ImpactPathwaysClusterDTO> list = createQuery.list();
+    return list;
   }
 
   @Override
