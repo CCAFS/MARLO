@@ -120,7 +120,7 @@ public class CrpClusterOfActivityMySQLDAO extends AbstractMarloDAO<CrpClusterOfA
       @Override
       public Object transformTuple(Object[] tuple, String[] aliases) {
         return new ImpactPathwaysClusterDTO((String) tuple[0], (String) tuple[1], (String) tuple[2], (String) tuple[3],
-          (String) tuple[4], (tuple[5] == null ? BigDecimal.ZERO.negate() : new BigDecimal((String) tuple[5])),
+          (String) tuple[4], (tuple[5] == null ? BigDecimal.ZERO : new BigDecimal(((Double) tuple[5]).toString())),
           (String) tuple[6], (String) tuple[7]);
       }
     });
