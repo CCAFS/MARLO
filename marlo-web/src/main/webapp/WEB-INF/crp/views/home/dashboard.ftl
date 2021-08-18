@@ -8,9 +8,10 @@
   ] 
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/home/dashboard.css",
+  "${baseUrlMedia}/css/home/dashboard.css?20210918a",
   "${baseUrlCdn}/global/css/customDataTable.css",
-  "${baseUrlCdn}/global/css/impactGraphic.css"
+  "${baseUrlCdn}/global/css/impactGraphic.css",
+  "${baseUrlCdn}/global/css/global.css?20210918a"
   ] 
 /]
 [#assign currentSection = "home" /]
