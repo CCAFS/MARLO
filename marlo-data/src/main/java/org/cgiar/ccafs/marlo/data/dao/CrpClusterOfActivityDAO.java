@@ -16,6 +16,7 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
+import org.cgiar.ccafs.marlo.data.dto.ImpactPathwaysClusterDTO;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
@@ -64,6 +65,13 @@ public interface CrpClusterOfActivityDAO {
    */
   public List<CrpClusterOfActivity> findClusterProgramPhase(long crpProgramID, long phaseID);
 
+  /**
+   * This method is meant to be used by the ImpactPathways report
+   * 
+   * @param phaseId the Phase identifier
+   * @return all the cluster info (including leaders, key outputs and linked outcomes)
+   */
+  public List<ImpactPathwaysClusterDTO> getAllClusterInfoFromPhase(long phaseId);
 
   public CrpClusterOfActivity getCrpClusterOfActivityByIdentifierPhase(String crpClusterOfActivityIdentefier,
     Phase phase);
