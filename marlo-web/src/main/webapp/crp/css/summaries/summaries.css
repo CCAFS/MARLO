@@ -159,6 +159,14 @@
   background-position: -92px -316px;
 }
 
+#reportByCountries.summariesSection span {
+  background-position: 5px -365px;
+}
+
+#reportByCountries.summariesSection.current span {
+  background-position: -92px -367px;
+}
+
 #capdev.summariesSection span {
   background-position: 5px -125px;
 }
