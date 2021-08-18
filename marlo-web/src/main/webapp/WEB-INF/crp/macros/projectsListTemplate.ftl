@@ -140,6 +140,7 @@
               [#assign tagsNumber = tagsNumber+1 /]
             [#else]
               [#assign programs = ((project.flagships)![]) + ((project.regions)![])]
+              
               [#list (programs)![] as element]
                 [#if element.crp.id == actualPhase.crp.id ]
                   <span class="programTag" style="border-color:${(element.color)!'#fff'}" title="${(element.composedName)}">${(element.acronym)!}</span>
@@ -147,7 +148,7 @@
                 [/#if]
               [/#list]
             [/#if]
-            
+            <span> ${(project.flagships)! "probando"}</span> 
             [#if tagsNumber < 1]
               [@s.text name="projectsList.none" /]
             [/#if]

@@ -2951,11 +2951,19 @@ input.userName {
 
 .homeTitle {
   display: flex;
-  justify-content: center;
+  justify-content: left;
   font-size: 2em;
   color: #333;
-  padding-bottom: 14px;
+  /* padding-bottom: 14px;
   padding-top: 5px;
+  padding-left: 30px; */
+  padding: 5px 30px 14px 30px;
+}
+
+.homeDescription {
+  margin-bottom: 14px;
+  font-style: italic;
+  color: black;
 }
 
 .homeSubTitle {
