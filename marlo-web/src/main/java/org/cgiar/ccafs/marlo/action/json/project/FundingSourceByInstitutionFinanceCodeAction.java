@@ -109,7 +109,8 @@ public class FundingSourceByInstitutionFinanceCodeAction extends BaseAction {
     }
     if (summaries != null && !summaries.isEmpty()) {
       String crpName = null;
-      Long phaseID;
+      // initialize variable (null at least)
+      Long phaseID = null;
       for (FundingSourceSearchSummary summary : summaries) {
         if (summary.getId() != null) {
           Long crpID = fundingSourceManager

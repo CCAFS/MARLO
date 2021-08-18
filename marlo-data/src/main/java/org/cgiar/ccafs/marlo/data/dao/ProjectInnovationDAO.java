@@ -16,6 +16,7 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
+import org.cgiar.ccafs.marlo.data.model.InnovationHomeDTO;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 
@@ -62,6 +63,16 @@ public interface ProjectInnovationDAO {
    * @return a list from ProjectInnovation null if no exist records
    */
   public List<ProjectInnovation> getInnovationsByPhase(Phase phase);
+
+  /**
+   * Gets a list of all the innovations from a project planned for the phase's year
+   * NOTE: this method is meant to be used by the Home Dashboard table
+   * 
+   * @param phaseId the Phase identifier
+   * @param projectId the Project identifier
+   * @return a list of InnovationHomeDTO or empty
+   */
+  public List<InnovationHomeDTO> getInnovationsByProjectAndPhaseHome(long phaseId, long projectId);
 
   public Boolean isInnovationExcluded(Long innovationId, Long phaseId);
 
