@@ -341,39 +341,6 @@ public class ImpactPathwaysSummaryAction extends BaseSummariesAction implements 
 
       model.addRow(new Object[] {flagship, clusterIdentifier, clusterTitle, clusterLeaders, keyOutputStatement,
         keyOutputContribution, outcomeId, outcomeDescription});
-      /*
-       * // Flagship/module
-       * if (clusterOfActivity.getCrpProgram() != null && clusterOfActivity.getCrpProgram().getId() != null
-       * && StringUtils.isNotBlank(clusterOfActivity.getCrpProgram().getAcronym())) {
-       * flagship = clusterOfActivity.getCrpProgram().getAcronym();
-       * } else {
-       * flagship = "<Not defined>";
-       * }
-       * // Cluster identifier
-       * if (StringUtils.isNotBlank(clusterOfActivity.getIdentifier())) {
-       * clusterIdentifier = clusterOfActivity.getIdentifier();
-       * } else {
-       * clusterIdentifier = "<Not provided>";
-       * }
-       * // Cluster title
-       * if (StringUtils.isNotBlank(clusterOfActivity.getDescription())) {
-       * clusterIdentifier = clusterOfActivity.getDescription();
-       * } else {
-       * clusterIdentifier = "<Not provided>";
-       * }
-       * // Cluster Leaders
-       * if (this.isNotEmpty(clusterOfActivity.getLeaders())) {
-       * for (CrpClusterActivityLeader leader : clusterOfActivity.getLeaders()) {
-       * if (leader != null && leader.getUser() != null && leader.getUser().getId() != null
-       * && StringUtils.isNotBlank(leader.getUser().getComposedName())) {
-       * clusterLeaders = clusterLeaders.append(leader.getUser().getComposedName()).append("; ");
-       * }
-       * }
-       * clusterLeaders = clusterLeaders.delete(clusterLeaders.length() - 3, clusterLeaders.length() - 1);
-       * } else {
-       * clusterLeaders = new StringBuffer("<Not provided>");
-       * }
-       */
     }
 
     return model;
