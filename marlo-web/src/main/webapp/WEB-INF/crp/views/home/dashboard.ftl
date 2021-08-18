@@ -44,30 +44,30 @@
 <section class="marlo-content">
   <div class="container">
     [#-- What do you want to do --]
-    <div class="homeTitle"><b>[@s.text name="dashboard.decisionTree.title" /]</b></div>
-    <div id="decisionTree">
+    <div class="homeTitle"><b>[@s.text name="dashboard.homepage.title" /] ${(currentUser.firstName)!}!</b></div>
+    [#--  <div id="decisionTree">  --]
     
-      [#if centerGlobalUnit]
+      [#--  [#if centerGlobalUnit]  --]
         [#-- CENTER Impact patchway --]
-        <div class="flex-container">
+        [#--  <div class="flex-container">
           <div id="newImpactPathway" class="option hvr-float">
             <a href="[@s.url action="impactPathway/${centerSession}/programimpacts"][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
               <p>[@s.text name="dashboard.decisionTree.defineImpact" /]</p>
             </a>
           </div>
-        </div>
+        </div>  --]
         
         [#-- Projects --]
-        <div class="flex-container">
+        [#--  <div class="flex-container">
           <div id="startMonitoring" class="option hvr-float">
             <a href="[@s.url action="monitoring/${centerSession}/monitoringOutcomesList"][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
               <p>[@s.text name="dashboard.decisionTree.startMonitoring" /]</p>
             </a>  
           </div>
-        </div>
+        </div>  --]
         
         [#-- Summaries --]
-        <div class="flex-container">
+        [#--  <div class="flex-container">
           <div id="finalDes" class="option hvr-float"">
             <a href="[@s.url namespace="/projects" action='${crpSession}/projectsList'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
               <p>[@s.text name="dashboard.decisionTree.updateProject" /]</p>
@@ -75,30 +75,30 @@
           </div>
         </div>
       
-      [#else]
+      [#else]  --]
       
         [#-- Add new Project --]
-        <div class="flex-container">
+        [#--  <div class="flex-container">
         [#assign canAddCoreProject = (action.canAddCoreProject()) && (!crpClosed) && (!reportingActive) && (action.getActualPhase().editable)]
         [#if canAddCoreProject]<a href="[@s.url namespace="/projects" action='${crpSession}/addNewCoreProject'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[/#if]
           <div id="newProject" class="hvr-float option ${(!canAddCoreProject)?string('disabled','')}" ${(!canAddCoreProject)?string('title="This link is disabled"','')}>
             <p>[@s.text name="dashboard.decisionTree.newProject" /]</p>
           </div>
         [#if canAddCoreProject]</a>[/#if]
-        </div>
+        </div>  --]
         
         [#-- Update an ongoing Project --]
-        <div class="flex-container">
+        [#--  <div class="flex-container">
         [#assign canUpdateOngoingProjects = !crpClosed && canEditPhase ]
         [#if canUpdateOngoingProjects]<a href="[@s.url namespace="/projects" action='${crpSession}/projectsList'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"> [/#if]
           <div id="updatePlanning" class="hvr-float option ${(!canUpdateOngoingProjects)?string('disabled','')}" ${(!canUpdateOngoingProjects)?string('title="This link is disabled"','')}>
             <p>[@s.text name="dashboard.decisionTree.updateProject" /]</p>
           </div>
         [#if canUpdateOngoingProjects]</a>[/#if]
-        </div>
+        </div>  --]
         
         [#-- Evaluate Project --]
-        <div class="flex-container">
+        [#--  <div class="flex-container">
           <div id="reportProject" class="option disabled" title="This link is disabled">
             <p>[@s.text name="dashboard.decisionTree.evaluateProject" /]</p>
           </div>
@@ -106,7 +106,7 @@
       
       [/#if]
       <div class="clearfix"></div>
-    </div>
+    </div>  --]
     
     
     [#-- Shorcuts --]    
@@ -150,7 +150,7 @@
     
     [#-- Dashboard --]   
     <div id="dashboardContent" class="col-md-12">
-      <div class="homeTitle col-md-12">[#-- <strong>Dashboard</strong> --]</div>
+      <div class="homeDescription col-md-12">[@s.text name="dashboard.homepage.description" /]</div>
       <div class="col-md-12">
         <ul class="nav nav-tabs" role="tablist">
           <li role="presentation" class="active"><a  id="projects" href="#myProjects" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.projects.table.title" /]</a></li>
