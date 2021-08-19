@@ -75,7 +75,7 @@ public class ActivityMySQLDAO extends AbstractMarloDAO<Activity, Long> implement
     String query = "from " + Activity.class.getName() + " where project_id=" + projectId + " and id_phase=" + phaseId
       + " and is_active=1";
     List<Activity> list = super.findAll(query);
-    if (list.size() > 0) {
+    if (!list.isEmpty()) {
       return list;
     }
     return null;
