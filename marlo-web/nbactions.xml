@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>CUSTOM-marlo-web</actionName>
+            <displayName>marlo-web</displayName>
+            <goals>
+                <goal>tomcat7:run</goal>
+                <goal>-T100</goal>
+            </goals>
+        </action>
+        <action>
+            <actionName>CUSTOM-marlo-web (debug)</actionName>
+            <displayName>marlo-web (debug)</displayName>
+            <goals>
+                <goal>tomcat7:run</goal>
+                <goal>-T100</goal>
+            </goals>
+            <properties>
+                <jpda.listen>maven</jpda.listen>
+                
+            </properties>
+        </action>
+    </actions>
