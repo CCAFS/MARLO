@@ -39,10 +39,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.AuthorizationInfo;
 
 /**
@@ -66,7 +68,8 @@ public class DashboardAction extends BaseAction {
 
   private List<Project> myProjects;
   private List<DeliverableHomeDTO> myDeliverables = new ArrayList<>();
-  private List<StudyHomeDTO> myStudies = new ArrayList<>();
+  private List<StudyHomeDTO> myOicrs = new ArrayList<>();
+  private List<StudyHomeDTO> myMelias = new ArrayList<>();
   private List<InnovationHomeDTO> myInnovations = new ArrayList<>();
   private List<PolicyHomeDTO> myPolicies = new ArrayList<>();
 
@@ -103,17 +106,21 @@ public class DashboardAction extends BaseAction {
   }
 
 
+  public List<StudyHomeDTO> getMyMelias() {
+    return myMelias;
+  }
+
+  public List<StudyHomeDTO> getMyOicrs() {
+    return myOicrs;
+  }
+
+
   public List<PolicyHomeDTO> getMyPolicies() {
     return myPolicies;
   }
 
   public List<Project> getMyProjects() {
     return myProjects;
-  }
-
-
-  public List<StudyHomeDTO> getMyStudies() {
-    return myStudies;
   }
 
   @Override
@@ -217,10 +224,14 @@ public class DashboardAction extends BaseAction {
         p -> deliverableManager.getDeliverablesByProjectAndPhaseHome(this.getActualPhase().getId(), p.getId()).stream())
       .collect(Collectors.toList());
 
-    myStudies = myProjects.stream().filter(p -> p != null && p.getId() != null)
+    Map<Boolean, List<StudyHomeDTO>> allStudies = myProjects.stream().filter(p -> p != null && p.getId() != null)
       .flatMap(p -> projectExpectedStudyManager
         .getStudiesByProjectAndPhaseHome(this.getActualPhase().getId(), p.getId()).stream())
-      .collect(Collectors.toList());
+      .collect(
+        Collectors.partitioningBy(st -> StringUtils.startsWith(StringUtils.trimToNull(st.getStudyType()), "OICR")));
+
+    myMelias.addAll(allStudies.get(false));
+    myOicrs.addAll(allStudies.get(true));
 
     myInnovations = myProjects.stream().filter(p -> p != null && p.getId() != null)
       .flatMap(p -> projectInnovationManager
@@ -250,16 +261,20 @@ public class DashboardAction extends BaseAction {
     this.myInnovations = myInnovations;
   }
 
+  public void setMyMelias(List<StudyHomeDTO> myMelias) {
+    this.myMelias = myMelias;
+  }
+
+  public void setMyOicrs(List<StudyHomeDTO> myStudies) {
+    this.myOicrs = myStudies;
+  }
+
   public void setMyPolicies(List<PolicyHomeDTO> myPolicies) {
     this.myPolicies = myPolicies;
   }
 
   public void setMyProjects(List<Project> myProjects) {
     this.myProjects = myProjects;
-  }
-
-  public void setMyStudies(List<StudyHomeDTO> myStudies) {
-    this.myStudies = myStudies;
   }
 
 }
