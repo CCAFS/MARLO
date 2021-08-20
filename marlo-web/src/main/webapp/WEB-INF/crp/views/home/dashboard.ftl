@@ -155,7 +155,7 @@
         [#if aiccra]
             <p><h3>What is a Cluster?</h3></p><p>A cluster is defined as the group of AICCRA main activities led by each AICCRA Country Leader (Ghana, Mali, Senegal, Ethiopia, Kenya and Zambia), AICCRA Regional Leaders (Western Africa and Eastern & Southern Africa) and AICCRA-CCAFS Flagship Leaders (FP1, FP2 and FP4). In each cluster, participants are involved as leader, coordinators and collaborators with specific budget allocations for each AICCRA main activity with a set of deliverables and contributions towards our performance indicators.</p>
             <h3>Reporting Schedule</h3>
-            <img class="img-fluid z-depth-1" src="${baseUrlCdn}/global/images/aiccra-planning-2021.png" alt="video"
+            <img class="img-fluid z-depth-1" style="cursor: zoom-in" src="${baseUrlCdn}/global/images/aiccra-planning-2021.png" alt="video"
                 data-toggle="modal" data-target="#modal1" width="450">
               <!--Modal: Name-->
             <div class="modal fade" id="modal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -237,8 +237,10 @@
             </div>
           </div>
         </div>
-        <h3>Where are we going?</h3>
-            <img class="img-fluid z-depth-1" src="${baseUrlCdn}/global/images/aiccra-roadmap-2021.png" alt="video"
+
+        [#if action.isAiccra()]
+          <h3>Where are we going?</h3>
+            <img class="img-fluid z-depth-1" style="cursor: zoom-in" src="${baseUrlCdn}/global/images/aiccra-roadmap-2021.png" alt="video"
                 data-toggle="modal" data-target="#modal2" width="450">
               <!--Modal: Name-->
             <div class="modal fade" id="modal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -266,6 +268,7 @@
               </div>
             </div>
             <!--Modal: Name-->
+          [/#if]
       </div>
     </div>
 
