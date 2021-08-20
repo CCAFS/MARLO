@@ -155,7 +155,35 @@
         [#if aiccra]
             <p><h3>What is a Cluster?</h3></p><p>A cluster is defined as the group of AICCRA main activities led by each AICCRA Country Leader (Ghana, Mali, Senegal, Ethiopia, Kenya and Zambia), AICCRA Regional Leaders (Western Africa and Eastern & Southern Africa) and AICCRA-CCAFS Flagship Leaders (FP1, FP2 and FP4). In each cluster, participants are involved as leader, coordinators and collaborators with specific budget allocations for each AICCRA main activity with a set of deliverables and contributions towards our performance indicators.</p>
             <h3>Reporting Schedule</h3>
-            <img src="${baseUrlCdn}/global/images/aiccra-planning-2021.png" width="450">
+            <img class="img-fluid z-depth-1" style="cursor: zoom-in" src="${baseUrlCdn}/global/images/aiccra-planning-2021.png" alt="video"
+                data-toggle="modal" data-target="#modal1" width="450">
+              <!--Modal: Name-->
+            <div class="modal fade" id="modal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-lg" role="document">
+
+                <!--Content-->
+                <div class="modal-content">
+
+                  <!--Body-->
+                  <div class="modal-body mb-0 p-0">
+
+                    <div class="embed-responsive embed-responsive-16by9 z-depth-1-half">
+                      <img class="img-fluid z-depth-1" src="${baseUrlCdn}/global/images/aiccra-planning-2021.png" alt="video"
+                          width="100%">
+                    </div>
+
+                  </div>
+
+                  <!--Footer-->
+                  <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-outline-primary btn-rounded btn-md ml-4" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+                <!--/.Content-->
+              </div>
+            </div>
+            <!--Modal: Name-->
+
         [#else]
             [@s.text name="dashboard.aiccra.instructions" ] [@s.param] <a href="https://docs.google.com/document/d/1hy2yt6E4pJ5orGqHxBSX_ACcr72pPTwaSesQ9P6vHYQ/edit" target="_blank">here</a>.[/@s.param][/@s.text]
             <img src="${baseUrlCdn}/global/images/aiccra-planning.png" width="450">
@@ -209,6 +237,38 @@
             </div>
           </div>
         </div>
+
+        [#if action.isAiccra()]
+          <h3>Where are we going?</h3>
+            <img class="img-fluid z-depth-1" style="cursor: zoom-in" src="${baseUrlCdn}/global/images/aiccra-roadmap-2021.png" alt="video"
+                data-toggle="modal" data-target="#modal2" width="450">
+              <!--Modal: Name-->
+            <div class="modal fade" id="modal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-lg" role="document">
+
+                <!--Content-->
+                <div class="modal-content">
+
+                  <!--Body-->
+                  <div class="modal-body mb-0 p-0">
+
+                    <div class="embed-responsive embed-responsive-16by9 z-depth-1-full">
+                      <img class="embed-responsive-item" src="${baseUrlCdn}/global/images/aiccra-roadmap-2021.png" alt="video"
+                          width="100%">
+                    </div>
+
+                  </div>
+
+                  <!--Footer-->
+                  <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-outline-primary btn-rounded btn-md ml-4" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+                <!--/.Content-->
+              </div>
+            </div>
+            <!--Modal: Name-->
+          [/#if]
       </div>
     </div>
 
