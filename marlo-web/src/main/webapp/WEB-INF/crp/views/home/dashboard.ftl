@@ -10,9 +10,10 @@
   ] 
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/home/dashboard.css?20210813b",
+  "${baseUrlMedia}/css/home/dashboard.css?20210918a",
   "${baseUrlCdn}/global/css/customDataTable.css",
-  "${baseUrlCdn}/global/css/impactGraphic.css"
+  "${baseUrlCdn}/global/css/impactGraphic.css",
+  "${baseUrlCdn}/global/css/global.css?20210918a"
   ] 
 /]
 [#assign currentSection = "home" /]
@@ -113,7 +114,7 @@
     
     [#-- Dashboard --]   
     <div id="dashboardContent" class="col-md-12">
-      <div class="homeTitle col-md-12">[#-- <strong>Dashboard</strong> --]</div>
+      <div class="homeDescription col-md-12">[@s.text name="dashboard.homepage.description" /]</div>
       <div class="col-md-12">
         <ul class="nav nav-tabs" role="tablist">
           <li role="presentation" class="active"><a  id="projects" href="#myProjects" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.projects.table.title" /]</a></li>
