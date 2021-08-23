@@ -17,7 +17,7 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectInnovationDAO;
-import org.cgiar.ccafs.marlo.data.model.InnovationHomeDTO;
+import org.cgiar.ccafs.marlo.data.dto.InnovationHomeDTO;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.utils.ListResultTransformer;
