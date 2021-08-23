@@ -19,10 +19,11 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dto.StudyHomeDTO;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.dto.MeliasByTypeDTO;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -43,9 +44,9 @@ public class MeliasByTypeAction extends BaseAction {
 
   // Logger
   private static final Logger LOG = LoggerFactory.getLogger(MeliasByTypeAction.class);
-
   private List<StudyHomeDTO> studies;
-  private Map<String, List<StudyHomeDTO>> classifiedStudies;
+
+  private List<MeliasByTypeDTO> classifiedStudies;
 
   @Inject
 
@@ -55,11 +56,13 @@ public class MeliasByTypeAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    this.classifiedStudies = this.studies.stream().collect(Collectors.groupingBy(s -> s.getStudyType()));
+    this.classifiedStudies = new ArrayList<>(this.studies.size());
+    this.studies.stream().collect(Collectors.groupingBy(s -> s.getStudyType()))
+      .forEach((k, v) -> classifiedStudies.add(new MeliasByTypeDTO(k, (long) v.size())));
     return SUCCESS;
   }
 
-  public Map<String, List<StudyHomeDTO>> getClassifiedStudies() {
+  public List<MeliasByTypeDTO> getClassifiedStudies() {
     return classifiedStudies;
   }
 
@@ -77,7 +80,7 @@ public class MeliasByTypeAction extends BaseAction {
     }
   }
 
-  public void setClassifiedStudies(Map<String, List<StudyHomeDTO>> result) {
+  public void setClassifiedStudies(List<MeliasByTypeDTO> result) {
     this.classifiedStudies = result;
   }
 }
