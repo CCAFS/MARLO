@@ -1,6 +1,49 @@
 [#ftl]
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities/]
 
+[#macro projectsHomeList projects={} owned=true canValidate=false canEdit=false isPlanning=false namespace="/" defaultAction="description"]
+  <table class="projectsList" id="projects">
+    <thead>
+      <tr class="subHeader">
+        <th id="ids">[@s.text name="projectsList.projectids" /]</th>
+        <th id="projectTitles" >[@s.text name="projectsList.projectTitles" /]</th>
+        [#-- <th id="projectType">[@s.text name="projectsList.projectType" /]</th> --]
+        [#if isPlanning]
+          <th id="projectBudget">[@s.text name="planning.projects.completion" /]</th>
+        [/#if]
+      </tr>
+    </thead>
+    <tbody>
+    [#if projects?has_content]
+      [#list projects as project]
+        <tr>
+        [#-- ID --]
+        <td class="projectId">
+          <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='projectID']${project.projectId?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"> P${project.projectId}</a>
+        </td>
+          [#-- Project Title --]
+          <td class="left"> 
+            [#if (project.title?has_content)!false]
+              <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='projectID']${project.projectId?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" >
+              [#if project.title?length < 120] ${project.title}</a> [#else] [@utilities.wordCutter string=project.title maxPos=120 /]...</a> [/#if]
+            [#else]
+              <a href="[@s.url namespace=namespace action=defaultAction includeParams='get'][@s.param name='projectID']${project.projectId?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+                [@s.text name="projectsList.title.none" /]
+              </a>
+            [/#if]
+          </td>
+          [#-- Project Type 
+          <td>
+            [@s.text name="project.type.${(project.type?lower_case)!'none'}" /]
+          </td>
+          --]
+        </tr>  
+      [/#list]
+    [/#if]
+    </tbody>
+  </table>
+[/#macro]
+
 [#macro deliverablesHomeList deliverables={} owned=true canValidate=false canEdit=false isReportingActive=false namespace="/clusters" defaultAction="deliverableList" currentTable=true]
   <table class="projectsList" id="deliverables">
     <thead>

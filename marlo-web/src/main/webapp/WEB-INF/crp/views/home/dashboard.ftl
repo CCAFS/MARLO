@@ -22,7 +22,6 @@
 ]/]
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
-[#import "/WEB-INF/crp/macros/projectsListTemplate.ftl" as projectList /]
 [#import "/WEB-INF/global/macros/homeDashboard.ftl" as indicatorLists /]
 
 [#assign timeline = [
@@ -127,7 +126,7 @@
         
         <div class="tab-content">
           <div role="tabpanel" class="tab-pane fade in active" id="myProjects">
-            [@projectList.dashboardProjectsList projects=myProjects canValidate=true canEdit=true namespace="/projects" defaultAction="${(crpSession)!}/description" /]
+            [@indicatorLists.projectsHomeList projects=myProjects canValidate=true canEdit=true namespace="/projects" defaultAction="${(crpSession)!}/description" /]
           </div>
           
           <div role="tabpanel" class="tab-pane fade" id="myDeliverables">
