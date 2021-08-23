@@ -16,8 +16,71 @@
     </ul>
   </div>
   [#-- Glossary --]
-  <div class="col-md-4 glossary text-right">
-    [@s.text name="footer.glossary"][@s.param]<a target="_blank" href="[@s.url namespace="/" action='glossary'][/@s.url]">[@s.text name="global.clickHere" /][/@s.param][/@s.text] <span class="glyphicon glyphicon-hand-left"></span> </a>
+  <div class="col-md-4 infoLinks text-left">
+    <strong>Others</strong><br />
+    <ul>
+      <li><a target="_blank" href="[@s.url namespace="/" action='glossary'][/@s.url]">Glossary of relevant items </a></li>
+      [#if action.isAiccra()]
+        <li><a data-toggle="modal" data-target="#modal1">Reporting Schedule </a></li>
+
+          <!--Modal: Name-->
+        <div class="modal fade" id="modal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg" role="document">
+
+            <!--Content-->
+            <div class="modal-content">
+
+              <!--Body-->
+              <div class="modal-body mb-0 p-0">
+
+                <div class="embed-responsive embed-responsive-16by9 z-depth-1-half">
+                  <img class="img-fluid z-depth-1" src="${baseUrlCdn}/global/images/aiccra-planning-2021.png" alt="video"
+                      width="100%">
+                </div>
+
+              </div>
+
+              <!--Footer-->
+              <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-outline-primary btn-rounded btn-md ml-4" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+            <!--/.Content-->
+          </div>
+        </div>
+        <!--Modal: Name-->
+
+        <li><a data-toggle="modal" data-target="#modal2">AICCRA Roadmap</a></li>
+
+          <!--Modal: Name-->
+        <div class="modal fade" id="modal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg" role="document">
+
+            <!--Content-->
+            <div class="modal-content">
+
+              <!--Body-->
+              <div class="modal-body mb-0 p-0">
+
+                <div class="embed-responsive embed-responsive-16by9 z-depth-1-full">
+                  <img class="embed-responsive-item" src="${baseUrlCdn}/global/images/aiccra-roadmap-2021.png" alt="video"
+                      width="100%">
+                </div>
+
+              </div>
+
+              <!--Footer-->
+              <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-outline-primary btn-rounded btn-md ml-4" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+            <!--/.Content-->
+          </div>
+        </div>
+        <!--Modal: Name-->
+
+      [/#if]
+    </ul>
   </div>
 </div>
 
