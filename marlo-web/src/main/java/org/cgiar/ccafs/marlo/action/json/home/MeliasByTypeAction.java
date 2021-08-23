@@ -20,12 +20,13 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dto.StudyHomeDTO;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +55,7 @@ public class MeliasByTypeAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    // TODO Auto-generated method stub
+    this.classifiedStudies = this.studies.stream().collect(Collectors.groupingBy(s -> s.getStudyType()));
     return SUCCESS;
   }
 
@@ -62,28 +63,21 @@ public class MeliasByTypeAction extends BaseAction {
     return classifiedStudies;
   }
 
-  public List<StudyHomeDTO> getStudies() {
-    return studies;
-  }
-
   @SuppressWarnings("unchecked")
   @Override
   public void prepare() throws Exception {
-    Map<String, Parameter> parameters = this.getParameters();
-
-    // If there are parameters, take its values
     try {
-      this.studies = (List<StudyHomeDTO>) parameters.get(APConstants.STUDIES_FOLDER).getObject();
+      this.studies = (List<StudyHomeDTO>) this.getSession().get(APConstants.USER_MELIAS);
+      if (studies == null) {
+        studies = Collections.emptyList();
+      }
     } catch (Exception e) {
       e.printStackTrace();
+      this.studies = Collections.emptyList();
     }
   }
 
   public void setClassifiedStudies(Map<String, List<StudyHomeDTO>> result) {
     this.classifiedStudies = result;
-  }
-
-  public void setStudies(List<StudyHomeDTO> studies) {
-    this.studies = studies;
   }
 }

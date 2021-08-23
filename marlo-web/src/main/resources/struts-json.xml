@@ -1099,6 +1099,13 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		<!-- ********************************************************************************************************** -->
+		<action name="meliasByType" class="org.cgiar.ccafs.marlo.action.json.home.MeliasByTypeAction">
+			<result type="json">
+				<param name="noCache">true</param>
+			</result>
+		</action>
 
 	</package>
 </struts>
