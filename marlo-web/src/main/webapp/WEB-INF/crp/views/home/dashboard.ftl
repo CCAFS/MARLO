@@ -49,7 +49,7 @@
 
     [#--  Home Graphs  --]
     <div class="homeGraphs col-md-12">
-      <div class="col-md-2">
+      [#--  <div class="col-md-2">
         <div class="tableSimpleBox">
           <table id="table" data-toggle="table" data-search="true" data-filter-control="true" data-show-export="true" data-click-to-select="true" data-toolbar="#toolbar">
             <thead>
@@ -66,10 +66,10 @@
             </tbody>
           </table>
         </div>
-      </div>
+      </div>  --]
 
       <div class="col-md-5">
-        <div id="barChartHome" class="chartBox simpleBox" style="height: 250px;">
+        <div id="chartHome1" class="chartBox simpleBox" style="height: 250px;">
           <ul class="chartData" style="display:none">
             <li>
               <span>[@s.text name="" /]</span>
@@ -114,14 +114,14 @@
     
     [#-- Dashboard --]   
     <div id="dashboardContent" class="col-md-12">
-      <div class="homeDescription col-md-12">[@s.text name="dashboard.homepage.description" /]</div>
       <div class="col-md-12">
         <ul class="nav nav-tabs" role="tablist">
           <li role="presentation" class="active"><a  id="projects" href="#myProjects" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.projects.table.title" /]</a></li>
-          <li role="presentation"><a id="deliverables" href="#myDeliverables" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.deliverables.table.title" /]</a></li>
-          <li role="presentation"><a id="studies" href="#myStudies" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.studies.table.title" /]</a></li>
-          <li role="presentation"><a id="innovations" href="#myInnovations" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.innovations.table.title" /]</a></li>
-          <li role="presentation"><a id="policies" href="#myPolicies" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.policies.table.title" /]</a></li>
+          <li role="presentation"><a id="deliverables" href="#myDeliverables" aria-controls="myDeliverables" role="tab" data-toggle="tab">[@s.text name="dashboard.deliverables.table.title" /]</a></li>
+          <li role="presentation"><a id="oicrs" href="#myOicrs" aria-controls="myOicrs" role="tab" data-toggle="tab">[@s.text name="dashboard.oicrs.table.title" /]</a></li>
+          <li role="presentation"><a id="melias" href="#myMelias" aria-controls="myMelias" role="tab" data-toggle="tab">[@s.text name="dashboard.melias.table.title" /]</a></li>
+          <li role="presentation"><a id="innovations" href="#myInnovations" aria-controls="myInnovations" role="tab" data-toggle="tab">[@s.text name="dashboard.innovations.table.title" /]</a></li>
+          <li role="presentation"><a id="policies" href="#myPolicies" aria-controls="myPolicies" role="tab" data-toggle="tab">[@s.text name="dashboard.policies.table.title" /]</a></li>
           <li role="presentation" style="display:none;"><a id="impact" href="#impactP" aria-controls="impactP" role="tab" data-toggle="tab">Impact pathway</a></li>
         </ul>
         
@@ -134,8 +134,12 @@
             [@indicatorLists.deliverablesHomeList deliverables=myDeliverables canValidate=true canEdit=true namespace="/projects" defaultAction="${(crpSession)!}/deliverable" /]
           </div>
 
-          <div role="tabpanel" class="tab-pane fade" id="myStudies">
-            [@indicatorLists.studiesHomeList studies=myStudies canValidate=true canEdit=true namespace="/projects" defaultAction="${(crpSession)!}/study" /]
+          <div role="tabpanel" class="tab-pane fade" id="myOicrs">
+            [@indicatorLists.studiesHomeList studies=myOicrs canValidate=true canEdit=true namespace="/projects" defaultAction="${(crpSession)!}/study" /]
+          </div>
+
+          <div role="tabpanel" class="tab-pane fade" id="myMelias">
+            [@indicatorLists.studiesMeliasHomeList studies=myMelias canValidate=true canEdit=true namespace="/projects" defaultAction="${(crpSession)!}/study" /]
           </div>
 
           <div role="tabpanel" class="tab-pane fade" id="myInnovations">
