@@ -4,9 +4,8 @@
 [#assign pageLibs = ["jQuery-Timelinr","cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
   "https://www.gstatic.com/charts/loader.js",
-  "${baseUrlMedia}/js/home/dashboard.js?20210813b",
-  "${baseUrlCdn}/global/js/impactGraphic.js",
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210813a"
+  "${baseUrlMedia}/js/home/dashboard.js?20210824a",
+  "${baseUrlCdn}/global/js/impactGraphic.js"
   ] 
 /]
 [#assign customCSS = [
@@ -48,66 +47,12 @@
 
     [#--  Home Graphs  --]
     <div class="homeGraphs col-md-12">
-      [#--  <div class="col-md-2">
-        <div class="tableSimpleBox">
-          <table id="table" data-toggle="table" data-search="true" data-filter-control="true" data-show-export="true" data-click-to-select="true" data-toolbar="#toolbar">
-            <thead>
-              <caption>CATEGORIES</caption>
-            </thead>
-            <tbody>
-              [#list (byTotalDTOs)![] as data]
-                <tr>
-                  <td class="bs-checkbox "><input data-index="0" name="btSelectItem" type="checkbox"></td>
-                  <td>${(data.indicatorName)!}</td>
-                  <td class="tableIndicatorTotal">${(data.indicatorTotal)!}</td>
-                </tr>
-              [/#list]
-            </tbody>
-          </table>
-        </div>
-      </div>  --]
-
-      <div class="col-md-5">
-        <div id="chartHome1" class="chartBox simpleBox" style="height: 250px;">
-          <ul class="chartData" style="display:none">
-            <li>
-              <span>[@s.text name="" /]</span>
-              <span>[@s.text name="" /]</span>
-              <span class="json">{"role":"style"}</span>
-              <span class="json">{"role":"annotation"}</span>
-            </li>
-                                
-            [#list (byTotalDTOs)![] as data]
-              <li>
-                <span>${(data.indicatorName)!}</span>
-                <span class="number">${(data.indicatorTotal)!}</span>
-                <span>${(data.indicatorColor)!}</span>
-                <span>${(data.indicatorTotal)!}</span>
-              </li> 
-            [/#list]
-          </ul>
-        </div>
+      <div class="col-md-6">
+        <div id="chartHome1" class="chartBox simpleBox" style="height: 250px;"></div>
       </div>
 
-      <div class="col-md-5">
-        <div id="pieChartHome" class="chartBox simpleBox" style="height: 250px;">
-          <ul class="chartData" style="display:none">
-            <li>
-              <span>[@s.text name="" /]</span>
-              <span>[@s.text name="" /]</span>
-              <span class="json">{"role":"annotation"}</span>
-            </li>
-            [#list (byTotalDTOs)![] as data]
-              [#if data.indicatorTotal??]
-              <li>
-                <span>${(data.indicatorName)!}</span>
-                <span class="number">${(data.indicatorTotal)!}</span>
-                <span>${(data.indicatorTotal)!}</span>
-              </li>
-              [/#if]
-            [/#list]
-          </ul>
-        </div>
+      <div class="col-md-6">
+        <div id="chartHome2" class="chartBox simpleBox" style="height: 250px;"></div>
       </div>
     </div>
     
