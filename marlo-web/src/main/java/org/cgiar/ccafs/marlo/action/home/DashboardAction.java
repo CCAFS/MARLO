@@ -31,6 +31,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PolicyHomeDTO;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
@@ -45,6 +46,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.AuthorizationInfo;
 
@@ -217,9 +219,18 @@ public class DashboardAction extends BaseAction {
           .filter(
             mp -> mp.isActive() && mp.getProjecInfoPhase(this.getActualPhase()) != null
               && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null || Integer.parseInt(dateFormat
-                .format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this.getCurrentCycleYear()))
-          .map(p -> new ProjectHomeDTO(p.getId(), StringUtils.trim(p.getProjecInfoPhase(this.getActualPhase()) != null
-            ? p.getProjecInfoPhase(this.getActualPhase()).getTitle() : null)))
+                .format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this.getCurrentCycleYear())
+              && StringUtils.isNotEmpty(mp.getProjecInfoPhase(this.getActualPhase()).getStatusName()))
+          .map(p -> new ProjectHomeDTO(p.getId(),
+            StringUtils.trim(p.getProjecInfoPhase(this.getActualPhase()) != null
+              ? p.getProjecInfoPhase(this.getActualPhase()).getTitle() : null),
+            StringUtils.defaultIfEmpty(p.getProjecInfoPhase(this.getActualPhase()).getStatusName(), "Not Defined"),
+            (ListUtils.union(
+              projectManager.getPrograms(p.getId(), ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue(),
+                this.getActualPhase().getId()),
+              projectManager.getPrograms(p.getId(), ProgramType.REGIONAL_PROGRAM_TYPE.getValue(),
+                this.getActualPhase().getId()))
+              .stream().map(f -> f.getAcronym()).collect(Collectors.toList()))))
           .collect(Collectors.toList());
     }
 
