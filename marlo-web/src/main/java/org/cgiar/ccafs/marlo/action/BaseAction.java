@@ -5948,15 +5948,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-  public Boolean isDeliverableNew(long deliverableID) {
-    Deliverable deliverable = this.deliverableManager.getDeliverableById(deliverableID);
-    if (deliverable.getPhase() == null) {
+  public Boolean isDeliverableNew(Long deliverableID) {
+    if (deliverableID != null) {
+      Deliverable deliverable = this.deliverableManager.getDeliverableById(deliverableID);
+      if (deliverable.getPhase() == null) {
+        return false;
+      }
+      if (deliverable.getPhase().equals(this.getActualPhase())) {
+        return true;
+      }
+      return false;
+    } else {
       return false;
     }
-    if (deliverable.getPhase().equals(this.getActualPhase())) {
-      return true;
-    }
-    return false;
   }
 
   public boolean isDraft() {
