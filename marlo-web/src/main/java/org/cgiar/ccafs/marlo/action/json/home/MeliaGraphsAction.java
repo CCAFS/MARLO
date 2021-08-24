@@ -19,7 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dto.StudyHomeDTO;
 import org.cgiar.ccafs.marlo.utils.APConfig;
-import org.cgiar.ccafs.marlo.utils.dto.MeliasByTypeDTO;
+import org.cgiar.ccafs.marlo.utils.dto.GraphCountDTO;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author German C. Martinez - CIAT/CCAFS
  **************/
 
-public class MeliasByTypeAction extends BaseAction {
+public class MeliaGraphsAction extends BaseAction {
 
   /**
    * 
@@ -43,14 +43,14 @@ public class MeliasByTypeAction extends BaseAction {
   private static final long serialVersionUID = 624003349869690697L;
 
   // Logger
-  private static final Logger LOG = LoggerFactory.getLogger(MeliasByTypeAction.class);
+  private static final Logger LOG = LoggerFactory.getLogger(MeliaGraphsAction.class);
   private List<StudyHomeDTO> studies;
 
-  private List<MeliasByTypeDTO> classifiedStudies;
+  private List<GraphCountDTO> classifiedStudies;
 
   @Inject
 
-  public MeliasByTypeAction(APConfig config) {
+  public MeliaGraphsAction(APConfig config) {
     super(config);
   }
 
@@ -58,11 +58,11 @@ public class MeliasByTypeAction extends BaseAction {
   public String execute() throws Exception {
     this.classifiedStudies = new ArrayList<>(this.studies.size());
     this.studies.stream().collect(Collectors.groupingBy(s -> s.getStudyType()))
-      .forEach((k, v) -> classifiedStudies.add(new MeliasByTypeDTO(k, (long) v.size())));
+      .forEach((k, v) -> classifiedStudies.add(new GraphCountDTO(k, (long) v.size())));
     return SUCCESS;
   }
 
-  public List<MeliasByTypeDTO> getClassifiedStudies() {
+  public List<GraphCountDTO> getClassifiedStudies() {
     return classifiedStudies;
   }
 
@@ -80,7 +80,7 @@ public class MeliasByTypeAction extends BaseAction {
     }
   }
 
-  public void setClassifiedStudies(List<MeliasByTypeDTO> result) {
+  public void setClassifiedStudies(List<GraphCountDTO> result) {
     this.classifiedStudies = result;
   }
 }
