@@ -31,41 +31,43 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 /**************
  * @author German C. Martinez - CIAT/CCAFS
  **************/
 
-public class MeliaGraphsAction extends BaseAction {
+public class OICRGraphsAction extends BaseAction {
 
   /**
    * 
    */
-  private static final long serialVersionUID = 624003349869690697L;
+  private static final long serialVersionUID = -3968321974456586107L;
 
   // Logger
-  private static final Logger LOG = LoggerFactory.getLogger(MeliaGraphsAction.class);
+  private static final Logger LOG = LoggerFactory.getLogger(OICRGraphsAction.class);
 
   // Variables
   private List<StudyHomeDTO> studies;
 
   // Graph results
-  private List<GraphCountDTO> byStudyType;
+  private List<GraphCountDTO> byLevel;
+  private List<GraphCountDTO> bySdgContribution;
 
   @Inject
-  public MeliaGraphsAction(APConfig config) {
+  public OICRGraphsAction(APConfig config) {
     super(config);
   }
 
   @Override
   public String execute() throws Exception {
-    this.byStudyType = new ArrayList<>();
-    this.studies.stream().collect(Collectors.groupingBy(s -> s.getStudyType()))
-      .forEach((k, v) -> byStudyType.add(new GraphCountDTO(k, (long) v.size())));
+    this.byLevel = new ArrayList<>();
+    this.studies.stream().collect(Collectors.groupingBy(s -> s.getStudyMaturity()))
+      .forEach((k, v) -> byLevel.add(new GraphCountDTO(k, (long) v.size())));
     return SUCCESS;
   }
 
-  public List<GraphCountDTO> getByStudyType() {
-    return byStudyType;
+  public List<GraphCountDTO> getByLevel() {
+    return byLevel;
   }
 
   @SuppressWarnings("unchecked")
@@ -82,7 +84,8 @@ public class MeliaGraphsAction extends BaseAction {
     }
   }
 
-  public void setByStudyType(List<GraphCountDTO> result) {
-    this.byStudyType = result;
+  public void setByLevel(List<GraphCountDTO> byLevel) {
+    this.byLevel = byLevel;
   }
+
 }
