@@ -20,34 +20,33 @@ package org.cgiar.ccafs.marlo.utils.dto;
  * @author German C. Martinez - CIAT/CCAFS
  **************/
 
-public class MeliasByTypeDTO {
+public class GraphCountDTO {
 
-  private String meliaCategory;
-  private Long quantity;
+  private String key;
+  private Long count;
 
-
-  public MeliasByTypeDTO() {
+  public GraphCountDTO() {
   }
 
-  public MeliasByTypeDTO(String meliaCategory, Long quantity) {
+  public GraphCountDTO(String key, Long count) {
     super();
-    this.meliaCategory = meliaCategory;
-    this.quantity = quantity;
+    this.key = key;
+    this.count = count;
   }
 
-  public String getMeliaCategory() {
-    return meliaCategory;
+  public String getKey() {
+    return key;
   }
 
-  public Long getQuantity() {
-    return quantity;
+  public Long getCount() {
+    return count;
   }
 
-  public void setMeliaCategory(String meliaCategory) {
-    this.meliaCategory = meliaCategory;
+  public void setKey(String meliaCategory) {
+    this.key = meliaCategory;
   }
 
-  public void setQuantity(Long quantity) {
-    this.quantity = quantity;
+  public void setCount(Long quantity) {
+    this.count = quantity;
   }
 }

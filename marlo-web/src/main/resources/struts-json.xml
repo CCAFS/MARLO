@@ -1055,7 +1055,7 @@
       </result>
     </action>
     <!-- ********************************************************************************************************** -->
-		<action name="meliasByType" class="org.cgiar.ccafs.marlo.action.json.home.MeliasByTypeAction">
+		<action name="meliasGraphs" class="org.cgiar.ccafs.marlo.action.json.home.MeliaGraphsAction">
 			<result type="json">
         <param name="noCache">true</param>
         <param name="excludeNullProperties">true</param>
