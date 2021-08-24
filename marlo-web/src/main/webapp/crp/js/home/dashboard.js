@@ -2,30 +2,132 @@
 $(document).ready(initDashboard);
 
 function initDashboard() {
-
-  // Set timeline dates completion
-  // setCompletionDates();
-  // timeline();
   $('#newProject').on('click', function (e) {
     $('#decisionTree .addProjectButtons').show(0, function () {
       $(this).addClass('animated flipInX');
     });
   });
 
-  $('#policies').on('click', function () {
-    setGoogleCharts('policies');
+  var byType = {
+    title: 'MELIAs by Type',
+    titleTextStyle: {
+      color: '#5f5e5e',
+      fontName: 'Open Sans',
+      fontSize: 16,
+      bold: false
+    },
+    chartArea: {
+      top: 65,
+      right: 0,
+      width: '50%',
+      heigth: "100%"
+    },
+    hAxis: {
+      baseline: 'none',
+      textPosition: 'none',
+      gridlines: {
+        count: 0
+      }
+    },
+    vAxis: {
+      textStyle: {
+        color: '#5f5e5e',
+        fontName: 'Open Sans'
+      }
+    },
+    legend: {
+      position: "none"
+    },
+    bars: 'horizontal'
+  };
+
+  var byLevel = {
+    title: 'Policies Level of Maturity',
+    titleTextStyle: {
+      color: '#5f5e5e',
+      fontName: 'Roboto',
+      fontSize: 16,
+      bold: false
+    },
+    orientation: 'horizontal',
+    hAxis: {
+      baseline: 'none',
+      textPosition: 'none',
+      gridlines: {
+        count: 0
+      }
+    },
+    vAxis: {
+      baseline: 'none',
+      textPosition: 'none',
+      gridlines: {
+        count: 0
+      }
+    },
+    chartArea: {
+      top: 45,
+      width: "80%",
+      heigth: "100%"
+    },
+    colors: [
+      '#1773b8', '#e43a74', '#00a0b0', '#f3bd1e', '#373a3b'
+    ],
+    bar: { groupWidth: '100%' },
+    legend: {
+      position: "bottom",
+    },
+  }
+
+  $('#oicrs').on('click', function () {
+    setGoogleCharts('chartHome2', byLevel);
+  });
+
+  $('#melias').on('click', function () {
+    setGoogleCharts('chartHome1', byType);
   });
 
   $('.loadingBlock').hide().next().fadeIn(500);
 
-  // Initialize tabs
-  // initTabs();
-
-  // Initialize datatable of projects
-  // initDatatable();
-
   // Set google charts
-  setGoogleCharts('policies');
+  setGoogleCharts('chartHome1', byType);
+}
+
+function setGoogleCharts(chartID, options) {
+  google.charts.load("visualization", "1", { packages: ["corechart"], callback: () => (loadPageData(chartID, options)) });
+  // google.charts.setOnLoadCallback(loadPageData(chartID));
+}
+
+function loadPageData(chartID, options) {
+  $.ajax({
+    url: baseURL + '/meliasGraphs.do',
+    async: false,
+    success: function (data) {
+      if (data) {
+        var newData = data.byStudyType.map(function (x) {
+          var arr = [];
+          arr.push(x.key);
+          arr.push(x.count);
+          arr.push((x.count).toString());
+          return arr;
+        });
+        newData.unshift(["Type", "Count", { role: "annotation" }]);
+        drawChart(newData, chartID, options);
+      }
+    },
+  });
+}
+
+function drawChart(chart_data, chartID, options) {
+  console.log(chart_data)
+  if (chart_data) {
+    var chart1_data = new google.visualization.arrayToDataTable(chart_data);
+    console.log(chart1_data);
+    var chart1_options = options;
+    var view = new google.visualization.DataView(chart1_data);
+    var chart1_chart = new google.visualization.BarChart(document.getElementById(chartID));
+    chart1_chart.draw(view, chart1_options);
+    console.log(chartID, options.title);
+  }
 }
 
 function setCompletionDates() {
@@ -253,144 +355,3 @@ $("#fullscreen").on("click", function () {
   });
 
 });
-
-function setGoogleCharts(chart) {
-  if (chart == 'projects') {
-    createGoogleBarChart("#chartHome1", {
-      title: "All",
-      titleTextStyle: {
-        color: '#5f5e5e',
-        fontName: 'Roboto',
-        fontSize: 16,
-        bold: false
-      },
-      chartArea: {
-        top: 65,
-        left: 80,
-        width: '100%',
-        heigth: "100%"
-      },
-      hAxis: {
-        baseline: 'none',
-        textPosition: 'none',
-        gridlines: {
-          count: 0
-        },
-        // title: '*Note: '
-      },
-      vAxis: {
-        textStyle: {
-          color: '#5f5e5e',
-          fontName: 'Roboto'
-        }
-      },
-      legend: {
-        position: "none"
-      },
-      bars: 'horizontal'
-    });
-
-    createGooglePieChart('#pieChartHome', {
-      title: 'All',
-      titleTextStyle: {
-        color: '#5f5e5e',
-        fontName: 'Roboto',
-        fontSize: 16,
-        bold: false
-      },
-      pieHole: 0.3,
-      chartArea: {
-        top: 65,
-        right: 0,
-        bottom: 0,
-        width: '80%',
-        height: '80%'
-      },
-      slices: {
-        0: { color: '#4B91D7' },
-        1: { color: '#F39C12' },
-        2: { color: '#71CE48' },
-        3: { color: '#8139B6' },
-        4: { color: '#E43A74' }
-      },
-      legend: {
-        alignment: 'center',
-      }
-    });
-  } else if (chart == 'policies') {
-    createGoogleBarChart("#chartHome1", {
-      title: 'Policies Level of Maturity',
-      titleTextStyle: {
-        color: '#5f5e5e',
-        fontName: 'Roboto',
-        fontSize: 16,
-        bold: false
-      },
-      orientation: 'horizontal',
-      hAxis: {
-        baseline: 'none',
-        textPosition: 'none',
-        gridlines: {
-          count: 0
-        }
-      },
-      vAxis: {
-        //baseline:'none',
-        baseline: 'none',
-        textPosition: 'none',
-        gridlines: {
-          count: 0
-        }
-      },
-      //pieHole: 0.4,
-      chartArea: {
-        top: 45,
-        width: "80%",
-        heigth: "100%"
-      },
-      colors: [
-        '#1773b8', '#e43a74', '#00a0b0', '#f3bd1e', '#373a3b'
-      ],
-      bar: { groupWidth: '100%' },
-      legend: {
-        position: "bottom",
-        //alignment: 'center',
-      },
-    });
-
-    createGoogleBarChart("#pieChartHome", {
-      title: "Policies by Type",
-      titleTextStyle: {
-        color: '#5f5e5e',
-        fontName: 'Roboto',
-        fontSize: 16,
-        bold: false
-      },
-      chartArea: {
-        top: 65,
-        right: 0,
-        width: '70%',
-        heigth: "100%"
-      },
-      hAxis: {
-        baseline: 'none',
-        //viewWindowMode: 'pretty',
-        //slantedText: true,
-        textPosition: 'none',
-        gridlines: {
-          count: 0
-        }
-      },
-      vAxis: {
-        textStyle: {
-          color: '#5f5e5e',
-          fontName: 'Roboto'
-        }
-      },
-      legend: {
-        position: "none"
-      },
-      bars: 'horizontal' // Required for Material Bar Charts.
-    });
-  }
-}
