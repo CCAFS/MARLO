@@ -15,6 +15,7 @@
 
 package org.cgiar.ccafs.marlo.data.dto;
 
+import java.util.List;
 
 /**************
  * @author German C. Martinez - CIAT/CCAFS
@@ -24,27 +25,46 @@ public class ProjectHomeDTO {
 
   private Long projectId;
   private String title;
-
+  private String status;
+  private List<String> programType;
 
   public ProjectHomeDTO() {
   }
 
-  public ProjectHomeDTO(Long projectId, String title) {
+  public ProjectHomeDTO(Long projectId, String title, String status, List<String> programType) {
     super();
     this.projectId = projectId;
     this.title = title;
+    this.programType = programType;
+    this.status = status;
+  }
+
+  public List<String> getProgramType() {
+    return programType;
   }
 
   public Long getProjectId() {
     return projectId;
   }
 
+  public String getStatus() {
+    return status;
+  }
+
   public String getTitle() {
     return title;
   }
 
+  public void setProgramType(List<String> programType) {
+    this.programType = programType;
+  }
+
   public void setProjectId(Long projectId) {
     this.projectId = projectId;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
   }
 
   public void setTitle(String title) {
