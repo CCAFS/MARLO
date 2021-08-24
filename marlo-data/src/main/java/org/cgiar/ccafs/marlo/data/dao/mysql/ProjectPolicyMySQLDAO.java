@@ -80,7 +80,8 @@ public class ProjectPolicyMySQLDAO extends AbstractMarloDAO<ProjectPolicy, Long>
   @Override
   public List<PolicyHomeDTO> getPoliciesByProjectAndPhaseHome(long phaseId, long projectId) {
     String query = "select pp.id as policyId, ppi.year as expectedYear, pr.id as projectId, "
-      + "coalesce(ppi.repIndPolicyInvestimentType.name, 'None') as policyType, ppi.title as policyTitle "
+      + "coalesce(ppi.repIndPolicyInvestimentType.name, 'None') as policyType, ppi.title as policyTitle,"
+      + "coalesce(ppi.repIndStageProcess.name, 'Not Defined') as policyLevel "
       + "from ProjectPolicy pp, ProjectPolicyInfo ppi, Phase ph, Project pr "
       + "where ppi.projectPolicy = pp and pp.active = true and "
       + "pp.project = pr and pr.id = :projectId and pr.active = true and "
@@ -93,7 +94,8 @@ public class ProjectPolicyMySQLDAO extends AbstractMarloDAO<ProjectPolicy, Long>
 
     createQuery.setResultTransformer(
       (ListResultTransformer) (tuple, aliases) -> new PolicyHomeDTO(((Number) tuple[0]).longValue(),
-        ((Number) tuple[1]).longValue(), ((Number) tuple[2]).longValue(), (String) tuple[3], (String) tuple[4]));
+        ((Number) tuple[1]).longValue(), ((Number) tuple[2]).longValue(), (String) tuple[3], (String) tuple[4],
+        (String) tuple[5]));
     createQuery.setFlushMode(FlushMode.COMMIT);
 
     List<PolicyHomeDTO> policies = createQuery.list();
