@@ -182,9 +182,12 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
   public List<DeliverableHomeDTO> getDeliverablesByProjectAndPhaseHome(long phaseId, long projectId) {
     String query = "select d.id as deliverableId, coalesce(di.newExpectedYear, -1) as newExpectedYear, "
       + "di.year as expectedYear, pr.id as projectId, coalesce(di.deliverableType.name, 'None') as deliverableType, "
-      + "di.title as deliverableTitle from Deliverable d, DeliverableInfo di, Phase ph, Project pr "
+      + "di.title as deliverableTitle, coalesce(gs.name, 'Not Defined') as status,"
+      + "(case when dd.isOpenAccess = 1 then 'Yes' when dd.isOpenAccess = 0 then 'No' when dd.isOpenAccess is null then 'Not Defined' else '???' end) as isOpenAccess "
+      + "from Deliverable d, DeliverableInfo di, GeneralStatus gs, DeliverableDissemination dd, Phase ph, Project pr "
       + "where di.deliverable = d and d.active = true and d.project = pr and pr.id = :projectId and pr.active = true and "
-      + "di.phase = ph and ph.id = :phaseId and coalesce(nullif(di.newExpectedYear, -1),di.year) = ph.year";
+      + "di.phase = ph and dd.deliverable = d and dd.phase = ph and ph.id = :phaseId and "
+      + "coalesce(nullif(di.newExpectedYear, -1),di.year) = ph.year and di.status = gs.id";
 
     Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
 
@@ -194,7 +197,7 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
     createQuery.setResultTransformer(
       (ListResultTransformer) (tuple, aliases) -> new DeliverableHomeDTO(((Number) tuple[0]).longValue(),
         ((Number) tuple[1]).longValue(), ((Number) tuple[2]).longValue(), ((Number) tuple[3]).longValue(),
-        (String) tuple[4], (String) tuple[5]));
+        (String) tuple[4], (String) tuple[5], (String) tuple[6], (String) tuple[7]));
     createQuery.setFlushMode(FlushMode.COMMIT);
 
     List<DeliverableHomeDTO> deliverables = createQuery.list();
