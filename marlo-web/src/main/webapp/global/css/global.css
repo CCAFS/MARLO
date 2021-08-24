@@ -2961,11 +2961,28 @@ input.userName {
   width: 650px;
 }
 
+.homeTitle2 {
+  display: flex;
+  justify-content: left;
+  font-size: 2em;
+  color: #333;
+  /* padding-bottom: 14px;
+  padding-top: 5px;
+  padding-left: 30px; */
+  padding: 5px 30px 14px 30px;
+}
+
 .homeTitle {
   font-size: 1.4em;
   color: #333;
   padding-bottom: 14px;
   padding-top: 5px;
+}
+
+.homeDescription {
+  margin-bottom: 14px;
+  font-style: italic;
+  color: black;
 }
 
 .homeSubTitle {
