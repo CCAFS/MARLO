@@ -1,4 +1,4 @@
-#ftl]
+[#ftl]
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities/]
 
 [#macro deliverablesHomeList deliverables={} owned=true canValidate=false canEdit=false isReportingActive=false namespace="/clusters" defaultAction="deliverableList" currentTable=true]
@@ -8,7 +8,8 @@
         <th id="deliverableProject">[@s.text name="project.id" /]</th>
         <th id="ids">[@s.text name="project.deliverableList.deliverableId" /]</th>
         <th id="deliverableTitles" >[@s.text name="project.deliverableList.deliverableName" /]</th>
-        <th id="deliverableType">[@s.text name="project.deliverableList.subtype" /]</th>
+        [#--  
+        <th id="deliverableType">[@s.text name="project.deliverableList.subtype" /]</th>--]
         <th id="deliverableEDY">[@s.text name="project.deliverableList.deliverySummaryYear" /]</th>
       </tr>
     </thead>
@@ -28,7 +29,7 @@
           [#-- Project ID --]
           <td class="deliverableId">
             <a href="[@s.url namespace=namespace action='${(crpSession)!}/deliverableList'][@s.param name='projectID']${deliverable.projectId?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-              P${deliverable.projectId}
+              C${deliverable.projectId}
             </a>
           </td>
           [#-- Deliverable ID --]
@@ -49,13 +50,14 @@
             [#if isDeliverableNew]<span class="label label-info">New</span>[/#if]
 
             <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='deliverableID']${deliverable.deliverableId?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-              [@utilities.wordCutter string=(deliverable.deliverableTitle)! maxPos=160 /]
+              [@utilities.wordCutter string=(deliverable.deliverableTitle)! maxPos=100 /]
             </a>
           </td>
-          [#-- Deliverable type --]
+          [#-- Deliverable type 
           <td class="left">
-            [@utilities.wordCutter string=(deliverable.deliverableType)! maxPos=160 /]
+            [@utilities.wordCutter string=(deliverable.deliverableType)! maxPos=100 /]
           </td>
+          --]
           [#-- Deliverable Year --]
           <td class="text-center">
 
@@ -211,6 +213,80 @@
               None
             [#else]
               ${(innovation.expectedYear)!'None'}
+              Pending. I am not sure if this has an extended year
+              [if ((deliverable.newExpectedYear != -1)!false)]
+                Extended to ${deliverable.newExpectedYear}
+              [/#if]
+            [/#if]
+          </td>--]
+        </tr>
+      [/#list]
+      [/#if]
+    </tbody>
+  </table>
+[/#macro]
+
+[#macro policiesHomeList policies={} owned=true canValidate=false canEdit=false isReportingActive=false namespace="/clusters" defaultAction="policyList" currentTable=true]
+  <table class="projectsList" id="studies">
+    <thead>
+      <tr class="subHeader">
+        <th id="policyProject">[@s.text name="project.id" /]</th>
+        <th id="ids">[@s.text name="dashboard.policies.id" /]</th>
+        <th id="policyTitles" >[@s.text name="dashboard.policies.title" /]</th>
+        <th id="policyType">[@s.text name="dashboard.policies.type" /]</th>
+        [#--<th id="policyEDY">[@s.text name="project.deliverableList.deliverySummaryYear" /]</th>--]
+      </tr>
+    </thead>
+    <tbody>
+    [#if policies?has_content]
+      [#list policies as policy]
+        [#-- Is New --]
+        [#assign isNew = (action.isPolicyNew(policy.policyId)) /]
+        [#-- Has draft version (Auto-save) --]
+        [#--assign hasDraft = (action.getAutoSaveFilePath(deliverable.class.simpleName, "deliverable", deliverable.id))!false /--]
+        [#-- Is Complete --]
+        [#assign isThisComplete = (action.hasPoliciesMissingFields(policy.policyId))!false /]
+        [#-- To Report --]
+        [#local toReport = reportingActive && !isThisComplete ]
+
+        <tr>
+          [#-- Project ID --]
+          <td class="deliverableId">
+            <a href="[@s.url namespace=namespace action='${(crpSession)!}/policies'][@s.param name='projectID']${policy.projectId?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+              P${policy.projectId}
+            </a>
+          </td>
+          [#-- Policy ID --]
+          <td class="deliverableId">
+            <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='policyID']${policy.policyId?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+              ${policy.policyId}
+            </a>
+          </td>
+          [#-- Policy Title --]
+          <td class="left">
+            [#-- Hidden title to sort correctly by title --]
+            <span class="hidden">${policy.policyTitle!''}</span>
+            [#-- Draft Tag --]
+            [#--if hasDraft]<strong class="text-info">[DRAFT]</strong>[/#if--]
+            [#-- Report --]
+            [#if toReport]<span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>[/#if]
+            [#-- New Tag --]
+            [#if isNew]<span class="label label-info">New</span>[/#if]
+
+            <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='policyID']${policy.policyId?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+              [@utilities.wordCutter string=(policy.policyTitle)! maxPos=160 /]
+            </a>
+          </td>
+          [#-- Policy type --]
+          <td class="left">
+            [@utilities.wordCutter string=(policy.policyType)! maxPos=160 /]
+          </td>
+          [#-- Policy Year --]
+          [#--<td class="text-center">
+            [#if policy.expectedYear == -1]
+              None
+            [#else]
+              ${(policy.expectedYear)!'None'}
               Pending. I am not sure if this has an extended year
               [if ((deliverable.newExpectedYear != -1)!false)]
                 Extended to ${deliverable.newExpectedYear}
