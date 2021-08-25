@@ -79,17 +79,53 @@ function initDashboard() {
     },
   };
 
+  var byLevel = {
+    title: 'Projects by Status',
+    titleTextStyle: {
+      color: '#5f5e5e',
+      fontName: 'Open Sans',
+      fontSize: 16,
+      bold: false
+    },
+    orientation: 'horizontal',
+    hAxis: {
+      baseline: 'none',
+      textPosition: 'none',
+      gridlines: {
+        count: 0
+      }
+    },
+    vAxis: {
+      baseline: 'none',
+      textPosition: 'none',
+      gridlines: {
+        count: 0
+      }
+    },
+    chartArea: {
+      top: 60,
+      width: "80%",
+      heigth: "100%"
+    },
+    bar: { groupWidth: '100%' },
+    legend: {
+      alignment: 'center',
+    },
+  };
+
   $('#homeProjects').on('click', function () {
+    byType.title = 'Projects by Program';
+    byStatus.title = 'Projects by Status';
     $('#chartHome2').css('opacity', 1);
     setGoogleCharts('/projectGraphs.do', 'byProjectProgramType', 'chartHome1', 'Bar', byType);
     setGoogleCharts('/projectGraphs.do', 'byProjectStatus', 'chartHome2', 'Pie', byStatus);
   });
 
   $('#deliverables').on('click', function () {
-    byType.title = 'Deliverables by Type';
+    byType.title = 'Deliverables by Open Access';
     byStatus.title = 'Deliverables by Status';
     $('#chartHome2').css('opacity', 1);
-    setGoogleCharts('/deliverableGraphs.do', 'byDeliverableType', 'chartHome1', 'Bar', byType);
+    setGoogleCharts('/deliverableGraphs.do', 'byDeliverableOpenAccess', 'chartHome1', 'Bar', byType);
     setGoogleCharts('/deliverableGraphs.do', 'byDeliverableStatus', 'chartHome2', 'Pie', byStatus);
   });
 
@@ -106,10 +142,10 @@ function initDashboard() {
   });
 
   $('#innovations').on('click', function () {
-    byType.title = 'Innovations by Type';
-    byStatus.title = 'Innovations by Level';
+    byLevel.title = 'Innovations by Type';
+    byStatus.title = 'Innovations by Stage';
     $('#chartHome2').css('opacity', 1);
-    setGoogleCharts('/innovationGraphs.do', 'byInnovationType', 'chartHome1', 'Bar', byType);
+    setGoogleCharts('/innovationGraphs.do', 'byInnovationType', 'chartHome1', 'Pie', byLevel);
     setGoogleCharts('/innovationGraphs.do', 'byInnovationLevel', 'chartHome2', 'Pie', byStatus);
   });
 
