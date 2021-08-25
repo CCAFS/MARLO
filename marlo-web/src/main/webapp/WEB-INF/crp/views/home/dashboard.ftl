@@ -22,6 +22,7 @@
 [#import "/WEB-INF/crp/macros/projectsListTemplate.ftl" as projectList /]
 [#import "/WEB-INF/global/macros/deliverableListTemplate.ftl" as deliverablesList /]
 
+
 [#assign timeline = [
   {"id":"1", "startDate":"11/28/2016", "endDate":"11/30/2016","what":"MARLO opens for Impact Pathway","who":"Flagship Leaders"},
   {"id":"2", "startDate":"12/01/2016", "endDate":"12/02/2016","what":"Create new projects according to new budget distribution; Assign W1/W2 budget to all projects.","who":"Finance Manager"},
@@ -44,6 +45,9 @@
 <section class="marlo-content">
   <div class="container">
     [#-- What do you want to do --]
+    <div class="homeTitle2"><b>[@s.text name="dashboard.homepage.title" /] ${(currentUser.firstName)!}!</b></div>
+    <div class="homeDescription2 col-md-12">[@s.text name="dashboard.homepage.description" /]</div>
+
     [#if !action.isAiccra()]
     <div class="homeTitle"><b>[@s.text name="dashboard.decisionTree.title" /]</b></div>
   [/#if]
