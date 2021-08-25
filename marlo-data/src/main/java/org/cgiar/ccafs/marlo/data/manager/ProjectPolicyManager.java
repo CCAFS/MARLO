@@ -16,6 +16,7 @@ package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.PolicyHomeDTO;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 
 import java.util.List;
@@ -45,13 +46,22 @@ public interface ProjectPolicyManager {
    */
   public boolean existProjectPolicy(long projectPolicyID);
 
-
   /**
    * This method gets a list of projectPolicy that are active
    * 
    * @return a list from ProjectPolicy null if no exist records
    */
   public List<ProjectPolicy> findAll();
+
+  /**
+   * Gets a list of all the policies from a project planned for the phase's year
+   * NOTE: this method is meant to be used by the Home Dashboard table
+   * 
+   * @param phaseId the Phase identifier
+   * @param projectId the Project identifier
+   * @return a list of PolicyHomeDTO or empty
+   */
+  public List<PolicyHomeDTO> getPoliciesByProjectAndPhaseHome(Long phaseId, Long projectId);
 
 
   /**
