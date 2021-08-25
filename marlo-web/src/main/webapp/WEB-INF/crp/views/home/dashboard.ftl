@@ -4,15 +4,15 @@
 [#assign pageLibs = ["jQuery-Timelinr","cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
   "https://www.gstatic.com/charts/loader.js",
-  "${baseUrlMedia}/js/home/dashboard.js?20210824a",
+  "${baseUrlMedia}/js/home/dashboard.js?20210825a",
   "${baseUrlCdn}/global/js/impactGraphic.js"
   ] 
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/home/dashboard.css?20210918a",
+  "${baseUrlMedia}/css/home/dashboard.css?20210825a",
   "${baseUrlCdn}/global/css/customDataTable.css",
   "${baseUrlCdn}/global/css/impactGraphic.css",
-  "${baseUrlCdn}/global/css/global.css?20210918a"
+  "${baseUrlCdn}/global/css/global.css?20210825b"
   ] 
 /]
 [#assign currentSection = "home" /]
@@ -47,6 +47,8 @@
 
     [#--  Home Graphs  --]
     <div class="homeGraphs col-md-12">
+    <div class="homeTitle"><b>[@s.text name="dashboard.homepage.title" /] ${(currentUser.firstName)!}!</b></div>
+    <div class="homeDescription col-md-12">[@s.text name="dashboard.homepage.description" /]</div>
       <div class="col-md-6">
         <div id="chartHome1" class="chartBox simpleBox" style="height: 250px;"></div>
       </div>
@@ -60,7 +62,7 @@
     <div id="dashboardContent" class="col-md-12">
       <div class="col-md-12">
         <ul class="nav nav-tabs" role="tablist">
-          <li role="presentation" class="active"><a  id="projects" href="#myProjects" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.projects.table.title" /]</a></li>
+          <li role="presentation" class="active"><a  id="homeProjects" href="#myProjects" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.projects.table.title" /]</a></li>
           <li role="presentation"><a id="deliverables" href="#myDeliverables" aria-controls="myDeliverables" role="tab" data-toggle="tab">[@s.text name="dashboard.deliverables.table.title" /]</a></li>
           <li role="presentation"><a id="oicrs" href="#myOicrs" aria-controls="myOicrs" role="tab" data-toggle="tab">[@s.text name="dashboard.oicrs.table.title" /]</a></li>
           <li role="presentation"><a id="melias" href="#myMelias" aria-controls="myMelias" role="tab" data-toggle="tab">[@s.text name="dashboard.melias.table.title" /]</a></li>

@@ -112,7 +112,7 @@
                 [/#if]
               [/#list]
             [/#if]
-            <span> ${(project.flagships)! "probando"}</span> 
+             
             [#if tagsNumber < 1]
               [@s.text name="projectsList.none" /]
             [/#if]
