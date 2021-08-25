@@ -105,7 +105,7 @@
           [#-- Project ID --]
           <td class="deliverableId">
             <a href="[@s.url namespace=namespace action='${(crpSession)!}/studies'][@s.param name='projectID']${study.projectId?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-              P${study.projectId}
+              C${study.projectId}
             </a>
           </td>
           [#-- Study ID --]
@@ -179,7 +179,7 @@
           [#-- Project ID --]
           <td class="deliverableId">
             <a href="[@s.url namespace=namespace action='${(crpSession)!}/innovationsList'][@s.param name='projectID']${innovation.projectId?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-              P${innovation.projectId}
+              C${innovation.projectId}
             </a>
           </td>
           [#-- Innovation ID --]
@@ -253,7 +253,7 @@
           [#-- Project ID --]
           <td class="deliverableId">
             <a href="[@s.url namespace=namespace action='${(crpSession)!}/policies'][@s.param name='projectID']${policy.projectId?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-              P${policy.projectId}
+              C${policy.projectId}
             </a>
           </td>
           [#-- Policy ID --]
