@@ -161,15 +161,16 @@ public class ProjectExpectedStudyMySQLDAO extends AbstractMarloDAO<ProjectExpect
 
   @Override
   public List<StudyHomeDTO> getStudiesByProjectAndPhaseHome(long phaseId, long projectId) {
-    String query = "select pes.id as studyId, pesi.year as expectedYear, "
-      + "pr.id as projectId, coalesce(pesi.studyType.name, 'None') as studyType, pesi.title as studyTitle, "
-      + "coalesce(pesi.repIndStageProcess.name, 'Not Defined') as studyMaturity "
-      + "from ProjectExpectedStudy pes, ProjectExpectedStudyInfo pesi, Phase ph, Project pr "
-      + "where pesi.projectExpectedStudy = pes and pes.active = true and "
-      + "pes.project = pr and pr.id = :projectId and pr.active = true and "
-      + "pesi.phase = ph and ph.id = :phaseId and pesi.year = ph.year";
+    String query = "select pes.id as studyId, pesi.year as expectedYear, pr.id as projectId, "
+      + "coalesce(st.name, 'None') as studyType, pesi.title as studyTitle, "
+      + "coalesce(riss.name, 'Not Defined') as studyMaturity " + "from project_expected_studies pes "
+      + "join project_expected_study_info pesi on pesi.project_expected_study_id = pes.id "
+      + "join phases ph on ph.id = pesi.id_phase " + "join projects pr on pes.project_id = pr.id "
+      + "left join study_types st on pesi.study_type_id = st.id "
+      + "left join rep_ind_stage_studies riss on pesi.rep_ind_stage_study_id = riss.id "
+      + "where ph.id = :phaseId and pr.id = :projectId and pesi.year = ph.year and pes.is_active";
 
-    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    Query createQuery = this.getSessionFactory().getCurrentSession().createSQLQuery(query);
 
     createQuery.setParameter("phaseId", phaseId);
     createQuery.setParameter("projectId", projectId);
@@ -180,9 +181,9 @@ public class ProjectExpectedStudyMySQLDAO extends AbstractMarloDAO<ProjectExpect
         (String) tuple[5]));
     createQuery.setFlushMode(FlushMode.COMMIT);
 
-    List<StudyHomeDTO> studys = createQuery.list();
+    List<StudyHomeDTO> studies = createQuery.list();
 
-    return studys;
+    return studies;
   }
 
   @Override
