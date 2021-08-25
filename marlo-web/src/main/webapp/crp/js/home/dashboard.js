@@ -80,6 +80,7 @@ function initDashboard() {
   };
 
   $('#homeProjects').on('click', function () {
+    $('#chartHome2').css('opacity', 1);
     setGoogleCharts('/projectGraphs.do', 'byProjectProgramType', 'chartHome1', 'Bar', byType);
     setGoogleCharts('/projectGraphs.do', 'byProjectStatus', 'chartHome2', 'Pie', byStatus);
   });
@@ -87,21 +88,27 @@ function initDashboard() {
   $('#deliverables').on('click', function () {
     byType.title = 'Deliverables by Type';
     byStatus.title = 'Deliverables by Status';
+    $('#chartHome2').css('opacity', 1);
     setGoogleCharts('/deliverableGraphs.do', 'byDeliverableType', 'chartHome1', 'Bar', byType);
     setGoogleCharts('/deliverableGraphs.do', 'byDeliverableStatus', 'chartHome2', 'Pie', byStatus);
   });
 
-  // $('#oicrs').on('click', function () {
-  //   setGoogleCharts('/oicrGraphs.do', 'chartHome2', byStatus);
-  // });
+  $('#oicrs').on('click', function () {
+    byStatus.title = 'OICRs by Level';
+    $('#chartHome2').css('opacity', 0);
+    setGoogleCharts('/oicrGraphs.do', 'byLevel', 'chartHome1', 'Pie', byStatus);
+  });
 
-  // $('#melias').on('click', function () {
-  //   setGoogleCharts('/meliaGraphs.do', 'chartHome1', byType);
-  // });
+  $('#melias').on('click', function () {
+    byType.title = 'MELIAs by Type';
+    $('#chartHome2').css('opacity', 0);
+    setGoogleCharts('/meliaGraphs.do', 'byStudyType', 'chartHome1', 'Bar', byType);
+  });
 
   $('#innovations').on('click', function () {
     byType.title = 'Innovations by Type';
     byStatus.title = 'Innovations by Level';
+    $('#chartHome2').css('opacity', 1);
     setGoogleCharts('/innovationGraphs.do', 'byInnovationType', 'chartHome1', 'Bar', byType);
     setGoogleCharts('/innovationGraphs.do', 'byInnovationLevel', 'chartHome2', 'Pie', byStatus);
   });
@@ -109,6 +116,7 @@ function initDashboard() {
   $('#policies').on('click', function () {
     byType.title = 'Policies by Type';
     byStatus.title = 'Policies by Level';
+    $('#chartHome2').css('opacity', 1);
     setGoogleCharts('/policyGraphs.do', 'byPolicyType', 'chartHome1', 'Bar', byType);
     setGoogleCharts('/policyGraphs.do', 'byPolicyLevel', 'chartHome2', 'Pie', byStatus);
   });
