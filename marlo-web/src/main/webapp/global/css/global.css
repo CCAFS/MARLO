@@ -2708,7 +2708,7 @@ input.userName {
   text-align: center;
   width: 41%;
   position: absolute;
-  top: 33%;
+  top: 30%;
   left: 29%;
 }
 
@@ -2950,10 +2950,20 @@ input.userName {
 }
 
 .homeTitle {
-  font-size: 1.4em;
+  display: flex;
+  justify-content: left;
+  font-size: 2em;
   color: #333;
-  padding-bottom: 14px;
+  /* padding-bottom: 14px;
   padding-top: 5px;
+  padding-left: 30px; */
+  padding: 5px 30px 14px 30px;
+}
+
+.homeDescription {
+  margin-bottom: 14px;
+  font-style: italic;
+  color: black;
 }
 
 .homeSubTitle {

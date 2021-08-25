@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
+import org.cgiar.ccafs.marlo.data.model.InnovationHomeDTO;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
@@ -199,6 +200,11 @@ public class ProjectInnovationManagerImpl implements ProjectInnovationManager {
   @Override
   public List<ProjectInnovation> getInnovationsByPhase(Phase phase) {
     return this.projectInnovationDAO.getInnovationsByPhase(phase);
+  }
+
+  @Override
+  public List<InnovationHomeDTO> getInnovationsByProjectAndPhaseHome(Long phaseId, Long projectId) {
+    return this.projectInnovationDAO.getInnovationsByProjectAndPhaseHome(phaseId.longValue(), projectId.longValue());
   }
 
   @Override
