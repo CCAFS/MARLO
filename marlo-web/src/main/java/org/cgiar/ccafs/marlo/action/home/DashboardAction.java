@@ -157,7 +157,7 @@ public class DashboardAction extends BaseAction {
       for (String permission : info.getStringPermissions()) {
         if (permission.contains("project")) {
           for (int i = 0; i > permission.split(":").length; i++) {
-            System.out.println(permission.split(":")[i]);
+            // System.out.println(permission.split(":")[i]);
           }
         }
       }
