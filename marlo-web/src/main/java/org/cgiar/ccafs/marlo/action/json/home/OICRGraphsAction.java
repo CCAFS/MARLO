@@ -74,7 +74,7 @@ public class OICRGraphsAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
     try {
-      this.studies = (List<StudyHomeDTO>) this.getSession().get(APConstants.USER_MELIAS);
+      this.studies = (List<StudyHomeDTO>) this.getSession().get(APConstants.USER_OICRS);
       if (studies == null) {
         studies = Collections.emptyList();
       }
