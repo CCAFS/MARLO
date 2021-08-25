@@ -24,7 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
-import org.cgiar.ccafs.marlo.data.model.DeliverableHomeDTO;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.InnovationHomeDTO;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -64,7 +64,7 @@ public class DashboardAction extends BaseAction {
   private GlobalUnit loggedCrp;
 
   private List<Project> myProjects;
-  private List<DeliverableHomeDTO> myDeliverables = new ArrayList<>();
+  private List<Deliverable> myDeliverables = new ArrayList<>();
   private List<StudyHomeDTO> myStudies = new ArrayList<>();
   private List<InnovationHomeDTO> myInnovations = new ArrayList<>();
 
@@ -91,7 +91,7 @@ public class DashboardAction extends BaseAction {
    *
    * @return the value of myDeliverables
    */
-  public List<DeliverableHomeDTO> getMyDeliverables() {
+  public List<Deliverable> getMyDeliverables() {
     return myDeliverables;
   }
 
@@ -204,12 +204,15 @@ public class DashboardAction extends BaseAction {
                 .format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this.getCurrentCycleYear()))
           .collect(Collectors.toList());
     }
+    myProjects.forEach((project) -> {
+      myDeliverables.addAll(project.getCurrentDeliverables(phase));
+    });
 
+    myDeliverables = new ArrayList<>();
 
-    myDeliverables = myProjects.stream().filter(p -> p != null && p.getId() != null)
-      .flatMap(
-        p -> deliverableManager.getDeliverablesByProjectAndPhaseHome(this.getActualPhase().getId(), p.getId()).stream())
-      .collect(Collectors.toList());
+    myProjects.forEach((project) -> {
+      myDeliverables.addAll(project.getCurrentDeliverables(phase));
+    });
 
     myStudies = myProjects.stream().filter(p -> p != null && p.getId() != null)
       .flatMap(p -> projectExpectedStudyManager
@@ -232,9 +235,10 @@ public class DashboardAction extends BaseAction {
    *
    * @param myDeliverables new value of myDeliverables
    */
-  public void setMyDeliverables(List<DeliverableHomeDTO> myDeliverables) {
+  public void setMyDeliverables(List<Deliverable> myDeliverables) {
     this.myDeliverables = myDeliverables;
   }
+
 
   public void setMyInnovations(List<InnovationHomeDTO> myInnovations) {
     this.myInnovations = myInnovations;

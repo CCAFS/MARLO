@@ -180,9 +180,9 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
 
   @Override
   public List<DeliverableHomeDTO> getDeliverablesByProjectAndPhaseHome(long phaseId, long projectId) {
-    String query = "select d.id as deliverableId, di.newExpectedYear as newExpectedYear, di.year as expectedYear, "
-      + "pr.id as projectId, coalesce(di.deliverableType.name, 'None') as deliverableType, di.title as deliverableTitle "
-      + "from Deliverable d, DeliverableInfo di, Phase ph, Project pr "
+    String query = "select d.id as deliverableId, coalesce(di.newExpectedYear, -1) as newExpectedYear, "
+      + "di.year as expectedYear, pr.id as projectId, coalesce(di.deliverableType.name, 'None') as deliverableType, "
+      + "di.title as deliverableTitle from Deliverable d, DeliverableInfo di, Phase ph, Project pr "
       + "where di.deliverable = d and d.active = true and d.project = pr and pr.id = :projectId and pr.active = true and "
       + "di.phase = ph and ph.id = :phaseId and coalesce(nullif(di.newExpectedYear, -1),di.year) = ph.year";
 
