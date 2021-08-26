@@ -239,7 +239,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
         // crpProgramOutcomeDAO.getCrpProgramOutcome(projectOutcome.getCrpProgramOutcome().getComposeID(), next));
         projectOutcomeAdd = projectOutcomeDAO.save(projectOutcomeAdd);
         this.updateProjectMilestones(projectOutcomeAdd, projectOutcome);
-        // this.updateProjectIndicators(projectOutcomeAdd, projectOutcome);
+        this.updateProjectIndicators(projectOutcomeAdd, projectOutcome);
         this.updateProjectNextUsers(projectOutcomeAdd, projectOutcome);
       }
 
