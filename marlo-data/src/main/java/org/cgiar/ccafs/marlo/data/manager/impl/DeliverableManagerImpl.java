@@ -29,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableHomeDTO;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableProgram;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
@@ -147,8 +148,13 @@ public class DeliverableManagerImpl implements DeliverableManager {
   }
 
   @Override
-  public List<Deliverable> getDeliverablesByProjectAndPhase(long phase, long project) {
-    return deliverableDAO.getDeliverablesByProjectAndPhase(phase, project);
+  public List<Deliverable> getDeliverablesByProjectAndPhase(Long phaseId, Long projectId) {
+    return deliverableDAO.getDeliverablesByProjectAndPhase(phaseId, projectId);
+  }
+
+  @Override
+  public List<DeliverableHomeDTO> getDeliverablesByProjectAndPhaseHome(Long phaseId, Long projectId) {
+    return deliverableDAO.getDeliverablesByProjectAndPhaseHome(phaseId.longValue(), projectId.longValue());
   }
 
   @Override

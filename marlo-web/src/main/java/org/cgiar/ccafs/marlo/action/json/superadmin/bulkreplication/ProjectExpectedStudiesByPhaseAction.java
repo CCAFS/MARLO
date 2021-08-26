@@ -85,7 +85,8 @@ public class ProjectExpectedStudiesByPhaseAction extends BaseAction {
               Map<String, Object> outcomeMap = new HashMap<String, Object>();
               outcomeMap.put("id", projectExpectedStudy.getId());
               outcomeMap.put("composedName", projectExpectedStudy.getComposedName());
-              outcomeMap.put("project", projectExpectedStudy.getProject().getId());
+              outcomeMap.put("project",
+                (projectExpectedStudy.getProject() == null ? -1 : projectExpectedStudy.getProject().getId()));
               this.entityByPhaseList.add(outcomeMap);
             }
           } catch (Exception e) {
