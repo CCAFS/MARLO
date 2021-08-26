@@ -8,9 +8,10 @@
   ] 
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/home/dashboard.css",
+  "${baseUrlMedia}/css/home/dashboard.css?20210918a",
   "${baseUrlCdn}/global/css/customDataTable.css",
-  "${baseUrlCdn}/global/css/impactGraphic.css"
+  "${baseUrlCdn}/global/css/impactGraphic.css",
+  "${baseUrlCdn}/global/css/global.css?20210918a"
   ] 
 /]
 [#assign currentSection = "home" /]
@@ -20,7 +21,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/crp/macros/projectsListTemplate.ftl" as projectList /]
-[#import "/WEB-INF/global/macros/deliverableListTemplate.ftl" as deliverablesList /]
+[#import "/WEB-INF/global/macros/homeDashboard.ftl" as indicatorLists /]
 
 [#assign timeline = [
   {"id":"1", "startDate":"11/28/2016", "endDate":"11/30/2016","what":"MARLO opens for Impact Pathway","who":"Flagship Leaders"},
@@ -44,30 +45,30 @@
 <section class="marlo-content">
   <div class="container">
     [#-- What do you want to do --]
-    <div class="homeTitle"><b>[@s.text name="dashboard.decisionTree.title" /]</b></div>
-    <div id="decisionTree">
+    <div class="homeTitle"><b>[@s.text name="dashboard.homepage.title" /] ${(currentUser.firstName)!}!</b></div>
+    [#--  <div id="decisionTree">  --]
     
-      [#if centerGlobalUnit]
+      [#--  [#if centerGlobalUnit]  --]
         [#-- CENTER Impact patchway --]
-        <div class="flex-container">
+        [#--  <div class="flex-container">
           <div id="newImpactPathway" class="option hvr-float">
             <a href="[@s.url action="impactPathway/${centerSession}/programimpacts"][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
               <p>[@s.text name="dashboard.decisionTree.defineImpact" /]</p>
             </a>
           </div>
-        </div>
+        </div>  --]
         
         [#-- Projects --]
-        <div class="flex-container">
+        [#--  <div class="flex-container">
           <div id="startMonitoring" class="option hvr-float">
             <a href="[@s.url action="monitoring/${centerSession}/monitoringOutcomesList"][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
               <p>[@s.text name="dashboard.decisionTree.startMonitoring" /]</p>
             </a>  
           </div>
-        </div>
+        </div>  --]
         
         [#-- Summaries --]
-        <div class="flex-container">
+        [#--  <div class="flex-container">
           <div id="finalDes" class="option hvr-float"">
             <a href="[@s.url namespace="/projects" action='${crpSession}/projectsList'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
               <p>[@s.text name="dashboard.decisionTree.updateProject" /]</p>
@@ -75,30 +76,30 @@
           </div>
         </div>
       
-      [#else]
+      [#else]  --]
       
         [#-- Add new Project --]
-        <div class="flex-container">
+        [#--  <div class="flex-container">
         [#assign canAddCoreProject = (action.canAddCoreProject()) && (!crpClosed) && (!reportingActive) && (action.getActualPhase().editable)]
         [#if canAddCoreProject]<a href="[@s.url namespace="/projects" action='${crpSession}/addNewCoreProject'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[/#if]
           <div id="newProject" class="hvr-float option ${(!canAddCoreProject)?string('disabled','')}" ${(!canAddCoreProject)?string('title="This link is disabled"','')}>
             <p>[@s.text name="dashboard.decisionTree.newProject" /]</p>
           </div>
         [#if canAddCoreProject]</a>[/#if]
-        </div>
+        </div>  --]
         
         [#-- Update an ongoing Project --]
-        <div class="flex-container">
+        [#--  <div class="flex-container">
         [#assign canUpdateOngoingProjects = !crpClosed && canEditPhase ]
         [#if canUpdateOngoingProjects]<a href="[@s.url namespace="/projects" action='${crpSession}/projectsList'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"> [/#if]
           <div id="updatePlanning" class="hvr-float option ${(!canUpdateOngoingProjects)?string('disabled','')}" ${(!canUpdateOngoingProjects)?string('title="This link is disabled"','')}>
             <p>[@s.text name="dashboard.decisionTree.updateProject" /]</p>
           </div>
         [#if canUpdateOngoingProjects]</a>[/#if]
-        </div>
+        </div>  --]
         
         [#-- Evaluate Project --]
-        <div class="flex-container">
+        [#--  <div class="flex-container">
           <div id="reportProject" class="option disabled" title="This link is disabled">
             <p>[@s.text name="dashboard.decisionTree.evaluateProject" /]</p>
           </div>
@@ -106,13 +107,13 @@
       
       [/#if]
       <div class="clearfix"></div>
-    </div>
+    </div>  --]
     
     
     [#-- Shorcuts --]    
-    <div id="shorcuts"  class="col-md-5">
+   [#-- <div id="shorcuts"  class="col-md-5"> --]  
     [#-- if crpSession?contains("CCAFS")  --]
-    [#if false ]
+    [#-- [#if false ]
       <div class="homeTitle"><strong>Timeline</strong></div>   
       <div class="borderBox col-md-12">
         <div id="timeline">
@@ -146,15 +147,18 @@
         </div>
       </div>
       [/#if]
-    </div>     
+    </div> --]    
     
     [#-- Dashboard --]   
     <div id="dashboardContent" class="col-md-12">
-      <div class="homeTitle col-md-12">[#-- <strong>Dashboard</strong> --]</div>
+      <div class="homeDescription col-md-12">[@s.text name="dashboard.homepage.description" /]</div>
       <div class="col-md-12">
         <ul class="nav nav-tabs" role="tablist">
-          <li role="presentation" class="active"><a  id="projects" href="#myProjects" aria-controls="myProjects" role="tab" data-toggle="tab">My projects</a></li>
-          <li role="presentation"><a id="deliverables" href="#myDeliverables" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.myDeliverables.title" /]</a></li>
+          <li role="presentation" class="active"><a  id="projects" href="#myProjects" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.projects.table.title" /]</a></li>
+          <li role="presentation"><a id="deliverables" href="#myDeliverables" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.deliverables.table.title" /]</a></li>
+          <li role="presentation"><a id="studies" href="#myStudies" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.studies.table.title" /]</a></li>
+          <li role="presentation"><a id="innovations" href="#myInnovations" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.innovations.table.title" /]</a></li>
+          <li role="presentation"><a id="policies" href="#myPolicies" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.policies.table.title" /]</a></li>
           <li role="presentation" style="display:none;"><a id="impact" href="#impactP" aria-controls="impactP" role="tab" data-toggle="tab">Impact pathway</a></li>
         </ul>
         
@@ -164,7 +168,19 @@
           </div>
           
           <div role="tabpanel" class="tab-pane fade" id="myDeliverables">
-            [@deliverablesList.deliverablesSummaryList deliverables=myDeliverables canValidate=true canEdit=true namespace="/deliverables" defaultAction="${(crpSession)!}/description" /]
+            [@indicatorLists.deliverablesHomeList deliverables=myDeliverables canValidate=true canEdit=true namespace="/projects" defaultAction="${(crpSession)!}/deliverable" /]
+          </div>
+
+          <div role="tabpanel" class="tab-pane fade" id="myStudies">
+            [@indicatorLists.studiesHomeList studies=myStudies canValidate=true canEdit=true namespace="/projects" defaultAction="${(crpSession)!}/study" /]
+          </div>
+
+          <div role="tabpanel" class="tab-pane fade" id="myInnovations">
+            [@indicatorLists.innovationsHomeList innovations=myInnovations canValidate=true canEdit=true namespace="/projects" defaultAction="${(crpSession)!}/innovation" /]
+          </div>
+
+          <div role="tabpanel" class="tab-pane fade" id="myPolicies">
+            [@indicatorLists.policiesHomeList policies=myPolicies canValidate=true canEdit=true namespace="/projects" defaultAction="${(crpSession)!}/policy" /]
           </div>
           
           <div role="tabpanel" class="tab-pane fade" id="impactP">
