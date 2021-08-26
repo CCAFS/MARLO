@@ -4,7 +4,7 @@
 [#assign pageLibs = ["jQuery-Timelinr","cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
   "https://www.gstatic.com/charts/loader.js",
-  "${baseUrlMedia}/js/home/dashboard.js?20210826a",
+  "${baseUrlMedia}/js/home/dashboard.js?20210826b",
   "${baseUrlCdn}/global/js/impactGraphic.js"
   ] 
 /]
@@ -12,7 +12,7 @@
   "${baseUrlMedia}/css/home/dashboard.css?20210825a",
   "${baseUrlCdn}/global/css/customDataTable.css",
   "${baseUrlCdn}/global/css/impactGraphic.css",
-  "${baseUrlCdn}/global/css/global.css?20210825b"
+  "${baseUrlCdn}/global/css/global.css?20210826a"
   ] 
 /]
 [#assign currentSection = "home" /]
