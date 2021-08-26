@@ -1888,14 +1888,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return submissions;
   }
 
-  public Boolean getAutoSaveFilePath(String simpleName, String actionName, long id) {
+  public Boolean getAutoSaveFilePath(String simpleName, String actionName, Long id) {
     String composedClassName = simpleName;
     String actionFile = this.getCrpSession() + "_" + actionName;
-    String autoSaveFile = id + "_" + composedClassName + "_" + this.getActualPhase().getName() + "_"
-      + this.getActualPhase().getYear() + "_" + actionFile + ".json";
-    Path path = Paths.get(this.config.getAutoSaveFolder() + autoSaveFile);
-    if (path.toFile().exists()) {
-      return true;
+    if (id != null) {
+      String autoSaveFile = id + "_" + composedClassName + "_" + this.getActualPhase().getName() + "_"
+        + this.getActualPhase().getYear() + "_" + actionFile + ".json";
+      Path path = Paths.get(this.config.getAutoSaveFolder() + autoSaveFile);
+      if (path.toFile().exists()) {
+        return true;
+      } else {
+        return false;
+      }
     } else {
       return false;
     }
@@ -5922,41 +5926,49 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @param deliverableID is the deliverable ID to be identified.
    * @return Boolean object with the status of the deliverable
    */
-  public Boolean isDeliverableComplete(long deliverableID, long phaseID) {
-    Deliverable deliverable = this.deliverableManager.getDeliverableById(deliverableID);
-    Phase phase = this.phaseManager.getPhaseById(phaseID);
+  public Boolean isDeliverableComplete(Long deliverableID, Long phaseID) {
+    if (deliverableID != null && phaseID != null) {
+      Deliverable deliverable = this.deliverableManager.getDeliverableById(deliverableID);
+      Phase phase = this.phaseManager.getPhaseById(phaseID);
 
-    if (deliverable.getDeliverableInfo(phase) != null) {
-      DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(phase);
+      if (deliverable.getDeliverableInfo(phase) != null) {
+        DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(phase);
 
-      if (deliverableInfo.isRequiredToComplete() || deliverableInfo.isStatusCompleteInNextPhases()) {
-        SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(),
-          phase.getDescription(), phase.getYear(), phase.getUpkeep(), "deliverableList");
-        if (sectionStatus == null) {
-          return false;
+        if (deliverableInfo.isRequiredToComplete() || deliverableInfo.isStatusCompleteInNextPhases()) {
+          SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(),
+            phase.getDescription(), phase.getYear(), phase.getUpkeep(), "deliverableList");
+          if (sectionStatus == null) {
+            return false;
+          }
+
+          if (sectionStatus.getMissingFields() == null || sectionStatus.getMissingFields().length() != 0) {
+            return false;
+          }
+        } else {
+          return true;
         }
-
-        if (sectionStatus.getMissingFields() == null || sectionStatus.getMissingFields().length() != 0) {
-          return false;
-        }
-      } else {
-        return true;
       }
-    }
 
-    return true;
+      return true;
+    } else {
+      return false;
+    }
 
   }
 
-  public Boolean isDeliverableNew(long deliverableID) {
-    Deliverable deliverable = this.deliverableManager.getDeliverableById(deliverableID);
-    if (deliverable.getPhase() == null) {
+  public Boolean isDeliverableNew(Long deliverableID) {
+    if (deliverableID != null) {
+      Deliverable deliverable = this.deliverableManager.getDeliverableById(deliverableID);
+      if (deliverable.getPhase() == null) {
+        return false;
+      }
+      if (deliverable.getPhase().equals(this.getActualPhase())) {
+        return true;
+      }
+      return false;
+    } else {
       return false;
     }
-    if (deliverable.getPhase().equals(this.getActualPhase())) {
-      return true;
-    }
-    return false;
   }
 
   public boolean isDraft() {

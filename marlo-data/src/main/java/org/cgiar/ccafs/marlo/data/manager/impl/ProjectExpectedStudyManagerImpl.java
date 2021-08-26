@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudyDAO;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
@@ -32,6 +33,8 @@ import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressStudy;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressStudyDTO;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisStudiesByCrpProgramDTO;
+import org.cgiar.ccafs.marlo.data.model.StudyHomeDTO;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -55,18 +58,21 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
   private ProjectManager projectManager;
   private ReportSynthesisManager reportSynthesisManager;
   private PhaseManager phaseManager;
+  private LiaisonInstitutionManager liaisonInstitutionManager;
 
 
   @Inject
   public ProjectExpectedStudyManagerImpl(ProjectExpectedStudyDAO projectExpectedStudyDAO,
     CrpProgramManager crpProgramManager, ProjectFocusManager projectFocusManager, ProjectManager projectManager,
-    ReportSynthesisManager reportSynthesisManager, PhaseManager phaseManager) {
+    ReportSynthesisManager reportSynthesisManager, PhaseManager phaseManager,
+    LiaisonInstitutionManager liaisonInstitutionManager) {
     this.projectExpectedStudyDAO = projectExpectedStudyDAO;
     this.crpProgramManager = crpProgramManager;
     this.projectFocusManager = projectFocusManager;
     this.projectManager = projectManager;
     this.reportSynthesisManager = reportSynthesisManager;
     this.phaseManager = phaseManager;
+    this.liaisonInstitutionManager = liaisonInstitutionManager;
   }
 
   @Override
@@ -87,6 +93,10 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
     return projectExpectedStudyDAO.findAll();
   }
 
+  @Override
+  public List<ProjectExpectedStudy> getAllStudiesByPhase(Long phaseId) {
+    return this.projectExpectedStudyDAO.getAllStudiesByPhase(phaseId.longValue());
+  }
 
   /**
    * Method to get the list of studies selected by flagships
@@ -225,11 +235,11 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
     return flagshipPlannedList;
   }
 
-
   @Override
   public ProjectExpectedStudy getProjectExpectedStudyById(long projectExpectedStudyID) {
     return projectExpectedStudyDAO.find(projectExpectedStudyID);
   }
+
 
   @Override
   public List<ProjectExpectedStudy> getProjectStudiesList(LiaisonInstitution liaisonInstitution, Phase phase) {
@@ -298,6 +308,55 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
     return projectExpectedStudies;
   }
 
+  @Override
+  public List<ReportSynthesisStudiesByCrpProgramDTO> getProjectStudiesListByFP(
+    List<LiaisonInstitution> liaisonInstitutions, List<ProjectExpectedStudy> selectedStudies, Phase phase) {
+    Phase phaseDB = phaseManager.getPhaseById(phase.getId());
+    List<ReportSynthesisStudiesByCrpProgramDTO> reportSynthesisStudiesByCrpProgramDTOs = new ArrayList<>();
+
+    for (LiaisonInstitution liaison : liaisonInstitutions) {
+      List<ProjectExpectedStudy> projectExpectedStudies = new ArrayList<>();
+      if (crpProgramManager.isFlagship(liaison)) {
+        // Fill Project Expected Studies of the current flagship
+        if (projectFocusManager.findAll() != null) {
+          List<ProjectFocus> projectFocus =
+            new ArrayList<>(projectFocusManager.findAll().stream()
+              .filter(pf -> pf.isActive() && pf.getCrpProgram().getId().equals(liaison.getCrpProgram().getId())
+                && pf.getPhase() != null && pf.getPhase().getId().equals(phaseDB.getId()))
+              .collect(Collectors.toList()));
+
+          for (ProjectFocus focus : projectFocus) {
+            Project project = projectManager.getProjectById(focus.getProject().getId());
+            List<ProjectExpectedStudy> plannedProjectExpectedStudies = new ArrayList<>(project
+              .getProjectExpectedStudies().stream()
+              .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(phaseDB) != null
+                && ps.getProjectExpectedStudyInfo().getStudyType() != null
+                && ps.getProjectExpectedStudyInfo().getStudyType().getId() == 1
+                && ps.getProjectExpectedStudyInfo().getYear() != null
+                && ps.getProjectExpectedStudyInfo().getYear().equals(phaseDB.getYear()))
+              .collect(Collectors.toList()));
+
+            for (ProjectExpectedStudy projectExpectedStudy : plannedProjectExpectedStudies) {
+              if (selectedStudies.contains(projectExpectedStudy)) {
+                projectExpectedStudy.getProjectExpectedStudyInfo(phaseDB);
+                projectExpectedStudy.setSrfTargets(projectExpectedStudy.getSrfTargets(phaseDB));
+                projectExpectedStudy.setSubIdos(projectExpectedStudy.getSubIdos(phaseDB));
+                projectExpectedStudies.add(projectExpectedStudy);
+              }
+            }
+          }
+        }
+
+        ReportSynthesisStudiesByCrpProgramDTO studiesByCrpProgramDTO = new ReportSynthesisStudiesByCrpProgramDTO();
+        studiesByCrpProgramDTO.setProjectStudies(projectExpectedStudies);
+        studiesByCrpProgramDTO.setCrpProgram(liaison.getCrpProgram());
+
+        reportSynthesisStudiesByCrpProgramDTOs.add(studiesByCrpProgramDTO);
+      }
+    }
+
+    return reportSynthesisStudiesByCrpProgramDTOs;
+  }
 
   @Override
   public List<ProjectExpectedStudy> getStudiesByOrganizationType(RepIndOrganizationType repIndOrganizationType,
@@ -305,9 +364,15 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
     return projectExpectedStudyDAO.getStudiesByOrganizationType(repIndOrganizationType, phase);
   }
 
+
   @Override
   public List<ProjectExpectedStudy> getStudiesByPhase(Phase phase) {
     return projectExpectedStudyDAO.getStudiesByPhase(phase);
+  }
+
+  @Override
+  public List<StudyHomeDTO> getStudiesByProjectAndPhaseHome(Long phaseId, Long projectId) {
+    return this.projectExpectedStudyDAO.getStudiesByProjectAndPhaseHome(phaseId.longValue(), projectId.longValue());
   }
 
   @Override

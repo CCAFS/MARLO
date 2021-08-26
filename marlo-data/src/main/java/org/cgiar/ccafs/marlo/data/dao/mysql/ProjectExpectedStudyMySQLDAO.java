@@ -20,6 +20,8 @@ import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudyDAO;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
+import org.cgiar.ccafs.marlo.data.model.StudyHomeDTO;
+import org.cgiar.ccafs.marlo.utils.ListResultTransformer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +30,10 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.FlushMode;
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.transform.AliasToEntityMapResultTransformer;
 
 @Named
 public class ProjectExpectedStudyMySQLDAO extends AbstractMarloDAO<ProjectExpectedStudy, Long>
@@ -74,6 +79,30 @@ public class ProjectExpectedStudyMySQLDAO extends AbstractMarloDAO<ProjectExpect
 
   }
 
+
+  @Override
+  public List<ProjectExpectedStudy> getAllStudiesByPhase(long phaseId) {
+    String query = "SELECT DISTINCT pes.id AS id FROM ProjectExpectedStudy pes, ProjectExpectedStudyInfo pesi "
+      + "where pesi.projectExpectedStudy = pes and pes.active = true AND pesi.phase.id = :phaseId";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("phaseId", phaseId);
+    createQuery.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+    createQuery.setFlushMode(FlushMode.COMMIT);
+
+    @SuppressWarnings("unchecked")
+    List<Map<String, Object>> rList = createQuery.list();
+    List<ProjectExpectedStudy> projectExpectedStudies = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        ProjectExpectedStudy projectExpectedStudy = this.find(Long.parseLong(map.get("id").toString()));
+        projectExpectedStudies.add(projectExpectedStudy);
+      }
+    }
+
+    return projectExpectedStudies;
+  }
 
   @Override
   public List<ProjectExpectedStudy> getStudiesByOrganizationType(RepIndOrganizationType repIndOrganizationType,
@@ -129,6 +158,30 @@ public class ProjectExpectedStudyMySQLDAO extends AbstractMarloDAO<ProjectExpect
     }
 
     return projectExpectedStudies;
+  }
+
+  @Override
+  public List<StudyHomeDTO> getStudiesByProjectAndPhaseHome(long phaseId, long projectId) {
+    String query = "select pes.id as studyId, pesi.year as expectedYear, "
+      + "pr.id as projectId, coalesce(pesi.studyType.name, 'None') as studyType, pesi.title as studyTitle "
+      + "from ProjectExpectedStudy pes, ProjectExpectedStudyInfo pesi, Phase ph, Project pr "
+      + "where pesi.projectExpectedStudy = pes and pes.active = true and "
+      + "pes.project = pr and pr.id = :projectId and pr.active = true and "
+      + "pesi.phase = ph and ph.id = :phaseId and pesi.year = ph.year";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+
+    createQuery.setParameter("phaseId", phaseId);
+    createQuery.setParameter("projectId", projectId);
+
+    createQuery.setResultTransformer(
+      (ListResultTransformer) (tuple, aliases) -> new StudyHomeDTO(((Number) tuple[0]).longValue(),
+        ((Number) tuple[1]).longValue(), ((Number) tuple[2]).longValue(), (String) tuple[3], (String) tuple[4]));
+    createQuery.setFlushMode(FlushMode.COMMIT);
+
+    List<StudyHomeDTO> studys = createQuery.list();
+
+    return studys;
   }
 
   @Override
