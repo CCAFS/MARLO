@@ -159,7 +159,9 @@ public class InnovationItem<T> {
     CrpMilestoneManager crpMilestoneManager, ProjectInnovationMilestoneManager projectInnovationMilestoneManager,
     SrfSubIdoManager srfSubIdoManager, ProjectInnovationSubIdoManager projectInnovationSubIdoManager,
     ProjectExpectedStudyManager projectExpectedStudyManager, LiaisonInstitutionManager liaisonInstitutionManager,
-    ReportSynthesisFlagshipProgressInnovationManager reportSynthesisFlagshipProgressInnovationManager) {
+    ReportSynthesisFlagshipProgressInnovationManager reportSynthesisFlagshipProgressInnovationManager,
+    ReportSynthesisManager reportSynthesisManager,
+    ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager) {
     this.projectInnovationManager = projectInnovationManager;
     this.innovationMapper = innovationMapper;
     this.phaseManager = phaseManager;
@@ -186,6 +188,8 @@ public class InnovationItem<T> {
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.reportSynthesisFlagshipProgressInnovationManager = reportSynthesisFlagshipProgressInnovationManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
+    this.reportSynthesisManager = reportSynthesisManager;
+    this.reportSynthesisFlagshipProgressManager = reportSynthesisFlagshipProgressManager;
   }
 
   /**
@@ -231,12 +235,12 @@ public class InnovationItem<T> {
       .findFirst().get();
 
     if (phase == null) {
-      fieldErrors.add(new FieldErrorDTO("createInnovation", "phase",
-        new NewInnovationDTO().getPhase().getYear() + " is an invalid year"));
+      fieldErrors.add(
+        new FieldErrorDTO("createInnovation", "phase", newInnovationDTO.getPhase().getYear() + " is an invalid year"));
     }
     if (phase != null && !phase.getEditable()) {
-      fieldErrors.add(new FieldErrorDTO("createInnovation", "phase",
-        new NewInnovationDTO().getPhase().getYear() + " is a closed phase"));
+      fieldErrors.add(
+        new FieldErrorDTO("createInnovation", "phase", newInnovationDTO.getPhase().getYear() + " is a closed phase"));
     }
 
 
@@ -549,25 +553,62 @@ public class InnovationItem<T> {
           projectInnovationSubIdoManager.saveProjectInnovationSubIdo(projectInnovationSubIdo);
         }
 
-        // verify if was included in synthesis
+        // verify if was included in synthesis PMU
         LiaisonInstitution liaisonInstitution =
           this.liaisonInstitutionManager.findByAcronymAndCrp(APConstants.CLARISA_ACRONYM_PMU, globalUnitEntity.getId());
-        ReportSynthesis reportSynthesis =
-          reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
-        ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress =
-          reportSynthesis.getReportSynthesisFlagshipProgress();
+        if (liaisonInstitution != null) {
+          boolean existing = true;
+          ReportSynthesis reportSynthesis =
+            reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
+          if (reportSynthesis != null) {
+            ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress =
+              reportSynthesis.getReportSynthesisFlagshipProgress();
+            if (reportSynthesisFlagshipProgress == null) {
+              reportSynthesisFlagshipProgress = new ReportSynthesisFlagshipProgress();
+              reportSynthesisFlagshipProgress.setReportSynthesis(reportSynthesis);
+              reportSynthesisFlagshipProgress.setCreatedBy(user);
+              existing = false;
+              reportSynthesisFlagshipProgress = reportSynthesisFlagshipProgressManager
+                .saveReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgress);
+            }
 
-        ReportSynthesisFlagshipProgressInnovation reportSynthesisFlagshipProgressInnovation =
-          reportSynthesisFlagshipProgress.getReportSynthesisFlagshipProgressInnovations().stream()
-            .filter(c -> c.isActive()).findFirst().orElse(null);
-        reportSynthesisFlagshipProgressInnovation = reportSynthesisFlagshipProgressInnovationManager
-          .getReportSynthesisFlagshipProgressInnovationById(reportSynthesisFlagshipProgressInnovation.getId());
+            final Long innovation = innovationID;
+            ReportSynthesisFlagshipProgressInnovation reportSynthesisFlagshipProgressInnovation =
+              reportSynthesisFlagshipProgress.getReportSynthesisFlagshipProgressInnovations().stream()
+                .filter(c -> c.isActive() && c.getProjectInnovation().getId().longValue() == innovation).findFirst()
+                .orElse(null);
+            if (reportSynthesisFlagshipProgressInnovation != null && existing) {
+              reportSynthesisFlagshipProgressInnovation = reportSynthesisFlagshipProgressInnovationManager
+                .getReportSynthesisFlagshipProgressInnovationById(reportSynthesisFlagshipProgressInnovation.getId());
+              reportSynthesisFlagshipProgressInnovation.setActive(false);
+              reportSynthesisFlagshipProgressInnovation = reportSynthesisFlagshipProgressInnovationManager
+                .saveReportSynthesisFlagshipProgressInnovation(reportSynthesisFlagshipProgressInnovation);
+            } else {
+              reportSynthesisFlagshipProgressInnovation = new ReportSynthesisFlagshipProgressInnovation();
+              reportSynthesisFlagshipProgressInnovation.setCreatedBy(user);
+              reportSynthesisFlagshipProgressInnovation.setProjectInnovation(projectInnovation);
+              reportSynthesisFlagshipProgressInnovation
+                .setReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgress);
+
+              reportSynthesisFlagshipProgressInnovation = reportSynthesisFlagshipProgressInnovationManager
+                .saveReportSynthesisFlagshipProgressInnovation(reportSynthesisFlagshipProgressInnovation);
+              reportSynthesisFlagshipProgressInnovation.setActive(false);
+              reportSynthesisFlagshipProgressInnovationManager
+                .saveReportSynthesisFlagshipProgressInnovation(reportSynthesisFlagshipProgressInnovation);
+
+            }
+          }
+        }
+
       }
     }
 
 
     // Validate all fields
     if (!fieldErrors.isEmpty()) {
+      for (FieldErrorDTO error : fieldErrors) {
+        System.out.println(error.getMessage());
+      }
       throw new MARLOFieldValidationException("Field Validation errors", "",
         fieldErrors.stream()
           .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))

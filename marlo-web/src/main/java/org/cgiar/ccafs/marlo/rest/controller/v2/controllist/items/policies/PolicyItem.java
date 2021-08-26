@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.manager.CgiarCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.PolicyMilestoneManager;
@@ -43,12 +44,16 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndOrganizationTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndPolicyInvestimentTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndPolicyTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageProcessManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressPolicyManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PolicyMilestone;
@@ -73,6 +78,9 @@ import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.RepIndPolicyInvestimentType;
 import org.cgiar.ccafs.marlo.data.model.RepIndPolicyType;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageProcess;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressPolicy;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.CGIAREntityDTO;
@@ -137,6 +145,11 @@ public class PolicyItem<T> {
   private GlobalUnitProjectManager globalUnitProjectManager;
 
   private ProjectInnovationManager projectInnovationManager;
+  // changes to be included to Synthesis
+  private LiaisonInstitutionManager liaisonInstitutionManager;
+  private ReportSynthesisManager reportSynthesisManager;
+  private ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager;
+  private ReportSynthesisFlagshipProgressPolicyManager reportSynthesisFlagshipProgressPolicyManager;
 
   @Inject
   public PolicyItem(GlobalUnitManager globalUnitManager, PhaseManager phaseManager,
@@ -156,7 +169,10 @@ public class PolicyItem<T> {
     ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager,
     ProjectExpectedStudyManager projectExpectedStudyManager,
     ProjectPolicyInnovationManager projectPolicyInnovationManager, ProjectInnovationManager projectInnovationManager,
-    GlobalUnitProjectManager globalUnitProjectManager) {
+    GlobalUnitProjectManager globalUnitProjectManager, LiaisonInstitutionManager liaisonInstitutionManager,
+    ReportSynthesisManager reportSynthesisManager,
+    ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
+    ReportSynthesisFlagshipProgressPolicyManager reportSynthesisFlagshipProgressPolicyManager) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.projectPolicyManager = projectPolicyManager;
@@ -185,6 +201,10 @@ public class PolicyItem<T> {
     this.projectPolicyInnovationManager = projectPolicyInnovationManager;
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitProjectManager = globalUnitProjectManager;
+    this.liaisonInstitutionManager = liaisonInstitutionManager;
+    this.reportSynthesisManager = reportSynthesisManager;
+    this.reportSynthesisFlagshipProgressManager = reportSynthesisFlagshipProgressManager;
+    this.reportSynthesisFlagshipProgressPolicyManager = reportSynthesisFlagshipProgressPolicyManager;
   }
 
   public Long createPolicy(NewProjectPolicyDTO newPolicyDTO, String entityAcronym, User user) {
@@ -518,6 +538,52 @@ public class PolicyItem<T> {
             for (ProjectPolicyInnovation projectPolicyInnovation : projectPolicyInnovationsList) {
               projectPolicyInnovation.setProjectPolicy(projectPolicy);
               projectPolicyInnovationManager.saveProjectPolicyInnovation(projectPolicyInnovation);
+            }
+            // verify if was included in synthesis PMU
+            LiaisonInstitution liaisonInstitution = this.liaisonInstitutionManager
+              .findByAcronymAndCrp(APConstants.CLARISA_ACRONYM_PMU, globalUnitEntity.getId());
+            if (liaisonInstitution != null) {
+              boolean existing = true;
+              ReportSynthesis reportSynthesis =
+                reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
+              if (reportSynthesis != null) {
+                ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress =
+                  reportSynthesis.getReportSynthesisFlagshipProgress();
+                if (reportSynthesisFlagshipProgress == null) {
+                  reportSynthesisFlagshipProgress = new ReportSynthesisFlagshipProgress();
+                  reportSynthesisFlagshipProgress.setReportSynthesis(reportSynthesis);
+                  reportSynthesisFlagshipProgress.setCreatedBy(user);
+                  existing = false;
+                  reportSynthesisFlagshipProgress = reportSynthesisFlagshipProgressManager
+                    .saveReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgress);
+                }
+                final Long policy = policyID;
+                ReportSynthesisFlagshipProgressPolicy reportSynthesisFlagshipProgressPolicy =
+                  reportSynthesisFlagshipProgress.getReportSynthesisFlagshipProgressPolicies().stream()
+                    .filter(c -> c.isActive() && c.getProjectPolicy().getId().longValue() == policy).findFirst()
+                    .orElse(null);
+                if (reportSynthesisFlagshipProgressPolicy != null && existing) {
+                  reportSynthesisFlagshipProgressPolicy = reportSynthesisFlagshipProgressPolicyManager
+                    .getReportSynthesisFlagshipProgressPolicyById(reportSynthesisFlagshipProgressPolicy.getId());
+                  reportSynthesisFlagshipProgressPolicy.setActive(false);
+                  reportSynthesisFlagshipProgressPolicy = reportSynthesisFlagshipProgressPolicyManager
+                    .saveReportSynthesisFlagshipProgressPolicy(reportSynthesisFlagshipProgressPolicy);
+                } else {
+                  reportSynthesisFlagshipProgressPolicy = new ReportSynthesisFlagshipProgressPolicy();
+                  reportSynthesisFlagshipProgressPolicy.setCreatedBy(user);
+                  reportSynthesisFlagshipProgressPolicy.setProjectPolicy(projectPolicy);
+                  reportSynthesisFlagshipProgressPolicy
+                    .setReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgress);
+
+                  reportSynthesisFlagshipProgressPolicy = reportSynthesisFlagshipProgressPolicyManager
+                    .saveReportSynthesisFlagshipProgressPolicy(reportSynthesisFlagshipProgressPolicy);
+                  reportSynthesisFlagshipProgressPolicy.setActive(false);
+                  reportSynthesisFlagshipProgressPolicyManager
+                    .saveReportSynthesisFlagshipProgressPolicy(reportSynthesisFlagshipProgressPolicy);
+
+                }
+              }
+
             }
 
           }

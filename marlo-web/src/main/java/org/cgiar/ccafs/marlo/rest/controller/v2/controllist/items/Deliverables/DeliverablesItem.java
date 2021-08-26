@@ -30,8 +30,12 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableUserManager;
 import org.cgiar.ccafs.marlo.data.manager.ExternalSourceAuthorManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.MetadataElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressDeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableAffiliation;
@@ -47,9 +51,13 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
 import org.cgiar.ccafs.marlo.data.model.ExternalSourceAuthor;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.MetadataElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Publication;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressDeliverable;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.DeliverableUserDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewPublicationDTO;
@@ -117,6 +125,12 @@ public class DeliverablesItem<T> {
   private DeliverablesMapper deliverablesMapper;
   private PublicationsMapper publicationsMapper;
 
+  // changes to be included to Synthesis
+  private LiaisonInstitutionManager liaisonInstitutionManager;
+  private ReportSynthesisManager reportSynthesisManager;
+  private ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager;
+  private ReportSynthesisFlagshipProgressDeliverableManager reportSynthesisFlagshipProgressDelvierableManager;
+
 
   @Inject
   public DeliverablesItem(PhaseManager phaseManager, GlobalUnitManager globalUnitManager,
@@ -130,7 +144,10 @@ public class DeliverablesItem<T> {
     DeliverableAffiliationManager deliverableAffiliationManager,
     DeliverableAffiliationsNotMappedManager deliverableAffiliationsNotMappedManager,
     InstitutionManager institutionManager, ExternalSourceAuthorManager externalSourceAuthorManager,
-    DeliverableAltmetricInfoManager deliverableAltmetricInfoManager) {
+    DeliverableAltmetricInfoManager deliverableAltmetricInfoManager,
+    LiaisonInstitutionManager liaisonInstitutionManager, ReportSynthesisManager reportSynthesisManager,
+    ReportSynthesisFlagshipProgressDeliverableManager reportSynthesisFlagshipProgressDelvierableManager,
+    ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.metadataElementManager = metadataElementManager;
@@ -149,6 +166,10 @@ public class DeliverablesItem<T> {
     this.institutionManager = institutionManager;
     this.externalSourceAuthorManager = externalSourceAuthorManager;
     this.deliverableAltmetricInfoManager = deliverableAltmetricInfoManager;
+    this.reportSynthesisFlagshipProgressDelvierableManager = reportSynthesisFlagshipProgressDelvierableManager;
+    this.liaisonInstitutionManager = liaisonInstitutionManager;
+    this.reportSynthesisManager = reportSynthesisManager;
+    this.reportSynthesisFlagshipProgressManager = reportSynthesisFlagshipProgressManager;
   }
 
   public Long createDeliverable(NewPublicationDTO deliverableDTO, String entityAcronym, User user) {
@@ -334,6 +355,50 @@ public class DeliverablesItem<T> {
           deliverableUser.setDeliverable(deliverable);
           deliverableUser.setPhase(phase);
           deliverableUserManager.saveDeliverableUser(deliverableUser);
+        }
+
+        // verify if was included in synthesis PMU
+        LiaisonInstitution liaisonInstitution =
+          this.liaisonInstitutionManager.findByAcronymAndCrp(APConstants.CLARISA_ACRONYM_PMU, globalUnitEntity.getId());
+        if (liaisonInstitution != null) {
+          boolean existing = true;
+          ReportSynthesis reportSynthesis =
+            reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
+          if (reportSynthesis != null) {
+            ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress =
+              reportSynthesis.getReportSynthesisFlagshipProgress();
+            if (reportSynthesisFlagshipProgress == null) {
+              reportSynthesisFlagshipProgress = new ReportSynthesisFlagshipProgress();
+              reportSynthesisFlagshipProgress.setReportSynthesis(reportSynthesis);
+              reportSynthesisFlagshipProgress.setCreatedBy(user);
+              existing = false;
+              reportSynthesisFlagshipProgress = reportSynthesisFlagshipProgressManager
+                .saveReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgress);
+            }
+            final Long publicationID = deliverablesID;
+            ReportSynthesisFlagshipProgressDeliverable reportSynthesisFlagshipProgressDeliverable =
+              reportSynthesisFlagshipProgress.getReportSynthesisFlagshipProgressDeliverables().stream()
+                .filter(c -> c.isActive() && c.getDeliverable().getId().longValue() == publicationID).findFirst()
+                .orElse(null);
+            if (reportSynthesisFlagshipProgressDeliverable != null && existing) {
+              reportSynthesisFlagshipProgressDeliverable = reportSynthesisFlagshipProgressDelvierableManager
+                .getReportSynthesisFlagshipProgressDeliverableById(reportSynthesisFlagshipProgressDeliverable.getId());
+              reportSynthesisFlagshipProgressDeliverable.setActive(false);
+              reportSynthesisFlagshipProgressDeliverable = reportSynthesisFlagshipProgressDelvierableManager
+                .saveReportSynthesisFlagshipProgressDeliverable(reportSynthesisFlagshipProgressDeliverable);
+            } else {
+              reportSynthesisFlagshipProgressDeliverable = new ReportSynthesisFlagshipProgressDeliverable();
+              reportSynthesisFlagshipProgressDeliverable.setCreatedBy(user);
+              reportSynthesisFlagshipProgressDeliverable.setDeliverable(deliverable);
+              reportSynthesisFlagshipProgressDeliverable
+                .setReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgress);
+              reportSynthesisFlagshipProgressDeliverable = reportSynthesisFlagshipProgressDelvierableManager
+                .saveReportSynthesisFlagshipProgressDeliverable(reportSynthesisFlagshipProgressDeliverable);
+              reportSynthesisFlagshipProgressDeliverable.setActive(false);
+              reportSynthesisFlagshipProgressDelvierableManager
+                .saveReportSynthesisFlagshipProgressDeliverable(reportSynthesisFlagshipProgressDeliverable);
+            }
+          }
         }
 
         // web of science integration
