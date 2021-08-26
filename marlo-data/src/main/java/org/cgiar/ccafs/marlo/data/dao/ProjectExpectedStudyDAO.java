@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.data.dao;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
+import org.cgiar.ccafs.marlo.data.model.StudyHomeDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -59,6 +60,13 @@ public interface ProjectExpectedStudyDAO {
 
 
   /**
+   * This method gets a list of ALL projectExpectedStudy that are active up to a given phase
+   * 
+   * @return a list of ProjectExpectedStudy null if no exist records
+   */
+  public List<ProjectExpectedStudy> getAllStudiesByPhase(long phaseId);
+
+  /**
    * This method gets a list of projectExpectedStudy that are active by a given organizationType and phase
    * 
    * @return a list from ProjectExpectedStudy null if no exist records
@@ -72,6 +80,16 @@ public interface ProjectExpectedStudyDAO {
    * @return a list from ProjectExpectedStudy null if no exist records
    */
   public List<ProjectExpectedStudy> getStudiesByPhase(Phase phase);
+
+  /**
+   * Gets a list of all the studies from a project planned for the phase's year
+   * NOTE: this method is meant to be used by the Home Dashboard table
+   * 
+   * @param phaseId the Phase identifier
+   * @param projectId the Project identifier
+   * @return a list of StudyHomeDTO or empty
+   */
+  public List<StudyHomeDTO> getStudiesByProjectAndPhaseHome(long phaseId, long projectId);
 
   /**
    * This method search the expected Studies that the user can be edit.
