@@ -17,6 +17,10 @@ package org.cgiar.ccafs.marlo.action.home;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.dto.DeliverableHomeDTO;
+import org.cgiar.ccafs.marlo.data.dto.InnovationHomeDTO;
+import org.cgiar.ccafs.marlo.data.dto.ProjectHomeDTO;
+import org.cgiar.ccafs.marlo.data.dto.StudyHomeDTO;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
@@ -24,14 +28,12 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
-import org.cgiar.ccafs.marlo.data.model.DeliverableHomeDTO;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
-import org.cgiar.ccafs.marlo.data.model.InnovationHomeDTO;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PolicyHomeDTO;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
-import org.cgiar.ccafs.marlo.data.model.StudyHomeDTO;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -39,10 +41,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.AuthorizationInfo;
 
 /**
@@ -64,9 +69,11 @@ public class DashboardAction extends BaseAction {
   // Variables
   private GlobalUnit loggedCrp;
 
-  private List<Project> myProjects;
+  private List<ProjectHomeDTO> myProjects;
+  private List<Project> myFullProjects;
   private List<DeliverableHomeDTO> myDeliverables = new ArrayList<>();
-  private List<StudyHomeDTO> myStudies = new ArrayList<>();
+  private List<StudyHomeDTO> myOicrs = new ArrayList<>();
+  private List<StudyHomeDTO> myMelias = new ArrayList<>();
   private List<InnovationHomeDTO> myInnovations = new ArrayList<>();
   private List<PolicyHomeDTO> myPolicies = new ArrayList<>();
 
@@ -103,17 +110,21 @@ public class DashboardAction extends BaseAction {
   }
 
 
+  public List<StudyHomeDTO> getMyMelias() {
+    return myMelias;
+  }
+
+  public List<StudyHomeDTO> getMyOicrs() {
+    return myOicrs;
+  }
+
+
   public List<PolicyHomeDTO> getMyPolicies() {
     return myPolicies;
   }
 
-  public List<Project> getMyProjects() {
+  public List<ProjectHomeDTO> getMyProjects() {
     return myProjects;
-  }
-
-
-  public List<StudyHomeDTO> getMyStudies() {
-    return myStudies;
   }
 
   @Override
@@ -127,12 +138,13 @@ public class DashboardAction extends BaseAction {
     }
 
     // if (projectManager.findAll() != null) {
+    myFullProjects = new ArrayList<>();
     myProjects = new ArrayList<>();
     if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
 
       for (ProjectPhase projectPhase : phase.getProjectPhases()) {
         projectPhase.getProject().setProjectInfo(projectPhase.getProject().getProjecInfoPhase(this.getActualPhase()));
-        myProjects.add(projectPhase.getProject());
+        myFullProjects.add(projectPhase.getProject());
       }
 
 
@@ -169,19 +181,19 @@ public class DashboardAction extends BaseAction {
       }
 
 
-      myProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
+      myFullProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
         .filter(p -> p.isActive()).collect(Collectors.toList());
 
 
       List<Project> mProjects = new ArrayList<>();
-      mProjects.addAll(myProjects);
+      mProjects.addAll(myFullProjects);
 
 
       for (Project project : mProjects) {
         project.getProjecInfoPhase(this.getActualPhase());
 
         if (!allProjects.contains(project)) {
-          myProjects.remove(project);
+          myFullProjects.remove(project);
         }
       }
 
@@ -194,43 +206,65 @@ public class DashboardAction extends BaseAction {
           projectManager.getCompletedProjects(this.getCrpID(), this.getActualPhase().getId());
         if (closedProjects != null) {
           // closedProjects.addAll(projectManager.getNoPhaseProjects(this.getCrpID(), this.getActualPhase()));
-          myProjects.removeAll(closedProjects);
+          myFullProjects.removeAll(closedProjects);
         }
-        Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
+        Collections.sort(myFullProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
 
       }
     } else {
       SimpleDateFormat dateFormat = new SimpleDateFormat("y");
 
       myProjects =
-        myProjects.stream()
+        myFullProjects.stream()
           .filter(
             mp -> mp.isActive() && mp.getProjecInfoPhase(this.getActualPhase()) != null
               && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null || Integer.parseInt(dateFormat
-                .format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this.getCurrentCycleYear()))
+                .format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this.getCurrentCycleYear())
+              && StringUtils.isNotEmpty(mp.getProjecInfoPhase(this.getActualPhase()).getStatusName()))
+          .map(p -> new ProjectHomeDTO(p.getId(),
+            StringUtils.trim(p.getProjecInfoPhase(this.getActualPhase()) != null
+              ? p.getProjecInfoPhase(this.getActualPhase()).getTitle() : null),
+            StringUtils.defaultIfEmpty(p.getProjecInfoPhase(this.getActualPhase()).getStatusName(), "Not Defined"),
+            (ListUtils.union(
+              projectManager.getPrograms(p.getId(), ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue(),
+                this.getActualPhase().getId()),
+              projectManager.getPrograms(p.getId(), ProgramType.REGIONAL_PROGRAM_TYPE.getValue(),
+                this.getActualPhase().getId()))
+              .stream().map(f -> f.getAcronym()).collect(Collectors.toList()))))
           .collect(Collectors.toList());
     }
 
 
-    myDeliverables = myProjects.stream().filter(p -> p != null && p.getId() != null)
-      .flatMap(
-        p -> deliverableManager.getDeliverablesByProjectAndPhaseHome(this.getActualPhase().getId(), p.getId()).stream())
+    myDeliverables = myProjects.stream().filter(p -> p != null && p.getProjectId() != null)
+      .flatMap(p -> deliverableManager
+        .getDeliverablesByProjectAndPhaseHome(this.getActualPhase().getId(), p.getProjectId()).stream())
       .collect(Collectors.toList());
 
-    myStudies = myProjects.stream().filter(p -> p != null && p.getId() != null)
+    Map<Boolean, List<StudyHomeDTO>> allStudies = myProjects.stream().filter(p -> p != null && p.getProjectId() != null)
       .flatMap(p -> projectExpectedStudyManager
-        .getStudiesByProjectAndPhaseHome(this.getActualPhase().getId(), p.getId()).stream())
-      .collect(Collectors.toList());
+        .getStudiesByProjectAndPhaseHome(this.getActualPhase().getId(), p.getProjectId()).stream())
+      .collect(
+        Collectors.partitioningBy(st -> StringUtils.startsWith(StringUtils.trimToNull(st.getStudyType()), "OICR")));
 
-    myInnovations = myProjects.stream().filter(p -> p != null && p.getId() != null)
+    myMelias.addAll(allStudies.get(false));
+    myOicrs.addAll(allStudies.get(true));
+
+    myInnovations = myProjects.stream().filter(p -> p != null && p.getProjectId() != null)
       .flatMap(p -> projectInnovationManager
-        .getInnovationsByProjectAndPhaseHome(this.getActualPhase().getId(), p.getId()).stream())
+        .getInnovationsByProjectAndPhaseHome(this.getActualPhase().getId(), p.getProjectId()).stream())
       .collect(Collectors.toList());
 
-    myPolicies = myProjects.stream().filter(p -> p != null && p.getId() != null)
-      .flatMap(
-        p -> projectPolicyManager.getPoliciesByProjectAndPhaseHome(this.getActualPhase().getId(), p.getId()).stream())
+    myPolicies = myProjects.stream().filter(p -> p != null && p.getProjectId() != null)
+      .flatMap(p -> projectPolicyManager
+        .getPoliciesByProjectAndPhaseHome(this.getActualPhase().getId(), p.getProjectId()).stream())
       .collect(Collectors.toList());
+
+    this.getSession().put(APConstants.USER_PROJECTS, myProjects);
+    this.getSession().put(APConstants.USER_DELIVERABLES, myDeliverables);
+    this.getSession().put(APConstants.USER_MELIAS, myMelias);
+    this.getSession().put(APConstants.USER_OICRS, myOicrs);
+    this.getSession().put(APConstants.USER_INNOVATIONS, myInnovations);
+    this.getSession().put(APConstants.USER_POLICIES, myPolicies);
   }
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
@@ -250,16 +284,19 @@ public class DashboardAction extends BaseAction {
     this.myInnovations = myInnovations;
   }
 
+  public void setMyMelias(List<StudyHomeDTO> myMelias) {
+    this.myMelias = myMelias;
+  }
+
+  public void setMyOicrs(List<StudyHomeDTO> myStudies) {
+    this.myOicrs = myStudies;
+  }
+
   public void setMyPolicies(List<PolicyHomeDTO> myPolicies) {
     this.myPolicies = myPolicies;
   }
 
-  public void setMyProjects(List<Project> myProjects) {
+  public void setMyProjects(List<ProjectHomeDTO> myProjects) {
     this.myProjects = myProjects;
   }
-
-  public void setMyStudies(List<StudyHomeDTO> myStudies) {
-    this.myStudies = myStudies;
-  }
-
 }
