@@ -371,7 +371,7 @@ public class ProjectOutcomeAction extends BaseAction {
       }
       i++;
     }
-    return -1;
+    return 0;
   }
 
   public int getIndexMilestone(long milestoneId, int year) {
