@@ -1319,15 +1319,16 @@ public class ProjectPolicyAction extends BaseAction {
       }
     }
 
+    boolean hasCurrentCrp = false;
     // Save form Information
     if (policy.getCrps() != null) {
       for (ProjectPolicyCrp policyCrp : policy.getCrps()) {
+        GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(policyCrp.getGlobalUnit().getId());
+        hasCurrentCrp = hasCurrentCrp || (globalUnit != null && this.getCurrentCrp().equals(globalUnit));
         if (policyCrp.getId() == null) {
           ProjectPolicyCrp policyCrpSave = new ProjectPolicyCrp();
           policyCrpSave.setProjectPolicy(projectPolicy);
           policyCrpSave.setPhase(phase);
-
-          GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(policyCrp.getGlobalUnit().getId());
 
           policyCrpSave.setGlobalUnit(globalUnit);
 
@@ -1335,6 +1336,20 @@ public class ProjectPolicyAction extends BaseAction {
           // This is to add innovationCrpSave to generate correct auditlog.
           policy.getProjectPolicyCrps().add(policyCrpSave);
         }
+      }
+
+      if (!hasCurrentCrp) {
+        ProjectPolicyCrp policyCrpSave = new ProjectPolicyCrp();
+        policyCrpSave.setProjectPolicy(projectPolicy);
+        policyCrpSave.setPhase(phase);
+
+        GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(this.getCurrentCrp().getId());
+
+        policyCrpSave.setGlobalUnit(globalUnit);
+
+        projectPolicyCrpManager.saveProjectPolicyCrp(policyCrpSave);
+        // This is to add innovationCrpSave to generate correct auditlog.
+        policy.getProjectPolicyCrps().add(policyCrpSave);
       }
     }
   }
