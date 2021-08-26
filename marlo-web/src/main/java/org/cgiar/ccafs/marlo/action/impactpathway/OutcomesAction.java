@@ -882,7 +882,7 @@ public class OutcomesAction extends BaseAction {
 
         crpProgramOutcomeIndicatorDB =
           crpProgramOutcomeIndicatorManager.saveCrpProgramOutcomeIndicator(crpProgramOutcomeIndicatorDB);
-        crpProgramOutcomeIndicatorManager.replicate(crpProgramOutcomeIndicatorDB, nextPhase);
+        // crpProgramOutcomeIndicatorManager.replicate(crpProgramOutcomeIndicatorDB, nextPhase);
       }
     }
   }
