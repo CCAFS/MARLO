@@ -323,15 +323,21 @@ function drawChart(chart_data, chartID, type, options) {
   if (chart_data) {
     var chart1_data = new google.visualization.arrayToDataTable(chart_data);
     var chart1_options = options;
-    var view = new google.visualization.DataView(chart1_data);
-
-    if (type == barType) {
-      var chart1_chart = new google.visualization.BarChart(document.getElementById(chartID));
+    if (chart1_data.Wf == 0) {
+      $('#'+chartID).empty();
+      $('#'+chartID).append(
+        '<p  class="text-center"> ' + options.title + " <br>  No data </p>"
+      );
     } else {
-      var chart1_chart = new google.visualization.PieChart(document.getElementById(chartID));
-    }
+      var view = new google.visualization.DataView(chart1_data);
 
-    chart1_chart.draw(view, chart1_options);
+      if (type == barType) {
+        var chart1_chart = new google.visualization.BarChart(document.getElementById(chartID));
+      } else {
+        var chart1_chart = new google.visualization.PieChart(document.getElementById(chartID));
+      }
+      chart1_chart.draw(view, chart1_options);
+    }
   }
 }
 
