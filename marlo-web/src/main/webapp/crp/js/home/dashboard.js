@@ -1,6 +1,59 @@
 // $.fn.dataTableExt.sErrMode = 'throw';
 $(document).ready(initDashboard);
 
+var barType = 'Bar';
+var pieType = 'Pie';
+var chartHome1 = 'chartHome1';
+var chartHome2 = 'chartHome2';
+
+var homeProjectsLoaded = false;
+var homeProjectsData1 = [];
+var homeProjectsData2 = [];
+var homeProjectsTitle1 = 'Projects by Program';
+var homeProjectsTitle2 = 'Projects by Status';
+var homeProjectsAjaxURL = '/projectGraphs.do';
+var homeProjectsArrName1 = 'byProjectProgramType';
+var homeProjectsArrName2 = 'byProjectStatus';
+
+var deliverablesLoaded = false;
+var deliverablesData1 = [];
+var deliverablesData2 = [];
+var deliverablesTitle1 = 'Deliverables by Open Access';
+var deliverablesTitle2 = 'Deliverables by Status';
+var deliverablesAjaxURL = '/deliverableGraphs.do';
+var deliverablesArrName1 = 'byDeliverableOpenAccess';
+var deliverablesArrName2 = 'byDeliverableStatus';
+
+var oicrsLoaded = false;
+var oicrsData = [];
+var oicrsTitle = 'OICRs by Level';
+var oicrsAjaxURL = '/oicrGraphs.do';
+var oicrsArrName = 'byLevel';
+
+var meliasLoaded = false;
+var meliasData = [];
+var meliasTitle = 'MELIAs by Type';
+var meliasAjaxURL = '/meliaGraphs.do';
+var meliasArrName = 'byStudyType';
+
+var innovationsLoaded = false;
+var innovationsData1 = [];
+var innovationsData2 = [];
+var innovationsTitle1 = 'Innovations by Type';
+var innovationsTitle2 = 'Innovations by Stage';
+var innovationsAjaxURL = '/innovationGraphs.do';
+var innovationsArrName1 = 'byInnovationType';
+var innovationsArrName2 = 'byInnovationLevel';
+
+var policiesLoaded = false;
+var policiesData1 = [];
+var policiesData2 = [];
+var policiesTitle1 = 'Policies by Type';
+var policiesTitle2 = 'Policies by Level';
+var policiesAjaxURL = '/policyGraphs.do';
+var policiesArrName1 = 'byPolicyType';
+var policiesArrName2 = 'byPolicyLevel';
+
 function initDashboard() {
   $('#newProject').on('click', function (e) {
     $('#decisionTree .addProjectButtons').show(0, function () {
@@ -9,7 +62,7 @@ function initDashboard() {
   });
 
   var byType = {
-    title: 'Projects by Program',
+    title: homeProjectsTitle1,
     titleTextStyle: {
       color: '#5f5e5e',
       fontName: 'Open Sans',
@@ -42,7 +95,7 @@ function initDashboard() {
   };
 
   var byStatus = {
-    title: 'Projects by Status',
+    title: homeProjectsTitle2,
     titleTextStyle: {
       color: '#5f5e5e',
       fontName: 'Open Sans',
@@ -80,7 +133,7 @@ function initDashboard() {
   };
 
   var byLevel = {
-    title: 'Projects by Status',
+    title: homeProjectsTitle1,
     titleTextStyle: {
       color: '#5f5e5e',
       fontName: 'Open Sans',
@@ -114,54 +167,87 @@ function initDashboard() {
   };
 
   $('#homeProjects').on('click', function () {
-    byType.title = 'Projects by Program';
-    byStatus.title = 'Projects by Status';
+    byType.title = homeProjectsTitle1;
+    byStatus.title = homeProjectsTitle2;
     $('#chartHome2').css('opacity', 1);
-    setGoogleCharts('/projectGraphs.do', 'byProjectProgramType', 'chartHome1', 'Bar', byType);
-    setGoogleCharts('/projectGraphs.do', 'byProjectStatus', 'chartHome2', 'Pie', byStatus);
+    if (homeProjectsLoaded) {
+      drawChart(homeProjectsData1, chartHome1, barType, byType);
+      drawChart(homeProjectsData2, chartHome2, pieType, byStatus);
+    }
   });
 
   $('#deliverables').on('click', function () {
-    byType.title = 'Deliverables by Open Access';
-    byStatus.title = 'Deliverables by Status';
+    byType.title = deliverablesTitle1;
+    byStatus.title = deliverablesTitle2;
     $('#chartHome2').css('opacity', 1);
-    setGoogleCharts('/deliverableGraphs.do', 'byDeliverableOpenAccess', 'chartHome1', 'Bar', byType);
-    setGoogleCharts('/deliverableGraphs.do', 'byDeliverableStatus', 'chartHome2', 'Pie', byStatus);
+    if (!deliverablesLoaded) {
+      setGoogleCharts(deliverablesAjaxURL, deliverablesArrName1, chartHome1, barType, byType);
+      setGoogleCharts(deliverablesAjaxURL, deliverablesArrName2, chartHome2, pieType, byStatus);
+      deliverablesLoaded = true;
+    } else {
+      drawChart(deliverablesData1, chartHome1, barType, byType);
+      drawChart(deliverablesData2, chartHome2, pieType, byStatus);
+    }
   });
 
   $('#oicrs').on('click', function () {
-    byStatus.title = 'OICRs by Level';
+    byStatus.title = oicrsTitle;
     $('#chartHome2').css('opacity', 0);
-    setGoogleCharts('/oicrGraphs.do', 'byLevel', 'chartHome1', 'Pie', byStatus);
+    if (!oicrsLoaded) {
+      setGoogleCharts(oicrsAjaxURL, oicrsArrName, chartHome1, pieType, byStatus);
+      oicrsLoaded = true;
+    } else {
+      drawChart(oicrsData, chartHome1, pieType, byStatus);
+    }
   });
 
   $('#melias').on('click', function () {
-    byType.title = 'MELIAs by Type';
+    byLevel.title = meliasTitle;
     $('#chartHome2').css('opacity', 0);
-    setGoogleCharts('/meliaGraphs.do', 'byStudyType', 'chartHome1', 'Bar', byType);
+    if (!meliasLoaded) {
+      setGoogleCharts(meliasAjaxURL, meliasArrName, chartHome1, pieType, byLevel);
+      meliasLoaded = true;
+    } else {
+      drawChart(meliasData, chartHome1, pieType, byLevel);
+    }
   });
 
   $('#innovations').on('click', function () {
-    byLevel.title = 'Innovations by Type';
-    byStatus.title = 'Innovations by Stage';
+    byLevel.title = innovationsTitle1;
+    byStatus.title = innovationsTitle2;
     $('#chartHome2').css('opacity', 1);
-    setGoogleCharts('/innovationGraphs.do', 'byInnovationType', 'chartHome1', 'Pie', byLevel);
-    setGoogleCharts('/innovationGraphs.do', 'byInnovationLevel', 'chartHome2', 'Pie', byStatus);
+    if (!innovationsLoaded) {
+      setGoogleCharts(innovationsAjaxURL, innovationsArrName1, chartHome1, pieType, byLevel);
+      setGoogleCharts(innovationsAjaxURL, innovationsArrName2, chartHome2, pieType, byStatus);
+      innovationsLoaded = true;
+    } else {
+      drawChart(innovationsData1, chartHome1, pieType, byLevel);
+      drawChart(innovationsData2, chartHome2, pieType, byStatus);
+    }
   });
 
   $('#policies').on('click', function () {
-    byType.title = 'Policies by Type';
-    byStatus.title = 'Policies by Level';
+    byType.title = policiesTitle1;
+    byStatus.title = policiesTitle2;
     $('#chartHome2').css('opacity', 1);
-    setGoogleCharts('/policyGraphs.do', 'byPolicyType', 'chartHome1', 'Bar', byType);
-    setGoogleCharts('/policyGraphs.do', 'byPolicyLevel', 'chartHome2', 'Pie', byStatus);
+    if (!policiesLoaded) {
+      setGoogleCharts(policiesAjaxURL, policiesArrName1, chartHome1, barType, byType);
+      setGoogleCharts(policiesAjaxURL, policiesArrName2, chartHome2, pieType, byStatus);
+      policiesLoaded = true;
+    } else {
+      drawChart(policiesData1, chartHome1, barType, byType);
+      drawChart(policiesData2, chartHome2, pieType, byStatus);
+    }
   });
 
   $('.loadingBlock').hide().next().fadeIn(500);
 
   // Set google charts
-  setGoogleCharts('/projectGraphs.do', 'byProjectProgramType', 'chartHome1', 'Bar', byType);
-  setGoogleCharts('/projectGraphs.do', 'byProjectStatus', 'chartHome2', 'Pie', byStatus);
+  if (!homeProjectsLoaded) {
+    setGoogleCharts(homeProjectsAjaxURL, homeProjectsArrName1, chartHome1, barType, byType);
+    setGoogleCharts(homeProjectsAjaxURL, homeProjectsArrName2, chartHome2, pieType, byStatus);
+    homeProjectsLoaded = true;
+  }
 }
 
 function setGoogleCharts(ajaxURL, arrName, chartID, type, options) {
@@ -183,6 +269,50 @@ function loadPageData(ajaxURL, arrName, chartID, type, options) {
           return arr;
         });
         newData.unshift(["Type", "Count", { role: "annotation" }]);
+        switch (arrName) {
+          case homeProjectsArrName1:
+            homeProjectsData1 = newData;
+            break;
+
+          case homeProjectsArrName2:
+            homeProjectsData2 = newData;
+            break;
+
+          case deliverablesArrName1:
+            deliverablesData1 = newData;
+            break;
+
+          case deliverablesArrName2:
+            deliverablesData2 = newData;
+            break;
+
+          case oicrsArrName:
+            oicrsData = newData;
+            break;
+
+          case meliasArrName:
+            meliasData = newData;
+            break;
+
+          case innovationsArrName1:
+            innovationsData1 = newData;
+            break;
+
+          case innovationsArrName2:
+            innovationsData2 = newData;
+            break;
+
+          case policiesArrName1:
+            policiesData1 = newData;
+            break;
+
+          case policiesArrName2:
+            policiesData2 = newData;
+            break;
+
+          default:
+            break;
+        }
         drawChart(newData, chartID, type, options);
       }
     },
@@ -195,7 +325,7 @@ function drawChart(chart_data, chartID, type, options) {
     var chart1_options = options;
     var view = new google.visualization.DataView(chart1_data);
 
-    if (type == 'Bar') {
+    if (type == barType) {
       var chart1_chart = new google.visualization.BarChart(document.getElementById(chartID));
     } else {
       var chart1_chart = new google.visualization.PieChart(document.getElementById(chartID));
