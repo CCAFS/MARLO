@@ -12,7 +12,7 @@
   "${baseUrlMedia}/css/home/dashboard.css?20210827a",
   "${baseUrlCdn}/global/css/customDataTable.css",
   "${baseUrlCdn}/global/css/impactGraphic.css",
-  "${baseUrlCdn}/global/css/global.css?20210826a"
+  "${baseUrlCdn}/global/css/global.css?20210827a"
   ] 
 /]
 [#assign currentSection = "home" /]
