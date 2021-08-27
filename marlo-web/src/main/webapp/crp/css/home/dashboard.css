@@ -270,3 +270,15 @@ table {
     position: relative;
     background: #FFF;
 }
+
+.chartSimpleBox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* border: 1px solid #E7E7E7; */
+    padding: 10px 20px 10px 20px;
+    border-radius: 3px;
+    margin: 2px 0px 5px 0;
+    position: relative;
+    background: #FFF;
+}

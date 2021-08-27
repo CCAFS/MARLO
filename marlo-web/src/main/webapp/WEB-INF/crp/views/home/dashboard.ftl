@@ -4,12 +4,12 @@
 [#assign pageLibs = ["jQuery-Timelinr","cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
   "https://www.gstatic.com/charts/loader.js",
-  "${baseUrlMedia}/js/home/dashboard.js?20210826b",
+  "${baseUrlMedia}/js/home/dashboard.js?20210827a",
   "${baseUrlCdn}/global/js/impactGraphic.js"
   ] 
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/home/dashboard.css?20210825a",
+  "${baseUrlMedia}/css/home/dashboard.css?20210827a",
   "${baseUrlCdn}/global/css/customDataTable.css",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "${baseUrlCdn}/global/css/global.css?20210826a"
@@ -46,18 +46,11 @@
   <div class="container">
 
     [#--  Home Graphs  --]
-    <div class="homeGraphs col-md-12">
+    <div class="col-md-12">
     <div class="homeTitle"><b>[@s.text name="dashboard.homepage.title" /] ${(currentUser.firstName)!}!</b></div>
     <div class="homeDescription col-md-12">[@s.text name="dashboard.homepage.description" /]</div>
-      <div class="col-md-6">
-        <div id="chartHome1" class="chartBox simpleBox" style="height: 250px;"></div>
-      </div>
-
-      <div class="col-md-6">
-        <div id="chartHome2" class="chartBox simpleBox" style="height: 250px;"></div>
-      </div>
     </div>
-    
+
     [#-- Dashboard --]   
     <div id="dashboardContent" class="col-md-12">
       <div class="col-md-12">
@@ -70,6 +63,17 @@
           <li role="presentation"><a id="policies" href="#myPolicies" aria-controls="myPolicies" role="tab" data-toggle="tab">[@s.text name="dashboard.policies.table.title" /]</a></li>
           <li role="presentation" style="display:none;"><a id="impact" href="#impactP" aria-controls="impactP" role="tab" data-toggle="tab">Impact pathway</a></li>
         </ul>
+
+        <div class="homeGraphs col-md-12">
+    
+      <div class="col-md-6">
+        <div id="chartHome1" class="chartBox chartSimpleBox" style="height: 250px;"></div>
+      </div>
+
+      <div class="col-md-6">
+        <div id="chartHome2" class="chartBox chartSimpleBox" style="height: 250px;"></div>
+      </div>
+    </div>
         
         <div class="tab-content">
           <div role="tabpanel" class="tab-pane fade in active" id="myProjects">
