@@ -123,7 +123,7 @@ function initDashboard() {
       heigth: "100%"
     },
     colors: [
-      '#e43a74', '#1773b8', '#00a0b0', '#f3bd1e', '#373a3b'
+      '#B21691', '#1773b8', '#00a0b0', '#f3bd1e', '#373a3b'
     ],
     bar: { groupWidth: '100%' },
     legend: {
