@@ -227,38 +227,58 @@
             </div>
           </div>
           [/#if]          
+           
                     
-          [#if action.isAiccra() && projectOutcome.crpProgramOutcome.indicators?size != 0]
-          <h4 class="headTitle">Progress to Targets</h4>
-          <div class="nextUsersBlock borderBox">
-            <div class="nextUsersList">
-            [#-- Baseline Indicators --]
-            [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcome.crpProgramOutcome.crpProgram.baseLine)!false) && ((projectOutcome.crpProgramOutcome.indicators?has_content)!false)]
-              <h5 class="sectionSubTitle">Progress to Key Performance Indicator</h5>
-              <div class="form-group">
-                <div class="" id="baseline">
-                  <div class="form-group text-right">
-                    [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
-                      <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}&filename=${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="20px" alt="" /> ${ (projectOutcome.crpProgramOutcome.file.fileName)!}</a> 
-                    [#else]
-                      <p class="note"><i>[@s.text name="projectOutcome.askForBaselineInstructions" /]</i></p>
+          <div class="deliverableTabs"> 
+            <ul class="nav nav-tabs" role="tablist"> 
+                <li role="presentation" class="active"><a index="1" href="#deliverable-mainInformation" aria-controls="info" role="tab" data-toggle="tab">Progress ${currentCycleYear}</a></li>              
+                [#if reportingActive]
+                <li role="presentation" class=""><a index="2" href="#deliverable-disseminationMetadata" aria-controls="metadata" role="tab" data-toggle="tab">Reporting ${currentCycleYear}</a></li>
+                [/#if]                      
+            </ul>
+            <div class="tab-content ">          
+              [#-- Progress tab --]  
+              <div id="deliverable-mainInformation" role="tabpanel" class="tab-pane fade in active">
+                [#if action.isAiccra() && projectOutcome.crpProgramOutcome.indicators?size != 0]
+                  <h4 class="headTitle">Progress to Targets</h4>
+                  <div class="nextUsersBlock borderBox">
+                    <div class="nextUsersList">
+                    [#-- Baseline Indicators --]
+                    [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcome.crpProgramOutcome.crpProgram.baseLine)!false) && ((projectOutcome.crpProgramOutcome.indicators?has_content)!false)]
+                      <h5 class="sectionSubTitle">Progress to Key Performance Indicator</h5>
+                      <div class="form-group">
+                        <div class="" id="baseline">
+                          <div class="form-group text-right">
+                            [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
+                              <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}&filename=${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="20px" alt="" /> ${ (projectOutcome.crpProgramOutcome.file.fileName)!}</a> 
+                            [#else]
+                              <p class="note"><i>[@s.text name="projectOutcome.askForBaselineInstructions" /]</i></p>
+                            [/#if]
+                          </div>
+                          [#-- Indicators --]
+                          [#list projectOutcome.crpProgramOutcome.indicators as  indicator   ]
+                          [#if action.isAiccra()]
+                            [@baselineAiccraIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  /]
+                          [#else]
+                            [@baselineIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  /]
+                          [/#if]
+                          [/#list]
+                        </div>
+                      </div>
                     [/#if]
+                    </div>           
                   </div>
-                  [#-- Indicators --]
-                  [#list projectOutcome.crpProgramOutcome.indicators as  indicator   ]
-                  [#if action.isAiccra()]
-                    [@baselineAiccraIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  /]
-                  [#else]
-                    [@baselineIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  /]
-                  [/#if]
-                  [/#list]
-                </div>
-              </div>
-            [/#if]
-            </div>           
-          </div>
-          [/#if]
-          
+                [/#if]
+                
+                [#-- Reporting tab --]
+                [#if reportingActive]
+                  <div id="deliverable-disseminationMetadata" role="tabpanel" class="tab-pane fade ">
+                  </div>
+                [/#if]
+               </div>         
+              </div>   
+          </div>     
+                              
           [#-- Next Users --]
           [#-- For A4NH CRP, nextusers aren't required --]
           [#if action.hasSpecificities('crp_next_users')]
