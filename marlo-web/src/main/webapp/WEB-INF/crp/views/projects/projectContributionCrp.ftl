@@ -554,13 +554,16 @@
     --]
     
       <div class="form-group">
-        [@customForm.textArea name="${customName}.narrative" i18nkey="projectOutcomeBaseline.expectedNarrative" value="${(projectOutcomeIndicator.narrative)!}" required=true className="limitWords-100" editable=editable && !reportingActive /]
+        [@customForm.textArea name="${customName}.narrative" i18nkey="projectOutcomeBaseline.expectedNarrative" value="${(projectOutcomeIndicator.narrative)!}" required=true className="limitWords-100" editable=editable/]
+        [#-- && !reportingActive  --]
       </div>
+      [#--  
       [#if reportingActive]
         <div class="form-group">
           [@customForm.textArea name="${customName}.achievedNarrative" i18nkey="projectOutcomeBaseline.achievedNarrative" required=true className="limitWords-100" editable=editable /]
         </div>
       [/#if]
+      --]
   </div>
 [/#macro]
 
