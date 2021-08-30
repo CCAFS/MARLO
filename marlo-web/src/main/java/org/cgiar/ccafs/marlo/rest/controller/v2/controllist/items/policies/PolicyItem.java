@@ -246,12 +246,26 @@ public class PolicyItem<T> {
         RepIndPolicyInvestimentType repIndPolicyInvestimentType =
           this.repIndPolicyInvestimentTypeManager.getRepIndPolicyInvestimentTypeById(
             newPolicyDTO.getProjectPoliciesInfo().getRepIndPolicyInvestimentType().getCode().longValue());
+
         if (repIndPolicyInvestimentType == null) {
           fieldErrors.add(new FieldErrorDTO("createPolicy", "repIndPolicyInvestimentType",
-            new NewProjectPolicyDTO().getProjectPoliciesInfo().getRepIndPolicyInvestimentType().getCode()
+            newPolicyDTO.getProjectPoliciesInfo().getRepIndPolicyInvestimentType().getCode()
               + " is an invalid investiment type code"));
         } else {
+          if (newPolicyDTO.getProjectPoliciesInfo().getRepIndPolicyInvestimentType().getCode().longValue() == 3) {
+            if (newPolicyDTO.getProjectPoliciesInfo().getBudgetAmount() == null) {
+              fieldErrors.add(new FieldErrorDTO("createPolicy", "budgetAmount", " budget amount is required"));
+            } else if (newPolicyDTO.getProjectPoliciesInfo().getBudgetAmount() <= 0) {
+              fieldErrors
+                .add(new FieldErrorDTO("createPolicy", "budgetAmount", " budget amount needs to be more than zero"));
+            } else {
+              projectPolicyInfo.setAmount(newPolicyDTO.getProjectPoliciesInfo().getBudgetAmount());
+            }
+          } else {
+            projectPolicyInfo.setAmount(null);
+          }
           projectPolicyInfo.setRepIndPolicyInvestimentType(repIndPolicyInvestimentType);
+
         }
       } else {
         fieldErrors
@@ -919,6 +933,18 @@ public class PolicyItem<T> {
               new NewProjectPolicyDTO().getProjectPoliciesInfo().getRepIndPolicyInvestimentType().getCode()
                 + " is an invalid investiment type code"));
           } else {
+            if (newPolicyDTO.getProjectPoliciesInfo().getRepIndPolicyInvestimentType().getCode().longValue() == 3) {
+              if (newPolicyDTO.getProjectPoliciesInfo().getBudgetAmount() == null) {
+                fieldErrors.add(new FieldErrorDTO("createPolicy", "budgetAmount", " budget amount is required"));
+              } else if (newPolicyDTO.getProjectPoliciesInfo().getBudgetAmount() <= 0) {
+                fieldErrors
+                  .add(new FieldErrorDTO("createPolicy", "budgetAmount", " budget amount needs to be more than zero"));
+              } else {
+                projectPolicyInfo.setAmount(newPolicyDTO.getProjectPoliciesInfo().getBudgetAmount());
+              }
+            } else {
+              projectPolicyInfo.setAmount(null);
+            }
             projectPolicyInfo.setRepIndPolicyInvestimentType(repIndPolicyInvestimentType);
           }
         } else {
