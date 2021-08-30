@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC 
+"-//Apache Software Foundation//DTD Struts Configuration 2.5//EN" 
+  "http://struts.apache.org/dtds/struts-2.5.dtd">
+<struts>
+    <!-- Add addition packages and configuration here. -->
+    <package name="data" namespace="/data" extends="marlo-default">
+        <action name="file" class="org.cgiar.ccafs.marlo.action.downloads.DownloadFileAction">
+            <result name="success" type="stream">
+                <param name="contentType">application/octet-stream</param>
+                <param name="inputName">fileInputStream</param>
+                <param name="contentDisposition">attachment;filename=${filename}</param>
+                <param name="bufferSize">1024</param>
+                <param name="edit">${edit}</param>
+                <param name="phaseID">${phaseID}</param>
+                <param name="projectID">${projectID}</param>
+            </result>
+            <result name="error" type="redirectAction">
+                /WEB-INF/global/pages/error/404.ftl
+                <param name="edit">${edit}</param>
+                <param name="phaseID">${phaseID}</param>
+                <param name="projectID">${projectID}</param>
+            </result>
+            <result name="login"  type="redirectAction">
+                /WEB-INF/global/pages/error/401.ftl
+                <param name="edit">${edit}</param>
+                <param name="phaseID">${phaseID}</param>
+                <param name="projectID">${projectID}</param>
+            </result>
+        </action>
+
+
+    </package>
+
+    <package name="downloads" namespace="/downloads" extends="data" />
+
+</struts>
+
