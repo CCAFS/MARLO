@@ -254,15 +254,14 @@ public class OutcomesAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-  public String getBaseLineFileURL(String outcomeID) {
-    String path = config.getDownloadURL() + "/" + this.getBaseLineFileUrlPath(outcomeID).replace('\\', '/');
-    return path;
-  }
+public String getBaseLineFileURL(String outcomeID) {
+  String path = config.getDownloadURL() + "/file.do?" +this.getBaseLineFileUrlPath(outcomeID).replace('\\', '/');
+  return path;
+}
 
-  public String getBaseLineFileUrlPath(String outcomeID) {
-    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + outcomeID + File.separator + "baseLine"
-      + File.separator;
-  }
+public String getBaseLineFileUrlPath(String outcomeID) {
+  return "crp=" + this.getActualPhase().getCrp().getAcronym() + "&category=projects&id=" + outcomeID;
+}
 
   public long getCrpProgramID() {
     return crpProgramID;
