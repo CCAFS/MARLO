@@ -39,16 +39,25 @@ public class ProjectPoliciesInfoDTO {
   @ApiModelProperty(notes = "Policy Investment Type", position = 5)
   private PolicyInvestmentTypeDTO repIndPolicyInvestimentType;
 
-  @ApiModelProperty(notes = "Maturity level", position = 6)
+  @ApiModelProperty(notes = "Policy budget amount", position = 6)
+  private Double budgetAmount;
+
+
+  @ApiModelProperty(notes = "Maturity level", position = 7)
   private PolicyMaturityLevelDTO repIndStageProcess;
 
-  @ApiModelProperty(notes = "Phase (AR, POWB, UpKeep)", position = 7)
+
+  @ApiModelProperty(notes = "Phase (AR, POWB, UpKeep)", position = 8)
   private PhaseDTO phase;
 
+  public Double getBudgetAmount() {
+    return budgetAmount;
+  }
 
   public String getDescription() {
     return description;
   }
+
 
   public String getNarrativeEvidence() {
     return narrativeEvidence;
@@ -72,6 +81,10 @@ public class ProjectPoliciesInfoDTO {
 
   public long getYear() {
     return year;
+  }
+
+  public void setBudgetAmount(Double budgetAmount) {
+    this.budgetAmount = budgetAmount;
   }
 
 

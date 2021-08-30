@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.manager.GeneralStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
@@ -51,7 +52,9 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageStudyManager;
-import org.cgiar.ccafs.marlo.data.manager.RestApiAuditlogManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
@@ -64,6 +67,7 @@ import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -87,7 +91,9 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageStudy;
-import org.cgiar.ccafs.marlo.data.model.RestApiAuditlog;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressStudy;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicator;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
@@ -107,18 +113,14 @@ import org.cgiar.ccafs.marlo.rest.mappers.ProjectExpectedStudyMapper;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -163,7 +165,11 @@ public class ExpectedStudiesItem<T> {
   private ProjectExpectedStudyMilestoneManager projectExpectedStudyMilestoneManager;
   private ProjectExpectedStudyMapper projectExpectedStudyMapper;
   private GlobalUnitProjectManager globalUnitProjectManager;
-  private RestApiAuditlogManager restApiAuditlogManager;
+  // changes to be included to Synthesis
+  private LiaisonInstitutionManager liaisonInstitutionManager;
+  private ReportSynthesisManager reportSynthesisManager;
+  private ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager;
+  private ReportSynthesisFlagshipProgressStudyManager reportSynthesisFlagshipProgressStudyManager;
 
 
   @Inject
@@ -191,7 +197,9 @@ public class ExpectedStudiesItem<T> {
     StudyTypeManager studyTypeManager, ProjectManager projectManager, CrpMilestoneManager crpMilestoneManager,
     ProjectExpectedStudyMilestoneManager projectExpectedStudyMilestoneManager,
     ProjectExpectedStudyMapper projectExpectedStudyMapper, GlobalUnitProjectManager globalUnitProjectManager,
-    RestApiAuditlogManager restApiAuditlogManager) {
+    LiaisonInstitutionManager liaisonInstitutionManager, ReportSynthesisManager reportSynthesisManager,
+    ReportSynthesisFlagshipProgressStudyManager reportSynthesisFlagshipProgressStudyManager,
+    ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.repIndStageStudyManager = repIndStageStudyManager;
@@ -228,7 +236,10 @@ public class ExpectedStudiesItem<T> {
     this.srfSloIndicatorTargetManager = srfSloIndicatorTargetManager;
     this.projectExpectedStudyMapper = projectExpectedStudyMapper;
     this.globalUnitProjectManager = globalUnitProjectManager;
-    this.restApiAuditlogManager = restApiAuditlogManager;
+    this.reportSynthesisFlagshipProgressStudyManager = reportSynthesisFlagshipProgressStudyManager;
+    this.liaisonInstitutionManager = liaisonInstitutionManager;
+    this.reportSynthesisManager = reportSynthesisManager;
+    this.reportSynthesisFlagshipProgressManager = reportSynthesisFlagshipProgressManager;
   }
 
   private int countWords(String string) {
@@ -1040,18 +1051,48 @@ public class ExpectedStudiesItem<T> {
                     .saveProjectExpectedStudyQuantification(projectExpectedStudyQuantificationDB);
                 }
 
-                // Log Action
-                try {
-                  ObjectMapper mapper = new ObjectMapper();
-                  String originalJson =
-                    mapper.writerWithDefaultPrettyPrinter().writeValueAsString(newProjectExpectedStudy);
-                  RestApiAuditlog restApiAuditLog =
-                    new RestApiAuditlog("createExpectedStudy", "Created " + projectExpectedStudy.getId(), new Date(),
-                      projectExpectedStudy.getId(), "class org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy",
-                      originalJson, user.getId(), null, "", phase.getId());
-                  restApiAuditlogManager.logApiCall(restApiAuditLog);
-                } catch (Throwable ex) {
-                  Logger.getLogger(ExpectedStudiesItem.class.getName()).log(Level.SEVERE, null, ex);
+                // verify if was included in synthesis PMU
+                LiaisonInstitution liaisonInstitution = this.liaisonInstitutionManager
+                  .findByAcronymAndCrp(APConstants.CLARISA_ACRONYM_PMU, globalUnitEntity.getId());
+                if (liaisonInstitution != null) {
+                  boolean existing = true;
+                  ReportSynthesis reportSynthesis =
+                    reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
+                  if (reportSynthesis != null) {
+                    ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress =
+                      reportSynthesis.getReportSynthesisFlagshipProgress();
+                    if (reportSynthesisFlagshipProgress == null) {
+                      reportSynthesisFlagshipProgress = new ReportSynthesisFlagshipProgress();
+                      reportSynthesisFlagshipProgress.setReportSynthesis(reportSynthesis);
+                      reportSynthesisFlagshipProgress.setCreatedBy(user);
+                      existing = false;
+                      reportSynthesisFlagshipProgress = reportSynthesisFlagshipProgressManager
+                        .saveReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgress);
+                    }
+                    final Long study = projectExpectedStudyID;
+                    ReportSynthesisFlagshipProgressStudy reportSynthesisFlagshipProgressStudy =
+                      reportSynthesisFlagshipProgress.getReportSynthesisFlagshipProgressStudies().stream()
+                        .filter(c -> c.isActive() && c.getProjectExpectedStudy().getId().longValue() == study)
+                        .findFirst().orElse(null);
+                    if (reportSynthesisFlagshipProgressStudy != null && existing) {
+                      reportSynthesisFlagshipProgressStudy = reportSynthesisFlagshipProgressStudyManager
+                        .getReportSynthesisFlagshipProgressStudyById(reportSynthesisFlagshipProgressStudy.getId());
+                      reportSynthesisFlagshipProgressStudy.setActive(false);
+                      reportSynthesisFlagshipProgressStudy = reportSynthesisFlagshipProgressStudyManager
+                        .saveReportSynthesisFlagshipProgressStudy(reportSynthesisFlagshipProgressStudy);
+                    } else {
+                      reportSynthesisFlagshipProgressStudy = new ReportSynthesisFlagshipProgressStudy();
+                      reportSynthesisFlagshipProgressStudy.setCreatedBy(user);
+                      reportSynthesisFlagshipProgressStudy.setProjectExpectedStudy(projectExpectedStudy);
+                      reportSynthesisFlagshipProgressStudy
+                        .setReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgress);
+                      reportSynthesisFlagshipProgressStudy = reportSynthesisFlagshipProgressStudyManager
+                        .saveReportSynthesisFlagshipProgressStudy(reportSynthesisFlagshipProgressStudy);
+                      reportSynthesisFlagshipProgressStudy.setActive(false);
+                      reportSynthesisFlagshipProgressStudyManager
+                        .saveReportSynthesisFlagshipProgressStudy(reportSynthesisFlagshipProgressStudy);
+                    }
+                  }
                 }
               }
             }
@@ -1198,14 +1239,6 @@ public class ExpectedStudiesItem<T> {
         projectExpectedStudy.setMilestones(projectExpectedStudyMilestoneList);
 
         projectExpectedStudyManager.deleteProjectExpectedStudy(projectExpectedStudy.getId());
-
-        // Log Action
-        RestApiAuditlog restApiAuditLog = new RestApiAuditlog("deleteExpectedStudy",
-          "Deleted CGIAR Entity Acronym " + CGIARentityAcronym + " ID " + projectExpectedStudy.getId() + " Year:"
-            + repoYear + " Phase: " + repoPhase,
-          new Date(), projectExpectedStudy.getId(), "class org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy",
-          "N/A", user.getId(), null, "", phase.getId());
-        restApiAuditlogManager.logApiCall(restApiAuditLog);
       } // ?
     } else {
       fieldErrors.add(new FieldErrorDTO("deleteExpectedStudy", "ProjectExpectedStudyEntity",
@@ -1276,12 +1309,6 @@ public class ExpectedStudiesItem<T> {
     projectExpectedStudyList = expectedStudyList.stream()
       .map(oicr -> this.projectExpectedStudyMapper.projectExpectedStudyToProjectExpectedStudyARDTO(oicr))
       .collect(Collectors.toList());
-
-    // Log Action
-    RestApiAuditlog restApiAuditLog = new RestApiAuditlog("findExpectedStudyByGlobalUnit",
-      "Searched CGIAR Entity Acronym" + CGIARentityAcronym + " Year:" + repoYear + " Phase: " + repoPhase, new Date(),
-      0L, "class org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy", "N/A", user.getId(), null, "", phase.getId());
-    restApiAuditlogManager.logApiCall(restApiAuditLog);
 
     return projectExpectedStudyList;
   }
@@ -1414,15 +1441,6 @@ public class ExpectedStudiesItem<T> {
           .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
           .collect(Collectors.toList()));
     }
-
-    // Log Action
-    RestApiAuditlog restApiAuditLog =
-      new RestApiAuditlog("findExpectedStudyById",
-        "Searched CGIAR Entity Acronym" + CGIARentityAcronym + " ID " + id + "Year:" + repoYear + " Phase: "
-          + repoPhase,
-        new Date(), id, "class org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy", "N/A", user.getId(), null, "",
-        phase.getId());
-    restApiAuditlogManager.logApiCall(restApiAuditLog);
 
     return Optional.ofNullable(projectExpectedStudy)
       .map(this.projectExpectedStudyMapper::projectExpectedStudyToProjectExpectedStudyDTO)
@@ -2608,20 +2626,6 @@ public class ExpectedStudiesItem<T> {
                 if (!existingProjectExpectedStudyPolicyList.contains(obj)) {
                   projectExpectedStudyPolicyManager.deleteProjectExpectedStudyPolicy(obj.getId());
                 }
-              }
-
-              // Log Action
-              try {
-                ObjectMapper mapper = new ObjectMapper();
-                String originalJson =
-                  mapper.writerWithDefaultPrettyPrinter().writeValueAsString(newProjectExpectedStudy);
-                RestApiAuditlog restApiAuditLog =
-                  new RestApiAuditlog("updateExpectedStudy", "Updated " + projectExpectedStudy.getId(), new Date(),
-                    projectExpectedStudy.getId(), "class org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy",
-                    originalJson, user.getId(), null, "", phase.getId());
-                restApiAuditlogManager.logApiCall(restApiAuditLog);
-              } catch (Throwable ex) {
-                Logger.getLogger(ExpectedStudiesItem.class.getName()).log(Level.SEVERE, null, ex);
               }
             }
           }

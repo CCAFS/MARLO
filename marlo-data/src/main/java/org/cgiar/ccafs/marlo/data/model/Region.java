@@ -33,6 +33,7 @@ public class Region extends MarloBaseEntity implements Serializable {
   private static final long serialVersionUID = -6184327810710297901L;
 
   private String name;
+  private Long iso_numeric;
   private RegionType regionType;
   private Set<LocElementRegion> regionCountries = new HashSet<LocElementRegion>(0);
   private List<LocElement> countries;
@@ -48,6 +49,11 @@ public class Region extends MarloBaseEntity implements Serializable {
   }
 
 
+  public Long getIso_numeric() {
+    return iso_numeric;
+  }
+
+
   public String getName() {
     return name;
   }
@@ -57,12 +63,17 @@ public class Region extends MarloBaseEntity implements Serializable {
     return regionCountries;
   }
 
+
   public RegionType getRegionType() {
     return regionType;
   }
 
   public void setCountries(List<LocElement> countries) {
     this.countries = countries;
+  }
+
+  public void setIso_numeric(Long iso_numeric) {
+    this.iso_numeric = iso_numeric;
   }
 
   public void setName(String name) {

@@ -24,12 +24,14 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPolicyInfo;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectPoliciesInfoDTO;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "jsr330", uses = {PhaseMapper.class, PolicyMaturityLevelMapper.class,
   OrganizationTypeMapper.class, PolicyInvestmentTypeMapper.class})
 public interface ProjectPoliciesInfoMapper {
 
-
+  @Mappings({@Mapping(source = "amount", target = "budgetAmount")})
   public abstract ProjectPoliciesInfoDTO projectPolicyInfoToProjectPoliciesInfoDTO(ProjectPolicyInfo projectPolicyInfo);
 
 }
