@@ -29,7 +29,7 @@ public class SDGTargetDTO {
   @NotNull
   private Long id;
 
-  @ApiModelProperty(notes = "SDG target SMO Code", position = 2)
+  @ApiModelProperty(notes = "SDG target Code", position = 2)
   private String sdgTargetCode;
 
   @ApiModelProperty(notes = "SDG target Description", position = 3)

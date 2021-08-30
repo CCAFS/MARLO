@@ -25,9 +25,9 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class SDGsDTO {
 
-  @ApiModelProperty(notes = "SDG SMO Code", position = 1)
+  @ApiModelProperty(notes = "SDG Code", position = 1)
   @NotNull
-  private long smoCode;
+  private long usndCode;
 
   @ApiModelProperty(notes = "SDG Short Name", position = 2)
   private String shortName;
@@ -43,21 +43,22 @@ public class SDGsDTO {
     return shortName;
   }
 
-  public long getSmoCode() {
-    return smoCode;
+  public long getUsndCode() {
+    return usndCode;
   }
 
   public void setFullName(String fullName) {
     this.fullName = fullName;
   }
 
+
   public void setShortName(String shortName) {
     this.shortName = shortName;
   }
 
-  public void setSmoCode(long smoCode) {
-    this.smoCode = smoCode;
-  }
 
+  public void setUsndCode(long usndCode) {
+    this.usndCode = usndCode;
+  }
 
 }
