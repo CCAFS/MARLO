@@ -333,14 +333,13 @@ public class ProjectOutcomeAction extends BaseAction {
   }
 
 
-  public String getBaseLineFileURL(String outcomeID) {
-    return config.getDownloadURL() + "/" + this.getBaseLineFileUrlPath(outcomeID).replace('\\', '/');
-  }
+public String getBaseLineFileURL(String outcomeID) {
+ return config.getDownloadURL() + "/file.do?" +this.getBaseLineFileUrlPath(outcomeID).replace('\\', '/');
+}
 
-  public String getBaseLineFileUrlPath(String outcomeID) {
-    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + outcomeID + File.separator + "baseLine"
-      + File.separator;
-  }
+public String getBaseLineFileUrlPath(String outcomeID) {
+  return "crp=" + this.getActualPhase().getCrp().getAcronym() + "&category=projects&id=" + outcomeID;
+}
 
   public int getIndexCommunication(int year) {
 
