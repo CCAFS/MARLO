@@ -154,12 +154,12 @@ function sdg(){
 			// print data
 			manageSpinner(false,"sdgs");
 			console.log(data);
-			let nameColumns = ['SMO code', 'Short Name','Full Name']
+			let nameColumns = ['UNSD code', 'Short Name','Full Name']
 
 			$.each(data, function (index, item) {
 				
 				$('#list-print-sdgs').append(
-					'<tr>' + '<td >' + item['smoCode'] + '</td>' + '<td>'
+					'<tr>' + '<td >' + item['usndCode'] + '</td>' + '<td>'
 					+ item['shortName'] + '</td>' + '<td>'
 					+ item['fullName'] + '</td>' + '</tr>')
 			});
@@ -320,10 +320,10 @@ function countries() {
 					'<tr>' + '<td >' + item['code'] + '</td>' + '<td>'
 					+ item['isoAlpha2'] + '</td>' + '<td>'
 					+ item['name'] + '</td>' + '<td>'
-					+ '<strong>UN49Code:</strong> '
-					+ item['regionDTO'].um49Code
-					+ ' - <strong>Name:</strong> '
-					+ item['regionDTO'].name + '</td>' + '</tr>')
+					+ (item['regionDTO']==null? '':'<strong>UN49Code:</strong> ')
+					+ (item['regionDTO']==null? '':item['regionDTO'].um49Code
+					+ ' - <strong>Name:</strong> ')
+					+ (item['regionDTO']==null? '':item['regionDTO'].name) + '</td>' + '</tr>')
 			});
 			updateDataTable("countries");
 			// end print Data

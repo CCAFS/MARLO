@@ -134,6 +134,7 @@ public class ProjectPolicySubIdoManagerImpl implements ProjectPolicySubIdoManage
       projectPolicySubIdoAdd.setProjectPolicy(projectPolicySubIdo.getProjectPolicy());
       projectPolicySubIdoAdd.setPhase(phase);
       projectPolicySubIdoAdd.setSrfSubIdo(projectPolicySubIdo.getSrfSubIdo());
+      projectPolicySubIdoAdd.setPrimary(projectPolicySubIdo.getPrimary());
       projectPolicySubIdoDAO.save(projectPolicySubIdoAdd);
     }
 

@@ -1679,7 +1679,7 @@ public class ProjectPolicyAction extends BaseAction {
           SrfSubIdo srfSubIdo = srfSubIdoManager.getSrfSubIdoById(policySubIdo.getSrfSubIdo().getId());
           policySubIdoSave.setSrfSubIdo(srfSubIdo);
 
-          projectPolicySubIdoManager.saveProjectPolicySubIdo(policySubIdoSave);
+          policySubIdoSave = projectPolicySubIdoManager.saveProjectPolicySubIdo(policySubIdoSave);
           // This is to add innovationCrpSave to generate correct auditlog.
           policy.getProjectPolicySubIdos().add(policySubIdoSave);
         } else {
@@ -1699,7 +1699,7 @@ public class ProjectPolicyAction extends BaseAction {
           if (policy.getSubIdos() != null && policy.getSubIdos().size() == 1) {
             policySubIdoSave.setPrimary(true);
           }
-          projectPolicySubIdoManager.saveProjectPolicySubIdo(policySubIdoSave);
+          policySubIdoSave = projectPolicySubIdoManager.saveProjectPolicySubIdo(policySubIdoSave);
           // This is to add innovationCrpSave to generate correct auditlog.
           policy.getProjectPolicySubIdos().add(policySubIdoSave);
 
