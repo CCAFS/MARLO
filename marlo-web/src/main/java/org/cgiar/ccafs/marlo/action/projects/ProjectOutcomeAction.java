@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectCommunicationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectMilestoneManager;
@@ -34,6 +35,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectCommunication;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
@@ -91,6 +93,7 @@ public class ProjectOutcomeAction extends BaseAction {
   private ProjectNextuserManager projectNextuserManager;
   private ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager;
   private CrpMilestoneManager crpMilestoneManager;
+  private PhaseManager phaseManager;
 
   // Front-end
   private long projectID;
@@ -102,6 +105,7 @@ public class ProjectOutcomeAction extends BaseAction {
   private List<SrfTargetUnit> targetUnits;
   private CrpProgramOutcome crpProgramOutcome;
   private ProjectOutcome projectOutcome;
+  private ProjectOutcome projectOutcomeLastPhase;
   private ProjectOutcomeValidator projectOutcomeValidator;
   private String transaction;
   private ProjectOutcome projectOutcomeDB;
@@ -114,7 +118,8 @@ public class ProjectOutcomeAction extends BaseAction {
     SrfTargetUnitManager srfTargetUnitManager, ProjectMilestoneManager projectMilestoneManager,
     ProjectCommunicationManager projectCommunicationManager, AuditLogManager auditLogManager,
     CrpMilestoneManager crpMilestoneManager, ProjectNextuserManager projectNextuserManager,
-    ProjectOutcomeValidator projectOutcomeValidator, ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager) {
+    ProjectOutcomeValidator projectOutcomeValidator, ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager,
+    PhaseManager phaseManager) {
     super(config);
     this.projectManager = projectManager;
     this.srfTargetUnitManager = srfTargetUnitManager;
@@ -128,6 +133,7 @@ public class ProjectOutcomeAction extends BaseAction {
     this.projectNextuserManager = projectNextuserManager;
     this.projectOutcomeValidator = projectOutcomeValidator;
     this.projectOutcomeIndicatorManager = projectOutcomeIndicatorManager;
+    this.phaseManager = phaseManager;
   }
 
   public void addAllCrpMilestones() {
@@ -333,13 +339,13 @@ public class ProjectOutcomeAction extends BaseAction {
   }
 
 
-public String getBaseLineFileURL(String outcomeID) {
- return config.getDownloadURL() + "/file.do?" +this.getBaseLineFileUrlPath(outcomeID).replace('\\', '/');
-}
+  public String getBaseLineFileURL(String outcomeID) {
+    return config.getDownloadURL() + "/file.do?" + this.getBaseLineFileUrlPath(outcomeID).replace('\\', '/');
+  }
 
-public String getBaseLineFileUrlPath(String outcomeID) {
-  return "crp=" + this.getActualPhase().getCrp().getAcronym() + "&category=projects&id=" + outcomeID;
-}
+  public String getBaseLineFileUrlPath(String outcomeID) {
+    return "crp=" + this.getActualPhase().getCrp().getAcronym() + "&category=projects&id=" + outcomeID;
+  }
 
   public int getIndexCommunication(int year) {
 
@@ -458,6 +464,10 @@ public String getBaseLineFileUrlPath(String outcomeID) {
     return projectOutcomeID;
   }
 
+  public ProjectOutcome getProjectOutcomeLastPhase() {
+    return projectOutcomeLastPhase;
+  }
+
   /**
    * Return the absolute path where the work plan is or should be located.
    * 
@@ -494,6 +504,7 @@ public String getBaseLineFileUrlPath(String outcomeID) {
     return editOutcomeExpectedValue;
   }
 
+
   public boolean isExpectedValueEditable(Long milestoneId) {
     boolean editable = false;
     if (milestoneId != null && milestoneId != 0) {
@@ -524,7 +535,6 @@ public String getBaseLineFileUrlPath(String outcomeID) {
     }
     return editable;
   }
-
 
   public ProjectCommunication loadProjectCommunication(int year) {
 
@@ -597,7 +607,6 @@ public String getBaseLineFileUrlPath(String outcomeID) {
       projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
     }
 
-
     if (projectOutcome != null) {
 
       Path path = this.getAutoSaveFilePath();
@@ -664,6 +673,22 @@ public String getBaseLineFileUrlPath(String outcomeID) {
          * .collect(Collectors.toList()));
          * } else {
          */
+
+        Phase previousPhase = phaseManager.findPreviousPhase(this.getActualPhase().getId());
+        // get Project outcome for the last phase
+        List<ProjectOutcome> outcomesLastPhase = new ArrayList<>();
+        outcomesLastPhase = projectOutcomeManager
+          .getProjectOutcomeByProgramOutcomeAndProject(projectOutcome.getCrpProgramOutcome().getId(), projectID);
+        if (outcomesLastPhase != null && !outcomesLastPhase.isEmpty() && previousPhase != null) {
+          outcomesLastPhase = outcomesLastPhase.stream()
+            .filter(o -> o.getPhase() != null && o.getPhase().getId().equals(previousPhase.getId()))
+            .collect(Collectors.toList());
+        }
+        if (outcomesLastPhase != null && !outcomesLastPhase.isEmpty() && outcomesLastPhase.get(0) != null) {
+          projectOutcomeLastPhase = outcomesLastPhase.get(0);
+          projectOutcomeLastPhase.setIndicators(projectOutcome.getProjectOutcomeIndicators().stream()
+            .filter(c -> c.isActive()).collect(Collectors.toList()));
+        }
         projectOutcome.setIndicators(
           projectOutcome.getProjectOutcomeIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
         // }
@@ -826,6 +851,7 @@ public String getBaseLineFileUrlPath(String outcomeID) {
     }
   }
 
+
   public void saveCommunications(ProjectOutcome projectOutcomeDB) {
 
     for (ProjectCommunication projectCommunication : projectOutcomeDB.getProjectCommunications().stream()
@@ -898,7 +924,6 @@ public String getBaseLineFileUrlPath(String outcomeID) {
       }
     }
   }
-
 
   public void saveIndicators(ProjectOutcome projectOutcomeDB) {
 
@@ -1166,23 +1191,24 @@ public String getBaseLineFileUrlPath(String outcomeID) {
 
   }
 
+
   public void setEditMilestoneExpectedValue(boolean editMilestoneExpectedValue) {
     this.editMilestoneExpectedValue = editMilestoneExpectedValue;
   }
-
 
   public void setEditOutcomeExpectedValue(boolean editOutcomeExpectedValue) {
     this.editOutcomeExpectedValue = editOutcomeExpectedValue;
   }
 
+
   public void setMilestones(List<CrpMilestone> milestones) {
     this.milestones = milestones;
   }
 
-
   public void setMilestonesProject(List<CrpMilestone> milestonesProject) {
     this.milestonesProject = milestonesProject;
   }
+
 
   public void setProject(Project project) {
     this.project = project;
@@ -1200,6 +1226,10 @@ public String getBaseLineFileUrlPath(String outcomeID) {
 
   public void setProjectOutcomeID(long projectOutcomeID) {
     this.projectOutcomeID = projectOutcomeID;
+  }
+
+  public void setProjectOutcomeLastPhase(ProjectOutcome projectOutcomeLastPhase) {
+    this.projectOutcomeLastPhase = projectOutcomeLastPhase;
   }
 
   public void setTargetUnits(List<SrfTargetUnit> targetUnits) {
