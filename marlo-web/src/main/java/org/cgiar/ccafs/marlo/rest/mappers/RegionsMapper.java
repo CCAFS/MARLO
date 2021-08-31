@@ -23,11 +23,13 @@ import org.cgiar.ccafs.marlo.data.model.Region;
 import org.cgiar.ccafs.marlo.rest.dto.OneCGIARRegionsDTO;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "jsr330", uses = {RegionTypeMapper.class, LocationMapper.class})
 public interface RegionsMapper {
 
-
+  @Mappings({@Mapping(source = "iso_numeric", target = "id")})
   public abstract OneCGIARRegionsDTO regionsToOneCGIARRegionsDTO(Region region);
 
 }

@@ -46,6 +46,7 @@ import org.pentaho.reporting.engine.classic.core.ReportHeader;
 import org.pentaho.reporting.engine.classic.core.SubReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.util.HtmlUtils;
 
 /**
  * Parent class for summaries
@@ -54,11 +55,18 @@ import org.slf4j.LoggerFactory;
  */
 public class BaseSummariesAction extends BaseAction {
 
-
   private static final long serialVersionUID = 2837063045483756677L;
-
-
   private static Logger LOG = LoggerFactory.getLogger(BaseSummariesAction.class);
+  protected final String notDefined = "<Not defined>";
+
+  protected final String notProvided = "<Not provided>";
+  protected final String notRequired = "<Not required>";
+  protected final String notDefinedHtml = HtmlUtils.htmlEscape(notDefined);
+
+
+  protected final String notProvidedHtml = HtmlUtils.htmlEscape(notProvided);
+
+  protected final String notRequiredHtml = HtmlUtils.htmlEscape(notRequired);
 
   // parameters
   private GlobalUnit loggedCrp;
