@@ -42,6 +42,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonParser;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -143,10 +144,10 @@ public class IndicatorStatusItem<T> {
 
   public JsonElement getQAElement(String url) throws MalformedURLException, IOException {
     URL submissionToolsUrl = new URL(url);
-    // String loginData = config.getQAUser() + ":" + config.getQAPassword();
-    // String encoded = Base64.encodeBase64String(loginData.getBytes());
+    String loginData = config.getQAUser() + ":" + config.getQAPassword();
+    String encoded = Base64.encodeBase64String(loginData.getBytes());
     HttpURLConnection conn = (HttpURLConnection) submissionToolsUrl.openConnection();
-    // conn.setRequestProperty("Authorization", "Basic " + encoded);
+    conn.setRequestProperty("Authorization", "Basic " + encoded);
 
     JsonElement element = null;
     try (InputStreamReader reader = new InputStreamReader(conn.getInputStream())) {
