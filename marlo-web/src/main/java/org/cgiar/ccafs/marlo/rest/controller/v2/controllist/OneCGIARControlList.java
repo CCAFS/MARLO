@@ -70,7 +70,7 @@ public class OneCGIARControlList {
   @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Regions.all.value}",
     response = OneCGIARRegionsDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/CGIARRegions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  @RequestMapping(value = "/OneCGIARRegions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<OneCGIARRegionsDTO>> findAllCGIARRegions() {
     try {
       ResponseEntity<List<OneCGIARRegionsDTO>> response = this.regionsItem.getAll();
