@@ -29,7 +29,7 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "jsr330", uses = {RegionTypeMapper.class, LocationMapper.class})
 public interface RegionsMapper {
 
-  @Mappings({@Mapping(source = "iso_numeric", target = "id")})
+  @Mappings({@Mapping(source = "iso_numeric", target = "id"), @Mapping(source = "acronym", target = "acronym")})
   public abstract OneCGIARRegionsDTO regionsToOneCGIARRegionsDTO(Region region);
 
 }

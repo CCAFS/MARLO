@@ -633,7 +633,7 @@ function glossary(){
 }
 function CGIARRegions(){
 	$.ajax({
-		url: config.endpoint + '/allCGIARRegions',
+		url: config.endpoint + '/CGIARRegions',
 		type: "GET",
 		beforeSend: function () {
 			// hideFilter();
@@ -655,6 +655,7 @@ function CGIARRegions(){
 				$('#list-print-CGIAR-regions').append(
 					'<tr>' + '<td >' + item['id'] + '</td>' 
 					+ '<td>'+ item['name'] + '</td>'
+					+ '<td>'+ item['acronym'] + '</td>'
 					+ '<td>'+ item['regionType'].name + '</td>' 
 					+ '<td>'+ getCountries(item['countries']) + '</td>' 
 					+ '</tr>')

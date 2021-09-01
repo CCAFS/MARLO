@@ -668,11 +668,11 @@
                 <div class="bshadow" data-aos="fade-up" id="section1-item6">
                   <div class="getColorbackground contEndpoint">
                     <button type="button" class="btn getColorbackground">GET</button> <span
-                      class="endpointTitle">/allCGIARRegions</span>
+                      class="endpointTitle">/CGIARRegions</span>
                   </div>
                   <div class="parameters">
                     <h3>Functionality</h3>
-                    <div>View all CGIAR Regions</div>
+                    <div>According to the One CGIAR Strategy, the CGIAR works in six regions: Central and West Asia and North Africa, Latin America and the Caribbean, West and Central Africa, East and Southern Africa, South Asia, Southeast Asia, and Pacific (<a href="https://www.cgiar.org/how-we-work/strategy/">see here</a>).</div>
                     <h3>Parameters</h3>
                     <div>No parameters</div>
                     <table style="width: 70%">
@@ -688,7 +688,7 @@
                               <p><span><Strong>Request URL: </Strong></span></p>
                               <div class="URLendpoint">
                                 <div class="fragCode">
-                                  <p><span class="endpoint"></span>/allCGIARRegions</p>
+                                  <p><span class="endpoint"></span>/CGIARRegions</p>
                                 </div>
                               </div>
                             </div>
@@ -712,6 +712,7 @@
   <span class="yellowCode">{</span>
     <span class="blueCode">"code"</span><span class="WhiteCode"> : 0,</span>
     <span class="blueCode">"name"</span><span class="WhiteCode"> : "string",</span>
+    <span class="blueCode">"acronym"</span><span class="WhiteCode"> : "string",</span>
     <span class="blueCode">"regionType"</span><span class="WhiteCode"> : </span><span class="yellowCode">{</span>
       <span class="blueCode">"id"</span><span class="WhiteCode"> : 0,</span>
       <span class="blueCode">"name"</span><span class="WhiteCode"> : "string"</span>
@@ -2274,6 +2275,7 @@
             <tr id="#list-print-columns-name">
               <td>Code</td>
               <td>Name</td>
+              <td>Acronym</td>
               <td>Region Type </td>
               <td>Countries</td>
             </tr>
@@ -2376,7 +2378,7 @@
 
 <button>Toggle slideUp() and slideDown()</button> -->
 <script src="conf/endpoint.conf.js"></script>
-<script src="js/request.js?20210810"></script>
+<script src="js/request.js?20210901"></script>
 <script>
   var coll = document.getElementsByClassName("collap");
   var i;
