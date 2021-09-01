@@ -103,6 +103,33 @@ public class ProjectOutcomeMySQLDAO extends AbstractMarloDAO<ProjectOutcome, Lon
   }
 
   @Override
+  public List<ProjectOutcome> getProjectOutcomeByProgramOutcomeAndProject(long programOutcomeId, long projectId) {
+    programOutcomeId = programOutcomeId - 1;
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT ");
+    query.append("project_outcomes.id ");
+    query.append("FROM ");
+    query.append("project_outcomes ");
+    query.append("INNER JOIN projects ON project_outcomes.project_id = projects.id ");
+    query.append("WHERE project_outcomes.project_id = " + projectId + " AND projects.is_active = 1 AND ");
+    query.append("project_outcomes.outcome_id=" + programOutcomeId);
+    query.append(" AND project_outcomes.is_active = 1");
+
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<ProjectOutcome> projectOutcomes = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        ProjectOutcome projectOutcome = this.find(Long.parseLong(map.get("id").toString()));
+        projectOutcomes.add(projectOutcome);
+      }
+    }
+
+    return projectOutcomes.stream().collect(Collectors.toList());
+  }
+
+  @Override
   public ProjectOutcome save(ProjectOutcome projectOutcome) {
     if (projectOutcome.getId() == null) {
       super.saveEntity(projectOutcome);
