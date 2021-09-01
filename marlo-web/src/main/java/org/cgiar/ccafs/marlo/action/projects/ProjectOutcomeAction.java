@@ -411,7 +411,6 @@ public class ProjectOutcomeAction extends BaseAction {
 
   }
 
-
   public ProjectMilestone getMilestone(long milestoneId, int year) {
     ProjectMilestone projectMilestone = new ProjectMilestone();
     if (projectOutcome.getMilestones() != null) {
@@ -442,8 +441,49 @@ public class ProjectOutcomeAction extends BaseAction {
     return milestoneList;
   }
 
+
   public List<CrpMilestone> getMilestonesProject() {
     return milestonesProject;
+  }
+
+  public ProjectOutcomeIndicator getPreIndicator(Long indicatorID) {
+    for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcome.getIndicators()) {
+      if (projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId().longValue() == indicatorID) {
+        return projectOutcomeIndicator;
+      }
+    }
+    ProjectOutcomeIndicator projectOutcomeIndicator = new ProjectOutcomeIndicator();
+    projectOutcomeIndicator.setCrpProgramOutcomeIndicator(new CrpProgramOutcomeIndicator(indicatorID));
+    projectOutcome.getIndicators().add(projectOutcomeIndicator);
+    return projectOutcomeIndicator;
+
+  }
+
+  public int getPrevIndexIndicator(Long indicatorID) {
+
+    ProjectOutcomeIndicator projectOutcomeIndicator = this.getIndicator(indicatorID);
+    int i = 0;
+    for (ProjectOutcomeIndicator projectOutcomeIndicatorList : projectOutcomeLastPhase.getIndicators()) {
+      if (projectOutcomeIndicatorList.getCrpProgramOutcomeIndicator().getId().longValue() == projectOutcomeIndicator
+        .getCrpProgramOutcomeIndicator().getId().longValue()) {
+        return i;
+      }
+      i++;
+    }
+    return 0;
+  }
+
+  public ProjectOutcomeIndicator getPrevIndicator(Long indicatorID) {
+    for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcomeLastPhase.getIndicators()) {
+      if (projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId().longValue() == indicatorID) {
+        return projectOutcomeIndicator;
+      }
+    }
+    ProjectOutcomeIndicator projectOutcomeIndicator = new ProjectOutcomeIndicator();
+    projectOutcomeIndicator.setCrpProgramOutcomeIndicator(new CrpProgramOutcomeIndicator(indicatorID));
+    projectOutcome.getIndicators().add(projectOutcomeIndicator);
+    return projectOutcomeIndicator;
+
   }
 
   public Project getProject() {
@@ -674,20 +714,25 @@ public class ProjectOutcomeAction extends BaseAction {
          * } else {
          */
 
-        Phase previousPhase = phaseManager.findPreviousPhase(this.getActualPhase().getId());
-        // get Project outcome for the last phase
-        List<ProjectOutcome> outcomesLastPhase = new ArrayList<>();
-        outcomesLastPhase = projectOutcomeManager
-          .getProjectOutcomeByProgramOutcomeAndProject(projectOutcome.getCrpProgramOutcome().getId(), projectID);
-        if (outcomesLastPhase != null && !outcomesLastPhase.isEmpty() && previousPhase != null) {
-          outcomesLastPhase = outcomesLastPhase.stream()
-            .filter(o -> o.getPhase() != null && o.getPhase().getId().equals(previousPhase.getId()))
-            .collect(Collectors.toList());
-        }
-        if (outcomesLastPhase != null && !outcomesLastPhase.isEmpty() && outcomesLastPhase.get(0) != null) {
-          projectOutcomeLastPhase = outcomesLastPhase.get(0);
-          projectOutcomeLastPhase.setIndicators(projectOutcome.getProjectOutcomeIndicators().stream()
-            .filter(c -> c.isActive()).collect(Collectors.toList()));
+        if (this.isReportingActive()) {
+          Phase previousPhase = phaseManager.findPreviousPhase(this.getActualPhase().getId());
+          // get Project outcome for the last phase
+          List<ProjectOutcome> outcomesLastPhase = new ArrayList<>();
+          outcomesLastPhase = projectOutcomeManager
+            .getProjectOutcomeByProgramOutcomeAndProject(projectOutcome.getCrpProgramOutcome().getId(), projectID);
+          if (outcomesLastPhase != null && !outcomesLastPhase.isEmpty() && previousPhase != null) {
+            outcomesLastPhase = outcomesLastPhase.stream()
+              .filter(o -> o.getPhase() != null && o.getPhase().getId().equals(previousPhase.getId()))
+              .collect(Collectors.toList());
+          }
+          if (outcomesLastPhase != null && !outcomesLastPhase.isEmpty() && outcomesLastPhase.get(0) != null) {
+            projectOutcomeLastPhase = outcomesLastPhase.get(0);
+            if (projectOutcomeLastPhase != null && projectOutcomeLastPhase.getId() != null) {
+              projectOutcomeLastPhase = projectOutcomeManager.getProjectOutcomeById(projectOutcomeLastPhase.getId());
+            }
+            projectOutcomeLastPhase.setIndicators(projectOutcomeLastPhase.getProjectOutcomeIndicators().stream()
+              .filter(c -> c.isActive()).collect(Collectors.toList()));
+          }
         }
         projectOutcome.setIndicators(
           projectOutcome.getProjectOutcomeIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
@@ -720,9 +765,28 @@ public class ProjectOutcomeAction extends BaseAction {
     milestonesProject.addAll(crpMilestones);
     milestonesProject.sort(Comparator.comparing(CrpMilestone::getYear));
     // Collections.sort(milestonesProject, (m1, m2) -> m1.getIndex().compareTo(m2.getIndex()));
-    if (projectOutcome != null)
 
-    {
+    if (this.isReportingActive()) {
+      if (projectOutcomeLastPhase != null) {
+        CrpProgramOutcome crpProgramOutcomeLastPhase;
+        crpProgramOutcomeLastPhase =
+          crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcomeLastPhase.getCrpProgramOutcome().getId());
+
+        projectOutcomeLastPhase.setCrpProgramOutcome(crpProgramOutcomeLastPhase);
+      }
+
+      /*
+       * Loading basic List
+       */
+      projectOutcomeLastPhase.setCrpProgramOutcome(
+        crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcomeLastPhase.getCrpProgramOutcome().getId()));
+      projectOutcomeLastPhase.getCrpProgramOutcome()
+        .setIndicators(projectOutcomeLastPhase.getCrpProgramOutcome().getCrpProgramOutcomeIndicators().stream()
+          .filter(c -> c.isActive()).sorted((d1, d2) -> d1.getIndicator().compareTo((d2.getIndicator())))
+          .collect(Collectors.toList()));
+    }
+
+    if (projectOutcome != null) {
       crpProgramOutcome =
         crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcome.getCrpProgramOutcome().getId());
 
@@ -772,6 +836,9 @@ public class ProjectOutcomeAction extends BaseAction {
       }
       if (projectOutcome.getIndicators() != null) {
         projectOutcome.getIndicators().clear();
+      }
+      if (projectOutcomeLastPhase.getIndicators() != null) {
+        projectOutcomeLastPhase.getIndicators().clear();
       }
       /**
        * Hack to fix ManyToOne issue as a result of issue #1124

@@ -104,6 +104,7 @@ public class ProjectOutcomeMySQLDAO extends AbstractMarloDAO<ProjectOutcome, Lon
 
   @Override
   public List<ProjectOutcome> getProjectOutcomeByProgramOutcomeAndProject(long programOutcomeId, long projectId) {
+    programOutcomeId = programOutcomeId - 1;
     StringBuilder query = new StringBuilder();
     query.append("SELECT ");
     query.append("project_outcomes.id ");
