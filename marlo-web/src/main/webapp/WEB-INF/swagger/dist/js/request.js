@@ -633,7 +633,7 @@ function glossary(){
 }
 function CGIARRegions(){
 	$.ajax({
-		url: config.endpoint + '/CGIARRegions',
+		url: config.endpoint + '/OneCGIARRegions',
 		type: "GET",
 		beforeSend: function () {
 			// hideFilter();
