@@ -4,6 +4,8 @@ package org.cgiar.ccafs.marlo.data.model;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import com.google.gson.annotations.Expose;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 
 public class ProjectInnovationEvidenceLink extends MarloBaseEntity implements java.io.Serializable, IAuditLog {
@@ -40,6 +42,35 @@ public class ProjectInnovationEvidenceLink extends MarloBaseEntity implements ja
     } else if (!this.getId().equals(other.getId())) {
       return false;
     }
+
+    if (this.getProjectInnovation() == null) {
+      if (other.getProjectInnovation() != null) {
+        return false;
+      }
+    } else if (this.getProjectInnovation().getId() == null) {
+      if (other.getProjectInnovation().getId() != null) {
+        return false;
+      }
+    } else if (!this.getProjectInnovation().getId().equals(other.getProjectInnovation().getId())) {
+      return false;
+    }
+
+    if (this.getPhase() == null) {
+      if (other.getPhase() != null) {
+        return false;
+      }
+    } else if (this.getPhase().getId() == null) {
+      if (other.getPhase().getId() != null) {
+        return false;
+      }
+    } else if (!this.getPhase().getId().equals(other.getPhase().getId())) {
+      return false;
+    }
+
+    if (!StringUtils.equals(this.getLink(), other.getLink())) {
+      return false;
+    }
+
     return true;
   }
 
@@ -82,11 +113,16 @@ public class ProjectInnovationEvidenceLink extends MarloBaseEntity implements ja
 
 
   @Override
+  /*
+   * WARNING: because the way hashCode() is implemented on Phase and ProjectInnovation there is a possibility a clash
+   * will happen. Let's pray it does not happen...
+   */
   public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
-    return result;
+    HashCodeBuilder hashBuilder = new HashCodeBuilder();
+    hashBuilder.append(this.phase);
+    hashBuilder.append(this.projectInnovation);
+    hashBuilder.append(this.link);
+    return hashBuilder.hashCode();
   }
 
 

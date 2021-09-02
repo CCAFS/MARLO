@@ -4,6 +4,8 @@ package org.cgiar.ccafs.marlo.data.model;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import com.google.gson.annotations.Expose;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 
 public class ProjectExpectedStudyReference extends MarloBaseEntity implements java.io.Serializable, IAuditLog {
@@ -40,12 +42,36 @@ public class ProjectExpectedStudyReference extends MarloBaseEntity implements ja
     } else if (!this.getId().equals(other.getId())) {
       return false;
     }
+
+    if (this.getProjectExpectedStudy() == null) {
+      if (other.getProjectExpectedStudy() != null) {
+        return false;
+      }
+    } else if (this.getProjectExpectedStudy().getId() == null) {
+      if (other.getProjectExpectedStudy().getId() != null) {
+        return false;
+      }
+    } else if (!this.getProjectExpectedStudy().getId().equals(other.getProjectExpectedStudy().getId())) {
+      return false;
+    }
+
+    if (this.getPhase() == null) {
+      if (other.getPhase() != null) {
+        return false;
+      }
+    } else if (this.getPhase().getId() == null) {
+      if (other.getPhase().getId() != null) {
+        return false;
+      }
+    } else if (!this.getPhase().getId().equals(other.getPhase().getId())) {
+      return false;
+    }
+
+    if (!StringUtils.equals(this.getReference(), other.getReference())) {
+      return false;
+    }
+
     return true;
-  }
-
-
-  public String getReference() {
-    return reference;
   }
 
 
@@ -81,23 +107,28 @@ public class ProjectExpectedStudyReference extends MarloBaseEntity implements ja
   }
 
 
+  public String getReference() {
+    return reference;
+  }
+
+
   @Override
+  /*
+   * WARNING: because the way hashCode() is implemented on Phase and ProjectExpectedStudy there is a possibility a clash
+   * will happen. Let's pray it does not happen...
+   */
   public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
-    return result;
+    HashCodeBuilder hashBuilder = new HashCodeBuilder();
+    hashBuilder.append(this.phase);
+    hashBuilder.append(this.projectExpectedStudy);
+    hashBuilder.append(this.reference);
+    return hashBuilder.hashCode();
   }
 
 
   @Override
   public boolean isActive() {
     return true;
-  }
-
-
-  public void setReference(String link) {
-    this.reference = link;
   }
 
 
@@ -114,6 +145,11 @@ public class ProjectExpectedStudyReference extends MarloBaseEntity implements ja
 
   public void setProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy) {
     this.projectExpectedStudy = projectExpectedStudy;
+  }
+
+
+  public void setReference(String link) {
+    this.reference = link;
   }
 
 
