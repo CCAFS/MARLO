@@ -576,8 +576,8 @@
 
 [#macro baselineIndicatorMacro element name index isTemplate=false]
   <div id="baselineIndicator-${isTemplate?string('template', index)}" class="baselineIndicator simpleBox" style="display:${isTemplate?string('none','block')}">
-    [#local indexIndicator = action.getIndexIndicator(element.id) /]
-    [#local projectOutcomeIndicator  = action.getIndicator(element.id) /]
+    [#local indexIndicator = action.getIndexIndicator(element.id)! /]
+    [#local projectOutcomeIndicator  = action.getIndicator(element.id)! /]
     [#local customName = "${name}[${indexIndicator}]" /]
     <div class="leftHead gray sm">
       <span class="index">${index+1}</span>

@@ -368,13 +368,15 @@ public class ProjectOutcomeAction extends BaseAction {
   public int getIndexIndicator(Long indicatorID) {
 
     ProjectOutcomeIndicator projectOutcomeIndicator = this.getIndicator(indicatorID);
-    int i = 0;
-    for (ProjectOutcomeIndicator projectOutcomeIndicatorList : projectOutcome.getIndicators()) {
-      if (projectOutcomeIndicatorList.getCrpProgramOutcomeIndicator().getId().longValue() == projectOutcomeIndicator
-        .getCrpProgramOutcomeIndicator().getId().longValue()) {
-        return i;
+    if (projectOutcomeIndicator != null && projectOutcome.getIndicators() != null) {
+      int i = 0;
+      for (ProjectOutcomeIndicator projectOutcomeIndicatorList : projectOutcome.getIndicators()) {
+        if (projectOutcomeIndicatorList.getCrpProgramOutcomeIndicator().getId().longValue() == projectOutcomeIndicator
+          .getCrpProgramOutcomeIndicator().getId().longValue()) {
+          return i;
+        }
+        i++;
       }
-      i++;
     }
     return 0;
   }
@@ -408,7 +410,6 @@ public class ProjectOutcomeAction extends BaseAction {
     projectOutcomeIndicator.setCrpProgramOutcomeIndicator(new CrpProgramOutcomeIndicator(indicatorID));
     projectOutcome.getIndicators().add(projectOutcomeIndicator);
     return projectOutcomeIndicator;
-
   }
 
   public ProjectMilestone getMilestone(long milestoneId, int year) {
