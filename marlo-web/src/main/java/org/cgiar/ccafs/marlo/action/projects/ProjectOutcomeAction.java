@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
@@ -94,6 +95,7 @@ public class ProjectOutcomeAction extends BaseAction {
   private ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager;
   private CrpMilestoneManager crpMilestoneManager;
   private PhaseManager phaseManager;
+  private CrpProgramOutcomeIndicatorManager crpProgramOutcomeIndicatorManager;
 
   // Front-end
   private long projectID;
@@ -119,7 +121,7 @@ public class ProjectOutcomeAction extends BaseAction {
     ProjectCommunicationManager projectCommunicationManager, AuditLogManager auditLogManager,
     CrpMilestoneManager crpMilestoneManager, ProjectNextuserManager projectNextuserManager,
     ProjectOutcomeValidator projectOutcomeValidator, ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager,
-    PhaseManager phaseManager) {
+    PhaseManager phaseManager, CrpProgramOutcomeIndicatorManager crpProgramOutcomeIndicatorManager) {
     super(config);
     this.projectManager = projectManager;
     this.srfTargetUnitManager = srfTargetUnitManager;
@@ -134,6 +136,7 @@ public class ProjectOutcomeAction extends BaseAction {
     this.projectOutcomeValidator = projectOutcomeValidator;
     this.projectOutcomeIndicatorManager = projectOutcomeIndicatorManager;
     this.phaseManager = phaseManager;
+    this.crpProgramOutcomeIndicatorManager = crpProgramOutcomeIndicatorManager;
   }
 
   public void addAllCrpMilestones() {
@@ -461,11 +464,11 @@ public class ProjectOutcomeAction extends BaseAction {
   }
 
   public int getPrevIndexIndicator(Long indicatorID) {
-    if (this.getIndicator(indicatorID) == null && this.getIndicator(indicatorID - 1) != null) {
+    if (this.getPrevIndicator(indicatorID) == null && this.getPrevIndicator(indicatorID - 1) != null) {
       indicatorID = indicatorID - 1;
     }
-    if (this.getIndicator(indicatorID) != null) {
-      ProjectOutcomeIndicator projectOutcomeIndicator = this.getIndicator(indicatorID);
+    if (this.getPrevIndicator(indicatorID) != null) {
+      ProjectOutcomeIndicator projectOutcomeIndicator = this.getPrevIndicator(indicatorID);
       int i = 0;
       for (ProjectOutcomeIndicator projectOutcomeIndicatorList : projectOutcomeLastPhase.getIndicators()) {
         if (projectOutcomeIndicatorList.getCrpProgramOutcomeIndicator().getId().longValue() == projectOutcomeIndicator
@@ -486,7 +489,7 @@ public class ProjectOutcomeAction extends BaseAction {
     }
     ProjectOutcomeIndicator projectOutcomeIndicator = new ProjectOutcomeIndicator();
     projectOutcomeIndicator.setCrpProgramOutcomeIndicator(new CrpProgramOutcomeIndicator(indicatorID));
-    projectOutcome.getIndicators().add(projectOutcomeIndicator);
+    projectOutcomeLastPhase.getIndicators().add(projectOutcomeIndicator);
     return projectOutcomeIndicator;
 
   }
@@ -785,10 +788,20 @@ public class ProjectOutcomeAction extends BaseAction {
        */
       projectOutcomeLastPhase.setCrpProgramOutcome(
         crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcomeLastPhase.getCrpProgramOutcome().getId()));
+
       projectOutcomeLastPhase.getCrpProgramOutcome()
         .setIndicators(projectOutcomeLastPhase.getCrpProgramOutcome().getCrpProgramOutcomeIndicators().stream()
           .filter(c -> c.isActive()).sorted((d1, d2) -> d1.getIndicator().compareTo((d2.getIndicator())))
           .collect(Collectors.toList()));
+
+      /*
+       * List<CrpProgramOutcomeIndicator> indicators = new ArrayList<>();
+       * indicators = crpProgramOutcomeIndicatorManager
+       * .getCrpProgramOutcomeIndicatorByOutcome(projectOutcomeLastPhase.getCrpProgramOutcome());
+       * if (indicators != null && !indicators.isEmpty()) {
+       * projectOutcomeLastPhase.getCrpProgramOutcome().setIndicators(indicators);
+       * }
+       */
     }
 
     if (projectOutcome != null) {

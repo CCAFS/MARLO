@@ -247,7 +247,7 @@
                       <div class="nextUsersBlock borderBox">
                         <div class="nextUsersList">
                           [#-- Baseline Indicators --]
-                          [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcomeLastPhase.crpProgramOutcome.crpProgram.baseLine)!false) && ((projectOutcome.crpProgramOutcome.indicators?has_content)!false)]
+                          [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcomeLastPhase.crpProgramOutcome.crpProgram.baseLine)!false) && ((projectOutcomeLastPhase.crpProgramOutcome.indicators?has_content)!false)]
                             <h5 class="sectionSubTitle">Progress to Key Performance Indicator</h5>
                             <div class="form-group">
                               <div class="" id="baseline">
@@ -305,6 +305,8 @@
                             [/#if]
                           </div>           
                         </div>
+                      [#else]
+                        <h5 class="headTitle">No Progress to Target indicators added</h5>
                       [/#if]
                     </div>
                   
