@@ -84,6 +84,9 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   // clarisa field
   private String pdfLink;
 
+  // AR2021
+  private Set<ProjectInnovationEvidenceLink> projectInnovationEvidenceLinks = new HashSet<>(0);
+  private List<ProjectInnovationEvidenceLink> innovationLinks;
 
   public List<ProjectInnovationCenter> getCenters() {
     return centers;
@@ -158,6 +161,10 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
       .filter(pg -> pg.isActive() && pg.getPhase().equals(phase)).collect(Collectors.toList()));
   }
 
+  public List<ProjectInnovationEvidenceLink> getInnovationLinks() {
+    return innovationLinks;
+  }
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -193,25 +200,29 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     return this.projectInnovationContributingOrganization;
   }
 
-
   public Set<ProjectInnovationCountry> getProjectInnovationCountries() {
     return this.projectInnovationCountries;
   }
 
-
   public Set<ProjectInnovationCrp> getProjectInnovationCrps() {
     return this.projectInnovationCrps;
   }
-
 
   public List<ProjectInnovationCrp> getProjectInnovationCrps(Phase phase) {
     return new ArrayList<>(this.getProjectInnovationCrps().stream()
       .filter(pc -> pc.isActive() && pc.getPhase().equals(phase)).collect(Collectors.toList()));
   }
 
+
   public Set<ProjectInnovationDeliverable> getProjectInnovationDeliverables() {
     return this.projectInnovationDeliverables;
   }
+
+
+  public Set<ProjectInnovationEvidenceLink> getProjectInnovationEvidenceLinks() {
+    return projectInnovationEvidenceLinks;
+  }
+
 
   public Set<ProjectInnovationGeographicScope> getProjectInnovationGeographicScopes() {
     return this.projectInnovationGeographicScopes;
@@ -254,7 +265,6 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
       .filter(pc -> pc.isActive() && pc.getPhase().equals(phase)).collect(Collectors.toList()));
   }
 
-
   public Set<ProjectInnovationRegion> getProjectInnovationRegions() {
     return this.projectInnovationRegions;
   }
@@ -262,6 +272,7 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   public Set<ProjectInnovationShared> getProjectInnovationShareds() {
     return this.projectInnovationShareds;
   }
+
 
   public Set<ProjectInnovationSubIdo> getProjectInnovationSubIdos() {
     return projectInnovationSubIdos;
@@ -362,6 +373,10 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     this.geographicScopes = geographicScopes;
   }
 
+  public void setInnovationLinks(List<ProjectInnovationEvidenceLink> innovationLinks) {
+    this.innovationLinks = innovationLinks;
+  }
+
   public void setMilestones(List<ProjectInnovationMilestone> milestones) {
     this.milestones = milestones;
   }
@@ -401,6 +416,10 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
 
   public void setProjectInnovationDeliverables(Set<ProjectInnovationDeliverable> projectInnovationDeliverables) {
     this.projectInnovationDeliverables = projectInnovationDeliverables;
+  }
+
+  public void setProjectInnovationEvidenceLinks(Set<ProjectInnovationEvidenceLink> projectInnovationEvidenceLinks) {
+    this.projectInnovationEvidenceLinks = projectInnovationEvidenceLinks;
   }
 
   public void
