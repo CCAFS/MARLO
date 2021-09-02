@@ -461,15 +461,19 @@ public class ProjectOutcomeAction extends BaseAction {
   }
 
   public int getPrevIndexIndicator(Long indicatorID) {
-
-    ProjectOutcomeIndicator projectOutcomeIndicator = this.getIndicator(indicatorID);
-    int i = 0;
-    for (ProjectOutcomeIndicator projectOutcomeIndicatorList : projectOutcomeLastPhase.getIndicators()) {
-      if (projectOutcomeIndicatorList.getCrpProgramOutcomeIndicator().getId().longValue() == projectOutcomeIndicator
-        .getCrpProgramOutcomeIndicator().getId().longValue()) {
-        return i;
+    if (this.getIndicator(indicatorID) == null && this.getIndicator(indicatorID - 1) != null) {
+      indicatorID = indicatorID - 1;
+    }
+    if (this.getIndicator(indicatorID) != null) {
+      ProjectOutcomeIndicator projectOutcomeIndicator = this.getIndicator(indicatorID);
+      int i = 0;
+      for (ProjectOutcomeIndicator projectOutcomeIndicatorList : projectOutcomeLastPhase.getIndicators()) {
+        if (projectOutcomeIndicatorList.getCrpProgramOutcomeIndicator().getId().longValue() == projectOutcomeIndicator
+          .getCrpProgramOutcomeIndicator().getId().longValue()) {
+          return i;
+        }
+        i++;
       }
-      i++;
     }
     return 0;
   }
