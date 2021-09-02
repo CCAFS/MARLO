@@ -542,13 +542,13 @@ function mqap() {
 		beforeSend: function () {
 			// hideFilter();
 			cleanModal();
-			// manageSpinner(true,"publicationMQAP");
+			manageSpinner(true,"publicationMQAP");
 			destroyTable("publicationMQAP");
 		},
 		success: function (data) {
 			// ********************************************* */
 			// print data
-			// manageSpinner(false,"publicationMQAP");
+			manageSpinner(false,"publicationMQAP");
 			let nameColumns = ['Field', 'Value']
 
 			// $.each(nameColumns, function (index, name) {
