@@ -23,9 +23,12 @@ import org.cgiar.ccafs.marlo.data.model.Sdg;
 import org.cgiar.ccafs.marlo.rest.dto.SDGsDTO;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "jsr330")
 public interface SdgMapper {
 
+  @Mappings({@Mapping(source = "smoCode", target = "usndCode")})
   public abstract SDGsDTO sdgToSdgsDTO(Sdg sdg);
 }

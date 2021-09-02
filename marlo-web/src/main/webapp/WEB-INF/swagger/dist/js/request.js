@@ -154,12 +154,12 @@ function sdg(){
 			// print data
 			manageSpinner(false,"sdgs");
 			console.log(data);
-			let nameColumns = ['SMO code', 'Short Name','Full Name']
+			let nameColumns = ['UNSD code', 'Short Name','Full Name']
 
 			$.each(data, function (index, item) {
 				
 				$('#list-print-sdgs').append(
-					'<tr>' + '<td >' + item['smoCode'] + '</td>' + '<td>'
+					'<tr>' + '<td >' + item['usndCode'] + '</td>' + '<td>'
 					+ item['shortName'] + '</td>' + '<td>'
 					+ item['fullName'] + '</td>' + '</tr>')
 			});
