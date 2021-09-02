@@ -75,12 +75,18 @@ public class CrpProgramOutcomeIndicatorManagerImpl implements CrpProgramOutcomeI
   }
 
   @Override
+  public List<CrpProgramOutcomeIndicator> getCrpProgramOutcomeIndicatorByOutcome(CrpProgramOutcome crpProgramOutcome) {
+    return crpProgramOutcomeIndicatorDAO.getCrpProgramOutcomeIndicatorByOutcome(crpProgramOutcome);
+  }
+
+  @Override
   public List<CrpProgramOutcomeIndicator> getCrpProgramOutcomeIndicatorByOutcomeAndIndicator(String indicator,
     CrpProgramOutcome crpProgramOutcome) {
     return crpProgramOutcomeIndicatorDAO.getCrpProgramOutcomeIndicatorByOutcomeAndIndicator(indicator,
       crpProgramOutcome);
 
   }
+
 
   public CrpProgramOutcomeIndicator getCrpProgramOutcomeIndicatorByPhase(String composedID, long phaseID) {
     return crpProgramOutcomeIndicatorDAO.getCrpProgramOutcomeIndicatorByPhase(composedID, phaseID);
