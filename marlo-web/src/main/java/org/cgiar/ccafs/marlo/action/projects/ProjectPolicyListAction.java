@@ -19,12 +19,14 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyInfo;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
@@ -49,6 +51,7 @@ public class ProjectPolicyListAction extends BaseAction {
   // Manager
   private ProjectPolicyManager projectPolicyManager;
   private ProjectPolicyInfoManager projectPolicyInfoManager;
+  private ProjectPolicyCrpManager projectPolicyCrpManager;
   private SectionStatusManager sectionStatusManager;
   private ProjectManager projectManager;
   private RepIndGeographicScopeManager repIndGeographicScopeManager;
@@ -68,13 +71,14 @@ public class ProjectPolicyListAction extends BaseAction {
   public ProjectPolicyListAction(APConfig config, ProjectPolicyManager projectPolicyManager,
     ProjectPolicyInfoManager projectPolicyInfoManager, SectionStatusManager sectionStatusManager,
     ProjectManager projectManager, ProjectInnovationCrpManager projectInnovationCrpManager,
-    RepIndGeographicScopeManager repIndGeographicScopeManager) {
+    RepIndGeographicScopeManager repIndGeographicScopeManager, ProjectPolicyCrpManager projectPolicyCrpManager) {
     super(config);
     this.projectPolicyManager = projectPolicyManager;
     this.projectPolicyInfoManager = projectPolicyInfoManager;
     this.sectionStatusManager = sectionStatusManager;
     this.projectManager = projectManager;
     this.repIndGeographicScopeManager = repIndGeographicScopeManager;
+    this.projectPolicyCrpManager = projectPolicyCrpManager;
   }
 
   @Override
@@ -88,7 +92,14 @@ public class ProjectPolicyListAction extends BaseAction {
     ProjectPolicyInfo projectPolicyInfo =
       new ProjectPolicyInfo(this.getActualPhase(), projectPolicy, new Long(this.getCurrentCycleYear()));
 
-    projectPolicyInfoManager.saveProjectPolicyInfo(projectPolicyInfo);
+    projectPolicyInfo = projectPolicyInfoManager.saveProjectPolicyInfo(projectPolicyInfo);
+
+    ProjectPolicyCrp projectPolicyThisCrp = new ProjectPolicyCrp();
+    projectPolicyThisCrp.setGlobalUnit(this.getCurrentGlobalUnit());
+    projectPolicyThisCrp.setPhase(this.getActualPhase());
+    projectPolicyThisCrp.setProjectPolicy(projectPolicy);
+
+    projectPolicyThisCrp = this.projectPolicyCrpManager.saveProjectPolicyCrp(projectPolicyThisCrp);
 
     policyID = projectPolicy.getId();
 
