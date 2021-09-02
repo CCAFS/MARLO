@@ -104,10 +104,16 @@ public class ProjectDeliverableSharedManagerImpl implements ProjectDeliverableSh
   }
 
   @Override
+  public List<ProjectDeliverableShared> getByProjectAndPhase(long projectId, long phaseId) {
+    return projectDeliverableSharedDAO.getByProjectAndPhase(projectId, phaseId);
+  }
+
+  @Override
   public ProjectDeliverableShared getProjectDeliverableSharedById(long projectDeliverableSharedID) {
 
     return projectDeliverableSharedDAO.find(projectDeliverableSharedID);
   }
+
 
   @Override
   public ProjectDeliverableShared saveProjectDeliverableShared(ProjectDeliverableShared projectDeliverableShared) {
