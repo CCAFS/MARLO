@@ -50,6 +50,21 @@
       <div class="col-md-9">
         [#-- Section Messages --]
         [#include "/WEB-INF/crp/views/projects/messages-deliverables.ftl" /]
+
+        [#--  <div class="containerTitleElements">
+            <div class="containerTitleMessage" style="margin-top: 10px;">
+              <div id="qualityAssessedIcon" class="deliverableQualityAssessedIcon qualityAssessed-mode text-center animated flipInX">
+                [#assign lastSubmission=action.getProjectSubmissions(projectID)?last /]
+                <p>
+                  [@s.text name="message.qualityAssessed"]
+                    [@s.param]Deliverable[/@s.param]
+                    [@s.param]${(lastSubmission.dateTime?string["MMMM dd, yyyy"])!}[/@s.param]
+                  [/@s.text]
+                </p>
+              </div> 
+              <p class="messageQAInfo">[@s.text name="message.qualityAssessedInfo"][/@s.text]</p>
+            </div>  
+          </div>  --]
         
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
           

@@ -36,18 +36,33 @@
     <div class="col-md-9">
       [#-- Section Messages --]
       [#include "/WEB-INF/crp/views/projects/messages-innovation.ftl" /]
-
-      [#-- Back --]
-      <small class="pull-right">
-        <a href="[@s.url action='${crpSession}/innovationsList'][@s.param name="projectID" value=project.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-          <span class="glyphicon glyphicon-circle-arrow-left"></span> [@s.text name="projectInnovations.back" /]
-        </a>
-      </small>
         
       [@s.form action=actionName cssClass="pure-form" enctype="multipart/form-data" ]
+      
+        [#-- Back --]
+        <small class="pull-right">
+          <a href="[@s.url action='${crpSession}/innovationsList'][@s.param name="projectID" value=project.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+            <span class="glyphicon glyphicon-circle-arrow-left"></span> [@s.text name="projectInnovations.back" /]
+          </a>
+        </small>
         
         [#--  Innovation Title --]
         <h3 class="headTitle">[@s.text name="projectInnovations" /]</h3> 
+
+        [#--  <div class="containerTitleElements">
+          <div class="containerTitleMessage">
+            <div id="qualityAssessedIcon" class="deliverableQualityAssessedIcon qualityAssessed-mode text-center animated flipInX">
+              [#assign lastSubmission=action.getProjectSubmissions(projectID)?last /]
+              <p>
+                [@s.text name="message.qualityAssessed"]
+                  [@s.param]Innovation[/@s.param]
+                  [@s.param]${(lastSubmission.dateTime?string["MMMM dd, yyyy"])!}[/@s.param]
+                [/@s.text]
+              </p>
+            </div> 
+            <p class="messageQAInfo">[@s.text name="message.qualityAssessedInfo"][/@s.text]</p>
+          </div>  
+        </div>  --]
         <div id="innovations" class="borderBox clearfix">   
 
         <div class="">        

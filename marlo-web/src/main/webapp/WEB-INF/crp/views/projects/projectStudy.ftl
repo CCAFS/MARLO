@@ -65,6 +65,22 @@
           
           [#-- Outcome case studies list --]
           <h3 class="headTitle">[@s.text name="projectStudies.caseStudyInformation" /]</h3>
+          
+          [#--  <div class="containerTitleElements">
+            <div class="containerTitleMessage">
+              <div id="qualityAssessedIcon" class="qualityAssessed-mode text-center animated flipInX">
+                [#assign lastSubmission=action.getProjectSubmissions(projectID)?last /]
+                <p>
+                  [@s.text name="message.qualityAssessed"]
+                    [@s.param]Study[/@s.param]
+                    [@s.param]${(lastSubmission.dateTime?string["MMMM dd, yyyy"])!}[/@s.param]
+                  [/@s.text]
+                </p>
+              </div> 
+              <p class="messageQAInfo">[@s.text name="message.qualityAssessedInfo"][/@s.text]</p>
+            </div>  
+          </div>  --]
+
           <div id="caseStudiesBlock" class="">
             [@studies.studyMacro element=(expectedStudy)!{} name="expectedStudy" index=0  /]
           </div> 
