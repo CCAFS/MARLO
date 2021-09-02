@@ -64,7 +64,6 @@ import org.cgiar.ccafs.marlo.utils.MilestoneComparators;
 import org.cgiar.ccafs.marlo.validation.impactpathway.OutcomeValidator;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -254,14 +253,14 @@ public class OutcomesAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-public String getBaseLineFileURL(String outcomeID) {
-  String path = config.getDownloadURL() + "/file.do?" +this.getBaseLineFileUrlPath(outcomeID).replace('\\', '/');
-  return path;
-}
+  public String getBaseLineFileURL(String outcomeID) {
+    String path = config.getDownloadURL() + "/file.do?" + this.getBaseLineFileUrlPath(outcomeID).replace('\\', '/');
+    return path;
+  }
 
-public String getBaseLineFileUrlPath(String outcomeID) {
-  return "crp=" + this.getActualPhase().getCrp().getAcronym() + "&category=projects&id=" + outcomeID;
-}
+  public String getBaseLineFileUrlPath(String outcomeID) {
+    return "crp=" + this.getActualPhase().getCrp().getAcronym() + "&category=projects&id=" + outcomeID;
+  }
 
   public long getCrpProgramID() {
     return crpProgramID;
@@ -851,7 +850,8 @@ public String getBaseLineFileUrlPath(String outcomeID) {
     for (CrpProgramOutcomeIndicator crpProgramOutcomeIndicator : crpProgramOutcomeDB.getCrpProgramOutcomeIndicators()
       .stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
       if (crpProgramOutcomeDetached.getIndicators() != null) {
-        if (!crpProgramOutcomeDetached.getIndicators().contains(crpProgramOutcomeIndicator)) {
+        if (crpProgramOutcomeIndicator != null
+          && !crpProgramOutcomeDetached.getIndicators().contains(crpProgramOutcomeIndicator)) {
           crpProgramOutcomeIndicatorManager.deleteCrpProgramOutcomeIndicator(crpProgramOutcomeIndicator.getId());
           crpProgramOutcomeIndicatorManager.remove(crpProgramOutcomeIndicator, nextPhase);
         }
