@@ -46,6 +46,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyNexusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyQuantificationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyReferenceManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySdgTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySrfTargetManager;
@@ -93,6 +94,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyNexus;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyQuantification;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyReference;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySdgTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
@@ -208,6 +210,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private ProjectExpectedStudyCenterManager projectExpectedStudyCenterManager;
   private ProjectExpectedStudyMilestoneManager projectExpectedStudyMilestoneManager;
 
+  // AR2021 Managers
+  private ProjectExpectedStudyReferenceManager projectExpectedStudyReferenceManager;
+
   // Variables
   private ProjectExpectedStudiesValidator projectExpectedStudiesValidator;
   private GlobalUnit loggedCrp;
@@ -286,7 +291,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     ProjectExpectedStudyNexusManager projectExpectedStudyNexusManager,
     ProjectExpectedStudySdgTargetManager projectExpectedStudySdgTargetManager,
     ProjectExpectedStudyLeverOutcomeManager projectExpectedStudyLeverOutcomeManager,
-    ProjectExpectedStudyLeverManager projectExpectedStudyLeverManager, AllianceLeverManager allianceLeverManager) {
+    ProjectExpectedStudyLeverManager projectExpectedStudyLeverManager, AllianceLeverManager allianceLeverManager,
+    ProjectExpectedStudyReferenceManager projectExpectedStudyReferenceManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -343,6 +349,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.projectExpectedStudySdgTargetManager = projectExpectedStudySdgTargetManager;
     this.projectExpectedStudyLeverOutcomeManager = projectExpectedStudyLeverOutcomeManager;
     this.projectExpectedStudyLeverManager = projectExpectedStudyLeverManager;
+    this.projectExpectedStudyReferenceManager = projectExpectedStudyReferenceManager;
   }
 
   /**
@@ -1016,6 +1023,13 @@ public class ProjectExpectedStudiesAction extends BaseAction {
               .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
+        // Expected Study Reference List
+        if (this.expectedStudy.getProjectExpectedStudyReferences() != null) {
+          this.expectedStudy
+            .setReferences(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyReferences().stream()
+              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+        }
+
         // Expected Study Innovations List
         if (this.expectedStudy.getProjectExpectedStudyInnovations() != null) {
           this.expectedStudy
@@ -1488,6 +1502,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         this.expectedStudy.getSdgTargets().clear();
       }
 
+      if (this.expectedStudy.getReferences() != null) {
+        this.expectedStudy.getReferences().clear();
+      }
+
       // HTTP Post info Values
       this.expectedStudy.getProjectExpectedStudyInfo().setRepIndRegion(null);
       this.expectedStudy.getProjectExpectedStudyInfo().setRepIndOrganizationType(null);
@@ -1544,6 +1562,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       // AR 2019 Save
       this.saveCenters(this.expectedStudyDB, phase);
       this.saveMilestones(this.expectedStudyDB, phase);
+
+      // AR2021 Save
+      this.saveReferences(this.expectedStudyDB, phase);
 
       // Save Geographic Scope Data
       this.saveGeographicScopes(this.expectedStudyDB, phase);
@@ -2519,6 +2540,56 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           // This is to add studyQuantificationSave to generate
           // correct auditlog.
           this.expectedStudy.getProjectExpectedStudyQuantifications().add(studyQuantificationSave);
+        }
+      }
+    }
+  }
+
+  /**
+   * Save Expected Studies References Information
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  private void saveReferences(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
+    // Search and deleted form Information
+    if (this.isNotEmpty(projectExpectedStudy.getProjectExpectedStudyReferences())) {
+      List<ProjectExpectedStudyReference> referencesPrev =
+        new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyReferences().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+      for (ProjectExpectedStudyReference studyReference : referencesPrev) {
+        if (this.expectedStudy.getReferences() == null
+          || !this.expectedStudy.getReferences().contains(studyReference)) {
+          this.projectExpectedStudyReferenceManager.deleteProjectExpectedStudyReference(studyReference.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (this.expectedStudy.getReferences() != null) {
+      for (ProjectExpectedStudyReference studyReference : this.expectedStudy.getReferences()) {
+        if (studyReference.getId() == null) {
+          ProjectExpectedStudyReference studyReferenceSave = new ProjectExpectedStudyReference();
+          studyReferenceSave.setProjectExpectedStudy(projectExpectedStudy);
+          studyReferenceSave.setPhase(phase);
+          studyReferenceSave.setReference(studyReference.getReference());
+
+          this.projectExpectedStudyReferenceManager.saveProjectExpectedStudyReference(studyReferenceSave);
+          // This is to add studyReferenceSave to generate correct
+          // auditlog.
+          this.expectedStudy.getProjectExpectedStudyReferences().add(studyReferenceSave);
+        } else {
+          ProjectExpectedStudyReference studyReferenceSave =
+            this.projectExpectedStudyReferenceManager.getProjectExpectedStudyReferenceById(studyReference.getId());
+          studyReferenceSave.setProjectExpectedStudy(projectExpectedStudy);
+          studyReferenceSave.setPhase(phase);
+          studyReferenceSave.setReference(studyReference.getReference());
+
+          this.projectExpectedStudyReferenceManager.saveProjectExpectedStudyReference(studyReferenceSave);
+          // This is to add studyReferenceSave to generate correct
+          // auditlog.
+          this.expectedStudy.getProjectExpectedStudyReferences().add(studyReferenceSave);
         }
       }
     }
