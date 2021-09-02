@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectDeliverableSharedManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
@@ -32,12 +33,14 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectDeliverableShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -66,12 +69,14 @@ public class DeliverableListAction extends BaseAction {
   private DeliverableInfoManager deliverableInfoManager;
   private ProjectManager projectManager;
   private SectionStatusManager sectionStatusManager;
+  private ProjectDeliverableSharedManager projectDeliverableSharedManager;
 
 
   // Front-end
   private List<Integer> allYears;
   private long deliverableID;
   private List<Deliverable> deliverables;
+  private List<Deliverable> currentDeliverableList;
   private List<DeliverableType> deliverablesType;
   private GlobalUnit loggedCrp;
   private Project project;
@@ -81,7 +86,8 @@ public class DeliverableListAction extends BaseAction {
   @Inject
   public DeliverableListAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     DeliverableTypeManager deliverableTypeManager, DeliverableManager deliverableManager, PhaseManager phaseManager,
-    DeliverableInfoManager deliverableInfoManager, SectionStatusManager sectionStatusManager) {
+    DeliverableInfoManager deliverableInfoManager, SectionStatusManager sectionStatusManager,
+    ProjectDeliverableSharedManager projectDeliverableSharedManager) {
     super(config);
     this.projectManager = projectManager;
     this.sectionStatusManager = sectionStatusManager;
@@ -90,6 +96,7 @@ public class DeliverableListAction extends BaseAction {
     this.deliverableTypeManager = deliverableTypeManager;
     this.deliverableManager = deliverableManager;
     this.phaseManager = phaseManager;
+    this.projectDeliverableSharedManager = projectDeliverableSharedManager;
   }
 
   @Override
@@ -195,10 +202,13 @@ public class DeliverableListAction extends BaseAction {
     return allYears;
   }
 
+  public List<Deliverable> getCurrentDeliverableList() {
+    return currentDeliverableList;
+  }
+
   public long getDeliverableID() {
     return deliverableID;
   }
-
 
   public List<Deliverable> getDeliverables() {
     return deliverables;
@@ -355,10 +365,10 @@ public class DeliverableListAction extends BaseAction {
 
   }
 
+
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
-
 
   public Project getProject() {
     return project;
@@ -367,6 +377,42 @@ public class DeliverableListAction extends BaseAction {
   public long getProjectID() {
     return projectID;
   }
+
+  /*
+   * Copy method from project.getCurrentDeliverables to allow add the shared deliverables to list
+   */
+  public void loadCurrentDeliverables() {
+    currentDeliverableList = new ArrayList<>();
+    currentDeliverableList = this.getDeliverables().stream().filter(
+      d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null && !d.getDeliverableInfo().isPrevious())
+      .collect(Collectors.toList());
+
+    // Load Shared deliverables
+    List<ProjectDeliverableShared> deliverableShared =
+      this.projectDeliverableSharedManager.getByProjectAndPhase(project.getId(), this.getActualPhase().getId()) != null
+        ? this.projectDeliverableSharedManager.getByProjectAndPhase(project.getId(), this.getActualPhase().getId())
+          .stream()
+          .filter(px -> px.isActive() && px.getDeliverable().isActive()
+            && px.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null)
+          .collect(Collectors.toList())
+        : Collections.emptyList();
+
+    if (deliverableShared != null && !deliverableShared.isEmpty()) {
+      for (ProjectDeliverableShared deliverableS : deliverableShared) {
+        if (!currentDeliverableList.contains(deliverableS.getDeliverable())) {
+          currentDeliverableList.add(deliverableS.getDeliverable());
+        }
+      }
+    }
+
+    if (currentDeliverableList != null && !currentDeliverableList.isEmpty()) {
+      currentDeliverableList.stream().sorted((d1, d2) -> d1.getId().compareTo((d2.getId())))
+        .collect(Collectors.toList());
+      // deliverables.addAll(currentDeliverableList);
+    }
+
+  }
+
 
   @Override
   public void prepare() throws Exception {
@@ -398,7 +444,6 @@ public class DeliverableListAction extends BaseAction {
             }
           }
 
-
           for (Deliverable deliverable : deliverables) {
             deliverable.setResponsiblePartnership(this.responsiblePartner(deliverable));
 
@@ -414,6 +459,8 @@ public class DeliverableListAction extends BaseAction {
             deliverable.setFundingSources(fundingSources);
           }
         }
+
+        this.loadCurrentDeliverables();
       }
 
 
@@ -444,7 +491,6 @@ public class DeliverableListAction extends BaseAction {
     }
   }
 
-
   @Override
   public String save() {
     return SUCCESS;
@@ -452,6 +498,10 @@ public class DeliverableListAction extends BaseAction {
 
   public void setAllYears(List<Integer> allYears) {
     this.allYears = allYears;
+  }
+
+  public void setCurrentDeliverableList(List<Deliverable> currentDeliverableList) {
+    this.currentDeliverableList = currentDeliverableList;
   }
 
   public void setDeliverableID(long deliverableID) {
@@ -477,6 +527,4 @@ public class DeliverableListAction extends BaseAction {
   public void setProjectID(long projectID) {
     this.projectID = projectID;
   }
-
-
 }
