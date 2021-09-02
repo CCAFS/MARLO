@@ -31,6 +31,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizat
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationDeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationEvidenceLinkManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
@@ -68,6 +69,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganizatio
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationDeliverable;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationEvidenceLink;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationOrganization;
@@ -156,6 +158,9 @@ public class ProjectInnovationAction extends BaseAction {
   private ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager;
   private ProjectExpectedStudyManager projectExpectedStudyManager;
 
+  // AR2021 managers
+  private ProjectInnovationEvidenceLinkManager projectInnovationEvidenceLinkManager;
+
 
   // Variables
   private long projectID;
@@ -222,7 +227,8 @@ public class ProjectInnovationAction extends BaseAction {
     ProjectInnovationCenterManager projectInnovationCenterManager,
     ProjectInnovationMilestoneManager projectInnovationMilestoneManager, SrfSubIdoManager srfSubIdoManager,
     ProjectInnovationSubIdoManager projectInnovationSubIdoManager, SrfIdoManager srfIdoManager,
-    ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager) {
+    ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager,
+    ProjectInnovationEvidenceLinkManager projectInnovationEvidenceLinkManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -260,6 +266,7 @@ public class ProjectInnovationAction extends BaseAction {
     this.projectInnovationSubIdoManager = projectInnovationSubIdoManager;
     this.srfIdoManager = srfIdoManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
+    this.projectInnovationEvidenceLinkManager = projectInnovationEvidenceLinkManager;
 
   }
 
@@ -819,6 +826,12 @@ public class ProjectInnovationAction extends BaseAction {
             .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
+        // Innovation Evidence Links list
+        if (innovation.getProjectInnovationEvidenceLinks() != null) {
+          innovation.setInnovationLinks(new ArrayList<>(innovation.getProjectInnovationEvidenceLinks().stream()
+            .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+        }
+
         // Innovation Milestone list
         if (innovation.getProjectInnovationMilestones() != null) {
           innovation.setMilestones(new ArrayList<>(innovation.getProjectInnovationMilestones().stream()
@@ -1151,6 +1164,10 @@ public class ProjectInnovationAction extends BaseAction {
       if (innovation.getStudies() != null) {
         innovation.getStudies().clear();
       }
+
+      if (innovation.getInnovationLinks() != null) {
+        innovation.getInnovationLinks().clear();
+      }
       // HTTP Post info Values
       // innovation.getProjectInnovationInfo().setGenderFocusLevel(null);
       // innovation.getProjectInnovationInfo().setYouthFocusLevel(null);
@@ -1193,6 +1210,9 @@ public class ProjectInnovationAction extends BaseAction {
       this.saveCenters(innovationDB, phase);
       this.saveMilestones(innovationDB, phase);
       this.saveStudies(innovationDB, phase);
+
+      // AR2021 save
+      this.saveLink(innovationDB, phase);
 
       this.saveGeographicScope(innovationDB, phase);
 
@@ -1498,15 +1518,16 @@ public class ProjectInnovationAction extends BaseAction {
       }
     }
 
+    boolean hasCurrentCrp = false;
     // Save form Information
     if (innovation.getCrps() != null) {
       for (ProjectInnovationCrp innovationCrp : innovation.getCrps()) {
+        GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(innovationCrp.getGlobalUnit().getId());
+        hasCurrentCrp = hasCurrentCrp || (globalUnit != null && this.getCurrentCrp().equals(globalUnit));
         if (innovationCrp.getId() == null) {
           ProjectInnovationCrp innovationCrpSave = new ProjectInnovationCrp();
           innovationCrpSave.setProjectInnovation(projectInnovation);
           innovationCrpSave.setPhase(phase);
-
-          GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(innovationCrp.getGlobalUnit().getId());
 
           innovationCrpSave.setGlobalUnit(globalUnit);
 
@@ -1514,6 +1535,19 @@ public class ProjectInnovationAction extends BaseAction {
           // This is to add innovationCrpSave to generate correct auditlog.
           innovation.getProjectInnovationCrps().add(innovationCrpSave);
         }
+      }
+
+      if (!hasCurrentCrp) {
+        ProjectInnovationCrp innovationCrpSave = new ProjectInnovationCrp();
+        innovationCrpSave.setProjectInnovation(projectInnovation);
+        innovationCrpSave.setPhase(phase);
+
+        GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(this.getCurrentCrp().getId());
+        innovationCrpSave.setGlobalUnit(globalUnit);
+
+        projectInnovationCrpManager.saveProjectInnovationCrp(innovationCrpSave);
+        // This is to add innovationCrpSave to generate correct auditlog.
+        innovation.getProjectInnovationCrps().add(innovationCrpSave);
       }
     }
   }
@@ -1596,6 +1630,56 @@ public class ProjectInnovationAction extends BaseAction {
           projectInnovationGeographicScopeManager.saveProjectInnovationGeographicScope(innovationScopeSave);
           // This is to add innovationCrpSave to generate correct auditlog.
           innovation.getProjectInnovationGeographicScopes().add(innovationScopeSave);
+        }
+      }
+    }
+  }
+
+  /**
+   * Save Innovation Link Information
+   * 
+   * @param projectInnovation
+   * @param phase
+   */
+  public void saveLink(ProjectInnovation projectInnovation, Phase phase) {
+    // Search and deleted form Information
+    if (this.isNotEmpty(projectInnovation.getProjectInnovationEvidenceLinks())) {
+      List<ProjectInnovationEvidenceLink> linkPrev =
+        new ArrayList<>(projectInnovation.getProjectInnovationEvidenceLinks().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+      for (ProjectInnovationEvidenceLink innovationLink : linkPrev) {
+        if (this.innovation.getInnovationLinks() == null
+          || !this.innovation.getInnovationLinks().contains(innovationLink)) {
+          this.projectInnovationEvidenceLinkManager.deleteProjectInnovationEvidenceLink(innovationLink.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (this.innovation.getInnovationLinks() != null) {
+      for (ProjectInnovationEvidenceLink studyLink : this.innovation.getInnovationLinks()) {
+        if (studyLink.getId() == null) {
+          ProjectInnovationEvidenceLink studyLinkSave = new ProjectInnovationEvidenceLink();
+          studyLinkSave.setProjectInnovation(projectInnovation);
+          studyLinkSave.setPhase(phase);
+          studyLinkSave.setLink(studyLink.getLink());
+
+          this.projectInnovationEvidenceLinkManager.saveProjectInnovationEvidenceLink(studyLinkSave);
+          // This is to add innovationLinkSave to generate correct
+          // auditlog.
+          this.innovation.getProjectInnovationEvidenceLinks().add(studyLinkSave);
+        } else {
+          ProjectInnovationEvidenceLink studyLinkSave =
+            this.projectInnovationEvidenceLinkManager.getProjectInnovationEvidenceLinkById(studyLink.getId());
+          studyLinkSave.setProjectInnovation(projectInnovation);
+          studyLinkSave.setPhase(phase);
+          studyLinkSave.setLink(studyLink.getLink());
+
+          this.projectInnovationEvidenceLinkManager.saveProjectInnovationEvidenceLink(studyLinkSave);
+          // This is to add innovationLinkSave to generate correct
+          // auditlog.
+          this.innovation.getProjectInnovationEvidenceLinks().add(studyLinkSave);
         }
       }
     }

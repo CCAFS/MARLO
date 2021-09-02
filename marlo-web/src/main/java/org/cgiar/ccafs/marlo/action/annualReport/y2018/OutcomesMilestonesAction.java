@@ -1054,10 +1054,12 @@ public class OutcomesMilestonesAction extends BaseAction {
       .collect(Collectors.toList());
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
 
-    outcomeList.forEach(o -> {
-      o.getMilestones().forEach(m -> LOG
-        .debug(m.getMilestonesStatus() == null ? "no status for " + m.getId() : m.getMilestonesStatus().getName()));
-    });
+    /*
+     * outcomeList.forEach(o -> {
+     * o.getMilestones().forEach(m -> LOG
+     * .debug(m.getMilestonesStatus() == null ? "no status for " + m.getId() : m.getMilestonesStatus().getName()));
+     * });
+     */
 
     if (this.isPMU()) {
       this.loadTablePMU();

@@ -130,6 +130,15 @@ public class APConfig {
   @Value("${clarisa.submissionToolsPassword}")
   private String SUBMISSION_TOOLS_PASSWORD;
 
+  @Value("${clarisa.urlQA}")
+  private String URL_QA;
+
+  @Value("${clarisa.QAUser}")
+  private String QA_USER;
+
+  @Value("${clarisa.QAPassword}")
+  private String QA_PASSWORD;
+
   // Path to get the base URL of media hosted in the CDN
   @Value("${cdn.url}")
   private String CDN_URL;
@@ -625,6 +634,22 @@ public class APConfig {
     return PUSH_SECRETE_KEY;
   }
 
+  public String getQAPassword() {
+    if (QA_PASSWORD == null) {
+      LOG.error("there is not a QA password configured.");
+      return null;
+    }
+    return QA_PASSWORD;
+  }
+
+  public String getQAUser() {
+    if (QA_USER == null) {
+      LOG.error("there is not a QA user configured.");
+      return null;
+    }
+    return QA_USER;
+  }
+
   public String getSubmissionToolsPassword() {
     if (SUBMISSION_TOOLS_PASSWORD == null) {
       LOG.error("there is not a submission tools password configured.");
@@ -655,6 +680,14 @@ public class APConfig {
     }
 
     return UPLOADS_BASE_FOLDER;
+  }
+
+  public String getUrlQA() {
+    if (URL_QA == null) {
+      LOG.error("there is not a QA URL configured.");
+      return null;
+    }
+    return URL_QA;
   }
 
   public String getUrlSubmissionTools() {
