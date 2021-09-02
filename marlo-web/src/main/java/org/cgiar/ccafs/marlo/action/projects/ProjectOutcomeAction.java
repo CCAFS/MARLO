@@ -855,7 +855,7 @@ public class ProjectOutcomeAction extends BaseAction {
       if (projectOutcome.getIndicators() != null) {
         projectOutcome.getIndicators().clear();
       }
-      if (projectOutcomeLastPhase.getIndicators() != null) {
+      if (projectOutcomeLastPhase != null && projectOutcomeLastPhase.getIndicators() != null) {
         projectOutcomeLastPhase.getIndicators().clear();
       }
       /**
