@@ -72,13 +72,13 @@ public class ProjectInnovationEvidenceLinkMySQLDAO extends AbstractMarloDAO<Proj
   }
 
   @Override
-  public List<ProjectInnovationEvidenceLink> getAllInnovationLinksByStudy(long studyId) {
+  public List<ProjectInnovationEvidenceLink> getAllInnovationLinksByStudy(long innovationId) {
     String query =
-      "select peslink from ProjectInnovationEvidenceLink peslink where peslink.projectExpectedStudy.id = :studyId "
+      "select peslink from ProjectInnovationEvidenceLink peslink where peslink.projectInnovation.id = :innovationId "
         + "order by peslink.phase.id";
     Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
 
-    createQuery.setParameter("studyId", studyId);
+    createQuery.setParameter("innovationId", innovationId);
 
     List<ProjectInnovationEvidenceLink> result = super.findAll(createQuery);
 
@@ -89,11 +89,11 @@ public class ProjectInnovationEvidenceLinkMySQLDAO extends AbstractMarloDAO<Proj
   public ProjectInnovationEvidenceLink getProjectInnovationEvidenceLinkByPhase(long innovationID, String link,
     long phaseID) {
     String query = "select distinct du from ProjectInnovationEvidenceLink du "
-      + "where phase.id = :phaseId and projectExpectedStudy.id= :expectedId " + "and du.link = :duLink";
+      + "where phase.id = :phaseId and projectInnovation.id= :innovationId " + "and du.link = :duLink";
     Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
 
     createQuery.setParameter("phaseId", phaseID);
-    createQuery.setParameter("expectedId", innovationID);
+    createQuery.setParameter("innovationId", innovationID);
     createQuery.setParameter("duLink", link);
 
     Object findSingleResult = super.findSingleResult(ProjectInnovationEvidenceLink.class, createQuery);
