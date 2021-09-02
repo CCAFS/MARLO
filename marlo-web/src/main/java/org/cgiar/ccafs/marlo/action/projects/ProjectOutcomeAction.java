@@ -786,8 +786,11 @@ public class ProjectOutcomeAction extends BaseAction {
       /*
        * Loading basic List
        */
-      projectOutcomeLastPhase.setCrpProgramOutcome(
-        crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcomeLastPhase.getCrpProgramOutcome().getId()));
+      if (projectOutcomeLastPhase != null && projectOutcomeLastPhase.getCrpProgramOutcome() != null
+        && projectOutcomeLastPhase.getCrpProgramOutcome().getId() != null) {
+        projectOutcomeLastPhase.setCrpProgramOutcome(
+          crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcomeLastPhase.getCrpProgramOutcome().getId()));
+      }
 
       projectOutcomeLastPhase.getCrpProgramOutcome()
         .setIndicators(projectOutcomeLastPhase.getCrpProgramOutcome().getCrpProgramOutcomeIndicators().stream()
