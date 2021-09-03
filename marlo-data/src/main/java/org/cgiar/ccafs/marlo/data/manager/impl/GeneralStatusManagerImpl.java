@@ -72,6 +72,7 @@ public class GeneralStatusManagerImpl implements GeneralStatusManager {
     if (year > 2020) {
       generalStati.removeIf(gs -> gs == null || gs.getId() == null
         || String.valueOf(gs.getId()).equals(DeliverableStatusEnum.EXTENDED.getStatusId()));
+      generalStati.replaceAll(this::onGoingToReadyToBeReportedOn);
     }
 
     if (year < 2021) {
@@ -102,6 +103,14 @@ public class GeneralStatusManagerImpl implements GeneralStatusManager {
   public GeneralStatus getGeneralStatusById(long generalStatusID) {
 
     return this.generalStatusDAO.find(generalStatusID);
+  }
+
+  private GeneralStatus onGoingToReadyToBeReportedOn(GeneralStatus onGoing) {
+    if (String.valueOf(onGoing.getId()).equals(DeliverableStatusEnum.ON_GOING.getStatusId())) {
+      onGoing.setName("Ready to be reported on");
+    }
+
+    return onGoing;
   }
 
   @Override
