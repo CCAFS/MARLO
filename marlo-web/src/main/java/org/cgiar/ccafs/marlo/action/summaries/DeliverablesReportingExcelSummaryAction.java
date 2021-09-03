@@ -50,6 +50,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverableProgram;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
+import org.cgiar.ccafs.marlo.data.model.DeliverableStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnershipPerson;
@@ -58,7 +59,6 @@ import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution;
-import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.RepositoryChannel;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -440,29 +440,41 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           } else {
             if (deliverableInfo != null && deliverable.getDeliverableInfo().getStatus() != null
 
-              && ((deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+              && ((deliverableInfo.getStatus().intValue() == Integer
+                .parseInt(DeliverableStatusEnum.COMPLETE.getStatusId())
                 && ((deliverableInfo.getYear() == this.getSelectedYear())
                   || (deliverableInfo.getNewExpectedYear() != null
                     && deliverableInfo.getNewExpectedYear().intValue() >= this.getSelectedYear())))
 
-                || (deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-                  && (
-                  // (deliverableInfo.getYear() == this.getSelectedYear()) ||
-                  (deliverableInfo.getNewExpectedYear() != null
-                    && deliverableInfo.getNewExpectedYear().intValue() == this.getSelectedYear())))
+                || (deliverableInfo.getStatus().intValue() == Integer
+                  .parseInt(DeliverableStatusEnum.EXTENDED.getStatusId()) && (
+                // (deliverableInfo.getYear() == this.getSelectedYear()) ||
+                (deliverableInfo.getNewExpectedYear() != null
+                  && deliverableInfo.getNewExpectedYear().intValue() == this.getSelectedYear())))
 
                 || (deliverableInfo.getStatus().intValue() == Integer
-                  .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+                  .parseInt(DeliverableStatusEnum.CANCELLED.getStatusId())
                   && (deliverableInfo.getYear() == this.getSelectedYear()
                     || (deliverableInfo.getNewExpectedYear() != null
                       && deliverableInfo.getNewExpectedYear().intValue() == this.getSelectedYear())))
-                || (deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                  && (deliverableInfo.getYear() == this.getSelectedYear())))
-              && (deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-                || deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-                || deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+                || (deliverableInfo.getStatus().intValue() == Integer
+                  .parseInt(DeliverableStatusEnum.ON_GOING.getStatusId())
+                  && (deliverableInfo.getYear() == this.getSelectedYear()))
+                || (deliverableInfo.getStatus().intValue() == Integer
+                  .parseInt(DeliverableStatusEnum.PARTIALLY_COMPLETE.getStatusId())
+                  && ((deliverableInfo.getYear() == this.getSelectedYear())
+                    || (deliverableInfo.getNewExpectedYear() != null
+                      && deliverableInfo.getNewExpectedYear().intValue() >= this.getSelectedYear()))))
+              && (deliverableInfo.getStatus().intValue() == Integer
+                .parseInt(DeliverableStatusEnum.EXTENDED.getStatusId())
                 || deliverableInfo.getStatus().intValue() == Integer
-                  .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))) {
+                  .parseInt(DeliverableStatusEnum.COMPLETE.getStatusId())
+                || deliverableInfo.getStatus().intValue() == Integer
+                  .parseInt(DeliverableStatusEnum.CANCELLED.getStatusId())
+                || deliverableInfo.getStatus().intValue() == Integer
+                  .parseInt(DeliverableStatusEnum.ON_GOING.getStatusId())
+                || deliverableInfo.getStatus().intValue() == Integer
+                  .parseInt(DeliverableStatusEnum.PARTIALLY_COMPLETE.getStatusId()))) {
               deliverables.add(deliverable);
 
             }
@@ -489,31 +501,31 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
       // .collect(Collectors.toList()).size() > 0
       // && d.getDeliverableInfo(this.getSelectedPhase()) != null && d.getDeliverableInfo().getStatus() != null
       // && ((d.getDeliverableInfo().getStatus().intValue() == Integer
-      // .parseInt(ProjectStatusEnum.Complete.getStatusId())
+      // .parseInt(DeliverableStatusEnum.Complete.getStatusId())
       // && (d.getDeliverableInfo().getYear() == this.getSelectedYear()
       // || (d.getDeliverableInfo().getNewExpectedYear() != null
       // && d.getDeliverableInfo().getNewExpectedYear().intValue() >= this.getSelectedYear())))
       // || (d.getDeliverableInfo().getStatus().intValue() == Integer
-      // .parseInt(ProjectStatusEnum.Extended.getStatusId())
+      // .parseInt(DeliverableStatusEnum.Extended.getStatusId())
       // && (d.getDeliverableInfo().getYear() == this.getSelectedYear()
       // || (d.getDeliverableInfo().getNewExpectedYear() != null
       // && d.getDeliverableInfo().getNewExpectedYear().intValue() == this.getSelectedYear())))
       // || (d.getDeliverableInfo().getStatus().intValue() == Integer
-      // .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+      // .parseInt(DeliverableStatusEnum.Cancelled.getStatusId())
       // && (d.getDeliverableInfo().getYear() == this.getSelectedYear()
       // || (d.getDeliverableInfo().getNewExpectedYear() != null
       // && d.getDeliverableInfo().getNewExpectedYear().intValue() == this.getSelectedYear())))
       // || (d.getDeliverableInfo().getStatus().intValue() == Integer
-      // .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+      // .parseInt(DeliverableStatusEnum.Ongoing.getStatusId())
       // && (d.getDeliverableInfo().getYear() == this.getSelectedYear())))
       // && (d.getDeliverableInfo().getStatus().intValue() == Integer
-      // .parseInt(ProjectStatusEnum.Extended.getStatusId())
+      // .parseInt(DeliverableStatusEnum.Extended.getStatusId())
       // || d.getDeliverableInfo().getStatus().intValue() == Integer
-      // .parseInt(ProjectStatusEnum.Complete.getStatusId())
+      // .parseInt(DeliverableStatusEnum.Complete.getStatusId())
       // || d.getDeliverableInfo().getStatus().intValue() == Integer
-      // .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+      // .parseInt(DeliverableStatusEnum.Cancelled.getStatusId())
       // || d.getDeliverableInfo().getStatus().intValue() == Integer
-      // .parseInt(ProjectStatusEnum.Ongoing.getStatusId())))
+      // .parseInt(DeliverableStatusEnum.Ongoing.getStatusId())))
       // .collect(Collectors.toList()));
       // }
 
@@ -728,7 +740,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         if (deliverable.getDeliverableInfo().getStatus() != null) {
           // Extended
           if (deliverable.getDeliverableInfo().getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Extended.getStatusId())
+            .parseInt(DeliverableStatusEnum.EXTENDED.getStatusId())
             && deliverable.getDeliverableInfo().getNewExpectedYear() != null
             && deliverable.getDeliverableInfo().getNewExpectedYear().intValue() != -1) {
             delivNewYear = deliverable.getDeliverableInfo().getNewExpectedYear();
@@ -737,7 +749,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           }
           // Complete
           if (deliverable.getDeliverableInfo().getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+            .parseInt(DeliverableStatusEnum.COMPLETE.getStatusId())) {
             if (deliverable.getDeliverableInfo().getNewExpectedYear() != null
               && deliverable.getDeliverableInfo().getNewExpectedYear() != -1) {
               delivNewYear = deliverable.getDeliverableInfo().getNewExpectedYear();
@@ -745,7 +757,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           }
           // Canceled
           if (deliverable.getDeliverableInfo().getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
+            .parseInt(DeliverableStatusEnum.CANCELLED.getStatusId())) {
             delivNewYearJustification = deliverable.getDeliverableInfo().getStatusDescription();
           }
         }

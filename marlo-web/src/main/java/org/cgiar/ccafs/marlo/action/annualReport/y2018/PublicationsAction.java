@@ -533,9 +533,15 @@ public class PublicationsAction extends BaseAction {
       liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
 
       deliverables = deliverableManager.getPublicationsList(liaisonInstitution, actualPhase);
+      deliverables.removeIf(d -> d == null || d.getId() == null
+        || d.getDeliverableInfo(actualPhase) == null && d.getDeliverableInfo(actualPhase).getId() == null
+        || d.getDeliverableInfo(actualPhase).getStatus() == null || d.getDeliverableInfo(actualPhase).getStatus() == 6);
 
       // List for gray literature
       deliverablesNotPublications = deliverableManager.getNotPublicationsList(liaisonInstitution, actualPhase);
+      deliverablesNotPublications.removeIf(d -> d == null || d.getId() == null
+        || d.getDeliverableInfo(actualPhase) == null && d.getDeliverableInfo(actualPhase).getId() == null
+        || d.getDeliverableInfo(actualPhase).getStatus() == null || d.getDeliverableInfo(actualPhase).getStatus() == 7);
 
       Path path = this.getAutoSaveFilePath();
       // Verify if there is a Draft file
