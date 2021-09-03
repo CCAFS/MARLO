@@ -130,7 +130,7 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     try {
       if (this.status != null) {
         if (status == Integer.parseInt(DeliverableStatusEnum.ON_GOING.getStatusId())) {
-          if (phase.getYear() > this.getYear()) {
+          if (phase.getYear() > this.getYear() || ("AR".equals(phase.getName()) && phase.getYear() == 2021)) {
             return "Ready to be reported on ";
           }
         }
