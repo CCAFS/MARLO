@@ -17,43 +17,17 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInnovationManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCenterManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCrpManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationDeliverableManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationMilestoneManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationOrganizationManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSharedManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyInnovationManager;
-import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrossCuttingDimensionInnovationManager;
-import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationDeliverable;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationMilestone;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationOrganization;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSubIdo;
-import org.cgiar.ccafs.marlo.data.model.ProjectPolicyInnovation;
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingDimensionInnovation;
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressInnovation;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -75,26 +49,12 @@ public class ProjectInnovationListAction extends BaseAction {
 
 
   // Manager
-  private ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager;
-  private ProjectInnovationCenterManager projectInnovationCenterManager;
-  private ProjectInnovationContributingOrganizationManager projectInnovationContributingOrganizationManager;
-  private ProjectInnovationCountryManager projectInnovationCountryManager;
-  private ProjectInnovationCrpManager projectInnovationCrpManager;
-  private ProjectInnovationDeliverableManager projectInnovationDeliverableManager;
-  private ProjectInnovationGeographicScopeManager projectInnovationGeographicScopeManager;
-  private ProjectInnovationInfoManager projectInnovationInfoManager;
-  private ProjectInnovationMilestoneManager projectInnovationMilestoneManager;
-  private ProjectInnovationOrganizationManager projectInnovationOrganizationManager;
-  private ProjectInnovationRegionManager projectInnovationRegionManager;
   private ProjectInnovationSharedManager projectInnovationSharedManager;
-  private ProjectInnovationSubIdoManager projectInnovationSubIdoManager;
+  private ProjectInnovationInfoManager projectInnovationInfoManager;
   private ProjectInnovationManager projectInnovationManager;
-  private ProjectPolicyInnovationManager projectPolicyInnovationManager;
-  private ReportSynthesisCrossCuttingDimensionInnovationManager reportSynthesisCrossCuttingDimensionInnovationManager;
-  private ReportSynthesisFlagshipProgressInnovationManager reportSynthesisFlagshipProgressInnovationManager;
+  private ProjectInnovationCrpManager projectInnovationCrpManager;
 
   private SectionStatusManager sectionStatusManager;
-
   private ProjectManager projectManager;
 
   // Variables
@@ -110,43 +70,17 @@ public class ProjectInnovationListAction extends BaseAction {
 
 
   @Inject
-  public ProjectInnovationListAction(APConfig config, SectionStatusManager sectionStatusManager,
-    ProjectManager projectManager, ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager,
-    ProjectInnovationCenterManager projectInnovationCenterManager,
-    ProjectInnovationContributingOrganizationManager projectInnovationContributingOrganizationManager,
-    ProjectInnovationCountryManager projectInnovationCountryManager,
-    ProjectInnovationCrpManager projectInnovationCrpManager,
-    ProjectInnovationDeliverableManager projectInnovationDeliverableManager,
-    ProjectInnovationGeographicScopeManager projectInnovationGeographicScopeManager,
-    ProjectInnovationInfoManager projectInnovationInfoManager,
-    ProjectInnovationMilestoneManager projectInnovationMilestoneManager,
-    ProjectInnovationOrganizationManager projectInnovationOrganizationManager,
-    ProjectInnovationRegionManager projectInnovationRegionManager,
-    ProjectInnovationSharedManager projectInnovationSharedManager,
-    ProjectInnovationSubIdoManager projectInnovationSubIdoManager, ProjectInnovationManager projectInnovationManager,
-    ProjectPolicyInnovationManager projectPolicyInnovationManager,
-    ReportSynthesisCrossCuttingDimensionInnovationManager reportSynthesisCrossCuttingDimensionInnovationManager,
-    ReportSynthesisFlagshipProgressInnovationManager reportSynthesisFlagshipProgressInnovationManager) {
+  public ProjectInnovationListAction(APConfig config, ProjectInnovationInfoManager projectInnovationInfoManager,
+    SectionStatusManager sectionStatusManager, ProjectManager projectManager,
+    ProjectInnovationManager projectInnovationManager, ProjectInnovationSharedManager projectInnovationSharedManager,
+    ProjectInnovationCrpManager projectInnovationCrpManager) {
     super(config);
     this.sectionStatusManager = sectionStatusManager;
     this.projectManager = projectManager;
-    this.projectExpectedStudyInnovationManager = projectExpectedStudyInnovationManager;
-    this.projectInnovationCenterManager = projectInnovationCenterManager;
-    this.projectInnovationContributingOrganizationManager = projectInnovationContributingOrganizationManager;
-    this.projectInnovationCountryManager = projectInnovationCountryManager;
-    this.projectInnovationCrpManager = projectInnovationCrpManager;
-    this.projectInnovationDeliverableManager = projectInnovationDeliverableManager;
-    this.projectInnovationGeographicScopeManager = projectInnovationGeographicScopeManager;
     this.projectInnovationInfoManager = projectInnovationInfoManager;
-    this.projectInnovationMilestoneManager = projectInnovationMilestoneManager;
-    this.projectInnovationOrganizationManager = projectInnovationOrganizationManager;
-    this.projectInnovationRegionManager = projectInnovationRegionManager;
-    this.projectInnovationSharedManager = projectInnovationSharedManager;
-    this.projectInnovationSubIdoManager = projectInnovationSubIdoManager;
     this.projectInnovationManager = projectInnovationManager;
-    this.projectPolicyInnovationManager = projectPolicyInnovationManager;
-    this.reportSynthesisCrossCuttingDimensionInnovationManager = reportSynthesisCrossCuttingDimensionInnovationManager;
-    this.reportSynthesisFlagshipProgressInnovationManager = reportSynthesisFlagshipProgressInnovationManager;
+    this.projectInnovationSharedManager = projectInnovationSharedManager;
+    this.projectInnovationCrpManager = projectInnovationCrpManager;
   }
 
   @Override
@@ -160,7 +94,14 @@ public class ProjectInnovationListAction extends BaseAction {
     ProjectInnovationInfo projectInnovationInfo = new ProjectInnovationInfo(projectInnovation, this.getActualPhase(),
       "", "", "", "", "", "", new Long(this.getActualPhase().getYear()));
 
-    projectInnovationInfoManager.saveProjectInnovationInfo(projectInnovationInfo);
+    projectInnovationInfo = projectInnovationInfoManager.saveProjectInnovationInfo(projectInnovationInfo);
+
+    ProjectInnovationCrp projectInnovationThisCrp = new ProjectInnovationCrp();
+    projectInnovationThisCrp.setGlobalUnit(this.getCurrentGlobalUnit());
+    projectInnovationThisCrp.setPhase(this.getActualPhase());
+    projectInnovationThisCrp.setProjectInnovation(projectInnovation);
+
+    projectInnovationThisCrp = this.projectInnovationCrpManager.saveProjectInnovationCrp(projectInnovationThisCrp);
 
     innovationID = projectInnovation.getId();
 
@@ -178,134 +119,6 @@ public class ProjectInnovationListAction extends BaseAction {
       if (projectInnovation.getId().longValue() == this.innovationID) {
         ProjectInnovation projectInnovationBD = projectInnovationManager.getProjectInnovationById(this.innovationID);
 
-        // project_expected_study_innovations
-        /*for (ProjectExpectedStudyInnovation pesi : projectInnovationBD.getProjectExpectedStudyInnovations().stream()
-          .filter(i -> i.getPhase().getId().equals(this.getPhaseID())).collect(Collectors.toList())) {
-          projectExpectedStudyInnovationManager.deleteProjectExpectedStudyInnovation(pesi.getId());
-        }*/
-
-        // project_innovation_centers
-        /*for (ProjectInnovationCenter pic : projectInnovationBD.getProjectInnovationCenters().stream()
-          .filter(i -> i.getPhase().getId().equals(this.getPhaseID())).collect(Collectors.toList())) {
-          projectInnovationCenterManager.deleteProjectInnovationCenter(pic.getId());
-        }*/
-
-        // project_innovation_contributing_organizations
-        /*for (ProjectInnovationContributingOrganization pico : projectInnovationBD
-          .getProjectInnovationContributingOrganization().stream()
-          .filter(i -> i.getPhase().getId().equals(this.getPhaseID())).collect(Collectors.toList())) {
-          projectInnovationContributingOrganizationManager
-            .deleteProjectInnovationContributingOrganization(pico.getId());
-        }*/
-
-        // project_innovation_countries
-        /*for (ProjectInnovationCountry pic : projectInnovationBD.getProjectInnovationCountries().stream()
-          .filter(i -> i.getPhase().getId().equals(this.getPhaseID())).collect(Collectors.toList())) {
-          projectInnovationCountryManager.deleteProjectInnovationCountry(pic.getId());
-        }*/
-
-        // project_innovation_crps
-        /*for (ProjectInnovationCrp pic : projectInnovationBD.getProjectInnovationCrps().stream()
-          .filter(i -> i.getPhase().getId().equals(this.getPhaseID())).collect(Collectors.toList())) {
-          projectInnovationCrpManager.deleteProjectInnovationCrp(pic.getId());
-        }*/
-
-        // project_innovation_deliverables
-        /*for (ProjectInnovationDeliverable pid : projectInnovationBD.getProjectInnovationDeliverables().stream()
-          .filter(i -> i.getPhase().getId().equals(this.getPhaseID())).collect(Collectors.toList())) {
-          projectInnovationDeliverableManager.deleteProjectInnovationDeliverable(pid.getId());
-        }*/
-
-        // project_innovation_geographic_scopes
-        /*for (ProjectInnovationGeographicScope pigs : projectInnovationBD.getProjectInnovationGeographicScopes().stream()
-          .filter(i -> i.getPhase().getId().equals(this.getPhaseID())).collect(Collectors.toList())) {
-          projectInnovationGeographicScopeManager.deleteProjectInnovationGeographicScope(pigs.getId());
-        }*/
-
-        // project_innovation_info (remove from this phase onwards)
-        /*for (ProjectInnovationInfo pii : projectInnovationBD.getProjectInnovationInfos().stream()
-          .filter(info -> info.getPhase().getId() >= this.getPhaseID()).collect(Collectors.toList())) {
-          projectInnovationInfoManager.deleteProjectInnovationInfo(pii.getId());
-        }*/
-
-        // project_innovation_milestones
-        /*for (ProjectInnovationMilestone pim : projectInnovationBD.getProjectInnovationMilestones().stream()
-          .filter(i -> i.getPhase().getId().equals(this.getPhaseID())).collect(Collectors.toList())) {
-          projectInnovationMilestoneManager.deleteProjectInnovationMilestone(pim.getId());
-        }*/
-
-        // project_innovation_organizations
-        /*for (ProjectInnovationOrganization pio : projectInnovationBD.getProjectInnovationOrganizations().stream()
-          .filter(i -> i.getPhase().getId().equals(this.getPhaseID())).collect(Collectors.toList())) {
-          projectInnovationOrganizationManager.deleteProjectInnovationOrganization(pio.getId());
-        }*/
-        
-        // project_innovation_regions
-        /*for (ProjectInnovationRegion pir : projectInnovationBD.getProjectInnovationRegions().stream()
-          .filter(i -> i.getPhase().getId().equals(this.getPhaseID())).collect(Collectors.toList())) {
-          projectInnovationRegionManager.deleteProjectInnovationRegion(pir.getId());
-        }*/
-
-        // project_innovation_shared
-        /*for (ProjectInnovationShared pis : projectInnovationBD.getProjectInnovationShareds().stream()
-          .filter(i -> i.getPhase().getId().equals(this.getPhaseID())).collect(Collectors.toList())) {
-          projectInnovationSharedManager.deleteProjectInnovationShared(pis.getId());
-        }*/
-
-        // project_innovation_sub_idos
-        /*for (ProjectInnovationSubIdo pisi : projectInnovationBD.getProjectInnovationSubIdos().stream()
-          .filter(i -> i.getPhase().getId().equals(this.getPhaseID())).collect(Collectors.toList())) {
-          projectInnovationSubIdoManager.deleteProjectInnovationSubIdo(pisi.getId());
-        }*/
-
-        // project_policy_innovations (2020: it is now not being used)
-        /*List<ProjectPolicyInnovation> policyInnovations = projectPolicyInnovationManager.findAll().stream()
-          .filter(p -> p.getProjectInnovation() != null
-            && p.getProjectInnovation().getId().equals(projectInnovationBD.getId())
-            && p.getPhase().getId().equals(this.getPhaseID()))
-          .collect(Collectors.toList());
-        for (ProjectPolicyInnovation ppi : policyInnovations) {
-          projectPolicyInnovationManager.deleteProjectPolicyInnovation(ppi.getId());
-        }*/
-
-        // report_synthesis_cross_cutting_dimension_innovations (2020: it is now not being used)
-        /*List<ReportSynthesisCrossCuttingDimensionInnovation> dimensionInnovations =
-          reportSynthesisCrossCuttingDimensionInnovationManager.findAll().stream()
-            .filter(di -> di.getReportSynthesisCrossCuttingDimension() != null
-              && di.getReportSynthesisCrossCuttingDimension().getReportSynthesis() != null
-              // we need to remove the phases from here because it is not done in the manager
-              && di.getReportSynthesisCrossCuttingDimension().getReportSynthesis().getPhase() != null
-              && (di.getReportSynthesisCrossCuttingDimension().getReportSynthesis().getPhase().getId()
-                .equals(this.getActualPhase().getId())
-                || di.getReportSynthesisCrossCuttingDimension().getReportSynthesis().getPhase().getId() > this
-                  .getActualPhase().getId())
-              && di.getProjectInnovation() != null
-              && di.getProjectInnovation().getId().equals(projectInnovationBD.getId()))
-            .collect(Collectors.toList());
-        for (ReportSynthesisCrossCuttingDimensionInnovation rsccdi : dimensionInnovations) {
-          reportSynthesisCrossCuttingDimensionInnovationManager
-            .deleteReportSynthesisCrossCuttingDimensionInnovation(rsccdi.getId());
-        }*/
-        
-        // report_synthesis_flagship_progress_innovations
-        /*List<ReportSynthesisFlagshipProgressInnovation> progressInnovations =
-          reportSynthesisFlagshipProgressInnovationManager.findAll().stream()
-            .filter(pi -> pi.getReportSynthesisFlagshipProgress() != null
-              && pi.getReportSynthesisFlagshipProgress().getReportSynthesis() != null
-              // we need to remove the phase entries from here because it is not done in the manager
-              && pi.getReportSynthesisFlagshipProgress().getReportSynthesis().getPhase() != null
-              && (pi.getReportSynthesisFlagshipProgress().getReportSynthesis().getPhase().getId()
-                .equals(this.getActualPhase().getId())
-                || pi.getReportSynthesisFlagshipProgress().getReportSynthesis().getPhase().getId() > this
-                  .getActualPhase().getId())
-              && pi.getProjectInnovation() != null
-              && pi.getProjectInnovation().getId().equals(projectInnovationBD.getId()))
-            .collect(Collectors.toList());
-        for (ReportSynthesisFlagshipProgressInnovation rsfpi : progressInnovations) {
-          reportSynthesisFlagshipProgressInnovationManager
-            .deleteReportSynthesisFlagshipProgressInnovation(rsfpi.getId());
-        }*/
-
         // section_status
         for (SectionStatus sectionStatus : projectInnovationBD.getSectionStatuses()) {
           sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
@@ -313,15 +126,7 @@ public class ProjectInnovationListAction extends BaseAction {
 
         projectInnovation.setModificationJustification(justification);
 
-        // we need to find the first info in order to know if the innovation has to be "deleted"
-        /*ProjectInnovationInfo initialInfo = projectInnovation.getProjectInnovationInfos().stream()
-          .sorted((infoOne, infoTwo) -> infoOne.getPhase().getId().compareTo(infoTwo.getPhase().getId())).findFirst()
-          // orElse should NEVER happen, I hope...
-          .orElse(null);
-        // if the innovation was created in this phase, the ACTUAL innovation should be "deleted"
-        if (initialInfo != null && this.getPhaseID().equals(initialInfo.getPhase().getId())) {*/
-          projectInnovationManager.deleteProjectInnovation(projectInnovationBD.getId());
-        //}
+        projectInnovationManager.deleteProjectInnovation(projectInnovationBD.getId());
       }
     }
     return SUCCESS;
