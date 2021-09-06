@@ -214,8 +214,10 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
     String globalUnitAcronym = split[0];
 
 
-    if (StringUtils.isNotEmpty(globalUnitAcronym) && (globalUnitAcronym.equals("index.html")
-      || globalUnitAcronym.equals("home.html") || globalUnitAcronym.equals("api.html"))) {
+    if (StringUtils.isNotEmpty(globalUnitAcronym)
+      && (globalUnitAcronym.equals("index.html") || globalUnitAcronym.equals("home.html")
+        || globalUnitAcronym.equals("api.html") || globalUnitAcronym.equals("additionalServices.html")
+        || globalUnitAcronym.equals("generalListReference.html"))) {
       if (this.isPublicUser()) {
         Subject subject = SecurityUtils.getSubject();
         subject.logout();
