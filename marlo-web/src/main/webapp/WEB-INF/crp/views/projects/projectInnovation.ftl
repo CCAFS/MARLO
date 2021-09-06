@@ -4,7 +4,7 @@
 [#-- TODO: Remove unused pageLibs--]
 [#assign pageLibs = ["select2","font-awesome", "flag-icon-css"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectInnovations.js?20210128",
+  "${baseUrlMedia}/js/projects/projectInnovations.js?20210906a",
   "${baseUrlCdn}/global/js/autoSave.js", 
   "${baseUrlCdn}/global/js/fieldsValidation.js"
 ] /]
@@ -20,6 +20,7 @@
 ]/]
 
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities /]
+[#import "/WEB-INF/global/macros/studiesTemplates.ftl" as studies /]
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
@@ -214,6 +215,21 @@
             [#-- Evidence Link --] 
             <div class="form-group stageFourBlock-false" style="display:${isStageFour?string('none','block')}">
               [@customForm.input name="innovation.projectInnovationInfo.evidenceLink"  type="text" i18nkey="projectInnovations.evidenceLink" help="projectInnovations.evidenceLink.help"  placeholder="marloRequestCreation.webSiteLink.placeholder2" className="" required=true editable=editable helpIcon=false /]
+              <div class="linksBlock ">
+                <div class="linksList">
+                  [#list (innovation.references)![{}] as link ]
+                    [@studies.studyLink name="innovation.references" element=link index=link_index /]
+                  [/#list]
+                </div>
+                [#if editable]
+                <div class="addButtonLink button-green pull-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add Link </div>
+                <div class="clearfix"></div>
+                [/#if]
+              </div>
+               [#-- Element item Template --]
+              <div style="display:none">
+                [@studies.studyLink name="innovation.references" element={} index=-1 template=true /]
+              </div>
             </div>
           
             [#-- Or Deliverable ID (optional) --]

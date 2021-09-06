@@ -442,6 +442,17 @@
       <div class="form-group stageProcessOne">
         <div class="form-group">
           [@customForm.textArea name="${customName}.projectExpectedStudyInfo.referencesText" i18nkey="study.referencesCited" help="study.referencesCited.help2" helpIcon=false className="" required=editable && !(isPolicy && stageProcessOne) editable=editable /]
+          <div class="linksBlock ">
+            <div class="linksList">
+              [#list (element.references)![{}] as link ]
+                [@studyLink name="${customName}.references" element=link index=link_index /]
+              [/#list]
+            </div>
+            [#if editable]
+            <div class="addButtonLink button-green pull-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add Link </div>
+            <div class="clearfix"></div>
+            [/#if]
+          </div>
         </div>
         <p class="note"> <small>[@s.text name="message.shortenURLsDisclaimer"][@s.param value="93" /][/@s.text]</small> </p>
         [#-- 
