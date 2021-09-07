@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${deliverableID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2","font-awesome","dropzone","blueimp-file-upload","jsUri", "flag-icon-css", "pickadate"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20210903A",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20210907A",
   "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20210609a", 
   "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20200205",
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
@@ -272,6 +272,8 @@
     </div>
   [/#list]
 </div>
+
+<div id="actualYear" style="display: none;">${actualPhase.year}</div>
 
 
 [#if reportingActive || upKeepActive]
