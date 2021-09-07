@@ -139,6 +139,12 @@ public class APConfig {
   @Value("${clarisa.QAPassword}")
   private String QA_PASSWORD;
 
+  @Value("${clarisa.qa.status.all.link}")
+  private String QA_FULL_INDICATOR_STATUS_URL;
+
+  @Value("${clarisa.qa.status.individual.link}")
+  private String QA_INDIVIDUAL_INDICATOR_STATUS_URL;
+
   // Path to get the base URL of media hosted in the CDN
   @Value("${cdn.url}")
   private String CDN_URL;
@@ -632,6 +638,24 @@ public class APConfig {
     }
 
     return PUSH_SECRETE_KEY;
+  }
+
+  public String getQAFullIndicatorStatusUrl() {
+    if (QA_FULL_INDICATOR_STATUS_URL == null) {
+      LOG.error("there is not a QA full indicator status url configured.");
+      return null;
+    }
+
+    return QA_FULL_INDICATOR_STATUS_URL;
+  }
+
+  public String getQAIndividualIndicatorStatusUrl() {
+    if (QA_INDIVIDUAL_INDICATOR_STATUS_URL == null) {
+      LOG.error("there is not a QA individual indicator status url configured.");
+      return null;
+    }
+
+    return QA_INDIVIDUAL_INDICATOR_STATUS_URL;
   }
 
   public String getQAPassword() {

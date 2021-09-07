@@ -24,12 +24,12 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class IndicatorStatus {
 
-  @SerializedName("indicator_name")
+  @SerializedName(value = "indicator_name", alternate = {"indicatorName"})
   private String indicatorName;
   private Long id;
-  @SerializedName("crp_id")
+  @SerializedName(value = "crp_id", alternate = {"crpId"})
   private String crpId;
-  @SerializedName("assessment_status")
+  @SerializedName(value = "assessment_status", alternate = {"assessmentStatus"})
   private String assessmentStatus;
   private String updatedAt;
 
