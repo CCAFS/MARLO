@@ -420,6 +420,10 @@ function validateCurrentDate() {
   $statuses.trigger("change.select2");
 }
 
+function isStatusPartiallyComplete(statusId) {
+  return(statusId == "7");
+}
+
 function justificationByStatus(statusId) {
   var $yearOverlay = $('#deliverableYear .overlay');
   var $newExpectedYearBlock = $('#newExpectedYear');
@@ -430,7 +434,7 @@ function justificationByStatus(statusId) {
   var isCompletedWithoutExpectedYear = ((!reportingActive) && isStatusComplete(statusId) && hasExpectedYear);
 
   // Validate the justification
-  if(isStatusCancelled(statusId) || isStatusExtended(statusId)) {
+  if(isStatusCancelled(statusId) || isStatusExtended(statusId) || isStatusPartiallyComplete(statusId)) {
     $statusDescription.slideDown(400);
     $statusDescription.find('label').html($('#status-' + statusId).html());
   } else {
@@ -513,7 +517,9 @@ function validateDeliverableStatus() {
       $statuses.find('option[value="5"]').prop("disabled", false); // Enable Cancelled
       $statuses.val("3"); // Set Complete
     } else {
-      $statuses.find('option[value="2"]').prop("disabled", true);// Disable On-going
+      if(actualPhase.year != 2021){
+        $statuses.find('option[value="2"]').prop("disabled", true);// Disable On-going
+      }
     }
 
     $('#deliverableYear .overlay').show();
