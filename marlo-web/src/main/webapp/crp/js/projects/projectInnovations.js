@@ -25,12 +25,12 @@ function attachEvents() {
     // Events
     $('.addButtonLink').on('click', addItem);
     $('.removeLink').on('click', removeItem);
-    $('.studyLink').find('span input').on('input', validateURL);
+    $('.multiInput').find('span input').on('input', validateURL);
 
     // Functions
     function addItem() {
       var $list = $(this).parent('.linksBlock').find('.linksList');
-      var $element = $('#studyLink-template').clone(true).removeAttr("id");
+      var $element = $('#multiInput-template').clone(true).removeAttr("id");
       var $listLength = $list.children().length;
       if ($listLength <= 9) {
         // Remove template tag
@@ -45,7 +45,7 @@ function attachEvents() {
       }
     }
     function removeItem() {
-      var $parent = $(this).parent('.studyLink');
+      var $parent = $(this).parent('.multiInput');
       var $addBtn = $(this).parent().parent().parent().find('.addButtonLink');
       $parent.hide(500, function () {
         // Remove DOM element
@@ -55,7 +55,7 @@ function attachEvents() {
       });
     }
     function updateIndexes(list) {
-      $(list).parent('.linksBlock').find('.linksList').find('.studyLink').each(function (i, element) {
+      $(list).parent('.linksBlock').find('.linksList').find('.multiInput').each(function (i, element) {
         $(element).find('.indexTag').text(i + 1);
         $(element).setNameIndexes(1, i);
       });

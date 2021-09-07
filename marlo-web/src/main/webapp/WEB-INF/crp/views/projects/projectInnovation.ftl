@@ -217,8 +217,8 @@
               [@customForm.input name="innovation.projectInnovationInfo.evidenceLink"  type="text" i18nkey="projectInnovations.evidenceLink" help="projectInnovations.evidenceLink.help"  placeholder="marloRequestCreation.webSiteLink.placeholder2" className="" required=true editable=editable helpIcon=false /]
               <div class="linksBlock ">
                 <div class="linksList">
-                  [#list (innovation.references)![{}] as link ]
-                    [@studies.studyLink name="innovation.references" element=link index=link_index /]
+                  [#list (innovation.innovationLinks)![{}] as link]
+                    [@customForm.multiInput name="innovation.innovationLinks" element=link index=link_index /]
                   [/#list]
                 </div>
                 [#if editable]
@@ -228,7 +228,7 @@
               </div>
                [#-- Element item Template --]
               <div style="display:none">
-                [@studies.studyLink name="innovation.references" element={} index=-1 template=true /]
+                [@customForm.multiInput name="innovation.innovationLinks" element={} index=-1 template=true /]
               </div>
             </div>
           
