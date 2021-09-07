@@ -24,10 +24,12 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
-public class ProjectDeliverableSharedMySQLDAO extends AbstractMarloDAO<ProjectDeliverableShared, Long> implements ProjectDeliverableSharedDAO {
+public class ProjectDeliverableSharedMySQLDAO extends AbstractMarloDAO<ProjectDeliverableShared, Long>
+  implements ProjectDeliverableSharedDAO {
 
 
   @Inject
@@ -67,6 +69,21 @@ public class ProjectDeliverableSharedMySQLDAO extends AbstractMarloDAO<ProjectDe
     }
     return null;
 
+  }
+
+  public List<ProjectDeliverableShared> getByProjectAndPhase(long projectId, long phaseId) {
+    String query = "select distinct esp from ProjectDeliverableShared esp "
+      + "where project.id = :projectId and phase.id = :phaseId";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("projectId", projectId);
+    createQuery.setParameter("phaseId", phaseId);
+    List<ProjectDeliverableShared> result = super.findAll(createQuery);
+
+    if (result != null && !result.isEmpty()) {
+      return result;
+    }
+
+    return null;
   }
 
   @Override
