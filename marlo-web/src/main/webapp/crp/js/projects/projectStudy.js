@@ -141,29 +141,34 @@ function attachEvents() {
 
     // Functions
     function addItem() {
-      var $list = $(this).parents('.linksBlock').find('.linksList');
-      var $element = $('#studyLink-template').clone(true).removeAttr("id");
-      // Remove template tag
-      $element.find('input, textarea').each(function(i,e) {
-        e.name = (e.name).replace("_TEMPLATE_", "");
-        e.id = (e.id).replace("_TEMPLATE_", "");
-      });
-      // Show the element
-      $element.appendTo($list).hide().show(350);
-      // Update indexes
-      updateIndexes();
+      var $list = $(this).parent('.linksBlock').find('.linksList');
+      var $element = $('#multiInput-template').clone(true).removeAttr("id");
+      var $listLength = $list.children().length;
+      
+      if ($listLength <= 9) {
+        // Remove template tag
+        $element.find('input, textarea').each(function(i,e) {
+          e.name = (e.name).replace("_TEMPLATE_", "");
+          e.id = (e.id).replace("_TEMPLATE_", "");
+        });
+        // Show the element
+        $element.appendTo($list).hide().show(350);
+        // Update indexes
+        updateIndexes(this); 
+      }
     }
     function removeItem() {
-      var $parent = $(this).parents('.studyLink');
+      var $parent = $(this).parent('.multiInput');
+      var $addBtn = $(this).parent().parent().parent().find('.addButtonLink');
       $parent.hide(500, function() {
         // Remove DOM element
         $parent.remove();
         // Update indexes
-        updateIndexes();
+        updateIndexes($addBtn);
       });
     }
-    function updateIndexes() {
-      $('.linksList').find('.studyLink').each(function(i,element) {
+    function updateIndexes(list) {
+      $(list).parent('.linksBlock').find('.linksList').find('.multiInput').each(function(i,element) {
         $(element).find('.indexTag').text(i + 1);
         $(element).setNameIndexes(1, i);
       });

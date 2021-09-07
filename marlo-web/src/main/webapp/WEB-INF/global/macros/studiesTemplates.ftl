@@ -199,7 +199,7 @@
         <div class="linksBlock ">
           <div class="linksList">
             [#list (element.links)![{}] as link ]
-              [@studyLink name="${customName}.links" element=link index=link_index /]
+              [@customForm.multiInput name="${customName}.links" element=link index=link_index /]
             [/#list]
           </div>
           [#if editable]
@@ -209,7 +209,7 @@
         </div>
         [#-- Element item Template --]
         <div style="display:none">
-          [@studyLink name="${customName}.links" element={} index=-1 template=true /]
+          [@customForm.multiInput name="${customName}.links" element={} index=-1 template=true /]
         </div>
       </div>
       [/#if]
@@ -442,6 +442,21 @@
       <div class="form-group stageProcessOne">
         <div class="form-group">
           [@customForm.textArea name="${customName}.projectExpectedStudyInfo.referencesText" i18nkey="study.referencesCited" help="study.referencesCited.help2" helpIcon=false className="" required=editable && !(isPolicy && stageProcessOne) editable=editable /]
+          <div class="linksBlock ">
+            <div class="linksList">
+              [#list (element.references)![{}] as link ]
+                [@customForm.multiInput name="${customName}.references" element=link index=link_index /]
+              [/#list]
+            </div>
+            [#if editable]
+            <div class="addButtonLink button-green pull-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add Link </div>
+            <div class="clearfix"></div>
+            [/#if]
+          </div>
+          [#-- Element item Template --]
+          <div style="display:none">
+            [@customForm.multiInput name="${customName}.references" element={} index=-1 template=true /]
+          </div>
         </div>
         <p class="note"> <small>[@s.text name="message.shortenURLsDisclaimer"][@s.param value="93" /][/@s.text]</small> </p>
         [#-- 
@@ -660,7 +675,7 @@
   [#-- <span class="label label-info pull-right"> <i class="fas fa-tag"></i> ${name} </span> --]
 [/#macro]
 
-[#macro studyLink name element index=-1 template=false]
+[#--macro studyLink name element index=-1 template=false]
   [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
   <div id="studyLink-${(template?string('template', ''))}" class="studyLink form-group grayBox">
     <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
@@ -669,7 +684,7 @@
     [#if editable]<div class="removeElement sm removeIcon removeLink" title="Remove"></div>[/#if]
     <div class="clearfix"></div>
   </div>
-[/#macro]
+[/#macro--]
 
 [#macro quantificationMacro name element index=-1 template=false]
   [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
