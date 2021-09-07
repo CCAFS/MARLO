@@ -164,8 +164,15 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
 
   @Override
   public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
 
     if (obj == null) {
+      return false;
+    }
+
+    if (this.getClass() != obj.getClass()) {
       return false;
     }
 

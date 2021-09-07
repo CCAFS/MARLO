@@ -144,6 +144,7 @@
           [#if !allowPopups]<th rowspan="2"> Outcome Progress </th>[/#if]
           <th rowspan="2"> Milestone </th>
           <th rowspan="2"> Status</th>
+          [#--  <th rowspan="2"> QA</th>  --]
           [#if !allowPopups]
           <th rowspan="2">Milestone Evidence</th>
           <th rowspan="2">Link to Evidences</th>
@@ -219,6 +220,7 @@
                     [#local milestoneNextYearStatus=(action.getCurrentMilestoneStatus(milestone.id))!]
                     [@utils.tableText value=(milestoneNextYearStatus.name)!"" emptyText="global.prefilledByFlagship" /]
                   </td>
+                  [#--  <td class="text-center"></td>  --]
                   [#if !allowPopups]
                     [#-- Milestone Evidence --]
                     <td class="urlify">[@utils.tableText value=(reportedMilestone.evidence)!"" emptyText="global.prefilledByFlagship" /] </td>

@@ -47,11 +47,7 @@ public class ProjectInnovationEvidenceLink extends MarloBaseEntity implements ja
       if (other.getProjectInnovation() != null) {
         return false;
       }
-    } else if (this.getProjectInnovation().getId() == null) {
-      if (other.getProjectInnovation().getId() != null) {
-        return false;
-      }
-    } else if (!this.getProjectInnovation().getId().equals(other.getProjectInnovation().getId())) {
+    } else if (!this.getProjectInnovation().equals(other.getProjectInnovation())) {
       return false;
     }
 
@@ -59,11 +55,7 @@ public class ProjectInnovationEvidenceLink extends MarloBaseEntity implements ja
       if (other.getPhase() != null) {
         return false;
       }
-    } else if (this.getPhase().getId() == null) {
-      if (other.getPhase().getId() != null) {
-        return false;
-      }
-    } else if (!this.getPhase().getId().equals(other.getPhase().getId())) {
+    } else if (!this.getPhase().equals(other.getPhase())) {
       return false;
     }
 
