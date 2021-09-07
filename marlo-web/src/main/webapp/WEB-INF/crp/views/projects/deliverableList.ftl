@@ -49,7 +49,7 @@
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
            
           <h3 class="headTitle">[@s.text name="project.deliverableList.title" /]</h3>
-          
+          [#assign isAr2021 = ((actualPhase.name == 'AR' && actualPhase.year == 2021))!false]
           [#if reportingActive]
             [#--  FAIR LEGEND --]
             <div class="form-group col-md-12 legendContent">
@@ -77,11 +77,11 @@
             <div class="col-md-6 colors">
               <div class="col-md-12 form-group "><b>[@s.text name="project.deliverableList.deliverableStatus" /]:</b></div>
               <div class="form-group col-md-6 fair"><span id="" class="legend-color status-indicator Complete"></span>[@s.text name="project.deliverableList.deliverableStatus.complete" /]</div>
-              <div class="form-group col-md-6 fair"><span id="" class="legend-color status-indicator On-going"></span>[@s.text name="project.deliverableList.deliverableStatus.onGoing" /]</div>
+              [#if !isAr2021]<div class="form-group col-md-6 fair"><span id="" class="legend-color status-indicator On-going"></span>[@s.text name="project.deliverableList.deliverableStatus.onGoing" /]</div>[/#if]
               <div class="form-group col-md-6 fair"><span id="" class="legend-color status-indicator Cancelled"></span>[@s.text name="project.deliverableList.deliverableStatus.cancelled" /]</div>
               <div class="form-group col-md-6 fair"><span id="" class="legend-color status-indicator Extended"></span>[@s.text name="project.deliverableList.deliverableStatus.extended" /]</div>
               <div class="form-group col-md-6 fair"><span id="" class="legend-color status-indicator Ready to be reported on"></span>[@s.text name="project.deliverableList.deliverableStatus.readyToReport" /]</div>
-              <div class="form-group col-md-6 fair"><span id="" class="legend-color status-indicator Partially complete"></span>[@s.text name="project.deliverableList.deliverableStatus.partiallyComplete" /]</div>
+              [#if isAr2021]<div class="form-group col-md-6 fair"><span id="" class="legend-color status-indicator Partially complete"></span>[@s.text name="project.deliverableList.deliverableStatus.partiallyComplete" /]</div>[/#if]
             </div>
             <div class="col-md-6 required-explanation">
               <div class="col-md-12 form-group"><b>[@s.text name="project.deliverableList.requiredStatus" /]:</b></div>
