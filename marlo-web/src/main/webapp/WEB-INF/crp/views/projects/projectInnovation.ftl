@@ -8,7 +8,7 @@
   "${baseUrlCdn}/global/js/autoSave.js", 
   "${baseUrlCdn}/global/js/fieldsValidation.js"
 ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectInnovations.css"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectInnovations.css?20210907a"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "innovations" /]
 
