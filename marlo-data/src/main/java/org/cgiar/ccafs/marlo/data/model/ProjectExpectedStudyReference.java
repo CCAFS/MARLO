@@ -47,11 +47,7 @@ public class ProjectExpectedStudyReference extends MarloBaseEntity implements ja
       if (other.getProjectExpectedStudy() != null) {
         return false;
       }
-    } else if (this.getProjectExpectedStudy().getId() == null) {
-      if (other.getProjectExpectedStudy().getId() != null) {
-        return false;
-      }
-    } else if (!this.getProjectExpectedStudy().getId().equals(other.getProjectExpectedStudy().getId())) {
+    } else if (!this.getProjectExpectedStudy().equals(other.getProjectExpectedStudy())) {
       return false;
     }
 
@@ -59,11 +55,7 @@ public class ProjectExpectedStudyReference extends MarloBaseEntity implements ja
       if (other.getPhase() != null) {
         return false;
       }
-    } else if (this.getPhase().getId() == null) {
-      if (other.getPhase().getId() != null) {
-        return false;
-      }
-    } else if (!this.getPhase().getId().equals(other.getPhase().getId())) {
+    } else if (!this.getPhase().equals(other.getPhase())) {
       return false;
     }
 

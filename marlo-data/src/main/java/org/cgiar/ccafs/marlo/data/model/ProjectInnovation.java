@@ -86,7 +86,34 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
 
   // AR2021
   private Set<ProjectInnovationEvidenceLink> projectInnovationEvidenceLinks = new HashSet<>(0);
+
   private List<ProjectInnovationEvidenceLink> innovationLinks;
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+
+    if (obj == null) {
+      return false;
+    }
+
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+
+    ProjectInnovation other = (ProjectInnovation) obj;
+    if (this.getId() == null) {
+      if (other.getId() != null) {
+        return false;
+      }
+    } else if (!this.getId().equals(other.getId())) {
+      return false;
+    }
+
+    return true;
+  }
 
   public List<ProjectInnovationCenter> getCenters() {
     return centers;
