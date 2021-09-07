@@ -453,8 +453,11 @@ function justificationByStatus(statusId) {
       } else {
         console.log("else");
         if(statusId==4) {
-          showNewExpectedComponent(true);
+          // showExpectedComponent(true);
           $('.expectedDisabled').hide("slow");
+          if ($('#actualYear').html() == '2021') {
+            showExpectedComponent(true);
+          }
         } else if(statusId==2 || statusId==3 || statusId==5 || statusId==6){
           
           if (($('.yearNewExpected').val() != '-1') && ($('.yearNewExpected').val() != $('.yearExpected').val())) {  
@@ -465,8 +468,11 @@ function justificationByStatus(statusId) {
           $('.expectedDisabled').show("slow");
         } else if(statusId==7) {
           showExpectedComponent(true);
+
           if (($('.yearNewExpected').val() != '-1')) {
-            $('#deliverableYear .overlay').hide();
+            showNewExpectedComponent(true);
+          } else {
+            showNewExpectedComponent(false);
           }
         } else {
           showNewExpectedComponent(false);
@@ -517,9 +523,11 @@ function validateDeliverableStatus() {
       $statuses.find('option[value="5"]').prop("disabled", false); // Enable Cancelled
       $statuses.val("3"); // Set Complete
     } else {
-      if(actualPhase.year != 2021){
-        $statuses.find('option[value="2"]').prop("disabled", true);// Disable On-going
-      }
+      // if(actualPhase.year != 2021){
+      //   $statuses.find('option[value="2"]').prop("disabled", true);// Disable On-going
+      // }
+      $statuses.find('option[value="2"]').prop("disabled", true);// Disable On-going
+      $statuses.find('option[value="4"]').prop("disabled", true);// Disable Extended
     }
 
     $('#deliverableYear .overlay').show();
