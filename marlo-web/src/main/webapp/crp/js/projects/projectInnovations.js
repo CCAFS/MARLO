@@ -24,13 +24,13 @@ function attachEvents() {
   (function () {
     // Events
     $('.addButtonLink').on('click', addItem);
-    $('.removeLink').on('click', removeItem);
+    $('.removeLink.links').on('click', removeItem);
     $('.multiInput').find('span input').on('input', validateURL);
 
     // Functions
     function addItem() {
       var $list = $(this).parent('.linksBlock').find('.linksList');
-      var $element = $('#multiInput-template').clone(true).removeAttr("id");
+      var $element = $('#multiInput-links-template').clone(true).removeAttr("id");
       var $listLength = $list.children().length;
       if ($listLength <= 9) {
         // Remove template tag
@@ -45,7 +45,7 @@ function attachEvents() {
       }
     }
     function removeItem() {
-      var $parent = $(this).parent('.multiInput');
+      var $parent = $(this).parent('.multiInput.links');
       var $addBtn = $(this).parent().parent().parent().find('.addButtonLink');
       $parent.hide(500, function () {
         // Remove DOM element
