@@ -73,6 +73,7 @@ import javax.inject.Inject;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -691,6 +692,14 @@ public class StudiesOICRAction extends BaseAction {
 
         this.getFlagshipsWithMissingFields();
 
+        if (CollectionUtils.emptyIfNull(this.reportSynthesisFlagshipProgressStudyManager.findAll()).stream()
+          .filter(p -> p != null && p.getId() != null && p.getProjectExpectedStudy() != null
+            && p.getReportSynthesisFlagshipProgress() != null && p.getReportSynthesisFlagshipProgress().getId() != null
+            && p.getReportSynthesisFlagshipProgress().getId()
+              .equals(this.reportSynthesis.getReportSynthesisFlagshipProgress().getId()))
+          .count() == 0L) {
+          this.removeAllFromAR();
+        }
 
         reportSynthesis.getReportSynthesisFlagshipProgress().setProjectStudies(new ArrayList<>());
         if (reportSynthesis.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressStudies() != null
@@ -718,6 +727,7 @@ public class StudiesOICRAction extends BaseAction {
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym() != null && c.getAcronym().equals("PMU"))
       .collect(Collectors.toList()));
+
 
     /** Graphs and Tables */
     List<ProjectExpectedStudy> selectedStudies = new ArrayList<>();
@@ -760,6 +770,13 @@ public class StudiesOICRAction extends BaseAction {
       }
     }
 
+  }
+
+  private void removeAllFromAR() {
+    for (ProjectExpectedStudy study : this.projectExpectedStudies) {
+      this.reportSynthesisFlagshipProgressStudyManager.toAnnualReport(study,
+        this.reportSynthesis.getReportSynthesisFlagshipProgress(), this.getCurrentUser(), true);
+    }
   }
 
   @Override

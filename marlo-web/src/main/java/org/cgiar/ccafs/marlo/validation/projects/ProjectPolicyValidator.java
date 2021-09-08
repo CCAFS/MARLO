@@ -119,6 +119,14 @@ public class ProjectPolicyValidator extends BaseValidator {
       action.getInvalidFields().put("input-policy.projectPolicyInfo.title", InvalidFieldsMessages.EMPTYFIELD);
     }
 
+    // AR2021 adjustment: Validate description
+    if (!(this.isValidString(projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getDescription())
+      && this.wordCount(projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getDescription()) <= 30)) {
+      action.addMessage(action.getText("Description"));
+      action.addMissingField("projectPolicy.description");
+      action.getInvalidFields().put("input-policy.projectPolicyInfo.description", InvalidFieldsMessages.EMPTYFIELD);
+    }
+
     // Validate Policy Investment Type
     if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndPolicyInvestimentType() != null) {
       if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndPolicyInvestimentType()
@@ -237,18 +245,25 @@ public class ProjectPolicyValidator extends BaseValidator {
       action.getInvalidFields().put("list-policy.subIdos",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
     } else {
-      // Validate primary selection
-      int count = 0;
-      for (ProjectPolicySubIdo subido : projectPolicy.getSubIdos()) {
-        if (subido.getPrimary() != null && subido.getPrimary() == true) {
-          count++;
-        }
-      }
-      if (count == 0) {
+      // AR2021 adjustment: validate max. 2
+      if (projectPolicy.getSubIdos().size() > 2) {
         action.addMessage(action.getText("subIdos"));
         action.addMissingField("policy.subIdos");
         action.getInvalidFields().put("list-policy.subIdos",
-          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
+          action.getText(InvalidFieldsMessages.WRONGVALUE, new String[] {"subIdos"}));
+      } else {
+        int count = 0;
+        for (ProjectPolicySubIdo subido : projectPolicy.getSubIdos()) {
+          if (subido.getPrimary() != null && subido.getPrimary() == true) {
+            count++;
+          }
+        }
+        if (count != 1) {
+          action.addMessage(action.getText("subIdos"));
+          action.addMissingField("policy.subIdos");
+          action.getInvalidFields().put("list-policy.subIdos",
+            action.getText(InvalidFieldsMessages.WRONGVALUE, new String[] {"subIdos"}));
+        }
       }
     }
 

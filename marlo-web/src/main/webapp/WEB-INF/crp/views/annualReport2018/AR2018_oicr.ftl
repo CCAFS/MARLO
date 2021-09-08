@@ -175,6 +175,7 @@
               <button type="button" class="selectAllCheckStudies" id="selectAllStudies" style="color: #1da5ce; font-style: italic; font-weight: 500; background-color: #F9F9F9; border-bottom: none; outline: none">Select All</button>
               [#--  <span class="selectAllCheckStudies">[@customForm.checkmark id="selectAllStudies" name="selectAllStudies" value="false" checked=false editable=editable centered=true/]</span>  --]
               </th>
+              [#--  <th class="col-md-1 text-center">[@s.text name="${customLabel}.${name}.QA" /]</th>  --]
             [/#if]
           [/#if]
         </tr>
@@ -250,6 +251,7 @@
                 </div>
                 <div style="display: none">${isChecked?string('1','0')}</div>
               </td>
+              [#--  <td class="text-center"></td>  --]
              [/#if]
             </tr>
           [/#list]

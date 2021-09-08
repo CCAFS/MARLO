@@ -24,10 +24,12 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
-public class ReportSynthesisFlagshipProgressPolicyMySQLDAO extends AbstractMarloDAO<ReportSynthesisFlagshipProgressPolicy, Long> implements ReportSynthesisFlagshipProgressPolicyDAO {
+public class ReportSynthesisFlagshipProgressPolicyMySQLDAO extends
+  AbstractMarloDAO<ReportSynthesisFlagshipProgressPolicy, Long> implements ReportSynthesisFlagshipProgressPolicyDAO {
 
 
   @Inject
@@ -37,14 +39,16 @@ public class ReportSynthesisFlagshipProgressPolicyMySQLDAO extends AbstractMarlo
 
   @Override
   public void deleteReportSynthesisFlagshipProgressPolicy(long reportSynthesisFlagshipProgressPolicyId) {
-    ReportSynthesisFlagshipProgressPolicy reportSynthesisFlagshipProgressPolicy = this.find(reportSynthesisFlagshipProgressPolicyId);
+    ReportSynthesisFlagshipProgressPolicy reportSynthesisFlagshipProgressPolicy =
+      this.find(reportSynthesisFlagshipProgressPolicyId);
     reportSynthesisFlagshipProgressPolicy.setActive(false);
     this.update(reportSynthesisFlagshipProgressPolicy);
   }
 
   @Override
   public boolean existReportSynthesisFlagshipProgressPolicy(long reportSynthesisFlagshipProgressPolicyID) {
-    ReportSynthesisFlagshipProgressPolicy reportSynthesisFlagshipProgressPolicy = this.find(reportSynthesisFlagshipProgressPolicyID);
+    ReportSynthesisFlagshipProgressPolicy reportSynthesisFlagshipProgressPolicy =
+      this.find(reportSynthesisFlagshipProgressPolicyID);
     if (reportSynthesisFlagshipProgressPolicy == null) {
       return false;
     }
@@ -70,7 +74,24 @@ public class ReportSynthesisFlagshipProgressPolicyMySQLDAO extends AbstractMarlo
   }
 
   @Override
-  public ReportSynthesisFlagshipProgressPolicy save(ReportSynthesisFlagshipProgressPolicy reportSynthesisFlagshipProgressPolicy) {
+  public ReportSynthesisFlagshipProgressPolicy
+    getReportSynthesisFlagshipProgressPolicyByPolicyAndFlagshipProgress(long policyId, long flagshipProgressId) {
+    String query =
+      "select rsfpp from ReportSynthesisFlagshipProgressPolicy rsfpp where rsfpp.projectPolicy.id = :policyId "
+        + "and rsfpp.reportSynthesisFlagshipProgress.id = :flagshipProgressId";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("policyId", policyId);
+    createQuery.setParameter("flagshipProgressId", flagshipProgressId);
+
+    List<ReportSynthesisFlagshipProgressPolicy> resultList = super.findAll(createQuery);
+
+    return (resultList != null && !resultList.isEmpty()) ? resultList.get(0) : null;
+  }
+
+  @Override
+  public ReportSynthesisFlagshipProgressPolicy
+    save(ReportSynthesisFlagshipProgressPolicy reportSynthesisFlagshipProgressPolicy) {
     if (reportSynthesisFlagshipProgressPolicy.getId() == null) {
       super.saveEntity(reportSynthesisFlagshipProgressPolicy);
     } else {
@@ -80,6 +101,5 @@ public class ReportSynthesisFlagshipProgressPolicyMySQLDAO extends AbstractMarlo
 
     return reportSynthesisFlagshipProgressPolicy;
   }
-
 
 }

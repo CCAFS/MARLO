@@ -39,16 +39,31 @@
         [#include "/WEB-INF/crp/views/projects/messages-projects.ftl" /]
         
         [@s.form action=actionName cssClass="pure-form" enctype="multipart/form-data" ]  
-
           [#-- Back --]
-          <small class="pull-right">
-            <a href="[@s.url action='${crpSession}/policies'][@s.param name="projectID" value=project.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-              <span class="glyphicon glyphicon-circle-arrow-left"></span> [@s.text name="projectPolicies.backProjectPolicies" /]
-            </a>
-          </small>
-          
+            <small class="pull-right">
+              <a href="[@s.url action='${crpSession}/policies'][@s.param name="projectID" value=project.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+                <span class="glyphicon glyphicon-circle-arrow-left"></span> [@s.text name="projectPolicies.backProjectPolicies" /]
+              </a>
+            </small> 
+
           [#-- Outcome case studies list --]
           <h3 class="headTitle">[@s.text name="projectPolicies.policyTitle" /]</h3>
+          
+          [#--  <div class="containerTitleElements">
+            <div class="containerTitleMessage">
+              <div id="qualityAssessedIcon" class="qualityAssessed-mode text-center animated flipInX">
+                [#assign lastSubmission=action.getProjectSubmissions(audit.id)?last /]
+                <p>
+                  [@s.text name="message.qualityAssessed"]
+                    [@s.param]Policy[/@s.param]
+                    [@s.param]${(lastSubmission.dateTime?string["MMMM dd, yyyy"])!}[/@s.param]
+                  [/@s.text]
+                </p>
+              </div> 
+              <p class="messageQAInfo">[@s.text name="message.qualityAssessedInfo"][/@s.text]</p>
+            </div>  
+          </div>    --]
+
           <div id="" class="">
             [@policyMacro element=(policy)!{} name="policy" index=0  /]
           </div> 
@@ -124,7 +139,7 @@
     
     [#-- Description --]
     <div class="form-group">
-  	  [@customForm.textArea name="${customName}.projectPolicyInfo.description" i18nkey="policy.description" className="limitWords-30" editable=editable /]
+  	  [@customForm.textArea name="${customName}.projectPolicyInfo.description" i18nkey="policy.description" className="limitWords-30" editable=editable required=true /]
     </div>
     
     <div class="form-group row ">
@@ -212,9 +227,9 @@
     </div>
 
     
-    [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]      
+    [#-- Sub IDOs (maxLimit=2 -Requested for AR2021) --]      
     <div class="form-group simpleBox">
-      [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=(element.subIdos)![] label="policy.subIDOs" helpIcon=false listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="composedName" required=true hasPrimary=true /]
+      [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=(element.subIdos)![] label="policy.subIDOs" helpIcon=false listName="subIdos" maxLimit=2 keyFieldName="id" displayFieldName="composedName" required=true hasPrimary=true /]
      [#--  <div class="buttonSubIdo-content"><br> <div class="selectSubIDO" ><span class=""></span>View sub-IDOs</div></div> --]
       [#--[@customForm.primaryListComponent name="${customName}.subIdos" checkName="subIdoPrimaryId" elementType="srfSubIdo" elementList=(element.subIdos)!"" label="policy.subIDOs" labelPrimary="policy.primarySubIdo" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description" required=false /]
        --]
