@@ -3,13 +3,13 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${expectedID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "select2", "blueimp-file-upload", "flag-icon-css", "components-font-awesome"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectStudy.js?20210127",
+  "${baseUrlMedia}/js/projects/projectStudy.js?20210907A",
   "${baseUrlCdn}/global/js/autoSave.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js"
   ] 
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/projects/projectStudies.css"
+  "${baseUrlMedia}/css/projects/projectStudies.css?20210907a"
   ] 
 /]
 
@@ -65,6 +65,22 @@
           
           [#-- Outcome case studies list --]
           <h3 class="headTitle">[@s.text name="projectStudies.caseStudyInformation" /]</h3>
+          
+          [#--  <div class="containerTitleElements">
+            <div class="containerTitleMessage">
+              <div id="qualityAssessedIcon" class="qualityAssessed-mode text-center animated flipInX">
+                [#assign lastSubmission=action.getProjectSubmissions(projectID)?last /]
+                <p>
+                  [@s.text name="message.qualityAssessed"]
+                    [@s.param]Study[/@s.param]
+                    [@s.param]${(lastSubmission.dateTime?string["MMMM dd, yyyy"])!}[/@s.param]
+                  [/@s.text]
+                </p>
+              </div> 
+              <p class="messageQAInfo">[@s.text name="message.qualityAssessedInfo"][/@s.text]</p>
+            </div>  
+          </div>  --]
+
           <div id="caseStudiesBlock" class="">
             [@studies.studyMacro element=(expectedStudy)!{} name="expectedStudy" index=0  /]
           </div> 

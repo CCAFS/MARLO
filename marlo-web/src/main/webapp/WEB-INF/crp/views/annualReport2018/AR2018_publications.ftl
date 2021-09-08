@@ -302,6 +302,7 @@
               <button type="button" class="selectAllCheck" id="selectAll${isGrey?then('Grey','')}" style="color: #1da5ce; font-style: italic; font-weight: 500; background-color: #F9F9F9; border-bottom: none; outline: none">Select All</button>
               [#--  [@customForm.checkmark id="selectAll${isGrey?then('Grey','')}" name="selectAll${isGrey?then('Grey','')}" value="false" checked=false editable=editable centered=true/]  --]
               </th>
+              [#--  <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.QA" /]</th>  --]
             [/#if]
           [/#if]
         </tr>
@@ -448,6 +449,7 @@
                     [@customForm.checkmark id="deliverable${isGrey?then('Grey','')}-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.deliverablesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
                     <div style="display: none">${isChecked?string('1','0')}</div>
                   </td>
+                  [#--  <td class="text-center"></td>  --]
                 [/#if]
               [/#if]
             </tr>
