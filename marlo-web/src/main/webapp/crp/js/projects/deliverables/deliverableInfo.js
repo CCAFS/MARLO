@@ -232,13 +232,13 @@ function init() {
 
 function disseminationMetadataRequiredFields(statusID) {
   var requiredTagsToHide = $('#deliverable-disseminationMetadata').find('span[class*="requiredTag"]').filter(function () {
-    if (statusID == '7') {
+    if (statusID == '7' || statusID == '5') {
       return $(this).css('display').includes('inline');
     } else {
       return $(this).css('display').includes('none');
     }
   });
-  if (statusID == '7') {
+  if (statusID == '7' || statusID == '5') {
     $(requiredTagsToHide).addClass('tagToHide');
     $(requiredTagsToHide).hide();
   } else {
