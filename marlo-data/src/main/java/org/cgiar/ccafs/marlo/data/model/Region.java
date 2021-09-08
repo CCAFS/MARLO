@@ -34,6 +34,7 @@ public class Region extends MarloBaseEntity implements Serializable {
 
   private String name;
   private Long iso_numeric;
+  private String acronym;
   private RegionType regionType;
   private Set<LocElementRegion> regionCountries = new HashSet<LocElementRegion>(0);
   private List<LocElement> countries;
@@ -41,6 +42,11 @@ public class Region extends MarloBaseEntity implements Serializable {
 
   public Region() {
     super();
+  }
+
+
+  public String getAcronym() {
+    return acronym;
   }
 
 
@@ -66,6 +72,11 @@ public class Region extends MarloBaseEntity implements Serializable {
 
   public RegionType getRegionType() {
     return regionType;
+  }
+
+
+  public void setAcronym(String acronym) {
+    this.acronym = acronym;
   }
 
   public void setCountries(List<LocElement> countries) {
