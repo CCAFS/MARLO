@@ -83,15 +83,10 @@ function attachEvents() {
 
   // Check the stage of innovation
   $('select.stageInnovationSelect').on('change', function () {
-    var isStageFour = this.value == 4;
-    if (isStageFour) {
-      $('.stageFourBlock-true').slideDown();
-      $('.stageFourBlock-false').slideUp();
-    } else {
-      $('.stageFourBlock-true').slideUp();
-      $('.stageFourBlock-false').slideDown();
-    }
+    stageValidations();
   });
+
+  stageValidations();
 
   // Check the stage of innovation
   $('select.innovationTypeSelect').on('change', function () {
@@ -124,6 +119,27 @@ function attachEvents() {
   $('input[class*="radioType-"]').on('change', onChangeRadioButton);
 
 }
+
+function stageValidations() {
+  var isStageTwo = $('select[name="innovation.projectInnovationInfo.repIndStageInnovation.id"]').val() == 2;
+  var isStageFour = $('select[name="innovation.projectInnovationInfo.repIndStageInnovation.id"]').val() == 4;
+  var evidenceLinkTag = $('label[for="innovation.projectInnovationInfo.evidenceLink"]').find('.requiredTag');
+
+  if (isStageFour) {
+    $('.stageFourBlock-true').slideDown();
+    $('.stageFourBlock-false').slideUp();
+  } else {
+    $('.stageFourBlock-true').slideUp();
+    $('.stageFourBlock-false').slideDown();
+  }
+
+  if (isStageTwo) {
+    $(evidenceLinkTag).show();
+  } else {
+    $(evidenceLinkTag).hide();
+  }
+}
+
 function AddRequired() {
   console.log($('#isClearLeadToAddRequired').is(":checked"));
   if ($('#isClearLeadToAddRequired').is(":checked")) {
