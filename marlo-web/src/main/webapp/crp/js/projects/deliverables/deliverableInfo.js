@@ -72,9 +72,10 @@ function init() {
   // Event when status is changed
   $statuses.on("change", function () {
     justificationByStatus(this.value);
-    disseminationMetadataRequiredFields(this.value);
+    disseminationMetadataRequiredFields();
   });
-
+  
+  disseminationMetadataRequiredFields();
   validateDeliverableStatus();
 
 
@@ -230,7 +231,8 @@ function init() {
   deliverablePartnersModule.init();
 }
 
-function disseminationMetadataRequiredFields(statusID) {
+function disseminationMetadataRequiredFields() {
+  var statusID = $('select[name="deliverable.deliverableInfo.status"]').val();
   var requiredTagsToHide = $('#deliverable-disseminationMetadata').find('span[class*="requiredTag"]').filter(function () {
     if (statusID == '7' || statusID == '5') {
       return $(this).css('display').includes('inline');
