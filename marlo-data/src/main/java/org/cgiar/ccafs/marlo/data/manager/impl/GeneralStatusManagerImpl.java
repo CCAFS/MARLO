@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 import org.cgiar.ccafs.marlo.data.dao.GeneralStatusDAO;
 import org.cgiar.ccafs.marlo.data.manager.GeneralStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.GeneralStatusTableManager;
+import org.cgiar.ccafs.marlo.data.model.DeliverableStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
 import org.cgiar.ccafs.marlo.data.model.GeneralStatusTable;
 
@@ -62,10 +63,34 @@ public class GeneralStatusManagerImpl implements GeneralStatusManager {
   }
 
   @Override
-  public List<GeneralStatus> findAll() {
+  public List<GeneralStatus> findAllDeliverables(long year) {
+    List<GeneralStatus> generalStati = this.generalStatusDAO.findAll();
 
-    return this.generalStatusDAO.findAll();
+    generalStati.removeIf(
+      gs -> gs == null || gs.getId() == null || DeliverableStatusEnum.getValue(gs.getId().intValue()) == null);
 
+    if (year > 2020) {
+      /*
+       * generalStati.removeIf(gs -> gs == null || gs.getId() == null
+       * || String.valueOf(gs.getId()).equals(DeliverableStatusEnum.EXTENDED.getStatusId()));
+       */
+      generalStati.replaceAll(this::onGoingToReadyToBeReportedOn);
+    }
+
+    if (year < 2021) {
+      generalStati.removeIf(gs -> gs == null || gs.getId() == null
+        || String.valueOf(gs.getId()).equals(DeliverableStatusEnum.PARTIALLY_COMPLETE.getStatusId()));
+    }
+
+    return generalStati;
+  }
+
+  @Override
+  public List<GeneralStatus> findAllGeneralUse() {
+    List<GeneralStatus> generalStati = this.generalStatusDAO.findAll();
+    generalStati.removeIf(gs -> gs == null || gs.getId() == null
+      || String.valueOf(gs.getId()).equals(DeliverableStatusEnum.PARTIALLY_COMPLETE.getStatusId()));
+    return generalStati;
   }
 
   @Override
@@ -82,11 +107,17 @@ public class GeneralStatusManagerImpl implements GeneralStatusManager {
     return this.generalStatusDAO.find(generalStatusID);
   }
 
+  private GeneralStatus onGoingToReadyToBeReportedOn(GeneralStatus onGoing) {
+    if (String.valueOf(onGoing.getId()).equals(DeliverableStatusEnum.ON_GOING.getStatusId())) {
+      onGoing.setName("Ready to be reported on");
+    }
+
+    return onGoing;
+  }
+
   @Override
   public GeneralStatus saveGeneralStatus(GeneralStatus generalStatus) {
 
     return this.generalStatusDAO.save(generalStatus);
   }
-
-
 }

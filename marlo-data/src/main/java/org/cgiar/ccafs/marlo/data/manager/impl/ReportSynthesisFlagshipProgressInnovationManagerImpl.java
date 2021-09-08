@@ -17,7 +17,10 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.ReportSynthesisFlagshipProgressInnovationDAO;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressInnovationManager;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressInnovation;
+import org.cgiar.ccafs.marlo.data.model.User;
 
 import java.util.List;
 
@@ -28,7 +31,8 @@ import javax.inject.Named;
  * @author CCAFS
  */
 @Named
-public class ReportSynthesisFlagshipProgressInnovationManagerImpl implements ReportSynthesisFlagshipProgressInnovationManager {
+public class ReportSynthesisFlagshipProgressInnovationManagerImpl
+  implements ReportSynthesisFlagshipProgressInnovationManager {
 
 
   private ReportSynthesisFlagshipProgressInnovationDAO reportSynthesisFlagshipProgressInnovationDAO;
@@ -36,7 +40,8 @@ public class ReportSynthesisFlagshipProgressInnovationManagerImpl implements Rep
 
 
   @Inject
-  public ReportSynthesisFlagshipProgressInnovationManagerImpl(ReportSynthesisFlagshipProgressInnovationDAO reportSynthesisFlagshipProgressInnovationDAO) {
+  public ReportSynthesisFlagshipProgressInnovationManagerImpl(
+    ReportSynthesisFlagshipProgressInnovationDAO reportSynthesisFlagshipProgressInnovationDAO) {
     this.reportSynthesisFlagshipProgressInnovationDAO = reportSynthesisFlagshipProgressInnovationDAO;
 
 
@@ -45,13 +50,15 @@ public class ReportSynthesisFlagshipProgressInnovationManagerImpl implements Rep
   @Override
   public void deleteReportSynthesisFlagshipProgressInnovation(long reportSynthesisFlagshipProgressInnovationId) {
 
-    reportSynthesisFlagshipProgressInnovationDAO.deleteReportSynthesisFlagshipProgressInnovation(reportSynthesisFlagshipProgressInnovationId);
+    reportSynthesisFlagshipProgressInnovationDAO
+      .deleteReportSynthesisFlagshipProgressInnovation(reportSynthesisFlagshipProgressInnovationId);
   }
 
   @Override
   public boolean existReportSynthesisFlagshipProgressInnovation(long reportSynthesisFlagshipProgressInnovationID) {
 
-    return reportSynthesisFlagshipProgressInnovationDAO.existReportSynthesisFlagshipProgressInnovation(reportSynthesisFlagshipProgressInnovationID);
+    return reportSynthesisFlagshipProgressInnovationDAO
+      .existReportSynthesisFlagshipProgressInnovation(reportSynthesisFlagshipProgressInnovationID);
   }
 
   @Override
@@ -62,16 +69,69 @@ public class ReportSynthesisFlagshipProgressInnovationManagerImpl implements Rep
   }
 
   @Override
-  public ReportSynthesisFlagshipProgressInnovation getReportSynthesisFlagshipProgressInnovationById(long reportSynthesisFlagshipProgressInnovationID) {
+  public ReportSynthesisFlagshipProgressInnovation
+    getReportSynthesisFlagshipProgressInnovationById(long reportSynthesisFlagshipProgressInnovationID) {
 
     return reportSynthesisFlagshipProgressInnovationDAO.find(reportSynthesisFlagshipProgressInnovationID);
   }
 
   @Override
-  public ReportSynthesisFlagshipProgressInnovation saveReportSynthesisFlagshipProgressInnovation(ReportSynthesisFlagshipProgressInnovation reportSynthesisFlagshipProgressInnovation) {
+  public ReportSynthesisFlagshipProgressInnovation
+    getReportSynthesisFlagshipProgressInnovationByInnovationAndFlagshipProgress(Long innovationId,
+      Long flagshipProgressId) {
+    return this.reportSynthesisFlagshipProgressInnovationDAO
+      .getReportSynthesisFlagshipProgressInnovationByInnovationAndFlagshipProgress(innovationId.longValue(),
+        flagshipProgressId.longValue());
+  }
+
+  @Override
+  public ReportSynthesisFlagshipProgressInnovation saveReportSynthesisFlagshipProgressInnovation(
+    ReportSynthesisFlagshipProgressInnovation reportSynthesisFlagshipProgressInnovation) {
 
     return reportSynthesisFlagshipProgressInnovationDAO.save(reportSynthesisFlagshipProgressInnovation);
   }
 
+  @Override
+  public ReportSynthesisFlagshipProgressInnovation toAnnualReport(ProjectInnovation projectInnovation,
+    ReportSynthesisFlagshipProgress flagshipProgress, User user, boolean remove) {
+    ReportSynthesisFlagshipProgressInnovation progressInnovation = null;
 
+    if (projectInnovation != null && projectInnovation.getId() != null && flagshipProgress != null
+      && flagshipProgress.getId() != null && user != null && user.getId() != null) {
+
+      progressInnovation = this.getReportSynthesisFlagshipProgressInnovationByInnovationAndFlagshipProgress(
+        projectInnovation.getId(), flagshipProgress.getId());
+
+      if (progressInnovation == null) {
+        // is not added to ar
+        if (remove) {
+          // we need to add it to ar. if we do not need to add it to ar, there is no need to create one.
+          progressInnovation = new ReportSynthesisFlagshipProgressInnovation();
+          progressInnovation.setCreatedBy(user);
+          progressInnovation.setReportSynthesisFlagshipProgress(flagshipProgress);
+          progressInnovation.setProjectInnovation(projectInnovation);
+        }
+      }
+
+      if (progressInnovation != null) {
+        progressInnovation.setModifiedBy(user);
+        progressInnovation.setActive(remove);
+      }
+
+      progressInnovation = this.saveReportSynthesisFlagshipProgressInnovation(progressInnovation);
+    }
+
+    return progressInnovation;
+  }
+
+  @Override
+  public ReportSynthesisFlagshipProgressInnovation
+    toAnnualReport(ReportSynthesisFlagshipProgressInnovation progressInnovation, boolean remove) {
+    if (progressInnovation != null && progressInnovation.getId() != null) {
+      progressInnovation.setActive(remove);
+      progressInnovation = this.saveReportSynthesisFlagshipProgressInnovation(progressInnovation);
+    }
+
+    return progressInnovation;
+  }
 }

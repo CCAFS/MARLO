@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis2018SectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressCrossCuttingMarker;
@@ -42,6 +43,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Named;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -233,21 +235,26 @@ public class OutcomeMilestonesValidator extends BaseValidator {
           + "].milestones[" + j + "].markers[" + k + "].focus.id", InvalidFieldsMessages.EMPTYFIELD);
 
         // Validate Brief Justification
-        if (!this.isValidString(crossCuttingMarker.getJust())) {
-          action.addMessage(action.getText("Brief Justification"));
-          action.addMissingField("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
-            + "].milestones[" + j + "].markers[" + k + "].just");
-          action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
-            + "].milestones[" + j + "].markers[" + k + "].just", InvalidFieldsMessages.EMPTYFIELD);
-        }
+        /*
+         * if (!this.isValidString(crossCuttingMarker.getJust())) {
+         * action.addMessage(action.getText("Brief Justification"));
+         * action.addMissingField("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
+         * + "].milestones[" + j + "].markers[" + k + "].just");
+         * action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
+         * + "].milestones[" + j + "].markers[" + k + "].just", InvalidFieldsMessages.EMPTYFIELD);
+         * }
+         */
       } else {
-        // Validate Brief Justification
-        if (!this.isValidString(crossCuttingMarker.getJust())) {
-          action.addMessage(action.getText("Brief Justification"));
-          action.addMissingField("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
-            + "].milestones[" + j + "].markers[" + k + "].just");
-          action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
-            + "].milestones[" + j + "].markers[" + k + "].just", InvalidFieldsMessages.EMPTYFIELD);
+        // AR 2021 adjustments: Validate Brief Justification -> Focus 2 = Significant; Focus 3 = Principal
+        if (crossCuttingMarker.getFocus().getId() == 2L || crossCuttingMarker.getFocus().getId() == 3L) {
+          if (!this.isValidString(crossCuttingMarker.getJust())
+            || this.wordCount(this.removeHtmlTags(crossCuttingMarker.getJust())) > 100) {
+            action.addMessage(action.getText("Brief Justification"));
+            action.addMissingField("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
+              + "].milestones[" + j + "].markers[" + k + "].just");
+            action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
+              + "].milestones[" + j + "].markers[" + k + "].just", InvalidFieldsMessages.EMPTYFIELD);
+          }
         }
       }
     } else {
@@ -267,8 +274,8 @@ public class OutcomeMilestonesValidator extends BaseValidator {
       action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
         + "].milestones[" + j + "].milestonesStatus.id", InvalidFieldsMessages.EMPTYFIELD);
     } else {
-      // status 3 = COMPLETED
-      if (milestone.getMilestonesStatus().getId() != 3) {
+      if (StringUtils.equals(String.valueOf(milestone.getMilestonesStatus().getId()),
+        ProjectStatusEnum.Complete.getStatusId())) {
         // Validate Milestone Reasons
         if (milestone.getReason() != null) {
           if (milestone.getReason().getId() != null && milestone.getReason().getId() != -1) {

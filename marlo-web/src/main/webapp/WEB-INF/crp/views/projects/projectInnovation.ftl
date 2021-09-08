@@ -4,11 +4,11 @@
 [#-- TODO: Remove unused pageLibs--]
 [#assign pageLibs = ["select2","font-awesome", "flag-icon-css"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectInnovations.js?20210128",
+  "${baseUrlMedia}/js/projects/projectInnovations.js?20210907A",
   "${baseUrlCdn}/global/js/autoSave.js", 
   "${baseUrlCdn}/global/js/fieldsValidation.js"
 ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectInnovations.css"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectInnovations.css?20210907a"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "innovations" /]
 
@@ -20,6 +20,7 @@
 ]/]
 
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities /]
+[#import "/WEB-INF/global/macros/studiesTemplates.ftl" as studies /]
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
@@ -36,18 +37,33 @@
     <div class="col-md-9">
       [#-- Section Messages --]
       [#include "/WEB-INF/crp/views/projects/messages-innovation.ftl" /]
-
-      [#-- Back --]
-      <small class="pull-right">
-        <a href="[@s.url action='${crpSession}/innovationsList'][@s.param name="projectID" value=project.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-          <span class="glyphicon glyphicon-circle-arrow-left"></span> [@s.text name="projectInnovations.back" /]
-        </a>
-      </small>
         
       [@s.form action=actionName cssClass="pure-form" enctype="multipart/form-data" ]
+      
+        [#-- Back --]
+        <small class="pull-right">
+          <a href="[@s.url action='${crpSession}/innovationsList'][@s.param name="projectID" value=project.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+            <span class="glyphicon glyphicon-circle-arrow-left"></span> [@s.text name="projectInnovations.back" /]
+          </a>
+        </small>
         
         [#--  Innovation Title --]
         <h3 class="headTitle">[@s.text name="projectInnovations" /]</h3> 
+
+        [#--  <div class="containerTitleElements">
+          <div class="containerTitleMessage">
+            <div id="qualityAssessedIcon" class="deliverableQualityAssessedIcon qualityAssessed-mode text-center animated flipInX">
+              [#assign lastSubmission=action.getProjectSubmissions(projectID)?last /]
+              <p>
+                [@s.text name="message.qualityAssessed"]
+                  [@s.param]Innovation[/@s.param]
+                  [@s.param]${(lastSubmission.dateTime?string["MMMM dd, yyyy"])!}[/@s.param]
+                [/@s.text]
+              </p>
+            </div> 
+            <p class="messageQAInfo">[@s.text name="message.qualityAssessedInfo"][/@s.text]</p>
+          </div>  
+        </div>  --]
         <div id="innovations" class="borderBox clearfix">   
 
         <div class="">        
@@ -199,6 +215,21 @@
             [#-- Evidence Link --] 
             <div class="form-group stageFourBlock-false" style="display:${isStageFour?string('none','block')}">
               [@customForm.input name="innovation.projectInnovationInfo.evidenceLink"  type="text" i18nkey="projectInnovations.evidenceLink" help="projectInnovations.evidenceLink.help"  placeholder="marloRequestCreation.webSiteLink.placeholder2" className="" required=true editable=editable helpIcon=false /]
+              <div class="linksBlock ">
+                <div class="linksList">
+                  [#list (innovation.innovationLinks)![{}] as link]
+                    [@customForm.multiInput name="innovation.innovationLinks" element=link index=link_index class="links" placeholder="global.webSiteLink.placeholder" /]
+                  [/#list]
+                </div>
+                [#if editable]
+                <div class="addButtonLink button-green pull-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add Link </div>
+                <div class="clearfix"></div>
+                [/#if]
+              </div>
+               [#-- Element item Template --]
+              <div style="display:none">
+                [@customForm.multiInput name="innovation.innovationLinks" element={} index=-1 template=true class="links" placeholder="global.webSiteLink.placeholder" /]
+              </div>
             </div>
           
             [#-- Or Deliverable ID (optional) --]
