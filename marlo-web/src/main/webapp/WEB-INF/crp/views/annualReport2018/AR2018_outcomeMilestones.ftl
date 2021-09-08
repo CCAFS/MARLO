@@ -9,10 +9,10 @@
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
-  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js",
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20210908a",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js"
 ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210216"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210908a"] /]
 
 [#assign breadCrumb = [
   {"label":"${currentSection}",   "nameSpace":"",             "action":""},
@@ -411,7 +411,7 @@
         <div class="row">
           <div class="col-sm-3 colTitleCenter boldCell"></div>
           <div class="col-sm-3 colTitleCenter boldCell">[@s.text name="${customLabel}.milestoneScoreMarker" /][@customForm.req required=editable  /]</div>
-          <div class="col-sm-6 colTitleCenter boldCell">[@s.text name="${customLabel}.milestoneScoreJustification" /][@customForm.req required=editable  /]</div>
+          <div class="col-sm-6 colTitleCenter boldCell">[@s.text name="${customLabel}.milestoneScoreJustification" /]</div>
         </div>
           
           [#assign markersPOWB=["${(milestoneNextPOWB.genderFocusLevel.powbName)!'Not available'}","${(milestoneNextPOWB.youthFocusLevel.powbName)!'Not available'}","${(milestoneNextPOWB.capdevFocusLevel.powbName)!'Not available'}","${(milestoneNextPOWB.climateFocusLevel.powbName)!'Not available'}"] /]
@@ -427,12 +427,15 @@
               </div>
               <div class="col-sm-3 colTitleCenter">
                 [@customForm.select name="${ccName}.focus.id" value="${(annualReportCrossCuting.focus.id)!-1}" label=""
-                listName="focusLevels" keyFieldName="id" displayFieldName="powbName" required=true showTitle=false className=""
+                listName="focusLevels" keyFieldName="id" displayFieldName="powbName" required=true showTitle=false className="marker"
                 editable=editable/]</td>
               </div>
-              <div class="col-sm-6 colTitleCenter">
-                [@customForm.input name="${ccName}.just" value="${(annualReportCrossCuting.just)!}" showTitle=false required=true
-                editable=editable /]
+              <div class="col-sm-6 colTitleCenter colAlignItems conditionalRequire">
+                <div style="width: 100%;">
+                  [@customForm.input name="${ccName}.just" value="${(annualReportCrossCuting.just)!}" showTitle=false required=true className="limitWords-100"
+                  editable=editable /]
+                </div>
+                [@customForm.req required=editable  /]
               </div>
               <div class="col-sm-12 ">
                 <p class="helpTextPOWB">In POWB ${(actualPhase.year+1)!} you selected for ${marker.name}: <span style="color: #1ca6ce">${(markersPOWB[marker_index])!}</span> </p>
