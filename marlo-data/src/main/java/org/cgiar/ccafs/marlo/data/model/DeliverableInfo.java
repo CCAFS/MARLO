@@ -129,15 +129,15 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
 
     try {
       if (this.status != null) {
-        if (status == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
-          if (phase.getYear() > this.getYear()) {
+        if (status == Integer.parseInt(DeliverableStatusEnum.ON_GOING.getStatusId())) {
+          if (phase.getYear() > this.getYear() || ("AR".equals(phase.getName()) && phase.getYear() == 2021)) {
             return "Ready to be reported on ";
           }
         }
       }
       if (this.status != null) {
-        return ProjectStatusEnum.getValue(this.status).getStatus() != null
-          ? ProjectStatusEnum.getValue(this.status).getStatus() : "";
+        return DeliverableStatusEnum.getValue(this.status).getStatus() != null
+          ? DeliverableStatusEnum.getValue(this.status).getStatus() : "";
       } else {
         return "";
       }
@@ -175,7 +175,7 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     }
 
     if (this.getStatus() != null
-      && this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+      && this.getStatus().intValue() == Integer.parseInt(DeliverableStatusEnum.COMPLETE.getStatusId())) {
       if (this.getNewExpectedYear() != null && this.getNewExpectedYear().intValue() != -1) {
         if (this.getNewExpectedYear() == phase.getYear()) {
           return true;
@@ -199,7 +199,7 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   public Boolean isPrevious() {
 
     if (this.getStatus() != null
-      && this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+      && this.getStatus().intValue() == Integer.parseInt(DeliverableStatusEnum.EXTENDED.getStatusId())) {
       if (this.getNewExpectedYear() != null && this.getNewExpectedYear().intValue() != -1) {
         if (this.getNewExpectedYear() < phase.getYear()) {
           return true;
@@ -208,8 +208,8 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     }
 
     if (this.getStatus() != null
-      && (this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-        || this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId()))) {
+      && (this.getStatus().intValue() == Integer.parseInt(DeliverableStatusEnum.COMPLETE.getStatusId())
+        || this.getStatus().intValue() == Integer.parseInt(DeliverableStatusEnum.CANCELLED.getStatusId()))) {
       if (this.getNewExpectedYear() != null && this.getNewExpectedYear().intValue() != -1) {
         if (this.getNewExpectedYear() < phase.getYear()) {
           return true;
@@ -222,7 +222,7 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     }
 
     if (this.getStatus() != null
-      && (this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))) {
+      && (this.getStatus().intValue() == Integer.parseInt(DeliverableStatusEnum.ON_GOING.getStatusId()))) {
       if (this.getYear() < phase.getYear()) {
         return true;
       }
@@ -243,7 +243,7 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     }
 
     if (this.getStatus() != null
-      && this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+      && this.getStatus().intValue() == Integer.parseInt(DeliverableStatusEnum.EXTENDED.getStatusId())) {
       if (this.getNewExpectedYear() != null && this.getNewExpectedYear().intValue() != -1) {
         if (this.getNewExpectedYear() == this.getPhase().getYear()) {
           return true;
@@ -254,7 +254,7 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     }
 
     if (this.getStatus() != null
-      && this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+      && this.getStatus().intValue() == Integer.parseInt(DeliverableStatusEnum.COMPLETE.getStatusId())) {
       if (this.getNewExpectedYear() != null && this.getNewExpectedYear().intValue() != -1) {
         if (this.getNewExpectedYear() == this.getPhase().getYear()) {
           return true;
@@ -267,12 +267,12 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     }
 
     if (this.getStatus() != null
-      && this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
+      && this.getStatus().intValue() == Integer.parseInt(DeliverableStatusEnum.CANCELLED.getStatusId())) {
       return false;
     }
 
     if (this.getStatus() != null
-      && (this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))) {
+      && (this.getStatus().intValue() == Integer.parseInt(DeliverableStatusEnum.ON_GOING.getStatusId()))) {
       if (this.getYear() == this.getPhase().getYear()) {
         return true;
       }
@@ -293,7 +293,7 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     }
 
     if (this.getStatus() != null
-      && this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+      && this.getStatus().intValue() == Integer.parseInt(DeliverableStatusEnum.COMPLETE.getStatusId())) {
       if (this.getNewExpectedYear() != null && this.getNewExpectedYear().intValue() != -1) {
         if (this.getNewExpectedYear() >= this.getPhase().getYear()) {
           return true;

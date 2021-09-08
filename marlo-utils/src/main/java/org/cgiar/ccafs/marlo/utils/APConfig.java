@@ -130,6 +130,21 @@ public class APConfig {
   @Value("${clarisa.submissionToolsPassword}")
   private String SUBMISSION_TOOLS_PASSWORD;
 
+  @Value("${clarisa.urlQA}")
+  private String URL_QA;
+
+  @Value("${clarisa.QAUser}")
+  private String QA_USER;
+
+  @Value("${clarisa.QAPassword}")
+  private String QA_PASSWORD;
+
+  @Value("${clarisa.qa.status.all.link}")
+  private String QA_FULL_INDICATOR_STATUS_URL;
+
+  @Value("${clarisa.qa.status.individual.link}")
+  private String QA_INDIVIDUAL_INDICATOR_STATUS_URL;
+
   // Path to get the base URL of media hosted in the CDN
   @Value("${cdn.url}")
   private String CDN_URL;
@@ -625,6 +640,40 @@ public class APConfig {
     return PUSH_SECRETE_KEY;
   }
 
+  public String getQAFullIndicatorStatusUrl() {
+    if (QA_FULL_INDICATOR_STATUS_URL == null) {
+      LOG.error("there is not a QA full indicator status url configured.");
+      return null;
+    }
+
+    return QA_FULL_INDICATOR_STATUS_URL;
+  }
+
+  public String getQAIndividualIndicatorStatusUrl() {
+    if (QA_INDIVIDUAL_INDICATOR_STATUS_URL == null) {
+      LOG.error("there is not a QA individual indicator status url configured.");
+      return null;
+    }
+
+    return QA_INDIVIDUAL_INDICATOR_STATUS_URL;
+  }
+
+  public String getQAPassword() {
+    if (QA_PASSWORD == null) {
+      LOG.error("there is not a QA password configured.");
+      return null;
+    }
+    return QA_PASSWORD;
+  }
+
+  public String getQAUser() {
+    if (QA_USER == null) {
+      LOG.error("there is not a QA user configured.");
+      return null;
+    }
+    return QA_USER;
+  }
+
   public String getSubmissionToolsPassword() {
     if (SUBMISSION_TOOLS_PASSWORD == null) {
       LOG.error("there is not a submission tools password configured.");
@@ -655,6 +704,14 @@ public class APConfig {
     }
 
     return UPLOADS_BASE_FOLDER;
+  }
+
+  public String getUrlQA() {
+    if (URL_QA == null) {
+      LOG.error("there is not a QA URL configured.");
+      return null;
+    }
+    return URL_QA;
   }
 
   public String getUrlSubmissionTools() {

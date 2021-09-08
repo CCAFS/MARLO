@@ -6108,7 +6108,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     GlobalUnitProject globalUnitProject = this.globalUnitProjectManager.findByProjectId(projectID);
 
     if (globalUnitProject.getGlobalUnit().getGlobalUnitType().getId().intValue() == 1
-      || globalUnitProject.getGlobalUnit().getGlobalUnitType().getId().intValue() == 3) {
+      || globalUnitProject.getGlobalUnit().getGlobalUnitType().getId().intValue() == 3
+      || globalUnitProject.getGlobalUnit().getGlobalUnitType().getId().intValue() == 5) {
       return true;
     }
 

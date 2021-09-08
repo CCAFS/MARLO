@@ -46,6 +46,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableUserPartnershipPersonManage
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.GeneralStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
@@ -92,6 +93,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnershipPerson;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.GenderType;
+import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
@@ -213,6 +215,7 @@ public class DeliverableAction extends BaseAction {
   private DeliverablePartnerTypeManager deliverablePartnerTypeManager;
   private DeliverableUserPartnershipPersonManager deliverableUserPartnershipPersonManager;
   private UserManager userManager;
+  private GeneralStatusManager generalStatusManager;
 
   // Variables
   private List<DeliverableQualityAnswer> answers;
@@ -290,7 +293,8 @@ public class DeliverableAction extends BaseAction {
     DeliverableGeographicScopeManager deliverableGeographicScopeManager,
     DeliverableUserPartnershipManager deliverableUserPartnershipManager,
     DeliverablePartnerTypeManager deliverablePartnerTypeManager, UserManager userManager,
-    DeliverableUserPartnershipPersonManager deliverableUserPartnershipPersonManager) {
+    DeliverableUserPartnershipPersonManager deliverableUserPartnershipPersonManager,
+    GeneralStatusManager generalStatusManager) {
     super(config);
     this.deliverableManager = deliverableManager;
     this.deliverableTypeManager = deliverableTypeManager;
@@ -340,6 +344,7 @@ public class DeliverableAction extends BaseAction {
     this.deliverablePartnerTypeManager = deliverablePartnerTypeManager;
     this.userManager = userManager;
     this.deliverableUserPartnershipPersonManager = deliverableUserPartnershipPersonManager;
+    this.generalStatusManager = generalStatusManager;
   }
 
   @Override
@@ -1321,10 +1326,10 @@ public class DeliverableAction extends BaseAction {
       }
 
       status = new HashMap<>();
-      List<ProjectStatusEnum> list = Arrays.asList(ProjectStatusEnum.values());
+      List<GeneralStatus> list = generalStatusManager.findAllDeliverables(this.getCurrentCycleYear());
       // Add all status
-      for (ProjectStatusEnum projectStatusEnum : list) {
-        status.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
+      for (GeneralStatus generalStatus : list) {
+        status.put(String.valueOf(generalStatus.getId()), generalStatus.getName());
       }
 
       // Status rules for planning

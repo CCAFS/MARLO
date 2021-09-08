@@ -40,7 +40,8 @@ public interface ReportSynthesisFlagshipProgressPolicyDAO {
   public boolean existReportSynthesisFlagshipProgressPolicy(long reportSynthesisFlagshipProgressPolicyID);
 
   /**
-   * This method gets a reportSynthesisFlagshipProgressPolicy object by a given reportSynthesisFlagshipProgressPolicy identifier.
+   * This method gets a reportSynthesisFlagshipProgressPolicy object by a given reportSynthesisFlagshipProgressPolicy
+   * identifier.
    * 
    * @param reportSynthesisFlagshipProgressPolicyID is the reportSynthesisFlagshipProgressPolicy identifier.
    * @return a ReportSynthesisFlagshipProgressPolicy object.
@@ -56,12 +57,25 @@ public interface ReportSynthesisFlagshipProgressPolicyDAO {
 
 
   /**
+   * This method gets a reportSynthesisFlagshipProgressPolicy object by a given projectPolicy id and a phase id
+   *
+   * @param policyId the ProjectPolicy identifier
+   * @param flagshipProgressId the ReportSynthesisFlagshipProgress identifier
+   * @return a ReportSynthesisFlagshipProgressPolicy object.
+   */
+  public ReportSynthesisFlagshipProgressPolicy
+    getReportSynthesisFlagshipProgressPolicyByPolicyAndFlagshipProgress(long policyId, long flagshipProgressId);
+
+  /**
    * This method saves the information of the given reportSynthesisFlagshipProgressPolicy
    * 
-   * @param reportSynthesisFlagshipProgressPolicy - is the reportSynthesisFlagshipProgressPolicy object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the reportSynthesisFlagshipProgressPolicy was
+   * @param reportSynthesisFlagshipProgressPolicy - is the reportSynthesisFlagshipProgressPolicy object with the new
+   *        information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         reportSynthesisFlagshipProgressPolicy was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ReportSynthesisFlagshipProgressPolicy save(ReportSynthesisFlagshipProgressPolicy reportSynthesisFlagshipProgressPolicy);
+  public ReportSynthesisFlagshipProgressPolicy
+    save(ReportSynthesisFlagshipProgressPolicy reportSynthesisFlagshipProgressPolicy);
 }

@@ -58,6 +58,8 @@
       [#--  [#assign canViewNewExpectedYear = action.candEditExpectedYear(deliverable.id) /]  --]
       [#assign hasExpectedYear = ((deliverable.deliverableInfo.newExpectedYear != -1))!false /]
       [#assign isStatusExtended = (deliverable.deliverableInfo.status == 4)!false]
+      [#assign isStatusPartiallyComplete = (deliverable.deliverableInfo.status == 7)!false]
+
       [#-- Deliverable Status --]
       <div class="col-md-4">
         [@customForm.select name="deliverable.deliverableInfo.status" label=""   i18nkey="project.deliverable.generalInformation.status" listName="status"  multiple=false required=true header=false className="status isNew-${isDeliverableNew?string}" editable=editable || editStatus/]
@@ -102,8 +104,8 @@
     </div>
     
     [#-- Status justification textArea --]
-    [#if !isDeliverableNew]
-      [#assign justificationRequired = ((deliverable.deliverableInfo.status == 4)  || (deliverable.deliverableInfo.status == 5))!false ]
+    [#if !isDeliverableNew || isStatusPartiallyComplete]
+      [#assign justificationRequired = ((deliverable.deliverableInfo.status == 4)  || (deliverable.deliverableInfo.status == 5) || (deliverable.deliverableInfo.status == 7))!false ]
       <div class="form-group">
         <div id="statusDescription" class="col-md-12" style="display:${justificationRequired?string('block','none')}">
           [@customForm.textArea name="deliverable.deliverableInfo.statusDescription" className="statusDescription limitWords-150" i18nkey="deliverable.statusJustification.status${(deliverable.deliverableInfo.status)!'NotSelected'}" editable=editable || editStatus/]
@@ -112,6 +114,7 @@
             <div id="status-3">[@s.text name="deliverable.statusJustification.status3" /]:<span class="red">*</span></div>[#-- Complete("3", "Complete") --]
             <div id="status-4">[@s.text name="deliverable.statusJustification.status4" /]:<span class="red">*</span></div>[#-- Extended("4", "Extended") --]
             <div id="status-5">[@s.text name="deliverable.statusJustification.status5" /]:<span class="red">*</span></div>[#-- Cancelled("5", "Cancelled") --]
+            <div id="status-7">[@s.text name="deliverable.statusJustification.status7" /]:<span class="red">*</span></div>[#-- Partially Complete("7", "Partially Complete") --]
           </div>
         </div>
       </div>

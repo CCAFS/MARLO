@@ -137,33 +137,83 @@ function attachEvents() {
   (function() {
     // Events
     $('.addButtonLink').on('click', addItem);
-    $('.removeLink').on('click', removeItem);
+    $('.removeLink.links').on('click', removeItem);
 
     // Functions
     function addItem() {
-      var $list = $(this).parents('.linksBlock').find('.linksList');
-      var $element = $('#studyLink-template').clone(true).removeAttr("id");
-      // Remove template tag
-      $element.find('input, textarea').each(function(i,e) {
-        e.name = (e.name).replace("_TEMPLATE_", "");
-        e.id = (e.id).replace("_TEMPLATE_", "");
-      });
-      // Show the element
-      $element.appendTo($list).hide().show(350);
-      // Update indexes
-      updateIndexes();
+      var $list = $(this).parent('.linksBlock').find('.linksList');
+      var $element = $('#multiInput-links-template').clone(true).removeAttr("id");
+      var $listLength = $list.children().length;
+      
+      if ($listLength <= 9) {
+        // Remove template tag
+        $element.find('input, textarea').each(function(i,e) {
+          e.name = (e.name).replace("_TEMPLATE_", "");
+          e.id = (e.id).replace("_TEMPLATE_", "");
+        });
+        // Show the element
+        $element.appendTo($list).hide().show(350);
+        // Update indexes
+        updateIndexes(this); 
+      }
     }
     function removeItem() {
-      var $parent = $(this).parents('.studyLink');
+      var $parent = $(this).parent('.multiInput.links');
+      var $addBtn = $(this).parent().parent().parent().find('.addButtonLink');
       $parent.hide(500, function() {
         // Remove DOM element
         $parent.remove();
         // Update indexes
-        updateIndexes();
+        updateIndexes($addBtn);
       });
     }
-    function updateIndexes() {
-      $('.linksList').find('.studyLink').each(function(i,element) {
+    function updateIndexes(list) {
+      $(list).parent('.linksBlock').find('.linksList').find('.multiInput').each(function(i,element) {
+        $(element).find('.indexTag').text(i + 1);
+        $(element).setNameIndexes(1, i);
+      });
+    }
+
+  })();
+
+  /**
+   * References Component
+   */
+   (function() {
+    // Events
+    $('.addButtonReference').on('click', addItem);
+    $('.removeLink.references').on('click', removeItem);
+
+    // Functions
+    function addItem() {
+      var $list = $(this).parent('.referenceBlock').find('.referenceList');
+      var $element = $('#multiInput-references-template').clone(true).removeAttr("id");
+      var $listLength = $list.children().length;
+      
+      if ($listLength <= 9) {
+        // Remove template tag
+        $element.find('input, textarea').each(function(i,e) {
+          e.name = (e.name).replace("_TEMPLATE_", "");
+          e.id = (e.id).replace("_TEMPLATE_", "");
+        });
+        // Show the element
+        $element.appendTo($list).hide().show(350);
+        // Update indexes
+        updateIndexes(this); 
+      }
+    }
+    function removeItem() {
+      var $parent = $(this).parent('.multiInput.references');
+      var $addBtn = $(this).parent().parent().parent().find('.addButtonReference');
+      $parent.hide(500, function() {
+        // Remove DOM element
+        $parent.remove();
+        // Update indexes
+        updateIndexes($addBtn);
+      });
+    }
+    function updateIndexes(list) {
+      $(list).parent('.referenceBlock').find('.referenceList').find('.multiInput').each(function(i,element) {
         $(element).find('.indexTag').text(i + 1);
         $(element).setNameIndexes(1, i);
       });
