@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyQuantification;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyReference;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
@@ -440,16 +441,26 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
         }
 
         // Validate References Cited
-        if (!this.isValidString(
-          projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getReferencesText())) {
+        if (action.isNotEmpty(projectExpectedStudy.getReferences())) {
+          boolean validReferences = true;
+          for (int i = 0; i < projectExpectedStudy.getReferences().size(); i++) {
+            ProjectExpectedStudyReference reference = projectExpectedStudy.getReferences().get(i);
+            if (reference == null || !this.isValidString(reference.getReference())) {
+              validReferences = false;
+            }
+          }
+
+          if (!validReferences) {
+            action.addMessage(action.getText("References Cited"));
+            action.addMissingField("study.referencesCited");
+            action.getInvalidFields().put("expectedStudy.projectExpectedStudyInfo.referencesText",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        } else {
           action.addMessage(action.getText("References Cited"));
           action.addMissingField("study.referencesCited");
-          action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.referencesText",
+          action.getInvalidFields().put("expectedStudy.projectExpectedStudyInfo.referencesText",
             InvalidFieldsMessages.EMPTYFIELD);
-        } else {
-          // String[] references =
-          // StringUtils.split(RegExUtils.replaceAll(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getReferencesText(),
-          // "\\R", ";"), ";");
         }
 
         // Validate Describe Gender

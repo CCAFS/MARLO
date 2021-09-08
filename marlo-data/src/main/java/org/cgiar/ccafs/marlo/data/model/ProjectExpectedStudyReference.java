@@ -4,7 +4,6 @@ package org.cgiar.ccafs.marlo.data.model;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import com.google.gson.annotations.Expose;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 
@@ -28,38 +27,21 @@ public class ProjectExpectedStudyReference extends MarloBaseEntity implements ja
     if (this == obj) {
       return true;
     }
+
     if (obj == null) {
       return false;
     }
+
     if (this.getClass() != obj.getClass()) {
       return false;
     }
+
     ProjectExpectedStudyReference other = (ProjectExpectedStudyReference) obj;
     if (this.getId() == null) {
       if (other.getId() != null) {
         return false;
       }
     } else if (!this.getId().equals(other.getId())) {
-      return false;
-    }
-
-    if (this.getProjectExpectedStudy() == null) {
-      if (other.getProjectExpectedStudy() != null) {
-        return false;
-      }
-    } else if (!this.getProjectExpectedStudy().equals(other.getProjectExpectedStudy())) {
-      return false;
-    }
-
-    if (this.getPhase() == null) {
-      if (other.getPhase() != null) {
-        return false;
-      }
-    } else if (!this.getPhase().equals(other.getPhase())) {
-      return false;
-    }
-
-    if (!StringUtils.equals(this.getReference(), other.getReference())) {
       return false;
     }
 
