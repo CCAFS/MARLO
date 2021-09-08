@@ -199,7 +199,7 @@
         <div class="linksBlock ">
           <div class="linksList">
             [#list (element.links)![{}] as link ]
-              [@customForm.multiInput name="${customName}.links" element=link index=link_index /]
+              [@customForm.multiInput name="${customName}.links" element=link index=link_index class="links" placeholder="global.webSiteLink.placeholder" /]
             [/#list]
           </div>
           [#if editable]
@@ -209,7 +209,7 @@
         </div>
         [#-- Element item Template --]
         <div style="display:none">
-          [@customForm.multiInput name="${customName}.links" element={} index=-1 template=true /]
+          [@customForm.multiInput name="${customName}.links" element={} index=-1 template=true class="links" placeholder="global.webSiteLink.placeholder" /]
         </div>
       </div>
       [/#if]
@@ -442,20 +442,20 @@
       <div class="form-group stageProcessOne">
         <div class="form-group">
           [@customForm.textArea name="${customName}.projectExpectedStudyInfo.referencesText" i18nkey="study.referencesCited" help="study.referencesCited.help2" helpIcon=false className="" required=editable && !(isPolicy && stageProcessOne) editable=editable /]
-          <div class="linksBlock ">
-            <div class="linksList">
+          <div class="referenceBlock ">
+            <div class="referenceList">
               [#list (element.references)![{}] as link ]
-                [@customForm.multiInput name="${customName}.references" element=link index=link_index /]
+                [@customForm.multiInput name="${customName}.references" element=link index=link_index class="references" placeholder="project.deliverable.reference.placeholder" field="reference" /]
               [/#list]
             </div>
             [#if editable]
-            <div class="addButtonLink button-green pull-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add Link </div>
+            <div class="addButtonReference button-green pull-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add Reference </div>
             <div class="clearfix"></div>
             [/#if]
           </div>
           [#-- Element item Template --]
           <div style="display:none">
-            [@customForm.multiInput name="${customName}.references" element={} index=-1 template=true /]
+            [@customForm.multiInput name="${customName}.references" element={} index=-1 template=true class="references" placeholder="project.deliverable.reference.placeholder" field="reference" /]
           </div>
         </div>
         <p class="note"> <small>[@s.text name="message.shortenURLsDisclaimer"][@s.param value="93" /][/@s.text]</small> </p>
