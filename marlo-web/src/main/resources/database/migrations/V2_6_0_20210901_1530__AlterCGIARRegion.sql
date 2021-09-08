@@ -1,0 +1,1 @@
+ALTER TABLE regions ADD acronym varchar(50) AFTER name;
