@@ -218,7 +218,7 @@
               <div class="linksBlock ">
                 <div class="linksList">
                   [#list (innovation.innovationLinks)![{}] as link]
-                    [@customForm.multiInput name="innovation.innovationLinks" element=link index=link_index /]
+                    [@customForm.multiInput name="innovation.innovationLinks" element=link index=link_index class="links" placeholder="global.webSiteLink.placeholder" /]
                   [/#list]
                 </div>
                 [#if editable]
@@ -228,7 +228,7 @@
               </div>
                [#-- Element item Template --]
               <div style="display:none">
-                [@customForm.multiInput name="innovation.innovationLinks" element={} index=-1 template=true /]
+                [@customForm.multiInput name="innovation.innovationLinks" element={} index=-1 template=true class="links" placeholder="global.webSiteLink.placeholder" /]
               </div>
             </div>
           
