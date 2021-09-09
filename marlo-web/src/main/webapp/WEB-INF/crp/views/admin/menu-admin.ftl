@@ -4,7 +4,7 @@
   { 'slug': 'regionalMapping',  'name': 'CRPAdmin.menu.hrefRegionalMapping',    'action': 'regionalMapping',    'active': action.hasProgramnsRegions() },
   { 'slug': 'siteIntegration',  'name': 'CRPAdmin.menu.hrefSiteIntegration',    'action': 'siteIntegration',    'active': true },
   { 'slug': 'ppaPartners',      'name': 'CRPAdmin.menu.hrefPPAPartners',        'action': 'ppaPartners',        'active': true },  
-  { 'slug': 'activities',       'name': 'CRPAdmin.menu.activities',             'action': 'activityManager',    'active': action.canAccessSuperAdmin() },  
+  { 'slug': 'activities',       'name': 'CRPAdmin.menu.activities',             'action': 'activityManager',    'active': true },  
   { 'slug': 'locations',        'name': 'CRPAdmin.menu.hrefLocations',          'action': 'locations',          'active': true },
   [#--  --{ 'slug': 'projectPhases',    'name': 'CRPAdmin.menu.hrefProjectPhases',      'action': 'projectPhases',      'active': false },--]
   { 'slug': 'users',            'name': 'CRPAdmin.menu.users',                  'action': 'crpUsers',           'active': true },
