@@ -31,11 +31,19 @@ public class OneCGIARRegionsDTO {
   @ApiModelProperty(notes = "Region name", position = 2)
   private String name;
 
-  @ApiModelProperty(notes = "Region Type Object", position = 3)
-  private OneCGIARRegionTypeDTO regionType;
+  @ApiModelProperty(notes = "Region Acronym", position = 3)
+  private String acronym;
 
-  @ApiModelProperty(notes = "Region Countries", position = 4)
+  // @ApiModelProperty(notes = "Region Type Object", position = 4)
+  // private OneCGIARRegionTypeDTO regionType;
+
+  @ApiModelProperty(notes = "Region Countries", position = 5)
   private List<CountryDTO> countries;
+
+
+  public String getAcronym() {
+    return acronym;
+  }
 
 
   public List<CountryDTO> getCountries() {
@@ -53,8 +61,15 @@ public class OneCGIARRegionsDTO {
   }
 
 
-  public OneCGIARRegionTypeDTO getRegionType() {
-    return regionType;
+  /*
+   * public OneCGIARRegionTypeDTO getRegionType() {
+   * return regionType;
+   * }
+   */
+
+
+  public void setAcronym(String acronym) {
+    this.acronym = acronym;
   }
 
 
@@ -73,9 +88,11 @@ public class OneCGIARRegionsDTO {
   }
 
 
-  public void setRegionType(OneCGIARRegionTypeDTO regionType) {
-    this.regionType = regionType;
-  }
+  /*
+   * public void setRegionType(OneCGIARRegionTypeDTO regionType) {
+   * this.regionType = regionType;
+   * }
+   */
 
 
 }

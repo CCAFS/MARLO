@@ -17,19 +17,26 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.rest.mappers;
+package org.cgiar.ccafs.marlo.data.model;
 
-import org.cgiar.ccafs.marlo.data.model.Region;
-import org.cgiar.ccafs.marlo.rest.dto.OneCGIARRegionsDTO;
+import java.io.Serializable;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
+public class DepthDescription extends MarloBaseEntity implements Serializable {
 
-@Mapper(componentModel = "jsr330", uses = {RegionTypeMapper.class, LocationMapper.class})
-public interface RegionsMapper {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
+  private String name;
 
-  @Mappings({@Mapping(source = "iso_numeric", target = "id"), @Mapping(source = "acronym", target = "acronym")})
-  public abstract OneCGIARRegionsDTO regionsToOneCGIARRegionsDTO(Region region);
+
+  public String getName() {
+    return name;
+  }
+
+
+  public void setName(String name) {
+    this.name = name;
+  }
 
 }
