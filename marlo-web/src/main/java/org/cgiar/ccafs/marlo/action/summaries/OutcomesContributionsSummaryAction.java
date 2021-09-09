@@ -112,9 +112,10 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
     masterReport.getParameterValues().put("i8nFlagship", this.getText("projectOtherContributions.flagship"));
     masterReport.getParameterValues().put("i8nOutcomeStatement", this.getText("outcome.statement.readText"));
     masterReport.getParameterValues().put("i8nExpectedValue",
-      "Project " + this.getText("projectOutcome.expectedValue"));
+      "Cluster " + this.getText("projectOutcome.expectedValue"));
     masterReport.getParameterValues().put("i8nTargetUnit", this.getText("outcome.targetUnit"));
-    masterReport.getParameterValues().put("i8nOutcomeTargetValue", "Outcome " + this.getText("outcome.targetValue"));
+    masterReport.getParameterValues().put("i8nOutcomeTargetValue",
+      "Intermediate " + this.getText("outcome.targetValue"));
     masterReport.getParameterValues().put("i8nMilestoneTargetValue",
       "Milestone " + this.getText("outcome.targetValue"));
     masterReport.getParameterValues().put("i8nNarrativeTarget",
@@ -248,7 +249,7 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("ImpactPathWayContributionsSummary-");
+    fileName.append("IndicatorContributionsSummary-");
     fileName.append(this.getLoggedCrp().getAcronym() + "-");
     fileName.append(this.getSelectedCycle() + "_");
     fileName.append(this.getSelectedYear() + "_");
@@ -338,7 +339,7 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
         && !projectMilestone.getProjectOutcome().getCrpProgramOutcome().getIndicator().isEmpty()) {
         outcomeIndicator = projectMilestone.getProjectOutcome().getCrpProgramOutcome().getIndicator();
       }
-      projectUrl = "P" + projectMilestone.getProjectOutcome().getProject().getId().toString();
+      projectUrl = "C" + projectMilestone.getProjectOutcome().getProject().getId().toString();
       milestone = projectMilestone.getCrpMilestone().getComposedName();
 
       // Institution leader
