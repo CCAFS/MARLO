@@ -56,6 +56,8 @@ public class MarloShiroConfiguration {
     filterChainDefinitionMap.put("/swagger/index.html", "anon");
     filterChainDefinitionMap.put("/swagger/home.html", "anon");
     filterChainDefinitionMap.put("/swagger/api.html", "anon");
+    filterChainDefinitionMap.put("/swagger/additionalServices.html", "anon");
+    filterChainDefinitionMap.put("/swagger/generalListReference.html", "anon");
     filterChainDefinitionMap.put("/api/**", "authcBasic");
     shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
 
