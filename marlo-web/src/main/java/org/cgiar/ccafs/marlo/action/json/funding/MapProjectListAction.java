@@ -35,9 +35,12 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -60,7 +63,7 @@ public class MapProjectListAction extends BaseAction {
   private FundingSourceManager fundingSourceManager;
   private PhaseManager phaseManager;
   private int year;
-  private List<Map<String, Object>> projects;
+  private SortedSet<Map<String, Object>> projects;
 
   private List<Project> userProjects;
 
@@ -89,8 +92,9 @@ public class MapProjectListAction extends BaseAction {
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = globalUnitManager.getGlobalUnitById(loggedCrp.getId());
 
-
-    projects = new ArrayList<Map<String, Object>>();
+    Comparator<Map<String, Object>> comparator =
+      (p1, p2) -> ((Long) p1.getOrDefault("id", -1L)).compareTo(((Long) p2.getOrDefault("id", -1L)));
+    projects = new TreeSet<Map<String, Object>>(comparator);
 
 
     Map<String, Object> userProject;
@@ -124,7 +128,7 @@ public class MapProjectListAction extends BaseAction {
         List<ProjectBudget> projectBudgetList = new ArrayList<>();
         projectBudgetList = fundingSource.getProjectBudgets().stream()
           .filter(pb -> pb.isActive() && pb.getInstitution().getId().equals(institutionId)
-            && pb.getPhase().getId().equals(this.getActualPhase().getId()))
+            && pb.getPhase().getId().equals(this.getActualPhase().getId()) && pb.getYear() == this.year)
           .collect(Collectors.toList());
 
         List<Project> projectList = new ArrayList<>();
@@ -136,9 +140,8 @@ public class MapProjectListAction extends BaseAction {
 
         for (Project project : userProjects) {
           // Ask if the project contains information in this phase
-          if (project.getProjecInfoPhase(phase) != null && project.getProjecInfoPhase(phase).isActive() == true) {
-
-
+          if (project != null && project.getId() != null && project.getProjecInfoPhase(phase) != null
+            && project.getProjecInfoPhase(phase).isActive() == true) {
             if (fundingSource != null) {
               if (!admin) {
                 // Ask if the user have permissions to edit the budget into the projects
@@ -213,7 +216,7 @@ public class MapProjectListAction extends BaseAction {
   }
 
 
-  public List<Map<String, Object>> getProjects() {
+  public SortedSet<Map<String, Object>> getProjects() {
     return projects;
   }
 
@@ -230,7 +233,7 @@ public class MapProjectListAction extends BaseAction {
   }
 
 
-  public void setProjects(List<Map<String, Object>> projects) {
+  public void setProjects(SortedSet<Map<String, Object>> projects) {
     this.projects = projects;
   }
 
