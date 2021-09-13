@@ -146,25 +146,35 @@ public class ProjectInnovationValidator extends BaseValidator {
       }
     }
 
-    // Validate SubIdos
+    // Validate Sub-Idos
     if (projectInnovation.getSubIdos() == null || projectInnovation.getSubIdos().isEmpty()) {
       action.addMessage(action.getText("subIdos"));
       action.addMissingField("innovation.subIdos");
       action.getInvalidFields().put("list-innovation.subIdos",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
     } else {
-      // Validate primary Sub-IDOS
-      int count = 0;
-      for (ProjectInnovationSubIdo subido : projectInnovation.getSubIdos()) {
-        if (subido.getPrimary() != null && subido.getPrimary() == true) {
-          count++;
+      // Validate primary sub-IDO
+      if (projectInnovation.getSubIdos().size() > 1) {
+        if (projectInnovation.getSubIdos().size() > 3) {
+          action.addMessage(action.getText("subIdos"));
+          action.addMissingField("study.stratgicResultsLink.subIDOs");
+          action.getInvalidFields().put("list-expectedStudy.subIdos",
+            action.getText(InvalidFieldsMessages.WRONGVALUE, new String[] {"subIdos"}));
         }
-      }
-      if (count == 0) {
-        action.addMessage(action.getText("subIdos"));
-        action.addMissingField("innovation.subIdos");
-        action.getInvalidFields().put("list-innovation.subIdos",
-          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
+
+        int count = 0;
+        for (ProjectInnovationSubIdo innovationSubIdo : projectInnovation.getSubIdos()) {
+          if (innovationSubIdo.getPrimary() != null && innovationSubIdo.getPrimary()) {
+            count++;
+          }
+        }
+
+        if (count == 0) {
+          action.addMessage(action.getText("subIdos"));
+          action.addMissingField("innovation.subIdos");
+          action.getInvalidFields().put("list-innovation.subIdos",
+            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
+        }
       }
     }
 

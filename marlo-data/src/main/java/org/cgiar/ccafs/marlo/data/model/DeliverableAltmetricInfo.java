@@ -132,7 +132,7 @@ public class DeliverableAltmetricInfo extends MarloAuditableEntity implements ja
     if (this.getClass() != obj.getClass()) {
       return false;
     }
-    DeliverableMetadataExternalSources other = (DeliverableMetadataExternalSources) obj;
+    DeliverableAltmetricInfo other = (DeliverableAltmetricInfo) obj;
     if (this.getId() == null) {
       if (other.getId() != null) {
         return false;
