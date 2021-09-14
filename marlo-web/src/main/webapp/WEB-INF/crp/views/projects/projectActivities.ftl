@@ -1,5 +1,5 @@
 [#ftl]
-[#assign title = "Project Activities" /]
+[#assign title = "Cluster Activities" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
