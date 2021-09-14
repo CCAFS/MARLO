@@ -1,5 +1,5 @@
 [#ftl]
-[#assign title = "Project Outcome Contribution to CRP" /]
+[#assign title = "Cluster Contribution to Indicators" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectOutcomeID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [ 
@@ -232,8 +232,8 @@
           [#if reportingActive]
             <div class="deliverableTabs"> 
               <ul class="nav nav-tabs" role="tablist"> 
-                 <li role="presentation" class="active"><a index="1" href="#deliverable-mainInformation" aria-controls="info" role="tab" data-toggle="tab">Progress ${currentCycleYear}</a></li>                       
-                 <li role="presentation" class=""><a index="2" href="#deliverable-disseminationMetadata" aria-controls="metadata" role="tab" data-toggle="tab">Reporting ${currentCycleYear}</a></li>                            
+                 <li role="presentation" class=""><a index="1" href="#deliverable-mainInformation" aria-controls="info" role="tab" data-toggle="tab">Progress ${currentCycleYear}</a></li>                       
+                 <li role="presentation" class="active"><a index="2" href="#deliverable-disseminationMetadata" aria-controls="metadata" role="tab" data-toggle="tab">Reporting ${currentCycleYear}</a></li>                            
               </ul>
               
               <div class="tab-content ">          
