@@ -1763,6 +1763,10 @@ public class DeliverableAction extends BaseAction {
           deliverable.getGeographicScopes().clear();
         }
 
+        if (deliverable.getSharedDeliverables() != null) {
+          deliverable.getSharedDeliverables().clear();
+        }
+
         deliverable.setQualityCheck(null);
         deliverable.getDeliverableInfo(this.getActualPhase()).setCrpClusterKeyOutput(null);
 
@@ -1858,6 +1862,7 @@ public class DeliverableAction extends BaseAction {
       }
 
       this.saveCrossCutting();
+      this.saveProjects(deliverableDB);
 
       // Reporting and upkeep
       if (this.isReportingActive() || this.isUpKeepActive()) {
@@ -1871,7 +1876,6 @@ public class DeliverableAction extends BaseAction {
         // Data Sharing is not longer used.
         this.saveDataSharing();
         this.saveUsers();
-        this.saveProjects(deliverableDB);
         this.saveParticipant();
       }
 
