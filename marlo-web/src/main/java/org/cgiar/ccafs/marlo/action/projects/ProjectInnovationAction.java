@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectDeliverableSharedManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCenterManager;
@@ -61,6 +62,7 @@ import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectDeliverableShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
@@ -103,6 +105,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -157,6 +160,7 @@ public class ProjectInnovationAction extends BaseAction {
   private SrfIdoManager srfIdoManager;
   private ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager;
   private ProjectExpectedStudyManager projectExpectedStudyManager;
+  private ProjectDeliverableSharedManager projectDeliverableSharedManager;
 
   // AR2021 managers
   private ProjectInnovationEvidenceLinkManager projectInnovationEvidenceLinkManager;
@@ -228,7 +232,8 @@ public class ProjectInnovationAction extends BaseAction {
     ProjectInnovationMilestoneManager projectInnovationMilestoneManager, SrfSubIdoManager srfSubIdoManager,
     ProjectInnovationSubIdoManager projectInnovationSubIdoManager, SrfIdoManager srfIdoManager,
     ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager,
-    ProjectInnovationEvidenceLinkManager projectInnovationEvidenceLinkManager) {
+    ProjectInnovationEvidenceLinkManager projectInnovationEvidenceLinkManager,
+    ProjectDeliverableSharedManager projectDeliverableSharedManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -267,6 +272,7 @@ public class ProjectInnovationAction extends BaseAction {
     this.srfIdoManager = srfIdoManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.projectInnovationEvidenceLinkManager = projectInnovationEvidenceLinkManager;
+    this.projectDeliverableSharedManager = projectDeliverableSharedManager;
 
   }
 
@@ -1011,9 +1017,44 @@ public class ProjectInnovationAction extends BaseAction {
         for (DeliverableInfo deliverableInfo : infos) {
           Deliverable deliverable = deliverableInfo.getDeliverable();
           deliverable.setDeliverableInfo(deliverableInfo);
+          deliverable.setTagTitle(deliverable.getComposedName());
           deliverableList.add(deliverable);
         }
       }
+
+      try {
+        // Load Shared deliverables
+        List<ProjectDeliverableShared> deliverableShared = this.projectDeliverableSharedManager
+          .getByProjectAndPhase(project.getId(), this.getActualPhase().getId()) != null
+            ? this.projectDeliverableSharedManager.getByProjectAndPhase(project.getId(), this.getActualPhase().getId())
+              .stream()
+              .filter(px -> px.isActive() && px.getDeliverable().isActive()
+                && px.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null)
+              .collect(Collectors.toList())
+            : Collections.emptyList();
+        if (deliverableShared != null && !deliverableShared.isEmpty()) {
+          for (ProjectDeliverableShared deliverableS : deliverableShared) {
+            if (!deliverableList.contains(deliverableS.getDeliverable())) {
+              if (deliverableS.getDeliverable().getProject() != null
+                && deliverableS.getDeliverable().getProject().getId() != null
+                && !deliverableS.getDeliverable().getProject().getId().equals(projectID)) {
+                DeliverableInfo deliverableInfo =
+                  deliverableS.getDeliverable().getDeliverableInfo(this.getActualPhase());
+                deliverableS.getDeliverable().setDeliverableInfo(deliverableInfo);
+                deliverableS.getDeliverable().setTagTitle(
+                  "<span class=\"label label-info\">From P" + deliverableS.getDeliverable().getProject().getId()
+                    + "</span> " + deliverableS.getDeliverable().getComposedName());
+              } else {
+                deliverableS.getDeliverable().setTagTitle(deliverableS.getDeliverable().getComposedName());
+              }
+              deliverableList.add(deliverableS.getDeliverable());
+            }
+          }
+        }
+      } catch (Exception e) {
+        // System.err.println("unable to get shared deliverables", e);
+      }
+
       List<Project> projectSharedList = new ArrayList<>();
       if (innovation.getSharedInnovations() != null && innovation.getSharedInnovations().size() > 0) {
         for (ProjectInnovationShared sharedInnovation : innovation.getSharedInnovations()) {
@@ -1037,6 +1078,7 @@ public class ProjectInnovationAction extends BaseAction {
               for (DeliverableInfo deliverableInfo : infos) {
                 Deliverable deliverable = deliverableInfo.getDeliverable();
                 deliverable.setDeliverableInfo(deliverableInfo);
+                deliverable.setTagTitle(deliverable.getComposedName());
                 deliverableList.add(deliverable);
               }
             }
