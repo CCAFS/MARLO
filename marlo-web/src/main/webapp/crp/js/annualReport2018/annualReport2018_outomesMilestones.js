@@ -1,6 +1,6 @@
 $(document).ready(init);
 
-var markers;
+var markers, inputMilestoneStatus;
 
 function init() {
 
@@ -8,7 +8,13 @@ function init() {
   // $('form select').select2({
   //   width: '100%'
   // });
-
+  
+  inputMilestoneStatus = $('input.milestoneStatus');
+  loadInputMilestoneStatus();
+  inputMilestoneStatus.on('change', function() {
+    var tag = $(this).parents('.synthesisMilestone').find('.linksToEvidence').find('#warningEmptyLinksTag');
+    disableEnableWarningTag(this.value, tag);
+  });
   attachEvents();
 
   // Set google charts
@@ -20,6 +26,23 @@ function init() {
     var tag = $(this).parent().parent().parent().next('.conditionalRequire').find('.requiredTag');
     disableEnableRequiredTag(this.value, tag);
   });
+}
+
+function loadInputMilestoneStatus() {
+  inputMilestoneStatus.each((index, item) => {
+    var tag = $(item).parents('.synthesisMilestone').find('.linksToEvidence').find('#warningEmptyLinksTag');
+    if (item.checked) {
+      disableEnableWarningTag(item.value, tag);
+    }
+  });
+}
+
+function disableEnableWarningTag(optionSelected, tag) {
+  if (optionSelected == '6') {
+    $(tag).show();
+  } else {
+    $(tag).hide();
+  }
 }
 
 function loadMarkers() {
@@ -78,7 +101,7 @@ function attachEvents() {
     }
   });
 
-  $('input.milestoneStatus').on('change', function() {
+  inputMilestoneStatus.on('change', function() {
     var optionSelected = this.value;
 
     // Milestone Evidence
