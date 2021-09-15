@@ -838,7 +838,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
             projectNextuser = projectNextuserManager.saveProjectNextuser(projectNextuser);
             // This add projectNextuser to generate correct auditlog.
-            projectOutcome.getProjectNextusers().add(projectNextuser);
+            // projectOutcome.getProjectNextusers().add(projectNextuser);
             // We should add this new milestone to the managed entity also
             if (this.isEmpty(this.projectOutcomeDB.getNextUsers())) {
               this.projectOutcomeDB.setNextUsers(new ArrayList<>());

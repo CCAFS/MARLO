@@ -645,7 +645,7 @@ function CGIARRegions(){
 			// ********************************************* */
 			// print data
 			manageSpinner(false,"CGIAR_regions");
-			let nameColumns = ['id', 'Name']
+			let nameColumns = ['id', 'Name','Acronym','Countries']
 
 			// $.each(nameColumns, function (index, name) {
 			// $('#list-print-columns-name').append('<th >' + name + '</th>')
@@ -656,7 +656,7 @@ function CGIARRegions(){
 					'<tr>' + '<td >' + item['id'] + '</td>' 
 					+ '<td>'+ item['name'] + '</td>'
 					+ '<td>'+ item['acronym'] + '</td>'
-					+ '<td>'+ item['regionType'].name + '</td>' 
+					// + '<td>'+ item['regionType'].name + '</td>'
 					+ '<td>'+ getCountries(item['countries']) + '</td>' 
 					+ '</tr>')
 			});

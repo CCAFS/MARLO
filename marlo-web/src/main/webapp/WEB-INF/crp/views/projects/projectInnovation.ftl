@@ -4,7 +4,7 @@
 [#-- TODO: Remove unused pageLibs--]
 [#assign pageLibs = ["select2","font-awesome", "flag-icon-css"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectInnovations.js?20210907A",
+  "${baseUrlMedia}/js/projects/projectInnovations.js?20210909A",
   "${baseUrlCdn}/global/js/autoSave.js", 
   "${baseUrlCdn}/global/js/fieldsValidation.js"
 ] /]
@@ -214,6 +214,7 @@
 
             [#-- Evidence Link --] 
             <div class="form-group stageFourBlock-false" style="display:${isStageFour?string('none','block')}">
+              <span id="warningEmptyLinksTag" class="errorTag glyphicon glyphicon-info-sign" style="left: 750px;" title="" aria-describedby="ui-id-5"> </span>
               [@customForm.input name="innovation.projectInnovationInfo.evidenceLink"  type="text" i18nkey="projectInnovations.evidenceLink" help="projectInnovations.evidenceLink.help"  placeholder="marloRequestCreation.webSiteLink.placeholder2" className="" required=true editable=editable helpIcon=false /]
               <div class="linksBlock ">
                 <div class="linksList">
