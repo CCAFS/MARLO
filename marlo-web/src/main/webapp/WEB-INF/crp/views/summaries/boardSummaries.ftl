@@ -255,7 +255,7 @@
   [#-- CRP/PTF Level --]
   { "slug": "globalUnitLevel", "active": !centerGlobalUnit, "title":"summaries.board.options.globalUnitLevel", "reportsList": [
     { "active": !centerGlobalUnit,
-      "available": false,
+      "available": true,
       "title": "summaries.board.report.impactPathwaysSummary", 
       "description": "summaries.board.report.impactPathwaysSummary.description",
       "namespace": "/projects",
