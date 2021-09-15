@@ -18,6 +18,7 @@ function init() {
   $('.subTypeSelect').change(validateRequiredTagToCategory);
   $('.subTypeSelectSupplementary').change(validateRequiredTagToCategory);
   $('.subTypeSelect').change(validateEmptyAuthors);
+  $('select[name="deliverable.deliverableInfo.status"]').change(validateRequiredTagToCategory, validateEmptyAuthors)
   // $('.typeSelect ').on("click",   validateRequiredTagToCategory);
   // Setting ID to Date-picker input
   $(".dateMetadata").attr("id", "deliverableMetadataDate");
@@ -54,48 +55,48 @@ function init() {
 }
 
 function validateRequiredTagToCategory() {
-  if ($('.subTypeSelect ').val() == 63 || $('.subTypeSelectSupplementary').val() == 63) {
-    console.log('%cThere is Articles and Books and Journal Article (peer reviewed)', 'background: #222; color: #37ff73');
-    // $('.conditionalRequire').find('.requiredTag').show('slow');
-    // $('.isOtherUrlTohide').show('slow');
-    hideOrShowCheckBoxIsOtherUrl(true);
-    if ($('.isOtherUrlFiel').val() == 'true') {
-      $('.conditionalRequire').find('.requiredTag').hide('slow');
+  var statusID = $('select[name="deliverable.deliverableInfo.status"]').val();
+  if (statusID != '7' && statusID != '5') {
+    if ($('.subTypeSelect ').val() == 63 || $('.subTypeSelectSupplementary').val() == 63) {
+      console.log('%cThere is Articles and Books and Journal Article (peer reviewed)', 'background: #222; color: #37ff73');
+
+      hideOrShowCheckBoxIsOtherUrl(true);
+
+      if ($('.isOtherUrlFiel').val() == 'true') {
+        $('.conditionalRequire').find('.requiredTag').hide('slow');
+      } else {
+        $('.conditionalRequire').find('.requiredTag').show('slow');
+      }
+
     } else {
-      $('.conditionalRequire').find('.requiredTag').show('slow');
+      console.log('%cThere is no Articles and Books and Journal Article (peer reviewed)', 'background: #222; color: #37ff73');
+      $('.conditionalRequire').find('.requiredTag').hide('slow');
+      $('.isOtherUrlTohide').hide('slow');
+      $('.other-url').hide('slow');
+      $('.isOtherUrlFiel').val(false);
+      $('input.isOtherUrl').prop('checked', false);
+      $('.other-url').find('input').val('');
+      hideOrShowCheckBoxIsOtherUrl(false);
     }
-
-  } else {
-    console.log('%cThere is no Articles and Books and Journal Article (peer reviewed)', 'background: #222; color: #37ff73');
-    $('.conditionalRequire').find('.requiredTag').hide('slow');
-    $('.isOtherUrlTohide').hide('slow');
-    $('.other-url').hide('slow');
-    $('.isOtherUrlFiel').val(false);
-    $('input.isOtherUrl').prop('checked', false);
-    $('.other-url').find('input').val('');
-    hideOrShowCheckBoxIsOtherUrl(false);
-
-
-    // if ($('.isOtherUrlFiel').val() == 'true') {
-    //   $('.conditionalRequire').find('.requiredTag').hide('slow');
-    // }else{
-    //   $('.conditionalRequire').find('.requiredTag').show('slow');
-    // }
   }
-
 }
 
 function validateEmptyAuthors() {
-  if ($('.subTypeSelect ').val() == 63) {
-    if ($('.authorsList').children('div').length > 0) {
+  var statusID = $('select[name="deliverable.deliverableInfo.status"]').val();
+  if (statusID != '7' && statusID != '5') {
+    if ($('.subTypeSelect ').val() == 63) {
+      if ($('.authorsList').children('div').length > 0) {
+        // ocultar banderilla
+        $('#warningEmptyAuthorsTag').hide();
+      } else {
+        // mostrar banderilla
+        $('#warningEmptyAuthorsTag').show();
+      }
+    } else {
       // ocultar banderilla
       $('#warningEmptyAuthorsTag').hide();
-    } else {
-      // mostrar banderilla
-      $('#warningEmptyAuthorsTag').show();
     }
   } else {
-    // ocultar banderilla
     $('#warningEmptyAuthorsTag').hide();
   }
 }
@@ -1225,7 +1226,7 @@ function getMetadata(channel, url) {
         $('.other-url').show('slow');
         $('.isOtherUrlFiel').val(true);
         $('input.isOtherUrl').prop('checked', true);
-      } 
+      }
       if (jQuery.isEmptyObject(metadata)) {
         $('#output-dissemination').html("Metadata empty");
       } else {
@@ -1290,24 +1291,27 @@ function validateSubCategorySelector() {
   var crp = $('form').attr("name");
   var selector = $('#' + crp + '_deliverable_deliverableInfo_deliverableType_id');
   var doiField = $('.metadataElement-doi').find('div.input ').children()[3];
+  var statusID = $('select[name="deliverable.deliverableInfo.status"]').val();
 
-  if (selector.val() == '63') {
-    $('.acknowledge' + crp[0] + ' .requiredTag').slideDown();
-    $('.metadataElement-volume .requiredTag').slideDown();
-    $('.metadataElement-issue .requiredTag').slideDown();
-    $('.metadataElement-pages .requiredTag').slideDown();
-    $('.isIsiJournal .requiredTag').slideDown();
-    if (doiField.value == '') {
-      displayExtraFieldUrl(true, true);
+  if (statusID != '7' && statusID != '5') {
+    if (selector.val() == '63') {
+      $('.acknowledge' + crp[0] + ' .requiredTag').slideDown();
+      $('.metadataElement-volume .requiredTag').slideDown();
+      $('.metadataElement-issue .requiredTag').slideDown();
+      $('.metadataElement-pages .requiredTag').slideDown();
+      $('.isIsiJournal .requiredTag').slideDown();
+      if (doiField.value == '') {
+        displayExtraFieldUrl(true, true);
+      } else {
+        displayExtraFieldUrl(false, true);
+      }
     } else {
-      displayExtraFieldUrl(false, true);
+      $('.acknowledge' + crp[0] + ' .requiredTag').slideUp();
+      $('.metadataElement-volume .requiredTag').slideUp();
+      $('.metadataElement-issue .requiredTag').slideUp();
+      $('.metadataElement-pages .requiredTag').slideUp();
+      $('.isIsiJournal .requiredTag').slideUp();
+      displayExtraFieldUrl(false, false);
     }
-  } else {
-    $('.acknowledge' + crp[0] + ' .requiredTag').slideUp();
-    $('.metadataElement-volume .requiredTag').slideUp();
-    $('.metadataElement-issue .requiredTag').slideUp();
-    $('.metadataElement-pages .requiredTag').slideUp();
-    $('.isIsiJournal .requiredTag').slideUp();
-    displayExtraFieldUrl(false, false);
   }
 };

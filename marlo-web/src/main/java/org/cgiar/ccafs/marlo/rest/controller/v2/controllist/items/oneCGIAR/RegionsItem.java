@@ -65,7 +65,8 @@ public class RegionsItem<T> {
 
   public ResponseEntity<List<OneCGIARRegionsDTO>> getAll() {
     List<Region> regionList = new ArrayList<Region>();
-    List<Region> regions = regionsManager.findAll();
+    List<Region> regions = regionsManager.findAll().stream().filter(c -> c.getRegionType().getId().longValue() == 1)
+      .collect(Collectors.toList());
     List<LocElement> regionCountries;
     if (regions != null) {
       for (Region region : regions) {

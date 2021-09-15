@@ -72,9 +72,10 @@ function init() {
   // Event when status is changed
   $statuses.on("change", function () {
     justificationByStatus(this.value);
-    disseminationMetadataRequiredFields(this.value);
+    disseminationMetadataRequiredFields();
   });
 
+  disseminationMetadataRequiredFields();
   validateDeliverableStatus();
 
 
@@ -230,7 +231,8 @@ function init() {
   deliverablePartnersModule.init();
 }
 
-function disseminationMetadataRequiredFields(statusID) {
+function disseminationMetadataRequiredFields() {
+  var statusID = $('select[name="deliverable.deliverableInfo.status"]').val();
   var requiredTagsToHide = $('#deliverable-disseminationMetadata').find('span[class*="requiredTag"]').filter(function () {
     if (statusID == '7' || statusID == '5') {
       return $(this).css('display').includes('inline');
@@ -453,6 +455,7 @@ function justificationByStatus(statusId) {
   var newExpectedYear = $newExpectedYearSelect.val();
   var hasExpectedYear =
     ((newExpectedYear != "") && newExpectedYear != "-1") && (typeof newExpectedYear !== 'undefined');
+  var expectedYear = $('#deliverableYear').find('select').val();
   var isCompletedWithoutExpectedYear = ((!reportingActive) && isStatusComplete(statusId) && hasExpectedYear);
 
   // Validate the justification
@@ -471,33 +474,47 @@ function justificationByStatus(statusId) {
       console.log("hasExpectedYear", hasExpectedYear);
       if (isStatusOnGoing(statusId)) {
         console.log("if");
-        showNewExpectedComponent(false);
+        showNewExpectedComponent(false, false);
       } else {
         console.log("else");
         if (statusId == 4) {
-          // showExpectedComponent(true);
-          $('.expectedDisabled').hide("slow");
-          if ($('#actualYear').html() == '2021') {
-            showExpectedComponent(true);
+          // si el año #actualYear NO es 2021, ambos new expected y expected year no deben poderse editar pero sí mostrar
+          // si el año #actualYear 2021, validar que tanto el new expected y expected year sean menores a 2021, si estos son menores a 2021 ambos se deben mostrar pero solamente queda editable el new expected year y si no son menores, entonces se deben mostrar pero ninguno queda editable
+          if ($('#actualYear').html() != '2021') {
+            console.log("año actual", $('#actualYear').html())
+            showNewExpectedComponent(true, true);
+            showExpectedComponent(true, true);
+          } else {
+            console.log("es 2021")
+            if (!(expectedYear < '2021' && newExpectedYear < '2021')) {
+              console.log("ambos no son menores")
+              showNewExpectedComponent(true, true);
+              showExpectedComponent(true, false);
+            } else {
+              console.log("ambos son menores")
+              showNewExpectedComponent(true, true);
+              showExpectedComponent(true, true);
+            }
           }
+
         } else if (statusId == 2 || statusId == 3 || statusId == 5 || statusId == 6) {
 
-          if (($('.yearNewExpected').val() != '-1') && ($('.yearNewExpected').val() != $('.yearExpected').val())) {
-            showNewExpectedComponent(true);
+          if (newExpectedYear != '-1') {
+            showNewExpectedComponent(true, true);
           } else {
-            showNewExpectedComponent(false);
+            showNewExpectedComponent(false, false);
           }
           $('.expectedDisabled').show("slow");
         } else if (statusId == 7) {
-          showExpectedComponent(true);
+          showExpectedComponent(true, true);
 
-          if (($('.yearNewExpected').val() != '-1')) {
-            showNewExpectedComponent(true);
+          if (newExpectedYear != '-1') {
+            showNewExpectedComponent(true, true);
           } else {
-            showNewExpectedComponent(false);
+            showNewExpectedComponent(false, false);
           }
         } else {
-          showNewExpectedComponent(false);
+          showNewExpectedComponent(false, false);
         }
       }
     }
@@ -508,7 +525,7 @@ function justificationByStatus(statusId) {
 
 }
 
-function showNewExpectedComponent(state) {
+function showNewExpectedComponent(state, overlay) {
   var $newExpectedYearBlock = $('#newExpectedYear');
   var $yearOverlay = $('#deliverableYear .overlay');
   if (state) {
@@ -520,9 +537,15 @@ function showNewExpectedComponent(state) {
       $yearOverlay.hide();
     }
   }
+
+  if (overlay) {
+    $yearOverlay.show();
+  } else {
+    $yearOverlay.hide();
+  }
 }
 
-function showExpectedComponent(state) {
+function showExpectedComponent(state, overlay) {
   var $expectedYearBlock = $('#deliverableYear');
   var $yearOverlay = $('#newExpectedYear .overlay');
   if (state) {
@@ -533,6 +556,12 @@ function showExpectedComponent(state) {
     if (isDeliverableNew) {
       $yearOverlay.hide();
     }
+  }
+
+  if (overlay) {
+    $yearOverlay.show();
+  } else {
+    $yearOverlay.hide();
   }
 }
 
@@ -548,8 +577,10 @@ function validateDeliverableStatus() {
       // if(actualPhase.year != 2021){
       //   $statuses.find('option[value="2"]').prop("disabled", true);// Disable On-going
       // }
+      var $expectedYear = $('#deliverableYear').find('select').val();
+      var $newExpectedYear = $('#newExpectedYear').find('select').val();
       $statuses.find('option[value="2"]').prop("disabled", true);// Disable On-going
-      $statuses.find('option[value="4"]').prop("disabled", true);// Disable Extended
+      $statuses.find('option[value="4"]').prop("disabled", !($expectedYear < '2021' && $newExpectedYear < '2021'));// Disable Extended
     }
 
     $('#deliverableYear .overlay').show();
