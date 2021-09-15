@@ -773,9 +773,13 @@ public class CrpUsersAction extends BaseAction {
     message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
     String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
       : loggedCrp.getName();
-    message.append(
-      this.getText("email.newUser.part2", new String[] {this.getText("global.sClusterOfActivities").toLowerCase(),
-        config.getBaseUrl(), crp, user.getEmail(), password, this.getText("email.support", new String[] {crpAdmins})}));
+    /*
+     * message.append(
+     * this.getText("email.newUser.part2", new String[] {this.getText("global.sClusterOfActivities").toLowerCase(),
+     * config.getBaseUrl(), crp, user.getEmail(), password, this.getText("email.support", new String[] {crpAdmins})}));
+     */
+    message.append(this.getText("email.newUser.part1", new String[] {this.getText("email.newUser.listRoles"),
+      config.getBaseUrl(), user.getEmail(), password, this.getText("email.support", new String[] {crpAdmins})}));
     message.append(this.getText("email.bye"));
 
     // Send pdf
