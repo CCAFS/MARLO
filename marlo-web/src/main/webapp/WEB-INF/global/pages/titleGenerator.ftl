@@ -6,7 +6,7 @@
 [#-- Draft --]
 [#if (draft)!false] [Draft] [/#if]
 [#-- Project > Deliverable --]
-[#if (project??)!false]P${(project.id)!} - 
+[#if (project??)!false]C${(project.id)!} - 
   [#if (deliverable?? && deliverable.id != 0)!false]D${(deliverable.id)!} - [/#if]
   [#if (expectedID?? && expectedID != 0)!false] ${(expectedID)!} - [/#if]
   [#if (innovationID?? && innovationID != 0)!false]I${(innovationID)!} - [/#if]
@@ -20,7 +20,7 @@
 [#if (reportSynthesis??)!false]${(reportSynthesis.liaisonInstitution.acronym)!} - [/#if]
 
 [#-- Title --]
-${(title)!"MARLO"}
+${(title)!"AICCRA"}
 
 [#-- AICCRA Environment --]
 [#if !config.production][AICCRA Project][/#if]
