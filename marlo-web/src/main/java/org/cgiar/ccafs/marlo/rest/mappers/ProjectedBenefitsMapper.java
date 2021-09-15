@@ -26,13 +26,14 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
-@Mapper(componentModel = "jsr330", uses = {DepthScaleMapper.class})
+@Mapper(componentModel = "jsr330", uses = {DepthScaleMapper.class, ProjectedBenefitsWeightingMapper.class})
 public interface ProjectedBenefitsMapper {
 
   @Mappings({@Mapping(source = "impactAreaIndicator.id", target = "impactAreaId"),
     @Mapping(source = "impactAreaIndicator.indicatorStatement", target = "impactAreaName"),
     @Mapping(source = "impactAreaIndicator.impactArea.id", target = "impactAreaIndicator"),
-    @Mapping(source = "impactAreaIndicator.impactArea.name", target = "impactAreaIndicatorName")})
+    @Mapping(source = "impactAreaIndicator.impactArea.name", target = "impactAreaIndicatorName"),
+    @Mapping(source = "weightingList", target = "weightingValues")})
   public abstract ProjectedBenefitsDTO projectBenefitsToProjectedBenefitsDTO(ProjectedBenefits projectedBenefits);
 
 }
