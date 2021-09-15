@@ -19,10 +19,18 @@
 
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools;
 
+import org.cgiar.ccafs.marlo.data.manager.DepthScaleManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectedBenefitsManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectedBenefitsWeightDescriptionManager;
+import org.cgiar.ccafs.marlo.data.model.DepthScales;
 import org.cgiar.ccafs.marlo.data.model.ProjectedBenefits;
+import org.cgiar.ccafs.marlo.data.model.ProjectedBenefitsWeightDescription;
+import org.cgiar.ccafs.marlo.rest.dto.DepthDescriptionsDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectedBenefitsDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectedBenefitsDepthScaleDTO;
+import org.cgiar.ccafs.marlo.rest.mappers.DepthScaleMapper;
 import org.cgiar.ccafs.marlo.rest.mappers.ProjectedBenefitsMapper;
+import org.cgiar.ccafs.marlo.rest.mappers.ProjectedBenefitsWeightingMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,27 +44,64 @@ public class ProjectedBenefitsItem<T> {
 
   private ProjectedBenefitsManager projectedBenefitsManager;
   private ProjectedBenefitsMapper projectedBenefitsMapper;
+  private DepthScaleManager depthScaleManager;
+  private DepthScaleMapper depthScaleMapper;
+  private ProjectedBenefitsWeightDescriptionManager projectedBenefitsWeightDescriptionManager;
+  private ProjectedBenefitsWeightingMapper projectedBenefitsWeightingMapper;
 
 
   @Inject
   public ProjectedBenefitsItem(ProjectedBenefitsManager projectedBenefitsManager,
-    ProjectedBenefitsMapper projectedBenefitsMapper) {
+    ProjectedBenefitsMapper projectedBenefitsMapper, DepthScaleManager depthScaleManager,
+    DepthScaleMapper depthScaleMapper,
+    ProjectedBenefitsWeightDescriptionManager projectedBenefitsWeightDescriptionManager,
+    ProjectedBenefitsWeightingMapper projectedBenefitsWeightingMapper) {
     super();
     this.projectedBenefitsManager = projectedBenefitsManager;
     this.projectedBenefitsMapper = projectedBenefitsMapper;
+    this.depthScaleManager = depthScaleManager;
+    this.depthScaleMapper = depthScaleMapper;
+    this.projectedBenefitsWeightDescriptionManager = projectedBenefitsWeightDescriptionManager;
+    this.projectedBenefitsWeightingMapper = projectedBenefitsWeightingMapper;
 
+
+  }
+
+  public List<DepthDescriptionsDTO> getDepthDescriptions() {
+    List<ProjectedBenefitsWeightDescription> depthDescriptionList = projectedBenefitsWeightDescriptionManager.findAll();
+    List<DepthDescriptionsDTO> depthDescriptions = depthDescriptionList.stream()
+      .map(c -> this.projectedBenefitsWeightingMapper.projectedBenefitsWeightDescriptionToDepthDescriptionsDTO(c))
+      .collect(Collectors.toList());
+    return depthDescriptions;
+  }
+
+  public List<ProjectedBenefitsDepthScaleDTO> getDepthScales() {
+    List<DepthScales> depthScalesList = depthScaleManager.findAll();
+    List<ProjectedBenefitsDepthScaleDTO> depthScales = new ArrayList<ProjectedBenefitsDepthScaleDTO>();
+    depthScales = depthScalesList.stream()
+      .map(c -> this.depthScaleMapper.depthScalesToProjectedBenefitsDepthScaleDTO(c)).collect(Collectors.toList());
+    return depthScales;
   }
 
   /**
    * Get All the projectedBenefits *
    * 
-   * @return a List of BudgetTypeDTO with all the Budget type Items.
+   * @return a List of ProjectedBenefitsDTO .
    */
   public List<ProjectedBenefitsDTO> getProjectedBenefits() {
     List<ProjectedBenefits> projectedBenefitsList = projectedBenefitsManager.findAll();
+    List<ProjectedBenefits> newProjectedBenefitsList = new ArrayList<ProjectedBenefits>();
     List<ProjectedBenefitsDTO> projectedBenefitsDTOs = new ArrayList<ProjectedBenefitsDTO>();
     if (projectedBenefitsList != null) {
-      projectedBenefitsDTOs = projectedBenefitsList.stream()
+      for (ProjectedBenefits projectedBenefits : projectedBenefitsList) {
+        projectedBenefits
+          .setDepthScales(projectedBenefits.getProjectedBenefitsDepthScales().stream().collect(Collectors.toList()));
+
+        projectedBenefits
+          .setWeightingList(projectedBenefits.getProjectedBenefitsWeighting().stream().collect(Collectors.toList()));
+        newProjectedBenefitsList.add(projectedBenefits);
+      }
+      projectedBenefitsDTOs = newProjectedBenefitsList.stream()
         .map(c -> this.projectedBenefitsMapper.projectBenefitsToProjectedBenefitsDTO(c)).collect(Collectors.toList());
     }
     return projectedBenefitsDTOs;

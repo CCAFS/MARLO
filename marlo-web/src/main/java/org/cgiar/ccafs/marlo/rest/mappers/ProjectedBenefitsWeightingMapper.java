@@ -19,25 +19,27 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
-import org.cgiar.ccafs.marlo.data.model.DepthScales;
-import org.cgiar.ccafs.marlo.data.model.ProjectedBenefitsDepthScale;
-import org.cgiar.ccafs.marlo.rest.dto.ProjectedBenefitsDepthScaleDTO;
+import org.cgiar.ccafs.marlo.data.model.ProjectedBenefitsWeightDescription;
+import org.cgiar.ccafs.marlo.data.model.ProjectedBenefitsWeighting;
+import org.cgiar.ccafs.marlo.rest.dto.DepthDescriptionsDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectedBenefitsWeightingDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "jsr330")
-public interface DepthScaleMapper {
+public interface ProjectedBenefitsWeightingMapper {
 
-  @Mappings({@Mapping(source = "id", target = "depthScaleId"), @Mapping(source = "name", target = "depthScaleName")})
-  public abstract ProjectedBenefitsDepthScaleDTO depthScalesToProjectedBenefitsDepthScaleDTO(DepthScales depthScales);
+  @Mappings({@Mapping(source = "id", target = "descriptionID"),
+    @Mapping(source = "description", target = "description")})
+  public abstract DepthDescriptionsDTO projectedBenefitsWeightDescriptionToDepthDescriptionsDTO(
+    ProjectedBenefitsWeightDescription projectedBenefitsWeightDescription);
 
-
-  @Mappings({@Mapping(source = "depthScale.id", target = "depthScaleId"),
-    @Mapping(source = "depthScale.name", target = "depthScaleName")})
-  public abstract ProjectedBenefitsDepthScaleDTO projectedBenefitsDepthScalesToProjectedBenefitsDepthScaleDTO(
-    ProjectedBenefitsDepthScale ProjectedBenefitsDepthScale);
-
+  @Mappings({@Mapping(source = "weightDescription.id", target = "descriptionID"),
+    @Mapping(source = "weightDescription.description", target = "description"),
+    @Mapping(source = "value", target = "weightValue")})
+  public abstract ProjectedBenefitsWeightingDTO
+    projectedBenefitsWeightingToProjectedBenefitsWeightingDTO(ProjectedBenefitsWeighting projectedBenefitsWeighting);
 
 }

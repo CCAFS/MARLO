@@ -25,12 +25,15 @@ import org.cgiar.ccafs.marlo.data.model.ProjectedBenefitsWeightDescription;
 
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 
+@Named
 public class ProjectedBenefitsWeightDescriptionManagerImpl implements ProjectedBenefitsWeightDescriptionManager {
 
   private ProjectedBenefitsWeightDescriptionDAO projectedBenefitsWeightDescriptionDAO;
 
-
+  @Inject
   public ProjectedBenefitsWeightDescriptionManagerImpl(
     ProjectedBenefitsWeightDescriptionDAO projectedBenefitsWeightDescriptionDAO) {
     super();

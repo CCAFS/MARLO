@@ -26,10 +26,12 @@ import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontool
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools.ProjectedBenefitsItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools.SdgItem;
 import org.cgiar.ccafs.marlo.rest.dto.ActionAreasDTO;
+import org.cgiar.ccafs.marlo.rest.dto.DepthDescriptionsDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ImpactAreasDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ImpactAreasIndicatorsDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InitiativesDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectedBenefitsDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectedBenefitsDepthScaleDTO;
 import org.cgiar.ccafs.marlo.rest.dto.SDGIndicatorDTO;
 import org.cgiar.ccafs.marlo.rest.dto.SDGTargetDTO;
 import org.cgiar.ccafs.marlo.rest.dto.SDGsDTO;
@@ -204,6 +206,22 @@ public class SubmissionToolsControlLists {
   @RequestMapping(value = "/allSDGTargets", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public List<SDGTargetDTO> getAllSDGTargets() {
     return this.sdgItem.getAllSDGTargets();
+  }
+
+  @ApiOperation(tags = {"Submission Tools Control Lists"}, value = "${SubmissionToolsControlLists.sdgTarget.all.value}",
+    response = DepthDescriptionsDTO.class, responseContainer = "List")
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/depthDescriptions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<DepthDescriptionsDTO> getDepthDescriptions() {
+    return this.projectedBenefitsItem.getDepthDescriptions();
+  }
+
+  @ApiOperation(tags = {"Submission Tools Control Lists"}, value = "${SubmissionToolsControlLists.sdgTarget.all.value}",
+    response = ProjectedBenefitsDepthScaleDTO.class, responseContainer = "List")
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/depthScales", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<ProjectedBenefitsDepthScaleDTO> getDepthScales() {
+    return this.projectedBenefitsItem.getDepthScales();
   }
 
   @ApiOperation(tags = {"Submission Tools Control Lists"}, value = "${SubmissionToolsControlLists.sdgTarget.all.value}",
