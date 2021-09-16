@@ -555,6 +555,11 @@ div#chart13 {
   text-align: center;
 }
 
+.colAlignItems {
+  display: flex;
+  flex-flow: row;
+}
+
 .rectGray{
   padding: 5px 0px;
   background-color: #fafafa;
