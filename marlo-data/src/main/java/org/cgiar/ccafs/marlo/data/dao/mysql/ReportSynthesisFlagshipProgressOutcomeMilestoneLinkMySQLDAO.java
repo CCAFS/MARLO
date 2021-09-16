@@ -101,9 +101,6 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestoneLinkMySQLDAO
         super.update(reportSynthesisFlagshipProgressOutcomeMilestoneLink);
     }
 
-
     return reportSynthesisFlagshipProgressOutcomeMilestoneLink;
   }
-
-
 }
