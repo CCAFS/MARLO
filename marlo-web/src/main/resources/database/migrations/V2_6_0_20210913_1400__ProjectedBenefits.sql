@@ -172,3 +172,17 @@ INSERT into st_projected_benefits_weighting (projected_benefits_id,weight_descri
 INSERT into st_projected_benefits_weighting (projected_benefits_id,weight_description_id,weight_value) values (19,2,'10');
 INSERT into st_projected_benefits_weighting (projected_benefits_id,weight_description_id,weight_value) values (19,3,'5');
 INSERT into st_projected_benefits_weighting (projected_benefits_id,weight_description_id,weight_value) values (19,4,'1');
+
+CREATE TABLE st_projected_benefits_probabilites (
+id bigint(20) NOT NULL AUTO_INCREMENT,
+name TEXT NULL,
+description TEXT NULL,
+PRIMARY KEY (id),
+INDEX `st_projected_benefits_probabilites_id` (`id`) USING BTREE 
+)ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci;
+
+Insert Into st_projected_benefits_probabilites (name, description) values ('Very high certainty','>80% expectation of achieving these impacts by 2030, at this point in the design process');
+Insert Into st_projected_benefits_probabilites (name, description) values ('High certainty','60%-80% expectation of achieving these impacts by 2030, at this point');
+Insert Into st_projected_benefits_probabilites (name, description) values ('Medium certainty','40%-60% expectation of achieving these impacts by 2030, at this point');
+Insert Into st_projected_benefits_probabilites (name, description) values ('Lower certainty','<40% expectation of achieving these impacts by 2030, at this point');
