@@ -19,23 +19,19 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
-import org.cgiar.ccafs.marlo.data.model.ImpactAreaIndicator;
-import org.cgiar.ccafs.marlo.rest.dto.ImpactAreasIndicatorsDTO;
+import org.cgiar.ccafs.marlo.data.model.ProjectedBenefitsProbabilites;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectedBenefitsProbabilitiesDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "jsr330")
-public interface ImpactAreasIndicatorMapper {
+public interface ProjectedBenefitsProbabilitiesMapper {
 
-  @Mappings({@Mapping(source = "id", target = "indicatorId"),
-    @Mapping(source = "impactArea.id", target = "impactAreaId"),
-    @Mapping(source = "impactArea.name", target = "impactAreaName"),
-    @Mapping(source = "targetYear", target = "targetYear"), @Mapping(source = "targetUnit", target = "targetUnit"),
-    @Mapping(source = "targetValue", target = "value"),
-    @Mapping(source = "isProjectedBenefits", target = "isAplicableProjectedBenefits")})
-  public abstract ImpactAreasIndicatorsDTO
-    impactAreasIndicatorsToImpactAreasIndicatorsDTO(ImpactAreaIndicator impactAreaIndicator);
+  @Mappings({@Mapping(source = "id", target = "probabilityID"), @Mapping(source = "name", target = "probabilityName"),
+    @Mapping(source = "description", target = "probabilityDescription")})
+  public abstract ProjectedBenefitsProbabilitiesDTO projectedBenefitsProbabilitiesToProjectedBenefitsProbabilitiesDTO(
+    ProjectedBenefitsProbabilites projectedBenefitsProbabilites);
 
 }

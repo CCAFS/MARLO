@@ -19,23 +19,21 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
-import org.cgiar.ccafs.marlo.data.model.ImpactAreaIndicator;
-import org.cgiar.ccafs.marlo.rest.dto.ImpactAreasIndicatorsDTO;
+import org.cgiar.ccafs.marlo.data.model.ProjectedBenefits;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectedBenefitsDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
-@Mapper(componentModel = "jsr330")
-public interface ImpactAreasIndicatorMapper {
+@Mapper(componentModel = "jsr330", uses = {DepthScaleMapper.class, ProjectedBenefitsWeightingMapper.class})
+public interface ProjectedBenefitsMapper {
 
-  @Mappings({@Mapping(source = "id", target = "indicatorId"),
-    @Mapping(source = "impactArea.id", target = "impactAreaId"),
-    @Mapping(source = "impactArea.name", target = "impactAreaName"),
-    @Mapping(source = "targetYear", target = "targetYear"), @Mapping(source = "targetUnit", target = "targetUnit"),
-    @Mapping(source = "targetValue", target = "value"),
-    @Mapping(source = "isProjectedBenefits", target = "isAplicableProjectedBenefits")})
-  public abstract ImpactAreasIndicatorsDTO
-    impactAreasIndicatorsToImpactAreasIndicatorsDTO(ImpactAreaIndicator impactAreaIndicator);
+  @Mappings({@Mapping(source = "impactAreaIndicator.id", target = "impactAreaIndicator"),
+    @Mapping(source = "impactAreaIndicator.indicatorStatement", target = "impactAreaIndicatorName"),
+    @Mapping(source = "impactAreaIndicator.impactArea.id", target = "impactAreaId"),
+    @Mapping(source = "impactAreaIndicator.impactArea.name", target = "impactAreaName"),
+    @Mapping(source = "weightingList", target = "weightingValues")})
+  public abstract ProjectedBenefitsDTO projectBenefitsToProjectedBenefitsDTO(ProjectedBenefits projectedBenefits);
 
 }

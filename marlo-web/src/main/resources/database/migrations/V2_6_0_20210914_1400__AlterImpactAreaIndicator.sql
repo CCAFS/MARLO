@@ -1,0 +1,1 @@
+Alter table st_impact_areas_indicators add is_aplicable_projected_benefits int(1) default 0;

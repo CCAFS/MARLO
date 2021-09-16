@@ -51,6 +51,9 @@ public class ImpactAreasIndicatorsDTO {
   @ApiModelProperty(notes = "Impact Area Indicator target value", position = 7)
   public String value;
 
+  @ApiModelProperty(notes = "this impact area indicator is aplicable for projected benefits", position = 8)
+  public Boolean isAplicableProjectedBenefits;
+
 
   public long getImpactAreaId() {
     return impactAreaId;
@@ -69,6 +72,11 @@ public class ImpactAreasIndicatorsDTO {
 
   public String getIndicatorStatement() {
     return indicatorStatement;
+  }
+
+
+  public Boolean getIsAplicableProjectedBenefits() {
+    return isAplicableProjectedBenefits;
   }
 
 
@@ -101,8 +109,13 @@ public class ImpactAreasIndicatorsDTO {
     this.indicatorId = indicatorId;
   }
 
+
   public void setIndicatorStatement(String indicatorStatement) {
     this.indicatorStatement = indicatorStatement;
+  }
+
+  public void setIsAplicableProjectedBenefits(Boolean isAplicableProjectedBenefits) {
+    this.isAplicableProjectedBenefits = isAplicableProjectedBenefits;
   }
 
   public void setTargetUnit(String targetUnit) {
