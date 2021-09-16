@@ -150,7 +150,7 @@
               <div class="row">
                 <div class="col-md-6">
                   [#-- Geographic Scope --]
-                  [@customForm.elementsListComponent name="innovation.geographicScopes" elementType="repIndGeographicScope" elementList=innovation.geographicScopes maxLimit=1 label="projectInnovations.geographicScope" listName="geographicScopeList" keyFieldName="id" displayFieldName="name" required=true /]
+                  [@customForm.elementsListComponent name="innovation.geographicScopes" elementType="repIndGeographicScope" elementList=innovation.geographicScopes  label="projectInnovations.geographicScope" listName="geographicScopeList" keyFieldName="id" displayFieldName="name" required=true /]
                 </div>
               </div>
               <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
