@@ -494,6 +494,8 @@
     <mapping resource="xmls/ProjectedBenefitsWeighting.hbm.xml"/>
     <mapping resource="xmls/ProjectedBenefitsDepthScale.hbm.xml"/>
     <mapping resource="xmls/ProjectedBenefits.hbm.xml"/>
+    <mapping resource="xmls/ProjectedBenefitsProbabilities.hbm.xml"/>
+    
     <!-- Annual Report 2021 -->
     <mapping resource="xmls/ProjectExpectedStudyReferences.hbm.xml" />
     <mapping resource="xmls/ProjectInnovationEvidenceLinks.hbm.xml" />

@@ -21,15 +21,19 @@ package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontoo
 
 import org.cgiar.ccafs.marlo.data.manager.DepthScaleManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectedBenefitsManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectedBenefitsProbabilitiesManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectedBenefitsWeightDescriptionManager;
 import org.cgiar.ccafs.marlo.data.model.DepthScales;
 import org.cgiar.ccafs.marlo.data.model.ProjectedBenefits;
+import org.cgiar.ccafs.marlo.data.model.ProjectedBenefitsProbabilites;
 import org.cgiar.ccafs.marlo.data.model.ProjectedBenefitsWeightDescription;
 import org.cgiar.ccafs.marlo.rest.dto.DepthDescriptionsDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectedBenefitsDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectedBenefitsDepthScaleDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectedBenefitsProbabilitiesDTO;
 import org.cgiar.ccafs.marlo.rest.mappers.DepthScaleMapper;
 import org.cgiar.ccafs.marlo.rest.mappers.ProjectedBenefitsMapper;
+import org.cgiar.ccafs.marlo.rest.mappers.ProjectedBenefitsProbabilitiesMapper;
 import org.cgiar.ccafs.marlo.rest.mappers.ProjectedBenefitsWeightingMapper;
 
 import java.util.ArrayList;
@@ -48,6 +52,8 @@ public class ProjectedBenefitsItem<T> {
   private DepthScaleMapper depthScaleMapper;
   private ProjectedBenefitsWeightDescriptionManager projectedBenefitsWeightDescriptionManager;
   private ProjectedBenefitsWeightingMapper projectedBenefitsWeightingMapper;
+  private ProjectedBenefitsProbabilitiesManager projectedBenefitsProbabilitiesManager;
+  private ProjectedBenefitsProbabilitiesMapper projectedBenefitsProbabilitiesMapper;
 
 
   @Inject
@@ -55,7 +61,9 @@ public class ProjectedBenefitsItem<T> {
     ProjectedBenefitsMapper projectedBenefitsMapper, DepthScaleManager depthScaleManager,
     DepthScaleMapper depthScaleMapper,
     ProjectedBenefitsWeightDescriptionManager projectedBenefitsWeightDescriptionManager,
-    ProjectedBenefitsWeightingMapper projectedBenefitsWeightingMapper) {
+    ProjectedBenefitsWeightingMapper projectedBenefitsWeightingMapper,
+    ProjectedBenefitsProbabilitiesManager projectedBenefitsProbabilitiesManager,
+    ProjectedBenefitsProbabilitiesMapper projectedBenefitsProbabilitiesMapper) {
     super();
     this.projectedBenefitsManager = projectedBenefitsManager;
     this.projectedBenefitsMapper = projectedBenefitsMapper;
@@ -63,6 +71,8 @@ public class ProjectedBenefitsItem<T> {
     this.depthScaleMapper = depthScaleMapper;
     this.projectedBenefitsWeightDescriptionManager = projectedBenefitsWeightDescriptionManager;
     this.projectedBenefitsWeightingMapper = projectedBenefitsWeightingMapper;
+    this.projectedBenefitsProbabilitiesManager = projectedBenefitsProbabilitiesManager;
+    this.projectedBenefitsProbabilitiesMapper = projectedBenefitsProbabilitiesMapper;
 
 
   }
@@ -105,6 +115,14 @@ public class ProjectedBenefitsItem<T> {
         .map(c -> this.projectedBenefitsMapper.projectBenefitsToProjectedBenefitsDTO(c)).collect(Collectors.toList());
     }
     return projectedBenefitsDTOs;
+  }
+
+  public List<ProjectedBenefitsProbabilitiesDTO> getProjectedBenefitsProbabilities() {
+    List<ProjectedBenefitsProbabilites> probabilitiesList = projectedBenefitsProbabilitiesManager.findAll();
+    List<ProjectedBenefitsProbabilitiesDTO> probabilities = new ArrayList<ProjectedBenefitsProbabilitiesDTO>();
+    probabilities = probabilitiesList.stream().map(c -> this.projectedBenefitsProbabilitiesMapper
+      .projectedBenefitsProbabilitiesToProjectedBenefitsProbabilitiesDTO(c)).collect(Collectors.toList());
+    return probabilities;
   }
 
 }
