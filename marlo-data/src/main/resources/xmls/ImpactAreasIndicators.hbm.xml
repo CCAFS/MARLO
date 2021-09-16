@@ -19,6 +19,9 @@
      <property name="targetValue" type="string">
       <column name="target_value" sql-type="TEXT" />
     </property>
+    <property name="isProjectedBenefits" type="java.lang.Boolean">
+      <column name="is_aplicable_projected_benefits" />
+    </property>
     <many-to-one name="impactArea"
       class="org.cgiar.ccafs.marlo.data.model.ImpactArea" fetch="select">
       <column name="st_impact_areas_id" />
