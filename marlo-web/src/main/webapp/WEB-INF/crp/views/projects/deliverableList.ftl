@@ -123,15 +123,10 @@
              <p class="note">[@s.text name="project.deliverableList.focusDeliverablesMessage"][@s.param]${currentCycleYear}[/@s.param][@s.param]<span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>[/@s.param][/@s.text]</p>
             [/#if]
             <hr />
-            [#if !action.isAiccra()]
-              [@deliverableList.deliverablesList deliverables=(project.getCurrentDeliverables(actualPhase))![] canValidate=true canEdit=candit  isReportingActive=reportingActive namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]
-            [#else]
-              [#if !config.production]
-                [@deliverableList.deliverablesList deliverables=(currentDeliverableList)![] canValidate=true canEdit=candit  isReportingActive=reportingActive namespace="/clusters" defaultAction="${(crpSession)!}/deliverable" projectID=projectID/]
-              [#else]
+              [@deliverableList.deliverablesList deliverables=(currentDeliverableList)![] canValidate=true canEdit=candit  isReportingActive=reportingActive namespace="/clusters" defaultAction="${(crpSession)!}/deliverable" projectID=projectID/]
+              [#--  
                 [@deliverableList.deliverablesList deliverables=(project.getCurrentDeliverables(actualPhase))![] canValidate=true canEdit=candit  isReportingActive=reportingActive namespace="/clusters" defaultAction="${(crpSession)!}/deliverable" projectID=projectID/]
-              [/#if]
-            [/#if]
+             --]
           </div>
 
           [#-- Add Deliverable Button --]
@@ -150,7 +145,7 @@
           <div class="">
             <h3 class="subTitle headTitle">Previous deliverables</h3>
             <hr />
-            [@deliverableList.deliverablesList deliverables=(project.getPreviousDeliverables(actualPhase))![] canValidate=true canEdit=candit isReportingActive=reportingActive namespace="/projects" defaultAction="${(crpSession)!}/deliverable" currentTable=false /]
+            [@deliverableList.deliverablesList deliverables=(project.getPreviousDeliverables(actualPhase))![] canValidate=true canEdit=candit isReportingActive=reportingActive namespace="/projects" defaultAction="${(crpSession)!}/deliverable" currentTable=false projectID=projectID/]
           </div>
 
           <input type="hidden" name="projectID" value="${projectID}" />
