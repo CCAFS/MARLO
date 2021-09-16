@@ -23,11 +23,16 @@ import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontool
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools.ImpactAreasIndicatorsItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools.ImpactAreasItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools.InitiativesItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools.ProjectedBenefitsItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools.SdgItem;
 import org.cgiar.ccafs.marlo.rest.dto.ActionAreasDTO;
+import org.cgiar.ccafs.marlo.rest.dto.DepthDescriptionsDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ImpactAreasDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ImpactAreasIndicatorsDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InitiativesDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectedBenefitsDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectedBenefitsDepthScaleDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectedBenefitsProbabilitiesDTO;
 import org.cgiar.ccafs.marlo.rest.dto.SDGIndicatorDTO;
 import org.cgiar.ccafs.marlo.rest.dto.SDGTargetDTO;
 import org.cgiar.ccafs.marlo.rest.dto.SDGsDTO;
@@ -59,7 +64,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @Configuration
 @PropertySource("classpath:clarisa.properties")
 @RestController
-@Api(tags = "Submission Tools Control Lists")
+@Api(tags = "Submission Tool Control Lists")
 @ApiIgnore
 @Named
 public class SubmissionToolsControlLists {
@@ -70,6 +75,7 @@ public class SubmissionToolsControlLists {
   private ImpactAreasIndicatorsItem<SubmissionToolsControlLists> impactAreasIndicatorsItem;
   private SdgItem<SubmissionToolsControlLists> sdgItem;
   private InitiativesItem<SubmissionToolsControlLists> initiativesItem;
+  private ProjectedBenefitsItem<SubmissionToolsControlLists> projectedBenefitsItem;
 
 
   @Autowired
@@ -79,16 +85,18 @@ public class SubmissionToolsControlLists {
   public SubmissionToolsControlLists(ActionAreasItem<SubmissionToolsControlLists> actionAreasItem,
     ImpactAreasItem<SubmissionToolsControlLists> impactAreasItem,
     ImpactAreasIndicatorsItem<SubmissionToolsControlLists> impactAreasIndicatorsItem,
-    SdgItem<SubmissionToolsControlLists> sdgItem, InitiativesItem<SubmissionToolsControlLists> initiativesItem) {
+    SdgItem<SubmissionToolsControlLists> sdgItem, InitiativesItem<SubmissionToolsControlLists> initiativesItem,
+    ProjectedBenefitsItem<SubmissionToolsControlLists> projectedBenefitsItem) {
     super();
     this.actionAreasItem = actionAreasItem;
     this.impactAreasItem = impactAreasItem;
     this.impactAreasIndicatorsItem = impactAreasIndicatorsItem;
     this.sdgItem = sdgItem;
     this.initiativesItem = initiativesItem;
+    this.projectedBenefitsItem = projectedBenefitsItem;
   }
 
-  @ApiOperation(tags = {"Submission Tools Control Lists"},
+  @ApiOperation(tags = {"Submission Tool Control Lists"},
     value = "${SubmissionToolsControlLists.action-areas.code.value}", response = ActionAreasDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/action-areas/{code}", method = RequestMethod.GET,
@@ -104,7 +112,7 @@ public class SubmissionToolsControlLists {
     return response;
   }
 
-  @ApiOperation(tags = {"Submission Tools Control Lists"},
+  @ApiOperation(tags = {"Submission Tool Control Lists"},
     value = "${SubmissionToolsControlLists.impact-areas.code.value}", response = ImpactAreasDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/impact-areas/{code}", method = RequestMethod.GET,
@@ -120,7 +128,7 @@ public class SubmissionToolsControlLists {
     return response;
   }
 
-  @ApiOperation(tags = {"Submission Tools Control Lists"},
+  @ApiOperation(tags = {"Submission Tool Control Lists"},
     value = "${SubmissionToolsControlLists.impact-areas-indicator.code.value}",
     response = ImpactAreasIndicatorsDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
@@ -139,7 +147,7 @@ public class SubmissionToolsControlLists {
     return response;
   }
 
-  @ApiOperation(tags = {"Submission Tools Control Lists"},
+  @ApiOperation(tags = {"Submission Tool Control Lists"},
     value = "${SubmissionToolsControlLists.action-areas.all.value}", response = ActionAreasDTO.class,
     responseContainer = "List")
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
@@ -148,7 +156,7 @@ public class SubmissionToolsControlLists {
     return this.actionAreasItem.getAllActionAreas();
   }
 
-  @ApiOperation(tags = {"Submission Tools Control Lists"},
+  @ApiOperation(tags = {"Submission Tool Control Lists"},
     value = "${SubmissionToolsControlLists.impact-areas.all.value}", response = ImpactAreasDTO.class,
     responseContainer = "List")
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
@@ -157,7 +165,7 @@ public class SubmissionToolsControlLists {
     return this.impactAreasItem.getAllActionAreas();
   }
 
-  @ApiOperation(tags = {"Submission Tools Control Lists"},
+  @ApiOperation(tags = {"Submission Tool Control Lists"},
     value = "${SubmissionToolsControlLists.impact-areas-indicators.all.value}",
     response = ImpactAreasIndicatorsDTO.class, responseContainer = "List")
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
@@ -167,7 +175,7 @@ public class SubmissionToolsControlLists {
     return this.impactAreasIndicatorsItem.getAllImpactAreasIndicators();
   }
 
-  @ApiOperation(tags = {"Submission Tools Control Lists"},
+  @ApiOperation(tags = {"Submission Tool Control Lists"},
     value = "${SubmissionToolsControlLists.Initiatives.all.value}", response = InitiativesDTO.class,
     responseContainer = "List")
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
@@ -176,7 +184,7 @@ public class SubmissionToolsControlLists {
     return this.initiativesItem.getInitiatives();
   }
 
-  @ApiOperation(tags = {"Submission Tools Control Lists"}, value = "${SubmissionToolsControlLists.sdg.all.value}",
+  @ApiOperation(tags = {"Submission Tool Control Lists"}, value = "${SubmissionToolsControlLists.sdg.all.value}",
     response = SDGsDTO.class, responseContainer = "List")
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/allSDG", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -184,7 +192,7 @@ public class SubmissionToolsControlLists {
     return this.sdgItem.getAllSDGs();
   }
 
-  @ApiOperation(tags = {"Submission Tools Control Lists"},
+  @ApiOperation(tags = {"Submission Tool Control Lists"},
     value = "${SubmissionToolsControlLists.sdgIndicator.all.value}", response = SDGIndicatorDTO.class,
     responseContainer = "List")
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
@@ -199,6 +207,39 @@ public class SubmissionToolsControlLists {
   @RequestMapping(value = "/allSDGTargets", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public List<SDGTargetDTO> getAllSDGTargets() {
     return this.sdgItem.getAllSDGTargets();
+  }
+
+  @ApiOperation(tags = {"Submission Tools Control Lists"}, value = "${SubmissionToolsControlLists.sdgTarget.all.value}",
+    response = DepthDescriptionsDTO.class, responseContainer = "List")
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/depthDescriptions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<DepthDescriptionsDTO> getDepthDescriptions() {
+    return this.projectedBenefitsItem.getDepthDescriptions();
+  }
+
+  @ApiOperation(tags = {"Submission Tools Control Lists"}, value = "${SubmissionToolsControlLists.sdgTarget.all.value}",
+    response = ProjectedBenefitsDepthScaleDTO.class, responseContainer = "List")
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/depthScales", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<ProjectedBenefitsDepthScaleDTO> getDepthScales() {
+    return this.projectedBenefitsItem.getDepthScales();
+  }
+
+  @ApiOperation(tags = {"Submission Tools Control Lists"}, value = "${SubmissionToolsControlLists.sdgTarget.all.value}",
+    response = ProjectedBenefitsDTO.class, responseContainer = "List")
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/projectedBenefits", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<ProjectedBenefitsDTO> getProjectedBenefits() {
+    return this.projectedBenefitsItem.getProjectedBenefits();
+  }
+
+  @ApiOperation(tags = {"Submission Tools Control Lists"}, value = "${SubmissionToolsControlLists.sdgTarget.all.value}",
+    response = ProjectedBenefitsProbabilitiesDTO.class, responseContainer = "List")
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/projectedBenefitsProbabilities", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<ProjectedBenefitsProbabilitiesDTO> getprojectedBenefitsProbabilities() {
+    return this.projectedBenefitsItem.getProjectedBenefitsProbabilities();
   }
 
 

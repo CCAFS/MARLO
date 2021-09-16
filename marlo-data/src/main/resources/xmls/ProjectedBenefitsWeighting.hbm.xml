@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+  <class name="org.cgiar.ccafs.marlo.data.model.ProjectedBenefitsWeighting" table="st_projected_benefits_weighting" optimistic-lock="none">
+    <id name="id" type="java.lang.Long">
+      <column name="id" />
+      <generator class="identity" />
+    </id>   
+     <many-to-one name="projectedBenefits" class="org.cgiar.ccafs.marlo.data.model.ProjectedBenefits" fetch="select">
+            <column name="projected_benefits_id" not-null="true" />
+    </many-to-one>
+    <many-to-one name="weightDescription" class="org.cgiar.ccafs.marlo.data.model.ProjectedBenefitsWeightDescription"
+      fetch="select" update="false">
+      <column name="weight_description_id" not-null="true" />
+    </many-to-one>
+    <property name="value" type="string" >
+      <column name="weight_value" sql-type="TEXT" />
+    </property>      
+  </class>
+</hibernate-mapping>

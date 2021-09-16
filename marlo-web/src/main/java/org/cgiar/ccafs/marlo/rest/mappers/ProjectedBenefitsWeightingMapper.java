@@ -19,23 +19,27 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
-import org.cgiar.ccafs.marlo.data.model.ImpactAreaIndicator;
-import org.cgiar.ccafs.marlo.rest.dto.ImpactAreasIndicatorsDTO;
+import org.cgiar.ccafs.marlo.data.model.ProjectedBenefitsWeightDescription;
+import org.cgiar.ccafs.marlo.data.model.ProjectedBenefitsWeighting;
+import org.cgiar.ccafs.marlo.rest.dto.DepthDescriptionsDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectedBenefitsWeightingDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "jsr330")
-public interface ImpactAreasIndicatorMapper {
+public interface ProjectedBenefitsWeightingMapper {
 
-  @Mappings({@Mapping(source = "id", target = "indicatorId"),
-    @Mapping(source = "impactArea.id", target = "impactAreaId"),
-    @Mapping(source = "impactArea.name", target = "impactAreaName"),
-    @Mapping(source = "targetYear", target = "targetYear"), @Mapping(source = "targetUnit", target = "targetUnit"),
-    @Mapping(source = "targetValue", target = "value"),
-    @Mapping(source = "isProjectedBenefits", target = "isAplicableProjectedBenefits")})
-  public abstract ImpactAreasIndicatorsDTO
-    impactAreasIndicatorsToImpactAreasIndicatorsDTO(ImpactAreaIndicator impactAreaIndicator);
+  @Mappings({@Mapping(source = "id", target = "descriptionID"),
+    @Mapping(source = "description", target = "description")})
+  public abstract DepthDescriptionsDTO projectedBenefitsWeightDescriptionToDepthDescriptionsDTO(
+    ProjectedBenefitsWeightDescription projectedBenefitsWeightDescription);
+
+  @Mappings({@Mapping(source = "weightDescription.id", target = "descriptionID"),
+    @Mapping(source = "weightDescription.description", target = "description"),
+    @Mapping(source = "value", target = "weightValue")})
+  public abstract ProjectedBenefitsWeightingDTO
+    projectedBenefitsWeightingToProjectedBenefitsWeightingDTO(ProjectedBenefitsWeighting projectedBenefitsWeighting);
 
 }
