@@ -238,7 +238,7 @@
               
               <div class="tab-content ">          
                 [#-- Progress tab --]  
-                  <div id="deliverable-mainInformation" role="tabpanel" class="tab-pane fade in active">
+                  <div id="deliverable-mainInformation" role="tabpanel" class="tab-pane fade">
                     [#if action.isAiccra()  && projectOutcomeLastPhase.crpProgramOutcome.indicators?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?size != 0]
                       [#-- 
                       && projectOutcomeLastPhase.crpProgramOutcome?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?has_content
@@ -275,7 +275,7 @@
                   </div>  
                   [#-- Reporting tab --]
                   
-                    <div id="deliverable-disseminationMetadata" role="tabpanel" class="tab-pane fade ">
+                    <div id="deliverable-disseminationMetadata" role="tabpanel" class="tab-pane fade in active">
                       [#if action.isAiccra() && projectOutcome.crpProgramOutcome.indicators?size != 0]
                         <h4 class="headTitle">Progress to Targets</h4>
                         <div class="nextUsersBlock borderBox">
