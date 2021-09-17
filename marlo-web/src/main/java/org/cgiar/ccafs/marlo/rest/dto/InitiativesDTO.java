@@ -19,130 +19,116 @@
 
 package org.cgiar.ccafs.marlo.rest.dto;
 
+import java.util.List;
+
 import io.swagger.annotations.ApiModelProperty;
 
 public class InitiativesDTO {
 
   @ApiModelProperty(notes = "Initiative ID", position = 1)
-  public Long initvStgId;
+  public Long id;
 
-  public String currentStage;
-
-  public String currentStageName;
-
-  public Long currentStageId;
-
-  public String initiativeName;
-
-  public int initvStageIsActive;
-
-  public String initvStageStatus;
-
-  public Long activeStageId;
-
-  public String activeStageName;
-
-  public String userInitiative;
-
-  public String userInitiativeRole;
-
-  private ConceptDTO concept;
+  public String name;
+  public String status;
+  public String action_area_id;
+  public String action_area_description;
+  public int active;
 
 
-  public Long getActiveStageId() {
-    return activeStageId;
+  public Long stageId;
+  public String description;
+
+  public List<StagesDTO> stages;
+
+
+  public String getAction_area_description() {
+    return action_area_description;
   }
 
 
-  public String getActiveStageName() {
-    return activeStageName;
+  public String getAction_area_id() {
+    return action_area_id;
   }
 
-  public ConceptDTO getConcept() {
-    return concept;
+
+  public int getActive() {
+    return active;
   }
 
-  public String getCurrentStage() {
-    return currentStage;
+
+  public String getDescription() {
+    return description;
   }
 
-  public Long getCurrentStageId() {
-    return currentStageId;
+
+  public Long getId() {
+    return id;
   }
 
-  public String getCurrentStageName() {
-    return currentStageName;
+
+  public String getName() {
+    return name;
   }
 
-  public String getInitiativeName() {
-    return initiativeName;
+
+  public Long getStageId() {
+    return stageId;
   }
 
-  public int getInitvStageIsActive() {
-    return initvStageIsActive;
+
+  public List<StagesDTO> getStages() {
+    return stages;
   }
 
-  public String getInitvStageStatus() {
-    return initvStageStatus;
+
+  public String getStatus() {
+    return status;
   }
 
-  public Long getInitvStgId() {
-    return initvStgId;
+
+  public void setAction_area_description(String action_area_description) {
+    this.action_area_description = action_area_description;
   }
 
-  public String getUserInitiative() {
-    return userInitiative;
+
+  public void setAction_area_id(String action_area_id) {
+    this.action_area_id = action_area_id;
   }
 
-  public String getUserInitiativeRole() {
-    return userInitiativeRole;
+
+  public void setActive(int active) {
+    this.active = active;
   }
 
-  public void setActiveStageId(Long activeStageId) {
-    this.activeStageId = activeStageId;
+
+  public void setDescription(String description) {
+    this.description = description;
   }
 
-  public void setActiveStageName(String activeStageName) {
-    this.activeStageName = activeStageName;
+
+  public void setId(Long id) {
+    this.id = id;
   }
 
-  public void setConcept(ConceptDTO concept) {
-    this.concept = concept;
+
+  public void setName(String name) {
+    this.name = name;
   }
 
-  public void setCurrentStage(String currentStage) {
-    this.currentStage = currentStage;
+
+  public void setStageId(Long stageId) {
+    this.stageId = stageId;
   }
 
-  public void setCurrentStageId(Long currentStageId) {
-    this.currentStageId = currentStageId;
+
+  public void setStages(List<StagesDTO> stages) {
+    this.stages = stages;
   }
 
-  public void setCurrentStageName(String currentStageName) {
-    this.currentStageName = currentStageName;
+
+  public void setStatus(String status) {
+    this.status = status;
   }
 
-  public void setInitiativeName(String initiativeName) {
-    this.initiativeName = initiativeName;
-  }
 
-  public void setInitvStageIsActive(int initvStageIsActive) {
-    this.initvStageIsActive = initvStageIsActive;
-  }
-
-  public void setInitvStageStatus(String initvStageStatus) {
-    this.initvStageStatus = initvStageStatus;
-  }
-
-  public void setInitvStgId(Long initvStgId) {
-    this.initvStgId = initvStgId;
-  }
-
-  public void setUserInitiative(String userInitiative) {
-    this.userInitiative = userInitiative;
-  }
-
-  public void setUserInitiativeRole(String userInitiativeRole) {
-    this.userInitiativeRole = userInitiativeRole;
-  }
 }
