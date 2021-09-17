@@ -14,7 +14,7 @@
         </many-to-one>
         
         <property name="link" type="string">
-            <column name="evidence" sql-type="TEXT" />
+            <column name="link" sql-type="TEXT" />
         </property>
     </class>
 </hibernate-mapping>
