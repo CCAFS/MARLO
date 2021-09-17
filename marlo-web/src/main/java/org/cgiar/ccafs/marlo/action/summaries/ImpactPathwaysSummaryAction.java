@@ -348,21 +348,28 @@ public class ImpactPathwaysSummaryAction extends BaseSummariesAction implements 
 
   private TypedTableModel getCrpMilestonesTableModel() {
     TypedTableModel model = new TypedTableModel(
-      new String[] {"outcomeComposedId", "outcomeName", "milestoneComposedId", "milestoneName", "milestoneTargetYear",
-        "milestoneStatus", "milestoneTargetUnit", "milestoneTargetValue", "levelOfChange", "assessmentOfRisk",
-        "mainRisk", "meansOfVerification", "markerGender", "markerYouth", "markerCapdev", "markerClimate",
-        "projectMilestones"},
+      new String[] {"flagship", "outcomeComposedId", "outcomeName", "milestoneComposedId", "milestoneName",
+        "milestoneTargetYear", "milestoneStatus", "milestoneTargetUnit", "milestoneTargetValue", "levelOfChange",
+        "assessmentOfRisk", "mainRisk", "meansOfVerification", "markerGender", "markerYouth", "markerCapdev",
+        "markerClimate", "projectMilestones"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        BigDecimal.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class});
+        String.class, BigDecimal.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, String.class});
 
-    String outcomeComposedId = "", outcomeName = "", milestoneComposedId = "", milestoneName = "", milestoneStatus = "",
-      milestoneTargetUnit = "", levelOfChange = "", assessmentOfRisk = "", meansOfVerification = "", markerGender = "",
-      markerYouth = "", markerCapdev = "", markerClimate = "";
+    String flagship = "", outcomeComposedId = "", outcomeName = "", milestoneComposedId = "", milestoneName = "",
+      milestoneStatus = "", milestoneTargetUnit = "", levelOfChange = "", assessmentOfRisk = "",
+      meansOfVerification = "", markerGender = "", markerYouth = "", markerCapdev = "", markerClimate = "";
     BigDecimal milestoneTargetValue = BigDecimal.ZERO;
     StringBuffer milestoneTargetYear = null, mainRisk = null, projectMilestones = null;
 
     for (CrpProgramOutcome outcome : outcomes) {
+      // Flagship/Module
+      if (outcome.getCrpProgram() != null && outcome.getCrpProgram().getId() != null) {
+        flagship = outcome.getCrpProgram().getAcronym();
+      } else {
+        flagship = notDefined;
+      }
+
       // Outcome composedId
       if (StringUtils.isNotBlank(outcome.getComposeID())) {
         outcomeComposedId = outcome.getComposeID();
@@ -507,10 +514,10 @@ public class ImpactPathwaysSummaryAction extends BaseSummariesAction implements 
             }
           }
 
-          model.addRow(new Object[] {outcomeComposedId, outcomeName, milestoneComposedId, milestoneName,
+          model.addRow(new Object[] {flagship, outcomeComposedId, outcomeName, milestoneComposedId, milestoneName,
             milestoneTargetYear.toString(), milestoneStatus, milestoneTargetUnit, milestoneTargetValue.toPlainString(),
             levelOfChange, assessmentOfRisk, mainRisk.toString(), meansOfVerification, markerGender, markerYouth,
-            markerCapdev, markerClimate, projectMilestones});
+            markerCapdev, markerClimate, projectMilestones.toString()});
         }
       } else {
         milestoneComposedId = notDefined;
@@ -529,7 +536,7 @@ public class ImpactPathwaysSummaryAction extends BaseSummariesAction implements 
         markerClimate = notProvided;
         projectMilestones = new StringBuffer(notDefined);
 
-        model.addRow(new Object[] {outcomeComposedId, outcomeName, milestoneComposedId, milestoneName,
+        model.addRow(new Object[] {flagship, outcomeComposedId, outcomeName, milestoneComposedId, milestoneName,
           milestoneTargetYear.toString(), milestoneStatus, milestoneTargetUnit, milestoneTargetValue, levelOfChange,
           assessmentOfRisk, mainRisk.toString(), meansOfVerification, markerGender, markerYouth, markerCapdev,
           markerClimate, projectMilestones.toString()});
@@ -548,12 +555,13 @@ public class ImpactPathwaysSummaryAction extends BaseSummariesAction implements 
 
     String flagship = "", composedId = "", outcomeName = "", outcomeTargetUnit = "";
     Long outcomeTargetYear = 0L, phaseId = 0L;
-    StringBuffer allSubidosAndContribution = null;
+    StringBuffer allSubidosAndContribution = null, primarySubIdos = null;
     BigDecimal outcomeTargetValue = BigDecimal.ZERO;
     phaseId = Long.valueOf(this.getSelectedPhase().getYear());
 
     for (CrpProgramOutcome outcome : outcomes) {
       allSubidosAndContribution = new StringBuffer();
+      primarySubIdos = new StringBuffer();
 
       // Outcome FP/Module
       if (outcome.getCrpProgram() != null && outcome.getCrpProgram().getId() != null) {
@@ -601,18 +609,29 @@ public class ImpactPathwaysSummaryAction extends BaseSummariesAction implements 
       if (this.isNotEmpty(outcome.getSubIdos())) {
         for (CrpOutcomeSubIdo subIdo : outcome.getSubIdos()) {
           if (subIdo.getSrfSubIdo() != null && subIdo.getSrfSubIdo().getId() != -1) {
-            allSubidosAndContribution = allSubidosAndContribution.append("•")
-              .append((subIdo.getPrimary() != null && subIdo.getPrimary()) ? "*" : "").append(" ")
-              .append(subIdo.getSrfSubIdo().getComposedName());
+            if (subIdo.getPrimary() != null && subIdo.getPrimary()) {
+              primarySubIdos = primarySubIdos.append("•").append("{Primary}").append(" ")
+                .append(subIdo.getSrfSubIdo().getComposedName());
+              if (subIdo.getContribution() != null) {
+                primarySubIdos = primarySubIdos.append(": ").append(subIdo.getContribution()).append('%');
+              }
 
-            if (subIdo.getContribution() != null) {
+              primarySubIdos = primarySubIdos.append("\r\n");
+            } else {
               allSubidosAndContribution =
-                allSubidosAndContribution.append(": ").append(subIdo.getContribution()).append('%');
-            }
+                allSubidosAndContribution.append("•").append(" ").append(subIdo.getSrfSubIdo().getComposedName());
 
-            allSubidosAndContribution = allSubidosAndContribution.append("\r\n");
+              if (subIdo.getContribution() != null) {
+                allSubidosAndContribution =
+                  allSubidosAndContribution.append(": ").append(subIdo.getContribution()).append('%');
+              }
+
+              allSubidosAndContribution = allSubidosAndContribution.append("\r\n");
+            }
           }
         }
+
+        allSubidosAndContribution = primarySubIdos.append(allSubidosAndContribution);
       } else {
         allSubidosAndContribution = allSubidosAndContribution.append(notProvided);
       }
