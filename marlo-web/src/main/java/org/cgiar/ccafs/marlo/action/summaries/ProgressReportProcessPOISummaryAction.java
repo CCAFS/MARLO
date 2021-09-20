@@ -1233,10 +1233,8 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
       fileName.append("All Clusters - ");
     } else {
       fileName.append("C" + projectID + " ");
-      if (projectInfo != null && projectInfo.getLiaisonInstitution() != null
-        && projectInfo.getLiaisonInstitution().getInstitution() != null
-        && projectInfo.getLiaisonInstitution().getInstitution().getName() != null) {
-        fileName.append(projectInfo.getLiaisonInstitution().getInstitution().getName() + " - ");
+      if (projectInfo != null && projectInfo.getTitle() != null) {
+        fileName.append(projectInfo.getTitle() + " - ");
       } else {
         fileName.append("- ");
       }
