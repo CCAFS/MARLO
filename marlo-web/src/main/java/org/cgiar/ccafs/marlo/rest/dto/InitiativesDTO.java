@@ -27,7 +27,7 @@ public class InitiativesDTO {
 
   @ApiModelProperty(notes = "Initiative ID", position = 1)
   public Long id;
-
+  public String official_code;
   public String name;
   public String status;
   public String action_area_id;
@@ -36,15 +36,16 @@ public class InitiativesDTO {
 
 
   public Long stageId;
+
+
   public String description;
 
-  public List<StagesDTO> stages;
 
+  public List<StagesDTO> stages;
 
   public String getAction_area_description() {
     return action_area_description;
   }
-
 
   public String getAction_area_id() {
     return action_area_id;
@@ -68,6 +69,11 @@ public class InitiativesDTO {
 
   public String getName() {
     return name;
+  }
+
+
+  public String getOfficial_code() {
+    return official_code;
   }
 
 
@@ -113,6 +119,11 @@ public class InitiativesDTO {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+
+  public void setOfficial_code(String official_code) {
+    this.official_code = official_code;
   }
 
 
