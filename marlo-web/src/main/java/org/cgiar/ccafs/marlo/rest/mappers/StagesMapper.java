@@ -19,14 +19,14 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
-import org.cgiar.ccafs.marlo.rest.dto.InitiativesDTO;
-import org.cgiar.ccafs.marlo.rest.services.submissionTools.Initiative;
+import org.cgiar.ccafs.marlo.rest.dto.StagesDTO;
+import org.cgiar.ccafs.marlo.rest.services.submissionTools.Stages;
 
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "jsr330", uses = {StagesMapper.class})
-public interface InitiativeMapper {
+@Mapper(componentModel = "jsr330")
+public interface StagesMapper {
 
-  public abstract InitiativesDTO initiativeToInitiativesDTO(Initiative initiative);
+  public abstract StagesDTO stagesToStagesDTO(Stages stages);
 
 }

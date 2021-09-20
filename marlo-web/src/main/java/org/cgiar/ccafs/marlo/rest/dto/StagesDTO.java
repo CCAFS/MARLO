@@ -17,16 +17,47 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.rest.mappers;
+package org.cgiar.ccafs.marlo.rest.dto;
 
-import org.cgiar.ccafs.marlo.rest.dto.InitiativesDTO;
-import org.cgiar.ccafs.marlo.rest.services.submissionTools.Initiative;
+import io.swagger.annotations.ApiModelProperty;
 
-import org.mapstruct.Mapper;
+public class StagesDTO {
 
-@Mapper(componentModel = "jsr330", uses = {StagesMapper.class})
-public interface InitiativeMapper {
+  @ApiModelProperty(notes = "Stage ID", position = 1)
+  private Long id;
+  private Long initvStgId;
+  private Long stageId;
+  private int active;
 
-  public abstract InitiativesDTO initiativeToInitiativesDTO(Initiative initiative);
+  public int getActive() {
+    return active;
+  }
 
+  public Long getId() {
+    return id;
+  }
+
+  public Long getInitvStgId() {
+    return initvStgId;
+  }
+
+  public Long getStageId() {
+    return stageId;
+  }
+
+  public void setActive(int active) {
+    this.active = active;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public void setInitvStgId(Long initvStgId) {
+    this.initvStgId = initvStgId;
+  }
+
+  public void setStageId(Long stageId) {
+    this.stageId = stageId;
+  }
 }
