@@ -30,6 +30,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.collections4.Bag;
 import org.apache.commons.collections4.bag.HashBag;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,8 +68,10 @@ public class ProjectGraphsAction extends BaseAction {
 
     this.projects.stream().collect(Collectors.groupingBy(p -> p.getStatus()))
       .forEach((k, v) -> byProjectStatus.add(new GraphCountDTO(k, (long) v.size())));
-    Bag<String> acc =
-      this.projects.stream().flatMap(p -> p.getProgramType().stream()).collect(Collectors.toCollection(HashBag::new));
+    Bag<String> acc = this.projects.stream()
+      .flatMap(p -> p.getProgramType().stream().filter(
+        pt -> StringUtils.isNotEmpty(pt) && StringUtils.containsAny(pt, "1", "2", "3", "4", "5", "6", "7", "8", "9")))
+      .collect(Collectors.toCollection(HashBag::new));
     acc.uniqueSet().forEach(u -> byProjectProgramType.add(new GraphCountDTO(u, (long) acc.getCount(u))));
 
     return SUCCESS;
