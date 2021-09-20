@@ -64,7 +64,9 @@ public class InnovationGraphsAction extends BaseAction {
 
     this.innovations.stream().collect(Collectors.groupingBy(i -> i.getInnovationType()))
       .forEach((k, v) -> byInnovationType.add(new GraphCountDTO(k, (long) v.size())));
-    this.innovations.stream().collect(Collectors.groupingBy(i -> i.getInnovationStage()))
+    this.innovations.stream()
+      .sorted((i1, i2) -> String.CASE_INSENSITIVE_ORDER.compare(i1.getInnovationStage(), i2.getInnovationStage()))
+      .collect(Collectors.groupingBy(i -> i.getInnovationStage()))
       .forEach((k, v) -> byInnovationLevel.add(new GraphCountDTO(k, (long) v.size())));
 
     return SUCCESS;

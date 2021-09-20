@@ -65,7 +65,9 @@ public class PolicyGraphsAction extends BaseAction {
 
     this.policies.stream().collect(Collectors.groupingBy(p -> p.getPolicyType()))
       .forEach((k, v) -> byPolicyType.add(new GraphCountDTO(k, (long) v.size())));
-    this.policies.stream().collect(Collectors.groupingBy(p -> p.getPolicyLevel()))
+    this.policies.stream()
+      .sorted((p1, p2) -> String.CASE_INSENSITIVE_ORDER.compare(p1.getPolicyLevel(), p2.getPolicyLevel()))
+      .collect(Collectors.groupingBy(p -> p.getPolicyLevel()))
       .forEach((k, v) -> byPolicyLevel.add(new GraphCountDTO(k, (long) v.size())));
 
     return SUCCESS;
