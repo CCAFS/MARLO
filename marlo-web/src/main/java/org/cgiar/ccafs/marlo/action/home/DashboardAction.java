@@ -43,12 +43,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
-import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.AuthorizationInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -56,6 +59,7 @@ import org.apache.shiro.authz.AuthorizationInfo;
 public class DashboardAction extends BaseAction {
 
   private static final long serialVersionUID = 6686785556753962379L;
+  private static final Logger LOG = LoggerFactory.getLogger(DashboardAction.class);
 
   // Managers
   private PhaseManager phaseManager;
@@ -199,6 +203,9 @@ public class DashboardAction extends BaseAction {
 
 
     }
+
+    Stream<Project> projectStream = Stream.empty();
+
     // Skip closed projects for Reporting
     if (this.isPlanningActive()) {
       if (this.getActualPhase() != null && this.getActualPhase().getId() != null) {
@@ -208,32 +215,36 @@ public class DashboardAction extends BaseAction {
           // closedProjects.addAll(projectManager.getNoPhaseProjects(this.getCrpID(), this.getActualPhase()));
           myFullProjects.removeAll(closedProjects);
         }
-        Collections.sort(myFullProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
 
+        projectStream =
+          myFullProjects.stream().filter(mp -> mp.isActive() && mp.getProjecInfoPhase(this.getActualPhase()) != null);
       }
     } else {
-      SimpleDateFormat dateFormat = new SimpleDateFormat("y");
+      SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy");
+      LOG.error(String.valueOf(this.getCurrentCycleYear()));
 
-      myProjects =
-        myFullProjects.stream()
-          .filter(
-            mp -> mp.isActive() && mp.getProjecInfoPhase(this.getActualPhase()) != null
-              && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null || Integer.parseInt(dateFormat
-                .format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this.getCurrentCycleYear())
-              && StringUtils.isNotEmpty(mp.getProjecInfoPhase(this.getActualPhase()).getStatusName()))
-          .map(p -> new ProjectHomeDTO(p.getId(),
-            StringUtils.trim(p.getProjecInfoPhase(this.getActualPhase()) != null
-              ? p.getProjecInfoPhase(this.getActualPhase()).getTitle() : null),
-            StringUtils.defaultIfEmpty(p.getProjecInfoPhase(this.getActualPhase()).getStatusName(), "Not Defined"),
-            (ListUtils.union(
-              projectManager.getPrograms(p.getId(), ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue(),
-                this.getActualPhase().getId()),
-              projectManager.getPrograms(p.getId(), ProgramType.REGIONAL_PROGRAM_TYPE.getValue(),
-                this.getActualPhase().getId()))
-              .stream().map(f -> f.getAcronym()).collect(Collectors.toList()))))
-          .collect(Collectors.toList());
+      projectStream = myFullProjects.stream()
+        /*
+         * .peek(mp -> LOG.error("P{} ends on {}", mp.getId(),
+         * Integer.parseInt(dateFormat.format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate()))))
+         */
+        .filter(mp -> mp.isActive() && mp.getProjecInfoPhase(this.getActualPhase()) != null
+          && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null
+            || Integer.parseInt(dateFormat.format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this
+              .getCurrentCycleYear())
+          && StringUtils.isNotEmpty(mp.getProjecInfoPhase(this.getActualPhase()).getStatusName()));
     }
 
+    myProjects = projectStream.map(p -> new ProjectHomeDTO(p.getId(),
+      StringUtils.trim(p.getProjecInfoPhase(this.getActualPhase()) != null
+        ? p.getProjecInfoPhase(this.getActualPhase()).getTitle() : null),
+      StringUtils.defaultIfEmpty(p.getProjecInfoPhase(this.getActualPhase()).getStatusName(), "Not Defined"),
+      projectManager.getPrograms(p.getId(), ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue(), this.getActualPhase().getId())
+        .stream().filter(cp -> cp != null && cp.getId() != null && StringUtils.isNotEmpty(cp.getAcronym()))
+        .map(cp -> cp.getAcronym()).collect(Collectors.toList())))
+      .collect(Collectors.toList());
+
+    Collections.sort(myProjects, (p1, p2) -> p1.getProjectId().compareTo(p2.getProjectId()));
 
     myDeliverables = myProjects.stream().filter(p -> p != null && p.getProjectId() != null)
       .flatMap(p -> deliverableManager
