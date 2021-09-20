@@ -80,7 +80,8 @@ public class ProjectPolicyMySQLDAO extends AbstractMarloDAO<ProjectPolicy, Long>
   @Override
   public List<PolicyHomeDTO> getPoliciesByProjectAndPhaseHome(long phaseId, long projectId) {
     String query = "select pp.id as policyId, ppi.year as expectedYear, pr.id as projectId, "
-      + "coalesce(ppi.repIndPolicyInvestimentType.name, 'None') as policyType, ppi.title as policyTitle,"
+      + "coalesce(ppi.repIndPolicyInvestimentType.name, 'None') as policyType, "
+      + "if(coalesce(ppi.title, '') = '', 'Not Provided', ppi.title) as policyTitle,"
       + "coalesce(ppi.repIndStageProcess.name, 'Not Defined') as policyLevel "
       + "from ProjectPolicy pp, ProjectPolicyInfo ppi, Phase ph, Project pr "
       + "where ppi.projectPolicy = pp and pp.active = true and "

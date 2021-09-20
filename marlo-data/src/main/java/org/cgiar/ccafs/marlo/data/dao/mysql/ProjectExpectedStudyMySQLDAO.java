@@ -162,7 +162,8 @@ public class ProjectExpectedStudyMySQLDAO extends AbstractMarloDAO<ProjectExpect
   @Override
   public List<StudyHomeDTO> getStudiesByProjectAndPhaseHome(long phaseId, long projectId) {
     String query = "select pes.id as studyId, pesi.year as expectedYear, pr.id as projectId, "
-      + "coalesce(st.name, 'None') as studyType, pesi.title as studyTitle, "
+      + "coalesce(st.name, 'Not Provided') as studyType, "
+      + "if(coalesce(pesi.title, '') = '', 'Not Provided', pesi.title) as studyTitle, "
       + "coalesce(riss.name, 'Not Defined') as studyMaturity " + "from project_expected_studies pes "
       + "join project_expected_study_info pesi on pesi.project_expected_study_id = pes.id "
       + "join phases ph on ph.id = pesi.id_phase " + "join projects pr on pes.project_id = pr.id "
