@@ -27,23 +27,21 @@ public class Initiative implements Serializable {
   private static final long serialVersionUID = -141497767412495428L;
 
   public Long id;
+  public String official_code;
   public String name;
   public String status;
   public String action_area_id;
   public String action_area_description;
   public int active;
-
-
   public Long stageId;
   public String description;
 
-  public List<Stages> stages;
 
+  public List<Stages> stages;
 
   public String getAction_area_description() {
     return action_area_description;
   }
-
 
   public String getAction_area_id() {
     return action_area_id;
@@ -67,6 +65,11 @@ public class Initiative implements Serializable {
 
   public String getName() {
     return name;
+  }
+
+
+  public String getOfficial_code() {
+    return official_code;
   }
 
 
@@ -112,6 +115,11 @@ public class Initiative implements Serializable {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+
+  public void setOfficial_code(String official_code) {
+    this.official_code = official_code;
   }
 
 
