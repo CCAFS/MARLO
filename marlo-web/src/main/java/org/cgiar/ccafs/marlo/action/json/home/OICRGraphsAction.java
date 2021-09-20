@@ -61,7 +61,9 @@ public class OICRGraphsAction extends BaseAction {
   @Override
   public String execute() throws Exception {
     this.byLevel = new ArrayList<>();
-    this.studies.stream().collect(Collectors.groupingBy(s -> s.getStudyMaturity()))
+    this.studies.stream()
+      .sorted((s1, s2) -> String.CASE_INSENSITIVE_ORDER.compare(s1.getStudyMaturity(), s2.getStudyMaturity()))
+      .collect(Collectors.groupingBy(s -> s.getStudyMaturity()))
       .forEach((k, v) -> byLevel.add(new GraphCountDTO(k, (long) v.size())));
     return SUCCESS;
   }
