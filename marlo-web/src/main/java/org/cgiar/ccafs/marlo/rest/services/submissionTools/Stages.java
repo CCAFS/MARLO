@@ -20,114 +20,49 @@
 package org.cgiar.ccafs.marlo.rest.services.submissionTools;
 
 import java.io.Serializable;
-import java.util.List;
 
-public class Initiative implements Serializable {
+public class Stages implements Serializable {
 
-  private static final long serialVersionUID = -141497767412495428L;
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
 
-  public Long id;
-  public String name;
-  public String status;
-  public String action_area_id;
-  public String action_area_description;
-  public int active;
-
-
-  public Long stageId;
-  public String description;
-
-  public List<Stages> stages;
-
-
-  public String getAction_area_description() {
-    return action_area_description;
-  }
-
-
-  public String getAction_area_id() {
-    return action_area_id;
-  }
-
+  private Long id;
+  private Long initvStgId;
+  private Long stageId;
+  private int active;
 
   public int getActive() {
     return active;
   }
 
-
-  public String getDescription() {
-    return description;
-  }
-
-
   public Long getId() {
     return id;
   }
 
-
-  public String getName() {
-    return name;
+  public Long getInitvStgId() {
+    return initvStgId;
   }
-
 
   public Long getStageId() {
     return stageId;
   }
 
-
-  public List<Stages> getStages() {
-    return stages;
-  }
-
-
-  public String getStatus() {
-    return status;
-  }
-
-
-  public void setAction_area_description(String action_area_description) {
-    this.action_area_description = action_area_description;
-  }
-
-
-  public void setAction_area_id(String action_area_id) {
-    this.action_area_id = action_area_id;
-  }
-
-
   public void setActive(int active) {
     this.active = active;
   }
-
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
 
   public void setId(Long id) {
     this.id = id;
   }
 
-
-  public void setName(String name) {
-    this.name = name;
+  public void setInitvStgId(Long initvStgId) {
+    this.initvStgId = initvStgId;
   }
-
 
   public void setStageId(Long stageId) {
     this.stageId = stageId;
   }
-
-
-  public void setStages(List<Stages> stages) {
-    this.stages = stages;
-  }
-
-
-  public void setStatus(String status) {
-    this.status = status;
-  }
-
 
 }
