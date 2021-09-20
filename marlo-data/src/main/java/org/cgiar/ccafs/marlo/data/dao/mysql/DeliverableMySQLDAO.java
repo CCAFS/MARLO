@@ -182,7 +182,8 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
   public List<DeliverableHomeDTO> getDeliverablesByProjectAndPhaseHome(long phaseId, long projectId) {
     String query = "select d.id as deliverableId, coalesce(di.newExpectedYear, -1) as newExpectedYear, "
       + "di.year as expectedYear, pr.id as projectId, coalesce(di.deliverableType.name, 'None') as deliverableType, "
-      + "di.title as deliverableTitle, coalesce(gs.name, 'Not Defined') as status,"
+      + "if(coalesce(di.title, '') = '', 'Not Provided', di.title) as deliverableTitle, "
+      + "coalesce(gs.name, 'Not Provided') as status,"
       + "(case when dd.isOpenAccess = 1 then 'Yes' when dd.isOpenAccess = 0 then 'No' when dd.isOpenAccess is null then 'Not Defined' else '???' end) as isOpenAccess "
       + "from Deliverable d, DeliverableInfo di, GeneralStatus gs, DeliverableDissemination dd, Phase ph, Project pr "
       + "where di.deliverable = d and d.active = true and d.project = pr and pr.id = :projectId and pr.active = true and "
