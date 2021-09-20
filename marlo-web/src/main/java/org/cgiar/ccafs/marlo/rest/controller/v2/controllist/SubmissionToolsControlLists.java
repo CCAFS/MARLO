@@ -19,12 +19,14 @@
 
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools.ActionAreaOutcomesItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools.ActionAreasItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools.ImpactAreasIndicatorsItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools.ImpactAreasItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools.InitiativesItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools.ProjectedBenefitsItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools.SdgItem;
+import org.cgiar.ccafs.marlo.rest.dto.ActionAreaOutcomeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ActionAreasDTO;
 import org.cgiar.ccafs.marlo.rest.dto.DepthDescriptionsDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ImpactAreasDTO;
@@ -76,6 +78,7 @@ public class SubmissionToolsControlLists {
   private SdgItem<SubmissionToolsControlLists> sdgItem;
   private InitiativesItem<SubmissionToolsControlLists> initiativesItem;
   private ProjectedBenefitsItem<SubmissionToolsControlLists> projectedBenefitsItem;
+  private ActionAreaOutcomesItem<SubmissionToolsControlLists> actionAreaOutcomesItem;
 
 
   @Autowired
@@ -86,7 +89,8 @@ public class SubmissionToolsControlLists {
     ImpactAreasItem<SubmissionToolsControlLists> impactAreasItem,
     ImpactAreasIndicatorsItem<SubmissionToolsControlLists> impactAreasIndicatorsItem,
     SdgItem<SubmissionToolsControlLists> sdgItem, InitiativesItem<SubmissionToolsControlLists> initiativesItem,
-    ProjectedBenefitsItem<SubmissionToolsControlLists> projectedBenefitsItem) {
+    ProjectedBenefitsItem<SubmissionToolsControlLists> projectedBenefitsItem,
+    ActionAreaOutcomesItem<SubmissionToolsControlLists> actionAreaOutcomesItem) {
     super();
     this.actionAreasItem = actionAreasItem;
     this.impactAreasItem = impactAreasItem;
@@ -94,6 +98,7 @@ public class SubmissionToolsControlLists {
     this.sdgItem = sdgItem;
     this.initiativesItem = initiativesItem;
     this.projectedBenefitsItem = projectedBenefitsItem;
+    this.actionAreaOutcomesItem = actionAreaOutcomesItem;
   }
 
   @ApiOperation(tags = {"Submission Tool Control Lists"},
@@ -145,6 +150,15 @@ public class SubmissionToolsControlLists {
         this.env.getProperty("SubmissionToolsControlLists.impact-areas-indicator.code.404"));
     }
     return response;
+  }
+
+  @ApiOperation(tags = {"Submission Tools Control Lists"}, value = "${SubmissionToolsControlLists.sdgTarget.all.value}",
+    response = ActionAreaOutcomeDTO.class, responseContainer = "List")
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/actionAreaOutcomes", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<ActionAreaOutcomeDTO> getActionAreaOutcomes() {
+    return this.actionAreaOutcomesItem.getAllActionAreaOutcomes();
   }
 
   @ApiOperation(tags = {"Submission Tool Control Lists"},
