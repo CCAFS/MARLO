@@ -188,6 +188,7 @@
             <th class="col-md-1 text-center"> <small>[@s.text name="${customLabel}.table11.missingFields" /]</small>  </th>
             [#if PMU]
               <th class="col-md-1 text-center"> <small>[@s.text name="${customLabel}.table10.includeAR" /]</small>  </th>
+              [#--  <th class="col-md-1 text-center">[@s.text name="${customLabel}.table10.QA" /]</th>  --]
             [/#if]
           [/#if]
         </tr>
@@ -249,6 +250,7 @@
                     [#local isChecked = ((!reportSynthesis.reportSynthesisMelia.studiesIds?seq_contains(item.id))!true) /]
                     [@customForm.checkmark id="study-${(item.id)!}" name="reportSynthesis.reportSynthesisMelia.plannedStudiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
                   </td>
+                  [#--  <td class="text-center"></td>  --]
                 [/#if]
               [/#if]
             </tr>

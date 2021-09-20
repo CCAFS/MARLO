@@ -11,7 +11,12 @@
       <property name="name" type="string">
         <column name="name" sql-type="TEXT" />
       </property>
-   
+      <property name="acronym" type="string">
+        <column name="acronym" length="50" />
+      </property>
+      <property name="iso_numeric" type="java.lang.Long">
+        <column name="iso_numeric" sql-type="int" />
+      </property>
       <many-to-one name="regionType" class="org.cgiar.ccafs.marlo.data.model.RegionType" fetch="select">
         <column name="region_type_id" />  
       </many-to-one>

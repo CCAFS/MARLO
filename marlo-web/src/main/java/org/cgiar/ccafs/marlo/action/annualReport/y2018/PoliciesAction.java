@@ -70,6 +70,7 @@ import javax.inject.Inject;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -146,7 +147,6 @@ public class PoliciesAction extends BaseAction {
     this.reportSynthesisFlagshipProgressStudyManager = reportSynthesisFlagshipProgressStudyManager;
     this.projectPolicyCountryManager = projectPolicyCountryManager;
     this.projectPolicyRegionManager = projectPolicyRegionManager;
-
   }
 
   /**
@@ -227,7 +227,6 @@ public class PoliciesAction extends BaseAction {
       }
     }
   }
-
 
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
@@ -353,6 +352,7 @@ public class PoliciesAction extends BaseAction {
     return policiesByOrganizationTypeDTOs;
   }
 
+
   public List<ReportSynthesisPoliciesByRepIndPolicyInvestimentTypeDTO> getPoliciesByRepIndInvestimentTypeDTOs() {
     return policiesByRepIndInvestimentTypeDTOs;
   }
@@ -365,7 +365,6 @@ public class PoliciesAction extends BaseAction {
     return projectPolicies;
   }
 
-
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
   }
@@ -374,6 +373,7 @@ public class PoliciesAction extends BaseAction {
   public Long getSynthesisID() {
     return synthesisID;
   }
+
 
   public Integer getTotal() {
     return total;
@@ -397,7 +397,6 @@ public class PoliciesAction extends BaseAction {
     return isFP;
   }
 
-
   @Override
   public boolean isPMU() {
     boolean isFP = false;
@@ -409,6 +408,7 @@ public class PoliciesAction extends BaseAction {
     return isFP;
 
   }
+
 
   /**
    * This method get the status of an specific policy depending of the
@@ -446,7 +446,6 @@ public class PoliciesAction extends BaseAction {
       return result;
     }
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -565,6 +564,14 @@ public class PoliciesAction extends BaseAction {
           reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
         }
 
+        if (CollectionUtils.emptyIfNull(this.reportSynthesisFlagshipProgressPolicyManager.findAll()).stream()
+          .filter(p -> p != null && p.getId() != null && p.getProjectPolicy() != null
+            && p.getReportSynthesisFlagshipProgress() != null && p.getReportSynthesisFlagshipProgress().getId() != null
+            && p.getReportSynthesisFlagshipProgress().getId()
+              .equals(this.reportSynthesis.getReportSynthesisFlagshipProgress().getId()))
+          .count() == 0L) {
+          this.removeAllFromAR();
+        }
 
         reportSynthesis.getReportSynthesisFlagshipProgress().setProjectPolicies(new ArrayList<>());
         if (reportSynthesis.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressPolicies() != null
@@ -592,6 +599,7 @@ public class PoliciesAction extends BaseAction {
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym() != null && c.getAcronym().equals("PMU"))
       .collect(Collectors.toList()));
+
 
     /** Graphs and Tables */
     List<ProjectPolicy> selectedProjectPolicies = new ArrayList<ProjectPolicy>();
@@ -636,6 +644,14 @@ public class PoliciesAction extends BaseAction {
       }
     }
 
+  }
+
+
+  private void removeAllFromAR() {
+    for (ProjectPolicy projectPolicy : this.projectPolicies) {
+      this.reportSynthesisFlagshipProgressPolicyManager.toAnnualReport(projectPolicy,
+        this.reportSynthesis.getReportSynthesisFlagshipProgress(), this.getCurrentUser(), true);
+    }
   }
 
   @Override

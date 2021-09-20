@@ -1,24 +1,24 @@
 var $statuses, $statusDescription;
 
 $(document).ready(init);
-function hideOrShowCheckBoxIsOtherUrl(value){
+function hideOrShowCheckBoxIsOtherUrl(value) {
   if (value) {
     $('.isOtherUrlTohide').show('slow');
-  }else{
+  } else {
     $('input.isOtherUrl').prop('checked', false);
     $('.other-url').hide('slow');
     $('.isOtherUrlFiel').val(false);
 
   }
 }
-function checkDOI() { 
+function checkDOI() {
   setTimeout(() => {
-    if ($('.deliverableDisseminationUrl ').prop('readonly') || $('.disseminationChannel').val() == 'other' ) {
+    if ($('.deliverableDisseminationUrl ').prop('readonly') || $('.disseminationChannel').val() == 'other') {
       if ($('#doi-bridge').val()) {
         $('.isOtherUrlTohide').hide('slow');
-        hideOrShowCheckBoxIsOtherUrl(false);      
-      }else{
-        if (($('.subTypeSelect ').val() ==63 )) {
+        hideOrShowCheckBoxIsOtherUrl(false);
+      } else {
+        if (($('.subTypeSelect ').val() == 63)) {
           hideOrShowCheckBoxIsOtherUrl(true);
         }
       }
@@ -30,31 +30,30 @@ function checkDOI() {
 
     // nuevo doi ^((https?:\/\/)?(www\.)?[a-zA-Z0-9.-]+\.+[a-zA-Z0-9.-]+\/10\.\d{4,9}\/[-._;():A-Z0-9]+$|^10\.\d{4,9}\/[-._;():A-Z0-9]+$)
     var result = /^((https?:\/\/)?(www\.)?[a-zA-Z0-9.-]+\.+[a-zA-Z0-9.-]+\/10\.\d{4,9}\/[-._;()/:A-Z0-9]+$|^10\.\d{4,9}\/[-._;()/:A-Z0-9]+$)/i.test($('#doi-bridge').val());
-   
-      if ( result  ) {
-        $('#doi-bridge').css("border", "1px solid #ccc");
-        $('.invalidDOI').hide('slow');
-        $('.validDOI').show('slow');
-      }
-      if(!result && $('#doi-bridge').val())
-      {
-        $('#doi-bridge').css("border", "red solid 1px");
-        $('.invalidDOI').show('slow');
-        $('.validDOI').hide('slow');
-        
-      }
-      if ( !$('#doi-bridge').val()  ) {
-        $('#doi-bridge').css("border", "1px solid #ccc");
-        $('.invalidDOI').hide('slow');
-        $('.validDOI').hide('slow');
-      
-      }
+
+    if (result) {
+      $('#doi-bridge').css("border", "1px solid #ccc");
+      $('.invalidDOI').hide('slow');
+      $('.validDOI').show('slow');
+    }
+    if (!result && $('#doi-bridge').val()) {
+      $('#doi-bridge').css("border", "red solid 1px");
+      $('.invalidDOI').show('slow');
+      $('.validDOI').hide('slow');
+
+    }
+    if (!$('#doi-bridge').val()) {
+      $('#doi-bridge').css("border", "1px solid #ccc");
+      $('.invalidDOI').hide('slow');
+      $('.validDOI').hide('slow');
+
+    }
 
   }, 50);
 
 }
 
-function init() { 
+function init() {
 
   $statuses = $('select.status');
   isDeliverableNew = $statuses.classParam('isNew') == "true";
@@ -71,20 +70,22 @@ function init() {
   $(".yearExpected").on("change", validateCurrentDate);
 
   // Event when status is changed
-  $statuses.on("change", function() {
+  $statuses.on("change", function () {
     justificationByStatus(this.value);
+    disseminationMetadataRequiredFields();
   });
-
-  validateDeliverableStatus();
   
+  disseminationMetadataRequiredFields();
+  validateDeliverableStatus();
+
 
   $('#doi-bridge').keydown(checkDOI);
   $('#doi-bridge').change(checkDOI);
-  $('#doi-bridge').bind("paste",checkDOI);
+  $('#doi-bridge').bind("paste", checkDOI);
   if ($('#doi-bridge')[0]) {
     document.getElementById("doi-bridge").addEventListener("paste", checkDOI);
   }
-  
+
 
   $('input.isOtherUrl').on("click", activeByNoDOIProvidedCheckbox);
   activeByNoDOIProvidedCheckbox();
@@ -93,9 +94,9 @@ function init() {
 
   /** Funding source * */
 
-  $(".fundingSource").on("change", function() {
+  $(".fundingSource").on("change", function () {
     var option = $(this).find("option:selected");
-    if(option.val() != "-1") {
+    if (option.val() != "-1") {
       addFundingSource(option);
     }
     // Remove option from select
@@ -105,10 +106,10 @@ function init() {
   $(".removeFundingSource").on("click", removeFundingSource);
 
   // Validate if funding source exists in select
-  $("form .fundingSources").each(function(i,e) {
+  $("form .fundingSources").each(function (i, e) {
     var options = $(".fundingSource option");
-    options.each(function(iOption,eOption) {
-      if($(e).find(".fId").val() == $(eOption).val()) {
+    options.each(function (iOption, eOption) {
+      if ($(e).find(".fId").val() == $(eOption).val()) {
         $(eOption).remove();
       }
     });
@@ -116,9 +117,9 @@ function init() {
 
   /** Gender Levels * */
 
-  $(".genderLevelsSelect.add").on("change", function() {
+  $(".genderLevelsSelect.add").on("change", function () {
     var option = $(this).find("option:selected");
-    if(option.val() != "-1") {
+    if (option.val() != "-1") {
       addGenderLevel(option);
     }
     // Remove option from select
@@ -128,33 +129,33 @@ function init() {
   $(".removeGenderLevel").on("click", removeGenderLevel);
 
   // Validate if funding source exists in select
-  $("form .genderLevel").each(function(i,e) {
+  $("form .genderLevel").each(function (i, e) {
     var options = $(".genderLevelsSelect option");
-    options.each(function(iOption,eOption) {
-      if($(e).find(".fId").val() == $(eOption).val()) {
+    options.each(function (iOption, eOption) {
+      if ($(e).find(".fId").val() == $(eOption).val()) {
         $(eOption).remove();
       }
     });
   });
 
-  $('.typeSelect').on('change', function() {
+  $('.typeSelect').on('change', function () {
     var $subTypeSelect = $(".subTypeSelect");
     $subTypeSelect.empty();
     $subTypeSelect.append("<option value='-1' >Select an option... </option>");
     $subTypeSelect.trigger("change.select2");
     var option = $(this).find("option:selected");
 
-    if(option.val() != "-1") {
+    if (option.val() != "-1") {
       $.ajax({
-          url: baseURL + "/deliverableSubType.do",
-          type: 'GET',
-          dataType: "json",
-          data: {
-              deliverableTypeId: option.val(),
-              phaseID: phaseID
-          }
-      }).success(function(m) {
-        for(var i = 0; i < m.deliverableSubTypes.length; i++) {
+        url: baseURL + "/deliverableSubType.do",
+        type: 'GET',
+        dataType: "json",
+        data: {
+          deliverableTypeId: option.val(),
+          phaseID: phaseID
+        }
+      }).success(function (m) {
+        for (var i = 0; i < m.deliverableSubTypes.length; i++) {
           $subTypeSelect.addOption(m.deliverableSubTypes[i].id, m.deliverableSubTypes[i].name)
         }
       });
@@ -162,28 +163,28 @@ function init() {
     $subTypeSelect.trigger('change');
   });
 
-  $(".subTypeSelect").on("change", function() {
+  $(".subTypeSelect").on("change", function () {
     var subTypeOption = $(this).find("option:selected").val();
     var typeOption = $('.typeSelect').find("option:selected").val();
     // Show or hide publication metadata
-    if(hasDeliverableRule('publicationMetadata', [
-        subTypeOption, typeOption
+    if (hasDeliverableRule('publicationMetadata', [
+      subTypeOption, typeOption
     ])) {
       $(".publicationMetadataBlock").show("slow");
     } else {
       $(".publicationMetadataBlock").hide("slow");
     }
     // Compliance Check Rule
-    if(hasDeliverableRule('complianceCheck', [
-        subTypeOption, typeOption
+    if (hasDeliverableRule('complianceCheck', [
+      subTypeOption, typeOption
     ])) {
       $("#complianceCheck").show("slow");
     } else {
       $("#complianceCheck").hide("slow");
     }
     // Data License
-    if(hasDeliverableRule('dataLicense', [
-        subTypeOption, typeOption
+    if (hasDeliverableRule('dataLicense', [
+      subTypeOption, typeOption
     ])) {
       $(".dataLicense").show("slow");
     } else {
@@ -192,8 +193,8 @@ function init() {
       $('.computerLicense input').prop("checked", false);
     }
     // Computer software
-    if(hasDeliverableRule('computerLicense', [
-        subTypeOption, typeOption
+    if (hasDeliverableRule('computerLicense', [
+      subTypeOption, typeOption
     ])) {
       $(".computerLicense").show("slow");
     } else {
@@ -210,43 +211,65 @@ function init() {
   });
 
   $(".fundingSource").select2({
-      templateResult: formatState,
-      templateSelection: formatState,
-      width: "100%"
+    templateResult: formatState,
+    templateSelection: formatState,
+    width: "100%"
   });
 
   $(".genderLevelsSelect").select2({
-      templateResult: formatStateGenderType,
-      width: "100%"
+    templateResult: formatStateGenderType,
+    width: "100%"
   });
 
   // Deliverable Geographic Scope
-  $('select.elementType-repIndGeographicScope').on("addElement removeElement", function(event,id,name) {
+  $('select.elementType-repIndGeographicScope').on("addElement removeElement", function (event, id, name) {
     setGeographicScope(this);
   });
   setGeographicScope($('form select.elementType-repIndGeographicScope')[0]);
-    // valiate checkbox "No DOI provided" value
- 
+  // valiate checkbox "No DOI provided" value
+
   deliverablePartnersModule.init();
 }
 
-function activeByNoDOIProvidedCheckbox(){
-    if ($('input.isOtherUrl').is(":checked")) {
-      console.log("checked");
-      $('.isOtherUrlFiel').val(true);
-    }else{
-      console.log("No checked");
-      $('.isOtherUrlFiel').val(false);
-
+function disseminationMetadataRequiredFields() {
+  var statusID = $('select[name="deliverable.deliverableInfo.status"]').val();
+  var requiredTagsToHide = $('#deliverable-disseminationMetadata').find('span[class*="requiredTag"]').filter(function () {
+    if (statusID == '7' || statusID == '5') {
+      return $(this).css('display').includes('inline');
+    } else {
+      return $(this).css('display').includes('none');
     }
-  
+  });
+  if (statusID == '7' || statusID == '5') {
+    $(requiredTagsToHide).addClass('tagToHide');
+    $(requiredTagsToHide).hide();
+  } else {
+    $(requiredTagsToHide).each((index, item) => {
+      if ($(item).hasClass('tagToHide')) {
+        $(item).show();
+        $(item).removeClass('tagToHide');
+      }
+    });
+  }
+}
+
+function activeByNoDOIProvidedCheckbox() {
+  if ($('input.isOtherUrl').is(":checked")) {
+    console.log("checked");
+    $('.isOtherUrlFiel').val(true);
+  } else {
+    console.log("No checked");
+    $('.isOtherUrlFiel').val(false);
+
+  }
+
 }
 
 function openDialog() {
   $("#dialog").dialog({
-      width: '980',
-      modal: true,
-      closeText: ""
+    width: '980',
+    modal: true,
+    closeText: ""
   });
 }
 
@@ -254,7 +277,7 @@ function openDialog() {
 function addFundingSource(option) {
   var canAdd = true;
   console.log(option.val());
-  if(option.val() == "-1") {
+  if (option.val() == "-1") {
     canAdd = false;
   }
 
@@ -263,13 +286,13 @@ function addFundingSource(option) {
   var v = $(option).text().length > 80 ? $(option).text().substr(0, 80) + ' ... ' : $(option).text();
 
   // Check if is already selected
-  $list.find('.fundingSources').each(function(i,e) {
-    if($(e).find('input.fId').val() == option.val()) {
+  $list.find('.fundingSources').each(function (i, e) {
+    if ($(e).find('input.fId').val() == option.val()) {
       canAdd = false;
       return;
     }
   });
-  if(!canAdd) {
+  if (!canAdd) {
     return;
   }
 
@@ -294,18 +317,18 @@ function removeFundingSource() {
   var name = $item.find(".name").attr("title");
   console.log(name + "-" + value);
   var $select = $(".fundingSource");
-  $item.hide(500, function() {
+  $item.hide(500, function () {
     $item.remove();
     checkFundingItems($list);
     updateFundingSources($list);
   });
-// Add funding source option again
+  // Add funding source option again
   $select.addOption(value, name);
   $select.trigger("change.select2");
 }
 
 function updateFundingSources($list) {
-  $($list).find('.fundingSources').each(function(i,e) {
+  $($list).find('.fundingSources').each(function (i, e) {
     // Set funding sources indexes
     $(e).setNameIndexes(1, i);
   });
@@ -316,7 +339,7 @@ function updateFundingSources($list) {
 function addGenderLevel(option) {
   var canAdd = true;
   console.log(option.val());
-  if(option.val() == "-1") {
+  if (option.val() == "-1") {
     canAdd = false;
   }
 
@@ -325,13 +348,13 @@ function addGenderLevel(option) {
   var v = $(option).text().length > 80 ? $(option).text().substr(0, 80) + ' ... ' : $(option).text();
 
   // Check if is already selected
-  $list.find('.genderLevel').each(function(i,e) {
-    if($(e).find('input.fId').val() == option.val()) {
+  $list.find('.genderLevel').each(function (i, e) {
+    if ($(e).find('input.fId').val() == option.val()) {
       canAdd = false;
       return;
     }
   });
-  if(!canAdd) {
+  if (!canAdd) {
     return;
   }
 
@@ -357,18 +380,18 @@ function removeGenderLevel() {
   var name = $item.find(".name").attr("title");
   console.log(name + "-" + value);
   var $select = $(".genderLevelsSelect");
-  $item.hide(800, function() {
+  $item.hide(800, function () {
     $item.remove();
     checkGenderItems($list);
     updateGenderLevels($list);
   });
-// Add funding source option again
+  // Add funding source option again
   $select.addOption(value, name);
   $select.trigger("change.select2");
 }
 
 function updateGenderLevels($list) {
-  $($list).find('.genderLevel').each(function(i,e) {
+  $($list).find('.genderLevel').each(function (i, e) {
     // Set funding sources indexes
     $(e).setNameIndexes(1, i);
   });
@@ -378,10 +401,10 @@ function validateCurrentDate() {
   var $statuses = $("form select.status");
   var statusValue = $("form select.status").val();
   var $yearSelect = $(".yearExpected");
-  var status = function() {
+  var status = function () {
     return $statuses.val();
   }
-  var year = function() {
+  var year = function () {
     return $yearSelect.val();
   };
 
@@ -389,35 +412,40 @@ function validateCurrentDate() {
 
   // Ajax
   $.ajax({
-      url: baseURL + '/deliverableStatus.do',
-      data: {
-          deliverableId: $('input[name=deliverableID]').val(),
-          year: year(),
-          phaseID: phaseID
-      },
-      beforeSend: function() {
-        statusValue = $("form select.status").val();
-        $statuses.empty();
-      },
-      success: function(data) {
-        $.each(data.status, function(val,name) {
-          $statuses.addOption(val, name);
-        });
-        $statuses.val(statusValue);
-        $statuses.trigger("change.select2");
-        justificationByStatus(statusValue);
+    url: baseURL + '/deliverableStatus.do',
+    data: {
+      deliverableId: $('input[name=deliverableID]').val(),
+      year: year(),
+      phaseID: phaseID
+    },
+    beforeSend: function () {
+      statusValue = $("form select.status").val();
+      $statuses.empty();
+    },
+    success: function (data) {
+      $.each(data.status, function (val, name) {
+        $statuses.addOption(val, name);
+      });
+      $statuses.val(statusValue);
+      $statuses.trigger("change.select2");
+      justificationByStatus(statusValue);
+      disseminationMetadataRequiredFields(statusValue);
 
-        // Check year and status
-        if((year() < currentCycleYear) && (status() == 4)) {
-          // $('#newExpectedYear').show();
-        } else {
-          // $('#newExpectedYear').hide();
-        }
-
+      // Check year and status
+      if ((year() < currentCycleYear) && (status() == 4)) {
+        // $('#newExpectedYear').show();
+      } else {
+        // $('#newExpectedYear').hide();
       }
+
+    }
   });
 
   $statuses.trigger("change.select2");
+}
+
+function isStatusPartiallyComplete(statusId) {
+  return (statusId == "7");
 }
 
 function justificationByStatus(statusId) {
@@ -426,39 +454,50 @@ function justificationByStatus(statusId) {
   var $newExpectedYearSelect = $newExpectedYearBlock.find('select');
   var newExpectedYear = $newExpectedYearSelect.val();
   var hasExpectedYear =
-      ((newExpectedYear != "") && newExpectedYear != "-1") && (typeof newExpectedYear !== 'undefined');
+    ((newExpectedYear != "") && newExpectedYear != "-1") && (typeof newExpectedYear !== 'undefined');
   var isCompletedWithoutExpectedYear = ((!reportingActive) && isStatusComplete(statusId) && hasExpectedYear);
 
   // Validate the justification
-  if(isStatusCancelled(statusId) || isStatusExtended(statusId)) {
+  if (isStatusCancelled(statusId) || isStatusExtended(statusId) || isStatusPartiallyComplete(statusId)) {
     $statusDescription.slideDown(400);
     $statusDescription.find('label').html($('#status-' + statusId).html());
   } else {
     $statusDescription.slideUp(400);
   }
 
-  if(reportingActive || upKeepActive) {
+  if (reportingActive || upKeepActive) {
     // Validate the new extended year
-    if(isDeliverableNew) {
+    if (isDeliverableNew) {
       showNewExpectedComponent(isStatusExtended(statusId) && upKeepActive);
     } else {
       console.log("hasExpectedYear", hasExpectedYear);
-      if(isStatusOnGoing(statusId)) {
+      if (isStatusOnGoing(statusId)) {
         console.log("if");
         showNewExpectedComponent(false);
       } else {
         console.log("else");
-        if(statusId==4) {
-          showNewExpectedComponent(true);
+        if (statusId == 4) {
+          // showExpectedComponent(true);
           $('.expectedDisabled').hide("slow");
-        } else if(statusId==2 || statusId==3 || statusId==5 || statusId==6){
-          
-          if (($('.yearNewExpected').val() != '-1') && ($('.yearNewExpected').val() != $('.yearExpected').val())) {  
+          if ($('#actualYear').html() == '2021') {
+            showExpectedComponent(true);
+          }
+        } else if (statusId == 2 || statusId == 3 || statusId == 5 || statusId == 6) {
+
+          if (($('.yearNewExpected').val() != '-1') && ($('.yearNewExpected').val() != $('.yearExpected').val())) {
             showNewExpectedComponent(true);
           } else {
             showNewExpectedComponent(false);
           }
           $('.expectedDisabled').show("slow");
+        } else if (statusId == 7) {
+          showExpectedComponent(true);
+
+          if (($('.yearNewExpected').val() != '-1')) {
+            showNewExpectedComponent(true);
+          } else {
+            showNewExpectedComponent(false);
+          }
         } else {
           showNewExpectedComponent(false);
         }
@@ -474,28 +513,45 @@ function justificationByStatus(statusId) {
 function showNewExpectedComponent(state) {
   var $newExpectedYearBlock = $('#newExpectedYear');
   var $yearOverlay = $('#deliverableYear .overlay');
-  if(state) {
+  if (state) {
     $newExpectedYearBlock.show();
     $yearOverlay.show();
   } else {
     $newExpectedYearBlock.hide();
-    if(isDeliverableNew) {
+    if (isDeliverableNew) {
       $yearOverlay.hide();
     }
   }
+}
 
+function showExpectedComponent(state) {
+  var $expectedYearBlock = $('#deliverableYear');
+  var $yearOverlay = $('#newExpectedYear .overlay');
+  if (state) {
+    $expectedYearBlock.show();
+    $yearOverlay.show();
+  } else {
+    $expectedYearBlock.hide();
+    if (isDeliverableNew) {
+      $yearOverlay.hide();
+    }
+  }
 }
 
 function validateDeliverableStatus() {
   // New Expected year should be greater than current reporting cycle year
-  if(reportingActive) {
-    if(isDeliverableNew) {
+  if (reportingActive) {
+    if (isDeliverableNew) {
       $statuses.find('option').prop("disabled", true); // Disable All
       $statuses.find('option[value="3"]').prop("disabled", false); // Enable Complete
       $statuses.find('option[value="5"]').prop("disabled", false); // Enable Cancelled
       $statuses.val("3"); // Set Complete
     } else {
+      // if(actualPhase.year != 2021){
+      //   $statuses.find('option[value="2"]').prop("disabled", true);// Disable On-going
+      // }
       $statuses.find('option[value="2"]').prop("disabled", true);// Disable On-going
+      $statuses.find('option[value="4"]').prop("disabled", true);// Disable Extended
     }
 
     $('#deliverableYear .overlay').show();
@@ -507,7 +563,7 @@ function checkFundingItems(block) {
   console.log(block);
   var items = $(block).find('.fundingSources').length;
   console.log(items);
-  if(items == 0) {
+  if (items == 0) {
     $(block).parent().find('p.emptyText').fadeIn();
   } else {
     $(block).parent().find('p.emptyText').fadeOut();
@@ -518,7 +574,7 @@ function checkGenderItems(block) {
   console.log(block);
   var items = $(block).find('.genderLevel').length;
   console.log(items);
-  if(items == 0) {
+  if (items == 0) {
     $(block).parent().find('p.emptyText').fadeIn();
   } else {
     $(block).parent().find('p.emptyText').fadeOut();
@@ -533,7 +589,7 @@ function notify(text) {
 }
 
 function formatState(state) {
-  if(state.id == -1) {
+  if (state.id == -1) {
     return state.text;
   }
   var $state = $("#fundingSource-" + state.id).clone(true);
@@ -542,21 +598,21 @@ function formatState(state) {
 };
 
 function formatStateGenderType(state) {
-  if(state.id == -1) {
+  if (state.id == -1) {
     return;
   }
   var $state = $("#genderLevel-" + state.id).clone(true);
   return $state;
 }
 
-function hasDeliverableRule(rule,arrValues) {
+function hasDeliverableRule(rule, arrValues) {
   var result = 0;
-  $.each(arrValues, function(index,value) {
-    if(($.inArray(value, getDeliverableTypesByRule(rule))) != -1) {
+  $.each(arrValues, function (index, value) {
+    if (($.inArray(value, getDeliverableTypesByRule(rule))) != -1) {
       result++;
     }
   });
-  return(result > 0);
+  return (result > 0);
 }
 
 function getDeliverableTypesByRule(rule) {
@@ -569,14 +625,14 @@ function selectKeyOutput() {
   var keyOutputOptions = $keyOutputList.find('option')
   var keyOutputsLength = keyOutputOptions.length;
 
-  if(keyOutputsLength == 2) {
+  if (keyOutputsLength == 2) {
     var optionValue = keyOutputOptions[1].value;
     $keyOutputList.val(optionValue);
     $keyOutputList.trigger('change');
   }
 }
 
-var deliverablePartnersModule = (function() {
+var deliverablePartnersModule = (function () {
 
   function init() {
     console.log('Starting deliverablePartnersModule');
@@ -605,7 +661,7 @@ var deliverablePartnersModule = (function() {
 
   function removePartnerItem() {
     var $item = $(this).parents('.deliverablePartnerItem');
-    $item.hide(500, function() {
+    $item.hide(500, function () {
       $item.remove();
       updateIndexes();
     });
@@ -623,18 +679,18 @@ var deliverablePartnersModule = (function() {
     // Show them
     $usersBlock.append($newUsersBlock.html());
     // Update indexes
-    if(!isResponsible) {
+    if (!isResponsible) {
       updateIndexes();
     }
   }
 
   function updateIndexes() {
-    $('.otherDeliverablePartners .deliverablePartnerItem').each(function(i,partner) {
+    $('.otherDeliverablePartners .deliverablePartnerItem').each(function (i, partner) {
 
       // Update deliverable partner index
       $(partner).setNameIndexes(1, i);
 
-      $(partner).find('.deliverableUserItem').each(function(j,user) {
+      $(partner).find('.deliverableUserItem').each(function (j, user) {
         var personID = $(user).find('input[type="checkbox"]').val();
         var customID = "jsGenerated-" + i + "-" + j + "-" + personID;
         // Update user index
@@ -654,24 +710,24 @@ var deliverablePartnersModule = (function() {
     var $institutionsSelects = $listBlock.find('select.partnerInstitutionID');
 
     // Get selected values
-    selectedValues = $institutionsSelects.map(function(i,select) {
+    selectedValues = $institutionsSelects.map(function (i, select) {
       return select.value;
     });
 
-    $institutionsSelects.each(function(i,select) {
+    $institutionsSelects.each(function (i, select) {
       // Enable options
       $(select).find('option').prop('disabled', false);
 
       // Disable only the selected values
-      $.each(selectedValues, function(key,val) {
-        if(select.value != val) {
+      $.each(selectedValues, function (key, val) {
+        if (select.value != val) {
           $(select).find('option[value="' + val + '"]').prop('disabled', true);
         }
       });
     });
 
     // Reset Select2
-    setTimeout(function() {
+    setTimeout(function () {
       $institutionsSelects.select2({
         width: '98%'
       });

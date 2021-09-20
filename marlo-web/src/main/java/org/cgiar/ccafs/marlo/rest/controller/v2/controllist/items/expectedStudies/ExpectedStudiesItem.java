@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.manager.GeneralStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
@@ -51,6 +52,9 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
@@ -63,6 +67,7 @@ import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -86,6 +91,9 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageStudy;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressStudy;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicator;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
@@ -157,6 +165,11 @@ public class ExpectedStudiesItem<T> {
   private ProjectExpectedStudyMilestoneManager projectExpectedStudyMilestoneManager;
   private ProjectExpectedStudyMapper projectExpectedStudyMapper;
   private GlobalUnitProjectManager globalUnitProjectManager;
+  // changes to be included to Synthesis
+  private LiaisonInstitutionManager liaisonInstitutionManager;
+  private ReportSynthesisManager reportSynthesisManager;
+  private ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager;
+  private ReportSynthesisFlagshipProgressStudyManager reportSynthesisFlagshipProgressStudyManager;
 
 
   @Inject
@@ -183,7 +196,10 @@ public class ExpectedStudiesItem<T> {
     ProjectExpectedStudyQuantificationManager projectExpectedStudyQuantificationManager,
     StudyTypeManager studyTypeManager, ProjectManager projectManager, CrpMilestoneManager crpMilestoneManager,
     ProjectExpectedStudyMilestoneManager projectExpectedStudyMilestoneManager,
-    ProjectExpectedStudyMapper projectExpectedStudyMapper, GlobalUnitProjectManager globalUnitProjectManager) {
+    ProjectExpectedStudyMapper projectExpectedStudyMapper, GlobalUnitProjectManager globalUnitProjectManager,
+    LiaisonInstitutionManager liaisonInstitutionManager, ReportSynthesisManager reportSynthesisManager,
+    ReportSynthesisFlagshipProgressStudyManager reportSynthesisFlagshipProgressStudyManager,
+    ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.repIndStageStudyManager = repIndStageStudyManager;
@@ -220,6 +236,10 @@ public class ExpectedStudiesItem<T> {
     this.srfSloIndicatorTargetManager = srfSloIndicatorTargetManager;
     this.projectExpectedStudyMapper = projectExpectedStudyMapper;
     this.globalUnitProjectManager = globalUnitProjectManager;
+    this.reportSynthesisFlagshipProgressStudyManager = reportSynthesisFlagshipProgressStudyManager;
+    this.liaisonInstitutionManager = liaisonInstitutionManager;
+    this.reportSynthesisManager = reportSynthesisManager;
+    this.reportSynthesisFlagshipProgressManager = reportSynthesisFlagshipProgressManager;
   }
 
   private int countWords(String string) {
@@ -1029,6 +1049,50 @@ public class ExpectedStudiesItem<T> {
                   projectExpectedStudyQuantificationDB.setComments(projectExpectedStudyQuantification.getComments());
                   projectExpectedStudyQuantificationManager
                     .saveProjectExpectedStudyQuantification(projectExpectedStudyQuantificationDB);
+                }
+
+                // verify if was included in synthesis PMU
+                LiaisonInstitution liaisonInstitution = this.liaisonInstitutionManager
+                  .findByAcronymAndCrp(APConstants.CLARISA_ACRONYM_PMU, globalUnitEntity.getId());
+                if (liaisonInstitution != null) {
+                  boolean existing = true;
+                  ReportSynthesis reportSynthesis =
+                    reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
+                  if (reportSynthesis != null) {
+                    ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress =
+                      reportSynthesis.getReportSynthesisFlagshipProgress();
+                    if (reportSynthesisFlagshipProgress == null) {
+                      reportSynthesisFlagshipProgress = new ReportSynthesisFlagshipProgress();
+                      reportSynthesisFlagshipProgress.setReportSynthesis(reportSynthesis);
+                      reportSynthesisFlagshipProgress.setCreatedBy(user);
+                      existing = false;
+                      reportSynthesisFlagshipProgress = reportSynthesisFlagshipProgressManager
+                        .saveReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgress);
+                    }
+                    final Long study = projectExpectedStudyID;
+                    ReportSynthesisFlagshipProgressStudy reportSynthesisFlagshipProgressStudy =
+                      reportSynthesisFlagshipProgress.getReportSynthesisFlagshipProgressStudies().stream()
+                        .filter(c -> c.isActive() && c.getProjectExpectedStudy().getId().longValue() == study)
+                        .findFirst().orElse(null);
+                    if (reportSynthesisFlagshipProgressStudy != null && existing) {
+                      reportSynthesisFlagshipProgressStudy = reportSynthesisFlagshipProgressStudyManager
+                        .getReportSynthesisFlagshipProgressStudyById(reportSynthesisFlagshipProgressStudy.getId());
+                      reportSynthesisFlagshipProgressStudy.setActive(false);
+                      reportSynthesisFlagshipProgressStudy = reportSynthesisFlagshipProgressStudyManager
+                        .saveReportSynthesisFlagshipProgressStudy(reportSynthesisFlagshipProgressStudy);
+                    } else {
+                      reportSynthesisFlagshipProgressStudy = new ReportSynthesisFlagshipProgressStudy();
+                      reportSynthesisFlagshipProgressStudy.setCreatedBy(user);
+                      reportSynthesisFlagshipProgressStudy.setProjectExpectedStudy(projectExpectedStudy);
+                      reportSynthesisFlagshipProgressStudy
+                        .setReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgress);
+                      reportSynthesisFlagshipProgressStudy = reportSynthesisFlagshipProgressStudyManager
+                        .saveReportSynthesisFlagshipProgressStudy(reportSynthesisFlagshipProgressStudy);
+                      reportSynthesisFlagshipProgressStudy.setActive(false);
+                      reportSynthesisFlagshipProgressStudyManager
+                        .saveReportSynthesisFlagshipProgressStudy(reportSynthesisFlagshipProgressStudy);
+                    }
+                  }
                 }
               }
             }

@@ -3,8 +3,8 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${deliverableID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2","font-awesome","dropzone","blueimp-file-upload","jsUri", "flag-icon-css", "pickadate"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20210310",
-  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20210609a", 
+  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20210908A",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20210908A", 
   "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20200205",
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
   [#--  "${baseUrlCdn}/global/js/autoSave.js",--]
@@ -50,6 +50,21 @@
       <div class="col-md-9">
         [#-- Section Messages --]
         [#include "/WEB-INF/crp/views/projects/messages-deliverables.ftl" /]
+
+        [#--  <div class="containerTitleElements">
+            <div class="containerTitleMessage" style="margin-top: 10px;">
+              <div id="qualityAssessedIcon" class="deliverableQualityAssessedIcon qualityAssessed-mode text-center animated flipInX">
+                [#assign lastSubmission=action.getProjectSubmissions(projectID)?last /]
+                <p>
+                  [@s.text name="message.qualityAssessed"]
+                    [@s.param]Deliverable[/@s.param]
+                    [@s.param]${(lastSubmission.dateTime?string["MMMM dd, yyyy"])!}[/@s.param]
+                  [/@s.text]
+                </p>
+              </div> 
+              <p class="messageQAInfo">[@s.text name="message.qualityAssessedInfo"][/@s.text]</p>
+            </div>  
+          </div>  --]
         
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
           
@@ -257,6 +272,8 @@
     </div>
   [/#list]
 </div>
+
+<div id="actualYear" style="display: none;">${actualPhase.year}</div>
 
 
 [#if reportingActive || upKeepActive]

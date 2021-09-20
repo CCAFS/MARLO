@@ -40,7 +40,8 @@ public interface ReportSynthesisFlagshipProgressStudyDAO {
   public boolean existReportSynthesisFlagshipProgressStudy(long reportSynthesisFlagshipProgressStudyID);
 
   /**
-   * This method gets a reportSynthesisFlagshipProgressStudy object by a given reportSynthesisFlagshipProgressStudy identifier.
+   * This method gets a reportSynthesisFlagshipProgressStudy object by a given reportSynthesisFlagshipProgressStudy
+   * identifier.
    * 
    * @param reportSynthesisFlagshipProgressStudyID is the reportSynthesisFlagshipProgressStudy identifier.
    * @return a ReportSynthesisFlagshipProgressStudy object.
@@ -54,14 +55,26 @@ public interface ReportSynthesisFlagshipProgressStudyDAO {
    */
   public List<ReportSynthesisFlagshipProgressStudy> findAll();
 
+  /**
+   * This method gets a reportSynthesisFlagshipProgressStudy object by a given projectExpectedStudy id and a phase id
+   *
+   * @param studyId the ProjectExpectedStudy identifier
+   * @param flagshipProgressId the ReportSynthesisFlagshipProgress identifier
+   * @return a ReportSynthesisFlagshipProgressStudy object.
+   */
+  public ReportSynthesisFlagshipProgressStudy
+    getReportSynthesisFlagshipProgressStudyByStudyAndFlagshipProgress(long studyId, long flagshipProgressId);
 
   /**
    * This method saves the information of the given reportSynthesisFlagshipProgressStudy
    * 
-   * @param reportSynthesisFlagshipProgressStudy - is the reportSynthesisFlagshipProgressStudy object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the reportSynthesisFlagshipProgressStudy was
+   * @param reportSynthesisFlagshipProgressStudy - is the reportSynthesisFlagshipProgressStudy object with the new
+   *        information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         reportSynthesisFlagshipProgressStudy was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ReportSynthesisFlagshipProgressStudy save(ReportSynthesisFlagshipProgressStudy reportSynthesisFlagshipProgressStudy);
+  public ReportSynthesisFlagshipProgressStudy
+    save(ReportSynthesisFlagshipProgressStudy reportSynthesisFlagshipProgressStudy);
 }

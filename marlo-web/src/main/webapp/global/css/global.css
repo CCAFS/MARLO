@@ -7126,6 +7126,72 @@ li.currentSection#bi::before{
   display: none;
 }
 
+.containerTitleElements {
+  width: 100%;
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.containerTitleMessage {
+  width: 79%;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  margin: 0 10px;
+}
+
+#qualityAssessedIcon {
+  background-image: url(../../global/images/quality-assessed-icon.svg);
+  background-repeat: no-repeat;
+  background-position: 510px;
+  background-size: 30px 30px;
+}
+
+.deliverableQualityAssessedIcon {
+  background-position: 530px !important;
+}
+
+.qualityAssessed-mode {
+  width: 100%;
+  color: #7FB06F;
+  padding: 5px 0;
+  background-color: #E8F7E3;
+  border: 1px solid #E3F5DD;
+  font-size: 1.2em;
+  border-radius: 4px;
+  font-weight: lighter;
+  margin: 0 10px;
+}
+
+.qualityAssessed-mode p {
+  margin: 0;
+}
+
+.messageQAInfo {
+  font-size: 1em;
+  color: red;
+  font-style: italic;
+}
+
+@media (max-width: 1197px) {
+  #qualityAssessedIcon {
+    background-image: url(../../global/images/quality-assessed-icon.svg);
+    background-repeat: no-repeat;
+    background-position: 435px;
+    background-size: 30px 30px;
+  }
+
+  .deliverableQualityAssessedIcon {
+    background-position: 455px !important;
+  }
+
+  .containerTitleMessage {
+    width: 74%;
+  }
+}
+
 @media (max-width: 1500px) {
   .crpProgressflagships {
     width: 25%;

@@ -119,7 +119,8 @@ public class DeliverableValidator extends BaseValidator {
 
     } else {
       validate = deliverable.getDeliverableInfo().isRequiredToComplete()
-        || deliverable.getDeliverableInfo().isStatusCompleteInNextPhases();
+        || deliverable.getDeliverableInfo().isStatusCompleteInNextPhases()
+        || deliverable.getDeliverableInfo().getStatus() == 7;
     }
     if (validate) {
       Project project = projectManager.getProjectById(deliverable.getProject().getId());
@@ -238,11 +239,15 @@ public class DeliverableValidator extends BaseValidator {
         if (action.isReportingActive() && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() != null
           && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
-          action.addMessage(action.getText("project.deliverable.generalInformation.status"));
-          action.getInvalidFields().put("input-deliverable.deliverableInfo.status", InvalidFieldsMessages.EMPTYFIELD);
+          if (action.getActualPhase().getYear() != 2021) {
+            action.addMessage(action.getText("project.deliverable.generalInformation.status"));
+            action.getInvalidFields().put("input-deliverable.deliverableInfo.status", InvalidFieldsMessages.EMPTYFIELD);
+          }
         }
 
-        if (action.hasSpecificities(APConstants.CRP_HAS_DISEMINATION)) {
+        if (action.hasSpecificities(APConstants.CRP_HAS_DISEMINATION)
+          && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() != null
+          && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() != 7) {
           boolean isPRP = false;
           // type 63 = Peer-reviewed publication (PRP). doi should only be mandatory for PRPs
           if (action.getActualPhase() != null && deliverable.getDeliverableInfo(action.getActualPhase()) != null
@@ -433,6 +438,16 @@ public class DeliverableValidator extends BaseValidator {
       action.getInvalidFields().put("input-deliverable.deliverableInfo.status", InvalidFieldsMessages.EMPTYFIELD);
     }
 
+    // Validating status justification when deliverable has been marked as partially complete
+    if (deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() != null
+      && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() == 7) {
+      if (!(this.isValidString(deliverable.getDeliverableInfo(action.getActualPhase()).getStatusDescription())
+        && this.wordCount(deliverable.getDeliverableInfo(action.getActualPhase()).getStatusDescription()) <= 150)) {
+        action.addMessage(action.getText("project.deliverable.generalInformation.justification"));
+        action.getInvalidFields().put("input-deliverable.deliverableInfo.statusDescription",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+    }
 
     if (deliverable.getDeliverableInfo(action.getActualPhase()).getYear() == -1) {
       action.addMessage(action.getText("project.deliverable.generalInformation.year"));

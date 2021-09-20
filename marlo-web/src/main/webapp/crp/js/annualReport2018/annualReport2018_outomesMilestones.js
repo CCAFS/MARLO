@@ -1,5 +1,7 @@
 $(document).ready(init);
 
+var markers;
+
 function init() {
 
   // Add Select2
@@ -12,6 +14,46 @@ function init() {
   // Set google charts
   setGoogleCharts();
   disabledUncheckedCheckmarkColor();
+  markers = $('select.marker');
+  loadMarkers();
+  markers.on('change', function() {
+    var tag = $(this).parent().parent().parent().next('.conditionalRequire').find('.requiredTag');
+    disableEnableRequiredTag(this.value, tag);
+  });
+}
+
+function loadMarkers() {
+  markers.each((index, item) => {
+    var tag = $(item).parent().parent().parent().next('.conditionalRequire').find('.requiredTag');
+    disableEnableRequiredTag(item.value, tag);
+  });
+}
+
+function disableEnableRequiredTag(key, tag) {
+  switch (key) {
+    case '-1':
+      $(tag).hide();
+      break;
+
+    case '1':
+      $(tag).hide();
+      break;
+
+    case '2':
+      $(tag).show();
+      break;
+
+    case '3':
+      $(tag).show();
+      break;
+
+    case '4':
+      $(tag).hide();
+      break;
+  
+    default:
+      break;
+  }
 }
 
 function disabledUncheckedCheckmarkColor() {
