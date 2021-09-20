@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationEvidenceLink;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSubIdo;
@@ -145,25 +146,35 @@ public class ProjectInnovationValidator extends BaseValidator {
       }
     }
 
-    // Validate SubIdos
+    // Validate Sub-Idos
     if (projectInnovation.getSubIdos() == null || projectInnovation.getSubIdos().isEmpty()) {
       action.addMessage(action.getText("subIdos"));
       action.addMissingField("innovation.subIdos");
       action.getInvalidFields().put("list-innovation.subIdos",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
     } else {
-      // Validate primary Sub-IDOS
-      int count = 0;
-      for (ProjectInnovationSubIdo subido : projectInnovation.getSubIdos()) {
-        if (subido.getPrimary() != null && subido.getPrimary() == true) {
-          count++;
+      // Validate primary sub-IDO
+      if (projectInnovation.getSubIdos().size() > 1) {
+        if (projectInnovation.getSubIdos().size() > 3) {
+          action.addMessage(action.getText("subIdos"));
+          action.addMissingField("study.stratgicResultsLink.subIDOs");
+          action.getInvalidFields().put("list-expectedStudy.subIdos",
+            action.getText(InvalidFieldsMessages.WRONGVALUE, new String[] {"subIdos"}));
         }
-      }
-      if (count == 0) {
-        action.addMessage(action.getText("subIdos"));
-        action.addMissingField("innovation.subIdos");
-        action.getInvalidFields().put("list-innovation.subIdos",
-          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
+
+        int count = 0;
+        for (ProjectInnovationSubIdo innovationSubIdo : projectInnovation.getSubIdos()) {
+          if (innovationSubIdo.getPrimary() != null && innovationSubIdo.getPrimary()) {
+            count++;
+          }
+        }
+
+        if (count == 0) {
+          action.addMessage(action.getText("subIdos"));
+          action.addMissingField("innovation.subIdos");
+          action.getInvalidFields().put("list-innovation.subIdos",
+            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
+        }
       }
     }
 
@@ -211,18 +222,39 @@ public class ProjectInnovationValidator extends BaseValidator {
         } else {
           // Validate Evidence Link (URL)
           // Validate stage different to 1 and 3
+          boolean validEvidenceLinks = true;
           if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndStageInnovation()
             .getId() != 1
             && projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndStageInnovation()
               .getId() != 3) {
-            if (!this.isValidString(
-              projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getEvidenceLink())) {
-              if (struts) {
-                action.addMessage(action.getText("projectInnovations.evidenceLink"));
-                action.addMissingField("projectInnovations.evidenceLink");
-                action.getInvalidFields().put("input-innovation.projectInnovationInfo.evidenceLink",
+            if (action.isNotEmpty(projectInnovation.getInnovationLinks())) {
+              for (int i = 0; i < projectInnovation.getInnovationLinks().size(); i++) {
+                ProjectInnovationEvidenceLink link = projectInnovation.getInnovationLinks().get(i);
+                if (link == null || !this.isValidString(link.getLink())) {
+                  if (struts) {
+                    // Does not work. On load there is not an specific way we can know the links are going to
+                    // be loaded in the same order they were saved
+                    /*
+                     * action.addMessage(action.getText("Evidence Link"));
+                     * action.addMissingField("Evidence Link");
+                     * action.getInvalidFields().put("input-innovation.innovationLinks[" + i + "].link",
+                     * InvalidFieldsMessages.EMPTYFIELD);
+                     */
+                    validEvidenceLinks = false;
+                  }
+                }
+              }
+              if (!validEvidenceLinks) {
+                action.addMessage(action.getText("Evidence Link"));
+                action.addMissingField("Evidence Link");
+                action.getInvalidFields().put("innovation.projectInnovationInfo.evidenceLink",
                   InvalidFieldsMessages.EMPTYFIELD);
               }
+            } else {
+              action.addMessage(action.getText("Evidence Link"));
+              action.addMissingField("Evidence Link");
+              action.getInvalidFields().put("innovation.projectInnovationInfo.evidenceLink",
+                action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Evidence Link"}));
             }
           }
 
@@ -232,11 +264,9 @@ public class ProjectInnovationValidator extends BaseValidator {
             || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndStageInnovation()
               .getId() == 3) {
 
-            if ((!this
-              .isValidString(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getEvidenceLink()))
-              && ((projectInnovation.getProjectInnovationDeliverables() != null
-                && projectInnovation.getProjectInnovationDeliverables().isEmpty())
-                || (projectInnovation.getProjectInnovationDeliverables() == null))) {
+            if (!validEvidenceLinks && ((projectInnovation.getProjectInnovationDeliverables() != null
+              && projectInnovation.getProjectInnovationDeliverables().isEmpty())
+              || (projectInnovation.getProjectInnovationDeliverables() == null))) {
               if (struts) {
                 action.addMessage(action.getText("projectInnovations.evidenceLink"));
                 action.addMissingField("projectInnovations.evidenceLink");

@@ -633,7 +633,7 @@ public class OutcomesAction extends BaseAction {
     }
 
     // General Status List
-    generalStatuses = generalStatusManager.findAll();
+    generalStatuses = generalStatusManager.findAllGeneralUse();
 
     /** POWB 2019 List */
     assessmentRisks = powbIndAssesmentRiskManager.findAll();

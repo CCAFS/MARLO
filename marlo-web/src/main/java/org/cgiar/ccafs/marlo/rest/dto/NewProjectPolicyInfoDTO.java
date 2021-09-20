@@ -38,8 +38,17 @@ public class NewProjectPolicyInfoDTO {
   @ApiModelProperty(notes = "Policy Investment Type", position = 5)
   private PolicyInvestmentTypeDTO repIndPolicyInvestimentType;
 
-  @ApiModelProperty(notes = "Maturity level", position = 6)
+
+  @ApiModelProperty(notes = "Policy budget amount", position = 6)
+  private Long budgetAmount;
+
+  @ApiModelProperty(notes = "Maturity level", position = 7)
   private PolicyMaturityLevelDTO repIndStageProcess;
+
+
+  public Long getBudgetAmount() {
+    return budgetAmount;
+  }
 
 
   public String getDescription() {
@@ -69,6 +78,11 @@ public class NewProjectPolicyInfoDTO {
 
   public long getYear() {
     return year;
+  }
+
+
+  public void setBudgetAmount(Long budgetAmount) {
+    this.budgetAmount = budgetAmount;
   }
 
 
