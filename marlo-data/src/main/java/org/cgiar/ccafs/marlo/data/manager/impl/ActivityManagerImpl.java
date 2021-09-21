@@ -173,6 +173,12 @@ public class ActivityManagerImpl implements ActivityManager {
 
   }
 
+
+  @Override
+  public List<Activity> getActivitiesByProject(long projectId, long phaseId) {
+    return activityDAO.getActivitiesByProject(projectId, phaseId);
+  }
+
   @Override
   public Activity getActivityById(long activityID) {
 

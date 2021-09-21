@@ -17,6 +17,7 @@
 package org.cgiar.ccafs.marlo.data.dao;
 
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableHomeDTO;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
@@ -73,7 +74,17 @@ public interface DeliverableDAO {
    */
   public List<Deliverable> getDeliverablesByPhase(long phase);
 
-  public List<Deliverable> getDeliverablesByProjectAndPhase(long phase, long project);
+  public List<Deliverable> getDeliverablesByProjectAndPhase(long phaseId, long projectId);
+
+  /**
+   * Gets a list of all the deliverables from a project planned for the phase's year
+   * NOTE: this method is meant to be used by the Home Dashboard table
+   * 
+   * @param phaseId the Phase identifier
+   * @param projectId the Project identifier
+   * @return a list of DeliverableHomeDTO or empty
+   */
+  public List<DeliverableHomeDTO> getDeliverablesByProjectAndPhaseHome(long phaseId, long projectId);
 
   public List<Deliverable> getDeliverablesLeadByInstitution(long institutionId, long phaseId);
 

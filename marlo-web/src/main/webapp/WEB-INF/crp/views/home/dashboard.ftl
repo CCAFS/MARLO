@@ -8,7 +8,7 @@
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/home/dashboard.css",
+  "${baseUrlMedia}/css/home/dashboard.css?20210826",
   "${baseUrlCdn}/global/css/customDataTable.css",
   "${baseUrlCdn}/global/css/impactGraphic.css"
   ]
@@ -20,7 +20,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/crp/macros/projectsListTemplate.ftl" as projectList /]
-[#import "/WEB-INF/global/macros/deliverableListTemplate.ftl" as deliverablesList /]
+[#import "/WEB-INF/global/macros/homeDashboard.ftl" as indicatorLists /]
 
 [#assign timeline = [
   {"id":"1", "startDate":"11/28/2016", "endDate":"11/30/2016","what":"MARLO opens for Impact Pathway","who":"Flagship Leaders"},
@@ -44,6 +44,9 @@
 <section class="marlo-content">
   <div class="container">
     [#-- What do you want to do --]
+    <div class="homeTitle2"><b>[@s.text name="dashboard.homepage.title" /] ${(currentUser.firstName)!}!</b></div>
+    <div class="homeDescription2 col-md-12">[@s.text name="dashboard.homepage.description" /]</div>
+
     [#if !action.isAiccra()]
     <div class="homeTitle"><b>[@s.text name="dashboard.decisionTree.title" /]</b></div>
   [/#if]
@@ -154,8 +157,6 @@
 
         [#if aiccra]
             <p><h3>What is a Cluster?</h3></p><p>A cluster is defined as the group of AICCRA main activities led by each AICCRA Country Leader (Ghana, Mali, Senegal, Ethiopia, Kenya and Zambia), AICCRA Regional Leaders (Western Africa and Eastern & Southern Africa) and AICCRA-CCAFS Flagship Leaders (FP1, FP2 and FP4). In each cluster, participants are involved as leader, coordinators and collaborators with specific budget allocations for each AICCRA main activity with a set of deliverables and contributions towards our performance indicators.</p>
-            <h3>Reporting Schedule</h3>
-            <img src="${baseUrlCdn}/global/images/aiccra-planning-2021.png" width="450">
         [#else]
             [@s.text name="dashboard.aiccra.instructions" ] [@s.param] <a href="https://docs.google.com/document/d/1hy2yt6E4pJ5orGqHxBSX_ACcr72pPTwaSesQ9P6vHYQ/edit" target="_blank">here</a>.[/@s.param][/@s.text]
             <img src="${baseUrlCdn}/global/images/aiccra-planning.png" width="450">
@@ -176,6 +177,8 @@
       <ul class="nav nav-tabs" role="tablist">
           <li role="presentation" class="active"><a  id="projects" href="#myProjects" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.myProjects.title" /]</a></li>
           <li role="presentation"><a id="deliverables" href="#myDeliverables" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.myDeliverables.title" /]</a></li>
+          <li role="presentation"><a id="studies" href="#myStudies" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.studies.table.title" /]</a></li>
+          <li role="presentation"><a id="innovations" href="#myInnovations" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.innovations.table.title" /]</a></li>
           <li role="presentation" style="display:none;"><a id="impact" href="#impactP" aria-controls="impactP" role="tab" data-toggle="tab">Impact pathway</a></li>
         </ul>
       [/#if]
@@ -190,7 +193,15 @@
           </div>
 
           <div role="tabpanel" class="tab-pane fade" id="myDeliverables">
-            [@deliverablesList.deliverablesSummaryList deliverables=myDeliverables canValidate=true canEdit=true namespace="/clusters" defaultAction="${(crpSession)!}/deliverable" /]
+            [@indicatorLists.deliverablesHomeList deliverables=myDeliverables canValidate=true canEdit=true namespace="/clusters" defaultAction="${(crpSession)!}/deliverable" /]
+          </div>
+          
+          <div role="tabpanel" class="tab-pane fade" id="myStudies">
+            [@indicatorLists.studiesHomeList studies=myStudies canValidate=true canEdit=true namespace="/clusters" defaultAction="${(crpSession)!}/study" /]
+          </div>
+          
+          <div role="tabpanel" class="tab-pane fade" id="myInnovations">
+            [@indicatorLists.innovationsHomeList innovations=myInnovations canValidate=true canEdit=true namespace="/clusters" defaultAction="${(crpSession)!}/innovation" /]
           </div>
 
           <div role="tabpanel" class="tab-pane fade" id="impactP">

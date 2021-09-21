@@ -1611,6 +1611,29 @@ public class DeliverableAction extends BaseAction {
         }
       }
 
+      // Add activities from the shared clusters
+      /*
+       * List<ProjectDeliverableShared> deliverablesShared = new ArrayList<>();
+       * deliverablesShared =
+       * projectDeliverableSharedManager.getByDeliverable(deliverable.getId(), this.getActualPhase().getId());
+       * if (deliverablesShared != null && !deliverablesShared.isEmpty()) {
+       * for (ProjectDeliverableShared deliverableShared : deliverablesShared) {
+       * Project projectShared = deliverableShared.getProject();
+       * List<Activity> sharedActivities = new ArrayList<>();
+       * activityManager = null;
+       * sharedActivities =
+       * activityManager.getActivitiesByProject(projectShared.getId(), this.getActualPhase().getId());
+       * if (sharedActivities != null) {
+       * for (Activity activity : sharedActivities) {
+       * if (!activities.contains(activity)) {
+       * activities.add(activity);
+       * }
+       * }
+       * }
+       * }
+       * }
+       */
+
       if (activities != null && !activities.isEmpty()) {
         activities = activities.stream().filter(c -> c.isActive() && c.getActivityTitle() != null)
           .sorted((a1, a2) -> a1.getActivityTitle().getTitle().compareTo(a2.getActivityTitle().getTitle()))
@@ -1740,6 +1763,10 @@ public class DeliverableAction extends BaseAction {
           deliverable.getGeographicScopes().clear();
         }
 
+        if (deliverable.getSharedDeliverables() != null) {
+          deliverable.getSharedDeliverables().clear();
+        }
+
         deliverable.setQualityCheck(null);
         deliverable.getDeliverableInfo(this.getActualPhase()).setCrpClusterKeyOutput(null);
 
@@ -1835,6 +1862,7 @@ public class DeliverableAction extends BaseAction {
       }
 
       this.saveCrossCutting();
+      this.saveProjects(deliverableDB);
 
       // Reporting and upkeep
       if (this.isReportingActive() || this.isUpKeepActive()) {
@@ -1848,7 +1876,6 @@ public class DeliverableAction extends BaseAction {
         // Data Sharing is not longer used.
         this.saveDataSharing();
         this.saveUsers();
-        this.saveProjects(deliverableDB);
         this.saveParticipant();
       }
 
