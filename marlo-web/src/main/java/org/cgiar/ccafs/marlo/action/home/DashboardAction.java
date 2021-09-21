@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.dto.DeliverableHomeDTO;
 import org.cgiar.ccafs.marlo.data.dto.InnovationHomeDTO;
 import org.cgiar.ccafs.marlo.data.dto.ProjectHomeDTO;
 import org.cgiar.ccafs.marlo.data.dto.StudyHomeDTO;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
@@ -28,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PolicyHomeDTO;
@@ -40,6 +42,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -69,6 +72,7 @@ public class DashboardAction extends BaseAction {
   private ProjectExpectedStudyManager projectExpectedStudyManager;
   private ProjectInnovationManager projectInnovationManager;
   private ProjectPolicyManager projectPolicyManager;
+  private CrpProgramManager crpProgramManager;
 
   // Variables
   private GlobalUnit loggedCrp;
@@ -80,11 +84,13 @@ public class DashboardAction extends BaseAction {
   private List<StudyHomeDTO> myMelias = new ArrayList<>();
   private List<InnovationHomeDTO> myInnovations = new ArrayList<>();
   private List<PolicyHomeDTO> myPolicies = new ArrayList<>();
+  private Map<String, String> fpColors = new HashMap<>();
 
   @Inject
   public DashboardAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     PhaseManager phaseManager, DeliverableManager deliverableManager, ProjectPolicyManager projectPolicyManager,
-    ProjectExpectedStudyManager projectExpectedStudyManager, ProjectInnovationManager projectInnovationManager) {
+    ProjectExpectedStudyManager projectExpectedStudyManager, ProjectInnovationManager projectInnovationManager,
+    CrpProgramManager crpProgramManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -93,11 +99,17 @@ public class DashboardAction extends BaseAction {
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.projectInnovationManager = projectInnovationManager;
     this.projectPolicyManager = projectPolicyManager;
+    this.crpProgramManager = crpProgramManager;
+  }
+
+  public Map<String, String> getFpColors() {
+    return fpColors;
   }
 
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
+
 
   /**
    * Get the value of myDeliverables
@@ -113,15 +125,14 @@ public class DashboardAction extends BaseAction {
     return myInnovations;
   }
 
-
   public List<StudyHomeDTO> getMyMelias() {
     return myMelias;
   }
 
+
   public List<StudyHomeDTO> getMyOicrs() {
     return myOicrs;
   }
-
 
   public List<PolicyHomeDTO> getMyPolicies() {
     return myPolicies;
@@ -246,6 +257,12 @@ public class DashboardAction extends BaseAction {
 
     Collections.sort(myProjects, (p1, p2) -> p1.getProjectId().compareTo(p2.getProjectId()));
 
+    fpColors = crpProgramManager.findAll().stream()
+      .filter(cp -> cp != null && cp.getId() != null && cp.getCrp() != null && cp.getCrp().getId() != null
+        && cp.getCrp().getId().equals(this.getCrpID())
+        && cp.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toMap(CrpProgram::getAcronym, CrpProgram::getColor));
+
     myDeliverables = myProjects.stream().filter(p -> p != null && p.getProjectId() != null)
       .flatMap(p -> deliverableManager
         .getDeliverablesByProjectAndPhaseHome(this.getActualPhase().getId(), p.getProjectId()).stream())
@@ -276,6 +293,12 @@ public class DashboardAction extends BaseAction {
     this.getSession().put(APConstants.USER_OICRS, myOicrs);
     this.getSession().put(APConstants.USER_INNOVATIONS, myInnovations);
     this.getSession().put(APConstants.USER_POLICIES, myPolicies);
+
+    this.getSession().put(APConstants.FP_COLORS, fpColors);
+  }
+
+  public void setFpColors(Map<String, String> fpColors) {
+    this.fpColors = fpColors;
   }
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {

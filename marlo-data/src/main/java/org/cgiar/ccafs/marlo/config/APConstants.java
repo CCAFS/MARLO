@@ -757,6 +757,8 @@ public final class APConstants {
   public static final String USER_POLICIES = "myPolicies";
   public static final String INDICATOR_ID = "indicatorID";
 
+  public static final String FP_COLORS = "fpColors";
+
   public static String getFilterBy() {
     return FILTER_BY;
   }
