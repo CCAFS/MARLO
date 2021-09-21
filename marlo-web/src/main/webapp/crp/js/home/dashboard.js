@@ -29,12 +29,14 @@ var oicrsData = [];
 var oicrsTitle = 'OICRs by Level';
 var oicrsAjaxURL = '/oicrGraphs.do';
 var oicrsArrName = 'byLevel';
+var isOicrs = false;
 
 var meliasLoaded = false;
 var meliasData = [];
 var meliasTitle = 'MELIAs by Type';
 var meliasAjaxURL = '/meliaGraphs.do';
 var meliasArrName = 'byStudyType';
+var isMelias = false;
 
 var innovationsLoaded = false;
 var innovationsData1 = [];
@@ -122,9 +124,9 @@ function initDashboard() {
       width: "80%",
       heigth: "100%"
     },
-    colors: [
-      '#B21691', '#1773b8', '#00a0b0', '#f3bd1e', '#373a3b'
-    ],
+    // colors: [
+    //   '#B21691', '#1773b8', '#00a0b0', '#f3bd1e', '#373a3b'
+    // ],
     bar: { groupWidth: '100%' },
     legend: {
       // position: "bottom",
@@ -167,6 +169,8 @@ function initDashboard() {
   };
 
   $('#homeProjects').on('click', function () {
+    isOicrs = false;
+    isMelias = false;
     byType.title = homeProjectsTitle1;
     byStatus.title = homeProjectsTitle2;
     $('#chartHome2').css('opacity', 1);
@@ -177,6 +181,8 @@ function initDashboard() {
   });
 
   $('#deliverables').on('click', function () {
+    isOicrs = false;
+    isMelias = false;
     byType.title = deliverablesTitle1;
     byStatus.title = deliverablesTitle2;
     $('#chartHome2').css('opacity', 1);
@@ -191,6 +197,8 @@ function initDashboard() {
   });
 
   $('#oicrs').on('click', function () {
+    isOicrs = true;
+    isMelias = false;
     byStatus.title = oicrsTitle;
     $('#chartHome2').css('opacity', 0);
     if (!oicrsLoaded) {
@@ -202,6 +210,8 @@ function initDashboard() {
   });
 
   $('#melias').on('click', function () {
+    isMelias = true;
+    isOicrs = false;
     byLevel.title = meliasTitle;
     $('#chartHome2').css('opacity', 0);
     if (!meliasLoaded) {
@@ -213,6 +223,8 @@ function initDashboard() {
   });
 
   $('#innovations').on('click', function () {
+    isOicrs = false;
+    isMelias = false;
     byLevel.title = innovationsTitle1;
     byStatus.title = innovationsTitle2;
     $('#chartHome2').css('opacity', 1);
@@ -227,6 +239,8 @@ function initDashboard() {
   });
 
   $('#policies').on('click', function () {
+    isOicrs = false;
+    isMelias = false;
     byType.title = policiesTitle1;
     byStatus.title = policiesTitle2;
     $('#chartHome2').css('opacity', 1);
@@ -266,9 +280,16 @@ function loadPageData(ajaxURL, arrName, chartID, type, options) {
           arr.push(x.key);
           arr.push(x.count);
           arr.push((x.count).toString());
+          if (arrName == homeProjectsArrName1) {
+            arr.push(data['fpColors'][x.key]);
+          }
           return arr;
         });
-        newData.unshift(["Type", "Count", { role: "annotation" }]);
+        if (arrName == homeProjectsArrName1) {
+          newData.unshift(["Type", "Count", { role: "annotation" }, { role: "style" }]);
+        } else {
+          newData.unshift(["Type", "Count", { role: "annotation" }]);
+        }
         switch (arrName) {
           case homeProjectsArrName1:
             homeProjectsData1 = newData;
@@ -323,12 +344,22 @@ function drawChart(chart_data, chartID, type, options) {
   if (chart_data) {
     var chart1_data = new google.visualization.arrayToDataTable(chart_data);
     var chart1_options = options;
-    if (chart1_data.Wf == 0) {
-      $('#'+chartID).empty();
-      $('#'+chartID).append(
-        '<p  class="text-center"> ' + options.title + " <br>  No data </p>"
-      );
+    if (chart1_data.Wf == 0 || chart1_data.Wf == 1) {
+      console.log("Empty or lower than 1", chart1_data.Wf)
+      if (isOicrs || isMelias) {
+        $('#'+chartHome1).css('display', 'none');
+        $('#'+chartHome2).css('display', 'none');
+      } else {
+        $('#'+chartID).css('display', 'none');
+      }
     } else {
+      console.log("Higher than 1", chart1_data.Wf)
+      if (isOicrs || isMelias) {
+        $('#'+chartHome1).css('display', 'block');
+        $('#'+chartHome2).css('display', 'block');
+      } else {
+        $('#'+chartID).css('display', 'block');
+      }
       var view = new google.visualization.DataView(chart1_data);
 
       if (type == barType) {
