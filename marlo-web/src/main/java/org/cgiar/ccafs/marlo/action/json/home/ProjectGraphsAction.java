@@ -24,12 +24,14 @@ import org.cgiar.ccafs.marlo.utils.dto.GraphCountDTO;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 import org.apache.commons.collections4.Bag;
 import org.apache.commons.collections4.bag.HashBag;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +56,7 @@ public class ProjectGraphsAction extends BaseAction {
   // Graph results
   private List<GraphCountDTO> byProjectProgramType;
   private List<GraphCountDTO> byProjectStatus;
+  private Map<String, String> fpColors;
 
   @Inject
   public ProjectGraphsAction(APConfig config) {
@@ -67,8 +70,10 @@ public class ProjectGraphsAction extends BaseAction {
 
     this.projects.stream().collect(Collectors.groupingBy(p -> p.getStatus()))
       .forEach((k, v) -> byProjectStatus.add(new GraphCountDTO(k, (long) v.size())));
-    Bag<String> acc =
-      this.projects.stream().flatMap(p -> p.getProgramType().stream()).collect(Collectors.toCollection(HashBag::new));
+    Bag<String> acc = this.projects.stream()
+      .flatMap(p -> p.getProgramType().stream().filter(
+        pt -> StringUtils.isNotEmpty(pt) && StringUtils.containsAny(pt, "1", "2", "3", "4", "5", "6", "7", "8", "9")))
+      .collect(Collectors.toCollection(HashBag::new));
     acc.uniqueSet().forEach(u -> byProjectProgramType.add(new GraphCountDTO(u, (long) acc.getCount(u))));
 
     return SUCCESS;
@@ -82,17 +87,23 @@ public class ProjectGraphsAction extends BaseAction {
     return byProjectStatus;
   }
 
+  public Map<String, String> getFpColors() {
+    return fpColors;
+  }
+
   @SuppressWarnings("unchecked")
   @Override
   public void prepare() throws Exception {
     try {
       this.projects = (List<ProjectHomeDTO>) this.getSession().get(APConstants.USER_PROJECTS);
+      this.fpColors = (Map<String, String>) this.getSession().get(APConstants.FP_COLORS);
       if (projects == null) {
         projects = Collections.emptyList();
       }
     } catch (Exception e) {
       e.printStackTrace();
       this.projects = Collections.emptyList();
+      this.fpColors = Collections.emptyMap();
     }
   }
 
@@ -102,5 +113,9 @@ public class ProjectGraphsAction extends BaseAction {
 
   public void setByProjectStatus(List<GraphCountDTO> byProjectStatus) {
     this.byProjectStatus = byProjectStatus;
+  }
+
+  public void setFpColors(Map<String, String> fpColors) {
+    this.fpColors = fpColors;
   }
 }

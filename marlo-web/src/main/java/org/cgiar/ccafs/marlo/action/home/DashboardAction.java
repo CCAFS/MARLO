@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.dto.DeliverableHomeDTO;
 import org.cgiar.ccafs.marlo.data.dto.InnovationHomeDTO;
 import org.cgiar.ccafs.marlo.data.dto.ProjectHomeDTO;
 import org.cgiar.ccafs.marlo.data.dto.StudyHomeDTO;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
@@ -28,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PolicyHomeDTO;
@@ -40,15 +42,19 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
-import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.AuthorizationInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -56,6 +62,7 @@ import org.apache.shiro.authz.AuthorizationInfo;
 public class DashboardAction extends BaseAction {
 
   private static final long serialVersionUID = 6686785556753962379L;
+  private static final Logger LOG = LoggerFactory.getLogger(DashboardAction.class);
 
   // Managers
   private PhaseManager phaseManager;
@@ -65,6 +72,7 @@ public class DashboardAction extends BaseAction {
   private ProjectExpectedStudyManager projectExpectedStudyManager;
   private ProjectInnovationManager projectInnovationManager;
   private ProjectPolicyManager projectPolicyManager;
+  private CrpProgramManager crpProgramManager;
 
   // Variables
   private GlobalUnit loggedCrp;
@@ -76,11 +84,13 @@ public class DashboardAction extends BaseAction {
   private List<StudyHomeDTO> myMelias = new ArrayList<>();
   private List<InnovationHomeDTO> myInnovations = new ArrayList<>();
   private List<PolicyHomeDTO> myPolicies = new ArrayList<>();
+  private Map<String, String> fpColors = new HashMap<>();
 
   @Inject
   public DashboardAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     PhaseManager phaseManager, DeliverableManager deliverableManager, ProjectPolicyManager projectPolicyManager,
-    ProjectExpectedStudyManager projectExpectedStudyManager, ProjectInnovationManager projectInnovationManager) {
+    ProjectExpectedStudyManager projectExpectedStudyManager, ProjectInnovationManager projectInnovationManager,
+    CrpProgramManager crpProgramManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -89,11 +99,17 @@ public class DashboardAction extends BaseAction {
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.projectInnovationManager = projectInnovationManager;
     this.projectPolicyManager = projectPolicyManager;
+    this.crpProgramManager = crpProgramManager;
+  }
+
+  public Map<String, String> getFpColors() {
+    return fpColors;
   }
 
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
+
 
   /**
    * Get the value of myDeliverables
@@ -109,15 +125,14 @@ public class DashboardAction extends BaseAction {
     return myInnovations;
   }
 
-
   public List<StudyHomeDTO> getMyMelias() {
     return myMelias;
   }
 
+
   public List<StudyHomeDTO> getMyOicrs() {
     return myOicrs;
   }
-
 
   public List<PolicyHomeDTO> getMyPolicies() {
     return myPolicies;
@@ -199,6 +214,9 @@ public class DashboardAction extends BaseAction {
 
 
     }
+
+    Stream<Project> projectStream = Stream.empty();
+
     // Skip closed projects for Reporting
     if (this.isPlanningActive()) {
       if (this.getActualPhase() != null && this.getActualPhase().getId() != null) {
@@ -208,32 +226,42 @@ public class DashboardAction extends BaseAction {
           // closedProjects.addAll(projectManager.getNoPhaseProjects(this.getCrpID(), this.getActualPhase()));
           myFullProjects.removeAll(closedProjects);
         }
-        Collections.sort(myFullProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
 
+        projectStream =
+          myFullProjects.stream().filter(mp -> mp.isActive() && mp.getProjecInfoPhase(this.getActualPhase()) != null);
       }
     } else {
-      SimpleDateFormat dateFormat = new SimpleDateFormat("y");
+      SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy");
+      LOG.error(String.valueOf(this.getCurrentCycleYear()));
 
-      myProjects =
-        myFullProjects.stream()
-          .filter(
-            mp -> mp.isActive() && mp.getProjecInfoPhase(this.getActualPhase()) != null
-              && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null || Integer.parseInt(dateFormat
-                .format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this.getCurrentCycleYear())
-              && StringUtils.isNotEmpty(mp.getProjecInfoPhase(this.getActualPhase()).getStatusName()))
-          .map(p -> new ProjectHomeDTO(p.getId(),
-            StringUtils.trim(p.getProjecInfoPhase(this.getActualPhase()) != null
-              ? p.getProjecInfoPhase(this.getActualPhase()).getTitle() : null),
-            StringUtils.defaultIfEmpty(p.getProjecInfoPhase(this.getActualPhase()).getStatusName(), "Not Defined"),
-            (ListUtils.union(
-              projectManager.getPrograms(p.getId(), ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue(),
-                this.getActualPhase().getId()),
-              projectManager.getPrograms(p.getId(), ProgramType.REGIONAL_PROGRAM_TYPE.getValue(),
-                this.getActualPhase().getId()))
-              .stream().map(f -> f.getAcronym()).collect(Collectors.toList()))))
-          .collect(Collectors.toList());
+      projectStream = myFullProjects.stream()
+        /*
+         * .peek(mp -> LOG.error("P{} ends on {}", mp.getId(),
+         * Integer.parseInt(dateFormat.format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate()))))
+         */
+        .filter(mp -> mp.isActive() && mp.getProjecInfoPhase(this.getActualPhase()) != null
+          && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null
+            || Integer.parseInt(dateFormat.format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this
+              .getCurrentCycleYear())
+          && StringUtils.isNotEmpty(mp.getProjecInfoPhase(this.getActualPhase()).getStatusName()));
     }
 
+    myProjects = projectStream.map(p -> new ProjectHomeDTO(p.getId(),
+      StringUtils.trim(p.getProjecInfoPhase(this.getActualPhase()) != null
+        ? p.getProjecInfoPhase(this.getActualPhase()).getTitle() : null),
+      StringUtils.defaultIfEmpty(p.getProjecInfoPhase(this.getActualPhase()).getStatusName(), "Not Defined"),
+      projectManager.getPrograms(p.getId(), ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue(), this.getActualPhase().getId())
+        .stream().filter(cp -> cp != null && cp.getId() != null && StringUtils.isNotEmpty(cp.getAcronym()))
+        .map(cp -> cp.getAcronym()).collect(Collectors.toList())))
+      .collect(Collectors.toList());
+
+    Collections.sort(myProjects, (p1, p2) -> p1.getProjectId().compareTo(p2.getProjectId()));
+
+    fpColors = crpProgramManager.findAll().stream()
+      .filter(cp -> cp != null && cp.getId() != null && cp.getCrp() != null && cp.getCrp().getId() != null
+        && cp.getCrp().getId().equals(this.getCrpID())
+        && cp.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toMap(CrpProgram::getAcronym, CrpProgram::getColor));
 
     myDeliverables = myProjects.stream().filter(p -> p != null && p.getProjectId() != null)
       .flatMap(p -> deliverableManager
@@ -265,6 +293,12 @@ public class DashboardAction extends BaseAction {
     this.getSession().put(APConstants.USER_OICRS, myOicrs);
     this.getSession().put(APConstants.USER_INNOVATIONS, myInnovations);
     this.getSession().put(APConstants.USER_POLICIES, myPolicies);
+
+    this.getSession().put(APConstants.FP_COLORS, fpColors);
+  }
+
+  public void setFpColors(Map<String, String> fpColors) {
+    this.fpColors = fpColors;
   }
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {

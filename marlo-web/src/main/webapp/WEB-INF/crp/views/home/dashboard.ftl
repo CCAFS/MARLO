@@ -4,7 +4,7 @@
 [#assign pageLibs = ["jQuery-Timelinr","cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
   "https://www.gstatic.com/charts/loader.js",
-  "${baseUrlMedia}/js/home/dashboard.js?20210827a",
+  "${baseUrlMedia}/js/home/dashboard.js?20210921a",
   "${baseUrlCdn}/global/js/impactGraphic.js"
   ] 
 /]
@@ -63,17 +63,18 @@
           <li role="presentation"><a id="policies" href="#myPolicies" aria-controls="myPolicies" role="tab" data-toggle="tab">[@s.text name="dashboard.policies.table.title" /]</a></li>
           <li role="presentation" style="display:none;"><a id="impact" href="#impactP" aria-controls="impactP" role="tab" data-toggle="tab">Impact pathway</a></li>
         </ul>
+        
+        [#if (action.canAcessCrpAdmin() || action.isRole("DM") || action.isRole("FPL") || action.isRole("FPM") || action.isRole("ML") || action.isRole("PMU") || action.isRole("RPL") || action.isRole("RPM") || action.canAccessSuperAdmin())!false]
+          <div class="homeGraphs col-md-12">
+            <div class="col-md-6">
+              <div id="chartHome1" class="chartBox chartSimpleBox" style="height: 250px;"></div>
+            </div>
 
-        <div class="homeGraphs col-md-12">
-    
-      <div class="col-md-6">
-        <div id="chartHome1" class="chartBox chartSimpleBox" style="height: 250px;"></div>
-      </div>
-
-      <div class="col-md-6">
-        <div id="chartHome2" class="chartBox chartSimpleBox" style="height: 250px;"></div>
-      </div>
-    </div>
+            <div class="col-md-6">
+              <div id="chartHome2" class="chartBox chartSimpleBox" style="height: 250px;"></div>
+            </div>
+          </div>
+        [/#if]
         
         <div class="tab-content">
           <div role="tabpanel" class="tab-pane fade in active" id="myProjects">
