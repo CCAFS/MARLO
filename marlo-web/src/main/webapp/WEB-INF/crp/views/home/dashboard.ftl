@@ -4,7 +4,7 @@
 [#assign pageLibs = ["jQuery-Timelinr","cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
   "https://www.gstatic.com/charts/loader.js",
-  "${baseUrlMedia}/js/home/dashboard.js?20210920a",
+  "${baseUrlMedia}/js/home/dashboard.js?20210921a",
   "${baseUrlCdn}/global/js/impactGraphic.js"
   ] 
 /]
@@ -63,8 +63,8 @@
           <li role="presentation"><a id="policies" href="#myPolicies" aria-controls="myPolicies" role="tab" data-toggle="tab">[@s.text name="dashboard.policies.table.title" /]</a></li>
           <li role="presentation" style="display:none;"><a id="impact" href="#impactP" aria-controls="impactP" role="tab" data-toggle="tab">Impact pathway</a></li>
         </ul>
-
-        [#if (action.isRole("CRP-Admin") || action.isRole("DM") || action.isRole("FPL") || action.isRole("FPM") || action.isRole("ML") || action.isRole("PMU") || action.isRole("RPL") || action.isRole("RPM") || action.isRole("SuperAdmin"))!false]
+        
+        [#if (action.canAcessCrpAdmin() || action.isRole("DM") || action.isRole("FPL") || action.isRole("FPM") || action.isRole("ML") || action.isRole("PMU") || action.isRole("RPL") || action.isRole("RPM") || action.canAccessSuperAdmin())!false]
           <div class="homeGraphs col-md-12">
             <div class="col-md-6">
               <div id="chartHome1" class="chartBox chartSimpleBox" style="height: 250px;"></div>
