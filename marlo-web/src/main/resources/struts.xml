@@ -569,5 +569,6 @@
 	<include file="struts-center-admin.xml" />
 	<include file="struts-center-summaries.xml" />
 	<include file="struts-center-capDev.xml" />
+	<include file="struts-data.xml" />
 
 </struts>

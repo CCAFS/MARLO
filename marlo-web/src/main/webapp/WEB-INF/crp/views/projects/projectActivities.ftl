@@ -91,7 +91,7 @@
             [/#list]
           [/#if]
           </div>
-          [#if editable && canEdit && action.canAccessSuperAdmin()]
+          [#if editable && canEdit && (action.canAccessSuperAdmin() || action.canAcessCrpAdmin() || action.isRole("PC") || action.isRole("PL"))]
             <div id="addPartnerBlock" class="addPerson text-right">
               <div class="button-blue  addActivity"><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="form.buttons.addActivity" /]</div>
             </div>
@@ -159,7 +159,7 @@
       <span>[@s.text name="project.activities.index" /] [#if element.id?? && element.id?number != -1]${(element.id)!}[/#if]</span>
     </div>
     --]
-    [#if isActive && editable && action.canAccessSuperAdmin()] [#--&& (isTemplate) --]
+    [#if isActive && editable && (action.canAccessSuperAdmin() || action.canAcessCrpAdmin() || action.isRole("PC") || action.isRole("PL"))] [#--&& (isTemplate) --]
       <div class="removeLink">
         <div id="removeActivity" class="removeActivityBtnInList removeElement removeLink" data-toggle="modal" data-target="#removeactivityModal" title="[@s.text name='project.activities.removeActivity' /]"></div>
       </div>
@@ -186,7 +186,7 @@
       [#-- Activity Title --]
       [#if action.isAiccra()]
         <div class="form-group">
-          [@customForm.select name="${customName}.activityTitle.id" label="" className="activityTitle" i18nkey="project.activities.inputTitle" listName="activityTitles" keyFieldName="id" displayFieldName="title" multiple=false required=true editable=action.canAccessSuperAdmin() && isActive/]
+          [@customForm.select name="${customName}.activityTitle.id" label="" className="activityTitle" i18nkey="project.activities.inputTitle" listName="activityTitles" keyFieldName="id" displayFieldName="title" multiple=false required=true editable=(action.canAccessSuperAdmin() || action.isRole("PC") || action.isRole("PL")) && isActive/]
         </div>
       [/#if]
       [#-- Description --]

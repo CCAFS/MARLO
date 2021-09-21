@@ -18,8 +18,10 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.DeliverableDAO;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableHomeDTO;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.utils.ListResultTransformer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +30,8 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.FlushMode;
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -159,30 +163,44 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
   }
 
   @Override
-  public List<Deliverable> getDeliverablesByProjectAndPhase(long phase, long project) {
-    StringBuilder query = new StringBuilder();
-    query.append("SELECT DISTINCT  ");
-    query.append("d.id as id ");
-    query.append("FROM ");
-    query.append("deliverables AS d ");
-    query.append("INNER JOIN deliverables_info AS di ON d.id = di.deliverable_id ");
-    query.append("WHERE d.is_active = 1 AND d.project_id IS NOT NULL AND d.project_id = " + project
-      + " AND (d.is_publication IS NULL OR d.is_publication = 0) AND ");
-    query.append("di.is_active = 1 AND ");
-    query.append("di.`id_phase` =" + phase);
-    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
-    List<Deliverable> deliverables = new ArrayList<>();
+  public List<Deliverable> getDeliverablesByProjectAndPhase(long phaseId, long projectId) {
+    String query = "select d from Deliverable d, DeliverableInfo di "
+      + "join d.project pr with pr.id = :projectId and pr.active = true join di.phase ph with ph.id = :phaseId "
+      + "where di.deliverable = d and d.active = true and coalesce(nullif(di.newExpectedYear, -1),di.year) = ph.year";
 
-    if (rList != null) {
-      for (Map<String, Object> map : rList) {
-        Deliverable deliverable = this.find(Long.parseLong(map.get("id").toString()));
-        deliverables.add(deliverable);
-      }
-    }
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+
+    createQuery.setParameter("phaseId", phaseId);
+    createQuery.setParameter("projectId", projectId);
+
+    List<Deliverable> deliverables = super.findAll(createQuery);
 
     return deliverables;
   }
 
+  @Override
+  public List<DeliverableHomeDTO> getDeliverablesByProjectAndPhaseHome(long phaseId, long projectId) {
+    String query = "select d.id as deliverableId, coalesce(di.newExpectedYear, -1) as newExpectedYear, "
+      + "di.year as expectedYear, pr.id as projectId, coalesce(di.deliverableType.name, 'None') as deliverableType, "
+      + "di.title as deliverableTitle from Deliverable d, DeliverableInfo di, Phase ph, Project pr "
+      + "where di.deliverable = d and d.active = true and d.project = pr and pr.id = :projectId and pr.active = true and "
+      + "di.phase = ph and ph.id = :phaseId and coalesce(nullif(di.newExpectedYear, -1),di.year) = ph.year";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+
+    createQuery.setParameter("phaseId", phaseId);
+    createQuery.setParameter("projectId", projectId);
+
+    createQuery.setResultTransformer(
+      (ListResultTransformer) (tuple, aliases) -> new DeliverableHomeDTO(((Number) tuple[0]).longValue(),
+        ((Number) tuple[1]).longValue(), ((Number) tuple[2]).longValue(), ((Number) tuple[3]).longValue(),
+        (String) tuple[4], (String) tuple[5]));
+    createQuery.setFlushMode(FlushMode.COMMIT);
+
+    List<DeliverableHomeDTO> deliverables = createQuery.list();
+
+    return deliverables;
+  }
 
   @Override
   public List<Deliverable> getDeliverablesLeadByInstitution(long institutionId, long phaseId) {
