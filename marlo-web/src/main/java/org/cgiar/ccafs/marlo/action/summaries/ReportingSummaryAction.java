@@ -104,6 +104,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganizatio
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationDeliverable;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationEvidenceLink;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationOrganization;
@@ -3436,10 +3437,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         Long id = null;
         String title = null, narrative = null, phaseResearch = null, stageInnovation = null, innovationType = null,
           contributionOfCrp = null, degreeInnovation = null, geographicScope = null, region = null, countries = null,
-          organizations = null, projectExpectedStudy = null, descriptionStage = null, evidenceLink = null,
-          deliverables = null, crps = null, genderFocusLevel = null, genderExplaniation = null, youthFocusLevel = null,
-          youthExplaniation = null, leadOrganization = null, contributingOrganizations = null;
+          organizations = null, projectExpectedStudy = null, descriptionStage = null, deliverables = null, crps = null,
+          genderFocusLevel = null, genderExplaniation = null, youthFocusLevel = null, youthExplaniation = null,
+          leadOrganization = null, contributingOrganizations = null;
         Boolean isRegional = false, isNational = false, isStage4 = false;
+        StringBuffer evidenceLink = new StringBuffer();
         // Id
         id = projectInnovation.getId();
         // Title
@@ -3588,12 +3590,32 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         }
 
         // Evidence Link
-        if (innovationInfo.getEvidenceLink() != null && !innovationInfo.getEvidenceLink().trim().isEmpty()) {
+        if (("AR".equals(this.getSelectedPhase().getName()) && 2021 == this.getSelectedPhase().getYear())
+          || this.getSelectedPhase().getYear() > 2021) {
+          if (this.isNotEmpty(innovationInfo.getProjectInnovation().getProjectInnovationEvidenceLinks())) {
+            List<ProjectInnovationEvidenceLink> currentPhaseLinks = innovationInfo.getProjectInnovation()
+              .getProjectInnovationEvidenceLinks().stream().filter(l -> l != null && l.getId() != null
+                && l.getPhase() != null && l.getPhase().getId() != null && l.getPhase().equals(this.getSelectedPhase()))
+              .collect(Collectors.toList());
+            for (ProjectInnovationEvidenceLink evidenceLinkObject : currentPhaseLinks) {
+              if (StringUtils.isNotEmpty(evidenceLinkObject.getLink())) {
+                String link = StringUtils.trimToEmpty(evidenceLinkObject.getLink());
+                evidenceLink = evidenceLink.append("• ").append(urlShortener.getShortUrlService(link)).append("\\r\\n");
+              }
+            }
+          } else {
+            evidenceLink = evidenceLink.append(notProvided);
+          }
+        } else {
+          if (StringUtils.isNotEmpty(innovationInfo.getEvidenceLink())) {
 
-          /*
-           * Get short url calling tinyURL service
-           */
-          evidenceLink = urlShortener.getShortUrlService(innovationInfo.getEvidenceLink());
+            /*
+             * Get short url calling tinyURL service
+             */
+            evidenceLink = evidenceLink.append(urlShortener.getShortUrlService(innovationInfo.getEvidenceLink()));
+          } else {
+            evidenceLink = evidenceLink.append(notProvided);
+          }
         }
         // Deliverables
         List<ProjectInnovationDeliverable> projectInnovationDeliverables =
