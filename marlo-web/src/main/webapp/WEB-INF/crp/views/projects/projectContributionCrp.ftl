@@ -1,5 +1,5 @@
 [#ftl]
-[#assign title = "Project Outcome Contribution to CRP" /]
+[#assign title = "Cluster Contribution to Indicators" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectOutcomeID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [ 
@@ -172,7 +172,7 @@
                     [#-- Indicators --]
                     [#list projectOutcome.crpProgramOutcome.indicators as  indicator   ]
                     [#if action.isAiccra()]
-                      [@baselineAiccraIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  /]
+                      [@baselineAiccraIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index AREditable=true/]
                     [#else]
                       [@baselineIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  /]
                     [/#if]
@@ -227,37 +227,124 @@
             </div>
           </div>
           [/#if]          
-                    
-          [#if action.isAiccra() && projectOutcome.crpProgramOutcome.indicators?size != 0]
-          <h4 class="headTitle">Progress to Targets</h4>
-          <div class="nextUsersBlock borderBox">
-            <div class="nextUsersList">
-            [#-- Baseline Indicators --]
-            [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcome.crpProgramOutcome.crpProgram.baseLine)!false) && ((projectOutcome.crpProgramOutcome.indicators?has_content)!false)]
-              <h5 class="sectionSubTitle">Progress to Key Performance Indicator</h5>
-              <div class="form-group">
-                <div class="" id="baseline">
-                  <div class="form-group text-right">
-                    [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
-                      <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}&filename=${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="20px" alt="" /> ${ (projectOutcome.crpProgramOutcome.file.fileName)!}</a> 
-                    [#else]
-                      <p class="note"><i>[@s.text name="projectOutcome.askForBaselineInstructions" /]</i></p>
+           
+          <br>       
+          [#if reportingActive]
+            <div class="deliverableTabs"> 
+              <ul class="nav nav-tabs" role="tablist"> 
+                 <li role="presentation" class=""><a index="1" href="#deliverable-mainInformation" aria-controls="info" role="tab" data-toggle="tab">Progress ${currentCycleYear}</a></li>                       
+                 <li role="presentation" class="active"><a index="2" href="#deliverable-disseminationMetadata" aria-controls="metadata" role="tab" data-toggle="tab">Reporting ${currentCycleYear}</a></li>                            
+              </ul>
+              
+              <div class="tab-content ">          
+                [#-- Progress tab --]  
+                  <div id="deliverable-mainInformation" role="tabpanel" class="tab-pane fade">
+                    [#if action.isAiccra()  && projectOutcomeLastPhase.crpProgramOutcome.indicators?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?size != 0]
+                      [#-- 
+                      && projectOutcomeLastPhase.crpProgramOutcome?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?has_content
+                      --]
+                      <h4 class="headTitle">Progress to Targets</h4>
+                      <div class="nextUsersBlock borderBox">
+                        <div class="nextUsersList">
+                          [#-- Baseline Indicators --]
+                          [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcomeLastPhase.crpProgramOutcome.crpProgram.baseLine)!false) && ((projectOutcomeLastPhase.crpProgramOutcome.indicators?has_content)!false)]
+                            <h5 class="sectionSubTitle">Progress to Key Performance Indicator</h5>
+                            <div class="form-group">
+                              <div class="" id="baseline">
+                                <div class="form-group text-right">
+                                  [#if (projectOutcomeLastPhase.crpProgramOutcome.file.fileName??)!false]
+                                    <a href="${action.getBaseLineFileURL((projectOutcomeLastPhase.crpProgramOutcome.id?string)!-1)}&filename=${ (projectOutcomeLastPhase.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="20px" alt="" /> ${ (projectOutcomeLastPhase.crpProgramOutcome.file.fileName)!}</a> 
+                                  [#else]
+                                    <p class="note"><i>[@s.text name="projectOutcome.askForBaselineInstructions" /]</i></p>
+                                  [/#if]
+                                </div>
+                                [#-- Indicators --]
+                                [#list projectOutcomeLastPhase.crpProgramOutcome.indicators as  indicator   ]
+                                  [#if action.isAiccra()]
+                                    [@baselineAiccraPrevIndicatorMacro element=indicator name="projectOutcomeLastPhase.indicators" index=indicator_index  AREditable=false/]
+                                  [#else]
+                                    [@baselineIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  /]
+                                  [/#if]
+                                [/#list]
+                              </div>
+                            </div>
+                          [/#if]
+                        </div>           
+                      </div>
                     [/#if]
-                  </div>
-                  [#-- Indicators --]
-                  [#list projectOutcome.crpProgramOutcome.indicators as  indicator   ]
-                  [#if action.isAiccra()]
-                    [@baselineAiccraIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  /]
-                  [#else]
-                    [@baselineIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  /]
-                  [/#if]
-                  [/#list]
+                  </div>  
+                  [#-- Reporting tab --]
+                  
+                    <div id="deliverable-disseminationMetadata" role="tabpanel" class="tab-pane fade in active">
+                      [#if action.isAiccra() && projectOutcome.crpProgramOutcome.indicators?size != 0]
+                        <h4 class="headTitle">Progress to Targets</h4>
+                        <div class="nextUsersBlock borderBox">
+                          <div class="nextUsersList">
+                            [#-- Baseline Indicators --]
+                            [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcome.crpProgramOutcome.crpProgram.baseLine)!false) && ((projectOutcome.crpProgramOutcome.indicators?has_content)!false)]
+                              <h5 class="sectionSubTitle">Progress to Key Performance Indicator</h5>
+                              <div class="form-group">
+                                <div class="" id="baseline">
+                                  <div class="form-group text-right">
+                                    [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
+                                      <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}&filename=${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="20px" alt="" /> ${ (projectOutcome.crpProgramOutcome.file.fileName)!}</a> 
+                                    [#else]
+                                      <p class="note"><i>[@s.text name="projectOutcome.askForBaselineInstructions" /]</i></p>
+                                    [/#if]
+                                  </div>
+                                  [#-- Indicators --]
+                                  [#list projectOutcome.crpProgramOutcome.indicators as  indicator   ]
+                                    [#if action.isAiccra()]
+                                      [@baselineAiccraIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index AREditable=true/]
+                                    [#else]
+                                      [@baselineIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  /]
+                                    [/#if]
+                                  [/#list]
+                                </div>
+                              </div>
+                            [/#if]
+                          </div>           
+                        </div>
+                      [#else]
+                        <h5 class="headTitle">No Progress to Target indicators added</h5>
+                      [/#if]
+                    </div>
+                  
+                        
+              </div>   
+            </div>
+          [#else]     
+            [#if action.isAiccra() && projectOutcome.crpProgramOutcome.indicators?size != 0]
+                <h4 class="headTitle">Progress to Targets</h4>
+                <div class="nextUsersBlock borderBox">
+                      <div class="nextUsersList">
+                        [#-- Baseline Indicators --]
+                        [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcome.crpProgramOutcome.crpProgram.baseLine)!false) && ((projectOutcome.crpProgramOutcome.indicators?has_content)!false)]
+                          <h5 class="sectionSubTitle">Progress to Key Performance Indicator</h5>
+                          <div class="form-group">
+                            <div class="" id="baseline">
+                              <div class="form-group text-right">
+                                [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
+                                  <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}&filename=${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="20px" alt="" /> ${ (projectOutcome.crpProgramOutcome.file.fileName)!}</a> 
+                                [#else]
+                                  <p class="note"><i>[@s.text name="projectOutcome.askForBaselineInstructions" /]</i></p>
+                                [/#if]
+                              </div>
+                              [#-- Indicators --]
+                              [#list projectOutcome.crpProgramOutcome.indicators as  indicator   ]
+                                [#if action.isAiccra()]
+                                  [@baselineAiccraIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  AREditable=true/]
+                                [#else]
+                                  [@baselineIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  /]
+                                [/#if]
+                              [/#list]
+                            </div>
+                          </div>
+                        [/#if]
+                      </div>           
                 </div>
-              </div>
             [/#if]
-            </div>           
-          </div>
-          [/#if]
+          [/#if]          
           
           [#-- Next Users --]
           [#-- For A4NH CRP, nextusers aren't required --]
@@ -491,8 +578,8 @@
 
 [#macro baselineIndicatorMacro element name index isTemplate=false]
   <div id="baselineIndicator-${isTemplate?string('template', index)}" class="baselineIndicator simpleBox" style="display:${isTemplate?string('none','block')}">
-    [#local indexIndicator = action.getIndexIndicator(element.id) /]
-    [#local projectOutcomeIndicator  = action.getIndicator(element.id) /]
+    [#local indexIndicator = action.getIndexIndicator(element.id)! /]
+    [#local projectOutcomeIndicator  = action.getIndicator(element.id)! /]
     [#local customName = "${name}[${indexIndicator}]" /]
     <div class="leftHead gray sm">
       <span class="index">${index+1}</span>
@@ -524,7 +611,7 @@
   </div>
 [/#macro]
 
-[#macro baselineAiccraIndicatorMacro element name index isTemplate=false]
+[#macro baselineAiccraIndicatorMacro element name index isTemplate=false AREditable=true]
   <div id="baselineIndicator-${isTemplate?string('template', index)}" class="baselineIndicator simpleBox" style="display:${isTemplate?string('none','block')}">
     [#local indexIndicator = action.getIndexIndicator(element.id) /]
     [#local projectOutcomeIndicator  = action.getIndicator(element.id) /]
@@ -554,13 +641,38 @@
     --]
     
       <div class="form-group">
-        [@customForm.textArea name="${customName}.narrative" i18nkey="projectOutcomeBaseline.expectedNarrative" value="${(projectOutcomeIndicator.narrative)!}" required=true className="limitWords-100" editable=editable && !reportingActive /]
+        [@customForm.textArea name="${customName}.narrative" i18nkey="projectOutcomeBaseline.expectedNarrative" value="${(projectOutcomeIndicator.narrative)!}" required=true className="limitWords-100" editable=editable && AREditable/]
+        [#-- && !reportingActive  --]
       </div>
+      [#--  
       [#if reportingActive]
         <div class="form-group">
           [@customForm.textArea name="${customName}.achievedNarrative" i18nkey="projectOutcomeBaseline.achievedNarrative" required=true className="limitWords-100" editable=editable /]
         </div>
       [/#if]
+      --]
+  </div>
+[/#macro]
+
+[#macro baselineAiccraPrevIndicatorMacro element name index isTemplate=false AREditable=true]
+  <div id="baselineIndicator-${isTemplate?string('template', index)}" class="baselineIndicator simpleBox" style="display:${isTemplate?string('none','block')}">
+    [#local indexIndicator = action.getPrevIndexIndicator(element.id) /]
+    [#local projectOutcomePrevIndicator  = action.getPrevIndicator(element.id) /]
+    [#local customName = "${name}[${indexIndicator}]" /]
+    <div class="leftHead gray sm">
+      <span class="index">${index+1}</span>
+    </div>
+    <div class="form-group grayBox">
+      <strong>${element.indicator}</strong>
+    </div>
+    <input type="hidden" name="${customName}.id" value="${(projectOutcomePrevIndicator.id)!}" >
+    <input type="hidden" name="${customName}.crpProgramOutcomeIndicator.id" value="${(projectOutcomePrevIndicator.crpProgramOutcomeIndicator.id)!}" >
+        
+      <div class="form-group">
+        [@customForm.textArea name="${customName}.narrative" i18nkey="projectOutcomeBaseline.expectedNarrative" value="${(projectOutcomePrevIndicator.narrative)!}" required=true className="limitWords-100" editable=editable && AREditable/]
+        [#-- && !reportingActive  --]
+      </div>
+
   </div>
 [/#macro]
 

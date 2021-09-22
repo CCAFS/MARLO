@@ -1,5 +1,5 @@
 [#ftl]
-[#assign title = "Project Evidence" /]
+[#assign title = "Cluster Evidence" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs" ] /]
 [#assign customJS = [
