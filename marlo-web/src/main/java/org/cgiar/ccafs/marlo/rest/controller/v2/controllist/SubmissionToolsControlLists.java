@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontool
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools.InitiativesItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools.ProjectedBenefitsItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools.SdgItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools.WorkpackagesItem;
 import org.cgiar.ccafs.marlo.rest.dto.ActionAreaOutcomeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ActionAreasDTO;
 import org.cgiar.ccafs.marlo.rest.dto.DepthDescriptionsDTO;
@@ -38,6 +39,7 @@ import org.cgiar.ccafs.marlo.rest.dto.ProjectedBenefitsProbabilitiesDTO;
 import org.cgiar.ccafs.marlo.rest.dto.SDGIndicatorDTO;
 import org.cgiar.ccafs.marlo.rest.dto.SDGTargetDTO;
 import org.cgiar.ccafs.marlo.rest.dto.SDGsDTO;
+import org.cgiar.ccafs.marlo.rest.dto.WorkPackagesDTO;
 import org.cgiar.ccafs.marlo.rest.errors.NotFoundException;
 import org.cgiar.ccafs.marlo.security.Permission;
 
@@ -79,6 +81,7 @@ public class SubmissionToolsControlLists {
   private InitiativesItem<SubmissionToolsControlLists> initiativesItem;
   private ProjectedBenefitsItem<SubmissionToolsControlLists> projectedBenefitsItem;
   private ActionAreaOutcomesItem<SubmissionToolsControlLists> actionAreaOutcomesItem;
+  private WorkpackagesItem<SubmissionToolsControlLists> workpackagesItem;
 
 
   @Autowired
@@ -90,7 +93,8 @@ public class SubmissionToolsControlLists {
     ImpactAreasIndicatorsItem<SubmissionToolsControlLists> impactAreasIndicatorsItem,
     SdgItem<SubmissionToolsControlLists> sdgItem, InitiativesItem<SubmissionToolsControlLists> initiativesItem,
     ProjectedBenefitsItem<SubmissionToolsControlLists> projectedBenefitsItem,
-    ActionAreaOutcomesItem<SubmissionToolsControlLists> actionAreaOutcomesItem) {
+    ActionAreaOutcomesItem<SubmissionToolsControlLists> actionAreaOutcomesItem,
+    WorkpackagesItem<SubmissionToolsControlLists> workpackagesItem) {
     super();
     this.actionAreasItem = actionAreasItem;
     this.impactAreasItem = impactAreasItem;
@@ -99,6 +103,7 @@ public class SubmissionToolsControlLists {
     this.initiativesItem = initiativesItem;
     this.projectedBenefitsItem = projectedBenefitsItem;
     this.actionAreaOutcomesItem = actionAreaOutcomesItem;
+    this.workpackagesItem = workpackagesItem;
   }
 
   @ApiOperation(tags = {"Submission Tool Control Lists"},
@@ -254,6 +259,15 @@ public class SubmissionToolsControlLists {
     produces = MediaType.APPLICATION_JSON_VALUE)
   public List<ProjectedBenefitsProbabilitiesDTO> getprojectedBenefitsProbabilities() {
     return this.projectedBenefitsItem.getProjectedBenefitsProbabilities();
+  }
+
+  @ApiOperation(tags = {"Submission Tool Control Lists"},
+    value = "${SubmissionToolsControlLists.Initiatives.all.value}", response = InitiativesDTO.class,
+    responseContainer = "List")
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/workpackages", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<List<WorkPackagesDTO>> getWorkpackages() {
+    return this.workpackagesItem.getWorkPackages();
   }
 
 
