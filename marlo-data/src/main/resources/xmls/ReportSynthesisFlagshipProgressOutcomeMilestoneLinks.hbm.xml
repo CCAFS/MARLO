@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jun 6, 2018 11:11:29 AM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestoneLink" table="report_synthesis_flagship_progress_outcome_milestone_links" optimistic-lock="none">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        
+        <many-to-one name="reportSynthesisFlagshipProgressOutcomeMilestone" class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestone" fetch="select">
+            <column name="progress_outcome_milestones_id" />
+        </many-to-one>
+        
+        <property name="link" type="string">
+            <column name="link" sql-type="TEXT" />
+        </property>
+    </class>
+</hibernate-mapping>
