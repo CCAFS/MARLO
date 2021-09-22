@@ -591,7 +591,10 @@ function validateDeliverableStatus() {
         $statuses.find('option[value="4"]').prop("disabled", true); // Disable Extended
       }
     }
-
+    var selectYearExpected = $('#deliverableYear select.yearExpected');
+    var selectYearNewExpected = $('#newExpectedYear select.yearNewExpected');
+    selectYearExpected.find('option[value="2022"]').prop("disabled", true);
+    selectYearNewExpected.find('option[value="2022"]').prop("disabled", true);
     $('#deliverableYear .overlay').show();
     $statuses.trigger("change");
   }
