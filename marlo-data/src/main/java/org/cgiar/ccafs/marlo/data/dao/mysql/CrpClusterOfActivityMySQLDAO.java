@@ -93,8 +93,9 @@ public class CrpClusterOfActivityMySQLDAO extends AbstractMarloDAO<CrpClusterOfA
   @Override
   public List<ImpactPathwaysClusterDTO> getAllClusterInfoFromPhase(long phaseId) {
     String query = "select fp.acronym, coa.identifier, coa.description as coa_title, "
-      + "GROUP_CONCAT(CONCAT(leader.last_name,', ', leader.first_name, '\\r\\n<', leader.email, '>') SEPARATOR ';\\r\\n'), "
-      + "kout.key_output, kout.contribution, " + "outc.composed_id, outc.description as cpo_title "
+      + "GROUP_CONCAT(DISTINCT CONCAT(leader.last_name,', ', leader.first_name, '\\r\\n<', leader.email, '>') SEPARATOR ';\\r\\n'), "
+      + "kout.key_output, kout.contribution, "
+      + "group_concat(distinct concat('• (', outc.composed_id, ') - ', outc.description) separator '\\r\\n') as outcomes "
       + "from crp_cluster_of_activities coa "
       + "join phases ph on ph.id = coa.id_phase join global_units gu on gu.id = ph.global_unit_id "
       + "join crp_programs fp on fp.id = coa.crp_program_id "
@@ -104,8 +105,7 @@ public class CrpClusterOfActivityMySQLDAO extends AbstractMarloDAO<CrpClusterOfA
       + "left join crp_cluster_key_outputs_outcome kouto on kouto.key_output_id = kout.id and kouto.is_active "
       + "left join crp_program_outcomes outc on outc.id = kouto.outcome_id and outc.is_active "
       + "where coa.is_active and ph.id = ? "
-      + "GROUP BY fp.acronym, coa.identifier, coa.description, kout.key_output, kout.contribution, outc.composed_id, "
-      + "outc.description " + "order by 1,2";
+      + "GROUP BY fp.acronym, coa.identifier, coa.description, kout.key_output, kout.contribution " + "order by 1,2";
     Query createQuery = this.getSessionFactory().getCurrentSession().createSQLQuery(query);
 
     createQuery.setParameter(0, phaseId);
@@ -121,7 +121,7 @@ public class CrpClusterOfActivityMySQLDAO extends AbstractMarloDAO<CrpClusterOfA
       public Object transformTuple(Object[] tuple, String[] aliases) {
         return new ImpactPathwaysClusterDTO((String) tuple[0], (String) tuple[1], (String) tuple[2], (String) tuple[3],
           (String) tuple[4], (tuple[5] == null ? BigDecimal.ZERO : new BigDecimal(((Double) tuple[5]).toString())),
-          (String) tuple[6], (String) tuple[7]);
+          (String) tuple[6]);
       }
     });
     createQuery.setFlushMode(FlushMode.COMMIT);
