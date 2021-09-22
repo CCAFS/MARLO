@@ -1,6 +1,6 @@
 $(document).ready(init);
 
-var markers;
+var markers, inputMilestoneStatus;
 
 function init() {
 
@@ -8,7 +8,13 @@ function init() {
   // $('form select').select2({
   //   width: '100%'
   // });
-
+  
+  inputMilestoneStatus = $('input.milestoneStatus');
+  loadInputMilestoneStatus();
+  inputMilestoneStatus.on('change', function() {
+    var tag = $(this).parents('.synthesisMilestone').find('.linksToEvidence').find('#warningEmptyLinksTag');
+    disableEnableWarningTag(this.value, tag);
+  });
   attachEvents();
 
   // Set google charts
@@ -20,6 +26,23 @@ function init() {
     var tag = $(this).parent().parent().parent().next('.conditionalRequire').find('.requiredTag');
     disableEnableRequiredTag(this.value, tag);
   });
+}
+
+function loadInputMilestoneStatus() {
+  inputMilestoneStatus.each((index, item) => {
+    var tag = $(item).parents('.synthesisMilestone').find('.linksToEvidence').find('#warningEmptyLinksTag');
+    if (item.checked) {
+      disableEnableWarningTag(item.value, tag);
+    }
+  });
+}
+
+function disableEnableWarningTag(optionSelected, tag) {
+  if (optionSelected == '6') {
+    $(tag).show();
+  } else {
+    $(tag).hide();
+  }
 }
 
 function loadMarkers() {
@@ -65,6 +88,63 @@ function disabledUncheckedCheckmarkColor() {
 }
 
 function attachEvents() {
+  // Links Component
+   (function () {
+    // Events
+    $('.addButtonLink').on('click', addItem);
+    $('.removeLink.links').on('click', removeItem);
+    $('.multiInput').find('span input').on('input', validateURL);
+
+    // Functions
+    function addItem() {
+      var $list = $(this).parent('.linksBlock').find('.linksList');
+      var $element = $('#multiInput-links-template').clone(true).removeAttr("id");
+      var $listLength = $list.children().length;
+      if ($listLength <= 9) {
+        // Remove template tag
+        $element.find('input, textarea').each(function (i, e) {
+          e.name = (e.name).replace("_TEMPLATE_", "");
+          e.id = (e.id).replace("_TEMPLATE_", "");
+        });
+        // Show the element
+        $element.appendTo($list).hide().show(350);
+        // Update indexes
+        updateIndexes(this);
+      }
+    }
+    function removeItem() {
+      var $parent = $(this).parent('.multiInput.links');
+      var $addBtn = $(this).parent().parent().parent().find('.addButtonLink');
+      $parent.hide(500, function () {
+        // Remove DOM element
+        $parent.remove();
+        // Update indexes
+        updateIndexes($addBtn);
+      });
+    }
+    function updateIndexes(list) {
+      $(list).parent('.linksBlock').find('.linksList').find('.multiInput').each(function (i, element) {
+        $(element).find('.indexTag').text(i + 1);
+        $(element).setNameIndexes(1, i);
+      });
+    }
+    function validateURL() {
+      var url = this.value;
+      var expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
+      var regex = new RegExp(expression);
+      var res = "";
+      if (url.match(regex)) {
+        res = "Valid URL";
+        $(this).css('border', 'none');
+        console.log(res);
+      } else {
+        res = "Invalid URL";
+        $(this).css('border', '1px solid red');
+        console.log(res);
+      }
+    }
+
+  })();
 
   // Change main reason
   $('select.milestoneMainReasonSelect').on('change', function() {
@@ -78,7 +158,7 @@ function attachEvents() {
     }
   });
 
-  $('input.milestoneStatus').on('change', function() {
+  inputMilestoneStatus.on('change', function() {
     var optionSelected = this.value;
 
     // Milestone Evidence
