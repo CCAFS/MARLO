@@ -174,6 +174,8 @@ public class ImpactPathwaysSummaryAction extends BaseSummariesAction implements 
       this.getText("summaries.impactPathways.cluster.keyOutput.statement"));
     masterReport.getParameterValues().put("i8nKeyOutputContribution",
       this.getText("summaries.impactPathways.cluster.keyOutput.contribution"));
+    masterReport.getParameterValues().put("i8nKeyOutputOutcomes",
+      this.getText("summaries.impactPathways.cluster.keyOutput.outcomes"));
 
     return masterReport;
   }
@@ -232,7 +234,7 @@ public class ImpactPathwaysSummaryAction extends BaseSummariesAction implements 
     stopTime = stopTime - startTime;
     LOG.info("Downloaded successfully: " + this.getFileName() + ". User: "
       + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: "
-      + this.getSelectedCycle() + ". Time to generate: " + stopTime + "ms.");
+      + this.getSelectedPhase().getName() + ". Time to generate: " + stopTime + "ms.");
 
     return SUCCESS;
   }
@@ -271,11 +273,11 @@ public class ImpactPathwaysSummaryAction extends BaseSummariesAction implements 
   private TypedTableModel getCrpClusterOfActivitiesTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"flagship", "clusterIdentifier", "clusterTitle", "clusterLeaders", "keyOutputStatement",
-        "keyOutputContribution", "outcomeId", "outcomeDescription"},
-      new Class[] {String.class, String.class, String.class, String.class, String.class, BigDecimal.class, String.class,
+        "keyOutputContribution", "outcomes"},
+      new Class[] {String.class, String.class, String.class, String.class, String.class, BigDecimal.class,
         String.class});
     String flagship = "", clusterIdentifier = "", clusterTitle = "", clusterLeaders = "", keyOutputStatement = "",
-      outcomeId = "", outcomeDescription = "";
+      outcomesListString = "";
     BigDecimal keyOutputContribution = BigDecimal.ZERO;
 
     for (ImpactPathwaysClusterDTO clusterInfo : this.crpClusterOfActivityManager
@@ -319,28 +321,21 @@ public class ImpactPathwaysSummaryAction extends BaseSummariesAction implements 
 
       // Key output contribution
       if (clusterInfo.getKeyOutputContribution() != null
-        && clusterInfo.getKeyOutputContribution().compareTo(BigDecimal.ONE) >= 0) {
+        && clusterInfo.getKeyOutputContribution().compareTo(BigDecimal.ZERO) >= 0) {
         keyOutputContribution = clusterInfo.getKeyOutputContribution();
       } else {
         // keyOutputContribution = notDefined;
       }
 
-      // Outcome composed id
-      if (StringUtils.isNotBlank(clusterInfo.getOutcomeId())) {
-        outcomeId = clusterInfo.getOutcomeId();
+      // Outcomes linked to the key output
+      if (StringUtils.isNotBlank(clusterInfo.getOutcomes())) {
+        outcomesListString = clusterInfo.getOutcomes();
       } else {
-        outcomeId = notDefined;
-      }
-
-      // Outcome name
-      if (StringUtils.isNotBlank(clusterInfo.getOutcomeDescription())) {
-        outcomeDescription = clusterInfo.getOutcomeDescription();
-      } else {
-        outcomeDescription = notDefined;
+        outcomesListString = notDefined;
       }
 
       model.addRow(new Object[] {flagship, clusterIdentifier, clusterTitle, clusterLeaders, keyOutputStatement,
-        keyOutputContribution, outcomeId, outcomeDescription});
+        keyOutputContribution, outcomesListString});
     }
 
     return model;
@@ -656,7 +651,7 @@ public class ImpactPathwaysSummaryAction extends BaseSummariesAction implements 
     StringBuffer fileName = new StringBuffer();
     fileName.append("ImpactPathwaysSummary-");
     fileName.append(this.getLoggedCrp().getAcronym() + "-");
-    fileName.append(this.getSelectedCycle() + "_");
+    fileName.append(this.getSelectedPhase().getName() + "_");
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
@@ -677,7 +672,7 @@ public class ImpactPathwaysSummaryAction extends BaseSummariesAction implements 
     TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "cycle", "year"},
       new Class[] {String.class, String.class, String.class, Integer.class});
 
-    model.addRow(new Object[] {center, date, this.getSelectedCycle(), this.getSelectedYear()});
+    model.addRow(new Object[] {center, date, this.getSelectedPhase().getName(), this.getSelectedYear()});
     return model;
   }
 
@@ -771,6 +766,6 @@ public class ImpactPathwaysSummaryAction extends BaseSummariesAction implements 
     startTime = System.currentTimeMillis();
     LOG.info(
       "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
-        + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: " + this.getSelectedCycle());
+        + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: " + this.getSelectedPhase().getName());
   }
 }
