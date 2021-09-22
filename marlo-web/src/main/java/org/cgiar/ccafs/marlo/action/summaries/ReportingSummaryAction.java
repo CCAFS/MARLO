@@ -91,6 +91,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLink;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyQuantification;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyReference;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
@@ -4897,16 +4898,17 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           linksProvided = null, isContributionText = null, policyInvestimentType = null, organizationType = null,
           stageProcess = null, stageStudy = null, srfTargets = null, subIdos = null, topLevelComments = null,
           geographicScope = "", region = "", countries = "", scopeComments = null, crps = null, flagships = null,
-          regions = null, institutions = null, elaborationOutcomeImpactStatement = null, referenceText = null,
-          referencesFile = null, quantification = null, genderRelevance = null, youthRelevance = null,
-          capacityRelevance = null, climateChangeRelevance = null, otherCrossCuttingDimensions = null,
-          comunicationsMaterial = null, comunicationsMaterials = null, projectPolicy = null, comunicationsFile = null,
-          contacts = null, studyProjects = null, commissioningStudy = null, tagget = null, cgiarInnovations = null,
+          regions = null, institutions = null, elaborationOutcomeImpactStatement = null, referencesFile = null,
+          quantification = null, genderRelevance = null, youthRelevance = null, capacityRelevance = null,
+          climateChangeRelevance = null, otherCrossCuttingDimensions = null, comunicationsMaterial = null,
+          comunicationsMaterials = null, projectPolicy = null, comunicationsFile = null, contacts = null,
+          studyProjects = null, commissioningStudy = null, tagget = null, cgiarInnovations = null,
           cgiarInnovationsList = null, link = null;
 
         Boolean isContribution = false, isBudgetInvestment = false, isStage1 = false, isRegional = false,
           isNational = false, hasreferencesFile = false, hasCommunicationFile = false, isOutcomeCaseStudy = false,
           hasMultipleProjects = false;
+        StringBuffer referenceText = new StringBuffer();
 
         // Id
         id = projectExpectedStudy.getId();
@@ -5228,12 +5230,33 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
 
         // References cited
-        if (studyinfo.getReferencesText() != null && !studyinfo.getReferencesText().trim().isEmpty()) {
-          referenceText = studyinfo.getReferencesText();
-          /*
-           * Get short url calling tinyURL service
-           */
-          referenceText = urlShortener.detectAndShortenLinks(studyinfo.getReferencesText());
+        if (("AR".equals(this.getSelectedPhase().getName()) && 2021 == this.getSelectedPhase().getYear())
+          || this.getSelectedPhase().getYear() > 2021) {
+          if (this.isNotEmpty(studyinfo.getProjectExpectedStudy().getProjectExpectedStudyReferences())) {
+            List<ProjectExpectedStudyReference> currentPhaseReferences = studyinfo.getProjectExpectedStudy()
+              .getProjectExpectedStudyReferences().stream().filter(l -> l != null && l.getId() != null
+                && l.getPhase() != null && l.getPhase().getId() != null && l.getPhase().equals(this.getSelectedPhase()))
+              .collect(Collectors.toList());
+            for (ProjectExpectedStudyReference studyReferenceObject : currentPhaseReferences) {
+              if (StringUtils.isNotEmpty(studyReferenceObject.getReference())) {
+                String reference = StringUtils.trimToEmpty(studyReferenceObject.getReference());
+                referenceText =
+                  referenceText.append("• ").append(urlShortener.getShortUrlService(reference)).append("\\r\\n");
+              }
+            }
+          } else {
+            referenceText = referenceText.append(notProvided);
+          }
+        } else {
+          if (StringUtils.isNotEmpty(studyinfo.getReferencesText())) {
+
+            /*
+             * Get short url calling tinyURL service
+             */
+            referenceText = referenceText.append(urlShortener.getShortUrlService(studyinfo.getReferencesText()));
+          } else {
+            referenceText = referenceText.append(notProvided);
+          }
         }
 
         // Atached material
