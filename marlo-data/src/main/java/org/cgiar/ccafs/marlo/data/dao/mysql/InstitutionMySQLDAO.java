@@ -92,7 +92,7 @@ public class InstitutionMySQLDAO extends AbstractMarloDAO<Institution, Long> imp
   @Override
   public List<Institution> getAllInstitutionsSimple() {
     String sqlquery =
-      "Select inst.id, inst.name, inst.acronym, inst.website_link,insttypes.name as type,loc.name as hqLocation,"
+      "Select inst.id, inst.name, inst.acronym, inst.website_link,insttypes.id as typeid,insttypes.name as type,loc.name as hqLocation,"
         + "loc.iso_alpha_2 as hqLocationISOalpha2 from institutions inst "
         + "INNER JOIN institution_types insttypes ON insttypes.id=inst.institution_type_id "
         + "INNER JOIN institutions_locations instloc ON instloc.institution_id=inst.id and instloc.is_headquater=1 "
@@ -107,6 +107,7 @@ public class InstitutionMySQLDAO extends AbstractMarloDAO<Institution, Long> imp
       data.setAcronym(map.get("acronym") != null ? map.get("acronym").toString() : "");
       data.setId(Long.parseLong(map.get("id").toString()));
       data.setWebsiteLink(map.get("website_link") != null ? map.get("website_link").toString() : "");
+      data.setTypeId(Long.parseLong(map.get("typeid").toString()));
       data.setType(map.get("type").toString());
       data.setHqLocation(map.get("hqLocation").toString());
       data.setHqLocationISOalpha2(map.get("hqLocationISOalpha2").toString());
