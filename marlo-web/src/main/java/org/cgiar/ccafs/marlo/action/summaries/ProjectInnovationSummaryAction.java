@@ -672,7 +672,8 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         for (ProjectInnovationEvidenceLink evidenceLinkObject : currentPhaseLinks) {
           if (StringUtils.isNotEmpty(evidenceLinkObject.getLink())) {
             String link = StringUtils.trimToEmpty(evidenceLinkObject.getLink());
-            evidenceLink = evidenceLink.append("• ").append(urlShortener.getShortUrlService(link)).append("\\r\\n");
+            evidenceLink =
+              evidenceLink.append("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● ").append(urlShortener.getShortUrlService(link));
           }
         }
       } else {
