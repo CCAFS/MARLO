@@ -471,15 +471,14 @@ function justificationByStatus(statusId) {
     if (isDeliverableNew) {
       showNewExpectedComponent(isStatusExtended(statusId) && upKeepActive);
     } else {
-      console.log("hasExpectedYear", hasExpectedYear);
       if ($('#actualYear').html() == '2021') {
         if (statusId == 2 || statusId == 3 || statusId == 4 || statusId == 5 || statusId == 6 || statusId == 7) {
           if (expectedYear < '2021') {
-            showNewExpectedComponent(true, true);
+            showExpectedComponent(true, false);
             if (statusId == 2 && newExpectedYear == '-1') {
-              showExpectedComponent(false, false);
+              showNewExpectedComponent(false, true);
             } else {
-              showExpectedComponent(true, false);
+              showNewExpectedComponent(true, true);
             }
           } else {
             showNewExpectedComponent(false, false);
