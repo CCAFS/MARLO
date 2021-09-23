@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+  <class name="org.cgiar.ccafs.marlo.data.model.ActionAreaOutcome" table="st_action_area_outcomes" optimistic-lock="none">
+    <id name="id" type="java.lang.Long">
+      <column name="id" />
+      <generator class="identity" />
+    </id>
+     <many-to-one name="actionArea"
+      class="org.cgiar.ccafs.marlo.data.model.ActionArea" fetch="select">
+      <column name="action_area_id" />
+    </many-to-one>  
+    <property name="outcomeStatement" type="string" >
+      <column name="outcome_statement" sql-type="TEXT" />
+    </property>
+  </class>
+</hibernate-mapping>

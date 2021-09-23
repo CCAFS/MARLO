@@ -93,14 +93,16 @@ public class GlobalUnitItem<T> {
           this.globalUnitManager.findAll().stream().filter(c -> c.isActive() && c.getGlobalUnitType().getId() == typeId)
             .filter(c -> c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_CRP
               || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_CGIAR_CENTER_TYPE
-              || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_PLATFORM)
+              || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_PLATFORM
+              || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_INITIATIVES)
             .sorted(Comparator.comparing(GlobalUnit::getSmoCode, Comparator.nullsLast(Comparator.naturalOrder())))
             .collect(Collectors.toList()));
       } else {
         globalUnits = this.globalUnitManager.findAll().stream()
           .filter(c -> c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_CRP
             || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_CGIAR_CENTER_TYPE
-            || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_PLATFORM)
+            || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_PLATFORM
+            || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_INITIATIVES)
           .sorted(Comparator.comparing(GlobalUnit::getSmoCode, Comparator.nullsLast(Comparator.naturalOrder())))
           .collect(Collectors.toList());;
       }

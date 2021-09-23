@@ -75,13 +75,12 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
 
   // fields not mapped in hibernate
   private String type;
+  private Long typeId;
   private String hqLocation;
   private String hqLocationISOalpha2;
 
-
   public Institution() {
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -131,6 +130,7 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
     return branches;
   }
 
+
   public String getComposedName() {
     if (this.getAcronym() != null) {
       if (this.getAcronym().length() != 0) {
@@ -146,6 +146,7 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
 
 
   }
+
 
   public String getComposedNameLoc() {
     if (this.getAcronym() != null) {
@@ -165,11 +166,9 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
     return crpPpaPartners;
   }
 
-
   public Set<FundingSource> getFundingSourcesDirectDonor() {
     return fundingSourcesDirectDonor;
   }
-
 
   public Set<FundingSource> getFundingSourcesOriginalDonor() {
     return fundingSourcesOriginalDonor;
@@ -185,19 +184,19 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
     return hqLocation;
   }
 
+
   public String getHqLocationISOalpha2() {
     return hqLocationISOalpha2;
   }
+
 
   public Set<InstitutionLocation> getInstitutionsLocations() {
     return institutionsLocations;
   }
 
-
   public InstitutionType getInstitutionType() {
     return institutionType;
   }
-
 
   public Set<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
@@ -207,6 +206,7 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
   public List<InstitutionLocation> getLocations() {
     return locations;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -232,6 +232,15 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
     return null;
   }
 
+
+  public String getName() {
+    return this.name;
+  }
+
+  public Long getProgramId() {
+    return this.programId;
+  }
+
   /*
    * public String getComposedLocation() {
    * try {
@@ -254,32 +263,27 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
    * }
    */
 
-  public String getName() {
-    return this.name;
-  }
-
-  public Long getProgramId() {
-    return this.programId;
-  }
-
   public Set<ProjectBudget> getProjectBudgets() {
     return projectBudgets;
   }
-
 
   public Set<ProjectPartnerPerson> getProjectPartnerPersons() {
     return projectPartnerPersons;
   }
 
-
   public Set<ProjectPartner> getProjectPartners() {
     return projectPartners;
   }
+
 
   public String getType() {
     return type;
   }
 
+
+  public Long getTypeId() {
+    return typeId;
+  }
 
   public String getWebsiteLink() {
     return this.websiteLink;
@@ -310,6 +314,7 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
     return false;
   }
 
+
   public void setAcronym(String acronym) {
     this.acronym = acronym;
   }
@@ -338,10 +343,10 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
     this.globalUnits = globalUnits;
   }
 
-
   public void setHqLocation(String hqLocation) {
     this.hqLocation = hqLocation;
   }
+
 
   public void setHqLocationISOalpha2(String hqLocationISOalpha2) {
     this.hqLocationISOalpha2 = hqLocationISOalpha2;
@@ -355,10 +360,10 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
     this.institutionType = institutionType;
   }
 
-
   public void setLiaisonInstitutions(Set<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
   }
+
 
   public void setLocations(List<InstitutionLocation> locations) {
     this.locations = locations;
@@ -391,6 +396,10 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
 
   public void setType(String type) {
     this.type = type;
+  }
+
+  public void setTypeId(Long typeId) {
+    this.typeId = typeId;
   }
 
   public void setWebsiteLink(String websiteLink) {
