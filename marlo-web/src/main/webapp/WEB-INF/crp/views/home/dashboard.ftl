@@ -4,12 +4,12 @@
 [#assign pageLibs = ["jQuery-Timelinr","cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
   "https://www.gstatic.com/charts/loader.js",
-  "${baseUrlMedia}/js/home/dashboard.js?20210921a",
+  "${baseUrlMedia}/js/home/dashboard.js?20210923a",
   "${baseUrlCdn}/global/js/impactGraphic.js"
   ] 
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/home/dashboard.css?20210827a",
+  "${baseUrlMedia}/css/home/dashboard.css?20210923a",
   "${baseUrlCdn}/global/css/customDataTable.css",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "${baseUrlCdn}/global/css/global.css?20210827a"
@@ -53,6 +53,10 @@
 
     [#-- Dashboard --]   
     <div id="dashboardContent" class="col-md-12">
+      <div class="toggleBtnGraphs">
+        <span class="glyphicon glyphicon-eye-open icon-show"></span>
+        <p class="toggleTxtGraphs">Hide/Show Graphs<p>
+      </div>
       <div class="col-md-12">
         <ul class="nav nav-tabs" role="tablist">
           <li role="presentation" class="active"><a  id="homeProjects" href="#myProjects" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.projects.table.title" /]</a></li>
