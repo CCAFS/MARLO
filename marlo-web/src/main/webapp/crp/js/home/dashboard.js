@@ -56,6 +56,8 @@ var policiesAjaxURL = '/policyGraphs.do';
 var policiesArrName1 = 'byPolicyType';
 var policiesArrName2 = 'byPolicyLevel';
 
+var clickedBtnGraph = false;
+
 function initDashboard() {
   $('#newProject').on('click', function (e) {
     $('#decisionTree .addProjectButtons').show(0, function () {
@@ -186,7 +188,7 @@ function initDashboard() {
     byType.title = deliverablesTitle1;
     byStatus.title = deliverablesTitle2;
     $('#chartHome2').css('opacity', 1);
-    if (!deliverablesLoaded) {
+    if (!deliverablesLoaded && !clickedBtnGraph) {
       setGoogleCharts(deliverablesAjaxURL, deliverablesArrName1, chartHome1, barType, byType);
       setGoogleCharts(deliverablesAjaxURL, deliverablesArrName2, chartHome2, pieType, byStatus);
       deliverablesLoaded = true;
@@ -201,7 +203,7 @@ function initDashboard() {
     isMelias = false;
     byStatus.title = oicrsTitle;
     $('#chartHome2').css('opacity', 0);
-    if (!oicrsLoaded) {
+    if (!oicrsLoaded && !clickedBtnGraph) {
       setGoogleCharts(oicrsAjaxURL, oicrsArrName, chartHome1, pieType, byStatus);
       oicrsLoaded = true;
     } else {
@@ -214,7 +216,7 @@ function initDashboard() {
     isOicrs = false;
     byLevel.title = meliasTitle;
     $('#chartHome2').css('opacity', 0);
-    if (!meliasLoaded) {
+    if (!meliasLoaded && !clickedBtnGraph) {
       setGoogleCharts(meliasAjaxURL, meliasArrName, chartHome1, pieType, byLevel);
       meliasLoaded = true;
     } else {
@@ -228,7 +230,7 @@ function initDashboard() {
     byLevel.title = innovationsTitle1;
     byStatus.title = innovationsTitle2;
     $('#chartHome2').css('opacity', 1);
-    if (!innovationsLoaded) {
+    if (!innovationsLoaded && !clickedBtnGraph) {
       setGoogleCharts(innovationsAjaxURL, innovationsArrName1, chartHome1, pieType, byLevel);
       setGoogleCharts(innovationsAjaxURL, innovationsArrName2, chartHome2, pieType, byStatus);
       innovationsLoaded = true;
@@ -244,7 +246,7 @@ function initDashboard() {
     byType.title = policiesTitle1;
     byStatus.title = policiesTitle2;
     $('#chartHome2').css('opacity', 1);
-    if (!policiesLoaded) {
+    if (!policiesLoaded && !clickedBtnGraph) {
       setGoogleCharts(policiesAjaxURL, policiesArrName1, chartHome1, barType, byType);
       setGoogleCharts(policiesAjaxURL, policiesArrName2, chartHome2, pieType, byStatus);
       policiesLoaded = true;
@@ -257,11 +259,31 @@ function initDashboard() {
   $('.loadingBlock').hide().next().fadeIn(500);
 
   // Set google charts
-  if (!homeProjectsLoaded) {
+  if (!homeProjectsLoaded && !clickedBtnGraph) {
     setGoogleCharts(homeProjectsAjaxURL, homeProjectsArrName1, chartHome1, barType, byType);
     setGoogleCharts(homeProjectsAjaxURL, homeProjectsArrName2, chartHome2, pieType, byStatus);
     homeProjectsLoaded = true;
   }
+
+  $('.toggleBtnGraphs').on('click', function () {
+    var icon = $('.icon-show');
+    var homeGraphs = $('.homeGraphs');
+    var currentTab = '#' + $('.nav-tabs').find('li.active').find('a').attr('id');
+    var activeTab = $(`${currentTab}`);
+    
+    if (!clickedBtnGraph) {
+      homeGraphs.hide();
+      icon.removeClass("glyphicon-eye-open");
+      icon.addClass("glyphicon-eye-close");
+      clickedBtnGraph = true;
+    } else {
+      homeGraphs.show();
+      icon.removeClass("glyphicon-eye-close");
+      icon.addClass("glyphicon-eye-open");
+      clickedBtnGraph = false;
+      activeTab.click();
+    }
+  });
 }
 
 function setGoogleCharts(ajaxURL, arrName, chartID, type, options) {
@@ -345,7 +367,6 @@ function drawChart(chart_data, chartID, type, options) {
     var chart1_data = new google.visualization.arrayToDataTable(chart_data);
     var chart1_options = options;
     if (chart1_data.Wf == 0 || chart1_data.Wf == 1) {
-      console.log("Empty or lower than 1", chart1_data.Wf)
       if (isOicrs || isMelias) {
         $('#'+chartHome1).css('display', 'none');
         $('#'+chartHome2).css('display', 'none');
@@ -353,7 +374,6 @@ function drawChart(chart_data, chartID, type, options) {
         $('#'+chartID).css('display', 'none');
       }
     } else {
-      console.log("Higher than 1", chart1_data.Wf)
       if (isOicrs || isMelias) {
         $('#'+chartHome1).css('display', 'block');
         $('#'+chartHome2).css('display', 'block');

@@ -282,3 +282,23 @@ table {
     position: relative;
     background: #FFF;
 }
+
+.toggleBtnGraphs {
+    width: 150px;
+    height: 30px;
+    position: absolute;
+    right: 0;
+    margin-right: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #0277A2;
+    text-align: center;
+    color: white;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.toggleTxtGraphs {
+    margin: 0 0 0 5px;
+}
