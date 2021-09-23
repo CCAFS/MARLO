@@ -27,6 +27,8 @@ public class InstitutionSimpleDTO {
   private String acronym;
   @ApiModelProperty(notes = "The Institution Website")
   private String websiteLink;
+  @ApiModelProperty(notes = "The Institution type Identifier")
+  private Long institutionTypeId;
   @ApiModelProperty(notes = "The Institution type")
   private String institutionType;
   @ApiModelProperty(notes = "HQ location")
@@ -54,6 +56,11 @@ public class InstitutionSimpleDTO {
 
   public String getInstitutionType() {
     return institutionType;
+  }
+
+
+  public Long getInstitutionTypeId() {
+    return institutionTypeId;
   }
 
 
@@ -89,6 +96,11 @@ public class InstitutionSimpleDTO {
 
   public void setInstitutionType(String institutionType) {
     this.institutionType = institutionType;
+  }
+
+
+  public void setInstitutionTypeId(Long institutionTypeId) {
+    this.institutionTypeId = institutionTypeId;
   }
 
 

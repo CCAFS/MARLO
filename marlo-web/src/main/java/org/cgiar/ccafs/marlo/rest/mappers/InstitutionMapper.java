@@ -80,7 +80,8 @@ public abstract class InstitutionMapper {
     @Mapping(source = "institutionsLocations", target = "countryOfficeDTO")})
   public abstract InstitutionDTO institutionToInstitutionDTO(Institution institution);
 
-  @Mappings({@Mapping(source = "id", target = "code"), @Mapping(source = "type", target = "institutionType")})
+  @Mappings({@Mapping(source = "id", target = "code"), @Mapping(source = "type", target = "institutionType"),
+    @Mapping(source = "typeId", target = "institutionTypeId")})
   public abstract InstitutionSimpleDTO institutionToInstitutionSimpleDTO(Institution institution);
 
   @Mappings({@Mapping(source = "locElement", target = "locElement"), @Mapping(source = "globalUnit", target = "crp"),
