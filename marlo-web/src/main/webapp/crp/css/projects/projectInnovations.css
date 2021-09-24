@@ -78,7 +78,3 @@ form .form-group.margin-panel {
   color: #fff;
   text-decoration: initial;
 }
-
-input[name="innovation.projectInnovationInfo.evidenceLink"] {
-  display: none;
-}
