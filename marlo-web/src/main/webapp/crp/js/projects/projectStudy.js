@@ -176,6 +176,25 @@ function attachEvents() {
 
   })();
 
+  validateEmptyLinks();
+  $('.addButtonLink').on('click', validateEmptyLinks);
+  $('.removeLink.links').on('click', validateEmptyLinks);
+
+  function validateEmptyLinks() {
+    var linksList = $('.linksList').children('div').length;
+  
+    if ($(this).hasClass('removeElement')) {
+      linksList -= 1;
+    } else {
+      linksList = linksList;
+    }
+    if ( linksList > 0) {
+      $('#warningEmptyLinksTag').hide();
+    } else {
+      $('#warningEmptyLinksTag').show();
+    }
+  }
+
   /**
    * References Component
    */
@@ -220,6 +239,25 @@ function attachEvents() {
     }
 
   })();
+
+  validateEmptyReferences();
+  $('.addButtonReference').on('click', validateEmptyReferences);
+  $('.removeLink.references').on('click', validateEmptyReferences);
+
+  function validateEmptyReferences() {
+    var referenceList = $('.referenceList').children('div').length;
+
+    if ($(this).hasClass('removeElement')) {
+      referenceList -= 1;
+    } else {
+      referenceList = referenceList;
+    }
+    if ( referenceList > 0) {
+      $('#warningEmptyReferencesTag').hide();
+    } else {
+      $('#warningEmptyReferencesTag').show();
+    }
+  }
 
   /**
    * Qualification Component

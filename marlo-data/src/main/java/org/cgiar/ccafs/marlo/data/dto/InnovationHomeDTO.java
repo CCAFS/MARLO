@@ -13,7 +13,7 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.data.model;
+package org.cgiar.ccafs.marlo.data.dto;
 
 
 /**************
@@ -27,18 +27,20 @@ public class InnovationHomeDTO {
   private long projectId;
   private String innovationType;
   private String innovationTitle;
+  private String innovationStage;
 
   public InnovationHomeDTO() {
   }
 
   public InnovationHomeDTO(long innovationId, long expectedYear, long projectId, String innovationType,
-    String innovationTitle) {
+    String innovationTitle, String innovationStage) {
     super();
     this.innovationId = innovationId;
     this.expectedYear = expectedYear;
     this.projectId = projectId;
     this.innovationType = innovationType;
     this.innovationTitle = innovationTitle;
+    this.innovationStage = innovationStage;
   }
 
   public long getExpectedYear() {
@@ -47,6 +49,10 @@ public class InnovationHomeDTO {
 
   public long getInnovationId() {
     return innovationId;
+  }
+
+  public String getInnovationStage() {
+    return innovationStage;
   }
 
   public String getInnovationTitle() {
@@ -67,6 +73,10 @@ public class InnovationHomeDTO {
 
   public void setInnovationId(long innovationId) {
     this.innovationId = innovationId;
+  }
+
+  public void setInnovationStage(String innovationStage) {
+    this.innovationStage = innovationStage;
   }
 
   public void setInnovationTitle(String innovationTitle) {

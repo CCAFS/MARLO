@@ -29,23 +29,20 @@ public class ImpactPathwaysClusterDTO {
   private String clusterLeaders;
   private String keyOutputStatement;
   private BigDecimal keyOutputContribution;
-  private String outcomeId;
-  private String outcomeDescription;
+  private String outcomes;
 
   public ImpactPathwaysClusterDTO() {
   }
 
   public ImpactPathwaysClusterDTO(String flagshipAcronym, String clusterIdentifier, String clusterTitle,
-    String clusterLeaders, String keyOutputStatement, BigDecimal keyOutputContribution, String outcomeId,
-    String outcomeDescription) {
+    String clusterLeaders, String keyOutputStatement, BigDecimal keyOutputContribution, String outcomes) {
     super();
     this.flagshipAcronym = flagshipAcronym;
     this.clusterIdentifier = clusterIdentifier;
     this.clusterTitle = clusterTitle;
     this.clusterLeaders = clusterLeaders;
     this.keyOutputStatement = keyOutputStatement;
-    this.outcomeId = outcomeId;
-    this.outcomeDescription = outcomeDescription;
+    this.outcomes = outcomes;
     this.keyOutputContribution = keyOutputContribution;
   }
 
@@ -74,12 +71,8 @@ public class ImpactPathwaysClusterDTO {
     return keyOutputStatement;
   }
 
-  public String getOutcomeDescription() {
-    return outcomeDescription;
-  }
-
-  public String getOutcomeId() {
-    return outcomeId;
+  public String getOutcomes() {
+    return outcomes;
   }
 
   public void setClusterIdentifier(String clusterIdentifier) {
@@ -106,12 +99,8 @@ public class ImpactPathwaysClusterDTO {
     this.keyOutputStatement = keyOutputStatement;
   }
 
-  public void setOutcomeDescription(String outcomeDescription) {
-    this.outcomeDescription = outcomeDescription;
-  }
-
-  public void setOutcomeId(String outcomeId) {
-    this.outcomeId = outcomeId;
+  public void setOutcomes(String outcomes) {
+    this.outcomes = outcomes;
   }
 
 }
