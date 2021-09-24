@@ -27,7 +27,14 @@ public class ProjectedBenefitsDTO {
   private String impactAreaName;
   private Long impactAreaIndicator;
   private String impactAreaIndicatorName;
+  public Long targetYear;
+  public String targetUnit;
+  public String value;
+
+
   private List<ProjectedBenefitsDepthScaleDTO> depthScales;
+
+
   private List<ProjectedBenefitsWeightingDTO> weightingValues;
 
 
@@ -45,14 +52,26 @@ public class ProjectedBenefitsDTO {
     return impactAreaIndicator;
   }
 
-
   public String getImpactAreaIndicatorName() {
     return impactAreaIndicatorName;
   }
 
-
   public String getImpactAreaName() {
     return impactAreaName;
+  }
+
+  public String getTargetUnit() {
+    return targetUnit;
+  }
+
+
+  public Long getTargetYear() {
+    return targetYear;
+  }
+
+
+  public String getValue() {
+    return value;
   }
 
 
@@ -60,13 +79,16 @@ public class ProjectedBenefitsDTO {
     return weightingValues;
   }
 
+
   public void setDepthScales(List<ProjectedBenefitsDepthScaleDTO> depthScales) {
     this.depthScales = depthScales;
   }
 
+
   public void setImpactAreaId(Long impactAreaId) {
     this.impactAreaId = impactAreaId;
   }
+
 
   public void setImpactAreaIndicator(Long impactAreaIndicator) {
     this.impactAreaIndicator = impactAreaIndicator;
@@ -78,6 +100,18 @@ public class ProjectedBenefitsDTO {
 
   public void setImpactAreaName(String impactAreaName) {
     this.impactAreaName = impactAreaName;
+  }
+
+  public void setTargetUnit(String targetUnit) {
+    this.targetUnit = targetUnit;
+  }
+
+  public void setTargetYear(Long targetYear) {
+    this.targetYear = targetYear;
+  }
+
+  public void setValue(String value) {
+    this.value = value;
   }
 
   public void setWeightingValues(List<ProjectedBenefitsWeightingDTO> weightingValues) {
