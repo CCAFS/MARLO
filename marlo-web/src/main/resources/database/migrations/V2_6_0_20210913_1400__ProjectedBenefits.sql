@@ -77,7 +77,7 @@ DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci;
 INSERT into st_projected_benefits_depths (projected_benefits_id,depth_description_id) values (1,1);
 INSERT into st_projected_benefits_depths (projected_benefits_id,depth_description_id) values (1,2);
 INSERT into st_projected_benefits_depths (projected_benefits_id,depth_description_id) values (2,1);
-INSERT into st_projected_benefits_depths (projected_benefits_id,depth_description_id) values (2,1);
+INSERT into st_projected_benefits_depths (projected_benefits_id,depth_description_id) values (2,2);
 INSERT into st_projected_benefits_depths (projected_benefits_id,depth_description_id) values (3,1);
 INSERT into st_projected_benefits_depths (projected_benefits_id,depth_description_id) values (3,2);
 INSERT into st_projected_benefits_depths (projected_benefits_id,depth_description_id) values (4,1);
