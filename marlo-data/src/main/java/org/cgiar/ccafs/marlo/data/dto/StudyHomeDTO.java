@@ -13,7 +13,7 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.data.model;
+package org.cgiar.ccafs.marlo.data.dto;
 
 
 /**************
@@ -27,17 +27,20 @@ public class StudyHomeDTO {
   private long projectId;
   private String studyType;
   private String studyTitle;
+  private String studyMaturity;
 
   public StudyHomeDTO() {
   }
 
-  public StudyHomeDTO(long studyId, long expectedYear, long projectId, String studyType, String studyTitle) {
+  public StudyHomeDTO(long studyId, long expectedYear, long projectId, String studyType, String studyTitle,
+    String studyMaturity) {
     super();
     this.studyId = studyId;
     this.expectedYear = expectedYear;
     this.projectId = projectId;
     this.studyType = studyType;
     this.studyTitle = studyTitle;
+    this.studyMaturity = studyMaturity;
   }
 
   public long getExpectedYear() {
@@ -50,6 +53,10 @@ public class StudyHomeDTO {
 
   public long getStudyId() {
     return studyId;
+  }
+
+  public String getStudyMaturity() {
+    return studyMaturity;
   }
 
   public String getStudyTitle() {
@@ -70,6 +77,10 @@ public class StudyHomeDTO {
 
   public void setStudyId(long studyId) {
     this.studyId = studyId;
+  }
+
+  public void setStudyMaturity(String studyMaturity) {
+    this.studyMaturity = studyMaturity;
   }
 
   public void setStudyTitle(String studyTitle) {

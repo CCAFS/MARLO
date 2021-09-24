@@ -30,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLink;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyReference;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
@@ -42,6 +43,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.pentaho.reporting.engine.classic.core.MasterReport;
 import org.pentaho.reporting.engine.classic.core.util.TypedTableModel;
 
@@ -176,14 +178,15 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           isContributionText = null, stageStudy = null, srfTargets = null, subIdos = null, topLevelComments = null,
           geographicScopes = null, regions = null, countries = null, scopeComments = null, crps = null,
           flagships = null, regionalPrograms = null, institutions = null, elaborationOutcomeImpactStatement = null,
-          referenceText = null, quantification = null, genderRelevance = null, youthRelevance = null,
-          capacityRelevance = null, otherCrossCuttingDimensions = null, comunicationsMaterial = null, contacts = null,
-          studyProjects = null, tagged = null, cgiarInnovation = null, cgiarInnovations = null, climateRelevance = null,
-          link = null, links = null, studyPolicies = null, isSrfTargetText = null,
-          otherCrossCuttingDimensionsSelection = null, url = null, studiesReference = null;
+          quantification = null, genderRelevance = null, youthRelevance = null, capacityRelevance = null,
+          otherCrossCuttingDimensions = null, comunicationsMaterial = null, contacts = null, studyProjects = null,
+          tagged = null, cgiarInnovation = null, cgiarInnovations = null, climateRelevance = null, link = null,
+          links = null, studyPolicies = null, isSrfTargetText = null, otherCrossCuttingDimensionsSelection = null,
+          url = null, studiesReference = null;
 
         Boolean isContribution = false, isRegional = false, isNational = false, isOutcomeCaseStudy = false,
           isSrfTarget = false;
+        StringBuffer referenceText = new StringBuffer();
 
         id = projectExpectedStudyInfo.getProjectExpectedStudy().getId();
         // Type
@@ -452,15 +455,35 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             htmlParser.plainTextToHtml(projectExpectedStudyInfo.getElaborationOutcomeImpactStatement());
         }
         // References cited
-        if (projectExpectedStudyInfo.getReferencesText() != null
-          && !projectExpectedStudyInfo.getReferencesText().trim().isEmpty()) {
-          studiesReference = htmlParser.plainTextToHtml(projectExpectedStudyInfo.getReferencesText());
+        if (("AR".equals(this.getSelectedPhase().getName()) && 2021 == this.getSelectedPhase().getYear())
+          || this.getSelectedPhase().getYear() > 2021) {
+          if (this.isNotEmpty(projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyReferences())) {
+            List<ProjectExpectedStudyReference> currentPhaseReferences =
+              projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyReferences().stream()
+                .filter(l -> l != null && l.getId() != null && l.getPhase() != null && l.getPhase().getId() != null
+                  && l.getPhase().equals(this.getSelectedPhase()))
+                .collect(Collectors.toList());
+            for (ProjectExpectedStudyReference studyReferenceObject : currentPhaseReferences) {
+              if (StringUtils.isNotEmpty(studyReferenceObject.getReference())) {
+                String reference = StringUtils.trimToEmpty(studyReferenceObject.getReference());
+                referenceText = referenceText.append("• ").append(reference).append("\\r\\n");
+              }
+            }
+          } else {
+            referenceText = referenceText.append(notProvided);
+          }
+        } else {
+          if (StringUtils.isNotEmpty(
+            projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyInfo().getReferencesText())) {
 
-          /*
-           * Get short url calling tinyURL service
-           */
-          referenceText = urlShortener.detectAndShortenLinks(studiesReference);
-
+            /*
+             * Get short url calling tinyURL service
+             */
+            referenceText = referenceText.append(
+              projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyInfo().getReferencesText());
+          } else {
+            referenceText = referenceText.append(notProvided);
+          }
         }
 
         // TODO: Add Quantifications in Pentaho/MySQL

@@ -13,7 +13,7 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.data.model;
+package org.cgiar.ccafs.marlo.data.dto;
 
 
 /**************
@@ -28,12 +28,14 @@ public class DeliverableHomeDTO {
   private long projectId;
   private String deliverableType;
   private String deliverableTitle;
+  private String status;
+  private String isOpenAccess;
 
   public DeliverableHomeDTO() {
   }
 
   public DeliverableHomeDTO(long deliverableId, long newExpectedYear, long expectedYear, long projectId,
-    String deliverableType, String deliverableTitle) {
+    String deliverableType, String deliverableTitle, String status, String isOpenAccess) {
     super();
     this.deliverableId = deliverableId;
     this.expectedYear = expectedYear;
@@ -41,6 +43,8 @@ public class DeliverableHomeDTO {
     this.projectId = projectId;
     this.deliverableType = deliverableType;
     this.deliverableTitle = deliverableTitle;
+    this.status = status;
+    this.isOpenAccess = isOpenAccess;
   }
 
   public long getDeliverableId() {
@@ -59,12 +63,20 @@ public class DeliverableHomeDTO {
     return expectedYear;
   }
 
+  public String getIsOpenAccess() {
+    return isOpenAccess;
+  }
+
   public long getNewExpectedYear() {
     return newExpectedYear;
   }
 
   public long getProjectId() {
     return projectId;
+  }
+
+  public String getStatus() {
+    return status;
   }
 
   public void setDeliverableId(long deliverableId) {
@@ -83,11 +95,19 @@ public class DeliverableHomeDTO {
     this.expectedYear = expectedYear;
   }
 
+  public void setIsOpenAccess(String isOpenAccess) {
+    this.isOpenAccess = isOpenAccess;
+  }
+
   public void setNewExpectedYear(long newExpectedYear) {
     this.newExpectedYear = newExpectedYear;
   }
 
   public void setProjectId(long projectId) {
     this.projectId = projectId;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
   }
 }

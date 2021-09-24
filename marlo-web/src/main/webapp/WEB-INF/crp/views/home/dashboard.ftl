@@ -3,15 +3,16 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["jQuery-Timelinr","cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/home/dashboard.js",
+  "https://www.gstatic.com/charts/loader.js",
+  "${baseUrlMedia}/js/home/dashboard.js?20210923a",
   "${baseUrlCdn}/global/js/impactGraphic.js"
   ] 
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/home/dashboard.css?20210918a",
+  "${baseUrlMedia}/css/home/dashboard.css?20210923a",
   "${baseUrlCdn}/global/css/customDataTable.css",
   "${baseUrlCdn}/global/css/impactGraphic.css",
-  "${baseUrlCdn}/global/css/global.css?20210918a"
+  "${baseUrlCdn}/global/css/global.css?20210827a"
   ] 
 /]
 [#assign currentSection = "home" /]
@@ -20,7 +21,6 @@
 ]/]
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
-[#import "/WEB-INF/crp/macros/projectsListTemplate.ftl" as projectList /]
 [#import "/WEB-INF/global/macros/homeDashboard.ftl" as indicatorLists /]
 
 [#assign timeline = [
@@ -44,135 +44,57 @@
 
 <section class="marlo-content">
   <div class="container">
-    [#-- What do you want to do --]
+
+    [#--  Home Graphs  --]
+    <div class="col-md-12">
     <div class="homeTitle"><b>[@s.text name="dashboard.homepage.title" /] ${(currentUser.firstName)!}!</b></div>
-    [#--  <div id="decisionTree">  --]
-    
-      [#--  [#if centerGlobalUnit]  --]
-        [#-- CENTER Impact patchway --]
-        [#--  <div class="flex-container">
-          <div id="newImpactPathway" class="option hvr-float">
-            <a href="[@s.url action="impactPathway/${centerSession}/programimpacts"][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-              <p>[@s.text name="dashboard.decisionTree.defineImpact" /]</p>
-            </a>
-          </div>
-        </div>  --]
-        
-        [#-- Projects --]
-        [#--  <div class="flex-container">
-          <div id="startMonitoring" class="option hvr-float">
-            <a href="[@s.url action="monitoring/${centerSession}/monitoringOutcomesList"][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-              <p>[@s.text name="dashboard.decisionTree.startMonitoring" /]</p>
-            </a>  
-          </div>
-        </div>  --]
-        
-        [#-- Summaries --]
-        [#--  <div class="flex-container">
-          <div id="finalDes" class="option hvr-float"">
-            <a href="[@s.url namespace="/projects" action='${crpSession}/projectsList'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-              <p>[@s.text name="dashboard.decisionTree.updateProject" /]</p>
-            </a>
-          </div>
-        </div>
-      
-      [#else]  --]
-      
-        [#-- Add new Project --]
-        [#--  <div class="flex-container">
-        [#assign canAddCoreProject = (action.canAddCoreProject()) && (!crpClosed) && (!reportingActive) && (action.getActualPhase().editable)]
-        [#if canAddCoreProject]<a href="[@s.url namespace="/projects" action='${crpSession}/addNewCoreProject'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[/#if]
-          <div id="newProject" class="hvr-float option ${(!canAddCoreProject)?string('disabled','')}" ${(!canAddCoreProject)?string('title="This link is disabled"','')}>
-            <p>[@s.text name="dashboard.decisionTree.newProject" /]</p>
-          </div>
-        [#if canAddCoreProject]</a>[/#if]
-        </div>  --]
-        
-        [#-- Update an ongoing Project --]
-        [#--  <div class="flex-container">
-        [#assign canUpdateOngoingProjects = !crpClosed && canEditPhase ]
-        [#if canUpdateOngoingProjects]<a href="[@s.url namespace="/projects" action='${crpSession}/projectsList'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"> [/#if]
-          <div id="updatePlanning" class="hvr-float option ${(!canUpdateOngoingProjects)?string('disabled','')}" ${(!canUpdateOngoingProjects)?string('title="This link is disabled"','')}>
-            <p>[@s.text name="dashboard.decisionTree.updateProject" /]</p>
-          </div>
-        [#if canUpdateOngoingProjects]</a>[/#if]
-        </div>  --]
-        
-        [#-- Evaluate Project --]
-        [#--  <div class="flex-container">
-          <div id="reportProject" class="option disabled" title="This link is disabled">
-            <p>[@s.text name="dashboard.decisionTree.evaluateProject" /]</p>
-          </div>
-        </div>
-      
-      [/#if]
-      <div class="clearfix"></div>
-    </div>  --]
-    
-    
-    [#-- Shorcuts --]    
-   [#-- <div id="shorcuts"  class="col-md-5"> --]  
-    [#-- if crpSession?contains("CCAFS")  --]
-    [#-- [#if false ]
-      <div class="homeTitle"><strong>Timeline</strong></div>   
-      <div class="borderBox col-md-12">
-        <div id="timeline">
-        <span class="timelineControl leftControl glyphicon glyphicon-chevron-left"></span>
-        <span class="timelineControl rigthControl control glyphicon glyphicon-chevron-right"></span>
-          <ul id="dates">
-          [#list timeline as time]
-            <li><a href="#${time.id}">[#if time.startDate?has_content]${(time.startDate)?date("MM/dd/yyyy")}[/#if]</a></li>
-          [/#list]
-          </ul>
-          
-          <div class="borderBox">
-            <ul id="issues">
-            [#list timeline as time]
-              <li class="infoActions" id="${time.id}">
-                <span class="startDate hidden">${time.startDate}</span>
-                <span class="endDate hidden">${time.endDate}</span>
-                <h1>[#if time.startDate?has_content]${((time.startDate)?date("MM/dd/yyyy"))?split(",")[0]}[/#if] [#if time.endDate?has_content]- ${((time.endDate)?date("MM/dd/yyyy"))?split(",")[0]}[/#if]</h1>
-                <hr />
-                <label for="">What happen?</label>
-                <p> ${time.what}</p>
-                [#if (time.who?has_content)]
-                <hr />
-                <label for="">Who?</label>
-                <p>${time.who}</p>
-                [/#if]
-              </li>
-            [/#list]
-            </ul> 
-          </div>
-        </div>
-      </div>
-      [/#if]
-    </div> --]    
-    
+    <div class="homeDescription col-md-12">[@s.text name="dashboard.homepage.description" /]</div>
+    </div>
+
     [#-- Dashboard --]   
     <div id="dashboardContent" class="col-md-12">
-      <div class="homeDescription col-md-12">[@s.text name="dashboard.homepage.description" /]</div>
+      <div class="toggleBtnGraphs">
+        <span class="glyphicon glyphicon-eye-open icon-show"></span>
+        <p class="toggleTxtGraphs">Hide/Show Graphs<p>
+      </div>
       <div class="col-md-12">
         <ul class="nav nav-tabs" role="tablist">
-          <li role="presentation" class="active"><a  id="projects" href="#myProjects" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.projects.table.title" /]</a></li>
-          <li role="presentation"><a id="deliverables" href="#myDeliverables" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.deliverables.table.title" /]</a></li>
-          <li role="presentation"><a id="studies" href="#myStudies" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.studies.table.title" /]</a></li>
-          <li role="presentation"><a id="innovations" href="#myInnovations" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.innovations.table.title" /]</a></li>
-          <li role="presentation"><a id="policies" href="#myPolicies" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.policies.table.title" /]</a></li>
+          <li role="presentation" class="active"><a  id="homeProjects" href="#myProjects" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.projects.table.title" /]</a></li>
+          <li role="presentation"><a id="deliverables" href="#myDeliverables" aria-controls="myDeliverables" role="tab" data-toggle="tab">[@s.text name="dashboard.deliverables.table.title" /]</a></li>
+          <li role="presentation"><a id="oicrs" href="#myOicrs" aria-controls="myOicrs" role="tab" data-toggle="tab">[@s.text name="dashboard.oicrs.table.title" /]</a></li>
+          <li role="presentation"><a id="melias" href="#myMelias" aria-controls="myMelias" role="tab" data-toggle="tab">[@s.text name="dashboard.melias.table.title" /]</a></li>
+          <li role="presentation"><a id="innovations" href="#myInnovations" aria-controls="myInnovations" role="tab" data-toggle="tab">[@s.text name="dashboard.innovations.table.title" /]</a></li>
+          <li role="presentation"><a id="policies" href="#myPolicies" aria-controls="myPolicies" role="tab" data-toggle="tab">[@s.text name="dashboard.policies.table.title" /]</a></li>
           <li role="presentation" style="display:none;"><a id="impact" href="#impactP" aria-controls="impactP" role="tab" data-toggle="tab">Impact pathway</a></li>
         </ul>
         
+        [#if (action.canAcessCrpAdmin() || action.isRole("DM") || action.isRole("FPL") || action.isRole("FPM") || action.isRole("ML") || action.isRole("PMU") || action.isRole("RPL") || action.isRole("RPM") || action.canAccessSuperAdmin())!false]
+          <div class="homeGraphs col-md-12">
+            <div class="col-md-6">
+              <div id="chartHome1" class="chartBox chartSimpleBox" style="height: 250px;"></div>
+            </div>
+
+            <div class="col-md-6">
+              <div id="chartHome2" class="chartBox chartSimpleBox" style="height: 250px;"></div>
+            </div>
+          </div>
+        [/#if]
+        
         <div class="tab-content">
           <div role="tabpanel" class="tab-pane fade in active" id="myProjects">
-            [@projectList.dashboardProjectsList projects=myProjects canValidate=true canEdit=true namespace="/projects" defaultAction="${(crpSession)!}/description" /]
+            [@indicatorLists.projectsHomeList projects=myProjects canValidate=true canEdit=true namespace="/projects" defaultAction="${(crpSession)!}/description" /]
           </div>
           
           <div role="tabpanel" class="tab-pane fade" id="myDeliverables">
             [@indicatorLists.deliverablesHomeList deliverables=myDeliverables canValidate=true canEdit=true namespace="/projects" defaultAction="${(crpSession)!}/deliverable" /]
           </div>
 
-          <div role="tabpanel" class="tab-pane fade" id="myStudies">
-            [@indicatorLists.studiesHomeList studies=myStudies canValidate=true canEdit=true namespace="/projects" defaultAction="${(crpSession)!}/study" /]
+          <div role="tabpanel" class="tab-pane fade" id="myOicrs">
+            [@indicatorLists.studiesHomeList studies=myOicrs canValidate=true canEdit=true namespace="/projects" defaultAction="${(crpSession)!}/study" /]
+          </div>
+
+          <div role="tabpanel" class="tab-pane fade" id="myMelias">
+            [@indicatorLists.studiesMeliasHomeList studies=myMelias canValidate=true canEdit=true namespace="/projects" defaultAction="${(crpSession)!}/study" /]
           </div>
 
           <div role="tabpanel" class="tab-pane fade" id="myInnovations">

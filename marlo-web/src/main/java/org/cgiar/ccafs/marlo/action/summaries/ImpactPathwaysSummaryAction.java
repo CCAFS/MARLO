@@ -174,6 +174,8 @@ public class ImpactPathwaysSummaryAction extends BaseSummariesAction implements 
       this.getText("summaries.impactPathways.cluster.keyOutput.statement"));
     masterReport.getParameterValues().put("i8nKeyOutputContribution",
       this.getText("summaries.impactPathways.cluster.keyOutput.contribution"));
+    masterReport.getParameterValues().put("i8nKeyOutputOutcomes",
+      this.getText("summaries.impactPathways.cluster.keyOutput.outcomes"));
 
     return masterReport;
   }
@@ -232,7 +234,7 @@ public class ImpactPathwaysSummaryAction extends BaseSummariesAction implements 
     stopTime = stopTime - startTime;
     LOG.info("Downloaded successfully: " + this.getFileName() + ". User: "
       + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: "
-      + this.getSelectedCycle() + ". Time to generate: " + stopTime + "ms.");
+      + this.getSelectedPhase().getName() + ". Time to generate: " + stopTime + "ms.");
 
     return SUCCESS;
   }
@@ -271,11 +273,11 @@ public class ImpactPathwaysSummaryAction extends BaseSummariesAction implements 
   private TypedTableModel getCrpClusterOfActivitiesTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"flagship", "clusterIdentifier", "clusterTitle", "clusterLeaders", "keyOutputStatement",
-        "keyOutputContribution", "outcomeId", "outcomeDescription"},
-      new Class[] {String.class, String.class, String.class, String.class, String.class, BigDecimal.class, String.class,
+        "keyOutputContribution", "outcomes"},
+      new Class[] {String.class, String.class, String.class, String.class, String.class, BigDecimal.class,
         String.class});
     String flagship = "", clusterIdentifier = "", clusterTitle = "", clusterLeaders = "", keyOutputStatement = "",
-      outcomeId = "", outcomeDescription = "";
+      outcomesListString = "";
     BigDecimal keyOutputContribution = BigDecimal.ZERO;
 
     for (ImpactPathwaysClusterDTO clusterInfo : this.crpClusterOfActivityManager
@@ -319,28 +321,21 @@ public class ImpactPathwaysSummaryAction extends BaseSummariesAction implements 
 
       // Key output contribution
       if (clusterInfo.getKeyOutputContribution() != null
-        && clusterInfo.getKeyOutputContribution().compareTo(BigDecimal.ONE) >= 0) {
+        && clusterInfo.getKeyOutputContribution().compareTo(BigDecimal.ZERO) >= 0) {
         keyOutputContribution = clusterInfo.getKeyOutputContribution();
       } else {
         // keyOutputContribution = notDefined;
       }
 
-      // Outcome composed id
-      if (StringUtils.isNotBlank(clusterInfo.getOutcomeId())) {
-        outcomeId = clusterInfo.getOutcomeId();
+      // Outcomes linked to the key output
+      if (StringUtils.isNotBlank(clusterInfo.getOutcomes())) {
+        outcomesListString = clusterInfo.getOutcomes();
       } else {
-        outcomeId = notDefined;
-      }
-
-      // Outcome name
-      if (StringUtils.isNotBlank(clusterInfo.getOutcomeDescription())) {
-        outcomeDescription = clusterInfo.getOutcomeDescription();
-      } else {
-        outcomeDescription = notDefined;
+        outcomesListString = notDefined;
       }
 
       model.addRow(new Object[] {flagship, clusterIdentifier, clusterTitle, clusterLeaders, keyOutputStatement,
-        keyOutputContribution, outcomeId, outcomeDescription});
+        keyOutputContribution, outcomesListString});
     }
 
     return model;
@@ -348,21 +343,28 @@ public class ImpactPathwaysSummaryAction extends BaseSummariesAction implements 
 
   private TypedTableModel getCrpMilestonesTableModel() {
     TypedTableModel model = new TypedTableModel(
-      new String[] {"outcomeComposedId", "outcomeName", "milestoneComposedId", "milestoneName", "milestoneTargetYear",
-        "milestoneStatus", "milestoneTargetUnit", "milestoneTargetValue", "levelOfChange", "assessmentOfRisk",
-        "mainRisk", "meansOfVerification", "markerGender", "markerYouth", "markerCapdev", "markerClimate",
-        "projectMilestones"},
+      new String[] {"flagship", "outcomeComposedId", "outcomeName", "milestoneComposedId", "milestoneName",
+        "milestoneTargetYear", "milestoneStatus", "milestoneTargetUnit", "milestoneTargetValue", "levelOfChange",
+        "assessmentOfRisk", "mainRisk", "meansOfVerification", "markerGender", "markerYouth", "markerCapdev",
+        "markerClimate", "projectMilestones"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        BigDecimal.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class});
+        String.class, BigDecimal.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, String.class});
 
-    String outcomeComposedId = "", outcomeName = "", milestoneComposedId = "", milestoneName = "", milestoneStatus = "",
-      milestoneTargetUnit = "", levelOfChange = "", assessmentOfRisk = "", meansOfVerification = "", markerGender = "",
-      markerYouth = "", markerCapdev = "", markerClimate = "";
+    String flagship = "", outcomeComposedId = "", outcomeName = "", milestoneComposedId = "", milestoneName = "",
+      milestoneStatus = "", milestoneTargetUnit = "", levelOfChange = "", assessmentOfRisk = "",
+      meansOfVerification = "", markerGender = "", markerYouth = "", markerCapdev = "", markerClimate = "";
     BigDecimal milestoneTargetValue = BigDecimal.ZERO;
     StringBuffer milestoneTargetYear = null, mainRisk = null, projectMilestones = null;
 
     for (CrpProgramOutcome outcome : outcomes) {
+      // Flagship/Module
+      if (outcome.getCrpProgram() != null && outcome.getCrpProgram().getId() != null) {
+        flagship = outcome.getCrpProgram().getAcronym();
+      } else {
+        flagship = notDefined;
+      }
+
       // Outcome composedId
       if (StringUtils.isNotBlank(outcome.getComposeID())) {
         outcomeComposedId = outcome.getComposeID();
@@ -507,10 +509,10 @@ public class ImpactPathwaysSummaryAction extends BaseSummariesAction implements 
             }
           }
 
-          model.addRow(new Object[] {outcomeComposedId, outcomeName, milestoneComposedId, milestoneName,
+          model.addRow(new Object[] {flagship, outcomeComposedId, outcomeName, milestoneComposedId, milestoneName,
             milestoneTargetYear.toString(), milestoneStatus, milestoneTargetUnit, milestoneTargetValue.toPlainString(),
             levelOfChange, assessmentOfRisk, mainRisk.toString(), meansOfVerification, markerGender, markerYouth,
-            markerCapdev, markerClimate, projectMilestones});
+            markerCapdev, markerClimate, projectMilestones.toString()});
         }
       } else {
         milestoneComposedId = notDefined;
@@ -529,7 +531,7 @@ public class ImpactPathwaysSummaryAction extends BaseSummariesAction implements 
         markerClimate = notProvided;
         projectMilestones = new StringBuffer(notDefined);
 
-        model.addRow(new Object[] {outcomeComposedId, outcomeName, milestoneComposedId, milestoneName,
+        model.addRow(new Object[] {flagship, outcomeComposedId, outcomeName, milestoneComposedId, milestoneName,
           milestoneTargetYear.toString(), milestoneStatus, milestoneTargetUnit, milestoneTargetValue, levelOfChange,
           assessmentOfRisk, mainRisk.toString(), meansOfVerification, markerGender, markerYouth, markerCapdev,
           markerClimate, projectMilestones.toString()});
@@ -548,12 +550,13 @@ public class ImpactPathwaysSummaryAction extends BaseSummariesAction implements 
 
     String flagship = "", composedId = "", outcomeName = "", outcomeTargetUnit = "";
     Long outcomeTargetYear = 0L, phaseId = 0L;
-    StringBuffer allSubidosAndContribution = null;
+    StringBuffer allSubidosAndContribution = null, primarySubIdos = null;
     BigDecimal outcomeTargetValue = BigDecimal.ZERO;
     phaseId = Long.valueOf(this.getSelectedPhase().getYear());
 
     for (CrpProgramOutcome outcome : outcomes) {
       allSubidosAndContribution = new StringBuffer();
+      primarySubIdos = new StringBuffer();
 
       // Outcome FP/Module
       if (outcome.getCrpProgram() != null && outcome.getCrpProgram().getId() != null) {
@@ -601,18 +604,29 @@ public class ImpactPathwaysSummaryAction extends BaseSummariesAction implements 
       if (this.isNotEmpty(outcome.getSubIdos())) {
         for (CrpOutcomeSubIdo subIdo : outcome.getSubIdos()) {
           if (subIdo.getSrfSubIdo() != null && subIdo.getSrfSubIdo().getId() != -1) {
-            allSubidosAndContribution = allSubidosAndContribution.append("•")
-              .append((subIdo.getPrimary() != null && subIdo.getPrimary()) ? "*" : "").append(" ")
-              .append(subIdo.getSrfSubIdo().getComposedName());
+            if (subIdo.getPrimary() != null && subIdo.getPrimary()) {
+              primarySubIdos = primarySubIdos.append("•").append("{Primary}").append(" ")
+                .append(subIdo.getSrfSubIdo().getComposedName());
+              if (subIdo.getContribution() != null) {
+                primarySubIdos = primarySubIdos.append(": ").append(subIdo.getContribution()).append('%');
+              }
 
-            if (subIdo.getContribution() != null) {
+              primarySubIdos = primarySubIdos.append("\r\n");
+            } else {
               allSubidosAndContribution =
-                allSubidosAndContribution.append(": ").append(subIdo.getContribution()).append('%');
-            }
+                allSubidosAndContribution.append("•").append(" ").append(subIdo.getSrfSubIdo().getComposedName());
 
-            allSubidosAndContribution = allSubidosAndContribution.append("\r\n");
+              if (subIdo.getContribution() != null) {
+                allSubidosAndContribution =
+                  allSubidosAndContribution.append(": ").append(subIdo.getContribution()).append('%');
+              }
+
+              allSubidosAndContribution = allSubidosAndContribution.append("\r\n");
+            }
           }
         }
+
+        allSubidosAndContribution = primarySubIdos.append(allSubidosAndContribution);
       } else {
         allSubidosAndContribution = allSubidosAndContribution.append(notProvided);
       }
@@ -637,7 +651,7 @@ public class ImpactPathwaysSummaryAction extends BaseSummariesAction implements 
     StringBuffer fileName = new StringBuffer();
     fileName.append("ImpactPathwaysSummary-");
     fileName.append(this.getLoggedCrp().getAcronym() + "-");
-    fileName.append(this.getSelectedCycle() + "_");
+    fileName.append(this.getSelectedPhase().getName() + "_");
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
@@ -658,7 +672,7 @@ public class ImpactPathwaysSummaryAction extends BaseSummariesAction implements 
     TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "cycle", "year"},
       new Class[] {String.class, String.class, String.class, Integer.class});
 
-    model.addRow(new Object[] {center, date, this.getSelectedCycle(), this.getSelectedYear()});
+    model.addRow(new Object[] {center, date, this.getSelectedPhase().getName(), this.getSelectedYear()});
     return model;
   }
 
@@ -752,6 +766,6 @@ public class ImpactPathwaysSummaryAction extends BaseSummariesAction implements 
     startTime = System.currentTimeMillis();
     LOG.info(
       "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
-        + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: " + this.getSelectedCycle());
+        + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: " + this.getSelectedPhase().getName());
   }
 }
