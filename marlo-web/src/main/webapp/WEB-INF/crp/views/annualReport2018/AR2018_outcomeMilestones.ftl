@@ -458,9 +458,9 @@
       [/#if]
       [#local statusesList = [
         { "id": 3, "name": "Complete" },
-        { "id": 4, "name": "Extended" },
         { "id": 5, "name": "Cancelled" },
-        { "id": 6, "name": "Changed" }
+        { "id": 6, "name": "Changed" },
+        { "id": 7, "name": "Partially complete" }
       ] /]
       [#list statusesList as s]
         [@customForm.radioFlat id="${customName}-status-${s.id}" name="${customName}.milestonesStatus.id" label="${s.name}"   value="${s.id}" checked=(milestoneStatus == s.id)!false editable=editable cssClass="milestoneStatus" cssClassLabel="font-normal"/]

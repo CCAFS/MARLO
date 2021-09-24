@@ -15,6 +15,7 @@ $(document).ready(function () {
   // Attach Events
   attachEvents();
   AddRequired();
+  $('input[name="innovation.projectInnovationInfo.evidenceLink"]').prop('disabled', true);
 });
 
 function attachEvents() {
