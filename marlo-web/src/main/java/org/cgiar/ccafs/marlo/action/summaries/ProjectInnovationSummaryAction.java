@@ -36,6 +36,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganizatio
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationDeliverable;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationEvidenceLink;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationMilestone;
@@ -350,12 +351,13 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     String title = null, narrative = null, phaseResearch = null, stageInnovation = null, innovationType = null,
       contributionOfCrp = null, degreeInnovation = null, geographicScope = null, region = null, countries = null,
       organizations = null, projectExpectedStudy = null, projectExpectedStudies = null, descriptionStage = null,
-      leadOrganization = null, contributingOrganization = null, adaptativeResearch = null, evidenceLink = null,
-      links = null, deliverables = null, crps = null, genderFocusLevel = null, genderExplaniation = null,
-      youthFocusLevel = null, youthExplaniation = null, project = null, oicr = "", centers = "", hasMilestones = "",
-      milestones = null, subIdos = null, deliverableLink = "", phaseID = "", loggedCenter = "", deliverableID = "",
-      isNew = null, innovationNumber = null;
+      leadOrganization = null, contributingOrganization = null, adaptativeResearch = null, links = null,
+      deliverables = null, crps = null, genderFocusLevel = null, genderExplaniation = null, youthFocusLevel = null,
+      youthExplaniation = null, project = null, oicr = "", centers = "", hasMilestones = "", milestones = null,
+      subIdos = null, deliverableLink = "", phaseID = "", loggedCenter = "", deliverableID = "", isNew = null,
+      innovationNumber = null;
     Boolean isRegional = false, isNational = false, isStage4 = false;
+    StringBuffer evidenceLink = new StringBuffer();
     // Id
     id = projectInnovationID;
     // Title
@@ -660,12 +662,33 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
 
     // Evidence Link
     URLShortener urlShortener = new URLShortener();
-    if (projectInnovationInfo.getEvidenceLink() != null && !projectInnovationInfo.getEvidenceLink().trim().isEmpty()) {
+    if (("AR".equals(this.getSelectedPhase().getName()) && 2021 == this.getSelectedPhase().getYear())
+      || this.getSelectedPhase().getYear() > 2021) {
+      if (this.isNotEmpty(this.projectInnovationInfo.getProjectInnovation().getProjectInnovationEvidenceLinks())) {
+        List<ProjectInnovationEvidenceLink> currentPhaseLinks = this.projectInnovationInfo.getProjectInnovation()
+          .getProjectInnovationEvidenceLinks().stream().filter(l -> l != null && l.getId() != null
+            && l.getPhase() != null && l.getPhase().getId() != null && l.getPhase().equals(this.getSelectedPhase()))
+          .collect(Collectors.toList());
+        for (ProjectInnovationEvidenceLink evidenceLinkObject : currentPhaseLinks) {
+          if (StringUtils.isNotEmpty(evidenceLinkObject.getLink())) {
+            String link = StringUtils.trimToEmpty(evidenceLinkObject.getLink());
+            evidenceLink =
+              evidenceLink.append("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● ").append(urlShortener.getShortUrlService(link));
+          }
+        }
+      } else {
+        evidenceLink = evidenceLink.append(notProvided);
+      }
+    } else {
+      if (StringUtils.isNotEmpty(projectInnovationInfo.getEvidenceLink())) {
 
-      /*
-       * Get short url calling tinyURL service
-       */
-      evidenceLink = urlShortener.getShortUrlService(projectInnovationInfo.getEvidenceLink());
+        /*
+         * Get short url calling tinyURL service
+         */
+        evidenceLink = evidenceLink.append(urlShortener.getShortUrlService(projectInnovationInfo.getEvidenceLink()));
+      } else {
+        evidenceLink = evidenceLink.append(notProvided);
+      }
     }
 
     // Deliverables
