@@ -12,8 +12,9 @@ function init() {
   inputMilestoneStatus = $('input.milestoneStatus');
   loadInputMilestoneStatus();
   inputMilestoneStatus.on('change', function() {
-    var tag = $(this).parents('.synthesisMilestone').find('.linksToEvidence').find('#warningEmptyLinksTag');
-    disableEnableWarningTag(this.value, tag);
+    var warningTag = $(this).parents('.synthesisMilestone').find('.linksToEvidence').find('#warningEmptyLinksTag');
+    var tag = $(warningTag).next().find('.requiredTag');
+    disableEnableWarningTag(this.value, warningTag, tag);
   });
   attachEvents();
 
@@ -30,17 +31,20 @@ function init() {
 
 function loadInputMilestoneStatus() {
   inputMilestoneStatus.each((index, item) => {
-    var tag = $(item).parents('.synthesisMilestone').find('.linksToEvidence').find('#warningEmptyLinksTag');
+    var warningTag = $(item).parents('.synthesisMilestone').find('.linksToEvidence').find('#warningEmptyLinksTag');
+    var tag = $(warningTag).next().find('.requiredTag');
     if (item.checked) {
-      disableEnableWarningTag(item.value, tag);
+      disableEnableWarningTag(item.value, warningTag, tag);
     }
   });
 }
 
-function disableEnableWarningTag(optionSelected, tag) {
+function disableEnableWarningTag(optionSelected, warningTag, tag) {
   if (optionSelected == '6') {
+    $(warningTag).show();
     $(tag).show();
   } else {
+    $(warningTag).hide();
     $(tag).hide();
   }
 }

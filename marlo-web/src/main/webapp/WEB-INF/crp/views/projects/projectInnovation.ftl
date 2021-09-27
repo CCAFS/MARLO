@@ -4,11 +4,11 @@
 [#-- TODO: Remove unused pageLibs--]
 [#assign pageLibs = ["select2","font-awesome", "flag-icon-css"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectInnovations.js?20210909A",
+  "${baseUrlMedia}/js/projects/projectInnovations.js?20210924A",
   "${baseUrlCdn}/global/js/autoSave.js", 
   "${baseUrlCdn}/global/js/fieldsValidation.js"
 ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectInnovations.css?20210907a"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectInnovations.css?20210924a"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "innovations" /]
 
@@ -215,7 +215,8 @@
             [#-- Evidence Link --] 
             <div class="form-group stageFourBlock-false" style="display:${isStageFour?string('none','block')}">
               <span id="warningEmptyLinksTag" class="errorTag glyphicon glyphicon-info-sign" style="left: 750px;" title="" aria-describedby="ui-id-5"> </span>
-              [@customForm.input name="innovation.projectInnovationInfo.evidenceLink"  type="text" i18nkey="projectInnovations.evidenceLink" help="projectInnovations.evidenceLink.help"  placeholder="marloRequestCreation.webSiteLink.placeholder2" className="" required=true editable=editable helpIcon=false /]
+              [@customForm.input name="innovation.projectInnovationInfo.evidenceLink"  type="text" i18nkey="projectInnovations.evidenceLink" help="projectInnovations.evidenceLink.help2"  placeholder="marloRequestCreation.webSiteLink.placeholder2" className="" required=true editable=editable helpIcon=false /]
+              <label for="">[@customForm.helpLabel name="projectInnovations.evidenceLink.help" showIcon=false editable=editable/]</label>
               <div class="linksBlock ">
                 <div class="linksList">
                   [#list (innovation.innovationLinks)![{}] as link]
