@@ -480,6 +480,9 @@ function justificationByStatus(statusId) {
             } else {
               showNewExpectedComponent(true, true);
             }
+            if (statusId == 4 && newExpectedYear == '2021') {
+              showExpectedComponent(true, true);
+            }
           } else {
             showNewExpectedComponent(false, false);
             showExpectedComponent(true, false);
@@ -584,6 +587,7 @@ function validateDeliverableStatus() {
   var selectYearNewExpected = $('#newExpectedYear select.yearNewExpected');
   var selectedStatus = $statuses.val();
   var expectedYear = $('#deliverableYear').find('select').val();
+  var newExpectedYear = $('#newExpectedYear').find('select').val();
   // New Expected year should be greater than current reporting cycle year
   if (reportingActive) {
     if (isDeliverableNew) {
@@ -597,7 +601,7 @@ function validateDeliverableStatus() {
       } else {
         if (expectedYear < '2021') {
           if (selectedStatus == 2) {
-            $statuses.find('option[value="2"]').prop("disabled", true); // Disable Completed
+            $statuses.find('option[value="2"]').prop("disabled", true); // Disable On-going
             $statuses.find('option[value="3"]').prop("disabled", true); // Disable Completed
             $statuses.find('option[value="4"]').prop("disabled", false); // Enable Extended
             $statuses.find('option[value="5"]').prop("disabled", true); // Disable Cancelled
@@ -606,9 +610,14 @@ function validateDeliverableStatus() {
             selectYearNewExpected.find('option[value="2018"]').prop("disabled", true);
             selectYearNewExpected.find('option[value="2019"]').prop("disabled", true);
             selectYearNewExpected.find('option[value="2020"]').prop("disabled", true);
-          } 
+          }
         } else {
           $statuses.find('option[value="4"]').prop("disabled", true); // Disable Extended
+        }
+
+        if (selectedStatus == 4 && newExpectedYear == '2021') {
+          $statuses.find('option[value="2"]').prop("disabled", true); // Disable On-going
+          $statuses.find('option[value="4"]').prop("disabled", true); // Enable Extended) {
         }
       }
     }
