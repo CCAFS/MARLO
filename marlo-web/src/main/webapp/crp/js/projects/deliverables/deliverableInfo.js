@@ -475,6 +475,7 @@ function justificationByStatus(statusId) {
         if (statusId == 2 || statusId == 3 || statusId == 4 || statusId == 5 || statusId == 6 || statusId == 7) {
           if (expectedYear < '2021') {
             showExpectedComponent(true, false);
+
             if (statusId == 2 && newExpectedYear == '-1') {
               showNewExpectedComponent(false, true);
             } else {
@@ -484,8 +485,12 @@ function justificationByStatus(statusId) {
               showExpectedComponent(true, true);
             }
           } else {
-            showNewExpectedComponent(false, false);
-            showExpectedComponent(true, false);
+            if (statusId == 4) {
+              showNewExpectedComponent(true, true);
+            } else {
+              showNewExpectedComponent(false, false);
+              showExpectedComponent(true, false);
+            }
           }
         }
       } else {
@@ -599,19 +604,29 @@ function validateDeliverableStatus() {
       if ($('#actualYear').html() != '2021') {
         $statuses.find('option').prop("disabled", true); // Disable All
       } else {
+        selectYearExpected.find('option[value="2022"]').prop("disabled", true);
+        selectYearNewExpected.find('option[value="2017"]').prop("disabled", true);
+        selectYearNewExpected.find('option[value="2018"]').prop("disabled", true);
+        selectYearNewExpected.find('option[value="2019"]').prop("disabled", true);
+        selectYearNewExpected.find('option[value="2020"]').prop("disabled", true);
+        selectYearNewExpected.find('option[value="2022"]').prop("disabled", true);
+
         if (expectedYear < '2021') {
-          if (selectedStatus == 2) {
+          if (selectedStatus == 2 && expectedYear != '-1' && newExpectedYear != '-1') {
+            $statuses.find('option[value="2"]').prop("disabled", true); // Disable On-going
+            $statuses.find('option[value="3"]').prop("disabled", false); // Disable Completed
+            $statuses.find('option[value="4"]').prop("disabled", true); // Enable Extended
+            $statuses.find('option[value="5"]').prop("disabled", false); // Disable Cancelled
+            $statuses.find('option[value="7"]').prop("disabled", false); // Disable Partially complete
+          } else {
             $statuses.find('option[value="2"]').prop("disabled", true); // Disable On-going
             $statuses.find('option[value="3"]').prop("disabled", true); // Disable Completed
             $statuses.find('option[value="4"]').prop("disabled", false); // Enable Extended
             $statuses.find('option[value="5"]').prop("disabled", true); // Disable Cancelled
             $statuses.find('option[value="7"]').prop("disabled", true); // Disable Partially complete
-            selectYearNewExpected.find('option[value="2017"]').prop("disabled", true);
-            selectYearNewExpected.find('option[value="2018"]').prop("disabled", true);
-            selectYearNewExpected.find('option[value="2019"]').prop("disabled", true);
-            selectYearNewExpected.find('option[value="2020"]').prop("disabled", true);
           }
         } else {
+          $statuses.find('option[value="2"]').prop("disabled", true); // Disable On-going
           $statuses.find('option[value="4"]').prop("disabled", true); // Disable Extended
         }
 
@@ -621,9 +636,6 @@ function validateDeliverableStatus() {
         }
       }
     }
-
-    selectYearExpected.find('option[value="2022"]').prop("disabled", true);
-    selectYearNewExpected.find('option[value="2022"]').prop("disabled", true);
     $('#deliverableYear .overlay').show();
     $statuses.trigger("change");
   }
