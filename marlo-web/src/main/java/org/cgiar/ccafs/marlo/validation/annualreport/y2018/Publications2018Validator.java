@@ -114,8 +114,8 @@ public class Publications2018Validator extends BaseValidator {
         if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
           // Get mark policies list
 
-          deliverablesTable6 = new ArrayList<>(
-            deliverableManager.getPublicationsList(reportSynthesis.getLiaisonInstitution(), action.getActualPhase()));
+          deliverablesTable6 = new ArrayList<>(deliverableManager
+            .getSynthesisPublicationsList(reportSynthesis.getLiaisonInstitution(), action.getActualPhase(), true));
 
           if (reportSynthesis != null && reportSynthesis.getReportSynthesisFlagshipProgress() != null
             && reportSynthesis.getReportSynthesisFlagshipProgress()
@@ -162,8 +162,8 @@ public class Publications2018Validator extends BaseValidator {
         if (deliverablesTable6 != null) {
           deliverables = new ArrayList<>(deliverablesTable6);
         } else {
-          deliverables =
-            deliverableManager.getPublicationsList(reportSynthesis.getLiaisonInstitution(), action.getActualPhase());
+          deliverables = deliverableManager.getSynthesisPublicationsList(reportSynthesis.getLiaisonInstitution(),
+            action.getActualPhase(), true);
         }
         if (deliverables != null && !deliverables.isEmpty()) {
           for (Deliverable deliverable : deliverables) {

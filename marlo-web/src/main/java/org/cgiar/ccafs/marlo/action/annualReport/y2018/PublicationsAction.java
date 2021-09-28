@@ -532,16 +532,19 @@ public class PublicationsAction extends BaseAction {
       liaisonInstitutionID = reportSynthesisDB.getLiaisonInstitution().getId();
       liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
 
-      deliverables = deliverableManager.getPublicationsList(liaisonInstitution, actualPhase);
+      deliverables = deliverableManager.getSynthesisPublicationsList(liaisonInstitution, actualPhase, true);
       deliverables.removeIf(d -> d == null || d.getId() == null
         || d.getDeliverableInfo(actualPhase) == null && d.getDeliverableInfo(actualPhase).getId() == null
-        || d.getDeliverableInfo(actualPhase).getStatus() == null || d.getDeliverableInfo(actualPhase).getStatus() != 3);
+        || d.getDeliverableInfo(actualPhase)
+          .getStatus() == null /* || d.getDeliverableInfo(actualPhase).getStatus() != 3 */);
 
       // List for gray literature
-      deliverablesNotPublications = deliverableManager.getNotPublicationsList(liaisonInstitution, actualPhase);
+      deliverablesNotPublications =
+        deliverableManager.getSynthesisPublicationsList(liaisonInstitution, actualPhase, false);
       deliverablesNotPublications.removeIf(d -> d == null || d.getId() == null
         || d.getDeliverableInfo(actualPhase) == null && d.getDeliverableInfo(actualPhase).getId() == null
-        || d.getDeliverableInfo(actualPhase).getStatus() == null || d.getDeliverableInfo(actualPhase).getStatus() != 3);
+        || d.getDeliverableInfo(actualPhase)
+          .getStatus() == null /* || d.getDeliverableInfo(actualPhase).getStatus() != 3 */);
 
       Path path = this.getAutoSaveFilePath();
       // Verify if there is a Draft file

@@ -90,6 +90,17 @@ public interface DeliverableDAO {
 
   public List<Deliverable> getDeliverablesLeadByUser(long userId, long phaseId);
 
+  /**
+   * Gets the list of deliverables to be reported on synthesis. The projectId parameter is optional: if null, it
+   * displays the entire list of planned deliverables; if not, it filters by the deliverables planned by the projectId
+   * 
+   * @param projectId the Project identifier (optional)
+   * @param phaseId the Phase identifier
+   * @param prp do you want to show the Peer-reviewed papers?
+   * @return the list of deliverables to be reported in Table 6
+   */
+  public List<Deliverable> getDeliverableSynthesis(Long projectId, long phaseId, boolean prp);
+
   public List<Deliverable> getPublicationsByPhase(long phase);
 
   public Boolean isDeliverableExcluded(Long deliverableId, Long phaseId);
