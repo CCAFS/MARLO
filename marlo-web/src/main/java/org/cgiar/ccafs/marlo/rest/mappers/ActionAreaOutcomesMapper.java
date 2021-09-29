@@ -20,7 +20,9 @@
 package org.cgiar.ccafs.marlo.rest.mappers;
 
 import org.cgiar.ccafs.marlo.data.model.ActionAreaOutcome;
+import org.cgiar.ccafs.marlo.data.model.ActionAreaOutcomeIndicator;
 import org.cgiar.ccafs.marlo.rest.dto.ActionAreaOutcomeDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ActionAreaOutcomeIndicatorDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -29,8 +31,17 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "jsr330")
 public interface ActionAreaOutcomesMapper {
 
+  @Mappings({@Mapping(source = "actionAreaOutcome.actionArea.id", target = "actionAreaId"),
+    @Mapping(source = "actionAreaOutcome.actionArea.name", target = "actionAreaName"),
+    @Mapping(source = "actionAreaOutcome.outcomeStatement", target = "outcomeStatement"),
+    @Mapping(source = "actionAreaOutcome.id", target = "outcomeId"),
+    @Mapping(source = "outcomeIndicator.id", target = "outcomeIndicatorId"),
+    @Mapping(source = "outcomeIndicator.outcomeIndicatorStatement", target = "outcomeIndicatorStatement")})
+  public abstract ActionAreaOutcomeIndicatorDTO
+    actionAreaOutcomeIndicatorToActionAreaOutcomeIndicatorDTO(ActionAreaOutcomeIndicator actionAreaOutcomeIndicator);
+
+
   @Mappings({@Mapping(source = "actionArea.id", target = "actionAreaId"),
     @Mapping(source = "actionArea.name", target = "actionAreaName"), @Mapping(source = "id", target = "outcomeId")})
   public abstract ActionAreaOutcomeDTO ActionAreaOutcomesToActionAreaOutcomeDTO(ActionAreaOutcome actionAreaOutcome);
-
 }
