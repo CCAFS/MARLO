@@ -17,40 +17,15 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.data.dao.mysql;
+package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.ActionAreaOutcomesDAO;
-import org.cgiar.ccafs.marlo.data.model.ActionAreaOutcome;
+import org.cgiar.ccafs.marlo.data.model.ActionAreaOutcomeIndicator;
 
 import java.util.List;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+public interface ActionAreaOutcomeIndicatorDAO {
 
-import org.hibernate.SessionFactory;
+  public ActionAreaOutcomeIndicator getActionAreaOutcomeIndicatorById(long id);
 
-@Named
-public class ActionAreaOutcomeMySQLDAO extends AbstractMarloDAO<ActionAreaOutcome, Long>
-  implements ActionAreaOutcomesDAO {
-
-  @Inject
-  public ActionAreaOutcomeMySQLDAO(SessionFactory sessionFactory) {
-    super(sessionFactory);
-  }
-
-  @Override
-  public ActionAreaOutcome getActionAreaOutcomeById(long id) {
-    return super.find(ActionAreaOutcome.class, id);
-  }
-
-  @Override
-  public List<ActionAreaOutcome> getAll() {
-    String query = "from " + ActionAreaOutcome.class.getName();
-    List<ActionAreaOutcome> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
-  }
-
+  public List<ActionAreaOutcomeIndicator> getAll();
 }

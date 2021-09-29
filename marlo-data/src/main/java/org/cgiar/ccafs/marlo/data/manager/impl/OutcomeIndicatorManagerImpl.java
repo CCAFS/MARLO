@@ -17,40 +17,27 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.data.dao.mysql;
+package org.cgiar.ccafs.marlo.data.manager.impl;
 
-import org.cgiar.ccafs.marlo.data.dao.ActionAreaOutcomesDAO;
-import org.cgiar.ccafs.marlo.data.model.ActionAreaOutcome;
+import org.cgiar.ccafs.marlo.data.dao.OutcomeIndicatorDAO;
+import org.cgiar.ccafs.marlo.data.manager.OutcomeIndicatorManager;
+import org.cgiar.ccafs.marlo.data.model.OutcomeIndicator;
 
 import java.util.List;
 
-import javax.inject.Inject;
-import javax.inject.Named;
 
-import org.hibernate.SessionFactory;
+public class OutcomeIndicatorManagerImpl implements OutcomeIndicatorManager {
 
-@Named
-public class ActionAreaOutcomeMySQLDAO extends AbstractMarloDAO<ActionAreaOutcome, Long>
-  implements ActionAreaOutcomesDAO {
+  private OutcomeIndicatorDAO outcomeIndicatorDAO;
 
-  @Inject
-  public ActionAreaOutcomeMySQLDAO(SessionFactory sessionFactory) {
-    super(sessionFactory);
+  @Override
+  public List<OutcomeIndicator> getAll() {
+    return outcomeIndicatorDAO.getAll();
   }
 
   @Override
-  public ActionAreaOutcome getActionAreaOutcomeById(long id) {
-    return super.find(ActionAreaOutcome.class, id);
-  }
-
-  @Override
-  public List<ActionAreaOutcome> getAll() {
-    String query = "from " + ActionAreaOutcome.class.getName();
-    List<ActionAreaOutcome> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
+  public OutcomeIndicator getOutcomeIndicatorById(long id) {
+    return outcomeIndicatorDAO.getOutcomeIndicatorById(id);
   }
 
 }

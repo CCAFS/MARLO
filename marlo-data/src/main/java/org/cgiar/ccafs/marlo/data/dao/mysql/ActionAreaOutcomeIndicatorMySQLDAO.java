@@ -19,8 +19,8 @@
 
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
-import org.cgiar.ccafs.marlo.data.dao.ActionAreaOutcomesDAO;
-import org.cgiar.ccafs.marlo.data.model.ActionAreaOutcome;
+import org.cgiar.ccafs.marlo.data.dao.ActionAreaOutcomeIndicatorDAO;
+import org.cgiar.ccafs.marlo.data.model.ActionAreaOutcomeIndicator;
 
 import java.util.List;
 
@@ -30,23 +30,23 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class ActionAreaOutcomeMySQLDAO extends AbstractMarloDAO<ActionAreaOutcome, Long>
-  implements ActionAreaOutcomesDAO {
+public class ActionAreaOutcomeIndicatorMySQLDAO extends AbstractMarloDAO<ActionAreaOutcomeIndicator, Long>
+  implements ActionAreaOutcomeIndicatorDAO {
 
   @Inject
-  public ActionAreaOutcomeMySQLDAO(SessionFactory sessionFactory) {
+  public ActionAreaOutcomeIndicatorMySQLDAO(SessionFactory sessionFactory) {
     super(sessionFactory);
   }
 
   @Override
-  public ActionAreaOutcome getActionAreaOutcomeById(long id) {
-    return super.find(ActionAreaOutcome.class, id);
+  public ActionAreaOutcomeIndicator getActionAreaOutcomeIndicatorById(long id) {
+    return super.find(ActionAreaOutcomeIndicator.class, id);
   }
 
   @Override
-  public List<ActionAreaOutcome> getAll() {
-    String query = "from " + ActionAreaOutcome.class.getName();
-    List<ActionAreaOutcome> list = super.findAll(query);
+  public List<ActionAreaOutcomeIndicator> getAll() {
+    String query = "from " + ActionAreaOutcomeIndicator.class.getName();
+    List<ActionAreaOutcomeIndicator> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
