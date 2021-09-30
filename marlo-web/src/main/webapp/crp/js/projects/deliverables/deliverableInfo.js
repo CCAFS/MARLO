@@ -594,7 +594,7 @@ function validateDeliverableStatus() {
   var expectedYear = $('#deliverableYear').find('select').val();
   var newExpectedYear = $('#newExpectedYear').find('select').val();
   // New Expected year should be greater than current reporting cycle year
-  if (reportingActive) {
+  if (reportingActive || upKeepActive) {
     if (isDeliverableNew) {
       $statuses.find('option').prop("disabled", true); // Disable All
       $statuses.find('option[value="3"]').prop("disabled", false); // Enable Complete
