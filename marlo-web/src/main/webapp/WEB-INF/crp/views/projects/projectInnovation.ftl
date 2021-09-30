@@ -4,11 +4,11 @@
 [#-- TODO: Remove unused pageLibs--]
 [#assign pageLibs = ["select2","font-awesome", "flag-icon-css"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectInnovations.js?20210908A",
+  "${baseUrlMedia}/js/projects/projectInnovations.js?20210924A",
   "${baseUrlCdn}/global/js/autoSave.js", 
   "${baseUrlCdn}/global/js/fieldsValidation.js"
 ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectInnovations.css?20210907a"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectInnovations.css?20210924a"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "innovations" /]
 
@@ -150,7 +150,7 @@
               <div class="row">
                 <div class="col-md-6">
                   [#-- Geographic Scope --]
-                  [@customForm.elementsListComponent name="innovation.geographicScopes" elementType="repIndGeographicScope" elementList=innovation.geographicScopes maxLimit=1 label="projectInnovations.geographicScope" listName="geographicScopeList" keyFieldName="id" displayFieldName="name" required=true /]
+                  [@customForm.elementsListComponent name="innovation.geographicScopes" elementType="repIndGeographicScope" elementList=innovation.geographicScopes  label="projectInnovations.geographicScope" listName="geographicScopeList" keyFieldName="id" displayFieldName="name" required=true /]
                 </div>
               </div>
               <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
@@ -214,7 +214,9 @@
 
             [#-- Evidence Link --] 
             <div class="form-group stageFourBlock-false" style="display:${isStageFour?string('none','block')}">
-              [@customForm.input name="innovation.projectInnovationInfo.evidenceLink"  type="text" i18nkey="projectInnovations.evidenceLink" help="projectInnovations.evidenceLink.help"  placeholder="marloRequestCreation.webSiteLink.placeholder2" className="" required=true editable=editable helpIcon=false /]
+              <span id="warningEmptyLinksTag" class="errorTag glyphicon glyphicon-info-sign" style="left: 750px;" title="" aria-describedby="ui-id-5"> </span>
+              [@customForm.input name="innovation.projectInnovationInfo.evidenceLink"  type="text" i18nkey="projectInnovations.evidenceLink" help="projectInnovations.evidenceLink.help2"  placeholder="marloRequestCreation.webSiteLink.placeholder2" className="" required=true editable=editable helpIcon=false /]
+              <label for="">[@customForm.helpLabel name="projectInnovations.evidenceLink.help" showIcon=false editable=editable/]</label>
               <div class="linksBlock ">
                 <div class="linksList">
                   [#list (innovation.innovationLinks)![{}] as link]
@@ -234,7 +236,7 @@
           
             [#-- Or Deliverable ID (optional) --]
             <div class="form-group">
-              [@customForm.elementsListComponent name="innovation.deliverables" elementType="deliverable" elementList=innovation.deliverables label="projectInnovations.deliverableId"  listName="deliverableList" required=false keyFieldName="id" displayFieldName="composedName"/]
+              [@customForm.elementsListComponent name="innovation.deliverables" elementType="deliverable" elementList=innovation.deliverables label="projectInnovations.deliverableId"  listName="deliverableList" required=false keyFieldName="id" displayFieldName="tagTitle"/]
             </div>
           </div>
          <br>

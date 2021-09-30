@@ -30,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganizatio
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationDeliverable;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationEvidenceLink;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationRegion;
@@ -56,6 +57,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -313,7 +315,8 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
       Long paramA = null, paramB = null;
       String paramC = "", paramD = "", paramE = "", paramF = "", paramG = "", paramH = "", paramI = "", paramJ = "",
         paramK = "", paramL = "", paramM = "", paramN = "", paramO = "", paramP = "", paramQ = "", paramR = "",
-        paramS = "", paramT = "", paramU = "", paramV = "", paramW = "", innovationURL = "", studyURL = "";
+        paramS = "", paramT = "", paramU = "", paramW = "", innovationURL = "", studyURL = "";
+      StringBuffer paramV = new StringBuffer();
 
       // Condition to know if the project innovation have information in the selected phase
       if (innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase()) != null) {
@@ -627,14 +630,34 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
         // paramV - evidence Link
         // CRPs / PLTs
         // Title
-        if (innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
-          .getEvidenceLink() != null
-          && !innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
-            .getEvidenceLink().isEmpty()) {
-          paramV = innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
-            .getEvidenceLink();
+        if (("AR".equals(this.getSelectedPhase().getName()) && 2021 == this.getSelectedPhase().getYear())
+          || this.getSelectedPhase().getYear() > 2021) {
+          if (this.isNotEmpty(innovationEvidences.getProjectInnovation().getProjectInnovationEvidenceLinks())) {
+            List<ProjectInnovationEvidenceLink> currentPhaseLinks = innovationEvidences.getProjectInnovation()
+              .getProjectInnovationEvidenceLinks().stream().filter(l -> l != null && l.getId() != null
+                && l.getPhase() != null && l.getPhase().getId() != null && l.getPhase().equals(this.getSelectedPhase()))
+              .collect(Collectors.toList());
+            for (ProjectInnovationEvidenceLink evidenceLinkObject : currentPhaseLinks) {
+              if (StringUtils.isNotEmpty(evidenceLinkObject.getLink())) {
+                String link = StringUtils.trimToEmpty(evidenceLinkObject.getLink());
+                paramV = paramV.append("• ").append(link).append("\\r\\n");
+              }
+            }
+          } else {
+            paramV = paramV.append(notProvided);
+          }
         } else {
-          paramV = "<Not Defined>";
+          if (StringUtils.isNotEmpty(innovationEvidences.getProjectInnovation()
+            .getProjectInnovationInfo(this.getSelectedPhase()).getEvidenceLink())) {
+
+            /*
+             * Get short url calling tinyURL service
+             */
+            paramV = paramV.append(innovationEvidences.getProjectInnovation()
+              .getProjectInnovationInfo(this.getSelectedPhase()).getEvidenceLink());
+          } else {
+            paramV = paramV.append(notProvided);
+          }
         }
 
         // paramW - Innovation Centers

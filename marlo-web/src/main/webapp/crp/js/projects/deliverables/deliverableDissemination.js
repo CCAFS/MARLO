@@ -18,7 +18,7 @@ function init() {
   $('.subTypeSelect').change(validateRequiredTagToCategory);
   $('.subTypeSelectSupplementary').change(validateRequiredTagToCategory);
   $('.subTypeSelect').change(validateEmptyAuthors);
-  $('select[name="deliverable.deliverableInfo.status"]').change(validateRequiredTagToCategory);
+  $('select[name="deliverable.deliverableInfo.status"]').change(validateRequiredTagToCategory, validateEmptyAuthors)
   // $('.typeSelect ').on("click",   validateRequiredTagToCategory);
   // Setting ID to Date-picker input
   $(".dateMetadata").attr("id", "deliverableMetadataDate");
@@ -96,6 +96,8 @@ function validateEmptyAuthors() {
       // ocultar banderilla
       $('#warningEmptyAuthorsTag').hide();
     }
+  } else {
+    $('#warningEmptyAuthorsTag').hide();
   }
 }
 

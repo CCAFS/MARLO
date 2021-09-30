@@ -151,7 +151,11 @@
     padding: 15px;
 }
 
-#myStudies {
+#myOicrs {
+    padding: 15px;
+}
+
+#myMelias {
     padding: 15px;
 }
 
@@ -228,4 +232,73 @@ span.timelineControl {
 
 span.timelineControl:hover {
     color: #117fa8;
+}
+
+.chartBox {
+    background: url(../../../global/images/saving.gif) no-repeat;
+    background-position: 50%;
+    min-height: 100px;
+    padding: 1em;
+    padding-top: 0;
+    margin: 0;
+    color: #8c8c8c;
+}
+
+table {
+    height: 193.5px;
+    font-size: 12px;
+    color: black;
+}
+
+.bs-checkbox {
+    margin-right: 5px;
+}
+
+.tableIndicatorTotal {
+    height: 38.59px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    color: #777777;
+}
+
+.tableSimpleBox {
+    border: 1px solid #E7E7E7;
+    padding: 10px 15px;
+    border-radius: 3px;
+    margin: 2px 0px 5px 0;
+    position: relative;
+    background: #FFF;
+}
+
+.chartSimpleBox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* border: 1px solid #E7E7E7; */
+    padding: 10px 20px 10px 20px;
+    border-radius: 3px;
+    margin: 2px 0px 5px 0;
+    position: relative;
+    background: #FFF;
+}
+
+.toggleBtnGraphs {
+    width: 150px;
+    height: 30px;
+    position: absolute;
+    right: 0;
+    margin-right: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #0277A2;
+    text-align: center;
+    color: white;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.toggleTxtGraphs {
+    margin: 0 0 0 5px;
 }

@@ -241,6 +241,15 @@
       <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableMetadataExternalSources" />
     </set>
     
+    <set name="projectDeliverableShareds" table="project_deliverable_shared"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="deliverable_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectDeliverableShared" />
+    </set>
+    
     <set name="deliverableAltmetricInfos" table="deliverable_altmetric_info" inverse="true"
       order-by="id" lazy="true" fetch="select">
       <key>

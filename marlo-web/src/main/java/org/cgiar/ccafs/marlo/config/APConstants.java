@@ -812,7 +812,15 @@ public final class APConstants {
 
   public static final Long OTHER_MAIN_AREA = 6L;
 
+  public static final String USER_PROJECTS = "myProjects";
+  public static final String USER_DELIVERABLES = "myDeliverables";
+  public static final String USER_MELIAS = "myMelias";
+  public static final String USER_OICRS = "myOicrs";
+  public static final String USER_INNOVATIONS = "myInnovations";
+  public static final String USER_POLICIES = "myPolicies";
   public static final String INDICATOR_ID = "indicatorID";
+
+  public static final String FP_COLORS = "fpColors";
 
   public static String getFilterBy() {
     return FILTER_BY;

@@ -249,4 +249,10 @@
       </a>
     </div>
   [/#if]
+
+  [#-- Projects shared --]
+  <h3 class="headTitle">[@s.text name="deliverable.sharedProjects.title" /]</h3>
+  <div class="borderBox">
+    [@customForm.elementsListComponent name="deliverable.sharedDeliverables" elementType="project" elementList=(deliverable.sharedDeliverables)![] label="deliverable.sharedProjects"  listName="myProjects" keyFieldName="id" displayFieldName="composedName" required=false /]
+  </div>
 </div>

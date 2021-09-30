@@ -46,6 +46,7 @@ import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsFlagship;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyReference;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -93,6 +94,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -675,7 +677,8 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
           .compareTo(f2.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase()).getTitle()))
         .collect(Collectors.toList())) {
         String title = "", outcomeReportLink = "", subIdo = "", describeGender = "", describeYouth = "",
-          describeCapDev = "", additional = "", linkToEvidence = "";
+          describeCapDev = "", additional = "";
+        StringBuilder referenceText = new StringBuilder();
 
         /** creating download link **/
         String year = powbEvidencePlannedStudyDTO.getProjectExpectedStudy()
@@ -700,12 +703,37 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
             }
           }
 
-          if (powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getProjectExpectedStudyInfo()
-            .getReferencesText() != null
-            && !powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getProjectExpectedStudyInfo().getReferencesText()
-              .isEmpty()) {
-            linkToEvidence =
-              powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getProjectExpectedStudyInfo().getReferencesText();
+          // References cited
+          if (("AR".equals(this.getSelectedPhase().getName()) && 2021 == this.getSelectedPhase().getYear())
+            || this.getSelectedPhase().getYear() > 2021) {
+            if (this
+              .isNotEmpty(powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getProjectExpectedStudyReferences())) {
+              List<ProjectExpectedStudyReference> currentPhaseReferences =
+                powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getProjectExpectedStudyReferences().stream()
+                  .filter(l -> l != null && l.getId() != null && l.getPhase() != null && l.getPhase().getId() != null
+                    && l.getPhase().equals(this.getSelectedPhase()))
+                  .collect(Collectors.toList());
+              for (ProjectExpectedStudyReference studyReferenceObject : currentPhaseReferences) {
+                if (StringUtils.isNotEmpty(studyReferenceObject.getReference())) {
+                  String reference = StringUtils.trimToEmpty(studyReferenceObject.getReference());
+                  referenceText = referenceText.append("• ").append(reference).append("\\r\\n");
+                }
+              }
+            } else {
+              referenceText = referenceText.append(notProvided);
+            }
+          } else {
+            if (StringUtils.isNotEmpty(powbEvidencePlannedStudyDTO.getProjectExpectedStudy()
+              .getProjectExpectedStudyInfo().getReferencesText())) {
+
+              /*
+               * Get short url calling tinyURL service
+               */
+              referenceText = referenceText.append(powbEvidencePlannedStudyDTO.getProjectExpectedStudy()
+                .getProjectExpectedStudyInfo().getReferencesText());
+            } else {
+              referenceText = referenceText.append(notProvided);
+            }
           }
 
           if (projectExpectedStudyInfo.getGenderLevel() != null) {
@@ -738,7 +766,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
           additional = "Gender: " + describeGender + "\nYouth: " + describeYouth + " \nCapDev: " + describeCapDev;
           POIField[] sData = {new POIField(title, ParagraphAlignment.LEFT, bold, blueColor, outcomeReportLink),
             new POIField(subIdo, ParagraphAlignment.LEFT, false),
-            new POIField(linkToEvidence, ParagraphAlignment.LEFT, false),
+            new POIField(referenceText.toString(), ParagraphAlignment.LEFT, false),
             new POIField(additional, ParagraphAlignment.LEFT, false)};
           data = Arrays.asList(sData);
           datas.add(data);

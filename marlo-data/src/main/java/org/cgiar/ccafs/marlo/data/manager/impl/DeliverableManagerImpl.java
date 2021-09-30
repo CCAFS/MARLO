@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.dao.CrpClusterOfActivityDAO;
 import org.cgiar.ccafs.marlo.data.dao.DeliverableDAO;
 import org.cgiar.ccafs.marlo.data.dao.DeliverableInfoDAO;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
+import org.cgiar.ccafs.marlo.data.dto.DeliverableHomeDTO;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
@@ -29,7 +30,6 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
-import org.cgiar.ccafs.marlo.data.model.DeliverableHomeDTO;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableProgram;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
@@ -391,9 +391,11 @@ public class DeliverableManagerImpl implements DeliverableManager {
 
 
     }
-    String deliverableIds = flagshipPlannedList.stream()
-      .filter(d -> d != null && d.getDeliverable() != null && d.getDeliverable().getId() != null)
-      .map(d -> String.valueOf(d.getDeliverable().getId())).collect(Collectors.joining(", "));
+    /*
+     * String deliverableIds = flagshipPlannedList.stream()
+     * .filter(d -> d != null && d.getDeliverable() != null && d.getDeliverable().getId() != null)
+     * .map(d -> String.valueOf(d.getDeliverable().getId())).collect(Collectors.joining(", "));
+     */
     return flagshipPlannedList;
   }
 

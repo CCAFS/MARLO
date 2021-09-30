@@ -114,7 +114,7 @@
                     [#local deliverableUrl][@s.url namespace="/projects" action="${(crpSession)!}/deliverable"][@s.param name='deliverableID']${d.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
                     <tr>
                       <th scope="row">D${d.id}</th>
-                      <td class="col-md-6">${(d.deliverableInfo.title)!'Untitled'}</td>
+                      <td class="col-md-6">[#if (d.tagTitle?has_content)]${(d.tagTitle)!}[/#if]${(d.deliverableInfo.title)!'Untitled'}</td>
                       <td>${(d.deliverableInfo.deliverableType.name?capitalize)!'none'}</td>
                       <td> <a href="${deliverableUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
                     </tr>

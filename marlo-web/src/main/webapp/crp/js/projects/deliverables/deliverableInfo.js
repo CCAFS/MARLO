@@ -74,7 +74,7 @@ function init() {
     justificationByStatus(this.value);
     disseminationMetadataRequiredFields();
   });
-  
+
   disseminationMetadataRequiredFields();
   validateDeliverableStatus();
 
@@ -455,6 +455,7 @@ function justificationByStatus(statusId) {
   var newExpectedYear = $newExpectedYearSelect.val();
   var hasExpectedYear =
     ((newExpectedYear != "") && newExpectedYear != "-1") && (typeof newExpectedYear !== 'undefined');
+  var expectedYear = $('#deliverableYear').find('select').val();
   var isCompletedWithoutExpectedYear = ((!reportingActive) && isStatusComplete(statusId) && hasExpectedYear);
 
   // Validate the justification
@@ -470,47 +471,75 @@ function justificationByStatus(statusId) {
     if (isDeliverableNew) {
       showNewExpectedComponent(isStatusExtended(statusId) && upKeepActive);
     } else {
-      console.log("hasExpectedYear", hasExpectedYear);
-      if (isStatusOnGoing(statusId)) {
-        console.log("if");
-        showNewExpectedComponent(false);
-      } else {
-        console.log("else");
-        if (statusId == 4) {
-          // showExpectedComponent(true);
-          $('.expectedDisabled').hide("slow");
-          if ($('#actualYear').html() == '2021') {
-            showExpectedComponent(true);
-          }
-        } else if (statusId == 2 || statusId == 3 || statusId == 5 || statusId == 6) {
-
-          if (($('.yearNewExpected').val() != '-1') && ($('.yearNewExpected').val() != $('.yearExpected').val())) {
-            showNewExpectedComponent(true);
+      if ($('#actualYear').html() == '2021') {
+        if (statusId == 2 || statusId == 3 || statusId == 4 || statusId == 5 || statusId == 6 || statusId == 7) {
+          if (expectedYear < '2021') {
+            showExpectedComponent(true, false);
+            if (statusId == 2 && newExpectedYear == '-1') {
+              showNewExpectedComponent(false, true);
+            } else {
+              showNewExpectedComponent(true, true);
+            }
           } else {
-            showNewExpectedComponent(false);
+            showNewExpectedComponent(false, false);
+            showExpectedComponent(true, false);
           }
-          $('.expectedDisabled').show("slow");
-        } else if (statusId == 7) {
-          showExpectedComponent(true);
-
-          if (($('.yearNewExpected').val() != '-1')) {
-            showNewExpectedComponent(true);
-          } else {
-            showNewExpectedComponent(false);
-          }
-        } else {
-          showNewExpectedComponent(false);
         }
+      } else {
+        showNewExpectedComponent(true, true);
+        showExpectedComponent(true, true);
       }
+
+      // if (isStatusOnGoing(statusId)) {
+      //   console.log("if");
+      //   showNewExpectedComponent(true, false);
+      // } else {
+      //   console.log("else");
+
+      //   if (statusId == 4) {
+      //     // si el año #actualYear NO es 2021, ambos new expected y expected year no deben poderse editar pero sí mostrar
+      //     // si el año #actualYear 2021, validar que tanto el new expected y expected year sean menores a 2021, si estos son menores a 2021 ambos se deben mostrar pero solamente queda editable el new expected year y si no son menores, entonces se deben mostrar pero ninguno queda editable
+      //     if ($('#actualYear').html() != '2021') {
+      //       console.log("año actual", $('#actualYear').html())
+      //       showNewExpectedComponent(true, true);
+      //       showExpectedComponent(true, true);
+      //     } else {
+      //       console.log("es 2021")
+      //       if (!(expectedYear < '2021' && newExpectedYear < '2021') || (newExpectedYear == '-1')) {
+      //         console.log("ambos no son menores")
+      //         showNewExpectedComponent(true, true);
+      //         showExpectedComponent(true, false);
+      //       } else {
+      //         console.log("ambos son menores")
+      //         showNewExpectedComponent(true, true);
+      //         showExpectedComponent(true, true);
+      //       }
+      //     }
+      //   } else if (statusId == 2 || statusId == 3 || statusId == 5 || statusId == 6) {
+      //     if (expectedYear < '2021') {
+      //       showNewExpectedComponent(true, true);
+      //       showExpectedComponent(true, false);
+      //     } else {
+      //       showNewExpectedComponent(true, false);
+      //       showExpectedComponent(true, false);
+      //     }
+      //   } else if (statusId == 7) {
+      //     showExpectedComponent(true, true);
+
+      //     if (newExpectedYear != '-1') {
+      //       showNewExpectedComponent(true, true);
+      //     } else {
+      //       showNewExpectedComponent(false, false);
+      //     }
+      //   } else {
+      //     showNewExpectedComponent(false, false);
+      //   }
+      // }
     }
-
-  } else {
-
   }
-
 }
 
-function showNewExpectedComponent(state) {
+function showNewExpectedComponent(state, overlay) {
   var $newExpectedYearBlock = $('#newExpectedYear');
   var $yearOverlay = $('#deliverableYear .overlay');
   if (state) {
@@ -522,9 +551,15 @@ function showNewExpectedComponent(state) {
       $yearOverlay.hide();
     }
   }
+
+  if (overlay) {
+    $yearOverlay.show();
+  } else {
+    $yearOverlay.hide();
+  }
 }
 
-function showExpectedComponent(state) {
+function showExpectedComponent(state, overlay) {
   var $expectedYearBlock = $('#deliverableYear');
   var $yearOverlay = $('#newExpectedYear .overlay');
   if (state) {
@@ -536,9 +571,19 @@ function showExpectedComponent(state) {
       $yearOverlay.hide();
     }
   }
+
+  if (overlay) {
+    $yearOverlay.show();
+  } else {
+    $yearOverlay.hide();
+  }
 }
 
 function validateDeliverableStatus() {
+  var selectYearExpected = $('#deliverableYear select.yearExpected');
+  var selectYearNewExpected = $('#newExpectedYear select.yearNewExpected');
+  var selectedStatus = $statuses.val();
+  var expectedYear = $('#deliverableYear').find('select').val();
   // New Expected year should be greater than current reporting cycle year
   if (reportingActive) {
     if (isDeliverableNew) {
@@ -547,13 +592,29 @@ function validateDeliverableStatus() {
       $statuses.find('option[value="5"]').prop("disabled", false); // Enable Cancelled
       $statuses.val("3"); // Set Complete
     } else {
-      // if(actualPhase.year != 2021){
-      //   $statuses.find('option[value="2"]').prop("disabled", true);// Disable On-going
-      // }
-      $statuses.find('option[value="2"]').prop("disabled", true);// Disable On-going
-      $statuses.find('option[value="4"]').prop("disabled", true);// Disable Extended
+      if ($('#actualYear').html() != '2021') {
+        $statuses.find('option').prop("disabled", true); // Disable All
+      } else {
+        if (expectedYear < '2021') {
+          if (selectedStatus == 2) {
+            $statuses.find('option[value="2"]').prop("disabled", true); // Disable Completed
+            $statuses.find('option[value="3"]').prop("disabled", true); // Disable Completed
+            $statuses.find('option[value="4"]').prop("disabled", false); // Enable Extended
+            $statuses.find('option[value="5"]').prop("disabled", true); // Disable Cancelled
+            $statuses.find('option[value="7"]').prop("disabled", true); // Disable Partially complete
+            selectYearNewExpected.find('option[value="2017"]').prop("disabled", true);
+            selectYearNewExpected.find('option[value="2018"]').prop("disabled", true);
+            selectYearNewExpected.find('option[value="2019"]').prop("disabled", true);
+            selectYearNewExpected.find('option[value="2020"]').prop("disabled", true);
+          } 
+        } else {
+          $statuses.find('option[value="4"]').prop("disabled", true); // Disable Extended
+        }
+      }
     }
 
+    selectYearExpected.find('option[value="2022"]').prop("disabled", true);
+    selectYearNewExpected.find('option[value="2022"]').prop("disabled", true);
     $('#deliverableYear .overlay').show();
     $statuses.trigger("change");
   }
