@@ -16,6 +16,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudyDAO;
+import org.cgiar.ccafs.marlo.data.dto.StudyHomeDTO;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
@@ -34,7 +35,6 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressStudy;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressStudyDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisStudiesByCrpProgramDTO;
-import org.cgiar.ccafs.marlo.data.model.StudyHomeDTO;
 
 import java.util.ArrayList;
 import java.util.Comparator;

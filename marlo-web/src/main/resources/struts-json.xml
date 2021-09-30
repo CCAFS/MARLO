@@ -1054,6 +1054,43 @@
         <param name="excludeNullProperties">true</param>
       </result>
     </action>
+    <!-- ********************************************************************************************************** -->
+		<action name="meliaGraphs" class="org.cgiar.ccafs.marlo.action.json.home.MeliaGraphsAction">
+			<result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+		</action>
+		<action name="oicrGraphs" class="org.cgiar.ccafs.marlo.action.json.home.OICRGraphsAction">
+			<result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+		</action>
+		<action name="innovationGraphs" class="org.cgiar.ccafs.marlo.action.json.home.InnovationGraphsAction">
+			<result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+		</action>
+		<action name="policyGraphs" class="org.cgiar.ccafs.marlo.action.json.home.PolicyGraphsAction">
+			<result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+		</action>
+		<action name="deliverableGraphs" class="org.cgiar.ccafs.marlo.action.json.home.DeliverableGraphsAction">
+			<result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+		</action>
+		<action name="projectGraphs" class="org.cgiar.ccafs.marlo.action.json.home.ProjectGraphsAction">
+			<result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+		</action>
 
 		<action name="qaAssessmentStatus"
 			class="org.cgiar.ccafs.marlo.action.json.global.QAAssessmentStatusAction">
@@ -1107,6 +1144,5 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
-
 	</package>
 </struts>

@@ -614,3 +614,7 @@ div#chart13 {
   font-size: 2rem;
   margin: 0.8rem 0 0 0;
 }
+
+/*textarea[name^="reportSynthesis.reportSynthesisFlagshipProgress.outcomeList"] {
+  display: none;
+}*/

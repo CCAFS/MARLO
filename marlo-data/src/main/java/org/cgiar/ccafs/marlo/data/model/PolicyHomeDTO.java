@@ -27,17 +27,20 @@ public class PolicyHomeDTO {
   private long projectId;
   private String policyType;
   private String policyTitle;
+  private String policyLevel;
 
   public PolicyHomeDTO() {
   }
 
-  public PolicyHomeDTO(long policyId, long expectedYear, long projectId, String policyType, String policyTitle) {
+  public PolicyHomeDTO(long policyId, long expectedYear, long projectId, String policyType, String policyTitle,
+    String policyLevel) {
     super();
     this.policyId = policyId;
     this.expectedYear = expectedYear;
     this.projectId = projectId;
     this.policyType = policyType;
     this.policyTitle = policyTitle;
+    this.policyLevel = policyLevel;
   }
 
   public long getExpectedYear() {
@@ -46,6 +49,10 @@ public class PolicyHomeDTO {
 
   public long getPolicyId() {
     return policyId;
+  }
+
+  public String getPolicyLevel() {
+    return policyLevel;
   }
 
   public String getPolicyTitle() {
@@ -66,6 +73,10 @@ public class PolicyHomeDTO {
 
   public void setPolicyId(long policyId) {
     this.policyId = policyId;
+  }
+
+  public void setPolicyLevel(String policyLevel) {
+    this.policyLevel = policyLevel;
   }
 
   public void setPolicyTitle(String policyTitle) {

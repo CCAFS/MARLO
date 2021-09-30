@@ -15,6 +15,7 @@ $(document).ready(function () {
   // Attach Events
   attachEvents();
   AddRequired();
+  $('input[name="innovation.projectInnovationInfo.evidenceLink"]').prop('disabled', true);
 });
 
 function attachEvents() {
@@ -118,6 +119,24 @@ function attachEvents() {
   //On change radio buttons
   $('input[class*="radioType-"]').on('change', onChangeRadioButton);
 
+  validateEmptyLinks();
+  $('.addButtonLink').on('click', validateEmptyLinks);
+  $('.removeLink.links').on('click', validateEmptyLinks);
+}
+
+function validateEmptyLinks() {
+  var linksList = $('.linksList').children('div').length;
+
+  if ($(this).hasClass('removeElement')) {
+    linksList -= 1;
+  } else {
+    linksList = linksList;
+  }
+  if ( linksList > 0) {
+    $('#warningEmptyLinksTag').hide();
+  } else {
+    $('#warningEmptyLinksTag').show();
+  }
 }
 
 function stageValidations() {

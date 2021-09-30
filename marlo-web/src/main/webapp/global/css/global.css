@@ -2954,10 +2954,7 @@ input.userName {
   justify-content: left;
   font-size: 2em;
   color: #333;
-  /* padding-bottom: 14px;
-  padding-top: 5px;
-  padding-left: 30px; */
-  padding: 5px 30px 14px 30px;
+  padding: 0 15px 14px 15px;
 }
 
 .homeDescription {

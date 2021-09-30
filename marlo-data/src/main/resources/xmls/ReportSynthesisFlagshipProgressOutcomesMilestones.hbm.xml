@@ -54,5 +54,11 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressCrossCuttingMarker" />
         </set>
+        <set name="reportSynthesisFlagshipProgressOutcomeMilestoneLinks" table="report_synthesis_flagship_progress_outcome_milestone_links" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="progress_outcome_milestones_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestoneLink" />
+        </set>
     </class>
 </hibernate-mapping>

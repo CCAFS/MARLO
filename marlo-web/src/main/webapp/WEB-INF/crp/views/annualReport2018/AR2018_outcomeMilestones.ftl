@@ -9,10 +9,10 @@
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
-  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20210908a",
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20210917a",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js"
 ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210908a"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210924a"] /]
 
 [#assign breadCrumb = [
   {"label":"${currentSection}",   "nameSpace":"",             "action":""},
@@ -458,9 +458,9 @@
       [/#if]
       [#local statusesList = [
         { "id": 3, "name": "Complete" },
-        { "id": 4, "name": "Extended" },
         { "id": 5, "name": "Cancelled" },
-        { "id": 6, "name": "Changed" }
+        { "id": 6, "name": "Changed" },
+        { "id": 7, "name": "Partially complete" }
       ] /]
       [#list statusesList as s]
         [@customForm.radioFlat id="${customName}-status-${s.id}" name="${customName}.milestonesStatus.id" label="${s.name}"   value="${s.id}" checked=(milestoneStatus == s.id)!false editable=editable cssClass="milestoneStatus" cssClassLabel="font-normal"/]
@@ -484,8 +484,24 @@
     </div>
     
     [#-- Links to evidence --]
-    <div class="form-group">
-      [@customForm.textArea name="${customName}.evidenceLink" value="${(annualReportElement.evidenceLink)!}" i18nkey="${customLabel}.milestoneEvidenceLink" help="${customLabel}.milestoneEvidenceLink.help" helpIcon=false display=true required=true editable=editable allowTextEditor=true /]
+    <div class="form-group linksToEvidence">
+      <span id="warningEmptyLinksTag" class="errorTag glyphicon glyphicon-info-sign" style="display: none; position: relative; left: 730px;" title="" aria-describedby="ui-id-5"></span>
+      [@customForm.textArea name="${customName}.evidenceLink" value="${(annualReportElement.evidenceLink)!}" i18nkey="${customLabel}.milestoneEvidenceLink" help="${customLabel}.milestoneEvidenceLink.help" helpIcon=false display=true required=true editable=editable  /]
+      <div class="linksBlock " style="display:none;">
+        <div class="linksList">
+          [#list (annualReportElement.links)![{}] as link]
+            [@customForm.multiInput name="annualReportElement.links" element=link index=link_index class="links" placeholder="global.webSiteLink.placeholder" /]
+          [/#list]
+        </div>
+        [#if editable]
+        <div class="addButtonLink button-green pull-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add Link </div>
+        <div class="clearfix"></div>
+        [/#if]
+        </div>
+          [#-- Element item Template --]
+        <div style="display:none">
+          [@customForm.multiInput name="annualReportElement.links" element={} index=-1 template=true class="links" placeholder="global.webSiteLink.placeholder" /]
+        </div>
     </div>
       
     <div class="form-group milestonesEvidence" style="width: 100%; display:${((milestoneStatus == 4) || (milestoneStatus == 5) || (milestoneStatus == 6))?string('block', 'none')}">

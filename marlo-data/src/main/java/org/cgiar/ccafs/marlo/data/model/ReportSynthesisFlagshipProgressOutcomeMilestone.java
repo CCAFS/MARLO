@@ -38,8 +38,11 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestone extends MarloAudita
 
   private Set<ReportSynthesisFlagshipProgressCrossCuttingMarker> reportSynthesisFlagshipProgressCrossCuttingMarkers =
     new HashSet<ReportSynthesisFlagshipProgressCrossCuttingMarker>(0);
-
   List<ReportSynthesisFlagshipProgressCrossCuttingMarker> markers;
+
+  private Set<ReportSynthesisFlagshipProgressOutcomeMilestoneLink> reportSynthesisFlagshipProgressOutcomeMilestoneLinks =
+    new HashSet<ReportSynthesisFlagshipProgressOutcomeMilestoneLink>(0);
+  List<ReportSynthesisFlagshipProgressOutcomeMilestoneLink> links;
 
   @Expose
   private RepIndMilestoneReason reason;
@@ -70,13 +73,17 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestone extends MarloAudita
     return extendedYear;
   }
 
+  public List<ReportSynthesisFlagshipProgressOutcomeMilestoneLink> getLinks() {
+    return links;
+  }
+
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
-
 
   public List<ReportSynthesisFlagshipProgressCrossCuttingMarker> getMarkers() {
     return this.markers;
@@ -85,6 +92,7 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestone extends MarloAudita
   public GeneralStatus getMilestonesStatus() {
     return milestonesStatus;
   }
+
 
   public String getOtherReason() {
     return this.otherReason;
@@ -100,11 +108,14 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestone extends MarloAudita
     return this.reportSynthesisFlagshipProgressCrossCuttingMarkers;
   }
 
-
   public ReportSynthesisFlagshipProgressOutcome getReportSynthesisFlagshipProgressOutcome() {
     return this.reportSynthesisFlagshipProgressOutcome;
   }
 
+  public Set<ReportSynthesisFlagshipProgressOutcomeMilestoneLink>
+    getReportSynthesisFlagshipProgressOutcomeMilestoneLinks() {
+    return reportSynthesisFlagshipProgressOutcomeMilestoneLinks;
+  }
 
   public String getStatusName() {
 
@@ -149,6 +160,11 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestone extends MarloAudita
   }
 
 
+  public void setLinks(List<ReportSynthesisFlagshipProgressOutcomeMilestoneLink> links) {
+    this.links = links;
+  }
+
+
   public void setMarkers(List<ReportSynthesisFlagshipProgressCrossCuttingMarker> markers) {
     this.markers = markers;
   }
@@ -178,6 +194,12 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestone extends MarloAudita
   public void setReportSynthesisFlagshipProgressOutcome(
     ReportSynthesisFlagshipProgressOutcome reportSynthesisFlagshipProgressOutcome) {
     this.reportSynthesisFlagshipProgressOutcome = reportSynthesisFlagshipProgressOutcome;
+  }
+
+
+  public void setReportSynthesisFlagshipProgressOutcomeMilestoneLinks(
+    Set<ReportSynthesisFlagshipProgressOutcomeMilestoneLink> reportSynthesisFlagshipProgressOutcomeMilestoneLinks) {
+    this.reportSynthesisFlagshipProgressOutcomeMilestoneLinks = reportSynthesisFlagshipProgressOutcomeMilestoneLinks;
   }
 
 

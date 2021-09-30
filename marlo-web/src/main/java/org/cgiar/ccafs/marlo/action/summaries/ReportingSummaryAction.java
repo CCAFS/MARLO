@@ -91,6 +91,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLink;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyQuantification;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyReference;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
@@ -104,6 +105,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganizatio
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationDeliverable;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationEvidenceLink;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationOrganization;
@@ -3436,10 +3438,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         Long id = null;
         String title = null, narrative = null, phaseResearch = null, stageInnovation = null, innovationType = null,
           contributionOfCrp = null, degreeInnovation = null, geographicScope = null, region = null, countries = null,
-          organizations = null, projectExpectedStudy = null, descriptionStage = null, evidenceLink = null,
-          deliverables = null, crps = null, genderFocusLevel = null, genderExplaniation = null, youthFocusLevel = null,
-          youthExplaniation = null, leadOrganization = null, contributingOrganizations = null;
+          organizations = null, projectExpectedStudy = null, descriptionStage = null, deliverables = null, crps = null,
+          genderFocusLevel = null, genderExplaniation = null, youthFocusLevel = null, youthExplaniation = null,
+          leadOrganization = null, contributingOrganizations = null;
         Boolean isRegional = false, isNational = false, isStage4 = false;
+        StringBuffer evidenceLink = new StringBuffer();
         // Id
         id = projectInnovation.getId();
         // Title
@@ -3588,12 +3591,32 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         }
 
         // Evidence Link
-        if (innovationInfo.getEvidenceLink() != null && !innovationInfo.getEvidenceLink().trim().isEmpty()) {
+        if (("AR".equals(this.getSelectedPhase().getName()) && 2021 == this.getSelectedPhase().getYear())
+          || this.getSelectedPhase().getYear() > 2021) {
+          if (this.isNotEmpty(innovationInfo.getProjectInnovation().getProjectInnovationEvidenceLinks())) {
+            List<ProjectInnovationEvidenceLink> currentPhaseLinks = innovationInfo.getProjectInnovation()
+              .getProjectInnovationEvidenceLinks().stream().filter(l -> l != null && l.getId() != null
+                && l.getPhase() != null && l.getPhase().getId() != null && l.getPhase().equals(this.getSelectedPhase()))
+              .collect(Collectors.toList());
+            for (ProjectInnovationEvidenceLink evidenceLinkObject : currentPhaseLinks) {
+              if (StringUtils.isNotEmpty(evidenceLinkObject.getLink())) {
+                String link = StringUtils.trimToEmpty(evidenceLinkObject.getLink());
+                evidenceLink = evidenceLink.append("• ").append(urlShortener.getShortUrlService(link)).append("\\r\\n");
+              }
+            }
+          } else {
+            evidenceLink = evidenceLink.append(notProvided);
+          }
+        } else {
+          if (StringUtils.isNotEmpty(innovationInfo.getEvidenceLink())) {
 
-          /*
-           * Get short url calling tinyURL service
-           */
-          evidenceLink = urlShortener.getShortUrlService(innovationInfo.getEvidenceLink());
+            /*
+             * Get short url calling tinyURL service
+             */
+            evidenceLink = evidenceLink.append(urlShortener.getShortUrlService(innovationInfo.getEvidenceLink()));
+          } else {
+            evidenceLink = evidenceLink.append(notProvided);
+          }
         }
         // Deliverables
         List<ProjectInnovationDeliverable> projectInnovationDeliverables =
@@ -4875,16 +4898,17 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           linksProvided = null, isContributionText = null, policyInvestimentType = null, organizationType = null,
           stageProcess = null, stageStudy = null, srfTargets = null, subIdos = null, topLevelComments = null,
           geographicScope = "", region = "", countries = "", scopeComments = null, crps = null, flagships = null,
-          regions = null, institutions = null, elaborationOutcomeImpactStatement = null, referenceText = null,
-          referencesFile = null, quantification = null, genderRelevance = null, youthRelevance = null,
-          capacityRelevance = null, climateChangeRelevance = null, otherCrossCuttingDimensions = null,
-          comunicationsMaterial = null, comunicationsMaterials = null, projectPolicy = null, comunicationsFile = null,
-          contacts = null, studyProjects = null, commissioningStudy = null, tagget = null, cgiarInnovations = null,
+          regions = null, institutions = null, elaborationOutcomeImpactStatement = null, referencesFile = null,
+          quantification = null, genderRelevance = null, youthRelevance = null, capacityRelevance = null,
+          climateChangeRelevance = null, otherCrossCuttingDimensions = null, comunicationsMaterial = null,
+          comunicationsMaterials = null, projectPolicy = null, comunicationsFile = null, contacts = null,
+          studyProjects = null, commissioningStudy = null, tagget = null, cgiarInnovations = null,
           cgiarInnovationsList = null, link = null;
 
         Boolean isContribution = false, isBudgetInvestment = false, isStage1 = false, isRegional = false,
           isNational = false, hasreferencesFile = false, hasCommunicationFile = false, isOutcomeCaseStudy = false,
           hasMultipleProjects = false;
+        StringBuffer referenceText = new StringBuffer();
 
         // Id
         id = projectExpectedStudy.getId();
@@ -5206,12 +5230,33 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
 
         // References cited
-        if (studyinfo.getReferencesText() != null && !studyinfo.getReferencesText().trim().isEmpty()) {
-          referenceText = studyinfo.getReferencesText();
-          /*
-           * Get short url calling tinyURL service
-           */
-          referenceText = urlShortener.detectAndShortenLinks(studyinfo.getReferencesText());
+        if (("AR".equals(this.getSelectedPhase().getName()) && 2021 == this.getSelectedPhase().getYear())
+          || this.getSelectedPhase().getYear() > 2021) {
+          if (this.isNotEmpty(studyinfo.getProjectExpectedStudy().getProjectExpectedStudyReferences())) {
+            List<ProjectExpectedStudyReference> currentPhaseReferences = studyinfo.getProjectExpectedStudy()
+              .getProjectExpectedStudyReferences().stream().filter(l -> l != null && l.getId() != null
+                && l.getPhase() != null && l.getPhase().getId() != null && l.getPhase().equals(this.getSelectedPhase()))
+              .collect(Collectors.toList());
+            for (ProjectExpectedStudyReference studyReferenceObject : currentPhaseReferences) {
+              if (StringUtils.isNotEmpty(studyReferenceObject.getReference())) {
+                String reference = StringUtils.trimToEmpty(studyReferenceObject.getReference());
+                referenceText =
+                  referenceText.append("• ").append(urlShortener.getShortUrlService(reference)).append("\\r\\n");
+              }
+            }
+          } else {
+            referenceText = referenceText.append(notProvided);
+          }
+        } else {
+          if (StringUtils.isNotEmpty(studyinfo.getReferencesText())) {
+
+            /*
+             * Get short url calling tinyURL service
+             */
+            referenceText = referenceText.append(urlShortener.getShortUrlService(studyinfo.getReferencesText()));
+          } else {
+            referenceText = referenceText.append(notProvided);
+          }
         }
 
         // Atached material

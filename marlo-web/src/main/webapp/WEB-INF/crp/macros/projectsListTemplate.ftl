@@ -345,49 +345,6 @@
   </table>
 [/#macro]
 
-[#macro dashboardProjectsList projects={} owned=true canValidate=false canEdit=false isPlanning=false namespace="/" defaultAction="description"]
-  <table class="projectsList" id="projects">
-    <thead>
-      <tr class="subHeader">
-        <th id="ids">[@s.text name="projectsList.projectids" /]</th>
-        <th id="projectTitles" >[@s.text name="projectsList.projectTitles" /]</th>
-        [#-- <th id="projectType">[@s.text name="projectsList.projectType" /]</th> --]
-        [#if isPlanning]
-          <th id="projectBudget">[@s.text name="planning.projects.completion" /]</th>
-        [/#if]
-      </tr>
-    </thead>
-    <tbody>
-    [#if projects?has_content]
-      [#list projects as project]
-        <tr>
-        [#-- ID --]
-        <td class="projectId">
-          <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='projectID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"> P${project.id}</a>
-        </td>
-          [#-- Project Title --]
-          <td class="left"> 
-            [#if (project.projectInfo.title?has_content)!false]
-              <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='projectID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" >
-              [#if project.projectInfo.title?length < 120] ${project.projectInfo.title}</a> [#else] [@utilities.wordCutter string=project.projectInfo.title maxPos=120 /]...</a> [/#if]
-            [#else]
-              <a href="[@s.url namespace=namespace action=defaultAction includeParams='get'][@s.param name='projectID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-                [@s.text name="projectsList.title.none" /]
-              </a>
-            [/#if]
-          </td>
-          [#-- Project Type 
-          <td>
-            [@s.text name="project.type.${(project.type?lower_case)!'none'}" /]
-          </td>
-          --]
-        </tr>  
-      [/#list]
-    [/#if]
-    </tbody>
-  </table>
-[/#macro]
-
 [#macro deliverablesList deliverable={} owned=true canValidate=false canEdit=false isPlanning=false namespace="/" defaultAction="deliverables"]
   <table class="projectsList" id="projects">
     <thead>

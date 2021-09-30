@@ -192,8 +192,10 @@
       
         <br />
         
+        
         <label for="">[@s.text name="study.outcomestoryLinks" /]:
           [@customForm.req required=false /]
+          <span id="warningEmptyLinksTag" class="errorTag glyphicon glyphicon-info-sign" style="position: relative; left: 271px;" title="" aria-describedby="ui-id-5"> </span>
           [@customForm.helpLabel name="study.outcomestoryLinks.help" paramText="<a href='https://hdl.handle.net/10568/99384' target='_blank'>Personal data use authorization form</a>" showIcon=false editable=editable/]
         </label>
         <div class="linksBlock ">
@@ -441,6 +443,7 @@
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
         <div class="form-group">
+          <span id="warningEmptyReferencesTag" class="errorTag glyphicon glyphicon-info-sign" style="position: relative; left: 750px;" title="" aria-describedby="ui-id-5"> </span>
           [@customForm.textArea name="${customName}.projectExpectedStudyInfo.referencesText" i18nkey="study.referencesCited" help="study.referencesCited.help2" helpIcon=false className="" required=editable && !(isPolicy && stageProcessOne) editable=editable /]
           <div class="referenceBlock ">
             <div class="referenceList">

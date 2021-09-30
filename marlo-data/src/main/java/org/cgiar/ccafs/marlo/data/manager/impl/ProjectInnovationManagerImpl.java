@@ -16,13 +16,13 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectInnovationDAO;
+import org.cgiar.ccafs.marlo.data.dto.InnovationHomeDTO;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
-import org.cgiar.ccafs.marlo.data.model.InnovationHomeDTO;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;

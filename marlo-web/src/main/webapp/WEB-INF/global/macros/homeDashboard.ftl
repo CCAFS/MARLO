@@ -1,6 +1,49 @@
 [#ftl]
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities/]
 
+[#macro projectsHomeList projects={} owned=true canValidate=false canEdit=false isPlanning=false namespace="/" defaultAction="description"]
+  <table class="projectsList" id="projects">
+    <thead>
+      <tr class="subHeader">
+        <th id="ids">[@s.text name="projectsList.projectids" /]</th>
+        <th id="projectTitles" >[@s.text name="projectsList.projectTitles" /]</th>
+        [#-- <th id="projectType">[@s.text name="projectsList.projectType" /]</th> --]
+        [#if isPlanning]
+          <th id="projectBudget">[@s.text name="planning.projects.completion" /]</th>
+        [/#if]
+      </tr>
+    </thead>
+    <tbody>
+    [#if projects?has_content]
+      [#list projects as project]
+        <tr>
+        [#-- ID --]
+        <td class="projectId">
+          <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='projectID']${project.projectId?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"> P${project.projectId}</a>
+        </td>
+          [#-- Project Title --]
+          <td class="left"> 
+            [#if (project.title?has_content)!false]
+              <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='projectID']${project.projectId?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" >
+              [#if project.title?length < 120] ${project.title}</a> [#else] [@utilities.wordCutter string=project.title maxPos=120 /]...</a> [/#if]
+            [#else]
+              <a href="[@s.url namespace=namespace action=defaultAction includeParams='get'][@s.param name='projectID']${project.projectId?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+                [@s.text name="projectsList.title.none" /]
+              </a>
+            [/#if]
+          </td>
+          [#-- Project Type 
+          <td>
+            [@s.text name="project.type.${(project.type?lower_case)!'none'}" /]
+          </td>
+          --]
+        </tr>  
+      [/#list]
+    [/#if]
+    </tbody>
+  </table>
+[/#macro]
+
 [#macro deliverablesHomeList deliverables={} owned=true canValidate=false canEdit=false isReportingActive=false namespace="/clusters" defaultAction="deliverableList" currentTable=true]
   <table class="projectsList" id="deliverables">
     <thead>
@@ -77,6 +120,77 @@
 [/#macro]
 
 [#macro studiesHomeList studies={} owned=true canValidate=false canEdit=false isReportingActive=false namespace="/clusters" defaultAction="studyList" currentTable=true]
+  <table class="projectsList" id="studies">
+    <thead>
+      <tr class="subHeader">
+        <th id="studyProject">[@s.text name="project.id" /]</th>
+        <th id="ids">[@s.text name="dashboard.studies.id" /]</th>
+        <th id="studyTitles" >[@s.text name="dashboard.studies.title" /]</th>
+        [#--<th id="studyEDY">[@s.text name="project.deliverableList.deliverySummaryYear" /]</th>--]
+      </tr>
+    </thead>
+    <tbody>
+    [#if studies?has_content]
+      [#list studies as study]
+        [#-- Is New --]
+        [#assign isNew = (action.isEvidenceNew(study.studyId)) /]
+        [#-- Has draft version (Auto-save) --]
+        [#--assign hasDraft = (action.getAutoSaveFilePath(deliverable.class.simpleName, "deliverable", deliverable.id))!false /--]
+        [#-- Is Complete --]
+        [#assign isThisComplete = (action.hasStudiesMissingFields('',study.studyId))!false /]
+        [#-- To Report --]
+        [#local toReport = reportingActive && !isThisComplete ]
+
+        <tr>
+          [#-- Project ID --]
+          <td class="deliverableId">
+            <a href="[@s.url namespace=namespace action='${(crpSession)!}/studies'][@s.param name='projectID']${study.projectId?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+              P${study.projectId}
+            </a>
+          </td>
+          [#-- Study ID --]
+          <td class="deliverableId">
+            <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='expectedID']${study.studyId?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+              ${study.studyId}
+            </a>
+          </td>
+          [#-- Study Title --]
+          <td class="left">
+            [#-- Hidden title to sort correctly by title --]
+            <span class="hidden">${study.studyTitle!''}</span>
+            [#-- Draft Tag --]
+            [#--if hasDraft]<strong class="text-info">[DRAFT]</strong>[/#if--]
+            [#-- Report --]
+            [#if toReport]<span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>[/#if]
+            [#-- New Tag --]
+            [#if isNew]<span class="label label-info">New</span>[/#if]
+
+            <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='expectedID']${study.studyId?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+              [@utilities.wordCutter string=(study.studyTitle)! maxPos=160 /]
+            </a>
+          </td>
+          [#-- Study Year --]
+          [#--<td class="text-center">
+
+            [#if study.expectedYear == -1]
+              None
+            [#else]
+              ${(study.expectedYear)!'None'}
+              Pending. I am not sure if this has an extended year
+              [if ((deliverable.newExpectedYear != -1)!false)]
+                Extended to ${deliverable.newExpectedYear}
+              [/#if]
+            [/#if]
+
+          </td>--]
+        </tr>
+      [/#list]
+      [/#if]
+    </tbody>
+  </table>
+[/#macro]
+
+[#macro studiesMeliasHomeList studies={} owned=true canValidate=false canEdit=false isReportingActive=false namespace="/clusters" defaultAction="studyList" currentTable=true]
   <table class="projectsList" id="studies">
     <thead>
       <tr class="subHeader">
@@ -229,7 +343,7 @@
 [/#macro]
 
 [#macro policiesHomeList policies={} owned=true canValidate=false canEdit=false isReportingActive=false namespace="/clusters" defaultAction="policyList" currentTable=true]
-  <table class="projectsList" id="studies">
+  <table class="projectsList" id="policies">
     <thead>
       <tr class="subHeader">
         <th id="policyProject">[@s.text name="project.id" /]</th>
