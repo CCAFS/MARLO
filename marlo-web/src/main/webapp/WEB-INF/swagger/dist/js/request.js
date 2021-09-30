@@ -386,20 +386,19 @@ function all_initiatives() {
 			// print data
 			manageSpinner(false,"all_initiatives");
 			console.log(data);
-			let nameColumns = ['Code', 'Name','Current Stage ID','Current Stage', 'Status','Active Stage ID','Active Stage', 'Concept Name','Action Area ID', 'Action Area' ]			
+			let nameColumns = ['Code','Official Code', 'Name','Status','Action area id', 'Action area description','','Stage id', 'Stage Desciption' ]			
 
 			$.each(data, function (index, item) {				
 				$('#list-print-all_initiatives').append(
-					'<tr>' + '<td >' + item['initvStgId'] + '</td>' 
-					+ '<td >' + item['initiativeName'] + '</td>' 
-					+ '<td >' + item['currentStageId'] + '</td>' 
-					+ '<td >' + item['currentStage'] + '</td>' 
-					+ '<td>'+ item['initvStageStatus'] + '</td>'
-					+ '<td>'+ item['activeStageId'] + '</td>'
-					+ '<td>'+ item['activeStageName'] + '</td>'
-					+ '<td>'+ (item['concept']== null? '': item['concept'].name) + '</td>'
-					+ '<td>'+ (item['concept']== null? '': item['concept'].action_area_id) + '</td>' 
-					+ '<td>'+ (item['concept']== null? '': item['concept'].action_area_description) + '</td>' 
+					'<tr>' + '<td >' + item['id'] + '</td>' 
+					+ '<td >' + item['official_code'] + '</td>' 
+					+ '<td >' + item['name'] + '</td>' 
+					+ '<td >' + item['status'] + '</td>' 
+					+ '<td >' + item['action_area_id'] + '</td>' 
+					+ '<td>'+ item['action_area_description'] + '</td>'
+					+ '<td>'+ item['active'] + '</td>'
+					+ '<td>'+ item['stageId'] + '</td>'
+					+ '<td>'+ item['description'] + '</td>' 
 					+ '</tr>')
 			});
 setTimeout(() => {
