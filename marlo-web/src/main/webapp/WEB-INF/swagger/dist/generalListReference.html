@@ -1721,22 +1721,23 @@
                           <pre><code>
 <span class="yellowCode">[</span>
   <span class="yellowCode">{</span>
-    <span class="blueCode">"initvStgId"</span><span class="WhiteCode"> : "long",</span>
-    <span class="blueCode">"currentStage"</span><span class="WhiteCode"> : "String",</span>
-    <span class="blueCode">"currentStageName"</span><span class="WhiteCode"> : "String,"</span>   
-    <span class="blueCode">"currentStageId"</span><span class="WhiteCode"> : "long,"</span>
-    <span class="blueCode">"initiativeName"</span><span class="WhiteCode"> : "String,"</span>
-    <span class="blueCode">"initvStageIsActive"</span><span class="WhiteCode"> : "long,"</span>
-    <span class="blueCode">"initvStageStatus"</span><span class="WhiteCode"> : "String,"</span>
-    <span class="blueCode">"activeStageId"</span><span class="WhiteCode"> : "long,"</span>
-    <span class="blueCode">"activeStageName"</span><span class="WhiteCode"> : "String,"</span>
-    <span class="blueCode">"userInitiative"</span><span class="WhiteCode"> : "String,"</span>
-    <span class="blueCode">"userInitiativeRole"</span><span class="WhiteCode"> : "String"</span>
-    <span class="blueCode">"concept :"</span><span class="WhiteCode">{</span>
-       <span class="blueCode">"name"</span><span class="yellowCode"> : "String,"</span>
-       <span class="blueCode">"action_area_id"</span><span class="WhiteCode"> : "long,"</span>
-       <span class="blueCode">"action_area_description"</span><span class="WhiteCode"> : "String"</span>
-    <span class="yellowCode">}</span>
+    <span class="blueCode">"Id"</span><span class="WhiteCode"> : "long",</span>
+    <span class="blueCode">"official_code"</span><span class="WhiteCode"> : "String",</span>
+    <span class="blueCode">"name"</span><span class="WhiteCode"> : "String",</span>
+    <span class="blueCode">"status"</span><span class="WhiteCode"> : "String",</span>   
+    <span class="blueCode">"action_area_id"</span><span class="WhiteCode"> : "String",</span>
+    <span class="blueCode">"action_area_description"</span><span class="WhiteCode"> : "String",</span>
+    <span class="blueCode">"active"</span><span class="WhiteCode"> : "long",</span>
+    <span class="blueCode">"stageId"</span><span class="WhiteCode"> : "String",</span>
+    <span class="blueCode">"description"</span><span class="WhiteCode"> : "String",</span>
+    <span class="blueCode">"stages :"</span><span class="WhiteCode">[</span>
+      <span class="WhiteCode">{</span>
+       <span class="blueCode">"id"</span><span class="yellowCode"> : "long",</span>
+       <span class="blueCode">"initvStgId"</span><span class="WhiteCode"> : "long",</span>
+       <span class="blueCode">"stageId"</span><span class="WhiteCode"> : "long",</span>
+       <span class="blueCode">"active"</span><span class="WhiteCode"> : "long"</span>
+      <span class="yellowCode">}</span>
+    <span class="yellowCode">]</span>
   <span class="yellowCode">}</span>
 <span class="yellowCode">]</span>
                           </code></pre> 
@@ -2308,15 +2309,14 @@
           <thead class="thead-dark">
             <tr id="#list-print-columns-name">              
               <td>Initiative ID</td>
+              <td>Official Code</td>
               <td>Name</td>
-              <td>Current Stage ID</td>             
-              <td>Current Stage</td>
-              <td>Status</td>
-              <td>Active Stage ID</td>
-              <td>Active Stage</td>
-              <td>Concept Name</td>
+              <td>Status</td>             
               <td>Action Area ID</td>
-              <td>Action Area</td>
+              <td>Action Area Name</td>
+              <td>Active</td>
+              <td>Stage ID</td>
+              <td>Stage Description</td>            
             </tr>
           </thead>
           <tbody id="list-print-all_initiatives">
@@ -2377,7 +2377,7 @@
 
 <button>Toggle slideUp() and slideDown()</button> -->
 <script src="conf/endpoint.conf.js"></script>
-<script src="js/request.js?20210908"></script>
+<script src="js/request.js?20210920"></script>
 <script>
   var coll = document.getElementsByClassName("collap");
   var i;

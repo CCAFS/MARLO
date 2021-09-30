@@ -489,6 +489,16 @@
     <mapping resource="xmls/RegionType.hbm.xml" />
     <mapping resource="xmls/Regions.hbm.xml" />
     <mapping resource="xmls/LocElementRegions.hbm.xml" />
+    <mapping resource="xmls/DepthScale.hbm.xml" />
+    <mapping resource="xmls/ProjectedBenefitsWeightDescription.hbm.xml"/>
+    <mapping resource="xmls/ProjectedBenefitsWeighting.hbm.xml"/>
+    <mapping resource="xmls/ProjectedBenefitsDepthScale.hbm.xml"/>
+    <mapping resource="xmls/ProjectedBenefits.hbm.xml"/>
+    <mapping resource="xmls/ProjectedBenefitsProbabilities.hbm.xml"/>
+    <mapping resource="xmls/ActionAreaOutcomes.hbm.xml"/>
+    <mapping resource="xmls/OutcomeIndicator.hbm.xml"/>
+    <mapping resource="xmls/ActionAreaOutcomeIndicators.hbm.xml"/>
+    
     <!-- Annual Report 2021 -->
     <mapping resource="xmls/ProjectExpectedStudyReferences.hbm.xml" />
     <mapping resource="xmls/ProjectInnovationEvidenceLinks.hbm.xml" />

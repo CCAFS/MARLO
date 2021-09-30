@@ -20,110 +20,122 @@
 package org.cgiar.ccafs.marlo.rest.services.submissionTools;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class Initiative implements Serializable {
 
   private static final long serialVersionUID = -141497767412495428L;
 
-  public Long initvStgId;
-  public String currentStage;
-  public String currentStageName;
-  public Long currentStageId;
-  public String initiativeName;
-  public int initvStageIsActive;
-  public String initvStageStatus;
-  public Long activeStageId;
-  public String activeStageName;
-  public String userInitiative;
-  public String userInitiativeRole;
-  public Concept concept;
+  public Long id;
+  public String official_code;
+  public String name;
+  public String status;
+  public String action_area_id;
+  public String action_area_description;
+  public int active;
+  public Long stageId;
+  public String description;
 
-  public Long getActiveStageId() {
-    return activeStageId;
+
+  public List<Stages> stages;
+
+  public String getAction_area_description() {
+    return action_area_description;
   }
 
-  public String getActiveStageName() {
-    return activeStageName;
+  public String getAction_area_id() {
+    return action_area_id;
   }
 
-  public String getCurrentStage() {
-    return currentStage;
+
+  public int getActive() {
+    return active;
   }
 
-  public Long getCurrentStageId() {
-    return currentStageId;
+
+  public String getDescription() {
+    return description;
   }
 
-  public String getCurrentStageName() {
-    return currentStageName;
+
+  public Long getId() {
+    return id;
   }
 
-  public String getInitiativeName() {
-    return initiativeName;
+
+  public String getName() {
+    return name;
   }
 
-  public int getInitvStageIsActive() {
-    return initvStageIsActive;
+
+  public String getOfficial_code() {
+    return official_code;
   }
 
-  public String getInitvStageStatus() {
-    return initvStageStatus;
+
+  public Long getStageId() {
+    return stageId;
   }
 
-  public Long getInitvStgId() {
-    return initvStgId;
+
+  public List<Stages> getStages() {
+    return stages;
   }
 
-  public String getUserInitiative() {
-    return userInitiative;
+
+  public String getStatus() {
+    return status;
   }
 
-  public String getUserInitiativeRole() {
-    return userInitiativeRole;
+
+  public void setAction_area_description(String action_area_description) {
+    this.action_area_description = action_area_description;
   }
 
-  public void setActiveStageId(Long activeStageId) {
-    this.activeStageId = activeStageId;
+
+  public void setAction_area_id(String action_area_id) {
+    this.action_area_id = action_area_id;
   }
 
-  public void setActiveStageName(String activeStageName) {
-    this.activeStageName = activeStageName;
+
+  public void setActive(int active) {
+    this.active = active;
   }
 
-  public void setCurrentStage(String currentStage) {
-    this.currentStage = currentStage;
+
+  public void setDescription(String description) {
+    this.description = description;
   }
 
-  public void setCurrentStageId(Long currentStageId) {
-    this.currentStageId = currentStageId;
+
+  public void setId(Long id) {
+    this.id = id;
   }
 
-  public void setCurrentStageName(String currentStageName) {
-    this.currentStageName = currentStageName;
+
+  public void setName(String name) {
+    this.name = name;
   }
 
-  public void setInitiativeName(String initiativeName) {
-    this.initiativeName = initiativeName;
+
+  public void setOfficial_code(String official_code) {
+    this.official_code = official_code;
   }
 
-  public void setInitvStageIsActive(int initvStageIsActive) {
-    this.initvStageIsActive = initvStageIsActive;
+
+  public void setStageId(Long stageId) {
+    this.stageId = stageId;
   }
 
-  public void setInitvStageStatus(String initvStageStatus) {
-    this.initvStageStatus = initvStageStatus;
+
+  public void setStages(List<Stages> stages) {
+    this.stages = stages;
   }
 
-  public void setInitvStgId(Long initvStgId) {
-    this.initvStgId = initvStgId;
+
+  public void setStatus(String status) {
+    this.status = status;
   }
 
-  public void setUserInitiative(String userInitiative) {
-    this.userInitiative = userInitiative;
-  }
-
-  public void setUserInitiativeRole(String userInitiativeRole) {
-    this.userInitiativeRole = userInitiativeRole;
-  }
 
 }
