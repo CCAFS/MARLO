@@ -134,7 +134,7 @@ public class Institutions {
    * @throws Exception
    */
   @ApiOperation(value = "${Institutions.institution-requests.create.value}", response = InstitutionRequestDTO.class)
-  @RequiresPermissions({Permission.FULL_CREATE_REST_API_PERMISSION, Permission.FULL_READ_REST_API_PERMISSION})
+  @RequiresPermissions({Permission.FULL_CREATE_REST_API_PERMISSION, Permission.INSTITUTIONS_CREATE_REST_API_PERMISSION})
   @RequestMapping(value = "/{CGIAREntity}/institutions/institution-requests", method = RequestMethod.POST,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<InstitutionRequestDTO> createPartnerRequest(
