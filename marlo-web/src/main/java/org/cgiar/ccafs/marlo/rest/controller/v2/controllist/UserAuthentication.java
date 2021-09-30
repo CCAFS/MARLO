@@ -21,6 +21,7 @@ package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.login.AuthenticationItem;
+import org.cgiar.ccafs.marlo.rest.dto.NewUserAuthenicationDTO;
 import org.cgiar.ccafs.marlo.rest.dto.UserAutenticationDTO;
 import org.cgiar.ccafs.marlo.security.Permission;
 
@@ -37,9 +38,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -62,14 +63,13 @@ public class UserAuthentication {
 
   @ApiOperation(tags = {"User Authentication"}, value = "${UserAuthentication.GET.value}",
     response = UserAutenticationDTO.class)
-  @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
-  @RequestMapping(value = "/UserAuthentication", method = RequestMethod.GET,
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/UserAuthentication", method = RequestMethod.POST,
     produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<UserAutenticationDTO> userAuthentication(
-    @ApiParam(value = "${UserAuthentication.GET.param.user.value}", required = true) @RequestParam String email,
-    @ApiParam(value = "${UserAuthentication.GET.param.password.value}",
-      required = true) @RequestParam String password) {
-    ResponseEntity<UserAutenticationDTO> response = authenticationItem.userAuthentication(email, password);
+  public ResponseEntity<UserAutenticationDTO>
+    userAuthentication(@ApiParam(value = "${UserAuthentication.GET.param.password.value}",
+      required = true) @RequestBody NewUserAuthenicationDTO UserAuthenicationDTO) {
+    ResponseEntity<UserAutenticationDTO> response = authenticationItem.userAuthentication(UserAuthenicationDTO);
     return response;
   }
 

@@ -22,6 +22,7 @@ package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.login;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.rest.dto.NewUserAuthenicationDTO;
 import org.cgiar.ccafs.marlo.rest.dto.UserAutenticationDTO;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.MD5Convert;
@@ -58,12 +59,12 @@ public class AuthenticationItem<T> {
   }
 
 
-  public ResponseEntity<UserAutenticationDTO> userAuthentication(String email, String password) {
+  public ResponseEntity<UserAutenticationDTO> userAuthentication(NewUserAuthenicationDTO userAuthenicationDTO) {
     UserAutenticationDTO userAutenticationDTO = null;
-    User userlogged = userManager.getUserByEmail(email);
+    User userlogged = userManager.getUserByEmail(userAuthenicationDTO.getEmail());
     if (userlogged != null) {
       String userEmail = userlogged.getEmail().trim().toLowerCase();
-      String md5Pass = MD5Convert.stringToMD5(password);
+      String md5Pass = MD5Convert.stringToMD5(userAuthenicationDTO.getPassword());
 
       userAutenticationDTO = new UserAutenticationDTO();
       userAutenticationDTO.setEmail(userEmail);
@@ -86,7 +87,7 @@ public class AuthenticationItem<T> {
               service = new LDAPService(true);
             }
             ldapUser = service.searchUserByEmail(userEmail);
-            con = service.authenticateUser(ldapUser.getLogin(), password);
+            con = service.authenticateUser(ldapUser.getLogin(), userAuthenicationDTO.getPassword());
 
             if (con != null) {
               if (con.getLogin() != null) {
@@ -102,8 +103,8 @@ public class AuthenticationItem<T> {
               // looged.put(APConstants.LOGIN_MESSAGE, APConstants.ERROR_LOGON_FAILURE);
             }
           } catch (Exception e) {
-            LOG.error("Exception raised trying to log in the user '{}' against the active directory. ", email,
-              e.getMessage());
+            LOG.error("Exception raised trying to log in the user '{}' against the active directory. ",
+              userAuthenicationDTO.getEmail(), e.getMessage());
           }
         } else {
 
