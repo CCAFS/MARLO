@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+  <class name="org.cgiar.ccafs.marlo.data.model.OutcomeIndicator" table="st_outcome_indicators" optimistic-lock="none">
+    <id name="id" type="java.lang.Long">
+      <column name="id" />
+      <generator class="identity" />
+    </id>
+    <property name="outcomeIndicatorStatement" type="string" >
+      <column name="outcome_indicator_statement" sql-type="TEXT" />
+    </property>
+  </class>
+</hibernate-mapping>
