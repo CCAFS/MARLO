@@ -33,6 +33,7 @@ public interface ProjectedBenefitsMapper {
     @Mapping(source = "impactAreaIndicator.indicatorStatement", target = "impactAreaIndicatorName"),
     @Mapping(source = "impactAreaIndicator.impactArea.id", target = "impactAreaId"),
     @Mapping(source = "impactAreaIndicator.impactArea.name", target = "impactAreaName"),
+    @Mapping(source = "impactAreaIndicator.isProjectedBenefits", target = "isApplicableProjectedBenefits"),
     @Mapping(source = "impactAreaIndicator.targetYear", target = "targetYear"),
     @Mapping(source = "impactAreaIndicator.targetUnit", target = "targetUnit"),
     @Mapping(source = "impactAreaIndicator.targetValue", target = "value", defaultValue = ""),
