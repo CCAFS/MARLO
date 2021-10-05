@@ -861,7 +861,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
             projectNextuserDB = projectNextuserManager.saveProjectNextuser(projectNextuserDB);
             // This add projectNextuser to generate correct auditlog.
-            projectOutcome.getProjectNextusers().add(projectNextuserDB);
+            projectOutcomeDB.getProjectNextusers().add(projectNextuserDB);
           }
 
 
