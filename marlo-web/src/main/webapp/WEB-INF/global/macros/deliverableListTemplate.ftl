@@ -76,7 +76,7 @@
               None
             [#else]
               ${(deliverable.deliverableInfo.year)!'None'}
-              [#if ((deliverable.deliverableInfo.status == 4 || deliverable.deliverableInfo.status==3 || deliverable.deliverableInfo.status == 5 || deliverable.deliverableInfo.status==7)!false) && ((deliverable.deliverableInfo.newExpectedYear != -1)!false) ]
+              [#if ((deliverable.deliverableInfo.status == 2 || deliverable.deliverableInfo.status == 4 || deliverable.deliverableInfo.status==3 || deliverable.deliverableInfo.status == 5 || deliverable.deliverableInfo.status==7)!false) && ((deliverable.deliverableInfo.newExpectedYear != -1)!false) ]
                 extended to ${deliverable.deliverableInfo.newExpectedYear}
               [/#if]
             [/#if]

@@ -1,3 +1,5 @@
+var multiInputInnovations;
+
 $(document).ready(function () {
 
   // Add select2
@@ -16,7 +18,35 @@ $(document).ready(function () {
   attachEvents();
   AddRequired();
   $('input[name="innovation.projectInnovationInfo.evidenceLink"]').prop('disabled', true);
+  multiInputInnovations = $('.multiInput').find('span input');
+  checkHyperlinks();
 });
+
+function checkHyperlinks() {
+  multiInputInnovations.each((index, item) => {
+    validateURL(item);
+  });
+}
+
+function validateURL(item) {
+  var url = item.value;
+  var expression = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/i;
+  var regex = new RegExp(expression);
+  var res = "";
+  if (url) {
+    if (url.match(regex)) {
+      res = "Valid URL";
+      $(item).css('border', 'none');
+      console.log(res);
+    } else {
+      res = "Invalid URL";
+      $(item).css('border', '1px solid red');
+      console.log(res);
+    }
+  } else {
+    $(item).css('border', '1px solid red');
+  }
+}
 
 function attachEvents() {
   /**
@@ -26,7 +56,9 @@ function attachEvents() {
     // Events
     $('.addButtonLink').on('click', addItem);
     $('.removeLink.links').on('click', removeItem);
-    $('.multiInput').find('span input').on('input', validateURL);
+    $('.multiInput').find('span input').on('input', function () {
+      validateURL(this);
+    });
 
     // Functions
     function addItem() {
@@ -60,21 +92,6 @@ function attachEvents() {
         $(element).find('.indexTag').text(i + 1);
         $(element).setNameIndexes(1, i);
       });
-    }
-    function validateURL() {
-      var url = this.value;
-      var expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
-      var regex = new RegExp(expression);
-      var res = "";
-      if (url.match(regex)) {
-        res = "Valid URL";
-        $(this).css('border', 'none');
-        console.log(res);
-      } else {
-        res = "Invalid URL";
-        $(this).css('border', '1px solid red');
-        console.log(res);
-      }
     }
 
   })();
