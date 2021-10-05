@@ -43,6 +43,8 @@ function validateURL(item) {
       $(item).css('border', '1px solid red');
       console.log(res);
     }
+  } else {
+    $(item).css('border', '1px solid red');
   }
 }
 
