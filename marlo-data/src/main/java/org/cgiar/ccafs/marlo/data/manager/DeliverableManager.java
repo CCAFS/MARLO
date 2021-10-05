@@ -109,7 +109,24 @@ public interface DeliverableManager {
    */
   public List<Deliverable> getDeliverablesList(LiaisonInstitution liaisonInstitution, Phase phase);
 
-  public List<Deliverable> getNotPublicationsList(LiaisonInstitution liaisonInstitution, Phase phase);
+  /**
+   * Gets the entire list of deliverables to be reported on synthesis.
+   * 
+   * @param phaseId the Phase identifier
+   * @param prp do you want to show the Peer-reviewed papers?
+   * @return the list of deliverables to be reported in Table 6
+   */
+  public List<Deliverable> getDeliverableSynthesis(long phaseId, boolean prp);
+
+  /**
+   * Gets the list of deliverables to be reported on synthesis, filtered by the deliverables planned of the projectId
+   * 
+   * @param projectId the Project identifier
+   * @param phaseId the Phase identifier
+   * @param prp do you want to show the Peer-reviewed papers?
+   * @return the list of deliverables to be reported in Table 6
+   */
+  public List<Deliverable> getDeliverableSynthesis(long projectId, long phaseId, boolean prp);
 
   /**
    * This method gets a list of publications that are active by a given phase
@@ -129,6 +146,9 @@ public interface DeliverableManager {
    * @return a list from Deliverable null if no exist records
    */
   public List<Deliverable> getPublicationsList(LiaisonInstitution liaisonInstitution, Phase phase);
+
+  public List<Deliverable> getSynthesisPublicationsList(LiaisonInstitution liaisonInstitution, Phase phase,
+    boolean prp);
 
   public Boolean isDeliverableExcluded(Long deliverableId, Long phaseId);
 
