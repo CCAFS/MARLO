@@ -27,13 +27,14 @@ public class ProjectedBenefitsDTO {
   private String impactAreaName;
   private Long impactAreaIndicator;
   private String impactAreaIndicatorName;
+  private Boolean isApplicableProjectedBenefits;
   public Long targetYear;
   public String targetUnit;
+
   public String value;
 
 
   private List<ProjectedBenefitsDepthScaleDTO> depthScales;
-
 
   private List<ProjectedBenefitsWeightingDTO> weightingValues;
 
@@ -52,18 +53,23 @@ public class ProjectedBenefitsDTO {
     return impactAreaIndicator;
   }
 
+
   public String getImpactAreaIndicatorName() {
     return impactAreaIndicatorName;
   }
+
 
   public String getImpactAreaName() {
     return impactAreaName;
   }
 
+  public Boolean getIsApplicableProjectedBenefits() {
+    return isApplicableProjectedBenefits;
+  }
+
   public String getTargetUnit() {
     return targetUnit;
   }
-
 
   public Long getTargetYear() {
     return targetYear;
@@ -94,12 +100,17 @@ public class ProjectedBenefitsDTO {
     this.impactAreaIndicator = impactAreaIndicator;
   }
 
+
   public void setImpactAreaIndicatorName(String impactAreaIndicatorName) {
     this.impactAreaIndicatorName = impactAreaIndicatorName;
   }
 
   public void setImpactAreaName(String impactAreaName) {
     this.impactAreaName = impactAreaName;
+  }
+
+  public void setIsApplicableProjectedBenefits(Boolean isApplicableProjectedBenefits) {
+    this.isApplicableProjectedBenefits = isApplicableProjectedBenefits;
   }
 
   public void setTargetUnit(String targetUnit) {
