@@ -27,14 +27,13 @@ import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import com.ibm.icu.util.Calendar;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -147,11 +146,9 @@ public class ProjectActivitiesValidator extends BaseValidator {
 
       if (action.isReportingActive()) {
         if (activity.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
-          Calendar cal = Calendar.getInstance();
-          cal.set(Calendar.YEAR, action.getCurrentCycleYear());
-          cal.set(Calendar.MONTH, 11); // 11 = december
-          cal.set(Calendar.DAY_OF_MONTH, 31); // new years eve
-          if (activity.getEndDate() != null && activity.getEndDate().compareTo(cal.getTime()) <= 0) {
+          LocalDate cal = LocalDate.of(action.getCurrentCycleYear(), 12, 31);
+          if (activity.getEndDate() != null
+            && LocalDate.ofEpochDay(activity.getEndDate().getTime()).compareTo(cal) <= 0) {
             action.addMessage(action.getText("activity.status", params));
             action.getInvalidFields().put("input-project." + listName + "[" + index + "].activityStatus",
               InvalidFieldsMessages.EMPTYFIELD);
