@@ -134,7 +134,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     } else {
       if (isOicr && this
-        .wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getTitle()) > 30) {
+        .wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getTitle()) > 35) {
         action.addMessage(action.getText("Title"));
         action.addMissingField("study.title");
         action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.title",
