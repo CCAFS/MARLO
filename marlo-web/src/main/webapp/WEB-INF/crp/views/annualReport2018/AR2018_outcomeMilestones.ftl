@@ -9,7 +9,7 @@
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
-  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20210917a",
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20210929a",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js"
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210924a"] /]
@@ -486,7 +486,7 @@
     [#-- Links to evidence --]
     <div class="form-group linksToEvidence">
       <span id="warningEmptyLinksTag" class="errorTag glyphicon glyphicon-info-sign" style="display: none; position: relative; left: 730px;" title="" aria-describedby="ui-id-5"></span>
-      [@customForm.textArea name="${customName}.evidenceLink" value="${(annualReportElement.evidenceLink)!}" i18nkey="${customLabel}.milestoneEvidenceLink" help="${customLabel}.milestoneEvidenceLink.help" helpIcon=false display=true required=true editable=editable  /]
+      [@customForm.textArea name="${customName}.evidenceLink" value="${(annualReportElement.evidenceLink)!}" i18nkey="${customLabel}.milestoneEvidenceLink" help="${customLabel}.milestoneEvidenceLink.help" helpIcon=false display=true required=false editable=editable  /]
       <div class="linksBlock " style="display:none;">
         <div class="linksList">
           [#list (annualReportElement.links)![{}] as link]
