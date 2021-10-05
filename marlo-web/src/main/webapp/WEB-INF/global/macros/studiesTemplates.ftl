@@ -166,9 +166,9 @@
         </div>
       [/#if]
 
-      [#-- 1. Title (up to 30 words if OICR, else no limit ) --]
+      [#-- 1. Title (up to 35 words if OICR, else no limit ) --]
       <div class="form-group">
-        [@customForm.input name="${customName}.projectExpectedStudyInfo.title" i18nkey="study.title" help="study.title.help" className=(isOutcomeCaseStudy?then("limitWords-30","")) helpIcon=!isOutcomeCaseStudy required=true editable=editable /]
+        [@customForm.input name="${customName}.projectExpectedStudyInfo.title" i18nkey="study.title" help="study.title.help" className=(isOutcomeCaseStudy?then("limitWords-35","")) helpIcon=!isOutcomeCaseStudy required=true editable=editable /]
       </div>
       
       [#-- Who is commissioning this study --]
