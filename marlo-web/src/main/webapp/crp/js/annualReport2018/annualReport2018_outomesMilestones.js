@@ -12,8 +12,9 @@ function init() {
   inputMilestoneStatus = $('input.milestoneStatus');
   loadInputMilestoneStatus();
   inputMilestoneStatus.on('change', function() {
-    var tag = $(this).parents('.synthesisMilestone').find('.linksToEvidence').find('#warningEmptyLinksTag');
-    disableEnableWarningTag(this.value, tag);
+    var warningTag = $(this).parents('.synthesisMilestone').find('.linksToEvidence').find('#warningEmptyLinksTag');
+    var tag = $(warningTag).next().find('.requiredTag');
+    disableEnableWarningTag(this.value, warningTag, tag);
   });
   attachEvents();
 
@@ -30,17 +31,20 @@ function init() {
 
 function loadInputMilestoneStatus() {
   inputMilestoneStatus.each((index, item) => {
-    var tag = $(item).parents('.synthesisMilestone').find('.linksToEvidence').find('#warningEmptyLinksTag');
+    var warningTag = $(item).parents('.synthesisMilestone').find('.linksToEvidence').find('#warningEmptyLinksTag');
+    var tag = $(warningTag).next().find('.requiredTag');
     if (item.checked) {
-      disableEnableWarningTag(item.value, tag);
+      disableEnableWarningTag(item.value, warningTag, tag);
     }
   });
 }
 
-function disableEnableWarningTag(optionSelected, tag) {
+function disableEnableWarningTag(optionSelected, warningTag, tag) {
   if (optionSelected == '6') {
+    $(warningTag).show();
     $(tag).show();
   } else {
+    $(warningTag).hide();
     $(tag).hide();
   }
 }
@@ -130,7 +134,7 @@ function attachEvents() {
     }
     function validateURL() {
       var url = this.value;
-      var expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
+      var expression = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/;
       var regex = new RegExp(expression);
       var res = "";
       if (url.match(regex)) {
