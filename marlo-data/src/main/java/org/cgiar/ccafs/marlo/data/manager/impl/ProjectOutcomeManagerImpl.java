@@ -360,6 +360,11 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
   }
 
   @Override
+  public List<ProjectOutcome> getProjectOutcomeByProgramOutcomeAndProject(long programOutcomeId, long projectId) {
+    return projectOutcomeDAO.getProjectOutcomeByProgramOutcomeAndProject(programOutcomeId, projectId);
+  }
+
+  @Override
   public ProjectOutcome saveProjectOutcome(ProjectOutcome projectOutcome) {
     if (projectOutcome.getOrder() == null) {
       projectOutcome.setOrder((double) 1);

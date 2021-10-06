@@ -1,5 +1,5 @@
 [#ftl]
-[#assign title = "Project Partners" /]
+[#assign title = "Cluster Partners" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "flag-icon-css"] /]
 [#assign customJS = [

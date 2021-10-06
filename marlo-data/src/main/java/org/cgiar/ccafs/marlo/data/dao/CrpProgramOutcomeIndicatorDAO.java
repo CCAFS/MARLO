@@ -58,6 +58,8 @@ public interface CrpProgramOutcomeIndicatorDAO {
   public CrpProgramOutcomeIndicator getCrpProgramOutcomeIndicator(String composedId,
     CrpProgramOutcome crpProgramOutcome);
 
+  public List<CrpProgramOutcomeIndicator> getCrpProgramOutcomeIndicatorByOutcome(CrpProgramOutcome crpProgramOutcome);
+
   public List<CrpProgramOutcomeIndicator> getCrpProgramOutcomeIndicatorByOutcomeAndIndicator(String indicator,
     CrpProgramOutcome crpProgramOutcome);
 

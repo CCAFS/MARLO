@@ -94,6 +94,19 @@ public class CrpProgramOutcomeIndicatorMySQLDAO extends AbstractMarloDAO<CrpProg
   }
 
   @Override
+  public List<CrpProgramOutcomeIndicator> getCrpProgramOutcomeIndicatorByOutcome(CrpProgramOutcome crpProgramOutcome) {
+
+    String query = "from " + CrpProgramOutcomeIndicator.class.getName()
+      + " where is_active=1 and crp_program_outcome_id = " + crpProgramOutcome.getId();
+    List<CrpProgramOutcomeIndicator> list = super.findAll(query);
+    if (!list.isEmpty()) {
+      return list;
+    }
+    return null;
+
+  }
+
+  @Override
   public List<CrpProgramOutcomeIndicator> getCrpProgramOutcomeIndicatorByOutcomeAndIndicator(String indicator,
     CrpProgramOutcome crpProgramOutcome) {
 
