@@ -75,6 +75,11 @@ public class CrpProgramOutcomeIndicatorManagerImpl implements CrpProgramOutcomeI
   }
 
   @Override
+  public List<CrpProgramOutcomeIndicator> getCrpProgramOutcomeIndicatorByOutcome(CrpProgramOutcome crpProgramOutcome) {
+    return crpProgramOutcomeIndicatorDAO.getCrpProgramOutcomeIndicatorByOutcome(crpProgramOutcome);
+  }
+
+  @Override
   public List<CrpProgramOutcomeIndicator> getCrpProgramOutcomeIndicatorByOutcomeAndIndicator(String indicator,
     CrpProgramOutcome crpProgramOutcome) {
     return crpProgramOutcomeIndicatorDAO.getCrpProgramOutcomeIndicatorByOutcomeAndIndicator(indicator,
@@ -82,35 +87,37 @@ public class CrpProgramOutcomeIndicatorManagerImpl implements CrpProgramOutcomeI
 
   }
 
+
   public CrpProgramOutcomeIndicator getCrpProgramOutcomeIndicatorByPhase(String composedID, long phaseID) {
     return crpProgramOutcomeIndicatorDAO.getCrpProgramOutcomeIndicatorByPhase(composedID, phaseID);
   }
 
   @Override
   public void remove(CrpProgramOutcomeIndicator originalCrpOutcomeIndicator, Phase initialPhase) {
-    if (originalCrpOutcomeIndicator.getCrpProgramOutcome() != null
+    if (originalCrpOutcomeIndicator != null && originalCrpOutcomeIndicator.getCrpProgramOutcome() != null
       && originalCrpOutcomeIndicator.getCrpProgramOutcome().getComposeID() != null) {
 
       List<CrpProgramOutcome> outcomes = crpProgramOutcomeManager.getAllCrpProgramOutcomesByComposedIdFromPhase(
         originalCrpOutcomeIndicator.getCrpProgramOutcome().getComposeID(), initialPhase.getId());
 
-      for (CrpProgramOutcome crpProgramOutcome : outcomes) {
+      if (outcomes != null) {
+        for (CrpProgramOutcome crpProgramOutcome : outcomes) {
 
-        if (this.getCrpProgramOutcomeIndicatorByOutcomeAndIndicator(originalCrpOutcomeIndicator.getIndicator(),
-          crpProgramOutcome) != null
-          || (!this.getCrpProgramOutcomeIndicatorByOutcomeAndIndicator(originalCrpOutcomeIndicator.getIndicator(),
-            crpProgramOutcome).isEmpty())) {
-          List<CrpProgramOutcomeIndicator> indicators =
-            new ArrayList<>(this.getCrpProgramOutcomeIndicatorByOutcomeAndIndicator(
-              originalCrpOutcomeIndicator.getIndicator(), crpProgramOutcome));
+          if (this.getCrpProgramOutcomeIndicatorByOutcomeAndIndicator(originalCrpOutcomeIndicator.getIndicator(),
+            crpProgramOutcome) != null
+            || (!this.getCrpProgramOutcomeIndicatorByOutcomeAndIndicator(originalCrpOutcomeIndicator.getIndicator(),
+              crpProgramOutcome).isEmpty())) {
+            List<CrpProgramOutcomeIndicator> indicators =
+              new ArrayList<>(this.getCrpProgramOutcomeIndicatorByOutcomeAndIndicator(
+                originalCrpOutcomeIndicator.getIndicator(), crpProgramOutcome));
 
-          for (CrpProgramOutcomeIndicator indicator : indicators) {
-            if (indicator.getId() != null) {
-              this.deleteCrpProgramOutcomeIndicator(indicator.getId());
+            for (CrpProgramOutcomeIndicator indicator : indicators) {
+              if (indicator != null && indicator.getId() != null) {
+                this.deleteCrpProgramOutcomeIndicator(indicator.getId());
+              }
             }
           }
         }
-
       }
     }
   }

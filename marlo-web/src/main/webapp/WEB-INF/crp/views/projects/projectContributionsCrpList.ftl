@@ -1,5 +1,5 @@
 [#ftl]
-[#assign title = "Project Contributions to CRP" /]
+[#assign title = "Cluster Contributions to Performance Indicators" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "jsUri"] /]
 [#assign customJS = [

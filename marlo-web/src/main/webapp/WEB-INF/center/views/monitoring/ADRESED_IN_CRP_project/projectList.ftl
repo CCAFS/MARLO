@@ -1,5 +1,5 @@
 [#ftl]
-[#assign title = "MARLO Projects" /]
+[#assign title = "AICCRA Clusters" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
 [#assign customJS = ["${baseUrlMedia}/js/monitoring/projects/projectsList.js" ] /]

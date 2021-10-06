@@ -65,6 +65,15 @@ public interface ProjectOutcomeDAO {
   public List<ProjectOutcome> getProjectOutcomeByPhase(Phase phase);
 
   /**
+   * This method gets a list of Active ProjecOutcomes by programOutcomeId outcome id and project id
+   * 
+   * @param programOutcome Id
+   * @param project Id
+   * @return
+   */
+  public List<ProjectOutcome> getProjectOutcomeByProgramOutcomeAndProject(long programOutcomeId, long projectId);
+
+  /**
    * This method saves the information of the given projectOutcome
    * 
    * @param projectOutcome - is the projectOutcome object with the new information to be added/updated.
