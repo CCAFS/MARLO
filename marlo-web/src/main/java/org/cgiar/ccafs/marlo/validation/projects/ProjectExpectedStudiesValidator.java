@@ -166,7 +166,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
           }
         }
 
-        if (count == 0) {
+        if (count == 0 && !action.isSelectedPhaseAR2021()) {
           action.addMessage(action.getText("subIdos"));
           action.addMissingField("study.stratgicResultsLink.subIDOs");
           action.getInvalidFields().put("list-expectedStudy.subIdos",
