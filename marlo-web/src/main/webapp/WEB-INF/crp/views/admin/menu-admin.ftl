@@ -1,19 +1,37 @@
 [#ftl]
-[#assign items= [
-  { 'slug': 'management',       'name': 'CRPAdmin.menu.hrefProgramManagement',  'action': 'management',         'active': true },
-  { 'slug': 'regionalMapping',  'name': 'CRPAdmin.menu.hrefRegionalMapping',    'action': 'regionalMapping',    'active': action.hasProgramnsRegions() },
-  { 'slug': 'siteIntegration',  'name': 'CRPAdmin.menu.hrefSiteIntegration',    'action': 'siteIntegration',    'active': true },
-  { 'slug': 'ppaPartners',      'name': 'CRPAdmin.menu.hrefPPAPartners',        'action': 'ppaPartners',        'active': true },  
-  { 'slug': 'activities',       'name': 'CRPAdmin.menu.activities',             'action': 'activityManager',    'active': true },  
-  { 'slug': 'locations',        'name': 'CRPAdmin.menu.hrefLocations',          'action': 'locations',          'active': true },
-  [#--  --{ 'slug': 'projectPhases',    'name': 'CRPAdmin.menu.hrefProjectPhases',      'action': 'projectPhases',      'active': false },--]
-  { 'slug': 'users',            'name': 'CRPAdmin.menu.users',                  'action': 'crpUsers',           'active': true },
-  { 'slug': 'deliverables',     'name': 'CRPAdmin.menu.deliverables',           'action': 'crpDeliverables',    'active': true },
-  [#-- { 'slug': 'guestUsers',       'name': 'CRPAdmin.menu.guestUsers',             'action': 'guestUser',          'active': !config.production }, --]
-  { 'slug': 'targetUnits',      'name': 'CRPAdmin.menu.hrefTargetUnits',        'action': 'targetUnits',        'active': true },
-  { 'slug': 'institutions',     'name': 'menu.superadmin.institutions',         'action': 'marloInstitutions',  'active': true },
-  { 'slug': 'crpPhases',        'name': 'CRPAdmin.menu.crpPhases',              'action': 'crpPhases',          'active': true }
-]/]
+[#if !action.isAiccra()]
+  [#assign items= [
+    { 'slug': 'management',       'name': 'CRPAdmin.menu.hrefProgramManagement',  'action': 'management',         'active': true },
+    { 'slug': 'regionalMapping',  'name': 'CRPAdmin.menu.hrefRegionalMapping',    'action': 'regionalMapping',    'active': action.hasProgramnsRegions() },
+    { 'slug': 'siteIntegration',  'name': 'CRPAdmin.menu.hrefSiteIntegration',    'action': 'siteIntegration',    'active': true },
+    { 'slug': 'ppaPartners',      'name': 'CRPAdmin.menu.hrefPPAPartners',        'action': 'ppaPartners',        'active': true },  
+    { 'slug': 'activities',       'name': 'CRPAdmin.menu.activities',             'action': 'activityManager',    'active': true },  
+    { 'slug': 'locations',        'name': 'CRPAdmin.menu.hrefLocations',          'action': 'locations',          'active': true },
+    [#--  --{ 'slug': 'projectPhases',    'name': 'CRPAdmin.menu.hrefProjectPhases',      'action': 'projectPhases',      'active': false },--]
+    { 'slug': 'users',            'name': 'CRPAdmin.menu.users',                  'action': 'crpUsers',           'active': true },
+    { 'slug': 'deliverables',     'name': 'CRPAdmin.menu.deliverables',           'action': 'crpDeliverables',    'active': true },
+    [#-- { 'slug': 'guestUsers',       'name': 'CRPAdmin.menu.guestUsers',             'action': 'guestUser',          'active': !config.production }, --]
+    { 'slug': 'targetUnits',      'name': 'CRPAdmin.menu.hrefTargetUnits',        'action': 'targetUnits',        'active': true },
+    { 'slug': 'institutions',     'name': 'menu.superadmin.institutions',         'action': 'marloInstitutions',  'active': true },
+    { 'slug': 'crpPhases',        'name': 'CRPAdmin.menu.crpPhases',              'action': 'crpPhases',          'active': true }
+  ]/]
+[#else]
+  [#assign items= [
+    { 'slug': 'management',       'name': 'CRPAdmin.menu.hrefProgramManagement',  'action': 'management',         'active': true },
+    { 'slug': 'regionalMapping',  'name': 'CRPAdmin.menu.hrefRegionalMapping',    'action': 'regionalMapping',    'active': action.hasProgramnsRegions() },
+    { 'slug': 'siteIntegration',  'name': 'CRPAdmin.menu.hrefSiteIntegration',    'action': 'siteIntegration',    'active': true },
+    { 'slug': 'ppaPartners',      'name': 'CRPAdmin.menu.hrefPPAPartners',        'action': 'ppaPartners',        'active': true },  
+    { 'slug': 'activities',       'name': 'CRPAdmin.menu.activities',             'action': 'activityManager',    'active': true },  
+    { 'slug': 'locations',        'name': 'CRPAdmin.menu.hrefLocations',          'action': 'locations',          'active': true },
+    [#--  --{ 'slug': 'projectPhases',    'name': 'CRPAdmin.menu.hrefProjectPhases',      'action': 'projectPhases',      'active': false },--]
+    { 'slug': 'users',            'name': 'CRPAdmin.menu.users',                  'action': 'crpUsers',           'active': true },
+    { 'slug': 'deliverables',     'name': 'CRPAdmin.menu.deliverables',           'action': 'crpDeliverables',    'active': true },
+    [#-- { 'slug': 'guestUsers',       'name': 'CRPAdmin.menu.guestUsers',             'action': 'guestUser',          'active': !config.production }, --]
+    { 'slug': 'targetUnits',      'name': 'CRPAdmin.menu.hrefTargetUnits',        'action': 'targetUnits',        'active': true },
+    <#--  { 'slug': 'institutions',     'name': 'menu.superadmin.institutions',         'action': 'marloInstitutions',  'active': true },  -->
+    { 'slug': 'crpPhases',        'name': 'CRPAdmin.menu.crpPhases',              'action': 'crpPhases',          'active': true }
+  ]/]
+[/#if]
 
 
 
