@@ -40,7 +40,7 @@ function loadInputMilestoneStatus() {
 }
 
 function disableEnableWarningTag(optionSelected, warningTag, tag) {
-  if (optionSelected == '6') {
+  if (optionSelected == '3' || optionSelected == '6') {
     $(warningTag).show();
     $(tag).show();
   } else {
