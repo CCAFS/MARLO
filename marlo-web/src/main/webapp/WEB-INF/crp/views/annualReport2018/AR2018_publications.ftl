@@ -58,7 +58,7 @@
             <ul class="nav nav-tabs" role="tablist"> 
                 <li role="presentation" class="active"><a index="1" href="#deliverable-mainInformation" aria-controls="info" role="tab" data-toggle="tab">Peer-reviewed Publications</a></li>
                 
-                <li role="presentation" class=""><a index="2" href="#deliverable-disseminationMetadata" aria-controls="metadata" role="tab" data-toggle="tab">Grey Literature</a></li>
+                [#if (!action.isSelectedPhaseAR2021())]<li role="presentation" class=""><a index="2" href="#deliverable-disseminationMetadata" aria-controls="metadata" role="tab" data-toggle="tab">Grey Literature</a></li>[/#if]
                         
             </ul>
             <div class="tab-content ">
@@ -198,7 +198,7 @@
                   
                
               </div>
- 
+              [#if (!action.isSelectedPhaseAR2021())]
               <div id="deliverable-disseminationMetadata" role="tabpanel" class="tab-pane fade ">
                   [#-- Full list of publications published --]
                   <div class="form-group viewMoreSyntesisTableGrey-block"> 
@@ -216,7 +216,7 @@
                     [@listOfPublications name="fullGreyList" list=(deliverablesNotPublications)![]  allowPopups=true isGrey=true /]
                   </div>
               </div>
-
+              [/#if]
             </div>
 
            </div>

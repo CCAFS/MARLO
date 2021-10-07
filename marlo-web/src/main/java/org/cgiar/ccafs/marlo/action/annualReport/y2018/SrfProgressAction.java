@@ -82,6 +82,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
@@ -958,9 +959,18 @@ public class SrfProgressAction extends BaseAction {
           reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
         }
 
+        Stream<RepIndGeographicScope> streamGeoScopes =
+          repIndGeographicScopeManager.findAll().stream().filter(gs -> gs != null && gs.getId() != null);
+
+        // removing sub-national as per SMO request for AR 2021
+        if (this.isSelectedPhaseAR2021()) {
+          streamGeoScopes = streamGeoScopes.filter(gs -> !StringUtils.containsIgnoreCase(gs.getName(), "sub"));
+        }
+
+        streamGeoScopes = streamGeoScopes.sorted((g1, g2) -> g1.getName().compareTo(g2.getName()));
+
         // Geographic scope
-        this.setRepIndGeographicScopes(repIndGeographicScopeManager.findAll().stream()
-          .sorted((g1, g2) -> g1.getName().compareTo(g2.getName())).collect(Collectors.toList()));
+        this.setRepIndGeographicScopes(streamGeoScopes.collect(Collectors.toList()));
         repIndRegions = locElementManager.findAll().stream()
           .filter(c -> c.getLocElementType().getId().intValue() == 1 && c.isActive() && c.getIsoNumeric() != null)
           .collect(Collectors.toList());

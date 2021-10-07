@@ -359,46 +359,46 @@ function secondForm(data) {
 }
 
 // Validate login success
-function checkPassword(email,password) {
-  $
-      .ajax({
-          url: baseUrl + "/validateUser.do",
-          data: {
-              userEmail: email,
-              userPassword: password,
-              agree: $('input#terms').is(':checked')
-          },
-          beforeSend: function() {
-            // If terms and conditions is checked, show loading gif
-            if($('input#terms').is(':checked')) {
-              $("input#login_next").addClass("login-loadingBlock");
-              $("input#login_next").attr("disabled", true);
-              $("input#login_next").val("");
-            }
-          },
-          success: function(data) {
-            // If login success is false show the error message, if doesn't send form
-            if(!data.userFound.loginSuccess) {
-              if(data.messageEror == "Invalid CGIAR email or password, please try again") {
-                wrongData("incorrectPassword");
-              } else {
-                wrongData("incorrectPassword", data.messageEror);
-              }
+function checkPassword(email, password) {
+  $.ajax({
+    url: baseUrl + "/validateUser.do",
+    type:"POST",
+    data: {
+      userEmail: email,
+      userPassword: password,
+      agree: $('input#terms').is(':checked')
+    },
+    beforeSend: function () {
+      // If terms and conditions is checked, show loading gif
+      if ($('input#terms').is(':checked')) {
+        $("input#login_next").addClass("login-loadingBlock");
+        $("input#login_next").attr("disabled", true);
+        $("input#login_next").val("");
+      }
+    },
+    success: function (data) {
+      // If login success is false show the error message, if doesn't send form
+      if (!data.userFound.loginSuccess) {
+        if (data.messageEror == "Invalid CGIAR email or password, please try again") {
+          wrongData("incorrectPassword");
+        } else {
+          wrongData("incorrectPassword", data.messageEror);
+        }
 
-              // Hide the loading gif
-              $("input#login_next").removeClass("login-loadingBlock");
-              $("input#login_next").attr("disabled", false);
-              $("input#login_next").val("Login");
-            } else {
-              $("input#login_formSubmit").click();
-            }
-          },
-          complete: function(data) {
-          },
-          error: function(data) {
-            wrongData("An error has ocurred. Please try again or contact with the MARLO Support team (MARLOSupport@cgiar.org)");
-          }
-      });
+        // Hide the loading gif
+        $("input#login_next").removeClass("login-loadingBlock");
+        $("input#login_next").attr("disabled", false);
+        $("input#login_next").val("Login");
+      } else {
+        $("input#login_formSubmit").click();
+      }
+    },
+    complete: function (data) {
+    },
+    error: function (data) {
+      wrongData("An error has ocurred. Please try again or contact with the MARLO Support team (MARLOSupport@cgiar.org)");
+    }
+  });
 }
 
 // Show error message and bottom red line in input
