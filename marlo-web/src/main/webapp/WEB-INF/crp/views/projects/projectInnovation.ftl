@@ -243,7 +243,7 @@
           
          [#-- Milestones Contribution --]
         <div class="form-group">          
-          <label for="">[@s.text name="innovation.milestones" /]:[@customForm.req required=editable /][@customForm.helpLabel name="innovation.milestones.help" showIcon=false editable=editable/]</label>
+          <label for="">[@s.text name="innovation.milestones" /]:[@customForm.req required=false /][@customForm.helpLabel name="innovation.milestones.help" showIcon=false editable=editable/]</label>
           [#assign innovationMilestoneLink = "innovationMilestoneLink"]
           [#assign showMilestoneIndicator = (innovation.projectInnovationInfo.hasMilestones?string)!"" /]
           [@customForm.radioFlat id="${innovationMilestoneLink}-yes" name="innovation.projectInnovationInfo.hasMilestones" label="Yes" value="true" checked=(showMilestoneIndicator == "true") cssClass="radioType-${innovationMilestoneLink}" cssClassLabel="radio-label-yes" editable=editable /]
