@@ -12,14 +12,25 @@
   { 'slug': 'customLocations',    'name': 'menu.superadmin.customLocations', 'action': 'customLocations',   'active': true }
 ]/]
 
-[#assign toolItems= [
-  { 'slug': 'notifications',    'name': 'menu.superadmin.notifications', 'action': 'notifications',   'active': true },
-  { 'slug': 'emails',    'name': 'menu.superadmin.emails', 'action': 'emails',   'active': true },
-  { 'slug': 'permissions',    'name': 'menu.superadmin.permissions', 'action': 'marloPermissions',   'active': false }
-  { 'slug': 'parameters',    'name': 'menu.superadmin.parameters', 'action': 'marloParameters',   'active': true },
-  { 'slug': 'institutions',    'name': 'menu.superadmin.institutions', 'action': 'marloInstitutions',   'active': true }
-  { 'slug': 'bulkReplication',    'name': 'menu.superadmin.bulkReplication', 'action': 'deliverablesReplication',   'active': true }
-]/]
+[#if !action.isAiccra()]
+  [#assign toolItems= [
+    { 'slug': 'notifications',    'name': 'menu.superadmin.notifications', 'action': 'notifications',   'active': true },
+    { 'slug': 'emails',    'name': 'menu.superadmin.emails', 'action': 'emails',   'active': true },
+    { 'slug': 'permissions',    'name': 'menu.superadmin.permissions', 'action': 'marloPermissions',   'active': false }
+    { 'slug': 'parameters',    'name': 'menu.superadmin.parameters', 'action': 'marloParameters',   'active': true },
+    { 'slug': 'institutions',    'name': 'menu.superadmin.institutions', 'action': 'marloInstitutions',   'active': true }
+    { 'slug': 'bulkReplication',    'name': 'menu.superadmin.bulkReplication', 'action': 'deliverablesReplication',   'active': true }
+  ]/]
+[#else]
+  [#assign toolItems= [
+    { 'slug': 'notifications',    'name': 'menu.superadmin.notifications', 'action': 'notifications',   'active': true },
+    { 'slug': 'emails',    'name': 'menu.superadmin.emails', 'action': 'emails',   'active': true },
+    { 'slug': 'permissions',    'name': 'menu.superadmin.permissions', 'action': 'marloPermissions',   'active': false }
+    { 'slug': 'parameters',    'name': 'menu.superadmin.parameters', 'action': 'marloParameters',   'active': true },
+    <#--  { 'slug': 'institutions',    'name': 'menu.superadmin.institutions', 'action': 'marloInstitutions',   'active': true }  -->
+    { 'slug': 'bulkReplication',    'name': 'menu.superadmin.bulkReplication', 'action': 'deliverablesReplication',   'active': true }
+  ]/]
+[/#if]
 
 <nav id="secondaryMenu">
   <p>[@s.text name="menu.superadmin.srfMenuTitle"/]</p>
