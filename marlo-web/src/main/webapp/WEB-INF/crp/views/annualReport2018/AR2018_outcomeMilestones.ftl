@@ -9,7 +9,7 @@
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
-  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20211007a",
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20211007b",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js"
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210924a"] /]
@@ -479,7 +479,7 @@
     </div>
     
     [#-- Evidence for completed milestones or explanation for extended or cancelled --]
-    <div class="form-group">
+    <div class="form-group milestoneEvidence">
       [@customForm.textArea name="${customName}.evidence" value="${(annualReportElement.evidence)!}" i18nkey="${customLabel}.milestoneEvidence" help="${customLabel}.milestoneEvidence.help" helpIcon=false display=true required=true className="limitWords-200" editable=editable allowTextEditor=true /]
     </div>
     
