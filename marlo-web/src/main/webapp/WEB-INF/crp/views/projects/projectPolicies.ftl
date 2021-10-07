@@ -82,7 +82,7 @@
         <th class="name col-md-5">Title</th>
         <th class="type">Type</th>
         <th class="subIdos col-md-2">Sub-IDOs</th>
-        <th class="maturity">Level of Maturity</th>
+        <th class="maturity">Stage of Maturity</th>
         <th class="">Geographic Scope</th>
         <th class="">Year</th>
         <th id="projectDownload" class="no-sort"></th>
