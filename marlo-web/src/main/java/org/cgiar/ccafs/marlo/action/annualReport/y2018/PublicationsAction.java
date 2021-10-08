@@ -539,12 +539,14 @@ public class PublicationsAction extends BaseAction {
           .getStatus() == null /* || d.getDeliverableInfo(actualPhase).getStatus() != 3 */);
 
       // List for gray literature
-      deliverablesNotPublications =
-        deliverableManager.getSynthesisPublicationsList(liaisonInstitution, actualPhase, false);
-      deliverablesNotPublications.removeIf(d -> d == null || d.getId() == null
-        || d.getDeliverableInfo(actualPhase) == null && d.getDeliverableInfo(actualPhase).getId() == null
-        || d.getDeliverableInfo(actualPhase)
-          .getStatus() == null /* || d.getDeliverableInfo(actualPhase).getStatus() != 3 */);
+      if (!this.isSelectedPhaseAR2021()) {
+        deliverablesNotPublications =
+          deliverableManager.getSynthesisPublicationsList(liaisonInstitution, actualPhase, false);
+        deliverablesNotPublications.removeIf(d -> d == null || d.getId() == null
+          || d.getDeliverableInfo(actualPhase) == null && d.getDeliverableInfo(actualPhase).getId() == null
+          || d.getDeliverableInfo(actualPhase)
+            .getStatus() == null /* || d.getDeliverableInfo(actualPhase).getStatus() != 3 */);
+      }
 
       Path path = this.getAutoSaveFilePath();
       // Verify if there is a Draft file
@@ -600,7 +602,9 @@ public class PublicationsAction extends BaseAction {
       .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym() != null && c.getAcronym().equals("PMU"))
       .collect(Collectors.toList()));
 
-    this.updateGreyDeliverableReportSynthesis();
+    if (!this.isSelectedPhaseAR2021()) {
+      this.updateGreyDeliverableReportSynthesis();
+    }
 
     /** Graphs and Tables */
     List<Deliverable> selectedDeliverables = new ArrayList<Deliverable>();
@@ -680,20 +684,20 @@ public class PublicationsAction extends BaseAction {
       }
     }
 
-    List<Deliverable> selectedGreyDeliverables = new ArrayList<Deliverable>();
-    if (deliverablesNotPublications != null && !deliverablesNotPublications.isEmpty()) {
-      deliverablesNotPublications.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
-
-      selectedGreyDeliverables.addAll(deliverablesNotPublications);
-      // Remove unchecked deliverables
-      if (reportSynthesis.getReportSynthesisFlagshipProgress().getDeliverables() != null
-        && !reportSynthesis.getReportSynthesisFlagshipProgress().getDeliverables().isEmpty()) {
-        for (Deliverable deliverable : reportSynthesis.getReportSynthesisFlagshipProgress().getDeliverables()) {
-          selectedGreyDeliverables.remove(deliverable);
+    if (!this.isSelectedPhaseAR2021()) {
+      List<Deliverable> selectedGreyDeliverables = new ArrayList<Deliverable>();
+      if (deliverablesNotPublications != null && !deliverablesNotPublications.isEmpty()) {
+        deliverablesNotPublications.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+        selectedGreyDeliverables.addAll(deliverablesNotPublications);
+        // Remove unchecked deliverables
+        if (reportSynthesis.getReportSynthesisFlagshipProgress().getDeliverables() != null
+          && !reportSynthesis.getReportSynthesisFlagshipProgress().getDeliverables().isEmpty()) {
+          for (Deliverable deliverable : reportSynthesis.getReportSynthesisFlagshipProgress().getDeliverables()) {
+            selectedGreyDeliverables.remove(deliverable);
+          }
         }
+        totalGrey = selectedGreyDeliverables.size();
       }
-
-      totalGrey = selectedGreyDeliverables.size();
     }
 
     // Base Permission
@@ -772,8 +776,10 @@ public class PublicationsAction extends BaseAction {
     }
 
     // grey
-    for (Deliverable deliverable : deliverablesNotPublications) {
-      selectedDeliverablesIds.add(deliverable.getId());
+    if (!this.isSelectedPhaseAR2021()) {
+      for (Deliverable deliverable : deliverablesNotPublications) {
+        selectedDeliverablesIds.add(deliverable.getId());
+      }
     }
 
     // Add Deliverable (active =0)
