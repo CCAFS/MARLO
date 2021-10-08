@@ -449,7 +449,7 @@
           <div class="referenceBlock ">
             <div class="referenceList">
               [#list (element.references)![{}] as link ]
-                [@customForm.multiInput name="${customName}.references" element=link index=link_index class="references" placeholder="project.deliverable.reference.placeholder" field="reference" /]
+                [@customForm.references name="${customName}.references" element=link index=link_index class="references" /]
               [/#list]
             </div>
             [#if editable]
@@ -459,7 +459,7 @@
           </div>
           [#-- Element item Template --]
           <div style="display:none">
-            [@customForm.multiInput name="${customName}.references" element={} index=-1 template=true class="references" placeholder="project.deliverable.reference.placeholder" field="reference" /]
+            [@customForm.references name="${customName}.references" element={} index=-1 template=true class="references" /]
           </div>
         </div>
         <p class="note"> <small>[@s.text name="message.shortenURLsDisclaimer"][@s.param value="93" /][/@s.text]</small> </p>
