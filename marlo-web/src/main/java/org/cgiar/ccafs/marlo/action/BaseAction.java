@@ -4897,7 +4897,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
-
   public boolean isCompleteCrpIndicator(long liaisonIntitution) {
     List<SectionStatus> sectionStatus = null;
     IpLiaisonInstitution ipLiaisonInstitution =
@@ -4919,6 +4918,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return true;
   }
+
 
   public boolean isCompleteImpact(long crpProgramID) {
 
@@ -6283,6 +6283,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean isSaveable() {
     return this.saveable;
+  }
+
+  public boolean isSelectedPhaseAR2021() {
+    boolean isAR2021 = false;
+    Phase actualPhase = this.getActualPhase();
+    if (actualPhase != null && actualPhase.getId() != null && actualPhase.getId() != -1L
+      && actualPhase.getName() != null && actualPhase.getYear() > 0) {
+      isAR2021 = StringUtils.equalsIgnoreCase(actualPhase.getName(), "AR") && actualPhase.getYear() == 2021;
+    }
+
+    return isAR2021;
   }
 
   public boolean isSubmit(long projectID) {

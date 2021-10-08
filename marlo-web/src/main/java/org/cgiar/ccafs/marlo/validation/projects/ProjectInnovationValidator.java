@@ -130,18 +130,20 @@ public class ProjectInnovationValidator extends BaseValidator {
         && (projectInnovation.getProjectInnovationInfo().getHasMilestones() != null
           && projectInnovation.getProjectInnovationInfo().getHasMilestones() == true
           && !projectInnovation.getMilestones().isEmpty())) {
-        int count = 0;
-        for (ProjectInnovationMilestone innovationMilestone : projectInnovation.getMilestones()) {
-          if (innovationMilestone.getPrimary() != null && innovationMilestone.getPrimary()) {
-            count++;
+        if (!action.isSelectedPhaseAR2021()) {
+          int count = 0;
+          for (ProjectInnovationMilestone innovationMilestone : projectInnovation.getMilestones()) {
+            if (innovationMilestone.getPrimary() != null && innovationMilestone.getPrimary()) {
+              count++;
+            }
           }
-        }
 
-        if (count == 0) {
-          action.addMessage(action.getText("milestones"));
-          action.addMissingField("innovation.milestones");
-          action.getInvalidFields().put("list-innovation.milestones",
-            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"milestones"}));
+          if (count != 1) {
+            action.addMessage(action.getText("milestones"));
+            action.addMissingField("innovation.milestones");
+            action.getInvalidFields().put("list-innovation.milestones",
+              action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"milestones"}));
+          }
         }
       }
     }
