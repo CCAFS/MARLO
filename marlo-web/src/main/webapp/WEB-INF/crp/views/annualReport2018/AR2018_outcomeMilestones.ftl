@@ -480,7 +480,7 @@
     
     [#-- Evidence for completed milestones or explanation for extended or cancelled --]
     <div class="form-group milestoneEvidence">
-      [@customForm.textArea name="${customName}.evidence" value="${(annualReportElement.evidence)!}" i18nkey="${customLabel}.milestoneEvidence" help="${customLabel}.milestoneEvidence.help" helpIcon=false display=true required=true className="limitWords-200" editable=editable allowTextEditor=true /]
+      [@customForm.textArea name="${customName}.evidence" value="${(annualReportElement.evidence)!}" i18nkey="${customLabel}.milestoneEvidence.help" helpIcon=false display=true required=true className="limitWords-200" editable=editable allowTextEditor=true /]
     </div>
     
     [#-- Links to evidence --]
