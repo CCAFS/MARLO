@@ -22,8 +22,8 @@ package org.cgiar.ccafs.marlo.data.model;
 
 public enum DeliverableStatusEnum {
 
-  ON_GOING("2", "On-going"), COMPLETE("3", "Complete"), EXTENDED("4", "Extended"), CANCELLED("5", "Cancelled"),
-  PARTIALLY_COMPLETE("7", "Partially complete");
+  ON_GOING("2", "On Going", "#4295EF"), COMPLETE("3", "Complete", "#198C19"), EXTENDED("4", "Extended", "#A9A4A3"),
+  CANCELLED("5", "Cancelled", "#FE1919"), PARTIALLY_COMPLETE("7", "Partially complete", "#AF198F");
 
   /**
    * Look for the DeliverableStatusEnum with id
@@ -45,10 +45,18 @@ public enum DeliverableStatusEnum {
 
   private String statusId;
 
-  private DeliverableStatusEnum(String statusId, String status) {
+  private String color;
+
+  private DeliverableStatusEnum(String statusId, String status, String color) {
     this.statusId = statusId;
     this.status = status;
+    this.color = color;
   }
+
+  public String getColor() {
+    return color;
+  }
+
 
   public String getStatus() {
     return status;
