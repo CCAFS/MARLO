@@ -30,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.DeliverableStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PolicyHomeDTO;
@@ -85,6 +86,7 @@ public class DashboardAction extends BaseAction {
   private List<InnovationHomeDTO> myInnovations = new ArrayList<>();
   private List<PolicyHomeDTO> myPolicies = new ArrayList<>();
   private Map<String, String> fpColors = new HashMap<>();
+  private Map<String, String> statusColors = new HashMap<>();
 
   @Inject
   public DashboardAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
@@ -110,7 +112,6 @@ public class DashboardAction extends BaseAction {
     return loggedCrp;
   }
 
-
   /**
    * Get the value of myDeliverables
    *
@@ -125,14 +126,15 @@ public class DashboardAction extends BaseAction {
     return myInnovations;
   }
 
+
   public List<StudyHomeDTO> getMyMelias() {
     return myMelias;
   }
 
-
   public List<StudyHomeDTO> getMyOicrs() {
     return myOicrs;
   }
+
 
   public List<PolicyHomeDTO> getMyPolicies() {
     return myPolicies;
@@ -142,11 +144,16 @@ public class DashboardAction extends BaseAction {
     return myProjects;
   }
 
+  public Map<String, String> getStatusColors() {
+    return statusColors;
+  }
+
   @Override
   public void prepare() throws Exception {
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     Phase phase = phaseManager.getPhaseById(this.getActualPhase().getId());
+    this.setStatusColors();
 
     if (this.isSwitchSession()) {
       this.clearPermissionsCache();
@@ -295,6 +302,7 @@ public class DashboardAction extends BaseAction {
     this.getSession().put(APConstants.USER_POLICIES, myPolicies);
 
     this.getSession().put(APConstants.FP_COLORS, fpColors);
+    this.getSession().put(APConstants.STATUS_COLORS, statusColors);
   }
 
   public void setFpColors(Map<String, String> fpColors) {
@@ -332,5 +340,13 @@ public class DashboardAction extends BaseAction {
 
   public void setMyProjects(List<ProjectHomeDTO> myProjects) {
     this.myProjects = myProjects;
+  }
+
+  private void setStatusColors() {
+    this.statusColors = new HashMap<>();
+    DeliverableStatusEnum[] lst = DeliverableStatusEnum.values();
+    for (DeliverableStatusEnum status : lst) {
+      this.statusColors.put(status.getStatus(), status.getColor());
+    }
   }
 }
