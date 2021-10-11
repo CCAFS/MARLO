@@ -1,0 +1,1 @@
+alter table project_expected_study_references add link text;

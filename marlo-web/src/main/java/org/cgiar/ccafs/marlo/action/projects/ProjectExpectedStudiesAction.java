@@ -2574,6 +2574,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           studyReferenceSave.setProjectExpectedStudy(projectExpectedStudy);
           studyReferenceSave.setPhase(phase);
           studyReferenceSave.setReference(studyReference.getReference());
+          studyReferenceSave.setLink(studyReference.getLink());
 
           this.projectExpectedStudyReferenceManager.saveProjectExpectedStudyReference(studyReferenceSave);
           // This is to add studyReferenceSave to generate correct
@@ -2585,6 +2586,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           studyReferenceSave.setProjectExpectedStudy(projectExpectedStudy);
           studyReferenceSave.setPhase(phase);
           studyReferenceSave.setReference(studyReference.getReference());
+          studyReferenceSave.setLink(studyReference.getLink());
 
           this.projectExpectedStudyReferenceManager.saveProjectExpectedStudyReference(studyReferenceSave);
           // This is to add studyReferenceSave to generate correct
