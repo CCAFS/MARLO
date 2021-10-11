@@ -102,7 +102,7 @@ public class ProjectGraphsAction extends BaseAction {
     try {
       this.projects = (List<ProjectHomeDTO>) this.getSession().get(APConstants.USER_PROJECTS);
       this.fpColors = (Map<String, String>) this.getSession().get(APConstants.FP_COLORS);
-      this.fpColors = (Map<String, String>) this.getSession().get(APConstants.STATUS_COLORS);
+      this.statusColors = (Map<String, String>) this.getSession().get(APConstants.STATUS_COLORS);
       if (projects == null) {
         projects = Collections.emptyList();
       }
