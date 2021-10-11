@@ -22,7 +22,7 @@ package org.cgiar.ccafs.marlo.data.model;
 
 public enum DeliverableStatusEnum {
 
-  ON_GOING("2", "On-going", "#4295EF"), COMPLETE("3", "Complete", "#198C19"), EXTENDED("4", "Extended", "#A9A4A3"),
+  ON_GOING("2", "On-going", "#FEAD19"), COMPLETE("3", "Complete", "#198C19"), EXTENDED("4", "Extended", "#A9A4A3"),
   CANCELLED("5", "Cancelled", "#FE1919"), PARTIALLY_COMPLETE("7", "Partially complete", "#AF198F");
 
   /**

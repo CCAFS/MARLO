@@ -346,7 +346,11 @@ public class DashboardAction extends BaseAction {
     this.statusColors = new HashMap<>();
     DeliverableStatusEnum[] lst = DeliverableStatusEnum.values();
     for (DeliverableStatusEnum status : lst) {
-      this.statusColors.put(status.getStatus(), status.getColor());
+      if (status.equals(DeliverableStatusEnum.ON_GOING) && this.isSelectedPhaseAR2021()) {
+        this.statusColors.put("Ready to be reported on", "#4295EF");
+      } else {
+        this.statusColors.put(status.getStatus(), status.getColor());
+      }
     }
   }
 }
