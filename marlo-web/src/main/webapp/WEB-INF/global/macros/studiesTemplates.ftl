@@ -448,6 +448,10 @@
           [@customForm.textArea name="${customName}.projectExpectedStudyInfo.referencesText" i18nkey="study.referencesCited" help="study.referencesCited.help2" helpIcon=false className="" required=editable && !(isPolicy && stageProcessOne) editable=editable /]
           <div class="referenceBlock ">
             <div class="referenceList">
+              <div class="row">
+                <div class="col-sm-7 colTitleCenter" style="font-weight: 600; text-align: center;">Reference[@customForm.req required=editable  /]</div>
+                <div class="col-sm-3 colTitleCenter" style="font-weight: 600; text-align: center;">URL[@customForm.req required=editable  /]</div>
+              </div>
               [#list (element.references)![{}] as link ]
                 [@customForm.references name="${customName}.references" element=link index=link_index class="references" /]
               [/#list]
