@@ -69,6 +69,7 @@ import org.cgiar.ccafs.marlo.data.model.AllianceLever;
 import org.cgiar.ccafs.marlo.data.model.AllianceLeverOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.DeliverableStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.EvidenceTag;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
@@ -1147,6 +1148,18 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       // Getting The list
       this.statuses = this.generalStatusManager.findByTable(APConstants.PROJECT_EXPECTED_STUDIES_TABLE);
+      if ((!this.isSelectedPhaseAR2021()
+        && this.expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()) != null
+        && this.expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType() != null
+        && this.expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType().getId() != null
+        && this.expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType().getId() != 1L)
+        || (this.expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()) != null
+          && this.expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType() != null
+          && this.expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType().getId() != null
+          && this.expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType().getId() == 1L)) {
+        this.statuses.removeIf(s -> s == null || s.getId() == null
+          || DeliverableStatusEnum.PARTIALLY_COMPLETE.equals(DeliverableStatusEnum.getValue(s.getId().intValue())));
+      }
 
       this.countries = this.locElementManager.findAll().stream()
         .filter(c -> c.getLocElementType().getId().intValue() == 2 && c.isActive()).collect(Collectors.toList());
