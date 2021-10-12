@@ -71,6 +71,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -567,6 +568,10 @@ public class OutcomesMilestonesAction extends BaseAction {
     return reasons;
   }
 
+  public ReportSynthesis getReportSynthesis() {
+    return reportSynthesis;
+  }
+
   /*
    * public ReportSynthesisFlagshipProgressMilestone getReportSynthesisFlagshipProgressProgram(Long crpMilestoneID,
    * Long crpProgramID) {
@@ -582,8 +587,21 @@ public class OutcomesMilestonesAction extends BaseAction {
    * }
    */
 
-  public ReportSynthesis getReportSynthesis() {
-    return reportSynthesis;
+  public ReportSynthesisFlagshipProgressOutcomeMilestone getReportSynthesisMilestone(CrpProgram crpProgram,
+    long outcomeId, long milestoneId) {
+    ReportSynthesisFlagshipProgressOutcomeMilestone flagshipProgressOutcomeMilestone = null;
+
+    List<ReportSynthesisFlagshipProgress> progress =
+      this.reportSynthesisFlagshipProgressManager.getFlagshipsReportSynthesisFlagshipProgress(
+        Collections.singletonList(
+          this.liaisonInstitutionManager.findByAcronymAndCrp(crpProgram.getAcronym(), crpProgram.getCrp().getId())),
+        this.getPhaseID());
+    if (this.isNotEmpty(progress) && progress.get(0) != null && progress.get(0).getId() != null) {
+      flagshipProgressOutcomeMilestone = this.reportSynthesisFlagshipProgressOutcomeMilestoneManager
+        .getReportSynthesisMilestoneFromOutcomeIdAndMilestoneId(progress.get(0).getId(), outcomeId, milestoneId);
+    }
+
+    return flagshipProgressOutcomeMilestone;
   }
 
   public Long getSynthesisID() {
