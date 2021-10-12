@@ -69,13 +69,13 @@ public class GeneralStatusManagerImpl implements GeneralStatusManager {
     generalStati.removeIf(
       gs -> gs == null || gs.getId() == null || DeliverableStatusEnum.getValue(gs.getId().intValue()) == null);
 
-    if (year > 2020) {
-      /*
-       * generalStati.removeIf(gs -> gs == null || gs.getId() == null
-       * || String.valueOf(gs.getId()).equals(DeliverableStatusEnum.EXTENDED.getStatusId()));
-       */
-      generalStati.replaceAll(this::onGoingToReadyToBeReportedOn);
-    }
+    /*
+     * if (year > 2020) {
+     * generalStati.removeIf(gs -> gs == null || gs.getId() == null
+     * || String.valueOf(gs.getId()).equals(DeliverableStatusEnum.EXTENDED.getStatusId()));
+     * generalStati.replaceAll(this::onGoingToReadyToBeReportedOn);
+     * }
+     */
 
     if (year < 2021) {
       generalStati.removeIf(gs -> gs == null || gs.getId() == null

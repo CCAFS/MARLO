@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.model.DeliverableStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
@@ -112,10 +113,12 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
 
     // Validate Status
     if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getStatus() != null) {
-      if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getStatus().getId() == -1) {
+      DeliverableStatusEnum status = DeliverableStatusEnum.getValue(
+        projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getStatus().getId().intValue());
+      if (status == null || (DeliverableStatusEnum.EXTENDED.equals(status) && baseAction.isSelectedPhaseAR2021())) {
         action.addMessage(action.getText("Status"));
         action.addMissingField("study.status");
-        action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.status",
+        action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.status.id",
           InvalidFieldsMessages.EMPTYFIELD);
       }
     } else {
