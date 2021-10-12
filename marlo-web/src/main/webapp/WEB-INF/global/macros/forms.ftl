@@ -838,7 +838,7 @@
     <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
     <span class="pull-left" style="width:4%"><strong><span class="indexTag">${index + 1}</span>.</strong></span>
     <span class="pull-left" style="width:45%">[@customForm.input name="${customName}.reference" placeholder="project.deliverable.reference.placeholder" showTitle=false i18nkey="" className="" editable=editable /]</span>
-    <span class="pull-left" style="width:45%">[@customForm.input name="${customName}.link" placeholder="global.webSiteLink.placeholder" showTitle=false i18nkey="" className="" editable=editable /]</span>
+    <span class="pull-left" style="width:45%; margin-left: 10px">[@customForm.input name="${customName}.link" placeholder="global.webSiteLink.placeholder" showTitle=false i18nkey="" className="" editable=editable /]</span>
     [#if editable]<div class="removeElement sm removeIcon removeLink ${class}" title="Remove"></div>[/#if]
     <div class="clearfix"></div>
   </div>
