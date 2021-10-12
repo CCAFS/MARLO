@@ -133,7 +133,7 @@ function initDashboard() {
       width: "80%",
       heigth: "100%"
     },
-    colors: [],
+    colors: ['#B21691', '#1773b8', '#00a0b0', '#f3bd1e', '#373a3b'],
     bar: { groupWidth: '100%' },
     legend: {
       alignment: 'center',
@@ -205,10 +205,10 @@ function initDashboard() {
   $('#oicrs').on('click', function () {
     isOicrs = true;
     isMelias = false;
-    byStatus.title = oicrsTitle;
+    byLevel.title = oicrsTitle;
     $('#chartHome2').css('opacity', 0);
     if (!oicrsLoaded && !clickedBtnGraph) {
-      setGoogleCharts(oicrsAjaxURL, oicrsArrName, chartHome1, pieType, byStatus);
+      setGoogleCharts(oicrsAjaxURL, oicrsArrName, chartHome1, pieType, byLevel);
       oicrsLoaded = true;
     } else {
       drawChart(oicrsData, chartHome1, pieType, oicrsOptions);
@@ -248,11 +248,11 @@ function initDashboard() {
     isOicrs = false;
     isMelias = false;
     byType.title = policiesTitle1;
-    byStatus.title = policiesTitle2;
+    byLevel.title = policiesTitle2;
     $('#chartHome2').css('opacity', 1);
     if (!policiesLoaded && !clickedBtnGraph) {
       setGoogleCharts(policiesAjaxURL, policiesArrName1, chartHome1, barType, byType);
-      setGoogleCharts(policiesAjaxURL, policiesArrName2, chartHome2, pieType, byStatus);
+      setGoogleCharts(policiesAjaxURL, policiesArrName2, chartHome2, pieType, byLevel);
       policiesLoaded = true;
     } else {
       drawChart(policiesData1, chartHome1, barType, byType);
@@ -298,7 +298,10 @@ function setGoogleCharts(ajaxURL, arrName, chartID, type, options) {
 function loadPageData(ajaxURL, arrName, chartID, type, options) {
   if ((type == pieType && arrName == homeProjectsArrName2) || (type == pieType && arrName == deliverablesArrName2)) {
     options['colors'] = [];
+  } else if ((type == pieType && arrName == innovationsArrName2)) {
+    options['colors'] = ['#B21691', '#1773b8', '#00a0b0', '#f3bd1e', '#373a3b'];
   }
+  
   $.ajax({
     url: baseURL + ajaxURL,
     async: false,
@@ -323,7 +326,8 @@ function loadPageData(ajaxURL, arrName, chartID, type, options) {
 
           if ((type == pieType && arrName == homeProjectsArrName2) || (type == pieType && arrName == deliverablesArrName2)) {
             var color;
-            if (actualPhase == 'true' && x.key == 'On-going' && arrName == deliverablesArrName2) {
+
+            if (actualPhase == 'true' && (x.key == 'On-going' || x.key == 'Ready to be reported on') && arrName == deliverablesArrName2) {
               color = '#4295EF';
               options['colors'].push(color);
               arr.push(color);
