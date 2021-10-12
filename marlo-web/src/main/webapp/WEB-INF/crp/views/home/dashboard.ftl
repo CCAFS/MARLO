@@ -4,7 +4,7 @@
 [#assign pageLibs = ["jQuery-Timelinr","cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
   "https://www.gstatic.com/charts/loader.js",
-  "${baseUrlMedia}/js/home/dashboard.js?20211012a",
+  "${baseUrlMedia}/js/home/dashboard.js?20211012b",
   "${baseUrlCdn}/global/js/impactGraphic.js"
   ] 
 /]
