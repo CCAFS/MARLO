@@ -107,7 +107,7 @@
             [#assign isGenetic = ((innovation.projectInnovationInfo.repIndInnovationType.id == 1))!false ]
             <div class="col-md-6">
             <div class="form-group numberInnovations-block" style="display:${isGenetic?string('block','none')}">
-                [@customForm.input name="innovation.projectInnovationInfo.innovationNumber" type="number" i18nkey="projectInnovations.innovationNumber" editable=editable /]   
+                [@customForm.input name="innovation.projectInnovationInfo.innovationNumber" type="number" i18nkey="projectInnovations.innovationNumber" editable=editable help="projectInnovations.innovationNumber.help" /]   
             </div>
             </div>
           </div>
