@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${expectedID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "select2", "blueimp-file-upload", "flag-icon-css", "components-font-awesome"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectStudy.js?20210909A",
+  "${baseUrlMedia}/js/projects/projectStudy.js?20211012A",
   "${baseUrlCdn}/global/js/autoSave.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js"
   ] 
@@ -80,7 +80,7 @@
               <p class="messageQAInfo">[@s.text name="message.qualityAssessedInfo"][/@s.text]</p>
             </div>  
           </div>  --]
-
+          <span id="actualPhase" style="display: none;">${action.isSelectedPhaseAR2021()?c}</span>
           <div id="caseStudiesBlock" class="">
             [@studies.studyMacro element=(expectedStudy)!{} name="expectedStudy" index=0  /]
           </div> 
