@@ -327,8 +327,16 @@ function loadPageData(ajaxURL, arrName, chartID, type, options) {
           if ((type == pieType && arrName == homeProjectsArrName2) || (type == pieType && arrName == deliverablesArrName2)) {
             var color;
 
-            if (actualPhase == 'true' && (x.key == 'On-going' || x.key == 'Ready to be reported on') && arrName == deliverablesArrName2) {
+            if (actualPhase == 'true' && x.key == 'On-going' && arrName == deliverablesArrName2) {
               color = '#4295EF';
+              options['colors'].push(color);
+              arr.push(color);
+            } else if (x.key == 'Ready to be reported on') {
+              color = '#4295EF';
+              options['colors'].push(color);
+              arr.push(color);
+            } else if (x.key == 'Partially Complete') {
+              color = '#AF198F';
               options['colors'].push(color);
               arr.push(color);
             } else if (x.key == 'Completed') {
