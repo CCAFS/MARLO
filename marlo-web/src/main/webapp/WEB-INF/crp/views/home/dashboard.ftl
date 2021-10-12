@@ -4,7 +4,7 @@
 [#assign pageLibs = ["jQuery-Timelinr","cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
   "https://www.gstatic.com/charts/loader.js",
-  "${baseUrlMedia}/js/home/dashboard.js?20210923a",
+  "${baseUrlMedia}/js/home/dashboard.js?20211011a",
   "${baseUrlCdn}/global/js/impactGraphic.js"
   ] 
 /]
@@ -52,6 +52,7 @@
     </div>
 
     [#-- Dashboard --]   
+    <span id="actualPhase" style="display: none;">${action.isSelectedPhaseAR2021()?c}</span>
     <div id="dashboardContent" class="col-md-12">
       <div class="toggleBtnGraphs">
         <span class="glyphicon glyphicon-eye-open icon-show"></span>
