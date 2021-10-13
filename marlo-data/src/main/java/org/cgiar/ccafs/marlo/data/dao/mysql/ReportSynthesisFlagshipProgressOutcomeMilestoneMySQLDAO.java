@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -103,6 +104,25 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestoneMySQLDAO
       return null;
     }
 
+  }
+
+  @Override
+  public ReportSynthesisFlagshipProgressOutcomeMilestone getReportSynthesisMilestoneFromOutcomeIdAndMilestoneId(
+    long reportSynthesisFlagshipProgressId, long crpProgramOutcomeId, long crpMilestoneId) {
+    String query = "select distinct rsfpom from ReportSynthesisFlagshipProgressOutcomeMilestone rsfpom "
+      + "where rsfpom.reportSynthesisFlagshipProgressOutcome.reportSynthesisFlagshipProgress.id = :reportSynthesisFlagshipProgressId and "
+      + "rsfpom.reportSynthesisFlagshipProgressOutcome.crpProgramOutcome.id = :crpProgramOutcomeId and "
+      + "rsfpom.crpMilestone.id = :crpMilestoneId and rsfpom.active=true";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+
+    createQuery.setParameter("reportSynthesisFlagshipProgressId", reportSynthesisFlagshipProgressId);
+    createQuery.setParameter("crpProgramOutcomeId", crpProgramOutcomeId);
+    createQuery.setParameter("crpMilestoneId", crpMilestoneId);
+
+    List<ReportSynthesisFlagshipProgressOutcomeMilestone> findAll = super.findAll(createQuery);
+
+    return findAll.isEmpty() ? null : findAll.get(0);
   }
 
   @Override

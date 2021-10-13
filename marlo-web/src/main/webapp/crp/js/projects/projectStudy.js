@@ -42,6 +42,9 @@ function init() {
 }
 
 function attachEvents() {
+  if ($('#actualPhase').html() == 'true') {
+    $('select.statusSelect option[value="4"]').prop('disabled', true);
+  }
 
   //Expected Year
   $('select.statusSelect').on('change', function() {

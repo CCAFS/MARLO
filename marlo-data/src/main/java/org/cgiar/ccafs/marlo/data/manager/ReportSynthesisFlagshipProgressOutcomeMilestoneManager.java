@@ -70,6 +70,9 @@ public interface ReportSynthesisFlagshipProgressOutcomeMilestoneManager {
   public ReportSynthesisFlagshipProgressOutcomeMilestone
     getReportSynthesisFlagshipProgressOutcomeMilestoneById(long reportSynthesisFlagshipProgressOutcomeMilestoneID);
 
+  public ReportSynthesisFlagshipProgressOutcomeMilestone getReportSynthesisMilestoneFromOutcomeIdAndMilestoneId(
+    long reportSynthesisFlagshipProgressId, long crpProgramOutcomeId, long crpMilestoneId);
+
   /**
    * This method saves the information of the given reportSynthesisFlagshipProgressOutcomeMilestone
    * 

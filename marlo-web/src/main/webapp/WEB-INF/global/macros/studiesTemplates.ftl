@@ -346,12 +346,12 @@
         <div class="form-group">          
           <label for="">[@s.text name="study.milestones" /]:[@customForm.req required=editable /][@customForm.helpLabel name="study.milestones.help" showIcon=false editable=editable/]</label>
           [#assign studyMilestoneLink = "studyMilestoneLink"]
-          [#assign showMilestoneIndicator = (expectedStudy.projectExpectedStudyInfo.hasMilestones?string)!"" /]
-          [@customForm.radioFlat id="${studyMilestoneLink}-yes" name="${customName}.projectExpectedStudyInfo.hasMilestones" label="Yes" value="true" checked=(showMilestoneIndicator == "true") cssClass="radioType-${studyMilestoneLink}" cssClassLabel="radio-label-yes" editable=editable /]
-          [@customForm.radioFlat id="${studyMilestoneLink}-no" name="${customName}.projectExpectedStudyInfo.hasMilestones" label="No" value="false" checked=(showMilestoneIndicator == "false") cssClass="radioType-${studyMilestoneLink}" cssClassLabel="radio-label-no" editable=editable /]
+          [#assign showMilestoneIndicator = (expectedStudy.projectExpectedStudyInfo.hasMilestones)!false /]
+          [@customForm.radioFlat id="${studyMilestoneLink}-yes" name="${customName}.projectExpectedStudyInfo.hasMilestones" label="Yes" value="true" checked=(showMilestoneIndicator == true) cssClass="radioType-${studyMilestoneLink}" cssClassLabel="radio-label-yes" editable=editable /]
+          [@customForm.radioFlat id="${studyMilestoneLink}-no" name="${customName}.projectExpectedStudyInfo.hasMilestones" label="No" value="false" checked=(showMilestoneIndicator == false) cssClass="radioType-${studyMilestoneLink}" cssClassLabel="radio-label-no" editable=editable /]
       </div>
         
-       <div class="form-group simpleBox block-${studyMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
+       <div class="form-group simpleBox block-${studyMilestoneLink}" style="display:${(showMilestoneIndicator == true)?string('block','none')}">
           [@customForm.elementsListComponent name="${customName}.milestones" elementType="crpMilestone" elementList=(element.milestones)![] label="study.milestones"  listName="milestones" keyFieldName="id" displayFieldName="composedNameWithFlagship" hasPrimary=true /]
           <div class="note">[@s.text name="study.milestones.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/contributionsCrpList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
          <br/>      
@@ -448,8 +448,12 @@
           [@customForm.textArea name="${customName}.projectExpectedStudyInfo.referencesText" i18nkey="study.referencesCited" help="study.referencesCited.help2" helpIcon=false className="" required=editable && !(isPolicy && stageProcessOne) editable=editable /]
           <div class="referenceBlock ">
             <div class="referenceList">
+              <div class="row">
+                <div class="col-sm-7 colTitleCenter" style="font-weight: 600; text-align: center;">Reference[@customForm.req required=editable  /]</div>
+                <div class="col-sm-3 colTitleCenter" style="font-weight: 600; text-align: center;">URL[@customForm.req required=editable  /]</div>
+              </div>
               [#list (element.references)![{}] as link ]
-                [@customForm.multiInput name="${customName}.references" element=link index=link_index class="references" placeholder="project.deliverable.reference.placeholder" field="reference" /]
+                [@customForm.references name="${customName}.references" element=link index=link_index class="references" /]
               [/#list]
             </div>
             [#if editable]
@@ -459,7 +463,7 @@
           </div>
           [#-- Element item Template --]
           <div style="display:none">
-            [@customForm.multiInput name="${customName}.references" element={} index=-1 template=true class="references" placeholder="project.deliverable.reference.placeholder" field="reference" /]
+            [@customForm.references name="${customName}.references" element={} index=-1 template=true class="references" /]
           </div>
         </div>
         <p class="note"> <small>[@s.text name="message.shortenURLsDisclaimer"][@s.param value="93" /][/@s.text]</small> </p>

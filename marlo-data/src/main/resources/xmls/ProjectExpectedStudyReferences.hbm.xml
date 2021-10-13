@@ -27,5 +27,9 @@
 			optimistic-lock="true" type="string" unique="false">
 			<column length="65535" name="reference" />
 		</property>
+		<property generated="never" lazy="false" name="link"
+			optimistic-lock="true" type="string" unique="false">
+			<column length="65535" name="link" />
+		</property>
 	</class>
 </hibernate-mapping>
