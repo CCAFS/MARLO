@@ -17,12 +17,15 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSharedManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
@@ -30,14 +33,28 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.Patterns;
+import org.cgiar.ccafs.marlo.utils.PhaseComparator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.apache.commons.collections4.comparators.ComparatorChain;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -46,13 +63,14 @@ public class ProjectInnovationListAction extends BaseAction {
 
 
   private static final long serialVersionUID = 3586039079035252726L;
-
+  private static final Logger LOG = LoggerFactory.getLogger(ProjectInnovationListAction.class);
 
   // Manager
   private ProjectInnovationSharedManager projectInnovationSharedManager;
   private ProjectInnovationInfoManager projectInnovationInfoManager;
   private ProjectInnovationManager projectInnovationManager;
   private ProjectInnovationCrpManager projectInnovationCrpManager;
+  private PhaseManager phaseManager;
 
   private SectionStatusManager sectionStatusManager;
   private ProjectManager projectManager;
@@ -71,7 +89,7 @@ public class ProjectInnovationListAction extends BaseAction {
 
   @Inject
   public ProjectInnovationListAction(APConfig config, ProjectInnovationInfoManager projectInnovationInfoManager,
-    SectionStatusManager sectionStatusManager, ProjectManager projectManager,
+    SectionStatusManager sectionStatusManager, ProjectManager projectManager, PhaseManager phaseManager,
     ProjectInnovationManager projectInnovationManager, ProjectInnovationSharedManager projectInnovationSharedManager,
     ProjectInnovationCrpManager projectInnovationCrpManager) {
     super(config);
@@ -81,6 +99,7 @@ public class ProjectInnovationListAction extends BaseAction {
     this.projectInnovationManager = projectInnovationManager;
     this.projectInnovationSharedManager = projectInnovationSharedManager;
     this.projectInnovationCrpManager = projectInnovationCrpManager;
+    this.phaseManager = phaseManager;
   }
 
   @Override
@@ -166,7 +185,6 @@ public class ProjectInnovationListAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-
     projectID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
 
     project = projectManager.getProjectById(projectID);
@@ -260,6 +278,139 @@ public class ProjectInnovationListAction extends BaseAction {
 
   public void setProjectOldInnovations(List<ProjectInnovation> projectOldInnovations) {
     this.projectOldInnovations = projectOldInnovations;
+  }
+
+  private void updateCrpAffiliation() {
+    Comparator<Phase> phaseComparator = PhaseComparator.getInstance();
+
+    Map<ProjectInnovation, SortedSet<Phase>> ar2021AndBeyond = this.projectInnovationInfoManager.findAll().stream()
+      .filter(pii -> pii != null && pii.getId() != null && pii.getPhase() != null && pii.getPhase().getId() != null
+        && pii.getPhase().getCrp() != null && pii.getPhase().getCrp().getId() != null
+        && pii.getProjectInnovation() != null && pii.getProjectInnovation().getId() != null)
+      .collect(Collectors.groupingBy(ProjectInnovationInfo::getProjectInnovation, Collectors
+        .mapping(ProjectInnovationInfo::getPhase, Collectors.toCollection(() -> new TreeSet<Phase>(phaseComparator)))));
+
+    Map<GlobalUnit, Set<ProjectInnovation>> innovationsPerCrp = this.projectInnovationInfoManager.findAll().stream()
+      .filter(pii -> pii != null && pii.getId() != null && pii.getPhase() != null && pii.getPhase().getId() != null
+        && pii.getPhase().getCrp() != null && pii.getPhase().getCrp().getId() != null
+        && pii.getProjectInnovation() != null && pii.getProjectInnovation().getId() != null)
+      .collect(Collectors.groupingBy(pii -> ar2021AndBeyond.get(pii.getProjectInnovation()).first().getCrp(),
+        Collectors.mapping(ProjectInnovationInfo::getProjectInnovation,
+          Collectors.toCollection(() -> new TreeSet<>(Comparator.comparingLong(ProjectInnovation::getId))))));
+
+    List<String> inserts = new ArrayList<>();
+    for (Entry<GlobalUnit, Set<ProjectInnovation>> entry : innovationsPerCrp.entrySet()) {
+      GlobalUnit crp = entry.getKey();
+      Long crpId = crp.getId();
+      for (ProjectInnovation innovation : entry.getValue()) {
+        Long projectInnovationId = innovation.getId();
+        Set<Phase> allPhasesWithRows = ar2021AndBeyond.get(innovation);
+        Map<Phase, Set<GlobalUnit>> innovationLinkedCrpsPerPhase = innovation.getProjectInnovationCrps().stream()
+          .filter(pic -> pic != null && pic.getId() != null && pic.getGlobalUnit() != null
+            && pic.getGlobalUnit().getId() != null && pic.getPhase() != null && pic.getPhase().getId() != null
+            && pic.getPhase().getCrp() != null && pic.getPhase().getCrp().getId() != null)
+          .collect(Collectors.groupingBy(pic -> pic.getPhase(), () -> new TreeMap<>(phaseComparator),
+            Collectors.mapping(ProjectInnovationCrp::getGlobalUnit, Collectors.toSet())));
+        for (Phase phase : allPhasesWithRows) {
+          Long phaseId = phase.getId();
+          if (!innovationLinkedCrpsPerPhase.getOrDefault(phase, Collections.emptySet()).contains(crp)) {
+            StringBuilder insert = new StringBuilder(
+              "INSERT INTO project_innovation_crps(project_innovation_id, global_unit_id, id_phase) VALUES (");
+            insert =
+              insert.append(projectInnovationId).append(",").append(crpId).append(",").append(phaseId).append(");");
+            inserts.add(insert.toString());
+          }
+        }
+      }
+    }
+
+    LOG.info("test");
+
+    /*
+     * Path fileSuccess = Paths.get("D:\\misc\\insert-icrps.txt");
+     * try {
+     * Files.write(fileSuccess, inserts, StandardCharsets.UTF_8);
+     * } catch (IOException e) {
+     * LOG.error("rip");
+     * e.printStackTrace();
+     * }
+     */
+  }
+
+  private void updateLinks() {
+    List<ProjectInnovationInfo> innovationInfos = this.projectInnovationManager.findAll().stream()
+      .filter(pi -> pi != null && pi.getId() != null).flatMap(pi -> pi.getProjectInnovationInfos().stream())
+      .filter(pii -> pii != null && pii.getId() != null && pii.getPhase() != null && pii.getPhase().getId() != null
+        && ((pii.getPhase().getYear() == 2021 && pii.getPhase().getName().equalsIgnoreCase("AR"))
+          || (pii.getPhase().getYear() > 2021))
+        && StringUtils.isNotEmpty(pii.getEvidenceLink()))
+      .collect(Collectors.toList());
+
+    LOG.info("infos size is {} and should be 6700; previously it had 6264", innovationInfos.size());
+
+    ComparatorChain<ProjectInnovationInfo> chain = new ComparatorChain<>();
+    chain.addComparator((i1, i2) -> i1.getProjectInnovation().getId().compareTo(i2.getProjectInnovation().getId()));
+    chain.addComparator((i1, i2) -> i1.getPhase().getId().compareTo(i2.getPhase().getId()));
+
+    Map<ProjectInnovationInfo, List<String>> infoToLinks = new TreeMap<>(chain);
+    Map<ProjectInnovationInfo, List<String>> failedInfos = new TreeMap<>(chain);
+    for (ProjectInnovationInfo info : innovationInfos) {
+      String evidenceLinks = info.getEvidenceLink();
+      String[] links = StringUtils.split(StringUtils.trimToEmpty(evidenceLinks), "\n");
+      List<String> cleanLinks = new ArrayList<>();
+      List<String> failedLinks = new ArrayList<>();
+      for (String individualLink : links) {
+        String link = StringUtils.trimToEmpty(individualLink);
+        cleanLinks.addAll(Arrays.asList(StringUtils.split(link, ";")).stream().map(l -> StringUtils.trimToEmpty(l))
+          .collect(Collectors.toList()));
+        failedLinks.addAll(cleanLinks.stream()
+          .filter(l -> StringUtils.isEmpty(l) || !Patterns.WEB_URL.matcher(l).find()).collect(Collectors.toList()));
+        cleanLinks.removeAll(failedLinks);
+      }
+
+      infoToLinks.put(info, cleanLinks);
+      failedInfos.put(info, failedLinks);
+    }
+
+    List<String> inserts = new ArrayList<>();
+    List<String> failed = new ArrayList<>();
+
+    for (Entry<ProjectInnovationInfo, List<String>> entry : infoToLinks.entrySet()) {
+      if (this.isNotEmpty(entry.getValue())) {
+        Long projectInnovationId = entry.getKey().getProjectInnovation().getId();
+        Long phaseId = entry.getKey().getPhase().getId();
+        for (String link : entry.getValue()) {
+          StringBuilder insert = new StringBuilder(
+            "INSERT INTO project_innovation_evidence_links(project_innovation_id, link, id_phase) VALUES (");
+          insert = insert.append(projectInnovationId).append(",'").append(link.replaceAll("'", "''")).append("',")
+            .append(phaseId).append(");");
+          inserts.add(insert.toString());
+        }
+      }
+    }
+
+    for (Entry<ProjectInnovationInfo, List<String>> entry : failedInfos.entrySet()) {
+      Long projectInnovationId = entry.getKey().getProjectInnovation().getId();
+      Long phaseId = entry.getKey().getPhase().getId();
+      for (String link : entry.getValue()) {
+        failed.add(String.format("project_innovation_info_id = %s; id_phase = %s; evidenceLink = '%s'",
+          projectInnovationId, phaseId, link));
+      }
+    }
+
+    LOG.info("test");
+
+    /*
+     * Path fileSuccess = Paths.get("D:\\misc\\insert-iel.txt");
+     * Path fileFail = Paths.get("D:\\misc\\fail-iel.txt");
+     * try {
+     * Files.write(fileSuccess, inserts, StandardCharsets.UTF_8);
+     * Files.write(fileFail, failed, StandardCharsets.UTF_8);
+     * } catch (IOException e) {
+     * LOG.error("rip");
+     * e.printStackTrace();
+     * }
+     */
   }
 
 }

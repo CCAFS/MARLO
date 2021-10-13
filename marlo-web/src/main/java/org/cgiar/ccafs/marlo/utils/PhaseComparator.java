@@ -27,13 +27,27 @@ import org.apache.commons.collections4.comparators.ComparatorChain;
 
 public class PhaseComparator implements Comparator<Phase> {
 
+  private static class Holder {
+
+    public static PhaseComparator instance = new PhaseComparator();
+  }
+
+  public static PhaseComparator getInstance() {
+    return Holder.instance;
+  }
+
+  private ComparatorChain<Phase> chain;
+
+  private PhaseComparator() {
+    this.chain = new ComparatorChain<>();
+    this.chain.addComparator(Comparator.comparingInt(Phase::getYear));
+    this.chain.addComparator(Comparator
+      .nullsLast((p1, p2) -> PhaseNames.getByName(p1.getName()).compareTo(PhaseNames.getByName(p2.getName()))));
+  }
+
   @Override
   public int compare(Phase o1, Phase o2) {
-    ComparatorChain<Phase> comp = new ComparatorChain<>();
-    comp.addComparator(Comparator.comparingInt(Phase::getYear));
-    comp.addComparator(Comparator
-      .nullsLast((p1, p2) -> PhaseNames.getByName(p1.getName()).compareTo(PhaseNames.getByName(p2.getName()))));
-    return comp.compare(o1, o2);
+    return this.chain.compare(o1, o2);
   }
 
 }
