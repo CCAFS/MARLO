@@ -450,6 +450,85 @@ setTimeout(() => {
 	});
 }
 
+function action_areas_outcomes() {
+	$.ajax({
+		url: config.endpoint + '/actionAreaOutcomeIndicators',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"actionAreaOutcomeIndicators");
+			destroyTable("actionAreaOutcomeIndicators");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"actionAreaOutcomeIndicators");
+			console.log(data);
+			let nameColumns = ['Action Area ID', 'Action Area Name','Outcome ID','Outcome Statement','Outcome Indicator ID','Outcome Indicator Statement']
+
+			$.each(data, function (index, item) {				
+				$('#list-print-actionAreaOutcomeIndicators').append(
+					'<tr>' + '<td >' + item['actionAreaId'] + '</td>' + '<td>'
+					+ item['actionAreaName'] + '</td>'+ '<td>'
+					+ item['outcomeId'] + '</td>'+ '<td>'
+					+ item['outcomeStatement'] + '</td>'+ '<td>'
+					+ item['outcomeIndicatorId'] + '</td>'+ '<td>'
+					+ item['outcomeIndicatorStatement'] + '</td>' + '</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("actionAreaOutcomeIndicators");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
+function work_packages() {
+	$.ajax({
+		url: config.endpoint + '/workpackages',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"workpackages");
+			destroyTable("workpackages");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"workpackages");
+			console.log(data);
+			let nameColumns = ['Action Area ID', 'Action Area Name','Outcome ID','Outcome Statement','Outcome Indicator ID','Outcome Indicator Statement']			
+
+			$.each(data, function (index, item) {				
+				$('#list-print-workpackages').append(
+					'<tr>' + '<td >' + item['id'] + '</td>' + '<td>'
+					+ item['acronym'] + '</td>'+ '<td>'
+					+ item['name'] + '</td>'+ '<td>'
+					+ item['initiativeId'] + '</td>'+ '<td>'
+					+ item['stageId'] + '</td>'+ '<td>'
+					+ (item['results']==null? '':item['results'] )+ '</td>'+ '<td>'
+					+ (item['pathway_content']==null? '':item['pathway_content'] ) + '</td>' + '</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("workpackages");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
 function impact_areas_indicators() {
 	$.ajax({
 		url: config.endpoint + '/impact-areas-indicators',
