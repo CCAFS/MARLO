@@ -392,6 +392,35 @@ public class ProjectInnovationValidator extends BaseValidator {
       }
     }
 
+    if (projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getRepIndInnovationType() != null
+      && projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getRepIndInnovationType().getId() != null
+      && projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getRepIndInnovationType().getId() != -1L
+      && projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getRepIndStageInnovation() != null
+      && projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getRepIndStageInnovation().getId() != null
+      && projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getRepIndStageInnovation()
+        .getId() != -1L) {
+      if (projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getRepIndInnovationType().getId() == 1L) {
+        if (projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getRepIndStageInnovation()
+          .getId() < 3) {
+          if (projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getInnovationNumber() == null
+            || projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getInnovationNumber() < 1L) {
+            action.addMessage(action.getText("projectInnovations.innovationNumber"));
+            action.addMissingField("projectInnovations.innovationNumber");
+            action.getInvalidFields().put("input-innovation.projectInnovationInfo.innovationNumber",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        } else {
+          if (projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getInnovationNumber() == null
+            || projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getInnovationNumber() != 1L) {
+            action.addMessage(action.getText("projectInnovations.innovationNumber"));
+            action.addMissingField("projectInnovations.innovationNumber");
+            action.getInvalidFields().put("input-innovation.projectInnovationInfo.innovationNumber",
+              InvalidFieldsMessages.WRONGVALUE);
+          }
+        }
+      }
+    }
+
     // Validate lead organization
     // NOTE -> FOR SOME REASON "CLEAR LEAD" MEANS "NOT A CLEAR LEAD", SO WE HAVE TO REVERSE THE CONDITIONAL
     if (clearLead == null || /* NO */clearLead == false) {
