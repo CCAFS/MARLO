@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [ 
-  "${baseUrlMedia}/js/projects/projectImpacts.js", 
+  "${baseUrlMedia}/js/projects/projectImpacts.js?20211013a", 
   "${baseUrlCdn}/global/js/autoSave.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js"
   ] 
@@ -74,6 +74,7 @@
         [#include "/WEB-INF/crp/views/projects/buttons-projects.ftl" /]
       [/@s.form]  
     </div>
+    <span id="actualPhase" style="display: none">${action.isSelectedPhaseAR2021()?c}</span>
 </section>
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
