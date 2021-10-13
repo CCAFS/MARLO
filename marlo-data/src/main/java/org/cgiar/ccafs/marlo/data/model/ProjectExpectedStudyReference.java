@@ -17,6 +17,8 @@ public class ProjectExpectedStudyReference extends MarloBaseEntity implements ja
   private ProjectExpectedStudy projectExpectedStudy;
   @Expose
   private String reference;
+  @Expose
+  private String link;
 
   public ProjectExpectedStudyReference() {
   }
@@ -48,6 +50,10 @@ public class ProjectExpectedStudyReference extends MarloBaseEntity implements ja
     return true;
   }
 
+  public String getLink() {
+    return link;
+  }
+
 
   @Override
   public String getLogDeatil() {
@@ -62,7 +68,6 @@ public class ProjectExpectedStudyReference extends MarloBaseEntity implements ja
     return "";
   }
 
-
   @Override
   public User getModifiedBy() {
     User u = new User();
@@ -70,16 +75,13 @@ public class ProjectExpectedStudyReference extends MarloBaseEntity implements ja
     return u;
   }
 
-
   public Phase getPhase() {
     return phase;
   }
 
-
   public ProjectExpectedStudy getProjectExpectedStudy() {
     return projectExpectedStudy;
   }
-
 
   public String getReference() {
     return reference;
@@ -105,27 +107,25 @@ public class ProjectExpectedStudyReference extends MarloBaseEntity implements ja
     return true;
   }
 
+  public void setLink(String link) {
+    this.link = link;
+  }
 
   @Override
   public void setModifiedBy(User modifiedBy) {
 
   }
 
-
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
-
 
   public void setProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy) {
     this.projectExpectedStudy = projectExpectedStudy;
   }
 
-
   public void setReference(String link) {
     this.reference = link;
   }
 
-
 }
-
