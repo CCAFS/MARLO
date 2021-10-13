@@ -166,9 +166,9 @@
         </div>
       [/#if]
 
-      [#-- 1. Title (up to 30 words if OICR, else no limit ) --]
+      [#-- 1. Title (up to 35 words if OICR, else no limit ) --]
       <div class="form-group">
-        [@customForm.input name="${customName}.projectExpectedStudyInfo.title" i18nkey="study.title" help="study.title.help" className=(isOutcomeCaseStudy?then("limitWords-30","")) helpIcon=!isOutcomeCaseStudy required=true editable=editable /]
+        [@customForm.input name="${customName}.projectExpectedStudyInfo.title" i18nkey="study.title" help="study.title.help" className=(isOutcomeCaseStudy?then("limitWords-35","")) helpIcon=!isOutcomeCaseStudy required=true editable=editable /]
       </div>
       
       [#-- Who is commissioning this study --]
@@ -297,7 +297,8 @@
         [/#if]
         [#-- Sub IDOs (maxLimit=2 if OICR, else 3) --]
         <div class="form-group simpleBox">
-          [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="study.stratgicResultsLink.subIDOs"  listName="subIdos" maxLimit=(isOutcomeCaseStudy?then(2,3)) keyFieldName="id" displayFieldName="composedName" hasPrimary=true/]
+          [#local isPrimary = ((actualPhase.name == "AR" && actualPhase.year == 2021)?then('false', 'true'))?boolean]
+          [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="study.stratgicResultsLink.subIDOs"  listName="subIdos" maxLimit=(isOutcomeCaseStudy?then(2,3)) keyFieldName="id" displayFieldName="composedName" hasPrimary=isPrimary/]
         </div> 
         
         [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]      

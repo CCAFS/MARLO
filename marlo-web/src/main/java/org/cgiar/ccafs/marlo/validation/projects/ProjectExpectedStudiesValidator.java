@@ -134,7 +134,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     } else {
       if (isOicr && this
-        .wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getTitle()) > 30) {
+        .wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getTitle()) > 35) {
         action.addMessage(action.getText("Title"));
         action.addMissingField("study.title");
         action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.title",
@@ -166,7 +166,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
           }
         }
 
-        if (count == 0) {
+        if (count == 0 && !action.isSelectedPhaseAR2021()) {
           action.addMessage(action.getText("subIdos"));
           action.addMissingField("study.stratgicResultsLink.subIDOs");
           action.getInvalidFields().put("list-expectedStudy.subIdos",
