@@ -20,7 +20,6 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
@@ -95,7 +94,6 @@ public class ProjectOutcomeAction extends BaseAction {
   private ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager;
   private CrpMilestoneManager crpMilestoneManager;
   private PhaseManager phaseManager;
-  private CrpProgramOutcomeIndicatorManager crpProgramOutcomeIndicatorManager;
 
   // Front-end
   private long projectID;
@@ -121,7 +119,7 @@ public class ProjectOutcomeAction extends BaseAction {
     ProjectCommunicationManager projectCommunicationManager, AuditLogManager auditLogManager,
     CrpMilestoneManager crpMilestoneManager, ProjectNextuserManager projectNextuserManager,
     ProjectOutcomeValidator projectOutcomeValidator, ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager,
-    PhaseManager phaseManager, CrpProgramOutcomeIndicatorManager crpProgramOutcomeIndicatorManager) {
+    PhaseManager phaseManager) {
     super(config);
     this.projectManager = projectManager;
     this.srfTargetUnitManager = srfTargetUnitManager;
@@ -136,7 +134,6 @@ public class ProjectOutcomeAction extends BaseAction {
     this.projectOutcomeValidator = projectOutcomeValidator;
     this.projectOutcomeIndicatorManager = projectOutcomeIndicatorManager;
     this.phaseManager = phaseManager;
-    this.crpProgramOutcomeIndicatorManager = crpProgramOutcomeIndicatorManager;
   }
 
   public void addAllCrpMilestones() {
@@ -758,11 +755,7 @@ public class ProjectOutcomeAction extends BaseAction {
     if (projectOutcome.getMilestones() != null) {
       for (ProjectMilestone crpMilestone : projectOutcome.getMilestones()) {
         CrpMilestone milestone = crpMilestoneManager.getCrpMilestoneById(crpMilestone.getCrpMilestone().getId());
-        /*
-         * if ((milestone.getYear() != null && milestone.getYear().intValue() == this.getCurrentCycleYear())
-         * || (milestone.getExtendedYear() != null
-         * && milestone.getExtendedYear().intValue() == this.getCurrentCycleYear())) {
-         */
+
         milestone.setIndex(crpMilestone.getId());
         crpMilestones.add(milestone);
         // }
@@ -888,7 +881,6 @@ public class ProjectOutcomeAction extends BaseAction {
       }
 
       this.saveProjectOutcome();
-      // projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
       projectOutcome.setPhase(this.getActualPhase());
       projectOutcome.setModificationJustification(this.getJustification());
       projectOutcome.setOrder(this.defineProjectOutcomeOrder(projectOutcome));
@@ -1004,11 +996,7 @@ public class ProjectOutcomeAction extends BaseAction {
             // This add projectCommunication to generate correct auditlog.
             projectOutcome.getProjectCommunications().add(projectCommunicationDB);
           }
-
-
         }
-
-
       }
     }
   }
@@ -1056,7 +1044,6 @@ public class ProjectOutcomeAction extends BaseAction {
               projectOutcomeIndicatorDB.setAchievedNarrative(projectOutcomeIndicator.getAchievedNarrative());
             }
 
-
             projectOutcomeIndicatorDB =
               projectOutcomeIndicatorManager.saveProjectOutcomeIndicator(projectOutcomeIndicatorDB);
             // This add projectOutcomeIndicator to generate correct auditlog.
@@ -1080,7 +1067,6 @@ public class ProjectOutcomeAction extends BaseAction {
       }
       if (!projectOutcome.getMilestones().contains(projectMilestone)) {
         projectMilestoneManager.deleteProjectMilestone(projectMilestone.getId());
-
       }
     }
 
@@ -1130,12 +1116,9 @@ public class ProjectOutcomeAction extends BaseAction {
             }
             // Reporting phase
             else {
-
               projectMilestoneDB.setAchievedValue(projectMilestone.getAchievedValue());
               projectMilestoneDB.setNarrativeAchieved(projectMilestone.getNarrativeAchieved());
             }
-
-
             projectMilestoneDB.setCrpMilestone(projectMilestone.getCrpMilestone());
             projectMilestoneDB.setExpectedValue(projectMilestone.getExpectedValue());
             projectMilestoneDB.setAchievedValue(projectMilestone.getAchievedValue());
@@ -1143,11 +1126,8 @@ public class ProjectOutcomeAction extends BaseAction {
             projectMilestoneDB = projectMilestoneManager.saveProjectMilestone(projectMilestoneDB);
             // This add projectMilestone to generate correct auditlog.
             projectOutcome.getProjectMilestones().add(projectMilestoneDB);
-
           }
-
         }
-
       }
     }
   }
