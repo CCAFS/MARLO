@@ -57,6 +57,7 @@ public class ProjectGraphsAction extends BaseAction {
   private List<GraphCountDTO> byProjectProgramType;
   private List<GraphCountDTO> byProjectStatus;
   private Map<String, String> fpColors;
+  private Map<String, String> statusColors;
 
   @Inject
   public ProjectGraphsAction(APConfig config) {
@@ -91,12 +92,17 @@ public class ProjectGraphsAction extends BaseAction {
     return fpColors;
   }
 
+  public Map<String, String> getStatusColors() {
+    return statusColors;
+  }
+
   @SuppressWarnings("unchecked")
   @Override
   public void prepare() throws Exception {
     try {
       this.projects = (List<ProjectHomeDTO>) this.getSession().get(APConstants.USER_PROJECTS);
       this.fpColors = (Map<String, String>) this.getSession().get(APConstants.FP_COLORS);
+      this.statusColors = (Map<String, String>) this.getSession().get(APConstants.STATUS_COLORS);
       if (projects == null) {
         projects = Collections.emptyList();
       }
@@ -104,6 +110,7 @@ public class ProjectGraphsAction extends BaseAction {
       e.printStackTrace();
       this.projects = Collections.emptyList();
       this.fpColors = Collections.emptyMap();
+      this.statusColors = Collections.emptyMap();
     }
   }
 
@@ -117,5 +124,9 @@ public class ProjectGraphsAction extends BaseAction {
 
   public void setFpColors(Map<String, String> fpColors) {
     this.fpColors = fpColors;
+  }
+
+  public void setStatusColors(Map<String, String> statusColors) {
+    this.statusColors = statusColors;
   }
 }
