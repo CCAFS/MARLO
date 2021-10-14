@@ -84,14 +84,6 @@ public class ClarisaPublicAccesFilter extends OncePerRequestFilter {
         }
         Session session = subject.getSession();
         session.setAttribute(APConstants.CLARISA_PUBLIC, true);
-      } else {
-        Long user = (Long) subject.getPrincipal();
-        User userobj = userManager.getUser(user);
-        if (!userobj.getUsername().equals(this.config.getClarisaUser())) {
-          Session session = subject.getSession();
-          session.setAttribute(APConstants.CLARISA_PUBLIC, false);
-        }
-
       }
     }
 
