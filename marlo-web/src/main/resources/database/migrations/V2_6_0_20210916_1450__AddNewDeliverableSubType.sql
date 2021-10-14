@@ -1,0 +1,1 @@
+INSERT INTO deliverable_types (name, parent_id, description, timeline, is_fair, admin_type, global_unit_id, is_included_website) values('Capacity Development Event', 46, NULL, NULL, 0, 0, NULL, 0);
