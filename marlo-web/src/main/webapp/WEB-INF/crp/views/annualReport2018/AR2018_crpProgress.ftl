@@ -5,7 +5,7 @@
 [#assign currentStage = actionName?split('/')[1]/]
 [#assign pageLibs = [ "select2", "trumbowyg", "components-font-awesome", "datatables.net", "datatables.net-bs","flag-icon-css"] /]
 [#assign customJS = [ 
-  "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js"
+  "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js?20211014a"
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210421C" ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210316"] /]
 
@@ -320,13 +320,15 @@
   </div>
   [#-- Expected additional contribution before end of 2022 (if not already fully covered). --]
   <br>
+  <span id="actualPhase" style="display: none;">${action.isSelectedPhaseAR2021()?c}</span>
   <div class="form-group TA_additionalContribution">
   [#if !PMU] [@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/][/#if]
-    [@customForm.textArea name="" value=element.additionalContribution i18nkey="${customLabel}.additionalContribution" className="limitWords-100 tumaco" help="${customLabel}.additionalContribution.help" helpIcon=false required=false editable=editable  allowTextEditor=!isTemplate /]
-    <br>
     <div style="display:none">
-    [@customForm.textArea name="${ccname}.additionalContribution" value=element.additionalContribution i18nkey="${customLabel}.additionalContribution" className="limitWords-100 additionalContributionTAHidden" help="${customLabel}.additionalContribution.help" helpIcon=false required=false editable=editable /]
+      [@customForm.textArea name="" value=element.additionalContribution i18nkey="${customLabel}.additionalContribution" className="limitWords-100 tumaco" help="${customLabel}.additionalContribution.help" helpIcon=false required=false editable=editable  allowTextEditor=!isTemplate /]
     </div>
+    
+    [@customForm.textArea name="${ccname}.additionalContribution" value=element.additionalContribution i18nkey="${customLabel}.additionalContribution" className="limitWords-100 additionalContributionTAHidden" help="${customLabel}.additionalContribution.help" helpIcon=false required=false editable=editable /]
+    
   
     [#-- FP Synthesis table --]
   [#if PMU]
