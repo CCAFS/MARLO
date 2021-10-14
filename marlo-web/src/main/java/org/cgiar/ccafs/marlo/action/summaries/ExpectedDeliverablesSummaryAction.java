@@ -332,8 +332,11 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             || (deliverableInfo.getStatus() != null && deliverableInfo.getYear() == selectedPhaseYear
 
               || ((deliverableInfo.getYear() == selectedPhaseYear || deliverableInfo.getNewExpectedYear() != null
-                && deliverableInfo.getNewExpectedYear() == selectedPhaseYear) && this.getSelectedPhase() != null
-                && ((this.getSelectedPhase().getName() != null && this.getSelectedPhase().getName().equals("UpKeep")||(this.getSelectedPhase().getName() != null && this.getSelectedPhase().getName().equals("Progress"))))))) {
+                && deliverableInfo.getNewExpectedYear() == selectedPhaseYear)
+                && this.getSelectedPhase() != null
+                && ((this.getSelectedPhase().getName() != null && this.getSelectedPhase().getName().equals("UpKeep"))
+                  || (this.getSelectedPhase().getName() != null
+                    && this.getSelectedPhase().getName().equals("Progress"))))))) {
             phaseDeliverables.add(deliverable);
 
           }
