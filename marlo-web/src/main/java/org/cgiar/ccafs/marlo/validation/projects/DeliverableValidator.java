@@ -407,7 +407,10 @@ public class DeliverableValidator extends BaseValidator {
         }
 
         // Validate Deliverable Participant
-        if (deliverable.getDeliverableParticipant() != null
+        if (deliverable.getDeliverableInfo(action.getActualPhase()) != null
+          && deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType() != null
+          && deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId() == 145
+          && deliverable.getDeliverableParticipant() != null
           && deliverable.getDeliverableParticipant().getHasParticipants() != null
           && deliverable.getDeliverableParticipant().getHasParticipants()) {
           this.validateDeliverableParticipant(deliverable.getDeliverableParticipant(), action);

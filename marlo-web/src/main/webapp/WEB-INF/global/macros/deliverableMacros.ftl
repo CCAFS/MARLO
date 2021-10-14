@@ -197,13 +197,21 @@
 [#-- Does this deliverable involve Participants and Trainees? --]
 [#macro deliverableParticipantsMacro ]
 [#local customName = "deliverable.deliverableParticipant" /]
+[#local capacityEventType = ((deliverable.deliverableInfo?has_content) && (deliverable.deliverableInfo.deliverableType?has_content) && (deliverable.deliverableInfo.deliverableType.id?has_content) && deliverable.deliverableInfo.deliverableType.id == 145)!false]
+
+[#local hasParticipants = (deliverable.deliverableParticipant.hasParticipants?string)!""/]
+  
+[#if capacityEventType]
+  [#assign hasParticipants = "true"]
+ [/#if]
+  
 <div class="simpleBox">
   <div class="form-group row yesNoInputDeliverable">
-    <label class="col-md-9 yesNoLabel" for="">[@s.text name="deliverable.involveParticipants.title" /] [@customForm.req required=reportingActive /]</label>
+    <label class="col-md-9 yesNoLabel" for="">[@s.text name="deliverable.involveParticipants.title" /] [@customForm.req required=(reportingActive || capacityEventType) /]</label>
     <div class="col-md-3">[@customForm.yesNoInputDeliverableParticipants name="${customName}.hasParticipants"  editable=editable inverse=false  cssClass="type-involveParticipants text-center" neutral=true  /] </div>  
   </div>
-  
-  <div class="block-involveParticipants" style="display:${((deliverable.deliverableParticipant.hasParticipants)!false)?string('block','none')}">
+
+  <div class="block-involveParticipants" style="display:${(hasParticipants == "true")?string('block','none')}">
     <hr />
     [#-- Title Event/Activity --]
     <div class="form-group">
