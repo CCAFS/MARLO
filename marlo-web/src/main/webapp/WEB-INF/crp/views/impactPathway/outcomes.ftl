@@ -285,7 +285,7 @@
             [#-- Uploaded File --]
             <p class="fileUploaded textMessage checked" style="display:${hasFile?string('block','none')}">
               <span class="contentResult">[#if outcome.file??]
-                <a target="_blank" href="${action.getBaseLineFileURL((outcome.id?string)!-1)}&filename=${(outcome.file.fileName)!}">${(outcome.file.fileName)!('No file name')} </a>
+                <a target="_blank" href="${action.getBaseLineFileURL((outcome.id?string)!-1)}&filename=${(outcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="38px" alt="Download document" /> ${(outcome.file.fileName)!('No file name')} </a>
                 [/#if]</span>
               [#if editable]<span class="removeIcon"> </span> [/#if]
             </p>

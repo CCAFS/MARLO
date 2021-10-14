@@ -95,14 +95,14 @@
                     [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive/]
                   [#else]
                     <label for="">[@s.text name="projectOutcome.expectedValue" /]:</label>
-                    <div class="input"><p>${(projectOutcome.expectedValue)!'Prefilled if available'}</p></div>
+                    <div class="input"><p>${(projectOutcome.expectedValue)!'No expected value indicated'}</p></div>
                   [/#if]
                 [#else]
                   [#if editable]
                     [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive && editOutcomeExpectedValue/]
                   [#else]
                     <label for="">[@s.text name="projectOutcome.expectedValue" /]:</label>
-                    <div class="input"><p>${(projectOutcome.expectedValue)!'Prefilled if available'}</p></div>
+                    <div class="input"><p>${(projectOutcome.expectedValue)!'No expected value indicated'}</p></div>
                   [/#if]
                 [/#if]
                 </div>
@@ -137,7 +137,7 @@
                     [@customForm.input name="projectOutcome.achievedValue" type="text"  placeholder="" className="targetValue ${reportingActive?string('fieldFocus','')}" required=true /]
                   [#else]
                     <label for="">[@s.text name="projectOutcome.achievedValue" /]:</label>
-                    <div class="input"><p>${(projectOutcome.achievedValue)!'Prefilled if available'}</p></div>
+                    <div class="input"><p>${(projectOutcome.achievedValue)!'No achieved value indicated'}</p></div>
                   [/#if]
                 </div>
                 <div class="col-md-7">
@@ -164,7 +164,7 @@
                   <div class="" id="baseline">
                     <div class="form-group text-right">
                       [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
-                        <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="20px" alt="" /> ${ (projectOutcome.crpProgramOutcome.file.fileName)!}</a> 
+                        <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="20px" alt="Download document" /> ${ (projectOutcome.crpProgramOutcome.file.fileName)!}</a> 
                       [#else]
                         <p class="note"><i>[@s.text name="projectOutcome.askForBaselineInstructions" /]</i></p>
                       [/#if]
@@ -253,7 +253,7 @@
                               <div class="" id="baseline">
                                 <div class="form-group text-right">
                                   [#if (projectOutcomeLastPhase.crpProgramOutcome.file.fileName??)!false]
-                                    <a href="${action.getBaseLineFileURL((projectOutcomeLastPhase.crpProgramOutcome.id?string)!-1)}&filename=${ (projectOutcomeLastPhase.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="20px" alt="" /> ${ (projectOutcomeLastPhase.crpProgramOutcome.file.fileName)!}</a> 
+                                    <a href="${action.getBaseLineFileURL((projectOutcomeLastPhase.crpProgramOutcome.id?string)!-1)}&filename=${ (projectOutcomeLastPhase.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="30px" alt="Download document" /> ${ (projectOutcomeLastPhase.crpProgramOutcome.file.fileName)!}</a> 
                                   [#else]
                                     <p class="note"><i>[@s.text name="projectOutcome.askForBaselineInstructions" /]</i></p>
                                   [/#if]
@@ -287,7 +287,7 @@
                                 <div class="" id="baseline">
                                   <div class="form-group text-right">
                                     [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
-                                      <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}&filename=${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="20px" alt="" /> ${ (projectOutcome.crpProgramOutcome.file.fileName)!}</a> 
+                                      <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}&filename=${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="30px" alt="Download document" /> ${ (projectOutcome.crpProgramOutcome.file.fileName)!}</a> 
                                     [#else]
                                       <p class="note"><i>[@s.text name="projectOutcome.askForBaselineInstructions" /]</i></p>
                                     [/#if]
@@ -323,9 +323,11 @@
                           <h5 class="sectionSubTitle">Progress to Key Performance Indicator</h5>
                           <div class="form-group">
                             <div class="" id="baseline">
-                              <div class="form-group text-right">
+                              <div class="form-group text-left">
                                 [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
-                                  <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}&filename=${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="20px" alt="" /> ${ (projectOutcome.crpProgramOutcome.file.fileName)!}</a> 
+                                  <p><b>Baseline Instructions:</b></p>
+                                  <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}&filename=${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="30px" alt="Download document" /> ${ (projectOutcome.crpProgramOutcome.file.fileName)!}</a>
+                                  <p><br></p> 
                                 [#else]
                                   <p class="note"><i>[@s.text name="projectOutcome.askForBaselineInstructions" /]</i></p>
                                 [/#if]
@@ -487,7 +489,7 @@
         
         <div class="row form-group milestoneTargetValue" style="display:${showMilestoneValue?string('block', 'none')}">
           <div class="col-md-4">
-            [@customForm.input name="${customName}.settedValue" i18nkey="projectOutcomeMilestone.settedValue" type="text"  placeholder="" className="targetValue" required=false editable=editable /]
+            [@customForm.input name="${customName}.settedValue" i18nkey="projectOutcomeMilestone.settedValue" type="text"  placeholder="" className="targetValue" required=false editable=editable && isYearRequired(milestoneYear) /]
           </div>
           
           <div class="col-md-4">
@@ -508,12 +510,14 @@
           [#-- REPORTING BLOCK --]
           [#if action.isUpKeepActive() && action.isAiccra()]
             <div class="col-md-4">
-              [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.upkeepAchievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) /]
+              [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.upkeepAchievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && isYearRequired(milestoneYear) /]
             </div>
           [#else]
+           [#if !isYearRequired(milestoneYear)]
             <div class="col-md-4">
-              [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) /]
+              [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && isYearRequired(milestoneYear)/]
             </div>
+           [/#if]
           [/#if]
         </div>
         
