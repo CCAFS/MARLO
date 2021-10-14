@@ -6314,6 +6314,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+  public boolean isPOWB() {
+    if (this.getActualPhase() != null && this.getActualPhase().getName() != null
+      && (this.getActualPhase().getName().equals("POWB") || this.getActualPhase().getName().equals("APWB"))) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   public boolean isPowb2019() {
     try {
       if (this.getCurrentCycleYear() >= 2019) {

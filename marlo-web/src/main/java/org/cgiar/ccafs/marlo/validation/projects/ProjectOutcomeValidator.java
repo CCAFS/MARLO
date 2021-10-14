@@ -322,15 +322,19 @@ public class ProjectOutcomeValidator extends BaseValidator {
             action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].expectedValue",
               InvalidFieldsMessages.EMPTYFIELD);
           }
-          if (projectMilestone.getAchievedValue() == null
-            || !this.isValidNumber(String.valueOf(projectMilestone.getAchievedValue()))) {
-            action.addMessage(action.getText("projectOutcomeMilestone.requeried.achievedValue", params));
-            action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].achievedValue",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
-          if (projectMilestone.getAchievedValue() != null && projectMilestone.getAchievedValue() < 0) {
-            action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].achievedValue",
-              InvalidFieldsMessages.EMPTYFIELD);
+          if (action.getActualPhase() != null && action.getActualPhase().getName() != null
+            && (!action.getActualPhase().getName().equals("POWB")
+              && !action.getActualPhase().getName().equals("APWB"))) {
+            if (projectMilestone.getAchievedValue() == null
+              || !this.isValidNumber(String.valueOf(projectMilestone.getAchievedValue()))) {
+              action.addMessage(action.getText("projectOutcomeMilestone.requeried.achievedValue", params));
+              action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].achievedValue",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+            if (projectMilestone.getAchievedValue() != null && projectMilestone.getAchievedValue() < 0) {
+              action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].achievedValue",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
           }
         }
 
