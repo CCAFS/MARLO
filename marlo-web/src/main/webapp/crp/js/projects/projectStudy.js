@@ -43,6 +43,18 @@ function init() {
 
 function attachEvents() {
   if ($('#actualPhase').html() == 'true') {
+    var outcomeStory = $('textarea[id*="comunicationsMaterial"]');
+    var outcomeStoryTrimmed;
+    if (outcomeStory.html() != undefined) {
+      outcomeStoryTrimmed = outcomeStory.html().trim();
+    } else {
+      outcomeStoryTrimmed = outcomeStory.html();
+    }
+
+    if (outcomeStoryTrimmed == undefined || outcomeStoryTrimmed == '') {
+      outcomeStory.prop('disabled', true);
+    }
+    
     $('select.statusSelect option[value="4"]').prop('disabled', true);
   }
 
