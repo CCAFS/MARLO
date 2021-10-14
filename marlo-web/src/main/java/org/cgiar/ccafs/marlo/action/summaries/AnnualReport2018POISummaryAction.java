@@ -78,6 +78,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressDeliverab
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressInnovation;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcome;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestone;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestoneLink;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressPolicy;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressStudy;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFundingUseExpendituryArea;
@@ -119,6 +120,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -191,10 +193,12 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       throw new IllegalArgumentException();
     }
 
-    BigDecimal bd = new BigDecimal(value);
+    BigDecimal bd = new BigDecimal(String.valueOf(value));
     bd = bd.setScale(places, RoundingMode.HALF_UP);
     return bd.doubleValue();
   }
+
+  private String notRequiredAR2021 = "According to the AR template for 2021, this field is no longer required";
 
   // Managers
   private PowbExpenditureAreasManager powbExpenditureAreasManager;
@@ -792,8 +796,13 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
               if (targetCase.getBriefSummary() != null) {
                 briefSummaries = targetCase.getBriefSummary();
               }
-              if (targetCase.getAdditionalContribution() != null) {
-                additionalContribution = targetCase.getAdditionalContribution();
+
+              if (this.getSelectedYear() != 2021) {
+                if (targetCase.getAdditionalContribution() != null) {
+                  additionalContribution = targetCase.getAdditionalContribution();
+                }
+              } else {
+                additionalContribution = notRequiredAR2021;
               }
 
               if (targetCase.getGeographicScopes() != null && !targetCase.getGeographicScopes().isEmpty()) {
@@ -1752,13 +1761,33 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
                       evidenceMilestone = evidenceMilestone.replaceAll("&amp;", "&");
                     }
                   }
-                  if (milestoneOb.getEvidenceLink() != null) {
-                    evidence = milestoneOb.getEvidenceLink();
-                    if (evidence != null) {
-                      // TODO the replaceAll() is a temporal solution. we need to check where the problem comes from
-                      evidence = evidence.replaceAll("&amp;", "&");
+
+                  if (this.getSelectedYear() != 2021) {
+                    if (milestoneOb.getEvidenceLink() != null) {
+                      evidence = milestoneOb.getEvidenceLink();
+                      if (evidence != null) {
+                        // TODO the replaceAll() is a temporal solution. we need to check where the problem comes from
+                        evidence = evidence.replaceAll("&amp;", "&");
+                      }
+                    }
+                  } else {
+                    if (this.isNotEmpty(milestoneOb.getReportSynthesisFlagshipProgressOutcomeMilestoneLinks())) {
+                      StringBuffer links = new StringBuffer();
+                      String linkTemp = "";
+                      for (ReportSynthesisFlagshipProgressOutcomeMilestoneLink milestoneLink : milestoneOb
+                        .getReportSynthesisFlagshipProgressOutcomeMilestoneLinks()) {
+                        linkTemp = StringUtils.trimToEmpty(milestoneLink.getLink());
+                        if (StringUtils.isNotBlank(linkTemp)) {
+                          links = links.append("•").append(linkTemp.replaceAll("&amp;", "&")).append("<br>");
+                        }
+                      }
+
+                      if (links.length() != 0) {
+                        evidence = links.toString();
+                      }
                     }
                   }
+
                   if (milestoneOb.getCrpMilestone().getStatusName() != null) {
                     milestoneStatus = milestoneOb.getCrpMilestone().getStatusName();
                     if (milestoneStatus != null) {
