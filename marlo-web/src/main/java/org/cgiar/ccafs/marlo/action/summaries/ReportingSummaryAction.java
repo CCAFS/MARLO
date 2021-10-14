@@ -4950,12 +4950,15 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         // OutcomeStory
         if (projectExpectedStudy.getProjectExpectedStudyInfo() != null
           && projectExpectedStudy.getProjectExpectedStudyInfo().getComunicationsMaterial() != null) {
-
           /*
            * Get short url calling tinyURL service
            */
           outcomeHistory = urlShortener
             .detectAndShortenLinks(projectExpectedStudy.getProjectExpectedStudyInfo().getComunicationsMaterial());
+          if (this.isSelectedPhaseAR2021() && StringUtils.isBlank(outcomeHistory)) {
+            outcomeHistory = this.getText("global.AR2021.notRequired");
+          }
+
         }
         // Policy
         if (projectExpectedStudy != null && projectExpectedStudy.getProject() != null
@@ -5342,11 +5345,17 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         if (studyinfo.getOtherCrossCuttingDimensions() != null
           && !studyinfo.getOtherCrossCuttingDimensions().trim().isEmpty()) {
           otherCrossCuttingDimensions = studyinfo.getOtherCrossCuttingDimensions();
+          if (this.isSelectedPhaseAR2021()) {
+            otherCrossCuttingDimensions = this.getText("global.AR2021.notRequired");
+          }
         }
 
         // Communications materials
         if (studyinfo.getComunicationsMaterial() != null && !studyinfo.getComunicationsMaterial().trim().isEmpty()) {
           comunicationsMaterials = studyinfo.getComunicationsMaterial();
+          if (this.isSelectedPhaseAR2021() && StringUtils.isBlank(comunicationsMaterials)) {
+            comunicationsMaterials = this.getText("global.AR2021.notRequired");
+          }
         }
         // Atached material
         if (studyinfo.getOutcomeFile() != null) {
