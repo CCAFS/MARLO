@@ -74,10 +74,7 @@ public class RegionsItem<T> {
         for (LocElementRegion locElementRegion : region.getRegionCountries().stream().collect(Collectors.toList())) {
           LocElement loc = locElementManager.getLocElementById(locElementRegion.getLocElement().getId());
           if (loc != null) {
-            /*
-             * FIXME: ESTA LÍNEA ESTABA MODIFICANDO LOS REGISTROS EN LA BASE DE DATOS
-             */
-            // loc.setLocElement(null);
+
             regionCountries.add(loc);
           }
         }
@@ -85,13 +82,10 @@ public class RegionsItem<T> {
         regionList.add(region);
       }
     }
+    //
+    List<OneCGIARRegionsDTO> regionsDTO = regionList.stream()
+      .map(region -> this.regionsMapper.regionsToOneCGIARRegionsDTO(region)).collect(Collectors.toList());
 
-    // FIXME: SOLUCIÓN TEMPORAL
-    List<OneCGIARRegionsDTO> regionsDTO =
-      regionList.stream().map(region -> this.regionsMapper.regionsToOneCGIARRegionsDTO(region))
-        .peek(dto -> dto.setCountries(
-          dto.getCountries().stream().peek(country -> country.setRegionDTO(null)).collect(Collectors.toList())))
-        .collect(Collectors.toList());
 
     return Optional.ofNullable(regionsDTO).map(result -> new ResponseEntity<>(result, HttpStatus.OK))
       .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
