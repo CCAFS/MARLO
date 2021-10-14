@@ -37,68 +37,74 @@ import javax.inject.Named;
 @Named
 public class ProjectImpactsValidator extends BaseValidator {
 
-  @Inject
-  // GlobalUnit Manager
-  private GlobalUnitManager crpManager;
+	@Inject
+	// GlobalUnit Manager
+	private GlobalUnitManager crpManager;
 
-  @Inject
-  public ProjectImpactsValidator() {
+	@Inject
+	public ProjectImpactsValidator() {
 
-  }
+	}
 
-  private Path getAutoSaveFilePath(ProjectImpacts projectImpacts, long crpID, BaseAction action) {
-    GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
-    String composedClassName = projectImpacts.getClass().getSimpleName();
-    String actionFile = ProjectSectionStatusEnum.IMPACTS.getStatus().replace("/", "_");
-    String autoSaveFile = projectImpacts.getId() + "_" + composedClassName + "_" + action.getActualPhase().getName()
-      + "_" + action.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
+	private Path getAutoSaveFilePath(ProjectImpacts projectImpacts, long crpID, BaseAction action) {
+		GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
+		String composedClassName = projectImpacts.getClass().getSimpleName();
+		String actionFile = ProjectSectionStatusEnum.IMPACTS.getStatus().replace("/", "_");
+		String autoSaveFile = projectImpacts.getId() + "_" + composedClassName + "_" + action.getActualPhase().getName()
+				+ "_" + action.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
 
+		return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+	}
 
-    return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
-  }
+	public void validate(BaseAction action, ProjectImpacts projectImpacts, boolean saving) {
+		action.setInvalidFields(new HashMap<>());
 
-  public void validate(BaseAction action, ProjectImpacts projectImpacts, boolean saving) {
-    action.setInvalidFields(new HashMap<>());
+		if (!saving) {
+			Path path = this.getAutoSaveFilePath(projectImpacts, action.getCrpID(), action);
 
-    if (!saving) {
-      Path path = this.getAutoSaveFilePath(projectImpacts, action.getCrpID(), action);
+			if (path.toFile().exists()) {
+				action.addMissingField("draft");
+			}
+		}
 
-      if (path.toFile().exists()) {
-        action.addMissingField("draft");
-      }
-    }
+		if (action.hasSpecificities(APConstants.CRP_COVID_REQUIRED)) {
+			this.validateImpacts(action, projectImpacts);
+		}
 
-    if (action.hasSpecificities(APConstants.CRP_COVID_REQUIRED)) {
-      this.validateImpacts(action, projectImpacts);
-    }
+		if (!action.getFieldErrors().isEmpty()) {
+			action.addActionError(action.getText("saving.fields.required"));
+		} else if (action.getValidationMessage().length() > 0) {
+			action.addActionMessage(" " + action.getText("saving.missingFields",
+					new String[] { action.getValidationMessage().toString() }));
+		}
 
-    if (!action.getFieldErrors().isEmpty()) {
-      action.addActionError(action.getText("saving.fields.required"));
-    } else if (action.getValidationMessage().length() > 0) {
-      action.addActionMessage(
-        " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
-    }
+		this.saveMissingFields(projectImpacts, action.getActualPhase().getDescription(),
+				action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
+				ProjectSectionStatusEnum.IMPACTS.getStatus(), action);
+	}
 
-    this.saveMissingFields(projectImpacts, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-      action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.IMPACTS.getStatus(), action);
-  }
+	private void validateImpacts(BaseAction action, ProjectImpacts projectImpacts) {
+		if (!(this.isValidString(projectImpacts.getAnswer()) && this.wordCount(projectImpacts.getAnswer()) <= 300)) {
+			action.addMessage(action.getText("projects.impacts.covid19.answer"));
+			action.getInvalidFields().put("input-projects.impacts.covid19.answer", InvalidFieldsMessages.EMPTYFIELD);
+		}
 
-  private void validateImpacts(BaseAction action, ProjectImpacts projectImpacts) {
-    if (!(this.isValidString(projectImpacts.getAnswer()) && this.wordCount(projectImpacts.getAnswer()) <= 300)) {
-      action.addMessage(action.getText("projects.impacts.covid19.answer"));
-      action.getInvalidFields().put("input-projects.impacts.covid19.answer", InvalidFieldsMessages.EMPTYFIELD);
-    }
+		if (projectImpacts.getProjectImpactCategoryId() != null) {
+			if (projectImpacts.getProjectImpactCategoryId() == -1) {
+				action.addMessage(action.getText("projects.impacts.covid19CategoryTitle"));
+				action.getInvalidFields().put("input-actualProjectImpact.projectImpactCategoryId",
+						InvalidFieldsMessages.EMPTYFIELD);
+			} else if (projectImpacts.getProjectImpactCategoryId() == 3L && action.isSelectedPhaseAR2021()) {
+				action.addMessage(action.getText("projects.impacts.covid19CategoryTitle"));
+				action.getInvalidFields().put("input-actualProjectImpact.projectImpactCategoryId",
+						InvalidFieldsMessages.WRONGVALUE);
+			}
+		} else {
+			action.addMessage(action.getText("projects.impacts.covid19CategoryTitle"));
+			action.getInvalidFields().put("input-actualProjectImpact.projectImpactCategoryId",
+					InvalidFieldsMessages.EMPTYFIELD);
+		}
 
-    if (projectImpacts.getProjectImpactCategoryId() != null) {
-      if (projectImpacts.getProjectImpactCategoryId() == -1) {
-        action.addMessage(action.getText("projects.impacts.covid19CategoryTitle"));
-        action.getInvalidFields().put("input-projects.impacts.covid19.categoryTitle", InvalidFieldsMessages.EMPTYFIELD);
-      }
-    } else {
-      action.addMessage(action.getText("projects.impacts.covid19CategoryTitle"));
-      action.getInvalidFields().put("input-projects.impacts.covid19.categoryTitle", InvalidFieldsMessages.EMPTYFIELD);
-    }
-
-  }
+	}
 
 }
