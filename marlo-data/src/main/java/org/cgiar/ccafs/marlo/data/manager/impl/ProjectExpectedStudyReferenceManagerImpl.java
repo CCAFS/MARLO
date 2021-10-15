@@ -136,6 +136,7 @@ public class ProjectExpectedStudyReferenceManagerImpl implements ProjectExpected
       projectExpectedStudyReferenceAdd.setProjectExpectedStudy(projectExpectedStudyReference.getProjectExpectedStudy());
       projectExpectedStudyReferenceAdd.setPhase(phase);
       projectExpectedStudyReferenceAdd.setReference(projectExpectedStudyReference.getReference());
+      projectExpectedStudyReferenceAdd.setLink(projectExpectedStudyReference.getLink());
       projectExpectedStudyReferenceDAO.save(projectExpectedStudyReferenceAdd);
     } else {
       for (ProjectExpectedStudyReference projectExpectedStudyReferenceDel : projectExpectedStudyReferences) {
@@ -150,6 +151,7 @@ public class ProjectExpectedStudyReferenceManagerImpl implements ProjectExpected
       projectExpectedStudyReferenceAdd.setProjectExpectedStudy(projectExpectedStudyReference.getProjectExpectedStudy());
       projectExpectedStudyReferenceAdd.setPhase(phase);
       projectExpectedStudyReferenceAdd.setReference(projectExpectedStudyReference.getReference());
+      projectExpectedStudyReferenceAdd.setLink(projectExpectedStudyReference.getLink());
       projectExpectedStudyReferenceDAO.save(projectExpectedStudyReferenceAdd);
     }
 

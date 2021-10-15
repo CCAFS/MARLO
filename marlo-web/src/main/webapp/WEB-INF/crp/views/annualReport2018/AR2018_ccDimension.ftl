@@ -69,8 +69,10 @@
                   [#-- List any important CRP research findings --]
                   <div class="form-group">
                     [#-- Word Document Tag --]
-                    [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
-                    [#else][@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/]
+                    [#if PMU]
+                      [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                    [#else]
+                      [@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/]
                     [/#if]
                     [@customForm.textArea name="${customName}.genderResearchFindings" i18nkey="${customLabel}.gender.researchFindings" help="${customLabel}.gender.researchFindings.help" className="limitWords-${calculateLimitWords(450)}" helpIcon=false required=true editable=editable allowTextEditor=true /]
                   </div>
@@ -158,8 +160,14 @@
                   [#-- CRPs contribution to CapDev --]
                   <div class="form-group">
                     [#-- Word Document Tag --]
-                    [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
-                    [#else][@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/]
+                    [#if PMU]
+                        [#assign guideSheetURL = "https://docs.google.com/document/d/1VSV90ioOcofH2N2DhmUdHV7flZctkIVI/edit" /]
+                        <small class="pull-left"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> Capacity development  -  Guideline </a> </small>
+                      [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                    [#else]
+                      [#assign guideSheetURL = "https://docs.google.com/document/d/1VSV90ioOcofH2N2DhmUdHV7flZctkIVI/edit" /]
+                      <small class="pull-left"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> Capacity development  -  Guideline </a> </small>
+                      [@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/]
                     [/#if]
                     [@customForm.textArea name="${customName}.capDevKeyAchievements" i18nkey="${customLabel}.capDev.keyAchievements" help="${customLabel}.capDev.keyAchievements.help" className="limitWords-${calculateLimitWords(300)}" helpIcon=false required=true editable=editable allowTextEditor=true /]
                   
