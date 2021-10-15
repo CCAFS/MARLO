@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectOutcomeID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [ 
-  "${baseUrlMedia}/js/projects/projectContributionCrp.js?20210302", 
+  "${baseUrlMedia}/js/projects/projectContributionCrp.js?20211014", 
   "${baseUrlCdn}/global/js/autoSave.js", 
   "${baseUrlCdn}/global/js/fieldsValidation.js"
   ] 
