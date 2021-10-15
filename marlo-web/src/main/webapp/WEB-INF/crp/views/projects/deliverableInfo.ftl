@@ -104,7 +104,6 @@
     </div>
     
     [#-- Status justification textArea --]
-    [#if !isDeliverableNew || isStatusPartiallyComplete]
       [#assign justificationRequired = ((deliverable.deliverableInfo.status == 4)  || (deliverable.deliverableInfo.status == 5) || (deliverable.deliverableInfo.status == 7))!false ]
       <div class="form-group">
         <div id="statusDescription" class="col-md-12" style="display:${justificationRequired?string('block','none')}">
@@ -119,7 +118,6 @@
         </div>
       </div>
       <div class="clearfix"></div>
-    [/#if]
     
     <hr />
     [#-- New deliverable at reporting --]
