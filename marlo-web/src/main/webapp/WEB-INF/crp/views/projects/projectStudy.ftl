@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${expectedID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "select2", "blueimp-file-upload", "flag-icon-css", "components-font-awesome"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectStudy.js?20211014A",
+  "${baseUrlMedia}/js/projects/projectStudy.js?20211015B",
   "${baseUrlCdn}/global/js/autoSave.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js"
   ] 
@@ -27,21 +27,13 @@
   }
 /] 
 
+[#import "/WEB-INF/global/macros/utils.ftl" as utilities /]
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/studiesTemplates.ftl" as studies /]
 
-
-[#assign isOutcomeCaseStudy = ((expectedStudy.projectExpectedStudyInfo.studyType.id == 1)!false) && reportingActive/]
-[#if isOutcomeCaseStudy]
-  <div class="container helpText viewMore-block">
-    <div class="helpMessage infoText">
-      <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
-      <p class="col-md-10"> [@s.text name="study.help" /] </p>
-    </div> 
-    <div style="display:none" class="viewMore closed"></div>
-  </div>
-[/#if]
+[#-- Helptext --]
+[@utilities.helpBox name="study.help" /]
 
 <section class="container">
     <div class="row">

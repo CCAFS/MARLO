@@ -14,8 +14,8 @@ function init() {
 
 function attachEvents() {
   if ($('#actualPhase').html() == 'true') {
-    var editor = $('.TA_additionalContribution textarea');
-    console.log(editor.prop('disabled', true));
+    var additionalContribution = $('.TA_additionalContribution');
+    additionalContribution.css('display', 'none');
   }
 
   // Add item

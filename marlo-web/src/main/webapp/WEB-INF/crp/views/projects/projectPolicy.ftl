@@ -23,9 +23,12 @@
   {"label":"policy", "nameSpace":"/projects", "action":""}
 ] /]
 
-
+[#import "/WEB-INF/global/macros/utils.ftl" as utilities /]
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /] 
+
+[#-- Helptext --]
+[@utilities.helpBox name="projectPolicies.help" /]
 
 <section class="container">
     <div class="row">
@@ -125,7 +128,7 @@
       </div>      
       <div class="col-md-8">
         <div class="form-group">
-              [#assign guideSheetURL = "https://drive.google.com/file/d/1GYLsseeZOOXF9zXNtpUtE1xeh2gx3Vw2/view" /]
+              [#assign guideSheetURL = "https://docs.google.com/document/d/1KcNKtAdexpISekoVaAKPmHK223ohkqgb/edit?rtpof=true&sd=true" /]
               <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> #I1 Policies  -  Guideline </a> </small>
             </div>
       </div>

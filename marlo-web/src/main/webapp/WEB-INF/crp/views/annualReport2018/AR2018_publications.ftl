@@ -67,8 +67,8 @@
             
 
                   <div class="form-group">
-                    [#assign guideSheetURL = "https://drive.google.com/file/d/1apWx9qJk5NXlZQTzZzhGqRNSx934Bp5H/view" /]
-                      <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> #C4 Peer review papers  -  Guideline </a> </small>
+                    [#assign guideSheetURL = "https://docs.google.com/document/d/1o3Po7eFr66VKf242I4F9zAoQ5kxvgC_i/edit?rtpof=true&sd=true" /]
+                      <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> #C4 Peer-reviewed papers  -  Guideline </a> </small>
                   </div>
                   <br />
                   
