@@ -229,6 +229,9 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         if (projectExpectedStudyInfo.getComunicationsMaterial() != null
           && !projectExpectedStudyInfo.getComunicationsMaterial().trim().isEmpty()) {
           comunicationsMaterial = htmlParser.plainTextToHtml(projectExpectedStudyInfo.getComunicationsMaterial());
+          if (this.isSelectedPhaseAR2021() && StringUtils.isBlank(comunicationsMaterial)) {
+            comunicationsMaterial = this.getText("global.AR2021.notRequired");
+          }
         }
         // Links
 
@@ -544,6 +547,9 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           && !projectExpectedStudyInfo.getOtherCrossCuttingDimensions().trim().isEmpty()) {
           otherCrossCuttingDimensions =
             htmlParser.plainTextToHtml(projectExpectedStudyInfo.getOtherCrossCuttingDimensions());
+          if (this.isSelectedPhaseAR2021()) {
+            otherCrossCuttingDimensions = htmlParser.plainTextToHtml(this.getText("global.AR2021.notRequired"));
+          }
         }
         // Contact person
         if (projectExpectedStudyInfo.getContacts() != null
