@@ -423,7 +423,9 @@ public class OutcomesMilestonesAction extends BaseAction {
     String stripped = StringUtils.stripToNull(milestoneComposedId);
     Phase current = this.getActualPhase();
     if (current != null) {
-      while (current.getName() != null && !StringUtils.containsIgnoreCase(current.getName(), "POWB")
+      while (current.getName() != null
+        && ((!StringUtils.containsIgnoreCase(current.getName(), "POWB"))
+          && (!StringUtils.containsIgnoreCase(current.getName(), "APWB")))
         && current.getYear() != this.getCurrentCycleYear() + 1) {
         current = current.getNext();
       }
