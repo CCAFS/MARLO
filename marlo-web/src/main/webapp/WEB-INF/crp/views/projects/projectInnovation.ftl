@@ -95,7 +95,12 @@
               [@customForm.select name="innovation.projectInnovationInfo.repIndStageInnovation.id" label=""  i18nkey="projectInnovations.stage" listName="stageInnovationList" keyFieldName="id"  displayFieldName="name"   required=true  className="stageInnovationSelect" editable=editable/]
               [#assign isStageFour = (innovation.projectInnovationInfo.repIndStageInnovation.id == 4)!false]
             </div>
-            <div class="col-md-6 ">
+            [#assign isGenetic = ((innovation.projectInnovationInfo.repIndInnovationType.id == 1))!false ]
+            <div class="col-md-6">
+              <div class="form-group numberInnovations-block" style="display:${isGenetic?string('block','none')}">
+                  [@customForm.input name="innovation.projectInnovationInfo.innovationNumber" type="number" i18nkey="projectInnovations.innovationNumber" editable=editable /]   
+                  <i class="helpLabel" style="position: absolute; text-align: justify; margin-right: 15px;">[@s.text name="projectInnovations.innovationNumber.help" /]</i>
+              </div>
             </div>
           </div>
           
@@ -103,12 +108,6 @@
           <div class="form-group row">  
             <div class="col-md-6 ">
               [@customForm.select name="innovation.projectInnovationInfo.repIndInnovationType.id" label="" i18nkey="projectInnovations.innovationType" listName="innovationTypeList" keyFieldName="id"  displayFieldName="name" required=true  className="innovationTypeSelect" editable=editable/]
-            </div>
-            [#assign isGenetic = ((innovation.projectInnovationInfo.repIndInnovationType.id == 1))!false ]
-            <div class="col-md-6">
-            <div class="form-group numberInnovations-block" style="display:${isGenetic?string('block','none')}">
-                [@customForm.input name="innovation.projectInnovationInfo.innovationNumber" type="number" i18nkey="projectInnovations.innovationNumber" editable=editable help="projectInnovations.innovationNumber.help" /]   
-            </div>
             </div>
           </div>
         
