@@ -55,6 +55,7 @@ function attachEvents() {
     //   outcomeStory.prop('disabled', true);
     // }
     
+    $('select.statusSelect option[value="1"]').prop('disabled', true);
     $('select.statusSelect option[value="4"]').prop('disabled', true);
   }
 
