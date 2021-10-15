@@ -369,6 +369,8 @@
     [#-- Cross-Cutting --]
     <div class="form-group">
       [#-- Word Document Tag --]
+      [#assign guideSheetURL = "https://docs.google.com/document/d/1DHNB6OefSqqlw1HbmJq0STfbNkeN0GSL/edit?rtpof=true&sd=true" /]
+      <small class="pull-left"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> Milestones  -  Guideline </a> </small>
       [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
       <br>
       

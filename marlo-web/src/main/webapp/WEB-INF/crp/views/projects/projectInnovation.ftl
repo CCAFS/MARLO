@@ -73,7 +73,7 @@
               
             </div>
             <div class="col-md-8">
-              [#assign guideSheetURL = "https://drive.google.com/file/d/1JvceA0bdvqS5Een056ctL7zJr3hidToe/view" /]
+              [#assign guideSheetURL = "https://docs.google.com/document/d/1jSkicfXhtLJqwjzinPIn9BFPWnr7mcfm/edit" /]
               <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> #C1 Innovations  -  Guideline </a> </small>
             </div>
           </div>

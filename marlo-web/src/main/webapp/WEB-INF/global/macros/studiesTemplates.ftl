@@ -16,8 +16,13 @@
     <div class="borderBox">
     
       <div class="form-group">
-        [#assign guideSheetURL = "https://drive.google.com/file/d/1sMmE8RK4mpDmJYl_S-bHy5CVK_ahCHr0/view" /]
-        <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> Outcome Impact Case Report  -  Guideline </a> </small>
+        [#if isOutcomeCaseStudy]
+          [#assign guideSheetURL = "https://docs.google.com/document/d/1C4K1iJ0dOrInk15Xzjs_wJgj_OKO4TDx/edit?rtpof=true&sd=true" /]
+          <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> Outcome Impact Case Report  -  Guideline </a> </small>
+        [#else]
+          [#assign guideSheetURL = "https://docs.google.com/document/d/1Nd-D3K4Zid8hUX0Vv5Yca7Y9azhcs-0U/edit?rtpof=true&sd=true" /]
+          <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> MELIA  -  Guideline </a> </small>
+        [/#if]
       </div>
       <br />
     
