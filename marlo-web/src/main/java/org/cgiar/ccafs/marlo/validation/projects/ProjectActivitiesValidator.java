@@ -147,8 +147,9 @@ public class ProjectActivitiesValidator extends BaseValidator {
       if (action.isReportingActive()) {
         if (activity.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
           LocalDate cal = LocalDate.of(action.getCurrentCycleYear(), 12, 31);
-          if (activity.getEndDate() != null
-            && LocalDate.ofEpochDay(activity.getEndDate().getTime()).compareTo(cal) <= 0) {
+          java.sql.Date endDate =
+            activity.getEndDate() != null ? new java.sql.Date(activity.getEndDate().getTime()) : null;
+          if (endDate != null && endDate.toLocalDate().compareTo(cal) <= 0) {
             action.addMessage(action.getText("activity.status", params));
             action.getInvalidFields().put("input-project." + listName + "[" + index + "].activityStatus",
               InvalidFieldsMessages.EMPTYFIELD);
