@@ -51,7 +51,7 @@
           <div class="borderBox">
             [#-- Table 2: Condensed list of policy contributions --]
             <div class="form-group">
-              [#assign guideSheetURL = "https://drive.google.com/file/d/1GYLsseeZOOXF9zXNtpUtE1xeh2gx3Vw2/view" /]
+              [#assign guideSheetURL = "https://docs.google.com/document/d/1KcNKtAdexpISekoVaAKPmHK223ohkqgb/edit?rtpof=true&sd=true" /]
               <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> #I1 Policies  -  Guideline </a> </small>
             </div>
             <br />

@@ -96,6 +96,14 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestoneManagerImpl
   }
 
   @Override
+  public ReportSynthesisFlagshipProgressOutcomeMilestone getReportSynthesisMilestoneFromOutcomeIdAndMilestoneId(
+    long reportSynthesisFlagshipProgressId, long crpProgramOutcomeId, long crpMilestoneId) {
+    return this.reportSynthesisFlagshipProgressOutcomeMilestoneDAO
+      .getReportSynthesisMilestoneFromOutcomeIdAndMilestoneId(reportSynthesisFlagshipProgressId, crpProgramOutcomeId,
+        crpMilestoneId);
+  }
+
+  @Override
   public ReportSynthesisFlagshipProgressOutcomeMilestone saveReportSynthesisFlagshipProgressOutcomeMilestone(
     ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone) {
 
