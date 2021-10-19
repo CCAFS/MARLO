@@ -1,0 +1,1 @@
+INSERT INTO general_statuses_table (`table_name`, `general_status_id`, `is_active`, `active_since`, `created_by`) VALUES ('project_expected_study_info', '6', '1', CURRENT_TIMESTAMP, '1082');
