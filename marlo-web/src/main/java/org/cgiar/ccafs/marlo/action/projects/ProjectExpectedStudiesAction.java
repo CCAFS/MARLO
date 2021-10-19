@@ -1157,8 +1157,16 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           && this.expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType() != null
           && this.expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType().getId() != null
           && this.expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType().getId() == 1L)) {
+        // 6 = Changed
         this.statuses.removeIf(s -> s == null || s.getId() == null
           || DeliverableStatusEnum.PARTIALLY_COMPLETE.equals(DeliverableStatusEnum.getValue(s.getId().intValue())));
+      }
+
+      if (this.expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()) != null
+        && this.expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType() != null
+        && this.expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType().getId() != null
+        && this.expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType().getId() == 1L) {
+        this.statuses.removeIf(s -> s == null || s.getId() == null || s.getId() == 6L);
       }
 
       this.countries = this.locElementManager.findAll().stream()
