@@ -17,13 +17,14 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrp;
@@ -31,14 +32,30 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPolicyGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyInfo;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.PhaseComparator;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -47,6 +64,7 @@ public class ProjectPolicyListAction extends BaseAction {
 
 
   private static final long serialVersionUID = 3586039079035252726L;
+  private static final Logger LOG = LoggerFactory.getLogger(ProjectPolicyListAction.class);
 
   // Manager
   private ProjectPolicyManager projectPolicyManager;
@@ -70,8 +88,8 @@ public class ProjectPolicyListAction extends BaseAction {
   @Inject
   public ProjectPolicyListAction(APConfig config, ProjectPolicyManager projectPolicyManager,
     ProjectPolicyInfoManager projectPolicyInfoManager, SectionStatusManager sectionStatusManager,
-    ProjectManager projectManager, ProjectInnovationCrpManager projectInnovationCrpManager,
-    RepIndGeographicScopeManager repIndGeographicScopeManager, ProjectPolicyCrpManager projectPolicyCrpManager) {
+    ProjectManager projectManager, ProjectPolicyCrpManager projectPolicyCrpManager,
+    RepIndGeographicScopeManager repIndGeographicScopeManager) {
     super(config);
     this.projectPolicyManager = projectPolicyManager;
     this.projectPolicyInfoManager = projectPolicyInfoManager;
@@ -161,6 +179,7 @@ public class ProjectPolicyListAction extends BaseAction {
     projectID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
     project = projectManager.getProjectById(projectID);
 
+    // this.updateCrpAffiliation();
 
     allYears = project.getProjecInfoPhase(this.getActualPhase()).getAllYears();
     projectOldPolicies = new ArrayList<>();
@@ -228,6 +247,62 @@ public class ProjectPolicyListAction extends BaseAction {
 
   public void setProjectOldPolicies(List<ProjectPolicy> projectOldPolicies) {
     this.projectOldPolicies = projectOldPolicies;
+  }
+
+  private void updateCrpAffiliation() {
+    Comparator<Phase> phaseComparator = PhaseComparator.getInstance();
+
+    Map<ProjectPolicy, SortedSet<Phase>> ar2021AndBeyond = this.projectPolicyInfoManager.findAll().stream()
+      .filter(pii -> pii != null && pii.getId() != null && pii.getPhase() != null && pii.getPhase().getId() != null
+        && pii.getPhase().getCrp() != null && pii.getPhase().getCrp().getId() != null && pii.getProjectPolicy() != null
+        && pii.getProjectPolicy().getId() != null)
+      .collect(Collectors.groupingBy(ProjectPolicyInfo::getProjectPolicy, Collectors
+        .mapping(ProjectPolicyInfo::getPhase, Collectors.toCollection(() -> new TreeSet<Phase>(phaseComparator)))));
+
+    Map<GlobalUnit, Set<ProjectPolicy>> policysPerCrp = this.projectPolicyInfoManager.findAll().stream()
+      .filter(pii -> pii != null && pii.getId() != null && pii.getPhase() != null && pii.getPhase().getId() != null
+        && pii.getPhase().getCrp() != null && pii.getPhase().getCrp().getId() != null && pii.getProjectPolicy() != null
+        && pii.getProjectPolicy().getId() != null)
+      .collect(Collectors.groupingBy(pii -> ar2021AndBeyond.get(pii.getProjectPolicy()).first().getCrp(),
+        Collectors.mapping(ProjectPolicyInfo::getProjectPolicy,
+          Collectors.toCollection(() -> new TreeSet<>(Comparator.comparingLong(ProjectPolicy::getId))))));
+
+    List<String> inserts = new ArrayList<>();
+    for (Entry<GlobalUnit, Set<ProjectPolicy>> entry : policysPerCrp.entrySet()) {
+      GlobalUnit crp = entry.getKey();
+      Long crpId = crp.getId();
+      for (ProjectPolicy policy : entry.getValue()) {
+        Long projectPolicyId = policy.getId();
+        Set<Phase> allPhasesWithRows = ar2021AndBeyond.get(policy);
+        Map<Phase, Set<GlobalUnit>> policyLinkedCrpsPerPhase = policy.getProjectPolicyCrps().stream()
+          .filter(pic -> pic != null && pic.getId() != null && pic.getGlobalUnit() != null
+            && pic.getGlobalUnit().getId() != null && pic.getPhase() != null && pic.getPhase().getId() != null
+            && pic.getPhase().getCrp() != null && pic.getPhase().getCrp().getId() != null)
+          .collect(Collectors.groupingBy(pic -> pic.getPhase(), () -> new TreeMap<>(phaseComparator),
+            Collectors.mapping(ProjectPolicyCrp::getGlobalUnit, Collectors.toSet())));
+        for (Phase phase : allPhasesWithRows) {
+          Long phaseId = phase.getId();
+          if (!policyLinkedCrpsPerPhase.getOrDefault(phase, Collections.emptySet()).contains(crp)) {
+            StringBuilder insert = new StringBuilder(
+              "INSERT INTO project_policy_crps(project_policy_id, global_unit_id, id_phase) VALUES (");
+            insert = insert.append(projectPolicyId).append(",").append(crpId).append(",").append(phaseId).append(");");
+            inserts.add(insert.toString());
+          }
+        }
+      }
+    }
+
+    LOG.info("test");
+
+
+    Path fileSuccess = Paths.get("D:\\misc\\insert-pcrps.txt");
+    try {
+      Files.write(fileSuccess, inserts, StandardCharsets.UTF_8);
+    } catch (IOException e) {
+      LOG.error("rip");
+      e.printStackTrace();
+    }
+
   }
 
 }
