@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.utils.dto.GraphCountDTO;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -53,6 +54,7 @@ public class DeliverableGraphsAction extends BaseAction {
   private List<GraphCountDTO> byDeliverableType;
   private List<GraphCountDTO> byDeliverableStatus;
   private List<GraphCountDTO> byDeliverableOpenAccess;
+  private Map<String, String> statusColors;
 
   @Inject
   public DeliverableGraphsAction(APConfig config) {
@@ -87,17 +89,23 @@ public class DeliverableGraphsAction extends BaseAction {
     return byDeliverableType;
   }
 
+  public Map<String, String> getStatusColors() {
+    return statusColors;
+  }
+
   @SuppressWarnings("unchecked")
   @Override
   public void prepare() throws Exception {
     try {
       this.deliverables = (List<DeliverableHomeDTO>) this.getSession().get(APConstants.USER_DELIVERABLES);
+      this.statusColors = (Map<String, String>) this.getSession().get(APConstants.STATUS_COLORS);
       if (deliverables == null) {
         deliverables = Collections.emptyList();
       }
     } catch (Exception e) {
       e.printStackTrace();
       this.deliverables = Collections.emptyList();
+      this.statusColors = Collections.emptyMap();
     }
   }
 
@@ -111,5 +119,9 @@ public class DeliverableGraphsAction extends BaseAction {
 
   public void setByDeliverableType(List<GraphCountDTO> byDeliverableType) {
     this.byDeliverableType = byDeliverableType;
+  }
+
+  public void setStatusColors(Map<String, String> statusColors) {
+    this.statusColors = statusColors;
   }
 }

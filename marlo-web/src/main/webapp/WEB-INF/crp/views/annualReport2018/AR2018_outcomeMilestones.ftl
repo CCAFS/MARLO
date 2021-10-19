@@ -217,8 +217,8 @@
                   <td> ${milestone.composedName} [#if allowPopups] <div class="pull-right">[@milestoneContributions element=milestone tiny=true /] [/#if]</div></td>
                   [#-- Milestone Status --]
                   <td class="text-center"> 
-                    [#local milestoneNextYearStatus=(action.getCurrentMilestoneStatus(milestone.id))!]
-                    [@utils.tableText value=(milestoneNextYearStatus.name)!"" emptyText="global.prefilledByFlagship" /]
+                    [#local milestoneReportSynthesis=(action.getReportSynthesisMilestone(fp, outcome.id, milestone.id))!]
+                    [@utils.tableText value=(milestoneReportSynthesis.milestonesStatus.name)!"" emptyText="global.prefilledByFlagship" /]
                   </td>
                   [#--  <td class="text-center"></td>  --]
                   [#if !allowPopups]
@@ -369,6 +369,8 @@
     [#-- Cross-Cutting --]
     <div class="form-group">
       [#-- Word Document Tag --]
+      [#assign guideSheetURL = "https://docs.google.com/document/d/1DHNB6OefSqqlw1HbmJq0STfbNkeN0GSL/edit?rtpof=true&sd=true" /]
+      <small class="pull-left"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> Milestones  -  Guideline </a> </small>
       [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
       <br>
       

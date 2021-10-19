@@ -758,6 +758,7 @@ public final class APConstants {
   public static final String INDICATOR_ID = "indicatorID";
 
   public static final String FP_COLORS = "fpColors";
+  public static final String STATUS_COLORS = "statusColors";
 
   public static String getFilterBy() {
     return FILTER_BY;

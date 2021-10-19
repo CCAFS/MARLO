@@ -230,10 +230,8 @@ public class DeliverableValidator extends BaseValidator {
         if (action.isReportingActive() && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() != null
           && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
-          if (action.getActualPhase().getYear() != 2021) {
-            action.addMessage(action.getText("project.deliverable.generalInformation.status"));
-            action.getInvalidFields().put("input-deliverable.deliverableInfo.status", InvalidFieldsMessages.EMPTYFIELD);
-          }
+          action.addMessage(action.getText("project.deliverable.generalInformation.status"));
+          action.getInvalidFields().put("input-deliverable.deliverableInfo.status", InvalidFieldsMessages.EMPTYFIELD);
         }
 
         if (action.hasSpecificities(APConstants.CRP_HAS_DISEMINATION)
@@ -419,9 +417,11 @@ public class DeliverableValidator extends BaseValidator {
     }
 
     // Validating status justification when deliverable has been marked as
-    // partially complete
+    // partially complete, cancelled or extended
     if (deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() != null
-      && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() == 7) {
+      && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() == 7
+      || deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() == 4
+      || deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() == 5) {
       if (!(this.isValidString(deliverable.getDeliverableInfo(action.getActualPhase()).getStatusDescription())
         && this.wordCount(deliverable.getDeliverableInfo(action.getActualPhase()).getStatusDescription()) <= 150)) {
         action.addMessage(action.getText("project.deliverable.generalInformation.justification"));
