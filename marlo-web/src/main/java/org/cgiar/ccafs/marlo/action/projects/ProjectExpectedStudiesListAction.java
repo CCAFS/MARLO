@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.ExpectedStudyProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
@@ -26,22 +27,39 @@ import org.cgiar.ccafs.marlo.data.manager.StudyTypeManager;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.StudyType;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.PhaseComparator;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -50,13 +68,14 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
 
 
   private static final long serialVersionUID = 5533305942651533875L;
-
+  private static final Logger LOG = LoggerFactory.getLogger(ProjectExpectedStudiesListAction.class);
 
   // Managers
   private SectionStatusManager sectionStatusManager;
   private ProjectManager projectManager;
   private ProjectExpectedStudyManager projectExpectedStudyManager;
   private ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager;
+  private ProjectExpectedStudyCrpManager projectExpectedStudyCrpManager;
   private StudyTypeManager studyTypeManager;
   private ExpectedStudyProjectManager expectedStudyProjectManager;
 
@@ -77,7 +96,8 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
   public ProjectExpectedStudiesListAction(APConfig config, SectionStatusManager sectionStatusManager,
     ProjectManager projectManager, ProjectExpectedStudyManager projectExpectedStudyManager,
     ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager, StudyTypeManager studyTypeManager,
-    ExpectedStudyProjectManager expectedStudyProjectManager) {
+    ExpectedStudyProjectManager expectedStudyProjectManager,
+    ProjectExpectedStudyCrpManager projectExpectedStudyCrpManager) {
     super(config);
     this.sectionStatusManager = sectionStatusManager;
     this.projectManager = projectManager;
@@ -85,6 +105,7 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
     this.projectExpectedStudyInfoManager = projectExpectedStudyInfoManager;
     this.studyTypeManager = studyTypeManager;
     this.expectedStudyProjectManager = expectedStudyProjectManager;
+    this.projectExpectedStudyCrpManager = projectExpectedStudyCrpManager;
   }
 
   @Override
@@ -126,11 +147,22 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
       studyTypeID = -1;
     }
 
-    projectExpectedStudyInfoManager.saveProjectExpectedStudyInfo(projectExpectedStudyInfo);
+    projectExpectedStudyInfo = projectExpectedStudyInfoManager.saveProjectExpectedStudyInfo(projectExpectedStudyInfo);
+
 
     expectedID = projectExpectedStudy.getId();
 
     if (expectedID > 0) {
+      if (studyTypeID == 1L) {
+        ProjectExpectedStudyCrp studyCrp = new ProjectExpectedStudyCrp();
+
+        studyCrp.setGlobalUnit(this.loggedCrp);
+        studyCrp.setProjectExpectedStudy(projectExpectedStudy);
+        studyCrp.setPhase(this.getActualPhase());
+
+        studyCrp = projectExpectedStudyCrpManager.saveProjectExpectedStudyCrp(studyCrp);
+      }
+
       return SUCCESS;
     }
 
@@ -235,6 +267,8 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
 
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     this.setPhaseID(this.getActualPhase().getId());
+
+    // this.updateCrpAffiliation();
 
     try {
       projectID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
@@ -383,5 +417,63 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
     this.projectStudies = projectStudies;
   }
 
+  private void updateCrpAffiliation() {
+    Comparator<Phase> phaseComparator = PhaseComparator.getInstance();
+
+    Map<ProjectExpectedStudy, SortedSet<Phase>> ar2021AndBeyond =
+      this.projectExpectedStudyInfoManager.findAll().stream()
+        .filter(pii -> pii != null && pii.getId() != null && pii.getPhase() != null && pii.getPhase().getId() != null
+          && pii.getPhase().getCrp() != null && pii.getPhase().getCrp().getId() != null && pii.getStudyType() != null
+          && pii.getStudyType().getId() != null && pii.getStudyType().getId() == 1L
+          && pii.getProjectExpectedStudy() != null && pii.getProjectExpectedStudy().getId() != null)
+        .collect(Collectors.groupingBy(ProjectExpectedStudyInfo::getProjectExpectedStudy, Collectors.mapping(
+          ProjectExpectedStudyInfo::getPhase, Collectors.toCollection(() -> new TreeSet<Phase>(phaseComparator)))));
+
+    Map<GlobalUnit, Set<ProjectExpectedStudy>> studysPerCrp = this.projectExpectedStudyInfoManager.findAll().stream()
+      .filter(pii -> pii != null && pii.getId() != null && pii.getPhase() != null && pii.getPhase().getId() != null
+        && pii.getPhase().getCrp() != null && pii.getPhase().getCrp().getId() != null && pii.getStudyType() != null
+        && pii.getStudyType().getId() != null && pii.getStudyType().getId() == 1L
+        && pii.getProjectExpectedStudy() != null && pii.getProjectExpectedStudy().getId() != null)
+      .collect(Collectors.groupingBy(pii -> ar2021AndBeyond.get(pii.getProjectExpectedStudy()).first().getCrp(),
+        Collectors.mapping(ProjectExpectedStudyInfo::getProjectExpectedStudy,
+          Collectors.toCollection(() -> new TreeSet<>(Comparator.comparingLong(ProjectExpectedStudy::getId))))));
+
+    List<String> inserts = new ArrayList<>();
+    for (Entry<GlobalUnit, Set<ProjectExpectedStudy>> entry : studysPerCrp.entrySet()) {
+      GlobalUnit crp = entry.getKey();
+      Long crpId = crp.getId();
+      for (ProjectExpectedStudy study : entry.getValue()) {
+        Long projectStudyId = study.getId();
+        Set<Phase> allPhasesWithRows = ar2021AndBeyond.get(study);
+        Map<Phase, Set<GlobalUnit>> studyLinkedCrpsPerPhase = study.getProjectExpectedStudyCrps().stream()
+          .filter(pic -> pic != null && pic.getId() != null && pic.getGlobalUnit() != null
+            && pic.getGlobalUnit().getId() != null && pic.getPhase() != null && pic.getPhase().getId() != null
+            && pic.getPhase().getCrp() != null && pic.getPhase().getCrp().getId() != null)
+          .collect(Collectors.groupingBy(pic -> pic.getPhase(), () -> new TreeMap<>(phaseComparator),
+            Collectors.mapping(ProjectExpectedStudyCrp::getGlobalUnit, Collectors.toSet())));
+        for (Phase phase : allPhasesWithRows) {
+          Long phaseId = phase.getId();
+          if (!studyLinkedCrpsPerPhase.getOrDefault(phase, Collections.emptySet()).contains(crp)) {
+            StringBuilder insert = new StringBuilder(
+              "INSERT INTO project_expected_study_crp(expected_id, global_unit_id, id_phase) VALUES (");
+            insert = insert.append(projectStudyId).append(",").append(crpId).append(",").append(phaseId).append(");");
+            inserts.add(insert.toString());
+          }
+        }
+      }
+    }
+
+    LOG.info("test");
+
+
+    Path fileSuccess = Paths.get("D:\\misc\\insert-ecrps.txt");
+    try {
+      Files.write(fileSuccess, inserts, StandardCharsets.UTF_8);
+    } catch (IOException e) {
+      LOG.error("rip");
+      e.printStackTrace();
+    }
+
+  }
 
 }
