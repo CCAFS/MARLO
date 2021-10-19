@@ -557,10 +557,17 @@ function validateDeliverableStatus() {
   // New Expected year should be greater than current reporting cycle year
   if (reportingActive || upKeepActive) {
     if (isDeliverableNew && reportingActive) {
-      $statuses.find('option').prop("disabled", true); // Disable All
-      $statuses.find('option[value="3"]').prop("disabled", false); // Enable Complete
-      $statuses.find('option[value="7"]').prop("disabled", false); // Enable Partially Complete
-      $statuses.val("3"); // Set Complete
+      if ($('#actualYear').html() == '2021') {
+        selectYearExpected.find('option[value="2022"]').prop("disabled", true);
+
+        if (expectedYear == '2021') {
+          // $statuses.find('option[value="2"]').prop("disabled", true); // Disable On-going
+          $statuses.find('option[value="3"]').prop("disabled", false); // Enable Completed
+          $statuses.find('option[value="4"]').prop("disabled", true); // Disable Extended
+          $statuses.find('option[value="5"]').prop("disabled", false); // Enable Cancelled
+          $statuses.find('option[value="7"]').prop("disabled", false); // Enable Partially complete
+        }
+      }
     } else {
       if ($('#actualYear').html() != '2021') {
         $statuses.find('option').prop("disabled", true); // Disable All
@@ -577,10 +584,10 @@ function validateDeliverableStatus() {
           if (selectedStatus == 2) {
             if (expectedYear != '-1' && newExpectedYear != '-1') {
               // $statuses.find('option[value="2"]').prop("disabled", true); // Disable On-going
-              $statuses.find('option[value="3"]').prop("disabled", false); // Disable Completed
-              $statuses.find('option[value="4"]').prop("disabled", true); // Enable Extended
-              $statuses.find('option[value="5"]').prop("disabled", false); // Disable Cancelled
-              $statuses.find('option[value="7"]').prop("disabled", false); // Disable Partially complete
+              $statuses.find('option[value="3"]').prop("disabled", false); // Enable Completed
+              $statuses.find('option[value="4"]').prop("disabled", true); // Disable Extended
+              $statuses.find('option[value="5"]').prop("disabled", false); // Enable Cancelled
+              $statuses.find('option[value="7"]').prop("disabled", false); // Enable Partially complete
             } else {
               // $statuses.find('option[value="2"]').prop("disabled", true); // Disable On-going
               $statuses.find('option[value="3"]').prop("disabled", true); // Disable Completed
@@ -590,10 +597,10 @@ function validateDeliverableStatus() {
             }
           } else {
             // $statuses.find('option[value="2"]').prop("disabled", true); // Disable On-going
-            $statuses.find('option[value="3"]').prop("disabled", false); // Disable Completed
-            $statuses.find('option[value="4"]').prop("disabled", true); // Enable Extended
-            $statuses.find('option[value="5"]').prop("disabled", false); // Disable Cancelled
-            $statuses.find('option[value="7"]').prop("disabled", false); // Disable Partially complete
+            $statuses.find('option[value="3"]').prop("disabled", false); // Enable Completed
+            $statuses.find('option[value="4"]').prop("disabled", true); // Disable Extended
+            $statuses.find('option[value="5"]').prop("disabled", false); // Enable Cancelled
+            $statuses.find('option[value="7"]').prop("disabled", false); // Enable Partially complete
           }
         } else {
           // $statuses.find('option[value="2"]').prop("disabled", true); // Disable On-going
