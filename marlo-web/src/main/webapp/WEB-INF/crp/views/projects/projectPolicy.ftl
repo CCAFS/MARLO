@@ -207,9 +207,9 @@
       [@customForm.radioFlat id="${policyMilestoneLink}-yes" name="${customName}.projectPolicyInfo.hasMilestones" label="Yes" value="true" checked=(showMilestoneIndicator == true) cssClass="radioType-${policyMilestoneLink}" cssClassLabel="radio-label-yes" editable=editable /]
       [@customForm.radioFlat id="${policyMilestoneLink}-no" name="${customName}.projectPolicyInfo.hasMilestones" label="No" value="false" checked=(showMilestoneIndicator == false) cssClass="radioType-${policyMilestoneLink}" cssClassLabel="radio-label-no" editable=editable /]
     </div>
-        
+    [#assign isAR2021 = !(action.isSelectedPhaseAR2021())]
      <div class="form-group simpleBox block-${policyMilestoneLink}" style="display:${(showMilestoneIndicator == true)?string('block','none')}">
-       [@customForm.elementsListComponent name="${customName}.milestones" elementType="crpMilestone" elementList=(element.milestones)![] label="policy.milestones" helpIcon=false listName="milestoneList" keyFieldName="id" displayFieldName="composedName" required=false hasPrimary=true/]
+       [@customForm.elementsListComponent name="${customName}.milestones" elementType="crpMilestone" elementList=(element.milestones)![] label="policy.milestones" helpIcon=false listName="milestoneList" keyFieldName="id" displayFieldName="composedName" required=isAR2021 hasPrimary=true/]
        
        [#--[@customForm.primaryListComponent name="${customName}.milestones" checkName="milestonePrimaryId" elementType="crpMilestone" elementList=(element.milestones)!"" label="policy.milestones" labelPrimary="policy.primaryMilestone" helpIcon=false listName="milestoneList" keyFieldName="id" displayFieldName="composedName" required=false /]
        --]
