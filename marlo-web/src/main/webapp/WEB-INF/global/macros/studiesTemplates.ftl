@@ -376,8 +376,9 @@
           <label for="">[@s.text name="study.${isOutcomeCaseStudy?string('keyContributors','keyContributorsOther')}" /]:</label>
         [/#if]
         [#-- CRPs --]
+        <span id="actualCRP" style="display: none;">${action.getLoggedCrp().acronym}</span>
         [#if isOutcomeCaseStudy]
-        <div class="form-group simpleBox">
+        <div class="form-group simpleBox oicrContributingCRP">
           [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="study.keyContributors.crps"  listName="crps" keyFieldName="id" displayFieldName="composedName" required=false /]
         </div>
         [/#if]
