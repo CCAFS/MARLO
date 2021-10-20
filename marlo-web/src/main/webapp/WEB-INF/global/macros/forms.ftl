@@ -824,6 +824,19 @@
 [#macro multiInput name element index=-1 template=false class="" placeholder="" field="link"]
   [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
   <div id="multiInput${class?has_content?string('-${class}', '')}-${(template?string('template', ''))}" class="multiInput form-group grayBox ${class}">
+  <span>${customName}</span>
+    <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
+    <span class="pull-left" style="width:4%"><strong><span class="indexTag">${index + 1}</span>.</strong></span>
+    <span class="pull-left" style="width:90%">[@customForm.input name="${customName}.${field}" placeholder="${placeholder}" showTitle=false i18nkey="" className="" editable=editable /]</span>
+    [#if editable]<div class="removeElement sm removeIcon removeLink ${class}" title="Remove"></div>[/#if]
+    <div class="clearfix"></div>
+  </div>
+[/#macro]
+
+[#macro multiInputOutcomes name element index=-1 template=false class="" placeholder="" field="link"]
+  [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
+  <div id="multiInput${class?has_content?string('-${class}', '')}-${(template?string('template', ''))}" class="multiInput form-group grayBox ${class}">
+  <span>${customName}</span>
     <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
     <span class="pull-left" style="width:4%"><strong><span class="indexTag">${index + 1}</span>.</strong></span>
     <span class="pull-left" style="width:90%">[@customForm.input name="${customName}.${field}" placeholder="${placeholder}" showTitle=false i18nkey="" className="" editable=editable /]</span>
