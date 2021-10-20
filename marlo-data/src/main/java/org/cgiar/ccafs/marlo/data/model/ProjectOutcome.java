@@ -46,6 +46,8 @@ public class ProjectOutcome extends MarloAuditableEntity implements java.io.Seri
   @Expose
   private String narrativeAchieved;
 
+  private String composedName;
+
   private Set<ProjectMilestone> projectMilestones = new HashSet<ProjectMilestone>(0);
 
 
@@ -83,6 +85,11 @@ public class ProjectOutcome extends MarloAuditableEntity implements java.io.Seri
     return communications;
   }
 
+  public String getComposedName() {
+    return composedName;
+  }
+
+
   public CrpProgramOutcome getCrpProgramOutcome() {
     return crpProgramOutcome;
   }
@@ -92,10 +99,10 @@ public class ProjectOutcome extends MarloAuditableEntity implements java.io.Seri
     return expectedUnit;
   }
 
-
   public Double getExpectedValue() {
     return expectedValue;
   }
+
 
   public List<ProjectOutcomeIndicator> getIndicators() {
     return indicators;
@@ -141,7 +148,6 @@ public class ProjectOutcome extends MarloAuditableEntity implements java.io.Seri
     }
   }
 
-
   public Phase getPhase() {
     return phase;
   }
@@ -149,6 +155,7 @@ public class ProjectOutcome extends MarloAuditableEntity implements java.io.Seri
   public Project getProject() {
     return project;
   }
+
 
   public Set<ProjectCommunication> getProjectCommunications() {
     return projectCommunications;
@@ -189,10 +196,10 @@ public class ProjectOutcome extends MarloAuditableEntity implements java.io.Seri
     return sectionStatuses;
   }
 
-
   public void setAchievedUnit(SrfTargetUnit achievedUnit) {
     this.achievedUnit = achievedUnit;
   }
+
 
   public void setAchievedValue(Double achievedValue) {
     this.achievedValue = achievedValue;
@@ -204,6 +211,10 @@ public class ProjectOutcome extends MarloAuditableEntity implements java.io.Seri
   }
 
 
+  public void setComposedName(String composedName) {
+    this.composedName = composedName;
+  }
+
   public void setCrpProgramOutcome(CrpProgramOutcome crpProgramOutcome) {
     this.crpProgramOutcome = crpProgramOutcome;
   }
@@ -212,6 +223,7 @@ public class ProjectOutcome extends MarloAuditableEntity implements java.io.Seri
   public void setExpectedUnit(SrfTargetUnit expectedUnit) {
     this.expectedUnit = expectedUnit;
   }
+
 
   public void setExpectedValue(Double expectedValue) {
     this.expectedValue = expectedValue;
@@ -222,11 +234,9 @@ public class ProjectOutcome extends MarloAuditableEntity implements java.io.Seri
     this.indicators = indicators;
   }
 
-
   public void setMilestones(List<ProjectMilestone> milestones) {
     this.milestones = milestones;
   }
-
 
   public void setNarrativeAchieved(String narrativeAchieved) {
     this.narrativeAchieved = narrativeAchieved;
@@ -236,9 +246,11 @@ public class ProjectOutcome extends MarloAuditableEntity implements java.io.Seri
     this.narrativeTarget = narrativeTarget;
   }
 
+
   public void setNextUsers(List<ProjectNextuser> nextUsers) {
     this.nextUsers = nextUsers;
   }
+
 
   public void setOrder(Double order) {
     this.order = order;
@@ -284,16 +296,13 @@ public class ProjectOutcome extends MarloAuditableEntity implements java.io.Seri
     this.projectNextusers = projectNextusers;
   }
 
-
   public void setProjectOutcomeIndicators(Set<ProjectOutcomeIndicator> projectOutcomeIndicators) {
     this.projectOutcomeIndicators = projectOutcomeIndicators;
   }
 
-
   public void setSectionStatuses(Set<SectionStatus> sectionStatuses) {
     this.sectionStatuses = sectionStatuses;
   }
-
 
   @Override
   public String toString() {

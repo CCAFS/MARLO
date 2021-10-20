@@ -349,6 +349,14 @@
          <br/>
         </div>--]
         [/#if]
+        
+      [#-- Performacen indicators --]      
+        <div class="form-group">
+          <label for="">[@s.text name="Performance Indicators" /]:</label>
+            <div class="form-group simpleBox">
+              [@customForm.elementsListComponent name="${customName}.projectOutcomes" elementType="projectOutcome" elementList=(element.projectOutcomes)![] label="study.outcomes"  listName="projectOutcomes" keyFieldName="id" displayFieldName="composedName" required=false/]
+            </div>          
+        </div>
       
 
       [#-- 7. Key Contributors  --]
