@@ -202,5 +202,13 @@
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyMilestone" />
     </set>
+    <set name="projectExpectedStudyProjectOutcomes" table="project_expected_study_project_outcomes"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="expected_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyProjectOutcome" />
+    </set>
 	</class>
 </hibernate-mapping>
