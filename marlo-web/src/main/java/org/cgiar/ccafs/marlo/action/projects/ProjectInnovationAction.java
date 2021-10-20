@@ -37,10 +37,12 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationOrganizationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSharedManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndContributionOfCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndDegreeInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
@@ -73,6 +75,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationDeliverable;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationOrganization;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSubIdo;
@@ -162,7 +165,8 @@ public class ProjectInnovationAction extends BaseAction {
   private ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager;
   private ProjectExpectedStudyManager projectExpectedStudyManager;
   private ProjectDeliverableSharedManager projectDeliverableSharedManager;
-
+  private ProjectOutcomeManager projectOutcomeManager;
+  private ProjectInnovationProjectOutcomeManager projectInnovationProjectOutcomeManager;
 
   // Variables
   private long projectID;
@@ -204,6 +208,7 @@ public class ProjectInnovationAction extends BaseAction {
   private List<SrfSubIdo> principalSubIdo;
   private List<SrfIdo> srfIdos;
   private HashMap<Long, String> idoList;
+  private List<ProjectOutcome> projectOutcomes;
 
   @Inject
   public ProjectInnovationAction(APConfig config, GlobalUnitManager globalUnitManager,
@@ -230,7 +235,8 @@ public class ProjectInnovationAction extends BaseAction {
     ProjectInnovationMilestoneManager projectInnovationMilestoneManager, SrfSubIdoManager srfSubIdoManager,
     ProjectInnovationSubIdoManager projectInnovationSubIdoManager, SrfIdoManager srfIdoManager,
     ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager,
-    ProjectDeliverableSharedManager projectDeliverableSharedManager) {
+    ProjectDeliverableSharedManager projectDeliverableSharedManager, ProjectOutcomeManager projectOutcomeManager,
+    ProjectInnovationProjectOutcomeManager projectInnovationProjectOutcomeManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -269,6 +275,8 @@ public class ProjectInnovationAction extends BaseAction {
     this.srfIdoManager = srfIdoManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.projectDeliverableSharedManager = projectDeliverableSharedManager;
+    this.projectOutcomeManager = projectOutcomeManager;
+    this.projectInnovationProjectOutcomeManager = projectInnovationProjectOutcomeManager;
   }
 
   /**
@@ -440,6 +448,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public long getProjectID() {
     return projectID;
+  }
+
+  public List<ProjectOutcome> getProjectOutcomes() {
+    return projectOutcomes;
   }
 
   public List<RepIndRegion> getRegionList() {
@@ -848,6 +860,12 @@ public class ProjectInnovationAction extends BaseAction {
           }
         }
 
+        // Expected Study Project Outcome list
+        if (innovation.getProjectInnovationProjectOutcomes() != null) {
+          innovation.setProjectOutcomes(new ArrayList<>(innovation.getProjectInnovationProjectOutcomes().stream()
+            .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+        }
+
         // SubIdos List
         if (innovation.getProjectInnovationSubIdos() != null) {
           innovation.setSubIdos(new ArrayList<>(innovation.getProjectInnovationSubIdos().stream()
@@ -1087,6 +1105,7 @@ public class ProjectInnovationAction extends BaseAction {
        * Get the milestone List
        */
       milestones = new ArrayList<>();
+      projectOutcomes = new ArrayList<>();
 
       // Get outcomes list
       List<ProjectOutcome> projectOutcomesList = new ArrayList<>();
@@ -1110,6 +1129,15 @@ public class ProjectInnovationAction extends BaseAction {
               }
             }
           }
+
+          // Fill projectOutcomes List
+          if (projectOutcome.getCrpProgramOutcome() != null
+            && projectOutcome.getCrpProgramOutcome().getComposedName() != null) {
+            projectOutcome.setComposedName(projectOutcome.getCrpProgramOutcome().getComposedName());
+          } else {
+            projectOutcome.setComposedName(projectOutcome.getId() + "");
+          }
+          projectOutcomes.add(projectOutcome);
         }
       }
 
@@ -1202,6 +1230,10 @@ public class ProjectInnovationAction extends BaseAction {
       if (innovation.getStudies() != null) {
         innovation.getStudies().clear();
       }
+
+      if (innovation.getProjectOutcomes() != null) {
+        innovation.getProjectOutcomes().clear();
+      }
       // HTTP Post info Values
       // innovation.getProjectInnovationInfo().setGenderFocusLevel(null);
       // innovation.getProjectInnovationInfo().setYouthFocusLevel(null);
@@ -1242,9 +1274,9 @@ public class ProjectInnovationAction extends BaseAction {
       this.saveCrps(innovationDB, phase);
       this.saveProjects(innovationDB, phase);
       this.saveCenters(innovationDB, phase);
-      this.saveMilestones(innovationDB, phase);
+      // this.saveMilestones(innovationDB, phase);
       this.saveStudies(innovationDB, phase);
-
+      this.saveProjectOutcomes(innovationDB, phase);
       this.saveGeographicScope(innovationDB, phase);
 
       boolean haveRegions = false;
@@ -1310,6 +1342,7 @@ public class ProjectInnovationAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_INNOVATION_CENTER_RELATION);
       relationsName.add(APConstants.PROJECT_INNOVATION_MILESTONE_RELATION);
       relationsName.add(APConstants.PROJECT_INNOVATION_SUB_IDO);
+      relationsName.add(APConstants.PROJECT_INNOVATION_PROJECT_OUTCOMES);
 
       innovation.setModificationJustification(this.getJustification());
 
@@ -1472,6 +1505,7 @@ public class ProjectInnovationAction extends BaseAction {
       }
     }
   }
+
 
   /**
    * Save Project Innovation contributing organizations
@@ -1799,6 +1833,54 @@ public class ProjectInnovationAction extends BaseAction {
   }
 
   /**
+   * Save Expected Studies Project Outcome Information
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  public void saveProjectOutcomes(ProjectInnovation projectInnovation, Phase phase) {
+
+    // Search and deleted form Information
+    if (projectInnovation.getProjectInnovationProjectOutcomes() != null
+      && projectInnovation.getProjectInnovationProjectOutcomes().size() > 0) {
+
+      List<ProjectInnovationProjectOutcome> outcomePrev =
+        new ArrayList<>(projectInnovation.getProjectInnovationProjectOutcomes().stream()
+          .filter(nu -> nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+      for (ProjectInnovationProjectOutcome innovationOutcome : outcomePrev) {
+        if (this.innovation.getProjectOutcomes() == null
+          || !this.innovation.getProjectOutcomes().contains(innovationOutcome)) {
+          this.projectInnovationProjectOutcomeManager.deleteProjectInnovationProjectOutcome(innovationOutcome.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (this.innovation.getProjectOutcomes() != null) {
+      for (ProjectInnovationProjectOutcome innovationOutcome : this.innovation.getProjectOutcomes()) {
+        if (innovationOutcome.getId() == null) {
+          ProjectInnovationProjectOutcome innovationOutcomeSave = new ProjectInnovationProjectOutcome();
+          innovationOutcomeSave.setProjectInnovation(projectInnovation);
+          innovationOutcomeSave.setPhase(phase);
+
+          if (innovationOutcome.getProjectOutcome() != null && innovationOutcome.getProjectOutcome().getId() != null) {
+            ProjectOutcome outcome =
+              projectOutcomeManager.getProjectOutcomeById(innovationOutcome.getProjectOutcome().getId());
+            innovationOutcomeSave.setProjectOutcome(outcome);
+
+            this.projectInnovationProjectOutcomeManager.saveProjectInnovationProjectOutcome(innovationOutcomeSave);
+            // This is to add studyCrpSave to generate correct auditlog.
+            this.innovation.getProjectInnovationProjectOutcomes().add(innovationOutcomeSave);
+          }
+        }
+      }
+    }
+
+
+  }
+
+  /**
    * Save Innovations Shared Projects Information
    * 
    * @param projectInnovation
@@ -2098,6 +2180,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
+  }
+
+  public void setProjectOutcomes(List<ProjectOutcome> projectOutcomes) {
+    this.projectOutcomes = projectOutcomes;
   }
 
   public void setRegionList(List<RepIndRegion> regionList) {
