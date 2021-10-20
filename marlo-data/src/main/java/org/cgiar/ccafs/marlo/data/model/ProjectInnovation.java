@@ -83,6 +83,9 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
 
   // clarisa field
   private String pdfLink;
+  private List<ProjectInnovationProjectOutcome> projectOutcomes;
+  private Set<ProjectInnovationProjectOutcome> projectInnovationProjectOutcomes =
+    new HashSet<ProjectInnovationProjectOutcome>(0);
 
 
   public List<ProjectInnovationCenter> getCenters() {
@@ -255,6 +258,10 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
       .filter(pc -> pc.isActive() && pc.getPhase().equals(phase)).collect(Collectors.toList()));
   }
 
+  public Set<ProjectInnovationProjectOutcome> getProjectInnovationProjectOutcomes() {
+    return projectInnovationProjectOutcomes;
+  }
+
   public Set<ProjectInnovationRegion> getProjectInnovationRegions() {
     return this.projectInnovationRegions;
   }
@@ -265,6 +272,10 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
 
   public Set<ProjectInnovationSubIdo> getProjectInnovationSubIdos() {
     return projectInnovationSubIdos;
+  }
+
+  public List<ProjectInnovationProjectOutcome> getProjectOutcomes() {
+    return projectOutcomes;
   }
 
   public List<ProjectInnovationRegion> getRegions() {
@@ -409,6 +420,11 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     this.projectInnovationOrganizations = projectInnovationOrganizations;
   }
 
+  public void
+    setProjectInnovationProjectOutcomes(Set<ProjectInnovationProjectOutcome> projectInnovationProjectOutcomes) {
+    this.projectInnovationProjectOutcomes = projectInnovationProjectOutcomes;
+  }
+
   public void setProjectInnovationRegions(Set<ProjectInnovationRegion> projectInnovationRegions) {
     this.projectInnovationRegions = projectInnovationRegions;
   }
@@ -419,6 +435,10 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
 
   public void setProjectInnovationSubIdos(Set<ProjectInnovationSubIdo> projectInnovationSubIdos) {
     this.projectInnovationSubIdos = projectInnovationSubIdos;
+  }
+
+  public void setProjectOutcomes(List<ProjectInnovationProjectOutcome> projectOutcomes) {
+    this.projectOutcomes = projectOutcomes;
   }
 
   public void setRegions(List<ProjectInnovationRegion> regions) {
