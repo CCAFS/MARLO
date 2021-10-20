@@ -104,12 +104,12 @@ public class ProjectInnovationValidator extends BaseValidator {
     if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()) != null
       && (projectInnovation.getProjectInnovationInfo().getHasMilestones() != null
         && projectInnovation.getProjectInnovationInfo().getHasMilestones() == true
-        && (projectInnovation.getMilestones() == null || projectInnovation.getMilestones().isEmpty()))
+        && (projectInnovation.getProjectOutcomes() == null || projectInnovation.getProjectOutcomes().isEmpty()))
       || projectInnovation.getProjectInnovationInfo().getHasMilestones() == null) {
-      action.addMessage(action.getText("milestones"));
-      action.addMissingField("innovation.milestones");
-      action.getInvalidFields().put("list-innovation.milestones",
-        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"milestones"}));
+      action.addMessage(action.getText("projectOutcomes"));
+      action.addMissingField("innovation.projectOutcomes");
+      action.getInvalidFields().put("list-innovation.projectOutcomes",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"projectOutcomes"}));
     }
 
     if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()) != null
