@@ -211,9 +211,18 @@
           [@customForm.radioFlat id="${innovationMilestoneLink}-yes" name="innovation.projectInnovationInfo.hasMilestones" label="Yes" value="true" checked=(showMilestoneIndicator == "true") cssClass="radioType-${innovationMilestoneLink}" cssClassLabel="radio-label-yes" editable=editable /]
           [@customForm.radioFlat id="${innovationMilestoneLink}-no" name="innovation.projectInnovationInfo.hasMilestones" label="No" value="false" checked=(showMilestoneIndicator == "false") cssClass="radioType-${innovationMilestoneLink}" cssClassLabel="radio-label-no" editable=editable /]
         </div> 
-          
+         
+        [#--    
         <div class="form-group simpleBox block-${innovationMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
           [@customForm.elementsListComponent name="innovation.milestones" elementType="crpMilestone" elementList=(innovation.milestones)![] label="innovation.milestones" helpIcon=false listName="milestones" keyFieldName="id" displayFieldName="composedName" required=false hasPrimary=true /]
+          [#-- [@customForm.primaryListComponent name="innovation.milestones" checkName="milestonePrimaryId" elementType="crpMilestone" elementList=(innovation.milestones)!"" label="innovation.milestones" labelPrimary="policy.primaryMilestone" helpIcon=false listName="milestones" keyFieldName="id" displayFieldName="composedName" required=false /]
+         <div class="note">[@s.text name="innovation.milestones.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/contributionsCrpList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
+         <br/>
+        </div> 
+        --] 
+        
+        <div class="form-group simpleBox block-${innovationMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
+          [@customForm.elementsListComponent name="innovation.projectOutcomes" elementType="projectOutcome" elementList=(innovation.projectOutcomes)![] label="innovation.outcomes" helpIcon=false listName="projectOutcomes" keyFieldName="id" displayFieldName="composedName" required=false /]
           [#-- [@customForm.primaryListComponent name="innovation.milestones" checkName="milestonePrimaryId" elementType="crpMilestone" elementList=(innovation.milestones)!"" label="innovation.milestones" labelPrimary="policy.primaryMilestone" helpIcon=false listName="milestones" keyFieldName="id" displayFieldName="composedName" required=false /] --]
          <div class="note">[@s.text name="innovation.milestones.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/contributionsCrpList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
          <br/>
