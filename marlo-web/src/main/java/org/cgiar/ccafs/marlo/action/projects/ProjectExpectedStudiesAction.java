@@ -39,12 +39,14 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyLinkManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPolicyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyQuantificationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySrfTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
@@ -78,6 +80,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLink;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyQuantification;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
@@ -169,6 +172,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private ProjectExpectedStudyGeographicScopeManager projectExpectedStudyGeographicScopeManager;
   private GeneralStatusManager generalStatusManager;
   private CrpMilestoneManager milestoneManager;
+  private ProjectOutcomeManager projectOutcomeManager;
+
 
   // AR 2018 Managers
   private EvidenceTagManager evidenceTagManager;
@@ -182,6 +187,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   // AR 2019 Managers
   private ProjectExpectedStudyCenterManager projectExpectedStudyCenterManager;
   private ProjectExpectedStudyMilestoneManager projectExpectedStudyMilestoneManager;
+  private ProjectExpectedStudyProjectOutcomeManager projectExpectedStudyProjectOutcomeManager;
 
   // Variables
   private ProjectExpectedStudiesValidator projectExpectedStudiesValidator;
@@ -223,6 +229,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private List<Institution> centers;
   private List<CrpMilestone> milestones;
   private int newExpectedYear;
+  private List<ProjectOutcome> projectOutcomes;
 
   @Inject
   public ProjectExpectedStudiesAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
@@ -250,7 +257,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     ProjectInnovationManager projectInnovationManager, ProjectPolicyManager projectPolicyManager,
     ProjectExpectedStudyGeographicScopeManager projectExpectedStudyGeographicScopeManager,
     ProjectExpectedStudyCenterManager projectExpectedStudyCenterManager, CrpMilestoneManager milestoneManager,
-    ProjectExpectedStudyMilestoneManager projectExpectedStudyMilestoneManager) {
+    ProjectExpectedStudyMilestoneManager projectExpectedStudyMilestoneManager,
+    ProjectOutcomeManager projectOutcomeManager,
+    ProjectExpectedStudyProjectOutcomeManager projectExpectedStudyProjectOutcomeManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -297,6 +306,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.projectExpectedStudyCenterManager = projectExpectedStudyCenterManager;
     this.milestoneManager = milestoneManager;
     this.projectExpectedStudyMilestoneManager = projectExpectedStudyMilestoneManager;
+    this.projectOutcomeManager = projectOutcomeManager;
+    this.projectExpectedStudyProjectOutcomeManager = projectExpectedStudyProjectOutcomeManager;
   }
 
   /**
@@ -432,6 +443,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   public long getProjectID() {
     return this.projectID;
+  }
+
+  public List<ProjectOutcome> getProjectOutcomes() {
+    return projectOutcomes;
   }
 
   public List<CrpProgram> getRegionList() {
@@ -888,6 +903,13 @@ public class ProjectExpectedStudiesAction extends BaseAction {
               .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
+        // Expected Study Project Outcome list
+        if (this.expectedStudy.getProjectExpectedStudyProjectOutcomes() != null) {
+          this.expectedStudy
+            .setProjectOutcomes(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyProjectOutcomes().stream()
+              .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+        }
+
         // Expected Study Projects List
         if (this.expectedStudy.getExpectedStudyProjects() != null) {
           this.expectedStudy.setProjects(new ArrayList<>(this.expectedStudy.getExpectedStudyProjects().stream()
@@ -1097,6 +1119,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
          * Get the milestone List
          */
         milestones = new ArrayList<>();
+        projectOutcomes = new ArrayList<>();
 
         // Get outcomes list
         List<ProjectOutcome> projectOutcomesList = new ArrayList<>();
@@ -1120,8 +1143,18 @@ public class ProjectExpectedStudiesAction extends BaseAction {
                 }
               }
             }
+
+            // Fill projectOutcomes List
+            if (projectOutcome.getCrpProgramOutcome() != null
+              && projectOutcome.getCrpProgramOutcome().getComposedName() != null) {
+              projectOutcome.setComposedName(projectOutcome.getCrpProgramOutcome().getComposedName());
+            } else {
+              projectOutcome.setComposedName(projectOutcome.getId() + "");
+            }
+            projectOutcomes.add(projectOutcome);
           }
         }
+
 
         List<ProjectInnovation> innovations =
           projectL.getProjectInnovations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
@@ -1283,6 +1316,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         this.expectedStudy.getMilestones().clear();
       }
 
+      if (this.expectedStudy.getProjectOutcomes() != null) {
+        this.expectedStudy.getProjectOutcomes().clear();
+      }
+
       // HTTP Post info Values
       this.expectedStudy.getProjectExpectedStudyInfo().setRepIndRegion(null);
       this.expectedStudy.getProjectExpectedStudyInfo().setRepIndOrganizationType(null);
@@ -1337,6 +1374,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       // AR 2019 Save
       this.saveCenters(this.expectedStudyDB, phase);
       this.saveMilestones(this.expectedStudyDB, phase);
+      this.saveProjectOutcomes(this.expectedStudyDB, phase);
 
       // Save Geographic Scope Data
       this.saveGeographicScopes(this.expectedStudyDB, phase);
@@ -1408,6 +1446,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_GEOGRAPHIC_SCOPE);
       relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_CENTER_RELATION);
       relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_MILESTONE_RELATION);
+      relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_PROJECT_OUTCOME_RELATION);
 
       this.expectedStudy.setModificationJustification(this.getJustification());
 
@@ -1619,6 +1658,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
+
   /**
    * Save Expected Studies Crps Information
    * 
@@ -1660,7 +1700,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
     }
   }
-
 
   /**
    * Save Expected Studies Flagships Information
@@ -2045,6 +2084,55 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
     }
   }
+
+  /**
+   * Save Expected Studies Project Outcome Information
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  public void saveProjectOutcomes(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
+
+    // Search and deleted form Information
+    if (projectExpectedStudy.getProjectExpectedStudyProjectOutcomes() != null
+      && projectExpectedStudy.getProjectExpectedStudyProjectOutcomes().size() > 0) {
+
+      List<ProjectExpectedStudyProjectOutcome> outcomePrev =
+        new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyProjectOutcomes().stream()
+          .filter(nu -> nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+      for (ProjectExpectedStudyProjectOutcome studyOutcome : outcomePrev) {
+        if (this.expectedStudy.getProjectOutcomes() == null
+          || !this.expectedStudy.getProjectOutcomes().contains(studyOutcome)) {
+          this.projectExpectedStudyProjectOutcomeManager.deleteProjectExpectedStudyProjectOutcome(studyOutcome.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (this.expectedStudy.getProjectOutcomes() != null) {
+      for (ProjectExpectedStudyProjectOutcome studyOutcome : this.expectedStudy.getProjectOutcomes()) {
+        if (studyOutcome.getId() == null) {
+          ProjectExpectedStudyProjectOutcome studyOutcomeSave = new ProjectExpectedStudyProjectOutcome();
+          studyOutcomeSave.setProjectExpectedStudy(projectExpectedStudy);
+          studyOutcomeSave.setPhase(phase);
+
+          if (studyOutcome.getProjectOutcome() != null && studyOutcome.getProjectOutcome().getId() != null) {
+            ProjectOutcome outcome =
+              projectOutcomeManager.getProjectOutcomeById(studyOutcome.getProjectOutcome().getId());
+            studyOutcomeSave.setProjectOutcome(outcome);
+
+            this.projectExpectedStudyProjectOutcomeManager.saveProjectExpectedStudyProjectOutcome(studyOutcomeSave);
+            // This is to add studyCrpSave to generate correct auditlog.
+            this.expectedStudy.getProjectExpectedStudyProjectOutcomes().add(studyOutcomeSave);
+          }
+        }
+      }
+    }
+
+
+  }
+
 
   /**
    * Save Expected Studies Projects Information
@@ -2464,6 +2552,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
+  }
+
+  public void setProjectOutcomes(List<ProjectOutcome> projectOutcomes) {
+    this.projectOutcomes = projectOutcomes;
   }
 
   public void setRegionList(List<CrpProgram> regionList) {
