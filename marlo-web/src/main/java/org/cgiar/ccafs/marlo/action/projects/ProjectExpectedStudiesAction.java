@@ -1373,7 +1373,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       // AR 2019 Save
       this.saveCenters(this.expectedStudyDB, phase);
-      this.saveMilestones(this.expectedStudyDB, phase);
+      // this.saveMilestones(this.expectedStudyDB, phase);
       this.saveProjectOutcomes(this.expectedStudyDB, phase);
 
       // Save Geographic Scope Data
