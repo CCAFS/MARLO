@@ -8,7 +8,7 @@ function init() {
   // $('form select').select2({
   //   width: '100%'
   // });
-  
+  $('textarea[name^="reportSynthesis.reportSynthesisFlagshipProgress.outcomeList"]').prop('disabled', true);
   inputMilestoneStatus = $('input.milestoneStatus');
   loadInputMilestoneStatus();
   inputMilestoneStatus.on('change', function() {
@@ -122,7 +122,7 @@ function attachEvents() {
     // Functions
     function addItem() {
       var $list = $(this).parent('.linksBlock').find('.linksList');
-      var $element = $('#multiInput-links-template').clone(true).removeAttr("id");
+      var $element = $(this).parent('.linksBlock').parent().find('#multiInput-links-template').clone(true).removeAttr("id");
       var $listLength = $list.children().length;
       if ($listLength <= 9) {
         // Remove template tag
