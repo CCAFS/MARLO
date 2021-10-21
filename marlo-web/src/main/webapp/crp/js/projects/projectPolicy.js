@@ -31,6 +31,23 @@ function init() {
       $commentBox.slideUp();
     }
   });
+
+  $('.policyContributingCRP select').on('change', checkContributingCRP);
+  checkContributingCRP();
+}
+
+function checkContributingCRP() {
+  var actualContributingCRP = $('.policyContributingCRP').find('.list .relationElement');
+
+  actualContributingCRP.each((index, item) => {
+    actualContributingCRPSpan = $(item).find('span.elementName').html();
+    var crpName = actualContributingCRPSpan.substr(0,actualContributingCRPSpan.indexOf(' '));
+    var actualCRP = $('#actualCRP').html();
+    
+    if (crpName == actualCRP) {
+      $(item).find('.removeElement').css('display', 'none');
+    }
+  });
 }
 
 function attachEvents() {
