@@ -18,9 +18,25 @@ $(document).ready(function () {
   attachEvents();
   AddRequired();
   $('input[name="innovation.projectInnovationInfo.evidenceLink"]').prop('disabled', true);
+  $('.innovationContributingCRP select').on('change', checkContributingCRP);
+  checkContributingCRP();
   multiInputInnovations = $('.multiInput').find('span input');
   checkHyperlinks();
 });
+
+function checkContributingCRP() {
+  var actualContributingCRP = $('.innovationContributingCRP').find('.list .relationElement');
+
+  actualContributingCRP.each((index, item) => {
+    actualContributingCRPSpan = $(item).find('span.elementName').html();
+    var crpName = actualContributingCRPSpan.substr(0,actualContributingCRPSpan.indexOf(' '));
+    var actualCRP = $('#actualCRP').html();
+
+    if (crpName == actualCRP) {
+      $(item).find('.removeElement').css('display', 'none');
+    }
+  });
+}
 
 function checkHyperlinks() {
   multiInputInnovations.each((index, item) => {

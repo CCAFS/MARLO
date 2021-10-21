@@ -261,6 +261,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
     masterReport.getParameterValues().put("i8nClimate", this.getText("deliverable.climateChange"));
     masterReport.getParameterValues().put("i8nJustification", this.getText("deliverable.justification"));
     masterReport.getParameterValues().put("i8nDeliverableDescription", this.getText("deliverable.description"));
+    masterReport.getParameterValues().put("i8nProjectLeadPartner", this.getText("summaries.deliverable.leadPartner"));
     // Altmetric data
     masterReport.getParameterValues().put("i8nAltmetricInfo", this.getText("summaries.deliverable.altmetricInfo"));
     masterReport.getParameterValues().put("i8nAltmetricScore",

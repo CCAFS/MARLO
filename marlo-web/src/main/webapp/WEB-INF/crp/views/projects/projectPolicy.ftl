@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${policyID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "select2", "blueimp-file-upload", "flag-icon-css", "components-font-awesome"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectPolicy.js",
+  "${baseUrlMedia}/js/projects/projectPolicy.js?20211020A",
   "${baseUrlCdn}/global/js/autoSave.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js"
   ] 
@@ -225,7 +225,8 @@
     </div>
     
     [#-- Contributing CRPs/PTFs  --]
-    <div class="form-group">
+    <span id="actualCRP" style="display: none;">${action.getLoggedCrp().acronym}</span>
+    <div class="form-group policyContributingCRP">
       [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="policy.contributingCrpsPtfs"  listName="crps" keyFieldName="id" displayFieldName="composedName" required=false/]
     </div>
 

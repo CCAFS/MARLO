@@ -4,12 +4,12 @@
 [#assign pageLibs = ["jQuery-Timelinr","cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
   "https://www.gstatic.com/charts/loader.js",
-  "${baseUrlMedia}/js/home/dashboard.js?20211012b",
+  "${baseUrlMedia}/js/home/dashboard.js?20211021a",
   "${baseUrlCdn}/global/js/impactGraphic.js"
   ] 
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/home/dashboard.css?20210923a",
+  "${baseUrlMedia}/css/home/dashboard.css?20211021a",
   "${baseUrlCdn}/global/css/customDataTable.css",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "${baseUrlCdn}/global/css/global.css?20210827a"
@@ -42,6 +42,9 @@
   </script>
 [/#if]
 
+<div id="loadingScreen" style="position: absolute; width: 100%; height: 200vw; background: white; z-index: 999">
+  <div class="loadingBlock"></div>
+</div>
 <section class="marlo-content">
   <div class="container">
 

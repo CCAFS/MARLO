@@ -149,7 +149,7 @@ function attachEvents() {
     function updateIndexes(list) {
       $(list).parent('.linksBlock').find('.linksList').find('.multiInput').each(function (i, element) {
         $(element).find('.indexTag').text(i + 1);
-        $(element).setNameIndexes(1, i);
+        $(element).setNameIndexes(3, i);
       });
     }
     function validateURL() {
