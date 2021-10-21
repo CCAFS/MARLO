@@ -17,59 +17,37 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.rest.dto;
+package org.cgiar.ccafs.marlo.data.manager.impl;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import org.cgiar.ccafs.marlo.data.dao.OneCGIARScienceGroupDAO;
+import org.cgiar.ccafs.marlo.data.manager.OneCGIARScienceGroupManager;
+import org.cgiar.ccafs.marlo.data.model.OneCGIARScienceGroup;
 
-public class ScienceGroupDTO {
+import java.util.List;
 
-  private Long code;
+import javax.inject.Inject;
+import javax.inject.Named;
 
-  private String financialCode;
+@Named
+public class OneCGIARScienceGroupManagerImpl implements OneCGIARScienceGroupManager {
 
-  private String description;
+  private OneCGIARScienceGroupDAO oneCGIARScienceGroupDAO;
 
-  @JsonInclude(JsonInclude.Include.NON_NULL)
-  private ParentDTO parent;
-
-
-  public Long getCode() {
-    return code;
+  @Inject
+  public OneCGIARScienceGroupManagerImpl(OneCGIARScienceGroupDAO oneCGIARScienceGroupDAO) {
+    super();
+    this.oneCGIARScienceGroupDAO = oneCGIARScienceGroupDAO;
   }
 
+  @Override
+  public List<OneCGIARScienceGroup> getAll() {
 
-  public String getDescription() {
-    return description;
+    return oneCGIARScienceGroupDAO.getAll();
   }
 
-
-  public String getFinancialCode() {
-    return financialCode;
-  }
-
-
-  public ParentDTO getParent() {
-    return parent;
-  }
-
-
-  public void setCode(Long code) {
-    this.code = code;
-  }
-
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-
-  public void setFinancialCode(String financialCode) {
-    this.financialCode = financialCode;
-  }
-
-
-  public void setParent(ParentDTO parent) {
-    this.parent = parent;
+  @Override
+  public OneCGIARScienceGroup getScienceGroupById(long id) {
+    return oneCGIARScienceGroupDAO.getScienceGroupById(id);
   }
 
 }
