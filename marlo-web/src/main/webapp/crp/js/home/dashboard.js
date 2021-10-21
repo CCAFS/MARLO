@@ -411,6 +411,7 @@ function loadPageData(ajaxURL, arrName, chartID, type, options) {
         }
         drawChart(newData, chartID, type, options);
       }
+      $('#loadingScreen').css('display', 'none');
     },
   });
 }
