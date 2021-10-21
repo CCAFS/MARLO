@@ -36,7 +36,7 @@ public class ActionAreaOutcomeIndicatorDTO {
   @ApiModelProperty(notes = "Outcome Indicator ID", position = 6)
   private Long outcomeIndicatorId;
   @ApiModelProperty(notes = "Outcome Indicator SMO code", position = 7)
-  private Long outcomeIndicatorSMOcode;
+  private String outcomeIndicatorSMOcode;
   @ApiModelProperty(notes = "Outcome Indicator Statement", position = 8)
   private String outcomeIndicatorStatement;
 
@@ -60,7 +60,7 @@ public class ActionAreaOutcomeIndicatorDTO {
   }
 
 
-  public Long getOutcomeIndicatorSMOcode() {
+  public String getOutcomeIndicatorSMOcode() {
     return outcomeIndicatorSMOcode;
   }
 
@@ -92,7 +92,7 @@ public class ActionAreaOutcomeIndicatorDTO {
     this.outcomeIndicatorId = outcomeIndicatorId;
   }
 
-  public void setOutcomeIndicatorSMOcode(Long outcomeIndicatorSMOcode) {
+  public void setOutcomeIndicatorSMOcode(String outcomeIndicatorSMOcode) {
     this.outcomeIndicatorSMOcode = outcomeIndicatorSMOcode;
   }
 
