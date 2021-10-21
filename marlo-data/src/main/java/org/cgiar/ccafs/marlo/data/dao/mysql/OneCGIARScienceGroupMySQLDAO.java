@@ -17,59 +17,40 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.rest.dto;
+package org.cgiar.ccafs.marlo.data.dao.mysql;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import org.cgiar.ccafs.marlo.data.dao.OneCGIARScienceGroupDAO;
+import org.cgiar.ccafs.marlo.data.model.OneCGIARScienceGroup;
 
-public class ScienceGroupDTO {
+import java.util.List;
 
-  private Long code;
+import javax.inject.Inject;
+import javax.inject.Named;
 
-  private String financialCode;
+import org.hibernate.SessionFactory;
 
-  private String description;
+@Named
+public class OneCGIARScienceGroupMySQLDAO extends AbstractMarloDAO<OneCGIARScienceGroup, Long>
+  implements OneCGIARScienceGroupDAO {
 
-  @JsonInclude(JsonInclude.Include.NON_NULL)
-  private ParentDTO parent;
-
-
-  public Long getCode() {
-    return code;
+  @Inject
+  public OneCGIARScienceGroupMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
-
-  public String getDescription() {
-    return description;
+  @Override
+  public List<OneCGIARScienceGroup> getAll() {
+    String query = "from " + OneCGIARScienceGroup.class.getName();
+    List<OneCGIARScienceGroup> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
   }
 
-
-  public String getFinancialCode() {
-    return financialCode;
-  }
-
-
-  public ParentDTO getParent() {
-    return parent;
-  }
-
-
-  public void setCode(Long code) {
-    this.code = code;
-  }
-
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-
-  public void setFinancialCode(String financialCode) {
-    this.financialCode = financialCode;
-  }
-
-
-  public void setParent(ParentDTO parent) {
-    this.parent = parent;
+  @Override
+  public OneCGIARScienceGroup getScienceGroupById(long id) {
+    return super.find(OneCGIARScienceGroup.class, id);
   }
 
 }

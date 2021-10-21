@@ -17,59 +17,23 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.rest.dto;
+package org.cgiar.ccafs.marlo.rest.mappers;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import org.cgiar.ccafs.marlo.data.model.OneCGIARScienceGroup;
+import org.cgiar.ccafs.marlo.rest.dto.ParentDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ScienceGroupDTO;
 
-public class ScienceGroupDTO {
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
-  private Long code;
+@Mapper(componentModel = "jsr330")
+public interface OneCGIARScienceGorupMapper {
 
-  private String financialCode;
+  @Mappings({@Mapping(source = "id", target = "code"), @Mapping(source = "description", target = "description")})
+  public abstract ParentDTO oneCGIARScienceGroupToParentDTO(OneCGIARScienceGroup oneCGIARScienceGroup);
 
-  private String description;
-
-  @JsonInclude(JsonInclude.Include.NON_NULL)
-  private ParentDTO parent;
-
-
-  public Long getCode() {
-    return code;
-  }
-
-
-  public String getDescription() {
-    return description;
-  }
-
-
-  public String getFinancialCode() {
-    return financialCode;
-  }
-
-
-  public ParentDTO getParent() {
-    return parent;
-  }
-
-
-  public void setCode(Long code) {
-    this.code = code;
-  }
-
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-
-  public void setFinancialCode(String financialCode) {
-    this.financialCode = financialCode;
-  }
-
-
-  public void setParent(ParentDTO parent) {
-    this.parent = parent;
-  }
+  @Mappings({@Mapping(source = "id", target = "code"), @Mapping(source = "parentCode", target = "parent")})
+  public abstract ScienceGroupDTO oneCGIARScienceGroupToScienceGroupDTO(OneCGIARScienceGroup oneCGIARScienceGroup);
 
 }

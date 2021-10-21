@@ -35,7 +35,7 @@ public class OneCGIARScienceGroup extends MarloAuditableEntity implements Serial
   private String financialCode;
   private String description;
 
-  private Long parentCode;
+  private OneCGIARScienceGroup parentCode;
 
 
   public String getDescription() {
@@ -46,7 +46,7 @@ public class OneCGIARScienceGroup extends MarloAuditableEntity implements Serial
     return financialCode;
   }
 
-  public Long getParentCode() {
+  public OneCGIARScienceGroup getParentCode() {
     return parentCode;
   }
 
@@ -59,7 +59,7 @@ public class OneCGIARScienceGroup extends MarloAuditableEntity implements Serial
     this.financialCode = financialCode;
   }
 
-  public void setParentCode(Long parentCode) {
+  public void setParentCode(OneCGIARScienceGroup parentCode) {
     this.parentCode = parentCode;
   }
 
