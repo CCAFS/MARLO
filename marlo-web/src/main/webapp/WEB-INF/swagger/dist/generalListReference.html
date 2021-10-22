@@ -12,6 +12,7 @@
 
   <!--  Vendor CSS Files -->
   <link href="homepage/assets/libraries/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="homepage/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
   <link href="homepage/assets/vendor/icofont/icofont.min.css" rel="stylesheet">
   <link href="homepage/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
   <link href="homepage/assets/vendor/animate.css/animate.min.css" rel="stylesheet">
@@ -19,6 +20,9 @@
   <link href="homepage/assets/vendor/owl.carousel/assets/owl.carousel.min.css" rel="stylesheet">
   <link href="homepage/assets/vendor/aos/aos.css" rel="stylesheet">
   <link href="homepage/assets/css/style.css" rel="stylesheet">
+  <link href="homepage/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="homepage/assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="homepage/assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
 
   <!-- Vendor JS Files -->
   <script src="homepage/assets/libraries/jquery/jquery-3.5.1.min.js"></script>
@@ -26,12 +30,16 @@
   <script src="homepage/assets/libraries/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="homepage/assets/vendor/php-email-form/validate.js"></script>
   <script src="homepage/assets/vendor/jquery-sticky/jquery.sticky.js"></script>
-  <script src="homepage/assets/vendor/venobox/venobox.min.js"></script>
-  <script src="homepage/assets/vendor/waypoints/jquery.waypoints.min.js"></script>
   <script src="homepage/assets/vendor/counterup/counterup.min.js"></script>
+  <script src="homepage/assets/vendor/waypoints/jquery.waypoints.min.js"></script>
+  <script src="homepage/assets/vendor/venobox/venobox.min.js"></script>
   <script src="homepage/assets/vendor/owl.carousel/owl.carousel.min.js"></script>
   <script src="homepage/assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
   <script src="homepage/assets/vendor/aos/aos.js"></script>
+  <script src="homepage/assets/vendor/purecounter/purecounter.js"></script>
+  <script src="homepage/assets/vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="homepage/assets/vendor/swiper/swiper-bundle.min.js"></script>
+  
 
   <!-- Main JS File -->
   <script src="homepage/assets/js/main.js"></script>
@@ -58,7 +66,7 @@
 
 
   <!-- ======= Top Bar ======= -->
-  <header id="header">
+ <header id="header" class="d-flex align-items-center justify-content-end">
     <nav class="navbar navbar-expand-lg">
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -67,32 +75,30 @@
 
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav ml-auto">
-          <li class="nav-item active">
-            <a class="nav-link" href="home.html">Home <span class="sr-only">(current)</span></a>
+          <li class="nav-item">
+            <a class="nav-link scrollto" href="home.html">Home <span class="sr-only">(current)</span></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="home.html#about">About CLARISA</a>
+            <a class="nav-link scrollto" href="home.html#about">About CLARISA</a>
           </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-              aria-haspopup="true" aria-expanded="false">
-              Services
+          <li class="dropdown">
+            <a class="nav-link" href="#">        
+              <span>Services</span> <i class="bi bi-chevron-down"></i>
             </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="api.html">Annual Report API Reference</a>
-              <a class="dropdown-item" href="generalListReference.html">One CGIAR Control List</a>
-              <a class="dropdown-item" href="additionalServices.html">Additional Services</a>
-              <a class="dropdown-item" href="financialoperation.html">One CGIAR Operation</a>
-            </div>
+		        <ul class="p-2">
+		          <li ><a class="nav-link" href="api.html">Annual Report API Reference</a></li>
+		          <li ><a class="nav-link" href="generalListReference.html">One CGIAR Control List</a> </li>
+		          <li ><a class="nav-link" href="additionalServices.html">Additional Services</a></li>
+            </ul>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="faq.html">FAQ</a>
+          <li>
+            <a class="nav-link scrollto" href="home.html#faq">FAQ</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="home.html#partners">Lead Partners</a>
+          <li>
+            <a class="nav-link scrollto" href="home.html#partners">Lead Partners</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="home.html#contact">Contact Us</a>
+          <li>
+            <a class="nav-link scrollto" href="home.html#contact">Contact Us</a>
           </li>
         </ul>
       </div>
@@ -119,7 +125,7 @@
         <a href="#section1-item5" > <button type="button" class="subCollapsible">CGIAR Acronyms <span class="getColor">GET</span></button></a>      
         <a href="#section1-item7" > <button type="button" class="subCollapsible">Glossary <span class="getColor">GET</span></button></a>
       </div>
-      <a href="#section2" class="collap"> <button type="button" class="collapsible" href="#section2">Institutions</button></a>
+      <a href="#section2" class="collap"> <button type="button" class="collapsible">Institutions</button></a>
       <div class="content">
         <a href="#section2-item1" > <button type="button" class="subCollapsible">Institutions List <span class="getColor">GET</span></button></a>
 
@@ -200,7 +206,7 @@
                   <div class="container-c">
                     <div class="row">
                       <div class="col-12" style="margin-bottom: 20px;">
-                        <button onclick="cgiar_entities()" type="button"  data-toggle="modal" data-target="#exampleRequestModal1" class="btn getColorbackgroundExample btn-lg btn-block">Display control list</button>
+                        <button onclick="cgiar_entities()" type="button"  data-bs-toggle="modal" data-bs-target="#exampleRequestModal1" class="btn getColorbackgroundExample btn-lg btn-block w-100">Display control list</button>
                       </div>
 
                       <div class="col-12">
@@ -302,7 +308,7 @@
                   <div class="container-c">
                     <div class="row">
                       <div class="col-12" style="margin-bottom: 20px;">
-                        <button onclick="cgiar_entity_types()" type="button"  data-toggle="modal" data-target="#exampleRequestModal2" class="btn getColorbackgroundExample btn-lg btn-block">Display control list</button>
+                        <button onclick="cgiar_entity_types()" type="button"  data-bs-toggle="modal" data-bs-target="#exampleRequestModal2" class="btn getColorbackgroundExample btn-lg btn-block w-100">Display control list</button>
                       </div>
                       <div class="col-12">
                         <div class="fragCode">
@@ -399,7 +405,7 @@
                   <div class="container-c">
                     <div class="row">
                       <div class="col-12" style="margin-bottom: 20px;">
-                        <button onclick="countries()" type="button"  data-toggle="modal" data-target="#exampleRequestModal3" class="btn getColorbackgroundExample btn-lg btn-block">Display control list</button>
+                        <button onclick="countries()" type="button"  data-bs-toggle="modal" data-bs-target="#exampleRequestModal3" class="btn getColorbackgroundExample btn-lg btn-block w-100">Display control list</button>
                       </div>
                       <div class="col-12">
                         <div class="fragCode">
@@ -506,7 +512,7 @@
                   <div class="container-c">
                     <div class="row">
                       <div class="col-12" style="margin-bottom: 20px;">
-                        <button onclick="un_regions()" type="button"  data-toggle="modal" data-target="#exampleRequestModal4" class="btn getColorbackgroundExample btn-lg btn-block">Display control list</button>
+                        <button onclick="un_regions()" type="button"  data-bs-toggle="modal" data-bs-target="#exampleRequestModal4" class="btn getColorbackgroundExample btn-lg btn-block w-100">Display control list</button>
                       </div>
                       <div class="col-12">
                         <div class="fragCode">
@@ -606,7 +612,7 @@
                   <div class="container-c">
                     <div class="row">
                       <div class="col-12" style="margin-bottom: 20px;">
-                        <button onclick="CGIARRegions()" type="button"  data-toggle="modal" data-target="#exampleRequestModal14" class="btn getColorbackgroundExample btn-lg btn-block">Display control list</button>
+                        <button onclick="CGIARRegions()" type="button"  data-bs-toggle="modal" data-bs-target="#exampleRequestModal14" class="btn getColorbackgroundExample btn-lg btn-block w-100">Display control list</button>
                       </div>
                       <div class="col-12">
                         <div class="fragCode">
@@ -710,7 +716,7 @@
                   <div class="container-c">
                     <div class="row">
                       <div class="col-12" style="margin-bottom: 20px;">
-                        <button onclick="acronyms()" type="button"  data-toggle="modal" data-target="#exampleRequestModal12" class="btn getColorbackgroundExample btn-lg btn-block">Display control list</button>
+                        <button onclick="acronyms()" type="button"  data-bs-toggle="modal" data-bs-target="#exampleRequestModal12" class="btn getColorbackgroundExample btn-lg btn-block w-100">Display control list</button>
                       </div>
                       <div class="col-12">
                         <div class="fragCode">
@@ -808,7 +814,7 @@
                   <div class="container-c">
                     <div class="row">
                       <div class="col-12" style="margin-bottom: 20px;">
-                        <button onclick="glossary()" type="button"  data-toggle="modal" data-target="#exampleRequestModal15" class="btn getColorbackgroundExample btn-lg btn-block">Display control list</button>
+                        <button onclick="glossary()" type="button"  data-bs-toggle="modal" data-bs-target="#exampleRequestModal15" class="btn getColorbackgroundExample btn-lg btn-block w-100">Display control list</button>
                       </div>
                       <div class="col-12">
                         <div class="fragCode">
@@ -927,7 +933,7 @@
                   <div class="container-c">
                     <div class="row">
                       <div class="col-12" style="margin-bottom: 20px;">
-                        <button onclick="institutions()" type="button"  data-toggle="modal" data-target="#exampleRequestModal5" class="btn getColorbackgroundExample btn-lg btn-block">Display control list</button>
+                        <button onclick="institutions()" type="button"  data-bs-toggle="modal" data-bs-target="#exampleRequestModal5" class="btn getColorbackgroundExample btn-lg btn-block w-100">Display control list</button>
                       </div>
                       <div class="col-12">
                         <div class="fragCode">
@@ -1068,7 +1074,7 @@
                   <div class="container-c">
                     <div class="row">
                       <div class="col-12" style="margin-bottom: 20px;">
-                        <button onclick="action_areas()" type="button"  data-toggle="modal" data-target="#exampleRequestModal6" class="btn getColorbackgroundExample btn-lg btn-block">Display control list</button>
+                        <button onclick="action_areas()" type="button"  data-bs-toggle="modal" data-bs-target="#exampleRequestModal6" class="btn getColorbackgroundExample btn-lg btn-block w-100">Display control list</button>
                       </div>
                       <div class="col-12">
                         <div class="fragCode">
@@ -1175,7 +1181,7 @@
                   <div class="container-c">
                     <div class="row">
                       <div class="col-12" style="margin-bottom: 20px;">
-                        <button onclick="impact_areas()" type="button"  data-toggle="modal" data-target="#exampleRequestModal7" class="btn getColorbackgroundExample btn-lg btn-block">Display control list</button>
+                        <button onclick="impact_areas()" type="button"  data-bs-toggle="modal" data-bs-target="#exampleRequestModal7" class="btn getColorbackgroundExample btn-lg btn-block w-100">Display control list</button>
                       </div>
                       <div class="col-12">
                         <div class="fragCode">
@@ -1282,7 +1288,7 @@
                   <div class="container-c">
                     <div class="row">
                       <div class="col-12" style="margin-bottom: 20px;">
-                        <button onclick="impact_areas_indicators()" type="button"  data-toggle="modal" data-target="#exampleRequestModal8" class="btn getColorbackgroundExample btn-lg btn-block">Display control list</button>
+                        <button onclick="impact_areas_indicators()" type="button"  data-bs-toggle="modal" data-bs-target="#exampleRequestModal8" class="btn getColorbackgroundExample btn-lg btn-block w-100">Display control list</button>
                       </div>
                       <div class="col-12">
                         <div class="fragCode">
@@ -1392,7 +1398,7 @@
                   <div class="container-c">
                     <div class="row">
                       <div class="col-12" style="margin-bottom: 20px;">
-                        <button onclick="sdg()" type="button"  data-toggle="modal" data-target="#exampleRequestModal9" class="btn getColorbackgroundExample btn-lg btn-block">Display control list</button>
+                        <button onclick="sdg()" type="button"  data-bs-toggle="modal" data-bs-target="#exampleRequestModal9" class="btn getColorbackgroundExample btn-lg btn-block w-100">Display control list</button>
                       </div>
                       <div class="col-12">
                         <div class="fragCode">
@@ -1498,7 +1504,7 @@
                   <div class="container-c">
                     <div class="row">
                       <div class="col-12" style="margin-bottom: 20px;">
-                        <button onclick="sdgtarget()" type="button"  data-toggle="modal" data-target="#exampleRequestModal10" class="btn getColorbackgroundExample btn-lg btn-block">Display control list</button>
+                        <button onclick="sdgtarget()" type="button"  data-bs-toggle="modal" data-bs-target="#exampleRequestModal10" class="btn getColorbackgroundExample btn-lg btn-block w-100">Display control list</button>
                       </div>
                       <div class="col-12">
                         <div class="fragCode">
@@ -1606,7 +1612,7 @@
                   <div class="container-c">
                     <div class="row">
                       <div class="col-12" style="margin-bottom: 20px;">
-                        <button onclick="sdgIndicators()" type="button"  data-toggle="modal" data-target="#exampleRequestModal11" class="btn getColorbackgroundExample btn-lg btn-block">Display control list</button>
+                        <button onclick="sdgIndicators()" type="button"  data-bs-toggle="modal" data-bs-target="#exampleRequestModal11" class="btn getColorbackgroundExample btn-lg btn-block w-100">Display control list</button>
                       </div>
                       <div class="col-12">
                         <div class="fragCode">
@@ -1715,7 +1721,7 @@
                   <div class="container-c">
                     <div class="row">
                       <div class="col-12" style="margin-bottom: 20px;">
-                        <button onclick="all_initiatives()" type="button"  data-toggle="modal" data-target="#exampleRequestModal13" class="btn getColorbackgroundExample btn-lg btn-block">Display control list</button>
+                        <button onclick="all_initiatives()" type="button"  data-bs-toggle="modal" data-bs-target="#exampleRequestModal13" class="btn getColorbackgroundExample btn-lg btn-block w-100">Display control list</button>
                       </div>
                       <div class="col-12">
                         <div class="fragCode">
@@ -1835,7 +1841,7 @@
                   <div class="container-c">
                     <div class="row">
                       <div class="col-12" style="margin-bottom: 20px;">
-                        <button onclick="action_areas_outcomes()" type="button"  data-toggle="modal" data-target="#exampleRequestModal16" class="btn getColorbackgroundExample btn-lg btn-block">Display control list</button>
+                        <button onclick="action_areas_outcomes()" type="button"  data-bs-toggle="modal" data-bs-target="#exampleRequestModal16" class="btn getColorbackgroundExample btn-lg btn-block w-100">Display control list</button>
                       </div>
                       <div class="col-12">
                         <div class="fragCode">
@@ -1944,7 +1950,7 @@
                   <div class="container-c">
                     <div class="row">
                       <div class="col-12" style="margin-bottom: 20px;">
-                        <button onclick="work_packages()" type="button"  data-toggle="modal" data-target="#exampleRequestModal17" class="btn getColorbackgroundExample btn-lg btn-block">Display control list</button>
+                        <button onclick="work_packages()" type="button"  data-bs-toggle="modal" data-bs-target="#exampleRequestModal17" class="btn getColorbackgroundExample btn-lg btn-block w-100">Display control list</button>
                       </div>
                       <div class="col-12">
                         <div class="fragCode">
@@ -2061,7 +2067,7 @@
         </div>
       </div>
       <div  class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
         <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
       </div>
     </div>
@@ -2107,7 +2113,7 @@
 
       </div>
       <div  class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
         <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
       </div>
     </div>
@@ -2149,7 +2155,7 @@
 
       </div>
       <div  class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
         <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
       </div>
     </div>
@@ -2194,7 +2200,7 @@
 
       </div>
       <div  class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
         <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
       </div>
     </div>
@@ -2241,7 +2247,7 @@
 
       </div>
       <div  class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
         <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
       </div>
     </div>
@@ -2274,7 +2280,7 @@
         </div>
       </div>
       <div  class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
         <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
       </div>
     </div>
@@ -2306,7 +2312,7 @@
         </div>
       </div>
       <div  class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
         <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
       </div>
     </div>
@@ -2342,7 +2348,7 @@
         </div>
       </div>
       <div  class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
         <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
       </div>
     </div>
@@ -2374,7 +2380,7 @@
         </div>
       </div>
       <div  class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
         <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
       </div>
     </div>
@@ -2408,7 +2414,7 @@
         </div>
       </div>
       <div  class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
         <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
       </div>
     </div>
@@ -2443,7 +2449,7 @@
         </div>
       </div>
       <div  class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
         <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
       </div>
     </div>
@@ -2475,7 +2481,7 @@
         </div>
       </div>
       <div  class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
         <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
       </div>
     </div>
@@ -2510,7 +2516,7 @@
         </div>
       </div>
       <div  class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
         <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
       </div>
     </div>
@@ -2549,7 +2555,7 @@
         </div>
       </div>
       <div  class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
         <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
       </div>
     </div>
@@ -2581,7 +2587,7 @@
         </div>
       </div>
       <div  class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
         <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
       </div>
     </div>
@@ -2617,7 +2623,7 @@
         </div>
       </div>
       <div  class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
         <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
       </div>
     </div>
@@ -2654,7 +2660,7 @@
         </div>
       </div>
       <div  class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
         <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
       </div>
     </div>
@@ -2710,14 +2716,4 @@
   <script type="text/javascript" src="DataTables/Buttons-1.6.5/js/buttons.bootstrap4.min.js"></script>
   <script type="text/javascript" src="DataTables/Buttons-1.6.5/js/buttons.html5.min.js"></script>
   <script type="text/javascript" src="DataTables/Buttons-1.6.5/js/buttons.print.min.js"></script>
-  <script type="text/javascript" async="true" src="https://www.googletagmanager.com/gtag/js?id=G-SS2H0S9QWB"></script>
-  <script type="text/javascript">
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-          dataLayer.push(arguments);
-      }
-      gtag('js', new Date());
-
-      gtag('config', 'G-SS2H0S9QWB');
-  </script>
 </html>
