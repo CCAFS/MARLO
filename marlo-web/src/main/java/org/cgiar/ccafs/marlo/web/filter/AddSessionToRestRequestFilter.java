@@ -214,10 +214,10 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
     String globalUnitAcronym = split[0];
 
 
-    if (StringUtils.isNotEmpty(globalUnitAcronym)
-      && (globalUnitAcronym.equals("index.html") || globalUnitAcronym.equals("home.html")
-        || globalUnitAcronym.equals("api.html") || globalUnitAcronym.equals("additionalServices.html")
-        || globalUnitAcronym.equals("generalListReference.html"))) {
+    if (StringUtils.isNotEmpty(globalUnitAcronym) && (globalUnitAcronym.equals("index.html")
+      || globalUnitAcronym.equals("home.html") || globalUnitAcronym.equals("api.html")
+      || globalUnitAcronym.equals("additionalServices.html") || globalUnitAcronym.equals("generalListReference.html")
+      || globalUnitAcronym.equals("financialoperation.html"))) {
       if (this.isPublicUser()) {
         Subject subject = SecurityUtils.getSubject();
         subject.logout();
@@ -230,8 +230,9 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
       && !globalUnitAcronym.equals("swagger-resources") && !globalUnitAcronym.equals("configuration")
       && !globalUnitAcronym.equals("index.html") && !globalUnitAcronym.equals("home.html")
       && !globalUnitAcronym.equals("api.html") && !globalUnitAcronym.equals("generalListReference.html")
-      && !globalUnitAcronym.contains(".js") && !globalUnitAcronym.contains(".css")
-      && !globalUnitAcronym.contains(".jpg") && !globalUnitAcronym.contains(".png")) {
+      && !globalUnitAcronym.equals("financialoperation.html") && !globalUnitAcronym.contains(".js")
+      && !globalUnitAcronym.contains(".css") && !globalUnitAcronym.contains(".jpg")
+      && !globalUnitAcronym.contains(".png")) {
       this.addCrpToSession(globalUnitAcronym);
       this.addMonitoringInfo(serviceType, restApiString, request, response);
     }

@@ -743,6 +743,7 @@ public final class APConstants {
   public static final long GLOBAL_UNIT_CENTER_TYPE = 2;
   public static final long GLOBAL_UNIT_PLATFORM = 3;
   public static final long GLOBAL_UNIT_CGIAR_CENTER_TYPE = 4;
+  public static final long GLOBAL_UNIT_APPLICATION = 5;
   public static final long GLOBAL_UNIT_INITIATIVES = 6;
 
   public static final long LOC_ELEMENT_TYPE_REGION = 1;
