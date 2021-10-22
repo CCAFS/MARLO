@@ -745,7 +745,7 @@ public final class APConstants {
   public static final long GLOBAL_UNIT_CGIAR_CENTER_TYPE = 4;
   public static final long GLOBAL_UNIT_APPLICATION = 7;
   public static final long GLOBAL_UNIT_INITIATIVES = 6;
-  public static final long GLOBAL_UNIT_OFFICES = 5;
+  public static final long GLOBAL_UNIT_OFFICES = 8;
 
   public static final long LOC_ELEMENT_TYPE_REGION = 1;
   public static final long LOC_ELEMENT_TYPE_COUNTRY = 2;
