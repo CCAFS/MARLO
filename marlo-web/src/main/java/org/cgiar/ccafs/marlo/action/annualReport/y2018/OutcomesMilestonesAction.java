@@ -1284,13 +1284,13 @@ public class OutcomesMilestonesAction extends BaseAction {
   private void saveLinks(ReportSynthesisFlagshipProgressOutcomeMilestone flagshipProgressMilestoneNew,
     ReportSynthesisFlagshipProgressOutcomeMilestone flagshipProgressMilestoneOld) {
     // Search and deleted form Information
-    if (this.isNotEmpty(flagshipProgressMilestoneOld.getReportSynthesisFlagshipProgressOutcomeMilestoneLinks())) {
+    if (this.isNotEmpty(flagshipProgressMilestoneNew.getReportSynthesisFlagshipProgressOutcomeMilestoneLinks())) {
       List<ReportSynthesisFlagshipProgressOutcomeMilestoneLink> linkPrev =
-        new ArrayList<>(flagshipProgressMilestoneOld.getReportSynthesisFlagshipProgressOutcomeMilestoneLinks());
+        new ArrayList<>(flagshipProgressMilestoneNew.getReportSynthesisFlagshipProgressOutcomeMilestoneLinks());
 
       for (ReportSynthesisFlagshipProgressOutcomeMilestoneLink milestoneLink : linkPrev) {
-        if (flagshipProgressMilestoneNew.getLinks() == null
-          || !flagshipProgressMilestoneNew.getLinks().contains(milestoneLink)) {
+        if (flagshipProgressMilestoneOld.getLinks() == null
+          || !flagshipProgressMilestoneOld.getLinks().contains(milestoneLink)) {
           this.reportSynthesisFlagshipProgressOutcomeMilestoneLinkManager
             .deleteReportSynthesisFlagshipProgressOutcomeMilestoneLink(milestoneLink.getId());
         }
@@ -1298,8 +1298,8 @@ public class OutcomesMilestonesAction extends BaseAction {
     }
 
     // Save form Information
-    if (flagshipProgressMilestoneNew.getLinks() != null) {
-      for (ReportSynthesisFlagshipProgressOutcomeMilestoneLink milestoneLinkIncoming : flagshipProgressMilestoneNew
+    if (flagshipProgressMilestoneOld.getLinks() != null) {
+      for (ReportSynthesisFlagshipProgressOutcomeMilestoneLink milestoneLinkIncoming : flagshipProgressMilestoneOld
         .getLinks()) {
         if (milestoneLinkIncoming.getId() == null) {
           ReportSynthesisFlagshipProgressOutcomeMilestoneLink milestoneLinkSave =
