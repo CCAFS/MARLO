@@ -502,15 +502,17 @@ function action_areas_outcomes() {
 			// print data
 			manageSpinner(false,"actionAreaOutcomeIndicators");
 			console.log(data);
-			let nameColumns = ['Action Area ID', 'Action Area Name','Outcome ID','Outcome Statement','Outcome Indicator ID','Outcome Indicator Statement']
+			let nameColumns = ['Action Area ID', 'Action Area Name','Outcome ID','Outcome SMO code','Outcome Statement','Outcome Indicator ID','Outcome Indicator SMO code','Outcome Indicator Statement']
 
 			$.each(data, function (index, item) {				
 				$('#list-print-actionAreaOutcomeIndicators').append(
 					'<tr>' + '<td >' + item['actionAreaId'] + '</td>' + '<td>'
 					+ item['actionAreaName'] + '</td>'+ '<td>'
 					+ item['outcomeId'] + '</td>'+ '<td>'
+					+ item['outcomeSMOcode'] + '</td>'+ '<td>'
 					+ item['outcomeStatement'] + '</td>'+ '<td>'
 					+ item['outcomeIndicatorId'] + '</td>'+ '<td>'
+					+ item['outcomeIndicatorSMOcode'] + '</td>'+ '<td>'
 					+ item['outcomeIndicatorStatement'] + '</td>' + '</tr>')
 			});
 setTimeout(() => {
