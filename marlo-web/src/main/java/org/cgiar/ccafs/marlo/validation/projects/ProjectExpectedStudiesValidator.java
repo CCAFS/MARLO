@@ -195,16 +195,12 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
       && baseAction.getActualPhase().getName() != null && baseAction.getActualPhase().getName().contains("AR")
       && isOicr) {
       if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null
-        && (projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() != null
-          && projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() == true
-          && (projectExpectedStudy.getMilestones() == null || projectExpectedStudy.getMilestones().isEmpty()))
-        || projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() == null) {
+        && projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() == null) {
 
         action.addMessage(action.getText("milestones"));
         action.addMissingField("expectedStudy.milestones");
         action.getInvalidFields().put("list-expectedStudy.milestones",
           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"milestones"}));
-
       } else {
 
         // Validate milestones
@@ -212,18 +208,20 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
           && (projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() != null
             && projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() == true
             && !projectExpectedStudy.getMilestones().isEmpty())) {
-          int count = 0;
-          for (ProjectExpectedStudyMilestone studyMilestone : projectExpectedStudy.getMilestones()) {
-            if (studyMilestone.getPrimary() != null && studyMilestone.getPrimary()) {
-              count++;
+          if (!action.isSelectedPhaseAR2021()) {
+            int count = 0;
+            for (ProjectExpectedStudyMilestone studyMilestone : projectExpectedStudy.getMilestones()) {
+              if (studyMilestone.getPrimary() != null && studyMilestone.getPrimary()) {
+                count++;
+              }
             }
-          }
 
-          if (count != 1) {
-            action.addMessage(action.getText("milestones"));
-            action.addMissingField("expectedStudy.milestones");
-            action.getInvalidFields().put("list-expectedStudy.milestones",
-              action.getText(InvalidFieldsMessages.WRONGVALUE, new String[] {"milestones"}));
+            if (count != 1) {
+              action.addMessage(action.getText("milestones"));
+              action.addMissingField("expectedStudy.milestones");
+              action.getInvalidFields().put("list-expectedStudy.milestones",
+                action.getText(InvalidFieldsMessages.WRONGVALUE, new String[] {"milestones"}));
+            }
           }
         }
       }

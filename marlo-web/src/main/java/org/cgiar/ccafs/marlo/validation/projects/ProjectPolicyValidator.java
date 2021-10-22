@@ -272,10 +272,7 @@ public class ProjectPolicyValidator extends BaseValidator {
 
     // Validate Milestones
     if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()) != null
-      && (projectPolicy.getProjectPolicyInfo().getHasMilestones() != null
-        && projectPolicy.getProjectPolicyInfo().getHasMilestones() == true
-        && (projectPolicy.getMilestones() == null || projectPolicy.getMilestones().isEmpty()))
-      || projectPolicy.getProjectPolicyInfo().getHasMilestones() == null) {
+      && projectPolicy.getProjectPolicyInfo().getHasMilestones() == null) {
       action.addMessage(action.getText("milestoneList"));
       action.addMissingField("policy.milestones");
       action.getInvalidFields().put("list-policy.milestones",
@@ -286,20 +283,22 @@ public class ProjectPolicyValidator extends BaseValidator {
       && projectPolicy.getProjectPolicyInfo().getHasMilestones() != null
       && projectPolicy.getProjectPolicyInfo().getHasMilestones() == true && projectPolicy.getMilestones() != null
       && !projectPolicy.getMilestones().isEmpty()) {
-      int countPrimaries = 0;
-      for (PolicyMilestone policyMilestone : projectPolicy.getMilestones()) {
-        if (policyMilestone != null && policyMilestone.getCrpMilestone() != null
-          && policyMilestone.getCrpMilestone().getId() != null && policyMilestone.getPrimary() != null
-          && policyMilestone.getPrimary().booleanValue() == true) {
-          countPrimaries++;
+      if (!action.isSelectedPhaseAR2021()) {
+        int countPrimaries = 0;
+        for (PolicyMilestone policyMilestone : projectPolicy.getMilestones()) {
+          if (policyMilestone != null && policyMilestone.getCrpMilestone() != null
+            && policyMilestone.getCrpMilestone().getId() != null && policyMilestone.getPrimary() != null
+            && policyMilestone.getPrimary().booleanValue() == true) {
+            countPrimaries++;
+          }
         }
-      }
 
-      if (countPrimaries != 1) {
-        action.addMessage(action.getText("milestoneList"));
-        action.addMissingField("policy.milestones");
-        action.getInvalidFields().put("list-policy.milestones",
-          action.getText(InvalidFieldsMessages.WRONGVALUE, new String[] {"milestones"}));
+        if (countPrimaries != 1) {
+          action.addMessage(action.getText("milestoneList"));
+          action.addMissingField("policy.milestones");
+          action.getInvalidFields().put("list-policy.milestones",
+            action.getText(InvalidFieldsMessages.WRONGVALUE, new String[] {"milestones"}));
+        }
       }
     }
 
