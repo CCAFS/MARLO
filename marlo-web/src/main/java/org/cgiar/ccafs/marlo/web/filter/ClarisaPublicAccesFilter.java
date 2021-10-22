@@ -83,9 +83,7 @@ public class ClarisaPublicAccesFilter extends OncePerRequestFilter {
           subject.login(token);
         }
         Session session = subject.getSession();
-
         session.setAttribute(APConstants.CLARISA_PUBLIC, true);
-
       }
     }
 
